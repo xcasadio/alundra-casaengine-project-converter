@@ -939,7 +939,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // AlundraDialogueDirector.Open's own doc). Dispatch itself owns the reentrancy
                        // guard (T2): a dialogue already open makes this retry (return 0) rather than
                        // stomping a second one open.
-                return OpenDialog(v[1], v[2], instructionSize: 3, opcode: 0x0D, opcodeName: "Dialog");
+                       // E19.f4b: the speaker (name box and portrait) is the LOGIC entity of the program, the one this handler receives.
+                return OpenDialog(v[1], v[2], instructionSize: 3, opcode: 0x0D, opcodeName: "Dialog", entity);
 
             case 0x39: // Wait for dialog - Script_59_039 (E12.a): blocking gate, NOT a predicate - writes
                        // no Result either way. Returns 0 while a dialogue is open, advances (1) once
@@ -1032,17 +1033,19 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return 1;
 
             case 0x5C: // Dialog with entity - Script_DialogWithEntity_5C (E12.a): same open semantics as
-                       // 0x0D (textId is v[2] here, ctrl is v[3]); v[1] (entity search) is only for the
-                       // deferred portrait/name box (E12.c) - ignored for display here, per plan.
-                return OpenDialog(v[2], v[3], instructionSize: 4, opcode: 0x5C, opcodeName: "DialogWithEntity");
+                       // 0x0D (textId is v[2] here, ctrl is v[3]); v[1] is the search of the SPEAKER (E19.f4b, @0x8003F01C): the
+                       // first entity found takes the portrait (if it has the flag) and the name (its sprite type); nobody found
+                       // opens the box with neither.
+                return OpenDialog(v[2], v[3], instructionSize: 4, opcode: 0x5C, opcodeName: "DialogWithEntity", entity, speakerSearch: v[1]);
 
             case 0xC4: // Dialog with speaker search - Script_196_0C4 @ 0x80041DA8 (E19.b, docs/plan-e19-opcodes.md
                        // §1.2d, D-E19-5): v1 = speaker search, v2 | v3 << 8 = name index, v4 = textId, v5 =
                        // controlMode. Same open semantics as 0x0D/0x5C (retry, return 0, while a box is open;
                        // otherwise opens and returns the size 6 at the same tick; never waits for the close,
-                       // never writes Result). The speaker search, the name and the portrait have no
-                       // observable effect without the name box, so v1, v2 and v3 are ignored until E19.f.
-                return OpenDialog(v[4], v[5], instructionSize: 6, opcode: 0xC4, opcodeName: "DialogWithSpeaker");
+                       // never writes Result). E19.f4b: v1 searches the speaker (the first entity found takes the portrait, if it
+                       // has the flag); the name is v2 | v3 << 8, only when an entity is found.
+                return OpenDialog(
+                    v[4], v[5], instructionSize: 6, opcode: 0xC4, opcodeName: "DialogWithSpeaker", entity, speakerSearch: v[1], nameOperand: v[2] | (v[3] << 8));
 
             case 0x49: // Restart - Script_73_049 (EntityEventHandlers.cs:1454-1459): unconditional jump
                        // back to Parameters[0] (this program's own start CodeIndex, set once by
@@ -1877,7 +1880,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// dégradé pose AUSSI les drapeaux numériques", or a later <c>0x36</c> waiting on one of them would
     /// suspend forever) - before advancing by <paramref name="instructionSize"/> regardless.
     /// </summary>
-    private int OpenDialog(int textIdParam, int controlMode, int instructionSize, int opcode, string opcodeName)
+    private int OpenDialog(
+        int textIdParam, int controlMode, int instructionSize, int opcode, string opcodeName, AlundraEntityScriptProxy logicEntity, int? speakerSearch = null, int? nameOperand = null)
     {
         var (asset, node) = ResolveDialogNode(textIdParam);
         var director = _worldContext.DialogueDirector;
@@ -1891,6 +1895,18 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
             LogDegradedOpcodeOnce(opcode, opcodeName, "dialogue presenter");
             return instructionSize;
+        }
+
+        // E19.f4b (F4B-R1): the binary opens the portrait and the name at EVERY attempt, before TryOpenDialog's own "already open" test (@0x8003D578, 0x8003F01C, 0x80041DA8).
+        // 0x0D takes the logic entity; 0x5C and 0xC4 take the first entity their search finds (none: neither name nor portrait, the box opens all the same).
+        if (speakerSearch is null)
+        {
+            director.OpenSpeaker(logicEntity);
+        }
+        else
+        {
+            var found = EntitySearchService.GetMatchingEntitiesBySearchType(logicEntity, speakerSearch.Value, _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+            director.OpenSpeaker(found.Count > 0 ? found[0] : null, found.Count > 0 ? nameOperand : null);
         }
 
         if (director.IsOpen)

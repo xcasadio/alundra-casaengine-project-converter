@@ -107,6 +107,13 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// </summary>
     public int SpriteType = -1;
 
+    /// <summary>
+    /// E19.f4b (docs/plan-e19-opcodes.md, F4B-R3): the speaker's dialogue portrait (the sprite of its first image and its true size), written at the spawn by
+    /// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/> from the header of its record (<see cref="SpriteRecordHeader.DialoguePortrait"/>), present exactly where
+    /// <see cref="Flags"/> has <see cref="EntityFlags.HasPortrait"/>. Null for every other entity and for the hero (its adoption does not write it). Copied by <see cref="Clone"/>.
+    /// </summary>
+    public DialoguePortraitRef? DialoguePortrait;
+
     public uint Flags;//6c
     public readonly int[] SpriteProgramIndexes = new int[6]; //70
     public uint TargetAnimationId; //88
@@ -2360,6 +2367,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
             SpriteTableIndex = SpriteTableIndex,
             SpriteType = SpriteType,
             Flags = Flags,
+            DialoguePortrait = DialoguePortrait,
             TargetAnimationId = TargetAnimationId,
             TargetDirection = TargetDirection,
             CurrentAnimationId = CurrentAnimationId,

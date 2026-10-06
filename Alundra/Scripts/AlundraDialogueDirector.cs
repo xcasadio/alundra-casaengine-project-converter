@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Presentation;
 using CasaEngine.Framework.Dialogue.Runtime;
@@ -35,6 +36,13 @@ public interface IAlundraDialogueDirector
 
     /// <summary>True while a choice list (opcode 0x44) is open and unresolved.</summary>
     bool IsAwaitingChoice { get; }
+
+    /// <summary>
+    /// E19.f4b (docs/plan-e19-opcodes.md, F4B-R1): the speaker of a dialogue - opcodes 0x0D, 0x5C and 0xC4 call it at EVERY attempt, right before the box's own opening and its "already open"
+    /// test, as the binary does (portrait first, then name). <paramref name="speaker"/> null (the search found nobody) opens neither; <paramref name="nameId"/> is the ETC index of the name
+    /// (0xC4's operands), the sprite type of the speaker when null. A default member that does nothing, like the other seams of this interface, so every implementer keeps compiling.
+    /// </summary>
+    void OpenSpeaker(AlundraEntityScriptProxy? speaker, int? nameId = null) { }
 
     /// <summary>
     /// Opcode 0x0D/0x5C/0xC4's own "open" half (Dispatch itself owns the reentrancy guard - see that method's
@@ -119,9 +127,22 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     private AlundraDialogueDirector()
     {
         _box = new AlundraDialogueBox(this);
+        _advanceDelegate = AdvanceOf;
+        _nameTextDelegate = NameTextOf;
     }
 
     private readonly AlundraDialogueBox _box;
+
+    // E19.f4b: the speaker's name box and portrait (the binary's slot 12 and portrait block), run by every pass of the director right after the text box's and the choice's.
+    private readonly AlundraDialogueNameBox _nameBox = new();
+    private readonly AlundraInventoryPortrait _portrait = new();
+    private AlundraEntityScriptProxy? _portraitSpeaker;
+    private readonly HashSet<int> _warnedPortraitSpriteTypes = new();
+    private readonly Func<char, int> _advanceDelegate;
+    private readonly Func<int, string?> _nameTextDelegate;
+
+    private const int PortraitRestX = 8;
+    private const int PortraitRestBottom = 172;
     private IDialoguePresenter? _presenter;
     private AlundraGameState? _gameState;
     private IAlundraSoundPlayer? _soundPlayer;
@@ -171,6 +192,21 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
 
     /// <summary>The box the world draws: its state is read by the view (E19.f2b) and by the tests; only this director writes it.</summary>
     internal AlundraDialogueBox Box => _box;
+
+    /// <summary>E19.f4b: the name box of the speaker (logic only; the view is E19.f4c): its state is read by the view and by the tests, only this director writes it.</summary>
+    internal AlundraDialogueNameBox NameBox => _nameBox;
+
+    /// <summary>E19.f4b: the dialogue's own instance of the portrait machine (rest (8, 172 - h)); the inventories' is <see cref="AlundraInventoryPortrait.Instance"/>, never touched here.</summary>
+    internal AlundraInventoryPortrait Portrait => _portrait;
+
+    /// <summary>E19.f4b: the speaker whose start the portrait machine accepted, the one its return flies to (null while no start was accepted).</summary>
+    internal AlundraEntityScriptProxy? PortraitSpeaker => _portraitSpeaker;
+
+    /// <summary>
+    /// E19.f4b (F4B-R4): the scroll of the camera in the original's pixels (<c>g_cameraScrollingX/Y</c>), read at the opening of a portrait and at its return; null = (0, 0). Set by
+    /// <see cref="AlundraWorldProxy.InstallDialogueSystems"/>, kept by <see cref="AttachToWorld"/>, cleared by <see cref="ResetForTests"/>.
+    /// </summary>
+    internal Func<(int X, int Y)>? ScrollSource { get; set; }
 
     /// <summary>E19.f3b: the choice box (OUI / NON) the world draws: its state is read by the choice presenter (<see cref="AlundraChoicePresenter"/>) and by the tests; only this director writes it.</summary>
     internal AlundraChoiceBox ChoiceBox => _choice;
@@ -235,6 +271,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         }
 
         _box.Reset();
+        ResetSpeakerSatellites();
         _pageCount = 0;
         _pagesDelivered = 0;
         _pageIndex = 0;
@@ -421,6 +458,57 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     /// <inheritdoc/>
     public bool RequestScriptClose() => _box.LatchClose();
 
+    // ---- the speaker: name and portrait (E19.f4b)
+
+    /// <inheritdoc/>
+    public void OpenSpeaker(AlundraEntityScriptProxy? speaker, int? nameId = null)
+    {
+        if (speaker == null)
+        {
+            return;
+        }
+
+        // The binary's order (0x8003D590..0x8003D640, 0x8003F060..0x8003F104, 0x80041DE8..0x80041EA0): the portrait if the entity has the flag, then the name.
+        if ((speaker.Flags & EntityFlags.HasPortrait) != 0)
+        {
+            if (speaker.DialoguePortrait is { } portrait)
+            {
+                // The start is ignored while the machine is busy; the speaker (and so the height) is kept only when it was accepted.
+                var head = HeadPointOf(speaker);
+                if (_portrait.Start(head.X, head.Y, PortraitRestX, PortraitRestBottom - portrait.Height, AlundraInventoryPortrait.FullWidth, portrait.Height))
+                {
+                    _portraitSpeaker = speaker;
+                }
+            }
+            else if (_warnedPortraitSpriteTypes.Add(speaker.SpriteType))
+            {
+                Logs.WriteWarning(
+                    $"AlundraDialogueDirector: a speaker of sprite type {speaker.SpriteType} has the portrait flag but no DialoguePortrait field (an export made before E19.f4a?); "
+                    + "its dialogues show no portrait (logged once per sprite type).");
+            }
+        }
+
+        _nameBox.TryOpen(nameId ?? speaker.SpriteType, _nameTextDelegate, _advanceDelegate);
+    }
+
+    /// <summary>The head point of a speaker on the original's screen: its 16.16 position (integer parts) minus the scroll of the camera, read now (<see cref="ScrollSource"/>, (0, 0) without one).</summary>
+    private (int X, int Y) HeadPointOf(AlundraEntityScriptProxy speaker)
+    {
+        var scroll = ScrollSource is { } source ? source() : (0, 0);
+        return AlundraInventoryPortrait.ComputeHeadPoint(speaker.PosX, speaker.PosY, speaker.PosZ, scroll.Item1, scroll.Item2);
+    }
+
+    /// <summary>The ETC text of a name (<see cref="AlundraEtcStringTable.TryResolveText"/>), or null when no ETC is loaded; an empty or absent entry gives the empty string, which the name box refuses.</summary>
+    private static string? NameTextOf(int etcIndex) => AlundraEtcStringTable.TryResolveText(etcIndex, out var text) ? text : null;
+
+    /// <summary>The name box, the portrait and the speaker back to the state of a map entry (the binary resets them once, in the UI initialisation at the start; the DLL where it resets the box).</summary>
+    private void ResetSpeakerSatellites()
+    {
+        _nameBox.Reset();
+        _portrait.ResetSessionForLoad();
+        _portraitSpeaker = null;
+    }
+
     // ---- the pass
 
     /// <summary>
@@ -433,6 +521,8 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         PassCountForTests++;
         _box.Pass(squareHeld, squarePressed);
         PassChoice(choicePressed, choiceInterval); // E19.f3a F3A-R3: slot 3 right after slot 0, like the binary; exactly one choice pass per call
+        _nameBox.Pass(); // E19.f4b F4B-R4: slot 12 (the name), then the portrait of the ordering-table build, after the box and the choice
+        _portrait.Step();
     }
 
     /// <summary>
@@ -486,12 +576,25 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
 
     void IAlundraDialogueBoxHost.PlaySound(int sfxId) => _soundPlayer?.PlaySfx(sfxId);
 
-    int IAlundraDialogueBoxHost.Advance(char display)
+    int IAlundraDialogueBoxHost.Advance(char display) => AdvanceOf(display);
+
+    private int AdvanceOf(char display)
     {
         var provider = AdvanceProviderForTests;
         return provider != null
             ? provider(display)
             : AlundraFont3Advances.GetOrCreate(CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath).Advance(display);
+    }
+
+    void IAlundraDialogueBoxHost.CloseTriggered()
+    {
+        // 0x80045EF8-0x80045F08: the name box's closer, then the dialogue portrait's return to where its speaker is NOW (the speaker whose start was accepted).
+        _nameBox.Close();
+        if (_portrait.State != AlundraInventoryPortrait.StateIdle && _portraitSpeaker is { } speaker)
+        {
+            var head = HeadPointOf(speaker);
+            _portrait.BeginReturn(head.X, head.Y);
+        }
     }
 
     void IAlundraDialogueBoxHost.PageTurned()
@@ -525,6 +628,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     /// </summary>
     internal void NotifyPresenterClosed()
     {
+        ResetSpeakerSatellites(); // before the guard: a portrait or a name left by an attempt that opened no box is cleaned too (E19.f4b F4B-R4)
         if (!_box.IsActive)
         {
             return;
@@ -613,6 +717,9 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         _runner = null;
         _boundGameState = null;
         _box.Reset();
+        ResetSpeakerSatellites();
+        _warnedPortraitSpriteTypes.Clear();
+        ScrollSource = null;
         _pageCount = 0;
         _pagesDelivered = 0;
         _pageIndex = 0;

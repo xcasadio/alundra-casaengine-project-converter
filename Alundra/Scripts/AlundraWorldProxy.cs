@@ -1243,6 +1243,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         AlundraDialogueDirector.Instance.AttachToWorld(presenter, GameState, SoundPlayer);
         AlundraDialogueDirector.Instance.InstallForMapEntry();
+
+        // E19.f4b (F4B-R4): the portrait of a speaker flies from and to its head point, which needs the scroll of the camera in the original's pixels, read at the opening and at the return
+        // (the same conversion as the inventory portrait's head point, UpdateInventoryPortraitHeadPoint). Kept by every later AttachToWorld; the director never reaches the world itself.
+        AlundraDialogueDirector.Instance.ScrollSource = () => AlundraCameraMath.ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero);
     }
 
     /// <summary>

@@ -571,6 +571,9 @@ internal static class AlundraEntitySpawnFactory
         // EntityManager.cs:92-93 (Entity.Flags packing documented by EntityFlags).
         proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
 
+        // E19.f4b (F4B-R3): the speaker's dialogue portrait travels with its header (null where the header has no portrait bit).
+        proxy.DialoguePortrait = header.DialoguePortrait;
+
         // E4.b ("Spawn" item, docs/plan-e4-deplacement-scripte.md): cache Controller/RenderProjection the
         // same way AdoptPlayerPawn does for the hero (E3.d) - every prefab with a positive body box now
         // carries a CharacterControllerComponent (E4.a), so a record-spawned NPC needs the same caching

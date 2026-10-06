@@ -54,6 +54,10 @@ internal interface IAlundraDialogueBoxHost
     /// <summary>The slide of the exit ended: the box is released.</summary>
     void Released();
 
+    /// <summary>E19.f4b (F4B-R4): the box triggered its close - called right after sound 7 and before the slide of the exit starts (the binary: <c>0x80045EF8-0x80045F08</c>, which then
+    /// closes the name box and sends the portrait back). Once per close; never at the opening, at a reset or at a pass that triggers nothing.</summary>
+    void CloseTriggered();
+
     /// <summary>The advance in pixels of the glyph the box shows as <paramref name="display"/> (font3): what the width of a centred line is made of (F2B1B-R1).</summary>
     int Advance(char display);
 }
@@ -527,6 +531,7 @@ internal sealed class AlundraDialogueBox
 
         _flags |= 2;
         _host.PlaySound(CloseSound);
+        _host.CloseTriggered();
         BeginSlide(OpenY, ClosedY);
     }
 

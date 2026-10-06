@@ -5624,7 +5624,7 @@ ré-export de référence en place à `30a845c` ne change que `report.json` (dur
 revert, export complet égal au manifeste « avant ». **Risques** : 13 feuilles distinctes portent les portraits : le premier locuteur de
 chaque feuille fera charger la feuille au premier affichage (f4c décide d'un préchargement).
 
-###### E19.f4b — Locuteur, boîte de nom et vol du portrait (logique) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (contrat de T1, vol en 48 × 72, entrées de la DLL), révisée après une passe de conception contre-vérifiée ; relecture n°2 à faire ; après E19.f4a)
+###### E19.f4b — Locuteur, boîte de nom et vol du portrait (logique) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06 ; relecture n°1 REVISE (contrat de T1, vol en 48 × 72, entrées de la DLL), révisée après une passe de conception contre-vérifiée ; relecture n°2 READY ; exécutée après E19.f4a)
 
 **Conception** (2026-10-06, `docs/plan-e19-f4-annexe/f4b-design-notes.md` et sa contre-vérification `f4b-design-verify.md` ; scripts versionnés
 dans `model/`, lancés depuis l'annexe : `check_regression.py` redonne S1 à S7 sans écart, `gen_sequences.py` redonne
@@ -5682,7 +5682,7 @@ dans `model/`, lancés depuis l'annexe : `check_regression.py` redonne S1 à S7 
   erreur, `AlundraArcChecks.cs:63`).
 
 **Tâches.**
-- **F4B-1 — Tests d'abord** :
+- ✅ **F4B-1 — Tests d'abord** :
   - **T1, contrat fermé** (montage au niveau du directeur, ordre du binaire) : à chaque itération f, le test déplace d'abord le monde
     (S9 et les suites tirées), puis `director.Pass(true, true)` (la manette A du modèle), on relève les tracés du nom et du portrait, le
     son 7 (= `close-trigger`) et la chute d'`IsOpen` (= `DialogClosed`) ; puis, si f ≥ 3 et qu'un programme attend, un
@@ -5721,8 +5721,35 @@ dans `model/`, lancés depuis l'annexe : `check_regression.py` redonne S1 à S7 
   - tests existants qui bougent : aucun (inventaire, sous-inventaire, `AlundraSaveGameLoadResetTests.cs:267-325`,
     `AlundraSaveGameApplyTests.cs:285`, `AlundraDialogueSpeakerOpcodeTests.cs` restent verts) ; toute assertion qui bouge est un arrêt.
     Rouges d'abord.
-- **F4B-2 — Suites** : `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (aucune ne bouge) ; pas d'export.
-- **F4B-3 — Vérification**.
+- ✅ **F4B-2 — Suites** : `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (aucune ne bouge) ; pas d'export.
+- 🧪 **F4B-3 — Vérification**.
+
+**Fait le 2026-10-06 (F4B-2)** : `Alundra.Tests` Release **2857/2857** puis Debug **2857/2857** (2805 avant, 52 tests ajoutés ; aucun test existant ne bouge, aucune assertion déplacée) ;
+`cmp` de `Alundra/bin/Debug/net9.0-windows/Alundra.dll` et de `alundra-project/Alundra.dll` identique ; garde des six traces sans écart (les quatre traces réécrites
+par les tests sont restaurées, rien de commité). Pas d'export (aucun fichier du convertisseur ni du projet exporté ne change) : pas de manifeste. Liste fermée
+respectée : `AlundraEventProgramRunner.cs`, `AlundraDialogueBox.cs`, `AlundraDialogueDirector.cs`, `AlundraInventoryPortrait.cs`, `AlundraDialogueNameBox.cs` (nouveau),
+`AlundraEntityScriptProxy.cs`, `AlundraEntitySpawnFactory.cs`, `AlundraWorldProxy.cs` (`SpriteRecordCatalog.cs` inchangé). Aucun arrêt : aucune valeur mesurée ne contredit le
+plan ou son annexe. Le risque du plan est levé : sur « AB », la boîte de texte de la DLL donne bien le déclencheur de fermeture à N+22 (la colonne `phase` et l'événement
+`close-trigger` des neuf tables sont égaux dès le premier vert).
+
+**Fait le 2026-10-06 (F4B-1)** : tests écrits d'abord, six fichiers dans `Alundra.Tests` : `AlundraDialogueSpeakerOracle.cs` (oracle C# porté de `model/f4_model.py` et
+`model/f4_model_h.py`, jamais de la DLL ; générateur SplitMix64 de `gen_sequences.py`), `AlundraDialogueSpeakerRig.cs` (le montage au niveau du directeur),
+`AlundraDialogueSpeakerContractTests.cs` (T1 : S1 à S9), `AlundraDialogueSpeakerMachineTests.cs` (oracle contre les empreintes, machines contre l'oracle, refus du nom),
+`AlundraDialogueSpeakerRuleTests.cs` (règles), `AlundraDialogueSpeakerCorpusTests.cs` (corpus). **Rouges d'abord sur le code d'avant**, avec le squelette des signatures (aucun
+comportement) pour compiler : 32 rouges sur les 63 tests du filtre (les 11 tests existants de `AlundraDialogueSpeakerOpcodeTests` verts) ; T1 : S1 75 images différentes
+(première : image 4 (N+1), nom non dessiné, table cadre 320 / texte 365 ; portrait non dessiné, table (160, 98, 0, 0, 255, in)), S2 37, S3 38, S5 154, S6 75, S8 75, S9 75, S4 et S7
+verts d'emblée (rien n'est dessiné dans la table : garde du changement additif, et la colonne `phase` de la boîte égale déjà aux tables) ; machines : 40 séquences sur 40
+différentes de l'oracle ; corpus : 1333 sites sur 2276 différents. L'oracle C# égal aux empreintes dès le premier essai : les cinq premières sorties de la graine 1, le SHA-256 et
+les 19 compteurs de couverture des 40 graines (couverture totale : 776 ouvertures, 235 portraits acceptés, 364 ignorés, 84 images à 72). **Verts après le code** : 63/63 sur le
+filtre. Valeurs mesurées : les 60 noms ont la largeur du binaire avec les avances de `font3.fnt` du projet (0 écart) ; corpus : 2273 sites décidables (2276 lignes, cinq sites
+partagés par plusieurs enregistrements), tous à la classe attendue ; 25 banques à portrait, toutes de largeur 48, le champ présent exactement où le bit `0x80` est posé.
+Le code : `AlundraDialogueNameBox` (portage de `NameBox`, refus dans l'ordre occupé, plage, texte ETC), `AlundraInventoryPortrait` généralisé par addition (`Start` à six
+paramètres rendant vrai si accepté, `DrawnThisStep`, `Rgb`, `Phase`, repos et taille en champs d'instance ; l'instance de l'inventaire et ses constantes inchangées),
+`AlundraDialogueDirector.OpenSpeaker`, `NameBox`, `Portrait` (seconde instance), `ScrollSource`, `CloseTriggered` (interface de la boîte, appelé après le son 7), passes du nom puis du
+portrait après la boîte et le choix, remises à l'entrée de carte, à la fermeture hors bande (avant la garde) et dans `ResetForTests` ; le runner appelle `OpenSpeaker` à chaque
+tentative des trois opcodes après la sortie « sans présentateur » et avant le test « déjà ouverte » ; `AlundraEntityScriptProxy.DialoguePortrait` écrit à l'apparition, copié
+par `Clone`, nul pour le héros ; `ScrollSource` câblé par `InstallDialogueSystems`. Les deux commentaires périmés du runner (`0x5C`, `0xC4`) sont mis à jour. Décision de test :
+le câblage du défilement est testé en appelant `InstallDialogueSystems` directement (un monde sans `tileMap` n'atteint pas le bloc d'installation).
 
 **Acceptation** : T1 égal aux tables S1 à S9 ; l'oracle égal aux empreintes ; les machines égales à l'oracle ; règles et corpus verts ; liste
 fermée ; suites. **Retour arrière** : revert. **Risques** : la boîte de texte de la DLL doit donner « typing-done » à N+21 et le déclencheur
