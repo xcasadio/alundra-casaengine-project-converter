@@ -6084,7 +6084,7 @@ DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la
   - Fichiers : `TextBoxScreen.xaml`, `TextBoxScreen.design.json`, `AlundraTextBoxViewModel.cs`, `AlundraInventoryViewModel.cs` (propriété `Brightness` et `ApplyDialogue`), `AlundraTextBoxPresenter.cs`,
     `AlundraDialogueNameBox.cs` (`Text`), `AlundraDialogueDirector.cs` (`PortraitSource`), les tests de la liste fermée dont le nouveau `AlundraSpeakerPixelTests.cs`, l'annexe, ADR-0042 et son index.
 
-###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) ⏳ (planifiée le 2026-10-06, **après f4c2**, qui ajoute la propriété ; relecture n°1 REVISE (liste fermée, prévisions), révisée ; relecture n°2 READY)
+###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06, **après f4c2**, qui ajoute la propriété ; relecture n°1 REVISE (liste fermée, prévisions), révisée ; relecture n°2 READY)
 
 DLL et écrans XAML de l'inventaire seulement : la propriété `InventoryPortraitViewModel.Brightness` (ajoutée par f4c2) est posée dans
 l'`Apply` de l'inventaire et liée sur le portrait des deux écrans ; le `Rgb` est déjà calculé (`AlundraInventoryPortrait.cs:234`,
@@ -6115,6 +6115,18 @@ l'`Apply` de l'inventaire et liée sur le portrait des deux écrans ; le `Rgb` e
   « remplacée par D-E19-100 (2026-10-06) » ; la ligne `:540` du journal reste telle quelle) et ce plan.
 - **Tâches** : F4C3-1 tests d'abord (rouges : `Brightness` reste à sa valeur par défaut 1, l'attribut manque) ; F4C3-2 code et XAML ;
   F4C3-3 vérification ; recette : ouvrir et fermer l'inventaire et le sous-inventaire, l'éclair du portrait.
+
+- **Fait le 2026-10-06** (mode AUTO, rien poussé, rien mergé). Parent seulement (moteur, MGUI et leurs pointeurs inchangés). Tâches : ✅ F4C3-1 tests d'abord ;
+  ✅ F4C3-2 code et XAML ; 🧪 F4C3-3 vérification (relecture indépendante) à faire ; ⏳ recette de l'auteur.
+  - **Rouge d'abord** (code et XAML d'avant) : 4 tests rouges sur 108 des trois classes touchées. Valeurs : les deux tests XAML (`PortraitImage_SitsAtRest_...`, inventaire et
+    sous-inventaire) : `Brightness` du `PortraitImage` 1 au lieu de 1,5234375 (195 / 128) ; cycle entier (`ViewModel_Apply_SetsTheBrightnessFromTheRgb_AcrossTheWholeCycle`) : à l'état
+    inactif `Brightness` 1 au lieu de 0 ; retour anticipé (`ViewModel_Apply_WithoutASource_LeavesTheBrightnessUntouched`) : 1 au lieu de 1,9921875 (Rgb 255) après un `Apply` avec source.
+  - **Vert** : les 108 tests des trois classes. Cycle entier contre la table de la prévision, taille, Rgb et `Brightness` = Rgb / 128 à chaque appel : ouverture 15 appels (de 0 × 0, 255, 1,9921875
+    à 44 × 52, 135, 1,0546875), repos 48 × 56, 128, 1 ; retour 15 appels (de 48 × 56, 127, 0,9921875 à 3 × 3, 246, 1,921875), dernière passe 0 × 0, 0, 0 ; inactif 0, 0, échelle 0 :
+    aucune valeur ne contredit la prévision. Retour anticipé sans source : l'élément se replie, `Brightness` n'est pas touchée.
+  - **Fichiers** (liste fermée respectée) : `Alundra/Scripts/AlundraInventoryViewModel.cs` (une affectation dans l'`Apply` de l'inventaire), `InventoryScreen.xaml`, `SubInventoryScreen.xaml`
+    (l'attribut `Brightness` lié à `Portrait.Brightness` ; les `.design.json` inchangés), les trois fichiers de tests nommés (assertions ajoutées seulement : aucun test existant ne bouge),
+    `docs/plan-portrait-inventaire.md` (D2 annotée aux deux endroits) et ce plan. Pas d'export (aucun fichier généré : `UI/Screens/*` est versionné à la main).
 
 **Acceptation** (chaque tranche) : tests rouges puis verts, aucun test existant ne bouge hors ceux nommés ; tests sur GPU verts sur le GPU de
 l'auteur (ils sont ignorés sans GPU : leur exécution est la preuve) ; `Alundra.Tests` en Release puis en Debug, `cmp`, six traces. **Retour

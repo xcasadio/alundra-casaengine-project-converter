@@ -56,7 +56,7 @@
          digits and the cursor. It sits at its rest position (248, 104); the flight from Alundra's head
          moves and scales it through the bindable render transform (MGUI ADR-0020), anchored at its
          top-left corner, so the layout never runs for it. -->
-    <Image Name="PortraitImage" Stretch="None" SourceName="{dataBinding:MGBinding Path=Portrait.SourceName}" CanvasLeft="248" CanvasTop="104" RenderTransformTranslation="{dataBinding:MGBinding Path=Portrait.Translation}" RenderTransformScale="{dataBinding:MGBinding Path=Portrait.Scale}" Visibility="{dataBinding:MGBinding Path=Portrait.Visibility}" />
+    <Image Name="PortraitImage" Stretch="None" SourceName="{dataBinding:MGBinding Path=Portrait.SourceName}" CanvasLeft="248" CanvasTop="104" RenderTransformTranslation="{dataBinding:MGBinding Path=Portrait.Translation}" RenderTransformScale="{dataBinding:MGBinding Path=Portrait.Scale}" Brightness="{dataBinding:MGBinding Path=Portrait.Brightness}" Visibility="{dataBinding:MGBinding Path=Portrait.Visibility}" />
 
     <!-- The armory's seven crest icons (plan §1.5, FUN_80052dd8) - owned crests only, at the original's own
          top-left (D-E13D-34, no centring). -->

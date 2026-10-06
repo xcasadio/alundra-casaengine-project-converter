@@ -281,6 +281,90 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
         Assert.Equal(new Vector2(3f / 48f, 3f / 56f), viewModel.Scale);
     }
 
+    /// <summary>E19.f4c3 (D-E19-100, F4C3-R1): the inventory's portrait writer sets the tint, Rgb / 128, with the translation and the scale on every call that has a source: the whole
+    /// cycle of the plan's table (the opening from 255 down to 135, rest 128, the return from 127 up to 246, the last pass and the idle at 0), size and Rgb together.</summary>
+    [Fact]
+    public void ViewModel_Apply_SetsTheBrightnessFromTheRgb_AcrossTheWholeCycle()
+    {
+        var portrait = new AlundraInventoryPortrait();
+        var viewModel = new InventoryPortraitViewModel();
+        var source = Guid.Parse("19436250-bfec-529a-bf3f-23d258f82db6");
+
+        // (width, height, Rgb) per call, from the closed forms (plan E19.f4c3, forecast).
+        var opening = new (int W, int H, int Rgb)[]
+        {
+            (0, 0, 255), (3, 3, 246), (6, 7, 237), (9, 11, 229), (12, 14, 220), (16, 18, 212), (19, 22, 203), (22, 26, 195), (25, 29, 186), (28, 33, 178),
+            (32, 37, 169), (35, 41, 161), (38, 44, 152), (41, 48, 144), (44, 52, 135),
+        };
+        var returning = new (int W, int H, int Rgb)[]
+        {
+            (48, 56, 127), (44, 52, 135), (41, 48, 144), (38, 44, 152), (35, 41, 161), (32, 37, 169), (28, 33, 178), (25, 29, 186), (22, 26, 195), (19, 22, 203),
+            (16, 18, 212), (12, 14, 220), (9, 11, 229), (6, 7, 237), (3, 3, 246),
+        };
+
+        void Check(string label, (int W, int H, int Rgb) expected)
+        {
+            Assert.True(
+                (expected.W, expected.H, expected.Rgb) == (portrait.DrawnWidth, portrait.DrawnHeight, portrait.Rgb),
+                $"{label}: size/Rgb {(portrait.DrawnWidth, portrait.DrawnHeight, portrait.Rgb)} expected {expected}");
+            viewModel.Apply(portrait, source);
+            Assert.True(expected.Rgb / 128f == viewModel.Brightness, $"{label}: Brightness {viewModel.Brightness} expected {expected.Rgb / 128f}");
+            Assert.Equal(new Vector2(expected.W / 48f, expected.H / 56f), viewModel.Scale);
+        }
+
+        // Idle, before anything: Rgb 0, Brightness 0, scale 0.
+        Check("idle", (0, 0, 0));
+
+        portrait.Start(160, 120);
+        for (var i = 0; i < opening.Length; i++)
+        {
+            portrait.Step();
+            Check($"opening call {i + 1}", opening[i]);
+        }
+
+        portrait.Step();
+        Check("rest", (48, 56, 128));
+        Assert.Equal(1f, viewModel.Brightness);
+        Assert.Equal(AlundraInventoryPortrait.StateAtRest, portrait.State);
+
+        portrait.BeginReturn(160, 120);
+        for (var i = 0; i < returning.Length; i++)
+        {
+            portrait.Step();
+            Check($"return call {i + 1}", returning[i]);
+        }
+
+        portrait.Step();
+        Check("last pass", (0, 0, 0));
+        Assert.Equal(0f, viewModel.Brightness);
+
+        portrait.Step();
+        Check("idle after", (0, 0, 0));
+    }
+
+    /// <summary>E19.f4c3 (F4C3-R1): the early return without a source (a collapsed element) leaves the tint as it was.</summary>
+    [Fact]
+    public void ViewModel_Apply_WithoutASource_LeavesTheBrightnessUntouched()
+    {
+        var portrait = new AlundraInventoryPortrait();
+        var viewModel = new InventoryPortraitViewModel();
+        var source = Guid.Parse("19436250-bfec-529a-bf3f-23d258f82db6");
+
+        portrait.Start(160, 120);
+        portrait.Step();
+        viewModel.Apply(portrait, source); // call 1: Rgb 255
+        Assert.Equal(255f / 128f, viewModel.Brightness);
+
+        portrait.Step(); // call 2: Rgb 246
+        viewModel.Apply(portrait, null);
+        Assert.Equal(Visibility.Collapsed, viewModel.Visibility);
+        Assert.Equal(255f / 128f, viewModel.Brightness);
+
+        viewModel.Brightness = 1f;
+        viewModel.Apply(portrait, null);
+        Assert.Equal(1f, viewModel.Brightness);
+    }
+
     [Fact]
     public void Presenter_WithoutAPortraitIndex_KeepsThePortraitHidden()
     {

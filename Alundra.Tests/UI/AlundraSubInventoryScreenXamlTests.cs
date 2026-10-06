@@ -363,9 +363,11 @@ public sealed class AlundraSubInventoryScreenXamlTests
         viewModel.Portrait.Translation = new Vector2(-88, 16);
         viewModel.Portrait.Scale = new Vector2(3f / 48f, 3f / 56f);
         viewModel.Portrait.Visibility = Visibility.Visible;
+        viewModel.Portrait.Brightness = 195f / 128f; // E19.f4c3: the tint is bound (MGUI ADR-0021)
         desktop.Update();
 
         Assert.Equal("19436250-bfec-529a-bf3f-23d258f82db6", portrait.SourceName);
+        Assert.Equal(195f / 128f, portrait.Brightness);
         Assert.Equal(new Vector2(-88, 16), portrait.RenderTransform.Translation);
         Assert.Equal(new Vector2(3f / 48f, 3f / 56f), portrait.RenderTransform.Scale);
         Assert.Equal(Visibility.Visible, portrait.Visibility);

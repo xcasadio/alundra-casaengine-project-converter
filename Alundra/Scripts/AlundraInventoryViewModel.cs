@@ -233,6 +233,8 @@ public sealed class InventoryPortraitViewModel : ViewModelBase
         Scale = new Vector2(
             portrait.DrawnWidth / (float)AlundraInventoryPortrait.FullWidth,
             portrait.DrawnHeight / (float)AlundraInventoryPortrait.FullHeight);
+        // E19.f4c3 (D-E19-100): the original's vertex colour over 128 (1 at rest, 0 once idle); the early return above, with no source, leaves it alone.
+        Brightness = portrait.Rgb / 128f;
         Visibility = Visibility.Visible;
     }
 }

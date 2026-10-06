@@ -90,7 +90,7 @@ la DLL.
   (u, v)–(u+48, v+56) : l'image entière est mise à l'échelle, jamais retournée. Au repos, elle est affichée 1:1.
 - **Couleur.** Quad texturé **non semi-transparent** (`SetPolyFT4`, code `0x2c`), modulé par la couleur du sommet :
   255 → 128 à l'ouverture, 127 → 246 au retour (éclaircissement jusqu'à ~2×). **Écarté par l'auteur** (D2 : teinte
-  normale en permanence). Transparence = texel d'index 0 (palette 16, entrée 0 = `0x0000`).
+  normale en permanence ; remplacée par D-E19-100 (2026-10-06)). Transparence = texel d'index 0 (palette 16, entrée 0 = `0x0000`).
 - **Ordre de dessin.** Table d'ordre de l'interface (10 entrées, `0x80146f58`), dessinée après le monde, entrée 0 en
   premier : 0 = les boîtes de l'inventaire et la jauge du HUD ; 1 = la description ; 2 = les noms ; **3 = le
   portrait** ; 4 = les icônes des objets et du HUD ; 5 = les chiffres et le curseur. Le portrait passe donc
@@ -210,7 +210,7 @@ transparents sur 2688 ; un buste aux cheveux blonds et aux vêtements bleu-gris,
 | Réf | Décision |
 |---|---|
 | D1 | **Fidèle au binaire** : vol d'aller depuis la tête d'Alundra à chaque ouverture (principal et sous-inventaire), portrait fixe en 48×56 en (248, 104) tant que le menu est ouvert, vol de retour vers la tête à chaque fermeture et à chaque bascule L1/R1. |
-| D2 | **La teinte reste normale en permanence** : pas d'éclaircissement pendant les vols. |
+| D2 | **La teinte reste normale en permanence** : pas d'éclaircissement pendant les vols. (remplacée par D-E19-100 (2026-10-06)) |
 | D3 | **Corriger le manque G9 dans MGUI** : la transformation de rendu d'un élément (translation et échelle) devient liable depuis le XAML ; pas de liaison de `Width`/`Height`. Le HUD n'est pas modifié dans ce chantier. |
 | D4 | **Ré-extraction complète** autorisée, ce qui écrit hors du dépôt (remaster, `data-extracted/`, export) ; le problème du texte non décodé est réglé d'abord. |
 
