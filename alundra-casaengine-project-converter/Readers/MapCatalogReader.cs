@@ -20,6 +20,7 @@ namespace AlundraCasaEngineProjectConverter.Readers;
 ///     dialogues/  {Name}-{id}.yarn, {Name}-{id}.dialogue
 ///     events/     {Name}-{id}.events.json
 ///     backdrop/   {Name}-{id}.backdrop.json, {Name}-{id}-layer{N}.png, .texture
+///     effects/    {Name}-{id}.effects.json, map_{id}_effectsheet.png, .texture
 ///     {Name}-{id}.world
 /// </code>
 /// The tilemap companions (.tileset, .texture and the tileset PNG) are not named here because the
@@ -39,6 +40,8 @@ public sealed record MapLocation(string ZoneFolder, string FileBaseName)
 
     public string BackdropDirectory => Path.Combine(MapFolder, "backdrop");
 
+    public string EffectsDirectory => Path.Combine(MapFolder, "effects");
+
     public string TileMapRelativePath => Path.Combine(TileMapDirectory, $"{FileBaseName}.tileMap");
 
     public string TiledMapRelativePath => Path.Combine(TileMapDirectory, $"{FileBaseName}.tmj");
@@ -46,6 +49,8 @@ public sealed record MapLocation(string ZoneFolder, string FileBaseName)
     public string EventsRelativePath => Path.Combine(EventsDirectory, $"{FileBaseName}.events.json");
 
     public string BackdropRelativePath => Path.Combine(BackdropDirectory, $"{FileBaseName}.backdrop.json");
+
+    public string EffectsRelativePath => Path.Combine(EffectsDirectory, $"{FileBaseName}.effects.json");
 
     public string BackdropLayerTextureFileName(int layerId) => $"{FileBaseName}-layer{layerId}.png";
 

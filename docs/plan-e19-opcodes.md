@@ -8531,7 +8531,7 @@ prouvés par l'exécution du vrai code du binaire dans l'interpréteur MIPS (0 �
 - **G4 — Recette** de l'auteur : 476 d'abord.
 
 
-###### E19.g G1 — Export des effets (convertisseur) 🚧 (en cours le 2026-10-06 : G1-0 faite ; planifiée le 2026-10-06 ; relecture n°1 REVISE (compteur des textures, cases d'animation, valeurs de la 163, retour arrière), révisée ; relecture n°2 READY ; exécution après la recette et l'approbation de l'auteur)
+###### E19.g G1 — Export des effets (convertisseur) 🚧 (en cours le 2026-10-06 : G1-0 et G1-1 faites ; planifiée le 2026-10-06 ; relecture n°1 REVISE (compteur des textures, cases d'animation, valeurs de la 163, retour arrière), révisée ; relecture n°2 READY ; exécution après la recette et l'approbation de l'auteur)
 
 Parent seul : ni moteur, ni DLL. Déclencheur de risque : nouveau format de données exporté (relecture du plan et vérificateur neuf
 obligatoires). Données de départ : `data-extracted/` tel quel (G0 a déjà tout extrait : aucune ré-extraction, aucun changement de
@@ -8591,7 +8591,7 @@ l'extracteur). Faits et valeurs : `docs/plan-e19-g1g3-annexe/` (`converter-notes
   SHA-1 de son contenu canonique (valeurs analysées, pas les octets) ; chaque compteur de `report.json` qui change avec sa valeur prévue
   (les `Effects.*`, `Verify.*`, `Metrics.OutputFileCount`), `Assets.Texture`, `Warnings`, `Errors` et les autres compteurs inchangés ; un
   ré-export de référence avant tout code ne doit changer que `report.json`.
-- ⏳ **G1-1 — Tests d'abord** (convertisseur, au patron des tests de `BackdropWriter`) : table synthétique avec cases de remplissage en fin,
+- ✅ **G1-1 — Tests d'abord** (convertisseur, au patron des tests de `BackdropWriter`) : table synthétique avec cases de remplissage en fin,
   ensembles partagés, image dégénérée, quad miroir (coins inversés), délai brut `0x80 | n` ; erreurs : trou dans les décalages, délai de
   fin inconnu, enregistrement sans table ; données réelles : 476 (1 enregistrement `0x80`, effet 0, animation 1, tuile (80, 22, 6) ; 4
   animations de 111, 16, 21, 32 images, fins `Destroy`, `Loop`, `Destroy`, `Loop`, périodes 222, 32, 34, 64 ; IDSV 52), 391 (5
@@ -8621,6 +8621,17 @@ inchangé, Release) a réécrit **383 fichiers `.entity`**, qui portent maintena
 `report.json` ; compteurs, avertissements et messages identiques à l'export précédent (aucun compteur ne bouge). Cause : le
 moteur, pas le convertisseur. Le manifeste « avant » de G1-2 est donc celui du ré-export de référence (23 771 fichiers hors DLL,
 PDB et `.casaeditor/`) ; l'égalité de ce ré-export à lui-même se prouve par le double export de G1-2.
+
+**Fait le 2026-10-06 (G1-1, tests d'abord).** `EffectWriterTests` (17 tests, `alundra-casaengine-project-converter.Tests`) écrits avec
+des squelettes du lecteur (`EffectBankReader`) et de l'écrivain (`EffectWriter`) qui lèvent `NotImplementedException`, plus les
+deux membres `MapLocation.EffectsDirectory` et `EffectsRelativePath` : **rouges 17 sur 17** (`dotnet test --no-build --filter
+EffectWriterTests`, Release). Couverture : table synthétique (cases de remplissage en fin, `AnimationOffsets` plus long que
+`AnimationCount`), délais bruts `0x80 | n` (1 et 127) et fins `Destroy` / `Loop`, ensembles partagés par table dans l'ordre de première
+utilisation avec leur IDSV, image dégénérée et ensemble vidé qui reste, quad miroir (coins inversés gardés, bits `Semi` et `Abr`), erreurs
+(trou, délai de fin inconnu, enregistrement sans table ni animation), fixtures réduites tolérées, compagnon de carte, compagnon global,
+planches et entrées du catalogue sauvegardé, déterminisme, valeurs réelles des cartes 476, 391, 163 et 161, et la garde des invariants
+de l'exécution complète (544 / 251 / 350 / 194 / 165 / 363 / 83 / 5148 / 2832 / 12 307 / 23 / 157 / 87 / 0, `Assets.Texture` inchangé).
+Aucun test existant ne bouge (aucun fichier de test existant modifié).
 
 **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; export égal à la prévision ; double export ; suites,
 `cmp`, traces. **Retour arrière** : revert, puis suppression exacte des chemins ajoutés listés par G1-0 (les dossiers `effects/` des cartes
