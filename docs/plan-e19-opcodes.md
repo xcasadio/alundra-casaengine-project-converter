@@ -338,6 +338,15 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-101** — (2026-10-06, l'auteur) Le **vol du portrait** (image MGUI réduite, lue au centre des pixels) est lu à la résolution
     de l'écran : l'écart à la règle de la PS1 (`floor(u + 0,5)`) pendant les 0,3 s du vol est accepté et écrit dans l'ADR ; au repos,
     le portrait est exact.
+  - **Règle de conduite R-BR** (2026-10-06, de la session, après les relectures de G2b et d'E19.h1b3 ; O-E19-74 reste à l'auteur pour
+    la seule renumérotation de G2d) — **Branches et numéros d'ADR des sous-modules.** (1) Base : toute nouvelle branche du moteur (ou de
+    MGUI) part du commit que le parent épingle au moment de l'exécution (aujourd'hui `33324030`, pointe de G2d, qui n'est pas dans le
+    `main` du moteur : l'auteur y a mergé l'audio, `4d1ab457`) ; les tranches s'exécutent l'une après l'autre et s'empilent ; après la
+    montée du pointeur, `git merge-base --is-ancestor <ancien pointeur> <nouveau pointeur>` doit réussir, sinon arrêt ; le merge dans
+    `main` se fait plus tard, à la demande de l'auteur, par une branche d'intégration. (2) Numéro d'une ADR du moteur : 1 + le plus grand
+    numéro trouvé sur `main`, `chantier/audio-modern`, toutes les branches `chantier/e19*` du moteur et la réservation 0061 (G2d,
+    proposition d'O-E19-74), soit 0062 aujourd'hui, **revérifié juste avant le commit** ; une collision est un arrêt. Même règle pour
+    MGUI (ses branches) et pour le parent (`main` et `chantier/e19-suite`).
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -5911,7 +5920,8 @@ bibliothèque partagée (MGUI ADR).
   seconde fois en `BlendType.Additive` avec la couleur (k − 1), en réglant le `DrawSettings` le temps du second dessin (précédent :
   `MGImage.cs:239-262`, le filtre de réduction).
 - **Tâches** : tests d'abord (MGUI : propriété, défaut, analyse XAML, liaison ; dessin au niveau des appels : un seul dessin à k ≤ 1, deux
-  à k > 1 avec le mélange additif et la couleur (k − 1)) ; ADR de MGUI (prochain numéro, 0021 aujourd'hui, revérifié) ; entrée G11 du
+  à k > 1 avec le mélange additif et la couleur (k − 1)) ; ADR de MGUI (numéro par la règle R-BR (2), 0021 aujourd'hui) ; branche par la
+  règle R-BR (1) ; entrée G11 du
   rapport des manques du moteur (`ai-agent/audits/mgui-gaps-from-xaml-screens.md`, en français) close ; vérification ; suites MGUI et
   moteur, montée des pointeurs (MGUI dans le moteur, moteur dans le parent), `Alundra.Tests` en Release puis en Debug, `cmp`, six traces.
 
@@ -6998,10 +7008,11 @@ trappes, boules, la chute de Sara).
   compte d'appels, un appel par image) ; le pas fait deux recherches d'appui bornées (atterrissage, puis sol de fin de tick, comme la
   passe de fin du binaire).
 
-##### 1.2n.1d E19.h1b3 — Cible de `0x22` du binaire (D-E19-94, D-E19-98) ⏳ (planifiée le 2026-10-06 ; relecture à faire ; exécution après la recette et l'approbation de l'auteur)
+##### 1.2n.1d E19.h1b3 — Cible de `0x22` du binaire (D-E19-94, D-E19-98) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (17 sites testés, branche du moteur, numéro d'ADR), révisée ; relecture n°2 à faire ; exécution après la recette et l'approbation de l'auteur)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-op22-annexe/` : `notes.md`,
-`verify.md`, `site-table.txt`, `handler-rows.txt`, `gen_rows.py`, `all17.py`, `rand_rules.py`). Faits porteurs **[binaire]** : le
+`verify.md`, `site-table.txt`, `handler-rows.txt`, `gen_rows.py`, `all17.py`, `rand_rules.py`, et la sonde sur la vraie DLL
+`op22-probe-tests.cs.txt`, qui porte la mise en place de chaque site). Faits porteurs **[binaire]** : le
 gestionnaire `0x8003DA70` mémorise au premier appel `octet(enregistrement + 9) << 19` et rend 0 ; ensuite il teste l'égalité exacte avec
 `PosZ` (`+0x11C`), sinon il borne `ForceZ` à l'écart seulement s'il le dépasse dans son sens (jamais de force créée ni inversée) ; `0x23`
 (`0x8003DB28`) rend aussi 1 sur le drapeau de contact, dès le premier appel. Le pas `PosZ += F`, l'atterrissage `ModdedPosZ + F <= T` puis
@@ -7016,20 +7027,23 @@ l'interpréteur et sur la vraie DLL ; les 12 plafonds suspendus de la 36 (`0x23`
 est posé dès le premier appel : ils ne montent jamais).
 
 **Règles.**
-- **H1B3-R1 — Moteur** (d'abord, sous-module, branche dédiée) : `CharacterControllerSettings.MinMoveDistance` (défaut égal à aujourd'hui,
+- **H1B3-R1 — Moteur** (d'abord ; sous-module, branche `chantier/e19h1b3-min-move-distance` créée selon la règle R-BR (1) depuis le commit
+  que le parent épingle au moment de l'exécution) : `CharacterControllerSettings.MinMoveDistance` (défaut égal à aujourd'hui,
   clé `min_move_distance`) remplace la constante aux six usages ; clonage, chargement, validation et sérialiseur
   (`CasaEngine.EditorServices/EditorEntityJsonSerializer.cs:495`) le suivent ; ligne au tableau des réglages
-  (`docs/engine/character-controller-features.md:161-162`) ; ADR du moteur (numéro : O-E19-74) ; fichier de tâches du moteur.
+  (`docs/engine/character-controller-features.md:161-162`) ; ADR du moteur (numéro par la règle R-BR (2)) ; fichier de tâches du moteur
+  (`ai-agent/tasks/e19h1b3-min-move-distance-tasks.md`) et sa ligne dans `ai-agent/README.md`.
 - **H1B3-R2 — DLL** : au premier appel de `WaitHeightTarget` (`AlundraEventProgramRunner.cs:2530-2565`) : `littérale = hauteur << 19`,
   `cible = littérale − 1`, et si l'entité a un contrôleur et `cible >= 1 << 24`, `cible = littérale` ; `Parameters[2] = cible` ; les appels
   suivants ne changent pas. `AlundraEntitySpawnFactory.cs:626` pose `MinMoveDistance = 0` à côté d'`IsVerticalOwnedExternally = true`.
 - **Fichiers** (liste fermée) : moteur `CasaEngine/Framework/Scene/Entities/Components/CharacterControllerSettings.cs`,
   `CharacterControllerComponent.cs`, `CasaEngine.EditorServices/EditorEntityJsonSerializer.cs`, `CasaEngine.Tests/Physics/CharacterControllerSettingsTests.cs`,
   `CharacterControllerComponentTests.cs`, `CasaEngine.Tests/EditorServices/CharacterControllerComponentSerializationTests.cs`,
-  `docs/engine/character-controller-features.md`, l'ADR et l'index, le fichier de tâches ; parent `Alundra/Scripts/AlundraEventProgramRunner.cs`,
+  `docs/engine/character-controller-features.md`, l'ADR et l'index, le fichier de tâches et sa ligne dans `ai-agent/README.md` ; parent `Alundra/Scripts/AlundraEventProgramRunner.cs`,
   `AlundraEntitySpawnFactory.cs`, commentaires seulement dans `AlundraEntityScriptProxy.cs:84-88` et `EntityRecordMapper.cs:196-199`,
   `Alundra.Tests/AlundraHeightWaitOpcodesTests.cs`, nouveau `Alundra.Tests/AlundraHeightTargetSitesTests.cs`, ADR du parent (prochain numéro
-  libre, revérifié ; remplace en partie la première exception d'ADR-0026, dont seule la ligne d'état change), le pointeur, ce plan.
+  libre par la règle R-BR (2) ; remplace en partie la première exception d'ADR-0026, dont seule la ligne d'état change) et l'index
+  `docs/decisions/README.md`, le pointeur, ce plan et l'annexe.
 
 **Valeurs écrites d'avance** (`handler-rows.txt`, tirées du vrai gestionnaire avec `PosZ_b = PosZ_dll + 1`) : hauteur 20 → cible 10485759 ;
 (10484999, 32768) → `ForceZ` 760 ; (10485760, −5) → −1 ; (10485759, 0) → résultat 1 ; mémos : hauteur 38 avec contrôleur 19922944 (littérale),
@@ -7042,12 +7056,24 @@ inchangés ; `TZ23_IsTheHeightWait...` `:233` 15728640 → 15728639 ; `TZ23_TheT
 **Tâches.**
 - ⏳ **H1B3-1 — Moteur** : tests d'abord (par défaut un déplacement de moins de 0,001 px est jeté, à 0 il est appliqué ; clonage, chargement,
   validation, sérialiseur) ; code ; docs ; ADR ; suites du moteur (`CasaEngine.Tests` buildé explicitement) ; vérification ; montée du pointeur.
-- ⏳ **H1B3-2 — DLL** : tests d'abord (lignes du gestionnaire, une `Theory` (hauteur, contrôleur, mémo), sites réels 115 (rouge aujourd'hui), 127
-  rec6, 127 rec17 (vert avant et après)) ; les quatre tests existants ré-épinglés ; code ; ADR du parent ; `Alundra.Tests` en Release puis
-  en Debug, `cmp`, six traces ; vérification. **Ordre** : moteur, pointeur, DLL (jamais la règle avant le réglage).
+- ⏳ **H1B3-2 — DLL** : tests d'abord : lignes du gestionnaire et une `Theory` (hauteur, contrôleur, mémo) dans `AlundraHeightWaitOpcodesTests.cs` ;
+  dans le nouveau `AlundraHeightTargetSitesTests.cs`, **une `Theory` sur les 33 instances des 17 sites** de `site-table.txt` (par le vrai
+  `ArcRun` sur l'export réel, contrôleur réel et préfabs), chacune avec la mise en place de `op22-probe-tests.cs.txt` (tuile du héros dans la
+  porte du programme, image d'arrivée ; 363 : drapeau 32769 bit 1 posé après le chargement de la carte ; 36 C[4] : drapeau 32774 bit 6 posé
+  après le chargement puis retiré, héros posé sur la plateforme une fois arrivée ; 115 : héros dans la zone, bouton de dialogue pressé à
+  chaque image de dialogue) et les valeurs de la colonne « proposed » : première image, dernière image, nombre d'appels, `PosZ` de fin.
+  Valeurs attendues : 115 rec19 756/1077, 321 appels, 3145727 ; 127 rec6, rec7 20/180, 160, 10485759 ; 127 rec11, rec12 20/180, 160,
+  6291455 ; 127 rec8, rec9, rec13 à rec16 22/214, 192, 15728639 ; 127 rec17, rec18 22/214, 192, 19922944 (repli littéral) ; 89 rec20 à
+  rec25 48/116, 68, 7340031 ; 363 rec0 14/62, 48, 5242879 ; 36 C[4] rec3 166/326, 160, 11534335 ; 36 C[14] rec42 à rec53 (`0x23`) 910/910,
+  0 appel, 1048576. Les nombres d'appels sont ceux du binaire (`all17.py`). Rouges d'abord : 115 (aujourd'hui 320 appels, 3145728) et
+  toutes les fins de `PosZ` qui baissent d'un cran ; verts avant et après : 127 rec17, rec18 et les 12 plafonds de la 36 (gardes). Les
+  quatre tests existants ré-épinglés ; code ; ADR du parent ; `Alundra.Tests` en Release puis en Debug, `cmp`, six traces ; vérification.
+  **Ordre** : moteur, pointeur, DLL (jamais la règle avant le réglage).
 
-**Acceptation** : rouges d'abord ; les 17 sites égaux au binaire (nombre d'appels) ; aucun autre test ni arc ne bouge ; six traces. **Retour
-arrière** : revert de la DLL, puis du pointeur et du moteur. **Arrêts** : un test non nommé qui bouge, un site qui diffère du binaire.
+**Acceptation** : rouges d'abord ; les 33 instances des 17 sites égales aux valeurs ci-dessus (nombre d'appels du binaire) ; aucun autre
+test ni arc ne bouge ; six traces ; après la montée du pointeur, `git merge-base --is-ancestor` de l'ancien pointeur vers le nouveau réussit.
+**Retour arrière** : revert de la DLL, puis du pointeur et du moteur. **Arrêts** : un test non nommé qui bouge, un site qui diffère de ses
+valeurs, un fichier hors de la liste, un pointeur qui ne descend pas de l'ancien, un numéro d'ADR déjà pris.
 **Risques** : le réglage à 0 vaut pour tous les déplacements des entités poussées par script (aussi l'horizontal et l'héritage du sol) :
 neutre sur tous les tests et arcs mesurés, pas sur une recette ; la position finale d'une montée est un cran plus bas (repère d'ADR-0026),
 d'où une `TileZ` d'un cran plus bas (lue par aucun opcode sur les cinq cartes) ; une descente d'entité à contrôleur au-dessus de 256 px
@@ -8162,7 +8188,7 @@ pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `S
   une **exécution rouge** avec `DrawPsxQuad` réduit à un dessin du rectangle englobant par le chemin d'aujourd'hui (les cas déformés
   échouent).
 - **G2b1-3** docs (`docs/engine/sprite-psx-semi-transparency.md` : la ligne « Quads with four free vertices are not covered » remplacée par
-  le chemin du quad et sa règle), ADR du moteur (numéro : O-E19-74 ; la règle à la résolution de l'écran et son écart aux facteurs k > 1),
+  le chemin du quad et sa règle), ADR du moteur (numéro par la règle R-BR (2) ; la règle à la résolution de l'écran et son écart aux facteurs k > 1),
   fichier de tâches ; **G2b1-4** vérification.
 - **Acceptation** : suites du moteur (`CasaEngine.Tests` buildé explicitement, `--blame-hang-timeout 300s`), aucun test existant ne bouge
   (`SpriteRendererComponent{BlendMode,Capacity,PsxSemiTransparency}Tests`, tests de tri et des couches : un test qui bouge est un arrêt) ;
