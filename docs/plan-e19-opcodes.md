@@ -8448,7 +8448,7 @@ pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `S
   confirmé par le relecteur (décalage d'un demi-pixel d'écran, terme de pente, ordre des cases, égalité 1:1 de `check_bk.py`).
   Nouvelle époque de préparation ; une seule relecture de clôture.
 
-###### E19.g G2b-2 — Piste de coins de `.anim2d` (moteur) ⏳ (planifiée le 2026-10-06, après G2b-1 ; relecture n°1 REVISE (liste fermée, sites, schéma, acceptation), révisée ; relecture n°2 REVISE (fixture de la réécriture à l'octet), disposition FIX ; nouvelle époque, relecture de clôture READY)
+###### E19.g G2b-2 — Piste de coins de `.anim2d` (moteur) 🧪 (faite le 2026-10-06, vérification à faire ; moteur `3483fed6` et `dd1f8afa`, ADR-0069)
 
 Changement de format du moteur (ADR) ; inerte pour Alundra tant qu'aucun fichier ne porte la piste (un fichier d'aujourd'hui se relit et se
 réécrit à l'octet). Déclencheur de risque : format sérialisé. Branche du moteur `chantier/e19g2b2-corner-track`, créée par la règle R-BR (1)
@@ -8512,6 +8512,43 @@ parent à sa fin** (le moteur porte alors la propriété ; aucun fichier export�
 - **Disposition de la relecture n°2** (2026-10-06, règle des deux REVISE) : un seul bloquant, **FIX** — la fixture copiée dans les tests du
   moteur, trouvée par la remontée vers la solution, réécrite par `EditorAssetWriterService.SaveDocument`, point de départ à l'octet exigé.
   Nouvelle époque ; une seule relecture de clôture.
+
+**État d'exécution** (2026-10-06) : exécutée sur `chantier/e19-suite2` du moteur (demande de l'auteur après le merge du 2026-10-06 : elle tient lieu
+de `chantier/e19g2b2-corner-track`), partie de `19aa21fe`, le commit que le parent épinglait ; ADR du moteur par R-BR (2) : le plus grand numéro
+trouvé sur toutes les branches locales est 0068, donc **0069**, revérifié juste avant le commit (aucun 0069). Mode AUTO, rien poussé, rien mergé.
+- ✅ **G2b2-1** tests d'abord · ✅ **G2b2-2** code · ✅ docs et ADR-0069 · 🧪 **G2b2-3** vérification (fraîche) à faire.
+
+**G2b-2 faite le 2026-10-06** : fichiers de test `CasaEngine.Tests/Animation/Animation2dCornerTrackTests.cs` (16 tests : chargement d'une clé active et
+champs manquants à zéro, `source_offset` entier quelconque, échantillonneur (rectangle avant la première clé et sur une clé désactivée, dernière clé
+au temps ou avant, `Reset`), `CloneTrack` par l'adaptateur, durées (inchangée quand les clés tombent sur les temps `Sprite`, suit une clé plus
+tardive), bornes (boîte des coins, rectangle d'avant sans coins), dessin au niveau du lot (une partie aux coins actifs passe par `DrawPsxQuad`, les
+parties rectangle restent sur le chemin du sprite, chemin avec clé de tri et chemin par z, coins = position de la partie + coins × échelle de
+l'entité, fenêtre décalée de `source_offset`, rotation, retournements et `SpriteEffect` ignorés), réécriture à l'octet d'un fichier réel) et
+`CasaEngine.Tests/EditorServices/Animation2dCornerTrackSerializationTests.cs` (5 tests : sérialiseur et instantané d'annulation de l'éditeur,
+clé active, clé désactivée sans coins ni décalage, liste vide non écrite) ; fixture `CasaEngine.Tests/Animation/Fixtures/bankalundra_0_anim1_down.anim2d`
+copiée à l'octet de `alundra-project/Entities/Alundra/` (`cmp` égal). **Rouge d'abord** (membre `Corners`, type, liste et champs d'état ajoutés sans
+comportement) : 17 tests rouges sur 21 (valeurs lues : « Animation2d track property 'Corners' is not supported » (échantillonneur et dessin), durée
+attendue 0,9 lue 0,5, « Expected: 2, Actual: 0 » (clés non chargées) et deux écritures absentes) ; les 4 verts d'avance sont les gardes : **réécriture à
+l'octet du fichier réel vérifiée avant le changement** (point de départ exigé), durée inchangée, listes vides non écrites (sérialiseur et instantané).
+**Vert après** : 21 sur 21, la réécriture à l'octet tient encore ; un temps de clé décimal (0,1) donnait un faux rouge de `JToken.DeepEquals`
+(float 32 bits contre double), les clés de test sont des temps exacts (0,125 et 0,375). Code : `Animation2dTrackData.cs` (`Corners` en fin
+d'énumération, `Animation2dCornersKeyframeData`, `CornerKeyframes`, `corner_keyframes` lu), `Animation2dCompositionAdapter.cs`,
+`Animation2dCompositionSampler.cs`, `Animation2dPartRuntimeState.cs` (`HasCorners`, les quatre coins, `CornerSourceOffset`, remis à zéro par
+`Reset`), `Animation2dData.cs` (durée), `Animation2dBoundsCalculator.cs`, `AnimatedSpriteComponent.cs` (`DrawCornerQuad` : `DrawPsxQuad` avec
+la clé de tri et le mode PSX du sprite, ou par z sans mode comme le rectangle), `EditorAssetJsonSerializer.cs` et l'instantané d'annulation de
+`Animation2dAssetInspectorPanel.cs` (`corner_keyframes` écrit seulement s'il n'est pas vide, clé désactivée sans coins ni décalage). Docs :
+`docs/engine/animation2d-composed-format-v1.md` (section « Corner track »), `docs/editor/animation2d_editor_casaengine.md`, ADR-0069 et sa ligne
+d'index, `ai-agent/tasks/e19g2b2-corner-track-tasks.md` et sa ligne dans `ai-agent/README.md`. Suite du moteur (`CasaEngine.Tests` buildé
+explicitement, `--blame-hang-timeout 300s`) : 4126 sur 4126 (4105 + 21 nouveaux, aucun test existant ne bouge). Commits moteur `3483fed6` (code,
+tests, fixture) et `dd1f8afa` (docs, ADR, tâches).
+
+**G2b2-3 (pointeur et suites)** : le parent épingle `dd1f8afa` (`git merge-base --is-ancestor 19aa21fe dd1f8afa` réussit). `Alundra.Tests` en Release
+2948 sur 2948, puis en Debug (en dernier) 2948 sur 2948 (le total d'avant était 2946 ; `9799984` ajoute des tests d'`Alundra.Tests`, l'écart de +2 n'est
+pas attribué test par test) ; `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll` égal ; garde des six traces : aucun
+écart (`git diff --ignore-cr-at-eol`), les quatre traces de héros restaurées par `git checkout`, rien de commité. Convertisseur, export et DLL
+inchangés (aucun manifeste à produire : aucun fichier exporté ne porte encore la piste). Aucun arrêt rencontré ; aucun fichier hors de la liste
+fermée (la fixture et les deux fichiers de test sont ceux de la liste). Écart de la lettre du plan, sans effet : la branche du moteur est
+`chantier/e19-suite2` (demande de l'auteur) et non `chantier/e19g2b2-corner-track`. Reste : la vérification fraîche (`verifier`) de la tranche, puis G2b-3.
 
 ###### E19.g G2b-3 — Export des coins (convertisseur) ⏳ (planifiée le 2026-10-06, après G2b-2 ; relecture n°1 REVISE (prévision clé par clé, garde, ordre du pointeur), révisée ; relecture n°2 REVISE (chemin du fichier de garde), disposition FIX ; nouvelle époque, relecture de clôture READY)
 
