@@ -339,14 +339,14 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-101** — (2026-10-06, l'auteur) Le **vol du portrait** (image MGUI réduite, lue au centre des pixels) est lu à la résolution
     de l'écran : l'écart à la règle de la PS1 (`floor(u + 0,5)`) pendant les 0,3 s du vol est accepté et écrit dans l'ADR ; au repos,
     le portrait est exact.
-  - **Règle de conduite R-BR** (2026-10-06, de la session, après les relectures de G2b et d'E19.h1b3 ; O-E19-74 reste à l'auteur pour
-    la seule renumérotation de G2d) — **Branches et numéros d'ADR des sous-modules.** (1) Base : toute nouvelle branche du moteur (ou de
+  - **Règle de conduite R-BR** (2026-10-06, de la session, après les relectures de G2b et d'E19.h1b3 ; O-E19-74 tranchée le 2026-10-06 :
+    G2d a pris 0066, 0061 étant pris sur le main du moteur) — **Branches et numéros d'ADR des sous-modules.** (1) Base : toute nouvelle branche du moteur (ou de
     MGUI) part du commit que le parent épingle au moment de l'exécution (aujourd'hui `33324030`, pointe de G2d, qui n'est pas dans le
     `main` du moteur : l'auteur y a mergé l'audio, `4d1ab457`) ; les tranches s'exécutent l'une après l'autre et s'empilent ; après la
     montée du pointeur, `git merge-base --is-ancestor <ancien pointeur> <nouveau pointeur>` doit réussir, sinon arrêt ; le merge dans
     `main` se fait plus tard, à la demande de l'auteur, par une branche d'intégration. (2) Numéro d'une ADR du moteur : 1 + le plus grand
-    numéro trouvé sur `main`, `chantier/audio-modern`, toutes les branches `chantier/e19*` du moteur et la réservation 0061 (G2d,
-    proposition d'O-E19-74), soit 0062 aujourd'hui, **revérifié juste avant le commit** ; une collision est un arrêt. Même règle pour
+    numéro trouvé sur `main`, `chantier/audio-modern`, toutes les branches `chantier/e19*` du moteur et l'ADR de G2d (O-E19-74 tranchée le 2026-10-06 : G2d a pris
+    0066, 0061 étant pris sur le main du moteur), soit 0067 aujourd'hui, **revérifié juste avant le commit** ; une collision est un arrêt. Même règle pour
     MGUI (ses branches) et pour le parent (`main` et `chantier/e19-suite`).
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
@@ -8155,7 +8155,7 @@ impossible aujourd'hui).
   plan `ai-agent/tasks/e19g2d-overlay-blend-tasks.md`, la modification locale de l'auteur dans `CasaEngine.Launcher/Program.cs` jamais
   indexée) : `451d5f91` (E1 : constructeur à trois arguments de `ScrollingTintDefinition`, `ScrollingLayerComponent.Submit` à une entrée
   à l'état du mode, 6 tests dans `ScrollingLayerPsxSemiTransparencyTests`), `06329626` (E2 : deux démos sœurs
-  `BackgroundTintPsxMode1Demo` et `BackgroundTintPsxMode0Demo`, base `BackgroundTintPsxDemoBase`), `33324030` (E3 : docs et ADR-0056).
+  `BackgroundTintPsxMode1Demo` et `BackgroundTintPsxMode0Demo`, base `BackgroundTintPsxDemoBase`), `33324030` (E3 : docs et ADR-0056, renumérotée ADR-0066 le 2026-10-06, O-E19-74).
   Rouges d'abord sur le code d'avant avec le constructeur ajouté sans comportement, valeurs lues égales aux valeurs écrites d'avance :
   `Mode1` et `Mode3` `AlphaBlend` là où `Additive` est attendu, `Mode2` `AlphaBlend` là où `Subtractive` est attendu, `Mode0` couleur
   (40, 40, 40, 255) là où (40, 40, 40, 128) est attendu (4 rouges sur 6 ; le constructeur à deux arguments et la clé de tri étaient verts
@@ -10441,7 +10441,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-71 | **Tranché le 2026-10-06 (D-E19-92 : résolution de l'écran).** **Quads déformés et facteur d'agrandissement** (découverte d'E19.g G2b, 2026-10-06) : 49 348 quads d'entités (30,8 %) sont déformés dans le binaire (échelle, miroir tourné, parallélogramme, quad quelconque) ; la scène est dessinée directement dans l'écran agrandi (ADR-0048 du moteur), donc à k > 1 un quad déformé ne donne pas des blocs k × k de pixels de la PS1 (D-E19-60). **Choix** : (A) quads dessinés à la résolution de l'écran, exacts à k = 1 et pour les quads 1:1, plus lisses que la PS1 aux autres facteurs, écart écrit dans l'ADR ; (C) la scène dessinée dans une cible de 320 × 240 puis agrandie, exacte à tout facteur, ADR-0048 révisée et travail du moteur en plus. Recommandation de la session : (C), seule fidèle à D-E19-60, si le coût moteur est acceptable. | Auteur |
 | O-E19-72 | **Tranché le 2026-10-06 (D-E19-96 : interface des créateurs et `0x82 0x53`).** **Portée de D-E19-54 (effets natifs)** (découverte d'E19.g G1/G3, 2026-10-06) : D-E19-54 repose sur une lecture fausse : il n'existe aucun effet de warp sur un changement de carte (les « effets de warp » sont des effets d'objets, bombes et magies, E14) ; les scripts n'atteignent que `0x82 0x53` (vase de vie, 8 sites hors de la chaîne ; il change aussi la vie, O-E19-39) et `0xBB` (E18). **Choix** : (A) E19.g livre l'interface des créateurs natifs et l'effet de `0x82 0x53` (avec sa vie max + 1, vie pleine, son `0x31`), le reste avec son consommateur (E14, déplacement, E18) ; (B) E19.g ne livre que les effets des enregistrements et des scripts, tous les natifs et `0x82 0x53` avec E14. | Auteur |
 | O-E19-73 | **Tranché le 2026-10-06 (D-E19-97 : même règle).** **D-E19-92 pour les quads d'effets** (découverte d'E19.g G1/G3, 2026-10-06) : D-E19-92 (quads déformés à la résolution de l'écran) nomme les sprites d'entités ; 63 % des références de quads d'effets sont déformées (l'aura de 476). La même règle vaut-elle pour les effets ? | Auteur |
-| O-E19-74 | **Numéros d'ADR du moteur en double** (2026-10-06) : l'ADR-0056 du moteur existe deux fois, sur `chantier/e19g2d-overlay-blend` (teinte des fonds, G2d, cette session) et sur `chantier/audio-modern` de l'auteur (0056 à 0060). Proposition : renuméroter celle de G2d en 0061 (références : l'ADR, l'index, `scrolling-layers.md`, `sprite-psx-semi-transparency.md`, quatre commentaires C#, le plan, ADR-0037 du parent) après la recette, et prendre les suivantes (G2b-1, G2b-2) après le dernier numéro des deux lignées, revérifié avant chaque commit. | Auteur |
+| O-E19-74 | **Tranché le 2026-10-06 (l'auteur : renuméroter l'ADR de G2d ; 0061 étant pris sur le main du moteur, elle prend 0066).** **Numéros d'ADR du moteur en double** (2026-10-06) : l'ADR-0056 du moteur existe deux fois, sur `chantier/e19g2d-overlay-blend` (teinte des fonds, G2d, cette session) et sur `chantier/audio-modern` de l'auteur (0056 à 0060). Proposition : renuméroter celle de G2d en 0061 (références : l'ADR, l'index, `scrolling-layers.md`, `sprite-psx-semi-transparency.md`, quatre commentaires C#, le plan, ADR-0037 du parent) après la recette, et prendre les suivantes (G2b-1, G2b-2) après le dernier numéro des deux lignées, revérifié avant chaque commit. | Auteur |
 | O-E19-75 | **Âge du mot de manette de l'écran de sauvegarde** (contre-vérification de la découverte d'E19.f3c, 2026-10-06) : les créneaux 3 et 10 du binaire lisent le même mot de manette ; dans le portage, l'écran lit celui du tick courant et la passe du dialogue celui du tick d'avant ; entre l'appui qui ouvre la question et la réponse la plus rapide, le binaire compte 19 échantillons, le portage 17 aujourd'hui, 18 après E19.f3c. Tranche à part après E19.f3c (D-E19-99) ; les épingles qui dépendent de la manette du sélecteur bougeront. | Session (D-E19-99) |
 
 ## 4. Hors périmètre

@@ -2,7 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-10-06
-- **Source**: `docs/plan-e19-opcodes.md`, section "E19.g G2d" (open item O-E19-58, decision D-E19-82 for the raw `BGColorA` in the companion; discovery of 2026-10-05, `o58-disc` and its independent verification `o58-disc-verify`, then two plan reviews until READY). Extends ADR-0035 (the PSX mode of the backdrop layers) to the full-view overlay tint, and the engine ADR-0056 (the tint of the scrolling layers carries a PSX mode, itself an extension of the engine ADR-0053).
+- **Source**: `docs/plan-e19-opcodes.md`, section "E19.g G2d" (open item O-E19-58, decision D-E19-82 for the raw `BGColorA` in the companion; discovery of 2026-10-05, `o58-disc` and its independent verification `o58-disc-verify`, then two plan reviews until READY). Extends ADR-0035 (the PSX mode of the backdrop layers) to the full-view overlay tint, and the engine ADR-0066 (numbered 0056 until 2026-10-06) (the tint of the scrolling layers carries a PSX mode, itself an extension of the engine ADR-0053).
 
 ## Context
 
@@ -13,7 +13,7 @@
 ## Decision
 
 - The converter exports the raw `BGColorA` as `OverlayBlendMode` in the backdrop companion (D-E19-82), omitted when 0 (`WhenWritingDefault`), set only when the tint is enabled.
-- The DLL resolves the mode of the tint through the resolver of the layers (`AlundraBackdropStage.ResolveLayerPsxSemiTransparency`: 1 `Mode0`, 2 `Mode1`, 3 `Mode2`, 4 `Mode3`); any other value, in particular the 0 of an export that predates the field, gives `Mode0`, today's drawing. The colour is `(R, G, B, 255)`: the engine alone bakes the alpha of the average (engine ADR-0056).
+- The DLL resolves the mode of the tint through the resolver of the layers (`AlundraBackdropStage.ResolveLayerPsxSemiTransparency`: 1 `Mode0`, 2 `Mode1`, 3 `Mode2`, 4 `Mode3`); any other value, in particular the 0 of an export that predates the field, gives `Mode0`, today's drawing. The colour is `(R, G, B, 255)`: the engine alone bakes the alpha of the average (engine ADR-0066 (numbered 0056 until 2026-10-06)).
 - The delivery is ordered: the engine first (the DLL does not compile without the constructor), then the converter and the full export in place, then the DLL. A test of the DLL on the real export reads `OverlayBlendMode` 2 on the companion of map 293: a stale export fails loudly.
 
 ## Consequences
