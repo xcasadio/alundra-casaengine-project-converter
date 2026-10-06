@@ -189,16 +189,23 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         Assert.Equal(new IUIScreen[] { rig.Screen }, uiView.Pushed); // opening the box pushed nothing of the engine's
 
         Director.OpenChoice(new[] { "OUI", "NON" });
-        var engineScreen = enginePresenter.ScreenForTests;
-        Assert.Equal(new IUIScreen[] { rig.Screen, engineScreen }, uiView.Pushed);
+        Assert.Equal(new IUIScreen[] { rig.Screen }, uiView.Pushed); // E19.f3a: the engine's window is not pushed any more
         Assert.Equal(UILayer.Modal, rig.Screen.Layer);
-        Assert.Equal(UILayer.Modal, engineScreen.Layer);
 
         Assert.True(Director.SelectChoiceForTests(0));
-        Assert.Equal(1, Director.TakeChoiceResult());
-        Assert.Equal(new IUIScreen[] { engineScreen }, uiView.Removed); // the answer closes the engine's window, not the text box
+        int? answer = null;
+        var passes = 0;
+        while ((answer = Director.TakeChoiceResult()) == null && passes < 150)
+        {
+            Director.Pass(false, false);
+            textBox.Tick();
+            passes++;
+        }
+
+        Assert.Equal(37, passes);
+        Assert.Equal(1, answer);
+        Assert.Empty(uiView.Removed); // the answer closes nothing of the text box
         Assert.True(textBox.IsPushedForTests);
-        Assert.False(enginePresenter.IsOpen);
     }
 
     [Fact]
@@ -209,9 +216,10 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         _ = new Rig(enginePresenter);
 
         Director.OpenChoice(new[] { "OUI", "NON" });
-        Assert.Single(uiView.Pushed);
+        Assert.Empty(uiView.Pushed); // E19.f3a: the engine's window is not pushed any more
         Assert.True(Director.CloseStandaloneChoice());
-        Assert.Single(uiView.Removed);
+        Assert.Empty(uiView.Removed);
+        Assert.False(Director.IsAwaitingChoice);
     }
 
     // ---- the world proxy ------------------------------------------------------------------------------------------------------------

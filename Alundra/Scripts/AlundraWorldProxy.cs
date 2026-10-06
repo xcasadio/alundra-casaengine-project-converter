@@ -155,6 +155,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <summary>E19.f2a F2-R1: the square button of the last tick of the previous frame: what the box pass of tick 0 reads.</summary>
     private (bool Held, bool Pressed) _squareOfLastTick;
 
+    /// <summary>E19.f3a F3A-R3: the pad words the choice box reads (just pressed, by interval) of each logic tick of the current frame, recorded by the pad pass of <see cref="Update"/>.</summary>
+    private readonly List<(uint Pressed, uint Interval)> _choicePadOfTick = new();
+
+    /// <summary>E19.f3a F3A-R3: the pad words of the last tick of the previous frame: what the choice pass of tick 0 reads.</summary>
+    private (uint Pressed, uint Interval) _choicePadOfLastTick;
+
     /// <summary>
     /// Per-frame working list for <see cref="Update"/>: cleared and refilled from
     /// <see cref="_spawnedEntities"/> every frame instead of allocating a temporary list in the hot
@@ -2101,10 +2107,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // pass of the dialogue box, in the loop of the map events below, reads the square of the tick BEFORE, as the binary's box reads the pad
         // sampled during the previous frame.
         _squareOfTick.Clear();
+        _choicePadOfTick.Clear();
         for (var padTick = 0; padTick < ticksThisFrame; padTick++)
         {
             GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
             _squareOfTick.Add(((GameState.TickPad.ButtonsHold & AlundraPadState.Square) != 0, (GameState.TickPad.ButtonsJustPressed & AlundraPadState.Square) != 0));
+            _choicePadOfTick.Add((GameState.TickPad.ButtonsJustPressed, GameState.TickPad.ButtonsJustPressedByInterval));
             UpdateInventoryPortraitHeadPoint();
             AlundraInventoryDirector.Instance.Tick(PlayerEntity);
             AlundraSubInventoryDirector.Instance.Tick();
@@ -2173,7 +2181,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         for (var tick = 0; tick < ticksThisFrame; tick++)
         {
             var (squareHeld, squarePressed) = tick == 0 ? _squareOfLastTick : _squareOfTick[tick - 1];
-            AlundraDialogueDirector.Instance.Pass(squareHeld, squarePressed);
+            // E19.f3a F3A-R3: the pass of the director also runs the choice box (slot 3, right after the text box's), on the pad words of the tick before, like the Square.
+            var (choicePressed, choiceInterval) = tick == 0 ? _choicePadOfLastTick : _choicePadOfTick[tick - 1];
+            AlundraDialogueDirector.Instance.Pass(squareHeld, squarePressed, choicePressed, choiceInterval);
 
             // E19.f2b1c F2B1C-R4: the text box screen reads what the pass just drew, before the gate is read and before the `continue` below (the pass runs whether the
             // hero exists and the gate is open or not), and once per pass: a frame of several ticks draws only its last pass, but each pass is applied in order.
@@ -2204,6 +2214,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         if (ticksThisFrame > 0)
         {
             _squareOfLastTick = _squareOfTick[ticksThisFrame - 1];
+            _choicePadOfLastTick = _choicePadOfTick[ticksThisFrame - 1];
         }
 
         // The triggers in waiting read the gate again after the loop: the box passes above may have opened or released one.

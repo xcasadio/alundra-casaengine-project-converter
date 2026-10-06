@@ -310,6 +310,7 @@ public sealed class AlundraDialogueBoxOrderTests
         var asset = Bonjour();
         var glyphFrames = new List<int>();
         var seen = -1;
+        var takenAt = -1;
         var opened = false;
         montage.EntityScript = frame =>
         {
@@ -322,14 +323,19 @@ public sealed class AlundraDialogueBoxOrderTests
             else if (frame == 30)
             {
                 montage.Director.OpenChoice(new[] { "OUI", "NON" }); // 0x44 asks, the script waits
+                Assert.True(montage.Director.SelectChoiceForTests(0)); // E19.f3a: the player answers OUI at the first interactive pass
             }
-            else if (frame == 90)
+            else if (frame > 30 && takenAt < 0)
             {
-                Assert.True(montage.Director.SelectChoiceForTests(0));
-                Assert.Equal(1, montage.Director.TakeChoiceResult()); // the result of 0x44 ...
-                Assert.True(montage.Director.RequestScriptClose()); // ... and the 0x51 that follows it, in the same tick
+                var taken = montage.Director.TakeChoiceResult(); // the 0x44 polls every tick
+                if (taken != null)
+                {
+                    Assert.Equal(1, taken); // the result of 0x44 ...
+                    Assert.True(montage.Director.RequestScriptClose()); // ... and the 0x51 that follows it, in the same tick
+                    takenAt = frame;
+                }
             }
-            else if (opened && frame > 90 && seen < 0 && !montage.Director.IsOpen)
+            else if (opened && takenAt > 0 && seen < 0 && !montage.Director.IsOpen)
             {
                 seen = frame;
             }
@@ -356,8 +362,9 @@ public sealed class AlundraDialogueBoxOrderTests
         }
 
         Assert.Equal(new[] { 28, 32, 36, 40, 44, 48, 52 }, glyphFrames);
-        Assert.Equal((56, 90, 108), (timeline.E, timeline.T, timeline.R));
-        Assert.Equal(109, seen);
+        Assert.Equal(67, takenAt); // E19.f3a: opened at the frame 30, the result is written 37 ticks later and polled by the script of the frame 67
+        Assert.Equal((56, 67, 85), (timeline.E, timeline.T, timeline.R));
+        Assert.Equal(86, seen);
     }
 
     // ---- K-6: the box draws the text typed so far --------------------------------------------------------------------------------

@@ -147,8 +147,15 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     private bool _tickSquarePressed;
 
     private bool _awaitingChoice;
-    private int? _pendingChoiceResult;
-    private EventHandler<DialogueChoiceSelectedEventArgs>? _choiceHandler;
+
+    // E19.f3a (F3A-R1/R2): the binary's choice box (slot 3), run by every pass of the director right after the text box's. The engine's window is no longer used for a choice.
+    private readonly AlundraChoiceBox _choice = new();
+    private AlundraChoiceAnswerPlan? _choicePlan;
+
+    // The pad of the previous call of Tick, as the choice box reads it (the seam of the hosts without a world proxy; the proxy hands the words of its own ticks to Pass).
+    private readonly AlundraTickPad _seamPad = new();
+    private uint _seamChoicePressed;
+    private uint _seamChoiceInterval;
 
     public bool HasPresenter => _presenter != null;
     public bool IsOpen => _box.IsActive;
@@ -224,17 +231,18 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
             ClearControlFlags();
         }
 
-        UnsubscribeChoiceHandler();
-
         _box.Reset();
         _pageCount = 0;
         _pagesDelivered = 0;
         _pageIndex = 0;
         _pageLine = DialogueLine.Empty;
         _awaitingChoice = false;
-        _pendingChoiceResult = null;
+        _choice.Cancel(); // E19.f3a: the machine back to rest; its cursor counter stays (only ResetForTests clears it)
+        _choicePlan = null;
         _tickSquareHeld = false;
         _tickSquarePressed = false;
+        _seamChoicePressed = 0;
+        _seamChoiceInterval = 0;
         _runner?.Stop();
         _presenter?.Close(); // the runner's own close is swallowed by the capture presenter: the presenter of the world is closed here
     }
@@ -247,7 +255,8 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         _pagesDelivered = 0;
         _pageLine = DialogueLine.Empty;
         _awaitingChoice = false;
-        _pendingChoiceResult = null;
+        _choice.Cancel(); // a choice still waiting is dropped, the machine with it (E19.f3a)
+        _choicePlan = null;
 
         _box.Open(); // sound 6 and the reset of the text state: the box is open from this tick, its first pass is the next one
         ApplyControlMode(controlMode);
@@ -416,20 +425,50 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     /// before the map events of the tick, with the square button of the tick BEFORE. Runs the machine; what it drew is read by the text box screen's presenter
     /// (E19.f2b1c), the engine's presenter only ever gets the choices.
     /// </summary>
-    public void Pass(bool squareHeld, bool squarePressed)
+    public void Pass(bool squareHeld, bool squarePressed, uint choicePressed = 0, uint choiceInterval = 0)
     {
         PassCountForTests++;
         _box.Pass(squareHeld, squarePressed);
+        PassChoice(choicePressed, choiceInterval); // E19.f3a F3A-R3: slot 3 right after slot 0, like the binary; exactly one choice pass per call
+    }
+
+    /// <summary>
+    /// E19.f3a (F3A-R1, F3A-R4): one pass of the choice box, on the pad words of the tick before (<paramref name="pressed"/>: just pressed, <paramref name="interval"/>:
+    /// by interval). A plan armed by <see cref="SelectChoiceForTests"/> replaces those words by the presses of a player. Plays the sounds of the pass.
+    /// </summary>
+    private void PassChoice(uint pressed, uint interval)
+    {
+        if (_choicePlan is { } plan)
+        {
+            plan.Pad.Update(plan.HeldWord(_choice.AcceptsInputThisPass, _choice.Selection));
+            pressed = plan.Pad.ButtonsJustPressed;
+            interval = plan.Pad.ButtonsJustPressedByInterval;
+        }
+
+        _choice.Pass(pressed, interval);
+        foreach (var sfx in _choice.SoundsOfLastPass)
+        {
+            _soundPlayer?.PlaySfx(sfx);
+        }
+
+        if (_choice.ClosedThisPass)
+        {
+            _choicePlan = null;
+        }
     }
 
     /// <inheritdoc/>
     public void Tick()
     {
-        Pass(_tickSquareHeld, _tickSquarePressed);
+        Pass(_tickSquareHeld, _tickSquarePressed, _seamChoicePressed, _seamChoiceInterval);
 
         var held = _gameState != null && (_gameState.LastPadState.ButtonsHold & SquareBit) != 0;
         _tickSquarePressed = held && !_tickSquareHeld;
         _tickSquareHeld = held;
+
+        _seamPad.Update(_gameState?.LastPadState.ButtonsHold ?? 0);
+        _seamChoicePressed = _seamPad.ButtonsJustPressed;
+        _seamChoiceInterval = _seamPad.ButtonsJustPressedByInterval;
     }
 
     // ---- IAlundraDialogueBoxHost
@@ -501,46 +540,28 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     public void OpenChoice(IReadOnlyList<string> labels)
     {
         _awaitingChoice = true;
-        _pendingChoiceResult = null;
+        _choicePlan = null;
 
-        if (_presenter == null)
-        {
-            return;
-        }
-
-        _choiceHandler ??= OnPresenterChoiceSelected;
-        _presenter.ChoiceSelected -= _choiceHandler; // guard against a stale double-subscription.
-        _presenter.ChoiceSelected += _choiceHandler;
-        _presenter.ShowChoices(labels);
-    }
-
-    private void OnPresenterChoiceSelected(object? sender, DialogueChoiceSelectedEventArgs e)
-    {
-        // §1.3: Result = 1 iff the FIRST option was picked, else 0.
-        _pendingChoiceResult = e.SelectedIndex == 0 ? 1 : 0;
+        // E19.f3a F3A-R2: the binary's choice box (opener 0x80050BA8), not the engine's window; it needs no presenter. Sound 4 at the tick of the opener.
+        var sfx = _choice.Open(labels.Count > 0 ? labels[0] : string.Empty, labels.Count > 1 ? labels[1] : string.Empty);
+        _soundPlayer?.PlaySfx(sfx);
     }
 
     /// <inheritdoc/>
     public int? TakeChoiceResult()
     {
-        if (_pendingChoiceResult == null)
+        // The box writes the caller's word when its slide-out ends: 1 first option, 2 second (0x80050B98). Until then, and with no choice, nothing.
+        var word = _choice.ResultWord;
+        if (word == 0)
         {
             return null;
         }
 
-        var result = _pendingChoiceResult.Value;
-        _pendingChoiceResult = null;
+        _choice.ClearResultWord();
         _awaitingChoice = false;
-        UnsubscribeChoiceHandler();
 
-        // E19.f2b1c F2B1C-R5: the engine's window holds only the buttons now, and after an answer its service stays open: it goes with the answer when a box is active
-        // (the box has its own screen). A lone choice, asked without a box, is closed by CloseStandaloneChoice.
-        if (_box.IsActive)
-        {
-            _presenter?.Close();
-        }
-
-        return result;
+        // §1.3: Result = 1 iff the FIRST option was picked, else 0.
+        return word == 1 ? 1 : 0;
     }
 
     /// <summary>
@@ -552,18 +573,16 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     internal void CancelChoice()
     {
         _awaitingChoice = false;
-        _pendingChoiceResult = null;
-        UnsubscribeChoiceHandler();
+        _choice.Cancel(); // E19.f3a: the machine closes too - no pass, no sound, no result after it
+        _choicePlan = null;
     }
 
     /// <summary>
     /// E16.e L5 (docs/plan-e16-etat-partie.md, the closing review of 2026-09-29): closes a choice list asked WITHOUT
-    /// a box (<see cref="OpenChoice"/> with no <see cref="Open"/> before it) - the save screen's OUI/NON. After an
-    /// answer the engine's service stays open (<c>DialogueService.SelectChoice</c>) and nothing else removes the
-    /// dialogue screen, while the release of a box would clear <c>MessageBox</c>/<c>MenuOpen</c>, which the
-    /// save screen keeps until its state <c>0x63</c>. So this clears the choice in waiting and any result not yet
-    /// taken, stops listening to the presenter, and closes the presenter (<c>_presenter?.Close()</c>, which removes
-    /// the screen). It never touches <see cref="AlundraGameState.PlayerControlFlags"/>.
+    /// a box (<see cref="OpenChoice"/> with no <see cref="Open"/> before it) - the save screen's OUI/NON. The release of
+    /// a box would clear <c>MessageBox</c>/<c>MenuOpen</c>, which the save screen keeps until its state <c>0x63</c>. So this clears
+    /// the choice in waiting and any result not yet taken, and closes the choice box's machine (E19.f3a: the choice is the director's own,
+    /// no engine window is left to close). It never touches <see cref="AlundraGameState.PlayerControlFlags"/>.
     /// Returns false, doing nothing, while a box is open (<see cref="IsOpen"/>): that choice is not a lone one.
     /// </summary>
     internal bool CloseStandaloneChoice()
@@ -574,18 +593,9 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         }
 
         _awaitingChoice = false;
-        _pendingChoiceResult = null;
-        UnsubscribeChoiceHandler();
-        _presenter?.Close();
+        _choice.Cancel(); // E19.f3a: the choice box is the director's own, there is no engine window to close
+        _choicePlan = null;
         return true;
-    }
-
-    private void UnsubscribeChoiceHandler()
-    {
-        if (_presenter != null && _choiceHandler != null)
-        {
-            _presenter.ChoiceSelected -= _choiceHandler;
-        }
     }
 
     /// <summary>Test-only: clears every piece of session state (same seam as
@@ -593,7 +603,6 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     /// so tests do not leak into each other through this singleton.</summary>
     internal void ResetForTests()
     {
-        UnsubscribeChoiceHandler();
         _presenter = null;
         _gameState = null;
         _soundPlayer = null;
@@ -608,7 +617,11 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         _tickSquareHeld = false;
         _tickSquarePressed = false;
         _awaitingChoice = false;
-        _pendingChoiceResult = null;
+        _choice.ResetForTests();
+        _choicePlan = null;
+        _seamPad.Reset();
+        _seamChoicePressed = 0;
+        _seamChoiceInterval = 0;
         PassCountForTests = 0;
     }
 
@@ -629,11 +642,29 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     /// presenter is attached - the presenter itself never sees the text (E19.f2b1c: the box is drawn by the text box screen).</summary>
     internal DialogueLine? CurrentLineForTests => _presenter == null ? null : _pageLine;
 
-    /// <summary>Test-only accessor: the attached presenter's own currently displayed choice labels (empty
-    /// when none is awaiting selection).</summary>
-    internal IReadOnlyList<string> ChoicesForTests => _presenter?.Choices ?? Array.Empty<string>();
+    /// <summary>Test-only accessor: the labels of the choice box while its machine runs, from the opener to its close pass (empty otherwise).</summary>
+    internal IReadOnlyList<string> ChoicesForTests => _choice.IsActive ? _choice.Labels : Array.Empty<string>();
 
-    /// <summary>Test-only: drives the attached presenter's own <c>SelectChoice</c> directly - simulates
-    /// the player picking an option without needing a live UI.</summary>
-    internal bool SelectChoiceForTests(int index) => _presenter?.SelectChoice(index) ?? false;
+    /// <summary>The choice box (logic), for the tests and, later, its screen (E19.f3b).</summary>
+    internal AlundraChoiceBox ChoiceBoxForTests => _choice;
+
+    /// <summary>
+    /// Test-only (E19.f3a, F3A-R4): the player answers the open choice - by the pad. Arms the presses (Left or Right until option <paramref name="index"/> is
+    /// selected, then Cross, one press per pass) consumed only by the active passes, from the first one that follows the arming. Returns true while a choice awaits
+    /// (<see cref="IsAwaitingChoice"/>); idempotent. Whoever waits for the answer must run the director once per tick.
+    /// </summary>
+    internal bool SelectChoiceForTests(int index)
+    {
+        if (!_awaitingChoice)
+        {
+            return false;
+        }
+
+        if (_choice.IsActive)
+        {
+            _choicePlan ??= new AlundraChoiceAnswerPlan(index);
+        }
+
+        return true;
+    }
 }

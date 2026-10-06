@@ -5290,7 +5290,7 @@ annulation ni souris, compteur du curseur persistant) ; découpage en f3a (machi
 la fenêtre du moteur n'est plus poussée pour un choix) puis f3b (l'écran XAML du choix et sa preuve au pixel), exécutées l'une après
 l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) ; les invites de carte mémoire restent hors périmètre.
 
-###### E19.f3a — Logique du choix au tick près ⏳ (planifiée le 2026-10-06 ; relectures n°1 et n°2 REVISE ; blocages n°2 (où tourne la passe, test de `CancelChoice`) : FIX ; nouvelle époque, relecture de clôture à faire)
+###### E19.f3a — Logique du choix au tick près 🧪 (faite le 2026-10-06, vérification à faire)
 
 **Règles.**
 - **F3A-R1 — Machine** : nouvelle classe interne `AlundraChoiceBox`, portage de `ChoiceBox` de `docs/plan-e19-f3-annexe/model/choice_model.py`
@@ -5334,7 +5334,7 @@ l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) 
   directeur une fois par tick.
 
 **Tâches.**
-- **F3A-1 — Tests d'abord** :
+- ✅ **F3A-1 — Tests d'abord** :
   - machine : V1 à V7 de `docs/plan-e19-f3-annexe/values.json` (par passe : fonction de mise à jour, dessin, x du cadre, des libellés et du
     curseur, image, sélection, sons ; tick de résolution et `Result`) ; cinq séquences de manette réelles par le mandataire (fin à N+50,
     N+52, N+37, N+80, jamais ; `sim-notes.md`) ; un `0x44` avec un directeur sans présentateur (aujourd'hui aucun test : à épingler avant
@@ -5359,9 +5359,9 @@ l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) 
     changement : les lecteurs de `ChoicesForTests` et d'`IsAwaitingChoice`, `RunToTheQuestion` et ses appelants, l'oracle de la boîte
     (K5 de `AlundraTextBoxOracleTests.cs:320`, les trois `O20_Sailor12Of389_*`, qui modélisent `0x44` par un `Hold(1)` et ne lisent pas
     le directeur) ; toute autre assertion qui bouge, ou une valeur lue qui diffère de la table, est un arrêt.
-- **F3A-2 — Suites** : `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp`, six traces (le harnais d'intro et les traces du
+- ✅ **F3A-2 — Suites** : `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp`, six traces (le harnais d'intro et les traces du
   héros n'ouvrent aucun choix) ; pas d'export.
-- **F3A-3 — Vérification** (vérificateur neuf). La recette se fait avec f3b.
+- ⏳ **F3A-3 — Vérification** (vérificateur neuf). La recette se fait avec f3b.
 
 **Acceptation** : la machine égale le modèle sur V1 à V7 ; chaque aide fait exactement une passe du choix par tick ; les tests de la
 liste fermée prennent les valeurs fidèles de la table ;
@@ -5369,6 +5369,28 @@ aucune autre assertion ne bouge ; suites, `cmp`, traces. **Retour arrière** : r
 choix n'est pas dessiné (f3b suit) ; le placement en tête de la première boucle fait passer, aux images de rattrapage (plusieurs ticks
 par image), toutes les passes du choix avant les programmes de cartes de l'image ; le chemin réel de la manette jusqu'à la passe du
 choix pendant qu'une boîte est ouverte n'est prouvé que par la recette (le crochet injecte les appuis).
+
+**Fait le 2026-10-06** (un commit, tests et code ensemble). Code : `Alundra/Scripts/AlundraChoiceBox.cs` (la machine, portage de `ChoiceBox`, et
+le plan de réponse du crochet) ; `AlundraDialogueDirector.cs` (`Pass(bool, bool, uint, uint)` appelle la passe du choix à sa fin ; `Tick()` tire
+la manette de `GameState.LastPadState` avec un appel de retard ; `OpenChoice` ouvre la machine et joue le son 4 ; `TakeChoiceResult` ne rend
+le résultat qu'une fois écrit ; `CancelChoice`, `CloseStandaloneChoice`, `Open` et `InstallForMapEntry` ferment la machine ; plus aucune fenêtre
+du moteur pour un choix) ; `AlundraWorldProxy.cs` (les mots de manette du choix enregistrés à côté de `_squareOfTick`, lus avec un tick de retard).
+Tests d'abord : sur le code d'avant, 13 tests de la liste fermée sont rouges avec les valeurs du plan : sept à valeur (K5 vu à 86, dispatch 37 et
+38, `Cross_AsksOuiNon` 37, `DownDuringTheQuestion` 20, le livre `Yes_...` état 5 au lieu de 6, `Carousel_Closing` 37) et six à assertion de la
+fenêtre du moteur ; le test épinglé avant le changement (0x44 d'un directeur sans présentateur :
+`Result` 1 au premier appel, aucun choix ouvert) est vert avant et après ; les 23 autres nouveaux tests (V1 à V7 passe par passe contre
+`values.json`, libellés coupés à 6, compteur du curseur, appui perdu avant N+19, réponses OUI à 37 et NON à 38 passes, crochet, `CancelChoice`,
+`Open`, `InstallForMapEntry`, `CloseStandaloneChoice`, deuxième choix, les cinq séquences de manette réelles par le mandataire) ne compilent pas
+avant la machine ; le mutant « `CancelChoice` sans fermer la machine » est rouge. Vert : `Alundra.Tests` **2768/2768** en Release et en Debug
+(2744 avant, 24 nouveaux), `cmp` identique, six traces inchangées. Observations du §5 remesurées à HEAD (aucun test ne les épingle) : A17
+`0x44 @1056` à 581, attente de 582 à 619, `0x03 @1059` et `0x05 @1072` à 637, `0x11 @1115` à 1162, `0x05 @1120` à 1193, fin à 1194 (budget 2500) ;
+marin 12 : choix en attente après 96, pris à l'image 133, boîte de la question relâchée après 151, boîte suivante ouverte après 152, relâchée après
+354 (budget 400, marge 46) ; livre de bout en bout : 62 (200), 139 (300), 116 (400), 38 (200), 42 (300) ; `State5_CaptureRefused` 138 ticks (borne 500),
+écran du livre 116 ticks (borne 400) : tous égaux à la simulation. Choix de rédaction : (1) le texte du plan disait que les blocs `BookTick` de
+`AlundraSaveScreenDirectorTests` « n'appellent pas l'aide » ; ils appellent bien l'aide `Tick(hold)`, qui gagne un `Dialogue.Tick()` : une aide
+`TickScreen(hold)` (la moitié écran de l'ancienne aide) leur est donnée pour qu'ils gardent leur `Dialogue.Tick()` et leur ordre, une passe du
+choix par tick ; (2) la machine ne porte ni largeur de libellé ni décodage des paires `{c` et `}c` du binaire (aucun libellé du corpus n'en a ;
+les largeurs 19 et 23 sont celles du binaire, à poser en f3b).
 
 ###### E19.f3b — Écran du choix et preuve au pixel ⏳ (esquisse, après E19.f3a)
 

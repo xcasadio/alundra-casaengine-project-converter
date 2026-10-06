@@ -223,6 +223,30 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         Assert.Equal(1, state.CodeIndex); // advanced, never suspended - no infinite block.
     }
 
+    /// <summary>E19.f3a: a director without a presenter (<c>HasPresenter</c> false) is the degraded mode of 0x44 too - pinned before the choice box became the
+    /// director's own (the choice box needs no presenter, but the opcode still gates on it): Result 1 at once, no choice opened.</summary>
+    [Fact]
+    public void Degraded_ADirectorWithoutAPresenter_0x44_WritesResultOne_AndOpensNoChoice()
+    {
+        var gameState = new AlundraGameState();
+        AlundraDialogueDirector.Instance.AttachToWorld(null, gameState);
+        AlundraDialogueDirector.Instance.InstallForMapEntry();
+        Assert.False(AlundraDialogueDirector.Instance.HasPresenter);
+        var context = new FakeEntityWorldContext { DialogueDirector = AlundraDialogueDirector.Instance };
+        var document = NewDocument(0x44, 0xFF);
+        var runner = NewRunner(document, gameState, context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        var kind = CaptureKindForOpcode(runner, 0x44, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(1, state.Result);
+        Assert.Equal(1, state.CodeIndex);
+        Assert.False(AlundraDialogueDirector.Instance.IsAwaitingChoice);
+        Assert.Empty(AlundraDialogueDirector.Instance.ChoicesForTests);
+    }
+
     [Fact]
     public void Degraded_NoDirectorAtAll_0x39_AlwaysAdvances()
     {
@@ -442,14 +466,23 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         Assert.True(AlundraDialogueDirector.Instance.IsAwaitingChoice);
         Assert.Equal(new[] { "OUI", "NON" }, AlundraDialogueDirector.Instance.ChoicesForTests);
 
-        // Second dispatch, still no selection: must keep suspending.
+        // Second dispatch, still no selection: must keep suspending. (E19.f3a: each dispatch is one logic tick: the pass of the choice box, then the script.)
+        AlundraDialogueDirector.Instance.Tick();
         runner.RunOneScriptCall(entity, state);
         Assert.Equal(0, state.CodeIndex);
 
-        // Simulate the player picking the SECOND option (NON).
+        // Simulate the player picking the SECOND option (NON): Right at the first interactive pass, Cross at the next.
         Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(1));
 
-        runner.RunOneScriptCall(entity, state);
+        var ticks = 1; // the opener is the tick 0
+        while (state.CodeIndex == 0 && ticks < 150)
+        {
+            AlundraDialogueDirector.Instance.Tick();
+            runner.RunOneScriptCall(entity, state);
+            ticks++;
+        }
+
+        Assert.Equal(38, ticks); // NON is resolved at the 38th tick after the opener's
         Assert.Equal(1, state.CodeIndex); // advances (instruction size 1).
         Assert.Equal(0, state.Result); // NOT the first option.
     }
@@ -471,7 +504,15 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         runner.RunOneScriptCall(entity, state); // opens
         Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(0)); // OUI
 
-        runner.RunOneScriptCall(entity, state);
+        var ticks = 0; // the opener is the tick 0
+        while (state.CodeIndex == 0 && ticks < 150)
+        {
+            AlundraDialogueDirector.Instance.Tick(); // E19.f3a: one logic tick: the pass of the choice box, then the script
+            runner.RunOneScriptCall(entity, state);
+            ticks++;
+        }
+
+        Assert.Equal(37, ticks); // OUI is resolved at the 37th tick after the opener's
         Assert.Equal(1, state.CodeIndex);
         Assert.Equal(1, state.Result);
     }

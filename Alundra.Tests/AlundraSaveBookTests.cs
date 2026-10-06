@@ -150,10 +150,10 @@ public sealed class AlundraSaveBookTests : IDisposable
         Assert.True(Dialogue.IsAwaitingChoice);
         Assert.Equal(new[] { "OUI", "NON" }, Dialogue.ChoicesForTests);
 
-        // State 4: OUI asks the box to close (the latch of 0x51), then waits. E19.f2a: the box is still up at the Tick 63 - it types to its end (Tick 115),
-        // triggers its close at 116 and is released at 134.
+        // State 4: OUI asks the box to close (the latch of 0x51), then waits. E19.f2a: the box is still up at the Tick 99 - it types to its end (Tick 115),
+        // triggers its close at 116 and is released at 134. E19.f3a: the choice box answers 37 ticks after its opener (the Tick 62): the answer is taken at the Tick 99.
         Assert.True(Dialogue.SelectChoiceForTests(0));
-        Tick();
+        Tick(37);
         Assert.Equal(AlundraSaveBook.StateCapture, BookState);
         Assert.True(Dialogue.IsOpen);
         Assert.False(Dialogue.IsAwaitingChoice);
@@ -161,8 +161,19 @@ public sealed class AlundraSaveBookTests : IDisposable
             AlundraGameState.PlayerControlBits.ControlLocked | AlundraGameState.PlayerControlBits.MessageBox,
             State.PlayerControlFlags);
 
-        // State 5: 61 ticks, then the capture and the screen.
-        Tick(Wait - 1);
+        // The box of the question is released at the Tick 134 (annex V-36): up at 133, down at 134 - BEFORE the capture of the book (Tick 160).
+        Tick(34);
+        Assert.True(Dialogue.IsOpen);
+        Assert.Equal(
+            AlundraGameState.PlayerControlBits.ControlLocked | AlundraGameState.PlayerControlBits.MessageBox,
+            State.PlayerControlFlags);
+        Tick();
+        Assert.False(Dialogue.IsOpen);
+        Assert.Equal(AlundraSaveBook.StateCapture, BookState);
+        Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
+
+        // State 5: 61 ticks after the answer (the Tick 99), then the capture and the screen (the Tick 160).
+        Tick(Wait - 1 - 35);
         Assert.Empty(_screen.Started);
         Tick();
         Assert.Equal(AlundraSaveBook.StateWaitScreen, BookState);
@@ -171,15 +182,6 @@ public sealed class AlundraSaveBookTests : IDisposable
         Assert.Equal((20, 30, 1), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
         Assert.Equal(0, _screen.FailuresStarted);
         Assert.True(_slots.NothingCalled); // the book itself never writes.
-
-        // The box of the question is released at the Tick 134, while the book already waits for the screen (annex V-36): up at 133, down at 134.
-        Tick(9);
-        Assert.True(Dialogue.IsOpen);
-        Assert.Equal(
-            AlundraGameState.PlayerControlBits.ControlLocked | AlundraGameState.PlayerControlBits.MessageBox,
-            State.PlayerControlFlags);
-        Tick();
-        Assert.False(Dialogue.IsOpen);
 
         // State 6: waits for the screen's end, then the reset.
         Tick(40);
@@ -197,14 +199,14 @@ public sealed class AlundraSaveBookTests : IDisposable
         RunToTheQuestion();
 
         Assert.True(Dialogue.SelectChoiceForTests(1));
-        Tick();
+        Tick(38); // E19.f3a: NON is Right at the first interactive pass, Cross at the next: taken 38 ticks after the opener (the Tick 100)
 
         Assert.Empty(_screen.Started);
         Assert.Equal(0, _screen.FailuresStarted);
         Assert.Equal(1, _screen.FlowEnded);
         // E19.f2a: the box of the question (24 letters, opened at the Tick 1, typed from the Tick 19, done at 115) is released by its own close, 18 ticks after
-        // the latch of the book is taken at the Tick 116 - the Tick 134 - whatever tick the book itself let go of it at (a latch set at the Tick 63 is taken at 116).
-        Tick(71);
+        // the latch of the book is taken at the Tick 116 - the Tick 134 - whatever tick the book itself let go of it at.
+        Tick(34);
         AssertReleased();
     }
 
@@ -348,7 +350,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         Assert.True(Dialogue.IsAwaitingChoice);
 
         Dialogue.SelectChoiceForTests(0);
-        Tick(1 + Wait);
+        Tick(37 + Wait); // E19.f3a: 37 ticks to the answer, then the 61 of the wait
         Assert.Equal(AlundraSaveBook.StateWaitScreen, BookState);
         Interact();
         Assert.Equal(AlundraSaveBook.StateWaitScreen, BookState);
@@ -370,7 +372,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         _screen.RefuseStart = true;
 
         Dialogue.SelectChoiceForTests(0);
-        Tick(1 + Wait);
+        Tick(37 + Wait); // E19.f3a
 
         Assert.Single(_screen.Started); // asked, refused.
         Assert.Equal(1, _screen.FlowEnded);
@@ -390,7 +392,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         using var log = LogCapture.Install();
 
         Dialogue.SelectChoiceForTests(0);
-        Tick(1 + Wait);
+        Tick(37 + Wait); // E19.f3a
 
         Assert.Empty(_screen.Started);
         Assert.Equal(1, _screen.FailuresStarted);
@@ -406,7 +408,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         RunToTheQuestion();
 
         Dialogue.SelectChoiceForTests(0);
-        Tick(1 + Wait);
+        Tick(37 + Wait); // E19.f3a
 
         Assert.Empty(_screen.Started);
         Assert.Equal(1, _screen.FailuresStarted);
@@ -420,7 +422,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         RunToTheQuestion();
 
         Dialogue.SelectChoiceForTests(0);
-        Tick(1 + Wait);
+        Tick(37 + Wait); // E19.f3a
 
         Assert.Empty(_screen.Started);
         Assert.Equal(1, _screen.FailuresStarted);
@@ -461,7 +463,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         RunToTheQuestion();
 
         Dialogue.SelectChoiceForTests(0);
-        Tick(1 + Wait);
+        Tick(37 + Wait); // E19.f3a
 
         // E19.f2a: the box of the question (24 letters, opened at the Tick 1, typed from the Tick 19, done at 115) is released by its own close, 18 ticks after
         // the latch of the book is taken at the Tick 116 - the Tick 134 - whatever tick the book itself let go of it at (a latch set at the Tick 63 is taken at 116).

@@ -178,8 +178,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
             AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", 1);
             Assert.Empty(recorder.Pushed); // E19.f2b1c: the box is drawn by the text box screen, the engine's window is the choices'
             AlundraDialogueDirector.Instance.OpenChoice(new[] { "OUI", "NON" });
-            Assert.True(recorder.Pushed.Count > 0,
-                "opening a choice after the real install must push the screen on the game's active UI view.");
+            Assert.Empty(recorder.Pushed); // E19.f3a: the choice box is the director's own: nothing is pushed on the engine's view
         }
         finally
         {
@@ -257,8 +256,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
 
             AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", 1);
             AlundraDialogueDirector.Instance.OpenChoice(new[] { "OUI", "NON" });
-            Assert.True(recorder.Pushed.Count > 0,
-                "opening a choice after the late wiring must push the screen on the game's UI view.");
+            Assert.Empty(recorder.Pushed); // E19.f3a: the choice box is the director's own: nothing is pushed on the engine's view
         }
         finally
         {

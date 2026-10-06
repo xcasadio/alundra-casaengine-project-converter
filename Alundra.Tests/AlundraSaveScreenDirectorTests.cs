@@ -70,16 +70,23 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
     private readonly List<int> _stateLog = new();
 
-    /// <summary>One logic tick as the frame runs it: the pad, then the director. Records the state the tick starts
-    /// in.</summary>
+    /// <summary>One logic tick as the frame runs it: the pad, then the director, then (E19.f3a, the order of the world proxy) the pass of the dialogue director,
+    /// whose choice box answers. Records the state the tick starts in.</summary>
     private void Tick(int count = 1, uint hold = 0)
     {
         for (var i = 0; i < count; i++)
         {
-            _stateLog.Add(Director.State);
-            State.TickPad.Update(hold);
-            Director.Tick();
+            TickScreen(hold);
+            Dialogue.Tick();
         }
+    }
+
+    /// <summary>The screen's half of a tick (the pad, then the director), for the callers that run the dialogue pass themselves.</summary>
+    private void TickScreen(uint hold = 0)
+    {
+        _stateLog.Add(Director.State);
+        State.TickPad.Update(hold);
+        Director.Tick();
     }
 
     private void Press(uint button) => Tick(hold: button);
@@ -111,15 +118,15 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         return save;
     }
 
-    /// <summary>Cross, then the answer through the real dialogue director (0 = OUI), then the closing slide: the
-    /// picker ends 18 ticks after the answer's tick.</summary>
+    /// <summary>Cross, then the answer through the real dialogue director (0 = OUI, 1 = NON), then the closing slide: the answer
+    /// is taken 37 (OUI) or 38 (NON) ticks after the Cross (E19.f3a, the choice box of the binary), the picker ends 18 ticks after it.</summary>
     private void AnswerAndClose(int choice)
     {
         Press(AlundraPadState.Cross);
         Assert.True(Director.IsQuestionPending);
         Assert.True(Dialogue.IsAwaitingChoice);
         Assert.True(Dialogue.SelectChoiceForTests(choice));
-        Tick(1 + 18);
+        Tick((choice == 0 ? 37 : 38) + 18);
         Assert.False(Director.IsPickerActive);
     }
 
@@ -522,7 +529,14 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.Equal(QuestionHeading, Director.MessageLine0.Text);
         Assert.True(Dialogue.SelectChoiceForTests(0));
 
-        Tick(); // the answer arms the closing slide.
+        var taken = 0;
+        while (Director.IsQuestionPending && taken < 150)
+        {
+            Tick(); // E19.f3a: the answer arms the closing slide at the 37th tick.
+            taken++;
+        }
+
+        Assert.Equal(37, taken);
         Assert.Equal(AlundraSaveScreenDirector.StatePickWait, Director.State);
 
         Tick(16);
@@ -553,18 +567,22 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
         Press(AlundraPadState.Cross);
         Assert.Equal(new[] { "OUI", "NON" }, Dialogue.ChoicesForTests);
-        Assert.Contains(_presenter.ScreenForTests, _uiView.Pushed);
-        Assert.False(Dialogue.IsOpen);
+        Assert.False(Dialogue.IsOpen); // E19.f3a: the engine's window is not pushed any more
 
         // Its own keys are ignored while the question waits.
         Press(AlundraPadState.Down);
         Assert.Equal(0, Director.Selection);
 
         Assert.True(Dialogue.SelectChoiceForTests(1));
-        Tick();
+        var taken = 0;
+        while (Dialogue.IsAwaitingChoice && taken < 150)
+        {
+            Tick();
+            taken++;
+        }
+
+        Assert.Equal(37, taken); // E19.f3a: NON armed one tick after the Cross is taken 37 ticks later (38 after the Cross)
         Assert.False(Dialogue.IsAwaitingChoice);
-        Assert.False(_presenter.IsOpen);
-        Assert.Contains(_presenter.ScreenForTests, _uiView.Removed);
         Assert.Equal(AlundraGameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
 
         TickUntilState(AlundraSaveScreenDirector.StateEnd);
@@ -585,7 +603,14 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Press(AlundraPadState.Down);
         Tick(25, hold: AlundraPadState.Down);
         Assert.True(Dialogue.SelectChoiceForTests(0));
-        Tick(hold: AlundraPadState.Down);
+        var taken = 0;
+        while (Director.IsQuestionPending && taken < 150)
+        {
+            Tick(hold: AlundraPadState.Down);
+            taken++;
+        }
+
+        Assert.Equal(20, taken); // E19.f3a: armed 26 ticks after the Cross, past the first interactive pass (18): pressed at the next pass; 20 ticks in the order of the proxy (19 in the binary's)
 
         TickUntilState(AlundraSaveScreenDirector.StateWaitSquare);
         Assert.Equal("slot2", Assert.Single(_slots.SaveCalls).Slot);
@@ -627,13 +652,10 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     {
         State.PlayerControlFlags = AlundraGameState.PlayerControlBits.MenuOpen | AlundraGameState.PlayerControlBits.ControlLocked;
         Dialogue.OpenChoice(new[] { "OUI", "NON" });
-        Assert.Contains(_presenter.ScreenForTests, _uiView.Pushed);
 
         Assert.True(Dialogue.CloseStandaloneChoice());
 
         Assert.False(Dialogue.IsAwaitingChoice);
-        Assert.False(_presenter.IsOpen);
-        Assert.Contains(_presenter.ScreenForTests, _uiView.Removed);
         Assert.Null(Dialogue.TakeChoiceResult());
         Assert.Equal(AlundraGameState.PlayerControlBits.MenuOpen | AlundraGameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
     }
@@ -796,7 +818,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
                 book.EventTrigger = ScriptHelper.ProgramCTick;
                 book.RunPickedEvent(runner);
                 Dialogue.Tick();
-                Tick(hold: hold);
+                TickScreen(hold); // E19.f3a: the dialogue pass is this block's own (the helper Tick would add a second one)
             }
         }
 
@@ -804,7 +826,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         book.RunPickedEvent(runner);
         BookTick(1 + AlundraSaveBook.WaitTicks + 1);
         Assert.True(Dialogue.SelectChoiceForTests(0)); // the book's own OUI.
-        BookTick(1 + AlundraSaveBook.WaitTicks + 1);
+        BookTick(37 + AlundraSaveBook.WaitTicks + 1); // E19.f3a: 37 ticks to the answer, then the 61 of the wait
         Assert.True(Director.IsActive);
 
         BookTick(TicksToSettledPicker);
@@ -848,7 +870,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
                 book.EventTrigger = ScriptHelper.ProgramCTick;
                 book.RunPickedEvent(runner);
                 Dialogue.Tick();
-                Tick(hold: hold);
+                TickScreen(hold); // E19.f3a: the dialogue pass is this block's own (the helper Tick would add a second one)
             }
         }
 
@@ -856,7 +878,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         book.RunPickedEvent(runner);
         BookTick(1 + AlundraSaveBook.WaitTicks + 1);
         Assert.True(Dialogue.SelectChoiceForTests(0));
-        BookTick(1 + AlundraSaveBook.WaitTicks + 1);
+        BookTick(37 + AlundraSaveBook.WaitTicks + 1); // E19.f3a
         Assert.True(Director.IsActive);
         BookTick(3);
         Assert.Equal((Failed0, Failed1), (Director.MessageLine0.Text, Director.MessageLine1.Text));

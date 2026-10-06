@@ -245,6 +245,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         passes.RunTo(52);
         Assert.Equal(("page un", "p"), (director.Box.Row(0), director.Box.Row(1))); // E19.f2b1c: the box draws the first letter of the second page, whatever the presenter
         director.OpenChoice(new[] { "OUI", "NON" });
-        Assert.Equal(new[] { "OUI", "NON" }, rePointedPresenter.Choices); // and the choice reaches the new presenter
+        Assert.Equal(new[] { "OUI", "NON" }, director.ChoicesForTests); // E19.f3a: the choice box is the director's own: nothing reaches the engine's presenter any more
+        Assert.Empty(rePointedPresenter.Choices);
     }
 }

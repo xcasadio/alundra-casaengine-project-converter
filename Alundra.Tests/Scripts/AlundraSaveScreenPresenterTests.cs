@@ -62,6 +62,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         {
             State.TickPad.Update(hold);
             Director.Tick();
+            AlundraDialogueDirector.Instance.Tick(); // E19.f3a: the pass of the dialogue director (its choice box) after the screen, the order of the world proxy
             _presenter.Tick();
         }
     }
@@ -143,20 +144,24 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         Assert.Equal(new IUIScreen[] { _screen }, _uiView.Pushed);
 
         Tick(hold: AlundraPadState.Cross);
-        var dialogueScreen = _dialoguePresenter.ScreenForTests;
-        Assert.Equal(new IUIScreen[] { _screen, dialogueScreen }, _uiView.Pushed);
+        Assert.Equal(new IUIScreen[] { _screen }, _uiView.Pushed); // E19.f3a: the engine's dialogue screen is gone: only the save screen is on the view
         Assert.Empty(_uiView.Removed);
-        Assert.Equal(UILayer.Modal, dialogueScreen.Layer);
         Assert.Equal(AlundraSaveScreen.ScreenLayer, _screen.Layer);
-        Assert.True(dialogueScreen.Layer > _screen.Layer);
 
         Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(1));
-        Tick();
-        Assert.Equal(new IUIScreen[] { dialogueScreen }, _uiView.Removed);
+        var taken = 0;
+        while (AlundraDialogueDirector.Instance.IsAwaitingChoice && taken < 150)
+        {
+            Tick();
+            taken++;
+        }
+
+        Assert.Equal(38, taken); // NON, armed in the tick of the Cross: taken 38 ticks later
+        Assert.Empty(_uiView.Removed);
         Assert.True(_presenter.IsPushedForTests);
 
         TickUntilIdle();
-        Assert.Equal(new IUIScreen[] { dialogueScreen, _screen }, _uiView.Removed);
+        Assert.Equal(new IUIScreen[] { _screen }, _uiView.Removed);
     }
 
     /// <summary>The production call site: the director and the presenter tick inside
