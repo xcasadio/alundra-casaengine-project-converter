@@ -225,7 +225,8 @@ seuil d'audibilité est une crête à 64 — **du bruit, de mauvais instruments 
 franchissent exactement comme de la vraie musique**, et l'identité octet à octet ne couvre par
 construction pas les pistes qui doivent changer. X1 pourrait donc livrer 26 fichiers non muets et
 faux, index 25 compris. **Écoute obligatoire de `bgm_025.wav` (la piste de la 389) et de
-`bgm_019.wav` avant de déclarer la tranche faite.**
+`bgm_019.wav` avant de déclarer la tranche faite.** (`bgm_025` validée en jeu le 2026-08-30 ; `bgm_019` écoutée et
+validée par l'auteur le 2026-10-06, recette du 2026-10-06, `docs/plan-e19-opcodes.md` §1.2x.)
 
 **Rapport de gardes attendu** (D-X-6) : déclenchements > 0 sur le site séquenceur (piste 19),
 **exactement 0** sur le site SFX et sur le site exportateur.

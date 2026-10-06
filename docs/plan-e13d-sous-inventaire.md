@@ -722,8 +722,9 @@ suites vertes ; chaque export prouvé par double export.
    l'original (D-E13D-30), SI7.
 4. ~~**Le déroulé du texte octet par octet**~~ **Tranché le 2026-09-25** : on garde le rythme par caractère
    (D-E13D-31).
-5. **`Triangle` ferme l'inventaire principal** depuis SI3.a (D-E13D-29) : un changement de comportement de
-   l'inventaire principal déjà validé, à revoir en recette.
+5. ~~**`Triangle` ferme l'inventaire principal** depuis SI3.a (D-E13D-29) : un changement de comportement de
+   l'inventaire principal déjà validé, à revoir en recette.~~ Validé par l'auteur le 2026-10-06 : Triangle ferme
+   l'inventaire principal et ne l'ouvre pas (recette du 2026-10-06, `docs/plan-e19-opcodes.md` §1.2x).
 6. ~~**Le présentateur de l'inventaire principal n'a aucun test qui traverse son site d'appel de production** (la
    boucle de la manette d'`AlundraWorldProxy.Update`) : la mutation qui retire son appel ne ferait échouer aucun
    test. Même trou que celui trouvé et comblé pour le sous-inventaire en SI4. Antérieur à ce plan, non corrigé

@@ -4065,7 +4065,7 @@ inchangées.
 - Sites `0x2F` qui lisent la Croix hors de la chaîne (51, 440, 477, 143, 475) : la même pression sert le script et le saut,
   comme l'original.
 
-### 1.2i E19.e — La chaîne du jour 3 et du jour 4 prouvée, et un test statique des opcodes sautés ✅ (E0 à E5 faites et CONFIRMED le 2026-10-03 ; recette E6 en attente)
+### 1.2i E19.e — La chaîne du jour 3 et du jour 4 prouvée, et un test statique des opcodes sautés ✅ (E0 à E5 faites et CONFIRMED le 2026-10-03 ; recette E6 : point 1 (livre de la 163) validé le 2026-10-06, jours 3 et 4 non atteints (recette du 2026-10-06, §1.2x))
 
 **Résultat** : les scènes scriptées du jour 3 qui ne demandent pas le combat sont rejouées par un arc sur la vraie DLL (176
 `B[6]`, 179 `B[3]`, 176 `B[7]`, 135, 178), en plus de celles qui le sont déjà (179 `B[2]` A12, 10 `B[20]` A10J, et au jour 4
@@ -4633,7 +4633,7 @@ avant les événements de carte du même tick, sur la manette du tick précéden
 elle ; écarts nommés dus à l'ordre du moteur (les entités avant le mandataire du monde), acceptés par l'auteur (D-E19-64), sans
 datation, origine par origine dans la table de F2-R1, avec l'ordre propre au harnais d'intro ; les deux défauts corrigés.
 
-###### E19.f2a — Logique de la boîte au tick près 🧪 (relance accordée par l'auteur le 2026-10-05, D-E19-71 ; liste fermée refaite à HEAD, relecture READY ; annexe des épingles et arcs simulés (D-E19-77) ; relecture avec l'annexe READY ; faite et CONFIRMED le 2026-10-05 ; recette F2a en attente)
+###### E19.f2a — Logique de la boîte au tick près 🧪 (relance accordée par l'auteur le 2026-10-05, D-E19-71 ; liste fermée refaite à HEAD, relecture READY ; annexe des épingles et arcs simulés (D-E19-77) ; relecture avec l'annexe READY ; faite et CONFIRMED le 2026-10-05 ; recette F2a validée le 2026-10-06 (recette du 2026-10-06, §1.2x))
 
 **Règles.**
 - **F2-R1 — Ordre d'un tick** (révision n°1 : la porte calculée une fois par image et la boucle de la manette, qui fait tous
@@ -4987,7 +4987,7 @@ n'est prouvée qu'en f2b1 (test sur GPU) ; les écrans en font3 existants change
   six traces à l'octet. Avis P4 : le repli « CSV absent » n'a pas de test ; la note de F2B0-3 « `Warnings` (0) » veut dire « 0
   différence » (`report.json` porte 6 avertissements antérieurs, identiques avant et après).
 
-###### E19.f2b1 — Vue de la boîte : découverte du 2026-10-05, découpée en E19.f2b1a, E19.f2b1b et E19.f2b1c 🧪 (les trois faites et CONFIRMED le 2026-10-06 ; recettes F2B1A-3 et F2B1C-4 en attente)
+###### E19.f2b1 — Vue de la boîte : découverte du 2026-10-05, découpée en E19.f2b1a, E19.f2b1b et E19.f2b1c 🧪 (les trois faites et CONFIRMED le 2026-10-06 ; recette F2B1C-4 validée le 2026-10-06 (recette du 2026-10-06, §1.2x) ; F2B1A-3 (le Pub) non atteinte)
 
 **Découverte** (2026-10-05, lecture seule ; quatre surfaces, chacune contre-vérifiée par un relecteur adverse qui a refait ses
 scripts ; notes, valeurs et scripts versionnés, en anglais, dans `docs/plan-e19-f2b1-annexe/`) ; faits porteurs :
@@ -5214,7 +5214,7 @@ Reste : la vérification (F2B1B-3), l'ADR n'étant pas prévue pour cette tranch
   la vérification (copie isolée) ne sont pas touchées. Le dossier `bak/` est laissé tel quel (son renommage a été refusé par le
   classifieur du mode auto) ; les consignes des agents interdisent de s'en servir.
 
-###### E19.f2b1c — Écran de la boîte, présentateur et preuve au pixel (R2 à R6, T2 à T5) 🧪 (relectures n°1 et n°2 REVISE, FIX ; relecture de clôture READY ; faite et CONFIRMED le 2026-10-06 ; recette F2B1C-4 en attente)
+###### E19.f2b1c — Écran de la boîte, présentateur et preuve au pixel (R2 à R6, T2 à T5) 🧪 (relectures n°1 et n°2 REVISE, FIX ; relecture de clôture READY ; faite et CONFIRMED le 2026-10-06 ; recette F2B1C-4 validée le 2026-10-06, texte jamais hors du cadre (D-E19-91) (recette du 2026-10-06, §1.2x))
 
 **Règles.**
 - **F2B1C-R2 — View model** `AlundraTextBoxViewModel`, au patron d'`AlundraSaveScreenViewModel` (notification au seul changement) :
@@ -5342,7 +5342,7 @@ annulation ni souris, compteur du curseur persistant) ; découpage en f3a (machi
 la fenêtre du moteur n'est plus poussée pour un choix) puis f3b (l'écran XAML du choix et sa preuve au pixel), exécutées l'une après
 l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) ; les invites de carte mémoire restent hors périmètre.
 
-###### E19.f3a — Logique du choix au tick près ✅ (relectures n°1 et n°2 REVISE, FIX ; relecture de clôture READY ; faite et CONFIRMED le 2026-10-06 ; recette avec f3b)
+###### E19.f3a — Logique du choix au tick près ✅ (relectures n°1 et n°2 REVISE, FIX ; relecture de clôture READY ; faite et CONFIRMED le 2026-10-06 ; recette avec f3b, validée le 2026-10-06 (recette du 2026-10-06, §1.2x))
 
 **Règles.**
 - **F3A-R1 — Machine** : nouvelle classe interne `AlundraChoiceBox`, portage de `ChoiceBox` de `docs/plan-e19-f3-annexe/model/choice_model.py`
@@ -5455,7 +5455,7 @@ les largeurs 19 et 23 sont celles du binaire, à poser en f3b).
   Écart de l'exécution : la machine ne décode pas les échappements `{c` et `}c` des libellés (aucun libellé du corpus n'en porte) ;
   les largeurs des libellés (19 et 23) vont à f3b.
 
-###### E19.f3b — Écran du choix et preuve au pixel 🧪 (relecture n°1 REVISE, révisée ; relecture n°2 READY ; faite et CONFIRMED le 2026-10-06 ; recette F3B-4 en attente)
+###### E19.f3b — Écran du choix et preuve au pixel ✅ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; faite et CONFIRMED le 2026-10-06 ; recette F3B-4 validée le 2026-10-06 (recette du 2026-10-06, §1.2x))
 
 **Découverte** (2026-10-06, `docs/plan-e19-f3-annexe/view/view-notes.md`, contre-vérifiée par `view-verify.md` ; la XAML proposée,
 l'enveloppe, les données de conception et les classes proposées sont dans `view/proposal/`, les images de référence dans `view/pixels/`,
@@ -6008,7 +6008,7 @@ arrière** : revert (et des pointeurs pour f4c1). **Arrêts** : un fichier hors 
 qui contredit la prévision. **Risques** : modèles de texel et de modulation de la PS1 tirés de la documentation publique (pas de matériel
 ici) ; références tirées des PNG exportés, pas de la VRAM (même réserve que f2b1 et f3b).
 
-### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 🧪 (faite et vérifiée le 2026-10-03, recette K2-4 en attente)
+### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 : 392 et 391 validées le 2026-10-06, 178 non atteinte) ; E19.k2 🧪 (faite et vérifiée le 2026-10-03, recette K2-4 en attente)
 
 **Découverte** (2026-10-03, lecture seule ; notes et scripts dans le scratchpad de la session, `e19k-disc/`). Faits
 porteurs **[binaire]** :
@@ -6046,7 +6046,7 @@ moteur d'abord : couche active par identifiant, ni avance, ni dessin, ni tirage 
 chaîne, après les tranches qui débloquent l'histoire) ; Reach persistant d'une carte à l'autre, comme le binaire ; libellés
 de `0x8E`, `0x8F`, `0xA4` corrigés dans E19.k1.
 
-##### 1.2k.1 E19.k1 — Balancement de la caméra ✅ (recette K5 en attente)
+##### 1.2k.1 E19.k1 — Balancement de la caméra ✅ (recette K5 : 392 et 391 validées le 2026-10-06, la 178 non atteinte (recette du 2026-10-06, §1.2x))
 
 **Relecture** (2026-10-03) : REVISE n°1 (site du pas sans caméra, tick de l'accroche, épingle d'A18) ; audit des valeurs :
 toutes les valeurs de K1 et K2 confirmées par un modèle indépendant (`e19k-audit/model.py`), un P2 (le binaire ne balance
@@ -6430,7 +6430,7 @@ les 19 opcodes ; aujourd'hui la DLL les saute tous par leur taille, `Result` lai
   E14, la boutique répond « pas assez d'argent » (dialogue 140), comme l'original avec une bourse vide, au lieu du « merci »
   sans rien donner d'aujourd'hui (le port suit le binaire : à la recette, pas une question).
 
-##### 1.2m.1 E19.l1 — Classes, branches et portail scripté ✅ (recette L1-4 en attente)
+##### 1.2m.1 E19.l1 — Classes, branches et portail scripté ✅ (recette L1-4 : Inoa 164 validée le 2026-10-06 ; la 10 et l'interrupteur non atteints (recette du 2026-10-06, §1.2x))
 
 **Relecture** (2026-10-03) : REVISE n°1 (les tests fabriqués de la règle 4 rougissent quand 164 quitte les sites connus) ;
 corrigé en L1-2 (option : `PredicateOpcodes` inchangé, entrées des tests réécrites sur les sites restants). Audit des
@@ -7189,7 +7189,7 @@ recherche, H3-1 gagne UH-APEX-REVERT, le risque disparaît).
 
 **Risques.** Les plafonds mobiles (D5) et ceux des PNJ (E19.h2) restent sans plafond.
 
-##### 1.2n.4 E19.h4 — Glissement le long des murs (étape 1) et `0x45`/`0x46` ✅ (recette H4-4 en attente)
+##### 1.2n.4 E19.h4 — Glissement le long des murs (étape 1) et `0x45`/`0x46` ✅ (recette H4-4 : le coin de mur validé le 2026-10-06 ; les marches de la 178 et de la 185 non atteintes (recette du 2026-10-06, §1.2x))
 
 **Relecture** (2026-10-03) : REVISE n°1 (la table du glissement et le test d'un coin bloqué n'étaient que dans les notes ;
 la règle de `ForceAdjusted` se contredisait, une lecture cassant T-R4 et l'autre faisant tomber le FA des PNJ en oblique ;
@@ -7804,7 +7804,7 @@ signature) ; la croissance des tampons alloue pendant le dessin (rare : plus de 
   vérifier si `data-extracted/` manque (documenté) ; la remise de la fenêtre après `TryReloadBuiltInShader` et la croissance du
   `VertexBuffer` n'ont pas de test sans périphérique (lecture du code et démo de capacité). Reste la recette G2a-4 (auteur).
 
-##### 1.2o.3 E19.g G2c — Semi-transparence par texel des fonds (O-E19-54) 🧪 (relecture n°1 READY ; faite et CONFIRMED le 2026-10-05 ; recette G2c-6 : pluie et mer validées le 2026-10-05, la 44 à voir)
+##### 1.2o.3 E19.g G2c — Semi-transparence par texel des fonds (O-E19-54) 🧪 (relecture n°1 READY ; faite et CONFIRMED le 2026-10-05 ; recette G2c-6 : pluie et mer validées le 2026-10-05, vagues de la 476 et de la 478 validées le 2026-10-06, la 44 non atteinte (recette du 2026-10-06, §1.2x))
 
 **Faits** **[binaire, données]** (découverte du 2026-10-03, `e19o54-disc/notes.md` du scratchpad ; deux vérifications indépendantes
 du 2026-10-05, `e19o54-verify-binary/verify.md` (recensement refait sur `DATAS.BIN` brut, rien de réfuté) et
@@ -8434,7 +8434,7 @@ fichiers hors catalogue pour `AssetVerifier.CheckCatalogCoverage`), puis export 
 prévision, un test existant qui bouge, un fichier hors de la liste. **Risques** : le compagnon de carte ne sert à rien tant que G3a ne
 le lit pas (aucun effet visible avant G3c) ; 748 images ont une case toute transparente (légitime : la PS1 ne les dessine pas non plus).
 
-### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
+### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 validée le 2026-10-06 : HUD à la sortie de la chambre, pièces de la 476, contrôle rendu à la 15 (recette du 2026-10-06, §1.2x))
 
 **Constat de l'auteur** (conversion relancée, DLL reconstruite) : contacts avec les PNJ bons ; sons et musique bons ; boîtes de
 dialogue toujours celles de MGUI ; scène de Lars et Melzas toujours fausse, halo plus petit que la fenêtre ; on traverse les
@@ -8622,7 +8622,7 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
 - 🧪 **R5 — Recette** (auteur) : sortir de la chambre de la 163 (le HUD glisse à l'écran) ; la 476 (les pièces apparaissent dans
   le cadre) ; la carte 15 après R3.
 
-### 1.2q E19.s — Image 320 × 240, facteur entier, bandes noires, suivie en temps réel ⚠️ (exécutée le 2026-10-03 ; recette S6 du 2026-10-05 : halo fidèle, interface MGUI mal découpée avec des bandes, O-E19-60 → E19.s2 planifiée)
+### 1.2q E19.s — Image 320 × 240, facteur entier, bandes noires, suivie en temps réel ✅ (exécutée le 2026-10-03 ; recette S6 du 2026-10-05 : halo fidèle, interface MGUI mal découpée avec des bandes, O-E19-60 → E19.s2 ; recette S6 validée le 2026-10-06 avec S2-5 (recette du 2026-10-06, §1.2x))
 
 **Décisions** : D-E19-47 (image de l'original, agrandie sans déformation, recalculée en temps réel, bandes noires), D-E19-60
 (facteur entier seulement). **Découverte** (2026-10-03, lecture seule, `e19s-disc/notes.md` du scratchpad de la session).
@@ -8780,7 +8780,7 @@ sous-module soit libre.
   couverts par la recette S6. **Reste la recette S6 de l'auteur.** Branche du moteur `chantier/e19s-virtual-resolution` (`dfaed7a6`),
   non mergée : le pointeur du parent la désigne.
 
-#### 1.2q.1 E19.s2 — Découpe de l'interface MGUI dans une vue à bandes (O-E19-60) 🧪 (faite et CONFIRMED le 2026-10-05 ; recette S2-5 de l'auteur en attente)
+#### 1.2q.1 E19.s2 — Découpe de l'interface MGUI dans une vue à bandes (O-E19-60) ✅ (faite et CONFIRMED le 2026-10-05 ; recette S2-5 validée le 2026-10-06 (recette du 2026-10-06, §1.2x))
 
 **Faits** (enquête et contre-vérification de la recette du 2026-10-05, `recipe-1005/inventory/notes.md` et
 `recipe-1005/inventory-verify/verify.md` du scratchpad ; observation de l'auteur, D-E19-71 : HUD et boîtes MGUI coupés ou absents dans la
@@ -9729,7 +9729,7 @@ pas de `cmp` changé, traces non touchées.
   piste (tranche X2 de `docs/plan-extraction-bgm.md`, jamais faite), ré-extraction de la musique, miroir, export ; la décision D-X-5
   (« abandonner si un octet des pistes 1 à 18 bouge ») repose sur une prémisse fausse (les pistes 2 à 18 ont ce reste) :
   **décision de l'auteur**. Effet de bord : chaque musique retrouve son vrai silence d'entrée (0,3 à 1,4 s). Le cri de la mouette est
-  probablement le bruitage 301 (« Marin-passager-mouette », image 2) ; à l'oreille de l'auteur.
+  probablement le bruitage 301 (« Marin-passager-mouette », image 2) ; à l'oreille de l'auteur. **Confirmé par l'auteur le 2026-10-06** (§1.2x).
 - **Boucle de la musique** (relevé en passant, confirmé) : la DLL reboucle tout le fichier (`AlundraMusicPlayer.cs:384-385`) ; l'original
   revient au repère de boucle de la séquence (`0x8008CA40` : `0x14` mémorise, `0x1E` y revient) ; pour la 25, le repère est au tick
   11510 (22,63 s, période 121,2 s) : le portage rejoue l'intro de 22 s, et le ding, toutes les 2 minutes ; contredit
@@ -9738,7 +9738,7 @@ pas de `cmp` changé, traces non touchées.
 **Suites** : O-E19-60 (découpe de MGUI dans une vue décalée : tranche du moteur, E19.s2) ; O-E19-61 (reste de piste en tête des musiques :
 X2, décision de l'auteur sur D-X-5) ; O-E19-62 (boucle au repère de la séquence).
 
-### 1.2v X2 — Musique : un système sonore neuf par piste (D-E19-69, O-E19-61) 🧪 (faite et CONFIRMED le 2026-10-05 ; recette X2-5 de l'auteur en attente)
+### 1.2v X2 — Musique : un système sonore neuf par piste (D-E19-69, O-E19-61) ✅ (faite et CONFIRMED le 2026-10-05 ; recette X2-5 validée le 2026-10-06 (recette du 2026-10-06, §1.2x))
 
 **Contrat** (révision n°1) : cette section remplace la tranche X2 et les arrêts de `docs/plan-extraction-bgm.md` pour X2 ; ce
 document y renvoie désormais (sa règle d'abandon « un octet des pistes 1–18 » et ses arrêts de X1 ne s'appliquent pas à X2).
@@ -9848,6 +9848,24 @@ DLL reboucle le fichier entier et rejoue ce silence à chaque tour ; une extract
   égal à l'annexe (47 lignes, SHA-1 de `export_values.tsv`, compteurs du rapport), double export ; les 179 nouveaux tests rejoués sur
   une copie des anciennes données : 129 rouges, 50 verts (T-D, T-E) ; convertisseur 612/612, `Alundra.Tests` 2570/2570 en Release
   puis en Debug, `cmp` sans écart, six traces à l'octet ; aucun `log.txt` d'extraction dans le dépôt. Reste la recette X2-5 (auteur).
+
+### 1.2x Recette de l'auteur du 2026-10-06 ✅ (consignée)
+
+Faite par l'auteur sur l'export et la DLL du 2026-10-06 (07:02), avec la page à cocher
+https://claude.ai/artifact/D74Bouh9HWJs5EBAScWuvT (45 recettes en attente, relevées dans tous les plans et relues contre eux). Aucun
+défaut signalé ; aucune note écrite.
+- **Validées (16)** : fenêtre agrandie et plein écran (S6, S2-5) ; musique sans « ding » (X2-5) ; cri de la mouette = celui de
+  l'original (§1.2u) ; boîte de dialogue d'Alundra, texte jamais hors du cadre, sortie d'un monde en plein dialogue (F2B1C-4, F2a,
+  D-E19-91) ; choix OUI/NON du marin 12, du livre et de l'écran de sauvegarde (F3B-4, f3a) ; secousse de la 392 et de la 391 (K5) ; pièces
+  de la 476, HUD à la sortie de la chambre de la 163, contrôle rendu à la 15 (R5) ; livre de la 163 sauvegardé et rechargé (E6, point 1) ;
+  vagues de la 476 et de la 478 (G2c-6) ; Beaumont, Thyea et Septimus à la 164 (L1-4, F2a) ; glissement le long d'un coin de mur (H4-4) ;
+  emplacements de sauvegarde hostiles et teinte du carrousel (T8 d'E16.e, plan E16) ; Triangle ferme l'inventaire principal sans l'ouvrir
+  (E13.d, plan du sous-inventaire) ; `bgm_019.wav` est de la musique (X1, plan de l'extraction BGM).
+- **Non atteintes (29), restent en attente** : la 478 tenue (C7, point 3) ; Bergus à la 165 (C7, point 2) ; la boutique de la 163 (L2-4) ;
+  les polices (F2B0-5) ; le jour 3 et le jour 4 (C7 points 1 et 4, E6 points 2 et 3, la 10, la 178, la 185, la 362) ; tout le hors-chaîne
+  (D7, H3-3, H1-3, H1B2-4, K2-4, J3, G2a-4, G0b-6, la 44 de G2c-6, G2d-6, F2B1A-3, C7 point 5, T7 d'E16.a, E19.m2, l'interrupteur de
+  L1-4) ; l'ondulation du HUD (E13.a), l'étoile de l'éditeur (T4.7), l'exemple MGUI (PI3), le monde gelé en dialogue (T2), le parcours
+  M3.
 
 ### 1.2w Boucle au repère de la séquence (D-E19-70, D-E19-72, D-E19-73, O-E19-62) ⏳ (préparée le 2026-10-05 ; la partie moteur va dans S2 d'audio-modern, D-E19-74 ; données, convertisseur et DLL après S2)
 

@@ -1981,6 +1981,8 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - un binaire avec un octet inversé : les deux lignes d'un emplacement vide établies par L3.
 
   Puis écraser l'un d'eux depuis le livre et le recharger par F9.
+  **Emplacements hostiles et teinte du carrousel validés par l'auteur le 2026-10-06** (recette du 2026-10-06,
+  `docs/plan-e19-opcodes.md` §1.2x).
 
 **Acceptation d'E16.e** : les tests de T1 à T5 passent ; `Alundra.Tests` sans échec, oracle de
 l'intro inchangé ; build Release puis Debug à 0 erreur (Debug en dernier) ; export en place dont le
