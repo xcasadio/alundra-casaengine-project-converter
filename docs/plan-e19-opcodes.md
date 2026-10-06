@@ -6084,7 +6084,7 @@ DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la
   - Fichiers : `TextBoxScreen.xaml`, `TextBoxScreen.design.json`, `AlundraTextBoxViewModel.cs`, `AlundraInventoryViewModel.cs` (propriété `Brightness` et `ApplyDialogue`), `AlundraTextBoxPresenter.cs`,
     `AlundraDialogueNameBox.cs` (`Text`), `AlundraDialogueDirector.cs` (`PortraitSource`), les tests de la liste fermée dont le nouveau `AlundraSpeakerPixelTests.cs`, l'annexe, ADR-0042 et son index.
 
-###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06, **après f4c2**, qui ajoute la propriété ; relecture n°1 REVISE (liste fermée, prévisions), révisée ; relecture n°2 READY)
+###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) 🧪 (faite et CONFIRMED le 2026-10-06 (`9799984` ; vérificateur neuf : rouges d'abord rejoués (4 sur 108), mutant du retour anticipé rouge, table du cycle entier égale au plan, liste fermée tenue, `Alundra.Tests` 2948 en Release puis en Debug, `cmp`, six traces ; aucun avis), recette en attente : ouvrir et fermer l'inventaire et le sous-inventaire ; planifiée le 2026-10-06, **après f4c2**, qui ajoute la propriété ; relecture n°1 REVISE (liste fermée, prévisions), révisée ; relecture n°2 READY)
 
 DLL et écrans XAML de l'inventaire seulement : la propriété `InventoryPortraitViewModel.Brightness` (ajoutée par f4c2) est posée dans
 l'`Apply` de l'inventaire et liée sur le portrait des deux écrans ; le `Rgb` est déjà calculé (`AlundraInventoryPortrait.cs:234`,
@@ -8448,7 +8448,7 @@ pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `S
   confirmé par le relecteur (décalage d'un demi-pixel d'écran, terme de pente, ordre des cases, égalité 1:1 de `check_bk.py`).
   Nouvelle époque de préparation ; une seule relecture de clôture.
 
-###### E19.g G2b-2 — Piste de coins de `.anim2d` (moteur) 🧪 (faite le 2026-10-06, vérification à faire ; moteur `3483fed6` et `dd1f8afa`, ADR-0069)
+###### E19.g G2b-2 — Piste de coins de `.anim2d` (moteur) ✅ (faite et CONFIRMED le 2026-10-06 (vérificateur neuf : rouges d'abord rejoués (17 sur 21), chaque site de perte silencieuse retiré un à un rougit au moins un test, réécriture à l'octet de la fixture avant et après, moteur 4126, `Alundra.Tests` 2948 en Release puis en Debug, `cmp`, six traces ; avis P4 : aucun test n'épingle le mode PSX du chemin trié d'une partie à coins) ; moteur `3483fed6` et `dd1f8afa`, ADR-0069)
 
 Changement de format du moteur (ADR) ; inerte pour Alundra tant qu'aucun fichier ne porte la piste (un fichier d'aujourd'hui se relit et se
 réécrit à l'octet). Déclencheur de risque : format sérialisé. Branche du moteur `chantier/e19g2b2-corner-track`, créée par la règle R-BR (1)
@@ -8550,7 +8550,7 @@ inchangés (aucun manifeste à produire : aucun fichier exporté ne porte encore
 fermée (la fixture et les deux fichiers de test sont ceux de la liste). Écart de la lettre du plan, sans effet : la branche du moteur est
 `chantier/e19-suite2` (demande de l'auteur) et non `chantier/e19g2b2-corner-track`. Reste : la vérification fraîche (`verifier`) de la tranche, puis G2b-3.
 
-###### E19.g G2b-3 — Export des coins (convertisseur) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06, après G2b-2 ; relecture n°1 REVISE (prévision clé par clé, garde, ordre du pointeur), révisée ; relecture n°2 REVISE (chemin du fichier de garde), disposition FIX ; nouvelle époque, relecture de clôture READY)
+###### E19.g G2b-3 — Export des coins (convertisseur) 🧪 (faite et CONFIRMED le 2026-10-06 (`3906931`, `8c48a76`, `a9f1bc3`, `db178bc`, ADR-0044 ; vérificateur neuf : prévision rejouée à l'octet, rouges d'abord rejoués, garde rouge sur l'ancien export puis verte, 1923 `.anim2d` et `report.json` modifiés, 45 237 clés égales à la prévision, sans écart, chaque fichier privé de ses pistes égal à l'ancien, double export, convertisseur 666, `Alundra.Tests` 2950 en Release puis en Debug, `cmp`, six traces), recette G2b-4 en attente ; planifiée le 2026-10-06, après G2b-2 ; relecture n°1 REVISE (prévision clé par clé, garde, ordre du pointeur), révisée ; relecture n°2 REVISE (chemin du fichier de garde), disposition FIX ; nouvelle époque, relecture de clôture READY)
 
 Parent : convertisseur et export. Le pointeur du moteur est déjà sur la pointe de G2b-2 (monté par G2b-2) : chaque commit du parent de
 G2b-3 compile, et un export avec `Corners` n'est jamais lu par un moteur qui ne la connaît pas. Déclencheur de risque : format exporté.
