@@ -6001,7 +6001,7 @@ MGUI (sous-module du moteur ; branche `chantier/e19f4c1-image-brightness` créé
   `notes.md`) est sans effet : les tests suivent la règle du centre, D-E19-101 fait foi. Nouvelle époque ; une seule relecture de
   clôture.
 
-###### E19.f4c2 — Vue du nom et du portrait du dialogue 🧪 (faite le 2026-10-06, vérification à faire)
+###### E19.f4c2 — Vue du nom et du portrait du dialogue 🧪 (faite et CONFIRMED le 2026-10-06 (`da5b7ee`, `7eee50e`, ADR-0042 ; vérificateur neuf : rouges d'abord rejoués (29 sur 71), générateur rejoué égal à l'annexe, 17 images exactes et 36 à 8/255 sur GPU, 180 noms et 25 portraits, mutant `Brightness = 1` rouge, préchargement inutile (9,6 ms au plus), `Alundra.Tests` 2946 en Release puis en Debug, `cmp`, six traces ; avis P4 : le contrôle de la table de glyphes contre le binaire a tourné sur la table de f2b0), recette F4C2-4 en attente)
 
 DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la main).
 - **F4C2-R1 — XAML** (`proposal-TextBoxScreen.xaml`) : après `TextClip`, `PortraitImage` (repos (8, 116) dans la XAML, vol par
@@ -6076,7 +6076,7 @@ DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la
   - Fichiers : `TextBoxScreen.xaml`, `TextBoxScreen.design.json`, `AlundraTextBoxViewModel.cs`, `AlundraInventoryViewModel.cs` (propriété `Brightness` et `ApplyDialogue`), `AlundraTextBoxPresenter.cs`,
     `AlundraDialogueNameBox.cs` (`Text`), `AlundraDialogueDirector.cs` (`PortraitSource`), les tests de la liste fermée dont le nouveau `AlundraSpeakerPixelTests.cs`, l'annexe, ADR-0042 et son index.
 
-###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) ⏳ (planifiée le 2026-10-06, **après f4c2**, qui ajoute la propriété ; relecture n°1 REVISE (liste fermée, prévisions), révisée ; relecture n°2 à faire)
+###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) ⏳ (planifiée le 2026-10-06, **après f4c2**, qui ajoute la propriété ; relecture n°1 REVISE (liste fermée, prévisions), révisée ; relecture n°2 READY)
 
 DLL et écrans XAML de l'inventaire seulement : la propriété `InventoryPortraitViewModel.Brightness` (ajoutée par f4c2) est posée dans
 l'`Apply` de l'inventaire et liée sur le portrait des deux écrans ; le `Rgb` est déjà calculé (`AlundraInventoryPortrait.cs:234`,
@@ -8286,7 +8286,7 @@ quads quelconques).
 - Rendu à la résolution de l'écran (ADR-0048 du moteur gardée) : exact à × 1, 1:1 égal au chemin rectangle à tout facteur, déformés plus
   lisses à k > 1.
 
-###### E19.g G2b-1 — Quad libre du moteur 🧪 (faite le 2026-10-06, vérification à faire)
+###### E19.g G2b-1 — Quad libre du moteur ✅ (faite et CONFIRMED le 2026-10-06 (moteur `ec042323`, ADR-0068 ; vérificateur neuf : rouges d'abord rejoués, démo à × 1 et × 3 égale à B(k), 0 écart sur 3160 et 28 488 pixels couverts, lignes 1:1 égales au chemin rectangle, exécution rouge du rectangle englobant, moteur 2760, `Alundra.Tests` 2946 en Release puis en Debug, `cmp`, six traces ; écart consigné : sous OpenGL `ddy` pointe vers le haut, signe pris dans le shader ; avis P4 : texture de 16 × 16 au lieu de 8 × 8, tolérance ±1 implicite sur les pixels mêlés des cas de mode))
 
 **État d'exécution** (2026-10-06) : la branche du moteur `chantier/e19g2b-free-quads` part, par la règle R-BR (1), du commit que le parent
 épingle à l'exécution, `face4b1e` (pointe de `chantier/e19g2d-adr-renumber`), et non de `33324030` (ancienne formulation de ce plan) ;
@@ -8428,7 +8428,7 @@ pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `S
   confirmé par le relecteur (décalage d'un demi-pixel d'écran, terme de pente, ordre des cases, égalité 1:1 de `check_bk.py`).
   Nouvelle époque de préparation ; une seule relecture de clôture.
 
-###### E19.g G2b-2 — Piste de coins de `.anim2d` (moteur) ⏳ (planifiée le 2026-10-06, après G2b-1 ; relecture n°1 REVISE (liste fermée, sites, schéma, acceptation), révisée ; relecture n°2 à faire)
+###### E19.g G2b-2 — Piste de coins de `.anim2d` (moteur) ⏳ (planifiée le 2026-10-06, après G2b-1 ; relecture n°1 REVISE (liste fermée, sites, schéma, acceptation), révisée ; relecture n°2 REVISE (fixture de la réécriture à l'octet), disposition FIX ; nouvelle époque, relecture de clôture à faire)
 
 Changement de format du moteur (ADR) ; inerte pour Alundra tant qu'aucun fichier ne porte la piste (un fichier d'aujourd'hui se relit et se
 réécrit à l'octet). Déclencheur de risque : format sérialisé. Branche du moteur `chantier/e19g2b2-corner-track`, créée par la règle R-BR (1)
@@ -8463,7 +8463,8 @@ parent à sa fin** (le moteur porte alors la propriété ; aucun fichier export�
   `Animation2dCompositionSampler.cs`, `Animation2dPartRuntimeState.cs`, `Animation2dData.cs`, `Animation2dBoundsCalculator.cs`,
   `CasaEngine/Framework/Scene/Entities/Components/AnimatedSpriteComponent.cs`, `CasaEngine.EditorServices/EditorAssetJsonSerializer.cs`,
   `CasaEngine.Editor/Controls/Animation2dAssetInspectorPanel.cs` ; nouveaux tests `CasaEngine.Tests/Animation/Animation2dCornerTrackTests.cs`
-  (modèle, chargement, réécriture, échantillonneur, `CloneTrack`, durées, bornes, dessin au niveau du lot) et
+  (modèle, chargement, réécriture, échantillonneur, `CloneTrack`, durées, bornes, dessin au niveau du lot), sa fixture
+  `CasaEngine.Tests/Animation/Fixtures/bankalundra_0_anim1_down.anim2d` (copie à l'octet du fichier exporté du parent) et
   `CasaEngine.Tests/EditorServices/Animation2dCornerTrackSerializationTests.cs` (sérialiseur et instantané de l'éditeur) ; docs
   `docs/engine/animation2d-composed-format-v1.md`, `docs/editor/animation2d_editor_casaengine.md` ; l'ADR du moteur et
   `docs/decisions/README.md` ; `ai-agent/tasks/e19g2b2-corner-track-tasks.md` et sa ligne dans `ai-agent/README.md` ; parent : le pointeur et
@@ -8472,18 +8473,27 @@ parent à sa fin** (le moteur porte alors la propriété ; aucun fichier export�
   d'écrit) : aller-retour de chaque champ d'une clé active, une clé désactivée écrite sans coins ni décalage, champs manquants à zéro ;
   échantillonneur (désactivée avant la première clé, valeurs, clé de désactivation, `Reset`) ; `CloneTrack` (une piste chargée est lue par
   l'échantillonneur) ; durées inchangées quand les clés tombent sur les temps des clés `Sprite` ; bornes ; instantané d'annulation de l'éditeur
-  qui garde la liste ; une partie aux coins actifs passe par `DrawPsxQuad` (au niveau du lot) ; **réécriture à l'octet** d'un fichier réel,
-  `alundra-project/Entities/Alundra/bankalundra_0_anim1_down.anim2d`, chargé puis réécrit par `EditorAssetJsonSerializer` : identique avant le
-  changement (point de départ vérifié d'abord) et après ; G2b2-2 code ; docs ; ADR ; G2b2-3 vérification.
+  qui garde la liste ; une partie aux coins actifs passe par `DrawPsxQuad` (au niveau du lot) ; **réécriture à l'octet** d'un fichier réel :
+  `alundra-project/Entities/Alundra/bankalundra_0_anim1_down.anim2d` est copié à l'octet dans la fixture
+  `CasaEngine.Tests/Animation/Fixtures/bankalundra_0_anim1_down.anim2d` (le test du moteur reste autonome : il trouve la fixture en
+  remontant jusqu'à `CasaEngine.MonoGame.sln`, comme `CasaEngine.Tests/Physics/RpgDemoCollisionKeyframesTests.cs`, sans changer
+  `CasaEngine.Tests.csproj` ; une fixture absente fait échouer le test avec un message explicite) ; le test la charge puis la réécrit par le
+  chemin du convertisseur, `EditorAssetWriterService.SaveDocument` (`CasaEngine.EditorServices/EditorAssetWriterService.cs:43-63`), et
+  compare les octets écrits à ceux de la fixture : identiques **avant le changement** (point de départ vérifié d'abord) et après ;
+  G2b2-2 code ; docs ; ADR ; G2b2-3 vérification.
 - **Acceptation** : `CasaEngine.Tests` buildé explicitement, `dotnet test --no-build --blame-hang-timeout 300s` ; aucun test existant ne bouge
   (en particulier `Animation2dAuthoringDataTests`, `Animation2dCompositionSamplerLoopWrapTests`, `AnimatedSpriteLogicalEndClockTests`,
   `AnimatedSpriteCollisionTimelineTests`, `CasaUIAssetProviderAnimatedImageTests`, `AnimatedSpriteComposedSortTests`,
   `AnimatedSpriteWorldInitializationTests`, `AuthoringAssetJsonSerializerTests`) ; après la montée du pointeur : `git merge-base --is-ancestor`
   de l'ancien pointeur vers le nouveau, `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (rien ne doit bouger). **Arrêts** : un
-  fichier hors de la liste, un test existant qui bouge, une réécriture qui n'est plus à l'octet, un pointeur qui ne descend pas de l'ancien.
+  fichier hors de la liste, un test existant qui bouge, une réécriture qui n'est pas à l'octet avant le changement (point de départ) ou qui
+  ne l'est plus après, un pointeur qui ne descend pas de l'ancien.
   **Retour arrière** : revert du moteur et du pointeur.
+- **Disposition de la relecture n°2** (2026-10-06, règle des deux REVISE) : un seul bloquant, **FIX** — la fixture copiée dans les tests du
+  moteur, trouvée par la remontée vers la solution, réécrite par `EditorAssetWriterService.SaveDocument`, point de départ à l'octet exigé.
+  Nouvelle époque ; une seule relecture de clôture.
 
-###### E19.g G2b-3 — Export des coins (convertisseur) ⏳ (planifiée le 2026-10-06, après G2b-2 ; relecture n°1 REVISE (prévision clé par clé, garde, ordre du pointeur), révisée ; relecture n°2 à faire)
+###### E19.g G2b-3 — Export des coins (convertisseur) ⏳ (planifiée le 2026-10-06, après G2b-2 ; relecture n°1 REVISE (prévision clé par clé, garde, ordre du pointeur), révisée ; relecture n°2 REVISE (chemin du fichier de garde), disposition FIX ; nouvelle époque, relecture de clôture à faire)
 
 Parent : convertisseur et export. Le pointeur du moteur est déjà sur la pointe de G2b-2 (monté par G2b-2) : chaque commit du parent de
 G2b-3 compile, et un export avec `Corners` n'est jamais lu par un moteur qui ne la connaît pas. Déclencheur de risque : format exporté.
@@ -8507,17 +8517,22 @@ G2b-3 compile, et un export avec `Corners` n'est jamais lu par un moteur qui ne 
   dans l'ordre, la première occurrence gagne ; classement des quads ; temps cumulés en `float32` comme écrits) ; il écrit
   `g2b3-prediction.json` (par fichier `.anim2d` : chaque clé ajoutée, partie, temps, `enabled`, les quatre coins, `source_offset`), la liste
   des fichiers modifiés (exactement les 1923 de `predicted_anim2d_changes.tsv`, sinon arrêt), les compteurs, et pour le fichier de garde
-  `Entities/Coffre d'Anzes/bankalundra_227_anim1_down.anim2d` (ouverture du coffre d'Anzes, chaîne 163, 170, 177, 184) : le nombre de
+  `Entities/Coffre d’Anzes/bankalundra_227_anim1_down.anim2d` (ouverture du coffre d'Anzes, chaîne 163, 170, 177, 184) : le nombre de
   clés de chaque piste `Corners`, la première clé entière et la durée `DurationSeconds` lue dans l'export d'aujourd'hui.
 - **G2b3-1 — Tests d'abord** : convertisseur : les cas de `engine-notes.md` 3.2 avec leur `source_offset` ; une animation sans quad déformé n'a
   pas de piste ; une partie mixte (clé désactivée) ; une suite d'images déformées identiques (une seule clé) ; une image cachée (pas de clé) ;
   l'image finale répétée d'un `Hold` (pas de clé). `Alundra.Tests` : la garde sur le fichier de garde (pistes `Corners` et première clé égales
-  à G2b3-0, durée inchangée), **rouge sur l'export d'aujourd'hui**.
+  à G2b3-0, durée inchangée), **rouge sur l'export d'aujourd'hui** sur les valeurs des pistes `Corners` ; le chemin du fichier de garde
+  est exactement celui de la ligne 222 de `predicted_anim2d_changes.tsv` (apostrophe typographique U+2019 dans `Coffre d’Anzes`) ; un
+  fichier absent fait échouer la garde avec un message « fichier introuvable » explicite, jamais un test ignoré ni vert.
 - **G2b3-2 — Export et preuves** : export complet en place, manifeste avant/après égal à la prévision (les 1923 `.anim2d` et `report.json`,
   7697 identiques à l'octet) ; **les pistes `Corners` ajoutées de chaque fichier égales clé par clé à `g2b3-prediction.json` (0 écart)** et
   chaque temps égal à un temps de clé `Sprite` de la même partie ; chaque fichier privé de ses pistes ajoutées égal à l'ancien ; compteurs ;
   double export ; suites du convertisseur ; `Alundra.Tests` en Release puis en Debug (la garde verte), `cmp`, six traces ; docs ; ADR du parent.
 - **G2b3-3 — Vérification**.
+- **Disposition de la relecture n°2** (2026-10-06, règle des deux REVISE) : un seul bloquant, **FIX** — le chemin du fichier de garde
+  écrit avec l'apostrophe typographique du dossier exporté (U+2019) et l'échec explicite sur un fichier absent. Nouvelle époque ; une
+  seule relecture de clôture.
 - **Recette G2b-4** (auteur) : Rancune de Melzas sur la 476, ouverture du coffre d'Anzes (163, 170, 177, 184), le héros (entrée dans le
   sable `0x20`, pose de victoire `0x5B`), à × 1 si possible puis au facteur de jeu.
 - **Arrêts** : une valeur qui contredit `g2b3-prediction.json`, un fichier modifié hors de la liste des 1923, un test existant qui bouge.
@@ -8596,7 +8611,7 @@ prouvés par l'exécution du vrai code du binaire dans l'interpréteur MIPS (0 �
 - **G4 — Recette** de l'auteur : 476 d'abord.
 
 
-###### E19.g G1 — Export des effets (convertisseur) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06 ; relecture n°1 REVISE (compteur des textures, cases d'animation, valeurs de la 163, retour arrière), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06)
+###### E19.g G1 — Export des effets (convertisseur) ✅ (faite et CONFIRMED le 2026-10-06 ; planifiée le 2026-10-06 ; relecture n°1 REVISE (compteur des textures, cases d'animation, valeurs de la 163, retour arrière), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06)
 
 Parent seul : ni moteur, ni DLL. Déclencheur de risque : nouveau format de données exporté (relecture du plan et vérificateur neuf
 obligatoires). Données de départ : `data-extracted/` tel quel (G0 a déjà tout extrait : aucune ré-extraction, aucun changement de
@@ -8669,7 +8684,11 @@ l'extracteur). Faits et valeurs : `docs/plan-e19-g1g3-annexe/` (`converter-notes
   planche, chaque `SheetTextureAssetId` résolu dans `AssetInfos.json` vers un `.texture` dont le PNG a l'empreinte de
   `docs/plan-e19-g0-annexe/expected_effect_sheets.tsv`) ; double export (seul `report.json` diffère) ; suite du convertisseur ;
   `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (la DLL ne change pas).
-- ⏳ **G1-3 — Vérification** : vérificateur neuf (rouges d'abord rejoués, prévision re-dérivée, invariants, double export).
+- ✅ **G1-3 — Vérification** (2026-10-06) : vérificateur neuf **CONFIRMED** (`3c190e0`, `4447028`, `eab1776`) : rouges d'abord rejoués,
+  prévision re-dérivée, 332 ajoutés et 2 modifiés, chaque compagnon égal à son empreinte, preuve des planches, double export,
+  invariants, convertisseur 659, `Alundra.Tests` 2946 en Release puis en Debug, `cmp`, six traces. Avis P4 : les tests sur données
+  réelles passent sans données (retour silencieux) ; le ré-export de référence a réécrit 383 `.entity` (champ `min_move_distance`
+  d'E19.h1b3 que l'export d'avant n'avait pas), hors de G1.
 
 **Fait le 2026-10-06 (G1-0).** `docs/plan-e19-g1g3-annexe/g1-predict.py` (indépendant du convertisseur ; mode `check` qui rejoue
 la preuve sur un export) et `g1-export-prediction.md` commités avant tout code. Valeurs : **332 ajoutés** (157 compagnons de carte,
