@@ -73,11 +73,19 @@ public sealed class AlundraDay3SceneArcTests
         var s = new ArcSamples(arc, new[] { 4 }, Array.Empty<uint>(), (B, 468, 526));
         Assert.False(IsSet(1653), "G1653 is not set by the arc's start");
 
+        var effects = EffectArcChecks.Attach(arc, 176);
+
         // 1. The end signal.
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 533, 0x53), "B[6] executes 0x53 @533");
 
         // 2. Only the instructions of the closed list are skipped.
         AssertSkippedAreListed(arc, 176);
+
+        // E19.g G3b: the effect instructions this arc runs are rows of g3b-golden.tsv (the 0xA2 of B[10] of the map 176), each leaves its slot.
+        effects.AssertClean();
+        var rows176 = OpcodeGolden.Of("OP").Where(r => r[1] == "176").Select(r => int.Parse(r[4])).ToHashSet();
+        Assert.NotEmpty(effects.Sites);
+        Assert.All(effects.Sites, t => Assert.Contains(t.Pc, rows176));
 
         // 3. Giles ends 0x24 @526 near (494, 552); G1653 is set by 0x05 @530, before the 0x53.
         var giles = s[B, 468, 526].Rec(4);
@@ -163,11 +171,19 @@ public sealed class AlundraDay3SceneArcTests
         using var arc = new ArcRun(A15Spec);
         var s = new ArcSamples(arc, new[] { 5, 6 }, new uint[] { 0, 1, 2, 3 }, (B, 544, 599));
 
+        var effects = EffectArcChecks.Attach(arc, 176);
+
         // 1. The end signal.
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 600, 0x53), "B[7] executes 0x53 @600");
 
         // 2. Only the instructions of the closed list are skipped.
         AssertSkippedAreListed(arc, 176);
+
+        // E19.g G3b: the effect instructions this arc runs are rows of g3b-golden.tsv (the 0xA2 of B[10] of the map 176), each leaves its slot.
+        effects.AssertClean();
+        var rows176 = OpcodeGolden.Of("OP").Where(r => r[1] == "176").Select(r => int.Parse(r[4])).ToHashSet();
+        Assert.NotEmpty(effects.Sites);
+        Assert.All(effects.Sites, t => Assert.Contains(t.Pc, rows176));
 
         // 3. The four flags: set by their pc, each before the wait that needs it passes, none cleared.
         Assert.True(arc.Has(B, 561, 0x05) && arc.Has(C, 812, 0x05) && arc.Has(C, 850, 0x05) && arc.Has(C, 860, 0x05), "a setter of T0 to T3 never ran");
@@ -256,12 +272,30 @@ public sealed class AlundraDay3SceneArcTests
             }
         };
 
+        var effects = EffectArcChecks.Attach(arc, 135);
+        var altar = new List<(int X, int Y, int Z)>();
+        effects.PerFrame = (stage, _) =>
+        {
+            var slot = stage.Reservoir.Slots[0];
+            var position = (slot.X, slot.Y, slot.Z);
+            if (slot.Active && (altar.Count == 0 || altar[^1] != position))
+            {
+                altar.Add(position);
+            }
+        };
+
         // 1. The end signal: 0x11 @1115 of C[1], then G14 by 0x05 @1120.
         RunAcceptingTheChoice(arc, () => arc.Has(C, 1115, 0x11), "C[1] executes 0x11 @1115");
         RunAcceptingTheChoice(arc, () => arc.Has(C, 1120, 0x05), "C[1] executes 0x05 @1120");
 
         // 2. Only the instructions of the closed list are skipped.
         AssertSkippedAreListed(arc, 135);
+
+        // The altar (E19.g G3b, g3b-golden.tsv): the load slot of the record 0, at (468, 376, 64) px. The arc runs the first 0xA0 of B[5] (@536: y + 8, no + 1) and not the second (@549: x - 72, which
+        // the unit test of the map 135 pins): the altar stays at (468, 384, 64) px.
+        effects.AssertClean();
+        Assert.Equal(new[] { 536 }, effects.Sites.Select(t => t.Pc).Distinct().ToArray());
+        Assert.Equal(new[] { (468 << 16, 384 << 16, 64 << 16) }, altar.ToArray()); // B[5] runs at the first frame: the load position (468, 376, 64) is never seen at the end of a frame
 
         // 3. B[1]: Ronan is active (record 0) and Giles (record 28) appeared by 0x8A @159.
         Assert.True(arc.Has(B, 159, 0x8A), "0x8A @159 never ran");

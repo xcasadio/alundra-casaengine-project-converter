@@ -527,6 +527,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     public AlundraCameraSway CameraSway => AlundraCameraSway.Instance;
 
+    /// <summary>E19.g G3b (docs/plan-e19-opcodes.md, section 1.2o.6, G3B-R2): this world's effect stage, on which the opcodes <c>0x90</c> to <c>0x94</c> and <c>0xA0</c> to <c>0xA3</c> queue their operation.</summary>
+    public AlundraEffectStage? EffectStage => _effectStage;
+
     /// <summary>
     /// Opcode 0xA4's background layer mask (E19.k2, docs/plan-e19-opcodes.md section 1.2k.2): forwarded to this world's
     /// backdrop stage, which switches the layers of the attached engine services on or off by identifier.
@@ -2260,6 +2263,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         _effectFrozenOfTick.Clear();
         for (var tick = 0; tick < ticksThisFrame; tick++)
         {
+            _effectStage.BeginSource(tick, 0); // E19.g G3b (G3B-R3): the effect operations the map events of this tick emit are marked with it (rank 0).
             var (squareHeld, squarePressed) = tick == 0 ? _squareOfLastTick : _squareOfTick[tick - 1];
             // E19.f3a F3A-R3: the pass of the director also runs the choice box (slot 3, right after the text box's), on the pad words of the tick before, like the Square.
             var (choicePressed, choiceInterval) = tick == 0 ? _choicePadOfLastTick : _choicePadOfTick[tick - 1];
@@ -2308,6 +2312,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             _effectFrozenOfTick.Add(EffectGateOfThisTick()); // E19.g G3a (G3A-R6): read after the map events of the tick.
         }
 
+        _effectStage.EndSource();
+
         if (ticksThisFrame > 0)
         {
             _squareOfLastTick = _squareOfTick[ticksThisFrame - 1];
@@ -2345,8 +2351,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             {
                 for (var tick = 0; tick < ticksThisFrame; tick++)
                 {
+                    _effectStage.BeginSource(tick, 2); // E19.g G3b (G3B-R3): the pending triggers come after the entities (rank 2).
                     RunPendingEventTriggers(_updateProxies, EventProgramRunner);
                 }
+
+                _effectStage.EndSource();
             }
 
             // Wall/sprite depth interleave (Slice B) - see WallPlacementOverlay's class doc. Gated on the

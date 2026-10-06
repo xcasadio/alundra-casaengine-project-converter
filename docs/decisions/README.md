@@ -59,3 +59,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0043 | The effects are exported as raw companions and sheets, not as sprites | Accepted | 2026-10-06 |
 | ADR-0044 | The quad corners of deformed entity images are exported as a Corners track appended to the .anim2d | Accepted | 2026-10-06 |
 | ADR-0045 | The effect reservoir lives in the DLL and ticks like the binary | Accepted | 2026-10-06 |
+| ADR-0046 | The effect opcodes queue their operation on the effect stage and apply it at the tick that emitted it | Accepted | 2026-10-06 |

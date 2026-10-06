@@ -95,6 +95,7 @@ public sealed class AlundraEffectReservoir
     private readonly Action<string>? _warn;
     private readonly AlundraEffectSlot[] _slots = new AlundraEffectSlot[SlotCount];
     private bool _warned;
+    private bool _warnedOperation;
 
     public AlundraEffectReservoir(AlundraEffectBank bank, Action<string>? warn = null)
     {
@@ -172,28 +173,145 @@ public sealed class AlundraEffectReservoir
     }
 
     /// <summary>Opcode <c>0x91</c>: frees at once (status 0, not drawn) every active slot created by record <paramref name="recordIndex"/>, the one in its destruction tick included.</summary>
-    public void FreeRecord(int recordIndex) => throw new NotImplementedException("E19.g G3b-2");
+    public void FreeRecord(int recordIndex)
+    {
+        foreach (var slot in _slots)
+        {
+            if (slot.Active && slot.RecordIndex == recordIndex)
+            {
+                slot.Active = false;
+            }
+        }
+    }
 
     /// <summary>Opcode <c>0x92</c>: the target animation of every active slot of the record; the switch happens at the next update. An animation outside the table: one warning, the slot is left as it is.</summary>
-    public void SetAnimation(int recordIndex, int animation) => throw new NotImplementedException("E19.g G3b-2");
+    public void SetAnimation(int recordIndex, int animation)
+    {
+        foreach (var slot in _slots)
+        {
+            if (!slot.Active || slot.RecordIndex != recordIndex)
+            {
+                continue;
+            }
+
+            if (!_bank.TryGetTable(slot.TargetMapTable, slot.TargetEffect, out var table) || animation < 0 || animation >= table.Animations.Count)
+            {
+                if (!_warnedOperation)
+                {
+                    _warnedOperation = true;
+                    _warn?.Invoke($"AlundraEffectReservoir: animation {animation} is not in the table of effect {slot.TargetEffect}; the operation is ignored (the binary would read past the table).");
+                }
+
+                continue;
+            }
+
+            slot.TargetAnimation = animation & 0xFF;
+        }
+    }
 
     /// <summary>Opcode <c>0x93</c>: every active slot of the record goes to (<paramref name="x"/> &lt;&lt; 16, <paramref name="y"/> &lt;&lt; 16, (<paramref name="z"/> &lt;&lt; 16) + 1); the operands are the unsigned 16-bit values.</summary>
-    public void PlaceRecord(int recordIndex, int x, int y, int z) => throw new NotImplementedException("E19.g G3b-2");
+    public void PlaceRecord(int recordIndex, int x, int y, int z)
+    {
+        foreach (var slot in _slots)
+        {
+            if (slot.Active && slot.RecordIndex == recordIndex)
+            {
+                Place(slot, x, y, z);
+            }
+        }
+    }
 
     /// <summary>Opcode <c>0xA0</c>: every active slot of the record moves by (<paramref name="dx"/> &lt;&lt; 16, <paramref name="dy"/> &lt;&lt; 16, <paramref name="dz"/> &lt;&lt; 16), 32-bit two's complement, no + 1.</summary>
-    public void AddPosition(int recordIndex, int dx, int dy, int dz) => throw new NotImplementedException("E19.g G3b-2");
+    public void AddPosition(int recordIndex, int dx, int dy, int dz)
+    {
+        foreach (var slot in _slots)
+        {
+            if (slot.Active && slot.RecordIndex == recordIndex)
+            {
+                unchecked
+                {
+                    slot.X += dx << 16;
+                    slot.Y += dy << 16;
+                    slot.Z += dz << 16;
+                }
+            }
+        }
+    }
 
     /// <summary>Opcode <c>0x94</c>: the forces of every active slot of the record are the signed 16-bit operands shifted left by 8.</summary>
-    public void SetForces(int recordIndex, int fx, int fy, int fz) => throw new NotImplementedException("E19.g G3b-2");
+    public void SetForces(int recordIndex, int fx, int fy, int fz)
+    {
+        foreach (var slot in _slots)
+        {
+            if (slot.Active && slot.RecordIndex == recordIndex)
+            {
+                unchecked
+                {
+                    slot.ForceX = (short)fx << 8;
+                    slot.ForceY = (short)fy << 8;
+                    slot.ForceZ = (short)fz << 8;
+                }
+            }
+        }
+    }
 
     /// <summary>Opcode <c>0xA1</c>: every active slot of the record goes to the 16.16 position of an entity plus (<paramref name="dx"/> &lt;&lt; 16, ...), no + 1.</summary>
-    public void MoveRecordToEntity(int recordIndex, int entityX, int entityY, int entityZ, int dx, int dy, int dz) => throw new NotImplementedException("E19.g G3b-2");
+    public void MoveRecordToEntity(int recordIndex, int entityX, int entityY, int entityZ, int dx, int dy, int dz)
+    {
+        foreach (var slot in _slots)
+        {
+            if (slot.Active && slot.RecordIndex == recordIndex)
+            {
+                PlaceAtEntity(slot, entityX, entityY, entityZ, dx, dy, dz);
+            }
+        }
+    }
 
     /// <summary>Opcode <c>0xA2</c>: <see cref="Spawn"/>, then the slot it created, and only that one, goes to the position of <c>0x93</c> (z + 1); null when nothing was created.</summary>
-    public AlundraEffectSlot? SpawnPlaced(int recordIndex, int x, int y, int z) => throw new NotImplementedException("E19.g G3b-2");
+    public AlundraEffectSlot? SpawnPlaced(int recordIndex, int x, int y, int z)
+    {
+        var slot = Spawn(recordIndex);
+        if (slot != null)
+        {
+            Place(slot, x, y, z);
+        }
+
+        return slot;
+    }
 
     /// <summary>Opcode <c>0xA3</c> (the entity was found): <see cref="Spawn"/>, then the slot it created, and only that one, goes to the position of the entity plus the offsets, no + 1.</summary>
-    public AlundraEffectSlot? SpawnAtEntity(int recordIndex, int entityX, int entityY, int entityZ, int dx, int dy, int dz) => throw new NotImplementedException("E19.g G3b-2");
+    public AlundraEffectSlot? SpawnAtEntity(int recordIndex, int entityX, int entityY, int entityZ, int dx, int dy, int dz)
+    {
+        var slot = Spawn(recordIndex);
+        if (slot != null)
+        {
+            PlaceAtEntity(slot, entityX, entityY, entityZ, dx, dy, dz);
+        }
+
+        return slot;
+    }
+
+    /// <summary>The position of <c>0x93</c> and <c>0xA2</c>: the operands in the high word, and one more on z (the binary's <c>+ 1</c>, which moves the drawn row).</summary>
+    private static void Place(AlundraEffectSlot slot, int x, int y, int z)
+    {
+        unchecked
+        {
+            slot.X = x << 16;
+            slot.Y = y << 16;
+            slot.Z = (z << 16) + 1;
+        }
+    }
+
+    /// <summary>The position of <c>0xA1</c> and <c>0xA3</c>: the 16.16 position of the entity plus the operands in the high word, no <c>+ 1</c>.</summary>
+    private static void PlaceAtEntity(AlundraEffectSlot slot, int entityX, int entityY, int entityZ, int dx, int dy, int dz)
+    {
+        unchecked
+        {
+            slot.X = entityX + (dx << 16);
+            slot.Y = entityY + (dy << 16);
+            slot.Z = entityZ + (dz << 16);
+        }
+    }
 
     /// <summary>
     /// One logic tick (<c>UpdateEffects 0x8003C410</c>). With <paramref name="frozen"/> (<c>PlayerControlFlags &amp; 0x48</c>) nothing is freed, animated or moved - the slots stay

@@ -28,8 +28,8 @@ public sealed class AlundraVisionArcTests
     private const int BProgram = ScriptHelper.ProgramBMap;
 
     /// <summary>The opcodes the map still skips after E19.b: none of them suspends (the original returns their size at
-    /// once). 0x4C only matters to the typewriter (E12.c); 0x92, 0x93 and 0xA2 are effects (E19.g).</summary>
-    private static readonly HashSet<int> AllowedSkippedOpcodes = new() { 0x4C, 0x92, 0x93, 0xA2 };
+    /// once). 0x4C only matters to the typewriter (E12.c); the effects 0x92, 0x93 and 0xA2 are executed since E19.g G3b.</summary>
+    private static readonly HashSet<int> AllowedSkippedOpcodes = new() { 0x4C };
 
     // The budgets are those of E19.f2a (annex V-120 to V-122): max(the budget of before, 1.2 times the end predicted by the oracle) - the boxes of the vision are typed at the binary's pace.
     private static ArcSpec A2Spec => new("A2", Zone, Map476, new[] { 1640 }, 0, 0, 3, 2499);
@@ -147,6 +147,29 @@ public sealed class AlundraVisionArcTests
         }
     }
 
+    /// <summary>E19.g G3b: the slot 0 of the reservoir (the aura) is never freed once created.</summary>
+    internal sealed class AuraWatch
+    {
+        private bool _created;
+
+        public bool AliveSinceCreation { get; private set; } = true;
+
+        public AuraWatch(EffectArcChecks effects)
+        {
+            effects.PerFrame = (stage, _) =>
+            {
+                if (stage.Reservoir.Slots[0].Active)
+                {
+                    _created = true;
+                }
+                else if (_created)
+                {
+                    AliveSinceCreation = false;
+                }
+            };
+        }
+    }
+
     internal static void AssertNoOtherSkippedOpcode(ArcRun arc)
     {
         var offenders = arc.SkippedOrExceeded
@@ -183,8 +206,19 @@ public sealed class AlundraVisionArcTests
         var samples = new Samples();
         var boxPcs = new[] { 622, 632, 739 };
         arc.OnInstruction = t => samples.Take(arc, t, boxPcs);
+        var effects = EffectArcChecks.Attach(arc, 476);
+        var aura = new AuraWatch(effects);
 
         arc.RunUntil(() => arc.Has(BProgram, 758, 0x53), "B4 executes 0x53 @758 towards map 478");
+
+        // The aura of the vision (E19.g G3b): 0xA2 @326 creates the slot of the record 0 at (960, 160, 48) px, z + 1, with the animation of its record (1); 0x93 @334 puts it where it is;
+        // 0x92 @342 aims the animation 0 (destroyed after 222 ticks), 0x92 @347 the animation 1 some 221 frames later, before its 223rd update: the aura lives on, alone in the reservoir.
+        effects.AssertClean();
+        Assert.Equal(new[] { 326, 334, 342, 347 }, effects.Sites.Select(t => t.Pc).ToArray());
+        var slot = Assert.Single(effects.Stage.Reservoir.ActiveSlots);
+        Assert.Equal((0, 62914560, 10485760, 3145729, 1), (slot.RecordIndex, slot.X, slot.Y, slot.Z, slot.TargetAnimation));
+        Assert.True(ArcChecks.FrameOf(arc, BProgram, 347) - ArcChecks.FrameOf(arc, BProgram, 342) <= 222, "0x92 @347 comes after the 223rd update of the aura");
+        Assert.True(aura.AliveSinceCreation, "the aura was freed");
 
         Assert.NotEqual(0u, ArcRun.State.GetFlag(1641) & (1u << (1641 & 0x1f)));
         Assert.Equal(0u, ArcRun.State.GetFlag(1640) & (1u << (1640 & 0x1f)));
@@ -246,11 +280,25 @@ public sealed class AlundraVisionArcTests
         var samples = new Samples();
         var boxPcs = new[] { 786, 810, 820, 832, 842, 854, 873, 974 };
         arc.OnInstruction = t => samples.Take(arc, t, boxPcs);
+        var effects = EffectArcChecks.Attach(arc, 476);
+        var aura = new AuraWatch(effects);
 
         arc.RunUntil(() => arc.Has(BProgram, 986, 0x53), "B5 executes 0x53 @986 towards map 392");
 
         // The skipped set comes right after the end signal (docs/plan-e19-opcodes.md §1.2e, T2: order of the checks).
         AssertNoOtherSkippedOpcode(arc);
+
+        // The aura of the return (E19.g G3b): 0xA2 @264 creates it (the slot of the record 0, z + 1), 0x93 @272 puts it where it is, 0x92 @280 aims its animation; every 0x92 executed leaves
+        // its animation on the slot (checked at the end of each frame), the aura is never freed, and the last 0x93 (@188) puts it at (0, 160, 48) px.
+        effects.AssertClean();
+        Assert.Equal(new[] { 264, 272, 280 }, effects.Sites.Take(3).Select(t => t.Pc).ToArray());
+        Assert.Equal(new[] { 0xA2, 0x93, 0x92 }, effects.Sites.Take(3).Select(t => t.Opcode).ToArray());
+        Assert.Equal(188, effects.Sites[^1].Pc);
+        Assert.Equal(0x93, effects.Sites[^1].Opcode);
+        var slot = Assert.Single(effects.Stage.Reservoir.ActiveSlots);
+        Assert.Equal((0, 0, 10485760, 3145729), (slot.RecordIndex, slot.X, slot.Y, slot.Z));
+        Assert.Equal(AlundraEffectOpcodeTests.Codes(476)[effects.Sites.Last(t => t.Opcode == 0x92).Pc + 2], slot.TargetAnimation);
+        Assert.True(aura.AliveSinceCreation, "the aura was freed");
 
         Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
         var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;

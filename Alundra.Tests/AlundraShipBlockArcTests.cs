@@ -30,12 +30,8 @@ public sealed class AlundraShipBlockArcTests
     private static ArcSpec A6Spec => new(
         "A6", "The Klark", "Ship Klark (night, break, Event)-391", new[] { 1641 }, 15, 28, 7, 2957, RealController: true, Prefabs: true);
 
-    /// <summary>The instructions the map still skips: none of them suspends (effects E19.g, typewriter E12.c); the camera sway 0x8E is executed since E19.k1.</summary>
-    private static readonly HashSet<(int Opcode, int Pc)> AllowedSkipped = new()
-    {
-        (0xA2, 228), (0xA2, 236), (0xA2, 244), (0xA2, 252), (0xA2, 408),
-        (0x94, 417), (0x94, 425), (0x94, 433), (0x94, 441), (0x94, 503),
-    };
+    /// <summary>The instructions the map still skips: none (the camera sway 0x8E is executed since E19.k1, the effects 0xA2 and 0x94 since E19.g G3b).</summary>
+    private static readonly HashSet<(int Opcode, int Pc)> AllowedSkipped = new();
 
     private sealed class Samples
     {
@@ -176,12 +172,41 @@ public sealed class AlundraShipBlockArcTests
         var samples = new Samples();
         arc.OnInstruction = t => samples.Take(arc, t);
         arc.OnFrame = () => samples.TakeFrame(arc);
+        var effects = EffectArcChecks.Attach(arc, 391);
+        var reservoirAtFrame = new List<(int Index, int Record, int X, int Y, int Z)[]>();
+        effects.PerFrame = (stage, _) => reservoirAtFrame.Add(stage.Reservoir.ActiveSlots.Select(s => (s.Index, s.RecordIndex, s.X, s.Y, s.Z)).ToArray());
 
         // 1. The end signal.
         arc.RunUntil(() => arc.Has(B, 540, 0x53), "B1 executes 0x53 @540 towards map 416");
 
         // 2. Only the expected instructions skipped, none cut off by the loop guard; 0x4C @706 is executed since E19.f2a (F2-R4), never skipped.
         AssertSkippedWithin(arc, AllowedSkipped);
+
+        // The effects (E19.g G3b, g3b-golden.tsv): the five 0xA2 (@228, @236, @244, @252, @408) and the five 0x94 (@417, @425, @433, @441, @503) are executed.
+        effects.AssertClean();
+        Assert.Equal(new[] { 228, 236, 244, 252, 408, 417, 425, 433, 441, 503 }, effects.Sites.Select(t => t.Pc).ToArray());
+        Assert.Equal(new[] { 0xA2, 0xA2, 0xA2, 0xA2, 0xA2, 0x94, 0x94, 0x94, 0x94, 0x94 }, effects.Sites.Select(t => t.Opcode).ToArray());
+
+        // First named instant: after the fifth 0xA2 (@408), before the first 0x94 (@417) - a tick apart (the 0x00 @416): ten slots, the five of the load where the binary put them, the five created
+        // by the 0xA2 at their operands (z + 1), every force still 0.
+        var first = FrameOf(arc, B, 408);
+        Assert.True(first < FrameOf(arc, B, 417), "the 0x94 @417 comes at a later tick than the 0xA2 @408");
+        Assert.Equal(OpcodeGolden.Of("S391a").Select(OpcodeGolden.Slot).ToArray(), reservoirAtFrame[first]);
+
+        // Second named instant: just after the fifth 0x94 (@503). From there each slot moves by the force of its record times N, the ticks the effects ran unfrozen (no absolute position is
+        // pinned: it depends on the number of such ticks since @417); the record whose force is 100 gives N, the load copies move like the created ones.
+        var second = reservoirAtFrame[FrameOf(arc, B, 503)];
+        var last = reservoirAtFrame[^1];
+        var forceOf = OpcodeGolden.Of("S391f").ToDictionary(r => int.Parse(r[1]), r => long.Parse(r[3]));
+        Assert.Equal(new long[] { 12800, 9216, 25600, 12800, 12800 }, forceOf.OrderBy(kv => kv.Key).Select(kv => kv.Value).ToArray());
+        Assert.Equal(10, second.Length);
+        Assert.Equal(second.Select(s => (s.Index, s.Record)).ToArray(), last.Select(s => (s.Index, s.Record)).ToArray());
+        var n = (last[2].Y - second[2].Y) / 25600; // the slot 2: the record 2 (force 100 << 8)
+        Assert.True(n > 0 && (last[2].Y - second[2].Y) % 25600 == 0, $"the slot 2 moved by {last[2].Y - second[2].Y}");
+        for (var i = 0; i < 10; i++)
+        {
+            Assert.Equal((0L, forceOf[second[i].Record] * n, 0L), ((long)last[i].X - second[i].X, (long)last[i].Y - second[i].Y, (long)last[i].Z - second[i].Z));
+        }
         Assert.Equal(0, arc.SkippedOrExceeded.Count(t => t.Opcode == 0x4C && t.Pc == 706));
 
         // The camera sway (E19.k1): the 0x8E are executed, none skipped; [1,1,3,2] after frame 0, [3,1,6,2] after @335,

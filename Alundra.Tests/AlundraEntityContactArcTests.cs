@@ -164,15 +164,21 @@ public sealed class AlundraEntityContactArcTests
             }
         };
 
+        var effects = EffectArcChecks.Attach(arc, 10);
+
         // 1. The end signal: 0x53 @2003 of B[14].
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 2003, 0x53), "B[14] executes 0x53 @2003");
 
         // 2. Only the instructions the measure shows are skipped.
-        // 0x58, 0x90, 0x95 and 0x2B (not ported, no effect on the scene); the two 0x25 of the bouquets are ported (E19.d2c1 R4).
+        // 0x58, 0x95 and 0x2B (not ported, no effect on the scene); the two 0x25 of the bouquets are ported (E19.d2c1 R4), the two 0x90 since E19.g G3b.
         AssertSkippedWithin(arc, new HashSet<(int, int)>
         {
-            (0x58, 5470), (0x90, 2689), (0x2B, 6413), (0x95, 6418), (0x90, 2828), (0x58, 4666),
+            (0x58, 5470), (0x2B, 6413), (0x95, 6418), (0x58, 4666),
         });
+
+        // The effects (E19.g G3b): the two 0x90 (@2689 the record 5, @2828 the record 0) are executed and each leaves its slot.
+        effects.AssertClean();
+        Assert.True(effects.Has(2689) && effects.Has(2828), "a 0x90 of the scene never ran");
 
         // 3. The rest, in the order of the plan.
         var n5163 = s[C, 5156, 5163];
@@ -283,14 +289,20 @@ public sealed class AlundraEntityContactArcTests
         };
         arc.PlaceHero(898, 736, 16);
 
+        var effects = EffectArcChecks.Attach(arc, 10);
+
         // 1. The end signal.
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(C, 3738, 0x11), "C[39] executes 0x11 @3738");
 
         // 2. Only the instructions the measure shows are skipped.
         AssertSkippedWithin(arc, new HashSet<(int, int)>
         {
-            (0x90, 2689), (0x2B, 6413), (0x95, 6418), (0x90, 2828), (0x4C, 3833), (0x4C, 3847), (0x4D, 3849),
+            (0x2B, 6413), (0x95, 6418), (0x4C, 3833), (0x4C, 3847), (0x4D, 3849),
         });
+
+        // The effects (E19.g G3b): the two 0x90 (@2689 the record 5, @2828 the record 0) are executed and each leaves its slot.
+        effects.AssertClean();
+        Assert.True(effects.Has(2689) && effects.Has(2828), "a 0x90 of the scene never ran");
 
         // 3. The rest, in the order of the plan.
         var at3670 = s[C, 3636, 3670];

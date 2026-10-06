@@ -36,7 +36,7 @@ public sealed class AlundraInoaDayOneArcTests
     /// A20 (no flag): the hero arrives by portal 163.0 at (732, 424). The map event B[7] (<c>@572</c>) locks the player, makes Sybill
     /// (record 2, <c>0x43 [2]</c>) the logic entity, walks her to the right (<c>0x0B @584 [1, 192, 0]</c>) from her start (540, 472),
     /// opens a box, then <c>0x11 @596</c> gives the hand back and <c>0x05 @597</c> sets G1659 in the same call. B[9] only holds eleven
-    /// <c>0xA2</c> (effects, not ported), each skipped once at the first tick. The walk overshoots its target: the first pass of
+    /// <c>0xA2</c> (effects), each executed once at the first tick (E19.g G3b). The walk overshoots its target: the first pass of
     /// <c>@588</c> reads the final X, measured here (E19.d2b re-measures it).
     /// </summary>
     [Fact]
@@ -65,17 +65,25 @@ public sealed class AlundraInoaDayOneArcTests
             }
         };
 
+        var effectChecks = EffectArcChecks.Attach(arc, 162);
+
         // 1. The end signal (the box is typed with Square held and closed by the press of the arcs' rule, E19.f2a).
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 596, 0x11), "B[7] executes 0x11 @596");
 
-        // 2. Exactly the eleven 0xA2 of B[9] skipped, nothing else, nothing cut off by the loop guard.
+        // 2. Nothing skipped, nothing cut off by the loop guard; the eleven 0xA2 of B[9] are executed, once each, at the first tick (E19.g G3b).
         var effects = Enumerable.Range(0, 11).Select(i => 608 + 8 * i).ToArray();
-        AssertSkippedWithin(arc, effects.Select(pc => (0xA2, pc)).ToHashSet());
+        AssertNothingSkippedOrExceeded(arc);
         foreach (var pc in effects)
         {
-            // E19.d2b B7: counted among the SKIPPED instructions (the trace also holds the executions, which this never asked): once each, at the first tick.
-            Assert.Equal(new[] { 0 }, arc.SkippedOrExceeded.Where(t => t.Opcode == 0xA2 && t.Pc == pc).Select(t => t.Frame).ToArray());
+            Assert.Equal(new[] { 0 }, arc.Trace.Where(t => t.Opcode == 0xA2 && t.Pc == pc).Select(t => t.Frame).ToArray());
         }
+
+        // The reservoir (E19.g G3b, g3b-golden.tsv): the seven slots of the load and the eleven of the 0xA2, the record 5 holding twelve, each at its position.
+        effectChecks.AssertClean();
+        Assert.Equal(effects, effectChecks.Sites.Select(t => t.Pc).ToArray());
+        var reservoir = effectChecks.Stage.Reservoir.ActiveSlots.Select(s => (s.Index, s.RecordIndex, s.X, s.Y, s.Z)).ToArray();
+        Assert.Equal(OpcodeGolden.Of("S162").Select(OpcodeGolden.Slot).ToArray(), reservoir);
+        Assert.Equal(12, reservoir.Count(s => s.RecordIndex == 5));
 
         // 3. The rest, in the order of the plan.
         Assert.Equal((540 << 16, 472 << 16), sybillAt584);

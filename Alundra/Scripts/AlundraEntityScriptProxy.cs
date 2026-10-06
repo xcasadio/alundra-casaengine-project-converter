@@ -1310,8 +1310,10 @@ public class AlundraEntityScriptProxy : GameplayProxy
             // second clock entirely: one logic tick is always exactly one script pass, one motion sub-step,
             // and one support step, in that order, every time.
             var ticksThisFrame = ScriptHost.LogicTicksThisFrame(elapsedTime);
+            var effectStage = (ScriptHost as IEntityWorldContext)?.EffectStage; // E19.g G3b (G3B-R3): the effect operations of this entity's script carry its tick (rank 1).
             for (var tick = 0; tick < ticksThisFrame; tick++)
             {
+                effectStage?.BeginSource(tick, 1);
                 PickEventTrigger();
                 RunPickedEvent(ScriptHost.Runner);
 
@@ -1376,6 +1378,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 // its own fixed frame too (i.e. once per logic tick here).
                 EvaluateEntitySupport(ScriptHost.Collidables);
             }
+
+            effectStage?.EndSource();
         }
         else
         {

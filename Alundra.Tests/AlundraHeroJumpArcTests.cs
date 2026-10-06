@@ -58,10 +58,16 @@ public sealed class AlundraHeroJumpArcTests
             }
         };
 
+        var effects = EffectArcChecks.Attach(arc, 10);
+
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 2463, 0x53), "B[20] executes 0x53 @2463");
 
         // 1. Nothing is skipped but what the measure shows (no opcode of the scene is missing: the jump waits for its landing).
-        AssertSkippedWithin(arc, new HashSet<(int, int)> { (0x90, 6406), (0x2B, 6413), (0x95, 6418), (0x90, 2689), (0x90, 2828) });
+        AssertSkippedWithin(arc, new HashSet<(int, int)> { (0x2B, 6413), (0x95, 6418) });
+
+        // The effects (E19.g G3b): the three 0x90 (@6406 the record 3, @2689 the record 5, @2828 the record 0) are executed and each leaves its slot.
+        effects.AssertClean();
+        Assert.True(effects.Has(6406) && effects.Has(2689) && effects.Has(2828), "a 0x90 of the scene never ran");
 
         var f0 = FrameOf(arc, B, 2441);
         Pose Hero(int slot, int pc, int image) => atInstruction[(slot, pc, image)];

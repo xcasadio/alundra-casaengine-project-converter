@@ -8933,7 +8933,7 @@ fait sur la pile seule, la lecture par tick dans la boucle des événements est 
   à sa création dans `InitializeWithWorld`, un test où elle change pendant la première image. Nouvelle époque ; une seule relecture de
   clôture.
 
-###### E19.g G3b — Les neuf opcodes d'effets (DLL) 🚧 (approuvée par l'auteur le 2026-10-06, exécution en cours ; planifiée le 2026-10-06, après G3a ; relecture n°1 REVISE (binaire : ticks gelés, créneau placé par `0xA2`/`0xA3` ; code : liste fermée), révisée ; relecture n°2 : READY (code), REVISE (binaire : valeurs de la 391), disposition FIX ; nouvelle époque, relecture de clôture REVISE (début de l'écart du second instantané de la 391) : **⚠️ en pause** (règle des relectures : pas de nouveau tour sans l'auteur) ; correctif écrit ci-dessous, une nouvelle relecture sur décision de l'auteur)
+###### E19.g G3b — Les neuf opcodes d'effets (DLL) ⚠️ (code, arcs et ADR-0046 faits le 2026-10-06, vérification à faire ; **arrêt** : deux tests de G3a, hors de la liste fermée, bougent, décision de l'auteur attendue (voir « Arrêt de G3b-2 ») ; approuvée par l'auteur le 2026-10-06 ; planifiée le 2026-10-06, après G3a ; relecture n°1 REVISE (binaire : ticks gelés, créneau placé par `0xA2`/`0xA3` ; code : liste fermée), révisée ; relecture n°2 : READY (code), REVISE (binaire : valeurs de la 391), disposition FIX ; nouvelle époque, relecture de clôture REVISE (début de l'écart du second instantané de la 391) : **⚠️ en pause** (règle des relectures : pas de nouveau tour sans l'auteur) ; correctif écrit ci-dessous, une nouvelle relecture sur décision de l'auteur)
 
 DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (liste fermée et arcs). Faits : `dll-notes.md` §4 et §6,
 `binary-data-verify.md` (sites, valeurs), `README.md` de l'annexe (391 : cinq `0xA2`).
@@ -9028,6 +9028,32 @@ d'effets (chaque opcode se dégrade et avance de sa taille), la file (marque de 
 les 14 verts sont les 13 tests de G3a de la réserve et le garde-fou `TheGoldenSites_AreTheBytesOfTheRealPrograms` (les 99 lignes `OP` égales aux octets de l'export) ;
 les cas à 223 et 224 mises à jour de la bascule de la 476 exigent le créneau (son indice d'enregistrement) avant l'opcode, sans quoi ils passeraient à vide. Les lignes de la liste
 fermée, l'audit, les arcs et les gestionnaires viennent dans le même commit (G3b-2, convention du plan).
+
+**Fait le 2026-10-06 (G3b-2, code).** Les neuf gestionnaires de `AlundraEventProgramRunner.Dispatch` (chacun met son opération en file sur `IEntityWorldContext.EffectStage` ; sans
+scène : trace `Degraded` et avance de sa taille) ; les huit opérations de `AlundraEffectReservoir` (`FreeRecord`, `SetAnimation` avec un avertissement une fois pour une animation
+hors de la table, `PlaceRecord`, `AddPosition`, `SetForces`, `MoveRecordToEntity`, `SpawnPlaced`, `SpawnAtEntity`) ; `AlundraEffectStage.BeginSource`, `EndSource` et `Emit` ; la marque du
+tick et du rang dans la boucle des événements de carte (rang 0), dans celle des déclencheurs en attente (rang 2) et dans la boucle de ticks de chaque entité (rang 1) ;
+`AlundraWorldProxy.EffectStage`. Les 99 lignes `EFFET` quittent `story-chain-skipped-opcodes.tsv` (102 → 3), `MapsWithoutSkippedSite` 19 → 28, l'assertion 19 → 28,
+`UnknownOpcode_KnownSize_SkipsBySize` est repointé sur `0xB3` (taille 9, non porté). Arcs : les ensembles de sauts autorisés perdent leurs opcodes d'effets (A2, A4, A6 vide, A20,
+A10J, T-A10v, T-B9) et les arcs assertent la réserve (`EffectArcChecks`, dans `AlundraEffectOpcodeTests.cs` : à la fin de chaque image, un `0x90` ou `0xA2` exécuté laisse un créneau
+de son enregistrement, un `0x92` laisse son animation sur les créneaux de son enregistrement) : l'aura de la 476 n'est jamais libérée (A2 : @326, @334, @342, @347, le `0x92` @347
+venant moins de 223 mises à jour après @342 ; A4 : de @264 à @188, créneau final en (0, 160, 48) px avec l'animation du dernier `0x92`), les dix créneaux de la 391 aux deux instants
+nommés (le premier égal à `S391a` ; au second chaque créneau a bougé de la force de son enregistrement fois N, N tiré du créneau de force 100, copie du chargement comprise, x et z
+inchangés), les 18 créneaux de la 162 égaux à `S162`, les `0x90` de la 10 exécutés, les `0xA2` de B[10] de la 176 (A13, A15) exécutés, l'autel de la 135 en (468, 384, 64) px dans
+A17. **Écart à l'annexe** : A17 n'exécute que la première `0xA0` de B[5] de la 135 (@536 : y + 8, à la première image), pas la seconde (@549) comme l'écrivait `dll-notes.md` §6 (« après la
+paire de `0xA0` de A17 ») ; l'autel en (396, 384) px est pinglé par le test unitaire de la 135, pas par l'arc. Les arcs A13, A15 et A17 exécutent des lignes de la liste (les `0xA2` de
+B[10] de la 176, la `0xA0` @536) : ils étaient rouges sur le code d'avant avec les lignes retirées (règle 5), et leurs règles n'ont plus rien à signaler. ADR-0046 (numéro revérifié : 0045
+sur la branche, 0043 sur `main`). **Mesures** : rouges d'abord sur le code d'avant, les ensembles vidés et les lignes retirées : A2, A4, A4p, A6, A20, A10J, T-A10v, T-B9, A13, A15, A17 et la
+règle 1 de l'audit ; nouveaux tests 45 rouges sur 59 (G3b-1) ; puis verts : les 37 cas de `AlundraEffectOpcodeTests` (dont `TheEntityLoop_MarksTheEffectOperationsWithTheTickOfItsScript_...`,
+rouge quand la marque du tick de l'entité est retirée : attendu [1, 0], obtenu [1, 1]) et les 10 de la réserve ; `Alundra.Tests` 3034 en Release : 3032 verts, 2 rouges (l'arrêt ci-dessous).
+
+**⚠️ Arrêt de G3b-2 (2026-10-06).** Deux tests de G3a, dans `AlundraEffectStageWiringTests.cs`, fichier hors de la liste fermée de G3b, deviennent rouges : sur la vraie carte 391 (arc
+`Ship391`), B1 exécute les quatre `0xA2` @228, @236, @244, @252 à la première image, donc `Map391_AfterTheFirstFrame_HoldsTheFiveLoadSlotsOfTheBinary_AtTheirPositions` mesure 9
+créneaux (valeur attendue 5) et `Map391_ACreationQueuedBeforeTheFirstUpdateOfTheProxy_TakesSlot5_NothingIsErased` en mesure 10 (valeur attendue 6 ; la création en file prend le créneau 5,
+les quatre `0xA2` les créneaux 6 à 9). Ce n'est pas une contradiction de l'annexe (neuf = 5 du chargement + 4 `0xA2`, comme le modèle), c'est une assertion de G3a que le portage des
+opcodes déplace et que la liste fermée de G3b n'avait pas prévue : rien n'a été repointé. **Décision de l'auteur attendue** : soit ajouter `AlundraEffectStageWiringTests.cs` à la liste
+et repointer ces deux assertions (9 créneaux dont les cinq du chargement aux positions de l'oracle ; 10 avec la création en file au créneau 5), soit faire monter ces deux tests sur une
+carte dont la première image ne crée rien. Le reste de la suite est vert.
 
 - **Acceptation** : rouges puis verts ; les ensembles de sauts autorisés des arcs nommés vidés de leurs opcodes d'effets et remplacés par
   les assertions de la réserve ; aucune autre assertion ne bouge (A10/A11 sur 165/164 ne bougent pas) ; `Alundra.Tests` en Release puis

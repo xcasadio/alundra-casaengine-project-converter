@@ -1520,6 +1520,159 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
                 return 1;
 
+            case 0x90: // Spawn map effect - Script_144_090 (E19.g G3b, docs/plan-e19-opcodes.md section 1.2o.6, ADR-0046): SpawnMapEffect(v1, force = 1),
+                       // no zone test and no 0x40 test; a record outside the table creates nothing. Queued on the effect stage (the reservoir is applied at the tick
+                       // that emitted the operation, G3B-R3); no stage -> degraded skip by size. Size 2.
+                if (_worldContext.EffectStage is { } spawnStage)
+                {
+                    var spawnRecord = v[1];
+                    spawnStage.Emit(reservoir => reservoir.Spawn(spawnRecord));
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0x90, "EffectSpawn", "effects");
+                }
+
+                return 2;
+
+            case 0x91: // Free effect - Script_145_091: every slot of the record is freed at once (not drawn), the one in its destruction tick too. Size 2.
+                if (_worldContext.EffectStage is { } freeStage)
+                {
+                    var freeRecord = v[1];
+                    freeStage.Emit(reservoir => reservoir.FreeRecord(freeRecord));
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0x91, "EffectFree", "effects");
+                }
+
+                return 2;
+
+            case 0x92: // Set effect animation - Script_146_092: the target animation v2 of every slot of the record v1; the switch happens at the next update. Size 3.
+                if (_worldContext.EffectStage is { } animationStage)
+                {
+                    var animationRecord = v[1];
+                    var animation = v[2];
+                    animationStage.Emit(reservoir => reservoir.SetAnimation(animationRecord, animation));
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0x92, "EffectAnimation", "effects");
+                }
+
+                return 3;
+
+            case 0x93: // Set effect position - Script_147_093: x = u16 << 16, y = u16 << 16, z = (u16 << 16) + 1 on every slot of the record. Size 8.
+                if (_worldContext.EffectStage is { } placeStage)
+                {
+                    var placeRecord = v[1];
+                    var placeX = v[2] | v[3] << 8;
+                    var placeY = v[4] | v[5] << 8;
+                    var placeZ = v[6] | v[7] << 8;
+                    placeStage.Emit(reservoir => reservoir.PlaceRecord(placeRecord, placeX, placeY, placeZ));
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0x93, "EffectPosition", "effects");
+                }
+
+                return 8;
+
+            case 0x94: // Set effect forces - Script_148_094: the forces of every slot of the record are the signed 16-bit operands shifted left by 8. Size 8.
+                if (_worldContext.EffectStage is { } forceStage)
+                {
+                    var forceRecord = v[1];
+                    var forceX = v[2] | v[3] << 8;
+                    var forceY = v[4] | v[5] << 8;
+                    var forceZ = v[6] | v[7] << 8;
+                    forceStage.Emit(reservoir => reservoir.SetForces(forceRecord, forceX, forceY, forceZ));
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0x94, "EffectForces", "effects");
+                }
+
+                return 8;
+
+            case 0xA0: // Add to effect position - Script_160_0A0: x, y, z += u16 << 16 (two's complement, no + 1) on every slot of the record. Size 8.
+                if (_worldContext.EffectStage is { } addStage)
+                {
+                    var addRecord = v[1];
+                    var addX = v[2] | v[3] << 8;
+                    var addY = v[4] | v[5] << 8;
+                    var addZ = v[6] | v[7] << 8;
+                    addStage.Emit(reservoir => reservoir.AddPosition(addRecord, addX, addY, addZ));
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xA0, "EffectAddPosition", "effects");
+                }
+
+                return 8;
+
+            case 0xA1: // Move effect to entity - Script_161_0A1: the first entity of the search v2 (none: nothing happens), then every slot of the record v1 goes to its
+                       // position plus (u16 << 16) on each axis, no + 1. The position is read now (the binary reads it at once); the move is queued. Size 9.
+                if (_worldContext.EffectStage is { } moveStage)
+                {
+                    var moveRecord = v[1];
+                    var moveMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[2], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                    if (moveMatches.Count != 0)
+                    {
+                        var moveTarget = moveMatches[0];
+                        var (moveTargetX, moveTargetY, moveTargetZ) = (moveTarget.PosX, moveTarget.PosY, moveTarget.PosZ);
+                        var moveX = v[3] | v[4] << 8;
+                        var moveY = v[5] | v[6] << 8;
+                        var moveZ = v[7] | v[8] << 8;
+                        moveStage.Emit(reservoir => reservoir.MoveRecordToEntity(moveRecord, moveTargetX, moveTargetY, moveTargetZ, moveX, moveY, moveZ));
+                    }
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xA1, "EffectMoveToEntity", "effects");
+                }
+
+                return 9;
+
+            case 0xA2: // Create effect with position - Script_162_0A2: SpawnMapEffect(v1, force = 1), then, if a slot was created, the position of 0x93 (z + 1) - on that slot
+                       // only; the animation stays the record's. Size 8.
+                if (_worldContext.EffectStage is { } createStage)
+                {
+                    var createRecord = v[1];
+                    var createX = v[2] | v[3] << 8;
+                    var createY = v[4] | v[5] << 8;
+                    var createZ = v[6] | v[7] << 8;
+                    createStage.Emit(reservoir => reservoir.SpawnPlaced(createRecord, createX, createY, createZ));
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xA2, "EffectCreateAt", "effects");
+                }
+
+                return 8;
+
+            case 0xA3: // Create effect at entity - Script_163_0A3: the first entity of the search v2 first (none: NOTHING is created), then SpawnMapEffect(v1, force = 1) and, if a slot
+                       // was created, its position is the entity's plus (u16 << 16) on each axis, no + 1. Size 9.
+                if (_worldContext.EffectStage is { } createAtStage)
+                {
+                    var createAtRecord = v[1];
+                    var createAtMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[2], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                    if (createAtMatches.Count != 0)
+                    {
+                        var createAtTarget = createAtMatches[0];
+                        var (createAtTargetX, createAtTargetY, createAtTargetZ) = (createAtTarget.PosX, createAtTarget.PosY, createAtTarget.PosZ);
+                        var createAtX = v[3] | v[4] << 8;
+                        var createAtY = v[5] | v[6] << 8;
+                        var createAtZ = v[7] | v[8] << 8;
+                        createAtStage.Emit(reservoir => reservoir.SpawnAtEntity(createAtRecord, createAtTargetX, createAtTargetY, createAtTargetZ, createAtX, createAtY, createAtZ));
+                    }
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xA3, "EffectCreateAtEntity", "effects");
+                }
+
+                return 9;
+
             case 0xB0: // Set warp fade color and duration - Script_176_0B0 (E10.b): machine A, the "warp"
                        // timer - its colours are DEAD in this port (§1.1: their only output has zero
                        // readers in the decompilation) - only its flag/duration matter, consumed by

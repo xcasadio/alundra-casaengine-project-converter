@@ -3,10 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
+using CasaEngine.Framework.Application;
+using CasaEngine.Framework.Gameplay;
 using CasaEngine.Framework.Scene.Entities;
+using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
+using World = CasaEngine.Framework.Scene.World.World;
 
 namespace Alundra.Tests;
 
@@ -22,6 +27,10 @@ internal static class OpcodeGolden
     internal static string[] One(string tag, string key) => Of(tag, key).Single();
 
     internal static long[] Numbers(string[] row, int from) => row.Skip(from).Select(long.Parse).ToArray();
+
+    /// <summary>A row <c>tag slot record x y z</c> as (slot, record, x, y, z).</summary>
+    internal static (int Index, int Record, int X, int Y, int Z) Slot(string[] row) =>
+        ((int)long.Parse(row[1]), (int)long.Parse(row[2]), (int)long.Parse(row[3]), (int)long.Parse(row[4]), (int)long.Parse(row[5]));
 
     private static string[][] Read()
     {
@@ -80,7 +89,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         public AlundraEffectStage? EffectStage => Stage;
     }
 
-    private static int[] Codes(int map)
+    internal static int[] Codes(int map)
     {
         if (!CodesOfMap.TryGetValue(map, out var codes))
         {
@@ -717,6 +726,74 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         GC.KeepAlive(player);
     }
 
+    /// <summary>A script host that is also the effect host: its runner emits one operation per script call (the calls are the ticks of the entity's own loop).</summary>
+    private sealed class EntityLoopHost : IAlundraScriptHost, IEntityWorldContext, IEventProgramRunner
+    {
+        public int Ticks;
+        public AlundraEffectStage? Stage { get; set; }
+        public int Calls;
+        public IEventProgramRunner Runner => this;
+        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public AlundraGameState GameState { get; } = new();
+        public AlundraPlayerController? PlayerController => null;
+        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) { }
+        public int LogicTicksThisFrame(float elapsedTime) => Ticks;
+        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public AlundraEntityScriptProxy? PlayerEntity => null;
+        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
+        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public NavigationGrid2D? NavigationGrid => null;
+        public AlundraEffectStage? EffectStage => Stage;
+
+        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        {
+            if (programSlot == ScriptHelper.ProgramCTick)
+            {
+                var x = ++Calls;
+                Stage!.Emit(reservoir => reservoir.Create(true, 0, 0, x << 16, 0, 0));
+            }
+        }
+
+        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        {
+        }
+    }
+
+    [Fact]
+    public void TheEntityLoop_MarksTheEffectOperationsWithTheTickOfItsScript_AFrameOfTwoTicksAppliesTheSecondAfterTheFirstUpdate()
+    {
+        var stage = new AlundraEffectStage();
+        stage.Load(EffectGolden.Synthetic(new[] { EffectGolden.Anim("Loop", new[] { 1, 0 }, new[] { 1, 1 }) }, 2)); // image sets 0 then 1, one tick each, forever
+        var host = new EntityLoopHost { Stage = stage, Ticks = 2 };
+        var world = new World();
+        var game = (CasaEngineGame)RuntimeHelpers.GetUninitializedObject(typeof(CasaEngineGame));
+        game.ExecutionPolicy = GameplayExecutionPolicies.Runtime;
+        typeof(Microsoft.Xna.Framework.Game).GetField("_components", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+            .SetValue(game, new Microsoft.Xna.Framework.GameComponentCollection());
+        HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
+        var owner = new Entity { Name = "e", GameplayProxyClassName = nameof(AlundraEntityScriptProxy), RootComponent = new AnimatedSpriteComponent() };
+        HeroWorldFixture.SetProperty(owner, nameof(Entity.World), world);
+        owner.Initialize();
+        var entity = Assert.IsType<AlundraEntityScriptProxy>(owner.GameplayProxy);
+        entity.ScriptHost = host;
+        entity.Status = EntityStatus.Normal;
+        entity.ProgramIndexes[ScriptHelper.ProgramCTick] = 1;
+
+        owner.Update(0.04f); // the script runs at the tick 0 and at the tick 1 of the frame: two operations, marked 0 and 1
+        stage.RunFrame(2, new[] { false, false });
+
+        Assert.Equal(2, host.Calls);
+        var created = stage.Reservoir.ActiveSlots.ToList();
+        Assert.Equal(new[] { 1 << 16, 2 << 16 }, created.Select(s => s.X).ToArray());
+        Assert.Equal(new[] { 1, 0 }, created.Select(s => s.CurrentImageSetIndex).ToArray()); // two updates for the first, one for the second (its tick is 1)
+
+        stage.RunFrame(1, new[] { false }); // nothing is left to apply
+        Assert.Equal(2, stage.Reservoir.ActiveCount);
+    }
+
     /// <summary>The world proxy itself as the host of the interpreter: the runner reads its <see cref="IEntityWorldContext.EffectStage"/>.</summary>
     private sealed class HostOf : IEntityWorldContext
     {
@@ -732,5 +809,107 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
         public AlundraEffectStage? EffectStage => ((IEntityWorldContext)_proxy).EffectStage;
+    }
+}
+
+/// <summary>
+/// E19.g G3b: what every arc that runs effect opcodes checks at the end of each frame, on the real operands of the real program of its map: a <c>0x90</c> or <c>0xA2</c> executed in the frame leaves
+/// a slot of its record, a <c>0x92</c> leaves the animation of its operand on the slots of its record (the effect operations are applied at the end of the tick that emitted them, so what an
+/// instruction wrote is read at the end of its frame). Attach it after the arc's own hooks: it chains them.
+/// </summary>
+internal sealed class EffectArcChecks
+{
+    private static readonly HashSet<int> EffectOpcodes = new() { 0x90, 0x91, 0x92, 0x93, 0x94, 0xA0, 0xA1, 0xA2, 0xA3 };
+    private readonly ArcRun _arc;
+    private readonly int[] _codes;
+    private readonly List<ArcInstruction> _thisFrame = new();
+
+    /// <summary>Every effect instruction the arc executed, in order.</summary>
+    public List<ArcInstruction> Sites { get; } = new();
+
+    public List<string> Violations { get; } = new();
+
+    /// <summary>Called at the end of every frame with the frame index, after the checks.</summary>
+    public Action<AlundraEffectStage, int>? PerFrame { get; set; }
+
+    private EffectArcChecks(ArcRun arc, int[] codes)
+    {
+        _arc = arc;
+        _codes = codes;
+    }
+
+    public AlundraEffectStage Stage => _arc.Proxy._effectStage;
+
+    public static EffectArcChecks Attach(ArcRun arc, int map)
+    {
+        var checks = new EffectArcChecks(arc, AlundraEffectOpcodeTests.Codes(map));
+        var onInstruction = arc.OnInstruction;
+        var onFrame = arc.OnFrame;
+        arc.OnInstruction = t =>
+        {
+            onInstruction?.Invoke(t);
+            if (EffectOpcodes.Contains(t.Opcode) && t.Kind is EventTraceKind.Implemented)
+            {
+                checks._thisFrame.Add(t);
+                checks.Sites.Add(t);
+            }
+        };
+        arc.OnFrame = () =>
+        {
+            onFrame?.Invoke();
+            checks.EndOfFrame(arc.Frame - 1);
+        };
+        return checks;
+    }
+
+    public bool Has(int pc) => Sites.Any(t => t.Pc == pc);
+
+    private void EndOfFrame(int frame)
+    {
+        var exists = new HashSet<int>();
+        var animation = new Dictionary<int, int>();
+        foreach (var t in _thisFrame)
+        {
+            var record = _codes[t.Pc + 1];
+            switch (t.Opcode)
+            {
+                case 0x90 or 0xA2:
+                    exists.Add(record);
+                    animation.Remove(record); // a slot created after the 0x92 carries the animation of its record
+                    break;
+                case 0x91:
+                    exists.Remove(record);
+                    animation.Remove(record);
+                    break;
+                case 0x92:
+                    animation[record] = _codes[t.Pc + 2];
+                    break;
+            }
+        }
+
+        _thisFrame.Clear();
+        var slots = Stage.Reservoir.ActiveSlots.ToList();
+        foreach (var record in exists)
+        {
+            if (slots.All(s => s.RecordIndex != record) && slots.Count < AlundraEffectReservoir.SlotCount)
+            {
+                Violations.Add($"frame {frame}: no slot of the record {record} after its creation");
+            }
+        }
+
+        foreach (var (record, expected) in animation)
+        {
+            foreach (var slot in slots.Where(s => s.RecordIndex == record && s.TargetAnimation != expected))
+            {
+                Violations.Add($"frame {frame}: the slot {slot.Index} of the record {record} aims the animation {slot.TargetAnimation}, 0x92 asked {expected}");
+            }
+        }
+
+        PerFrame?.Invoke(Stage, frame);
+    }
+
+    public void AssertClean()
+    {
+        Assert.True(Violations.Count == 0, "effect instructions without their effect: " + string.Join("; ", Violations.Take(5)));
     }
 }
