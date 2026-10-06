@@ -5559,7 +5559,7 @@ convertisseur n'a pas changé (pas de tests du convertisseur). Restent la vérif
   248 texels ; liste fermée tenue ; export re-dérivé (les trois fichiers, l'entrée d'`AssetInfos.json`, les compteurs) et double
   export ; `Alundra.Tests` 2802/2802 en Release puis en Debug, `cmp` sans écart, six traces.
 
-###### E19.f3c — Ordre de l'écran de sauvegarde (D-E19-93) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (liste des fichiers de test), révisée ; relecture n°2 à faire ; exécution après la recette et l'approbation de l'auteur)
+###### E19.f3c — Ordre de l'écran de sauvegarde (D-E19-93) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (liste des fichiers de test), révisée ; relecture n°2 READY ; exécution après la recette et l'approbation de l'auteur)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais et en français, dans `docs/plan-e19-save-order-annexe/` :
 `notes.md`, `verify.md`, le modèle `hostmodel.py`, les preuves `slotorder*.py`, le correctif proposé `patch-proposal.diff.txt` et les tests
@@ -5884,7 +5884,7 @@ une extension sans vérité binaire (D-E19-90) ; `GetMatchingEntitiesBySearchTyp
   `cmp` sans écart, six traces. Avis P4 : la remise avant la garde de `NotifyPresenterClosed` n'est vérifiée que par lecture (à
   voir en jeu : deux dialogues de suite avec le même locuteur).
 
-###### E19.f4c — Vue du nom et du portrait ⏳ (découverte du 2026-10-06 faite et contre-vérifiée ; D-E19-100, D-E19-101 ; planifiée en f4c1, f4c2, f4c3 ; relecture n°1 REVISE (masque de la passe additive, fichiers de f4c1, propriétaire de `Brightness`, classes de comparaison), révisée ; relecture n°2 à faire ; exécution après la recette et l'approbation de l'auteur)
+###### E19.f4c — Vue du nom et du portrait ⏳ (découverte du 2026-10-06 faite et contre-vérifiée ; D-E19-100, D-E19-101 ; planifiée en f4c1, f4c2, f4c3 ; relecture n°1 REVISE (masque de la passe additive, fichiers de f4c1, propriétaire de `Brightness`, classes de comparaison), révisée ; relecture n°2 REVISE (exemple MGUI), disposition FIX ; nouvelle époque, relecture de clôture à faire ; exécution après la recette et l'approbation de l'auteur)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-f4c-annexe/` : `notes*.md`,
 `verify.md`, la XAML proposée `proposal-TextBoxScreen.xaml` validée par une sonde sur GPU hors du dépôt, et le générateur
@@ -5924,16 +5924,28 @@ MGUI (sous-module du moteur ; branche `chantier/e19f4c1-image-brightness` créé
     source + destination) avec masque RVB = `round(255 · (k − 1))` sur les trois canaux et **A = 255** (un alpha de masque inférieur
     ajouterait texel · (k − 1)² ; un texel transparent, alpha 0, n'ajoute rien), le `DrawSettings` réglé le temps du second dessin
     (précédent : `MGImage.cs:239-262`, le filtre de réduction) puis rendu.
+  - avec une `TextureColor` posée, les deux masques se multiplient (couleur de texture × masque de `Brightness`) ; écrit dans l'ADR.
 - **Fichiers** (liste fermée) : MGUI `MGUI.Core/UI/MGImage.cs`, `MGUI.Core/UI/XAML/Controls.cs`, nouveaux `MGUI.Tests/Controls/MGImageBrightnessTests.cs`
   et `MGUI.Tests/Integration/MGImageBrightnessGpuTests.cs` (au patron de `MGUI.Tests/Integration/PrimitiveBatchBlendStateGpuTests.cs`),
-  l'ADR (`Docs/decisions/`, numéro par la règle R-BR (2), 0021 aujourd'hui) et son index `Docs/decisions/README.md` ; l'exemple
+  l'ADR (`Docs/decisions/`, numéro par la règle R-BR (2), 0021 aujourd'hui) et son index `Docs/decisions/README.md` ; **un exemple MGUI**
+  (règle du moteur : toute fonction visible nouvelle est montrée dans un exemple ; patron de G9, ADR-0020 de MGUI) : nouveaux
+  `MGUI.Samples/Features/ImageBrightness.xaml`, `ImageBrightness.xaml.cs`, `ImageBrightnessViewModel.cs` (une image et un curseur de k de
+  0,5 à 2), inscrits dans `MGUI.Samples/MGUI.Samples.csproj` (ressource incorporée, comme `Features\RenderTransformBinding.xaml`),
+  `MGUI.Samples/Compendium.xaml` (un bouton) et `MGUI.Samples/Compendium.xaml.cs` (la propriété et sa construction) ; l'exemple
   `MGUI.Samples/Controls/Image.xaml` **n'est pas touché** ; moteur : `ai-agent/audits/mgui-gaps-from-xaml-screens.md` (entrée G11 close,
   en français) et le pointeur de MGUI ; parent : le pointeur du moteur et ce plan.
 - **Tâches** : tests d'abord : propriété, défaut 1, analyse XAML, liaison ; au niveau des appels, les masques enregistrés (RVB **et** A) pour
   k = 127/128, 1, 1,5 et 255/128 (un seul dessin à k ≤ 1, deux à k > 1, le second en additif) ; **un test au pixel sur GPU** : un texel opaque
   t sur fond noir, à k = 1,5 et k = 255/128, attendu `min(255, t · k)` à 2/255 près par canal (ce test rougit si le second masque a un alpha
-  inférieur à 255) ; code ; ADR ; entrée G11 ; vérification ; suites MGUI et moteur, montée des pointeurs (MGUI dans le moteur, moteur
+  inférieur à 255) ; code ; **exemple lancé une fois** (k = 1, 1,5 et 2, capture du tampon d'image en processus) ; ADR ; entrée G11 ;
+  vérification ; suites MGUI et moteur, montée des pointeurs (MGUI dans le moteur, moteur
   dans le parent, chacune vérifiée par la règle R-BR (1)), `Alundra.Tests` en Release puis en Debug, `cmp`, six traces.
+
+- **Disposition de la relecture n°2** (2026-10-06, règle des deux REVISE) : un seul bloquant, **FIX** — l'exemple MGUI exigé par les
+  règles du moteur entre dans la liste fermée de f4c1 (patron de G9) avec un lancement ; deux notes mineures prises au passage
+  (`TextureColor` avec `Brightness`, place de la surcharge `Apply`) ; la troisième (règle de texel de la PS1 décrite autrement dans
+  `notes.md`) est sans effet : les tests suivent la règle du centre, D-E19-101 fait foi. Nouvelle époque ; une seule relecture de
+  clôture.
 
 ###### E19.f4c2 — Vue du nom et du portrait du dialogue ⏳ (planifiée le 2026-10-06, après f4c1)
 
@@ -5947,7 +5959,8 @@ DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la
   échelle (largeur dessinée / 48, hauteur dessinée / hauteur de l'image), `Brightness` = Rgb / 128 ; une passe 0 × 0 reste visible à l'échelle 0.
   **f4c2 possède la propriété** `InventoryPortraitViewModel.Brightness` (défaut 1, notifiée au changement) : elle l'ajoute ; f4c3 ne fait
   que la poser dans l'`Apply` de l'inventaire.
-- **F4C2-R3 — Présentateur** : surcharge `Apply(box, speakerDrawn)` ; l'écran est poussé à la première passe où la boîte, le nom ou le
+- **F4C2-R3 — View model de la boîte et présentateur** : surcharge `AlundraTextBoxViewModel.Apply(box, speakerDrawn)` (le présentateur
+  n'a que `Tick`, qui l'appelle) ; l'écran est poussé à la première passe où la boîte, le nom ou le
   portrait est dessiné, un `Apply` par tick, retiré quand plus rien n'est dessiné (le cas S5 : à N+40 seuls le nom et le portrait sont
   dessinés) ; quand seuls le nom et le portrait sont dessinés, `Frame`, `Cursor` et `TextClip` sont repliés ; un portrait laissé au repos sans
   boîte garde l'écran (comme le binaire, jusqu'à l'entrée de carte ou `NotifyPresenterClosed`).
@@ -7025,7 +7038,7 @@ trappes, boules, la chute de Sara).
   compte d'appels, un appel par image) ; le pas fait deux recherches d'appui bornées (atterrissage, puis sol de fin de tick, comme la
   passe de fin du binaire).
 
-##### 1.2n.1d E19.h1b3 — Cible de `0x22` du binaire (D-E19-94, D-E19-98) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (17 sites testés, branche du moteur, numéro d'ADR), révisée ; relecture n°2 à faire ; exécution après la recette et l'approbation de l'auteur)
+##### 1.2n.1d E19.h1b3 — Cible de `0x22` du binaire (D-E19-94, D-E19-98) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (17 sites testés, branche du moteur, numéro d'ADR), révisée ; relecture n°2 READY ; exécution après la recette et l'approbation de l'auteur)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-op22-annexe/` : `notes.md`,
 `verify.md`, `site-table.txt`, `handler-rows.txt`, `gen_rows.py`, `all17.py`, `rand_rules.py`, et la sonde sur la vraie DLL
