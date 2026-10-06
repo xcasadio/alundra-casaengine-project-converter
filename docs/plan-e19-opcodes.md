@@ -8809,7 +8809,7 @@ fichiers hors catalogue pour `AssetVerifier.CheckCatalogCoverage`), puis export 
 prévision, un test existant qui bouge, un fichier hors de la liste. **Risques** : le compagnon de carte ne sert à rien tant que G3a ne
 le lit pas (aucun effet visible avant G3c) ; 748 images ont une case toute transparente (légitime : la PS1 ne les dessine pas non plus).
 
-###### E19.g G3a — Réserve des effets, apparition au chargement et tick (DLL) ⏳ (planifiée le 2026-10-06 ; relecture n°1 : READY (code), REVISE (binaire : moment de l'apparition), révisée ; relecture n°2 : READY (binaire), REVISE (code : tuile du héros), disposition FIX ; nouvelle époque, relecture de clôture à faire)
+###### E19.g G3a — Réserve des effets, apparition au chargement et tick (DLL) ⏳ (planifiée le 2026-10-06 ; relecture n°1 : READY (code), REVISE (binaire : moment de l'apparition), révisée ; relecture n°2 : READY (binaire), REVISE (code : tuile du héros), disposition FIX ; nouvelle époque, relecture de clôture READY)
 
 DLL seule (ni moteur, ni export : G1 est livré, ADR-0043) ; rien ne se voit encore (le dessin est G3c) et aucun opcode n'est porté (G3b).
 Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et vérificateur neuf). Faits et valeurs : `docs/plan-e19-g1g3-annexe/`
@@ -8885,7 +8885,7 @@ Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et 
   à sa création dans `InitializeWithWorld`, un test où elle change pendant la première image. Nouvelle époque ; une seule relecture de
   clôture.
 
-###### E19.g G3b — Les neuf opcodes d'effets (DLL) ⏳ (planifiée le 2026-10-06, après G3a ; relecture n°1 REVISE (binaire : ticks gelés, créneau placé par `0xA2`/`0xA3` ; code : liste fermée), révisée ; relecture n°2 : READY (code), REVISE (binaire : valeurs de la 391), disposition FIX ; nouvelle époque, relecture de clôture à faire)
+###### E19.g G3b — Les neuf opcodes d'effets (DLL) ⏳ (planifiée le 2026-10-06, après G3a ; relecture n°1 REVISE (binaire : ticks gelés, créneau placé par `0xA2`/`0xA3` ; code : liste fermée), révisée ; relecture n°2 : READY (code), REVISE (binaire : valeurs de la 391), disposition FIX ; nouvelle époque, relecture de clôture REVISE (début de l'écart du second instantané de la 391) : **⚠️ en pause** (règle des relectures : pas de nouveau tour sans l'auteur) ; correctif écrit ci-dessous, une nouvelle relecture sur décision de l'auteur)
 
 DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (liste fermée et arcs). Faits : `dll-notes.md` §4 et §6,
 `binary-data-verify.md` (sites, valeurs), `README.md` de l'annexe (391 : cinq `0xA2`).
@@ -8932,9 +8932,13 @@ DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (list
   (0, 50, 0), (0, 36, 0), (0, 100, 0), (0, 50, 0), (0, 50, 0) ; deux instantanés de la réserve de 10 créneaux, **(enregistrement, x, y, z) en
   16.16 brut pour chaque créneau** : (1) après la cinquième `0xA2` (pc 408) et avant la première `0x94` (pc 417) : les créneaux 0 à 4 aux
   positions du chargement (996, 504, 0), (996, 600, 0), (996, 696, 0), (996, 792, 0), (1020, 792, 0) px, les créneaux 5 à 9 créés par les
-  cinq `0xA2` (enregistrements 3, 4, 0, 1, 2) à leurs positions ; (2) 100 ticks après la cinquième `0x94` : chaque créneau a bougé des forces
-  de son enregistrement fois le nombre de ticks, la copie du chargement comprise (les forces de `0x94` touchent tous les créneaux de
-  l'enregistrement) : le créneau 0 et le créneau 7 (enregistrement 0) ont le même écart en y, 1 280 000 (`scenarios_out.txt`). 162 : 7 + 11 = 18 créneaux, l'enregistrement 5 en porte 12, **chacun à sa
+  cinq `0xA2` (enregistrements 3, 4, 0, 1, 2) à leurs positions ; (2) un **écart** mesuré depuis l'instant juste après la cinquième `0x94`
+  (pc 503) sur N ticks d'effet **non gelés** (ceux que `& 0x48` ne fige pas) : chaque créneau bouge de la force de son enregistrement fois
+  N, la copie du chargement comprise (les forces de `0x94` touchent tous les créneaux de l'enregistrement), les forces tirées des vrais
+  opérandes des `0x94` à pc 417, 425, 433, 441 et 503 (par exemple, à N = 100, les créneaux 0 et 7 de l'enregistrement 0 bougent de
+  1 280 000 en y, ceux de l'enregistrement dont la force y vaut 100 de 2 560 000) ; aucune position absolue au second instantané (elle
+  dépendrait du nombre de ticks non gelés entre pc 417 et pc 503, que le binaire seul ne donne pas) ; le scénario synthétique S1 de
+  `scenarios_out.txt` (forces appliquées l'une après l'autre) n'est pas une valeur attendue. 162 : 7 + 11 = 18 créneaux, l'enregistrement 5 en porte 12, **chacun à sa
   position**. Une `0xA3` sans entité trouvée laisse la réserve inchangée. Toutes ces valeurs sont calculées par un script de l'annexe
   (`g3b-golden.tsv`), depuis les programmes réels et le modèle validé sur le binaire (`fxpool.py`, `oracle_ops`), jamais recopiées à la main. 135 : `0xA0 [0, −72, 0, 0]` x 468 → 396, `[0, 0, 8, 0]` y 376 → 384. 10 : un créneau à l'entrée (enregistrement 4),
   `0x92 [0, 1]` @2864 (le rocher : 62 images puis fin). Une image de deux ticks avec une opération d'entité au tick 1 : le même état qu'à un
@@ -8952,6 +8956,10 @@ DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (list
 - **Disposition de la relecture n°2** (2026-10-06, règle des deux REVISE) : un seul bloquant, **FIX** — les valeurs de la 391 aux
   deux instants nommés, en 16.16 brut, les forces appliquées aux deux copies de chaque enregistrement. Nouvelle époque ; une seule
   relecture de clôture.
+- **Relecture de clôture** (2026-10-06) : **REVISE**, un bloquant (P2) : le second instantané mesurait l'écart depuis le premier, alors que
+  l'enregistrement 0 reçoit sa force à pc 417, au moins ~250 ticks avant la cinquième `0x94` (`AlundraShipBlockArcTests.cs:244-259`), et
+  1 280 000 venait du scénario synthétique S1. Correctif écrit (écart depuis pc 503 sur N ticks non gelés, forces des vrais opérandes).
+  **En pause** : une nouvelle relecture seulement sur décision de l'auteur.
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 validée le 2026-10-06 : HUD à la sortie de la chambre, pièces de la 476, contrôle rendu à la 15 (recette du 2026-10-06, §1.2x))
 
 **Constat de l'auteur** (conversion relancée, DLL reconstruite) : contacts avec les PNJ bons ; sons et musique bons ; boîtes de
