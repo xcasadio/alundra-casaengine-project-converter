@@ -10971,7 +10971,7 @@ prête (champ, déplacement, `FillQueue`, plafond de tampons, valeurs de test), 
 musique par le service de musique du moteur avec le point de boucle ; `LoopDetected` vaut vrai aussi sur les pistes sans boucle :
 un champ `Looping` à part est nécessaire.
 
-#### 1.2w.1 E19.L-a — Point de boucle de la musique en flux (moteur) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102 ; planifiée le 2026-10-08 ; T1 : relecture n°1 READY (faits), REVISE (exécution : liste des tests d'abord incomplète), révisée ; relecture n°2 à faire ; T2 : attend la réponse de l'auteur sur la profondeur)
+#### 1.2w.1 E19.L-a — Point de boucle de la musique en flux (moteur) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102 ; planifiée le 2026-10-08 ; T1 : relecture n°1 READY (faits), REVISE (exécution : liste des tests d'abord incomplète), révisée ; relecture n°2 READY ; exécution après E19.u (les deux bâtissent le moteur) ; T2 : attend la réponse de l'auteur sur la profondeur)
 
 Moteur seul (sous-module, branche `chantier/e19-suite2` du moteur, au-dessus de `f86a981b`, le merge du navigateur de démos de l'auteur ;
 la montée du pointeur du parent à la fin de L-a fera entrer ce merge dans le parent : question à l'auteur ; écart consigné à R-BR (1), qui
@@ -11043,7 +11043,7 @@ lit les nombres en flottants (16 777 217 deviendrait 16 777 216) ; `CreatePrevie
   **Retour arrière** : revert des commits du moteur (T1 et T2 séparément).
 
 
-### 1.2y E19.u — Ordre d'image du déclencheur de l'inventaire (D-E19-103, O-E19-78) 🚧 (découverte du 2026-10-08 faite et contre-vérifiée ; planifiée le 2026-10-08 ; relecture n°1 READY (deux angles) ; exécution en cours)
+### 1.2y E19.u — Ordre d'image du déclencheur de l'inventaire (D-E19-103, O-E19-78) 🧪 (faite le 2026-10-08 (`d293ec5` tests, `cd0f3f3` code et ADR-0050), vérification à faire ; découverte du 2026-10-08 faite et contre-vérifiée ; planifiée le 2026-10-08 ; relecture n°1 READY (deux angles))
 
 DLL seule. Déclencheur de risque : ordre des passes du monde par tick (relecture et vérificateur neuf). Faits et valeurs :
 `docs/plan-e19-u-annexe/` (`notes.md`, `candidate-pending.diff.txt`, `AlundraInventoryTriggerFrameOrderTests.cs.txt`, `bin-out.txt`,
@@ -11099,12 +11099,23 @@ La contre-vérification redonne ces valeurs et trois autres fenêtres (fermeture
   de tests des présentateurs, lignes données par `verify/verify.md`) ; nouveau `Alundra.Tests/AlundraInventoryTriggerFrameOrderTests.cs` ; ce
   plan ; une nouvelle ADR du parent et son index ; ADR-0040 annotée aux lignes 15 et 22 (la phrase sur `TickPad` et l'inconvénient des images
   à plusieurs ticks) ; l'annexe `docs/plan-e19-u-annexe/`.
-- ⏳ **U-1 — Tests d'abord** (rouges au HEAD ; `AlundraInventoryTriggerFrameOrderTests.cs.txt` de l'annexe) : événements de carte gelés
+- ✅ **U-1 — Tests d'abord** (rouges au HEAD ; `AlundraInventoryTriggerFrameOrderTests.cs.txt` de l'annexe) : événements de carte gelés
   aux ticks 1..37 (aujourd'hui 0..36) ; 1..74 et 1..112 (aujourd'hui 0..73 et 0..111) ; portes des effets et des déclencheurs en attente
   à (P, P+1, P+37, P+38) = (faux, vrai, vrai, faux) (aujourd'hui (vrai, vrai, faux, faux)) ; modes de contrôle 0 et 1 : Carré à l'image 46,
   Start à l'image 65, après l'image 65 la boîte est fermée, l'inventaire actif et `MenuOpen` posé ; un événement de carte ouvre une boîte à
   P avec Start à P : drapeaux exactement 0x08 ou 0x10, l'inventaire toujours au repos 40 images plus tard. Attendu : 7 rouges sur 7.
-- ⏳ **U-2 — Code** (U-R1 à U-R3), ADR du parent (prochain numéro libre de toutes les branches, revérifié avant le commit), commentaires.
+- ✅ **U-2 — Code** (U-R1 à U-R3), ADR du parent (prochain numéro libre de toutes les branches, revérifié avant le commit), commentaires.
+**Fait le 2026-10-08 (U-1, U-2).** `d293ec5` (les deux coutures de test, sans changement de comportement, et
+`AlundraInventoryTriggerFrameOrderTests` : 7 rouges sur 7, valeurs égales à l'annexe), `cd0f3f3` (U-R1 : la manette lue en tête de chaque
+tick de la boucle des passes, la première boucle retirée ; U-R2 : le bloc de l'inventaire à la fin du tick, après la porte des effets,
+à chaque tick, l'ancien `continue` devenu une condition autour de la passe des événements de carte ; U-R3 : la porte des déclencheurs en
+attente relue après la porte des effets de chaque tick ; aide `GameplayGateNow()` ; commentaires ; ADR-0050, plus grand numéro de toutes
+les branches 0049 ; ADR-0040 annotée aux lignes 15 et 22). Un 8e cas, mesuré après le correctif et non écrit rouge d'abord (rouge sur
+`d293ec5`, comme prévu par l'écart (2)) : un événement de carte qui lance un warp au tick où Start est pressé lance le warp, l'inventaire
+reste inactif. Mesures : mutant « U-R3 retirée » : seul le cas des portes rougit ; `Alundra.Tests` **3222** en Release puis en Debug
+(3214 + 8), aucun test existant ne bouge ; `cmp` égal ; traces. Écarts de l'exécuteur : les présentateurs de l'inventaire sont maintenant
+câblés avant leur premier tick (le bloc vient après leur câblage ; consigné dans l'ADR) ; un commentaire périmé reste hors de la liste,
+`AlundraGameState.cs:127` (« own per-tick pad loop »), à corriger avec la prochaine tranche qui touche ce fichier.
 - ⏳ **U-3 — Vérification** par un vérificateur neuf.
 - **Acceptation** : 7 rouges sur 7 au HEAD puis verts ; mutant « bloc déplacé sans U-R3 » : le cas des portes reste rouge ; `Alundra.Tests`
   en Release puis en Debug (3214 + 7), aucun test existant ne bouge (les aides de test pilotent l'inventaire seul, dans un ordre interne
