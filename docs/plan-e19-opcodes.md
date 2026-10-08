@@ -10971,7 +10971,7 @@ prête (champ, déplacement, `FillQueue`, plafond de tampons, valeurs de test), 
 musique par le service de musique du moteur avec le point de boucle ; `LoopDetected` vaut vrai aussi sur les pistes sans boucle :
 un champ `Looping` à part est nécessaire.
 
-#### 1.2w.1 E19.L-a — Point de boucle de la musique en flux (moteur) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102 ; planifiée le 2026-10-08 ; T1 : relecture n°1 READY (faits), REVISE (exécution : liste des tests d'abord incomplète), révisée ; relecture n°2 READY ; T1 faite le 2026-10-08 sans la démo (moteur `674549cc` tests, `bc3bd023` code et ADR-0072), vérification à faire ; T2 : attend la réponse de l'auteur sur la profondeur)
+#### 1.2w.1 E19.L-a — Point de boucle de la musique en flux (moteur) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102 ; planifiée le 2026-10-08 ; T1 : relecture n°1 READY (faits), REVISE (exécution : liste des tests d'abord incomplète), révisée ; relecture n°2 READY ; T1 faite et CONFIRMED le 2026-10-08 sans la démo (moteur `674549cc` tests, `bc3bd023` code et ADR-0072 ; vérificateur neuf : diff relu ligne par ligne, débordement d'entier sondé, valeurs des tests égales à l'annexe et à un modèle indépendant, 30 rouges rejoués, mutations rouges, `CasaEngine.Tests` 4225, deux solutions, `Alundra.Tests` 3222 en Release puis en Debug, `cmp`, traces, liste fermée, ADR-0072 libre ; avis P4 : aucun test n'épingle le débordement d'entier ; un test d'allocation hors du changement, `L14_AdvancingAllocatesNothing`, a échoué une fois puis réussi) ; T2 : attend la réponse de l'auteur sur la profondeur)
 
 Moteur seul (sous-module, branche `chantier/e19-suite2` du moteur, au-dessus de `f86a981b`, le merge du navigateur de démos de l'auteur ;
 la montée du pointeur du parent à la fin de L-a fera entrer ce merge dans le parent : question à l'auteur ; écart consigné à R-BR (1), qui
@@ -11044,7 +11044,7 @@ construisent ; `Alundra.Tests` **3222** en Release puis en Debug, `cmp` égal, t
 pointeur.
 - ⏳ **LA-2 — T2** (après la réponse de l'auteur), commit à part, révocable seul.
 - ⏳ **LA-3 — Pointeur** (après la réponse de l'auteur sur le merge du navigateur de démos), `merge-base --is-ancestor acbb1ae3 <nouveau>`.
-- ⏳ **LA-4 — Vérification** par un vérificateur neuf.
+- 🧪 **LA-4 — Vérification** : T1 vérifiée **CONFIRMED** le 2026-10-08 (voir l'en-tête) ; T2, la démo et le pointeur restent à vérifier quand ils seront faits.
 - **Acceptation** : tests rouges puis verts ; chaque mutation rougit ses tests ; les deux solutions se construisent ; `CasaEngine.Tests` bâti à
   part (hors du `.sln`) et vert contre une base remesurée (4194 au `f86a981b`) ; la démo tourne depuis `CasaEngine.Demos/` (capture du
   back-buffer, journal sans avertissement ; l'écoute revient à l'auteur) ; `Alundra.Tests` inchangé en nombre, en Release puis en Debug,
