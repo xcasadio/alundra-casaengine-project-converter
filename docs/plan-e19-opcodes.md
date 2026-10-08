@@ -11177,7 +11177,7 @@ montage) ; reproduit par une sonde temporaire, la classe remet maintenant le dir
   images ; données de `data-extracted.bak-lb` remises (retour arrière de L-b1) et export refait : manifeste égal à « avant » sauf
   `report.json`.
 
-###### E19.L-b3 — La DLL joue la musique en flux avec son point de boucle ⏳
+###### E19.L-b3 — La DLL joue la musique en flux avec son point de boucle 🧪 (faite le 2026-10-08 : `d7d805f` tests, `9140e03` code et ADR-0051 ; vérification à faire)
 
 Après L-a (pointeur monté, D-E19-105) et L-b2. Déclencheur de risque : comportement audible du jeu.
 - **LB3-R1** : `AlundraMusicPlayer` lit `looping` et `loop_start_sample` du manifeste ; garde un `SoundAsset` par index (`IsStreaming`,
@@ -11194,13 +11194,13 @@ Après L-a (pointeur monté, D-E19-105) et L-b2. Déclencheur de risque : compor
   (déjà dans la liste) ; l'enregistreur des voix en flux fournit la voix et son bus aux sites qui lisaient `CurrentVoiceForTests` et
   `GetVoiceBus` (`data/notes.md` lignes 294 à 296) ; D-3 capture l'avertissement par `Logs.AddLogger`, comme
   `AlundraTextBoxDrawnStateTests.cs:376-383`.
-- ⏳ **LB3-0 — Tests d'abord** : D-1 à D-5 (`docs/plan-e19-loop-annexe/data/notes.md` §5, par exemple D-1 : manifeste `{25 : looping vrai,
+- ✅ **LB3-0 — Tests d'abord** : D-1 à D-5 (`docs/plan-e19-loop-annexe/data/notes.md` §5, par exemple D-1 : manifeste `{25 : looping vrai,
   loop_start_sample 5 344 920}`, `PlayMapMusic(389)` puis une fermeture d'image : une voix en flux bouclée au point 5 344 920 ; D-5 : B4
   inchangée, observée par un enregistreur qui voit aujourd'hui le chemin `PlayClip` et ensuite les voix en flux, jamais vrai par vide) ;
   **D-6** : une piste sans boucle dont le flux se termine : `IsCurrentVoiceAlive` reste vrai jusqu'au `Music.Update` suivant, puis faux.
   Au départ (pointeur de L-a monté, export de L-b2 présent) : **D-1 à D-4 et D-6 rouges** (aucune voix en flux aujourd'hui), **D-5 vert** ;
   D-4 lit le vrai export et **échoue** s'il manque (jamais vert en silence).
-- ⏳ **LB3-1 — Code**, ADR (prochain numéro libre de toutes les branches, revérifié : 0050 est pris par E19.u) ; mutations : point de boucle
+- ✅ **LB3-1 — Code**, ADR (prochain numéro libre de toutes les branches, revérifié : 0050 est pris par E19.u) ; mutations : point de boucle
   ignoré, `IsLooped` forcé à vrai (chacune rougit au moins un test).
 - **Acceptation** : D-1 à D-4 et D-6 rouges puis verts ; `Alundra.Tests` en Release puis en Debug, total = base remesurée au départ de
   L-b3 (3222 aujourd'hui) plus N, N le nombre de cas de D-1 à D-6 (et rien d'autre) ;
@@ -11210,6 +11210,16 @@ Après L-a (pointeur monté, D-E19-105) et L-b2. Déclencheur de risque : compor
   collision d'ADR, `Music.Play`, `Stop`, `IsAlive` ou `SoundAsset.LoopStartSample` absents au pointeur monté. **Retour arrière** : revert
   des commits de L-b3 (tests, code, ADR), DLL rebâtie et recopiée ; les données et l'export de L-b2 restent : pas d'essai de jeu jusqu'à
   ce que L-b3 revienne (ou retour arrière de L-b2 enchaîné).
+**Fait le 2026-10-08 (LB3-0, LB3-1).** Base 3222. `d7d805f` (D-1 à D-6 et le faux backend : `OpenStream` sert un WAV enregistré, compte
+des tampons des voix en flux, enregistreur) : D-1 à D-4 et D-6 rouges, D-5 vert (compte les démarrages par les deux chemins). `9140e03`
+(`AlundraMusicPlayer` : un `SoundAsset` par index, en flux, `IsLooped = looping ?? true`, `LoopStartSample`, bus Musique, `Music.Play`, `Stop`,
+`IsAlive` ; repli sans les champs : boucle entière et un avertissement par attache ; garde B4 inchangée ; ADR-0051, plus grand numéro de
+toutes les branches 0050). Mutations : point de boucle ignoré (D-1, D-4 rouges), `IsLooped` forcé (D-2, D-6 et le test du corpus de la
+piste 42 rouges). Tests réécrits : 29 des 40 méthodes de la borne (les seules qui touchent la musique ; deux restent sur `PlayCalls`, l'une
+ne fait que des effets sonores, l'autre ne joue rien), la bascule de la piste 42 ; rien d'autre ne bouge. `Alundra.Tests` **3228** en
+Release puis en Debug (3222 + 6), `cmp` égal (la DLL Debug est dans `alundra-project/` pour la recette), traces. Limite notée : le faux WAV
+de 64 trames est plus court que le point 5 344 920 de certains tests : le moteur avertit et boucle à 0 ; les tests lisent l'asset, pas les
+octets joués (le déplacement lui-même est prouvé par L-a).
 - ⏳ **LB3-2 — Vérification** par un vérificateur neuf. **Recette LB-4** (auteur) : une musique qui boucle (par exemple la 25, chambre de la
   389) revient au repère sans coupure audible ; les pistes 36 et 42 s'arrêtent après leur traîne (fidèle à l'original) ; un changement de
   carte qui garde la musique ne la coupe pas.
