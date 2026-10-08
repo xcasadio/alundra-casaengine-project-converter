@@ -11133,7 +11133,7 @@ vérifié ; miroir `robocopy /MIR` depuis PowerShell ; `diff -rq` final vide (45
   bouge hors de la liste, un fichier hors de la liste. **Retour arrière** : revert du commit de l'analyseur, du pointeur et du commit des
   tests du parent ; les dossiers renommés remis en place et le miroir refait, ou l'extracteur `a958d86` relancé (déterministe, 45 s).
 
-###### E19.L-b2 — Convertisseur et export 🧪 (faite le 2026-10-08 : `bab2f84` tests, `eb2db6e` code, doc, images et export en place ; vérification à faire)
+###### E19.L-b2 — Convertisseur et export ✅ (faite et CONFIRMED le 2026-10-08 : `bab2f84` tests, `eb2db6e` code, doc, images et export en place, `f8bca08` correctif d'isolation d'un test d'E19.u ; vérificateur neuf : diff relu, 3 rouges rejoués, convertisseur 848, manifeste recalculé (48 fichiers exactement, `bgm-manifest.json` au SHA-1 du modèle, champs des pistes 1, 25 et 42 égaux à `bgm.json`), export frais identique pour les musiques et font3, images : seuls les échanges prévus, tests GPU rouges sur les anciennes et verts sur les nouvelles, défaut intermittent reproduit par une sonde et corrigé, `Alundra.Tests` 3222 en quatre suites complètes (trois Release, une Debug), `cmp`, traces, liste fermée ; avis P4 seulement)
 
 Après L-b1 (miroir fait et vérifié).
 
@@ -11172,7 +11172,7 @@ Release puis en Debug ; `cmp` ; traces. Un test a échoué une fois dans la prem
 introduit par E19.u, trouvé et corrigé** (`f8bca08`) : un fondu d'écran laissé posé à la couleur de départ par une classe de tests
 précédente fait poser le fondu du départ dès son premier tick, et le directeur du warp abandonne alors le départ (pas de `GameManager` en
 montage) ; reproduit par une sonde temporaire, la classe remet maintenant le directeur des fondus à zéro.
-- ⏳ **LB2-2 — Vérification** par un vérificateur neuf. **Arrêts** : un fichier exporté hors des 48, un `bgm-manifest.json` différent du
+- ✅ **LB2-2 — Vérification** (2026-10-08) : vérificateur neuf **CONFIRMED** (voir l'en-tête). **Arrêts** : un fichier exporté hors des 48, un `bgm-manifest.json` différent du
   modèle, un test qui bouge hors des trois tests GPU, un fichier hors de la liste. **Retour arrière** : revert du convertisseur et des
   images ; données de `data-extracted.bak-lb` remises (retour arrière de L-b1) et export refait : manifeste égal à « avant » sauf
   `report.json`.
