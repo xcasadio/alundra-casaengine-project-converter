@@ -370,7 +370,7 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
                 Assert.True(hero.PosZ == 1048576, $"{label}: posZ {hero.PosZ}");
                 Assert.True(hero.IsOnGround == 1, $"{label}: onGround {hero.IsOnGround}");
                 Assert.True(hero.CollidedWithEntityZ == (tick == 18 ? 1 : 0), $"{label}: collided {hero.CollidedWithEntityZ}");
-                Assert.True(tick == 18 ? hero.ForceZ == 0 : hero.ForceZ == 0, $"{label}: forceZ {hero.ForceZ}");
+                Assert.True(hero.ForceZ == 0, $"{label}: forceZ {hero.ForceZ}");
             }
         }
 
@@ -600,7 +600,7 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
         SteadyWalk(rig);
         Assert.Equal(1048576, hero.PosZ);
         var riding = new List<int>();
-        var onFlush = 0;
+        var airborne = new List<int>();
         for (var tick = 1; tick <= 30; tick++)
         {
             rig.Step(Right, 0);
@@ -617,12 +617,15 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
 
             if (hero.HeroAirborne)
             {
-                onFlush++;
+                airborne.Add(tick);
             }
         }
 
-        Assert.NotEmpty(riding);
-        Assert.True(onFlush > 0, "the hero entered the state held by the tick at rest on the object (the engine found no ground over the hollow)");
+        // E19.m10 (M-17): the lists, not a vague non-empty. The head of the hero is at x = 165 + 2.4375 * (t - 1) at the tick t; it is carried iff 181 < x < 226, the strict
+        // windows of 21 and 24 px of the binary (0x80036574 hero side, 0x80036594 object side) -> ticks 8 to 26. The state held by the tick at rest on the object (the engine
+        // found no ground over the hollow: HeroAirborne, the F3 design of the DLL) is entered at tick 17 and lasts to tick 26.
+        Assert.Equal(Enumerable.Range(8, 19).ToList(), riding);
+        Assert.Equal(Enumerable.Range(17, 10).ToList(), airborne);
         Assert.False(hero.HeroAirborne);
         Assert.Equal(1, hero.IsOnGround);
     }

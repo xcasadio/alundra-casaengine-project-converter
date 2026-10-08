@@ -373,28 +373,87 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         }
     }
 
-    [Fact]
-    public void UH7b_ADescentOf3PixelsOrLess_DoesNotFall()
+    // UH-7b (E19.m10, M-16): a hero WALKING east from a flat cell of 16 px onto a cell of slope kind 1 meets a constant step fixed by its y (the ground of the slope is
+    // height * 16 - (y mod 16), without a term in x: AlundraCellsCollisionField.cs:382-391, binary 0x8003722C-0x80037264). The binary glues a descent of 3 px or less back to the
+    // ground when Gravity is set, ForceZ is 0 and the XY step is not null (0x80037848, 0x800377A0-0x800377A8); the montage gives the step 3 px at y 107.5 and 5 px at y 109.5.
+    // 4 px is never tested: it is the gap O-E19-40 between the engine snap and the binary.
+    private static JumpHeroRig DescentRig(int drop, float groundSnapDistance)
     {
-        var field = FlatCells.Create(cell: (cx, _) => (0, 0));
-        // After the settling frame of the montage the engine has already snapped the hero to the ground, so the test puts it 3 px above the ground AFTER it, by the
-        // gesture of UH-14, and observes it at once, outside the air state. The engine's snap of 4 px brings it back without the state ever being entered (the real descent of
-        // 3 px asks for cells of a free height, which FlatCells cannot build: a gap of the montage noted for E19.m).
-        var rig = FreeRig(field);
+        var field = FlatCells.Create(cell: (_, _) => (0, 1), slope: (cx, _) => cx >= 6 ? 1 : 0);
+        var rig = JumpHeroRig.Build(field, x: 120f, y: 104.5f + drop, z: 16f, freePad: true, groundSnapDistance: groundSnapDistance);
+        SteadyWalk(rig);
+        Assert.Equal(1048576, rig.Hero.PosZ);
+        Assert.Equal(1048576, rig.Hero.ComputeTerrainHeight()); // the self-check of the terrain: the flat cell, 16 px.
+        return rig;
+    }
+
+    [Theory]
+    [InlineData(3)]
+    [InlineData(5)]
+    public void UH7b_ADescentOf3PixelsWhileWalking_DoesNotFall_AndAFall5PixelsDoes(int drop)
+    {
+        var rig = DescentRig(drop, -1f);
         var hero = rig.Hero;
-        hero.PosZ = 196608;
-        hero.PushLogicalPositionToRoot();
-        Assert.Equal(196608, hero.PosZ);
-        Assert.False(hero.HeroAirborne);
-        for (var frame = 0; frame < 4; frame++)
+        var groundBeyond = 1048576 - drop * 65536;
+        var landedAt = -1;
+        for (var tick = 1; tick <= 24; tick++)
         {
-            rig.Step();
-            Assert.False(hero.HeroAirborne, $"frame {frame}");
-            Assert.True(hero.TargetAnimationId is not (44u or 45u), $"frame {frame}: target {hero.TargetAnimationId}");
+            rig.Step(Right, 0);
+            var label = $"tick {tick}";
+            if (tick == 24)
+            {
+                Assert.True(hero.ComputeTerrainHeight() == groundBeyond, $"{label}: terrain {hero.ComputeTerrainHeight()}"); // the self-check after the walk.
+            }
+
+            if (drop == 3)
+            {
+                Assert.False(hero.HeroAirborne, label);
+                Assert.True(hero.TargetAnimationId == 1u, $"{label}: target {hero.TargetAnimationId}");
+                Assert.True(hero.IsOnGround == 1, $"{label}: onGround {hero.IsOnGround}");
+                Assert.True(hero.ForceZ == 0, $"{label}: forceZ {hero.ForceZ}");
+                Assert.True(hero.ForceX == 159744, $"{label}: forceX {hero.ForceX}");
+                Assert.True(hero.PosZ == (tick <= 14 ? 1048576 : groundBeyond), $"{label}: posZ {hero.PosZ}");
+            }
+            else if (tick <= 14)
+            {
+                Assert.True(hero.CurrentAnimationId == 1u && hero.PosZ == 1048576 && hero.IsOnGround == 1, $"{label}: animation {hero.CurrentAnimationId} posZ {hero.PosZ}");
+            }
+            else
+            {
+                if (tick == 15)
+                {
+                    Assert.True(hero.CurrentAnimationId == 44u && hero.IsOnGround == 0 && hero.PosZ < 1048576, $"{label}: animation {hero.CurrentAnimationId} posZ {hero.PosZ}");
+                }
+
+                if (landedAt < 0 && hero.PosZ == groundBeyond && hero.IsOnGround == 1 && hero.CollidedWithEntityZ == 1)
+                {
+                    landedAt = tick;
+                }
+            }
         }
 
-        Assert.Equal(0, hero.PosZ);
-        Assert.Equal(1, hero.IsOnGround);
+        if (drop == 5)
+        {
+            Assert.Equal(19, landedAt);
+            Assert.Equal(groundBeyond, hero.PosZ);
+        }
+    }
+
+    [Fact]
+    public void UH7b_Control_TheSame3PixelsWithoutTheEngineSnap_Fall_SoTheGreenCaseComesFromTheSnapAlone()
+    {
+        var rig = DescentRig(3, 0f);
+        var hero = rig.Hero;
+        for (var tick = 1; tick <= 14; tick++)
+        {
+            rig.Step(Right, 0);
+            Assert.False(hero.HeroAirborne, $"tick {tick}");
+        }
+
+        rig.Step(Right, 0);
+        Assert.True(hero.HeroAirborne, "tick 15: airborne");
+        Assert.True(hero.CurrentAnimationId == 44u, $"tick 15: animation {hero.CurrentAnimationId}");
+        Assert.True(hero.PosZ < 1048576, $"tick 15: posZ {hero.PosZ}");
     }
 
     [Fact]

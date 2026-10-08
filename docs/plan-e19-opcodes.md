@@ -11003,7 +11003,7 @@ Faits et valeurs : `docs/plan-e19-m9-annexe/`
   trace qui change ; une valeur de (a) à (c) qui contredit l'annexe ; un fichier hors de la liste.
 - **Retour arrière** : revert.
 
-#### 1.2s.11 E19.m10 — Gardes de tests du saut (M-16, M-17, SJ-12) et clôture écrite de M-32 ⏳ (planifiée le 2026-10-09, nuit en mode AUTO)
+#### 1.2s.11 E19.m10 — Gardes de tests du saut (M-16, M-17, SJ-12) et clôture écrite de M-32 ✅ (planifiée le 2026-10-09, nuit en mode AUTO ; relecture n°2 READY ; faite et CONFIRMED le 2026-10-09)
 
 Tests seuls, sans décision de l'auteur : le tri du 2026-10-08 les marque « session, sans question ». La question D5b reste ouverte ; son
 option (C) les sortirait de toute façon de D5b. Faits : `docs/plan-e19-m-annexe/night-discovery-2026-10-09/tests.json` et `M32.json`
@@ -11060,6 +11060,22 @@ les mesure : un écart est un arrêt, jamais une nouvelle épingle.
   - `Alundra.Tests` en Release puis en Debug, aucun autre test qui bouge ; `cmp` ; traces.
 
   **Arrêts** : une mesure différente d'une valeur prévue, ou un fichier hors de la liste. **Retour arrière** : revert.
+- ✅ **Fait le 2026-10-09** par un exécuteur, puis vérifié par un vérificateur neuf, **CONFIRMED**. Tests seuls, aucun écart.
+  - **Valeurs déduites**, toutes confirmées à la première mesure :
+    - 3 px : jamais en l'air, `PosZ` 1048576 puis 851968 dès le tick 15 ;
+    - 5 px : en l'air au tick 15, en 44, atterrissage au tick 19 ;
+    - le contrôle `groundSnapDistance: 0f` tombe dès le tick 15, en 44 ;
+    - UH-17 : porté aux ticks 8 à 26, `HeroAirborne` aux ticks 17 à 26.
+
+    Le montage est factorisé dans une aide privée `DescentRig`, et `AlundraJumpTestSupport.cs` n'est pas touché.
+  - **Mutations** par script, restaurées à l'octet près :
+    - fenêtre X côté héros : la liste des ticks portés commence à 10 ;
+    - fenêtre X côté objet : elle s'arrête à 24 ;
+    - copie de la force du porteur retirée : la liste en l'air se réduit à [17].
+
+    Le vérificateur a vérifié que l'ancien UH-17 restait vert sous ces trois mutations.
+  - **Campagne** : `Alundra.Tests` 3253/3253 en Release puis en Debug ; `cmp` identique ; traces inchangées.
+  - **Avis P4, reporté** : on pourrait aussi affirmer `HeroAirborne` au tick 15 du cas à 5 px, et `CurrentAnimationId` 1 pour 3 px.
 
 #### 1.2s.12 E19.m11 — Moteur : dimensions de `VirtualResolution` validées (M-34), M-37 accepté (G5) ⏳ (planifiée le 2026-10-09, nuit en mode AUTO)
 
