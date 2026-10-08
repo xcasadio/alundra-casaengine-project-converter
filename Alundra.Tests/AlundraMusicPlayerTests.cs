@@ -196,7 +196,7 @@ public class AlundraMusicPlayerTests : IDisposable
 
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(assetId, new FakeAudioClip("bgm_025", 44100));
+        provider.RegisterStream(assetId, "bgm_025");
 
         var game = BuildGameWithAudio(backend, provider);
         var world = new World { Name = WorldName };
@@ -209,17 +209,17 @@ public class AlundraMusicPlayerTests : IDisposable
             var proxy = new AlundraWorldProxy();
             proxy.InstallAudioSystems(world);
 
-            Assert.Empty(backend.PlayCalls); // (a): loading never plays.
+            Assert.Empty(backend.StreamVoices); // (a): loading never plays.
 
             proxy.Update(0.02f); // one logic tick - the frame-close site (P3) consumes ResetSoundFlag.
 
-            Assert.Single(backend.PlayCalls);
-            Assert.True(backend.PlayCalls[0].Parameters.IsLooped);
+            Assert.Single(backend.StreamVoices);
+            Assert.True(backend.StreamVoices[0].Parameters.IsLooped);
 
             var service = game.AudioSystemComponent.Service;
             var voice = ((AlundraMusicPlayer)proxy.MusicPlayer!).CurrentVoiceForTests;
-            Assert.Equal(AudioBusNames.Music, service.GetVoiceBus(voice));
-            Assert.Equal(AudioVoiceParameters.MaxVolume * service.Mixer.GetEffectiveGain(AudioBusNames.Music), backend.PlayCalls[0].Parameters.Volume);
+            Assert.Equal(AudioBusNames.Music, service.GetVoiceBus(backend.StreamVoices[0].Voice));
+            Assert.Equal(AudioVoiceParameters.MaxVolume * service.Mixer.GetEffectiveGain(AudioBusNames.Music), backend.StreamVoices[0].Parameters.Volume);
 
             // D-C-6's own guarantee, exercised through the REAL per-world wiring (not the singleton
             // directly, unlike T1 bis): a SECOND, independently constructed AlundraWorldProxy - exactly
@@ -233,7 +233,7 @@ public class AlundraMusicPlayerTests : IDisposable
             proxy390.InstallAudioSystems(world390);
             proxy390.Update(0.02f); // (b): 390's own frame close, same raw index 25 - still a total no-op.
 
-            Assert.Single(backend.PlayCalls); // still one - the guard survived across proxies
+            Assert.Single(backend.StreamVoices); // still one - the guard survived across proxies
             Assert.Equal(voice, ((AlundraMusicPlayer)proxy390.MusicPlayer!).CurrentVoiceForTests);
         }
         finally
@@ -253,18 +253,18 @@ public class AlundraMusicPlayerTests : IDisposable
 
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(MakeAssetId(25), new FakeAudioClip("bgm_025_fixture", 44100));
+        provider.RegisterStream(MakeAssetId(25), "bgm_025_fixture");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
         AlundraBgmFadeDirector.Instance.AttachToWorld(service, null);
 
         AlundraMusicPlayer.Instance.PlayMapMusic(389);
-        Assert.Empty(backend.PlayCalls); // B7: loading never plays.
+        Assert.Empty(backend.StreamVoices); // B7: loading never plays.
         Assert.True(AlundraMusicPlayer.Instance.ResetSoundFlag);
 
         SimulateFrameClose();
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
         Assert.False(AlundraMusicPlayer.Instance.ResetSoundFlag);
         var voiceAfter389 = AlundraMusicPlayer.Instance.CurrentVoiceForTests;
 
@@ -272,7 +272,7 @@ public class AlundraMusicPlayerTests : IDisposable
         Assert.False(AlundraMusicPlayer.Instance.ResetSoundFlag); // total no-op: never armed
         SimulateFrameClose(); // no-op: nothing to consume
 
-        Assert.Single(backend.PlayCalls); // no second request
+        Assert.Single(backend.StreamVoices); // no second request
         Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive); // and the voice is still alive
         Assert.Equal(voiceAfter389, AlundraMusicPlayer.Instance.CurrentVoiceForTests); // not restarted
     }
@@ -288,9 +288,9 @@ public class AlundraMusicPlayerTests : IDisposable
 
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(MakeAssetId(25), new FakeAudioClip("bgm_025", 44100));
-        provider.Register(MakeAssetId(1), new FakeAudioClip("bgm_001", 44100));
-        provider.Register(MakeAssetId(16), new FakeAudioClip("bgm_016", 44100));
+        provider.RegisterStream(MakeAssetId(25), "bgm_025");
+        provider.RegisterStream(MakeAssetId(1), "bgm_001");
+        provider.RegisterStream(MakeAssetId(16), "bgm_016");
         var game = BuildGameWithAudio(backend, provider);
 
         var previousProjectPath = EngineEnvironment.ProjectPath;
@@ -302,7 +302,7 @@ public class AlundraMusicPlayerTests : IDisposable
             var proxy389 = new AlundraWorldProxy();
             proxy389.InstallAudioSystems(world389);
             proxy389.Update(0.02f);
-            Assert.Single(backend.PlayCalls); // track 25 playing.
+            Assert.Single(backend.StreamVoices); // track 25 playing.
 
             // 183: raw -1 - loads track 1, but CurrentMapSoundIndex stays -1 (B7), so StopAllSound's own
             // B2 guard (P2/D6) makes the frame close a TOTAL no-op: silence, the old voice stopped above.
@@ -312,7 +312,7 @@ public class AlundraMusicPlayerTests : IDisposable
             proxy183.InstallAudioSystems(world183);
             Assert.False(((AlundraMusicPlayer)proxy183.MusicPlayer!).IsCurrentVoiceAlive); // stopped at load.
             proxy183.Update(0.02f);
-            Assert.Single(backend.PlayCalls); // still just the one - no new Play call, ever.
+            Assert.Single(backend.StreamVoices); // still just the one - no new Play call, ever.
             Assert.False(((AlundraMusicPlayer)proxy183.MusicPlayer!).IsCurrentVoiceAlive);
 
             // 184: also raw -1 - same raw index as 183 (B10's own "already current" guard), total no-op.
@@ -321,7 +321,7 @@ public class AlundraMusicPlayerTests : IDisposable
             var proxy184 = new AlundraWorldProxy();
             proxy184.InstallAudioSystems(world184);
             proxy184.Update(0.02f);
-            Assert.Single(backend.PlayCalls);
+            Assert.Single(backend.StreamVoices);
             Assert.False(((AlundraMusicPlayer)proxy184.MusicPlayer!).IsCurrentVoiceAlive);
 
             // 226: a real index (16) - plays.
@@ -330,8 +330,8 @@ public class AlundraMusicPlayerTests : IDisposable
             var proxy226 = new AlundraWorldProxy();
             proxy226.InstallAudioSystems(world226);
             proxy226.Update(0.02f);
-            Assert.Equal(2, backend.PlayCalls.Count);
-            Assert.Equal("bgm_016", ((FakeAudioClip)backend.PlayCalls[1].Clip).Name);
+            Assert.Equal(2, backend.StreamVoices.Count);
+            Assert.Equal("bgm_016", provider.OpenedStreams[1]);
             Assert.True(((AlundraMusicPlayer)proxy226.MusicPlayer!).IsCurrentVoiceAlive);
         }
         finally
@@ -368,7 +368,7 @@ public class AlundraMusicPlayerTests : IDisposable
 
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(MakeAssetId(25), new FakeAudioClip("bgm_025_fixture", 44100));
+        provider.RegisterStream(MakeAssetId(25), "bgm_025_fixture");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
@@ -376,13 +376,13 @@ public class AlundraMusicPlayerTests : IDisposable
         AlundraMusicPlayer.Instance.PlayMapMusic(389);
         SimulateFrameClose();
 
-        Assert.Single(backend.PlayCalls);
-        Assert.True(backend.PlayCalls[0].Parameters.IsLooped);
-        Assert.Equal("bgm_025_fixture", ((FakeAudioClip)backend.PlayCalls[0].Clip).Name);
-        Assert.Equal(AudioBusNames.Music, service.GetVoiceBus(AlundraMusicPlayer.Instance.CurrentVoiceForTests));
+        Assert.Single(backend.StreamVoices);
+        Assert.True(backend.StreamVoices[0].Parameters.IsLooped);
+        Assert.Equal("bgm_025_fixture", provider.OpenedStreams[0]);
+        Assert.Equal(AudioBusNames.Music, service.GetVoiceBus(backend.StreamVoices[0].Voice));
         Assert.Equal(
             AudioVoiceParameters.MaxVolume * service.Mixer.GetEffectiveGain(AudioBusNames.Music),
-            backend.PlayCalls[0].Parameters.Volume);
+            backend.StreamVoices[0].Parameters.Volume);
     }
 
     // ---- T5: ownership (D-C-5) ----------------------------------------------------------------------
@@ -398,7 +398,7 @@ public class AlundraMusicPlayerTests : IDisposable
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
         provider.Register(SfxAssetId, new FakeAudioClip("sfx_0300", 11025));
-        provider.Register(MakeAssetId(25), new FakeAudioClip("bgm_025_fixture", 44100));
+        provider.RegisterStream(MakeAssetId(25), "bgm_025_fixture");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         var world = new object(); // stands in for the owning World
@@ -419,7 +419,7 @@ public class AlundraMusicPlayerTests : IDisposable
 
         Assert.Equal(1, service.ActiveVoiceCount); // only the music voice remains
         Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
-        Assert.Equal(AudioBusNames.Music, service.GetVoiceBus(AlundraMusicPlayer.Instance.CurrentVoiceForTests));
+        Assert.Equal(AudioBusNames.Music, service.GetVoiceBus(backend.StreamVoices[0].Voice));
     }
 
     // ---- Acceptance items (j)/(l)/(m): frame-close interactions with a same-frame opcode ------------
@@ -433,7 +433,7 @@ public class AlundraMusicPlayerTests : IDisposable
         var projectPath = BuildFixtureProject(new Dictionary<int, int> { [389] = 25 }, new HashSet<int> { 25 });
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(MakeAssetId(25), new FakeAudioClip("bgm_025", 44100));
+        provider.RegisterStream(MakeAssetId(25), "bgm_025");
         var game = BuildGameWithAudio(backend, provider);
         var world = new World { Name = WorldName };
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
@@ -451,7 +451,7 @@ public class AlundraMusicPlayerTests : IDisposable
 
             proxy.Update(0.02f); // frame close: nothing to consume.
 
-            Assert.Empty(backend.PlayCalls);
+            Assert.Empty(backend.StreamVoices);
             Assert.True(proxy.BgmFadeDirector.IsArmed);
         }
         finally
@@ -471,8 +471,8 @@ public class AlundraMusicPlayerTests : IDisposable
 
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(MakeAssetId(25), new FakeAudioClip("bgm_025", 44100));
-        provider.Register(MakeAssetId(5), new FakeAudioClip("bgm_005", 44100));
+        provider.RegisterStream(MakeAssetId(25), "bgm_025");
+        provider.RegisterStream(MakeAssetId(5), "bgm_005");
         var game = BuildGameWithAudio(backend, provider);
         var world = new World { Name = WorldName };
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
@@ -488,12 +488,12 @@ public class AlundraMusicPlayerTests : IDisposable
             Assert.False(((AlundraMusicPlayer)proxy.MusicPlayer!).ResetSoundFlag); // P8: cleared.
 
             proxy.Update(0.02f); // frame close: nothing to consume.
-            Assert.Empty(backend.PlayCalls);
+            Assert.Empty(backend.StreamVoices);
 
             proxy.BgmFadeDirector.StopAllSound(); // simulated 0xA5.
 
-            Assert.Single(backend.PlayCalls);
-            Assert.Equal("bgm_005", ((FakeAudioClip)backend.PlayCalls[0].Clip).Name);
+            Assert.Single(backend.StreamVoices);
+            Assert.Equal("bgm_005", provider.OpenedStreams[0]);
         }
         finally
         {
@@ -510,7 +510,7 @@ public class AlundraMusicPlayerTests : IDisposable
         var projectPath = BuildFixtureProject(new Dictionary<int, int> { [226] = 16 }, new HashSet<int> { 16 });
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(MakeAssetId(16), new FakeAudioClip("bgm_016", 44100));
+        provider.RegisterStream(MakeAssetId(16), "bgm_016");
         var game = BuildGameWithAudio(backend, provider);
         var world = new World { Name = "Sable-226" };
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
@@ -531,7 +531,7 @@ public class AlundraMusicPlayerTests : IDisposable
 
             Assert.False(proxy.BgmFadeDirector.IsArmed); // disarmed.
             Assert.Equal(1f, service.Mixer.GetBus(AudioBusNames.Master).Volume, 5); // restored.
-            Assert.Single(backend.PlayCalls);
+            Assert.Single(backend.StreamVoices);
         }
         finally
         {
@@ -541,13 +541,8 @@ public class AlundraMusicPlayerTests : IDisposable
 
     // ---- E19.L-b3 (docs/plan-e19-opcodes.md, LB3-0): the game plays its music as a stream with the loop point -----
 
-    /// <summary>The started asset of the session player. Reached by name until the production member exists (LB3-0 compiles
-    /// before LB3-1); null while it does not, so the cases below are red for the right reason.</summary>
-    internal static SoundAsset? CurrentAssetOf(AlundraMusicPlayer player)
-    {
-        var property = typeof(AlundraMusicPlayer).GetProperty("CurrentAssetForTests", BindingFlags.Instance | BindingFlags.NonPublic);
-        return property?.GetValue(player) as SoundAsset;
-    }
+    /// <summary>The started asset of the session player (null when nothing plays).</summary>
+    internal static SoundAsset? CurrentAssetOf(AlundraMusicPlayer player) => player.CurrentAssetForTests;
 
     private string BuildFixtureProjectWithManifest(IReadOnlyDictionary<int, int> rawByMapId, string bgmManifestJson)
     {
@@ -671,10 +666,9 @@ public class AlundraMusicPlayerTests : IDisposable
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
         provider.RegisterStream(MakeAssetId(25), "bgm_025");
-        provider.Register(MakeAssetId(25), new FakeAudioClip("bgm_025", 44100)); // the whole-clip route, while it exists.
         var service = new AudioService(backend) { ClipProvider = provider };
 
-        // The recorder of the starts reads both routes: a start counts whichever way the voice is made.
+        // The recorder of the starts reads both routes, a stream or a whole clip: a start counts whichever way the voice is made.
         int Starts() => backend.PlayCalls.Count + backend.StreamVoices.Count;
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);

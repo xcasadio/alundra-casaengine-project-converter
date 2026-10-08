@@ -480,8 +480,8 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         {
             var backend = new FakeAudioBackend();
             var provider = new FakeAudioClipProvider();
-            provider.Register(Track25AssetId(projectRoot), new FakeAudioClip("bgm_025", 44100));
-            provider.Register(Guid.Parse("84951c69-5db3-52ed-beb0-265839a9bcbb"), new FakeAudioClip("bgm_030", 44100));
+            provider.RegisterStream(Track25AssetId(projectRoot), "bgm_025");
+            provider.RegisterStream(Guid.Parse("84951c69-5db3-52ed-beb0-265839a9bcbb"), "bgm_030");
             var game = BuildGameWithAudioAndGameManager(backend, provider, out _);
 
             var world389 = new World { Name = "Ship-389" };
@@ -490,7 +490,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.InstallAudioSystems(world389);
             proxy389.InstallWarpSystems(world389);
             proxy389.Update(0.02f); // frame close: track 25 starts.
-            Assert.Single(backend.PlayCalls);
+            Assert.Single(backend.StreamVoices);
 
             var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
             proxy389.PlayerEntity = player;
@@ -499,13 +499,13 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             ((IAlundraScriptHost)proxy389).OnPortalTriggerDetected(portal, 0x10);
 
             // F2: the departure only RECORDS the request - nothing armed yet, same frame it was requested.
-            Assert.Single(backend.PlayCalls);
+            Assert.Single(backend.StreamVoices);
             Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
 
             proxy389.Update(0.02f); // the departing world's own next frame close: evaluates the pending
                                      // departure (F2), AFTER the reset-flag consumption (B9).
             // No destination track loaded, only the fade armed.
-            Assert.Single(backend.PlayCalls); // still just track 25's own play.
+            Assert.Single(backend.StreamVoices); // still just track 25's own play.
             Assert.True(AlundraBgmFadeDirector.Instance.IsArmed);
 
             var world45 = new World { Name = "Dest-45" };
@@ -517,8 +517,8 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             Assert.False(AlundraBgmFadeDirector.Instance.IsArmed); // disarmed by StopAllSound.
             var service = game.AudioSystemComponent.Service;
             Assert.Equal(1f, service.Mixer.GetBus(AudioBusNames.Master).Volume, 5);
-            Assert.Equal(2, backend.PlayCalls.Count);
-            Assert.Equal("bgm_030", ((FakeAudioClip)backend.PlayCalls[1].Clip).Name);
+            Assert.Equal(2, backend.StreamVoices.Count);
+            Assert.Equal("bgm_030", provider.OpenedStreams[1]);
             Assert.True(((AlundraMusicPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
         }
         finally
@@ -542,7 +542,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         {
             var backend = new FakeAudioBackend();
             var provider = new FakeAudioClipProvider();
-            provider.Register(Track25AssetId(projectRoot), new FakeAudioClip("bgm_025", 44100));
+            provider.RegisterStream(Track25AssetId(projectRoot), "bgm_025");
             var game = BuildGameWithAudioAndGameManager(backend, provider, out _);
 
             var world389 = new World { Name = "Ship-389" };
@@ -559,13 +559,13 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             // Nothing started yet at all - map entry only loads and arms the flag (B7); the departure
             // only records its own request (F2).
-            Assert.Empty(backend.PlayCalls);
+            Assert.Empty(backend.StreamVoices);
             Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
 
             proxy389.Update(0.02f); // the ONE frame close both consume.
 
-            Assert.Single(backend.PlayCalls); // track 25's own voice, started by the flag's StopAllSound.
-            Assert.Equal("bgm_025", ((FakeAudioClip)backend.PlayCalls[0].Clip).Name);
+            Assert.Single(backend.StreamVoices); // track 25's own voice, started by the flag's StopAllSound.
+            Assert.Equal("bgm_025", provider.OpenedStreams[0]);
             Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
             Assert.True(AlundraBgmFadeDirector.Instance.IsArmed); // the departure ran AFTER it (B9 then B17).
         }
@@ -586,8 +586,8 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         {
             var backend = new FakeAudioBackend();
             var provider = new FakeAudioClipProvider();
-            provider.Register(Track25AssetId(projectRoot), new FakeAudioClip("bgm_025", 44100));
-            provider.Register(Guid.Parse("84951c69-5db3-52ed-beb0-265839a9bcbb"), new FakeAudioClip("bgm_030", 44100));
+            provider.RegisterStream(Track25AssetId(projectRoot), "bgm_025");
+            provider.RegisterStream(Guid.Parse("84951c69-5db3-52ed-beb0-265839a9bcbb"), "bgm_030");
             var game = BuildGameWithAudioAndGameManager(backend, provider, out _);
 
             var world389 = new World { Name = "Ship-389" };
@@ -596,7 +596,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.InstallAudioSystems(world389);
             proxy389.InstallWarpSystems(world389);
             proxy389.Update(0.02f);
-            Assert.Single(backend.PlayCalls);
+            Assert.Single(backend.StreamVoices);
 
             var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
             proxy389.PlayerEntity = player;
@@ -606,14 +606,14 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             // F2: the departure only RECORDS the request - the voice is still playing right after it.
             Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
-            Assert.Single(backend.PlayCalls);
+            Assert.Single(backend.StreamVoices);
 
             proxy389.Update(0.02f); // frame close: evaluates the pending departure (F2), AFTER the
                                      // reset-flag consumption (B9).
             // The music voice is stopped outright (LoadBgm(0)), the fade never arms.
             Assert.False(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
             Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
-            Assert.Single(backend.PlayCalls); // no new play at departure either.
+            Assert.Single(backend.StreamVoices); // no new play at departure either.
 
             var world45 = new World { Name = "Dest-45" };
             HeroWorldFixture.SetProperty(world45, nameof(World.Game), game);
@@ -621,8 +621,8 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy45.InstallAudioSystems(world45);
             proxy45.Update(0.02f);
 
-            Assert.Equal(2, backend.PlayCalls.Count);
-            Assert.Equal("bgm_030", ((FakeAudioClip)backend.PlayCalls[1].Clip).Name);
+            Assert.Equal(2, backend.StreamVoices.Count);
+            Assert.Equal("bgm_030", provider.OpenedStreams[1]);
             Assert.True(((AlundraMusicPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
         }
         finally
@@ -646,7 +646,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         {
             var backend = new FakeAudioBackend();
             var provider = new FakeAudioClipProvider();
-            provider.Register(Track25AssetId(projectRoot), new FakeAudioClip("bgm_025", 44100));
+            provider.RegisterStream(Track25AssetId(projectRoot), "bgm_025");
             var game = BuildGameWithAudioAndGameManager(backend, provider, out _);
 
             var world389 = new World { Name = "Ship-389" };
@@ -655,7 +655,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.InstallAudioSystems(world389);
             proxy389.InstallWarpSystems(world389);
             proxy389.Update(0.02f);
-            Assert.Single(backend.PlayCalls);
+            Assert.Single(backend.StreamVoices);
 
             var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
             proxy389.PlayerEntity = player;
@@ -668,7 +668,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             // Stopped outright (LoadBgm(0)), never armed - same shape as (o), NOT the silent (n) shape.
             Assert.False(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
             Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
-            Assert.Single(backend.PlayCalls);
+            Assert.Single(backend.StreamVoices);
         }
         finally
         {
@@ -687,7 +687,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         {
             var backend = new FakeAudioBackend();
             var provider = new FakeAudioClipProvider();
-            provider.Register(Track25AssetId(projectRoot), new FakeAudioClip("bgm_025", 44100));
+            provider.RegisterStream(Track25AssetId(projectRoot), "bgm_025");
             var game = BuildGameWithAudioAndGameManager(backend, provider, out _);
 
             var world389 = new World { Name = "Ship-389" };
@@ -696,7 +696,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.InstallAudioSystems(world389);
             proxy389.InstallWarpSystems(world389);
             proxy389.Update(0.02f);
-            Assert.Single(backend.PlayCalls);
+            Assert.Single(backend.StreamVoices);
             var voiceBeforeDeparture = ((AlundraMusicPlayer)proxy389.MusicPlayer!).CurrentVoiceForTests;
 
             var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
@@ -706,7 +706,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             proxy389.Update(0.02f); // frame close: evaluates the pending departure (F2) - index égal, rien.
 
-            Assert.Single(backend.PlayCalls); // no new play, no stop: still the SAME voice.
+            Assert.Single(backend.StreamVoices); // no new play, no stop: still the SAME voice.
             Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
             Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
             Assert.Equal(voiceBeforeDeparture, ((AlundraMusicPlayer)proxy389.MusicPlayer!).CurrentVoiceForTests);
@@ -738,8 +738,8 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         {
             var backend = new FakeAudioBackend();
             var provider = new FakeAudioClipProvider();
-            provider.Register(Track25AssetId(projectRoot), new FakeAudioClip("bgm_025", 44100));
-            provider.Register(Guid.Parse("84951c69-5db3-52ed-beb0-265839a9bcbb"), new FakeAudioClip("bgm_030", 44100));
+            provider.RegisterStream(Track25AssetId(projectRoot), "bgm_025");
+            provider.RegisterStream(Guid.Parse("84951c69-5db3-52ed-beb0-265839a9bcbb"), "bgm_030");
             var game = BuildGameWithAudioAndGameManager(backend, provider, out _);
 
             var world389 = new World { Name = "Ship-389" };
@@ -748,7 +748,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.InstallAudioSystems(world389);
             proxy389.InstallWarpSystems(world389);
             proxy389.Update(0.02f); // frame close: track 25 starts.
-            Assert.Single(backend.PlayCalls);
+            Assert.Single(backend.StreamVoices);
 
             var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
             proxy389.PlayerEntity = player;
@@ -759,12 +759,12 @@ public sealed class AlundraWarpDepartureTests : IDisposable
                 player, AlundraGameState.Instance);
 
             // F2: the departure only RECORDS the request - nothing armed yet, same frame it was requested.
-            Assert.Single(backend.PlayCalls);
+            Assert.Single(backend.StreamVoices);
             Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
 
             proxy389.Update(0.02f); // the departing world's own next frame close: evaluates the pending
                                      // departure (F2), AFTER the reset-flag consumption (B9).
-            Assert.Single(backend.PlayCalls); // still just track 25's own play.
+            Assert.Single(backend.StreamVoices); // still just track 25's own play.
             Assert.True(AlundraBgmFadeDirector.Instance.IsArmed);
             Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive); // track 25 still alive.
 
@@ -775,8 +775,8 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy45.Update(0.02f); // arrival's own first frame close.
 
             Assert.False(AlundraBgmFadeDirector.Instance.IsArmed); // disarmed by StopAllSound.
-            Assert.Equal(2, backend.PlayCalls.Count);
-            Assert.Equal("bgm_030", ((FakeAudioClip)backend.PlayCalls[1].Clip).Name);
+            Assert.Equal(2, backend.StreamVoices.Count);
+            Assert.Equal("bgm_030", provider.OpenedStreams[1]);
             Assert.True(((AlundraMusicPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
         }
         finally
@@ -796,8 +796,8 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         {
             var backend = new FakeAudioBackend();
             var provider = new FakeAudioClipProvider();
-            provider.Register(Track25AssetId(projectRoot), new FakeAudioClip("bgm_025", 44100));
-            provider.Register(Guid.Parse("84951c69-5db3-52ed-beb0-265839a9bcbb"), new FakeAudioClip("bgm_030", 44100));
+            provider.RegisterStream(Track25AssetId(projectRoot), "bgm_025");
+            provider.RegisterStream(Guid.Parse("84951c69-5db3-52ed-beb0-265839a9bcbb"), "bgm_030");
             var game = BuildGameWithAudioAndGameManager(backend, provider, out _);
 
             var world389 = new World { Name = "Ship-389" };
@@ -806,7 +806,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.InstallAudioSystems(world389);
             proxy389.InstallWarpSystems(world389);
             proxy389.Update(0.02f);
-            Assert.Single(backend.PlayCalls);
+            Assert.Single(backend.StreamVoices);
 
             var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
             proxy389.PlayerEntity = player;
@@ -817,13 +817,13 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             // F2: the departure only RECORDS the request - the voice is still playing right after it.
             Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
-            Assert.Single(backend.PlayCalls);
+            Assert.Single(backend.StreamVoices);
 
             proxy389.Update(0.02f); // frame close: evaluates the pending departure (F2), AFTER the
                                      // reset-flag consumption (B9).
             Assert.False(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
             Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
-            Assert.Single(backend.PlayCalls); // no new play at departure either.
+            Assert.Single(backend.StreamVoices); // no new play at departure either.
 
             var world45 = new World { Name = "Dest-45" };
             HeroWorldFixture.SetProperty(world45, nameof(World.Game), game);
@@ -831,8 +831,8 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy45.InstallAudioSystems(world45);
             proxy45.Update(0.02f);
 
-            Assert.Equal(2, backend.PlayCalls.Count);
-            Assert.Equal("bgm_030", ((FakeAudioClip)backend.PlayCalls[1].Clip).Name);
+            Assert.Equal(2, backend.StreamVoices.Count);
+            Assert.Equal("bgm_030", provider.OpenedStreams[1]);
             Assert.True(((AlundraMusicPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
         }
         finally

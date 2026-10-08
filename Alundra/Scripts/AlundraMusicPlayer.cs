@@ -8,6 +8,7 @@ using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Audio;
 using CasaEngine.Framework.Audio.Mixing;
+using CasaEngine.Framework.Audio.Streaming;
 
 namespace Alundra.Scripts;
 
@@ -94,11 +95,15 @@ public interface IAlundraMusicPlayer
 }
 
 /// <summary>
-/// Implements <see cref="IAlundraMusicPlayer"/> - Route B of docs/plan-e11c-musique.md §2.2 (D-C-1):
-/// <see cref="AudioService.PlayClip"/> on <see cref="AudioBusNames.Music"/>, looped, at full volume,
-/// straight from the already-exported <c>Musics/*.wav</c> (resolved through
-/// <c>Musics/bgm-manifest.json</c>'s own <c>SoundIndex -&gt; AssetId</c>, the SAME manifest
-/// <c>AudioWriter</c> already writes - no new export). No fade-in (D-C-3, fact 1.3): the original's own
+/// Implements <see cref="IAlundraMusicPlayer"/> - since E19.L-b3 (ADR-0051) the engine's music player
+/// (<see cref="AudioService.Music"/>) streams each track as a <see cref="SoundAsset"/> on
+/// <see cref="AudioBusNames.Music"/>, at full volume, straight from the already-exported <c>Musics/*.wav</c>
+/// (resolved through <c>Musics/bgm-manifest.json</c>'s own <c>SoundIndex -&gt; AssetId</c>, the SAME manifest
+/// <c>AudioWriter</c> already writes). The manifest also says whether the track loops (<c>looping</c>) and
+/// where it comes back to (<c>loop_start_sample</c>, the sample frame of the sequence's loop marker): the file
+/// holds the intro and the first pass up to the end of the loop, and the engine goes back to that sample at the
+/// end of the data - a one-shot just ends. This replaces Route B of docs/plan-e11c-musique.md §2.2 (D-C-1),
+/// <see cref="AudioService.PlayClip"/> looping the whole file. No fade-in (D-C-3, fact 1.3): the original's own
 /// volume ramp is mathematically a no-op (each tick computes <c>127 - (-12) = 139</c>, clamped to
 /// <c>0x7F</c>), so the track is already effectively at full volume on tick one - porting a fade would
 /// be LESS faithful, not more.
@@ -142,7 +147,9 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
 
     private AudioService? _audioService;
     private AlundraMusicIndexTable? _table;
-    private Dictionary<int, Guid>? _assetIdBySoundIndex;
+
+    /// <summary>One streaming sound per track, built once per attach from the manifest (E19.L-b3).</summary>
+    private Dictionary<int, SoundAsset>? _assetBySoundIndex;
 
     /// <summary>Port of <c>g_currentMapSoundIndex</c> (B7's own <c>0x80049cf4</c>) - the RAW value last
     /// written by <see cref="PlayMapMusic"/>/<see cref="PlayFromRawIndex"/>, NEVER remapped (0 initially,
@@ -172,7 +179,12 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
     /// mid-frame when the departure is requested. <see langword="null"/> when no departure is pending.</summary>
     private (int DestinationMapId, bool WarpSoundIsSilent)? _pendingWarpDeparture;
 
-    private AudioVoiceHandle _currentVoice;
+    /// <summary>The track this session is playing (the engine music player's handle), or none. B4's "a live voice is
+    /// left alone" is <see cref="IsCurrentVoiceAlive"/> on it: a one-shot stays alive until the music player's next
+    /// update has seen its stream end (D-E19-106).</summary>
+    private MusicTrackHandle _currentTrack;
+
+    private SoundAsset? _currentAsset;
 
     private AlundraMusicPlayer()
     {
@@ -181,13 +193,13 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
     /// <summary>Re-points this session-scoped instance at the current world's own <see cref="AudioService"/>
     /// and reloads <c>Musics/bgm-manifest.json</c> - called by <see cref="AlundraWorldProxy.InstallAudioSystems"/>
     /// on every world install. Deliberately does NOT touch <see cref="_currentMapSoundIndex"/> or
-    /// <see cref="_currentVoice"/> (D-C-6) - those survive across this call exactly like the original's
+    /// <see cref="_currentTrack"/> (D-C-6) - those survive across this call exactly like the original's
     /// global survives a map change.</summary>
     public void AttachToWorld(AudioService? audioService, string projectPath)
     {
         _audioService = audioService;
         _table = new AlundraMusicIndexTable(projectPath);
-        _assetIdBySoundIndex = LoadBgmManifest(projectPath);
+        _assetBySoundIndex = LoadBgmManifest(projectPath);
     }
 
     public void PlayMapMusic(int mapId)
@@ -358,53 +370,47 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
 
     private void StartVoice(int soundIndex)
     {
-        if (_audioService == null || _assetIdBySoundIndex == null)
+        if (_audioService == null || _assetBySoundIndex == null)
         {
             return;
         }
 
-        if (!_assetIdBySoundIndex.TryGetValue(soundIndex, out var assetId))
-        {
-            return;
-        }
-
-        var clipProvider = _audioService.ClipProvider;
-        if (clipProvider == null)
-        {
-            return;
-        }
-
-        var clip = clipProvider.GetClip(assetId);
-        if (clip == null)
+        if (!_assetBySoundIndex.TryGetValue(soundIndex, out var asset))
         {
             return;
         }
 
         // D-C-3: full volume, no fade - see this class's own doc for why a ramp would be unfaithful.
-        var parameters = new AudioVoiceParameters(AudioVoiceParameters.MaxVolume, 0f, 0f, isLooped: true);
-        _currentVoice = _audioService.PlayClip(clip, AudioBusNames.Music, parameters, owner: this);
+        _currentTrack = _audioService.Music.Play(asset, 0f, owner: this);
+        _currentAsset = _currentTrack.IsValid ? asset : null;
     }
 
     private void StopCurrentVoice()
     {
-        if (_audioService != null && _currentVoice.IsValid)
+        if (_audioService != null && _currentTrack.IsValid)
         {
-            _audioService.Stop(_currentVoice);
+            _audioService.Music.Stop(_currentTrack);
         }
 
-        _currentVoice = AudioVoiceHandle.None;
+        _currentTrack = MusicTrackHandle.None;
+        _currentAsset = null;
     }
 
-    /// <summary>T1 bis (docs/plan-e11c-musique.md, slice C1): true while this session's music voice is
+    /// <summary>T1 bis (docs/plan-e11c-musique.md, slice C1): true while this session's music track is
     /// still alive on <see cref="_audioService"/> - the "and the voice is still alive, not restarted"
     /// half of the guard proof, which a request count alone cannot show (a stopped-then-replayed voice
-    /// would look identical to a request count).</summary>
-    internal bool IsCurrentVoiceAlive => _audioService != null && _audioService.IsAlive(_currentVoice);
+    /// would look identical to a request count). A one-shot whose stream ended stays alive until the
+    /// engine's next <c>Music.Update</c> drops it (E19.L-b3, D-E19-106).</summary>
+    internal bool IsCurrentVoiceAlive => _audioService != null && _audioService.Music.IsAlive(_currentTrack);
 
-    /// <summary>Test-only accessor (T1/T1 bis/T4): the voice handle currently owned by this session
-    /// director, so a test can look its bus/liveness up on the real <see cref="AudioService"/> without
-    /// this class exposing that handle on its public <see cref="IAlundraMusicPlayer"/> surface.</summary>
-    internal AudioVoiceHandle CurrentVoiceForTests => _currentVoice;
+    /// <summary>Test-only accessor (T1/T1 bis/T4): the track handle currently owned by this session
+    /// director, so a test can compare it before and after without this class exposing it on its public
+    /// <see cref="IAlundraMusicPlayer"/> surface.</summary>
+    internal MusicTrackHandle CurrentVoiceForTests => _currentTrack;
+
+    /// <summary>Test-only (E19.L-b3): the sound asset of the track being played - its streaming flag, loop flag, loop
+    /// start, bus and volume - or <see langword="null"/> when nothing plays.</summary>
+    internal SoundAsset? CurrentAssetForTests => _currentAsset;
 
     /// <summary>Test-only (T1 bis): clears every piece of session state so tests do not leak into each
     /// other through this singleton - the "moyen de le réinitialiser en test" D-C-6 asks the slice to
@@ -413,15 +419,16 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
     {
         _audioService = null;
         _table = null; // F5 (docs/plan-bgm-demarrage-binaire.md): the music-index table itself, too.
-        _assetIdBySoundIndex = null;
-        _currentVoice = AudioVoiceHandle.None;
+        _assetBySoundIndex = null;
+        _currentTrack = MusicTrackHandle.None;
+        _currentAsset = null;
         _currentMapSoundIndex = 0;
         _loadedTrackIndex = null;
         _resetSoundFlag = false;
         _pendingWarpDeparture = null; // F2/F5: no warp departure survives into the next test.
     }
 
-    private static Dictionary<int, Guid>? LoadBgmManifest(string projectPath)
+    private static Dictionary<int, SoundAsset>? LoadBgmManifest(string projectPath)
     {
         var filePath = Path.Combine(projectPath, "Musics", "bgm-manifest.json");
 
@@ -445,13 +452,41 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
                 return null;
             }
 
-            var bySoundIndex = new Dictionary<int, Guid>();
+            var bySoundIndex = new Dictionary<int, SoundAsset>();
+            var withoutLoopFields = 0;
             foreach (var entry in entries)
             {
-                if (Guid.TryParse(entry.AssetId, out var assetGuid))
+                if (!Guid.TryParse(entry.AssetId, out var assetGuid))
                 {
-                    bySoundIndex[entry.SoundIndex] = assetGuid;
+                    continue;
                 }
+
+                // ADR-0003 fallback: a manifest from before the loop fields (no 'looping') loops the whole file, from
+                // sample 0 - the whole-file loop of the previous route.
+                if (entry.Looping == null)
+                {
+                    withoutLoopFields++;
+                }
+
+                var looping = entry.Looping ?? true;
+                bySoundIndex[entry.SoundIndex] = new SoundAsset
+                {
+                    Name = $"bgm_{entry.SoundIndex:D3}",
+                    AudioFileAssetId = assetGuid,
+                    IsStreaming = true,
+                    IsLooped = looping,
+                    LoopStartSample = looping ? entry.LoopStartSample ?? 0 : 0,
+                    BusName = AudioBusNames.Music,
+                    Volume = AudioVoiceParameters.MaxVolume,
+                };
+            }
+
+            if (withoutLoopFields > 0)
+            {
+                Logs.WriteWarning(
+                    $"AlundraMusicPlayer: '{filePath}' has no 'looping' field for {withoutLoopFields} track(s) "
+                    + "(an export from before the loop points); they loop the whole file from sample 0. "
+                    + "Export the project again for the loop points.");
             }
 
             return bySoundIndex;
@@ -472,5 +507,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
     {
         [JsonPropertyName("sound_index")] public int SoundIndex { get; set; }
         [JsonPropertyName("asset_id")] public string? AssetId { get; set; }
+        [JsonPropertyName("looping")] public bool? Looping { get; set; }
+        [JsonPropertyName("loop_start_sample")] public long? LoopStartSample { get; set; }
     }
 }

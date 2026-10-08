@@ -118,7 +118,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var projectPath = BuildFixtureProjectWithOneTrack(out var assetId);
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(assetId, new FakeAudioClip("bgm_fixture", 44100));
+        provider.RegisterStream(assetId, "bgm_fixture");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
@@ -127,14 +127,14 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var sfx = new FakeSoundPlayerForFade();
         AlundraBgmFadeDirector.Instance.AttachToWorld(service, sfx);
         AlundraBgmFadeDirector.Instance.StopAllSound(); // simulate 0xA5 starting it, as production would.
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
 
         AlundraBgmFadeDirector.Instance.LoadBgm(9); // arm
 
         AlundraBgmFadeDirector.Instance.Advance(60); // reach the swap tick (pre-tick state 0x3d).
 
         // B15: StopSequence stopped the voice - no second Play call, and the voice is no longer alive.
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
         Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
     }
 
@@ -148,7 +148,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var projectPath = BuildFixtureProjectWithOneMapEntry(out var assetId);
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(assetId, new FakeAudioClip("bgm_fixture", 44100));
+        provider.RegisterStream(assetId, "bgm_fixture");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
@@ -158,14 +158,14 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var sfx = new FakeSoundPlayerForFade();
         AlundraBgmFadeDirector.Instance.AttachToWorld(service, sfx);
         AlundraBgmFadeDirector.Instance.StopAllSound(); // simulate the frame-close start, as production would.
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
 
         service.Mixer.GetBus(AudioBusNames.Master).Volume = 0.3f; // a non-default value the machine must not touch.
 
         AlundraBgmFadeDirector.Instance.LoadBgm(0);
 
         Assert.False(AlundraBgmFadeDirector.Instance.IsArmed); // state untouched by the 0 branch.
-        Assert.Single(backend.PlayCalls); // StopSequence ran, not a restart - no second Play call.
+        Assert.Single(backend.StreamVoices); // StopSequence ran, not a restart - no second Play call.
         Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
         Assert.Equal(0.3f, MasterVolume(service), 5); // the machine's own master call never ran.
         Assert.Equal(0, sfx.StopAllSfxCallCount); // no SFX key-off on this path.
@@ -178,7 +178,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var projectPath = BuildFixtureProjectWithOneTrack(out var assetId);
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(assetId, new FakeAudioClip("bgm_fixture", 44100));
+        provider.RegisterStream(assetId, "bgm_fixture");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
@@ -187,12 +187,12 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var sfx = new FakeSoundPlayerForFade();
         AlundraBgmFadeDirector.Instance.AttachToWorld(service, sfx);
         AlundraBgmFadeDirector.Instance.StopAllSound(); // starts it, as production's frame-close would.
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
 
         AlundraBgmFadeDirector.Instance.LoadBgm(42); // any non-zero value.
 
         Assert.True(AlundraBgmFadeDirector.Instance.IsArmed);
-        Assert.Single(backend.PlayCalls); // no restart until the swap tick, 59 ticks later.
+        Assert.Single(backend.StreamVoices); // no restart until the swap tick, 59 ticks later.
     }
 
     // ---- 0xA5 (StopAllSound): conditional on the armed state, and on whether a voice is already alive --
@@ -203,13 +203,13 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var projectPath = BuildFixtureProjectWithOneTrack(out var assetId);
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(assetId, new FakeAudioClip("bgm_fixture", 44100));
+        provider.RegisterStream(assetId, "bgm_fixture");
         var service = new AudioService(backend) { ClipProvider = provider };
         service.Mixer.GetBus(AudioBusNames.Master).Volume = 0.4f; // must end up restored to full.
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
         AlundraMusicPlayer.Instance.PlayFromRawIndex(7); // loads only - no voice yet (B13).
-        Assert.Empty(backend.PlayCalls);
+        Assert.Empty(backend.StreamVoices);
 
         var sfx = new FakeSoundPlayerForFade();
         AlundraBgmFadeDirector.Instance.AttachToWorld(service, sfx);
@@ -221,7 +221,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         // state): a not-armed machine must leave SFX completely untouched.
         Assert.Equal(0, sfx.StopAllSfxCallCount);
         Assert.Equal(1f, MasterVolume(service), 5); // restored unconditionally.
-        Assert.Single(backend.PlayCalls); // B1/B2: StopAllSound is the executable's ONLY BGM-playing site.
+        Assert.Single(backend.StreamVoices); // B1/B2: StopAllSound is the executable's ONLY BGM-playing site.
     }
 
     [Fact]
@@ -231,7 +231,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var projectPath = BuildFixtureProjectWithOneTrack(out var assetId);
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(assetId, new FakeAudioClip("bgm_fixture", 44100));
+        provider.RegisterStream(assetId, "bgm_fixture");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
@@ -240,12 +240,12 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var sfx = new FakeSoundPlayerForFade();
         AlundraBgmFadeDirector.Instance.AttachToWorld(service, sfx);
         AlundraBgmFadeDirector.Instance.StopAllSound(); // starts the voice.
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
         var voice = AlundraMusicPlayer.Instance.CurrentVoiceForTests;
 
         AlundraBgmFadeDirector.Instance.StopAllSound(); // a second 0xA5 while it already plays.
 
-        Assert.Single(backend.PlayCalls); // B4: PlaySeq never touches a voice already alive - no restart.
+        Assert.Single(backend.StreamVoices); // B4: PlaySeq never touches a voice already alive - no restart.
         Assert.Equal(voice, AlundraMusicPlayer.Instance.CurrentVoiceForTests);
     }
 
@@ -255,7 +255,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var projectPath = BuildFixtureProjectWithOneTrack(out var assetId);
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(assetId, new FakeAudioClip("bgm_fixture", 44100));
+        provider.RegisterStream(assetId, "bgm_fixture");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
@@ -271,7 +271,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         Assert.Equal(1, sfx.StopAllSfxCallCount); // armed -> the SFX stop DOES run.
         Assert.False(AlundraBgmFadeDirector.Instance.IsArmed); // disarmed.
         Assert.Equal(1f, MasterVolume(service), 5);
-        Assert.Single(backend.PlayCalls); // B1/B2: this IS the track's first (and only) play.
+        Assert.Single(backend.StreamVoices); // B1/B2: this IS the track's first (and only) play.
     }
 
     [Fact]
@@ -308,7 +308,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var projectPath = BuildFixtureProjectWithOneTrack(out var assetId);
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(assetId, new FakeAudioClip("bgm_fixture", 44100));
+        provider.RegisterStream(assetId, "bgm_fixture");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
@@ -333,7 +333,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         runner.RunOneScriptCall(entity, state);
 
         Assert.Equal(6, state.CodeIndex); // 0xA7(3)+0xA6(2)+0xA5(1) = 6, right before the terminal 0xFF.
-        Assert.Single(backend.PlayCalls); // 0xA7 only LOADS (B13) - 0xA5's own PlaySequence is the only play.
+        Assert.Single(backend.StreamVoices); // 0xA7 only LOADS (B13) - 0xA5's own PlaySequence is the only play.
         Assert.Equal(1, sfx.StopAllSfxCallCount); // 0xA6 armed it, so 0xA5 DID stop the (zero) live SFX.
         Assert.False(AlundraBgmFadeDirector.Instance.IsArmed); // 0xA5 disarmed it.
         Assert.Equal(1f, MasterVolume(service), 5);
@@ -368,8 +368,8 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var projectPath = BuildFixtureProjectWithInitialTrackAndTrack42(out var assetInitial, out var asset42);
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(assetInitial, new FakeAudioClip("bgm_initial", 44100));
-        provider.Register(asset42, new FakeAudioClip("bgm_042", 44100));
+        provider.RegisterStream(assetInitial, "bgm_initial");
+        provider.RegisterStream(asset42, "bgm_042");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
@@ -380,7 +380,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         // runner's own dispatch calls StopAllSound right after, since v[2] != 0).
         AlundraMusicPlayer.Instance.PlayFromRawIndex(7);
         AlundraBgmFadeDirector.Instance.StopAllSound();
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
         Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
 
         // A6(1), 37(140 = 0x8C), A7(42,0), 37(30 = 0x1E), A8, 03(-2 = 0xFE,0xFF), A5, 37(10 = 0x0A),
@@ -416,26 +416,26 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         runner.RunOneScriptCall(entity, state);
         Assert.True(AlundraBgmFadeDirector.Instance.IsArmed);
         Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive); // not swapped yet.
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
 
         // 60 ticks after arming: the swap tick - the INITIAL track's voice is stopped.
         Tick(60);
         Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
-        Assert.Single(backend.PlayCalls); // stopped, not restarted.
+        Assert.Single(backend.StreamVoices); // stopped, not restarted.
 
         // 117 ticks after arming (57 more): the master-restore tick - still no voice, master back to
         // full, and still no new play call anywhere.
         Tick(57);
         Assert.Equal(1f, MasterVolume(service), 5);
         Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
 
         // 24 more ticks (141 total) resolve the 140-tick Wait; the SAME dispatch call then runs
         // A7(42,0) - a SILENT load (B13, v[2]=0) - and suspends again at the FIRST entry into the
         // 30-tick Wait: still no voice, and still just the one original play call.
         Tick(24);
         Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
         Assert.Equal(42, AlundraMusicPlayer.Instance.CurrentMapSoundIndex); // loaded, not yet playing.
 
         // 31 more ticks resolve the 30-tick Wait; the SAME call then runs A8 (Result = 0), 03 (falls
@@ -443,10 +443,10 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         // then suspends at the FIRST entry into the 10-tick Wait.
         Tick(31);
         Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
-        Assert.Equal(2, backend.PlayCalls.Count); // exactly one NEW play call, at A5.
-        Assert.Equal("bgm_042", ((FakeAudioClip)backend.PlayCalls[1].Clip).Name);
-        Assert.True(backend.PlayCalls[1].Parameters.IsLooped);
-        Assert.Equal(AudioBusNames.Music, service.GetVoiceBus(AlundraMusicPlayer.Instance.CurrentVoiceForTests));
+        Assert.Equal(2, backend.StreamVoices.Count); // exactly one NEW play call, at A5.
+        Assert.Equal("bgm_042", provider.OpenedStreams[1]);
+        Assert.False(backend.StreamVoices[1].Parameters.IsLooped); // track 42 is a one-shot: it ends (E19.L-b3).
+        Assert.Equal(AudioBusNames.Music, service.GetVoiceBus(backend.StreamVoices[1].Voice));
 
         // 11 more ticks resolve the 10-tick Wait; the SAME call then runs A7(0,0) - stop and close - and
         // hits End: no live voice, and STILL no restart hiding behind it (the whole point of tracking
@@ -454,7 +454,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         Tick(11);
         Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
         Assert.Equal(0, AlundraMusicPlayer.Instance.CurrentMapSoundIndex);
-        Assert.Equal(2, backend.PlayCalls.Count);
+        Assert.Equal(2, backend.StreamVoices.Count);
     }
 
     private string BuildFixtureProjectWithInitialTrackAndTrack42(out Guid assetInitial, out Guid asset42)
@@ -466,7 +466,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         Directory.CreateDirectory(musicsDir);
         assetInitial = Guid.Parse("00000000-0000-0000-0000-000000000007");
         asset42 = Guid.Parse("00000000-0000-0000-0000-000000000042");
-        var manifest = $$"""[{"sound_index": 7, "asset_id": "{{assetInitial}}"}, {"sound_index": 42, "asset_id": "{{asset42}}"}]""";
+        var manifest = $$"""[{"sound_index": 7, "asset_id": "{{assetInitial}}"}, {"sound_index": 42, "asset_id": "{{asset42}}", "looping": false, "loop_start_frame": null, "loop_start_sample": null}]""";
         File.WriteAllText(Path.Combine(musicsDir, "bgm-manifest.json"), manifest);
 
         var mapsDir = Path.Combine(root, "Maps");
@@ -503,8 +503,8 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var projectPath = BuildFixtureProjectWithTwoTracks(out var asset7, out var asset5);
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(asset7, new FakeAudioClip("bgm_007", 44100));
-        provider.Register(asset5, new FakeAudioClip("bgm_005", 44100));
+        provider.RegisterStream(asset7, "bgm_007");
+        provider.RegisterStream(asset5, "bgm_005");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
@@ -514,19 +514,19 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         // Track 7 already playing - "sur une carte qui joue".
         AlundraMusicPlayer.Instance.PlayFromRawIndex(7);
         AlundraBgmFadeDirector.Instance.StopAllSound();
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
 
         var loadRunner = NewRunner(new[] { 0xA7, 5, 0, 0xFF }, out var loadEntity, out var loadState);
         loadRunner.RunOneScriptCall(loadEntity, loadState); // 0xA7(5,0): stops+closes 7, loads 5.
 
         Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
-        Assert.Single(backend.PlayCalls); // still just the original track-7 play.
+        Assert.Single(backend.StreamVoices); // still just the original track-7 play.
 
         var stopAllRunner = NewRunner(new[] { 0xA5, 0xFF }, out var stopAllEntity, out var stopAllState);
         stopAllRunner.RunOneScriptCall(stopAllEntity, stopAllState); // 0xA5 starts track 5.
 
-        Assert.Equal(2, backend.PlayCalls.Count);
-        Assert.Equal("bgm_005", ((FakeAudioClip)backend.PlayCalls[1].Clip).Name);
+        Assert.Equal(2, backend.StreamVoices.Count);
+        Assert.Equal("bgm_005", provider.OpenedStreams[1]);
     }
 
     [Fact]
@@ -537,7 +537,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var projectPath = BuildFixtureProjectWithTwoTracks(out _, out var asset5);
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(asset5, new FakeAudioClip("bgm_005", 44100));
+        provider.RegisterStream(asset5, "bgm_005");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
@@ -547,22 +547,22 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var runner = NewRunner(new[] { 0xA7, 5, 1, 0xFF }, out var entity, out var state);
         runner.RunOneScriptCall(entity, state);
 
-        Assert.Single(backend.PlayCalls);
-        Assert.Equal("bgm_005", ((FakeAudioClip)backend.PlayCalls[0].Clip).Name);
+        Assert.Single(backend.StreamVoices);
+        Assert.Equal("bgm_005", provider.OpenedStreams[0]);
         Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
     }
 
     [Fact]
     public void PlayMusic_0xA7_ZeroIndex_ThenA5_StaysSilent()
     {
-        // Acceptance item (f). F4: a track must actually be LOADED AND PLAYING first, or "PlayCalls
+        // Acceptance item (f). F4: a track must actually be LOADED AND PLAYING first, or "StreamVoices
         // stays empty" is trivially true regardless of what 0xA7(0,0)/0xA5 do - the previous version of
         // this test never loaded anything and never even ran the 0xA5 half (RunOneScriptCall executes
         // ONE opcode; the original single call only ever reached the 0xA7 instruction).
         var projectPath = BuildFixtureProjectWithOneTrack(out var assetId);
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(assetId, new FakeAudioClip("bgm_fixture", 44100));
+        provider.RegisterStream(assetId, "bgm_fixture");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
@@ -572,19 +572,19 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         // Track 7 loaded and started first - "sur une carte qui joue" (fact d's own precondition).
         AlundraMusicPlayer.Instance.PlayFromRawIndex(7);
         AlundraBgmFadeDirector.Instance.StopAllSound();
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
         Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
 
         var loadRunner = NewRunner(new[] { 0xA7, 0, 0, 0xFF }, out var loadEntity, out var loadState);
         loadRunner.RunOneScriptCall(loadEntity, loadState); // 0xA7(0,0): stops+closes, flag untouched.
 
         Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
-        Assert.Single(backend.PlayCalls); // no new play from the load itself.
+        Assert.Single(backend.StreamVoices); // no new play from the load itself.
 
         var stopAllRunner = NewRunner(new[] { 0xA5, 0xFF }, out var stopAllEntity, out var stopAllState);
         stopAllRunner.RunOneScriptCall(stopAllEntity, stopAllState); // 0xA5: PlaySequence - nothing loaded now.
 
-        Assert.Single(backend.PlayCalls); // still exactly the one original play - stays silent.
+        Assert.Single(backend.StreamVoices); // still exactly the one original play - stays silent.
         Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
         Assert.Equal(0, AlundraMusicPlayer.Instance.CurrentMapSoundIndex);
     }
@@ -598,7 +598,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var projectPath = BuildFixtureProjectWithOneTrack(out var assetId);
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(assetId, new FakeAudioClip("bgm_fixture", 44100));
+        provider.RegisterStream(assetId, "bgm_fixture");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
@@ -607,17 +607,17 @@ public class AlundraBgmFadeDirectorTests : IDisposable
 
         AlundraMusicPlayer.Instance.PlayFromRawIndex(7);
         AlundraBgmFadeDirector.Instance.StopAllSound(); // starts it.
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
         Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
 
         AlundraBgmFadeDirector.Instance.LoadBgm(0); // 0xA6 0.
 
         Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
-        Assert.Single(backend.PlayCalls); // still just the one, so far.
+        Assert.Single(backend.StreamVoices); // still just the one, so far.
 
         AlundraBgmFadeDirector.Instance.StopAllSound(); // 0xA5.
 
-        Assert.Equal(2, backend.PlayCalls.Count); // a NEW voice for the SAME track.
+        Assert.Equal(2, backend.StreamVoices.Count); // a NEW voice for the SAME track.
         Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
     }
 
@@ -628,7 +628,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         var projectPath = BuildFixtureProjectWithOneTrack(out var assetId);
         var backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
-        provider.Register(assetId, new FakeAudioClip("bgm_fixture", 44100));
+        provider.RegisterStream(assetId, "bgm_fixture");
         var service = new AudioService(backend) { ClipProvider = provider };
 
         AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
@@ -637,7 +637,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
 
         AlundraMusicPlayer.Instance.PlayFromRawIndex(7);
         AlundraBgmFadeDirector.Instance.StopAllSound(); // starts it.
-        Assert.Single(backend.PlayCalls);
+        Assert.Single(backend.StreamVoices);
 
         AlundraBgmFadeDirector.Instance.LoadBgm(1); // 0xA6 1 - arm.
         AlundraBgmFadeDirector.Instance.Advance(60); // swap tick (pre-tick state 0x3d).
@@ -648,11 +648,11 @@ public class AlundraBgmFadeDirectorTests : IDisposable
 
         Assert.Equal(1f, MasterVolume(service), 5);
         Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive); // still silent - restore != play.
-        Assert.Single(backend.PlayCalls); // no extra Play call anywhere in this whole sequence.
+        Assert.Single(backend.StreamVoices); // no extra Play call anywhere in this whole sequence.
 
         AlundraBgmFadeDirector.Instance.StopAllSound(); // 0xA5.
 
-        Assert.Equal(2, backend.PlayCalls.Count);
+        Assert.Equal(2, backend.StreamVoices.Count);
         Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
     }
 
@@ -683,7 +683,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
 
         Assert.True(AlundraBgmFadeDirector.Instance.IsArmed); // B2: untouched - total no-op.
         Assert.Equal(0.55f, MasterVolume(service), 5); // master untouched too.
-        Assert.Empty(backend.PlayCalls); // and PlaySequence never ran either.
+        Assert.Empty(backend.StreamVoices); // and PlaySequence never ran either.
     }
 
     private string BuildFixtureProjectWithTwoTracks(out Guid asset7, out Guid asset5)
