@@ -347,6 +347,15 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-103** — (2026-10-08, l'auteur, O-E19-78) L'**ordre d'image du déclencheur de l'inventaire** se **corrige** comme le
     binaire (après la passe du dialogue et les événements de carte du même tick ; les événements de carte gelés aux mêmes ticks que
     le binaire), dans une tranche à part.
+  - **D-E19-104** — (2026-10-08, l'auteur, L-a T2) La **profondeur par défaut de la file de musique en flux** passe de 3 à **24
+    tampons pour tout le moteur** (`DefaultQueuedBufferTarget`), d'après la mesure O-E19-63 (D-E19-75).
+  - **D-E19-105** — (2026-10-08, l'auteur) La **montée du pointeur du moteur** dans le parent à la fin de L-a fait entrer le merge du
+    navigateur de démos de l'auteur (`f86a981b`) dans le parent : accepté.
+  - **D-E19-106** — (2026-10-08, l'auteur, L-b) Pendant la **traîne de relâchement** d'une musique sans boucle (D-E19-76 ; jusqu'à
+    1,9 s ; pistes 36 et 42 atteignables), une nouvelle commande `0xA5` de la même piste est ignorée par la garde « ne pas relancer une
+    piste vivante » alors que l'original la relance : **écart accepté**, écrit dans l'ADR ; le `bgm.json` de l'oracle ne change pas.
+  - **D-E19-107** — (2026-10-08, l'auteur, L-a) La démo du point de boucle **versionne un WAV généré** de 529 Ko dans le moteur
+    (`loop_point_demo.wav`), son générateur dans l'annexe.
   - **Règle de conduite R-BR** (2026-10-06, de la session, après les relectures de G2b et d'E19.h1b3 ; O-E19-74 tranchée le 2026-10-06 :
     G2d a pris 0066, 0061 étant pris sur le main du moteur) — **Branches et numéros d'ADR des sous-modules.** (1) Base : toute nouvelle branche du moteur (ou de
     MGUI) part du commit que le parent épingle au moment de l'exécution (aujourd'hui `33324030`, pointe de G2d, qui n'est pas dans le
@@ -10949,7 +10958,7 @@ défaut signalé ; aucune note écrite.
   L1-4) ; l'ondulation du HUD (E13.a), l'étoile de l'éditeur (T4.7), l'exemple MGUI (PI3), le monde gelé en dialogue (T2), le parcours
   M3.
 
-### 1.2w Boucle au repère de la séquence (D-E19-70, D-E19-72, D-E19-73, O-E19-62, D-E19-102) ⏳ (préparée le 2026-10-05 ; la partie moteur va dans S2 d'audio-modern, D-E19-74 ; données, convertisseur et DLL après S2 ; en pause le 2026-10-06 : S2 est mergé sans la partie moteur, question O-E19-76 ; mesure O-E19-63 faite le 2026-10-07 : la profondeur 24 tient les chargements mesurés, la profondeur 3 non ; **reprise le 2026-10-08 : l'auteur confie L-a et L-b à la session, D-E19-102** ; découverte du 2026-10-08 faite et contre-vérifiée, `docs/plan-e19-loop-annexe/la-1008/` et `lb-1008/` ; L-a planifiée (1.2w.1) ; L-b en trois tranches, à planifier après la réponse de l'auteur sur la traîne des musiques sans boucle)
+### 1.2w Boucle au repère de la séquence (D-E19-70, D-E19-72, D-E19-73, O-E19-62, D-E19-102) ⏳ (préparée le 2026-10-05 ; la partie moteur va dans S2 d'audio-modern, D-E19-74 ; données, convertisseur et DLL après S2 ; en pause le 2026-10-06 : S2 est mergé sans la partie moteur, question O-E19-76 ; mesure O-E19-63 faite le 2026-10-07 : la profondeur 24 tient les chargements mesurés, la profondeur 3 non ; **reprise le 2026-10-08 : l'auteur confie L-a et L-b à la session, D-E19-102** ; découverte du 2026-10-08 faite et contre-vérifiée, `docs/plan-e19-loop-annexe/la-1008/` et `lb-1008/` ; L-a planifiée (1.2w.1) ; L-b en trois tranches, D-E19-106 tranché le 2026-10-08 : à planifier)
 
 Esquisse (découverte du 2026-10-05, `loop-disc/notes.md` et `loop-disc-verify/verify.md` du scratchpad) : le pilote du binaire
 (libsnd) mémorise la position au contrôleur 99 = 20 et y revient au contrôleur 99 = 30 quand le compte vaut 127 (`0x8008CA40`), sans
@@ -10971,7 +10980,7 @@ prête (champ, déplacement, `FillQueue`, plafond de tampons, valeurs de test), 
 musique par le service de musique du moteur avec le point de boucle ; `LoopDetected` vaut vrai aussi sur les pistes sans boucle :
 un champ `Looping` à part est nécessaire.
 
-#### 1.2w.1 E19.L-a — Point de boucle de la musique en flux (moteur) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102 ; planifiée le 2026-10-08 ; T1 : relecture n°1 READY (faits), REVISE (exécution : liste des tests d'abord incomplète), révisée ; relecture n°2 READY ; T1 faite et CONFIRMED le 2026-10-08 sans la démo (moteur `674549cc` tests, `bc3bd023` code et ADR-0072 ; vérificateur neuf : diff relu ligne par ligne, débordement d'entier sondé, valeurs des tests égales à l'annexe et à un modèle indépendant, 30 rouges rejoués, mutations rouges, `CasaEngine.Tests` 4225, deux solutions, `Alundra.Tests` 3222 en Release puis en Debug, `cmp`, traces, liste fermée, ADR-0072 libre ; avis P4 : aucun test n'épingle le débordement d'entier ; un test d'allocation hors du changement, `L14_AdvancingAllocatesNothing`, a échoué une fois puis réussi) ; T2 : attend la réponse de l'auteur sur la profondeur)
+#### 1.2w.1 E19.L-a — Point de boucle de la musique en flux (moteur) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102 ; planifiée le 2026-10-08 ; T1 : relecture n°1 READY (faits), REVISE (exécution : liste des tests d'abord incomplète), révisée ; relecture n°2 READY ; T1 faite et CONFIRMED le 2026-10-08 sans la démo (moteur `674549cc` tests, `bc3bd023` code et ADR-0072 ; vérificateur neuf : diff relu ligne par ligne, débordement d'entier sondé, valeurs des tests égales à l'annexe et à un modèle indépendant, 30 rouges rejoués, mutations rouges, `CasaEngine.Tests` 4225, deux solutions, `Alundra.Tests` 3222 en Release puis en Debug, `cmp`, traces, liste fermée, ADR-0072 libre ; avis P4 : aucun test n'épingle le débordement d'entier ; un test d'allocation hors du changement, `L14_AdvancingAllocatesNothing`, a échoué une fois puis réussi) ; T2, la démo et le pointeur tranchés par l'auteur le 2026-10-08 (D-E19-104, D-E19-107, D-E19-105) : exécution)
 
 Moteur seul (sous-module, branche `chantier/e19-suite2` du moteur, au-dessus de `f86a981b`, le merge du navigateur de démos de l'auteur ;
 la montée du pointeur du parent à la fin de L-a fera entrer ce merge dans le parent : question à l'auteur ; écart consigné à R-BR (1), qui
@@ -11000,7 +11009,7 @@ lit les nombres en flottants (16 777 217 deviendrait 16 777 216) ; `CreatePrevie
   couture (il ne gagnerait que 90 ms à la profondeur 24 ; choix de conduite de la session, D-E19-102).
 - **LA-R7** (hors de portée) : fin de boucle, fondu du moteur, points de boucle des sons résidents (un son non diffusé en flux ignore la
   clé), interface des backends, la DLL et les données (L-b).
-- **LA-T2 — profondeur** (tâche à part, **en attente de l'auteur**) : `DefaultQueuedBufferTarget` de 3 à 24 (marge à la couture 2045 ms
+- **LA-T2 — profondeur** (tâche à part ; **D-E19-104 : 24 pour tout le moteur**) : `DefaultQueuedBufferTarget` de 3 à 24 (marge à la couture 2045 ms
   contre 96 ms ; pire couture : 81 trames, piste 13, verify M2 ; pire arrêt mesuré 351,5 ms, O-E19-63 ; coût : 384 Kio de file et un anneau de 768 Kio par piste jouée, une lecture de 384 Kio
   dans `Play` ; le mélangeur logiciel accepte 64 tampons par voix) ; `audio-system.md` réécrit pour 44,1 kHz ; deux tests bougent
   (`Play_StartsAStreamAndQueuesAhead`, `Update_TopsTheQueueBackUp` : 24, 22, 24 avec `SampleCount` = 106 496).
@@ -11010,9 +11019,8 @@ lit les nombres en flottants (16 777 217 deviendrait 16 777 216) ; `CreatePrevie
   `SoundAssetTests.cs` (la liste fixe des fichiers de démo de `Loader_DemoSoundFiles_HaveTheVariationDefaults` reçoit le nouveau fichier,
   modification attendue, et son résumé est mis à jour),
   `SoundAssetEditorSerializationTests.cs`, `Editor/SoundAssetInspectorPanelTests.cs`, `MusicPlayerTests.cs` (T2) ; démo `AudioDemo.cs`
-  (touche libre parmi A, E, Q, U, W, X, Y, Z), `loop_point_demo.wav` (529 260 o, données à l'offset 60, généré ; **le versionner dans le
-  moteur attend la réponse de l'auteur**, sinon la démo fabrique le son en mémoire ; le générateur est versionné dans
-  `docs/plan-e19-loop-annexe/la-1008/`) et `loop_point_demo.sound`
+  (touche libre parmi A, E, Q, U, W, X, Y, Z), `loop_point_demo.wav` (529 260 o, données à l'offset 60, généré ; **versionné dans le
+  moteur, D-E19-107** ; le générateur est versionné dans `docs/plan-e19-loop-annexe/la-1008/`) et `loop_point_demo.sound`
   (point de boucle 44 100), `AssetInfos.json`, `Content.mgcb` ; docs `docs/engine/audio-system.md` (§3, §5, §9, §11, et le commentaire de
   `GetPosition` qui dit « revient à zéro »), ADR-0072 du moteur (revérifiée sur toutes les branches) et son index,
   `ai-agent/tasks/e19la-music-loop-start-tasks.md`, `ai-agent/README.md` ; parent : ce plan et le pointeur.
@@ -11042,8 +11050,8 @@ mutation rougit ses tests (offset ignoré : 13 ; rembobinage dans `FillQueue` : 
 décalée : W3 et L5 ; clé non écrite : S4 ; clé à 0 : 11 ; lecture flottante : S6 et S7 ; copie absente : P1) ; les deux solutions se
 construisent ; `Alundra.Tests` **3222** en Release puis en Debug, `cmp` égal, traces. Non faits (attendent l'auteur) : la démo, T2, le
 pointeur.
-- ⏳ **LA-2 — T2** (après la réponse de l'auteur), commit à part, révocable seul.
-- ⏳ **LA-3 — Pointeur** (après la réponse de l'auteur sur le merge du navigateur de démos), `merge-base --is-ancestor acbb1ae3 <nouveau>`.
+- ⏳ **LA-2 — T2** (D-E19-104), commit à part, révocable seul ; puis la démo (LA-1, partie démo, D-E19-107), commit à part.
+- ⏳ **LA-3 — Pointeur** (D-E19-105 : il inclut le merge `f86a981b`), `merge-base --is-ancestor acbb1ae3 <nouveau>`.
 - 🧪 **LA-4 — Vérification** : T1 vérifiée **CONFIRMED** le 2026-10-08 (voir l'en-tête) ; T2, la démo et le pointeur restent à vérifier quand ils seront faits.
 - **Acceptation** : tests rouges puis verts ; chaque mutation rougit ses tests ; les deux solutions se construisent ; `CasaEngine.Tests` bâti à
   part (hors du `.sln`) et vert contre une base remesurée (4194 au `f86a981b`) ; la démo tourne depuis `CasaEngine.Demos/` (capture du
