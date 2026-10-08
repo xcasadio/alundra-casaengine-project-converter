@@ -11082,7 +11082,7 @@ l'autre, **après L-a** (LA-2 à LA-4 faits, pointeur monté et vérifié : les 
 essai de jeu entre L-b2 et L-b3 (la DLL bouclerait le fichier entier, doublé, et les musiques sans boucle). Branche de l'analyseur :
 `chantier/e19-suite2` (jamais `master`).
 
-###### E19.L-b1 — Extracteur, ré-extraction et miroir (analyseur), moitié extracteur d'O-E19-66 🧪 (faite le 2026-10-08 : parent `0ca81b1` tests, analyseur `fc16872`, parent `192d8f7` pointeur et `font.md` ; vérification à faire)
+###### E19.L-b1 — Extracteur, ré-extraction et miroir (analyseur), moitié extracteur d'O-E19-66 ✅ (faite et CONFIRMED le 2026-10-08 : parent `0ca81b1` tests, analyseur `fc16872`, parent `192d8f7` pointeur et `font.md` ; vérificateur neuf : diff de l'analyseur égal au prototype sauf le déplacement du décodage hors d'`AlundraEngine`, données égales à l'oracle et aux sauvegardes, 44 texels exactement, extraction relancée de zéro égale à `data-extracted/`, rouges rejoués sur les anciennes données (175, exactement l'ensemble attendu), convertisseur 844, `Alundra.Tests` 3222, liste fermée ; avis P4 seulement)
 
 Analyseur et données, plus des tests du convertisseur. Déclencheur de risque : données non versionnées (sauvegardes) et format extrait.
 - **LB1-R1 — Rendu des musiques** (D-E19-73, D-E19-76) : plafond 480 s ; fichier `[0, J2)` ; `bgm.json` gagne `Looping`, `LoopStartFrame` = J1
@@ -11129,7 +11129,7 @@ prévues ; les 45 WAV, `bgm.json` (`3d176f4a…6efaf`) et `font3.png` (`381c63ef
 vérifié ; miroir `robocopy /MIR` depuis PowerShell ; `diff -rq` final vide (4536 fichiers). Parent `192d8f7` : pointeur de l'analyseur et
 `docs/formats/font.md` (section en français comme le reste du fichier). Mesures : convertisseur **844** (669 + 175) ; `Alundra.Tests`
 3222 en Debug, inchangé.
-- ⏳ **LB1-3 — Vérification** par un vérificateur neuf. **Arrêts** : un écart de la sortie à l'oracle ou à la liste des 47, un test qui
+- ✅ **LB1-3 — Vérification** (2026-10-08) : vérificateur neuf **CONFIRMED** (voir l'en-tête). **Arrêts** : un écart de la sortie à l'oracle ou à la liste des 47, un test qui
   bouge hors de la liste, un fichier hors de la liste. **Retour arrière** : revert du commit de l'analyseur, du pointeur et du commit des
   tests du parent ; les dossiers renommés remis en place et le miroir refait, ou l'extracteur `a958d86` relancé (déterministe, 45 s).
 
