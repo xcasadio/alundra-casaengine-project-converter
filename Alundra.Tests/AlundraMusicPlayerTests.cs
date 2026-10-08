@@ -9,6 +9,7 @@ using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components;
+using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Audio;
 using CasaEngine.Framework.Audio.Mixing;
 using Xunit;
@@ -535,6 +536,232 @@ public class AlundraMusicPlayerTests : IDisposable
         finally
         {
             EngineEnvironment.ProjectPath = previousProjectPath;
+        }
+    }
+
+    // ---- E19.L-b3 (docs/plan-e19-opcodes.md, LB3-0): the game plays its music as a stream with the loop point -----
+
+    /// <summary>The started asset of the session player. Reached by name until the production member exists (LB3-0 compiles
+    /// before LB3-1); null while it does not, so the cases below are red for the right reason.</summary>
+    internal static SoundAsset? CurrentAssetOf(AlundraMusicPlayer player)
+    {
+        var property = typeof(AlundraMusicPlayer).GetProperty("CurrentAssetForTests", BindingFlags.Instance | BindingFlags.NonPublic);
+        return property?.GetValue(player) as SoundAsset;
+    }
+
+    private string BuildFixtureProjectWithManifest(IReadOnlyDictionary<int, int> rawByMapId, string bgmManifestJson)
+    {
+        var root = BuildFixtureProject(rawByMapId, new HashSet<int>());
+        File.WriteAllText(Path.Combine(root, "Musics", "bgm-manifest.json"), bgmManifestJson);
+        return root;
+    }
+
+    private static string ManifestEntry(int soundIndex, string loopFields)
+        => $$"""{"sound_index": {{soundIndex}}, "asset_id": "{{MakeAssetId(soundIndex)}}"{{loopFields}}}""";
+
+    [Fact]
+    public void D1_ALoopingTrack_IsAStreamLoopedAtItsLoopPoint_OnTheMusicBus_AtFullVolume_NeverAWholeClip()
+    {
+        var projectPath = BuildFixtureProjectWithManifest(
+            new Dictionary<int, int> { [389] = 25 },
+            "[" + ManifestEntry(25, """, "looping": true, "loop_start_frame": 7272, "loop_start_sample": 5344920""") + "]");
+
+        var backend = new FakeAudioBackend();
+        var provider = new FakeAudioClipProvider();
+        provider.RegisterStream(MakeAssetId(25), "bgm_025");
+        var service = new AudioService(backend) { ClipProvider = provider };
+
+        AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
+        AlundraBgmFadeDirector.Instance.AttachToWorld(service, null);
+        AlundraMusicPlayer.Instance.PlayMapMusic(389);
+        SimulateFrameClose();
+
+        Assert.Empty(backend.PlayCalls); // no whole clip any more.
+        var stream = Assert.Single(backend.StreamVoices);
+        Assert.True(stream.Parameters.IsLooped);
+        Assert.Equal(AudioBusNames.Music, service.GetVoiceBus(stream.Voice));
+        Assert.Equal(AudioVoiceParameters.MaxVolume * service.Mixer.GetEffectiveGain(AudioBusNames.Music), stream.Parameters.Volume);
+        Assert.Equal(new[] { "bgm_025" }, provider.OpenedStreams);
+
+        var asset = CurrentAssetOf(AlundraMusicPlayer.Instance);
+        Assert.NotNull(asset);
+        Assert.True(asset!.IsStreaming);
+        Assert.True(asset.IsLooped);
+        Assert.Equal(5344920L, asset.LoopStartSample);
+        Assert.Equal(AudioBusNames.Music, asset.BusName);
+        Assert.Equal(AudioVoiceParameters.MaxVolume, asset.Volume);
+    }
+
+    [Fact]
+    public void D3_AManifestWithoutTheLoopFields_LoopsTheWholeFileFromSampleZero_WithOneWarningPerAttach()
+    {
+        var projectPath = BuildFixtureProjectWithManifest(
+            new Dictionary<int, int> { [389] = 25 },
+            "[" + ManifestEntry(25, "") + ", " + ManifestEntry(16, "") + "]");
+
+        var backend = new FakeAudioBackend();
+        var provider = new FakeAudioClipProvider();
+        provider.RegisterStream(MakeAssetId(25), "bgm_025");
+        var service = new AudioService(backend) { ClipProvider = provider };
+
+        using var capture = new WarningCapture();
+        AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
+
+        // Two tracks lack the fields, one warning: per attach, not per track, and it names the manifest.
+        var warnings = capture.Warnings.Where(w => w.Contains("bgm-manifest.json", StringComparison.Ordinal)).ToList();
+        Assert.True(warnings.Count == 1, $"{warnings.Count} warnings: {string.Join(" | ", warnings)}");
+        Assert.Contains("looping", warnings[0], StringComparison.Ordinal);
+
+        AlundraBgmFadeDirector.Instance.AttachToWorld(service, null);
+        AlundraMusicPlayer.Instance.PlayMapMusic(389);
+        SimulateFrameClose();
+
+        var stream = Assert.Single(backend.StreamVoices);
+        Assert.True(stream.Parameters.IsLooped);
+        var asset = CurrentAssetOf(AlundraMusicPlayer.Instance);
+        Assert.NotNull(asset);
+        Assert.True(asset!.IsStreaming);
+        Assert.True(asset.IsLooped);
+        Assert.Equal(0L, asset.LoopStartSample);
+
+        // A second attach (the next world) warns again, once.
+        AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
+        var afterSecond = capture.Warnings.Count(w => w.Contains("bgm-manifest.json", StringComparison.Ordinal));
+        Assert.Equal(2, afterSecond);
+    }
+
+    [Fact]
+    public void D4_TheRealExport_GivesTrack25ItsLoopPoint()
+    {
+        var projectRoot = FindProjectRoot(); // throws when the export is missing: this case is never green in silence.
+        var manifestPath = Path.Combine(projectRoot, "Musics", "bgm-manifest.json");
+        Assert.True(File.Exists(manifestPath), $"'{manifestPath}' is missing: export the project (L-b2) first.");
+
+        using var manifestDoc = JsonDocument.Parse(File.ReadAllText(manifestPath));
+        var entry25 = manifestDoc.RootElement.EnumerateArray().First(e => e.GetProperty("sound_index").GetInt32() == 25);
+        var assetId = Guid.Parse(entry25.GetProperty("asset_id").GetString()!);
+        Assert.True(entry25.GetProperty("looping").GetBoolean());
+        Assert.Equal(5344920L, entry25.GetProperty("loop_start_sample").GetInt64());
+
+        var backend = new FakeAudioBackend();
+        var provider = new FakeAudioClipProvider();
+        provider.RegisterStream(assetId, "bgm_025");
+        var service = new AudioService(backend) { ClipProvider = provider };
+
+        AlundraMusicPlayer.Instance.AttachToWorld(service, projectRoot);
+        AlundraMusicPlayer.Instance.PlayFromRawIndex(25);
+        AlundraMusicPlayer.Instance.PlaySequence();
+
+        Assert.Single(backend.StreamVoices);
+        var asset = CurrentAssetOf(AlundraMusicPlayer.Instance);
+        Assert.NotNull(asset);
+        Assert.Equal(assetId, asset!.AudioFileAssetId);
+        Assert.True(asset.IsStreaming);
+        Assert.True(asset.IsLooped);
+        Assert.Equal(5344920L, asset.LoopStartSample);
+    }
+
+    [Fact]
+    public void D5_B4_ALiveTrackIsNotRestarted_ByASecondPlaySequence()
+    {
+        var projectPath = BuildFixtureProjectWithManifest(
+            new Dictionary<int, int>(),
+            "[" + ManifestEntry(25, """, "looping": true, "loop_start_frame": 7272, "loop_start_sample": 5344920""") + "]");
+
+        var backend = new FakeAudioBackend();
+        var provider = new FakeAudioClipProvider();
+        provider.RegisterStream(MakeAssetId(25), "bgm_025");
+        provider.Register(MakeAssetId(25), new FakeAudioClip("bgm_025", 44100)); // the whole-clip route, while it exists.
+        var service = new AudioService(backend) { ClipProvider = provider };
+
+        // The recorder of the starts reads both routes: a start counts whichever way the voice is made.
+        int Starts() => backend.PlayCalls.Count + backend.StreamVoices.Count;
+
+        AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
+        AlundraMusicPlayer.Instance.PlayFromRawIndex(25);
+        Assert.Equal(0, Starts()); // loading never plays.
+
+        AlundraMusicPlayer.Instance.PlaySequence();
+        Assert.Equal(1, Starts()); // the recorder sees the start, so the next lines cannot be green by emptiness.
+        Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
+        var track = AlundraMusicPlayer.Instance.CurrentVoiceForTests;
+
+        AlundraMusicPlayer.Instance.PlaySequence(); // B4: a live voice is left alone.
+
+        Assert.Equal(1, Starts());
+        Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
+        Assert.Equal(track, AlundraMusicPlayer.Instance.CurrentVoiceForTests);
+    }
+
+    [Fact]
+    public void D6_AOneShotWhoseStreamEnds_StaysAliveUntilTheNextMusicUpdate_ThenIsGone()
+    {
+        var projectPath = BuildFixtureProjectWithManifest(
+            new Dictionary<int, int>(),
+            "[" + ManifestEntry(42, """, "looping": false, "loop_start_frame": null, "loop_start_sample": null""") + "]");
+
+        var backend = new FakeAudioBackend();
+        var provider = new FakeAudioClipProvider();
+        provider.RegisterStream(MakeAssetId(42), "bgm_042");
+        var service = new AudioService(backend) { ClipProvider = provider };
+
+        AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
+        AlundraMusicPlayer.Instance.PlayFromRawIndex(42);
+        AlundraMusicPlayer.Instance.PlaySequence();
+
+        var stream = Assert.Single(backend.StreamVoices);
+        Assert.False(stream.Parameters.IsLooped); // a one-shot: it ends.
+        Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
+
+        backend.DrainStream(stream.Voice); // the device played the last buffer: the stream is over.
+
+        Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive); // nothing has looked at the end yet.
+
+        service.Update(0.016f); // the next Music.Update drops the finished track.
+
+        Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
+    }
+
+    private sealed class WarningCapture : ILogger, IDisposable
+    {
+        private readonly object _gate = new();
+        private readonly List<string> _warnings = new();
+
+        public WarningCapture()
+        {
+            Logs.AddLogger(this);
+        }
+
+        public List<string> Warnings
+        {
+            get
+            {
+                lock (_gate)
+                {
+                    return _warnings.ToList();
+                }
+            }
+        }
+
+        public void Close() { }
+        public void WriteTrace(string msg) { }
+        public void WriteDebug(string msg) { }
+        public void WriteInfo(string msg) { }
+        public void WriteError(string msg) { }
+
+        public void WriteWarning(string msg)
+        {
+            lock (_gate)
+            {
+                _warnings.Add(msg);
+            }
+        }
+
+        public void Dispose()
+        {
+            var field = typeof(Logs).GetField("_loggers", BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.NotNull(field);
+            ((List<ILogger>)field!.GetValue(null)!).Remove(this);
         }
     }
 }

@@ -135,6 +135,8 @@ public sealed class FakeAudioBackend : IAudioBackend
         slot.State = AudioVoiceState.Stopped;
         slot.InUse = false;
         slot.Clip = null;
+        slot.IsStreaming = false;
+        slot.Pending = 0;
         slot.Generation++;
     }
 
@@ -151,9 +153,15 @@ public sealed class FakeAudioBackend : IAudioBackend
             slot.State = AudioVoiceState.Stopped;
             slot.InUse = false;
             slot.Clip = null;
+            slot.IsStreaming = false;
+            slot.Pending = 0;
             slot.Generation++;
         }
     }
+
+    /// <summary>Every streaming voice created, in order (E19.L-b3): the stream recorder. The music tests read it where
+    /// they read <see cref="PlayCalls"/> before, and ask the service for the bus of a recorded voice.</summary>
+    public List<FakeStreamVoice> StreamVoices { get; } = new();
 
     public bool SupportsStreaming { get; set; } = true;
 
@@ -176,17 +184,28 @@ public sealed class FakeAudioBackend : IAudioBackend
         slot.Clip = null;
         slot.Parameters = parameters;
         slot.State = AudioVoiceState.Stopped;
+        slot.IsStreaming = true;
+        slot.Pending = 0;
 
-        return new AudioVoiceHandle(index, slot.Generation);
+        var handle = new AudioVoiceHandle(index, slot.Generation);
+        StreamVoices.Add(new FakeStreamVoice(handle, sampleRate, channelCount, parameters));
+        return handle;
     }
 
     public void SubmitBuffer(AudioVoiceHandle voice, byte[] buffer, int offset, int count)
     {
-        // Not exercised by T5 (no streaming voice ever created through AlundraSoundPlayer) - present
-        // only so this class satisfies IAudioBackend in full.
+        // A streaming voice counts what it was given until the test drains it (E19.L-b3); nothing else reads a buffer.
+        if (TryGetSlot(voice, out var slot) && slot.IsStreaming)
+        {
+            slot.Pending++;
+        }
     }
 
-    public int GetPendingBufferCount(AudioVoiceHandle voice) => 0;
+    /// <summary>Buffers submitted to a streaming voice and not drained yet; 0 for any other voice.</summary>
+    public int GetPendingBufferCount(AudioVoiceHandle voice)
+    {
+        return TryGetSlot(voice, out var slot) && slot.IsStreaming ? slot.Pending : 0;
+    }
 
     public void Start(AudioVoiceHandle voice)
     {
@@ -229,6 +248,16 @@ public sealed class FakeAudioBackend : IAudioBackend
             {
                 slot.State = AudioVoiceState.Stopped;
             }
+        }
+    }
+
+    /// <summary>Simulates the device having played every buffer submitted to a streaming voice (E19.L-b3): the pending
+    /// count goes to 0, the voice stays alive until the music player's next update drops it.</summary>
+    public void DrainStream(AudioVoiceHandle voice)
+    {
+        if (TryGetSlot(voice, out var slot) && slot.IsStreaming)
+        {
+            slot.Pending = 0;
         }
     }
 
@@ -283,8 +312,14 @@ public sealed class FakeAudioBackend : IAudioBackend
         public IAudioClip Clip;
         public AudioVoiceParameters Parameters;
         public AudioVoiceState State;
+        public bool IsStreaming;
+        public int Pending;
     }
 }
+
+/// <summary>One streaming voice the backend created (E19.L-b3): the music now plays as a stream, so this is what
+/// the music tests read where they read <see cref="FakeAudioBackend.PlayCalls"/> before.</summary>
+public sealed record FakeStreamVoice(AudioVoiceHandle Voice, int SampleRate, int ChannelCount, AudioVoiceParameters Parameters);
 
 /// <summary>Deterministic <see cref="IAudioClip"/> for T5: no device, no decoding - see
 /// <see cref="FakeAudioBackend"/>'s own doc for why this is re-implemented in this project.
@@ -328,9 +363,58 @@ public sealed class FakeAudioClipProvider : IAudioClipProvider
 {
     private readonly Dictionary<Guid, IAudioClip> _clips = new();
 
+    private readonly Dictionary<Guid, (string Name, byte[] Wav)> _streams = new();
+
     public void Register(Guid assetId, IAudioClip clip) => _clips[assetId] = clip;
+
+    /// <summary>Registers a music file served by <see cref="OpenStream"/> (E19.L-b3), a small 16 bit stereo wav by default.</summary>
+    public void RegisterStream(Guid assetId, string name, byte[] wav = null) => _streams[assetId] = (name, wav ?? BuildWav());
+
+    /// <summary>The names of the streams opened so far, in order: which music files were actually started.</summary>
+    public List<string> OpenedStreams { get; } = new();
 
     public IAudioClip GetClip(Guid audioFileAssetId) => _clips.GetValueOrDefault(audioFileAssetId);
 
-    public Stream OpenStream(Guid audioFileAssetId) => null;
+    public Stream OpenStream(Guid audioFileAssetId)
+    {
+        if (!_streams.TryGetValue(audioFileAssetId, out var stream))
+        {
+            return null;
+        }
+
+        OpenedStreams.Add(stream.Name);
+        return new MemoryStream(stream.Wav, writable: false);
+    }
+
+    /// <summary>A canonical 16 bit PCM stereo wav whose frame i holds the value i in both channels.</summary>
+    public static byte[] BuildWav(int frameCount = 64, int sampleRate = 44100)
+    {
+        const int channels = 2;
+        const int blockAlign = channels * 2;
+        var dataLength = frameCount * blockAlign;
+
+        using var stream = new MemoryStream();
+        using var writer = new BinaryWriter(stream);
+        writer.Write(System.Text.Encoding.ASCII.GetBytes("RIFF"));
+        writer.Write(36 + dataLength);
+        writer.Write(System.Text.Encoding.ASCII.GetBytes("WAVE"));
+        writer.Write(System.Text.Encoding.ASCII.GetBytes("fmt "));
+        writer.Write(16);
+        writer.Write((short)1);
+        writer.Write((short)channels);
+        writer.Write(sampleRate);
+        writer.Write(sampleRate * blockAlign);
+        writer.Write((short)blockAlign);
+        writer.Write((short)16);
+        writer.Write(System.Text.Encoding.ASCII.GetBytes("data"));
+        writer.Write(dataLength);
+        for (var frame = 0; frame < frameCount; frame++)
+        {
+            writer.Write((short)frame);
+            writer.Write((short)frame);
+        }
+
+        writer.Flush();
+        return stream.ToArray();
+    }
 }

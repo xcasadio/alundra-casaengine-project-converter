@@ -805,4 +805,44 @@ public class AlundraBgmFadeDirectorTests : IDisposable
 
         return root;
     }
+
+    // ---- E19.L-b3 (docs/plan-e19-opcodes.md, LB3-0) -------------------------------------------------------------
+
+    [Fact]
+    public void D2_ATrackTheManifestSaysDoesNotLoop_IsAStreamThatDoesNotLoop()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "AlundraBgmFadeDirectorTests_OneShot_" + Guid.NewGuid());
+        _tempDirs.Add(root);
+        Directory.CreateDirectory(Path.Combine(root, "Musics"));
+        Directory.CreateDirectory(Path.Combine(root, "Maps"));
+        var asset42 = Guid.Parse("00000000-0000-0000-0000-000000000042");
+        File.WriteAllText(
+            Path.Combine(root, "Musics", "bgm-manifest.json"),
+            $$"""[{"sound_index": 42, "asset_id": "{{asset42}}", "looping": false, "loop_start_frame": null, "loop_start_sample": null}]""");
+        File.WriteAllText(Path.Combine(root, "Maps", "music-index.json"), "{}");
+
+        var backend = new FakeAudioBackend();
+        var provider = new FakeAudioClipProvider();
+        provider.RegisterStream(asset42, "bgm_042");
+        var service = new AudioService(backend) { ClipProvider = provider };
+
+        AlundraMusicPlayer.Instance.AttachToWorld(service, root);
+        var sfx = new FakeSoundPlayerForFade();
+        AlundraBgmFadeDirector.Instance.AttachToWorld(service, sfx);
+
+        var loadRunner = NewRunner(new[] { 0xA7, 42, 0, 0xFF }, out var loadEntity, out var loadState);
+        loadRunner.RunOneScriptCall(loadEntity, loadState); // 0xA7(42,0): loads, silent.
+        var stopAllRunner = NewRunner(new[] { 0xA5, 0xFF }, out var stopAllEntity, out var stopAllState);
+        stopAllRunner.RunOneScriptCall(stopAllEntity, stopAllState); // 0xA5 starts it.
+
+        Assert.Empty(backend.PlayCalls);
+        var stream = Assert.Single(backend.StreamVoices);
+        Assert.False(stream.Parameters.IsLooped);
+        Assert.Equal(new[] { "bgm_042" }, provider.OpenedStreams);
+
+        var asset = AlundraMusicPlayerTests.CurrentAssetOf(AlundraMusicPlayer.Instance);
+        Assert.NotNull(asset);
+        Assert.True(asset!.IsStreaming);
+        Assert.False(asset.IsLooped);
+    }
 }
