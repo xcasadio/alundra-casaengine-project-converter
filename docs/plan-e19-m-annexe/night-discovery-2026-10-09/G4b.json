@@ -1,0 +1,220 @@
+{
+ "slice": "G4b: M-15 (spawn exemption must key on animation AND direction row), M-33 (interact latch on a recycled proxy), M-43 (camera sway constructor), plus the deferred P3 comment of AlundraPlayerManager.cs:309-310 (critic-corrected report)",
+ "summary": "Read-only critique. I re-disassembled and re-read the decision-carrying points; nothing was built, run or written to the repository. The core of the discovery report holds, with six corrections and four upgrades.\n\nM-15 (CONFIRMED): the binary has no exemption flag; its switch test in UpdateAnimation (0x80038AB4) is on the pair (Target != Current at 0x80038B08) OR (row from table[AnimationDirection*8+col(TargetDirection)] != AnimationDirection at 0x80038B10). InitializeEntity (0x80039D04) writes Current=~anim, CurrentDirection=~dir, Target, TargetDirection, then calls UpdateAnimation (0x80039EA8), which commits (anim, row R0) and writes +0xF8; the next UpdateAnimation clears +0xF8 first (0x80038AE4). So the binary's effective exemption keys on animation AND row: any later change of either before the first validation is an ordinary switch with an impulse. The DLL compares the animation only (AlundraFrameSyncPasses.cs:128, :266) and, deeper, does not commit the spawn row at spawn (AnimationDirection is assigned only at AlundraFrameSyncPasses.cs:140), so a pre-validation turn resolves from row 0 instead of R0. The table in the EXE (0x800237F4) is identical to AnimationTables.cs:30-36. Exposure today: no real site found by census and reading (not a measurement).\n\nM-33 (CONFIRMED as a real latent port defect, not original behaviour): the binary latch holds a slot pointer (0x80098F0C) plus the serial Index2 (+4, stored in 0x80126F64) and compares the serial first (0x8002E9B4-0x8002E9C0); a freed slot is overwritten by the zero BSS template (so Index2 = 0, while live serials start at 1), and a reused slot gets a new serial, so the latch can never survive a recycle. In the DLL Index2 is never assigned and the recycler keeps Flags, ProgramIndexes and Pos, so a latched recycled proxy is still found. The test-hygiene half was closed by E19.m5 (e35cd5e). Corrections to the report: the guard must reject BOTH Destroyed and FlagToDestroy for a binary-faithful result (the report's own optional control test was wrong, it is a RED test), the 'eager clear' alternative is not equivalent, and a guard on the latch term alone leaves the adjacent stale-XCollisionEntity branch (not shown reachable).\n\nM-43: accept with the written reason (deliberate internal constructor, comment at AlundraCameraSway.cs:25, 15 test constructions in 2 files).\n\nP3 comment: stale on both counts (LoadingMap ported by E19.v, air states by E19.d2c2). The report's replacement wording would have duplicated the existing 'USER DECISION' sentence; corrected wording is in production_change. The class doc has further stale statements outside the slice.",
+ "facts": [
+  {
+   "claim": "The binary's switch test is on the pair (animation, direction row); +0xF8 is cleared on every call before the test; the new row is stored at +0x98 and +0xF8 receives the animation set's IsZForceApplied only inside the switch block. RE-VERIFIED.",
+   "evidence": "python docs/plan-e19-backlog-1006-annexe/mipsdis.py 80038AB4 60: 0x80038AD8 lw a2,0x88 (Target); 0x80038ADC lw a3,0x98 (AnimationDirection); 0x80038AE0 lw v0,0x8c (TargetDirection); 0x80038AE4 sw zero,0xf8; 0x80038AE8-0x80038AFC row address = 0x800237F4 + AD*32 + ((TD+2)&0x1c), a1 = table value; 0x80038B00 lw v0,0x90 (Current); 0x80038B08 bne a2,v0 -> switch; 0x80038B10 beq a1,a3 -> skip (no switch); 0x80038B40 sw a1,0x98; 0x80038B4C sw a2,0x90; 0x80038B5C-0x80038B64 lh 0xA(animSet) -> +0xF8.",
+   "kind": "binary"
+  },
+  {
+   "claim": "InitializeEntity commits the spawn switch itself: Current=~anim (+0x90), CurrentDirection=~dir (+0x94), Target (+0x88) and TargetDirection (+0x8C) are written, then UpdateAnimation is called; +0x98 (AnimationDirection) is not written in between, so R0 = table[AD_init*8+col(TD)]. RE-VERIFIED (callees 0x8004201C, 0x80039C40, 0x80044550 show no store to +0x98 in the first 70 instructions of each).",
+   "evidence": "mipsdis 80039D04 140: 0x80039DAC nor/sw +0x90, 0x80039DB4 nor/sw +0x94, 0x80039DC0 sw +0x88, 0x80039DC4 sw +0x8C, 0x80039EA8 jal 0x80038ab4. Spawn call sites pass the direction as an argument: alundra-datas-analyser/AlundraTools/AlundraEngine/GameEngine.cs:652 (the hero), :746, :2172, :2208.",
+   "kind": "binary"
+  },
+  {
+   "claim": "AD_init is 0 in the binary, now MEASURED instead of inferred from Entity.Clear(): the slot template at 0x80134368 lies beyond the end of the file-backed image (0x800CA800), so it is BSS (zero at boot); the only store into it found is 0x8003B21C (+0x48 = -1); the other references to the template base (0x8003864C, 0x8003A074, 0x8003A0E8, 0x8003B264) are copy loops that read FROM it. InitializeEntitySlots (0x8003B250) copies the template over all 0x40 slots, the hero's slot 0 (0x80127D30) included, and the hero's InitializeEntity is a direct call (GameEngine.cs:652). Limit: the scan only follows lui+offset addressing within 40 instructions.",
+   "evidence": "python -I scan of ALUN_CD.EXE (size 700416, image end 0x800CA800) for lui/addiu/load/store forming addresses in 0x80134368..0x801345FC: 5 hits (0x8003864C, 0x8003A074, 0x8003A0E8, 0x8003B21C store +0x48, 0x8003B264); mipsdis 8003A060 30, 8003A0D8 30, 8003B250 30 show lw from the template and sw into the slot.",
+   "kind": "binary"
+  },
+  {
+   "claim": "The direction table in the EXE equals the DLL's AnimationDirectionTable; rows 0/1 are identical, rows 2/3 are identical, and the table is idempotent per column (table[R0*8+col] == R0 with R0 = table[0*8+col]).",
+   "evidence": "python -I read of 128 bytes at file offset 0x800+0x800237F4-0x80020000: row0=row1=(0,0,2,1,1,1,3,0), row2=row3=(0,2,2,2,1,3,3,3); Alundra/Scripts/AnimationTables.cs:30-36 identical; idempotence checked by hand on the four rows.",
+   "kind": "binary"
+  },
+  {
+   "claim": "In one tick the binary runs UpdateDestroyedEntities, UpdateEntitiesEvents (MovePlayer FIRST, then slots 1..N: Load/Tick/Touch programs), counters, entity lists, UpdateEntitiesAnimation, then physics. A script write of TargetDirection or TargetAnimationId between the spawn and the first UpdateAnimation is therefore an ordinary switch with an impulse. RE-VERIFIED.",
+   "evidence": "alundra-datas-analyser/AlundraTools/AlundraEngine/Gameplay/EntityManager.cs:377-388 (order) and :805-811 (MovePlayer called first in UpdateEntitiesEvents, loop from i = 1).",
+   "kind": "read"
+  },
+  {
+   "claim": "The plan's R2 text only describes the animation ('une autre animation ecrite par un script avant cette validation donne l'impulsion'); M-15 extends the same binary rule to the direction row.",
+   "evidence": "docs/plan-e19-opcodes.md:3320-3326.",
+   "kind": "read"
+  },
+  {
+   "claim": "The DLL exemption compares the animation only, evaluated before the row is assigned, and the DLL defers the spawn switch: AnimationDirection stays 0 and Current = ~Target until the first SyncAnimation. RE-VERIFIED.",
+   "evidence": "Alundra/Scripts/AlundraFrameSyncPasses.cs:128 (spawnSwitch = SpawnAnimationActive && TargetAnimationId == SpawnAnimationId), :129 (flag dropped), :140 (the only production assignment of AnimationDirection besides Clone at AlundraEntityScriptProxy.cs:2380), :266 (same test in TakeZImpulse); flag and id set at AlundraEntitySpawnFactory.cs:704-705 and AlundraWorldProxy.cs:1900-1901; factory spawn writes Current=~anim at :698-699 region without touching AnimationDirection.",
+   "kind": "read"
+  },
+  {
+   "claim": "Because the DLL resolves the combined switch from row 0, its final row differs from the binary's two-step resolution when TargetDirection changes before the first validation and the spawn row is in {2,3}. Example: SpriteDirection 2 (TD 0x08, R0=2), then TD=0x0C: binary table[2*8+3]=2 (row kept), DLL table[0*8+3]=1. Hand-checked against the EXE table.",
+   "evidence": "AnimationTables.cs:30-36 and the EXE table above; AlundraFrameSyncPasses.cs:432-449 resolves from proxy.AnimationDirection (0 at the first validation).",
+   "kind": "inference"
+  },
+  {
+   "claim": "No real DLL site for M-15 found by census and reading (this is a census, not a measurement). 13 prefabs have IZF on animation 0: 2 iron grids (-32768, no gravity so ForceZ is 0 anyway) and 11 projectiles. RE-COUNTED: 13 hits, values -32768 x2, 256 x3, 512 x6, 1024 x2. Placement by map records and absence of a pre-validation direction write in their programs were not re-run (report's census taken as stated).",
+   "evidence": "python -I over alundra-project/Data/sprite-records.json (AnimSets[Anim==0].IsZForceApplied != 0): ids 0137431e, 396c008e, f5b39f45, eab8d775, d080a2ef, 74db711f, 56534d81, 3db89e90, 67b30f8f, 86f4bf39, 2d239eb2, 4d8bb418, 8292a889. Opcode 0x09 does set TargetDirection = v1 & 0x1f (AlundraEventProgramRunner.cs:607-609), 0x0A reverses it (:611-613).",
+   "kind": "inference"
+  },
+  {
+   "claim": "The only reachable path plausible for M-15 in the story is a hero arrival that copies a jump animation with an impulse (anim 2 or 0x2B) followed by a direction write before the first frame, and future E14 spawners; a real scripted arrival is control-locked, which is why UJ-7 forces ControlLocked. Not measured.",
+   "evidence": "Alundra.Tests/AlundraAnimationImpulseSpawnTests.cs:216-261; AlundraPlayerManager.cs:291-302 (jump states write TargetDirection from the stick).",
+   "kind": "inference"
+  },
+  {
+   "claim": "The missing spawn-row commit has readers beyond the impulse: 0x57 (hero AD), 0x58 (logic entity AD), the portal facing test (hero AD) and the IDSV sort key. The report's census found none of 0x57/0x58 in a Load (A) program; C/D/F programs that use them run after the first validation except possibly on a catch-up first frame. Counts are approximate (linear walk, jumps not followed, 195 F-table offsets skipped) and were not re-run here.",
+   "evidence": "AlundraEventProgramRunner.cs:1071-1086 (0x57 reads the hero's AnimationDirection, 0x58 the entity's; the 0x58 comment cites Beaumont and Thyea appearing facing down); AlundraPortalTrigger.cs:130-135; AlundraFrameSyncPasses.cs:416.",
+   "kind": "inference"
+  },
+  {
+   "claim": "The hero pawn is the engine-spawned pawn of each world (a fresh proxy, AnimationDirection 0, per map), but the UJ-7 montage re-invokes AdoptPlayerPawn by reflection on a hero that already played frames, so proxy.AnimationDirection can be stale there while the binary's AD_init is 0.",
+   "evidence": "Alundra/Scripts/AlundraWorldProxy.cs:1822-1866 (pawn taken from playerController.Pawn); Alundra.Tests/AlundraAnimationImpulseSpawnTests.cs:236-243 (reflection call after arc.OneFrame() calls).",
+   "kind": "read"
+  },
+  {
+   "claim": "M-33 test-hygiene half is already done: the three classes are IDisposable and reset the four session carriers; the backlog row is stale on that point. RE-VERIFIED.",
+   "evidence": "Alundra.Tests/AlundraDestroyedEntityRecyclingTests.cs:19-34; git show --stat e35cd5e ('M-33 resets the session carriers in the three classes that build an AlundraWorldProxy'); docs/plan-e19-opcodes.md:10555 and :10621.",
+   "kind": "read"
+  },
+  {
+   "claim": "The binary latch: slot pointer at 0x80098F0C, serial at 0x80126F64, entity position at 0x80126F58/5C/60, player position at 0x80126F48/4C/50, direction at 0x80126F54. On the latch path the serial (+4) is compared first, then the three entity positions, the three player positions, then TargetDirection; any mismatch goes to 0x8002EA78 which zeroes the pointer and leaves collided = XCollisionEntity. The final check reads ProgramIndexes[5] (+0x60) / SpriteProgramIndexes[5] (+0x84), Flags & 0x8000 (+0x6C) and the Square bit 0x80 of the just-pressed word. RE-VERIFIED against the decompilation (PlayerManager.cs:1597-1669, matches the DLL branch for branch).",
+   "evidence": "mipsdis 8002E910 80 and 8002EA4C 60: 0x8002E9B4-0x8002E9C0 (serial), 0x8002E9CC-0x8002EA50 (positions), 0x8002EA58-0x8002EA68 (direction), 0x8002EA74 move a0,a1 (latch hit), 0x8002EA78 sw zero,-0x70f4 (reset), 0x8002EA84/0x8002EA94 (+0x60/+0x84), 0x8002EAA4-0x8002EAB0 (+0x6C & 0x8000), 0x8002EABC-0x8002EAC4 (0x80).",
+   "kind": "binary"
+  },
+  {
+   "claim": "The binary overwrites every FlagToDestroy slot (state 4) with the 0x294-byte template and mints a fresh serial at every InitializeEntity (counter at 0x80134600, pre-incremented, so live serials are >= 1 while a wiped slot reads 0). RE-VERIFIED; template content now measured (see the BSS fact above).",
+   "evidence": "mipsdis 80038634 60: 0x8003865C bne v0,t5(4), copy loop 0x80038668-0x80038690 from 0x80134368, 0x800386A4 stores the slot index; mipsdis 80039D04: 0x80039D88-0x80039DA0 (Index2 = ++counter at +4), 0x80039D94 sw 1 -> +0x10.",
+   "kind": "binary"
+  },
+  {
+   "claim": "In the binary no FlagToDestroy slot is ever visible to the hero's latch: UpdateDestroyedEntities runs immediately before UpdateEntitiesEvents, whose first call is MovePlayer, under the same gate. In the DLL the entity scripts (the hero's MovePlayer included) run BEFORE the world proxy's tick loop, which recycles right after each map-events pass; a proxy flagged earlier in the same frame's entity pass is therefore FlagToDestroy (not yet recycled) when the hero's CheckEntityInteraction runs. Whether the hero updates before every other entity was not established.",
+   "evidence": "EntityManager.cs:377-388 and :805-811; AlundraWorldProxy.cs:2229-2236 (comment: 'The scripts of the entities already ran this frame, before this proxy') and :2276-2286 (recycle after RunMapEventsPass); docs/decisions/0024-... ('A corpse left by an entity script is seen by exactly one map-events pass'); AlundraPlayerManager.cs:645-657.",
+   "kind": "read"
+  },
+  {
+   "claim": "In the DLL, Index2 is never assigned (always 0, so the serial test of the latch is vacuous), and the recycler only sets Status = Destroyed and EntityRefId = -1; Flags, ProgramIndexes and Pos* of the recycled proxy are kept and the proxy is never reused. RE-VERIFIED.",
+   "evidence": "rg Index2 in Alundra: AlundraEntityScriptProxy.cs:66 (declaration), :2354 (Clone), AlundraPlayerManager.cs:651 and :669 only; AlundraWorldProxy.cs:2680-2701; ADR-0024 ('Nothing else is cleared', 'Known gap').",
+   "kind": "read"
+  },
+  {
+   "claim": "Consequence of a recycled latched proxy P: with the hero still, XCollisionEntity null and TargetDirection unchanged, CheckEntityInteraction takes collidedEntity = P (all eight equalities hold since P keeps its position), P keeps ProgramIndexes[F] != 0 and InteractRequiresButton, so Square gives res 2, host.ActiveCollisionEntity = P (never picked, P left the update lists) and MovePlayer forces Idle and skips the tail; the binary returns 0. Not reproduced.",
+   "evidence": "AlundraPlayerManager.cs:645-712 and :277-290; AlundraEntityScriptProxy.cs:1525-1548 (pick matches ReferenceEquals(host.ActiveCollisionEntity, this)); the existing T5 test shows the latch carrying a Status Normal entity (AlundraInteractionPassTests.cs:317-348).",
+   "kind": "inference"
+  },
+  {
+   "claim": "The same defect has an adjacent branch: XCollisionEntity is rewritten only inside MoveControllerAndPullPosition (set to null, then to the blocker of the step) and kept when no step is taken; if it still points at a recycled proxy P, the 'else if' branch reads P.Flags (kept by the recycler), re-latches P and the final check uses P's kept ProgramIndexes, while the binary reads a wiped slot (Flags 0, programs 0) and returns 0. Reachability (a zero-tick frame or an ordering where MovePlayer precedes the next step) was not established.",
+   "evidence": "AlundraEntityScriptProxy.cs:2178-2185 and the field doc :320-327; AlundraWorldProxy.cs:2488-2491 ('no step is taken, so the contact keeps its value'); AlundraPlayerManager.cs:667-678; binary 0x8002E92C-0x8002E934 (Flags & 0x8000 on the pointed slot).",
+   "kind": "inference"
+  },
+  {
+   "claim": "The scenario is plausible but rare: 8 of 988 interact (F) programs contain 0x2E 'Destroy entity' by the report's linear-walk census (approximate, not re-run). It will matter more once E14 ports PlayerTryAttack/PlayerTryAction.",
+   "evidence": "report census of EventCodesFTable programs; AlundraPlayerManager.cs unported no-ops.",
+   "kind": "inference"
+  },
+  {
+   "claim": "M-43: the internal parameterless constructor is deliberate and tests build 15 fresh instances (13 in AlundraCameraSwayTests.cs, 2 in AlundraCameraSwayFollowTests.cs); production only does Instance = new(). RE-VERIFIED: the sibling singletons (AlundraDialogueDirector, AlundraInventoryDirector, AlundraMusicPlayer, AlundraScreenFadeDirector, AlundraWarpDirector) have private constructors and no test calls new on them, so the sway is the one with test-built instances.",
+   "evidence": "Alundra/Scripts/AlundraCameraSway.cs:23-28; rg -c 'new AlundraCameraSway\\(\\)' Alundra.Tests (13 + 2); rg private constructors in Alundra/Scripts; git log -1 88ce888.",
+   "kind": "read"
+  },
+  {
+   "claim": "The P3 comment is stale on two counts (LoadingMap is ported: on the ground the hero stays LoadingMap, in the air it gets 0x2D, E19.v; the air states and jump tail are ported, E19.d2c2 S1). The original's lateral ladder exit sets TargetAnimationId = PlayerAnimation.Jump (0x2D). RE-VERIFIED. The class doc has more stale statements outside this slice: lines 28-31 say CheckEntityInteraction is not ported (it is, E12.d), lines 63-66 list 'jump' among the unported cases and speak of 'the five ported values'.",
+   "evidence": "AlundraPlayerManager.cs:262-271, :291-302, :308-312 (the comment, lines 309-310 are the deferred P3 lines), :28-31, :63-70; decompilation PlayerManager.cs:681-683 and PlayerAnimation.cs:53 (Jump = 0x2D); constants AlundraPlayerManager.cs:84-101.",
+   "kind": "read"
+  },
+  {
+   "claim": "Test-side feasibility: names UJ6c/UJ6d/UJ6e/UJ7b are free; the Spawn helper hard-codes SpriteDirection '0' (needs an optional parameter); NewCollidable of the interaction tests uses Status Normal; JumpNpcRig exists in Alundra.Tests/AlundraJumpTestSupport.cs.",
+   "evidence": "rg 'UJ6[c-z]_|UJ7b' Alundra.Tests (no hit); AlundraAnimationImpulseSpawnTests.cs:62-72; AlundraInteractionPassTests.cs:48-60.",
+   "kind": "read"
+  }
+ ],
+ "files_to_touch": [
+  "docs/plan-e19-opcodes.md (a new G4b section with its tasks, BEFORE any code; rule 2 of the workflow since the slice is more than one commit; plus M-15, M-33, M-43 status rows afterwards)",
+  "Alundra/Scripts/AlundraPlayerManager.cs (CheckEntityInteraction guard at :648-657, optionally the XCollisionEntity branch at :667; comments :309-310 and :68-70)",
+  "Alundra/Scripts/AlundraGameState.cs (doc :145-154 claims the eight checks self-invalidate any stale value; Index2 is never assigned)",
+  "Alundra.Tests/AlundraInteractionPassTests.cs (new M-33 tests next to InteractLatch_StandingStillAgainstAButtonEntity_TheLaterPressStillLands, :317)",
+  "Alundra/Scripts/AlundraFrameSyncPasses.cs (helper plus :128 and :266, M-15)",
+  "Alundra/Scripts/AlundraEntitySpawnFactory.cs (commit the spawn row after :699-701, M-15)",
+  "Alundra/Scripts/AlundraWorldProxy.cs (same commit after :1896 in AdoptPlayerPawn, M-15)",
+  "Alundra/Scripts/AlundraEntityScriptProxy.cs (doc of SpawnAnimationActive :205-212, M-15)",
+  "Alundra.Tests/AlundraAnimationImpulseSpawnTests.cs (new M-15 tests; Spawn helper gets an optional spriteDirection parameter)",
+  "docs/decisions/0024-destroyed-entities-are-recycled-through-the-engine-like-the-binary.md (an '## Amendment (E19.m, G4b)' section only, same convention as ADR-0028 and ADR-0050; an ADR is not rewritten)",
+  "docs/plan-e19-m-annexe/backlog-2026-10-03.md (M-15, M-33, M-43 rows; M-33 reset half marked done by E19.m5)",
+  "M-43: no source file (accept)"
+ ],
+ "proposed_red_first_tests": [
+  {
+   "name": "UJ6c_ARowChangeOfTheAppearanceAnimationBeforeItsFirstValidation_GivesTheImpulse",
+   "file": "Alundra.Tests/AlundraAnimationImpulseSpawnTests.cs",
+   "setup": "Spawn(ArrowLevel1, height: 2) with SpriteDirection 0 (TD 0, R0 0). Preconditions: AnimSetsByAnim[0].IsZForceApplied == 256, SpawnAnimationActive. Write arrow.TargetDirection = 0x10 (what a Load program 0x09 writes; col 4 -> row 1 from row 0) before the first rig.Update(), then Update once and once more.",
+   "expected_after": "After update 1: IsZForceApplied == 256 (measure ForceZ first; 256<<8 = 65536 expected by R3) and AnimationDirection == 1; after update 2: IsZForceApplied == 0. AnimationDirection == 0 right after the spawn (committed R0 of SpriteDirection 0).",
+   "expected_at_head": "RED: IsZForceApplied is 0 after update 1 (Expected 256, Actual 0) because the animation-only test exempts the switch (UJ-6b already pins the animation half; this is the row half).",
+   "mutation": "Drop the row term of the exemption (back to animation only): red with Actual 0."
+  },
+  {
+   "name": "UJ6d_ADirectionChangeWithinTheSameRow_StillGivesNoImpulse",
+   "file": "Alundra.Tests/AlundraAnimationImpulseSpawnTests.cs",
+   "setup": "Same spawn; arrow.TargetDirection = 0x04 (col 1, table[1] = row 0, the committed row) before update 1.",
+   "expected_after": "IsZForceApplied == 0 after update 1 and SpawnAnimationActive == false (fell at the validation).",
+   "expected_at_head": "GREEN (control: pins that the exemption keys on the resolved row, not on the raw direction).",
+   "mutation": "Compare TargetDirection with the spawn TargetDirection instead of the resolved row: Actual 256, red."
+  },
+  {
+   "name": "UJ6e_TheRowCommittedAtTheAppearanceHoldsThroughAnAdjacentTurn",
+   "file": "Alundra.Tests/AlundraAnimationImpulseSpawnTests.cs",
+   "setup": "Spawn(ArrowLevel1, height: 2, spriteDirection: 2) (TD 0x08, committed row 2), then TargetDirection = 0x0C before update 1 (binary: table[2*8+3] = 2, no row change).",
+   "expected_after": "IsZForceApplied == 0 and AnimationDirection == 2 after update 1.",
+   "expected_at_head": "RED on AnimationDirection (Expected 2, Actual 1, resolved from row 0); the impulse assertion is green at head. Needed only if the spawn-row commit is chosen.",
+   "mutation": "Remove the row commit in ApplySpawnInitialization: AnimationDirection becomes 1, red."
+  },
+  {
+   "name": "UJ7b_TheHeroArrivingByThe0x53DuringTheAnimation2_TakesTheImpulseWhenItsRowChangesBeforeTheFirstFrame",
+   "file": "Alundra.Tests/AlundraAnimationImpulseSpawnTests.cs",
+   "setup": "Montage of UJ-7 (arc 179, real hero, 0x53 copies animation 2, AdoptPlayerPawn invoked by reflection, ControlLocked), with a record DirectionId and then hero.TargetDirection set to another row before the first arc.OneFrame(). The hero is re-adopted after played frames, so the commit must resolve from row 0 (binary AD_init), not from the stale proxy.AnimationDirection; assert that explicitly.",
+   "expected_after": "hero.IsZForceApplied == 1280 at the first tick (value to be measured first: the hero scale may differ, R6); the UJ-7 test itself (same row) keeps IsZForceApplied == 0 for 5 ticks.",
+   "expected_at_head": "RED: IsZForceApplied 0 (exempt by animation only). Production-site pin for the AdoptPlayerPawn commit.",
+   "mutation": "Remove the row commit in AdoptPlayerPawn only: UJ6c stays green, this test goes red. Second mutation: resolve from proxy.AnimationDirection instead of 0 with a stale non-zero row seeded before the call: row differs, red."
+  },
+  {
+   "name": "InteractLatch_TheLatchedEntityIsRecycled_TheLaterPressFindsNothing",
+   "file": "Alundra.Tests/AlundraInteractionPassTests.cs",
+   "setup": "Montage of T5 (NewDrivablePlayer, sailor with InteractRequiresButton, F program 0x8d, Status Normal). Frame 1: XCollisionEntity = sailor, Update (latch stored). Then put the sailor in the state RecycleDestroyedEntities leaves (Status = Destroyed, EntityRefId = -1, nothing else changed). Frame 2: XCollisionEntity = null, Square pressed, nobody moved, Update.",
+   "expected_after": "host.ActiveCollisionEntity is null and host.GameState.InteractLatchEntity is null (the latch falls through to its invalidation, as the binary's serial mismatch). T5 (live sailor still found) stays green.",
+   "expected_at_head": "RED: Assert.Null(host.ActiveCollisionEntity) fails with the sailor as Actual; the latch entity is still the sailor.",
+   "mutation": "Remove the new Status condition in CheckEntityInteraction: red with the sailor. Second mutation: test only FlagToDestroy: this test stays red (the Destroyed case is not caught)."
+  },
+  {
+   "name": "InteractLatch_TheLatchedEntityIsFlaggedToDestroy_TheLaterPressFindsNothing",
+   "file": "Alundra.Tests/AlundraInteractionPassTests.cs",
+   "setup": "Same montage but the sailor is put in Status = FlagToDestroy between the two frames (the state a proxy flagged earlier in the same frame has when the hero's MovePlayer runs, before the recycling).",
+   "expected_after": "host.ActiveCollisionEntity is null and the latch is null: the binary never exposes a flagged slot to the latch (UpdateDestroyedEntities precedes MovePlayer), so the guard rejects both states.",
+   "expected_at_head": "RED (the report's version of this row said GREEN either way, which was wrong: a direct frame-2 Update with a FlagToDestroy latched sailor still gives res 2 at head).",
+   "mutation": "Guard on Destroyed only: red. Pins the choice of rejecting both states."
+  },
+  {
+   "name": "InteractLatch_TheContactIsARecycledEntity_NoInteractionAndTheLatchIsDropped (optional, only if the adjacent branch is taken into the slice)",
+   "file": "Alundra.Tests/AlundraInteractionPassTests.cs",
+   "setup": "player.XCollisionEntity = a sailor already in the recycled state (Status Destroyed, Flags InteractRequiresButton and ProgramIndexes[F] kept), Square pressed, Update.",
+   "expected_after": "ActiveCollisionEntity null and InteractLatchEntity null (binary: wiped slot, Flags 0, no relatch, programs 0, result 0).",
+   "expected_at_head": "RED (the 'else if' branch re-latches the dead proxy and gives res 2). Reachability of this state in the DLL is not established, so the test pins the function's input domain only.",
+   "mutation": "Remove the extra branch: red."
+  }
+ ],
+ "production_change": "M-33 (about 4 lines, plus the optional adjacent branch). In AlundraPlayerManager.CheckEntityInteraction add a private static predicate IsRecycledSlot(AlundraEntityScriptProxy p) => p.Status is EntityStatus.Destroyed or EntityStatus.FlagToDestroy and add '&& !IsRecycledSlot(state.InteractLatchEntity)' to the all-equal conjunction of the latch test (:650-657). A mismatch then takes the existing fall-through (:681-686: latch = null, collidedEntity = XCollisionEntity), which is exactly the binary's serial mismatch on a wiped slot (0x8002E9C0 -> 0x8002EA78). Reject BOTH states: the binary never shows a flagged slot at MovePlayer (UpdateDestroyedEntities runs first), while the DLL recycles after the entity pass, so only the two-state guard reproduces the binary's observable behaviour; if the flagged state turns out to be unreachable the second state costs nothing. Optional second hunk, only with its own RED test and only if the author wants the adjacent branch: when player.XCollisionEntity is itself a recycled slot, treat it as the wiped slot of the binary (no relatch, latch = null, result 0), since falling through with collidedEntity = XCollisionEntity would still read its kept ProgramIndexes. Correct the doc at AlundraGameState.cs:149-152 (Index2 is never assigned, so the eight checks do not self-invalidate a recycled proxy; the guard does). Add an '## Amendment (E19.m, G4b)' to ADR-0024 saying the binary overwrites the whole 0x294-byte slot (state, serial, flags, programs, positions) while the DLL keeps a deliberate partial reset and guards the one reader that can still reach a recycled proxy. Alternatives considered: (a) mint Index2 from a counter at both spawn paths and zero it in the recycler (the faithful mechanism, larger, many montages build proxies with Index2 0, better done with E14 together with the other pointer-plus-serial checks); (b) eager clear of InteractLatchEntity inside RecycleDestroyedEntities: NOT equivalent to the guard (correction to the report), it covers the recycled state only and leaves the flagged window open, and it adds a second writer of a field documented as single-writer.\\n\\nM-15 (about 15 lines, separate commit so it can be dropped). (1) AlundraFrameSyncPasses gets a pure helper ResolveDirectionRow(int row, uint targetDirection) => AnimationTables.AnimationDirectionTable[row * 8 + (int)(((targetDirection + 2) & 0x1c) >> 2)], used by TryResolveAnimationTarget. (2) At the two spawn sites, ApplySpawnInitialization (after the TargetDirection write, AlundraEntitySpawnFactory.cs:~699) and AdoptPlayerPawn (after :1896), commit the row as InitializeEntity's UpdateAnimation does, resolving from ZERO, not from the proxy's current value: proxy.AnimationDirection = ResolveDirectionRow(0, proxy.TargetDirection) (comment: binary 0x80038B40 and 0x80039EA8, AD_init = 0 from the template copy, 0x8003B250 and 0x8003A074; the correction to the report is 'from 0', because the UJ-7 montage re-adopts a hero that already played frames). (3) One private helper IsAppearanceSwitch(proxy) => proxy.SpawnAnimationActive && proxy.TargetAnimationId == proxy.SpawnAnimationId && ResolveDirectionRow(proxy.AnimationDirection, proxy.TargetDirection) == proxy.AnimationDirection, replacing the test at :128 (evaluated before :140 assigns the row) and at :266 (TakeZImpulse recomputes it at tick time; both evaluation points must use the same helper). Narrower variant if the author refuses to touch AnimationDirection at spawn: a SpawnDirectionRow field set at the same two sites and a predicate resolved from it; it fixes the impulse only, not the final row nor the first-frame readers (0x57/0x58, portal facing, IDSV key).\\n\\nP3 comment, exact replacement (the report's wording would have duplicated the 'USER DECISION' sentence that follows). Lines 309-310 of AlundraPlayerManager.cs, now: '// input - left/right) while climbing. The original goes to Jump here - NOT ported (no jump' / '// animation/physics in V1, same restriction as the LoadingMap case above). USER DECISION'. Replace with: '// input - left/right) while climbing. The original sets TargetAnimationId = PlayerAnimation.Jump here (0x2D, the in-air state,' / '// PlayerManager.cs:681-683); the air states are ported (E19.d2c2) and the LoadingMap case above gives that same 0x2D to a hero that arrives in the air (E19.v), but this exit is NOT ported on purpose. USER DECISION'. Lines 311 and following (the '(2026-08-26, docs/plan-echelles-chiffrage.md): this port's own lateral exit goes to Idle instead - documented deviation, not an oversight.' sentence) stay as they are. Class doc lines 68-70: 'Within the Climbing/ClimbStill case itself, the original's lateral-input exit to Jump (PlayerManager.cs:681-683, 0x2D) is not ported on purpose: this port's documented deviation sends that exit to Idle instead (user decision, 2026-08-26).' The other stale class-doc statements (lines 28-31, 63-66) are out of this slice: log them as documentation debt, do not extend the slice.\\n\\nM-43: no change. Accept with the reason: the internal parameterless constructor is the documented way for pure tests to build a fresh instance (AlundraCameraSway.cs:25); a private constructor plus an internal factory would rewrite 15 test call sites in 2 files for a style gain, while production only does Instance = new().",
+ "chain_impact": "Off the story chain (triage: no case in the corpus). M-33 only affects the hero in Idle or Moving with a non-null latch (or contact) pointing at a recycled or flagged proxy; chain arcs are scripted and control-locked, so no pin should move (inference). M-15 changes AnimationDirection between the spawn and the first SyncAnimation, which is read by 0x57/0x58, the IDSV sort key (AlundraFrameSyncPasses.cs:416) and the portal facing test; the report's A-program census found no Load-time reader, but a catch-up first frame can run a C program before the validation. Acceptance as usual: Alundra.Tests in Release then Debug, cmp of the DLL against alundra-project, the six traces byte-identical (git diff --ignore-cr-at-eol), closed list unchanged, arc pins (A0..A17, A10J) unchanged, and the interaction family (AlundraInteractionPassTests, AlundraDialogueOpcodesProductionTests, AlundraHeroJumpStatesTests, AlundraDestroyedEntityRecyclingTests). Stop rule for M-15: if any pin or trace moves, drop that commit and write the reason.",
+ "risks": [
+  "CRITIC: the report said the FlagToDestroy state is 'unreachable at the check' in the DLL and offered a 'control' test that is 'GREEN either way'. Both are unsupported: the DLL recycles after the entity pass (AlundraWorldProxy.cs:2276-2286), so a proxy flagged earlier in the frame is FlagToDestroy when MovePlayer runs, whereas the binary never exposes a flagged slot to the latch (EntityManager.cs:377-388, :805-811). The guard must reject both Destroyed and FlagToDestroy and the FlagToDestroy test is RED at head (corrected in proposed_red_first_tests and production_change). Reachability of that state in the DLL is still not shown (hero update order unknown).",
+  "CRITIC: the report called the eager clear of the latch inside RecycleDestroyedEntities an 'equivalent result'. It is not: it covers the recycled state only and leaves the flagged window open; it also adds a second writer to a single-writer field.",
+  "CRITIC: a guard on the latch term alone leaves the adjacent branch where XCollisionEntity itself points at a recycled proxy (the 'else if' reads the kept Flags and re-latches it; the binary reads a wiped slot and returns 0). XCollisionEntity is rewritten only in MoveControllerAndPullPosition and kept when no step is taken, so the state may be reachable on a zero-tick frame; not established. The adjacent hunk and its RED test are optional and need the author's scope call.",
+  "CRITIC: the report's M-15 commit formula resolved the spawn row from proxy.AnimationDirection. The binary's AD_init is 0 (template copy: the BSS template is zero, 0x8003B250 and 0x8003A074/0x8003A0E8 copy it before InitializeEntity), and the UJ-7 montage re-adopts a hero that already played frames, so a stale non-zero row would be used. The commit now resolves from row 0.",
+  "CRITIC: the report labelled 'AD_init = 0' and 'the rest of the template is zero' as binary/inference on the strength of Entity.Clear() in the decompilation. They are now measured from the EXE (template beyond the image end 0x800CA800, only store 0x8003B21C, the other references are copies from it); residual limit: the scan follows lui+offset addressing within 40 instructions only.",
+  "CRITIC: 'Measured exposure today is nil' for M-15 overstated the evidence: it is a census over sprite-records.json (re-counted: 13 prefabs) plus a reading of programs, not a measurement; the placement and program-content census was not re-run here. Reworded as 'no real site found'.",
+  "CRITIC: the report's P3 replacement text would have produced a duplicated 'USER DECISION (2026-08-26...)' sentence because the existing sentence after 'above).' stays. Exact line-level replacement for lines 309-310 is now in production_change. The class doc also carries other stale statements (CheckEntityInteraction 'not ported' at lines 28-31, 'jump' among unported cases at 63-66); fixing only lines 68-70 leaves them, and extending the slice to them would be out of scope.",
+  "CRITIC: process. The slice is more than one commit, so the workflow requires a plan section (docs/plan-e19-opcodes.md) approved by the author before any code change; the report's 'do now' must be read as 'write the G4b plan section now', not as permission to edit production code. The plan file is itself a file to touch (added to files_to_touch).",
+  "Everything about the DLL is read, not run: M-33 and M-15 are not reproduced; the RED tests are the reproduction and their at-head values must be confirmed before the fix is written (a contradiction is a stop).",
+  "The census of 0x57/0x58 and of 0x2E (and of events placing the 13 prefabs) uses a linear walk to the first 0xFF with EventOpcodeSizeTable sizes; jumps are not followed and 195 F-table offsets were out of range and skipped, so counts are approximate. Not re-run in this critique.",
+  "M-15 full commit changes the first-frame value of AnimationDirection for every entity spawned with a non-down SpriteDirection (IDSV key, 0x58, portal facing): more faithful, but it can move a pinned arc or trace; keep it a separate commit.",
+  "Guard on Status: EntityStatus.Destroyed is numerically 0, the default of a never-spawned proxy. The interaction montages read use Status Normal (NewCollidable), but the whole interaction family must be run; a latched default-status proxy in another test would now be rejected.",
+  "Unmeasured and outside M-15: the DLL's tick-1 handling of the deferred spawn switch reserves the tick (switch pending from Current = ~Target) whereas the binary's InitializeEntity switch happens outside any tick; this one-tick animation phase question is related but was not checked.",
+  "Process note on the critique itself: only read-only commands were used (the disassembler, python -I reading the EXE and sprite-records.json from stdin, rg, sed, git); no file was created or modified in the repository and nothing was built or run."
+ ],
+ "author_questions": [
+  "M-15 scope: commit the spawn row at spawn, resolved from row 0 as the binary's InitializeEntity does (changes the first-frame AnimationDirection, also fixes the hysteresis final row and the 0x57/0x58/portal first-frame read), or keep the fix to the impulse only with a SpawnDirectionRow field? Recommendation: commit the row, it is one binary value (+0x98 set by the first UpdateAnimation of InitializeEntity) rather than a second modelled state.",
+  "M-33 mechanism: guard on the recycled/flagged status now (recommended), or also mint Index2 from a g_nextEntityIndex-style counter so E14 can port the pointer-plus-serial stale checks with the same field? Recommendation: guard now, Index2 with E14.",
+  "M-33 scope: include the adjacent branch (XCollisionEntity pointing at a recycled proxy, treated as the wiped slot) in this slice, or leave it until it is shown reachable? Recommendation: leave it out unless a montage shows the state, but keep the optional RED test written.",
+  "ADR-0024 says 'a reference kept on a recycled slot sees a slot in the state 0, as in the binary', but the binary overwrites the whole 0x294-byte slot. OK to add an '## Amendment (E19.m, G4b)' section (same convention as ADR-0028 and ADR-0050, not a rewrite) stating that, with the DLL's deliberate partial reset and the guard?",
+  "M-43: confirm 'accept with reason' (no constructor change)."
+ ],
+ "size": "S for M-33, the P3 comment and the M-43 acceptance (about 4 production lines, 2 to 3 tests, comments, docs). M-15 is S to M because of the acceptance runs (Release and Debug suites, six traces, arc pins) after a change that touches AnimationDirection at the two spawn sites. A G4b plan section must be written and approved first.",
+ "recommendation": "Do now as one slice G4b, after its plan section is written and approved (more than one commit), in three commits: (1) M-33 guard on both Destroyed and FlagToDestroy, its two tests, the AlundraGameState doc correction, the ADR-0024 Amendment and the P3 comment with the corrected line-level wording (real latent defect with a firm binary basis, tiny fix; the reset half of M-33 is already done by E19.m5); (2) M-15 row-aware exemption with the spawn-row commit resolved from row 0 and tests UJ6c, UJ6d, UJ6e and UJ7b, as a separate commit with the stop rule above (no real site today, so it can be dropped without loss); (3) docs: backlog and plan status rows, M-43 closed as accepted with the written reason. If the author prefers minimal risk: M-33 plus the P3 comment now and M-15 deferred to the first E14 spawner that writes a direction after InitializeEntity."
+}
