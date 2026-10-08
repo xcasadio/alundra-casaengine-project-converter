@@ -9271,7 +9271,7 @@ Déclencheur de risque : rendu de jeu nouveau et preuve au pixel (relecture et v
   (règles et garde) ; `docs/formats/effects.md` (la phrase qui dit que rien ne les charge), `docs/editeur-couverture-dll.md`, l'ADR du
   parent et son index, ce plan, l'annexe `docs/plan-e19-g3c-annexe/` (`g3c_model.py`, `g3c_expected.json`, `g3c_compare.py`, références). `hero_effects.json` reste exporté (le retirer change l'export,
   hors de G3c).
-- ⏳ **G3c-0 — Prévision d'abord** (commitée avant le code) : `docs/plan-e19-g3c-annexe/g3c_model.py` (lit seulement le JSON de l'export
+- ✅ **G3c-0 — Prévision d'abord** (commitée avant le code) : `docs/plan-e19-g3c-annexe/g3c_model.py` (lit seulement le JSON de l'export
   et la planche PNG ; ancre, coins, recul miroir, ordre, mélange par texel, B(k) avec la **règle haut-gauche**, jamais `tie_sign`) et
   `g3c_expected.json` (empreintes, zones de bruit, sondes, à × 1 et × 3, fond (24, 40, 56)) ; scènes : aura de 476 (`SpawnPlaced(0, 960,
   160, 48)`, animation 1, défilement (800, −8), ancre (160, 119)) aux ticks 0, 2 et 16 du créneau ; rais de la 163 au tick 0, défilement
@@ -9288,7 +9288,7 @@ Déclencheur de risque : rendu de jeu nouveau et preuve au pixel (relecture et v
   (comparaison modèle contre moteur seulement, limite à rapporter). Le nouveau `g3c_model.py` (à la
   racine de l'annexe ; la copie de `discovery/` reste comme trace de la découverte) n'importe ni `tie_sign` ni `bk` de
   `g2b1_predict.py`.
-- ⏳ **G3c-1 — Tests d'abord** (rouges) : ancre (z + 1 : ligne du monde 111 contre 112), bornes de l'élimination (x −129 non, −128 oui, 448 oui,
+- ✅ **G3c-1 — Tests d'abord** (rouges) : ancre (z + 1 : ligne du monde 111 contre 112), bornes de l'élimination (x −129 non, −128 oui, 448 oui,
   449 non ; y −129, −128, 368, 369), fenêtres miroir (U = 0 : origine −1), modes `Abr` 0 à 3 → `Mode0` à `Mode3`, planche 0 ou 1, champs de
   la clé (aura : élévation 214, coordonnée 100 × 111 = 11 100, la ligne du monde ; ligne d'écran 119 au défilement (800, −8) ; l'IDSV de
   l'ensemble d'images est lu dans l'export pour l'élévation), décalage local (image 0 en dernier), image poussée gelée (`0x48`) et pendant
@@ -9303,7 +9303,17 @@ Déclencheur de risque : rendu de jeu nouveau et preuve au pixel (relecture et v
   `BackdropPushProductionTests.cs`) ; `AlundraCameraMath.ToOriginalScrollSpace` épinglé sur les cibles entières du harnais (G3c-3) ; garde sur le vrai export : chaque
   `SheetTextureAssetId` non nul (87 des 158 documents : 86 cartes et le global ; 71 nuls admis) résout dans `AssetInfos.json` vers une
   `.texture` dont le PNG existe.
-- ⏳ **G3c-2 — Code, ADR, docs**.
+- ✅ **G3c-2 — Code, ADR, docs**.
+**Fait le 2026-10-08 (G3c-0 à G3c-2).** `5e2f692` (prévision : `g3c_model.py`, `g3c_expected.json`, `g3c_compare.py`, 16 références ; scènes
+`aura_t0`, `aura_t2`, `aura_t16`, `rays_163`, `pieces_391`, `mirror_476`, `mirror_327`, `abr_378` (la scène ABR choisie par script : 378 effet 1,
+ABR2, 7 quads tous miroir ; pas de scène ABR0 sur données réelles, `Abr + 1` épinglé par les tests et la démo de G2e) ; séquence d'appels
+par scène avec `RunFrame(1, [false])` répété N fois (N tiré des délais de l'export) ; recoupements tous égaux : 163 et 391 aux empreintes de
+la découverte, aura aux empreintes haut-gauche de `verify.md` §2, scènes miroir de la 476 et de la 327 à `verify.md` §3, couverture de
+l'aura à k = 1 égale au marcheur matériel (0 pixel différent)), `7007e5a` (51 cas de tests, 49 rouges sur des corps vides, les 2 verts
+étant l'épingle de `ToOriginalScrollSpace` et la garde de l'export), `a3fa881` (`AlundraEffectStage.AttachService`, `PushFrame` publiques,
+construction pure interne, câblage du mandataire, `docs/formats/effects.md`, `docs/editeur-couverture-dll.md`, ADR-0049, plus grand numéro
+de toutes les branches 0048). Mesures : `Alundra.Tests` **3214** en Release puis en Debug (3163 + 51), aucun test existant ne bouge,
+`cmp` égal, traces. Écart de citation corrigé : les clés du préfab d'entité sont aux lignes 544 à 553 d'`Alundra.entity`.
 - ⏳ **G3c-3 — Preuve au pixel** : harnais hors dépôt (référence `Alundra.dll` par `HintPath`, jamais par `ProjectReference` : la copie
   d'après-build écrit dans `alundra-project/`) : un `CasaEngineGame` sur le vrai export, **back-buffer d'exactement 320k × 240k** (donc
   w = 320k, h = 240k), caméra `Zoom = k`, `Target = (scrollX + 160, −(scrollY + 120))` à composantes entières (la DLL calcule son
