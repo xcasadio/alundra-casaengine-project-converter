@@ -11061,7 +11061,7 @@ pointeur.
   **Retour arrière** : revert des commits du moteur (T1 et T2 séparément).
 
 
-#### 1.2w.2 E19.L-b — Données, convertisseur et DLL de la boucle au repère, avec O-E19-66 ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102, D-E19-106 ; planifiée le 2026-10-08 en L-b1, L-b2, L-b3 ; relecture à faire)
+#### 1.2w.2 E19.L-b — Données, convertisseur et DLL de la boucle au repère, avec O-E19-66 ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102, D-E19-106 ; planifiée le 2026-10-08 en L-b1, L-b2, L-b3 ; relecture n°1 REVISE (les trois tranches), révisée ; relecture n°2 à faire)
 
 Faits et valeurs : `docs/plan-e19-loop-annexe/` (`data/` : l'oracle du 2026-10-05, `oracle_sha256.tsv`, `predicted_*_changes.txt` ; `lb-1008/` :
 la découverte du 2026-10-08, `notes.md`, `proto_extractor.patch` ; `lb-1008/verify/verify.md` l'emporte, corrections M1 à M8). **[F]** Le
@@ -11069,17 +11069,20 @@ prototype de l'extracteur (règle de `data/notes.md` 1.2 dans `RenderBgmTrackUnt
 redonne l'oracle **à l'octet** (45 WAV, `bgm.json` `3d176f4a…6efaf`) et le correctif de font3 (exactement 44 texels de (82, 90, 57) à
 (74, 82, 57)), deux fois, et la contre-vérification le refait de son côté ; l'extracteur d'aujourd'hui (`a958d86`) redonne `data-extracted/`
 à l'octet ; `data-extracted/` égale `Alundra Remake/remaster-data-extracted` (4536 fichiers). Les trois tranches s'exécutent l'une après
-l'autre ; aucun essai de jeu entre L-b2 et L-b3 (la DLL bouclerait le fichier entier, doublé, et les musiques sans boucle).
+l'autre, **après L-a** (LA-2 à LA-4 faits, pointeur monté et vérifié : les deux écrivent la branche du parent et ce plan) ; aucun
+essai de jeu entre L-b2 et L-b3 (la DLL bouclerait le fichier entier, doublé, et les musiques sans boucle). Branche de l'analyseur :
+`chantier/e19-suite2` (jamais `master`).
 
 ###### E19.L-b1 — Extracteur, ré-extraction et miroir (analyseur), moitié extracteur d'O-E19-66 ⏳
 
 Analyseur et données, plus des tests du convertisseur. Déclencheur de risque : données non versionnées (sauvegardes) et format extrait.
 - **LB1-R1 — Rendu des musiques** (D-E19-73, D-E19-76) : plafond 480 s ; fichier `[0, J2)` ; `bgm.json` gagne `Looping`, `LoopStartFrame` = J1
   et `LoopStartSample` = J1 × 735 pour les 38 pistes qui bouclent ; fondu linéaire de 735 échantillons avant les statistiques ; les 7 pistes
-  sans boucle gardent leur traîne (26 : 1220, 36 : 601, 37 : 620, 38 : 531, 40 : 543, 42 : 772, 43 : 900 trames), `Looping` faux et les deux
-  champs nuls ; atteindre le plafond est un échec (la traîne aussi, verify M7, sans changer un octet aujourd'hui).
+  sans boucle gardent leur traîne (113, 104, 14, 111, 2, 108 et 92 trames) : leur longueur totale `Frames` devient 26 : 1220, 36 : 601,
+  37 : 620, 38 : 531, 40 : 543, 42 : 772, 43 : 900, avec `Looping` faux et les deux champs nuls ; atteindre le plafond est un échec (la traîne aussi, verify M7, sans changer un octet aujourd'hui).
 - **LB1-R2 — font3** (O-E19-66) : `ui/font3.png` décodé avec l'entrée 8 de la table de CLUT remplie depuis `WIND.CL` (`0x80044B48`-`0x80044B9C`,
-  lue à `0x80050424`), couleurs décodées comme `TimLoader` (réplication des bits, `TimLoader.cs:63-66`, jamais `Font3.Palettes` qui fait un
+  lue à `0x80050424` ; seules les bandes de texte et le curseur sont prouvés lire l'entrée 8, limite écrite dans `docs/formats/font.md`),
+  couleurs décodées comme `TimLoader` (réplication des bits, `TimLoader.cs:63-66`, jamais `Font3.Palettes` qui fait un
   simple `<< 3`) ; la couleur 0x0000 reste transparente et garde le RVB de l'index 0 de FONT3.TIM. **Le décodage vit dans
   `AlundraDataExtractor/Program.cs`** et appelle l'interface publique de `TimLoader` : la décompilation `AlundraEngine` ne se modifie pas
   (règle de l'auteur du 2026-10-03 ; verify M1).
@@ -11088,42 +11091,53 @@ Analyseur et données, plus des tests du convertisseur. Déclencheur de risque :
   piste 1), nouveau `BgmLoopAtMarkerTests.cs`, un nouveau test de font3 à côté de `FontWriterTests.cs`, `docs/formats/font.md`, le pointeur
   de l'analyseur, ce plan.
 - ⏳ **LB1-0 — Tests d'abord** (rouges sur le `data-extracted/` d'aujourd'hui) : L-A (38 pistes : `Looping`, J1, J1 × 735, `Frames` = J2),
-  L-B (7 pistes sans boucle : faux, nuls, les trames de traîne), L-C (45 : longueur du WAV = 44 + `Frames` × 2940), L-D (38 coutures : la
-  dernière trame stéréo égale la trame `LoopStartSample − 1` ; **rouge sur 38**, verify M4), le test doré (45 WAV et `bgm.json`), F-1 (les 44
-  texels en (74, 82, 57, 255), aucun en (82, 90, 57, 255)) ; verts avant et après : L-E (préfixe, 45), T-A, T-B, T-C.
-- ⏳ **LB1-1 — Code** (LB1-R1, LB1-R2) ; tests du convertisseur verts sur une sortie de l'extracteur avant le miroir (chemin donné aux tests).
+  L-B (7 pistes sans boucle : `Looping` faux, champs nuls, `Frames` = 1220, 601, 620, 531, 543, 772, 900), L-D (38 coutures : la dernière
+  trame stéréo égale la trame `LoopStartSample − 1` ; rouge sur 38, verify M4), le test doré (45 WAV et `bgm.json`), T-D (45), F-1 (les 44
+  texels en (74, 82, 57, 255), aucun en (82, 90, 57, 255)) ; **attendus rouges : L-A 38, L-B 7, L-D 38, doré 45 + `bgm.json`, T-D 45,
+  F-1 1** ; verts avant et après : L-C (45 : longueur du WAV = 44 + `Frames` × 2940, garde invariante), L-E (préfixe, 45), T-A, T-B, T-C.
+  Ces tests se taisent sans données (ils rendent tôt) : chaque passage rapporte le nombre de cas réellement exécutés, non nul.
+- ⏳ **LB1-1 — Code** (LB1-R1, LB1-R2). Pas de passage des tests avant le miroir : la porte d'avant le miroir est celle des SHA-256 et
+  du `diff -rq` de LB1-2 ; les tests du convertisseur passent verts après le miroir, sur `data-extracted/`.
 - ⏳ **LB1-2 — Ré-extraction et miroir** (comme X2-R2) : construction Release fraîche de l'analyseur, `EntityNames.csv` copié à côté de
   l'exécutable (le projet de l'extracteur ne le copie pas) ; lancée **hors du dépôt**, chemin du jeu en barres obliques, dans un dossier neuf
   `D:\development\repo\Alundra Remake\remaster-data-extracted-lb` ; sortie attendue `rendered=45 silent=1 failed=0 (of 46)`,
   `sequencer=18` ; `diff -rq` contre `data-extracted/` = exactement 47 lignes (les 46 de `data/predicted_extract_changes.txt` et
   `ui/font3.png`) ; les 45 WAV et `bgm.json` égaux à l'oracle, `font3.png` au SHA-256 `381c63ef…6fb5` ; tout autre écart est un arrêt ;
-  sauvegardes hors du dépôt `data-extracted.bak-lb` et `remaster-data-extracted.bak-lb` (les précédentes restent ; place : environ 9 Go sur
-  D:, 460 Go libres), renommage, `robocopy /MIR` depuis PowerShell, `diff -rq` final vide (4536 fichiers) ; sens de l'écart vérifié avant le
+  sauvegardes hors du dépôt : `D:\development\repo\Alundra Remake\data-extracted.bak-lb` (copie par `robocopy /E` de `data-extracted/`)
+  et `remaster-data-extracted.bak-lb` (l'ancien dossier renommé) ; les précédentes restent ; place : environ 9 Go sur D:, 460 Go libres ; renommage, `robocopy /MIR` depuis PowerShell, `diff -rq` final vide (4536 fichiers) ; sens de l'écart vérifié avant le
   miroir (mémoire du 2026-09-24).
-- ⏳ **LB1-3 — Vérification** par un vérificateur neuf. **Retour arrière** : revert du commit de l'analyseur et du pointeur ; les dossiers
-  renommés remis en place et le miroir refait, ou l'extracteur `a958d86` relancé (déterministe, 45 s).
+- ⏳ **LB1-3 — Vérification** par un vérificateur neuf. **Arrêts** : un écart de la sortie à l'oracle ou à la liste des 47, un test qui
+  bouge hors de la liste, un fichier hors de la liste. **Retour arrière** : revert du commit de l'analyseur, du pointeur et du commit des
+  tests du parent ; les dossiers renommés remis en place et le miroir refait, ou l'extracteur `a958d86` relancé (déterministe, 45 s).
 
 ###### E19.L-b2 — Convertisseur et export ⏳
 
-- **LB2-R1** : `SoundManifestReader` lit les trois champs nullables (`looping`, `loop_start_frame`, `loop_start_sample`) et les écrit dans
-  `bgm-manifest.json` ; `frames` prend le sens nouveau (jusqu'à J2) ; `loop_detected` reste vrai sur les pistes sans boucle (d'où `looping`).
+- **LB2-R1** : `SoundManifestReader` lit dans `bgm.json` les trois champs nullables `Looping` (nouveau `GetNullableBoolean`), `LoopStartFrame`
+  et `LoopStartSample` et les écrit dans `bgm-manifest.json` sous `looping`, `loop_start_frame`, `loop_start_sample`, juste après `asset_id`,
+  de types `bool?`, `int?`, `int?` (ordre et types de `docs/plan-e19-loop-annexe/data/notes.md`, lignes 239 à 248) ; `frames` prend le sens
+  nouveau (jusqu'à J2 ; pour une piste sans boucle, la fin plus la traîne) ; `loop_detected` reste vrai sur les pistes sans boucle (d'où
+  `looping`).
 - **Fichiers** (liste fermée) : `Readers/SoundManifestReader.cs`, `Writers/AudioWriter.cs` (doc de classe), `SoundManifestReaderTests.cs`,
   `AudioWriterTests.cs` (25 : vrai, 7272, 5 344 920 ; 42 : faux, nul, nul ; absent : nul), `docs/formats/audio-manifests.md` (les trois champs,
   le sens de `frames`, l'exemple de la piste 1) ; **les cinq images de référence** qui portent l'ancienne couleur de l'index 4
   (`docs/plan-e19-f2b1-annexe/pixels/centred.png`, `centred_x2.png`, `docs/plan-e19-f3-annexe/view/pixels/overlap_mrow_V1_t19_x1.png`,
   `overlap_mrow_V1_t19_x2.png`, `overlap_mrow_V2_t22_x1.png` ; verify M2), mises à jour par leurs compositeurs ou par l'échange exact
-  (82, 90, 57) → (74, 82, 57) (82 n'est jamais une valeur `<< 3`) ; ce plan.
+  (82, 90, 57) → (74, 82, 57) (82 n'est jamais une valeur `<< 3` ; texels attendus : 8, 32, 90, 360, 90) ; ce plan.
 - ⏳ **LB2-0 — Tests d'abord** (rouges) : les champs lus et écrits ; puis, après l'export, les trois tests GPU qui comparent les images de
-  référence (`AlundraTextBoxPixelTests.ACentredLine_…`, `AlundraChoicePixelTests.TheChoice_OverAFullFirstRow_…`,
-  `AlundraChoicePixelTests.TheInverseOrderOfTheWindows_…`) passent rouges sur les anciennes images, puis verts sur les nouvelles.
-- ⏳ **LB2-1 — Code et export** : export de référence « avant » refait au HEAD et son manifeste ; export complet en place ; manifeste
+  référence (`Alundra.Tests/UI/AlundraTextBoxPixelTests.cs:230`, `Alundra.Tests/UI/AlundraChoicePixelTests.cs:295` et `:304`) passent
+  rouges sur les anciennes images, puis verts sur les nouvelles.
+- ⏳ **LB2-1 — Code et export** : **manifeste « avant »** = celui de l'`alundra-project/` en place au début de L-b2, export des **anciennes**
+  données par le convertisseur du HEAD fait par E19.m7 (L-b1 ne touche pas l'export ; vérifier qu'aucun export n'a eu lieu depuis :
+  manifeste égal à `m7/manifest-after.txt` du bloc-notes de la session, sauf `report.json`) ; export complet en place ; manifeste
   avant/après = exactement 48 fichiers changés (les 47 de `data/predicted_export_changes.txt` et `UI/Textures/font3.png`), 0 ajouté, 0 retiré
   (le `Musics/bgm_044.wav` resté d'un export ancien est noté, pas touché) ; `bgm-manifest.json` au SHA-1 prévu (`8f302c1a…`, modèle du
-  2026-10-05, à confirmer par l'export) ; `AssetInfos.json` et les compteurs du rapport inchangés ; taille totale **rebasée** sur l'export
+  2026-10-05 ; 20 352 o ; **un `bgm-manifest.json` différent est un arrêt** pour diagnostic) ; `AssetInfos.json` et les compteurs du rapport inchangés ; taille totale **rebasée** sur l'export
   « avant » (environ 1 955 084 838 o, verify M3), nombre de fichiers inchangé ; double export : seul `report.json` diffère ; convertisseur
   vert ; `Alundra.Tests` en Release puis en Debug (les trois tests GPU verts), `cmp`, traces.
-- ⏳ **LB2-2 — Vérification** par un vérificateur neuf. **Retour arrière** : revert ; export refait depuis les données restaurées, manifeste
-  égal à « avant » sauf `report.json`.
+- ⏳ **LB2-2 — Vérification** par un vérificateur neuf. **Arrêts** : un fichier exporté hors des 48, un `bgm-manifest.json` différent du
+  modèle, un test qui bouge hors des trois tests GPU, un fichier hors de la liste. **Retour arrière** : revert du convertisseur et des
+  images ; données de `data-extracted.bak-lb` remises (retour arrière de L-b1) et export refait : manifeste égal à « avant » sauf
+  `report.json`.
 
 ###### E19.L-b3 — La DLL joue la musique en flux avec son point de boucle ⏳
 
@@ -11132,7 +11146,8 @@ Après L-a (pointeur monté, D-E19-105) et L-b2. Déclencheur de risque : compor
   `IsLooped = looping ?? true`, `LoopStartSample ?? 0`, bus Musique, volume 1) ; joue par `Music.Play`/`Stop`/`IsAlive` du moteur au lieu de
   `PlayClip` en boucle entière (`AlundraMusicPlayer.cs`, `StartVoice`) ; la garde B4 (« ne pas relancer une piste vivante ») est inchangée :
   pendant la traîne d'une piste sans boucle, une nouvelle `0xA5` de la même piste est ignorée (**D-E19-106**, écart accepté, dans l'ADR) ;
-  `IsAlive` devient faux au `Music.Update` suivant.
+  `IsAlive` devient faux au `Music.Update` suivant (à épingler par un test) ; un manifeste sans les champs (`looping` absent) : la piste
+  boucle en entier, point 0, avec **un avertissement** par attache nommant le manifeste (repli d'ADR-0003, `data/notes.md` ligne 265).
 - **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraMusicPlayer.cs`, `Alundra.Tests/FakeAudioBackend.cs` (`OpenStream` sert un WAV
   enregistré ; le compte des tampons en attente des voix en flux ; un enregistreur des voix en flux), `AlundraMusicPlayerTests.cs`,
   `AlundraBgmFadeDirectorTests.cs`, `AlundraWarpDepartureTests.cs` (les 40 méthodes passent de `PlayCalls` à l'enregistreur ; la bascule de
@@ -11140,8 +11155,17 @@ Après L-a (pointeur monté, D-E19-105) et L-b2. Déclencheur de risque : compor
   ce plan.
 - ⏳ **LB3-0 — Tests d'abord** : D-1 à D-5 (`docs/plan-e19-loop-annexe/data/notes.md` §5, par exemple D-1 : manifeste `{25 : looping vrai,
   loop_start_sample 5 344 920}`, `PlayMapMusic(389)` puis une fermeture d'image : une voix en flux bouclée au point 5 344 920 ; D-5 : B4
-  inchangée).
-- ⏳ **LB3-1 — Code**, ADR ; `Alundra.Tests` en Release puis en Debug, `cmp`, traces.
+  inchangée). Au départ (pointeur de L-a monté, export de L-b2 présent) : **D-1 à D-4 rouges, D-5 vert** ; D-4 lit le vrai export et
+  **échoue** s'il manque (jamais vert en silence).
+- ⏳ **LB3-1 — Code**, ADR (prochain numéro libre de toutes les branches, revérifié : 0050 est pris par E19.u) ; mutations : point de boucle
+  ignoré, `IsLooped` forcé à vrai (chacune rougit au moins un test).
+- **Acceptation** : D-1 à D-4 rouges puis verts ; `Alundra.Tests` en Release puis en Debug, total = 3222 plus les cas D (et rien d'autre) ;
+  seuls bougent les 40 méthodes `[Fact]` d'`AlundraMusicPlayerTests`, `AlundraBgmFadeDirectorTests` et `AlundraWarpDepartureTests` (lignes
+  `PlayCalls` 22, 39 et 27, `data/notes.md` lignes 282 à 288) et la bascule de `:448` ; `cmp` ; traces ; la DLL Debug copiée dans
+  `alundra-project/` par la cible d'après-build, pour la recette. **Arrêts** : un autre test qui bouge, un fichier hors de la liste, une
+  collision d'ADR, `Music.Play`, `Stop`, `IsAlive` ou `SoundAsset.LoopStartSample` absents au pointeur monté. **Retour arrière** : revert
+  des commits de L-b3 (tests, code, ADR), DLL rebâtie et recopiée ; les données et l'export de L-b2 restent : pas d'essai de jeu jusqu'à
+  ce que L-b3 revienne (ou retour arrière de L-b2 enchaîné).
 - ⏳ **LB3-2 — Vérification** par un vérificateur neuf. **Recette LB-4** (auteur) : une musique qui boucle (par exemple la 25, chambre de la
   389) revient au repère sans coupure audible ; les pistes 36 et 42 s'arrêtent après leur traîne (fidèle à l'original) ; un changement de
   carte qui garde la musique ne la coupe pas.
