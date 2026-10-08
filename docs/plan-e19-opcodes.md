@@ -10792,7 +10792,7 @@ Release puis en Debug (3158 + les 5 lignes de la garde), aucun autre ne bouge ; 
 - ✅ **Recette M7-4** (auteur ; « Tout est ok » le 2026-10-08) : la barrière de la banque 151 (cartes 48 à 53, 435 à 438) et l'interrupteur tricolore (75, 137) : l'image
   s'affiche figée (hypothèse non tracée : quels scripts choisissent ces animations).
 
-#### 1.2s.9 E19.m8 — Petits points du lanceur, commentaires et gardes de tests (tri du 2026-10-08) 🧪 (planifiée le 2026-10-08 ; M8-a, M8-b et M8-c faites, vérification neuve à faire)
+#### 1.2s.9 E19.m8 — Petits points du lanceur, commentaires et gardes de tests (tri du 2026-10-08) ✅ (planifiée le 2026-10-08 ; faite et CONFIRMED le 2026-10-08)
 
 Sans décision de l'auteur ; aucun déclencheur de risque (pas de comportement de la chaîne : 0 site atteignable de `0x5F` ; des
 libellés, des commentaires et des tests) ; un vérificateur neuf sur l'ensemble à la fin. Faits : le tri du 2026-10-08
@@ -10847,6 +10847,13 @@ M-26, M-44). Trois commits, dans l'ordre :
   en Debug (3228 plus les nouveaux), `cmp`, traces : quatre identiques, les deux régénérées ne diffèrent que par leurs lignes de
   libellé ; `CasaEngine.Tests` (4227 plus deux) ; deux solutions du moteur. **Arrêts** : un test existant qui bouge, une ligne de trace
   qui change hors des libellés, un compte de corpus différent de 3. **Retour arrière** : revert.
+- **Vérification (2026-10-08)** : vérificateur neuf **CONFIRMED** sur `dff1cba` (moteur `a24fe31d`). Il a refait chaque
+  mutation (rouge, puis restauré), `Alundra.Tests` 3235/3235 en Release puis en Debug, `cmp` identique, traces : seules les
+  5 et 6 lignes de libellé de `0x36` entre `4cb2520` et `HEAD`, `CasaEngine.Tests` 4229/4229, deux solutions du moteur bâties,
+  la lecture de `0x8003D7B4` refaite. **Avis P3, reporté** (règle : pas de retouche d'un candidat CONFIRMED pour un P3) : les
+  résumés de `WaitUntilFlagOn` et `WaitUntilFlagOff` (`AlundraEventProgramRunner.cs:2202` et `:2213`) disent encore que la
+  table des tailles les nomme à l'envers ; à corriger par la prochaine tranche qui touche ce fichier (contrôle :
+  `rg -n "size table calls|size table's backwards" Alundra/Scripts/AlundraEventProgramRunner.cs` ne rend rien).
 
 ### 1.2u Recette de l'auteur du 2026-10-05 ✅ (constat consigné ; deux défauts enquêtés ; suites réglées : O-E19-60 (E19.s2), O-E19-61 (X2), O-E19-62 (§1.2w), (tri du 2026-10-08))
 
