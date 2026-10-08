@@ -1900,15 +1900,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         proxy.SpawnAnimationActive = true;
         proxy.SpawnAnimationId = proxy.TargetAnimationId;
 
-        // Documented stub for AlundraPlayerManager's faithful LoadingMap(0x36) port
-        // (PlayerManager.cs:914-916: "if IsOnGround != 0, break" - i.e. stay in LoadingMap): only ever
-        // read before this frame's own AlundraEntityScriptProxy.Update runs (E3.d has that method pull
-        // a real Controller.IsGrounded reading here on, every frame, once the controller exists - see
-        // its own doc). Pinning it to 1 here reproduces the ONE case that matters for a fresh New Game
-        // spawn - a grounded hero - so MovePlayer's LoadingMap case takes the "stay" branch instead
-        // of falling to the NOT-ported Jump case; the actual LoadingMap -> Idle exit is the animation
-        // Chain bridge instead (anim 54 -> 0, see AlundraWorldProxy.OnAnimationFinished), matching the
-        // original's own trailing-control-frame-driven animation switch rather than a ground check.
+        // Documented stub for AlundraPlayerManager's LoadingMap(0x36) case (binary 0x800325E8: on the ground the
+        // hero stays LoadingMap, in the air it gets 0x2D - E19.v, O-E19-32): it only covers a read before this
+        // frame's own AlundraEntityScriptProxy.Update, which pulls the real Controller.IsGrounded every frame once
+        // the controller exists (E3.d, see its own doc). Measured on a real arrival 432 px above the ground
+        // (AlundraLoadingMapAirArrivalTests): the pull comes first, so 0x2D is set from the frame 1. On the
+        // ground the LoadingMap -> Idle exit is the animation Chain bridge (anim 54 -> 0, see
+        // AlundraWorldProxy.OnAnimationFinished), matching the original's own trailing-control-frame-driven
+        // animation switch.
         proxy.IsOnGround = 1;
 
         // E19.d2c1 R6: a new pawn starts outside the air state the logic tick holds (a state of the former pawn never follows it). E19.d2c2 S6: the engine

@@ -154,11 +154,10 @@ public class AlundraPlayerManagerTests
     }
 
     // -----------------------------------------------------------------------------------------
-    // LoadingMap(0x36) case, ported faithfully (PlayerManager.cs:914-922): "if IsOnGround != 0,
-    // break" (stay in LoadingMap), else switch to Jump (NOT ported). Either way MovePlayer itself
-    // never moves a LoadingMap-animation player off it - the actual exit is the animation Chain
-    // bridge (AlundraWorldProxy.OnAnimationFinished, hero anim 54 -> 0/Idle), not this method. See
-    // AlundraWorldProxyAnimationEndBridgeTests for that side.
+    // LoadingMap(0x36) case, binary 0x800325E8 (PlayerManager.cs:914-922): on the ground it stays
+    // LoadingMap - the exit is then the animation Chain bridge (AlundraWorldProxy.OnAnimationFinished,
+    // hero anim 54 -> 0/Idle, see AlundraWorldProxyAnimationEndBridgeTests); in the air it gives 0x2D
+    // and leaves the switch (E19.v, O-E19-32, docs/plan-e19-opcodes.md section 1.2z).
     // -----------------------------------------------------------------------------------------
 
     [Fact]
@@ -175,11 +174,36 @@ public class AlundraPlayerManagerTests
     }
 
     [Fact]
-    public void MovePlayer_LoadingMapNotGrounded_StaysLoadingMap_JumpNotPorted()
+    public void MovePlayer_LoadingMapInTheAir_Gives0x2D()
     {
-        // IsOnGround == 0 (default): the original would switch to Jump here (PlayerManager.cs:919-920) -
-        // not ported (no jump animation/physics in V1), so this is a documented no-op, not a mutation.
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0 };
+        // E19.v: the binary reads IsOnGround (+0x144) and, at 0, sets 0x2D. A bare proxy is in the air through HeroAirborne, the
+        // predicate of the common tail (ApplyGroundOrAirTail, which reads the same word at 0x80031EBC).
+        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, HeroAirborne = true };
+
+        AlundraPlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
+
+        Assert.Equal(0x2Du, player.TargetAnimationId);
+    }
+
+    [Fact]
+    public void MovePlayer_LoadingMapInTheAir_WithADirectionHeld_Gives0x2D_AndLeavesTheSwitch()
+    {
+        // E19.v V-R1: after 0x2D the binary leaves the switch, so the jump states' case (the stick's direction, 0x2C with a
+        // direction held) does not run in the same call.
+        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, HeroAirborne = true };
+        var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
+
+        AlundraPlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
+
+        Assert.Equal(0x2Du, player.TargetAnimationId);
+        Assert.Equal(0u, player.TargetDirection);
+    }
+
+    [Fact]
+    public void MovePlayer_LoadingMapBareProxyNotAirborne_StaysLoadingMap_ThePredicateIsTheTails()
+    {
+        // E19.v V-R2: without a controller the air predicate is HeroAirborne, not the IsOnGround a bare proxy leaves at 0.
+        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 0, HeroAirborne = false };
 
         AlundraPlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
 

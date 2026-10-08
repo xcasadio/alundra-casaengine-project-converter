@@ -29,15 +29,12 @@ namespace Alundra.Scripts;
 /// original's own <c>TryUseItem</c>/<c>PlayerTryAction</c>/<c>CheckEntityInteraction</c>/<c>PlayerTryAttack</c>
 /// calls (item use, carried-entity/NPC interaction, weapon attack) are NOT ported - no item/interaction/
 /// combat system exists yet.</description></item>
-/// <item><description>LoadingMap(0x36) case, PlayerManager.cs:914-922, ported faithfully: <c>if
-/// IsOnGround != 0, break</c> (stay in LoadingMap); the original's ground-contact check reads a stub
-/// value (<see cref="AlundraEntityScriptProxy.IsOnGround"/> pinned to 1 for the player until E3's own
-/// gravity/collision chantier - see <see cref="MovePlayer"/>'s own doc). The freshly spawned hero's
-/// actual LoadingMap -&gt; Idle exit is the animation Chain bridge (<c>AlundraWorldProxy.OnAnimationFinished</c>,
-/// 2026-08-23 "Correctif fins d'animation" - anim 54's trailing control frame chains to anim 0/Idle),
-/// not this method - matching the original, where the same trailing-control-frame-driven
-/// <c>UpdateAnimation</c> recursion is what actually leaves LoadingMap, not
-/// <c>MovePlayer</c>.</description></item>
+/// <item><description>LoadingMap(0x36) case, binary 0x800325E8 (PlayerManager.cs:914-922): on the ground the
+/// case ends and the hero stays LoadingMap - its exit is then the animation Chain bridge
+/// (<c>AlundraWorldProxy.OnAnimationFinished</c>, 2026-08-23 "Correctif fins d'animation" - anim 54's trailing
+/// control frame chains to anim 0/Idle), matching the original, where the same trailing-control-frame-driven
+/// <c>UpdateAnimation</c> recursion leaves LoadingMap; in the air (E19.v, O-E19-32) it gives 0x2D and leaves the
+/// switch.</description></item>
 /// </list>
 ///
 /// NOT ported (out of E2's own scope, unconditionally, regardless of <c>TargetAnimationId</c>):
@@ -261,26 +258,23 @@ public static class AlundraPlayerManager
         // PlayerManager.cs:355-357 (UpdatePlayerWeaponEffect/UpdateWeaponStepProgression/
         // UpdatePlayerCarriedEntity) - NOT PORTED (no weapon/carry system).
 
-        // LoadingMap(0x36) case, PlayerManager.cs:914-922, ported faithfully: "if IsOnGround != 0, break"
-        // (stay in LoadingMap) else switch to Jump (NOT ported - no jump animation/physics in V1, see this
-        // class' own doc). AlundraWorldProxy.AdoptPlayerPawn pins IsOnGround = 1 for the player until E3
-        // (no gravity/collision yet), so this always takes the "stay" branch - the hero's actual
-        // LoadingMap -> Idle exit is the animation Chain bridge instead (anim 54's trailing control frame
-        // chains to anim 0/Idle - see AlundraWorldProxy.OnAnimationFinished), matching the original's own
-        // trailing-control-frame-driven animation switch rather than this ground check.
-        if (player.TargetAnimationId == LoadingMapAnimationId && player.IsOnGround == 0)
+        // LoadingMap(0x36) case, binary 0x800325E8 (PlayerManager.cs:914-922; E19.v, O-E19-32): on the ground the case ends and the
+        // hero stays LoadingMap - its exit is then the animation Chain bridge (anim 54's trailing control frame chains to anim 0/Idle,
+        // see AlundraWorldProxy.OnAnimationFinished); in the air it sets 0x2D and leaves the switch, so none of the cases below runs in
+        // this call (V-R1: no stick direction, no 0x2C). "In the air" is the common tail's predicate (V-R2, IsHeroInTheAir).
+        if (player.TargetAnimationId == LoadingMapAnimationId)
         {
-            // PlayerManager.cs:919-920 (goto LAB_80032604): the original branches to the Jump animation
-            // here. Not ported (no jump animation/physics in V1) - documented no-op rather than a fake
-            // jump, same convention as every other unported TargetAnimationId case in this class.
+            if (IsHeroInTheAir(player))
+            {
+                player.TargetAnimationId = AirStillAnimationId;
+            }
         }
-
         // PlayerManager.cs:361-383 (Idle/Moving case) - E12.d ports CheckEntityInteraction into it
         // (TryUseItem/PlayerTryAction/PlayerTryAttack stay unported no-ops, E2's scope): res==2 (button
         // interact) forces Idle and ends the case; res==1 (auto-touch interact) ends it WITHOUT
         // updating the animation this tick; res==0 falls through to the normal animation update -
         // exactly the original's `if (iVar2 != 0) { if (iVar2 != 2) break; ... Idle ... }` shape.
-        if (player.TargetAnimationId == IdleAnimationId || player.TargetAnimationId == MovingAnimationId)
+        else if (player.TargetAnimationId == IdleAnimationId || player.TargetAnimationId == MovingAnimationId)
         {
             player.TargetDirection = dir;
 
@@ -425,12 +419,12 @@ public static class AlundraPlayerManager
     /// when the hero has a controller, <see cref="AlundraEntityScriptProxy.HeroAirborne"/> for a bare proxy of a test): 0x2C with a direction held, else 0x2D.
     /// On the ground: the edge of the Cross (<c>ButtonsJustPressed</c>) takes off - the walking jump (2) with a direction held, else the standing one (0x2B) -
     /// unless the cells forbid it (<c>VramOR &amp; 0x4000</c>: the case ends, nothing changes, not even the Moving), and the tick stamp is taken; otherwise
-    /// Moving or Idle. <c>TryUseItem</c>, <c>PlayerTryAction</c>, <c>PlayerTryAttack</c> and the run of the Triangle stay no-ops of the port. The branch
-    /// <c>LoadingMap</c> to 0x2D stays unported (O-E19-32).
+    /// Moving or Idle. <c>TryUseItem</c>, <c>PlayerTryAction</c>, <c>PlayerTryAttack</c> and the run of the Triangle stay no-ops of the port. The
+    /// <c>LoadingMap</c> case reads the same predicate (E19.v, <see cref="IsHeroInTheAir"/>).
     /// </summary>
     private static void ApplyGroundOrAirTail(AlundraEntityScriptProxy player, in AlundraPadState pad, uint buttonsHold)
     {
-        var airborne = player.Controller != null ? player.IsOnGround == 0 : player.HeroAirborne;
+        var airborne = IsHeroInTheAir(player);
         if (airborne)
         {
             player.TargetAnimationId = buttonsHold != 0 ? AirMovingAnimationId : AirStillAnimationId;
@@ -451,6 +445,12 @@ public static class AlundraPlayerManager
 
         player.TargetAnimationId = buttonsHold != 0 ? MovingAnimationId : IdleAnimationId;
     }
+
+    /// <summary>E19.v V-R2 (docs/plan-e19-opcodes.md section 1.2z): "in the air" for the two sites of the binary that read the hero's
+    /// <c>IsOnGround</c> (+0x144), the <c>LoadingMap</c> case (0x800325E8) and the common tail (0x80031EBC): the controller's ground contact
+    /// when the hero has a controller, <see cref="AlundraEntityScriptProxy.HeroAirborne"/> for a bare proxy of a test.</summary>
+    private static bool IsHeroInTheAir(AlundraEntityScriptProxy player)
+        => player.Controller != null ? player.IsOnGround == 0 : player.HeroAirborne;
 
     /// <summary>
     /// Engine-only addition (docs/plan-echelles-chiffrage.md É4, no equivalent original call): the

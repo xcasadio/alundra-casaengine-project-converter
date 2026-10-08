@@ -11381,7 +11381,7 @@ câblés avant leur premier tick (le bloc vient après leur câblage ; consigné
   un événement de carte pendant qu'on presse Start (la boîte l'emporte) ; un passage de carte franchi en pressant Start (le warp part,
   l'inventaire ne s'ouvre pas).
 
-### 1.2z E19.v — `LoadingMap` en l'air : la pose `0x2D` dès l'arrivée (O-E19-32) ⏳ (planifiée le 2026-10-08 ; découverte faite le 2026-10-08)
+### 1.2z E19.v — `LoadingMap` en l'air : la pose `0x2D` dès l'arrivée (O-E19-32) 🧪 (planifiée le 2026-10-08, relecture READY ; V-1 et V-2 faites le 2026-10-08, vérification neuve à faire)
 
 DLL seule. Pas de décision de l'auteur : le binaire tranche, et D-E19-39 range les états de saut du héros dans E19.d2c. Machine
 d'états du héros : relecture du plan, puis vérificateur neuf. Faits et valeurs : `docs/plan-e19-v-annexe/` (`README.md`,
@@ -11419,7 +11419,7 @@ fait pas. Les arrivées en `0x36` sont le portail, F9 et la nouvelle partie ; `0
   - le commentaire d'`AdoptPlayerPawn` sur `IsOnGround = 1` (« falling to the NOT-ported Jump case », `AlundraWorldProxy.cs`).
 - **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraPlayerManager.cs` ; `Alundra/Scripts/AlundraWorldProxy.cs` (commentaire seul) ;
   `Alundra.Tests/AlundraPlayerManagerTests.cs` ; un nouveau `Alundra.Tests/AlundraLoadingMapAirArrivalTests.cs` ; ce plan ; l'annexe.
-- ⏳ **V-1 — Tests d'abord**, rouges au HEAD :
+- ✅ **V-1 — Tests d'abord**, rouges au HEAD :
   - **(a)** dans `AlundraPlayerManagerTests`, le test qui épingle l'écart (`MovePlayer_LoadingMapNotGrounded_StaysLoadingMap_JumpNotPorted`)
     est remplacé par trois cas :
     - mandataire nu, `HeroAirborne` vrai : `0x2D` (rouge) ;
@@ -11434,7 +11434,20 @@ fait pas. Les arrivées en `0x36` sont le portail, F9 et la nouvelle partie ; `0
     - Idle (0) à l'atterrissage, dont l'image est mesurée avant et après.
     Rouge au HEAD : `0x36` jusqu'à l'image 24.
   - **(c)** le témoin au sol (portail 3 de la 6 vers la 10) : `0x36` jusqu'à l'image 24, puis Idle à l'image 25 (garde, vert au HEAD).
-- ⏳ **V-2 — Code** (V-R1, V-R2) et commentaires.
+- ✅ **V-2 — Code** (V-R1, V-R2) et commentaires.
+  *(fait le 2026-10-08, un seul commit avec les tests. **Rouges d'abord** : les trois prévus. Dans (a), les deux cas en l'air rendent
+  54 au lieu de 45 ; dans (b), `0x2D` n'arrive qu'à l'image 26, et `0x36` va des images 1 à 24. Les quatre gardes sont vertes
+  au HEAD.
+  Écart au plan, dans (a) : le troisième cas pose `IsOnGround` 0 et `HeroAirborne` faux, plus fort que `IsOnGround` 1. Il prouve que le
+  prédicat d'un mandataire nu est bien `HeroAirborne` ; le cas `IsOnGround` 1 existait déjà
+  (`MovePlayer_LoadingMapGrounded_StaysLoadingMap_RegardlessOfPad`).
+  **Mesuré après le correctif** :
+  - `0x2D` arrive dès l'image 1 : la lecture du contact du contrôleur passe avant `MovePlayer`, et l'épingle `IsOnGround = 1`
+    d'`AdoptPlayerPawn` n'est pas lue sur cette arrivée. Le test épingle l'image 1, et le commentaire d'`AdoptPlayerPawn` le dit ;
+  - l'atterrissage reste à l'image 43, toujours en `0x2D`, et Idle vient à l'image 44, comme avant le correctif.
+  Code : une aide `IsHeroInTheAir`, partagée avec `ApplyGroundOrAirTail` ; la branche `LoadingMap` devient la tête de la chaîne.
+  `Alundra.Tests` passe en entier, 3239/3239, en Release puis en Debug (3235 − 1 + 3 + 2) ; aucun autre test ne bouge. `cmp` est égal, et
+  les six traces de référence sont identiques.)*
 - ⏳ **V-3 — Vérification** : vérificateur neuf.
 - **Acceptation** :
   - (a) 2 rouges, (b) 1 rouge, puis tout vert ;
