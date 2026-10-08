@@ -307,7 +307,8 @@ public static class AlundraPlayerManager
         {
             // PlayerManager.cs:679-684: any held direction OTHER than up/down (i.e. a genuinely LATERAL
             // input - left/right) while climbing. The original goes to Jump here - NOT ported (no jump
-            // animation/physics in V1, same restriction as the LoadingMap case above). USER DECISION
+            // animation/physics in V1). The LoadingMap case above IS ported (E19.v: in the air it gives
+            // 0x2D); only this lateral exit to Jump is not. USER DECISION
             // (2026-08-26, docs/plan-echelles-chiffrage.md): this port's own lateral exit goes to Idle
             // instead - documented deviation, not an oversight. ForceZ is cleared (engine-only addition:
             // the original has no separate "stop climbing" reset because a Jump entry starts its own fresh
@@ -647,8 +648,15 @@ public static class AlundraPlayerManager
 
         if (player.XCollisionEntity == null)
         {
+            // E19.m12 (M-33): the binary compares the slot serial first (0x8002E9B4-0x8002E9C0); a wiped slot
+            // (state 0, serial 0, all 0x294 bytes rewritten by the template) never matches, and the mismatch
+            // takes 0x8002E9C0 -> 0x8002EA78 (latch cleared, contact used). The DLL never assigns Index2 and
+            // RecycleDestroyedEntities keeps Flags/ProgramIndexes/positions, so the Index2 comparison cannot
+            // catch a recycled proxy: Status == Destroyed (the state the recycler leaves) refuses it instead,
+            // through the same fall-through. FlagToDestroy is deliberately NOT refused (not proven faithful).
             if (state.InteractLatchEntity == null ||
-                (state.InteractLatchEntity.Index2 == state.InteractLatchFacing &&
+                (state.InteractLatchEntity.Status != EntityStatus.Destroyed &&
+                 state.InteractLatchEntity.Index2 == state.InteractLatchFacing &&
                  state.InteractLatchEntity.PosX == state.InteractLatchEntityX &&
                  state.InteractLatchEntity.PosY == state.InteractLatchEntityY &&
                  state.InteractLatchEntity.PosZ == state.InteractLatchEntityZ &&

@@ -347,6 +347,38 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
         Assert.Null(host.ActiveCollisionEntity);
     }
 
+    [Fact]
+    public void InteractLatch_OnARecycledProxy_IsRefusedAndCleared()
+    {
+        // E19.m12 (M-33): same montage as T5, then the latched sailor is put in the state
+        // RecycleDestroyedEntities leaves (Status Destroyed, EntityRefId -1, nothing else changed).
+        // Index2 is never assigned in the DLL, so only the Destroyed guard can refuse it.
+        var pressNow = false;
+        var host = new InteractScriptHost
+        {
+            PlayerController = new AlundraPlayerController
+            {
+                PadStateProviderForTests = () => pressNow ? SquarePress() : default,
+            },
+        };
+        var player = NewDrivablePlayer(host);
+        var sailor = NewCollidable(0, 0, 0, EntityFlags.InteractRequiresButton);
+        sailor.ProgramIndexes[ScriptHelper.ProgramFInteract] = 0x8d;
+
+        player.XCollisionEntity = sailor;
+        player.Update(1f / 50f);
+        Assert.Same(sailor, host.GameState.InteractLatchEntity);
+
+        sailor.Status = EntityStatus.Destroyed;
+        sailor.EntityRefId = -1;
+
+        player.XCollisionEntity = null;
+        pressNow = true;
+        player.Update(1f / 50f);
+        Assert.Null(host.ActiveCollisionEntity);
+        Assert.Null(host.GameState.InteractLatchEntity);
+    }
+
     // -----------------------------------------------------------------------------------------
     // P-c - consume-on-pick at the REAL slot-F pick site (D-E12D-4, mutation №1's cadence half).
     // -----------------------------------------------------------------------------------------

@@ -11144,7 +11144,7 @@ Moteur seul, puis le pointeur. Faits : `docs/plan-e19-m-annexe/night-discovery-2
   - **Avis P4** : le dépôt compte cinq fichiers de trace et une liste de programmes (`intro-programs-389.txt`). « Six traces » les
     désigne ensemble.
 
-#### 1.2s.13 E19.m12 — Verrou d'interaction sur une entité recyclée (M-33), M-43 accepté, commentaire P3 d'E19.v (G4b sans M-15) ⏳ (planifiée le 2026-10-09, nuit en mode AUTO)
+#### 1.2s.13 E19.m12 — Verrou d'interaction sur une entité recyclée (M-33), M-43 accepté, commentaire P3 d'E19.v (G4b sans M-15) ✅ (planifiée le 2026-10-09, nuit en mode AUTO ; relecture n°2 READY ; faite et CONFIRMED le 2026-10-09)
 
 DLL. Faits : `docs/plan-e19-m-annexe/night-discovery-2026-10-09/G4b.json`.
 - **M-33 [binaire].** Le verrou d'interaction du binaire tient un pointeur d'emplacement (`0x80098F0C`) et le numéro de série `Index2`
@@ -11185,6 +11185,18 @@ DLL. Faits : `docs/plan-e19-m-annexe/night-discovery-2026-10-09/G4b.json`.
   - ce plan, le backlog (M-33, M-43, M-15 reporté).
 - **Acceptation** : un rouge, puis vert ; `Alundra.Tests` en Release puis en Debug, aucun autre test qui bouge ; `cmp` ; traces.
   **Arrêts** : un test existant qui bouge, ou un arc. **Retour arrière** : revert.
+- ✅ **Fait le 2026-10-09** par un exécuteur, puis vérifié par un vérificateur neuf, **CONFIRMED**.
+  - **Code** : la garde `Status != Destroyed` dans le test du verrou (`AlundraPlayerManager.cs:657-665`), commentée avec les adresses ;
+    le résumé d'`InteractLatchEntity` corrigé ; la section Amendment d'ADR-0024 (le corps est intact) ; le commentaire de la branche
+    d'échelle réécrit.
+  - **Test** : `InteractLatch_OnARecycledProxy_IsRefusedAndCleared`. Il est rouge au HEAD (mesuré par le vérificateur, ligne 378 : le
+    marin recyclé est encore trouvé) et rouge sous la mutation « garde retirée » ; T5 reste vert.
+  - **Binaire relu** : en `0x8002E9B4`-`0x8002E9C0`, le numéro de série est comparé, puis `bne` → `0x8002EA78` (verrou vidé, contact
+    gardé).
+  - **Campagne** : `Alundra.Tests` 3254/3254 en Release puis en Debug ; `cmp` identique ; traces inchangées.
+  - **Avis P4** : le statut 0 (`Destroyed`) est aussi celui d'un mandataire construit mais jamais lancé. Tous les chemins de lancement
+    lus posent un statut non nul, et dans le binaire le statut 0 veut aussi dire emplacement libre, donc le refus reste fidèle. À
+    relire si un futur chemin de lancement laissait le statut à 0.
 
 #### 1.2s.14 E19.m13 — Portes de l'aimantation au sommet (M-11, O-E19-44) et plafond absolu suivi du balayage des entités (M-45) (G4a) ⏳ (planifiée le 2026-10-09, nuit en mode AUTO)
 

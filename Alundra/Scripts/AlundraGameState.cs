@@ -147,9 +147,10 @@ public sealed class AlundraGameState
     /// (decompiler-artifact names; PlayerManager.cs:1605-1643 shows they are the interaction memory:
     /// while the player stands still against an InteractRequiresButton entity, contact may read null,
     /// and these eight stored values let the button still find it). Lives here because this object has
-    /// the original globals' scope (the E11.c lesson: guard state lives where the original's lives),
-    /// and the eight equality checks self-invalidate any stale value - including a cross-map
-    /// coincidence, exactly like the original. Only <c>AlundraPlayerManager.CheckEntityInteraction</c>
+    /// the original globals' scope (the E11.c lesson: guard state lives where the original's lives).
+    /// The position checks invalidate a stale value, but <c>Index2</c> is never assigned in the DLL (the
+    /// binary's serial), so a recycled proxy (<c>EntityStatus.Destroyed</c>) is refused by an explicit
+    /// guard in the latch test instead (E19.m12, M-33). Only <c>AlundraPlayerManager.CheckEntityInteraction</c>
     /// reads or writes these.
     /// </summary>
     public AlundraEntityScriptProxy? InteractLatchEntity;

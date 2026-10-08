@@ -24,3 +24,14 @@
 - A corpse left by an entity script is seen by exactly one map-events pass; one left by a map program disappears in the same image.
 - Arc pins that observed a corpse were re-pinned (A0, A0b, A1, A11, A17, A10J) to the recycled state.
 - Known gap, not treated: the binary reuses a freed slot at the next spawn, the DLL appends new entities at the end of the list.
+
+## Amendment (E19.m12, M-33)
+
+The decision "Nothing else is cleared" is a deliberate partial reset, not the binary's behaviour: the binary overwrites the whole
+0x294-byte slot with the template (state, serial `Index2`, flags, programs, positions), while the DLL only sets `Status` to
+`Destroyed` and `EntityRefId` to -1 and keeps `Flags`, `ProgramIndexes` and the positions. The one reader that can still reach a
+recycled proxy is the interact latch (`AlundraGameState.InteractLatchEntity`): in the binary its serial comparison
+(`0x8002E9B4`-`0x8002E9C0`) fails on a wiped slot, but the DLL never assigns `Index2`. `AlundraPlayerManager.CheckEntityInteraction` now
+refuses a latched proxy whose `Status` is `Destroyed` and takes the existing fall-through (latch cleared, contact used, `0x8002EA78`).
+`FlagToDestroy` is not refused (not proven faithful, question to the author). The faithful serial goes with E14. The decision does
+not change.
