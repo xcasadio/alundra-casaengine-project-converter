@@ -208,6 +208,78 @@ public class AudioWriterTests
         }
     }
 
+    // E19.L-b2: the loop fields follow asset_id, in this order, typed bool?, int?, int?.
+    [Fact]
+    public void ConvertAudio_CarriesTheLoopFieldsRightAfterTheAssetIdAndKeepsMissingOnesNull()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            WriteSoundFixture(inputDirectory);
+            File.WriteAllBytes(Path.Combine(inputDirectory, "sound", "bgm", "bgm_003.wav"), FakeWavBytes);
+            File.WriteAllText(
+                Path.Combine(inputDirectory, "sound", "bgm.json"),
+                """
+                [
+                    {
+                        "SoundIndex": 25, "File": "bgm_001.wav", "Frames": 15215, "DurationSeconds": 253.58,
+                        "LoopDetected": true, "PeakLeft": 1, "PeakRight": 1, "RmsLeft": 1.0, "RmsRight": 1.0,
+                        "FirstAudibleFrame": 0, "Looping": true, "LoopStartFrame": 7272, "LoopStartSample": 5344920
+                    },
+                    {
+                        "SoundIndex": 42, "File": "bgm_002.wav", "Frames": 100, "DurationSeconds": 1.0,
+                        "LoopDetected": true, "PeakLeft": 1, "PeakRight": 1, "RmsLeft": 1.0, "RmsRight": 1.0,
+                        "FirstAudibleFrame": 0, "Looping": false, "LoopStartFrame": null, "LoopStartSample": null
+                    },
+                    {
+                        "SoundIndex": 50, "File": "bgm_003.wav", "Frames": 100, "DurationSeconds": 1.0,
+                        "LoopDetected": false, "PeakLeft": 1, "PeakRight": 1, "RmsLeft": 1.0, "RmsRight": 1.0,
+                        "FirstAudibleFrame": 0
+                    }
+                ]
+                """);
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            AudioWriter.ConvertAudio(inputDirectory, outputDirectory, report);
+
+            using var bgmManifest = JsonDocument.Parse(
+                File.ReadAllText(Path.Combine(outputDirectory, "Musics", "bgm-manifest.json")));
+            var entries = bgmManifest.RootElement.EnumerateArray().ToArray();
+
+            var looped = entries[0];
+            Assert.Equal(25, looped.GetProperty("sound_index").GetInt32());
+            Assert.Equal(JsonValueKind.True, looped.GetProperty("looping").ValueKind);
+            Assert.Equal(7272, looped.GetProperty("loop_start_frame").GetInt32());
+            Assert.Equal(5344920, looped.GetProperty("loop_start_sample").GetInt32());
+
+            var oneShot = entries[1];
+            Assert.Equal(JsonValueKind.False, oneShot.GetProperty("looping").ValueKind);
+            AssertNull(oneShot, "loop_start_frame", "loop_start_sample");
+
+            AssertNull(entries[2], "looping", "loop_start_frame", "loop_start_sample");
+
+            var names = looped.EnumerateObject().Select(property => property.Name).ToArray();
+            var assetIdIndex = Array.IndexOf(names, "asset_id");
+            Assert.Equal(
+                new[] { "looping", "loop_start_frame", "loop_start_sample" },
+                names.Skip(assetIdIndex + 1).ToArray());
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
     private static void AssertNull(JsonElement element, params string[] propertyNames)
     {
         foreach (var propertyName in propertyNames)

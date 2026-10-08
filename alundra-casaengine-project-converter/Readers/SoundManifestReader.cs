@@ -22,6 +22,9 @@ public sealed class BgmEntry
     public double RmsRight { get; set; }
     public int FirstAudibleFrame { get; set; }
     public Guid AssetId { get; set; }
+    public bool? Looping { get; set; }
+    public int? LoopStartFrame { get; set; }
+    public int? LoopStartSample { get; set; }
 }
 
 /// <summary>

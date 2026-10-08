@@ -121,6 +121,63 @@ public class SoundManifestReaderTests
         }
     }
 
+    // E19.L-b2: the loop marker fields written by the extractor (docs/plan-e19-loop-annexe/data/notes.md, 4.1).
+    // Looping tells a looped track from a one-shot; all three stay null when the key is absent (an older bgm.json)
+    // and a one-shot carries explicit nulls for the two loop positions.
+    [Fact]
+    public void ReadBgm_ReadsTheLoopFieldsOfALoopedTrack()
+    {
+        var entry = ReadSingleBgm(
+            """
+            { "SoundIndex": 25, "File": "bgm_025.wav", "Frames": 15215, "LoopDetected": true,
+              "Looping": true, "LoopStartFrame": 7272, "LoopStartSample": 5344920 }
+            """);
+
+        Assert.True(entry.Looping);
+        Assert.Equal(7272, entry.LoopStartFrame);
+        Assert.Equal(5344920, entry.LoopStartSample);
+    }
+
+    [Fact]
+    public void ReadBgm_ReadsAOneShotAsNotLoopingWithNullPositions()
+    {
+        var entry = ReadSingleBgm(
+            """
+            { "SoundIndex": 42, "File": "bgm_042.wav", "Frames": 100, "LoopDetected": true,
+              "Looping": false, "LoopStartFrame": null, "LoopStartSample": null }
+            """);
+
+        Assert.False(entry.Looping);
+        Assert.Null(entry.LoopStartFrame);
+        Assert.Null(entry.LoopStartSample);
+    }
+
+    [Fact]
+    public void ReadBgm_KeepsTheLoopFieldsNullWhenTheKeysAreAbsent()
+    {
+        var entry = ReadSingleBgm(
+            """
+            { "SoundIndex": 7, "File": "bgm_007.wav", "Frames": 100, "LoopDetected": true }
+            """);
+
+        Assert.Null(entry.Looping);
+        Assert.Null(entry.LoopStartFrame);
+        Assert.Null(entry.LoopStartSample);
+    }
+
+    private static BgmEntry ReadSingleBgm(string elementJson)
+    {
+        var path = WriteFixture("[" + elementJson + "]");
+        try
+        {
+            return Assert.Single(SoundManifestReader.ReadBgm(path));
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
     private static string WriteFixture(string json)
     {
         var path = Path.Combine(Path.GetTempPath(), $"sound-{Guid.NewGuid():N}.json");
