@@ -1,0 +1,70 @@
+using CasaEngine.Framework.Audio;
+using CasaEngine.Framework.Audio.Mixing;
+using CasaEngine.Framework.Audio.Streaming;
+using Xunit;
+
+namespace CasaEngine.Tests.Audio;
+
+/// <summary>Counter-check prototype (scratch copy only): FileStream seek and the depth-24 values.</summary>
+public class VerifyExtraTests
+{
+    [Fact]
+    public void W6f_SeekOnAFileStream_DoesNotAllocate()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"verify-seek-{Guid.NewGuid():N}.wav");
+        File.WriteAllBytes(path, WavBuilder.CreatePcm16(44100, 2, 200000, 18, new byte[6], "LIST"));
+        try
+        {
+            using var reader = new WavStreamReader(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read));
+            var buffer = new byte[16384];
+            reader.Read(buffer, 0, buffer.Length);
+            reader.SeekToSample(100000);
+            reader.Read(buffer, 0, buffer.Length);
+
+            var before = AllocationWindow.Start();
+            for (var i = 0; i < 500; i++)
+            {
+                reader.SeekToSample((i * 397L) % 200000);
+                reader.Read(buffer, 0, buffer.Length);
+            }
+
+            Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public void L1_AtTheDefaultDepth_After_T2()
+    {
+        var backend = new FakeAudioBackend { RecordSubmittedBuffers = true };
+        var provider = new FakeAudioClipProvider();
+        var service = new AudioService(backend) { ClipProvider = provider };
+        var data = new byte[4000];
+        for (var f = 0; f < 1000; f++)
+        {
+            BitConverter.TryWriteBytes(data.AsSpan(f * 4, 2), (short)f);
+            BitConverter.TryWriteBytes(data.AsSpan((f * 4) + 2, 2), (short)(10000 + f));
+        }
+
+        var asset = new SoundAsset
+        {
+            Name = "ramp",
+            AudioFileAssetId = provider.RegisterStream(WavBuilder.Create(WavBuilder.PcmFormatTag, 44100, 2, 16, data, 18)),
+            BusName = AudioBusNames.Music,
+            IsStreaming = true,
+            IsLooped = true,
+            LoopStartSample = 600,
+        };
+
+        service.Music.Play(asset);
+
+        var sizes = backend.GetSubmittedBuffers(new AudioVoiceHandle(0, 0)).Select(b => b.Length).ToArray();
+        var target = MusicPlayer.DefaultQueuedBufferTarget;
+        Assert.Equal(target, sizes.Length);
+        Assert.Equal(4000, sizes[0]);
+        Assert.All(sizes.Skip(1), s => Assert.Equal(1600, s));
+    }
+}

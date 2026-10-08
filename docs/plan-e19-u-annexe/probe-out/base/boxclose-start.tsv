@@ -1,0 +1,7 @@
+mode	startAt	R	inventoryFirstActiveFrame	menuOpenFirstFrameAfterR	boxReopened
+0	R-1	65	-1	-1	0
+0	R+0	65	-1	-1	0
+0	R+1	65	66	66	0
+1	R-1	65	-1	-1	0
+1	R+0	65	-1	-1	0
+1	R+1	65	66	66	0

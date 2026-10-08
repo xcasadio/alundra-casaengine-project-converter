@@ -1,0 +1,10 @@
+wav vs oracle table: mismatches []
+bgm.json proto 3d176f4a2df0dc7ad0d8f1a2b88fed1e919d4e4b4aab173c6028192ca0b6efaf oracle 3d176f4a2df0dc7ad0d8f1a2b88fed1e919d4e4b4aab173c6028192ca0b6efaf
+bgm.json byte-equal to oracle True
+bgm_044.wav in proto False
+font3 size (256, 256, 4) (256, 256, 4) differing texels 44
+old colours [(np.int64(82), np.int64(90), np.int64(57), np.int64(255))] new colours [(np.int64(74), np.int64(82), np.int64(57), np.int64(255))]
+cells {np.int64(4): 1, np.int64(14): 1, np.int64(15): 1, np.int64(21): 8, np.int64(22): 2, np.int64(23): 2, np.int64(24): 2, np.int64(25): 2, np.int64(26): 5, np.int64(27): 5, np.int64(28): 5, np.int64(29): 5, np.int64(64): 5}
+index-0 colour kept: transparent texels old/new 54517 54517 RGB of transparent equal True
+font3.png sha256 new 381c63efe4f663b0f0fec8e9da6f3a81751eec23ce60eeb742ba5df8f86a6fb5 9951
+mode of new png RGBA old RGBA

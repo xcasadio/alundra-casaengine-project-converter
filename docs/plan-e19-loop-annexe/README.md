@@ -16,3 +16,10 @@ Versioned on 2026-10-08 from the session scratchpad, where it was prepared on 20
   the oracle's SHA-256 table `oracle_sha256.tsv`), and its counter-check `data/verify/`. The oracle WAV files themselves (about 16 GB with
   the working copies) stay in the session scratchpad (`loop-data/oracle/`) and are not versioned.
 - The scripts read the game data, the binary and the scratchpad through absolute paths of the author's machine: adapt them first.
+- `la-1008/`: the discovery of 2026-10-08 for L-a against the engine at `f86a981b` (rules, values written in advance by `sim.py`,
+  closed file list, depth table) and its counter-check `la-1008/verify/` (the values replayed as real xUnit tests in a physical copy, all
+  equal; mutations; corrections M1 to M7).
+- `lb-1008/`: the discovery of 2026-10-08 for L-b and O-E19-66 (the extractor prototype `proto_extractor.patch` reproduces the oracle byte
+  for byte and gives the font3 fix) and its counter-check `lb-1008/verify/` (corrections M1 to M8: the font3 decode belongs in
+  `AlundraDataExtractor/Program.cs`, not in the decompiled `AlundraEngine`; five reference images and three GPU tests hold the old
+  index-4 colour; the export size target is re-based).

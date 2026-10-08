@@ -1,0 +1,5 @@
+export Musics vs TodaySHA256 mismatches []
+oracle WAVs vs SHA256 mismatches [] oracle bytes 1343140980
+current export OutputSizeBytes 1311900066 OutputFileCount 24106
+delta (WAVs + manifest) 643184772 predicted new OutputSizeBytes 1955084838 (10-05 prediction 1930905296)
+font3.png export sha256 08824c3b971ec28e442706c31c0df4845815e95153814ba3ea9d187443b0f9a7

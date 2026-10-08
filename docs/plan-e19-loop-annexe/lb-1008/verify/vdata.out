@@ -1,0 +1,19 @@
+table rows 45
+my bgm.json sha256 3d176f4a2df0dc7ad0d8f1a2b88fed1e919d4e4b4aab173c6028192ca0b6efaf equals oracle constant True 17202
+my bgm.json byte-equal to oracle file True
+bgm.json keys (mine) ['SoundIndex', 'File', 'Frames', 'DurationSeconds', 'LoopDetected', 'PeakLeft', 'PeakRight', 'RmsLeft', 'RmsRight', 'FirstAudibleFrame', 'Looping', 'LoopStartFrame', 'LoopStartSample']
+entries mine/today 45 45 indices True
+mismatches []
+looping 38 one-shots [(26, 1220, None, None, 1106), (36, 601, None, None, 496), (37, 620, None, None, 605), (38, 531, None, None, 419), (40, 543, None, None, 540), (42, 772, None, None, 663), (43, 900, None, None, 807)]
+max release tail (frames after E) (113, 26) seconds 1.883
+L-C red (mine) []
+L-D red on my output []
+L-D red on today data-extracted (table LoopStartSample) 38 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 35, 39, 41, 45, 46]
+looping tracks where today L-D is green []
+L-E prefix red (mine) [] L-E red (today) []
+WAV bytes total (mine) 1343140980
+LoopDetected changed [14]
+FirstAudibleFrame changed []
+max LoopStartSample 10695720
+track 1 entry {'SoundIndex': 1, 'File': 'bgm_001.wav', 'Frames': 15215, 'DurationSeconds': 253.58333333333334, 'LoopDetected': True, 'PeakLeft': 32767, 'PeakRight': 28689, 'RmsLeft': 3792.8441318675627, 'RmsRight': 3775.4593717910325, 'FirstAudibleFrame': 34, 'Looping': True, 'LoopStartFrame': 7965, 'LoopStartSample': 5854275}
+track 42 entry {'SoundIndex': 42, 'File': 'bgm_042.wav', 'Frames': 772, 'DurationSeconds': 12.866666666666667, 'LoopDetected': True, 'PeakLeft': 27885, 'PeakRight': 32768, 'RmsLeft': 3445.397607275519, 'RmsRight': 5851.076969082561, 'FirstAudibleFrame': 31, 'Looping': False, 'LoopStartFrame': None, 'LoopStartSample': None}

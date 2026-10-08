@@ -1,0 +1,65 @@
+string at 0x80023EFC: b'taki\\screen\\wind.cl'
+80044b30  lw       $s2, 0x38($sp)
+80044b34  lw       $s1, 0x34($sp)
+80044b38  lw       $s0, 0x30($sp)
+80044b3c  addiu    $sp, $sp, 0x58
+80044b40  jr       $ra
+80044b44  nop      
+80044b48  addiu    $sp, $sp, -0x28
+80044b4c  lui      $a0, 0x8002
+80044b50  addiu    $a0, $a0, 0x3efc
+80044b54  lui      $a1, 0x800d
+80044b58  addiu    $a1, $a1, -0x3fa8
+80044b5c  move     $a2, $zero
+80044b60  addiu    $a3, $zero, 0x200
+80044b64  sw       $ra, 0x20($sp)
+80044b68  sw       $s1, 0x1c($sp)
+80044b6c  jal      0x8008160c
+80044b70  sw       $s0, 0x18($sp)
+80044b74  move     $s0, $zero
+80044b78  lui      $v0, 0x8014
+80044b7c  addiu    $s1, $v0, 0x6e28
+80044b80  addiu    $a0, $zero, 0x120
+80044b84  jal      0x800840e8
+80044b88  addiu    $a1, $s0, 0x1e0
+80044b8c  sh       $v0, ($s1)
+80044b90  addiu    $s0, $s0, 1
+80044b94  slti     $v0, $s0, 0x10
+80044b98  bnez     $v0, 0x80044b80
+80044b9c  addiu    $s1, $s1, 2
+80044ba0  addiu    $a0, $sp, 0x10
+80044ba4  lui      $a1, 0x800d
+80044ba8  addiu    $a1, $a1, -0x3fa8
+80044bac  addiu    $v0, $zero, 0x120
+80044bb0  sh       $v0, 0x10($sp)
+80044bb4  addiu    $v0, $zero, 0x1e0
+80044bb8  sh       $v0, 0x12($sp)
+80044bbc  addiu    $v0, $zero, 0x10
+80044bc0  sh       $v0, 0x14($sp)
+80044bc4  jal      0x80084f90
+80044bc8  sh       $v0, 0x16($sp)
+80044bcc  lw       $ra, 0x20($sp)
+80044bd0  lw       $s1, 0x1c($sp)
+80044bd4  lw       $s0, 0x18($sp)
+80044bd8  addiu    $sp, $sp, 0x28
+80044bdc  jr       $ra
+80045408 addiu $t0, $t0, 0x6e28 -> table
+8004714c addiu $t1, $t1, 0x6e28 -> table
+80048460 lhu $v1, 0x6e28($v1) -> table
+8004b848 addiu $a3, $a3, 0x6e28 -> table
+8004b904 addiu $a2, $a2, 0x6e28 -> table
+8004b9e4 addiu $a3, $a3, 0x6e28 -> table
+8004bb08 addiu $a2, $a2, 0x6e28 -> table
+8004bbd0 addiu $a3, $a3, 0x6e28 -> table
+8004f83c lhu $v0, 0x6e28($v0) -> table
+80050424 lhu $v0, 0x6e38($v0) -> entry8
+80050a30 lhu $v0, 0x6e28($v0) -> table
+800521a4 addiu $t0, $t0, 0x6e28 -> table
+800522a8 addiu $t0, $t0, 0x6e28 -> table
+80052394 addiu $t0, $t0, 0x6e28 -> table
+80052490 addiu $t0, $t0, 0x6e28 -> table
+80054b90 addiu $t0, $t0, 0x6e28 -> table
+80054c30 addiu $t1, $t1, 0x6e28 -> table
+80054d24 addiu $t0, $t0, 0x6e28 -> table
+80054e18 addiu $t1, $t1, 0x6e28 -> table
+8005a1d8 lhu $v1, 0x6e28($v1) -> table

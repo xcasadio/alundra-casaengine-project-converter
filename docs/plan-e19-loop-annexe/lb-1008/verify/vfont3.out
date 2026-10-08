@@ -1,0 +1,30 @@
+FONT3.TIM bpp 4 clut True clut at (0, 0) size (16, 1) image at (0, 0) size (256, 256)
+FONT3.TIM CLUT 0 raw 4293 36ab 3630 25ac 1d6a 1528 08c5 04a3 0c80 6a72 21da 5639 6318 2108 294a 4a52
+index histogram [54517, 22, 1770, 277, 44, 93, 8043, 189, 0, 16, 24, 24, 240, 120, 145, 12]
+WIND.CL entry 8 raw 0000 36ab 3630 25ac 1d49 1528 08c5 04a3 0c80 6a72 21da 5639 6318 2108 294a 4a52
+per index: FONT3 CLUT0 rep | WIND8 rep | WIND8 plain<<3
+0 4293 (156, 165, 132) 0000 (0, 0, 0) (0, 0, 0) texels 54517 DIFF
+1 36ab (90, 173, 107) 36ab (90, 173, 107) (88, 168, 104) texels 22 
+2 3630 (132, 140, 107) 3630 (132, 140, 107) (128, 136, 104) texels 1770 
+3 25ac (99, 107, 74) 25ac (99, 107, 74) (96, 104, 72) texels 277 
+4 1d6a (82, 90, 57) 1d49 (74, 82, 57) (72, 80, 56) texels 44 DIFF
+5 1528 (66, 74, 41) 1528 (66, 74, 41) (64, 72, 40) texels 93 
+6 08c5 (41, 49, 16) 08c5 (41, 49, 16) (40, 48, 16) texels 8043 
+7 04a3 (24, 41, 8) 04a3 (24, 41, 8) (24, 40, 8) texels 189 
+8 0c80 (0, 33, 24) 0c80 (0, 33, 24) (0, 32, 24) texels 0 
+9 6a72 (148, 156, 214) 6a72 (148, 156, 214) (144, 152, 208) texels 16 
+10 21da (214, 115, 66) 21da (214, 115, 66) (208, 112, 64) texels 24 
+11 5639 (206, 140, 173) 5639 (206, 140, 173) (200, 136, 168) texels 24 
+12 6318 (198, 198, 198) 6318 (198, 198, 198) (192, 192, 192) texels 240 
+13 2108 (66, 66, 66) 2108 (66, 66, 66) (64, 64, 64) texels 120 
+14 294a (82, 82, 82) 294a (82, 82, 82) (80, 80, 80) texels 145 
+15 4a52 (148, 148, 148) 4a52 (148, 148, 148) (144, 144, 144) texels 12 
+used indices [0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15] WIND.CL entries equal to entry 8 on them [8]
+FONT3 CLUT0 equals which WIND.CL entry on used indices: []
+today png == my CLUT0 decode (RGBA): True differing texels 0
+my WIND8 decode vs CLUT0 decode: differing texels 44 indices [4]
+cells {np.int64(15): 1, np.int64(4): 1, np.int64(14): 1, np.int64(25): 2, np.int64(21): 8, np.int64(22): 2, np.int64(23): 2, np.int64(26): 5, np.int64(27): 5, np.int64(28): 5, np.int64(29): 5, np.int64(24): 2, np.int64(64): 5}
+alpha-visible texels per index {0: 0, 1: 22, 2: 1770, 3: 277, 4: 44, 5: 93, 6: 8043, 7: 189, 9: 16, 10: 24, 11: 24, 12: 240, 13: 120, 14: 145, 15: 12}
+prototype (discovery out-lb) sha256 381c63efe4f663b0f0fec8e9da6f3a81751eec23ce60eeb742ba5df8f86a6fb5 9951 == my WIND8 decode: True diff texels 0
+prototype (my run) sha256 381c63efe4f663b0f0fec8e9da6f3a81751eec23ce60eeb742ba5df8f86a6fb5 9951 == my WIND8 decode: True diff texels 0
+today sha256 08824c3b971ec28e442706c31c0df4845815e95153814ba3ea9d187443b0f9a7 9951

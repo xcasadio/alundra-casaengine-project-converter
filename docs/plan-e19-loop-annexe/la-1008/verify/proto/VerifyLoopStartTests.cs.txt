@@ -1,0 +1,444 @@
+using CasaEngine.Core.Logging;
+using CasaEngine.Editor.Controls;
+using CasaEngine.EditorServices;
+using CasaEngine.Framework.Audio;
+using CasaEngine.Framework.Audio.Mixing;
+using CasaEngine.Framework.Audio.Streaming;
+using Newtonsoft.Json.Linq;
+using Xunit;
+
+namespace CasaEngine.Tests.Audio;
+
+/// <summary>Counter-check prototype (scratch copy only): the discovery's written-in-advance values.</summary>
+[Collection(ProjectEnvironmentCollection.Name)]
+public class VerifyLoopStartTests
+{
+    private sealed class CapturingLogger : ILogger
+    {
+        public List<string> Warnings { get; } = new();
+        public void Close() { }
+        public void WriteTrace(string msg) { }
+        public void WriteDebug(string msg) { }
+        public void WriteInfo(string msg) { }
+        public void WriteWarning(string msg) => Warnings.Add(msg);
+        public void WriteError(string msg) { }
+    }
+
+    private static readonly AudioVoiceHandle Voice = new(0, 0);
+
+    /// <summary>Stereo ramp: frame f = (L f, R 10000 + f).</summary>
+    private static byte[] Ramp(int frames, int formatChunkSize, int listBytes)
+    {
+        var data = new byte[frames * 4];
+        for (var f = 0; f < frames; f++)
+        {
+            BitConverter.TryWriteBytes(data.AsSpan(f * 4, 2), (short)f);
+            BitConverter.TryWriteBytes(data.AsSpan((f * 4) + 2, 2), (short)(10000 + f));
+        }
+
+        return WavBuilder.Create(WavBuilder.PcmFormatTag, 44100, 2, 16, data, formatChunkSize,
+            listBytes > 0 ? new byte[listBytes] : null, listBytes > 0 ? "LIST" : null);
+    }
+
+    private static byte[] MonoRamp(int frames)
+    {
+        var data = new byte[frames * 2];
+        for (var f = 0; f < frames; f++)
+        {
+            BitConverter.TryWriteBytes(data.AsSpan(f * 2, 2), (short)f);
+        }
+
+        return WavBuilder.Create(WavBuilder.PcmFormatTag, 44100, 1, 16, data, 16);
+    }
+
+    private static AudioService Service(out FakeAudioBackend backend, out FakeAudioClipProvider provider, bool record = true)
+    {
+        backend = new FakeAudioBackend { RecordSubmittedBuffers = record };
+        provider = new FakeAudioClipProvider();
+        return new AudioService(backend) { ClipProvider = provider };
+    }
+
+    private static SoundAsset Asset(FakeAudioClipProvider provider, byte[] wav, bool looped, long loopStart) => new()
+    {
+        Name = "ramp",
+        AudioFileAssetId = provider.RegisterStream(wav),
+        BusName = AudioBusNames.Music,
+        IsStreaming = true,
+        IsLooped = looped,
+        LoopStartSample = loopStart,
+    };
+
+    private static int[] Sizes(FakeAudioBackend backend) => backend.GetSubmittedBuffers(Voice).Select(b => b.Length).ToArray();
+
+    private static List<(short L, short R)> Frames(FakeAudioBackend backend)
+    {
+        var list = new List<(short, short)>();
+        foreach (var b in backend.GetSubmittedBuffers(Voice))
+        {
+            for (var i = 0; i < b.Length; i += 4)
+            {
+                list.Add((BitConverter.ToInt16(b, i), BitConverter.ToInt16(b, i + 2)));
+            }
+        }
+
+        return list;
+    }
+
+    private static void AssertLoopSequence(FakeAudioBackend backend, int frames, int loopStart)
+    {
+        var seq = Frames(backend);
+        var period = frames - loopStart;
+        for (var i = 0; i < seq.Count; i++)
+        {
+            var expected = i < frames ? i : loopStart + ((i - frames) % period);
+            Assert.True(seq[i].L == expected && seq[i].R == 10000 + expected, $"frame {i}: ({seq[i].L},{seq[i].R}) != {expected}");
+        }
+    }
+
+    private static void PumpWorker(MusicPlayer player, FakeAudioBackend backend, int wanted)
+    {
+        var deadline = Environment.TickCount64 + 2000;
+        while (backend.GetSubmittedBuffers(Voice).Count < wanted && Environment.TickCount64 < deadline)
+        {
+            player.Update(0.016f);
+            Thread.Sleep(2);
+        }
+    }
+
+    // ---- L: player -----------------------------------------------------------------
+
+    [Theory]
+    [InlineData(false, 18, 0)]
+    [InlineData(true, 18, 0)]
+    [InlineData(false, 18, 6)] // L6: data offset 60
+    [InlineData(true, 18, 6)]
+    public void L1_LoopsToTheLoopStart(bool worker, int fmt, int list)
+    {
+        var service = Service(out var backend, out var provider);
+        using var player = new MusicPlayer(service, worker, 16384, 3);
+        Assert.True(player.Play(Asset(provider, Ramp(1000, fmt, list), true, 600)).IsValid);
+
+        Assert.Equal(new[] { 4000, 1600, 1600 }, Sizes(backend));
+
+        backend.ConsumeBuffers(Voice, 3);
+        if (worker)
+        {
+            PumpWorker(player, backend, 6);
+        }
+        else
+        {
+            player.Update(0.016f);
+        }
+
+        Assert.Equal(new[] { 4000, 1600, 1600, 1600, 1600, 1600 }, Sizes(backend));
+        AssertLoopSequence(backend, 1000, 600);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void L2_SmallBuffersCrossTheSeam(bool worker)
+    {
+        var service = Service(out var backend, out var provider);
+        using var player = new MusicPlayer(service, worker, 1024, 3);
+        player.Play(Asset(provider, Ramp(1000, 18, 0), true, 600));
+        Assert.Equal(new[] { 1024, 1024, 1024 }, Sizes(backend));
+
+        for (var round = 1; round <= 2; round++)
+        {
+            backend.ConsumeBuffers(Voice, 3);
+            if (worker)
+            {
+                PumpWorker(player, backend, 3 + (3 * round));
+            }
+            else
+            {
+                player.Update(0.016f);
+            }
+        }
+
+        Assert.Equal(new[] { 1024, 1024, 1024, 928, 1024, 576, 1024, 576, 1024 }, Sizes(backend));
+        AssertLoopSequence(backend, 1000, 600);
+    }
+
+    [Fact]
+    public void L3_LoopStartZero_IsTodaysBytes()
+    {
+        var service = Service(out var backend, out var provider);
+        using var player = new MusicPlayer(service, 16384, 3);
+        player.Play(Asset(provider, Ramp(1000, 18, 0), true, 0));
+        Assert.Equal(new[] { 4000, 4000, 4000 }, Sizes(backend));
+        backend.ConsumeBuffers(Voice, 3);
+        player.Update(0.016f);
+        Assert.Equal(Enumerable.Repeat(4000, 6), Sizes(backend));
+        AssertLoopSequence(backend, 1000, 0);
+    }
+
+    [Fact]
+    public void L4_NotLooped_IgnoresTheLoopStart()
+    {
+        var service = Service(out var backend, out var provider);
+        using var player = new MusicPlayer(service, 16384, 3);
+        var track = player.Play(Asset(provider, Ramp(1000, 18, 0), false, 600));
+        Assert.Equal(new[] { 4000 }, Sizes(backend));
+        backend.ConsumeBuffers(Voice, 1);
+        player.Update(0.016f);
+        Assert.False(player.IsAlive(track));
+    }
+
+    [Theory]
+    [InlineData(1000L)]
+    [InlineData(5_000_000L)]
+    public void L5_OutOfRangeLoopStart_FallsBackToZero_WithOneWarning(long loopStart)
+    {
+        var logger = new CapturingLogger();
+        Logs.AddLogger(logger);
+        try
+        {
+            var service = Service(out var backend, out var provider);
+            using var player = new MusicPlayer(service, 16384, 3);
+            var track = player.Play(Asset(provider, Ramp(1000, 18, 0), true, loopStart));
+            Assert.True(track.IsValid);
+            Assert.Equal(new[] { 4000, 4000, 4000 }, Sizes(backend));
+            AssertLoopSequence(backend, 1000, 0);
+            Assert.Single(logger.Warnings, w => w.Contains("loop start"));
+        }
+        finally
+        {
+            Logs.Close();
+        }
+    }
+
+    [Fact]
+    public void L7_SteadyUpdates_WithALoopStart_DoNotAllocate()
+    {
+        var service = Service(out var backend, out var provider, record: false);
+        using var player = new MusicPlayer(service, 16384, 3);
+        player.Play(Asset(provider, WavBuilder.CreatePcm16(44100, 2, 65536, 18), true, 32768));
+        for (var i = 0; i < 20; i++)
+        {
+            backend.ConsumeBuffers(Voice, 2);
+            player.Update(0.016f);
+        }
+
+        var before = AllocationWindow.Start();
+        for (var i = 0; i < 200; i++)
+        {
+            backend.ConsumeBuffers(Voice, 2);
+            player.Update(0.016f);
+        }
+
+        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
+    }
+
+    [Fact]
+    public void L8_LastFrameLoopStart_SubmitsOneFrameBuffers()
+    {
+        var service = Service(out var backend, out var provider);
+        using var player = new MusicPlayer(service, 16384, 3);
+        player.Play(Asset(provider, Ramp(1000, 18, 0), true, 999));
+        Assert.Equal(new[] { 4000, 4, 4 }, Sizes(backend));
+        backend.ConsumeBuffers(Voice, 3);
+        player.Update(0.016f);
+        Assert.Equal(new[] { 4000, 4, 4, 4, 4, 4 }, Sizes(backend));
+        AssertLoopSequence(backend, 1000, 999);
+    }
+
+    [Fact]
+    public void B2_ABackendReportingNoPendingBuffer_IsBoundedPerCall()
+    {
+        var service = Service(out var backend, out var provider, record: false);
+        backend.ReportsZeroPendingBuffers = true;
+        var player = new MusicPlayer(service, 16384, 3);
+        var asset = Asset(provider, Ramp(1000, 18, 0), true, 600);
+        long afterPlay = -1, afterUpdate = -1;
+
+        var run = Task.Run(() =>
+        {
+            player.Play(asset);
+            afterPlay = backend.GetSubmittedBytes(Voice);
+            player.Update(0.016f);
+            afterUpdate = backend.GetSubmittedBytes(Voice);
+        });
+
+        Assert.True(run.Wait(TimeSpan.FromSeconds(10)), "the per-call bound must stop the fill");
+        Assert.Equal(7200, afterPlay);
+        Assert.Equal(12000, afterUpdate);
+        player.Dispose();
+    }
+
+    // ---- W: reader -----------------------------------------------------------------
+
+    [Fact]
+    public void W1_SeekToSample_UsesTheDataOffset()
+    {
+        using var reader = new WavStreamReader(new MemoryStream(Ramp(1000, 18, 6)));
+        Assert.Equal(60, reader.Format.DataOffset);
+        reader.SeekToSample(600);
+        Assert.Equal(2400, reader.Position);
+        var buffer = new byte[16];
+        Assert.Equal(16, reader.Read(buffer, 0, 16));
+        for (var k = 0; k < 4; k++)
+        {
+            Assert.Equal(600 + k, BitConverter.ToInt16(buffer, k * 4));
+            Assert.Equal(10600 + k, BitConverter.ToInt16(buffer, (k * 4) + 2));
+        }
+
+        Assert.Equal(2416, reader.Position);
+    }
+
+    [Fact]
+    public void W2_W3_W4_Bounds()
+    {
+        using var reader = new WavStreamReader(new MemoryStream(Ramp(1000, 18, 0)));
+        var buffer = new byte[64];
+        reader.SeekToSample(999);
+        Assert.Equal(4, reader.Read(buffer, 0, 64));
+        Assert.Equal(0, reader.Read(buffer, 0, 64));
+        Assert.True(reader.IsEndOfStream);
+        Assert.Throws<ArgumentOutOfRangeException>(() => reader.SeekToSample(-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => reader.SeekToSample(1000));
+        reader.SeekToSample(0);
+        Assert.Equal(0, reader.Position);
+        Assert.Equal(64, reader.Read(buffer, 0, 64));
+        Assert.Equal(0, BitConverter.ToInt16(buffer, 0));
+    }
+
+    [Fact]
+    public void W5_Mono()
+    {
+        using var reader = new WavStreamReader(new MemoryStream(MonoRamp(1000)));
+        reader.SeekToSample(600);
+        Assert.Equal(1200, reader.Position);
+        var buffer = new byte[2];
+        reader.Read(buffer, 0, 2);
+        Assert.Equal(600, BitConverter.ToInt16(buffer, 0));
+    }
+
+    [Fact]
+    public void W6_SeekDoesNotAllocate()
+    {
+        using var reader = new WavStreamReader(new MemoryStream(Ramp(1000, 18, 6)));
+        reader.SeekToSample(1);
+        var before = AllocationWindow.Start();
+        for (var i = 0; i < 1000; i++)
+        {
+            reader.SeekToSample(i % 1000);
+        }
+
+        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
+    }
+
+    [Fact]
+    public void W7_EighteenByteFormatChunk()
+    {
+        var wav = Ramp(1000, 18, 0);
+        using var reader = new WavStreamReader(new MemoryStream(wav));
+        Assert.Equal(46, reader.Format.DataOffset);
+        reader.SeekToSample(600);
+        var buffer = new byte[4];
+        reader.Read(buffer, 0, 4);
+        Assert.Equal((600, 10600), ((int)BitConverter.ToInt16(buffer, 0), (int)BitConverter.ToInt16(buffer, 2)));
+        // the naive 44 + 600 * 4 position
+        Assert.Equal((10599, 600), ((int)BitConverter.ToInt16(wav, 44 + 2400), (int)BitConverter.ToInt16(wav, 44 + 2402)));
+    }
+
+    // ---- S / P: asset, serializer, preview copy ------------------------------------
+
+    private static JObject Doc(JToken value)
+    {
+        var doc = new JObject
+        {
+            ["id"] = Guid.NewGuid().ToString(),
+            ["name"] = "s",
+            ["audio_file_asset_id"] = Guid.NewGuid().ToString(),
+            ["is_looped"] = true,
+            ["is_streaming"] = true,
+        };
+        if (value != null)
+        {
+            doc["loop_start_sample"] = value;
+        }
+
+        return doc;
+    }
+
+    [Theory]
+    [InlineData(5344920L, 5344920L)]
+    [InlineData(16777217L, 16777217L)]
+    [InlineData(-5L, 0L)]
+    public void S1_S3_S6_IntegerRead(long written, long expected)
+    {
+        var asset = new SoundAsset();
+        asset.Load(Doc(new JValue(written)));
+        Assert.Equal(expected, asset.LoopStartSample);
+    }
+
+    [Fact]
+    public void S2_MissingKey_IsZero()
+    {
+        var asset = new SoundAsset();
+        asset.Load(Doc(null));
+        Assert.Equal(0L, asset.LoopStartSample);
+    }
+
+    [Fact]
+    public void S4_S5_Serializer()
+    {
+        Assert.True(EditorAssetJsonSerializer.TrySerialize(new SoundAsset(), out var empty));
+        Assert.False(empty.ContainsKey("loop_start_sample"));
+
+        Assert.True(EditorAssetJsonSerializer.TrySerialize(new SoundAsset { LoopStartSample = 5344920 }, out var doc));
+        Assert.Equal(JTokenType.Integer, doc["loop_start_sample"].Type);
+        var reloaded = new SoundAsset();
+        reloaded.Load(doc);
+        Assert.Equal(5344920L, reloaded.LoopStartSample);
+        var names = doc.Properties().Select(p => p.Name).ToList();
+        Assert.Equal(names.IndexOf("is_streaming") + 1, names.IndexOf("loop_start_sample"));
+    }
+
+    [Fact]
+    public void S7_WrongTokenTypes_KeepZero_WithOneWarning()
+    {
+        foreach (var token in new JToken[] { new JValue("600"), new JValue(600.5), new JValue(true) })
+        {
+            var logger = new CapturingLogger();
+            Logs.AddLogger(logger);
+            try
+            {
+                var asset = new SoundAsset();
+                asset.Load(Doc(token));
+                Assert.Equal(0L, asset.LoopStartSample);
+                Assert.Single(logger.Warnings, w => w.Contains("loop_start_sample"));
+            }
+            finally
+            {
+                Logs.Close();
+            }
+        }
+    }
+
+    [Fact]
+    public void P1_PreviewCopy_KeepsTheLoopStart()
+    {
+        var copy = SoundAssetInspectorPanel.CreatePreviewCopy(new SoundAsset { IsStreaming = true, IsLooped = true, LoopStartSample = 600 });
+        Assert.Equal(600L, copy.LoopStartSample);
+    }
+
+    // ---- depth (T2) with the discovery's SampleCount 106 496 -----------------------
+
+    [Fact]
+    public void T2_DefaultDepth_With106496Frames()
+    {
+        var service = Service(out var backend, out var provider, record: false);
+        var wav = WavBuilder.CreatePcm16(sampleRate: 22050, channelCount: 2, sampleCount: 106496, formatChunkSize: 18);
+        var track = service.Music.Play(new SoundAsset { Name = "t", AudioFileAssetId = provider.RegisterStream(wav), BusName = AudioBusNames.Music, IsStreaming = true });
+        var a = service.Music.GetPendingBufferCount(track);
+        backend.ConsumeBuffers(Voice, 2);
+        var b = service.Music.GetPendingBufferCount(track);
+        service.Update(0.016f);
+        var c = service.Music.GetPendingBufferCount(track);
+        var t = MusicPlayer.DefaultQueuedBufferTarget;
+        Assert.Equal((t, t - 2, t), (a, b, c));
+    }
+}

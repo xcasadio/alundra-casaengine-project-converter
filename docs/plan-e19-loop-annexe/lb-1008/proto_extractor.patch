@@ -1,0 +1,317 @@
+--- src-head/AlundraTools/AlundraDataExtractor/Program.cs	2026-10-05 23:26:47.000000000 +0200
++++ src-lb/AlundraTools/AlundraDataExtractor/Program.cs	2026-10-08 10:54:58.655560900 +0200
+@@ -18,6 +18,7 @@
+     private static readonly JsonSerializerOptions _jsonLineSerializerOptions = new() { IncludeFields = true };
+     private static Dictionary<string, HashSet<string>> entitySpriteSheetIds = new();
+     private static HashSet<string> entitySpriteSheetAlreadySaved = new();
++    private static string Font3FolderForPrototype = string.Empty;
+ 
+     /// <summary>
+     /// Re-extracts the MOVIE/*.MOV streams from a CD image, keeping whole 2352-byte sectors.
+@@ -150,7 +151,7 @@
+         ExtractDataFromBgm(Path.Combine(gamePath, "DATA", "SOUND.BIN"), extractionPath);
+     }
+ 
+-    private record BgmExportRecord(int SoundIndex, string File, int Frames, double DurationSeconds, bool LoopDetected, int PeakLeft, int PeakRight, double RmsLeft, double RmsRight, int FirstAudibleFrame);
++    private record BgmExportRecord(int SoundIndex, string File, int Frames, double DurationSeconds, bool LoopDetected, int PeakLeft, int PeakRight, double RmsLeft, double RmsRight, int FirstAudibleFrame, bool Looping, int? LoopStartFrame, int? LoopStartSample);
+ 
+     // JUSTIFICATION: C# language bridge only
+     // RELATION: batch counterpart to --render-bgm; renders every LoadMapSequence-addressable track
+@@ -182,7 +183,7 @@
+         var bgmPath = Path.Combine(soundPath, "bgm");
+         Directory.CreateDirectory(bgmPath);
+ 
+-        const int maxSeconds = 240;
++        const int maxSeconds = 480;
+         const int maxFrames = maxSeconds * 60;
+         var maxSoundIndex = (new SoundBin(soundBinPath).MusicSeqVabOffsets.Length - 4) / 3;
+         var exported = new List<BgmExportRecord>();
+@@ -217,6 +218,13 @@
+                 }
+ 
+                 var result = RenderBgmTrackUntilLoop(gameEngine, mixer, seqId, maxFrames);
++                if (result.Failure != null)
++                {
++                    Console.WriteLine($"BGM {soundIndex} failed: {result.Failure} - not exported");
++                    DeleteStaleBgm(filePath);
++                    failed++;
++                    continue;
++                }
+ 
+                 // docs/plan-extraction-bgm.md, decision D-X-4: a render that never crossed the
+                 // audibility threshold is a FAILURE, not a file. 26 tracks were once written as five
+@@ -233,7 +241,8 @@
+                 }
+ 
+                 WriteStereoWav(filePath, result.Samples, SpuMixerSoundPlaybackBackend.OutputSampleRate);
+-                exported.Add(new BgmExportRecord(soundIndex, fileName, result.Frames, result.Frames / 60.0, result.LoopDetected, result.PeakLeft, result.PeakRight, result.RmsLeft, result.RmsRight, result.FirstAudibleFrame));
++                exported.Add(new BgmExportRecord(soundIndex, fileName, result.Frames, result.Frames / 60.0, result.LoopDetected, result.PeakLeft, result.PeakRight, result.RmsLeft, result.RmsRight, result.FirstAudibleFrame,
++                    result.Looping, result.Looping ? result.LoopStartFrame : null, result.Looping ? result.LoopStartFrame * SpuMixerSoundPlaybackBackend.OutputSampleRate / 60 : null));
+             }
+             catch (Exception ex)
+             {
+@@ -253,72 +262,167 @@
+     // stingers with no loop marker at all) rather than real looping tracks, and would otherwise
+     // burn the full maxFrames as near-silence; silenceGraceFrames cuts those short once nothing
+     // has crossed the audible threshold for a few seconds.
+-    private static (short[] Samples, int Frames, bool LoopDetected, int PeakLeft, int PeakRight, double RmsLeft, double RmsRight, int FirstAudibleFrame) RenderBgmTrackUntilLoop(GameEngine gameEngine, SpuMixerSoundPlaybackBackend mixer, short seqId, int maxFrames)
++    // PROTOTYPE (scratch only, L-b1 discovery 2026-10-08): option B of docs/plan-e19-opcodes.md section 1.2w (D-E19-73,
++    // D-E19-76). A backward SeqPosition with sequence flag bit 0 still set is a loop jump; with bit 0 clear it is the
++    // end of track. The first jump J1 is kept, the second J2 is not; one-shots keep their release tail.
++    private sealed class BgmRender
++    {
++        public short[] Samples = Array.Empty<short>();
++        public int Frames;
++        public bool LoopDetected;
++        public bool Looping;
++        public int LoopStartFrame = -1;
++        public int LoopEndFrame = -1;
++        public int EndOfTrackFrame = -1;
++        public int PeakLeft;
++        public int PeakRight;
++        public double RmsLeft;
++        public double RmsRight;
++        public int FirstAudibleFrame = -1;
++        public string? Failure;
++    }
++
++    private static BgmRender RenderBgmTrackUntilLoop(GameEngine gameEngine, SpuMixerSoundPlaybackBackend mixer, short seqId, int maxFrames)
+     {
+         const int samplesPerFrame = SpuMixerSoundPlaybackBackend.OutputSampleRate / 60;
+         const int silenceGraceFrames = 5 * 60;
++        const int releaseTailSilentFrames = 60;
+         var renderBuffer = new short[samplesPerFrame * 2];
+         var allSamples = new List<short>(maxFrames * samplesPerFrame * 2 / 4);
+-        long sumSquaresLeft = 0;
+-        long sumSquaresRight = 0;
+-        var peakLeft = 0;
+-        var peakRight = 0;
+-        var firstAudibleFrame = -1;
+-        var silentFrameRun = 0;
+-        var loopDetected = false;
++        var result = new BgmRender();
+         var sequenceStates = gameEngine.StaticVariables.g_sequenceStatePointers;
+         var previousSeqPosition = (uint)sequenceStates[seqId].SeqPosition;
++        var silentFrameRun = 0;
++        var lastAudibleFrame = -1;
++        var stoppedByCap = true;
+ 
+-        var frame = 0;
+-        for (; frame < maxFrames; frame++)
++        for (var frame = 0; frame < maxFrames; frame++)
+         {
+             gameEngine.SoundManager.AdvanceSoundFrame();
++            var currentSeqPosition = (uint)sequenceStates[seqId].SeqPosition;
++            var sequencePlaying = (sequenceStates[seqId].Flags & 1u) != 0;
+             mixer.RenderSamples(renderBuffer, samplesPerFrame);
+-            allSamples.AddRange(renderBuffer);
++            var backward = currentSeqPosition < previousSeqPosition;
++
++            if (backward && sequencePlaying && result.LoopStartFrame >= 0)
++            {
++                result.LoopEndFrame = frame; // J2: iteration 3's first frame, not kept
++                stoppedByCap = false;
++                break;
++            }
+ 
+             var frameAudible = false;
+             for (var i = 0; i < samplesPerFrame; i++)
+             {
+-                int left = renderBuffer[i * 2];
+-                int right = renderBuffer[i * 2 + 1];
+-                sumSquaresLeft += (long)left * left;
+-                sumSquaresRight += (long)right * right;
+-                peakLeft = Math.Max(peakLeft, Math.Abs(left));
+-                peakRight = Math.Max(peakRight, Math.Abs(right));
+-
+-                if (Math.Abs(left) > 64 || Math.Abs(right) > 64)
++                if (Math.Abs((int)renderBuffer[i * 2]) > 64 || Math.Abs((int)renderBuffer[i * 2 + 1]) > 64)
+                 {
+                     frameAudible = true;
+-                    if (firstAudibleFrame < 0)
+-                    {
+-                        firstAudibleFrame = frame;
+-                    }
++                    break;
+                 }
+             }
+ 
++            allSamples.AddRange(renderBuffer);
++            if (frameAudible)
++            {
++                lastAudibleFrame = frame;
++            }
++
+             silentFrameRun = frameAudible ? 0 : silentFrameRun + 1;
+-            if (silentFrameRun >= silenceGraceFrames)
++            if (result.EndOfTrackFrame >= 0 && silentFrameRun >= releaseTailSilentFrames)
+             {
+-                frame++;
++                stoppedByCap = false;
+                 break;
+             }
+ 
+-            var currentSeqPosition = (uint)sequenceStates[seqId].SeqPosition;
+-            if (currentSeqPosition < previousSeqPosition)
++            if (silentFrameRun >= silenceGraceFrames)
+             {
+-                loopDetected = true;
+-                frame++;
++                stoppedByCap = false;
+                 break;
+             }
+ 
++            if (backward)
++            {
++                result.LoopDetected = true;
++                if (sequencePlaying)
++                {
++                    result.LoopStartFrame = frame; // J1: iteration 2's first frame, kept
++                }
++                else
++                {
++                    result.EndOfTrackFrame = frame; // end of track, kept; the release tail follows
++                }
++            }
++
+             previousSeqPosition = currentSeqPosition;
+         }
+ 
+-        var totalSamples = (long)frame * samplesPerFrame;
+-        var rmsLeft = totalSamples > 0 ? Math.Sqrt(sumSquaresLeft / (double)totalSamples) : 0;
+-        var rmsRight = totalSamples > 0 ? Math.Sqrt(sumSquaresRight / (double)totalSamples) : 0;
++        var frames = allSamples.Count / (samplesPerFrame * 2);
++        if (result.EndOfTrackFrame >= 0)
++        {
++            frames = Math.Max(result.EndOfTrackFrame + 1, lastAudibleFrame + 1);
++            allSamples.RemoveRange(frames * samplesPerFrame * 2, allSamples.Count - frames * samplesPerFrame * 2);
++        }
++
++        if (result.LoopStartFrame >= 0 && result.LoopEndFrame < 0)
++        {
++            result.Failure = $"first loop jump at frame {result.LoopStartFrame} but no second one before the cap ({maxFrames} frames)";
++            return result;
++        }
++
++        if (result.LoopStartFrame < 0 && result.EndOfTrackFrame < 0 && stoppedByCap)
++        {
++            result.Failure = $"no loop jump and no end of track before the cap ({maxFrames} frames)";
++            return result;
++        }
++
++        result.Frames = frames;
++        result.Samples = allSamples.ToArray();
++        result.Looping = result.LoopEndFrame >= 0;
++        if (result.Looping)
++        {
++            CrossfadeLoopEnd(result.Samples, result.LoopStartFrame, result.LoopEndFrame, samplesPerFrame);
++        }
++
++        long sumSquaresLeft = 0;
++        long sumSquaresRight = 0;
++        for (var i = 0; i < frames * samplesPerFrame; i++)
++        {
++            int left = result.Samples[i * 2];
++            int right = result.Samples[i * 2 + 1];
++            sumSquaresLeft += (long)left * left;
++            sumSquaresRight += (long)right * right;
++            result.PeakLeft = Math.Max(result.PeakLeft, Math.Abs(left));
++            result.PeakRight = Math.Max(result.PeakRight, Math.Abs(right));
++            if (result.FirstAudibleFrame < 0 && (Math.Abs(left) > 64 || Math.Abs(right) > 64))
++            {
++                result.FirstAudibleFrame = i / samplesPerFrame;
++            }
++        }
+ 
+-        return (allSamples.ToArray(), frame, loopDetected, peakLeft, peakRight, rmsLeft, rmsRight, firstAudibleFrame);
++        var totalSamples = (long)frames * samplesPerFrame;
++        result.RmsLeft = totalSamples > 0 ? Math.Sqrt(sumSquaresLeft / (double)totalSamples) : 0;
++        result.RmsRight = totalSamples > 0 ? Math.Sqrt(sumSquaresRight / (double)totalSamples) : 0;
++        return result;
++    }
++
++    // Linear crossfade of the file's last frame (k stereo samples before J2) toward the k stereo samples before J1, so the
++    // last sample equals the sample just before J1: the wrap J2 -> J1 is the junction the render itself made at J1.
++    // Round to nearest, k odd: no ties.
++    private static void CrossfadeLoopEnd(short[] samples, int loopStartFrame, int loopEndFrame, int k)
++    {
++        var a0 = loopEndFrame * k - k;
++        var b0 = loopStartFrame * k - k;
++        for (var x = 0; x < k; x++)
++        {
++            for (var channel = 0; channel < 2; channel++)
++            {
++                long end = samples[(a0 + x) * 2 + channel];
++                long beforeLoopStart = samples[(b0 + x) * 2 + channel];
++                var numerator = end * (k - (x + 1)) + beforeLoopStart * (x + 1);
++                var value = numerator >= 0 ? (numerator + k / 2) / k : (numerator - k / 2) / k;
++                samples[(a0 + x) * 2 + channel] = (short)value;
++            }
++        }
+     }
+ 
+     // Volume/Pan (VagAtr) and the three record-level attributes (VabHdr.Mvol, ProgAtr.Mvol/Mpan) come from the
+@@ -553,6 +657,7 @@
+         var datasBin = new DatasBin(Path.Combine(dataFolder, "DATAS.BIN"));
+         balanceBin = new BalanceBin(Path.Combine(dataFolder, "BALANCE.BIN"));
+         var soundBin = new SoundBin(Path.Combine(dataFolder, "SOUND.BIN"));
++        Font3FolderForPrototype = Path.Combine(dataFolder, "..", "TAKI\\SCREEN");
+         font3 = new Font3(Path.Combine(dataFolder, "..", "TAKI\\SCREEN"));
+         var etcResFileName = PathHelper.GetEtcFileName(dataFolder);
+         etcRes = Path.GetFileName(etcResFileName).Contains("usa", StringComparison.InvariantCultureIgnoreCase)
+@@ -1127,7 +1232,10 @@
+     {
+         var screenPath = Path.Combine(extractionPath, "ui");
+         Directory.CreateDirectory(screenPath);
+-        font3.FontBitmapTim.Save(Path.Combine(screenPath, "font3.png"), ImageFormat.Png);
++        using (var font3Page = Font3.DecodeFontTimWithWindClut(Font3FolderForPrototype, 8))
++        {
++            font3Page.Save(Path.Combine(screenPath, "font3.png"), ImageFormat.Png);
++        }
+         var fontCharTiles = new List<FontCharTile>();
+ 
+         for (int i = 0; i < 16 * 16; i++)
+@@ -1535,4 +1643,4 @@
+ 
+         bitmap.Save(fileName, ImageFormat.Png);
+     }
+-}
+\ No newline at end of file
++}
+--- src-head/AlundraTools/AlundraEngine/Text/Font3.cs	2026-10-05 23:26:47.000000000 +0200
++++ src-lb/AlundraTools/AlundraEngine/Text/Font3.cs	2026-10-08 10:54:25.695524000 +0200
+@@ -138,6 +138,34 @@
+         _hudImageData = File.ReadAllBytes(Path.Combine(folderName, "WIND.TX"));
+     }
+ 
++    // PROTOTYPE (scratch only, O-E19-66): FONT3.TIM's 4 bpp image decoded with one 16-colour entry of WIND.CL, as the
++    // binary draws it (0x80044B7C-0x80044B8C fills the CLUT table from wind.cl; the text bands use entry 8). Same
++    // BGR555 bit replication as TimLoader. Colour 0x0000 is transparent and keeps FONT3.TIM's own index 0 RGB.
++    public static Bitmap DecodeFontTimWithWindClut(string folderName, int windClutEntry)
++    {
++        using var fs = File.OpenRead(Path.Combine(folderName, "FONT3.TIM"));
++        using var br = new BinaryReader(fs);
++        var raw = TimLoader.LoadTimRaw(br, Color.FromArgb(255, 156, 165, 132));
++        var wind = File.ReadAllBytes(Path.Combine(folderName, "WIND.CL"));
++        var pal = new Color[16];
++        for (var i = 0; i < 16; i++)
++        {
++            int c = BitConverter.ToUInt16(wind, (windClutEntry * 16 + i) * 2);
++            if (c == 0)
++            {
++                pal[i] = raw.Palettes![0][0];
++                continue;
++            }
++
++            int r = ((c & 0x1F) << 3) | ((c & 0x1F) >> 2);
++            int g = (((c >> 5) & 31) << 3) | (((c >> 5) & 31) >> 2);
++            int b = (((c >> 10) & 31) << 3) | (((c >> 10) & 31) >> 2);
++            pal[i] = Color.FromArgb(255, r, g, b);
++        }
++
++        return TimLoader.DecodeBuffer(0, raw.Width, raw.Height, raw.Bpp, new[] { pal }, raw.ImgWWords, raw.ImgData);
++    }
++
+     private void LoadImageTim(string folderName)
+     {
+         FontBitmapTim = TimLoader.LoadTim(Path.Combine(folderName, "FONT3.TIM"), 

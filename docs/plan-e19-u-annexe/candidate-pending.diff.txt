@@ -1,0 +1,100 @@
+--- orig/AlundraWorldProxy.cs.orig	2026-10-08 11:01:42.695319900 +0200
++++ repo/Alundra/Scripts/AlundraWorldProxy.cs	2026-10-08 11:09:34.709683100 +0200
+@@ -2203,15 +2203,8 @@
+         // sampled during the previous frame.
+         _squareOfTick.Clear();
+         _choicePadOfTick.Clear();
+-        for (var padTick = 0; padTick < ticksThisFrame; padTick++)
++        for (var padTick = 0; padTick < 0; padTick++) // O78: the pad pass and the inventory block moved into the loop of the passes below
+         {
+-            GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
+-            _squareOfTick.Add(((GameState.TickPad.ButtonsHold & AlundraPadState.Square) != 0, (GameState.TickPad.ButtonsJustPressed & AlundraPadState.Square) != 0));
+-            _choicePadOfTick.Add((GameState.TickPad.ButtonsJustPressed, GameState.TickPad.ButtonsJustPressedByInterval));
+-            UpdateInventoryPortraitHeadPoint();
+-            AlundraInventoryDirector.Instance.Tick(PlayerEntity);
+-            AlundraSubInventoryDirector.Instance.Tick();
+-            AlundraInventoryPostProcess.Instance.Run();
+ 
+             // docs/plan-portrait-inventaire.md P4/PI8: the portrait steps once per tick HERE, after both
+             // directors' per-frame work and the post-process and before the presenters - the original's own
+@@ -2219,8 +2212,6 @@
+             // (0x80048054 at 0x8002be5c) inside RenderScene. A start or a return made in this tick's render
+             // half therefore steps in this same tick, and the trigger's opening (this tick's Update half)
+             // too, which is the original's next render.
+-            AlundraInventoryPortrait.Instance.Step();
+-
+             // E13.d D5 (docs/plan-e13d-inventaire.md): the presenter, right after the director's own
+             // Tick() for this SAME tick - same "presenter runs immediately after its director, inside the
+             // per-tick loop" shape the HUD's own hudTick loop uses, needed here for the same reason this
+@@ -2228,12 +2219,9 @@
+             // edges - and here, of the director's own per-tick state - must not wait until after the
+             // loop). Null until a view is wired (TryWireInventoryScreenOnce production path, or
+             // AttachInventoryPresenterForTests in tests).
+-            _inventoryPresenter?.Tick();
+-
+             // E13.d SI4: the sub-inventory's own presenter, right after the main's, same tick - the two
+             // screens are never pushed together (D-E13D-26), so their push/remove order here never matters,
+             // but running both inside the loop keeps every presenter reading this SAME tick's director state.
+-            _subInventoryPresenter?.Tick();
+         }
+ 
+         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
+@@ -2265,8 +2253,12 @@
+         // fixed 50 Hz frame). A frame of several ticks interleaves the box and the map events tick by tick (B0 M0 B1 M1), like the binary. The scripts of the
+         // entities already ran this frame, before this proxy (see this method's own doc): the origin table of F2-R1 follows from that order.
+         _effectFrozenOfTick.Clear();
++        var gateAfterMapEvents = gameplayBlocked; // O78
+         for (var tick = 0; tick < ticksThisFrame; tick++)
+         {
++            GameState.TickPad.Update(GameState.LastPadState.ButtonsHold); // O78: the pad of tick k (sample k), first
++            _squareOfTick.Add(((GameState.TickPad.ButtonsHold & AlundraPadState.Square) != 0, (GameState.TickPad.ButtonsJustPressed & AlundraPadState.Square) != 0));
++            _choicePadOfTick.Add((GameState.TickPad.ButtonsJustPressed, GameState.TickPad.ButtonsJustPressedByInterval));
+             _effectStage.BeginSource(tick, 0); // E19.g G3b (G3B-R3): the effect operations the map events of this tick emit are marked with it (rank 0).
+             var (squareHeld, squarePressed) = tick == 0 ? _squareOfLastTick : _squareOfTick[tick - 1];
+             // E19.f3a F3A-R3: the pass of the director also runs the choice box (slot 3, right after the text box's), on the pad words of the tick before, like the Square.
+@@ -2294,12 +2286,8 @@
+ 
+             var tickBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
+                 || AlundraWarpDirector.Instance.IsTransitionInProgress;
+-            if (PlayerEntity == null || tickBlocked)
++            if (PlayerEntity != null && !tickBlocked)
+             {
+-                _effectFrozenOfTick.Add(EffectGateOfThisTick()); // E19.g G3a (G3A-R6): the gate of the tick, `continue` paths included.
+-                continue;
+-            }
+-
+             // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the passes after the first of a catch-up frame stand for ticks whose
+             // UpdateAnimation (0x80038B6C) already switched the animations a previous pass asked for, clearing their Hold flag:
+             // clear it here too, so a 0x1C does not count the same Hold end again. A no-op at 0 or 1 tick per frame.
+@@ -2313,8 +2301,19 @@
+             // E19.r R3 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): the recycling of the destroyed entities, right after each pass of the map
+             // events, as the binary's UpdateEntities (0x8003B3A0) opens with UpdateDestroyedEntities (0x80038634) after RunMapEvents.
+             RecycleDestroyedEntities();
++            }
+ 
+             _effectFrozenOfTick.Add(EffectGateOfThisTick()); // E19.g G3a (G3A-R6): read after the map events of the tick.
++            gateAfterMapEvents = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
++                || AlundraWarpDirector.Instance.IsTransitionInProgress; // O78
++            // O78: the inventory block - Update(k)'s trigger (after UpdateWorld) then RenderScene(k+1)'s slots 4 and 6, tail and portrait.
++            UpdateInventoryPortraitHeadPoint();
++            AlundraInventoryDirector.Instance.Tick(PlayerEntity);
++            AlundraSubInventoryDirector.Instance.Tick();
++            AlundraInventoryPostProcess.Instance.Run();
++            AlundraInventoryPortrait.Instance.Step();
++            _inventoryPresenter?.Tick();
++            _subInventoryPresenter?.Tick();
+         }
+ 
+         _effectStage.EndSource();
+@@ -2326,8 +2325,9 @@
+         }
+ 
+         // The triggers in waiting read the gate again after the loop: the box passes above may have opened or released one.
+-        gameplayBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
+-            || AlundraWarpDirector.Instance.IsTransitionInProgress;
++        gameplayBlocked = ticksThisFrame > 0
++            ? gateAfterMapEvents // O78: the pending triggers belong to UpdateEntities(k), before the trigger and RenderScene(k+1)
++            : (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0 || AlundraWarpDirector.Instance.IsTransitionInProgress;
+ 
+         // E7.b (docs/plan-e7-mutation-tuiles.md, "coalescer par frame"): applies at most one overlay
+         // reconstruction for however many 0x54/0x55/0x85 opcodes the loop above just dispatched (a map's

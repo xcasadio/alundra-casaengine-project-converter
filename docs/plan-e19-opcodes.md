@@ -10949,7 +10949,7 @@ défaut signalé ; aucune note écrite.
   L1-4) ; l'ondulation du HUD (E13.a), l'étoile de l'éditeur (T4.7), l'exemple MGUI (PI3), le monde gelé en dialogue (T2), le parcours
   M3.
 
-### 1.2w Boucle au repère de la séquence (D-E19-70, D-E19-72, D-E19-73, O-E19-62, D-E19-102) ⏳ (préparée le 2026-10-05 ; la partie moteur va dans S2 d'audio-modern, D-E19-74 ; données, convertisseur et DLL après S2 ; en pause le 2026-10-06 : S2 est mergé sans la partie moteur, question O-E19-76 ; mesure O-E19-63 faite le 2026-10-07 : la profondeur 24 tient les chargements mesurés, la profondeur 3 non ; **reprise le 2026-10-08 : l'auteur confie L-a et L-b à la session, D-E19-102** ; découverte à faire)
+### 1.2w Boucle au repère de la séquence (D-E19-70, D-E19-72, D-E19-73, O-E19-62, D-E19-102) ⏳ (préparée le 2026-10-05 ; la partie moteur va dans S2 d'audio-modern, D-E19-74 ; données, convertisseur et DLL après S2 ; en pause le 2026-10-06 : S2 est mergé sans la partie moteur, question O-E19-76 ; mesure O-E19-63 faite le 2026-10-07 : la profondeur 24 tient les chargements mesurés, la profondeur 3 non ; **reprise le 2026-10-08 : l'auteur confie L-a et L-b à la session, D-E19-102** ; découverte du 2026-10-08 faite et contre-vérifiée, `docs/plan-e19-loop-annexe/la-1008/` et `lb-1008/` ; L-a planifiée (1.2w.1) ; L-b en trois tranches, à planifier après la réponse de l'auteur sur la traîne des musiques sans boucle)
 
 Esquisse (découverte du 2026-10-05, `loop-disc/notes.md` et `loop-disc-verify/verify.md` du scratchpad) : le pilote du binaire
 (libsnd) mémorise la position au contrôleur 99 = 20 et y revient au contrôleur 99 = 30 quand le compte vaut 127 (`0x8008CA40`), sans
@@ -10970,6 +10970,139 @@ sans boucle, D-E19-76), 46 fichiers de données et 47 de l'export prévus, WAV d
 prête (champ, déplacement, `FillQueue`, plafond de tampons, valeurs de test), confiée à S2 d'audio-modern (D-E19-74) ; la DLL lira la
 musique par le service de musique du moteur avec le point de boucle ; `LoopDetected` vaut vrai aussi sur les pistes sans boucle :
 un champ `Looping` à part est nécessaire.
+
+#### 1.2w.1 E19.L-a — Point de boucle de la musique en flux (moteur) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102 ; planifiée le 2026-10-08 ; T1 : relecture à faire ; T2 : attend la réponse de l'auteur sur la profondeur)
+
+Moteur seul (sous-module, branche `chantier/e19-suite2` du moteur, au-dessus de `f86a981b`, le merge du navigateur de démos de l'auteur ;
+la montée du pointeur du parent à la fin de L-a fera entrer ce merge dans le parent : question à l'auteur). Déclencheur de risque :
+champ sérialisé nouveau et lecteur de flux (relecture et vérificateur neuf). Faits et valeurs : `docs/plan-e19-loop-annexe/la-1008/`
+(`notes.md`, `sim.py`, `sim.out` ; `verify/verify.md` l'emporte : les valeurs ont été rejouées par de vrais tests dans une copie, toutes
+égales ; sept corrections M1 à M7) et la conception du 2026-10-05 (`engine/`).
+
+**Faits** (moteur `f86a981b`) : aucune boucle au repère ; deux sites rembobinent au début, `MusicPlayer.FillQueue` (`MusicPlayer.cs:373`) et
+le travailleur de flux (`StreamingWorker.cs:263`, le chemin de production, `AudioService.cs:98`) ; `Acquire` et `Channel.Reset` ne portent pas
+de point de boucle ; le plafond de tampons par appel existe déjà sur les deux chemins (`MusicPlayer.cs:358-360`, `:325-327`) ; `SoundAsset`
+lit les nombres en flottants (16 777 217 deviendrait 16 777 216) ; `CreatePreviewCopy` de l'inspecteur peut devenir `internal` et testé.
+
+- **LA-R1** : `SoundAsset.LoopStartSample` (`long`, en trames, défaut 0, un négatif ramené à 0) ; `Load` lit une clé entière
+  `loop_start_sample` (tout autre type de jeton : un avertissement nommant l'asset et la clé, 0 gardé).
+- **LA-R2** : `SaveSoundAsset` n'écrit la clé que si elle n'est pas nulle, juste après `is_streaming` ; `CreatePreviewCopy` la copie ;
+  aucune ligne d'inspecteur (son champ numérique est flottant).
+- **LA-R3** : `WavStreamReader.SeekToSample(trame)` se place à l'offset des données lu dans l'en-tête plus `trame × BlockAlign`, lève sauf si
+  `0 ≤ trame < DataLength / BlockAlign`, n'alloue rien ; `Rewind()` devient `SeekToSample(0)`.
+- **LA-R4** : `Play` vérifie le point de boucle une fois, pour une piste bouclée seulement ; une valeur à la fin ou au-delà : un
+  avertissement (soumis au délai unique de 5 s du lecteur pour tous ses avertissements) et retour à 0 ; la valeur est gardée sur la piste.
+- **LA-R5** : les deux sites de boucle se placent au point de boucle ; `Acquire` et `Channel.Reset` reçoivent l'argument, `Reset` l'écrit
+  avant `Volatile.Write(ref State, ActiveState)` (`StreamingWorker.cs:213`).
+- **LA-R6** : la lecture s'arrête toujours à la fin des données : chaque couture soumet un tampon court ; aucun remplissage à travers la
+  couture (il ne gagnerait que 90 ms à la profondeur 24).
+- **LA-R7** (hors de portée) : fin de boucle, fondu du moteur, points de boucle des sons résidents (un son non diffusé en flux ignore la
+  clé), interface des backends, la DLL et les données (L-b).
+- **LA-T2 — profondeur** (tâche à part, **en attente de l'auteur**) : `DefaultQueuedBufferTarget` de 3 à 24 (marge à la couture 2046 ms
+  contre 96 ms ; pire arrêt mesuré 351,5 ms, O-E19-63 ; coût : 384 Kio de file et un anneau de 768 Kio par piste jouée, une lecture de 384 Kio
+  dans `Play` ; le mélangeur logiciel accepte 64 tampons par voix) ; `audio-system.md` réécrit pour 44,1 kHz ; deux tests bougent
+  (`Play_StartsAStreamAndQueuesAhead`, `Update_TopsTheQueueBackUp` : 24, 22, 24 avec `SampleCount` = 106 496).
+- **Fichiers** (liste fermée) : `SoundAsset.cs` ; `Streaming/WavStreamReader.cs`, `Streaming/WavFormatInfo.cs`, `Streaming/MusicPlayer.cs`,
+  `Streaming/StreamingWorker.cs`, `Streaming/StereoVoiceMixer.cs` (ligne de doc de T2) ; `EditorAssetJsonSerializer.cs`,
+  `SoundAssetInspectorPanel.cs` ; tests `WavStreamReaderTests.cs`, nouveau `MusicPlayerLoopStartTests.cs` (l'aide de la rampe dedans),
+  `SoundAssetTests.cs` (la liste fixe des fichiers de démo de `Loader_DemoSoundFiles_HaveTheVariationDefaults` reçoit le nouveau fichier),
+  `SoundAssetEditorSerializationTests.cs`, `Editor/SoundAssetInspectorPanelTests.cs`, `MusicPlayerTests.cs` (T2) ; démo `AudioDemo.cs`
+  (touche libre parmi A, E, Q, U, W, X, Y, Z), `loop_point_demo.wav` (529 260 o, données à l'offset 60, généré) et `loop_point_demo.sound`
+  (point de boucle 44 100), `AssetInfos.json`, `Content.mgcb` ; docs `docs/engine/audio-system.md` (§3, §5, §9, §11, et le commentaire de
+  `GetPosition` qui dit « revient à zéro »), ADR-0072 du moteur (revérifiée sur toutes les branches) et son index,
+  `ai-agent/tasks/e19la-music-loop-start-tasks.md`, `ai-agent/README.md` ; parent : ce plan et le pointeur.
+- ⏳ **LA-0 — Tests d'abord** (valeurs de `sim.out`, rejouées par la contre-vérification ; chaque lecteur des tests a une cible explicite de
+  3, donc T2 ne les bouge pas) : rampe stéréo de 1000 trames (gauche f, droite 10 000 + f), point de boucle 600 : L1 et L1w (travailleur)
+  4000, 1600, 1600 o après `Play`, puis trois tampons de 1600 o (trames 600 à 999) ; L2 et L2w (tampons de 1024 o) 1024, 1024, 1024, 928,
+  1024, 576, 1024, 576, 1024 (en L2w le travailleur franchit lui-même la couture) ; L3 (point 0) trois tampons de 4000 o ; L4 (non bouclé) un
+  tampon de 4000 o puis fin ; L5 (1000 et 5 000 000) retour à 0, un avertissement ; L6 (`fmt` de 18 o et `LIST` de 6 o, données à 60) comme L1
+  (un déplacement naïf `44 + 600 × 4` tombe sur la trame 596) ; L7 (0 o alloué au déplacement) ; L8 (point 999) 4000, 4, 4 o ; B2 (backend
+  qui rend toujours 0 en attente) 7200 o après `Play`, 12 000 o après une mise à jour, sous une garde de 10 s ; W1 position 2400 puis trames
+  (600, 10 600) à (603, 10 603) ; W4 la première trame lue après `SeekToSample(0)` sur un en-tête qui n'est pas de 44 o (canal droit 10 000) ;
+  W7 (`fmt` de 18 o, données à 46) : un déplacement naïf donne (10 599, 600) ; asset et sérialiseur : S1/S4 5 344 920 lu et relu, S5 clé
+  absente à 0, S6 16 777 217 gardé exactement, P1 la copie de l'aperçu garde 600.
+- ⏳ **LA-1 — T1 code** (LA-R1 à LA-R6), démo, docs, ADR-0072 ; mutations, chacune rouge sur ses tests : offset des données ignoré (W1, W4,
+  W7, L6), rembobinage dans `FillQueue` (L1, L2, L6, B2), rembobinage dans le travailleur (L2w), plafond par appel retiré (B2), décalage de un
+  dans la borne (W3, L5), clé non écrite (S4), clé écrite à 0 (S5), lecture flottante (S6), copie de l'aperçu absente (P1).
+- ⏳ **LA-2 — T2** (après la réponse de l'auteur), commit à part, révocable seul.
+- ⏳ **LA-3 — Pointeur** (après la réponse de l'auteur sur le merge du navigateur de démos), `merge-base --is-ancestor acbb1ae3 <nouveau>`.
+- ⏳ **LA-4 — Vérification** par un vérificateur neuf.
+- **Acceptation** : tests rouges puis verts ; chaque mutation rougit ses tests ; les deux solutions se construisent ; `CasaEngine.Tests` bâti à
+  part (hors du `.sln`) et vert contre une base remesurée (4194 au `f86a981b`) ; la démo tourne depuis `CasaEngine.Demos/` (capture du
+  back-buffer, journal sans avertissement ; l'écoute revient à l'auteur) ; `Alundra.Tests` inchangé en nombre, en Release puis en Debug,
+  `cmp`, traces. **Arrêts** : un test existant qui bouge (hors des deux de T2), un fichier hors de la liste, une collision d'ADR.
+  **Retour arrière** : revert des commits du moteur (T1 et T2 séparément).
+
+
+### 1.2y E19.u — Ordre d'image du déclencheur de l'inventaire (D-E19-103, O-E19-78) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; planifiée le 2026-10-08 ; relecture à faire)
+
+DLL seule. Déclencheur de risque : ordre des passes du monde par tick (relecture et vérificateur neuf). Faits et valeurs :
+`docs/plan-e19-u-annexe/` (`notes.md`, `candidate-pending.diff.txt`, `AlundraInventoryTriggerFrameOrderTests.cs.txt`, `bin-out.txt`,
+`probe-out/` ; `verify/verify.md` l'emporte : changement de comportement du warp, traces sans valeur de preuve ici, liste fermée
+complétée).
+
+**Découverte.** [binaire] La boucle principale fait `RenderScene` (`0x8002C3FC` : créneaux 0, 3, 4, 6, 10, la fermeture de la boîte
+`0x8004501C` efface les bits 0x18 de `0x800DC4B8`) puis `Update(0)` (`0x8002C404` : échantillon de la manette `0x8002BB5C`, `UpdateWorld`
+`0x8002BC4C` (événements de carte `0x8003C67C`, entités, effets, chacun lisant le masque 0x48 en tête), décompte du délai de warp, puis le
+déclencheur de l'inventaire `0x8002BC6C`-`0x8002BD00`, qui teste tout le mot des drapeaux de contrôle à `0x8002BC70`). [dépôt] Le
+mandataire fait le bloc de l'inventaire dans la **première** boucle de ticks (`AlundraWorldProxy.cs`, la lecture de `TickPad` puis
+l'inventaire, le sous-inventaire, le post-traitement), avant la passe du dialogue, l'écran de sauvegarde et les événements de carte du
+même tick. Convention (`AlundraInventoryDirector.cs`, résumé de classe) : le tick k du portage vaut `Update(k)` plus `RenderScene(k+1)` du
+binaire. **Mesuré** (vrai code du binaire dans l'interpréteur, vrai mandataire par `DialogueBoxMontage`) :
+
+| Mesure | Binaire | Portage aujourd'hui | Correctif |
+|---|---|---|---|
+| Événements de carte gelés, ouverture à P, fermeture à P+19 | P+1..P+37 | P..P+36 | P+1..P+37 |
+| Même, par le sous-inventaire | P+1..P+74 | P..P+73 | P+1..P+74 |
+| Sous-inventaire puis retour | P+1..P+112 | P..P+111 | P+1..P+112 |
+| Portes des effets et des déclencheurs en attente | comme les événements | P..P+36 | P+1..P+37 |
+| Boîte (mode 0 ou 1) relâchée à S+19, Start échantillonné à S+19 | ouvre l'inventaire | Start perdu | ouvre |
+| Un événement de carte ouvre une boîte au tick du déclencheur, Start à ce tick | la boîte l'emporte | l'inventaire l'emporte | la boîte l'emporte |
+
+La contre-vérification redonne ces valeurs et trois autres fenêtres (fermeture à +24 : 1..42 ; à +30 : 1..48 ; sous-inventaire : 1..126),
+à 1, 2 et 3 ticks par image.
+
+- **U-R1** : la lecture de la manette du tick (`TickPad.Update` et l'enregistrement des mots Carré et choix) passe en tête de chaque tick de
+  la boucle des passes ; la première boucle de ticks disparaît (seuls l'inventaire et le sous-inventaire y lisaient `TickPad`).
+- **U-R2** : le **bloc de l'inventaire** (point de tête du portrait, `AlundraInventoryDirector.Tick` : décompte du délai de warp puis
+  déclencheur, tête, mise en place ou image par image ; le tick du sous-inventaire ; le post-traitement ; le pas du portrait ; les deux
+  présentateurs) tourne à la **fin du tick k**, après la porte des effets de ce tick, à chaque tick, que le héros existe ou que la porte soit
+  fermée (aucun `continue` ne le saute).
+- **U-R3** : la passe des déclencheurs en attente lit la porte telle qu'elle était après les événements de carte du dernier tick, avant
+  le bloc de l'inventaire de ce tick (sinon ses déclencheurs restent gelés un tick trop tôt).
+- **U-R4** : le comportement de l'inventaire par tick ne change pas (âge de la manette : D-E19-99, O-E19-77).
+- **Écarts à écrire dans l'ADR** : (1) dans `RenderScene(k+1)`, le binaire fait les créneaux 0, 3, 4, 6, 10 puis la fin ; le portage fait 4, 6
+  et la fin à la fin du tick k, puis 0, 3 et 10 en tête du tick k+1 ; les gardes existantes excluent toute interaction (le déclencheur refuse
+  tant qu'un drapeau de contrôle est posé ou que l'écran de sauvegarde est actif, la tête refuse tant qu'une boîte est ouverte, les
+  créneaux 6 et 10 ne sont jamais actifs ensemble, l'inventaire n'ouvre jamais de boîte) ; (2) **changement de comportement** : un
+  événement de carte qui lance un warp au tick où Start est pressé lance désormais le warp, et le déclencheur refuse Start par sa garde de
+  warp (D-E13D-30) ; dans le binaire, le warp part et l'inventaire reste armé (le défaut d'origine que D-E13D-30 corrige) ; le
+  commentaire du déclencheur (`AlundraInventoryDirector.cs`, garde du warp) est revu ; (3) les sons de l'inventaire viennent après ceux des
+  événements de carte du même tick, et le point de tête du portrait suit un héros déplacé par un événement de carte du même tick, comme
+  dans le binaire.
+- **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraWorldProxy.cs` (le comportement ; deux coutures de test, `EffectFrozenOfTickForTests`
+  et `PendingTriggersGateForTests` ; la première boucle et ses commentaires retirés ; le commentaire de la porte des déclencheurs ; le
+  commentaire qui dit que `TickPad` ne porte que les fronts du dernier tick) ; commentaires seulement : `Alundra/Scripts/AlundraInventoryDirector.cs`
+  (résumé de classe, site du déclencheur, garde du warp), `Alundra/Scripts/AlundraInventoryPostProcess.cs`, `Alundra/Scripts/AlundraSaveScreenDirector.cs`
+  (sa phrase sur `TickPad`), le résumé de classe d'`AlundraDialogueBoxMontage` et les cinq commentaires de tests qui citent la boucle de la
+  manette par tick (`AlundraInventoryDirectorTests.cs`, `AlundraSubInventoryDirectorTests.cs`, `AlundraTickPadTests.cs` et les deux fichiers
+  de tests des présentateurs, lignes données par `verify/verify.md`) ; nouveau `Alundra.Tests/AlundraInventoryTriggerFrameOrderTests.cs` ; ce
+  plan ; une nouvelle ADR du parent et son index ; ADR-0040 annotée aux lignes 15 et 22 (la phrase sur `TickPad` et l'inconvénient des images
+  à plusieurs ticks) ; l'annexe `docs/plan-e19-u-annexe/`.
+- ⏳ **U-1 — Tests d'abord** (rouges au HEAD ; `AlundraInventoryTriggerFrameOrderTests.cs.txt` de l'annexe) : événements de carte gelés
+  aux ticks 1..37 (aujourd'hui 0..36) ; 1..74 et 1..112 (aujourd'hui 0..73 et 0..111) ; portes des effets et des déclencheurs en attente
+  à (P, P+1, P+37, P+38) = (faux, vrai, vrai, faux) (aujourd'hui (vrai, vrai, faux, faux)) ; modes de contrôle 0 et 1 : Carré à l'image 46,
+  Start à l'image 65, après l'image 65 la boîte est fermée, l'inventaire actif et `MenuOpen` posé ; un événement de carte ouvre une boîte à
+  P avec Start à P : drapeaux exactement 0x08 ou 0x10, l'inventaire toujours au repos 40 images plus tard. Attendu : 7 rouges sur 7.
+- ⏳ **U-2 — Code** (U-R1 à U-R3), ADR du parent (prochain numéro libre de toutes les branches, revérifié avant le commit), commentaires.
+- ⏳ **U-3 — Vérification** par un vérificateur neuf.
+- **Acceptation** : 7 rouges sur 7 au HEAD puis verts ; mutant « bloc déplacé sans U-R3 » : le cas des portes reste rouge ; `Alundra.Tests`
+  en Release puis en Debug (3214 + 7), aucun test existant ne bouge (les aides de test pilotent l'inventaire seul, dans un ordre interne
+  que le correctif garde) ; `cmp` ; traces (garde seulement : leurs montages n'appellent pas `AlundraWorldProxy.Update`). **Arrêts** : un
+  test existant qui bouge, une valeur qui contredit l'annexe, un fichier hors de la liste. **Retour arrière** : revert.
+- **Recette U-4** (auteur) : Start pressé exactement à la fermeture d'une boîte de dialogue (l'inventaire s'ouvre) ; un dialogue lancé par
+  un événement de carte pendant qu'on presse Start (la boîte l'emporte) ; un passage de carte franchi en pressant Start (le warp part,
+  l'inventaire ne s'ouvre pas).
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
@@ -11376,7 +11509,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-75 | **Planifiée le 2026-10-06 en E19.f3d ; faite et CONFIRMED le 2026-10-07 (`0e50b0f`, ADR-0047) ; recette F3D-4 validée le 2026-10-08.** **Âge du mot de manette de l'écran de sauvegarde** (contre-vérification de la découverte d'E19.f3c, 2026-10-06) : les créneaux 3 et 10 du binaire lisent le même mot de manette ; dans le portage, l'écran lit celui du tick courant et la passe du dialogue celui du tick d'avant ; entre l'appui qui ouvre la question et la réponse la plus rapide, le binaire compte 19 échantillons, le portage 17 aujourd'hui, 18 après E19.f3c. Tranche à part après E19.f3c (D-E19-99) ; les épingles qui dépendent de la manette du sélecteur bougeront. | Session (D-E19-99) |
 | O-E19-76 | **Tranché le 2026-10-08 (D-E19-102 : la session fait L-a puis L-b).** **Question à l'auteur : propriétaire de la partie moteur de la boucle au repère** (découverte de nuit du 2026-10-06, contre-vérifiée, `docs/plan-e19-backlog-1006-annexe/`) : D-E19-74 confiait la partie moteur (`SoundAsset.LoopStartSample`, déplacement du lecteur de flux, `FillQueue` et le travailleur) à S2 d'audio-modern ; S2 est mergé dans `main` sans elle (`LoopStartSample` : 0 occurrence sur toutes les branches du moteur ; les deux boucles font `Rewind()`, `MusicPlayer.cs:373` et `StreamingWorker.cs:263`) ; la DLL joue toujours la musique comme un clip résident bouclé en entier. **Choix** : (A) la session la fait sur la pile E19 (tranche L-a : plan, relecture, vérificateur), puis L-b (données, convertisseur, DLL) après la mesure O-E19-63 ; (B) elle reste à la ligne audio de l'auteur. Recommandation de la session : (A). La section 1.2w est en pause jusqu'à la réponse. | Auteur |
 | O-E19-77 | **Clos le 2026-10-07 : aucun écart** (découverte et contre-vérification, `docs/plan-e19-pad-age-annexe/o77/` : le tick k du portage vaut `Update(k)` plus `RenderScene(k+1)` du binaire, l'appel par image n lit le même échantillon que dans le binaire ; 21 scénarios sur 21 puis 10 sur 10 égaux par le vrai mandataire ; la correction d'E19.f3d appliquée ici en casserait 16 sur 21). **Âge des mots de manette de l'inventaire et du sous-inventaire** (découverte de nuit d'E19.f3d, contre-vérifiée, `docs/plan-e19-pad-age-annexe/`) : la mise à jour par image de l'inventaire (créneau 6, `0x80056598`) et celle du sous-inventaire (créneau 4, `0x80053328`, six lectures par intervalle) lisent leurs mots dans `RenderScene`, donc l'échantillon de l'image d'avant ; les directeurs d'inventaire du portage lisent `TickPad` du tick courant. Même classe qu'O-E19-75, mais pas une seule ligne : à découvrir et planifier. | Session |
-| O-E19-78 | **Tranché le 2026-10-08 (D-E19-103 : à corriger, tranche à part).** **Ordre d'image du déclencheur de l'inventaire** (contre-vérification d'O-E19-77, 2026-10-07, `docs/plan-e19-pad-age-annexe/o77/verify/`) : dans le binaire, le déclencheur (`Update(0)`, `0x8002BCA4`) tourne après `RenderScene(k)` (où la boîte de texte se ferme, `0x8004501C`, et efface les bits 0x18 de `0x800DC4B8` que le déclencheur teste à `0x8002BC70`) et après les événements de carte ; dans le portage, il tourne dans la première boucle de ticks, avant la passe du dialogue, l'écran de sauvegarde et les événements de carte du même tick. **Mesuré** : autour d'un inventaire ouvert à P et fermé à P+19, le binaire saute les événements de carte dans `Update(P+1)` à `Update(P+37)`, le portage aux ticks P à P+36 : un tick trop tôt aux deux bouts. **Non mesuré** (hypothèses) : un Start donné à l'échantillon où une boîte se ferme ouvre l'inventaire dans le binaire, pas dans le portage ; un événement de carte qui ouvre une boîte au même tick que le déclencheur l'emporte dans le binaire, l'inventaire dans le portage. Corriger demanderait de déplacer le déclencheur après la passe du dialogue et les événements de carte (épingles de l'inventaire à reprendre), comme E19.f3c l'a fait pour l'écran de sauvegarde. | Auteur, puis tranche à part |
+| O-E19-78 | **Tranché le 2026-10-08 (D-E19-103 : à corriger, tranche à part) ; planifié en E19.u (§1.2y).** **Ordre d'image du déclencheur de l'inventaire** (contre-vérification d'O-E19-77, 2026-10-07, `docs/plan-e19-pad-age-annexe/o77/verify/`) : dans le binaire, le déclencheur (`Update(0)`, `0x8002BCA4`) tourne après `RenderScene(k)` (où la boîte de texte se ferme, `0x8004501C`, et efface les bits 0x18 de `0x800DC4B8` que le déclencheur teste à `0x8002BC70`) et après les événements de carte ; dans le portage, il tourne dans la première boucle de ticks, avant la passe du dialogue, l'écran de sauvegarde et les événements de carte du même tick. **Mesuré** : autour d'un inventaire ouvert à P et fermé à P+19, le binaire saute les événements de carte dans `Update(P+1)` à `Update(P+37)`, le portage aux ticks P à P+36 : un tick trop tôt aux deux bouts. **Non mesuré** (hypothèses) : un Start donné à l'échantillon où une boîte se ferme ouvre l'inventaire dans le binaire, pas dans le portage ; un événement de carte qui ouvre une boîte au même tick que le déclencheur l'emporte dans le binaire, l'inventaire dans le portage. Corriger demanderait de déplacer le déclencheur après la passe du dialogue et les événements de carte (épingles de l'inventaire à reprendre), comme E19.f3c l'a fait pour l'écran de sauvegarde. | Auteur, puis tranche à part |
 
 ## 4. Hors périmètre
 

@@ -1,0 +1,27 @@
+8002e058  addiu    $sp, $sp, -0x20
+8002e05c  lui      $v0, 3
+8002e060  sw       $s1, 0x14($sp)
+8002e064  lui      $s1, 0x8012
+8002e068  lw       $v1, 0x6e68($s1)
+8002e06c  ori      $v0, $v0, 0x8800
+8002e070  sw       $ra, 0x18($sp)
+8002e074  slt      $v0, $v0, $v1
+8002e078  beqz     $v0, 0x8002e0ec
+8002e07c  sw       $s0, 0x10($sp)
+8002e080  lui      $v0, 0x8014
+8002e084  lw       $v0, -0x4b8($v0)
+8002e088  nop      
+8002e08c  andi     $v0, $v0, 4
+8002e090  beqz     $v0, 0x8002e0d0
+8002e094  lui      $s0, 0x800e
+8002e098  addiu    $s0, $s0, -0x3f60
+8002e09c  jal      0x80081ffc
+8002e0a0  move     $a0, $s0
+8002e0a4  lw       $a2, 0x6e68($s1)
+8002e0a8  addu     $a0, $v0, $s0
+8002e0ac  lui      $v0, 0x8002
+8002e0b0  bgez     $a2, 0x8002e0bc
+8002e0b4  addiu    $a1, $v0, 0x4b8
+8002e0b8  addiu    $a2, $a2, 0x7ff
+8002e0bc  sra      $a2, $a2, 0xb
+8002e0c0  jal      0x80082918

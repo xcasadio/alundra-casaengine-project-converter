@@ -1,0 +1,262 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Alundra.Scripts;
+using Xunit;
+using static Alundra.Tests.SaveGameDirectorTestSupport;
+
+namespace Alundra.Tests;
+
+/// <summary>Counter-check probes for O-E19-78 (PHYSICAL COPY ONLY, never in the repository). Writes text files under VERIFY_OUT.</summary>
+public sealed class VerifyO78Probes : IDisposable
+{
+    private sealed class NullSounds : IAlundraSoundPlayer
+    {
+        public void PlaySfx(int sfxId) { }
+        public void RemixVoice(int sfxId, int left, int right) { }
+        public void FlushFrameSounds() { }
+        public void StopAllSfx() { }
+    }
+
+    public VerifyO78Probes() => Reset();
+
+    public void Dispose() => Reset();
+
+    private static void Reset()
+    {
+        AlundraInventoryDirector.Instance.ResetForTests();
+        AlundraSubInventoryDirector.Instance.ResetForTests();
+        AlundraInventoryPostProcess.Instance.ResetForTests();
+        AlundraInventoryPortrait.Instance.ResetForTests();
+        AlundraSaveScreenDirector.Instance.ResetForTests();
+        AlundraHudDirector.Instance.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests();
+        AlundraEtcStringTable.ResetForTests();
+        AlundraWorldProxy.VerifyTickCounter = 0;
+        AlundraWorldProxy.VerifyMapEventTicks.Clear();
+    }
+
+    private static DialogueBoxMontage Build()
+    {
+        var m = new DialogueBoxMontage();
+        var tables = ItemTablesFixture.LoadReal();
+        AlundraInventoryDirector.Instance.AttachToWorld(m.State, tables, new NullSounds());
+        AlundraSubInventoryDirector.Instance.AttachToWorld(m.State, tables, new NullSounds());
+        AlundraWorldProxy.VerifyTickCounter = 0;
+        AlundraWorldProxy.VerifyMapEventTicks.Clear();
+        return m;
+    }
+
+    private static void Write(string name, IEnumerable<string> lines)
+    {
+        var dir = Environment.GetEnvironmentVariable("VERIFY_OUT") ?? Path.GetTempPath();
+        Directory.CreateDirectory(dir);
+        File.WriteAllLines(Path.Combine(dir, name), lines);
+    }
+
+    private static string Runs(IEnumerable<int> values)
+    {
+        var v = values.OrderBy(x => x).ToList();
+        var runs = new List<string>();
+        for (var i = 0; i < v.Count; i++)
+        {
+            var s = v[i];
+            while (i + 1 < v.Count && v[i + 1] == v[i] + 1)
+            {
+                i++;
+            }
+
+            runs.Add($"{s}..{v[i]}");
+        }
+
+        return string.Join(",", runs);
+    }
+
+    /// <summary>Ticks (relative to the open tick) on which the map events did NOT run. presses: relative tick -> word; frames of `ticksPerFrame` ticks,
+    /// the press of a frame being held during all its ticks; hold ticks of the press = the frame's ticks.</summary>
+    private static (string Frozen, string TicksPerFrame) FrozenTicks(int ticksPerFrame, int openTick, Dictionary<int, uint> pressesRel, int totalTicks)
+    {
+        Reset();
+        using var m = Build();
+        m.MapEventScript = () => { };
+        var starts = new HashSet<int>();
+        var tpf = new List<int>();
+        var frame = 0;
+        while (AlundraWorldProxy.VerifyTickCounter < totalTicks)
+        {
+            var first = AlundraWorldProxy.VerifyTickCounter + 1; // 1-based index of this frame's first tick
+            starts.Add(first);
+            uint word = 0;
+            for (var t = first; t < first + ticksPerFrame; t++)
+            {
+                if (pressesRel.TryGetValue(t - openTick, out var w))
+                {
+                    word |= w;
+                }
+            }
+
+            m.PadForFrame = _ => word;
+            var before = AlundraWorldProxy.VerifyTickCounter;
+            m.RunFrame(0.02f * ticksPerFrame);
+            tpf.Add(AlundraWorldProxy.VerifyTickCounter - before);
+            frame++;
+        }
+
+        var ran = new HashSet<int>(AlundraWorldProxy.VerifyMapEventTicks);
+        var frozen = Enumerable.Range(1, AlundraWorldProxy.VerifyTickCounter).Where(t => !ran.Contains(t)).Select(t => t - openTick);
+        var aligned = pressesRel.Keys.Where(k => !pressesRel.ContainsKey(k - 1)).All(k => starts.Contains(openTick + k));
+        return (Runs(frozen), string.Join("", tpf.Distinct()) + (aligned ? " aligned" : " MISALIGNED"));
+    }
+
+    [Fact]
+    public void P1_TickRateInvariance_OfTheMapEventFreeze()
+    {
+        var lines = new List<string>();
+        // open tick 13 (1-based) is the first tick of a frame for r = 1, 2, 3 (13 = 1 + 12)
+        const int open = 13;
+        foreach (var r in new[] { 1, 2, 3 })
+        {
+            foreach (var close in new[] { 24, 30 })
+            {
+                var presses = new Dictionary<int, uint>();
+                for (var k = 0; k < r; k++)
+                {
+                    presses[k] = AlundraPadState.Start;
+                    presses[close + k] = AlundraPadState.Start;
+                }
+
+                var refRes = FrozenTicks(1, open, presses, open + 80);
+                var res = FrozenTicks(r, open, presses, open + 80);
+                lines.Add($"main  r={r} close={close}: frozen(rel open) at r ticks/frame = {res.Frozen} (tpf {res.TicksPerFrame}); same presses at 1 tick/frame = {refRes.Frozen}; equal={res.Frozen == refRes.Frozen}");
+            }
+
+            // sub-inventory and back (L1 at 24, L1 back at 66, Start close at 108): all multiples of 1, 2 and 3
+            var sub = new Dictionary<int, uint>();
+            for (var k = 0; k < r; k++)
+            {
+                sub[k] = AlundraPadState.Start;
+                sub[24 + k] = AlundraPadState.L1;
+                sub[66 + k] = AlundraPadState.L1;
+                sub[108 + k] = AlundraPadState.Start;
+            }
+
+            var refSub = FrozenTicks(1, open, sub, open + 170);
+            var resSub = FrozenTicks(r, open, sub, open + 170);
+            lines.Add($"sub   r={r}: frozen(rel open) = {resSub.Frozen} (tpf {resSub.TicksPerFrame}); at 1 tick/frame = {refSub.Frozen}; equal={resSub.Frozen == refSub.Frozen}");
+        }
+
+        Write("p1-tickrate.txt", lines);
+    }
+
+    [Fact]
+    public void P2_EndOfFrameFlagsAndInventoryState_PerFrame()
+    {
+        var lines = new List<string>();
+        foreach (var r in new[] { 1, 2 })
+        {
+            Reset();
+            using var m = Build();
+            m.MapEventScript = () => { };
+            const int P = 6;
+            var sched = new Dictionary<int, uint> { [0] = AlundraPadState.Start, [19] = AlundraPadState.L1, [56] = AlundraPadState.L1, [94] = AlundraPadState.Start };
+            m.PadForFrame = f => sched.TryGetValue(f - P, out var w) ? w : 0u;
+            for (var f = 0; f < P + 130; f++)
+            {
+                m.RunFrame(0.02f * r);
+                lines.Add($"r={r} f={f - P} flags={m.State.PlayerControlFlags:X2} inv={(AlundraInventoryDirector.Instance.IsActive ? 1 : 0)}{(AlundraInventoryDirector.Instance.IsDrawn ? 1 : 0)} sub={(AlundraSubInventoryDirector.Instance.IsActive ? 1 : 0)}{(AlundraSubInventoryDirector.Instance.IsDrawn ? 1 : 0)} post={AlundraInventoryPostProcess.Instance.State}");
+            }
+        }
+
+        Write("p2-endofframe.txt", lines);
+    }
+
+    /// <summary>Save screen (failure flow) closing on a tick, Start on that tick: does the inventory open? Port side only.</summary>
+    [Fact]
+    public void P3_SaveScreenClose_PlusStart()
+    {
+        var lines = new List<string>();
+        int? closeFrame = null;
+        foreach (var startOffset in new int?[] { null, -1, 0, 1 })
+        {
+            Reset();
+            using var m = Build();
+            AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
+            AlundraSaveScreenDirector.Instance.AttachToWorld(m.State, null);
+            m.MapEventScript = () => { };
+            m.RunFrames(3);
+            Assert.True(AlundraSaveScreenDirector.Instance.StartFailure());
+            var squareFrame = -1;
+            var log = new List<string>();
+            for (var i = 0; i < 400; i++)
+            {
+                if (squareFrame < 0 && AlundraSaveScreenDirector.Instance.State == AlundraSaveScreenDirector.StateWaitSquare)
+                {
+                    squareFrame = m.Frame + 5;
+                }
+
+                var f = m.Frame;
+                var activeBefore = AlundraSaveScreenDirector.Instance.IsActive;
+                m.PadForFrame = fr => fr == squareFrame ? AlundraPadState.Square
+                    : (startOffset.HasValue && closeFrame.HasValue && fr == closeFrame.Value + startOffset.Value) ? AlundraPadState.Start : 0u;
+                m.RunFrame();
+                var activeAfter = AlundraSaveScreenDirector.Instance.IsActive;
+                if (activeBefore && !activeAfter && startOffset == null)
+                {
+                    closeFrame = f;
+                }
+
+                if (squareFrame >= 0 && f >= squareFrame - 1)
+                {
+                    log.Add($"  f={f} save={(activeAfter ? 1 : 0)} st={AlundraSaveScreenDirector.Instance.State} flags={m.State.PlayerControlFlags:X2} inv={(AlundraInventoryDirector.Instance.IsActive ? 1 : 0)}");
+                }
+
+                if (squareFrame >= 0 && closeFrame.HasValue && f > closeFrame.Value + 6)
+                {
+                    break;
+                }
+            }
+
+            lines.Add($"startOffset={(startOffset?.ToString() ?? "none")} square@{squareFrame} saveScreenInactiveAfterFrame={closeFrame}");
+            if (closeFrame.HasValue)
+            {
+                lines.AddRange(log.Where(s => int.Parse(s.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0].Substring(2)) >= closeFrame.Value - 3));
+            }
+        }
+
+        Write("p3-savescreen.txt", lines);
+    }
+    /// <summary>A map event starts a warp departure on the tick whose sample carries Start (D-E13D-30's guard). Port side only.</summary>
+    [Fact]
+    public void P4_MapEventWarp_PlusStart_OnTheSameTick()
+    {
+        var lines = new List<string>();
+        foreach (var withStart in new[] { false, true })
+        {
+            Reset();
+            using var m = Build();
+            const int P = 6;
+            var started = false;
+            m.MapEventScript = () =>
+            {
+                if (!started && m.Frame == P)
+                {
+                    AlundraWarpDirector.Instance.BeginDepartureForLoad(5, 0, 0, 0, m.Proxy.PlayerEntity!, m.State);
+                    started = true;
+                }
+            };
+            m.PadForFrame = f => withStart && f == P ? AlundraPadState.Start : 0u;
+            for (var f = 0; f <= P + 3; f++)
+            {
+                m.RunFrame();
+                if (f >= P - 1)
+                {
+                    lines.Add($"start={withStart} f={f - P} warp={(AlundraWarpDirector.Instance.IsTransitionInProgress ? 1 : 0)} departureCalled={(started ? 1 : 0)} inv={(AlundraInventoryDirector.Instance.IsActive ? 1 : 0)} flags={m.State.PlayerControlFlags:X2}");
+                }
+            }
+        }
+
+        Write("p4-warp.txt", lines);
+    }
+}

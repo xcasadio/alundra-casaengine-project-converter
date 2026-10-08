@@ -1,0 +1,106 @@
+=== A. Rule kept by the recommendation: reads stop at the end of data (no fill across the seam) ===
+L1[inline] R1000 loop 600, 16384 B, target 3 after Play
+  n=3 bytes=[4000, 1600, 1600] total=7200
+  frames=['[0..999]', '[600..999]', '[600..999]']
+  f(i) holds over 1800 frames; finishing=False
+L1[inline] R1000 loop 600, 16384 B, target 3 after 1 x (ConsumeBuffers(3) + Update)
+  n=6 bytes=[4000, 1600, 1600, 1600, 1600, 1600] total=12000
+  frames=['[0..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]']
+  f(i) holds over 3000 frames; finishing=False
+L2[inline] R1000 loop 600, 1024 B, target 3 after Play
+  n=3 bytes=[1024, 1024, 1024] total=3072
+  frames=['[0..255]', '[256..511]', '[512..767]']
+  f(i) holds over 768 frames; finishing=False
+L2[inline] R1000 loop 600, 1024 B, target 3 after 2 x (ConsumeBuffers(3) + Update)
+  n=9 bytes=[1024, 1024, 1024, 928, 1024, 576, 1024, 576, 1024] total=8224
+  frames=['[0..255]', '[256..511]', '[512..767]', '[768..999]', '[600..855]', '[856..999]', '[600..855]', '[856..999]', '[600..855]']
+  f(i) holds over 2056 frames; finishing=False
+L1[worker] R1000 loop 600, 16384 B, target 3 after Play
+  n=3 bytes=[4000, 1600, 1600] total=7200
+  frames=['[0..999]', '[600..999]', '[600..999]']
+  f(i) holds over 1800 frames; finishing=False
+L1[worker] R1000 loop 600, 16384 B, target 3 after 1 x (ConsumeBuffers(3) + Update)
+  n=6 bytes=[4000, 1600, 1600, 1600, 1600, 1600] total=12000
+  frames=['[0..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]']
+  f(i) holds over 3000 frames; finishing=False
+L2[worker] R1000 loop 600, 1024 B, target 3 after Play
+  n=3 bytes=[1024, 1024, 1024] total=3072
+  frames=['[0..255]', '[256..511]', '[512..767]']
+  f(i) holds over 768 frames; finishing=False
+L2[worker] R1000 loop 600, 1024 B, target 3 after 2 x (ConsumeBuffers(3) + Update)
+  n=9 bytes=[1024, 1024, 1024, 928, 1024, 576, 1024, 576, 1024] total=8224
+  frames=['[0..255]', '[256..511]', '[512..767]', '[768..999]', '[600..855]', '[856..999]', '[600..855]', '[856..999]', '[600..855]']
+  f(i) holds over 2056 frames; finishing=False
+L3[inline] R1000 loop 0 (default) after Play
+  n=3 bytes=[4000, 4000, 4000] total=12000
+  frames=['[0..999]', '[0..999]', '[0..999]']
+  f(i) holds over 3000 frames; finishing=False
+L3[inline] R1000 loop 0 (default) after 1 x (ConsumeBuffers(3) + Update)
+  n=6 bytes=[4000, 4000, 4000, 4000, 4000, 4000] total=24000
+  frames=['[0..999]', '[0..999]', '[0..999]', '[0..999]', '[0..999]', '[0..999]']
+  f(i) holds over 6000 frames; finishing=False
+L4[inline] R1000 NOT looped, loop 600 after Play
+  n=1 bytes=[4000] total=4000
+  frames=['[0..999]']
+  f(i) holds over 1000 frames; finishing=True
+L5[inline] R1000 loop 1000 (out of range -> 0) after Play
+  n=3 bytes=[4000, 4000, 4000] total=12000
+  frames=['[0..999]', '[0..999]', '[0..999]']
+  f(i) holds over 3000 frames; finishing=False
+L5b[inline] R1000 loop 5000000 (out of range -> 0) after Play
+  n=3 bytes=[4000, 4000, 4000] total=12000
+  frames=['[0..999]', '[0..999]', '[0..999]']
+  f(i) holds over 3000 frames; finishing=False
+L8[inline] R1000 loop 999 (last frame, valid) after Play
+  n=3 bytes=[4000, 4, 4] total=4008
+  frames=['[0..999]', '[999..999]', '[999..999]']
+  f(i) holds over 1002 frames; finishing=False
+L8[inline] R1000 loop 999 (last frame, valid) after 1 x (ConsumeBuffers(3) + Update)
+  n=6 bytes=[4000, 4, 4, 4, 4, 4] total=4020
+  frames=['[0..999]', '[999..999]', '[999..999]', '[999..999]', '[999..999]', '[999..999]']
+  f(i) holds over 1005 frames; finishing=False
+
+=== B. Same tests at the proposed depth 24 (if the depth change is in the same slice) ===
+L1@24[inline] R1000 loop 600, 16384 B, target 24 after Play
+  n=24 bytes=[4000, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600] total=40800
+  frames=['[0..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]']
+  f(i) holds over 10200 frames; finishing=False
+
+=== C. Alternative rule priced only: fill across the seam (every buffer full) ===
+L1x[inline] R1000 loop 600, 16384 B, target 3 after Play
+  n=3 bytes=[16384, 16384, 16384] total=49152
+  frames=['[0..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..895]', '[896..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..991]', '[992..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..999]+[600..687]']
+  f(i) holds over 12288 frames; finishing=False
+L2x[inline] R1000 loop 600, 1024 B, target 3 after Play
+  n=3 bytes=[1024, 1024, 1024] total=3072
+  frames=['[0..255]', '[256..511]', '[512..767]']
+  f(i) holds over 768 frames; finishing=False
+L2x[inline] R1000 loop 600, 1024 B, target 3 after 2 x (ConsumeBuffers(3) + Update)
+  n=9 bytes=[1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024] total=9216
+  frames=['[0..255]', '[256..511]', '[512..767]', '[768..999]+[600..623]', '[624..879]', '[880..999]+[600..735]', '[736..991]', '[992..999]+[600..847]', '[848..999]+[600..703]']
+  f(i) holds over 2304 frames; finishing=False
+
+=== D. Existing tests at depth 24 (65536-frame 22050 Hz stereo file = 16 buffers) ===
+Play_StartsAStreamAndQueuesAhead @24, non-looped 65536: pending after Play = 16, finishing=True
+Update_TopsTheQueueBackUp @24: after ConsumeBuffers(2) pending = 14 (test asserts 1), after Update = 14 (test asserts 3)
+  with SampleCount 65536: after Play 16, after ConsumeBuffers(2) 14, after Update 14
+  with SampleCount 106496: after Play 24, after ConsumeBuffers(2) 22, after Update 24
+Looped 65536 @24 (worker tests' Play): pending after Play = 24
+
+=== E. Margins (44.1 kHz stereo 16-bit, 16 KiB buffer = 4096 frames) ===
+target  3: best   278.6 ms, worst   185.8 ms, at a seam (track 6)    95.9 ms; fill-across seam = worst   185.8 ms; ring 96 KiB, queue 48 KiB, mixer chunks 6/128
+target  6: best   557.3 ms, worst   464.4 ms, at a seam (track 6)   374.6 ms; fill-across seam = worst   464.4 ms; ring 192 KiB, queue 96 KiB, mixer chunks 12/128
+target 12: best  1114.6 ms, worst  1021.7 ms, at a seam (track 6)   931.8 ms; fill-across seam = worst  1021.7 ms; ring 384 KiB, queue 192 KiB, mixer chunks 24/128
+target 24: best  2229.1 ms, worst  2136.2 ms, at a seam (track 6)  2046.4 ms; fill-across seam = worst  2136.2 ms; ring 768 KiB, queue 384 KiB, mixer chunks 48/128
+O-E19-63 worst measured: Debug 2-frame top-up gap 351.5 ms, Debug Tick 301.1 + 31 ms frame
+max target with 16 KiB buffers under SoftwareMixer.VoiceChunkQueueCapacity 128 (2 chunks per buffer): 64
+
+=== F. Header trap ===
+fmt 18 + LIST 6: data offset 60; naive 44+600*4=2444 -> data byte 2384 -> frame 596
+racing_game_music_1.wav fmt 18 + fact 4: data offset 58 (measured 58 by own parser, 6190583 frames)
+
+=== G. Precision trap of a float read ===
+5344920 as float32 -> 5344920 (exact)
+10695720 as float32 -> 10695720 (exact)
+19994940 as float32 -> 19994940 (exact)
+16777217 as float32 -> 16777216 (LOST)

@@ -1,0 +1,21 @@
+A0 box opened before RS(2), control mode 0: ctrl after open = 0x8 ; Square at sample 60 -> sound 7 in RS [61] ; bits 0x18 cleared in RS(79) (= S+19)
+    f  1 w=0000 | RS: ctrl=00 slot0=0 box=0 wait=0 slot6=0 flag6=0 [] | UP: ctrl=00 slot0=0 slot6=0 flag6=0 []
+    f  2 w=0000 | RS: ctrl=08 slot0=1 box=5 wait=0 slot6=0 flag6=0 [('open_box', 0), ('sound', 6)] | UP: ctrl=08 slot0=1 slot6=0 flag6=0 []
+    f  3 w=0000 | RS: ctrl=08 slot0=1 box=5 wait=0 slot6=0 flag6=0 [] | UP: ctrl=08 slot0=1 slot6=0 flag6=0 []
+    f 59 w=0000 | RS: ctrl=08 slot0=1 box=4 wait=1 slot6=0 flag6=0 [] | UP: ctrl=08 slot0=1 slot6=0 flag6=0 []
+    f 60 w=0080 | RS: ctrl=08 slot0=1 box=4 wait=1 slot6=0 flag6=0 [] | UP: ctrl=08 slot0=1 slot6=0 flag6=0 []
+    f 61 w=0000 | RS: ctrl=08 slot0=1 box=6 wait=1 slot6=0 flag6=0 [('sound', 7)] | UP: ctrl=08 slot0=1 slot6=0 flag6=0 []
+    f 62 w=0000 | RS: ctrl=08 slot0=1 box=6 wait=1 slot6=0 flag6=0 [] | UP: ctrl=08 slot0=1 slot6=0 flag6=0 []
+    f 78 w=0000 | RS: ctrl=08 slot0=1 box=6 wait=1 slot6=0 flag6=0 [] | UP: ctrl=08 slot0=1 slot6=0 flag6=0 []
+    f 79 w=0000 | RS: ctrl=00 slot0=0 box=0 wait=1 slot6=0 flag6=0 [] | UP: ctrl=00 slot0=0 slot6=0 flag6=0 []
+    f 80 w=0000 | RS: ctrl=00 slot0=0 box=0 wait=1 slot6=0 flag6=0 [] | UP: ctrl=00 slot0=0 slot6=0 flag6=0 []
+A1 mode 0: Start at sample R-1 (frame 78): DisplayInventory armed slot 6 in Update([]), MenuOpen from RS([])
+A1 mode 0: Start at sample R+0 (frame 79): DisplayInventory armed slot 6 in Update([79]), MenuOpen from RS([80])
+A1 mode 0: Start at sample R+1 (frame 80): DisplayInventory armed slot 6 in Update([80]), MenuOpen from RS([81])
+A1 mode 1: ctrl while open=10, released in RS(79); Start at sample 79: slot 6 armed in Update([79])
+B mode 0: box opened inside UpdateWorld(10), Start at sample 10: after Update(10) ctrl=08 slot0=1 slot6=0; inventory ever armed: []
+B mode 1: box opened inside UpdateWorld(10), Start at sample 10: after Update(10) ctrl=10 slot0=1 slot6=0; inventory ever armed: []
+B control (no box): slot 6 armed in Update([10]), MenuOpen first after RS([11])
+main_open0_close19                 map events skipped in Update(P+a..P+b): 1..37
+main_open0_L1_19_subclose56        map events skipped in Update(P+a..P+b): 1..74
+main_open0_L1_19_back56_close94    map events skipped in Update(P+a..P+b): 1..112

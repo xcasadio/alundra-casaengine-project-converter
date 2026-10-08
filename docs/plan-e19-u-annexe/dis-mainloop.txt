@@ -1,0 +1,65 @@
+8002c3d0  jal      0x8004be0c
+8002c3d4  nop      
+8002c3d8  lw       $a0, -0x3a60($s4)
+8002c3dc  jal      0x8004a09c
+8002c3e0  nop      
+8002c3e4  jal      0x8002baec
+8002c3e8  addiu    $a0, $zero, 1
+8002c3ec  jal      0x80042748
+8002c3f0  nop      
+8002c3f4  jal      0x8002ac2c
+8002c3f8  sb       $zero, -0x3f60($s5)
+8002c3fc  jal      0x8002bd60
+8002c400  nop      
+8002c404  jal      0x8002baec
+8002c408  move     $a0, $zero
+8002c40c  lui      $v0, 0x800e
+8002c410  lw       $a0, -0x3b60($v0)
+8002c414  jal      0x80083c40
+8002c418  addiu    $a1, $s5, -0x3f60
+8002c41c  lw       $v0, -0x3fa8($s2)
+8002c420  nop      
+8002c424  bgez     $v0, 0x8002c444
+8002c428  addiu    $a0, $zero, 1
+8002c42c  lw       $v0, 4($s0)
+8002c430  lui      $v1, 0x4000
+8002c434  and      $v0, $v0, $v1
+8002c438  beqz     $v0, 0x8002c444
+8002c43c  nop      
+8002c440  lw       $a0, 0x14($s0)
+8002c444  jal      0x80042798
+8002c448  nop      
+8002c44c  jal      0x800815e4
+8002c450  nop      
+8002c454  lw       $v0, 4($s1)
+8002c458  nop      
+8002c45c  beqz     $v0, 0x8002c3f4
+8002c460  nop      
+8002c464  lw       $a0, 0xc($s1)
+8002c468  lw       $a1, 0x28($s1)
+8002c46c  jal      0x80049f1c
+8002c470  nop      
+8002c474  lw       $a0, 8($s1)
+8002c478  jal      0x80044320
+8002c47c  sw       $zero, 0x28($s1)
+8002c480  lui      $v0, 0x800d
+8002c484  addiu    $s2, $v0, -0x5dd0
+8002c488  addiu    $v0, $zero, 1
+8002c48c  sw       $v0, 0x24($s1)
+8002c490  jal      0x8002e38c
+8002c494  sb       $zero, -0x3f60($s5)
+8002c498  lw       $a0, 0x1e20($s2)
+8002c49c  lw       $a1, 8($s1)
+8002c4a0  jal      0x80044440
+8002c4a4  addiu    $a0, $a0, 0xc
+8002c4a8  jal      0x8004b1d4
+8002c4ac  move     $s0, $v0
+8002c4b0  jal      0x80042798
+8002c4b4  addiu    $a0, $zero, 1
+8002c4b8  jal      0x800815e4
+8002c4bc  nop      
+8002c4c0  bnez     $s0, 0x8002c490
+8002c4c4  nop      
+8002c4c8  jal      0x8004288c
+8002c4cc  nop      
+8002c4d0  lw       $a0, 0xc($s1)

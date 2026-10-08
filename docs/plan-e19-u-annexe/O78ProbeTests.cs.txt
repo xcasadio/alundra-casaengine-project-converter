@@ -1,0 +1,299 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using Alundra.Scripts;
+using Xunit;
+
+namespace Alundra.Tests;
+
+/// <summary>O-E19-78 PROBE (physical scratch copy only, never in the repository). The real AlundraWorldProxy.Update through the dialogue montage (map-event
+/// script as a lambda run inside RunMapEventsPass), one logic tick per frame unless stated. Output directory from the O78OUT environment variable.</summary>
+[Collection("O78Probe")]
+public sealed class O78ProbeTests : IDisposable
+{
+    private static string OutDir => Environment.GetEnvironmentVariable("O78OUT") ?? throw new InvalidOperationException("O78OUT");
+
+    private sealed class Rec : IAlundraSoundPlayer
+    {
+        public readonly List<int> Requests = new();
+        public void PlaySfx(int sfxId) => Requests.Add(sfxId);
+        public void RemixVoice(int sfxId, int left, int right) { }
+        public void FlushFrameSounds() { }
+        public void StopAllSfx() { }
+    }
+
+    public O78ProbeTests() => Reset();
+
+    public void Dispose() => Reset();
+
+    private static void Reset()
+    {
+        AlundraInventoryDirector.Instance.ResetForTests();
+        AlundraSubInventoryDirector.Instance.ResetForTests();
+        AlundraInventoryPostProcess.Instance.ResetForTests();
+        AlundraInventoryPortrait.Instance.ResetForTests();
+        AlundraSaveScreenDirector.Instance.ResetForTests();
+        AlundraHudDirector.Instance.ResetForTests();
+        AlundraDialogueDirector.Instance.ResetForTests();
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests();
+        AlundraScreenFadeDirector.Instance.ResetForTests();
+        AlundraMusicPlayer.Instance.ResetForTests();
+        AlundraBgmFadeDirector.Instance.ResetForTests();
+        AlundraEtcStringTable.ResetForTests();
+        AlundraWorldProxy.O78PendingGate.Clear();
+    }
+
+    private static (DialogueBoxMontage M, Rec Rec) Build()
+    {
+        Reset();
+        var m = new DialogueBoxMontage();
+        var rec = new Rec();
+        var tables = ItemTablesFixture.LoadReal();
+        AlundraInventoryDirector.Instance.AttachToWorld(m.State, tables, rec);
+        AlundraSubInventoryDirector.Instance.AttachToWorld(m.State, tables, rec);
+        return (m, rec);
+    }
+
+    private static readonly FieldInfo EffectGates = typeof(AlundraWorldProxy).GetField("_effectFrozenOfTick", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+    private static int MenuOpen(DialogueBoxMontage m) => (m.State.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0 ? 1 : 0;
+
+    /// <summary>(a) Freeze window: inventory opened by Start at frame P, closed by Start at P+19. Per frame: map-event script calls, MenuOpen after the
+    /// frame, the effect gate of each tick, the pending-trigger gate of the frame, the inventory flag.</summary>
+    [Fact]
+    public void Probe_FreezeWindow()
+    {
+        const int P = 5;
+        foreach (var seconds in new[] { 0.02f, 0.04f })
+        {
+            var (m, _) = Build();
+            var calls = 0;
+            m.MapEventScript = () => calls++;
+            m.PadForFrame = f => f - P == 0 || f - P == (seconds > 0.03f ? 10 : 19) ? AlundraPadState.Start : 0u;
+            var rows = new List<string> { "rel\tmapEventCalls\tmenuOpenAfter\teffectGates\tpendingGate\tforbiddenWarpFlag" };
+            for (var f = 0; f <= P + 45; f++)
+            {
+                var before = calls;
+                AlundraWorldProxy.O78PendingGate.Clear();
+                m.RunFrame(seconds);
+                var gates = string.Join(",", ((List<bool>)EffectGates.GetValue(m.Proxy)!).Select(g => g ? 1 : 0));
+                var pending = AlundraWorldProxy.O78PendingGate.Count == 0 ? "-" : (AlundraWorldProxy.O78PendingGate[^1] ? "1" : "0");
+                rows.Add($"{f - P}\t{calls - before}\t{MenuOpen(m)}\t{gates}\t{pending}\t{AlundraInventoryDirector.Instance.ForbiddenWarpFlag}");
+            }
+
+            File.WriteAllLines(Path.Combine(OutDir, seconds > 0.03f ? "freeze-2ticks.tsv" : "freeze.tsv"), rows);
+            m.Dispose();
+        }
+    }
+
+    /// <summary>(a2) Freeze windows of three schedules (main close; L1 then sub-inventory close; L1, back to the main, close), as runs of skipped frames.</summary>
+    [Fact]
+    public void Probe_FreezeWindows()
+    {
+        const int P = 5;
+        var scheds = new (string Name, Dictionary<int, uint> Presses)[]
+        {
+            ("main_open0_close19", new() { [0] = AlundraPadState.Start, [19] = AlundraPadState.Start }),
+            ("main_open0_L1_19_subclose56", new() { [0] = AlundraPadState.Start, [19] = AlundraPadState.L1, [56] = AlundraPadState.Start }),
+            ("main_open0_L1_19_back56_close94", new() { [0] = AlundraPadState.Start, [19] = AlundraPadState.L1, [56] = AlundraPadState.L1, [94] = AlundraPadState.Start }),
+        };
+        var rows = new List<string>();
+        foreach (var (name, presses) in scheds)
+        {
+            var (m, _) = Build();
+            var calls = 0;
+            m.MapEventScript = () => calls++;
+            m.PadForFrame = f => presses.TryGetValue(f - P, out var w) ? w : 0u;
+            var skipped = new List<int>();
+            for (var f = 0; f <= P + 135; f++)
+            {
+                var before = calls;
+                m.RunFrame();
+                if (calls == before)
+                {
+                    skipped.Add(f - P);
+                }
+            }
+
+            var runs = new List<string>();
+            var start = int.MinValue;
+            for (var i = 0; i < skipped.Count; i++)
+            {
+                if (i == 0 || skipped[i] != skipped[i - 1] + 1)
+                {
+                    start = skipped[i];
+                }
+
+                if (i == skipped.Count - 1 || skipped[i + 1] != skipped[i] + 1)
+                {
+                    runs.Add($"{start}..{skipped[i]}");
+                }
+            }
+
+            rows.Add($"{name}\tskipped ticks P+{string.Join(", P+", runs)}");
+            m.Dispose();
+        }
+
+        File.WriteAllLines(Path.Combine(OutDir, "freeze-windows.tsv"), rows);
+    }
+
+    /// <summary>(b) A box opened at frame 0 (control mode 0 and 1), Square at frame S; R = the frame whose update releases it; Start at R-1, R, R+1.</summary>
+    [Fact]
+    public void Probe_StartOnTheClosingSample()
+    {
+        const int S = 46;
+        var rows = new List<string> { "mode\tstartAt\tR\tinventoryFirstActiveFrame\tmenuOpenFirstFrameAfterR\tboxReopened" };
+        foreach (var mode in new[] { 0, 1 })
+        {
+            // find R
+            var (m0, _) = Build();
+            m0.Director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: mode);
+            m0.PadForFrame = f => f == S ? AlundraPadState.Square : 0u;
+            var r = -1;
+            for (var f = 0; f < 120 && r < 0; f++)
+            {
+                m0.RunFrame();
+                if (!m0.Director.IsOpen)
+                {
+                    r = f;
+                }
+            }
+
+            m0.Dispose();
+            foreach (var d in new[] { -1, 0, 1 })
+            {
+                var (m, _) = Build();
+                m.Director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: mode);
+                m.PadForFrame = f => f == S ? AlundraPadState.Square : f == r + d ? AlundraPadState.Start : 0u;
+                var firstActive = -1;
+                var menuOpenAfterR = -1;
+                for (var f = 0; f < r + 10; f++)
+                {
+                    m.RunFrame();
+                    if (firstActive < 0 && AlundraInventoryDirector.Instance.IsActive)
+                    {
+                        firstActive = f;
+                    }
+
+                    if (f >= r && menuOpenAfterR < 0 && MenuOpen(m) == 1)
+                    {
+                        menuOpenAfterR = f;
+                    }
+                }
+
+                rows.Add($"{mode}\tR{d:+0;-0;+0}\t{r}\t{firstActive}\t{menuOpenAfterR}\t{(m.Director.IsOpen ? 1 : 0)}");
+                m.Dispose();
+            }
+        }
+
+        File.WriteAllLines(Path.Combine(OutDir, "boxclose-start.tsv"), rows);
+    }
+
+    /// <summary>(c) A map event opens a box at frame P (once), Start at frame P (and, as a control, no box).</summary>
+    [Fact]
+    public void Probe_MapEventBoxOnTheTriggerTick()
+    {
+        const int P = 5;
+        var rows = new List<string> { "case\tinventoryFirstActiveFrame\tboxOpenedAtFrame\tboxOpenAfterP\tflagsAfterP\tinventoryActiveAfterP+40\tboxOpenAfterP+40" };
+        foreach (var mode in new[] { -1, 0, 1 })
+        {
+            var (m, _) = Build();
+            var opened = -1;
+            m.MapEventScript = () =>
+            {
+                if (mode >= 0 && opened < 0 && m.Frame >= P)
+                {
+                    m.Director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: mode);
+                    opened = m.Frame;
+                }
+            };
+            m.PadForFrame = f => f == P ? AlundraPadState.Start : 0u;
+            var firstActive = -1;
+            var boxAfterP = -1;
+            uint flagsAfterP = 0;
+            for (var f = 0; f <= P + 40; f++)
+            {
+                m.RunFrame();
+                if (firstActive < 0 && AlundraInventoryDirector.Instance.IsActive)
+                {
+                    firstActive = f;
+                }
+
+                if (f == P)
+                {
+                    boxAfterP = m.Director.IsOpen ? 1 : 0;
+                    flagsAfterP = m.State.PlayerControlFlags;
+                }
+            }
+
+            rows.Add($"{(mode < 0 ? "nobox" : "mode" + mode)}\t{firstActive}\t{opened}\t{boxAfterP}\t0x{flagsAfterP:X2}\t{(AlundraInventoryDirector.Instance.IsActive ? 1 : 0)}\t{(m.Director.IsOpen ? 1 : 0)}");
+            m.Dispose();
+        }
+
+        File.WriteAllLines(Path.Combine(OutDir, "mapevent-box.tsv"), rows);
+    }
+
+    /// <summary>(d) The O-E19-77 counter-check schedules (inventory state per tick), at 1 tick and at 2 ticks per frame: must not move.</summary>
+    [Fact]
+    public void Probe_InventorySchedules()
+    {
+        foreach (var seconds in new[] { 0.02f, 0.04f })
+        {
+            var rows = new List<string>();
+            foreach (var (name, presses, frames) in O78Schedules.All())
+            {
+                var (m, rec) = Build();
+                m.PadForFrame = f => presses.TryGetValue(f - 5, out var w) ? w : 0u;
+                for (var f = 0; f <= 5 + frames; f++)
+                {
+                    rec.Requests.Clear();
+                    m.RunFrame(seconds);
+                    var inv = AlundraInventoryDirector.Instance;
+                    var sub = AlundraSubInventoryDirector.Instance;
+                    rows.Add($"{name}\t{f - 5}\t{inv.ForbiddenWarpFlag}\t{inv.SelectedSlotId}\t{sub.State}\t{sub.SelectedPosition}\t{AlundraInventoryPostProcess.Instance.State}\t{MenuOpen(m)}\t{AlundraInventoryPortrait.Instance.State}\t{string.Join(",", rec.Requests)}");
+                }
+
+                m.Dispose();
+            }
+
+            File.WriteAllLines(Path.Combine(OutDir, seconds > 0.03f ? "schedules-2ticks.tsv" : "schedules.tsv"), rows);
+        }
+    }
+}
+
+internal static class O78Schedules
+{
+    public static IEnumerable<(string Name, Dictionary<int, uint> Presses, int Frames)> All()
+    {
+        const uint st = AlundraPadState.Start, dn = AlundraPadState.Down, up = AlundraPadState.Up, rt = AlundraPadState.Right,
+            lf = AlundraPadState.Left, l1 = AlundraPadState.L1, tri = AlundraPadState.Triangle, r2 = AlundraPadState.R2, l2 = AlundraPadState.L2;
+        yield return ("A_down18", new() { [0] = st, [18] = dn }, 30);
+        yield return ("B_down19", new() { [0] = st, [19] = dn }, 30);
+        yield return ("C_close19_start37", new() { [0] = st, [19] = st, [37] = st }, 60);
+        yield return ("D_close19_start38", new() { [0] = st, [19] = st, [38] = st }, 60);
+        yield return ("E_sub_right55", new() { [0] = st, [19] = l1, [55] = rt }, 64);
+        yield return ("F_sub_right56", new() { [0] = st, [19] = l1, [56] = rt }, 64);
+        yield return ("G_back_down94", new() { [0] = st, [19] = l1, [56] = l1, [94] = dn }, 100);
+        var hold = new Dictionary<int, uint> { [0] = st };
+        for (var k = 10; k <= 45; k++)
+        {
+            hold[k] = dn;
+        }
+
+        yield return ("H_down_held", hold, 50);
+        yield return ("I_sub_up56_left57_tri58_l2_reopen", new() { [0] = st, [19] = l1, [56] = up, [57] = lf, [58] = tri, [76] = l2, [77] = l2 | dn }, 100);
+        var hold2 = new Dictionary<int, uint> { [0] = r2, [19] = tri };
+        for (var k = 30; k <= 70; k++)
+        {
+            hold2[k] = st | lf;
+        }
+
+        yield return ("J_tri_close_start_held", hold2, 80);
+    }
+}
