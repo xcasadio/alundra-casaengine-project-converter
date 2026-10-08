@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.Json;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace AlundraCasaEngineProjectConverter.Tests;
 
@@ -9,13 +10,22 @@ namespace AlundraCasaEngineProjectConverter.Tests;
 /// Guards the BGM batch extraction rendered from one fresh sound system per track
 /// (docs/plan-e19-opcodes.md section 1.2v, X2, D-E19-69). Before X2 every track started with what the
 /// previous one left sounding (the "ding" at the start of track 25, the map 389 music), and track 44 was
-/// the tail of track 43. The expected values are the value annex of the plan (docs/plan-e19-x2-annexe/),
-/// written before the re-extraction.
+/// the tail of track 43. The expected values are the value annex of the plan, written before the
+/// re-extraction: docs/plan-e19-x2-annexe/ for X2, and since E19.L-b1 (D-E19-73, D-E19-76) the oracle of
+/// docs/plan-e19-loop-annexe/data/ (the music rendered to the second loop jump), of which the X2 render is
+/// a byte prefix.
 /// Runs on real data-extracted content; returns early (rather than failing) when data-extracted/ or the
 /// annex is not present next to the built test binaries - same convention as SpriteBankReaderAnimSetsTests.
 /// </summary>
 public class BgmFreshSoundSystemTests
 {
+    private readonly ITestOutputHelper _output;
+
+    public BgmFreshSoundSystemTests(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private const int SamplesPerVideoFrame = 735;
     private const int BytesPerStereoFrame = 4;
     private const int WavHeaderBytes = 44;
@@ -110,26 +120,27 @@ public class BgmFreshSoundSystemTests
         Assert.False(File.Exists(Path.Combine(Path.GetDirectoryName(bgmJson)!, "bgm", "bgm_044.wav")));
     }
 
-    // T-D (guard): the number of frames per track does not move (annex tracks.tsv).
+    // T-D: the number of frames per track is the oracle's (column Frames; E19.L-b1 moved it from the X2 annex).
     [Theory]
     [MemberData(nameof(WrittenTracks))]
     public void Frames_PerTrack_MatchTheAnnex(int soundIndex)
     {
         var bgmJson = FindFile("sound", "bgm.json");
-        var tracks = FindAnnexFile("tracks.tsv");
-        if (bgmJson is null || tracks is null)
+        var oracle = FindAnnexFile("oracle_sha256.tsv");
+        if (bgmJson is null || oracle is null)
         {
             return;
         }
 
-        var row = ReadTsv(tracks).Single(r => r["SoundIndex"] == soundIndex.ToString(CultureInfo.InvariantCulture));
+        _output.WriteLine("executed");
+        var row = ReadTsv(oracle).Single(r => r["SoundIndex"] == soundIndex.ToString(CultureInfo.InvariantCulture));
         var entry = ReadEntries(bgmJson).Single(e => e.GetProperty("SoundIndex").GetInt32() == soundIndex);
-        Assert.Equal(int.Parse(row["NewFrames"], CultureInfo.InvariantCulture), entry.GetProperty("Frames").GetInt32());
+        Assert.Equal(int.Parse(row["Frames"], CultureInfo.InvariantCulture), entry.GetProperty("Frames").GetInt32());
     }
 
-    // T-E (guard): track 1 is the same before and after X2, to the byte.
+    // T-E (guard): the X2 render of track 1 (7966 frames) is a byte prefix of the file, before and after L-b1.
     [Fact]
-    public void Track1_IsByteIdenticalToTheAnnex()
+    public void Track1_StartsWithTheX2RenderByteForByte()
     {
         var bgmDirectory = FindBgmDirectory();
         var oracle = FindAnnexFile("oracle_sha256.tsv");
@@ -138,8 +149,9 @@ public class BgmFreshSoundSystemTests
             return;
         }
 
+        _output.WriteLine("executed");
         var row = ReadTsv(oracle).Single(r => r["SoundIndex"] == "1");
-        Assert.Equal(row["SHA256"], Sha256Of(Path.Combine(bgmDirectory, "bgm_001.wav")));
+        Assert.Equal(row["TodayDataSHA256"], Sha256OfDataPrefix(Path.Combine(bgmDirectory, "bgm_001.wav"), int.Parse(row["TodayFrames"], CultureInfo.InvariantCulture)));
     }
 
     // Golden theory: each of the 45 written tracks equals the fixed batch's own output (annex).
@@ -154,6 +166,7 @@ public class BgmFreshSoundSystemTests
             return;
         }
 
+        _output.WriteLine("executed");
         var row = ReadTsv(oracle).Single(r => r["SoundIndex"] == soundIndex.ToString(CultureInfo.InvariantCulture));
         Assert.Equal(row["SHA256"], Sha256Of(Path.Combine(bgmDirectory, row["File"])));
     }
@@ -162,6 +175,29 @@ public class BgmFreshSoundSystemTests
     {
         using var stream = File.OpenRead(path);
         return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
+    }
+
+    // SHA-256 of the data bytes [44, 44 + frames * 2940) of a WAV (the first 'frames' video frames).
+    private static string Sha256OfDataPrefix(string path, int frames)
+    {
+        using var stream = File.OpenRead(path);
+        stream.Seek(WavHeaderBytes, SeekOrigin.Begin);
+        var remaining = (long)frames * SamplesPerVideoFrame * BytesPerStereoFrame;
+        var buffer = new byte[1 << 20];
+        using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+        while (remaining > 0)
+        {
+            var read = stream.Read(buffer, 0, (int)Math.Min(buffer.Length, remaining));
+            if (read <= 0)
+            {
+                break;
+            }
+
+            hash.AppendData(buffer, 0, read);
+            remaining -= read;
+        }
+
+        return Convert.ToHexString(hash.GetHashAndReset()).ToLowerInvariant();
     }
 
     // Reads up to 'stereoFrames' stereo frames after the 44-byte header, as interleaved 16-bit samples.
@@ -209,7 +245,7 @@ public class BgmFreshSoundSystemTests
 
     private static string? FindAnnexFile(string fileName)
     {
-        return FindUpwards(Path.Combine("docs", "plan-e19-x2-annexe", fileName));
+        return FindUpwards(Path.Combine("docs", "plan-e19-loop-annexe", "data", fileName));
     }
 
     private static string? FindUpwards(string relativePath)
