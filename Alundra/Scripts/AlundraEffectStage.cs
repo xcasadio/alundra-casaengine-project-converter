@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CasaEngine.Core.Logging;
+using CasaEngine.Framework.Rendering.EffectQuads;
+using CasaEngine.Framework.Scene.Entities.Components;
 
 namespace Alundra.Scripts;
 
@@ -63,6 +65,15 @@ public sealed class AlundraEffectStage
         _loadSpawned = false;
         _warnedNoHero = false;
     }
+
+    /// <summary>Stub (E19.g G3c-1, red first).</summary>
+    public void AttachService(EffectQuadService? service) => throw new NotImplementedException();
+
+    /// <summary>Stub (E19.g G3c-1, red first).</summary>
+    public void PushFrame(Camera2dComponent? camera) => throw new NotImplementedException();
+
+    /// <summary>Stub (E19.g G3c-1, red first).</summary>
+    internal void PushFrameAt(bool hasScroll, int scrollX, int scrollY) => throw new NotImplementedException();
 
     /// <summary>The tile of the hero when it was created, the one the zone test of the load-time spawn reads.</summary>
     public void CaptureHeroTile(int tileX, int tileY)
