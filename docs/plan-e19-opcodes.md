@@ -11381,7 +11381,7 @@ câblés avant leur premier tick (le bloc vient après leur câblage ; consigné
   un événement de carte pendant qu'on presse Start (la boîte l'emporte) ; un passage de carte franchi en pressant Start (le warp part,
   l'inventaire ne s'ouvre pas).
 
-### 1.2z E19.v — `LoadingMap` en l'air : la pose `0x2D` dès l'arrivée (O-E19-32) 🧪 (planifiée le 2026-10-08, relecture READY ; V-1 et V-2 faites le 2026-10-08, vérification neuve à faire)
+### 1.2z E19.v — `LoadingMap` en l'air : la pose `0x2D` dès l'arrivée (O-E19-32) 🧪 (planifiée le 2026-10-08, relecture READY ; faite et CONFIRMED le 2026-10-08, `ed3cd7a` ; recette V-4 hors chaîne, quand une de ces cartes sera atteignable)
 
 DLL seule. Pas de décision de l'auteur : le binaire tranche, et D-E19-39 range les états de saut du héros dans E19.d2c. Machine
 d'états du héros : relecture du plan, puis vérificateur neuf. Faits et valeurs : `docs/plan-e19-v-annexe/` (`README.md`,
@@ -11448,7 +11448,20 @@ fait pas. Les arrivées en `0x36` sont le portail, F9 et la nouvelle partie ; `0
   Code : une aide `IsHeroInTheAir`, partagée avec `ApplyGroundOrAirTail` ; la branche `LoadingMap` devient la tête de la chaîne.
   `Alundra.Tests` passe en entier, 3239/3239, en Release puis en Debug (3235 − 1 + 3 + 2) ; aucun autre test ne bouge. `cmp` est égal, et
   les six traces de référence sont identiques.)*
-- ⏳ **V-3 — Vérification** : vérificateur neuf.
+- ✅ **V-3 — Vérification** (2026-10-08) : vérificateur neuf **CONFIRMED** sur `ed3cd7a`.
+  - Il a relu le binaire (`0x800325E8`, `0x80031EBC`) et la décompilation.
+  - Il a remis le code de `227a9f1` : exactement les trois rouges prévus ; au HEAD, tout est vert.
+  - Deux mutations par script sont attrapées : la chaîne non exclusive par le cas « direction tenue », le prédicat `IsOnGround || HeroAirborne`
+    par le cas du mandataire nu.
+  - `Alundra.Tests` 3239/3239 en Release puis en Debug ; `cmp` égal ; traces inchangées ; liste fermée respectée ; recomptage de
+    l'annexe égal.
+  - **Avis reportés** :
+    - **A1 (P3)** : le commentaire de la branche d'échelle (`AlundraPlayerManager.cs:309-310`, « same restriction as the LoadingMap case
+      above ») renvoie à une restriction qui n'existe plus. À corriger par la prochaine tranche qui touche ce fichier ; contrôle :
+      `grep -n "same restriction as the LoadingMap" Alundra/Scripts/AlundraPlayerManager.cs` ne rend rien.
+    - **A2 (P4)** : aucun portail ne mène à 476, 478 ni 416. Seule l'arrivée par `0x53` sur la 476 est mesurée (en `0xD`) ; celles vers 478
+      et 416 gardent l'animation du héros au départ et ne joueraient que s'il était alors en `0x36`, ce qui n'est pas démontré. L'affirmation
+      « hors chaîne » vaut pour les portails et la 476.
 - **Acceptation** :
   - (a) 2 rouges, (b) 1 rouge, puis tout vert ;
   - `Alundra.Tests` en Release puis en Debug ; aucun test existant ne bouge, hors le cas remplacé ;
