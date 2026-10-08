@@ -1,0 +1,62 @@
+maps in world-index: 483; maps without portal list/with load note: 0
+portals: 3316; with a measurable ground: 3316; unmeasurable: 0
+above > 0: 335; above == 0: 119; above < 0: 2862
+chain destinations: portals 219, measurable 219, above > 0: 0
+above > 0 by destination map (count; max above px):
+  311 (Well (+Lurvy house unused_)-311): 3; max 432
+  38 (Nirude’s Lair-38): 4; max 336
+  104 (Giles Nightmare-104): 1; max 320
+  68 (Coal Mine (unused_)-68): 2; max 272
+  422 (Nirude (inner)-422): 1; max 208
+  36 (Nirude’s Lair-36): 1; max 176
+  6 (Overworld 1,1-6): 3; max 160
+  93 (Magyscar-93): 8; max 128
+  101 (Giles Nightmare-101): 16; max 128
+  121 (Old desert entrance (unused)-121): 4; max 128
+  20 (Overworld 4,3-20): 1; max 112
+  22 (Lars' Crypt-22): 4; max 96
+  48 (Elenes Nightmare-48): 2; max 96
+  103 (Giles Nightmare-103): 5; max 96
+  80 (Lizardman's Lair-80): 1; max 80
+  30 (Ancient Shrine-30): 1; max 80
+  33 (Ancient Shrine-33): 1; max 80
+  50 (Elenes Nightmare-50): 4; max 80
+  51 (Elenes Nightmare-51): 3; max 80
+  54 (Elenes Nightmare-54): 15; max 80
+  59 (Torla Buggy_ with bar music and random texts (early version of Torla)-59): 12; max 80
+  78 (Underground Watercourse-78): 3; max 80
+  90 (Magyscar-90): 12; max 80
+  102 (Giles Nightmare-102): 3; max 80
+  107 (Giles Nightmare-107): 4; max 80
+  106 (Giles Nightmare-106): 1; max 80
+  105 (Giles Nightmare-105): 3; max 80
+  128 (Inoa (inner)-128): 26; max 80
+  150 (Murgg Tree (inner)-150): 14; max 80
+  159 (Fairy cave (underwater)-159): 6; max 80
+  319 (Cave (unused) probably Nava entrance early-319): 8; max 80
+  341 (Lake Shrine (inner)-341): 4; max 80
+  337 (Lake Shrine (inner)-337): 2; max 80
+  340 (Lake Shrine (inner)-340): 5; max 80
+  424 (Nirude (inner)-424): 4; max 80
+  445 (Torla (inner)-445): 1; max 80
+  447 (Torla (inner)-447): 13; max 80
+  24 (Lars' Crypt-24): 20; max 64
+  400 (Desert _ Ancient Shrine-400): 4; max 64
+  45 (Unused Dream (inner) (Beta Surferboys Dream)_-45): 13; max 64
+  70 (Coastal Cave-70): 24; max 64
+  88 (Magyscar-88): 12; max 64
+  108 (Nestus' Dream (Boss)-108): 2; max 64
+  125 (Kline's Nightmare-125): 8; max 64
+  305 (Meia Dream (unused_)-305): 8; max 64
+  313 (Ship (inner, broken, unused)-313): 2; max 64
+  312 (Ship (inner, broken, unused)-312): 4; max 64
+  339 (Lake Shrine (inner)-339): 1; max 64
+  29 (Ancient Shrine-29): 17; max 48
+  37 (Nirude’s Lair-37): 9; max 48
+  57 (Torla Buggy_ with bar music and random texts (early version of Torla)-57): 1; max 48
+  77 (Underground Watercourse-77): 5; max 48
+  91 (Magyscar-91): 1; max 48
+  1 (Overworld 0,0-1): 1; max 48
+  89 (Magyscar-89): 1; max 32
+  154 (Murgg Tree (inner)-154): 1; max 16
+unmeasurable notes:

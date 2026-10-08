@@ -1,0 +1,333 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using Alundra.Scripts;
+using CasaEngine.Framework.Assets.TileMap;
+using Newtonsoft.Json.Linq;
+using Xunit;
+
+namespace Alundra.Tests;
+
+/// <summary>
+/// E19.v discovery (throwaway, measurement only): the census of the portal arrivals above the ground, the arrival record of the
+/// 0x53 @688 departure of map 390 to 476, and per-frame traces of arrivals on real maps. Results go to docs/plan-e19-v-annexe/.
+/// </summary>
+[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+public sealed class ZzE19vArrivalCensusTests
+{
+    private const float BoxHalfX = 21f / 2f, BoxHalfY = 15f / 2f, BoxLocalX = 0.5f, BoxLocalY = 0.5f; // the hero's Box fixture (21x15x32, local (0.5, 0.5, 16)).
+
+    private sealed record MapInfo(int Index, string Zone, string WorldName, AlundraCellsCollisionField? Field, List<AlundraPortalRecord> Portals, string? Note);
+
+    private sealed record CensusRow(int SrcMap, AlundraPortalRecord Portal, int DestInternal, MapInfo? Dest, bool HasGround, float Ground, float Above, bool OnChain, string Note);
+
+    private static string Annex(string root)
+    {
+        var dir = Path.Combine(Directory.GetParent(root)!.FullName, "docs", "plan-e19-v-annexe");
+        Directory.CreateDirectory(dir);
+        return dir;
+    }
+
+    private static List<CensusRow>? _census;
+    private static Dictionary<int, MapInfo>? _maps;
+
+    private static (List<CensusRow> Rows, Dictionary<int, MapInfo> Maps) Census(string root)
+    {
+        if (_census != null && _maps != null)
+        {
+            return (_census, _maps);
+        }
+
+        using var index = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Maps", "world-index.json")));
+        var maps = new Dictionary<int, MapInfo>();
+        foreach (var entry in index.RootElement.EnumerateObject())
+        {
+            var id = int.Parse(entry.Name, CultureInfo.InvariantCulture);
+            var relative = entry.Value.GetString()!;
+            var parts = relative.Split('\\', '/');
+            var zone = parts[1];
+            var worldName = Path.GetFileNameWithoutExtension(relative);
+            var folder = Path.GetDirectoryName(Path.Combine(root, relative))!;
+            var portals = new List<AlundraPortalRecord>();
+            AlundraCellsCollisionField? field = null;
+            string? note = null;
+            try
+            {
+                var tilemapFolder = Path.Combine(folder, "tilemap");
+                var file = Directory.Exists(tilemapFolder) ? Directory.GetFiles(tilemapFolder, "*.tileMap").FirstOrDefault() : null;
+                if (file == null)
+                {
+                    note = "no tileMap file";
+                }
+                else
+                {
+                    var data = new TileMapData();
+                    data.Load(JObject.Parse(File.ReadAllText(file)));
+                    if (!AlundraCellsCollisionField.TryCreate(data, worldName, out field))
+                    {
+                        note = "no collision field";
+                    }
+
+                    var proxy = new AlundraWorldProxy();
+                    proxy.BuildPortals(data.ObjectLayers.FirstOrDefault(l => l.Name == "Portals"));
+                    portals.AddRange(((IAlundraScriptHost)proxy).Portals);
+                }
+            }
+            catch (Exception e)
+            {
+                note = "load failed: " + e.GetType().Name + ": " + e.Message;
+            }
+
+            maps[id] = new MapInfo(id, zone, worldName, field, portals, note);
+        }
+
+        var table = AlundraGameState.Instance.MapIdToInternalMapIndexTable; // production's table (identity at New Game).
+        var chain = new HashSet<int>(AlundraStoryChainOpcodeAudit.ChainMaps);
+        var rows = new List<CensusRow>();
+        foreach (var src in maps.Values.OrderBy(m => m.Index))
+        {
+            foreach (var portal in src.Portals)
+            {
+                var destInternal = portal.DestMapId >= 0 && portal.DestMapId < table.Length ? table[portal.DestMapId] : -1;
+                maps.TryGetValue(destInternal, out var dest);
+                var hasGround = false;
+                var groundMax = 0f;
+                var note = "";
+                if (dest == null)
+                {
+                    note = "destination map absent from world-index";
+                }
+                else if (dest.Field == null)
+                {
+                    note = dest.Note ?? "no field";
+                }
+                else
+                {
+                    // Hero at the arrival tile (PosX = tx*24+12, PosY = ty*16+8, in px), the 4-corner max of ClampToGround.
+                    var cx = portal.DestTileX * 24 + 12 + BoxLocalX;
+                    var cy = portal.DestTileY * 16 + 8 + BoxLocalY;
+                    var minX = cx - BoxHalfX;
+                    var maxX = MathF.BitDecrement(cx + BoxHalfX);
+                    var minY = cy - BoxHalfY;
+                    var maxY = MathF.BitDecrement(cy + BoxHalfY);
+                    AlundraTerrainProbe.SampleGroundCorner(dest.Field, minX, minY, ref hasGround, ref groundMax);
+                    AlundraTerrainProbe.SampleGroundCorner(dest.Field, minX, maxY, ref hasGround, ref groundMax);
+                    AlundraTerrainProbe.SampleGroundCorner(dest.Field, maxX, minY, ref hasGround, ref groundMax);
+                    AlundraTerrainProbe.SampleGroundCorner(dest.Field, maxX, maxY, ref hasGround, ref groundMax);
+                    if (!hasGround)
+                    {
+                        note = "no ground under the arrival";
+                    }
+                }
+
+                var above = hasGround ? portal.ZLevel * 16f - groundMax : float.NaN;
+                rows.Add(new CensusRow(src.Index, portal, destInternal, dest, hasGround, groundMax, above, chain.Contains(destInternal), note));
+            }
+        }
+
+        _census = rows;
+        _maps = maps;
+        return (rows, maps);
+    }
+
+    private static string F(float v) => float.IsNaN(v) ? "NaN" : v.ToString("0.###", CultureInfo.InvariantCulture);
+
+    [Fact]
+    public void Census_PortalArrivalsAboveTheGround()
+    {
+        var root = ProjectRootFinder.Find();
+        var (rows, maps) = Census(root);
+        var sb = new StringBuilder();
+        sb.AppendLine("src_map\tportal_index\tdest_map_id\tdest_internal\tdest_name\tdest_tile_x\tdest_tile_y\tzlevel\tzlevel_px\tground_px\tabove_px\tdest_on_chain\tnote");
+        foreach (var r in rows)
+        {
+            var p = r.Portal;
+            sb.AppendLine(string.Join('\t', r.SrcMap, p.Index, p.DestMapId, r.DestInternal, r.Dest?.WorldName ?? "?", p.DestTileX, p.DestTileY, p.ZLevel, p.ZLevel * 16,
+                r.HasGround ? F(r.Ground) : "NaN", F(r.Above), r.OnChain ? 1 : 0, r.Note));
+        }
+
+        File.WriteAllText(Path.Combine(Annex(root), "census-portals.tsv"), sb.ToString());
+
+        var summary = new StringBuilder();
+        var withGround = rows.Where(r => r.HasGround).ToList();
+        summary.AppendLine($"maps in world-index: {maps.Count}; maps without portal list/with load note: {maps.Values.Count(m => m.Note != null)}");
+        summary.AppendLine($"portals: {rows.Count}; with a measurable ground: {withGround.Count}; unmeasurable: {rows.Count - withGround.Count}");
+        summary.AppendLine($"above > 0: {withGround.Count(r => r.Above > 0)}; above == 0: {withGround.Count(r => r.Above == 0)}; above < 0: {withGround.Count(r => r.Above < 0)}");
+        summary.AppendLine($"chain destinations: portals {rows.Count(r => r.OnChain)}, measurable {withGround.Count(r => r.OnChain)}, above > 0: {withGround.Count(r => r.OnChain && r.Above > 0)}");
+        summary.AppendLine("above > 0 by destination map (count; max above px):");
+        foreach (var g in withGround.Where(r => r.Above > 0).GroupBy(r => r.DestInternal).OrderByDescending(g => g.Max(r => r.Above)))
+        {
+            summary.AppendLine($"  {g.Key} ({g.First().Dest?.WorldName}){(g.First().OnChain ? " [CHAIN]" : "")}: {g.Count()}; max {F(g.Max(r => r.Above))}");
+        }
+
+        summary.AppendLine("unmeasurable notes:");
+        foreach (var g in rows.Where(r => !r.HasGround).GroupBy(r => r.Note))
+        {
+            summary.AppendLine($"  {g.Key}: {g.Count()}");
+        }
+
+        File.WriteAllText(Path.Combine(Annex(root), "census-summary.txt"), summary.ToString());
+    }
+
+    private const string Zone390 = "The Klark";
+    private const string Map390 = "Ship Klark (inner)-390";
+
+    private static (uint MapIndex, int PosX, int PosY, int PosZ, uint AnimationId, uint DirectionId, int EffectId, uint HeroTarget, uint HeroCurrent, int Frame) Record476()
+    {
+        var flags = new[] { 866, 869, 870, 871 };
+        using var arc = new ArcRun(new ArcSpec("E19v-476", Zone390, Map390, flags, 44, 23, 4, 900, RealController: true));
+        arc.RunUntil(() => AlundraDialogueDirector.Instance.IsOpen, "the dialogue of B3 opens (0x0D @724)");
+        arc.CloseDialogueWithTheButton("the dialogue of B3 closes with the button");
+        arc.RunUntil(() => arc.Has(ScriptHelper.ProgramBMap, 688, 0x53), "B2 executes 0x53 @688 towards map 476");
+        var r = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        return (r.MapIndex, r.PosX, r.PosY, r.PosZ, r.AnimationId, r.DirectionId, r.EffectId, arc.Hero.TargetAnimationId, arc.Hero.CurrentAnimationId, arc.Frame);
+    }
+
+    [Fact]
+    public void Arrival476_TheRecordOf0x53At688()
+    {
+        var root = ProjectRootFinder.Find();
+        var r = Record476();
+        var sb = new StringBuilder();
+        sb.AppendLine("A1c setup (flags 866,869,870,871; hero tile 44,23,4; RealController), run until 0x53 @688 of program B executed (frame " + r.Frame + ").");
+        sb.AppendLine($"ArrivalRecordForTests: MapIndex={r.MapIndex} PosX={r.PosX} (px {(r.PosX / 65536.0).ToString("0.###", CultureInfo.InvariantCulture)}) PosY={r.PosY} (px {(r.PosY / 65536.0).ToString("0.###", CultureInfo.InvariantCulture)}) PosZ={r.PosZ} (px {(r.PosZ / 65536.0).ToString("0.###", CultureInfo.InvariantCulture)}, tileZ {r.PosZ >> 20}) AnimationId=0x{r.AnimationId:X} ({r.AnimationId}) DirectionId={r.DirectionId} EffectId={r.EffectId}");
+        sb.AppendLine($"Hero at that moment: TargetAnimationId=0x{r.HeroTarget:X} ({r.HeroTarget}) CurrentAnimationId=0x{r.HeroCurrent:X} ({r.HeroCurrent})");
+        sb.AppendLine($"Is the arrival animation 0x36? {r.AnimationId == 0x36}");
+
+        // The ground under that arrival on map 476 with the census convention.
+        var (_, maps) = Census(root);
+        if (maps.TryGetValue((int)r.MapIndex, out var dest) && dest.Field != null)
+        {
+            var px = r.PosX / 65536f;
+            var py = r.PosY / 65536f;
+            var cx = px + BoxLocalX;
+            var cy = py + BoxLocalY;
+            var hasGround = false;
+            var gm = 0f;
+            AlundraTerrainProbe.SampleGroundCorner(dest.Field, cx - BoxHalfX, cy - BoxHalfY, ref hasGround, ref gm);
+            AlundraTerrainProbe.SampleGroundCorner(dest.Field, cx - BoxHalfX, MathF.BitDecrement(cy + BoxHalfY), ref hasGround, ref gm);
+            AlundraTerrainProbe.SampleGroundCorner(dest.Field, MathF.BitDecrement(cx + BoxHalfX), cy - BoxHalfY, ref hasGround, ref gm);
+            AlundraTerrainProbe.SampleGroundCorner(dest.Field, MathF.BitDecrement(cx + BoxHalfX), MathF.BitDecrement(cy + BoxHalfY), ref hasGround, ref gm);
+            sb.AppendLine($"Ground under the record on map {r.MapIndex} ({dest.WorldName}): hasGround={hasGround} ground={F(gm)} px; record Z={r.PosZ / 65536.0:0.###} px; above={(hasGround ? F((float)(r.PosZ / 65536.0) - gm) : "n/a")} px");
+        }
+
+        File.WriteAllText(Path.Combine(Annex(root), "arrival-476.txt"), sb.ToString());
+    }
+
+    private static bool Trace(StringBuilder sb, string title, string zone, string worldName, int posX, int posY, int posZ, uint animationId, uint directionId, string info)
+    {
+        sb.AppendLine("=== " + title);
+        sb.AppendLine(info);
+        var ok = true;
+        try
+        {
+            var spec = new ArcSpec("E19v-trace", zone, worldName, Array.Empty<int>(), 0, 0, 0, 100, RealController: true, Prefabs: true,
+                Arrival: new ArcArrival(posX, posY, posZ, AlundraGameState.ResetAnimationId, directionId)); // the ctor asserts the 0x36 animation; set to animationId below.
+            using var arc = new ArcRun(spec);
+            var hero = arc.Hero;
+            hero.TargetAnimationId = animationId; // the ctor of ArcRun zeroes it (headless montage); production keeps the arrival animation.
+            var rows = new List<(int Frame, uint Target, uint Current, int OnGround, bool Airborne, double PosZ, uint Flags, bool Transition)>();
+            void Sample(int frame) => rows.Add((frame, hero.TargetAnimationId, hero.CurrentAnimationId, hero.IsOnGround, hero.HeroAirborne,
+                hero.PosZ / 65536.0, ArcRun.State.PlayerControlFlags, AlundraWarpDirector.Instance.IsTransitionInProgress));
+            Sample(0);
+            for (var f = 1; f <= 60; f++)
+            {
+                arc.OneFrame();
+                Sample(f);
+            }
+
+            sb.AppendLine("frame\ttarget\tcurrent\tIsOnGround\tHeroAirborne\tPosZ_px\tPlayerControlFlags\tinputBlocked\ttransition");
+            foreach (var r in rows)
+            {
+                sb.AppendLine($"{r.Frame}\t0x{r.Target:X}\t0x{r.Current:X}\t{r.OnGround}\t{(r.Airborne ? 1 : 0)}\t{r.PosZ:0.###}\t0x{r.Flags:X}\t{((r.Flags & AlundraGameState.PlayerControlBits.InputBlockedMask) != 0 ? 1 : 0)}\t{(r.Transition ? 1 : 0)}");
+            }
+
+            const uint L = 0x36;
+            var end = rows.FirstOrDefault(r => r.Frame > 0 && r.Target != L);
+            sb.AppendLine(end.Frame == 0 && rows.All(r => r.Target == L) ? "SUMMARY 0x36 never ended within 60 frames" : $"SUMMARY 0x36 ends: first frame with target != 0x36 = {end.Frame} (target 0x{end.Target:X}, current 0x{end.Current:X})");
+            bool Unlocked((int Frame, uint Target, uint Current, int OnGround, bool Airborne, double PosZ, uint Flags, bool Transition) r) => (r.Flags & AlundraGameState.PlayerControlBits.InputBlockedMask) == 0;
+            var firstAirIog = rows.Cast<(int Frame, uint Target, uint Current, int OnGround, bool Airborne, double PosZ, uint Flags, bool Transition)?>().FirstOrDefault(r => r!.Value.Target == L && r.Value.OnGround == 0 && Unlocked(r.Value));
+            var firstAirHA = rows.Cast<(int Frame, uint Target, uint Current, int OnGround, bool Airborne, double PosZ, uint Flags, bool Transition)?>().FirstOrDefault(r => r!.Value.Target == L && r.Value.Airborne && Unlocked(r.Value));
+            sb.AppendLine($"SUMMARY first frame target==0x36 && unlocked && IsOnGround==0: {(firstAirIog?.Frame.ToString() ?? "none")}");
+            sb.AppendLine($"SUMMARY first frame target==0x36 && unlocked && HeroAirborne: {(firstAirHA?.Frame.ToString() ?? "none")}");
+            var anyAir = rows.FirstOrDefault(r => r.OnGround == 0 || r.Airborne);
+            var airSeen = rows.Any(r => r.OnGround == 0 || r.Airborne);
+            sb.AppendLine($"SUMMARY first frame in the air (IsOnGround==0 or HeroAirborne), any target: {(airSeen ? anyAir.Frame.ToString() : "none")}");
+            if (airSeen)
+            {
+                var landing = rows.Where(r => r.Frame > anyAir.Frame).FirstOrDefault(r => r.OnGround != 0 && !r.Airborne);
+                sb.AppendLine($"SUMMARY landing frame (first later frame with IsOnGround!=0 && !HeroAirborne): {(landing.Frame > 0 ? landing.Frame.ToString() : "none within 60")}; PosZ then {(landing.Frame > 0 ? landing.PosZ.ToString("0.###", CultureInfo.InvariantCulture) : "n/a")}");
+            }
+
+            var blockedFrames = rows.Where(r => !Unlocked(r)).Select(r => r.Frame).ToList();
+            sb.AppendLine($"SUMMARY frames with InputBlockedMask bits: {(blockedFrames.Count == 0 ? "none" : $"{blockedFrames.Count} (first {blockedFrames.First()}, last {blockedFrames.Last()})")}");
+        }
+        catch (Exception e)
+        {
+            sb.AppendLine("TRACE FAILED: " + e.GetType().Name + ": " + e.Message);
+            ok = false;
+        }
+
+        sb.AppendLine();
+        return ok;
+    }
+
+    [Fact]
+    public void DynamicTraces_ArrivalsAboveTheGround()
+    {
+        var root = ProjectRootFinder.Find();
+        var (rows, maps) = Census(root);
+        var sb = new StringBuilder();
+        sb.AppendLine("Each trace: ArcRun, RealController + Prefabs (the export's animated hero), Arrival record posed as production writes it, no flags, no input, 60 frames.");
+        sb.AppendLine("Sample 'frame 0' is the state after the ArcRun constructor (before any OneFrame), with TargetAnimationId restored to the arrival animation.");
+        sb.AppendLine();
+
+        // Candidates: distinct destinations, chain maps first (none has above > 0 in the census), then the largest above overall.
+        var candidates = rows.Where(r => r.HasGround && r.Above > 0 && r.Dest!.Field != null)
+            .OrderByDescending(r => r.OnChain).ThenByDescending(r => r.Above).GroupBy(r => r.DestInternal).Select(g => g.OrderByDescending(r => r.Above).First()).ToList();
+        var control = rows.Where(r => r.HasGround && r.OnChain && r.Above == 0).OrderBy(r => r.SrcMap).FirstOrDefault();
+
+        bool Do(string label, CensusRow r)
+        {
+            var p = r.Portal;
+            var dir = (uint)AnimationTables.CardinalDirectionTable[p.ArrivalDirectionIndex];
+            return Trace(sb, $"{label}: portal {p.Index} of map {r.SrcMap} -> map {r.DestInternal} ({r.Dest!.WorldName}){(r.OnChain ? " [CHAIN]" : "")} tile ({p.DestTileX},{p.DestTileY}) ZLevel {p.ZLevel}",
+                r.Dest.Zone, r.Dest.WorldName, ((p.DestTileX * 24 + 12) << 16), ((p.DestTileY * 16 + 8) << 16), p.ZLevel << 20, 0x36, dir,
+                $"ground {F(r.Ground)} px, ZLevel*16 {p.ZLevel * 16} px, above {F(r.Above)} px, direction index {p.ArrivalDirectionIndex} -> id {dir}");
+        }
+
+        var done = 0;
+        foreach (var r in candidates)
+        {
+            if (done == 5)
+            {
+                break;
+            }
+
+            if (Do("ABOVE#" + (done + 1), r))
+            {
+                done++;
+            }
+        }
+
+        if (control != null)
+        {
+            Do("CONTROL", control);
+        }
+
+        var rec = Record476();
+        var r476 = rec.MapIndex;
+        if (maps.TryGetValue((int)r476, out var d476))
+        {
+            Trace(sb, $"RECORD-476: the 0x53 @688 record -> map {r476} ({d476.WorldName})", d476.Zone, d476.WorldName, rec.PosX, rec.PosY, rec.PosZ, rec.AnimationId, rec.DirectionId,
+                $"record AnimationId 0x{rec.AnimationId:X}, PosZ {rec.PosZ / 65536.0:0.###} px, direction {rec.DirectionId}");
+        }
+
+        File.WriteAllText(Path.Combine(Annex(root), "dynamic-traces.txt"), sb.ToString());
+    }
+}

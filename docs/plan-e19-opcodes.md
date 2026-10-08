@@ -11381,6 +11381,77 @@ câblés avant leur premier tick (le bloc vient après leur câblage ; consigné
   un événement de carte pendant qu'on presse Start (la boîte l'emporte) ; un passage de carte franchi en pressant Start (le warp part,
   l'inventaire ne s'ouvre pas).
 
+### 1.2z E19.v — `LoadingMap` en l'air : la pose `0x2D` dès l'arrivée (O-E19-32) ⏳ (planifiée le 2026-10-08 ; découverte faite le 2026-10-08)
+
+DLL seule. Pas de décision de l'auteur : le binaire tranche, et D-E19-39 range les états de saut du héros dans E19.d2c. Machine
+d'états du héros : relecture du plan, puis vérificateur neuf. Faits et valeurs : `docs/plan-e19-v-annexe/` (`README.md`,
+`census-portals.tsv`, `census-summary.txt`, `arrival-476.txt`, `dynamic-traces.txt`, la source du test de mesure en `.cs.txt`).
+
+**Découverte.** [binaire] `MovePlayer`, cas `LoadingMap` (`0x800325E8`-`0x80032608`) : `v1` = héros (`0x80127D30`), `lw v0, 0x144(v1)`
+(`IsOnGround`) ; non nul → `j 0x80032914`, la sortie du `switch` ; nul → `TargetAnimationId` (`+0x88`) = `0x2D` dans le délai du saut vers
+la même sortie. La décompilation est d'accord (`PlayerManager.cs:914-922`, `Jump` = `0x2D`). [dépôt] La branche est un sans-effet
+(`AlundraPlayerManager.cs:271-276`). C'est un `if` à part, placé avant la chaîne `if`/`else if` des états : y poser `0x2D` ferait courir le
+cas des états de saut dans le même appel (direction du stick, et `0x2C` quand une direction est tenue), ce que le `switch` du binaire ne
+fait pas. Les arrivées en `0x36` sont le portail, F9 et la nouvelle partie ; `0x53` recopie l'animation du héros
+(`AlundraWarpDirector.cs:411`). **Mesuré** au HEAD `420cc64` :
+- **portails** : 3316 portails sur 483 cartes ; 335 posent le héros au-dessus du sol, vers 56 cartes, **toutes hors chaîne**. Les 219
+  portails vers les 30 cartes de la chaîne arrivent au sol ou dessous, et `ClampToGround` relève le héros. Approximation : le héros est pris
+  au coin `X1`/`Y1` du portail ;
+- **la 476** (`0x53 @688` de la 390) fait bien arriver le héros à 48 px, mais en `0xD` (il dort) : la branche n'y joue pas. Le tri
+  du 2026-10-08 la croyait sur la chaîne ;
+- **traces** de 60 images, vrai contrôleur et préfabs, sans entrée :
+  - quatre arrivées hautes (311, 38, 104, 68 ; 432 à 272 px) sont déverrouillées (`PlayerControlFlags` 0, pas de transition) et gardent
+    `0x36` aux images 1 à 24 en tombant ;
+  - à l'image 25, l'animation 54 finit et sa chaîne pose Idle (0) ; à l'image 26, la queue d'Idle pose `0x2D` ; elles atterrissent aux
+    images 33 à 43 ;
+  - la 422 est verrouillée (`0x4`), et un autre écrivain, non établi, la passe en `0x2D` dès l'image 1 ;
+  - le témoin au sol (6 → 10) ne quitte pas le sol.
+
+- **V-R1** : la branche `LoadingMap` devient la tête de la chaîne des états (`if (LoadingMap) { … } else if (Idle ou Moving) …`), exclusive
+  comme le `switch` du binaire. En l'air, `TargetAnimationId = 0x2D` et rien d'autre dans cet appel (ni direction, ni `0x2C`) ; au sol, rien.
+- **V-R2** : « en l'air » est le prédicat d'`ApplyGroundOrAirTail` : `IsOnGround == 0` avec un contrôleur, `HeroAirborne` pour un mandataire
+  nu de test. Une petite aide le partage, pour que les deux sites du binaire qui lisent `+0x144` lisent la même chose.
+- **V-R3** : rien d'autre ne change. Le verrou (`InputBlockedMask`) sort toujours avant, et la chaîne `0x36` → Idle reste le chemin au sol.
+- **Commentaires périmés corrigés** :
+  - le résumé de classe d'`AlundraPlayerManager` (`:32-39`) ;
+  - le commentaire de la branche (`:264-270`) ;
+  - le résumé d'`ApplyGroundOrAirTail` (« reste non portée (O-E19-32) ») ;
+  - le commentaire d'`AdoptPlayerPawn` sur `IsOnGround = 1` (« falling to the NOT-ported Jump case », `AlundraWorldProxy.cs`).
+- **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraPlayerManager.cs` ; `Alundra/Scripts/AlundraWorldProxy.cs` (commentaire seul) ;
+  `Alundra.Tests/AlundraPlayerManagerTests.cs` ; un nouveau `Alundra.Tests/AlundraLoadingMapAirArrivalTests.cs` ; ce plan ; l'annexe.
+- ⏳ **V-1 — Tests d'abord**, rouges au HEAD :
+  - **(a)** dans `AlundraPlayerManagerTests`, le test qui épingle l'écart (`MovePlayer_LoadingMapNotGrounded_StaysLoadingMap_JumpNotPorted`)
+    est remplacé par trois cas :
+    - mandataire nu, `HeroAirborne` vrai : `0x2D` (rouge) ;
+    - le même avec une direction tenue : `0x2D` et non `0x2C`, `TargetDirection` inchangée (rouge) ;
+    - mandataire nu au sol (`HeroAirborne` faux, `IsOnGround` 1) : reste `0x36` (garde, vert au HEAD).
+    Le cas verrouillé existant ne change pas.
+  - **(b)** nouveau test d'arc : l'arrivée réelle du portail 4 de la 20 vers la 311 (tuile (33,45), `ZLevel` 28, 432 px au-dessus du sol),
+    avec vrai contrôleur et préfabs, sans entrée :
+    - `0x2D` dès la première image où `MovePlayer` lit le héros en l'air et déverrouillé (image 1 ou 2, selon l'ordre de la lecture
+      d'`IsOnGround` après l'épingle d'`AdoptPlayerPawn` ; le test rouge d'abord donne l'image et le plan la consigne) ;
+    - plus jamais `0x36` ensuite, et jamais Idle avant l'atterrissage ;
+    - Idle (0) à l'atterrissage, dont l'image est mesurée avant et après.
+    Rouge au HEAD : `0x36` jusqu'à l'image 24.
+  - **(c)** le témoin au sol (portail 3 de la 6 vers la 10) : `0x36` jusqu'à l'image 24, puis Idle à l'image 25 (garde, vert au HEAD).
+- ⏳ **V-2 — Code** (V-R1, V-R2) et commentaires.
+- ⏳ **V-3 — Vérification** : vérificateur neuf.
+- **Acceptation** :
+  - (a) 2 rouges, (b) 1 rouge, puis tout vert ;
+  - `Alundra.Tests` en Release puis en Debug ; aucun test existant ne bouge, hors le cas remplacé ;
+  - `cmp` égal ;
+  - les six traces de référence identiques : celles du héros partent en Idle, l'arrivée de l'intro est au sol ;
+  - les arcs de la chaîne sont inchangés, puisque les 219 portails de la chaîne arrivent au sol et que la 476 arrive en `0xD`.
+- **Arrêts** :
+  - un test existant qui bouge, hors le cas remplacé, ou une trace qui change ;
+  - `0x2D` après la deuxième image ;
+  - une image d'atterrissage qui change sans explication ;
+  - un fichier hors de la liste.
+- **Retour arrière** : revert.
+- **Recette V-4** (auteur, hors chaîne, quand une de ces cartes deviendra atteignable) : arriver par une porte haute, par exemple celle
+  de la 20 vers le puits 311 ou de la 37 vers l'antre de Nirude (38). Le héros tombe en pose de saut dès l'arrivée, et non plus en pose
+  d'arrivée.
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
@@ -11740,7 +11811,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-29 | **Troncature au pixel à l'atterrissage** (relecture d'E19.d2b) : quand un PNJ à contrôleur atterrit sur une nouvelle hauteur de terrain, `EvaluateEntitySupport` (`AlundraEntityScriptProxy.cs:700-735`, `wasAlreadyLanded` faux à chaque changement de hauteur) appelle `PushLogicalPositionToRoot`, et `ResolveLogicalPosition` (`AlundraEntitySpawnFactory.cs:472-479`) ramène X et Y au pixel entier inférieur ; le binaire garde la fraction. Sur une rampe qui change de hauteur à chaque pixel, la vitesse double et le cortège de la 10 `B[13]` (chapitre 18) cale, avec ou sans blocage d'entités. Question à l'auteur : tranche à part. **L'auteur, le 2026-10-02 : plus tard, dans une tranche à part.** Vu aussi sur Giles dans A10J (E19.d2c1 C4) : sur la rampe (30,49), X ramené à 732,0 et une montée de 2,0 px par image, `0x24 @6400` deux images plus tôt ; épinglé dans l'arc avec ce renvoi. | tranche à part, plus tard |
 | O-E19-30 | **Résolu (tri du 2026-10-08) (R2 et R5, G0b et G2a, G2c-6, G3c et G4, E19.s) ; reste la recette G2b-4.** **Recette T6 d'E19.b (2026-10-02, auteur)** : la scène de la vision de Lars et Melzas (476) s'affiche mal : carte en partie noire derrière un halo elliptique, personnages mal affichés (captures de l'auteur). Pistes connues, non vérifiées : effets de carte non exportés (l'aura de la 476, E19.g, D-E19-7), masque des couches de fond `0xA4` et balancement `0x8E`/`0x8F` sautés (E19.k), autres opcodes d'affichage sautés sur la 476. À établir par une découverte en lecture seule avant de placer la correction. **Reconnaissance du 2026-10-03** : pendant la vision, les arcs A2 et A4 ne laissent sauter que `0x4C`, `0x92`, `0x93` et `0xA2` (`AlundraVisionArcTests.cs:32`) : trois opcodes d'effets (E19.g) ; `0xA4`, `0x8E` et `0x8F` n'y sont pas exécutés ; l'export de la 476 n'a aucune donnée d'effet (D-E19-7 : le convertisseur ne les exporte pas encore). Piste la plus probable : l'aura de la 476, non dessinée (E19.g) ; non vérifié en jeu. **Découverte d'E19.g (2026-10-03)** : la DLL ne dessine aucun effet ; à la 476, l'aura de la vision est un effet additif dans une zone sans tuiles (noire par construction) ; « le halo elliptique » des captures n'est donc probablement pas l'aura (non dessinée) ; non vérifié en jeu. | E19.g (à confirmer) |
 | O-E19-31 | **Cartes sous-marines 159 et 160** (« Fairy cave underwater ») **[binaire, données]** : gravité 3, `ZViscosity` 256 et octet d'en-tête `+8` (exporté sous le nom `SlideEffectId`) à 1, contre 128, 4096 et 0 sur les 481 autres cartes ; l'octet `+8` décale `ForceX` et `ForceY` avant le déplacement (`srav` en `0x8003675C`) : le héros y va deux fois moins vite et un saut dure 178 ticks. La DLL ne lit pas ce décalage (aucun consommateur). Hors de la chaîne. | à placer |
-| O-E19-32 | **`LoadingMap` (`0x36`) en l'air** **[binaire]** : `MovePlayer` passe en `0x2D` quand le héros arrive au-dessus du sol (`0x800325E8`) ; la DLL laisse `0x36` sans effet (`AlundraPlayerManager.cs:256-263`). La 476 fait arriver le héros à 48 px au-dessus du sol (`0x53` de la 390 `@688`). Non porté en E19.d2c2. | à placer |
+| O-E19-32 | **Planifié en E19.v (§1.2z) le 2026-10-08, après mesure : hors chaîne (aucun portail de la chaîne n'arrive en l'air ; la 476 arrive en `0xD`, pas en `0x36`).** **`LoadingMap` (`0x36`) en l'air** **[binaire]** : `MovePlayer` passe en `0x2D` quand le héros arrive au-dessus du sol (`0x800325E8`) ; la DLL laisse `0x36` sans effet (`AlundraPlayerManager.cs:256-263`). La 476 fait arriver le héros à 48 px au-dessus du sol (`0x53` de la 390 `@688`). Non porté en E19.d2c2. | à placer |
 | O-E19-33 | **Scène d'avant le rêve** (179 `B[1]`, jour 3) et rêve 44 : la scène n'est atteignable qu'après le jour 2 (combat, E14) et aucun préréglage ne la couvre ; le rêve demande le combat. Question à l'auteur : faut-il un préréglage `day3-start` (179, case (12,22), z1, G203, G1660, table [162] = 176) et un arc de 179 `B[1]` ? Hors d'E19.e en attendant. **Complément du 2026-10-03** (découverte d'E19.l) : la scène d'avant le rêve (179 `B[1] @183`) retire le livre d'Elna (objet 88), donné à la 117 `@167` ; un préréglage `day3-start` fidèle porterait `NumberOfItems[177]` = 1. | à placer |
 | O-E19-34 | **Paramètres effacés au redémarrage d'un programme** (découverte d'E19.j, D7) : `InitializeEventData` efface tous les paramètres (`Array.Clear`, `AlundraEventProgramRunner.cs:352`) alors que le binaire ne réécrit que l'entrée et le pc (`0x80041EE4`) et garde +8..+0x28 (clé d'attente, compteur de `0x37`…) : un programme suspendu sur son premier `0x37` continue son compte dans le binaire et le recommence dans la DLL ; 19 programmes B à zone bornée et 243 programmes C commencent par `0x37`, 47 par `0x0B`. | E19.m |
 | O-E19-35 | **Termes additifs du suivi et écrivains natifs du balancement** (audit d'E19.k1, P4-a et P4-b) : la formule du suivi caméra du binaire ajoute aussi `0x800DD870` (X) et `0x800DD874` (Y), effacés à chaque tick et au chargement, le terme Y écrit par du code natif (`0x8007F350`) ; la structure du balancement (`0x800E4338`) a d'autres écrivains natifs que `0x8E`/`0x8F` : la magie séisme la sauvegarde et la restaure (`0x80035D00`/`0x80034E08`) et pose Flag (`0x80035DF4`), des comportements d'entités l'écrivent (`0x80061E78`, `0x8006224C`…). L'instance de session d'E19.k1 doit leur servir. | E14 |

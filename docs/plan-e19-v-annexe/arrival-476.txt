@@ -1,0 +1,5 @@
+A1c setup (flags 866,869,870,871; hero tile 44,23,4; RealController), run until 0x53 @688 of program B executed (frame 387).
+ArrivalRecordForTests: MapIndex=476 PosX=786432 (px 12) PosY=524288 (px 8) PosZ=3145728 (px 48, tileZ 3) AnimationId=0xD (13) DirectionId=0 EffectId=4
+Hero at that moment: TargetAnimationId=0xD (13) CurrentAnimationId=0xD (13)
+Is the arrival animation 0x36? False
+Ground under the record on map 476 (Lars & Melzas Room (beginning Event)-476): hasGround=True ground=0 px; record Z=48 px; above=48 px
