@@ -11061,7 +11061,7 @@ pointeur.
   **Retour arrière** : revert des commits du moteur (T1 et T2 séparément).
 
 
-#### 1.2w.2 E19.L-b — Données, convertisseur et DLL de la boucle au repère, avec O-E19-66 ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102, D-E19-106 ; planifiée le 2026-10-08 en L-b1, L-b2, L-b3 ; relecture n°1 REVISE (les trois tranches), révisée ; relecture n°2 à faire)
+#### 1.2w.2 E19.L-b — Données, convertisseur et DLL de la boucle au repère, avec O-E19-66 ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102, D-E19-106 ; planifiée le 2026-10-08 en L-b1, L-b2, L-b3 ; relecture n°1 REVISE (les trois tranches), révisée ; relecture n°2 : L-b1 READY, L-b2 READY, L-b3 READY (faits) et REVISE (exécution : index des ADR, test d'`IsAlive` non compté), disposition FIX ; nouvelle époque pour L-b3, relecture de clôture à faire)
 
 Faits et valeurs : `docs/plan-e19-loop-annexe/` (`data/` : l'oracle du 2026-10-05, `oracle_sha256.tsv`, `predicted_*_changes.txt` ; `lb-1008/` :
 la découverte du 2026-10-08, `notes.md`, `proto_extractor.patch` ; `lb-1008/verify/verify.md` l'emporte, corrections M1 à M8). **[F]** Le
@@ -11089,12 +11089,14 @@ Analyseur et données, plus des tests du convertisseur. Déclencheur de risque :
 - **Fichiers** (liste fermée) : analyseur `AlundraTools/AlundraDataExtractor/Program.cs` ; parent : `alundra-casaengine-project-converter.Tests/BgmFreshSoundSystemTests.cs`
   (T-D, T-E et le test doré repointés vers `docs/plan-e19-loop-annexe/data/oracle_sha256.tsv` ; T-E devient la vérification du préfixe de la
   piste 1), nouveau `BgmLoopAtMarkerTests.cs`, un nouveau test de font3 à côté de `FontWriterTests.cs`, `docs/formats/font.md`, le pointeur
-  de l'analyseur, ce plan.
+  de l'analyseur, ce plan. Le nouveau test de font3 s'appelle `alundra-casaengine-project-converter.Tests/Font3WindClutTests.cs` ; T-D lit
+  la colonne `Frames` de `docs/plan-e19-loop-annexe/data/oracle_sha256.tsv` (l'aide `FindAnnexFile` prend ce dossier).
 - ⏳ **LB1-0 — Tests d'abord** (rouges sur le `data-extracted/` d'aujourd'hui) : L-A (38 pistes : `Looping`, J1, J1 × 735, `Frames` = J2),
   L-B (7 pistes sans boucle : `Looping` faux, champs nuls, `Frames` = 1220, 601, 620, 531, 543, 772, 900), L-D (38 coutures : la dernière
   trame stéréo égale la trame `LoopStartSample − 1` ; rouge sur 38, verify M4), le test doré (45 WAV et `bgm.json`), T-D (45), F-1 (les 44
   texels en (74, 82, 57, 255), aucun en (82, 90, 57, 255)) ; **attendus rouges : L-A 38, L-B 7, L-D 38, doré 45 + `bgm.json`, T-D 45,
-  F-1 1** ; verts avant et après : L-C (45 : longueur du WAV = 44 + `Frames` × 2940, garde invariante), L-E (préfixe, 45), T-A, T-B, T-C.
+  F-1 1** ; verts avant et après : L-C (45 : longueur du WAV = 44 + `Frames` × 2940, garde invariante), L-E (préfixe, 45), T-E (préfixe
+  de la piste 1), T-A, T-B, T-C.
   Ces tests se taisent sans données (ils rendent tôt) : chaque passage rapporte le nombre de cas réellement exécutés, non nul.
 - ⏳ **LB1-1 — Code** (LB1-R1, LB1-R2). Pas de passage des tests avant le miroir : la porte d'avant le miroir est celle des SHA-256 et
   du `diff -rq` de LB1-2 ; les tests du convertisseur passent verts après le miroir, sur `data-extracted/`.
@@ -11112,6 +11114,8 @@ Analyseur et données, plus des tests du convertisseur. Déclencheur de risque :
 
 ###### E19.L-b2 — Convertisseur et export ⏳
 
+Après L-b1 (miroir fait et vérifié).
+
 - **LB2-R1** : `SoundManifestReader` lit dans `bgm.json` les trois champs nullables `Looping` (nouveau `GetNullableBoolean`), `LoopStartFrame`
   et `LoopStartSample` et les écrit dans `bgm-manifest.json` sous `looping`, `loop_start_frame`, `loop_start_sample`, juste après `asset_id`,
   de types `bool?`, `int?`, `int?` (ordre et types de `docs/plan-e19-loop-annexe/data/notes.md`, lignes 239 à 248) ; `frames` prend le sens
@@ -11128,11 +11132,13 @@ Analyseur et données, plus des tests du convertisseur. Déclencheur de risque :
   rouges sur les anciennes images, puis verts sur les nouvelles.
 - ⏳ **LB2-1 — Code et export** : **manifeste « avant »** = celui de l'`alundra-project/` en place au début de L-b2, export des **anciennes**
   données par le convertisseur du HEAD fait par E19.m7 (L-b1 ne touche pas l'export ; vérifier qu'aucun export n'a eu lieu depuis :
-  manifeste égal à `m7/manifest-after.txt` du bloc-notes de la session, sauf `report.json`) ; export complet en place ; manifeste
+  manifeste égal à `docs/plan-e19-loop-annexe/lb-1008/m7-manifest-after.txt`, sauf `report.json` ; sinon, arrêt) ; export complet en place ;
+  un fichier changé en plus des 48 vient d'abord, à vérifier, de la montée du pointeur du moteur (merge `f86a981b`) avant d'être
+  attribué à L-b2 ; manifeste
   avant/après = exactement 48 fichiers changés (les 47 de `data/predicted_export_changes.txt` et `UI/Textures/font3.png`), 0 ajouté, 0 retiré
   (le `Musics/bgm_044.wav` resté d'un export ancien est noté, pas touché) ; `bgm-manifest.json` au SHA-1 prévu (`8f302c1a…`, modèle du
   2026-10-05 ; 20 352 o ; **un `bgm-manifest.json` différent est un arrêt** pour diagnostic) ; `AssetInfos.json` et les compteurs du rapport inchangés ; taille totale **rebasée** sur l'export
-  « avant » (environ 1 955 084 838 o, verify M3), nombre de fichiers inchangé ; double export : seul `report.json` diffère ; convertisseur
+  « avant » (taille « avant » + 643 184 772 o, soit environ 1 955 084 838 o, à l'écart de `report.json` près, verify M3), nombre de fichiers inchangé ; double export : seul `report.json` diffère ; convertisseur
   vert ; `Alundra.Tests` en Release puis en Debug (les trois tests GPU verts), `cmp`, traces.
 - ⏳ **LB2-2 — Vérification** par un vérificateur neuf. **Arrêts** : un fichier exporté hors des 48, un `bgm-manifest.json` différent du
   modèle, un test qui bouge hors des trois tests GPU, un fichier hors de la liste. **Retour arrière** : revert du convertisseur et des
@@ -11152,14 +11158,20 @@ Après L-a (pointeur monté, D-E19-105) et L-b2. Déclencheur de risque : compor
   enregistré ; le compte des tampons en attente des voix en flux ; un enregistreur des voix en flux), `AlundraMusicPlayerTests.cs`,
   `AlundraBgmFadeDirectorTests.cs`, `AlundraWarpDepartureTests.cs` (les 40 méthodes passent de `PlayCalls` à l'enregistreur ; la bascule de
   `AlundraBgmFadeDirectorTests.cs:448` : la piste 42 ne boucle pas), une ADR du parent (prochain numéro libre ; remplace la route B, D-C-1),
-  ce plan.
+  l'index `docs/decisions/README.md`, ce plan. Les cas D vivent dans `AlundraMusicPlayerTests.cs` et `AlundraBgmFadeDirectorTests.cs`
+  (déjà dans la liste) ; l'enregistreur des voix en flux fournit la voix et son bus aux sites qui lisaient `CurrentVoiceForTests` et
+  `GetVoiceBus` (`data/notes.md` lignes 294 à 296) ; D-3 capture l'avertissement par `Logs.AddLogger`, comme
+  `AlundraTextBoxDrawnStateTests.cs:376-383`.
 - ⏳ **LB3-0 — Tests d'abord** : D-1 à D-5 (`docs/plan-e19-loop-annexe/data/notes.md` §5, par exemple D-1 : manifeste `{25 : looping vrai,
   loop_start_sample 5 344 920}`, `PlayMapMusic(389)` puis une fermeture d'image : une voix en flux bouclée au point 5 344 920 ; D-5 : B4
-  inchangée). Au départ (pointeur de L-a monté, export de L-b2 présent) : **D-1 à D-4 rouges, D-5 vert** ; D-4 lit le vrai export et
-  **échoue** s'il manque (jamais vert en silence).
+  inchangée, observée par un enregistreur qui voit aujourd'hui le chemin `PlayClip` et ensuite les voix en flux, jamais vrai par vide) ;
+  **D-6** : une piste sans boucle dont le flux se termine : `IsCurrentVoiceAlive` reste vrai jusqu'au `Music.Update` suivant, puis faux.
+  Au départ (pointeur de L-a monté, export de L-b2 présent) : **D-1 à D-4 et D-6 rouges** (aucune voix en flux aujourd'hui), **D-5 vert** ;
+  D-4 lit le vrai export et **échoue** s'il manque (jamais vert en silence).
 - ⏳ **LB3-1 — Code**, ADR (prochain numéro libre de toutes les branches, revérifié : 0050 est pris par E19.u) ; mutations : point de boucle
   ignoré, `IsLooped` forcé à vrai (chacune rougit au moins un test).
-- **Acceptation** : D-1 à D-4 rouges puis verts ; `Alundra.Tests` en Release puis en Debug, total = 3222 plus les cas D (et rien d'autre) ;
+- **Acceptation** : D-1 à D-4 et D-6 rouges puis verts ; `Alundra.Tests` en Release puis en Debug, total = base remesurée au départ de
+  L-b3 (3222 aujourd'hui) plus N, N le nombre de cas de D-1 à D-6 (et rien d'autre) ;
   seuls bougent les 40 méthodes `[Fact]` d'`AlundraMusicPlayerTests`, `AlundraBgmFadeDirectorTests` et `AlundraWarpDepartureTests` (lignes
   `PlayCalls` 22, 39 et 27, `data/notes.md` lignes 282 à 288) et la bascule de `:448` ; `cmp` ; traces ; la DLL Debug copiée dans
   `alundra-project/` par la cible d'après-build, pour la recette. **Arrêts** : un autre test qui bouge, un fichier hors de la liste, une
@@ -11170,6 +11182,10 @@ Après L-a (pointeur monté, D-E19-105) et L-b2. Déclencheur de risque : compor
   389) revient au repère sans coupure audible ; les pistes 36 et 42 s'arrêtent après leur traîne (fidèle à l'original) ; un changement de
   carte qui garde la musique ne la coupe pas.
 
+- **Disposition de la relecture n°2 de L-b3** (2026-10-08, règle des deux REVISE) : deux bloquants, **FIX** tous deux — l'index des
+  ADR du parent ajouté à la liste fermée ; le test qui épingle `IsAlive` nommé D-6, rouge au départ, compté dans le total. Avis repris :
+  D-5 non vide, l'accès au bus des voix, la capture de l'avertissement de D-3, la base remesurée. Nouvelle époque ; une seule relecture
+  de clôture.
 ### 1.2y E19.u — Ordre d'image du déclencheur de l'inventaire (D-E19-103, O-E19-78) 🧪 (faite et CONFIRMED le 2026-10-08 (`d293ec5` tests, `cd0f3f3` code et ADR-0050 ; vérificateur neuf : ordre du binaire relu et mesure rejouée à l'identique, diff relu ligne par ligne, 8 rouges rejoués sur `d293ec5`, 3 mutants rouges, fenêtres +24, +30 et sous-inventaire égales à 1, 2 et 3 ticks par image, `Alundra.Tests` 3222 en Release puis en Debug, `cmp`, traces, liste fermée, ADR-0050 libre ; avis P4 : le commentaire d'`AlundraGameState.cs:127`, et l'ADR-0050 doit préciser « +19 à 1 tick par image »), recette U-4 en attente ; découverte du 2026-10-08 faite et contre-vérifiée ; planifiée le 2026-10-08 ; relecture n°1 READY (deux angles))
 
 DLL seule. Déclencheur de risque : ordre des passes du monde par tick (relecture et vérificateur neuf). Faits et valeurs :
