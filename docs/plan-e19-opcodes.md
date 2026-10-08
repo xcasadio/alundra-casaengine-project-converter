@@ -11051,33 +11051,37 @@ Moteur seul, puis le pointeur. Faits : `docs/plan-e19-m-annexe/night-discovery-2
   lecture `(int?)declaration[key]` à `:99`) accepte en silence une chaîne numérique, un booléen (vrai vaut 1) et un flottant (arrondi).
   Pour un autre jeton, il lève une exception qui ne nomme pas la clé. ADR-0048 (`:30`) promet pourtant « une déclaration invalide échoue
   au chargement en nommant la clé ».
-  Règle de la session, d'après le tri et le backlog : seul un **entier JSON** compris entre 1 et `int.MaxValue` est une dimension. Tout
-  autre jeton lève une `InvalidDataException` qui nomme `VirtualResolution.Width` ou `.Height` et cite la valeur trouvée : `"320"`, `"abc"`,
-  `true`, `1.5`, `320.0`, `{}`, `[]`, `null`, 3000000000, 99999999999999999999. Le seul fichier de projet du dépôt qui déclare
+  Règle de la session, d'après le tri et le backlog (**simplifiée après la relecture n°2** : plus de citation de la valeur) : seul un
+  **entier JSON** compris entre 1 et `int.MaxValue` est une dimension. Tout autre jeton lève une `InvalidDataException` dont le message
+  est celui d'aujourd'hui, qui nomme `VirtualResolution.Width` ou `.Height`. Le seul fichier de projet du dépôt qui déclare
   `VirtualResolution` (`alundra-project/AlundraGame.json`) l'écrit en entiers (320 × 240), et le convertisseur l'écrit par des propriétés
   `int`. Rien de ce qui se charge aujourd'hui ne casse.
-  Le message garde la clé, que les tests existants (`Load_WithAnInvalidDeclaration_FailsNamingTheKey`) affirment seule, et cite la
-  valeur trouvée sous la forme `found <jeton JSON compact>`, ou `found no value` si la clé manque.
+  Code : `long? value = token is JValue { Type: JTokenType.Integer, Value: int or long } ? token.Value<long>() : null;` puis le refus si
+  `value is not (> 0 and <= int.MaxValue)`. La lecture se fait au chargement seulement, jamais par image.
   Tests nouveaux, dans `CasaEngine.Tests/Configuration/ProjectSettingsVirtualResolutionTests.cs`. Chaque ligne affirme une
-  `InvalidDataException` dont le message contient `'VirtualResolution.<clé>'` et `found <jeton>`. Résultat attendu au HEAD, ligne par
-  ligne :
+  `InvalidDataException` dont le message contient `'VirtualResolution.<clé>'`. Résultat attendu au HEAD, ligne par ligne :
   - `"abc"` : rouge, `FormatException` ;
   - `"320"` : rouge, chargé (320) ;
   - `true` : rouge, chargé (1) ;
   - `1.5` : rouge, chargé (2) ;
   - `320.0` : rouge, chargé (320) ;
   - `{}` et `[]` : rouges, `ArgumentException` sans la clé ;
-  - `null` : rouge **par la seule valeur citée**, puisque le HEAD lève déjà l'exception qui nomme la clé, sans `found null` ;
-  - `3000000000` et `99999999999999999999` : rouges, `OverflowException`.
+  - `3000000000` et `99999999999999999999` : rouges, `OverflowException` ;
+  - `null` : **verte**, une garde, puisque le HEAD lève déjà l'exception qui nomme la clé.
 
   Ces résultats au HEAD sont déduits du comportement de Json.NET 13. Le premier passage rouge les mesure, et **une ligne dont le résultat
   au HEAD diffère de celui écrit est un arrêt**, jamais une nouvelle épingle.
-  Gardes vertes : les bornes 1 et `int.MaxValue`, et un `VirtualResolution` qui n'est pas un objet (branche déjà là, sans test).
-  Mutations par script :
-  - retirer la borne haute ;
-  - retirer la garde du type de valeur ;
-  - décaler une borne ;
-  - retirer la valeur du message : toutes les lignes refusées rougissent.
+  Gardes vertes : les bornes 1 et `int.MaxValue` (théorie à deux lignes), et un `VirtualResolution` qui n'est pas un objet (`"320x240"`,
+  `[320,240]`, `5` ; branche déjà là, sans test).
+  Mutations par script, chacune restaurée à l'octet près, avec les lignes qui doivent rougir :
+  - **MU-1**, la borne haute retirée (`<= int.MaxValue` supprimé ; le cast `(int)` laisse passer -1294967296) : la ligne `3000000000` ;
+  - **MU-2**, la garde de type de valeur retirée (`Value: int or long` supprimé, `Type: JTokenType.Integer` gardé) : la ligne
+    `99999999999999999999` ;
+  - **MU-3**, `> 0` remplacé par `> 1` : la ligne de borne 1 ;
+  - **MU-4**, `<= int.MaxValue` remplacé par `< int.MaxValue` : la ligne de borne `int.MaxValue` ;
+  - **MU-5**, la garde de type d'objet de `ReadVirtualResolution` remplacée par `return null` : les trois lignes « pas un objet ».
+
+  Retirer `Type: JTokenType.Integer` seul est un mutant équivalent, et n'est pas listé.
 - **M-37, accepté sans code**, avec une raison écrite :
   - `UIRoot.cs:135`, `CasaEngineGame.cs:485` et `:660` demandent une vraie fenêtre ou un vrai périphérique, ainsi qu'un `CasaEngineGame`
     initialisé. Un test sans tête (un `MGDesktop` seul) réécrirait la ligne au lieu de la garder ;
@@ -11090,8 +11094,13 @@ Moteur seul, puis le pointeur. Faits : `docs/plan-e19-m-annexe/night-discovery-2
   - après le pointeur : les tests du convertisseur (`ProjectWriterTests` relit le projet écrit) et `Alundra.Tests` en Release puis en
     Debug, `cmp`, traces.
 
-  **Arrêts** : un fichier de projet du dépôt qui ne charge plus ; un test existant qui bouge. **Retour arrière** : revert dans le moteur,
-  pointeur remis.
+  **Arrêts** :
+  - un fichier de projet du dépôt qui ne charge plus ;
+  - un test existant qui bouge ;
+  - une ligne dont le résultat au HEAD diffère de celui écrit ;
+  - une mutation qui laisse tout vert, ou qui rougit d'autres lignes que celles écrites.
+
+  **Retour arrière** : revert dans le moteur, pointeur remis.
 
 #### 1.2s.13 E19.m12 — Verrou d'interaction sur une entité recyclée (M-33), M-43 accepté, commentaire P3 d'E19.v (G4b sans M-15) ⏳ (planifiée le 2026-10-09, nuit en mode AUTO)
 
