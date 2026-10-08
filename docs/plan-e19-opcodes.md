@@ -10855,7 +10855,7 @@ M-26, M-44). Trois commits, dans l'ordre :
   table des tailles les nomme à l'envers ; à corriger par la prochaine tranche qui touche ce fichier (contrôle :
   `rg -n "size table calls|size table's backwards" Alundra/Scripts/AlundraEventProgramRunner.cs` ne rend rien).
 
-#### 1.2s.10 E19.m9 — `InitializeEventData` garde les paramètres, comme le binaire (O-E19-34, M-09) 🧪 (planifiée le 2026-10-08, relecture READY ; M9-1 et M9-2 faites le 2026-10-08, vérification neuve à faire)
+#### 1.2s.10 E19.m9 — `InitializeEventData` garde les paramètres, comme le binaire (O-E19-34, M-09) ✅ (planifiée le 2026-10-08, relecture READY ; faite et CONFIRMED le 2026-10-08, `0b97491`)
 
 DLL seule. Pas de décision de l'auteur : le binaire tranche. Tout le recensement est vu sans défaut visible de l'original à trancher ;
 voir **Limite** plus bas. Relecture du plan, puis vérificateur neuf. Ce sont l'état de l'interpréteur et 46 sites de la chaîne.
@@ -10925,7 +10925,12 @@ Faits et valeurs : `docs/plan-e19-m9-annexe/`
   `rg` ne rend plus rien) ; le commentaire du test `RunScript_DefaultSlot_AlwaysReInitializes_EvenAfterASuspend` réécrit, son assertion
   inchangée et verte. `Alundra.Tests` 3243/3243 en Release puis en Debug (3239 + 4) ; aucun test existant ni aucun arc ne bouge, y
   compris ceux des cartes à sites ; `cmp` égal ; les six traces identiques.)*
-- ⏳ **M9-3 — Vérification** : vérificateur neuf.
+- ✅ **M9-3 — Vérification** (2026-10-08) : vérificateur neuf **CONFIRMED** sur `0b97491`, sans constat P0 à P2. Il a relu `0x80041EE4`
+  jusqu'à l'épilogue (seuls `+4` et `+0` écrits) et la correspondance des champs : le pc avance par `+4` (`0x80042280`, `0x80042340`) ;
+  `sw zero, 8(s3)` (`0x8004232C`) ; le compteur de `0x37` est en `+0xC` ; le réarmement remet à zéro `+0`, `+4` et `+0x2C`. Avec
+  `Array.Clear` remis, la suite complète a exactement trois échecs, M9a, M9b (93) et M9c ; M9d reste vert. `Alundra.Tests` passe en
+  entier, 3243/3243, en Release puis en Debug ; `cmp` est égal, les traces sont inchangées, la liste fermée respectée et l'échantillon
+  du recensement confirmé.
 - **Acceptation** :
   - (a), (b) et (c) rouges, puis tout vert ;
   - `Alundra.Tests` en Release puis en Debug, sans aucun test existant qui bouge ;
