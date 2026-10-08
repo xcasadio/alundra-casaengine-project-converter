@@ -277,6 +277,40 @@ public class AlundraEventProgramRunnerLogicEntityTests
     }
 
     [Fact]
+    public void SetLogicEntityByMatch_0x43_GetPlayer_0x81_MakesTheHeroTheLogicEntity_AndTheNextSetAnimActsOnTheHero()
+    {
+        // E19.m8 M8-d (O-E19-79), characterisation: the exact path of map 240 @529 and map 292 @423. 0x43 [0x81] searches "get player" (function 1,
+        // 0x8003CA38) with the logic entity as reference and writes the OWNER's word with the hero; the 0x1A [80] that follows acts on the hero, not on the owner.
+        var document = NewDocument(0x43, 0x81, 0x1A, 80, 0xFF);
+        var world = new FakeWorld();
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal, EntityRefId = 99 };
+        world.PlayerEntity = hero;
+        var runner = NewRunner(document, world);
+        var owner = Entity(1);
+        var state = StateFor(document);
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Same(hero, owner.LogicEntity);
+        Assert.Equal(1, state.Result);
+        Assert.Equal(80u, hero.TargetAnimationId);
+        Assert.Equal(0u, owner.TargetAnimationId);
+
+        // 0x43 [0x00] then brings the context back to the entity of record index 0.
+        var home = Entity(0);
+        world.Spawned.Add(home);
+        var back = NewDocument(0x43, 0x00, 0x1A, 81, 0xFF);
+        var backState = StateFor(back);
+
+        NewRunner(back, world).RunOneScriptCall(owner, backState);
+
+        Assert.Same(home, owner.LogicEntity);
+        Assert.Equal(1, backState.Result);
+        Assert.Equal(81u, home.TargetAnimationId);
+        Assert.Equal(80u, hero.TargetAnimationId);
+    }
+
+    [Fact]
     public void NoObstacleSlide_0x46And0x45_AfterA0x42_WriteTheFlagsOfTheHero_NotTheOwners_ResultUntouched()
     {
         // E19.m6 M6-3: UO-1 runs 0x45/0x46 on an entity that is its own logic entity, so the handlers' operand (the logic entity) is never told apart from the owner.

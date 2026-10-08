@@ -10792,7 +10792,7 @@ Release puis en Debug (3158 + les 5 lignes de la garde), aucun autre ne bouge ; 
 - ✅ **Recette M7-4** (auteur ; « Tout est ok » le 2026-10-08) : la barrière de la banque 151 (cartes 48 à 53, 435 à 438) et l'interrupteur tricolore (75, 137) : l'image
   s'affiche figée (hypothèse non tracée : quels scripts choisissent ces animations).
 
-#### 1.2s.9 E19.m8 — Petits points du lanceur, commentaires et gardes de tests (tri du 2026-10-08) 🚧 (planifiée le 2026-10-08 ; faite et CONFIRMED le 2026-10-08 ; **la conclusion M-07 de M8-b est fausse, corrigée par M8-d le 2026-10-09**)
+#### 1.2s.9 E19.m8 — Petits points du lanceur, commentaires et gardes de tests (tri du 2026-10-08) ✅ (planifiée le 2026-10-08 ; faite et CONFIRMED le 2026-10-08 ; **la conclusion M-07 de M8-b était fausse, corrigée par M8-d, CONFIRMED le 2026-10-09**)
 
 Sans décision de l'auteur ; aucun déclencheur de risque (pas de comportement de la chaîne : 0 site atteignable de `0x5F` ; des
 libellés, des commentaires et des tests) ; un vérificateur neuf sur l'ensemble à la fin. Faits : le tri du 2026-10-08
@@ -10839,7 +10839,7 @@ M-26, M-44). Trois commits, dans l'ordre :
   `Load_ALoopStartBeyondALong_KeepsZeroAndWarnsOnce`, verts, puis rouges sous leur mutation faite par script (le saut de
   `Guid.Empty` retiré : le chargeur reçoit la planche absente ; le `catch` retiré : `OverflowException`), sources restaurées ;
   `CasaEngine.Tests` 4229/4229, les deux solutions du moteur bâties ; `1b2b616a` ancêtre de `a24fe31d`, pointeur monté.)*
-- 🚧 **M8-d — Correction de M-07** (2026-10-09). Source : la découverte de nuit relue par un critique,
+- ✅ **M8-d — Correction de M-07** (2026-10-09). Source : la découverte de nuit relue par un critique,
   `docs/plan-e19-m-annexe/night-discovery-2026-10-09/O79.json`. Les faits porteurs ont été recontrôlés en session principale : les
   octets de la 240 et de la 292, et `0x8003CA38`.
   - **Faits.** **[binaire]** Le gestionnaire de `0x1A` (`0x8003D7B4`) écrit `+0x88` de `a0`, l'entité logique relue dans owner+0x230
@@ -10882,6 +10882,23 @@ M-26, M-44). Trois commits, dans l'ordre :
   - **Acceptation** : `Alundra.Tests` en Release puis en Debug, aucun test existant qui bouge hors le test M-07 renommé ; `cmp` ; traces.
     **Fichiers** : les deux fichiers de test, `AlundraStoryChainOpcodeAudit.cs` (seulement si le flot y est extrait, sans changement de
     comportement), ce plan, le backlog. O-E19-14, O-E19-79 et la ligne M-07 du backlog sont corrigés dans ce commit de plan.
+  *(fait le 2026-10-09 par un exécuteur, puis vérifié par un vérificateur neuf, **CONFIRMED** ; tests seuls.)*
+  - **Recensement**. Il suit le repointage : la jointure est l'union ; le héros est résolu par `AssetInfos.json`, sans GUID écrit en dur.
+    Mesuré sur tout `world-index.json` : exactement (35, 1228), (38, 850), (39, 726), 11 entités, animation 9 sur les 9 jeux de
+    `0edffd14`, aucun échec ; les sites de la 240 et de la 292 sont jugés contre le héros (94 jeux). Le test est renommé
+    `M07_TheWaitsOnAnAnimationTheLogicEntityLacks_AreTheThreeFlamesOfTheLairOfNirude_FollowingTheRetarget`.
+  - **Flot**. Il est écrit à côté de `WalkProgram` : `AlundraStoryChainOpcodeAudit.cs` n'est pas touché. Une assertion vérifie que, pour
+    chaque entité de chaque carte, les programmes et les pcs atteints sont ceux de `WalkMap`. Les retours `0x7D` à `0x81` sont reliés à
+    toutes les marques `0x78`/`0x79`/`0x7B`/`0x7C`. `0x43 [n]` prend le **dernier** objet d'`Index` n, comme le binaire ; il n'y a eu ni
+    doublon ni absence.
+  - **Tests ajoutés** : les sept cas (a) à (g) ; la caractérisation du lanceur (`0x43 [0x81]` puis `0x1A [80]`), verte d'emblée.
+  - **Mutations** par script, chacune rouge puis restaurée à l'identique (contrôle `git hash-object`) :
+    - attribution au propriétaire seul : 5 sites ;
+    - branche `0x81` retirée : (a) et le corpus. Le vérificateur l'a vue sous une autre forme, « 13 repointages non résolus » ;
+    - jointure « dernier repointage » : (f) ;
+    - recherche 1 qui renvoie la référence : la caractérisation.
+  - **Campagne** : `Alundra.Tests` 3251/3251 en Release puis en Debug ; `cmp` identique ; traces inchangées.
+  - **Avis P4** : la limite du mot owner+0x230 partagé entre les programmes est reconnue dans le résumé de la classe.
 - **Fichiers** (liste fermée) : `Alundra/Scripts/EventOpcodeSizeTable.cs`, `Alundra/Scripts/AlundraEventProgramRunner.cs` (commentaires),
   `Alundra/Scripts/AlundraGameState.cs` (commentaire), `Alundra.Tests/AlundraEventProgramRunnerTests.cs`, `docs/intro-trace-389.txt`,
   `docs/intro-programs-389.txt`, un nouveau `Alundra.Tests/AlundraMissingAnimationWaitCorpusTests.cs`,
