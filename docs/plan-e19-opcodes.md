@@ -10792,6 +10792,42 @@ Release puis en Debug (3158 + les 5 lignes de la garde), aucun autre ne bouge ; 
 - ✅ **Recette M7-4** (auteur ; « Tout est ok » le 2026-10-08) : la barrière de la banque 151 (cartes 48 à 53, 435 à 438) et l'interrupteur tricolore (75, 137) : l'image
   s'affiche figée (hypothèse non tracée : quels scripts choisissent ces animations).
 
+#### 1.2s.9 E19.m8 — Petits points du lanceur, commentaires et gardes de tests (tri du 2026-10-08) ⏳ (planifiée le 2026-10-08)
+
+Sans décision de l'auteur ; aucun déclencheur de risque (pas de comportement de la chaîne : 0 site atteignable de `0x5F` ; des
+libellés, des commentaires et des tests) ; un vérificateur neuf sur l'ensemble à la fin. Faits : le tri du 2026-10-08
+(`docs/plan-e19-m-annexe/triage-2026-10-08.json`) et `docs/plan-e19-m-annexe/backlog-2026-10-03.md` (M-01, M-02, M-07, M-20, M-25,
+M-26, M-44). Trois commits, dans l'ordre :
+- **M8-a — Lanceur et commentaires (DLL)** : M-01 la taille de `0x5F` passe de 1 à 8 (`EventOpcodeSizeTable.cs:136`, le binaire rend 8,
+  §0.2.5 ; son libellé ne change pas) ; M-02 les libellés de `0x35` (« Wait flag on » devient « Wait until flag off ») et `0x36`
+  (« Wait flag off » devient « Wait until flag on ») remis dans le bon sens (`:94-95`, aujourd'hui inversés), avec les commentaires
+  du lanceur et du test qui le disent ; M-26 le `& 3` de `DirectionalJump` (absent du binaire, sans effet pour d de 0 à 3) : un
+  commentaire qui le consigne ; le résumé d'`AlundraGameState.TickPad` mis à jour (avancé en tête de chaque tick de la boucle des passes
+  depuis E19.u, lu par l'inventaire, la passe du dialogue, le choix et l'écran de sauvegarde). Un test rouge d'abord pour la taille de
+  `0x5F` (`AlundraEventProgramRunnerTests.cs`). Les traces de référence `docs/intro-trace-389.txt` et `docs/intro-programs-389.txt`,
+  qui impriment ces libellés, sont régénérées : seules leurs lignes de libellé changent (5 et 6 lignes), rien d'autre ; l'audit de la
+  chaîne (`AlundraStoryChainOpcodeAudit`) reste vert, `0x5F` y est déjà rangé parmi les attentes.
+- **M8-b — Gardes de tests (DLL, tests seuls)** : M-07 / O-E19-14 un test de corpus qui compte les sites `0x1C`/`0x1D` atteignables
+  dont l'animation manque au préfab de l'acteur : exactement les trois Flammes (35 `@1228`, 38 `@850`, 39 `@726`), mesuré sur l'export
+  courant (un autre compte se tranche par une preuve, jamais par une épingle silencieuse) ; M-20 l'arc A17 affirme que la boîte de
+  choix s'ouvre avant `@1115` ; M-25 un test du parcours de l'audit qui s'arrête après `0x57`/`0x58` ; M-44 la borne Y1 de J1-f
+  (`InlineData(2, 2, false)`) et les remises à zéro de `Sp` et `CodeIndex`. Chaque garde rougit sous sa mutation (parcours sans
+  arrêt ; borne `<` au lieu de `<=` ; etc.).
+- **M8-c — Tests du moteur (moteur, tests seuls) puis pointeur** : la planche absente de G2e (un chargeur qui compte ses appels : 0
+  appel et 0 avertissement pour `Guid.Empty` ; mutation : retirer le `continue` → 1 appel, 1 avertissement) ; le débordement d'entier
+  de `SoundAsset.ReadInteger` (L-a : `9223372036854775808` donne 0 et un seul avertissement ; mutation : retirer le `try`) ;
+  `CasaEngine.Tests` bâti à part ; pointeur du parent monté (`merge-base --is-ancestor`).
+- **Fichiers** (liste fermée) : `Alundra/Scripts/EventOpcodeSizeTable.cs`, `Alundra/Scripts/AlundraEventProgramRunner.cs` (commentaires),
+  `Alundra/Scripts/AlundraGameState.cs` (commentaire), `Alundra.Tests/AlundraEventProgramRunnerTests.cs`, `docs/intro-trace-389.txt`,
+  `docs/intro-programs-389.txt`, un nouveau `Alundra.Tests/AlundraMissingAnimationWaitCorpusTests.cs`,
+  `Alundra.Tests/AlundraDay3SceneArcTests.cs`, `Alundra.Tests/AlundraStoryChainSkippedOpcodesTests.cs`,
+  `Alundra.Tests/AlundraWorldProxyEventPassTests.cs` ; moteur `CasaEngine.Tests/Rendering/EffectQuads/EffectQuadComponentSubmissionTests.cs`,
+  `CasaEngine.Tests/Audio/SoundAssetTests.cs` ; le pointeur ; le backlog (M-01, M-02, M-07, M-20, M-25, M-26, M-44 marqués) ; ce plan.
+- **Acceptation** : chaque test nouveau rouge d'abord (ou sous sa mutation pour une garde), puis vert ; `Alundra.Tests` en Release puis
+  en Debug (3228 plus les nouveaux), `cmp`, traces : quatre identiques, les deux régénérées ne diffèrent que par leurs lignes de
+  libellé ; `CasaEngine.Tests` (4227 plus deux) ; deux solutions du moteur. **Arrêts** : un test existant qui bouge, une ligne de trace
+  qui change hors des libellés, un compte de corpus différent de 3. **Retour arrière** : revert.
+
 ### 1.2u Recette de l'auteur du 2026-10-05 ✅ (constat consigné ; deux défauts enquêtés ; suites réglées : O-E19-60 (E19.s2), O-E19-61 (X2), O-E19-62 (§1.2w), (tri du 2026-10-08))
 
 **Constat de l'auteur** (DLL et export de `cc948ec`, deux captures) :
