@@ -595,6 +595,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     private bool EffectGateOfThisTick() => (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0;
 
+    /// <summary>Test-only seam (E19.u, docs/plan-e19-u-annexe/): the effect gate of each logic tick of the last <see cref="Update"/> (see <see cref="_effectFrozenOfTick"/>).</summary>
+    internal IReadOnlyList<bool> EffectFrozenOfTickForTests => _effectFrozenOfTick;
+
+    private bool _pendingTriggersGate;
+
+    /// <summary>Test-only seam (E19.u, docs/plan-e19-u-annexe/): the gate the pending event triggers read in the last <see cref="Update"/> (true = frozen).</summary>
+    internal bool PendingTriggersGateForTests => _pendingTriggersGate;
+
     /// <summary>Bug fix (see <see cref="AlundraLogicClock"/>'s own class doc for the full diagnosis): this
     /// world's ONE shared 50 Hz logic clock - every spawned entity's own <see cref="AlundraEntityScriptProxy.Update"/>
     /// and this proxy's own <see cref="Update"/> read <see cref="LogicTicksThisFrame"/> off this SAME
@@ -2328,6 +2336,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // The triggers in waiting read the gate again after the loop: the box passes above may have opened or released one.
         gameplayBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
             || AlundraWarpDirector.Instance.IsTransitionInProgress;
+        _pendingTriggersGate = gameplayBlocked;
 
         // E7.b (docs/plan-e7-mutation-tuiles.md, "coalescer par frame"): applies at most one overlay
         // reconstruction for however many 0x54/0x55/0x85 opcodes the loop above just dispatched (a map's
