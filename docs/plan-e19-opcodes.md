@@ -11082,7 +11082,7 @@ l'autre, **après L-a** (LA-2 à LA-4 faits, pointeur monté et vérifié : les 
 essai de jeu entre L-b2 et L-b3 (la DLL bouclerait le fichier entier, doublé, et les musiques sans boucle). Branche de l'analyseur :
 `chantier/e19-suite2` (jamais `master`).
 
-###### E19.L-b1 — Extracteur, ré-extraction et miroir (analyseur), moitié extracteur d'O-E19-66 ⏳
+###### E19.L-b1 — Extracteur, ré-extraction et miroir (analyseur), moitié extracteur d'O-E19-66 🧪 (faite le 2026-10-08 : parent `0ca81b1` tests, analyseur `fc16872`, parent `192d8f7` pointeur et `font.md` ; vérification à faire)
 
 Analyseur et données, plus des tests du convertisseur. Déclencheur de risque : données non versionnées (sauvegardes) et format extrait.
 - **LB1-R1 — Rendu des musiques** (D-E19-73, D-E19-76) : plafond 480 s ; fichier `[0, J2)` ; `bgm.json` gagne `Looping`, `LoopStartFrame` = J1
@@ -11100,16 +11100,16 @@ Analyseur et données, plus des tests du convertisseur. Déclencheur de risque :
   piste 1), nouveau `BgmLoopAtMarkerTests.cs`, un nouveau test de font3 à côté de `FontWriterTests.cs`, `docs/formats/font.md`, le pointeur
   de l'analyseur, ce plan. Le nouveau test de font3 s'appelle `alundra-casaengine-project-converter.Tests/Font3WindClutTests.cs` ; T-D lit
   la colonne `Frames` de `docs/plan-e19-loop-annexe/data/oracle_sha256.tsv` (l'aide `FindAnnexFile` prend ce dossier).
-- ⏳ **LB1-0 — Tests d'abord** (rouges sur le `data-extracted/` d'aujourd'hui) : L-A (38 pistes : `Looping`, J1, J1 × 735, `Frames` = J2),
+- ✅ **LB1-0 — Tests d'abord** (rouges sur le `data-extracted/` d'aujourd'hui) : L-A (38 pistes : `Looping`, J1, J1 × 735, `Frames` = J2),
   L-B (7 pistes sans boucle : `Looping` faux, champs nuls, `Frames` = 1220, 601, 620, 531, 543, 772, 900), L-D (38 coutures : la dernière
   trame stéréo égale la trame `LoopStartSample − 1` ; rouge sur 38, verify M4), le test doré (45 WAV et `bgm.json`), T-D (45), F-1 (les 44
   texels en (74, 82, 57, 255), aucun en (82, 90, 57, 255)) ; **attendus rouges : L-A 38, L-B 7, L-D 38, doré 45 + `bgm.json`, T-D 45,
   F-1 1** ; verts avant et après : L-C (45 : longueur du WAV = 44 + `Frames` × 2940, garde invariante), L-E (préfixe, 45), T-E (préfixe
   de la piste 1), T-A, T-B, T-C.
   Ces tests se taisent sans données (ils rendent tôt) : chaque passage rapporte le nombre de cas réellement exécutés, non nul.
-- ⏳ **LB1-1 — Code** (LB1-R1, LB1-R2). Pas de passage des tests avant le miroir : la porte d'avant le miroir est celle des SHA-256 et
+- ✅ **LB1-1 — Code** (LB1-R1, LB1-R2). Pas de passage des tests avant le miroir : la porte d'avant le miroir est celle des SHA-256 et
   du `diff -rq` de LB1-2 ; les tests du convertisseur passent verts après le miroir, sur `data-extracted/`.
-- ⏳ **LB1-2 — Ré-extraction et miroir** (comme X2-R2) : construction Release fraîche de l'analyseur, `EntityNames.csv` copié à côté de
+- ✅ **LB1-2 — Ré-extraction et miroir** (comme X2-R2) : construction Release fraîche de l'analyseur, `EntityNames.csv` copié à côté de
   l'exécutable (le projet de l'extracteur ne le copie pas) ; lancée **hors du dépôt**, chemin du jeu en barres obliques, dans un dossier neuf
   `D:\development\repo\Alundra Remake\remaster-data-extracted-lb` ; sortie attendue `rendered=45 silent=1 failed=0 (of 46)`,
   `sequencer=18` ; `diff -rq` contre `data-extracted/` = exactement 47 lignes (les 46 de `data/predicted_extract_changes.txt` et
@@ -11117,6 +11117,18 @@ Analyseur et données, plus des tests du convertisseur. Déclencheur de risque :
   sauvegardes hors du dépôt : `D:\development\repo\Alundra Remake\data-extracted.bak-lb` (copie par `robocopy /E` de `data-extracted/`)
   et `remaster-data-extracted.bak-lb` (l'ancien dossier renommé) ; les précédentes restent ; place : environ 9 Go sur D:, 460 Go libres ; renommage, `robocopy /MIR` depuis PowerShell, `diff -rq` final vide (4536 fichiers) ; sens de l'écart vérifié avant le
   miroir (mémoire du 2026-09-24).
+**Fait le 2026-10-08 (LB1-0 à LB1-2).** Parent `0ca81b1` (T-D, T-E et le test doré repointés vers l'oracle de l'annexe ; nouveaux
+`BgmLoopAtMarkerTests.cs` et `Font3WindClutTests.cs` ; un test de plus, `BgmJson_IsTheOracleByteForByte`, pour le `bgm.json` doré que
+le test doré existant ne couvrait pas) : rouges L-A 38, L-B 7, L-D 38, T-D 45, doré 45, `bgm.json` 1, F-1 1, chaque cas compté comme
+exécuté ; verts avant et après L-C 45, L-E 45, T-E 1, T-A, T-B, T-C. Analyseur `fc16872` (`Program.cs` seul : rendu jusqu'à J2, plafond
+480 s, fondu d'une image, champs de `bgm.json`, échec si une traîne n'a pas fini avant le plafond ; font3 par `DecodeFont3WithWindClut`
+et l'interface publique de `TimLoader`, `AlundraEngine` intact). Ré-extraction hors du dépôt (construction Release fraîche,
+`EntityNames.csv` copié, 70 s) : `rendered=45 silent=1 failed=0 (of 46)`, `sequencer=18` ; `diff -rq` = exactement les 47 lignes
+prévues ; les 45 WAV, `bgm.json` (`3d176f4a…6efaf`) et `font3.png` (`381c63ef…6fb5`) égaux à l'oracle ; sauvegardes
+`data-extracted.bak-lb` (copie) et `remaster-data-extracted.bak-lb` (renommé), toutes deux égales à l'ancien `data-extracted/` ; sens
+vérifié ; miroir `robocopy /MIR` depuis PowerShell ; `diff -rq` final vide (4536 fichiers). Parent `192d8f7` : pointeur de l'analyseur et
+`docs/formats/font.md` (section en français comme le reste du fichier). Mesures : convertisseur **844** (669 + 175) ; `Alundra.Tests`
+3222 en Debug, inchangé.
 - ⏳ **LB1-3 — Vérification** par un vérificateur neuf. **Arrêts** : un écart de la sortie à l'oracle ou à la liste des 47, un test qui
   bouge hors de la liste, un fichier hors de la liste. **Retour arrière** : revert du commit de l'analyseur, du pointeur et du commit des
   tests du parent ; les dossiers renommés remis en place et le miroir refait, ou l'extracteur `a958d86` relancé (déterministe, 45 s).
