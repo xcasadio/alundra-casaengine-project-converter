@@ -11007,6 +11007,10 @@ les mesure : un écart est un arrêt, jamais une nouvelle épingle.
   - 5 px : en l'air au tick 15 en 44, atterrissage au tick 19.
 
   Le test vérifie lui-même son terrain (`ComputeTerrainHeight` avant et après). `AlundraJumpTestSupport.cs` ne change pas.
+  **Contrôle rouge de UH-7b** (relecture n°1) : un `[Fact]` voisin reprend le même montage de 3 px avec `groundSnapDistance: 0f` (le
+  paramètre existe déjà, `AlundraHeroFallAndPadJumpTests.cs:54-55`). Le héros doit être en l'air dès le tick 15. Cela prouve que le cas
+  vert de 3 px vient de l'aimantation qui absorbe une petite descente, et d'aucun autre chemin. Un héros qui ne tombe pas est un arrêt.
+  Aucune mutation du moteur n'est nécessaire.
 - **M-17 (UH-17).** Les deux fins vagues (`NotEmpty(riding)`, `onFlush > 0`) sont remplacées par des listes. Pour la tête de chaque tick,
   x = 165 + 2,4375 × (t − 1). Le héros est porté si 181 < x < 226 : fenêtres strictes de 21 et 24 px du binaire, `0x80036574` et
   `0x80036594`. Valeurs prévues :
@@ -11030,10 +11034,12 @@ les mesure : un écart est un arrêt, jamais une nouvelle épingle.
     (`0x8002C3D0`).
   - La recette R5 a été validée par l'auteur le 2026-10-06.
   - Un arc ne prouverait pas la seule chose que la recette prouve : la propagation de G1662, car `ArcRun` remet les singletons à zéro.
-- **Fichiers** (liste fermée) : `Alundra.Tests/AlundraHeroFallAndPadJumpTests.cs`, `Alundra.Tests/AlundraHeroObjectTopsTests.cs`, ce
-  plan, le backlog (M-16, M-17, M-19 : le reste de SJ-12 ; M-32).
+- **Fichiers** (liste fermée) : `Alundra.Tests/AlundraHeroFallAndPadJumpTests.cs` (la théorie et son contrôle),
+  `Alundra.Tests/AlundraHeroObjectTopsTests.cs`, ce plan, le backlog (M-16, M-17, M-19 : le reste de SJ-12 ; M-32). Les mutations
+  de M-17 touchent `EntitySupport.cs` et `AlundraScriptedMotion.cs` le temps du test seulement, restaurés à l'octet près.
 - **Acceptation** :
-  - chaque nouvelle épingle mesurée égale à la valeur prévue, puis rouge sous sa mutation faite par script, puis restaurée ;
+  - chaque nouvelle épingle mesurée égale à la valeur prévue, puis rouge sous sa mutation faite par script, puis restaurée ; pour UH-7b,
+    le contrôle `groundSnapDistance: 0f` tient lieu de rouge ;
   - `Alundra.Tests` en Release puis en Debug, aucun autre test qui bouge ; `cmp` ; traces.
 
   **Arrêts** : une mesure différente d'une valeur prévue, ou un fichier hors de la liste. **Retour arrière** : revert.
@@ -11050,10 +11056,28 @@ Moteur seul, puis le pointeur. Faits : `docs/plan-e19-m-annexe/night-discovery-2
   `true`, `1.5`, `320.0`, `{}`, `[]`, `null`, 3000000000, 99999999999999999999. Le seul fichier de projet du dépôt qui déclare
   `VirtualResolution` (`alundra-project/AlundraGame.json`) l'écrit en entiers (320 × 240), et le convertisseur l'écrit par des propriétés
   `int`. Rien de ce qui se charge aujourd'hui ne casse.
-  Tests (nouveaux, dans `CasaEngine.Tests/Configuration/ProjectSettingsVirtualResolutionTests.cs`) : une théorie des jetons refusés (rouge
-  au HEAD : chargé ou exception sans la clé), une théorie hors de l'intervalle d'`int` (rouge : `OverflowException`), une garde des bornes
-  1 et `int.MaxValue` (verte), et une garde du `VirtualResolution` qui n'est pas un objet (verte, branche déjà là, sans test). Mutations
-  par script : retirer la borne haute ; retirer la garde du type de valeur ; décaler une borne.
+  Le message garde la clé, que les tests existants (`Load_WithAnInvalidDeclaration_FailsNamingTheKey`) affirment seule, et cite la
+  valeur trouvée sous la forme `found <jeton JSON compact>`, ou `found no value` si la clé manque.
+  Tests nouveaux, dans `CasaEngine.Tests/Configuration/ProjectSettingsVirtualResolutionTests.cs`. Chaque ligne affirme une
+  `InvalidDataException` dont le message contient `'VirtualResolution.<clé>'` et `found <jeton>`. Résultat attendu au HEAD, ligne par
+  ligne :
+  - `"abc"` : rouge, `FormatException` ;
+  - `"320"` : rouge, chargé (320) ;
+  - `true` : rouge, chargé (1) ;
+  - `1.5` : rouge, chargé (2) ;
+  - `320.0` : rouge, chargé (320) ;
+  - `{}` et `[]` : rouges, `ArgumentException` sans la clé ;
+  - `null` : rouge **par la seule valeur citée**, puisque le HEAD lève déjà l'exception qui nomme la clé, sans `found null` ;
+  - `3000000000` et `99999999999999999999` : rouges, `OverflowException`.
+
+  Ces résultats au HEAD sont déduits du comportement de Json.NET 13. Le premier passage rouge les mesure, et **une ligne dont le résultat
+  au HEAD diffère de celui écrit est un arrêt**, jamais une nouvelle épingle.
+  Gardes vertes : les bornes 1 et `int.MaxValue`, et un `VirtualResolution` qui n'est pas un objet (branche déjà là, sans test).
+  Mutations par script :
+  - retirer la borne haute ;
+  - retirer la garde du type de valeur ;
+  - décaler une borne ;
+  - retirer la valeur du message : toutes les lignes refusées rougissent.
 - **M-37, accepté sans code**, avec une raison écrite :
   - `UIRoot.cs:135`, `CasaEngineGame.cs:485` et `:660` demandent une vraie fenêtre ou un vrai périphérique, ainsi qu'un `CasaEngineGame`
     initialisé. Un test sans tête (un `MGDesktop` seul) réécrirait la ligne au lieu de la garder ;
@@ -11078,18 +11102,22 @@ DLL. Faits : `docs/plan-e19-m-annexe/night-discovery-2026-10-09/G4b.json`.
   un recyclage.
   La DLL n'attribue jamais `Index2`, et son recyclage garde `Flags`, `ProgramIndexes` et la position. Un mandataire recyclé et verrouillé
   est donc encore trouvé par `CheckEntityInteraction` : c'est un défaut latent du portage, pas un comportement de l'original.
-  Correctif : dans `AlundraPlayerManager.CheckEntityInteraction`, le test du verrou refuse aussi un mandataire `Destroyed` ou
-  `FlagToDestroy`. Le binaire ne montre jamais un emplacement marqué au moment de `MovePlayer`, car `UpdateDestroyedEntities` passe avant ;
-  la DLL recycle après la passe des entités. Un refus suit le chemin existant : verrou effacé, contact de la collision. C'est l'échec de
-  numéro du binaire sur un emplacement effacé (`0x8002E9C0` → `0x8002EA78`).
+  Correctif (relecture n°1 : restreint à ce que le binaire prouve) : dans `AlundraPlayerManager.CheckEntityInteraction`, le test du
+  verrou refuse aussi un mandataire **`Destroyed`**, c'est-à-dire recyclé. Un refus suit le chemin existant : verrou effacé, contact de
+  la collision. C'est l'échec de numéro du binaire sur un emplacement effacé (`0x8002E9C0` → `0x8002EA78`).
+  Le cas `FlagToDestroy` n'est **pas** traité. Dans la DLL, un mandataire ne peut être marqué au moment du test que si le programme
+  d'une autre entité l'a marqué plus tôt dans la même image : les scripts des entités passent avant le mandataire du monde, puis les
+  événements de carte, puis le recyclage (`AlundraWorldProxy.cs:2235-2236`, `:2282-2286`). Dans le binaire, au même tick, `MovePlayer`
+  passe avant les scripts des emplacements et voit l'entité encore vivante. L'ordre du héros parmi les entités de la DLL n'est pas
+  établi : rien ne prouve qu'un refus de `FlagToDestroy` soit fidèle. C'est une question à l'auteur, consignée.
   Le résumé d'`AlundraGameState.InteractLatchEntity` (`:149-152`, « les huit vérifications invalident d'elles-mêmes ») est corrigé. Une
   section **Amendment** est ajoutée à ADR-0024 : le binaire réécrit tout l'emplacement de 0x294 octets ; la DLL garde une remise à zéro
   partielle voulue et garde le seul lecteur qui puisse encore atteindre un mandataire recyclé. Le numéro de série fidèle (`Index2` tiré
   d'un compteur) va avec E14. La branche voisine (`XCollisionEntity` sur un mandataire recyclé) n'est pas montrée atteignable et reste
   hors tranche.
-  Tests (dans `AlundraInteractionPassTests.cs`, montage de T5) : le marin verrouillé passe à `Destroyed`, et une pression de Carré ne
-  trouve plus rien, verrou nul (rouge au HEAD) ; le même cas en `FlagToDestroy` (rouge au HEAD). Mutation : garde sur `Destroyed` seul, le
-  second test rougit. T5 (marin vivant) reste vert.
+  Test (dans `AlundraInteractionPassTests.cs`, montage de T5) : le marin verrouillé passe dans l'état que laisse
+  `RecycleDestroyedEntities` (`Destroyed`, `EntityRefId` -1, le reste gardé). Une pression de Carré ne trouve plus rien, et le verrou est
+  nul ; rouge au HEAD. Mutation : la garde retirée, le test rougit. T5 (marin vivant) reste vert.
 - **M-43, accepté sans code** : le constructeur interne d'`AlundraCameraSway` est voulu (commentaire `:25`, 15 constructions de test dans
   deux fichiers).
 - **Avis P3 d'E19.v** : le commentaire de la branche d'échelle (`AlundraPlayerManager.cs:309-310`, « same restriction as the LoadingMap
@@ -11104,7 +11132,7 @@ DLL. Faits : `docs/plan-e19-m-annexe/night-discovery-2026-10-09/G4b.json`.
   - `Alundra.Tests/AlundraInteractionPassTests.cs` ;
   - `docs/decisions/0024-*.md` (la section Amendment seulement) ;
   - ce plan, le backlog (M-33, M-43, M-15 reporté).
-- **Acceptation** : deux rouges, puis verts ; `Alundra.Tests` en Release puis en Debug, aucun autre test qui bouge ; `cmp` ; traces.
+- **Acceptation** : un rouge, puis vert ; `Alundra.Tests` en Release puis en Debug, aucun autre test qui bouge ; `cmp` ; traces.
   **Arrêts** : un test existant qui bouge, ou un arc. **Retour arrière** : revert.
 
 #### 1.2s.14 E19.m13 — Portes de l'aimantation au sommet (M-11, O-E19-44) et plafond absolu suivi du balayage des entités (M-45) (G4a) ⏳ (planifiée le 2026-10-09, nuit en mode AUTO)
