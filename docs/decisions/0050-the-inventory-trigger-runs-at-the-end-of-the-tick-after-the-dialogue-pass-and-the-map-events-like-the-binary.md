@@ -30,3 +30,9 @@ Gaps recorded (the slice's list):
 - The traces of the intro and of the hero do not guard this order (their harnesses do not run `AlundraWorldProxy.Update`); only the new tests do.
 - A frame of several ticks runs the whole inventory block at each tick; before, it ran in a loop of its own ahead of the passes. The presenters of the inventory are now wired before their first tick (the wiring calls precede the loop of the passes).
 - To recheck in game (recipe U-4): Start pressed exactly when a dialogue box closes (the inventory opens); a dialogue started by a map event while Start is pressed (the box wins); a map passage crossed while pressing Start (the warp starts, the inventory does not open).
+
+## Amendment (E19.m, 2026-10-08)
+
+The first consequence reads "measured at 1, 2 and 3 ticks per frame, and for closings at +19, +24, +30 and through the
+sub-inventory". The E19.u verification measured the closings at +24 and +30 and the run through the sub-inventory at 1, 2 and 3
+ticks per frame; the closing at +19 was measured at 1 tick per frame only. The decision does not change.

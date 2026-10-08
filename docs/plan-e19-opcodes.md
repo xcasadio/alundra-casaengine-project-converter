@@ -11459,6 +11459,7 @@ reste inactif. Mesures : mutant « U-R3 retirée » : seul le cas des portes rou
 câblés avant leur premier tick (le bloc vient après leur câblage ; consigné dans l'ADR) ; un commentaire périmé reste hors de la liste,
 `AlundraGameState.cs:127` (« own per-tick pad loop »), à corriger avec la prochaine tranche qui touche ce fichier.
 - ✅ **U-3 — Vérification** (2026-10-08) : vérificateur neuf **CONFIRMED** (voir l'en-tête).
+  *(2026-10-08 : l'avis P4 « +19 à 1 tick par image » est porté dans l'ADR-0050 par une section Amendment, sans réécrire l'ADR.)*
 - **Acceptation** : 7 rouges sur 7 au HEAD puis verts ; mutant « bloc déplacé sans U-R3 » : le cas des portes reste rouge ; `Alundra.Tests`
   en Release puis en Debug (3214 + 7), aucun test existant ne bouge (les aides de test pilotent l'inventaire seul, dans un ordre interne
   que le correctif garde) ; `cmp` ; traces (garde seulement : leurs montages n'appellent pas `AlundraWorldProxy.Update`). **Arrêts** : un
