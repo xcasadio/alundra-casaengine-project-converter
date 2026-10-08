@@ -7508,7 +7508,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2d 🧪 (CONFIRMED le 2026-10-06, recette G2d-6 en attente) ; G2b 🧪 (G2b-1 ✅, G2b-2 ✅, G2b-3 faite et CONFIRMED, recette G2b-4 en attente) ; G1/G3 ⏳ (découverte faite, D-E19-96 et D-E19-97 ; G1 ✅ ; G3a ✅ ; G3b ✅ ; G2e ✅ et G3d ✅ le 2026-10-07 ; G3c ⚠️ en pause après sa relecture de clôture) ; G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2d 🧪 (CONFIRMED le 2026-10-06, recette G2d-6 en attente) ; G2b 🧪 (G2b-1 ✅, G2b-2 ✅, G2b-3 faite et CONFIRMED, recette G2b-4 en attente) ; G1/G3 ⏳ (découverte faite, D-E19-96 et D-E19-97 ; G1 ✅ ; G3a ✅ ; G3b ✅ ; G2e ✅ et G3d ✅ le 2026-10-07 ; G3c faite et CONFIRMED le 2026-10-08, recette G4 en attente) ; G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -8666,7 +8666,7 @@ agrandie (écart voulu, D-E19-92, écrit dans l'ADR du moteur) ; le shader suppo
 le drapeau « sale » des bornes d'entités ne suit que
 le premier sprite visible (faiblesse d'avant, documentée, non corrigée ici) ; la frise de l'éditeur ne montre pas la piste.
 
-##### 1.2o.6 E19.g G1/G3 — Export, réserve et opcodes des effets ⏳ (découverte du 2026-10-06 faite, deux surfaces contre-vérifiées ; l'auteur a tranché O-E19-72 et O-E19-73 : D-E19-96, D-E19-97 ; G1 ✅, G3a ✅, G3b ✅ ; G2e, G3c et G3d planifiées le 2026-10-06 (nuit), relecture à faire)
+##### 1.2o.6 E19.g G1/G3 — Export, réserve et opcodes des effets ⏳ (découverte du 2026-10-06 faite, deux surfaces contre-vérifiées ; l'auteur a tranché O-E19-72 et O-E19-73 : D-E19-96, D-E19-97 ; G1 ✅, G3a ✅, G3b ✅, G2e ✅, G3d ✅ ; G3c faite et CONFIRMED le 2026-10-08 ; recette G4 en attente)
 
 **Découverte** (2026-10-06, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B le convertisseur, le moteur et la DLL ;
 chacune contre-vérifiée par un relecteur neuf qui a re-dérivé les faits de son côté ; versionnée, en anglais, dans
@@ -9219,7 +9219,7 @@ tests ; `Texture` inchangé, consigné dans l'ADR) ; la démo s'arrête seule ap
   **Arrêts** : un test existant qui bouge, un fichier hors de la liste, une collision d'ADR, un pixel différent. **Retour arrière** :
   revert des commits du moteur et du pointeur.
 
-###### E19.g G3c — Effets poussés et dessinés (DLL), preuve au pixel 🚧 (découverte de nuit du 2026-10-06 faite et contre-vérifiée ; planifiée le 2026-10-06, après G2e ; relecture n°1 REVISE (coordonnée de l'aura, ordre du harnais), révisée ; relecture n°2 REVISE (tolérance des pixels mêlés, valeur attendue du test du mandataire), disposition FIX ; nouvelle époque, relecture de clôture REVISE (la condition d'arrêt de G3c-3 exigeait des empreintes exactes) : en pause, correctif écrit ci-dessous ; **le 2026-10-08, l'auteur dit de continuer : nouvelle relecture sur le plan corrigé, puis exécution si READY** ; relecture n°3 du 2026-10-08 : READY (faits), READY (exécution), REVISE (preuve : taille du back-buffer du harnais), correctif écrit ; relecture n°4 READY (preuve, exécution) le 2026-10-08 ; exécution en cours)
+###### E19.g G3c — Effets poussés et dessinés (DLL), preuve au pixel 🧪 (faite et CONFIRMED le 2026-10-08 (`5e2f692` prévision, `7007e5a` tests, `a3fa881` code et ADR-0049, `620f55b` harnais ; vérificateur neuf : prévision rejouée à l'octet, rendu indépendant de la 391 et de la 163 égal aux captures de la DLL (0 pixel), 49 rouges sur 51 rejoués, 6 mutants rouges, 6 captures refaites avec un harnais rebâti sur la DLL du jour (0 pixel différent, contrôle négatif en échec comme attendu), `Alundra.Tests` 3214 en Release puis en Debug, `cmp`, traces, liste fermée, ADR-0049 libre ; avis P4 seulement), recette G4 en attente ; découverte de nuit du 2026-10-06 faite et contre-vérifiée ; planifiée le 2026-10-06, après G2e ; relecture n°1 REVISE (coordonnée de l'aura, ordre du harnais), révisée ; relecture n°2 REVISE (tolérance des pixels mêlés, valeur attendue du test du mandataire), disposition FIX ; nouvelle époque, relecture de clôture REVISE (la condition d'arrêt de G3c-3 exigeait des empreintes exactes) : en pause, correctif écrit ci-dessous ; **le 2026-10-08, l'auteur dit de continuer : nouvelle relecture sur le plan corrigé, puis exécution si READY** ; relecture n°3 du 2026-10-08 : READY (faits), READY (exécution), REVISE (preuve : taille du back-buffer du harnais), correctif écrit ; relecture n°4 READY (preuve, exécution) le 2026-10-08 ; exécution en cours)
 
 DLL seule ; compile contre le pointeur du moteur monté par G2e (livraison verrouillée comme G2c) ; aucun export (G1 est livré).
 Déclencheur de risque : rendu de jeu nouveau et preuve au pixel (relecture et vérificateur neuf). Faits : `docs/plan-e19-g3c-annexe/discovery/`
@@ -9338,7 +9338,11 @@ recalculé égal à celui de chaque scène, deux planches et le bon nombre de qu
 passent `g3c_compare.py` avec **0 pixel différent** (écart maximal 0, égalités exactes gardées comprises, toutes les sondes égales),
 la 163 et la 391 comprises. Résiduels, sans bloquer : à k = 1 l'aura égale le marcheur matériel (0 pixel différent hors bruit) ; à × 3,
 l'aura diffère de l'image × 1 agrandie sur 1,65 à 1,76 % des pixels (D-E19-92 : plus lisse que la PS1 agrandie).
-- ⏳ **G3c-4 — Vérification** par un vérificateur neuf.
+- ✅ **G3c-4 — Vérification** (2026-10-08) : vérificateur neuf **CONFIRMED** (voir l'en-tête). Avis P4 reportés : la documentation de
+  `g3c_compare.py` et `tolerance_rule` disent « Mode0 à Mode2 » (le code applique ±1 à tout pixel mêlé, quel que soit le mode) ; la
+  vérification du marcheur s'imprime deux fois ; l'ADR-0049 consigne un écart que ce plan ne listait pas : la DLL dessine la position et la
+  clé vivantes du créneau, le binaire des copies prises à la dernière mise à jour (au plus une image d'écart, seulement quand une
+  opération est appliquée à la fin d'une image sans tick ; à voir en recette G4).
 - **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; `g3c_compare.py` sort 0 pour chaque scène à × 1 et × 3 :
   hors des zones de bruit, pixels opaques exacts, pixels mêlés d'un mode PSX (`Mode0` à `Mode3`) à ±1 par canal (règle de
   `g2b1_compare.py`, la même que G2e) ; résiduels rapportés sans bloquer (B(1) contre le marcheur matériel ; D-E19-92 à × 3 sur l'aura) ;
