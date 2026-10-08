@@ -10986,6 +10986,179 @@ Faits et valeurs : `docs/plan-e19-m9-annexe/`
   trace qui change ; une valeur de (a) à (c) qui contredit l'annexe ; un fichier hors de la liste.
 - **Retour arrière** : revert.
 
+#### 1.2s.11 E19.m10 — Gardes de tests du saut (M-16, M-17, SJ-12) et clôture écrite de M-32 ⏳ (planifiée le 2026-10-09, nuit en mode AUTO)
+
+Tests seuls, sans décision de l'auteur : le tri du 2026-10-08 les marque « session, sans question ». La question D5b reste ouverte ; son
+option (C) les sortirait de toute façon de D5b. Faits : `docs/plan-e19-m-annexe/night-discovery-2026-10-09/tests.json` et `M32.json`
+(rapports relus par un critique). Toutes les valeurs écrites ci-dessous sont **déduites** du code et du binaire. La première exécution
+les mesure : un écart est un arrêt, jamais une nouvelle épingle.
+
+- **M-16 (UH-7b).** La prémisse du backlog (« `FlatCells` ne fait que des hauteurs de 16 px ») ne tient pas. La pente de type 1 donne un
+  sol `hauteur × 16 − (y mod 16)`, sans terme en x, dans la DLL (`AlundraCellsCollisionField.cs:382-391`) comme dans le binaire
+  (`0x8003722C`-`0x80037264`). Un héros qui marche vers l'est, d'une case plate de 16 px vers une case de type 1, voit donc une marche
+  constante fixée par son y : y = 107,5 donne exactement 3 px.
+  Règle du binaire (`0x80037848`) : une descente de 3 px au plus est recollée si Gravity, `ForceZ == 0` et un pas XY non nul
+  (`0x800377A0`-`0x800377A8`). Le UH-7b d'aujourd'hui, avec un héros immobile posé 3 px trop haut à la main, ne teste que l'aimantation
+  de 4 px du moteur, un cas que la règle du binaire ne couvre pas.
+  Réécriture : une théorie `UH7b_ADescentOf3PixelsWhileWalking_DoesNotFall_AndAFall5PixelsDoes` (3 et 5 ; jamais 4, c'est l'écart
+  O-E19-40). Champ `FlatCells.Create(cell: (_, _) => (0, 1), slope: (cx, _) => cx >= 6 ? 1 : 0)`, héros en (120, 104,5 + chute, z 16),
+  `SteadyWalk`, 24 ticks vers la droite. Valeurs prévues :
+  - 3 px : jamais en l'air, animation 1, `IsOnGround` 1, `ForceZ` 0, `ForceX` 159744 ; `PosZ` 1048576 aux ticks 1 à 14, puis 851968 ;
+  - 5 px : en l'air au tick 15 en 44, atterrissage au tick 19.
+
+  Le test vérifie lui-même son terrain (`ComputeTerrainHeight` avant et après). `AlundraJumpTestSupport.cs` ne change pas.
+- **M-17 (UH-17).** Les deux fins vagues (`NotEmpty(riding)`, `onFlush > 0`) sont remplacées par des listes. Pour la tête de chaque tick,
+  x = 165 + 2,4375 × (t − 1). Le héros est porté si 181 < x < 226 : fenêtres strictes de 21 et 24 px du binaire, `0x80036574` et
+  `0x80036594`. Valeurs prévues :
+  - porté : ticks 8 à 26 ;
+  - `HeroAirborne` (conception F3 de la DLL) : ticks 17 à 26.
+
+  Mutations qui doivent rougir :
+  - fenêtre X côté héros (`EntitySupport.cs:338`) ;
+  - fenêtre X côté objet (`:333`) ;
+  - copie de la force du porteur retirée (`AlundraScriptedMotion.cs:303-306`).
+
+  Celles que proposait le tri ne discriminent pas : la fenêtre Y, et le drapeau F3, déjà tué par les assertions existantes.
+- **SJ-12** : le ternaire aux deux branches identiques (`AlundraHeroObjectTopsTests.cs:373`) devient
+  `Assert.True(hero.ForceZ == 0, …)`. Aucun changement de comportement.
+- **M-32, clos sans changement.**
+  - La moitié surcouche est faite par E19.m6 M6-4 (`ea7d2a4`).
+  - La moitié warp : la sortie de la chambre de la 163 est le portail 2 (trou en (39,22)-(39,23), effet 0, destination (11,21) de la même
+    carte, arrivée en `0x18`). Chacun de ses maillons est testé : le trou, le départ sur données réelles, l'arrivée TH3b, G1662 posé par A8,
+    l'armement du HUD R1.
+  - Le binaire confirme le déclenchement du trou (`0x8002F180`), l'arithmétique d'arrivée (`0x80031340`) et l'armement du HUD
+    (`0x8002C3D0`).
+  - La recette R5 a été validée par l'auteur le 2026-10-06.
+  - Un arc ne prouverait pas la seule chose que la recette prouve : la propagation de G1662, car `ArcRun` remet les singletons à zéro.
+- **Fichiers** (liste fermée) : `Alundra.Tests/AlundraHeroFallAndPadJumpTests.cs`, `Alundra.Tests/AlundraHeroObjectTopsTests.cs`, ce
+  plan, le backlog (M-16, M-17, M-19 : le reste de SJ-12 ; M-32).
+- **Acceptation** :
+  - chaque nouvelle épingle mesurée égale à la valeur prévue, puis rouge sous sa mutation faite par script, puis restaurée ;
+  - `Alundra.Tests` en Release puis en Debug, aucun autre test qui bouge ; `cmp` ; traces.
+
+  **Arrêts** : une mesure différente d'une valeur prévue, ou un fichier hors de la liste. **Retour arrière** : revert.
+
+#### 1.2s.12 E19.m11 — Moteur : dimensions de `VirtualResolution` validées (M-34), M-37 accepté (G5) ⏳ (planifiée le 2026-10-09, nuit en mode AUTO)
+
+Moteur seul, puis le pointeur. Faits : `docs/plan-e19-m-annexe/night-discovery-2026-10-09/G5.json`.
+- **M-34.** `ProjectSettingsHelper.ReadPositiveDimension` (`CasaEngine/Framework/Configuration/Project/ProjectSettingsHelper.cs:97-106`,
+  lecture `(int?)declaration[key]` à `:99`) accepte en silence une chaîne numérique, un booléen (vrai vaut 1) et un flottant (arrondi).
+  Pour un autre jeton, il lève une exception qui ne nomme pas la clé. ADR-0048 (`:30`) promet pourtant « une déclaration invalide échoue
+  au chargement en nommant la clé ».
+  Règle de la session, d'après le tri et le backlog : seul un **entier JSON** compris entre 1 et `int.MaxValue` est une dimension. Tout
+  autre jeton lève une `InvalidDataException` qui nomme `VirtualResolution.Width` ou `.Height` et cite la valeur trouvée : `"320"`, `"abc"`,
+  `true`, `1.5`, `320.0`, `{}`, `[]`, `null`, 3000000000, 99999999999999999999. Le seul fichier de projet du dépôt qui déclare
+  `VirtualResolution` (`alundra-project/AlundraGame.json`) l'écrit en entiers (320 × 240), et le convertisseur l'écrit par des propriétés
+  `int`. Rien de ce qui se charge aujourd'hui ne casse.
+  Tests (nouveaux, dans `CasaEngine.Tests/Configuration/ProjectSettingsVirtualResolutionTests.cs`) : une théorie des jetons refusés (rouge
+  au HEAD : chargé ou exception sans la clé), une théorie hors de l'intervalle d'`int` (rouge : `OverflowException`), une garde des bornes
+  1 et `int.MaxValue` (verte), et une garde du `VirtualResolution` qui n'est pas un objet (verte, branche déjà là, sans test). Mutations
+  par script : retirer la borne haute ; retirer la garde du type de valeur ; décaler une borne.
+- **M-37, accepté sans code**, avec une raison écrite :
+  - `UIRoot.cs:135`, `CasaEngineGame.cs:485` et `:660` demandent une vraie fenêtre ou un vrai périphérique, ainsi qu'un `CasaEngineGame`
+    initialisé. Un test sans tête (un `MGDesktop` seul) réécrirait la ligne au lieu de la garder ;
+  - toute la logique qu'elles appellent est extraite et testée (`ShouldClearBands`, `NotifyScreenBounds`, `ResizeSingleBackBufferView`) ;
+  - la recette S6, sensible à ces points, a été validée par l'auteur le 2026-10-06.
+- **Fichiers** (liste fermée) : moteur `ProjectSettingsHelper.cs` (BOM et CRLF gardés) et le fichier de tests ; parent : le pointeur, ce
+  plan, le backlog (M-34, M-37). `CasaEngine.Launcher/Program.cs` n'est jamais indexé.
+- **Acceptation** :
+  - rouges d'abord, puis verts ; `CasaEngine.Tests` bâti à part, en entier ; les deux solutions du moteur ;
+  - après le pointeur : les tests du convertisseur (`ProjectWriterTests` relit le projet écrit) et `Alundra.Tests` en Release puis en
+    Debug, `cmp`, traces.
+
+  **Arrêts** : un fichier de projet du dépôt qui ne charge plus ; un test existant qui bouge. **Retour arrière** : revert dans le moteur,
+  pointeur remis.
+
+#### 1.2s.13 E19.m12 — Verrou d'interaction sur une entité recyclée (M-33), M-43 accepté, commentaire P3 d'E19.v (G4b sans M-15) ⏳ (planifiée le 2026-10-09, nuit en mode AUTO)
+
+DLL. Faits : `docs/plan-e19-m-annexe/night-discovery-2026-10-09/G4b.json`.
+- **M-33 [binaire].** Le verrou d'interaction du binaire tient un pointeur d'emplacement (`0x80098F0C`) et le numéro de série `Index2`
+  (`0x80126F64`), et compare d'abord le numéro (`0x8002E9B4`-`0x8002E9C0`). Un emplacement libéré est réécrit par le modèle nul (numéro
+  0, alors que les numéros vivants partent de 1) ; un emplacement réutilisé reçoit un nouveau numéro. Le verrou ne survit donc jamais à
+  un recyclage.
+  La DLL n'attribue jamais `Index2`, et son recyclage garde `Flags`, `ProgramIndexes` et la position. Un mandataire recyclé et verrouillé
+  est donc encore trouvé par `CheckEntityInteraction` : c'est un défaut latent du portage, pas un comportement de l'original.
+  Correctif : dans `AlundraPlayerManager.CheckEntityInteraction`, le test du verrou refuse aussi un mandataire `Destroyed` ou
+  `FlagToDestroy`. Le binaire ne montre jamais un emplacement marqué au moment de `MovePlayer`, car `UpdateDestroyedEntities` passe avant ;
+  la DLL recycle après la passe des entités. Un refus suit le chemin existant : verrou effacé, contact de la collision. C'est l'échec de
+  numéro du binaire sur un emplacement effacé (`0x8002E9C0` → `0x8002EA78`).
+  Le résumé d'`AlundraGameState.InteractLatchEntity` (`:149-152`, « les huit vérifications invalident d'elles-mêmes ») est corrigé. Une
+  section **Amendment** est ajoutée à ADR-0024 : le binaire réécrit tout l'emplacement de 0x294 octets ; la DLL garde une remise à zéro
+  partielle voulue et garde le seul lecteur qui puisse encore atteindre un mandataire recyclé. Le numéro de série fidèle (`Index2` tiré
+  d'un compteur) va avec E14. La branche voisine (`XCollisionEntity` sur un mandataire recyclé) n'est pas montrée atteignable et reste
+  hors tranche.
+  Tests (dans `AlundraInteractionPassTests.cs`, montage de T5) : le marin verrouillé passe à `Destroyed`, et une pression de Carré ne
+  trouve plus rien, verrou nul (rouge au HEAD) ; le même cas en `FlagToDestroy` (rouge au HEAD). Mutation : garde sur `Destroyed` seul, le
+  second test rougit. T5 (marin vivant) reste vert.
+- **M-43, accepté sans code** : le constructeur interne d'`AlundraCameraSway` est voulu (commentaire `:25`, 15 constructions de test dans
+  deux fichiers).
+- **Avis P3 d'E19.v** : le commentaire de la branche d'échelle (`AlundraPlayerManager.cs:309-310`, « same restriction as the LoadingMap
+  case above ») est réécrit. `LoadingMap` est porté (E19.v) ; la sortie latérale vers le saut reste envoyée vers Idle par la décision de
+  l'auteur du 2026-08-26.
+- **Reporté, question à l'auteur : M-15.** La fidélité demande de valider la ligne de direction d'apparition dès l'apparition (le binaire
+  la résout depuis la ligne 0 dans `InitializeEntity`). Cela change la direction de la première image de toute apparition, lue par
+  `0x57`/`0x58`, la clé de tri et le test de face des portails. Aucun site réel n'est connu.
+- **Fichiers** (liste fermée) :
+  - `Alundra/Scripts/AlundraPlayerManager.cs` (la garde, les commentaires `:309-310` et le résumé qui cite le verrou) ;
+  - `Alundra/Scripts/AlundraGameState.cs` (le résumé) ;
+  - `Alundra.Tests/AlundraInteractionPassTests.cs` ;
+  - `docs/decisions/0024-*.md` (la section Amendment seulement) ;
+  - ce plan, le backlog (M-33, M-43, M-15 reporté).
+- **Acceptation** : deux rouges, puis verts ; `Alundra.Tests` en Release puis en Debug, aucun autre test qui bouge ; `cmp` ; traces.
+  **Arrêts** : un test existant qui bouge, ou un arc. **Retour arrière** : revert.
+
+#### 1.2s.14 E19.m13 — Portes de l'aimantation au sommet (M-11, O-E19-44) et plafond absolu suivi du balayage des entités (M-45) (G4a) ⏳ (planifiée le 2026-10-09, nuit en mode AUTO)
+
+DLL. Faits : `docs/plan-e19-m-annexe/night-discovery-2026-10-09/G4a.json`, désassemblage relu par le critique. Saut du héros : relecture
+du plan, puis vérificateur neuf.
+- **[binaire] Aimantation au sommet** (`0x80037848`, dans `ComputeXY`). Elle n'est atteinte que si deux portes sont ouvertes :
+  - **porte 1** : `FinalForceX` ou `FinalForceY` non nul (`0x800377A0`, `0x800377A8`). Sinon le binaire saute en `0x80037DC0` ;
+  - **porte 2** : au moins une tentative de pas acceptée. Une tentative refusée rend X, Y et Z (`0x80037938`-`0x80037948`). L'unique
+    glissement (`0x800379A0` et suivants) réécrit les forces et rentre en `0x80037798`.
+
+  `SnapHeroAtApex` (`AlundraScriptedMotion.cs:394-414`) ne garde que Gravity et `ForceZ == 0`.
+  - **M13-R1** : deux retours anticipés.
+    - Porte 1 : `FinalForceX == 0 && FinalForceY == 0`.
+    - Porte 2 : `LastTickDeltaX == 0 && LastTickDeltaY == 0`, le déplacement réel après le glissement.
+  - **Choix de la session, à confirmer par l'auteur** :
+    - la porte 2 est approchée par le déplacement réel du tick. Le binaire, lui, teste tentative par tentative, avec le Z qui se propage.
+      C'est un écart borné, consigné ; aucun cas du corpus ne le distingue ;
+    - la porte 1 est gardée par fidélité, bien qu'elle soit un mutant équivalent dans le modèle de la DLL : la porte 2 la couvre.
+- **[binaire] Plafond** (`0x80036D94`). Le plafond absolu (`0x7800000`) est testé en premier, mais ne court-circuite rien. La cible est
+  plafonnée à `0x77FFFFF`, puis le balayage des entités continue avec cette cible comme borne courante : une entité plus basse que le
+  plafond l'abaisse. Un sujet non éligible garde le contact du plafond absolu (`0x80036F18`). `EntitySupport.TryFindCeiling` (`:206-210`)
+  sort avant le balayage.
+  - **M13-R2** : le plafond absolu pose la cible (`AbsoluteCeiling - 2`, convention de la DLL) et le contact, puis le balayage d'un sujet
+    éligible continue ; un sujet non éligible garde le contact.
+
+  Le plafond absolu seul rend la même valeur qu'avant : UH-CAP ne bouge pas. Un plafond mobile (le binaire déplace d'abord l'entité,
+  `0x80037638`) reste hors tranche (D5).
+- **M-45 (a), clos sans changement** : la remise à 0 de `FinalForceZ` au plafond (`AlundraScriptedMotion.cs:353`) est une écriture
+  morte, réécrite en fin de tick (`:500`). Elle n'a aucun effet observable. L'écart réel (le binaire garde la force du tick) demanderait
+  un `TickForceZ` du héros ; c'est une question à l'auteur, hors tranche.
+- **Tests** (`AlundraHeroApexAndCeilingTests.cs`), valeurs déduites et mesurées au premier rouge :
+  - saut sur place sous une boîte à 34 px, sans force XY : pas d'aimantation, `PosZ` 131072, 98304, 32768, 0 aux ticks 1 à 4 (rouge au
+    HEAD : 0 au tick 1) ;
+  - contrôle : saut en marchant, vers l'est puis vers le nord, sous la même boîte : aimantation au tick 1 (vert) ;
+  - pas entièrement bloqué contre un mur, avec `NoObstacleSlide` et les préconditions affirmées : pas d'aimantation (rouge au HEAD) ;
+  - toit sous le plafond absolu (boîte à 1900 px) : `PosZ` 122421248 aux ticks 2 à 5 (rouge au HEAD : 123731967) ;
+  - toit au-dessus du plafond (1925 px) : inchangé (vert) ;
+  - UH-APEX-REVERT réécrit en marche, l'ancien corps gardé comme garde au repos : sans cela, la règle d'annulation perdrait son épingle ;
+  - porte Gravity et bords de la fenêtre (35 et 36 px) : épingles vertes, la moitié test de M-45.
+
+  Mutations par script : chaque porte retirée ; le retour anticipé du plafond remis ; le balayage avec la cible non plafonnée ; la fenêtre
+  élargie ou rétrécie ; l'annulation retirée.
+- **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraScriptedMotion.cs`, `Alundra/Scripts/EntitySupport.cs`,
+  `Alundra.Tests/AlundraHeroApexAndCeilingTests.cs`, ce plan (y compris le libellé de H3-R2, « testée avant tout », et la ligne
+  O-E19-44), le backlog (M-11, M-45).
+- **Acceptation** :
+  - les rouges prévus, puis verts ;
+  - UH-APEX-DOWN, UH-APEX-UP, SJ-14, UH-12 et UH-CAP inchangés ;
+  - `Alundra.Tests` en Release puis en Debug ; `cmp` ; les six traces identiques (l'oracle du héros n'atteint l'aimantation qu'en
+    chute, avec `ForceZ` non nul).
+
+  **Arrêts** : une mesure qui contredit une valeur déduite ; un test existant ou une trace qui bouge. **Retour arrière** : revert.
+
 ### 1.2u Recette de l'auteur du 2026-10-05 ✅ (constat consigné ; deux défauts enquêtés ; suites réglées : O-E19-60 (E19.s2), O-E19-61 (X2), O-E19-62 (§1.2w), (tri du 2026-10-08))
 
 **Constat de l'auteur** (DLL et export de `cc948ec`, deux captures) :
