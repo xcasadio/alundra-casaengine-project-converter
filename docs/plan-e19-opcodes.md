@@ -952,6 +952,14 @@ flottant 32 bits dans le scratchpad `e19a2/`) :
     en avance rapide ; MGUI `develop` (`18b2c14a`) et l'analyseur `master` (`a958d86`) les contenaient déjà ; rien poussé. **La suite
     du travail part de `chantier/e19-suite2` dans le parent, le moteur, MGUI et l'analyseur** (demande de l'auteur) : les commits des
     sous-modules vont sur cette branche, qui tient lieu des branches dédiées que nomment encore les tranches.
+  - **Merge du 2026-10-08** (demandé par l'auteur) : branches `integration/e19-1008` ; le `main` du moteur avait reçu de l'autre session
+    le merge du navigateur de démos (`44581be4`) et une note (`2f5575eb`) : conflits de deux fichiers de suivi (`ai-agent/README.md`,
+    `ai-agent/tasks/demo-browser-split-tasks.md`) résolus en gardant les deux récits (moteur `1b2b616a`, code identique à `15610ee4`) ;
+    pointeur du parent monté (`a41fc18`) ; l'inscription des recettes U-4, de la démo Q et de LB-4 retirée en attendant la confirmation
+    de l'auteur (`0f72618`, revert de `32b55ed` : « test OK » pouvait désigner les tests du merge) ; suites vertes sur l'état intégré
+    (deux solutions du moteur, `CasaEngine.Tests` 4227, convertisseur 848, `Alundra.Tests` 3228 en Release puis en Debug, `cmp`, six
+    traces), puis avance rapide : parent `main` `0f72618`, moteur `main` `1b2b616a`, analyseur `master` `fc16872` ; MGUI `develop`
+    `18b2c14a` inchangé ; rien poussé. **La suite part de `chantier/e19-suite3`** dans le parent, le moteur, MGUI et l'analyseur.
   - **cabine seule** : un test durable sur les vraies cellules de la 390, avec l'en-tête et les réglages
     réels du héros, le masque `0x41` vérifié, et les quatre marches.
     - Les rails sont posés comme B2 les pose, par `records.Walkability[y * largeur + x] |= 1` sur le
