@@ -1,0 +1,223 @@
+recompute_z.py - independent re-derivation (no zsim / mips / emu / zmodel / vz / rules_vs_emu).  Python 3.14.2
+
+== 0. anchors: the model is the disassembly (instruction words of ALUN_CD.EXE France)
+  ok  80036a84  lw $v0, 0x28($s0)             carried entity (+0x28): all forces zero (not modelled: no carrier)
+  ok  80036ab8  lw $v0, 0xf8($s0)             impulse word +0xF8
+  ok  80036ac0  beqz $v0, 0x80036b08          no impulse -> gravity branch
+  ok  80036ac8  lhu $v0, 0xf8($s0)            marker compare (0x8000): not met by IZF 768..1360
+  ok  80036afc  sll $v0, $v0, 8               ForceZ = IZF << 8
+  ok  80036b04  sw $v0, 0xb8($s0)             ForceZ store (impulse branch)
+  ok  80036b10  andi $v0, $v0, 0x100          Gravity bit of the flags +0x6C
+  ok  80036b14  beqz $v0, 0x80036b64          no gravity: ForceZ unchanged
+  ok  80036b24  lhu $v0, 4($a0)               map word +4 = G
+  ok  80036b2c  sll $v0, $v0, 8               G << 8
+  ok  80036b30  subu $v1, $v1, $v0            ForceZ - (G << 8)
+  ok  80036b34  lhu $v0, 6($a0)               map word +6 = V
+  ok  80036b44  sll $a1, $v0, 8               V << 8
+  ok  80036b48  slt $v0, $a1, $a0             (V<<8) < |v|
+  ok  80036b54  bgtz $v1, 0x80036b60          clamp: delay slot move $v1,$a1 runs in both cases
+  ok  80036b58  move $v1, $a1                 clamp positive
+  ok  80036b5c  negu $v1, $a1                 clamp negative
+  ok  80036b60  sw $v1, 0xb8($s0)             ForceZ store (gravity branch)
+  ok  80036bb8  sw $a0, 0xec($s0)             FinalForceZ(+0xEC) = ForceZ(+0xB8)
+  ok  800383b0  sw $zero, 0x168($a2)          start of P: +0x168 cleared
+  ok  800383b4  sw $zero, 0x140($a2)          start of P: contact +0x140 cleared
+  ok  800383b8  sw $zero, 0x13c($a2)          start of P: +0x13C cleared
+  ok  800383d0  addu $v1, $v1, $a1            ModdedPosZ = PosZ(+0x11C) + OffsetZ(+0x1EC)
+  ok  800383e0  sw $v1, 0x1e0($a2)            ModdedPosZ store (+0x1E0)
+  ok  800375f4  lw $s1, 0xec($s0)             F = FinalForceZ
+  ok  800375fc  blez $s1, 0x8003768c          F <= 0 -> landing-test branch
+  ok  80037694  sw $v0, 0x138($s0)            terrain probe BEFORE the XY step stored in +0x138
+  ok  800376a0  jal 0x80036bfc                landing test
+  ok  800376a8  beqz $v0, 0x80037708          no landing -> PosZ += F
+  ok  800376e0  sw $v0, 0x140($s0)            contact = 1
+  ok  800376f0  subu $v0, $v0, $a0            PosZ = top - OffsetZ
+  ok  800376f4  andi $v1, $v1, 0x100          Gravity bit
+  ok  800376fc  sw $v0, 0x11c($s0)            PosZ store (landing; delay slot of the beqz at 0x800376F8)
+  ok  80037704  sw $zero, 0xb8($s0)           ForceZ = 0 at a landing, only with Gravity
+  ok  80037710  addu $v0, $v0, $s1            PosZ += F
+  ok  80036c14  lw $a3, 0x1e0($a0)            ModdedPosZ
+  ok  80036c18  lw $v0, 0xec($a0)             FinalForceZ
+  ok  80036c1c  lw $v1, 0x138($a0)            T
+  ok  80036c20  addu $t1, $a3, $v0            t1 = ModdedPosZ + F
+  ok  80036c24  slt $v0, $v1, $t1             T < t1 ?
+  ok  80036c28  bnez $v0, 0x80036c38          yes -> NO landing (strict)
+  ok  80036c30  addiu $t1, $v1, 1             landing: top = T + 1
+  ok  80036c34  addiu $t6, $zero, 1           landing: result 1
+  ok  80037f3c  addiu $t3, $v1, 1             FloorHeight = T(+0x138) + 1
+  ok  80038060  move $v0, $t3                 FloorHeight returned (no other entity)
+  ok  800380f8  slt $v0, $v0, $v1             FloorHeight < PosZ ?
+  ok  80038100  xori $v0, $v0, 1              IsOnGround = not (...)
+  ok  8003810c  sw $v0, 0x144($s0)            IsOnGround store
+  ok  8003db7c  lw $v0, 0x140($a0)            0x25 reads contact
+  ok  8003db8c  lw $v0, 0x144($a0)            0x25 reads IsOnGround
+  ok  8003d7c4  sw $v0, 0x88($a0)             0x1A writes only the target animation +0x88
+  ok  8003d7f0  sw $v0, 0xb8($a0)             0x1B writes ForceZ
+  ok  8003d780  sw $v0, 0x6c($a0)             0x16 sets the Gravity bit
+  ok  80038ae4  sw $zero, 0xf8($s0)           UpdateAnimation clears +0xF8 at every call
+  ok  80038b5c  lh $v0, 0xa($a0)              IZF = signed half word at +0xA of the AnimSet
+  ok  80038b64  sw $v0, 0xf8($s0)             impulse written when the switch block is entered
+  ok  8003b3a8  jal 0x800386d0                1: entity scripts
+  ok  8003b3d0  jal 0x800384f4                2: lists
+  ok  8003b3d8  jal 0x80038e18                3: UpdateAnimation
+  ok  8003b3e0  jal 0x80038364                4: physics pass P
+  ok  80039cb8  sll $v0, $v1, 0x10            width field: size << 16 ...
+  ok  80039cbc  addiu $v0, $v0, -1            ... minus 1 unit
+  ok  80039cc4  sw $v0, 0x1f0($t0)            width field +0x1F0
+  ok  800370e8  lw $v0, 0x114($a0)            PosX
+  ok  800370ec  lw $v1, 0x1e4($a0)            OffsetX
+  ok  800370f8  sra $v1, $v0, 0x10            x_l
+  ok  80037104  lw $v1, 0x1f0($a3)            width field
+  ok  8003710c  addu $v0, $v0, $v1            PosX + OffsetX + width field
+  ok  80037110  sra $v0, $v0, 0x10            x_r
+  ok  8003b198  addiu $a1, $v0, 0x7168        table base 0x80127168
+  ok  8003b1b4  sh $s3, ($v0)                 table[a0 + s1] = column s3
+  ok  8003b1bc  slti $v0, $s1, 0x18           24 entries per column
+  ok  8003b1cc  slti $v0, $s3, 0x34           52 columns
+  ok  8003b1d4  addiu $a0, $a0, 0x18          next column starts 24 entries later
+  ok  80037324  sll $a1, $a1, 4               flat cell: height = byte3 * 16 (px) ...
+  ok  80037328  sll $a1, $a1, 0x10            ... in 16.16
+  ok  8003732c  slt $v0, $t2, $a1             max over the 4 corners (t2 starts at 0)
+  ok  800371e8  beqz $v1, 0x80037324          slope & 3 == 0 -> flat
+  ok  8003e3e8  bne $v0, $a2, 0x8003e414      first call at this pc: store pc, counter 0, yield
+  ok  8003e400  slt $v0, $v0, $a0             counter < N ?
+  ok  8003e404  xori $v0, $v0, 1              counter >= N -> 1
+  ok  8003e408  sll $v0, $v0, 1               -> returns 2 (advance) when done, 0 (yield) otherwise
+anchors: 82 checked, 0 differ
+
+== 1. IZF 1360 (flat terrain 0, G 128, V 4096, Gravity)
+    k= 1 tick s+0   P_dll=  348160  ForceZ=  348160  FinalForceZ=  348160  contact=0  IsOnGround=0   0x25 at s+1 reads 0
+    k= 2 tick s+1   P_dll=  663552  ForceZ=  315392  FinalForceZ=  315392  contact=0  IsOnGround=0   0x25 at s+2 reads 0
+    ...
+    k=20 tick s+19  P_dll=  737280  ForceZ= -274432  FinalForceZ= -274432  contact=0  IsOnGround=0   0x25 at s+20 reads 0
+    k=21 tick s+20  P_dll=  430080  ForceZ= -307200  FinalForceZ= -307200  contact=0  IsOnGround=0   0x25 at s+21 reads 0
+    k=22 tick s+21  P_dll=   90112  ForceZ= -339968  FinalForceZ= -339968  contact=0  IsOnGround=0   0x25 at s+22 reads 0
+    k=23 tick s+22  P_dll=       0  ForceZ=       0  FinalForceZ= -372736  contact=1  IsOnGround=1   0x25 at s+23 reads 1
+    k=24 tick s+23  P_dll=       0  ForceZ=       0  FinalForceZ=  -32768  contact=1  IsOnGround=1   0x25 at s+24 reads 1
+    k=25 tick s+24  P_dll=       0  ForceZ=       0  FinalForceZ=  -32768  contact=1  IsOnGround=1   0x25 at s+25 reads 1
+  PosZ_dll of the updates 1..22 = [348160, 663552, 946176, 1196032, 1413120, 1597440, 1748992, 1867776, 1953792, 2007040, 2027520, 2015232, 1970176, 1892352, 1781760, 1638400, 1462272, 1253376, 1011712, 737280, 430080, 90112]
+  K (first update with contact or IsOnGround) = 23 ; ForceZ=0 FinalForceZ=-372736 at K ; contact at 23 ; IsOnGround at 23
+  => 0x25 returns at s+23.  First poll after `1A [3]; 37 [3]` = s+4 (0x37 handler: done at the call where the counter reaches N, i.e. s+N+1) -> 20 polls.
+  hand check of the landing update: update 22 : P_bin=430081 + F(-339968) = 90113 ; T(0) >= 90113 ? no -> falls to 90113 (P_dll 90112).  update 23 : F = 348160-22*32768 = -372736 ;
+     P_bin 90113 + F = -282623 ; 0 >= -282623 -> LANDING (strict or <=: same, the sum is not on the boundary).
+  rule strict: K=23   (contact at 23)
+  rule le    : K=23   (contact at 23)
+
+== 2. IZF 1280
+    k=18 tick s+17  P_dll=  884736  ForceZ= -229376  FinalForceZ= -229376  contact=0  IsOnGround=0   0x25 at s+18 reads 0
+    k=19 tick s+18  P_dll=  622592  ForceZ= -262144  FinalForceZ= -262144  contact=0  IsOnGround=0   0x25 at s+19 reads 0
+    k=20 tick s+19  P_dll=  327680  ForceZ= -294912  FinalForceZ= -294912  contact=0  IsOnGround=0   0x25 at s+20 reads 0
+    k=21 tick s+20  P_dll=       0  ForceZ= -327680  FinalForceZ= -327680  contact=0  IsOnGround=1   0x25 at s+21 reads 1
+    k=22 tick s+21  P_dll=       0  ForceZ=       0  FinalForceZ= -360448  contact=1  IsOnGround=1   0x25 at s+22 reads 1
+    k=23 tick s+22  P_dll=       0  ForceZ=       0  FinalForceZ=  -32768  contact=1  IsOnGround=1   0x25 at s+23 reads 1
+    k=24 tick s+23  P_dll=       0  ForceZ=       0  FinalForceZ=  -32768  contact=1  IsOnGround=1   0x25 at s+24 reads 1
+  PosZ_dll of the updates 1..20 = [327680, 622592, 884736, 1114112, 1310720, 1474560, 1605632, 1703936, 1769472, 1802240, 1802240, 1769472, 1703936, 1605632, 1474560, 1310720, 1114112, 884736, 622592, 327680]
+  first update with P_dll = 0 : 21  (ForceZ -327680, FinalForceZ -327680, contact 0, IsOnGround 1)
+  hand check, update 21 : F = 327680 - 20*32768 = -327680 ; P_bin(after 20) = 327681 ; t1 = 327681 - 327680 = 1 ; T(0) >= 1 ? NO (strict) -> no landing, P_bin = 1, P_dll = 0, ForceZ stays -327680, contact 0 ;
+     IsOnGround = not(FloorHeight(1) < PosZ(1)) = 1.   update 22 : F = -360448 ; t1 = 1 - 360448 ; 0 >= t1 -> LANDING (contact 1, ForceZ 0).
+  rule 'le' (DLL comparison, P_dll + F <= T) : update 21 -> ForceZ=0 contact=1  (the DLL zeroes ForceZ at 21 ; contact is a separate DLL flag, see UJ1b comment)
+  K (strict) = 21 ; contact first at 22 ; 0x25 returns at s+21
+
+== 3. other families (cross-check of the whole table of the annex, same recurrence)
+  IZF  768 : K=13  ForceZ at K=-196608  contact first at 14  last air point 3.0000 px
+  IZF 1024 : K=17  ForceZ at K=-262144  contact first at 18  last air point 4.0000 px
+  last air point of 1360 = 1.3750 px, of 1280 = 5.0000 px
+  TR-V (no gravity, 8 px, 1B [128,255]) : K=16 (0x25 at t+16) ; PosZ_dll-floor of updates 1..15 = [491520, 458752, 425984, 393216, 360448, 327680, 294912, 262144, 229376, 196608, 163840, 131072, 98304, 65536, 32768]
+     with the `1B [0,0]` tail : contact raised at None (never) ; WITHOUT the tail : contact first at 17
+     foot at update 8 = 262144 (= 4.000 px exactly: True)
+
+== 4. field-by-field comparison with out/replay_all.json (engine A rows; my numbers are NOT taken from it)
+  S-1360               K mine=23  annex(free poll)=23  annex(real program A/B)=23/23  rows compared=26  field differences=0  => AGREE
+  S-1280               K mine=21  annex(free poll)=21  annex(real program A/B)=21/21  rows compared=26  field differences=0  => AGREE
+  S-768                K mine=13  annex(free poll)=13  annex(real program A/B)=13/13  rows compared=26  field differences=0  => AGREE
+  S-1024               K mine=17  annex(free poll)=17  annex(real program A/B)=17/17  rows compared=26  field differences=0  => AGREE
+  R-1360-Giles10       K mine=23  annex(free poll)=23  annex(real program A/B)=23/23  rows compared=26  field differences=0  => AGREE
+  R-1360-Bergus165     K mine=23  annex(free poll)=23  annex(real program A/B)=23/23  rows compared=26  field differences=0  => AGREE
+  R-1360-Bergus179     K mine=23  annex(free poll)=23  annex(real program A/B)=23/23  rows compared=26  field differences=0  => AGREE
+  R-1360-Bergus172     K mine=23  annex(free poll)=23  annex(real program A/B)=23/23  rows compared=26  field differences=0  => AGREE
+  R-768-Dog478a        K mine=13  annex(free poll)=13  annex(real program A/B)=13/13  rows compared=26  field differences=0  => AGREE
+  R-768-Dog478b        K mine=13  annex(free poll)=13  annex(real program A/B)=13/13  rows compared=26  field differences=0  => AGREE
+  R-1280-GilesAnim16   K mine=21  annex(free poll)=21  annex(real program A/B)=21/21  rows compared=26  field differences=0  => AGREE
+  R-1024-Bomb362       K mine=17  annex(free poll)=17  annex(real program A/B)=17/17  rows compared=26  field differences=0  => AGREE
+  S-TRV                K mine=16  annex(free poll)=16  annex(real program A/B)=16/16  rows compared=24  field differences=0  => AGREE
+  S-TRV-keep           K mine=16  annex(free poll)=16  annex(real program A/B)=16/16  rows compared=24  field differences=0  => AGREE
+  R-TRV-rec69          K mine=16  annex(free poll)=16  annex(real program A/B)=16/16  rows compared=24  field differences=0  => AGREE
+  R-TRV-rec81          K mine=16  annex(free poll)=16  annex(real program A/B)=16/16  rows compared=24  field differences=0  => AGREE
+  note: R-1024-Bomb362 starts with Gravity OFF in the annex rest state; the script `1A [2]` + `0x16` sets the Gravity bit (handler 0x8003D774, anchor ok) in the call of the jump,
+        so the impulse of update 1 meets Gravity ON: same recurrence as S-1024.
+  DLL test lists (Alundra.Tests/AlundraAnimationImpulseTests.cs, Flight1360 / Flight1280, READ not run) equal my PosZ_dll lists: 1360 -> True, 1280 -> True
+
+== 5. Giles (map 10 rec98, `1A [3]` @6389), IZF 1360, onto the 16 px ledge; strict vs <= ; terrain before / after the XY step
+  cells: alundra-project/Maps/Overworld/Overworld 2,1-10/tilemap/Overworld 2,1-10.tileMap (W=52 H=60)
+  Giles PosY 856 px -> box rows y = 849..862 -> row 53 (both) ; height byte of columns 18..27 on that row = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1] ; slope bytes & 3 = [0]
+  ledge in front of Giles = first column >= 18 with height 1 on that row : column 22 -> x >= 528 px (column = x // 24, table 0x80127168 filled by the loop 0x8003B190-0x8003B1D4 [R]); columns 22..51 all height 1
+  INPUTS (not recomputed from the binary): x0 = 32329728 (493.3125 px, plan d2c-valeurs:28), first XY step 129024 (annex: UpdateAnimation then P in one tick) or 159744 (plan, DLL one frame late), then 98304 per update
+  consistency of the two first-step values with the plan's DLL sequence 159744, 129024, 98304: the walk force goes 159744 -> 98304 in two equal steps of 30720; the binary applies the change one pass earlier.
+  -- first step binary XY (129024)
+     binary  : terrain BEFORE the step, strict    ledge seen by the pre-step probe from update 18, by the post-step probe from 17 ; K=19  PosZ_dll(K)=1048576  ForceZ(K)=0 FinalForceZ(K)=-241664 contact=1 ground=1  -> 0x25 at s+19
+     mixed   : terrain BEFORE the step, <=        ledge seen by the pre-step probe from update 18, by the post-step probe from 17 ; K=19  PosZ_dll(K)=1048576  ForceZ(K)=0 FinalForceZ(K)=-241664 contact=1 ground=1  -> 0x25 at s+19
+     mixed   : terrain AFTER the step,  strict    ledge seen by the pre-step probe from update 18, by the post-step probe from 17 ; K=19  PosZ_dll(K)=1048576  ForceZ(K)=0 FinalForceZ(K)=-241664 contact=1 ground=1  -> 0x25 at s+19
+     DLL-like: terrain AFTER the step,  <=        ledge seen by the pre-step probe from update 18, by the post-step probe from 17 ; K=19  PosZ_dll(K)=1048576  ForceZ(K)=0 FinalForceZ(K)=-241664 contact=1 ground=1  -> 0x25 at s+19
+  -- first step plan XY (159744)
+     binary  : terrain BEFORE the step, strict    ledge seen by the pre-step probe from update 17, by the post-step probe from 16 ; K=19  PosZ_dll(K)=1048576  ForceZ(K)=0 FinalForceZ(K)=-241664 contact=1 ground=1  -> 0x25 at s+19
+     mixed   : terrain BEFORE the step, <=        ledge seen by the pre-step probe from update 17, by the post-step probe from 16 ; K=19  PosZ_dll(K)=1048576  ForceZ(K)=0 FinalForceZ(K)=-241664 contact=1 ground=1  -> 0x25 at s+19
+     mixed   : terrain AFTER the step,  strict    ledge seen by the pre-step probe from update 17, by the post-step probe from 16 ; K=19  PosZ_dll(K)=1048576  ForceZ(K)=0 FinalForceZ(K)=-241664 contact=1 ground=1  -> 0x25 at s+19
+     DLL-like: terrain AFTER the step,  <=        ledge seen by the pre-step probe from update 17, by the post-step probe from 16 ; K=19  PosZ_dll(K)=1048576  ForceZ(K)=0 FinalForceZ(K)=-241664 contact=1 ground=1  -> 0x25 at s+19
+  table (binary XY, pre-step terrain, strict):
+     k= 1 PosX= 495.2812 px  right edge= 505.2812 px  P_dll=  348160  ForceZ=  348160 FinalForceZ=  348160  contact=0 ground=0  T_pre= 0 px T_post= 0 px
+     k= 2 PosX= 496.7812 px  right edge= 506.7812 px  P_dll=  663552  ForceZ=  315392 FinalForceZ=  315392  contact=0 ground=0  T_pre= 0 px T_post= 0 px
+     k=15 PosX= 516.2812 px  right edge= 526.2812 px  P_dll= 1781760  ForceZ= -110592 FinalForceZ= -110592  contact=0 ground=0  T_pre= 0 px T_post= 0 px
+     k=16 PosX= 517.7812 px  right edge= 527.7812 px  P_dll= 1638400  ForceZ= -143360 FinalForceZ= -143360  contact=0 ground=0  T_pre= 0 px T_post= 0 px
+     k=17 PosX= 519.2812 px  right edge= 529.2812 px  P_dll= 1462272  ForceZ= -176128 FinalForceZ= -176128  contact=0 ground=0  T_pre= 0 px T_post=16 px
+     k=18 PosX= 520.7812 px  right edge= 530.7812 px  P_dll= 1253376  ForceZ= -208896 FinalForceZ= -208896  contact=0 ground=0  T_pre=16 px T_post=16 px
+     k=19 PosX= 522.2812 px  right edge= 532.2812 px  P_dll= 1048576  ForceZ=       0 FinalForceZ= -241664  contact=1 ground=1  T_pre=16 px T_post=16 px
+     k=20 PosX= 523.7812 px  right edge= 533.7812 px  P_dll= 1048576  ForceZ=       0 FinalForceZ=  -32768  contact=1 ground=1  T_pre=16 px T_post=16 px
+     k=21 PosX= 525.2812 px  right edge= 535.2812 px  P_dll= 1048576  ForceZ=       0 FinalForceZ=  -32768  contact=1 ground=1  T_pre=16 px T_post=16 px
+  update 18 (no landing, any rule) : P_dll(17)=1462272 + F(18)=-208896 = 1253376 > ledge top 1048576 ; update 19 : P_dll(18)=1253376 + F(19)=-241664 = 1011712 < 1048576 -> landing (the sum is not on the boundary, so strict and <= agree).
+  K over the 8 combinations (first step x order x rule) = [19]
+  last air point (update 18) = 1253376 = 19.1250 px = 3.1250 px above the ledge top (< 4 px: inside the DLL engine magnet, mechanism (c), not modelled here)
+  box right edge after update 16 / 17 / 18 (binary XY): 527.7812 / 529.2812 / 530.7812 px (ledge when >= 528 px, the real edge being 1/65536 px less)
+  sweep of x0 (1/8 px, 480..520 px).  The XY walk is FREE in this model (ComputeXY and its blocking by the wall are not recomputed), so a start is called 'wall-free' only if the ledge
+  first enters the box (post-step probe) at an update where the entity is already at or above the ledge top after its Z step (PosZ_dll >= 16 px); otherwise the real ComputeXY blocks the
+  box at the wall (the annex output shows the right edge stuck at 528.000 px for x0 < 490.6, K=23) and this model is not comparable there.
+  analytic lower bound (ledge seen by the pre-step probe at update 19, i.e. x_r = (PosX + 10 px - 1 unit) >> 16 >= 528 after update 18): x0 >= 528 - 10 - 1.96875 - 17*1.5 + 1/65536 = 490.531265 px (binary first step); with the plan's first step 159744: 490.062515 px
+     first step 129024  probe pre  rule strict : wall-free starts with K=19: from x0 = 490.625 px to 513.000 px ; wall-free starts with K != 19: none ; the start just below 490.625 is wall-free: False
+     first step 129024  probe pre  rule le     : wall-free starts with K=19: from x0 = 490.625 px to 513.000 px ; wall-free starts with K != 19: none ; the start just below 490.625 is wall-free: False
+     first step 129024  probe post rule strict : wall-free starts with K=19: from x0 = 489.125 px to 513.000 px ; wall-free starts with K != 19: none ; the start just below 489.125 is wall-free: True
+     first step 129024  probe post rule le     : wall-free starts with K=19: from x0 = 489.125 px to 513.000 px ; wall-free starts with K != 19: none ; the start just below 489.125 is wall-free: True
+     first step 159744  probe pre  rule strict : wall-free starts with K=19: from x0 = 490.125 px to 512.500 px ; wall-free starts with K != 19: none ; the start just below 490.125 is wall-free: False
+     first step 159744  probe pre  rule le     : wall-free starts with K=19: from x0 = 490.125 px to 512.500 px ; wall-free starts with K != 19: none ; the start just below 490.125 is wall-free: False
+     first step 159744  probe post rule strict : wall-free starts with K=19: from x0 = 488.625 px to 512.500 px ; wall-free starts with K != 19: none ; the start just below 488.625 is wall-free: True
+     first step 159744  probe post rule le     : wall-free starts with K=19: from x0 = 488.625 px to 512.500 px ; wall-free starts with K != 19: none ; the start just below 488.625 is wall-free: True
+  walk-animation-1 like start (first step 98304): lowest wall-free x0 on the 1/8 grid with K=19 = 491.125 px ; analytic bound 528 - 10 - 18*1.5 + 1/65536 = 491.000015 px
+
+== 6. ledge fall (NPC with Gravity, box 20 px wide off -10, cells 16 px high on columns 0..5 = x < 144 px, flat 0 beyond ; walks east at 65536 per tick from PosX 150 px)
+  binary (terrain before the step, strict)   first tick in the air = 5
+  DLL order (terrain after the step, <=)     first tick in the air = 4
+  terrain after the step, strict             first tick in the air = 4
+  terrain before the step, <=                first tick in the air = 5
+     t=1 PosX=151.00 PosZ_dll= 1048576 contact=1 IsOnGround=1 FinalForceZ=  -32768 Terrain(after the pass)=1048576
+     t=2 PosX=152.00 PosZ_dll= 1048576 contact=1 IsOnGround=1 FinalForceZ=  -32768 Terrain(after the pass)=1048576
+     t=3 PosX=153.00 PosZ_dll= 1048576 contact=1 IsOnGround=1 FinalForceZ=  -32768 Terrain(after the pass)=1048576
+     t=4 PosX=154.00 PosZ_dll= 1048576 contact=1 IsOnGround=0 FinalForceZ=  -32768 Terrain(after the pass)=0
+     t=5 PosX=155.00 PosZ_dll= 1015808 contact=0 IsOnGround=0 FinalForceZ=  -32768 Terrain(after the pass)=0
+     t=6 PosX=156.00 PosZ_dll=  950272 contact=0 IsOnGround=0 FinalForceZ=  -65536 Terrain(after the pass)=0
+     t=7 PosX=157.00 PosZ_dll=  851968 contact=0 IsOnGround=0 FinalForceZ=  -98304 Terrain(after the pass)=0
+     t=8 PosX=158.00 PosZ_dll=  720896 contact=0 IsOnGround=0 FinalForceZ= -131072 Terrain(after the pass)=0
+
+== 7. first poll of the 0x25 after `1A [N]; 37 [N]` (handler 0x8003E3DC read above)
+  call 1 at tick s : pc stored, counter 0 -> returns 0 (yield) ; call j (j>=2) : returns 2 (advance, same call goes on to the 0x25) iff counter(j-2) >= N ; counter = j-2
+  37 [2] first returns 2 at tick s+3 -> first 0x25 poll at s+3 -> for IZF 1360 (K=23) the number of 0x25 executions is 21
+  37 [3] first returns 2 at tick s+4 -> first 0x25 poll at s+4 -> for IZF 1360 (K=23) the number of 0x25 executions is 20
+
+== VERDICT of this script (True = my independent recurrence agrees with the annex value)
+  AGREE  IZF1360 K=23 (0x25 at s+23), 22 air PosZ = UJ-1 list, FinalForceZ -372736, contact 1 & IsOnGround 1 at 23
+  AGREE  IZF1280 P=0 at update 21 with ForceZ -327680, contact 0, IsOnGround 1; contact & ForceZ 0 at 22; 0x25 at s+21
+  AGREE  TR-V K=16 (t+16); contact never with the 1B[0,0] tail, 17 without it
+  AGREE  IZF768 K=13 ForceZ -196608 contact 14; IZF1024 K=17 ForceZ -262144 contact 18
+  AGREE  all 16 cases of replay_all.json: every row (PosZ_bin, ForceZ, FinalForceZ, contact, IsOnGround) and K
+  AGREE  the in-air PosZ lists equal the DLL test lists Flight1360 (22) and Flight1280 (20)
+  AGREE  Giles K=19 on the 16 px ledge for strict and <= (and for either probe order), 0x25 at s+19 = F0+120 (s = F0+101)
+  AGREE  Giles K=19 for every wall-free start from 490.625 px (walk anim 9; analytic 490.531265) and from 491.125 px (walk anim 1; analytic 491.000015) - the lower bounds of the annex's fine sweep
+  AGREE  ledge fall: first tick in the air 5 (binary order) ; 4 with the terrain read after the step (DLL order, arithmetic only)
+  anchors differing from the EXE: 0

@@ -1,0 +1,40 @@
+rerun_check.txt - step 1 of the independent check: the commands of README.md section 4 were re-run into a scratch directory (nothing written under the annex except recompute/)
+python -B, Python 3.14.2, capstone 5.0.7 ; HEAD 08c9c5f (the annex was written at f06e087 .. 5305027, none of the cited files changed) ; date 2026-10-09
+
+command -> reproduced file vs saved file (sha256 first 16 hex)
+IDENTICAL 6017ff3b0ea118af  6017ff3b0ea118af  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/giles_ledge.json
+IDENTICAL 892a6cfb707a328d  892a6cfb707a328d  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/giles_ledge.txt
+IDENTICAL ed8e2aa3f4665d79  ed8e2aa3f4665d79  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_R-1024-Bomb362.txt
+IDENTICAL dc0c594204c1cbcd  dc0c594204c1cbcd  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_R-1280-GilesAnim16.txt
+IDENTICAL c27a13362dc76cd7  c27a13362dc76cd7  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_R-1360-Bergus165.txt
+IDENTICAL 9aa7f1189b0cd5c0  9aa7f1189b0cd5c0  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_R-1360-Bergus172.txt
+IDENTICAL 48eeeed7d5c8ba82  48eeeed7d5c8ba82  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_R-1360-Bergus179.txt
+IDENTICAL 8e899099c0437672  8e899099c0437672  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_R-1360-Giles10.txt
+IDENTICAL 3d7e78988b36c028  3d7e78988b36c028  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_R-768-Dog478a.txt
+IDENTICAL be8d98a92bea1587  be8d98a92bea1587  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_R-768-Dog478b.txt
+IDENTICAL 422dda6bfe0a3cdd  422dda6bfe0a3cdd  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_R-TRV-rec69.txt
+IDENTICAL 737f4aebf8a422ea  737f4aebf8a422ea  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_R-TRV-rec81.txt
+IDENTICAL 5024efeed460da94  5024efeed460da94  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_S-1024.txt
+IDENTICAL 8b745f3a70642df0  8b745f3a70642df0  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_S-1280.txt
+IDENTICAL 32edf5cb5a2c387e  32edf5cb5a2c387e  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_S-1360.txt
+IDENTICAL 4b92c94e8a0699e4  4b92c94e8a0699e4  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_S-768.txt
+IDENTICAL b2cca933cd54f602  b2cca933cd54f602  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_S-TRV-keep.txt
+IDENTICAL b29d93be8be8eb82  b29d93be8be8eb82  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_S-TRV.txt
+IDENTICAL c034fb7fdcf81357  c034fb7fdcf81357  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_all.json
+IDENTICAL 368e8fd69b1b64d0  368e8fd69b1b64d0  python -B tools/scenarios_h2.py <dir> ; tools/giles_ledge_h2.py <dir>  ->  out/replay_summary.txt
+IDENTICAL 0925c75cf0cdb081  0925c75cf0cdb081  python -B tools/make_values_h2.py (script copy with ANNEX redirected to scratch)  ->  values.md
+IDENTICAL 856fcfeceb4a1550  856fcfeceb4a1550  python -B tools/rules_vs_emu.py  ->  out/rules_vs_emu.out
+IDENTICAL a9d94ba1731d44ca  a9d94ba1731d44ca  python -B tools/validate.py 400  ->  out/validate.out
+IDENTICAL 9099b3ae6981e17e  9099b3ae6981e17e  python -B tools/zmodel_dll.py  ->  out/zmodel_dll.out
+IDENTICAL 155843d852d5046c  155843d852d5046c  python -B tools/survey_h2.py  ->  out/prefabs_survey.txt
+
+25 of 25 files byte-identical
+
+modulo line endings (the saved outputs were produced on Windows; compared with diff --strip-trailing-cr):
+IDENTICAL  python -B tools/scen_real.py  vs docs/plan-e19-h1b2-annexe/scen_real.out (versioned)
+IDENTICAL  python -B tools/traces.py     vs docs/plan-e19-h1b2-annexe/traces.out (versioned)
+IDENTICAL  python -B tools/listing_h2.py <map> <a> <b> for the 12 sections of out/programs_listing.txt (12 of 12; README gives only the first command, the 12 parameter sets are the '=== map M pc A-B' headers of the file)
+
+tool copies against the scratchpad originals (sha256 prefix = README table): zsim 1a568b77 -> 1f318f9f (1 line: path), rules_vs_emu a82b6256 -> 141ff503 (1 line: path), m 'c5b88d36 -> 1ee36b4d' (2 lines: path of two frozen sources -> live sources), vz 47a6da2c -> 77c450df (3 lines -> comment), emu 26dfa17e -> 1a4475a7 (2 lines: path); mips, zmodel, zmodel_dll, lib, scen_real, traces, validate: byte-identical. All sha256 prefixes of README.md section 2 match; every edit is a path edit, no computation touched.
+tools/m.py equals research/census/walks-0x0b/m.py modulo CRLF ; tools/lib.py is byte-identical to docs/plan-e19-pad-age-annexe/lib.py ; tools/emu.py differs from docs/plan-e19-pad-age-annexe/emu.py by the path line only.
+README.md section 5: git diff --name-only f06e087 5305027 = AlundraHeroFallAndPadJumpTests.cs, AlundraHeroObjectTopsTests.cs, CasaEngineMonogame (pointer), backlog-2026-10-03.md, plan-e19-opcodes.md ; 5305027 -> HEAD 08c9c5f touches none of the files cited by dll-delta.md ; the cited DLL lines (AlundraEntityScriptProxy.cs 871, 968, 1266, 1271, 1368, 1379) and test lines were re-read at HEAD and match.

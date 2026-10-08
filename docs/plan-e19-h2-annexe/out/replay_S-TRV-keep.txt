@@ -1,0 +1,34 @@
+### S-TRV-keep
+synthetic TR-V WITHOUT the `1B [0,0]` tail (the force -32768 is kept after the 0x25): shows the contact that the tail prevents
+source: variant of the programme above (h2.json: 'contact a la 17' holds only if the force is kept)
+terrain (+0x138) 0 = 0.000 px ; map gravity G 128, V 4096 ; start PosZ_bin 524289 ; rest PosZ_bin 524289 (DLL 524288) ; REST_TICKS 3 passes without script ; flags 0x80
+engines: A (zsim, mips.py) | B (vz, emu.py, real RunScript) ; models: Z = zmodel.py, Zd = zmodel_dll.py (+1), M = rules_vs_emu.M ; disagreements: 0
+update k = tick s+k-1.  Columns: PosZ_bin = engine A ; PosZ_dll = PosZ_bin-1 ; h = (PosZ_dll - T)/65536 px above the rest ; poll = value read by `0x25` at tick s+k (the flags of this pass)
+k | tick | PosZ_bin | PosZ_dll | h(px) | ForceZ | FinalForceZ | contact(+0x140) | IsOnGround(+0x144) | Terrain(+0x138) | FloorHeight(+0x134) | poll 0x25 at s+k | A==B==Z==Zd==M
+1 | s+0 | 491521 | 491520 | 7.500000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+2 | s+1 | 458753 | 458752 | 7.000000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+3 | s+2 | 425985 | 425984 | 6.500000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+4 | s+3 | 393217 | 393216 | 6.000000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+5 | s+4 | 360449 | 360448 | 5.500000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+6 | s+5 | 327681 | 327680 | 5.000000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+7 | s+6 | 294913 | 294912 | 4.500000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+8 | s+7 | 262145 | 262144 | 4.000000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+9 | s+8 | 229377 | 229376 | 3.500000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+10 | s+9 | 196609 | 196608 | 3.000000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+11 | s+10 | 163841 | 163840 | 2.500000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+12 | s+11 | 131073 | 131072 | 2.000000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+13 | s+12 | 98305 | 98304 | 1.500000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+14 | s+13 | 65537 | 65536 | 1.000000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+15 | s+14 | 32769 | 32768 | 0.500000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+16 | s+15 | 1 | 0 | 0.000000 | -32768 | -32768 | 0 | 1 | 0 | 1 | 1 | yes
+17 | s+16 | 1 | 0 | 0.000000 | -32768 | -32768 | 1 | 1 | 0 | 1 | 1 | yes
+18 | s+17 | 1 | 0 | 0.000000 | -32768 | -32768 | 1 | 1 | 0 | 1 | 1 | yes
+19 | s+18 | 1 | 0 | 0.000000 | -32768 | -32768 | 1 | 1 | 0 | 1 | 1 | yes
+20 | s+19 | 1 | 0 | 0.000000 | -32768 | -32768 | 1 | 1 | 0 | 1 | 1 | yes
+21 | s+20 | 1 | 0 | 0.000000 | -32768 | -32768 | 1 | 1 | 0 | 1 | 1 | yes
+22 | s+21 | 1 | 0 | 0.000000 | -32768 | -32768 | 1 | 1 | 0 | 1 | 1 | yes
+23 | s+22 | 1 | 0 | 0.000000 | -32768 | -32768 | 1 | 1 | 0 | 1 | 1 | yes
+24 | s+23 | 1 | 0 | 0.000000 | -32768 | -32768 | 1 | 1 | 0 | 1 | 1 | yes
+first update with contact or IsOnGround: K=16 -> a free-standing 0x25 reads 1 at tick s+16
+the REAL program passed its 0x25 at tick offset: engine A s+16, engine B s+16 (pc after each call: A [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4] ; B [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4])
+first update with IsOnGround 1 (after k=1): 16 ; first update with contact 1: 17

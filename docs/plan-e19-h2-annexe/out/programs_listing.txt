@@ -1,0 +1,171 @@
+=== map 10 pc 4640-4745
+map 10 boundary 288 len 6824
+ 4640: IMPL 0x00 Break                                    []
+ 4641: IMPL 0x00 Break                                    []
+ 4642: IMPL 0x00 Break                                    []
+ 4643: IMPL 0x00 Break                                    []
+ 4644: IMPL 0x00 Break                                    []
+ 4645: IMPL 0x00 Break                                    []
+ 4646: IMPL 0x00 Break                                    []
+ 4647: IMPL 0x00 Break                                    []
+ 4648: IMPL 0x00 Break                                    []
+ 4649: IMPL 0x00 Break                                    []
+ 4650: IMPL 0xFF End script                               []
+ 4651: IMPL 0x00 Break                                    []
+  ;; entry C[44]
+ 4652: IMPL 0x30 If flag on                               [201, 1, 94, 0] G457 -> 4746
+ 4657: IMPL 0x37 Wait                                     [1]
+ 4659: IMPL 0x30 If flag on                               [150, 130, 79, 0] T662 -> 4738
+ 4664: IMPL 0x43 Set LogicContextEntity                   [68]
+ 4666: IMPL 0x58 Goto by animation direction              [10, 0, 23, 0, 36, 0, 49, 0]
+ 4675: IMPL 0x00 Break                                    []
+ 4676: IMPL 0x89 Set matched entities position relative to reference [68, 69, 0, 0, 12, 0, 0, 0]
+ 4685: IMPL 0x02 Goto                                     [39, 0] -> 4724
+ 4688: IMPL 0x00 Break                                    []
+ 4689: IMPL 0x89 Set matched entities position relative to reference [68, 69, 0, 0, 244, 255, 0, 0]
+ 4698: IMPL 0x02 Goto                                     [26, 0] -> 4724
+ 4701: IMPL 0x00 Break                                    []
+ 4702: IMPL 0x89 Set matched entities position relative to reference [68, 69, 244, 255, 0, 0, 0, 0]
+ 4711: IMPL 0x02 Goto                                     [13, 0] -> 4724
+ 4714: IMPL 0x00 Break                                    []
+ 4715: IMPL 0x89 Set matched entities position relative to reference [68, 69, 12, 0, 0, 0, 0, 0]
+ 4724: IMPL 0x43 Set LogicContextEntity                   [69]
+ 4726: IMPL 0x65 Move entity position                     [128, 0, 0, 252, 255, 8, 0]
+ 4734: IMPL 0x02 Goto                                     [179, 255] -> 4657
+ 4737: IMPL 0x00 Break                                    []
+ 4738: IMPL 0x1B Fly                                      [128, 255]
+ 4741: IMPL 0x25 Wait until collided with entity Z or on ground []
+ 4742: IMPL 0x1B Fly                                      [0, 0]
+ 4745: IMPL 0x00 Break                                    []
+=== map 10 pc 5530-5550
+map 10 boundary 288 len 6824
+ 5530: IMPL 0x65 Move entity position                     [128, 0, 0, 252, 255, 8, 0]
+ 5538: IMPL 0x02 Goto                                     [179, 255] -> 5461
+ 5541: IMPL 0x00 Break                                    []
+ 5542: IMPL 0x1B Fly                                      [128, 255]
+ 5545: IMPL 0x25 Wait until collided with entity Z or on ground []
+ 5546: IMPL 0x1B Fly                                      [0, 0]
+ 5549: IMPL 0x00 Break                                    []
+ 5550: IMPL 0xFF End script                               []
+=== map 10 pc 6380-6400
+map 10 boundary 288 len 6824
+  ;; entry C[74]
+ 6380: IMPL 0x36 Wait until flag on                       [32, 131] T800
+ 6383: IMPL 0x09 Set direction                            [24]
+ 6385: IMPL 0x0B Wait until entity moves beyond radius    [9, 240, 0]
+ 6389: IMPL 0x1A Set anim                                 [3]
+ 6391: IMPL 0x37 Wait                                     [3]
+ 6393: IMPL 0x25 Wait until collided with entity Z or on ground []
+ 6394: IMPL 0x0B Wait until entity moves beyond radius    [9, 210, 0]
+ 6398: IMPL 0x09 Set direction                            [16]
+ 6400: IMPL 0x24 Wait until force adjusted                []
+=== map 165 pc 826-870
+map 165 boundary 92 len 2428
+  827: IMPL 0x35 Wait until flag off                      [103, 128] T103
+  830: IMPL 0x02 Goto                                     [230, 255] -> 804
+  833: IMPL 0x00 Break                                    []
+  834: IMPL 0x1A Set anim                                 [2]
+  836: IMPL 0x37 Wait                                     [2]
+  838: IMPL 0x25 Wait until collided with entity Z or on ground []
+  839: IMPL 0x1A Set anim                                 [2]
+  841: IMPL 0x37 Wait                                     [2]
+  843: IMPL 0x25 Wait until collided with entity Z or on ground []
+  844: IMPL 0x1A Set anim                                 [0]
+  846: IMPL 0x39 Wait for dialog                          []
+  847: IMPL 0x06 Flag off                                 [104, 128] T104
+  850: IMPL 0x02 Goto                                     [210, 255] -> 804
+  853: IMPL 0x00 Break                                    []
+  854: IMPL 0x10 Player lose control                      []
+  855: IMPL 0x59 Set entity anim                          [129, 0]
+  858: IMPL 0x0D Dialog                                   [131, 1]
+  861: IMPL 0x1A Set anim                                 [2]
+  863: IMPL 0x37 Wait                                     [2]
+  865: IMPL 0x25 Wait until collided with entity Z or on ground []
+  866: IMPL 0x1A Set anim                                 [0]
+  868: IMPL 0x39 Wait for dialog                          []
+  869: IMPL 0x11 Player gain control                      []
+  870: IMPL 0x06 Flag off                                 [2, 128] T2
+=== map 179 pc 405-420
+map 179 boundary 100 len 2468
+  407: IMPL 0x37 Wait                                     [20]
+  409: IMPL 0x43 Set LogicContextEntity                   [8]
+  411: IMPL 0x1A Set anim                                 [2]
+  413: IMPL 0x37 Wait                                     [3]
+  415: IMPL 0x25 Wait until collided with entity Z or on ground []
+  416: IMPL 0x1A Set anim                                 [0]
+  418: IMPL 0x5C Dialog with entity                       [8, 146, 1]
+=== map 478 pc 322-350
+map 478 boundary 88 len 880
+  322: IMPL 0xFF End script                               []
+  323: IMPL 0x00 Break                                    []
+  ;; entry C[3]
+  324: IMPL 0x36 Wait until flag on                       [10, 128] T10
+  327: IMPL 0x37 Wait                                     [40]
+  329: IMPL 0x5B Turn entity with anim                    [128, 12, 66]
+  333: IMPL 0x37 Wait                                     [120]
+  335: IMPL 0x2E Destroy entity                           [128]
+  337: IMPL 0xFF End script                               []
+  338: IMPL 0x00 Break                                    []
+  339: IMPL 0x00 Break                                    []
+  ;; entry C[4]
+  340: IMPL 0x36 Wait until flag on                       [10, 128] T10
+  343: IMPL 0x37 Wait                                     [50]
+  345: IMPL 0x5B Turn entity with anim                    [128, 12, 67]
+  349: IMPL 0x37 Wait                                     [120]
+=== map 362 pc 355-362
+map 362 boundary 56 len 752
+  355: IMPL 0x62 Set entities flags (low 16 bits)         [10, 0, 64]
+  359: IMPL 0x25 Wait until collided with entity Z or on ground []
+  360: IMPL 0xBD Play sound 2                             [24, 0]
+=== map 362 pc 628-640
+map 362 boundary 56 len 752
+  ;; entry C[5]
+  628: IMPL 0x17 Low gravity                              []
+  629: IMPL 0x1B Fly                                      [0, 0]
+  632: IMPL 0x36 Wait until flag on                       [4, 128] T4
+  635: IMPL 0x1A Set anim                                 [2]
+  637: IMPL 0x16 High gravity                             []
+  638: IMPL 0x36 Wait until flag on                       [5, 128] T5
+=== map 172 pc 600-614
+map 172 boundary 80 len 1872
+  600: IMPL 0x59 Set entity anim                          [129, 0]
+  603: IMPL 0x0D Dialog                                   [133, 1]
+  606: IMPL 0x1A Set anim                                 [2]
+  608: IMPL 0x37 Wait                                     [2]
+  610: IMPL 0x25 Wait until collided with entity Z or on ground []
+  611: IMPL 0x1A Set anim                                 [0]
+  613: IMPL 0x39 Wait for dialog                          []
+  614: IMPL 0x11 Player gain control                      []
+=== map 174 pc 188-207
+map 174 boundary 32 len 324
+  188: IMPL 0xBD Play sound 2                             [45, 0]
+  191: IMPL 0x37 Wait                                     [10]
+  193: IMPL 0x1B Fly                                      [0, 6]
+  196: IMPL 0x37 Wait                                     [10]
+  198: IMPL 0x1B Fly                                      [0, 250]
+  201: IMPL 0x1A Set anim                                 [0]
+  203: IMPL 0x25 Wait until collided with entity Z or on ground []
+  204: IMPL 0x1B Fly                                      [0, 0]
+  207: IMPL 0x8F Camera sway stop                         []
+=== map 181 pc 195-211
+map 181 boundary 32 len 308
+  195: IMPL 0x37 Wait                                     [10]
+  197: IMPL 0x1B Fly                                      [0, 6]
+  200: IMPL 0x37 Wait                                     [10]
+  202: IMPL 0x1B Fly                                      [0, 250]
+  205: IMPL 0x1A Set anim                                 [0]
+  207: IMPL 0x25 Wait until collided with entity Z or on ground []
+  208: IMPL 0x1B Fly                                      [0, 0]
+  211: IMPL 0x8F Camera sway stop                         []
+=== map 10 pc 316-345
+map 10 boundary 288 len 6824
+  ;; entry A[4]
+  316: IMPL 0x63 Clear entities flags (low 16 bits)       [128, 255, 249]
+  320: IMPL 0x30 If flag on                               [201, 1, 14, 0] G457 -> 334
+  325: IMPL 0x89 Set matched entities position relative to reference [68, 128, 0, 0, 240, 255, 9, 0]
+  334: IMPL 0xFF End script                               []
+  335: IMPL 0x00 Break                                    []
+  ;; entry A[5]
+  336: IMPL 0x63 Clear entities flags (low 16 bits)       [128, 255, 249]
+  340: IMPL 0x30 If flag on                               [201, 1, 14, 0] G457 -> 354
+  345: IMPL 0x89 Set matched entities position relative to reference [79, 128, 0, 0, 240, 255, 9, 0]

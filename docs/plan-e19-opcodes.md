@@ -7341,7 +7341,7 @@ d'où une `TileZ` d'un cran plus bas (lue par aucun opcode sur les cinq cartes) 
 n'est pas exacte (aucune dans le corpus) ; les passagers d'une plateforme n'ont pas été mesurés. **Recette H1B3-3** : carte 115, la
 plateforme `B[2]` qui descend, le héros reprend la main.
 
-##### 1.2n.2 E19.h2 — État en l'air des PNJ ⏳ (esquisse)
+##### 1.2n.2 E19.h2 — État en l'air des PNJ ⏳ (esquisse ; découverte D1 faite le 2026-10-09, nuit en mode AUTO ; quatre questions à l'auteur avant le plan)
 
 Port borné, au patron de R6 du héros : un état en l'air des PNJ tenu par le tick (entré par une impulsion, une force `0x1B`/`0x5E`
 ou un pas sans atterrissage), sentinelle positive déclarée au moteur, pas en Z **avant** le pas XY sur le terrain d'avant le pas,
@@ -7349,6 +7349,36 @@ atterrissage strict, `IsOnGround` par la règle du sol après le tick (jamais `C
 garde les escaliers. Valeurs du binaire déjà connues : UJ-1b (atterrit au tick 22, `ForceZ` −327680 au tick 21), UJ-7 (`0x25`
 à s+23), le rebord (chute au tick 5 au lieu de 4). **Avant le plan** : une émulation de la boucle de scène du binaire pour les
 images de TR-V, A10 (Bergus), A12, A10J (Giles).
+
+- **D1 (2026-10-09, lecture seule côté production)** : annexe `docs/plan-e19-h2-annexe/`.
+  - **Outils** : les outils d'émulation, jusqu'ici hors dépôt, y sont archivés (`zsim`, `mips`, `zmodel`, `zmodel_dll`, `rules_vs_emu`,
+    `m.py`, avec les seules éditions de chemins, listées). Les sorties versionnées d'E19.h1b2 se reproduisent à l'octet.
+  - **Mesures du binaire** (deux moteurs d'accord, puis un recalcul indépendant écrit depuis le désassemblage, qui ne partage aucun code
+    avec l'annexe et ne trouve **aucun désaccord numérique**, `recompute/`) :
+
+    | Saut | `0x25` rend à | DLL |
+    |---|---|---|
+    | IZF 1360 | s+23 | s+22 |
+    | IZF 1280 | s+21 (`ForceZ` −327680 à la mise à jour 21) | même tick, autre `ForceZ` |
+    | IZF 768 | s+13 | |
+    | IZF 1024 | s+17 | |
+    | TR-V | t+16 | t+8 |
+    | Giles sur le rebord de la carte 10 | F0+120 | F0+119 |
+    | chute de rebord | en l'air au tick 5 | 4 |
+
+    Les hauteurs en l'air sont les mêmes que dans la DLL ; seuls le tick d'atterrissage et `ForceZ` diffèrent.
+  - **Écarts expliqués** par les mécanismes de `h2.json` : (b) atterrissage `<=` contre strict ; (c) aimantation de 4 px du moteur ;
+    (a) l'ordre Z avant XY ne change que le rebord.
+  - **Correction C3** : l'épingle absolue de X d'A10J (`AlundraHeroJumpArcTests.cs:163`) sortirait d'environ 0,72 px de sa fenêtre une
+    fois h2 appliquée. Elle sera à réépingler avec les épingles relationnelles.
+  - **Note de décision** : pas d'extension de l'émulateur à la boucle de scène. Les images absolues d'A10, A12 et A10J sont des valeurs
+    de la DLL, que la méthode D-E19-77 ou des épingles relationnelles mesurées après le code suffisent à établir. Une option D1b, plus
+    petite, ferait tourner `UpdateAnimation` sur les vrais octets de Bergus pour l'impulsion du second saut.
+- **Questions à l'auteur, avant le plan d'h2** (`h2.json`, recopiées dans `notes.md`) :
+  1. Le lien avec O-E19-29, la troncature au pixel quand un PNJ atterrit. Recommandation : attendre la réponse à O-E19-29.
+  2. La méthode d'épinglage. Recommandation : D-E19-77 pour A10, et des épingles relationnelles pour le reste.
+  3. Le périmètre : d'abord h2a, les sauts scriptés, puis h2b, les chutes de rebord, avec la place d'O-E19-40 à fixer.
+  4. La propriété de `AlundraScriptedMotion.cs`, `EntitySupport.cs` et `AlundraEntityScriptProxy.cs` tant que D5b reste en pause.
 
 ##### 1.2n.3 E19.h3 — Aimantation au sommet et plafonds du héros ✅ (recette H3-3 en attente)
 

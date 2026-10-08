@@ -1,0 +1,99 @@
+check 0x63 [128,255,249] on the flags of rec69: 0x230180 -> 0x230000 (real handler 0x8003f590, trace [(0, 99, 4), (4, 255, None)])
+check 0x63 [128,255,249] on the flags of rec81: 0x230180 -> 0x230000 (real handler 0x8003f590, trace [(0, 99, 4), (4, 255, None)])
+
+### G - Giles (map 10 rec98) jumps with animation 3 (IZF 1360, speed 128, accel byte 1) from the ground (terrain 0) onto the 16 px ledge (first column 22 = x >= 528 px)
+start: PosX 32329728 (493.3125 px) = plan value at the tick of `1A [3]` @6389 (s = F0+101), PosY 56098816 (856.0 px), rest on terrain 0 ; XY force injected: walking anim 9 (speed 208), direction 24 (east), steady force 159744
+engines A (zsim) and B (vz) identical on posx, posy, posz, forcex, forcez, finalz, contact, ground, terrain, poll: True
+k | tick | PosX(px) | box right edge (px) | PosZ_bin | PosZ_dll | h above terrain 0 (px) | ForceX | ForceZ | FinalForceZ | contact | IsOnGround | Terrain(+0x138) px, read after the pass (= probe after the XY step) | poll 0x25 at s+k
+1 | s+0 | 495.2812 | 505.2812 | 348161 | 348160 | 5.3125 | 129024 | 348160 | 348160 | 0 | 0 | 0.000 | 0
+2 | s+1 | 496.7812 | 506.7812 | 663553 | 663552 | 10.1250 | 98304 | 315392 | 315392 | 0 | 0 | 0.000 | 0
+3 | s+2 | 498.2812 | 508.2812 | 946177 | 946176 | 14.4375 | 98304 | 282624 | 282624 | 0 | 0 | 0.000 | 0
+4 | s+3 | 499.7812 | 509.7812 | 1196033 | 1196032 | 18.2500 | 98304 | 249856 | 249856 | 0 | 0 | 0.000 | 0
+5 | s+4 | 501.2812 | 511.2812 | 1413121 | 1413120 | 21.5625 | 98304 | 217088 | 217088 | 0 | 0 | 0.000 | 0
+6 | s+5 | 502.7812 | 512.7812 | 1597441 | 1597440 | 24.3750 | 98304 | 184320 | 184320 | 0 | 0 | 0.000 | 0
+7 | s+6 | 504.2812 | 514.2812 | 1748993 | 1748992 | 26.6875 | 98304 | 151552 | 151552 | 0 | 0 | 0.000 | 0
+8 | s+7 | 505.7812 | 515.7812 | 1867777 | 1867776 | 28.5000 | 98304 | 118784 | 118784 | 0 | 0 | 0.000 | 0
+9 | s+8 | 507.2812 | 517.2812 | 1953793 | 1953792 | 29.8125 | 98304 | 86016 | 86016 | 0 | 0 | 0.000 | 0
+10 | s+9 | 508.7812 | 518.7812 | 2007041 | 2007040 | 30.6250 | 98304 | 53248 | 53248 | 0 | 0 | 0.000 | 0
+11 | s+10 | 510.2812 | 520.2812 | 2027521 | 2027520 | 30.9375 | 98304 | 20480 | 20480 | 0 | 0 | 0.000 | 0
+12 | s+11 | 511.7812 | 521.7812 | 2015233 | 2015232 | 30.7500 | 98304 | -12288 | -12288 | 0 | 0 | 0.000 | 0
+13 | s+12 | 513.2812 | 523.2812 | 1970177 | 1970176 | 30.0625 | 98304 | -45056 | -45056 | 0 | 0 | 0.000 | 0
+14 | s+13 | 514.7812 | 524.7812 | 1892353 | 1892352 | 28.8750 | 98304 | -77824 | -77824 | 0 | 0 | 0.000 | 0
+15 | s+14 | 516.2812 | 526.2812 | 1781761 | 1781760 | 27.1875 | 98304 | -110592 | -110592 | 0 | 0 | 0.000 | 0
+16 | s+15 | 517.7812 | 527.7812 | 1638401 | 1638400 | 25.0000 | 98304 | -143360 | -143360 | 0 | 0 | 0.000 | 0
+17 | s+16 | 519.2812 | 529.2812 | 1462273 | 1462272 | 22.3125 | 98304 | -176128 | -176128 | 0 | 0 | 16.000 | 0
+18 | s+17 | 520.7812 | 530.7812 | 1253377 | 1253376 | 19.1250 | 98304 | -208896 | -208896 | 0 | 0 | 16.000 | 0
+19 | s+18 | 522.2812 | 532.2812 | 1048577 | 1048576 | 16.0000 | 98304 | 0 | -241664 | 1 | 1 | 16.000 | 1
+20 | s+19 | 523.7812 | 533.7812 | 1048577 | 1048576 | 16.0000 | 98304 | 0 | -32768 | 1 | 1 | 16.000 | 1
+21 | s+20 | 525.2812 | 535.2812 | 1048577 | 1048576 | 16.0000 | 98304 | 0 | -32768 | 1 | 1 | 16.000 | 1
+22 | s+21 | 526.7812 | 536.7812 | 1048577 | 1048576 | 16.0000 | 98304 | 0 | -32768 | 1 | 1 | 16.000 | 1
+23 | s+22 | 528.2812 | 538.2812 | 1048577 | 1048576 | 16.0000 | 98304 | 0 | -32768 | 1 | 1 | 16.000 | 1
+24 | s+23 | 529.7812 | 539.7812 | 1048577 | 1048576 | 16.0000 | 98304 | 0 | -32768 | 1 | 1 | 16.000 | 1
+25 | s+24 | 531.2812 | 541.2812 | 1048577 | 1048576 | 16.0000 | 98304 | 0 | -32768 | 1 | 1 | 16.000 | 1
+26 | s+25 | 532.7812 | 542.7812 | 1048577 | 1048576 | 16.0000 | 98304 | 0 | -32768 | 1 | 1 | 16.000 | 1
+first update with contact or IsOnGround: K=19 -> `0x25 @6393` returns at tick s+19 = F0+120 (s = F0+101: update k is the pass of tick s+k-1, 0x25 reads the pass before)
+Terrain (+0x138) read AFTER a pass is the probe at the position AFTER that pass's XY step (ComputeXY re-probes at 0x80037DC0 ; confirmed by the ledge table L, tick 4: contact 1 from the pre-step probe, Terrain 0 after the step).
+first update after whose XY step the box is over the ledge (Terrain 16 px read after the pass): U=17 ; the binary's ComputeZ (probe BEFORE the step, 0x80037690) uses it from update 18 ; a DLL-order step (terrain AFTER the step of the same update) from update 17 ; landing update K=19 : the order of the probe does not change the landing update (the ledge is known 1 update(s) before the landing in the binary, 2 in the DLL order)
+
+sweep (engine A): x0 (px) at the tick of `1A` and pre-jump steady walk force ; K = first update with contact/IsOnGround ; T_first = first update whose after-pass Terrain (+0x138, probe after the XY step) is the ledge ; xR_K = box right edge (px) after update K-1
+walk anim 9 force steady | x0          486 px | K=23 | T_first=None | box right edge after update K-1: 528.000
+walk anim 9 force steady | x0          488 px | K=23 | T_first=None | box right edge after update K-1: 528.000
+walk anim 9 force steady | x0          490 px | K=23 | T_first=None | box right edge after update K-1: 528.000
+walk anim 9 force steady | x0          492 px | K=19 | T_first=18 | box right edge after update K-1: 529.469
+walk anim 9 force steady | x0 493.3 (plan) px | K=19 | T_first=17 | box right edge after update K-1: 530.781
+walk anim 9 force steady | x0          494 px | K=19 | T_first=16 | box right edge after update K-1: 531.469
+walk anim 9 force steady | x0          496 px | K=19 | T_first=15 | box right edge after update K-1: 533.469
+walk anim 9 force steady | x0          498 px | K=19 | T_first=14 | box right edge after update K-1: 535.469
+walk anim 9 force steady | x0          500 px | K=19 | T_first=12 | box right edge after update K-1: 537.469
+walk anim 9 force steady | x0          505 px | K=19 | T_first=9 | box right edge after update K-1: 542.469
+walk anim 9 force steady | x0          510 px | K=19 | T_first=6 | box right edge after update K-1: 547.469
+walk anim 9 force steady | x0          515 px | K=19 | T_first=4 | box right edge after update K-1: 550.500
+walk anim 9 force steady | x0          518 px | K=19 | T_first=4 | box right edge after update K-1: 550.500
+walk anim 9 force steady | x0          520 px | K=23 | T_first=1 | box right edge after update K-1: 563.469
+walk anim 1 force steady | x0          486 px | K=23 | T_first=None | box right edge after update K-1: 528.000
+walk anim 1 force steady | x0          488 px | K=23 | T_first=None | box right edge after update K-1: 528.000
+walk anim 1 force steady | x0          490 px | K=23 | T_first=None | box right edge after update K-1: 528.000
+walk anim 1 force steady | x0          492 px | K=19 | T_first=18 | box right edge after update K-1: 529.000
+walk anim 1 force steady | x0 493.3 (plan) px | K=19 | T_first=17 | box right edge after update K-1: 530.312
+walk anim 1 force steady | x0          494 px | K=19 | T_first=17 | box right edge after update K-1: 531.000
+walk anim 1 force steady | x0          496 px | K=19 | T_first=15 | box right edge after update K-1: 533.000
+walk anim 1 force steady | x0          498 px | K=19 | T_first=14 | box right edge after update K-1: 535.000
+walk anim 1 force steady | x0          500 px | K=19 | T_first=13 | box right edge after update K-1: 537.000
+walk anim 1 force steady | x0          505 px | K=19 | T_first=9 | box right edge after update K-1: 542.000
+walk anim 1 force steady | x0          510 px | K=19 | T_first=6 | box right edge after update K-1: 547.000
+walk anim 1 force steady | x0          515 px | K=19 | T_first=4 | box right edge after update K-1: 550.500
+walk anim 1 force steady | x0          518 px | K=19 | T_first=4 | box right edge after update K-1: 550.500
+walk anim 1 force steady | x0          520 px | K=23 | T_first=1 | box right edge after update K-1: 563.000
+walk anim 0 force (0, 0) | x0          486 px | K=23 | T_first=None | box right edge after update K-1: 528.000
+walk anim 0 force (0, 0) | x0          488 px | K=23 | T_first=None | box right edge after update K-1: 528.000
+walk anim 0 force (0, 0) | x0          490 px | K=23 | T_first=None | box right edge after update K-1: 528.000
+walk anim 0 force (0, 0) | x0          492 px | K=19 | T_first=18 | box right edge after update K-1: 528.250
+walk anim 0 force (0, 0) | x0 493.3 (plan) px | K=19 | T_first=17 | box right edge after update K-1: 529.562
+walk anim 0 force (0, 0) | x0          494 px | K=19 | T_first=17 | box right edge after update K-1: 530.250
+walk anim 0 force (0, 0) | x0          496 px | K=19 | T_first=16 | box right edge after update K-1: 532.250
+walk anim 0 force (0, 0) | x0          498 px | K=19 | T_first=14 | box right edge after update K-1: 534.250
+walk anim 0 force (0, 0) | x0          500 px | K=19 | T_first=13 | box right edge after update K-1: 536.250
+walk anim 0 force (0, 0) | x0          505 px | K=19 | T_first=10 | box right edge after update K-1: 541.250
+walk anim 0 force (0, 0) | x0          510 px | K=19 | T_first=6 | box right edge after update K-1: 546.250
+walk anim 0 force (0, 0) | x0          515 px | K=19 | T_first=4 | box right edge after update K-1: 550.500
+walk anim 0 force (0, 0) | x0          518 px | K=19 | T_first=4 | box right edge after update K-1: 550.500
+walk anim 0 force (0, 0) | x0          520 px | K=23 | T_first=1 | box right edge after update K-1: 562.250
+fine sweep (engine A, x0 from 490 to 494 px by 1/8 px, 30 updates): the x0 at which K changes (K=23 is a landing on the ground 0 in front of the 16 px wall)
+  walk anim 9 : x0 = 490.000 px -> K=23
+  walk anim 9 : x0 = 490.625 px -> K=19
+  walk anim 1 : x0 = 490.000 px -> K=23
+  walk anim 1 : x0 = 491.125 px -> K=19
+the plan's x0 (493.3125 px) is 2.69 px (walk anim 9) / 2.19 px (walk anim 1) above the lowest x0 that still lands on the ledge
+
+### L - ledge fall: gravity NPC (flags 0x180, box 20x14x32, off -10,-7,0), 3 rest passes on 16 px cells (columns 0-5, x < 144 px), then a steady 65536/tick east walk from PosX 150 px (injected force)
+rest: engine A PosZ_bin 1048577 terrain 1048576 ; engine B PosZ_bin 1048577 terrain 1048576 (16 px = 1048576)
+t | PosX(px) A (after the step) | PosZ_dll A | Terrain(+0x138) A, after the pass (= after the step) | contact | IsOnGround | FinalForceZ | in the air? || B: PosX | PosZ_dll | Terrain || hand arithmetic: pre-step x, box left edge, over high cells | post-step x, over high cells
+1 | 151.00 | 1048576 | 1048576 | 1 | 1 | -32768 | on ground || 151.00 | 1048576 | 1048576 || 150.0, 140.0, True | 151.0, True
+2 | 152.00 | 1048576 | 1048576 | 1 | 1 | -32768 | on ground || 152.00 | 1048576 | 1048576 || 151.0, 141.0, True | 152.0, True
+3 | 153.00 | 1048576 | 1048576 | 1 | 1 | -32768 | on ground || 153.00 | 1048576 | 1048576 || 152.0, 142.0, True | 153.0, True
+4 | 154.00 | 1048576 | 0 | 1 | 0 | -32768 | on ground || 154.00 | 1048576 | 0 || 153.0, 143.0, True | 154.0, False
+5 | 155.00 | 1015808 | 0 | 0 | 0 | -32768 | AIR || 155.00 | 1015808 | 0 || 154.0, 144.0, False | 155.0, False
+6 | 156.00 | 950272 | 0 | 0 | 0 | -65536 | AIR || 156.00 | 950272 | 0 || 155.0, 145.0, False | 156.0, False
+7 | 157.00 | 851968 | 0 | 0 | 0 | -98304 | AIR || 157.00 | 851968 | 0 || 156.0, 146.0, False | 157.0, False
+8 | 158.00 | 720896 | 0 | 0 | 0 | -131072 | AIR || 158.00 | 720896 | 0 || 157.0, 147.0, False | 158.0, False
+first tick in the air: engine A tick 5, engine B tick 5 ; hand arithmetic (terrain read BEFORE the step): tick 5 ; terrain read AFTER the step (DLL order, mechanism a): tick 4

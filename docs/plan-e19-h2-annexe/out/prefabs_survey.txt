@@ -1,0 +1,516 @@
+MAP 10 52 x 60 G/V 128 4096
+ rec 69 name I74_Bouquet de fleurs prefab 9341efcd-1a4e-5b60-a981-357df4ddb2e1 X 46 Y 16 Height 0 dir 1 C 172 B? 132
+    flags 0x230180 (Gravity bit 0x100: True) off (-12,-8,0) size (24,16,16)
+    AnimSets: [(0, 0, 64, 0), (1, 0, 64, 0), (2, 64, 0, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Loop', None)]}
+ rec 81 name I74_Bouquet de fleurs prefab 9341efcd-1a4e-5b60-a981-357df4ddb2e1 X 48 Y 22 Height 0 dir 0 C 182 B? 133
+    flags 0x230180 (Gravity bit 0x100: True) off (-12,-8,0) size (24,16,16)
+    AnimSets: [(0, 0, 64, 0), (1, 0, 64, 0), (2, 64, 0, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Loop', None)]}
+ rec 98 name Giles (homme religieux) prefab 9b582582-3bcd-5c72-8897-903b6a5690be X 20 Y 106 Height 0 dir 128 C 202 B? 0
+    flags 0x83a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0), (16, 512, 64, 1280)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+MAP 165 52 x 60 G/V 128 4096
+ rec 0 name Wendell (grand-père) prefab 5dc8cb35-411a-5ce2-8c9f-9da9ae1aa5a7 X 2 Y 52 Height 0 dir 128 C 130 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 1 name Meade (père des jumeaux) prefab a71e48a2-43b7-566f-9322-70548e503c40 X 4 Y 52 Height 0 dir 128 C 133 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 2 name Bergus (frère aîné) prefab e6446e9f-2182-591e-850a-c901dfbbafc8 X 6 Y 52 Height 0 dir 128 C 131 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 3 name Nestus (frère cadet) prefab bbeba3db-4c1c-55d4-b45a-94887c80a210 X 8 Y 52 Height 0 dir 131 C 132 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 4 name Déclencheur clé invisible (standard) prefab 2d142560-6895-5fea-b613-a27bed8f4388 X 36 Y 14 Height 5 dir 64 C 0 B? 129
+    flags 0xe080 (Gravity bit 0x100: False) off (-12,-8,0) size (24,16,32)
+    AnimSets: [(0, 0, 0, 0), (1, 64, 0, 0), (2, 128, 0, 0), (3, 208, 0, 0), (4, 256, 0, 0), (5, 0, 64, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Loop', None)], 3: [('Loop', None)], 4: [('Loop', None)], 5: [('Loop', None)]}
+ rec 5 name Bloc transparent (1×1×2) prefab d8e3f7a6-673f-59bd-a837-2e17fff65de8 X 10 Y 52 Height 0 dir 0 C 129 B? 0
+    flags 0x6080 (Gravity bit 0x100: False) off (-12,-8,0) size (24,16,32)
+    AnimSets: [(0, 0, 0, 0), (1, 64, 0, 0), (2, 128, 0, 0), (3, 208, 0, 0), (4, 256, 0, 0), (5, 0, 64, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Loop', None)], 3: [('Loop', None)], 4: [('Loop', None)], 5: [('Loop', None)]}
+ rec 6 name Wendell (grand-père) prefab 5dc8cb35-411a-5ce2-8c9f-9da9ae1aa5a7 X 2 Y 54 Height 0 dir 128 C 134 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 7 name Meade (père des jumeaux) prefab a71e48a2-43b7-566f-9322-70548e503c40 X 4 Y 54 Height 0 dir 129 C 135 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 8 name Bergus (frère aîné) prefab e6446e9f-2182-591e-850a-c901dfbbafc8 X 6 Y 54 Height 0 dir 131 C 136 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 9 name Nestus (frère cadet) prefab bbeba3db-4c1c-55d4-b45a-94887c80a210 X 8 Y 54 Height 0 dir 131 C 137 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 10 name Cruche générique prefab 1aebb011-3089-52d9-be37-068be389bdf2 X 10 Y 18 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 11 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 76 Y 32 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 12 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 76 Y 32 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 13 name Cruche générique prefab 1aebb011-3089-52d9-be37-068be389bdf2 X 16 Y 82 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 14 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 84 Y 102 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 15 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 86 Y 102 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 16 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 84 Y 102 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 17 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 86 Y 102 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 18 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 19 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 20 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 21 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 22 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 23 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 24 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 25 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 26 name Kisha (petite sœur) prefab b2273aa7-9581-53bd-ba52-9ea0dcad63bb X 24 Y 98 Height 2 dir 192 C 151 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 27 name Giles (homme religieux) prefab 9b582582-3bcd-5c72-8897-903b6a5690be X 20 Y 88 Height 2 dir 193 C 150 B? 0
+    flags 0x83a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0), (16, 512, 64, 1280)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+MAP 172 52 x 60 G/V 128 4096
+ rec 0 name Cruche générique prefab 1aebb011-3089-52d9-be37-068be389bdf2 X 10 Y 18 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 1 name Cruche générique prefab 1aebb011-3089-52d9-be37-068be389bdf2 X 16 Y 82 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 2 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 76 Y 32 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 3 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 76 Y 32 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 4 name Déclencheur clé invisible (standard) prefab 2d142560-6895-5fea-b613-a27bed8f4388 X 36 Y 14 Height 5 dir 64 C 0 B? 129
+    flags 0xe080 (Gravity bit 0x100: False) off (-12,-8,0) size (24,16,32)
+    AnimSets: [(0, 0, 0, 0), (1, 64, 0, 0), (2, 128, 0, 0), (3, 208, 0, 0), (4, 256, 0, 0), (5, 0, 64, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Loop', None)], 3: [('Loop', None)], 4: [('Loop', None)], 5: [('Loop', None)]}
+ rec 5 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 84 Y 102 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 6 name Wendell (grand-père) prefab 5dc8cb35-411a-5ce2-8c9f-9da9ae1aa5a7 X 37 Y 14 Height 0 dir 192 C 134 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 7 name Meade (père des jumeaux) prefab a71e48a2-43b7-566f-9322-70548e503c40 X 36 Y 20 Height 0 dir 193 C 135 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 8 name Bergus (frère aîné) prefab e6446e9f-2182-591e-850a-c901dfbbafc8 X 34 Y 12 Height 0 dir 195 C 136 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 9 name Nestus (frère cadet) prefab bbeba3db-4c1c-55d4-b45a-94887c80a210 X 34 Y 16 Height 0 dir 195 C 137 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 10 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 86 Y 102 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 11 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 84 Y 102 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 12 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 86 Y 102 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 13 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 14 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 15 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 16 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 17 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 18 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 19 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 20 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 21 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 22 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 23 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 24 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 25 name Alundra prefab 192c2eeb-bdda-5bb4-92d6-39a4ae298307 X 0 Y 0 Height 0 dir 0 C 0 B? 0
+    flags 0x3118c (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,32)
+    AnimSets: [(0, 0, 1, 0), (1, 208, 1, 0), (2, 208, 1, 1280), (3, 336, 2, 0), (4, 0, 6, 0), (5, 0, 0, 0), (6, 208, 0, 1280), (43, 0, 1, 1280), (46, 0, 0, 1280), (62, 256, 64, 1024), (88, 512, 65, 1280), (90, 0, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Chain', 1)], 2: [('Chain', 44)], 3: [('Loop', None)], 4: [('Chain', 0)], 5: [('Chain', 12)], 6: [('Chain', 47)], 7: [('Loop', None)]}
+ rec 26 name Kisha (petite sœur) prefab b2273aa7-9581-53bd-ba52-9ea0dcad63bb X 24 Y 98 Height 2 dir 192 C 151 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 27 name Giles (homme religieux) prefab 9b582582-3bcd-5c72-8897-903b6a5690be X 20 Y 88 Height 2 dir 193 C 150 B? 0
+    flags 0x83a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0), (16, 512, 64, 1280)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+MAP 179 52 x 60 G/V 128 4096
+ rec 8 name Bergus (frère aîné) prefab e6446e9f-2182-591e-850a-c901dfbbafc8 X 34 Y 12 Height 0 dir 195 C 136 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+MAP 478 52 x 60 G/V 128 4096
+ rec 3 name Toutou (chien) prefab c85427d1-b992-53ea-8552-4600fa6295bf X 56 Y 110 Height 2 dir 192 C 131 B? 131
+    flags 0x3a100 (Gravity bit 0x100: True) off (-9,-7,0) size (18,14,8)
+    AnimSets: [(0, 0, 64, 0), (1, 128, 65, 0), (2, 0, 65, 1360), (3, 128, 65, 1360), (4, 0, 65, 0), (5, 128, 65, 0), (12, 64, 65, 768)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 4 name Toutou (chien) prefab c85427d1-b992-53ea-8552-4600fa6295bf X 60 Y 112 Height 2 dir 195 C 132 B? 131
+    flags 0x3a100 (Gravity bit 0x100: True) off (-9,-7,0) size (18,14,8)
+    AnimSets: [(0, 0, 64, 0), (1, 128, 65, 0), (2, 0, 65, 1360), (3, 128, 65, 1360), (4, 0, 65, 0), (5, 128, 65, 0), (12, 64, 65, 768)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+MAP 362 52 x 60 G/V 128 4096
+ rec 0 name Couvercle de tige-bombe (vertical) prefab 3ca08bd1-e743-5719-a30b-6c0abec821a7 X 17 Y 12 Height 4 dir 64 C 131 B? 129
+    flags 0x320a1 (Gravity bit 0x100: False) off (-23,0,0) size (48,8,44)
+    AnimSets: [(0, 0, 0, 0)]
+    anim ends: {0: [('Chain', 0)]}
+ rec 1 name Chariot de mine prefab 40fa5de1-0d2f-543e-a377-2473e1e283fc X 16 Y 24 Height 4 dir 64 C 0 B? 0
+    flags 0x32080 (Gravity bit 0x100: False) off (-12,-8,0) size (24,16,16)
+    AnimSets: [(0, 0, 0, 0), (1, 64, 0, 0), (2, 128, 0, 0), (3, 208, 0, 0), (4, 256, 0, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Loop', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 2 name Jaylen (mineur) prefab 467be6d7-ffdd-5f04-bab3-082942f81236 X 18 Y 24 Height 4 dir 192 C 129 B? 0
+    flags 0x83a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 3 name Lyman (mineur) prefab 43e06d18-cb40-5b63-a8e2-742620715034 X 34 Y 20 Height 4 dir 194 C 130 B? 0
+    flags 0x83a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 4 name Olen (mineur) prefab 008cdd94-fa0c-582d-9556-15d85436a7f7 X 16 Y 14 Height 4 dir 192 C 132 B? 0
+    flags 0x83a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 5 name Bombe prefab 4d0c2294-87b6-50da-99ca-d789281cc580 X 32 Y 4 Height 2 dir 1 C 133 B? 0
+    flags 0x13234e (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 1, 0), (1, 0, 64, 0), (2, 128, 64, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Hold', None)], 2: [('Loop', None)]}
+ rec 6 name ◆Muruta (griffes) Niv.1 prefab e3a39ec4-45d5-55f2-85e9-894c7b6e4a08 X 16 Y 4 Height 2 dir 128 C 134 B? 0
+    flags 0x30103 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,21)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 1, 0), (2, 256, 65, 0), (3, 256, 1, 1792), (4, 0, 0, 1792), (5, 0, 68, 0), (7, 0, 0, 768), (8, 0, 0, 768)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 5)], 3: [('Chain', 10)], 4: [('Chain', 10)], 5: [('Hold', None)], 6: [('Hold', None)], 7: [('Chain', 9)]}
+ rec 7 name ◆Muruta (griffes) Niv.1 prefab e3a39ec4-45d5-55f2-85e9-894c7b6e4a08 X 18 Y 4 Height 2 dir 128 C 135 B? 0
+    flags 0x30103 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,21)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 1, 0), (2, 256, 65, 0), (3, 256, 1, 1792), (4, 0, 0, 1792), (5, 0, 68, 0), (7, 0, 0, 768), (8, 0, 0, 768)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 5)], 3: [('Chain', 10)], 4: [('Chain', 10)], 5: [('Hold', None)], 6: [('Hold', None)], 7: [('Chain', 9)]}
+ rec 8 name ◆Muruta (griffes) Niv.1 prefab e3a39ec4-45d5-55f2-85e9-894c7b6e4a08 X 20 Y 4 Height 2 dir 128 C 136 B? 0
+    flags 0x30103 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,21)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 1, 0), (2, 256, 65, 0), (3, 256, 1, 1792), (4, 0, 0, 1792), (5, 0, 68, 0), (7, 0, 0, 768), (8, 0, 0, 768)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 5)], 3: [('Chain', 10)], 4: [('Chain', 10)], 5: [('Hold', None)], 6: [('Hold', None)], 7: [('Chain', 9)]}
+ rec 9 name ◆Muruta (griffes) Niv.1 prefab e3a39ec4-45d5-55f2-85e9-894c7b6e4a08 X 22 Y 4 Height 2 dir 128 C 137 B? 0
+    flags 0x30103 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,21)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 1, 0), (2, 256, 65, 0), (3, 256, 1, 1792), (4, 0, 0, 1792), (5, 0, 68, 0), (7, 0, 0, 768), (8, 0, 0, 768)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 5)], 3: [('Chain', 10)], 4: [('Chain', 10)], 5: [('Hold', None)], 6: [('Hold', None)], 7: [('Chain', 9)]}
+ rec 10 name Coffre au trésor prefab c54fd151-9651-539d-af84-a22024a10e44 X 8 Y 4 Height 2 dir 0 C 0 B? 0
+    flags 0x8180 (Gravity bit 0x100: True) off (-12,-8,0) size (24,16,16)
+    AnimSets: [(0, 0, 64, 0), (1, 0, 64, 0), (2, 0, 64, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 0), ('Chain', 1)]}
+MAP 174 52 x 60 G/V 128 4096
+ rec 0 name Elene (femme à personnalités multiples) prefab fefe877e-3962-558b-a5ec-9608f7a8f59b X 90 Y 100 Height 4 dir 192 C 0 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 1 name Gustav (ivrogne) prefab 18ff7dc4-ee2f-5115-9bc4-5fa324cc55c1 X 14 Y 86 Height 2 dir 193 C 133 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 2 name Nadia (femme insomniaque) prefab 64c74f55-d512-5dce-9156-e53ee41afabd X 16 Y 26 Height 2 dir 194 C 131 B? 0
+    flags 0x83a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 3 name Myra (vieille femme) prefab afbdc0c1-716e-5c71-8a40-ea981d11c1fd X 28 Y 30 Height 2 dir 194 C 132 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 4 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 6 Y 12 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 5 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 8 Y 12 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 6 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 6 Y 12 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 7 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 8 Y 12 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 8 name Cruche générique prefab 1aebb011-3089-52d9-be37-068be389bdf2 X 26 Y 80 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 9 name Cruche générique prefab 1aebb011-3089-52d9-be37-068be389bdf2 X 28 Y 80 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 10 name Cruche générique prefab 1aebb011-3089-52d9-be37-068be389bdf2 X 28 Y 82 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 11 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 64 Y 40 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 12 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 64 Y 40 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 13 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 64 Y 42 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 14 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 66 Y 40 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 15 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 64 Y 42 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 16 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 66 Y 40 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 17 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 68 Y 40 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 18 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 66 Y 42 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 19 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 92 Y 82 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 20 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 94 Y 82 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 21 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 92 Y 82 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 22 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 94 Y 82 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 23 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 92 Y 84 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 24 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 94 Y 84 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 25 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 92 Y 84 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 26 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 94 Y 84 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+MAP 181 52 x 60 G/V 128 4096
+ rec 0 name Elene (femme à personnalités multiples) prefab fefe877e-3962-558b-a5ec-9608f7a8f59b X 90 Y 100 Height 4 dir 192 C 0 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 1 name Gustav (ivrogne) prefab 18ff7dc4-ee2f-5115-9bc4-5fa324cc55c1 X 22 Y 94 Height 2 dir 193 C 0 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 2 name Nadia (femme insomniaque) prefab 64c74f55-d512-5dce-9156-e53ee41afabd X 16 Y 26 Height 2 dir 130 C 131 B? 0
+    flags 0x83a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 3 name Myra (vieille femme) prefab afbdc0c1-716e-5c71-8a40-ea981d11c1fd X 28 Y 30 Height 2 dir 194 C 132 B? 0
+    flags 0x3a180 (Gravity bit 0x100: True) off (-10,-7,0) size (20,14,32)
+    AnimSets: [(0, 0, 0, 0), (1, 128, 1, 0), (2, 0, 1, 1360), (3, 128, 1, 1360), (4, 0, 1, 0), (5, 128, 1, 0)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Chain', 4)], 3: [('Chain', 5)], 4: [('Loop', None)], 5: [('Loop', None)], 6: [('Hold', None)], 7: [('Hold', None)]}
+ rec 4 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 6 Y 12 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 5 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 8 Y 12 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 6 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 6 Y 12 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 7 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 8 Y 12 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 8 name Cruche générique prefab 1aebb011-3089-52d9-be37-068be389bdf2 X 26 Y 80 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 9 name Cruche générique prefab 1aebb011-3089-52d9-be37-068be389bdf2 X 28 Y 80 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 10 name Cruche générique prefab 1aebb011-3089-52d9-be37-068be389bdf2 X 28 Y 82 Height 2 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 11 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 64 Y 40 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 12 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 66 Y 40 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 13 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 68 Y 40 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 14 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 64 Y 42 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 15 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 66 Y 42 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 16 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 66 Y 40 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 17 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 64 Y 40 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 18 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 64 Y 42 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 19 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 92 Y 82 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 20 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 94 Y 82 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 21 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 92 Y 82 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 22 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 94 Y 82 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 23 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 92 Y 84 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 24 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 94 Y 84 Height 4 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 25 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 92 Y 84 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}
+ rec 26 name Caisse en bois générique prefab 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f X 94 Y 84 Height 6 dir 192 C 0 B? 0
+    flags 0x3323e4 (Gravity bit 0x100: True) off (-10,-7,0) size (21,15,16)
+    AnimSets: [(0, 0, 0, 0), (1, 256, 0, 1024), (2, 0, 0, 0), (3, 128, 0, 1024), (4, 384, 0, 1024)]
+    anim ends: {0: [('Loop', None)], 1: [('Loop', None)], 2: [('Hold', None)], 3: [('Loop', None)], 4: [('Loop', None)]}

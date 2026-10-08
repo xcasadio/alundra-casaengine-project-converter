@@ -1,0 +1,5 @@
+physics: 460 random scenarios x 40 ticks, mismatching: 0
+  mutation one_sided       caught in 311 of 460 scenarios
+  mutation strict_landing  caught in 30 of 460 scenarios
+  mutation ground_modded   caught in 87 of 460 scenarios
+handlers: 3000 random 0x20 and 0x22 call pairs, mismatching: 0

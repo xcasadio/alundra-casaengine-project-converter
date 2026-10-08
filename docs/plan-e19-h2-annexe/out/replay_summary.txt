@@ -1,0 +1,18 @@
+E19.h2 D1 - replay summary (binary convention PosZ_bin = DLL + 1 ; tick offsets from s = tick of the 1A / 1B ; update k at tick s+k-1)
+name | first update with contact or IsOnGround (-> a free-standing 0x25 reads 1 at tick s+K) | tick offset at which the REAL program passed its 0x25 : engine A, engine B | engine/model disagreements | XY moved?
+S-1360           K=23  return A=s+23 B=s+23  disagreements=0  xy_moved=False
+S-1280           K=21  return A=s+21 B=s+21  disagreements=0  xy_moved=False
+S-768            K=13  return A=s+13 B=s+13  disagreements=0  xy_moved=False
+S-1024           K=17  return A=s+17 B=s+17  disagreements=0  xy_moved=False
+S-TRV            K=16  return A=s+16 B=s+16  disagreements=0  xy_moved=False
+S-TRV-keep       K=16  return A=s+16 B=s+16  disagreements=0  xy_moved=False
+R-1360-Giles10   K=23  return A=s+23 B=s+23  disagreements=0  xy_moved=False
+R-1360-Bergus165 K=23  return A=s+23 B=s+23  disagreements=0  xy_moved=False
+R-1360-Bergus179 K=23  return A=s+23 B=s+23  disagreements=0  xy_moved=False
+R-1360-Bergus172 K=23  return A=s+23 B=s+23  disagreements=0  xy_moved=False
+R-768-Dog478a    K=13  return A=s+13 B=s+13  disagreements=0  xy_moved=False
+R-768-Dog478b    K=13  return A=s+13 B=s+13  disagreements=0  xy_moved=False
+R-1280-GilesAnim16 K=21  return A=s+21 B=s+21  disagreements=0  xy_moved=False
+R-1024-Bomb362   K=17  return A=s+17 B=s+17  disagreements=0  xy_moved=False
+R-TRV-rec69      K=16  return A=s+16 B=s+16  disagreements=0  xy_moved=False
+R-TRV-rec81      K=16  return A=s+16 B=s+16  disagreements=0  xy_moved=False

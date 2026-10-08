@@ -1,0 +1,36 @@
+### S-1280
+synthetic montage, flat 0, G 128 / V 4096, Gravity, box 20x14x32 (off -10,-7,0), anim 3 = IZF 1280
+source: UJ-1 / UJ1b montage of docs/plan-e19-d2c-valeurs.md A.1 (AlundraAnimationImpulseTests.cs:45,68)
+terrain (+0x138) 0 = 0.000 px ; map gravity G 128, V 4096 ; start PosZ_bin 1 ; rest PosZ_bin 1 (DLL 0) ; REST_TICKS 3 passes without script ; flags 0x180
+engines: A (zsim, mips.py) | B (vz, emu.py, real RunScript) ; models: Z = zmodel.py, Zd = zmodel_dll.py (+1), M = rules_vs_emu.M ; disagreements: 0
+update k = tick s+k-1.  Columns: PosZ_bin = engine A ; PosZ_dll = PosZ_bin-1 ; h = (PosZ_dll - T)/65536 px above the rest ; poll = value read by `0x25` at tick s+k (the flags of this pass)
+k | tick | PosZ_bin | PosZ_dll | h(px) | ForceZ | FinalForceZ | contact(+0x140) | IsOnGround(+0x144) | Terrain(+0x138) | FloorHeight(+0x134) | poll 0x25 at s+k | A==B==Z==Zd==M
+1 | s+0 | 327681 | 327680 | 5.000000 | 327680 | 327680 | 0 | 0 | 0 | 1 | 0 | yes
+2 | s+1 | 622593 | 622592 | 9.500000 | 294912 | 294912 | 0 | 0 | 0 | 1 | 0 | yes
+3 | s+2 | 884737 | 884736 | 13.500000 | 262144 | 262144 | 0 | 0 | 0 | 1 | 0 | yes
+4 | s+3 | 1114113 | 1114112 | 17.000000 | 229376 | 229376 | 0 | 0 | 0 | 1 | 0 | yes
+5 | s+4 | 1310721 | 1310720 | 20.000000 | 196608 | 196608 | 0 | 0 | 0 | 1 | 0 | yes
+6 | s+5 | 1474561 | 1474560 | 22.500000 | 163840 | 163840 | 0 | 0 | 0 | 1 | 0 | yes
+7 | s+6 | 1605633 | 1605632 | 24.500000 | 131072 | 131072 | 0 | 0 | 0 | 1 | 0 | yes
+8 | s+7 | 1703937 | 1703936 | 26.000000 | 98304 | 98304 | 0 | 0 | 0 | 1 | 0 | yes
+9 | s+8 | 1769473 | 1769472 | 27.000000 | 65536 | 65536 | 0 | 0 | 0 | 1 | 0 | yes
+10 | s+9 | 1802241 | 1802240 | 27.500000 | 32768 | 32768 | 0 | 0 | 0 | 1 | 0 | yes
+11 | s+10 | 1802241 | 1802240 | 27.500000 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | yes
+12 | s+11 | 1769473 | 1769472 | 27.000000 | -32768 | -32768 | 0 | 0 | 0 | 1 | 0 | yes
+13 | s+12 | 1703937 | 1703936 | 26.000000 | -65536 | -65536 | 0 | 0 | 0 | 1 | 0 | yes
+14 | s+13 | 1605633 | 1605632 | 24.500000 | -98304 | -98304 | 0 | 0 | 0 | 1 | 0 | yes
+15 | s+14 | 1474561 | 1474560 | 22.500000 | -131072 | -131072 | 0 | 0 | 0 | 1 | 0 | yes
+16 | s+15 | 1310721 | 1310720 | 20.000000 | -163840 | -163840 | 0 | 0 | 0 | 1 | 0 | yes
+17 | s+16 | 1114113 | 1114112 | 17.000000 | -196608 | -196608 | 0 | 0 | 0 | 1 | 0 | yes
+18 | s+17 | 884737 | 884736 | 13.500000 | -229376 | -229376 | 0 | 0 | 0 | 1 | 0 | yes
+19 | s+18 | 622593 | 622592 | 9.500000 | -262144 | -262144 | 0 | 0 | 0 | 1 | 0 | yes
+20 | s+19 | 327681 | 327680 | 5.000000 | -294912 | -294912 | 0 | 0 | 0 | 1 | 0 | yes
+21 | s+20 | 1 | 0 | 0.000000 | -327680 | -327680 | 0 | 1 | 0 | 1 | 1 | yes
+22 | s+21 | 1 | 0 | 0.000000 | 0 | -360448 | 1 | 1 | 0 | 1 | 1 | yes
+23 | s+22 | 1 | 0 | 0.000000 | 0 | -32768 | 1 | 1 | 0 | 1 | 1 | yes
+24 | s+23 | 1 | 0 | 0.000000 | 0 | -32768 | 1 | 1 | 0 | 1 | 1 | yes
+25 | s+24 | 1 | 0 | 0.000000 | 0 | -32768 | 1 | 1 | 0 | 1 | 1 | yes
+26 | s+25 | 1 | 0 | 0.000000 | 0 | -32768 | 1 | 1 | 0 | 1 | 1 | yes
+first update with contact or IsOnGround: K=21 -> a free-standing 0x25 reads 1 at tick s+21
+the REAL program passed its 0x25 at tick offset: engine A s+21, engine B s+21 (pc after each call: A [2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 8] ; B [2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 8])
+first update with IsOnGround 1 (after k=1): 21 ; first update with contact 1: 22
