@@ -19,6 +19,18 @@ charger, plus une table compagnon qui garde tout ce qu'un `.fnt` ne peut pas rep
 `UI/font3.fnt` lui-même est catalogué comme une simple entrée fichier : ce n'est pas un type
 d'asset CasaEngine, mais un runtime a besoin de pouvoir l'adresser par id.
 
+## Palette de la page (`ui/font3.png`)
+
+Depuis E19.L-b1 (O-E19-66), l'extracteur décode l'image 4 bpp de `FONT3.TIM` avec l'**entrée 8** de la table de CLUT
+que le binaire remplit depuis `WIND.CL` (chargement à `0x80044B48`-`0x80044B9C`, lecture à `0x80050424`), et non avec
+la palette 0 propre à `FONT3.TIM`. Seul l'indice de couleur 4 diffère : (74, 82, 57) au lieu de (82, 90, 57), soit 44
+texels de la page. Les couleurs 15 bits sont décodées comme `TimLoader` (réplication des bits) ; la couleur `0x0000`
+reste transparente et garde le RVB de l'indice 0 de `FONT3.TIM`.
+
+**Limite** : seules les bandes de texte et le curseur sont prouvés lire l'entrée 8 ; les autres lectures de font3 par
+un indice de CLUT calculé n'ont pas été suivies. Le décodage vit dans `AlundraDataExtractor/Program.cs`
+(`DecodeFont3WithWindClut`) ; la décompilation `AlundraEngine` n'est pas modifiée. Le convertisseur copie la page telle quelle.
+
 ## Pourquoi un `.fnt` et pas un asset CasaEngine natif
 
 CasaEngine n'a pas de type "police" en propre ; BMFont est un format texte standard qu'une
