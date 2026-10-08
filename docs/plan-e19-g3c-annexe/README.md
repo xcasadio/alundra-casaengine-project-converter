@@ -21,3 +21,17 @@ Plan: `docs/plan-e19-opcodes.md`, sections "E19.g G2e" and "E19.g G3c".
 - The scripts are copies of the discovery's working files. They read the game binary, `DATAS.BIN` and the export through absolute
   paths of the session scratchpad and of the author's machine (`fxm.py`, `emit_fuzz.py`): adapt the paths before running them.
   `g2b1_predict.py` and `redux.py` live in `docs/plan-e19-g2b-annexe/`.
+
+## G3c-0 prediction (2026-10-08, before any DLL code)
+
+- `g3c_model.py`: the prediction of the frames the DLL pushes. Reads only the exported effect companions and sheet PNGs of `alundra-project/`;
+  rule B(k) with the **top-left** tie rule (rasterizer and blend helpers of `g2e_predict.py`; `tie_sign` and `bk` of `g2b1_predict.py` are not used).
+  `python g3c_model.py` writes `g3c_expected.json` and `ref_g3c_<scene>_k<k>.png` and runs the cross-checks (any failure is a stop, nothing is
+  written): 163 and 391 against the discovery digests, the aura against `discovery/verify/verify.md` section 2, the mirror scenes against section 3,
+  the aura coverage at k = 1 against the hardware walker `docs/plan-e19-g2b-annexe/redux.py` (texel wrap removed, covered pixels unchanged).
+- `g3c_expected.json`: per scene the harness call sequence (bank, setup calls, `RunFrame(1, [false])` count derived from the export delays), the
+  camera, the quads, and per k the size, SHA-1, counts and probes.
+- `g3c_compare.py <dump.bin> --scene <name>`: same rule as `g2e_compare.py` (opaque exact, blended PSX-mode pixels +-1 per channel outside the
+  noise zone, exact ties kept; the SHA-1 of a capture is never compared). `--selftest` checks the comparator.
+- Scenes: `aura_t0`, `aura_t2`, `aura_t16`, `rays_163`, `pieces_391`, `mirror_476`, `mirror_327`, `abr_378` (the ABR scene is chosen by script,
+  see `abr_choice` in the JSON).
