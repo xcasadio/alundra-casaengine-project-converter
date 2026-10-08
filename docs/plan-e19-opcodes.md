@@ -11077,7 +11077,7 @@ les mesure : un écart est un arrêt, jamais une nouvelle épingle.
   - **Campagne** : `Alundra.Tests` 3253/3253 en Release puis en Debug ; `cmp` identique ; traces inchangées.
   - **Avis P4, reporté** : on pourrait aussi affirmer `HeroAirborne` au tick 15 du cas à 5 px, et `CurrentAnimationId` 1 pour 3 px.
 
-#### 1.2s.12 E19.m11 — Moteur : dimensions de `VirtualResolution` validées (M-34), M-37 accepté (G5) ⏳ (planifiée le 2026-10-09, nuit en mode AUTO)
+#### 1.2s.12 E19.m11 — Moteur : dimensions de `VirtualResolution` validées (M-34), M-37 accepté (G5) ✅ (planifiée le 2026-10-09, nuit en mode AUTO ; relecture de clôture READY ; faite et CONFIRMED le 2026-10-09, moteur `b2205d9f`)
 
 Moteur seul, puis le pointeur. Faits : `docs/plan-e19-m-annexe/night-discovery-2026-10-09/G5.json`.
 - **M-34.** `ProjectSettingsHelper.ReadPositiveDimension` (`CasaEngine/Framework/Configuration/Project/ProjectSettingsHelper.cs:97-106`,
@@ -11134,6 +11134,15 @@ Moteur seul, puis le pointeur. Faits : `docs/plan-e19-m-annexe/night-discovery-2
   - une mutation qui laisse tout vert, ou qui rougit d'autres lignes que celles écrites.
 
   **Retour arrière** : revert dans le moteur, pointeur remis.
+- ✅ **Fait le 2026-10-09** (moteur `b2205d9f`, `a24fe31d` ancêtre ; pointeur monté) par un exécuteur, puis vérifié par un vérificateur
+  neuf, **CONFIRMED**.
+  - **Rouges d'abord**, mesurés au HEAD, ligne par ligne comme écrit : `"abc"` → `FormatException` ; `"320"`, `true`, `1.5` et `320.0` se
+    chargent ; `{}` et `[]` → `ArgumentException` ; les deux entiers hors bornes → `OverflowException` ; `null` vert.
+  - **MU-1 à MU-5** rougissent exactement les lignes prévues, et chaque fichier est restauré à l'octet près.
+  - **Campagne** : `CasaEngine.Tests` 4244/4244 ; les deux solutions du moteur bâties ; tests du convertisseur 848/848 ; `Alundra.Tests`
+    3253/3253 en Release puis en Debug ; `cmp` identique ; traces inchangées.
+  - **Avis P4** : le dépôt compte cinq fichiers de trace et une liste de programmes (`intro-programs-389.txt`). « Six traces » les
+    désigne ensemble.
 
 #### 1.2s.13 E19.m12 — Verrou d'interaction sur une entité recyclée (M-33), M-43 accepté, commentaire P3 d'E19.v (G4b sans M-15) ⏳ (planifiée le 2026-10-09, nuit en mode AUTO)
 
