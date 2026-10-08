@@ -10971,7 +10971,7 @@ prête (champ, déplacement, `FillQueue`, plafond de tampons, valeurs de test), 
 musique par le service de musique du moteur avec le point de boucle ; `LoopDetected` vaut vrai aussi sur les pistes sans boucle :
 un champ `Looping` à part est nécessaire.
 
-#### 1.2w.1 E19.L-a — Point de boucle de la musique en flux (moteur) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102 ; planifiée le 2026-10-08 ; T1 : relecture n°1 READY (faits), REVISE (exécution : liste des tests d'abord incomplète), révisée ; relecture n°2 READY ; exécution après E19.u (les deux bâtissent le moteur) ; T2 : attend la réponse de l'auteur sur la profondeur)
+#### 1.2w.1 E19.L-a — Point de boucle de la musique en flux (moteur) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102 ; planifiée le 2026-10-08 ; T1 : relecture n°1 READY (faits), REVISE (exécution : liste des tests d'abord incomplète), révisée ; relecture n°2 READY ; T1 faite le 2026-10-08 sans la démo (moteur `674549cc` tests, `bc3bd023` code et ADR-0072), vérification à faire ; T2 : attend la réponse de l'auteur sur la profondeur)
 
 Moteur seul (sous-module, branche `chantier/e19-suite2` du moteur, au-dessus de `f86a981b`, le merge du navigateur de démos de l'auteur ;
 la montée du pointeur du parent à la fin de L-a fera entrer ce merge dans le parent : question à l'auteur ; écart consigné à R-BR (1), qui
@@ -11016,7 +11016,7 @@ lit les nombres en flottants (16 777 217 deviendrait 16 777 216) ; `CreatePrevie
   (point de boucle 44 100), `AssetInfos.json`, `Content.mgcb` ; docs `docs/engine/audio-system.md` (§3, §5, §9, §11, et le commentaire de
   `GetPosition` qui dit « revient à zéro »), ADR-0072 du moteur (revérifiée sur toutes les branches) et son index,
   `ai-agent/tasks/e19la-music-loop-start-tasks.md`, `ai-agent/README.md` ; parent : ce plan et le pointeur.
-- ⏳ **LA-0 — Tests d'abord** (valeurs de `sim.out`, rejouées par la contre-vérification ; chaque lecteur des tests a une cible explicite de
+- ✅ **LA-0 — Tests d'abord** (valeurs de `sim.out`, rejouées par la contre-vérification ; chaque lecteur des tests a une cible explicite de
   3, donc T2 ne les bouge pas) : rampe stéréo de 1000 trames (gauche f, droite 10 000 + f), point de boucle 600 : L1 et L1w (travailleur)
   4000, 1600, 1600 o après `Play`, puis trois tampons de 1600 o (trames 600 à 999) ; L2 et L2w (tampons de 1024 o) 1024, 1024, 1024, 928,
   1024, 576, 1024, 576, 1024 (en L2w le travailleur franchit lui-même la couture) ; L3 (point 0) trois tampons de 4000 o ; L4 (non bouclé) un
@@ -11029,9 +11029,19 @@ lit les nombres en flottants (16 777 217 deviendrait 16 777 216) ; `CreatePrevie
   `la-1008/notes.md` §3** (W1 à W7, S1 à S7, L1 à L8, B2, P1 ; W4 comme écrit ci-dessus, verify M5), dont W2, W3 (−1 et 1000 lèvent),
   W5, W6 (aucune allocation au déplacement), S2, S3 (−5 donne 0) et S7 (`"600"`, 600,5 et `true` donnent chacun 0 et un avertissement) :
   chaque règle LA-R1 à LA-R4 a au moins un test nommé.
-- ⏳ **LA-1 — T1 code** (LA-R1 à LA-R6), démo, docs, ADR-0072 ; mutations, chacune rouge sur ses tests : offset des données ignoré (W1, W4,
+- ✅ **LA-1 — T1 code** (sans la démo, qui attend l'auteur) (LA-R1 à LA-R6), démo, docs, ADR-0072 ; mutations, chacune rouge sur ses tests : offset des données ignoré (W1, W4,
   W7, L6), rembobinage dans `FillQueue` (L1, L2, L6, B2), rembobinage dans le travailleur (L2w), plafond par appel retiré (B2), décalage de un
   dans la borne (W3, L5), clé non écrite (S4), clé écrite à 0 (S5), lecture flottante (S6, S7), copie de l'aperçu absente (P1).
+**Fait le 2026-10-08 (LA-0, LA-1 sans la démo).** Moteur `674549cc` (31 cas : 30 rouges sur des membres vides, le 31e, « aucune clé à 0 »,
+vert par construction et rouge sous la mutation qui écrit la clé à 0) puis `bc3bd023` (`SoundAsset.LoopStartSample`, lecture entière par
+`ReadInteger` avec un avertissement pour tout autre jeton ; `WavFormatInfo.SampleFrameCount` ; `WavStreamReader.SeekToSample`, `Rewind()` en
+devient un cas ; `StreamingWorker.Acquire` et `Channel.Reset` prennent le point de boucle, écrit avant l'état actif ; les deux sites de
+boucle s'y placent ; `CreatePreviewCopy` interne et copiant le champ ; `audio-system.md` §3, §5, §9 (§11 attend la démo) ; ADR-0072,
+plus grand numéro de toutes les branches 0071 ; fichier de tâches du moteur). Mesures : `CasaEngine.Tests` **4225** (4194 + 31) ; chaque
+mutation rougit ses tests (offset ignoré : 13 ; rembobinage dans `FillQueue` : 7 ; dans le travailleur : 3 ; plafond retiré : B2 ; borne
+décalée : W3 et L5 ; clé non écrite : S4 ; clé à 0 : 11 ; lecture flottante : S6 et S7 ; copie absente : P1) ; les deux solutions se
+construisent ; `Alundra.Tests` **3222** en Release puis en Debug, `cmp` égal, traces. Non faits (attendent l'auteur) : la démo, T2, le
+pointeur.
 - ⏳ **LA-2 — T2** (après la réponse de l'auteur), commit à part, révocable seul.
 - ⏳ **LA-3 — Pointeur** (après la réponse de l'auteur sur le merge du navigateur de démos), `merge-base --is-ancestor acbb1ae3 <nouveau>`.
 - ⏳ **LA-4 — Vérification** par un vérificateur neuf.
