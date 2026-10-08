@@ -31,6 +31,8 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    where the data the engine cannot represent survives - per-tone SampleRate/LoopStart/LoopEnd
 ///    (MonoGame's SoundEffect exposes no loop points), the VAB/SEQ addressing (VabId,
 ///    ProgramNumber, ToneNumber, Note, SeqNum, RefSfxId, MaxVoices), and the BGM loudness analysis.
+///    The BGM entries also carry the loop marker (looping, loop_start_frame, loop_start_sample; null when
+///    the source bgm.json predates them) right after asset_id.
 ///  - Records the extractor could not decode (SkipReason non-null, 91 of them) are kept in the
 ///    manifest with an empty tone list rather than dropped: scripts address sfx by id, so the id
 ///    space must stay complete, and the reason is itself a fact worth keeping.

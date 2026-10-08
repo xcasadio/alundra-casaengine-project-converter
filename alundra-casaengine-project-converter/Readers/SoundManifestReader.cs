@@ -8,6 +8,9 @@ namespace AlundraCasaEngineProjectConverter.Readers;
 /// measurements the extractor made on the decoded WAV, not values read from the game data, but
 /// they are cheap to keep and a gameplay DLL may want them (e.g. to skip leading silence).
 /// AssetId is the only field the converter adds: the catalog id of the copied WAV.
+/// Looping / LoopStartFrame / LoopStartSample are the loop marker the extractor found (E19.L-b): null when
+/// the key is absent (an older bgm.json), and for a one-shot (Looping false) the two positions are null too.
+/// Frames counts up to the end of the rendered WAV (the loop end, or the end plus the release tail for a one-shot).
 /// </summary>
 public sealed class BgmEntry
 {
@@ -105,6 +108,9 @@ public static class SoundManifestReader
                 RmsLeft = GetDouble(element, "RmsLeft"),
                 RmsRight = GetDouble(element, "RmsRight"),
                 FirstAudibleFrame = GetInt32(element, "FirstAudibleFrame"),
+                Looping = GetNullableBoolean(element, "Looping"),
+                LoopStartFrame = GetNullableInt32(element, "LoopStartFrame"),
+                LoopStartSample = GetNullableInt32(element, "LoopStartSample"),
             });
         }
 
@@ -182,6 +188,16 @@ public static class SoundManifestReader
 
     private static bool GetBoolean(JsonElement element, string propertyName)
         => element.TryGetProperty(propertyName, out var value) && value.ValueKind == JsonValueKind.True;
+
+    private static bool? GetNullableBoolean(JsonElement element, string propertyName)
+        => element.TryGetProperty(propertyName, out var value)
+            ? value.ValueKind switch
+            {
+                JsonValueKind.True => true,
+                JsonValueKind.False => false,
+                _ => null,
+            }
+            : null;
 
     private static string GetString(JsonElement element, string propertyName)
         => GetNullableString(element, propertyName) ?? string.Empty;

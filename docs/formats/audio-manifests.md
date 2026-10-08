@@ -38,13 +38,20 @@ Un enregistrement par piste, champs en `snake_case` :
 |---|---|---|---|
 | `sound_index` | int | Index de la piste | `SoundIndex` (`sound/bgm.json`) |
 | `file` | string | Nom du WAV copié dans `Musics/` | `File` |
-| `frames` | int | Nombre de frames audio | `Frames` |
+| `frames` | int | Nombre de frames audio du WAV rendu : jusqu'à la fin de la boucle (J2) pour une piste qui boucle ; pour une piste sans boucle, sa fin plus la traîne de relâchement | `Frames` |
 | `duration_seconds` | double | Durée en secondes | `DurationSeconds` |
-| `loop_detected` | bool | La piste boucle-t-elle (détecté par l'extracteur) | `LoopDetected` |
+| `loop_detected` | bool | Mesure de l'extracteur ; **reste vrai sur les pistes sans boucle** (36, 42), d'où `looping` | `LoopDetected` |
 | `peak_left` / `peak_right` | int | Amplitude crête par canal | `PeakLeft` / `PeakRight` |
 | `rms_left` / `rms_right` | double | RMS par canal | `RmsLeft` / `RmsRight` |
 | `first_audible_frame` | int | Première frame non silencieuse | `FirstAudibleFrame` |
 | `asset_id` | guid | Id catalogue du WAV copié | ajouté par le convertisseur (`Ids.For("sound/bgm/{file}")`) |
+| `looping` | bool ou null | La piste boucle-t-elle au repère trouvé ; `false` pour une piste jouée une fois | `Looping` |
+| `loop_start_frame` | int ou null | Frame du repère de boucle (retour de la lecture) ; nul sans boucle | `LoopStartFrame` |
+| `loop_start_sample` | int ou null | Même repère en échantillons (`loop_start_frame` × 735) ; nul sans boucle | `LoopStartSample` |
+
+Les trois champs de boucle sont nuls quand `bgm.json` ne les porte pas (extraction ancienne) : un
+consommateur doit alors rejouer la piste en entier. Exemple, piste 1 : `frames` 15215,
+`duration_seconds` 253,583…, `loop_start_frame` 7965, `loop_start_sample` 5 854 275.
 
 Les champs d'analyse (`peak_*`, `rms_*`, `first_audible_frame`, `loop_detected`) sont des mesures
 faites par l'extracteur sur le WAV décodé, pas des valeurs lues dans les données du jeu — mais
