@@ -620,6 +620,7 @@ public class AlundraWorldProxyEventPassTests
     [InlineData(5, 6, false)]
     [InlineData(4, 7, false)]
     [InlineData(1, 3, false)]
+    [InlineData(2, 2, false)] // E19.m8 M-44: y under Y1 (x on X1), the lower bound of y
     public void RunMapEventsPass_J1f_ZoneBoundsAreInclusive(int tileX, int tileY, bool runs)
     {
         var runner = new RecordingRunner();
@@ -629,6 +630,26 @@ public class AlundraWorldProxyEventPassTests
         AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
 
         Assert.Equal(runs ? 1 : 0, runner.Calls.Count);
+    }
+
+    /// <summary>E19.m8 M-44 (docs/plan-e19-opcodes.md section 1.2s.9): the J1-f rows decide run or not; here the same bounds decide re-arm or not. One tile under
+    /// Y1 (x on X1) the slot's state goes back to "not started" (Sp and CodeIndex at 0); on the corner (X1, Y1) it keeps what it had.</summary>
+    [Theory]
+    [InlineData(2, 2, true)]
+    [InlineData(1, 3, true)]
+    [InlineData(2, 3, false)]
+    public void RunMapEventsPass_J1f_AnOutOfZoneTickRearmsTheSlot_TheCornerOfTheZoneDoesNot(int tileX, int tileY, bool rearmed)
+    {
+        var runner = new RecordingRunner();
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true, TileX = tileX, TileY = tileY };
+        var mapEvent = NewMapEvent(2, 3, 4, 6, 129, hero);
+        mapEvent.EventData.Sp = 0xAB;
+        mapEvent.EventData.CodeIndex = 2;
+
+        AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+
+        Assert.Equal(rearmed ? 0 : 0xAB, mapEvent.EventData.Sp);
+        Assert.Equal(rearmed ? 0 : 2, mapEvent.EventData.CodeIndex);
     }
 
     /// <summary>Real data, off the story chain: Torla (inner) 445, record 0 (zone (1,8)-(13,59), program byte 129).</summary>

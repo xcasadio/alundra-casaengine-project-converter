@@ -182,6 +182,17 @@ public class AlundraStoryChainSkippedOpcodesTests
         Assert.Equal(new[] { 1, 2 }, reached.Select(r => r.Pc));
     }
 
+    [Fact]
+    public void Walk_ADirectionalBranchReachesItsFourTargetsAndNeverFallsThroughToPcPlus9()
+    {
+        // E19.m8 M-25 (docs/plan-e19-opcodes.md section 1.2s.9): @1 0x58 (size 9) with four offsets 10, 11, 12, 13 -> @11..@14 (0xFF each);
+        // @10 (= pc + 9, the fall-through) holds a 0x0A that must never be reached.
+        var reached = Walk(Doc(new[] { 1, 0x58, 10, 0, 11, 0, 12, 0, 13, 0, 0x0A, 0xFF, 0xFF, 0xFF, 0xFF }), ('B', 1));
+
+        Assert.Equal(new[] { 1, 11, 12, 13, 14 }, reached.Select(r => r.Pc).OrderBy(pc => pc));
+        Assert.DoesNotContain(10, reached.Select(r => r.Pc));
+    }
+
     // -----------------------------------------------------------------------------------------
     // The rule functions, on made-up input
     // -----------------------------------------------------------------------------------------

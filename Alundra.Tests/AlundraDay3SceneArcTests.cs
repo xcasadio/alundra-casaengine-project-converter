@@ -224,9 +224,11 @@ public sealed class AlundraDay3SceneArcTests
 
     /// <summary>Frames until <paramref name="done"/>, with the button of the arcs' rule on the frames that start with a dialogue open (E19.f2a: held while the box
     /// types, released then pressed when it waits for a press), and answering the choice of a box the first option (OUI) at the start of the frame, as a player
-    /// who accepts. Fails at the arc's frame limit.</summary>
-    private static void RunAcceptingTheChoice(ArcRun arc, Func<bool> done, string signal)
+    /// who accepts. Fails at the arc's frame limit. Returns the number of frames that started with the choice box open (E19.m8 M-20,
+    /// docs/plan-e19-opcodes.md section 1.2s.9: the helper answered the choice when present but nothing proved it ever opened).</summary>
+    private static int RunAcceptingTheChoice(ArcRun arc, Func<bool> done, string signal)
     {
+        var choiceFrames = 0;
         while (!done())
         {
             if (arc.Frame >= arc.Spec.FrameLimit)
@@ -236,6 +238,7 @@ public sealed class AlundraDay3SceneArcTests
 
             if (AlundraDialogueDirector.Instance.IsAwaitingChoice)
             {
+                choiceFrames++;
                 Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(0));
             }
 
@@ -243,6 +246,7 @@ public sealed class AlundraDay3SceneArcTests
         }
 
         arc.LetGoOfTheDialogueButton();
+        return choiceFrames;
     }
 
     /// <summary>
@@ -285,7 +289,9 @@ public sealed class AlundraDay3SceneArcTests
         };
 
         // 1. The end signal: 0x11 @1115 of C[1], then G14 by 0x05 @1120.
-        RunAcceptingTheChoice(arc, () => arc.Has(C, 1115, 0x11), "C[1] executes 0x11 @1115");
+        // E19.m8 M-20: the choice box (0x44 @1056) opened at least once before the program reaches @1115.
+        var choiceFrames = RunAcceptingTheChoice(arc, () => arc.Has(C, 1115, 0x11), "C[1] executes 0x11 @1115");
+        Assert.True(choiceFrames > 0, "the choice box of 0x44 @1056 opened before C[1] reaches @1115");
         RunAcceptingTheChoice(arc, () => arc.Has(C, 1120, 0x05), "C[1] executes 0x05 @1120");
 
         // 2. Only the instructions of the closed list are skipped.
