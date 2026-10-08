@@ -9219,7 +9219,7 @@ tests ; `Texture` inchangé, consigné dans l'ADR) ; la démo s'arrête seule ap
   **Arrêts** : un test existant qui bouge, un fichier hors de la liste, une collision d'ADR, un pixel différent. **Retour arrière** :
   revert des commits du moteur et du pointeur.
 
-###### E19.g G3c — Effets poussés et dessinés (DLL), preuve au pixel ⚠️ (découverte de nuit du 2026-10-06 faite et contre-vérifiée ; planifiée le 2026-10-06, après G2e ; relecture n°1 REVISE (coordonnée de l'aura, ordre du harnais), révisée ; relecture n°2 REVISE (tolérance des pixels mêlés, valeur attendue du test du mandataire), disposition FIX ; nouvelle époque, relecture de clôture REVISE (la condition d'arrêt de G3c-3 exigeait des empreintes exactes) : en pause, correctif écrit ci-dessous ; **le 2026-10-08, l'auteur dit de continuer : nouvelle relecture sur le plan corrigé, puis exécution si READY**)
+###### E19.g G3c — Effets poussés et dessinés (DLL), preuve au pixel ⚠️ (découverte de nuit du 2026-10-06 faite et contre-vérifiée ; planifiée le 2026-10-06, après G2e ; relecture n°1 REVISE (coordonnée de l'aura, ordre du harnais), révisée ; relecture n°2 REVISE (tolérance des pixels mêlés, valeur attendue du test du mandataire), disposition FIX ; nouvelle époque, relecture de clôture REVISE (la condition d'arrêt de G3c-3 exigeait des empreintes exactes) : en pause, correctif écrit ci-dessous ; **le 2026-10-08, l'auteur dit de continuer : nouvelle relecture sur le plan corrigé, puis exécution si READY** ; relecture n°3 du 2026-10-08 : READY (faits), READY (exécution), REVISE (preuve : taille du back-buffer du harnais), correctif écrit ; relecture n°4 à faire)
 
 DLL seule ; compile contre le pointeur du moteur monté par G2e (livraison verrouillée comme G2c) ; aucun export (G1 est livré).
 Déclencheur de risque : rendu de jeu nouveau et preuve au pixel (relecture et vérificateur neuf). Faits : `docs/plan-e19-g3c-annexe/discovery/`
@@ -9242,7 +9242,9 @@ Déclencheur de risque : rendu de jeu nouveau et preuve au pixel (relecture et v
   créneau, l'image 0 est dessinée en dernier ; entre créneaux, la clé de profondeur la plus petite d'abord (tri de `0x8002E130`). **Écart
   consigné** : à clés égales, l'ordre du binaire vient d'un tri rapide instable sur toute la liste des entités et des effets (P = 0,5) ;
   la DLL est stable par index de créneau ; cas visible, 391 créneaux 3 et 4 (même clé, images opaques de 48 × 39 à 24 px) : binaire, le 3
-  dessus ; DLL, le 4 dessus ; à voir en recette. Un effet et une entité de mêmes passe, couche, élévation et coordonnée se départagent
+  dessus ; DLL, le 4 dessus ; à voir en recette. Entre créneaux, le binaire trie sur la clé de profondeur entière ((y & 0xFFFF0000) +
+  (z >> 16) + (IDSV << 16)), la DLL sur la case de 16 px (`DepthKey >> 20`) puis la coordonnée `100 · ay` : deux créneaux de la même case
+  dont z ou l'IDSV diffèrent peuvent s'inverser (écart déjà partagé avec les entités ; aucune scène de preuve ne le montre). Un effet et une entité de mêmes passe, couche, élévation et coordonnée se départagent
   par leurs décalages locaux et identifiants stables : ordre entre types non fixé par le binaire (même tri instable), écart accepté.
   Deux créneaux de même clé à plusieurs images sont dessinés image par image entrelacés (le décalage local passe avant l'identifiant
   stable : créneau 3 image 1, créneau 4 image 1, créneau 3 image 0, créneau 4 image 0), quand le binaire garde les images d'un élément
@@ -9277,33 +9279,49 @@ Déclencheur de risque : rendu de jeu nouveau et preuve au pixel (relecture et v
   (836, 640) (créneau 0 éliminé, 6 quads) ; **scènes miroir** (verify M2) : 476 effet 0 animation 3 image 2 (14 quads,
   3 miroir), 327 effet 0 animation 3 image 3 (3 quads miroir, un à l'origine −1) ; une image de la 378 effet 1 (ABR2) **ou** de la 7
   effet 1 (ABR0) avec des miroirs (verify M3), choisie par le script. Recoupements : couverture de l'aura égale à celle du marcheur
-  matériel (`redux.py`) ; 163 et 391 égales aux empreintes de la découverte ; aura égale aux empreintes haut-gauche de `verify.md` §2 ;
-  scènes miroir de la 476 et de la 327 recoupées avec les empreintes haut-gauche de `verify.md` §3. Le nouveau `g3c_model.py` (à la
+  matériel (`redux.py`, défini à k = 1 seulement) ; 163 et 391 égales aux empreintes de la découverte ; aura égale aux empreintes haut-gauche de `verify.md` §2 ;
+  scènes miroir de la 476 et de la 327 recoupées avec les empreintes haut-gauche de `verify.md` §3 (placement de ces empreintes : celui
+  de l'aura, défilement (800, −8), ancre à l'écran (160, 119) ; la 327 par `Reservoir.Create(true, 0, 3, …)` à la même position) ;
+  `g3c_expected.json` donne pour chaque scène le nombre de mises à jour (`RunFrame`) qui atteint l'image voulue, tiré des délais de
+  l'export (ticks 0, 2 et 16 de l'aura ; image 2 de l'animation 3 de la 476 ; image 3 de l'animation 3 de la 327 ; la scène de la
+  378 ou de la 7), et le modèle comme le harnais utilisent ce nombre ; la scène ABR0 ou ABR2 n'a pas d'empreinte indépendante
+  (comparaison modèle contre moteur seulement, limite à rapporter). Le nouveau `g3c_model.py` (à la
   racine de l'annexe ; la copie de `discovery/` reste comme trace de la découverte) n'importe ni `tie_sign` ni `bk` de
   `g2b1_predict.py`.
 - ⏳ **G3c-1 — Tests d'abord** (rouges) : ancre (z + 1 : ligne du monde 111 contre 112), bornes de l'élimination (x −129 non, −128 oui, 448 oui,
   449 non ; y −129, −128, 368, 369), fenêtres miroir (U = 0 : origine −1), modes `Abr` 0 à 3 → `Mode0` à `Mode3`, planche 0 ou 1, champs de
-  la clé (aura : élévation 214, coordonnée 100 × 111 = 11 100, la ligne du monde ; ligne d'écran 119 au défilement (800, −8)), décalage local (image 0 en dernier), image poussée gelée (`0x48`) et pendant un
-  départ de warp, image vide, ensemble nul sauté, service nul sans exception ; après la séquence de G3C-R5 dans les deux ordres
+  la clé (aura : élévation 214, coordonnée 100 × 111 = 11 100, la ligne du monde ; ligne d'écran 119 au défilement (800, −8) ; l'IDSV de
+  l'ensemble d'images est lu dans l'export pour l'élévation), décalage local (image 0 en dernier), image poussée gelée (`0x48`) et pendant
+  un départ de warp (**par l'`Update` du mandataire**, pas seulement au niveau du stage : la poussée à chaque image rendue), image vide, ensemble nul sauté, service nul sans exception ; après la séquence de G3C-R5 dans les deux ordres
   (attache puis chargement, chargement puis attache), le service porte les deux identifiants de planches ; au niveau du mandataire, un
   vrai `EffectQuadService` attaché après `InitializeWithWorld` (précédent : `BackdropPushProductionTests.cs`) sur la vraie 391 : après le
   premier `Update`, le service porte l'identifiant de la planche de la carte et celui de la planche globale (`Guid` non vides), et son
   image égale, quad pour quad, ce que la construction pure produit des mêmes `Reservoir.Slots` avec la même `ResolvedCamera` du
-  mandataire, et compte au moins un quad (égalité structurelle : la valeur au pixel est prouvée par G3c-3, pas par ce test) ; garde sur le vrai export : chaque
+  mandataire, et compte au moins un quad (égalité structurelle : la valeur au pixel est prouvée par G3c-3, pas par ce test ; prémisses :
+  le monde s'appelle `Ship Klark (night, break, Event)-391` pour que le compagnon se résolve, le premier `Update` fait au moins un tick
+  (avant, `CurrentImageSet` est nul et le créneau est sauté), les singletons de session sont remis comme dans
+  `BackdropPushProductionTests.cs`) ; `AlundraCameraMath.ToOriginalScrollSpace` épinglé sur les cibles entières du harnais (G3c-3) ; garde sur le vrai export : chaque
   `SheetTextureAssetId` non nul (87 des 158 documents : 86 cartes et le global ; 71 nuls admis) résout dans `AssetInfos.json` vers une
   `.texture` dont le PNG existe.
 - ⏳ **G3c-2 — Code, ADR, docs**.
 - ⏳ **G3c-3 — Preuve au pixel** : harnais hors dépôt (référence `Alundra.dll` par `HintPath`, jamais par `ProjectReference` : la copie
-  d'après-build écrit dans `alundra-project/`) : un `CasaEngineGame` sur le vrai export, caméra `Zoom = k`, `Target = (scrollX + w / 2k,
-  −(scrollY + h / 2k))`, `AttachService`, chargeur de la banque, `Load`, `SpawnPlaced`/`Create`/animation, `RunFrame`, `PushFrame`, capture
-  `GetBackBufferData` en processus (format de vidage de `PsxFreeQuadDemo`), image de 320k × 240k ; chaque scène à × 1 et × 3 comparée à
+  d'après-build écrit dans `alundra-project/`) : un `CasaEngineGame` sur le vrai export, **back-buffer d'exactement 320k × 240k** (donc
+  w = 320k, h = 240k), caméra `Zoom = k`, `Target = (scrollX + 160, −(scrollY + 120))` à composantes entières (la DLL calcule son
+  défilement d'élimination par `ToOriginalScrollSpace`, figé sur une vue de 320 × 240 : `(int)Target.X − 160`, `−(int)Target.Y − 120`) ; le
+  harnais rapporte pour chaque capture ce défilement recalculé et vérifie qu'il égale (scrollX, scrollY) ; aucun monde chargé (aucune
+  carte dessinée) ; fond (24, 40, 56) posé par le harnais (couleur d'effacement ou fond uni, mécanisme rapporté ; jamais le noir par
+  défaut) ; seules les surfaces publiques de la DLL ; séquence `AttachService`, chargeur de la banque, `Load`, `SpawnPlaced`/`Create`/
+  animation, `RunFrame` (le nombre de G3c-0), `PushFrame`, puis **une mise à jour et un dessin du moteur** (le composant soumet depuis son
+  propre `Update`), puis la capture `GetBackBufferData` en processus (format de vidage de `PsxFreeQuadDemo`) ; chaque scène à × 1 et × 3 comparée à
   G3c-0 par `docs/plan-e19-g3c-annexe/g3c_compare.py` (même règle que `g2e_compare.py`). Si le harnais ne se construit pas, ou si
   `g3c_compare.py` ne sort pas 0 sur les captures de la 163 et de la 391 (scènes sans ambiguïté ; pixels opaques exacts, pixels mêlés
   d'un mode PSX à ±1 par canal, la règle de l'acceptation ; jamais l'égalité de l'empreinte SHA-1 d'une capture, la 163 étant toute
   en `Mode1`), **arrêt de G3c-3** : rapport, pas de réglage au jugé. Les recoupements par empreinte de G3c-0 comparent modèle à
   modèle et restent. Le harnais ne
   couvre ni le câblage du mandataire (le test du mandataire avec un vrai service le fait) ni la caméra à résolution virtuelle du jeu
-  (G2b-4 et G4).
+  (G2b-4 et G4). Résiduel accepté : la ligne de production qui prend le service (`world.Game?.EffectQuadComponent?.Service`) n'est
+  couverte que par la recette G4 (le test du mandataire attache le service à la main, comme pour les fonds). Les mesures d'avant et
+  d'après se font sur le même état du moteur (le checkout porte `f86a981b`).
 - ⏳ **G3c-4 — Vérification** par un vérificateur neuf.
 - **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; `g3c_compare.py` sort 0 pour chaque scène à × 1 et × 3 :
   hors des zones de bruit, pixels opaques exacts, pixels mêlés d'un mode PSX (`Mode0` à `Mode3`) à ±1 par canal (règle de
