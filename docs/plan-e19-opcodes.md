@@ -11918,6 +11918,10 @@ fait pas. Les arrivées en `0x36` sont le portail, F9 et la nouvelle partie ; `0
     - **A2 (P4)** : aucun portail ne mène à 476, 478 ni 416. Seule l'arrivée par `0x53` sur la 476 est mesurée (en `0xD`) ; celles vers 478
       et 416 gardent l'animation du héros au départ et ne joueraient que s'il était alors en `0x36`, ce qui n'est pas démontré. L'affirmation
       « hors chaîne » vaut pour les portails et la 476.
+      **Fermé le 2026-10-09** (mesure, `docs/plan-e19-v-annexe/arrivals-478-416.txt`). Les seuls départs `0x53` de la chaîne vers la 478
+      et la 416 sont 476 `B @758` (arc A2) et 391 `B @540` (arc A6). Les deux enregistrements d'arrivée portent l'animation 0 et posent le
+      héros **au sol** (`PosZ` 16 px, égal au sol de la destination) : la branche en l'air ne peut pas y jouer, quelle que soit
+      l'animation. La recherche s'est faite par les arcs et le plan, pas par un balayage statique de tous les `0x53`.
 - **Acceptation** :
   - (a) 2 rouges, (b) 1 rouge, puis tout vert ;
   - `Alundra.Tests` en Release puis en Debug ; aucun test existant ne bouge, hors le cas remplacé ;

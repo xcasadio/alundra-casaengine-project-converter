@@ -1,0 +1,89 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using Alundra.Scripts;
+using CasaEngine.Framework.Assets.TileMap;
+using Newtonsoft.Json.Linq;
+using Xunit;
+
+namespace Alundra.Tests;
+
+/// <summary>E19.v verification note A2 (throwaway, measurement only): the 0x53 departures towards maps 478 and 416 (arcs A2 of 476 and A6 of 391).</summary>
+[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+public sealed class ZzE19vA2ArrivalsTests
+{
+    private const float BoxHalfX = 21f / 2f, BoxHalfY = 15f / 2f, BoxLocalX = 0.5f, BoxLocalY = 0.5f;
+
+    private static string Ground(string root, uint map, int posX, int posY, int posZ)
+    {
+        using var index = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Maps", "world-index.json")));
+        var relative = index.RootElement.GetProperty(map.ToString(CultureInfo.InvariantCulture)).GetString()!;
+        var worldName = Path.GetFileNameWithoutExtension(relative);
+        var folder = Path.GetDirectoryName(Path.Combine(root, relative))!;
+        var file = Directory.GetFiles(Path.Combine(folder, "tilemap"), "*.tileMap").First();
+        var data = new TileMapData();
+        data.Load(JObject.Parse(File.ReadAllText(file)));
+        if (!AlundraCellsCollisionField.TryCreate(data, worldName, out var field) || field == null)
+        {
+            return $"map {map} ({worldName}): no collision field";
+        }
+
+        var cx = posX / 65536f + BoxLocalX;
+        var cy = posY / 65536f + BoxLocalY;
+        var has = false;
+        var gm = 0f;
+        AlundraTerrainProbe.SampleGroundCorner(field, cx - BoxHalfX, cy - BoxHalfY, ref has, ref gm);
+        AlundraTerrainProbe.SampleGroundCorner(field, cx - BoxHalfX, MathF.BitDecrement(cy + BoxHalfY), ref has, ref gm);
+        AlundraTerrainProbe.SampleGroundCorner(field, MathF.BitDecrement(cx + BoxHalfX), cy - BoxHalfY, ref has, ref gm);
+        AlundraTerrainProbe.SampleGroundCorner(field, MathF.BitDecrement(cx + BoxHalfX), MathF.BitDecrement(cy + BoxHalfY), ref has, ref gm);
+        var z = posZ / 65536.0;
+        return $"Ground under the record on map {map} ({worldName}): hasGround={has} ground={gm.ToString("0.###", CultureInfo.InvariantCulture)} px; record Z={z.ToString("0.###", CultureInfo.InvariantCulture)} px; above={(has ? (z - gm).ToString("0.###", CultureInfo.InvariantCulture) : "n/a")} px";
+    }
+
+    private static string Measure(string label, ArcSpec spec, int pc, int expectedMap, string root)
+    {
+        using var arc = new ArcRun(spec);
+        var seen = new SortedSet<uint>();
+        var first = new Dictionary<uint, int>();
+        arc.OnFrame = () =>
+        {
+            var a = arc.Hero.TargetAnimationId;
+            if (seen.Add(a))
+            {
+                first[a] = arc.Frame;
+            }
+        };
+        arc.RunUntil(() => arc.Has(ScriptHelper.ProgramBMap, pc, 0x53), label);
+        var r = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        Assert.Equal((uint)expectedMap, r.MapIndex);
+        var sb = new StringBuilder();
+        sb.AppendLine($"{label}: ran until 0x53 @{pc} of program B executed (frame {arc.Frame}); ArcRun(RealController) set-up of the existing arc.");
+        sb.AppendLine($"ArrivalRecordForTests: MapIndex={r.MapIndex} PosX={r.PosX} PosY={r.PosY} PosZ={r.PosZ} (px {(r.PosZ / 65536.0).ToString("0.###", CultureInfo.InvariantCulture)}, tileZ {r.PosZ >> 20}) AnimationId=0x{r.AnimationId:X} ({r.AnimationId}) DirectionId={r.DirectionId} EffectId={r.EffectId}");
+        sb.AppendLine($"Hero at departure: TargetAnimationId=0x{arc.Hero.TargetAnimationId:X} CurrentAnimationId=0x{arc.Hero.CurrentAnimationId:X} IsOnGround={arc.Hero.IsOnGround} HeroAirborne={arc.Hero.HeroAirborne}");
+        sb.AppendLine("Distinct hero TargetAnimationId seen at the end of each frame (first frame): " + string.Join(", ", seen.Select(a => $"0x{a:X}@{first[a]}")));
+        sb.AppendLine($"Is the record's animation 0x36? {r.AnimationId == 0x36}");
+        sb.AppendLine(Ground(root, r.MapIndex, r.PosX, r.PosY, r.PosZ));
+        return sb.ToString();
+    }
+
+    [Fact]
+    public void Arrivals_478_And_416()
+    {
+        var root = ProjectRootFinder.Find();
+        var sb = new StringBuilder();
+        sb.AppendLine("E19.v verification note A2: hero animation at the 0x53 departures of the story chain towards 478 and 416.");
+        sb.AppendLine("Departures reached by existing arcs: 476 B[4] 0x53 @758 -> 478 (AlundraVisionArcTests A2); 391 B 0x53 @540 -> 416 (AlundraShipBlockArcTests A6). Both are the only ones found by grep in the arcs and in plan 1.2c/1.2d/1.2g.");
+        sb.AppendLine();
+        sb.Append(Measure("A2 (476 -> 478)", new ArcSpec("A2", "Lars & Melzas Room", "Lars & Melzas Room (beginning Event)-476", new[] { 1640 }, 0, 0, 3, 2499), 758, 478, root));
+        sb.AppendLine();
+        sb.Append(Measure("A6 (391 -> 416)", new ArcSpec("A6", "The Klark", "Ship Klark (night, break, Event)-391", new[] { 1641 }, 15, 28, 7, 2957, RealController: true, Prefabs: true), 540, 416, root));
+        var dir = Path.Combine(Directory.GetParent(root)!.FullName, "docs", "plan-e19-v-annexe");
+        Directory.CreateDirectory(dir);
+        File.WriteAllText(Path.Combine(dir, "arrivals-478-416.txt"), sb.ToString());
+    }
+}

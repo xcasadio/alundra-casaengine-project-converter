@@ -1,0 +1,16 @@
+E19.v verification note A2: hero animation at the 0x53 departures of the story chain towards 478 and 416.
+Departures reached by existing arcs: 476 B[4] 0x53 @758 -> 478 (AlundraVisionArcTests A2); 391 B 0x53 @540 -> 416 (AlundraShipBlockArcTests A6). Both are the only ones found by grep in the arcs and in plan 1.2c/1.2d/1.2g.
+
+A2 (476 -> 478): ran until 0x53 @758 of program B executed (frame 2070); ArcRun(RealController) set-up of the existing arc.
+ArrivalRecordForTests: MapIndex=478 PosX=35389440 PosY=60293120 PosZ=1048576 (px 16, tileZ 1) AnimationId=0x0 (0) DirectionId=0 EffectId=2
+Hero at departure: TargetAnimationId=0x0 CurrentAnimationId=0x0 IsOnGround=1 HeroAirborne=False
+Distinct hero TargetAnimationId seen at the end of each frame (first frame): 0x0@1
+Is the record's animation 0x36? False
+Ground under the record on map 478 (Inoa (Vision Event from Lars and Melzas cutscene)-478): hasGround=True ground=16 px; record Z=16 px; above=0 px
+
+A6 (391 -> 416): ran until 0x53 @540 of program B executed (frame 2464); ArcRun(RealController) set-up of the existing arc.
+ArrivalRecordForTests: MapIndex=416 PosX=65273856 PosY=51904512 PosZ=1048576 (px 16, tileZ 1) AnimationId=0x0 (0) DirectionId=16 EffectId=2
+Hero at departure: TargetAnimationId=0x0 CurrentAnimationId=0x0 IsOnGround=1 HeroAirborne=False
+Distinct hero TargetAnimationId seen at the end of each frame (first frame): 0x0@22, 0x1@1
+Is the record's animation 0x36? False
+Ground under the record on map 416 (Coast beginning-416): hasGround=True ground=16 px; record Z=16 px; above=0 px
