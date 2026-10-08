@@ -1,0 +1,18 @@
+bgm.json keys: ['DurationSeconds', 'File', 'FirstAudibleFrame', 'Frames', 'LoopDetected', 'PeakLeft', 'PeakRight', 'RmsLeft', 'RmsRight', 'SoundIndex']
+one-shot 26 last-frame rms 4290 peak 11585
+one-shot 36 last-frame rms 4047 peak 12396
+one-shot 37 last-frame rms 40 peak 129
+one-shot 38 last-frame rms 3158 peak 8760
+one-shot 40 last-frame rms 19 peak 50
+one-shot 42 last-frame rms 6007 peak 22244
+one-shot 43 last-frame rms 2423 peak 7655
+one-shot 44 last-frame rms 5 peak 11
+fmt (tag, ch, rate, byterate, align, bits) set: {(1, 2, 44100, 176400, 4, 16)} data offsets: {44}
+Frames == file frames on all: True
+total today 700.3 MB (MiB 667.9), option B 1341.9 MB (MiB 1279.7)
+measurable 37 naive step > 2x true step: 30
+  track 4 true 5803 naive 13564
+  track 24 true 313 naive 1090
+  track 25 true 220 naive 1157
+  track 29 true 20 naive 4167
+[(14, 'bgm_014.wav', (1, 2, 44100, 176400, 4, 16), 44, 14400, 14400.0, False)]

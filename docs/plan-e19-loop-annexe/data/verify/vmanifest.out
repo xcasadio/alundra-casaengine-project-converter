@@ -1,0 +1,18 @@
+model(today) == today manifest: True 16440
+new manifest bytes 20352 sha1 8f302c1a90fed03313c54b5755fb525487989048 sha256 3e2db0dce1eb9e50c7cc35780f7a2d71d11a22fed5f414783afd58f18faebce5
+equals predicted: True
+from-old equals predicted from-old: True 20265
+keys oracle ['SoundIndex', 'File', 'Frames', 'DurationSeconds', 'LoopDetected', 'PeakLeft', 'PeakRight', 'RmsLeft', 'RmsRight', 'FirstAudibleFrame', 'Looping', 'LoopStartFrame', 'LoopStartSample']
+changed SoundIndex          0 []
+changed File                0 []
+changed Frames             45 
+changed DurationSeconds    45 
+changed LoopDetected        1 [14]
+changed PeakLeft           16 [5, 11, 13, 17, 18, 19, 20, 21, 23, 24, 29, 30, 32, 33, 39, 41]
+changed PeakRight          15 [6, 7, 11, 15, 17, 18, 19, 21, 22, 29, 31, 32, 39, 41, 46]
+changed RmsLeft            45 
+changed RmsRight           45 
+changed FirstAudibleFrame   0 []
+Looping true 38 false [26, 36, 37, 38, 40, 42, 43]
+LSS != LSF*735: []
+one-shot nulls: True

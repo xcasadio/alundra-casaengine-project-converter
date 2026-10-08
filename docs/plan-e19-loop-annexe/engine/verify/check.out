@@ -1,0 +1,74 @@
+== A. loops.tsv vs bgm.json (J1 = Frames - 1 for looping tracks) ==
+mismatches: [(14, 'LoopDetected false, Frames=14400, J1=14552'), (44, 'one-shot, no bgm.json entry (end 122)')]
+
+== B. WAV headers of the sampled tracks (data-extracted/sound/bgm) ==
+track  1: off=44 rate=44100 ch=2 bits=16 align=4 sampleFrames=5855010 bgm.Frames*735=5855010 equal=True LoopDetected=True
+track  7: off=44 rate=44100 ch=2 bits=16 align=4 sampleFrames=7819665 bgm.Frames*735=7819665 equal=True LoopDetected=True
+track 14: off=44 rate=44100 ch=2 bits=16 align=4 sampleFrames=10584000 bgm.Frames*735=10584000 equal=True LoopDetected=False
+track 25: off=44 rate=44100 ch=2 bits=16 align=4 sampleFrames=5345655 bgm.Frames*735=5345655 equal=True LoopDetected=True
+track 32: off=44 rate=44100 ch=2 bits=16 align=4 sampleFrames=4572435 bgm.Frames*735=4572435 equal=True LoopDetected=True
+track 35: off=44 rate=44100 ch=2 bits=16 align=4 sampleFrames=10102575 bgm.Frames*735=10102575 equal=True LoopDetected=True
+track 45: off=44 rate=44100 ch=2 bits=16 align=4 sampleFrames=280035 bgm.Frames*735=280035 equal=True LoopDetected=True
+track 26: off=44 rate=44100 ch=2 bits=16 align=4 sampleFrames=813645 bgm.Frames*735=813645 equal=True LoopDetected=True
+track 36: off=44 rate=44100 ch=2 bits=16 align=4 sampleFrames=365295 bgm.Frames*735=365295 equal=True LoopDetected=True
+racing_game_music_1.wav: chunks=[('fmt ', 12, 18), ('fact', 38, 4), ('data', 50, 24762332)] rate=22050 data_offset=58 seconds=280.752
+menu_screenclick.wav: chunks=[('fmt ', 12, 16), ('data', 36, 155232)] rate=44100 data_offset=44 seconds=0.880
+
+== C. values the report quotes for L-b (option B, D-E19-73: file [0,J2), loop [J1,J2)) ==
+track  1: J1=7965 J2=15215 LoopStartSample=5854275 fileSampleFrames=11183025 bytes=44732144 (42.7 MiB) loopRegion=5328750 frames (120.83 s) loopStart<frameCount=True
+track  7: J1=10638 J2=21192 LoopStartSample=7818930 fileSampleFrames=15576120 bytes=62304524 (59.4 MiB) loopRegion=7757190 frames (175.90 s) loopStart<frameCount=True
+track 14: J1=14552 J2=27204 LoopStartSample=10695720 fileSampleFrames=19994940 bytes=79979804 (76.3 MiB) loopRegion=9299220 frames (210.87 s) loopStart<frameCount=True
+track 25: J1=7272 J2=13186 LoopStartSample=5344920 fileSampleFrames=9691710 bytes=38766884 (37.0 MiB) loopRegion=4346790 frames (98.57 s) loopStart<frameCount=True
+track 32: J1=6220 J2=12273 LoopStartSample=4571700 fileSampleFrames=9020655 bytes=36082664 (34.4 MiB) loopRegion=4448955 frames (100.88 s) loopStart<frameCount=True
+track 35: J1=13744 J2=20549 LoopStartSample=10101840 fileSampleFrames=15103515 bytes=60414104 (57.6 MiB) loopRegion=5001675 frames (113.42 s) loopStart<frameCount=True
+track 45: J1=380 J2=718 LoopStartSample=279300 fileSampleFrames=527730 bytes=2110964 (2.0 MiB) loopRegion=248430 frames (5.63 s) loopStart<frameCount=True
+track 26: one-shot, end 1106 -> no loop start (Looping false)
+track 36: one-shot, end 496 -> no loop start (Looping false)
+track 46: J1=380 J2=718 LoopStartSample=279300 fileSampleFrames=527730 bytes=2110964 (2.0 MiB) loopRegion=248430 frames (5.63 s) loopStart<frameCount=True
+max sample frame (J2*735) = 19994940  fits int32 = True; max byte offset 79979804
+shortest loop region: track 45 338 frames = 248430 sample frames (5.63 s)
+track 14 binary (verify.md row 10): J1 14551 -> 10694985 ; analyser 14552 -> 10695720
+BGM bytes today 699960120 (667.5 MiB); option B 1341541620 (1279.4 MiB) [one-shots kept at end+1; track 44 excluded since X2]
+
+== D. own model of FillQueue / WavStreamReader against FakeAudioBackend ==
+L1 Play only (16 KiB, ls 600): result=None sizes=[4000, 1600, 1600] total=7200 finishing=False | formula holds over 1800 frames
+L1 + 1 round: result=None sizes=[4000, 1600, 1600, 1600, 1600, 1600] total=12000 finishing=False | formula holds over 3000 frames
+L1 today (ls ignored -> 0): result=None sizes=[4000, 4000, 4000] total=12000 finishing=False | formula holds over 3000 frames
+L2 1024-B, 2 rounds: result=None sizes=[1024, 1024, 1024, 928, 1024, 576, 1024, 576, 1024] total=8224 finishing=False | formula holds over 2056 frames
+L3 ls 0, 1 round: result=None sizes=[4000, 4000, 4000, 4000, 4000, 4000] total=24000 finishing=False | formula holds over 6000 frames
+L4 not looped, ls 600: result=None sizes=[4000] total=4000 finishing=True
+L5 ls 1000 -> fallback 0: result=None sizes=[4000, 4000, 4000] total=12000 finishing=False | formula holds over 3000 frames
+L5 ls 5000000 -> fallback 0: result=None sizes=[4000, 4000, 4000] total=12000 finishing=False | formula holds over 3000 frames
+B1 today: zero pending, not looped, 65536 frames: result=None sizes=[16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384] total=262144 finishing=True
+B1 proposed bound 3: result=None sizes=[16384, 16384, 16384, 16384, 16384, 16384] total=98304 finishing=False
+   B1 proposed totals per step: [49152, 98304]
+B2 today: zero pending, looped: result=SPINS sizes=n/a total=n/a finishing=False
+B2 proposed: result=None sizes=[4000, 1600, 1600, 1600, 1600, 1600] total=12000 finishing=False | formula holds over 3000 frames
+   B2 proposed sizes per step: [[4000, 1600, 1600], [4000, 1600, 1600, 1600, 1600, 1600]]
+
+header fmt18 + LIST6: data offset 60; naive byte 2444 -> data byte 2384 -> frame 596.0
+W1: Position after SeekToSample(600) = 2400 ; next 16 bytes = (600, 10600, 601, 10601, 602, 10602, 603, 10603) ; Position = 2416
+
+== E. seam buffers under option B with 16 KiB buffers (4096 stereo frames) ==
+smallest steady-state seam buffers (frames): [(134, 6, 1417), (211, 8, 1257), (459, 35, 1563), (699, 32, 1263), (712, 16, 2710), (732, 20, 2506)]
+tracks with steady seam buffer < 1024 frames (23 ms): [(6, 134), (8, 211), (35, 459), (32, 699), (16, 712), (20, 732), (41, 738), (39, 757), (12, 768), (25, 934), (15, 954)]
+track 6: queue of 3 = [playing, full, 134-frame tail] -> worst-case margin about 95.9 ms instead of 185.8 ms (target 3)
+
+== F. queue margins ==
+44100 Hz target 3: best 278.6 ms worst 185.8 ms, 48 KiB
+44100 Hz target 23: best 2136.2 ms worst 2043.4 ms, 368 KiB
+44100 Hz target 24: best 2229.1 ms worst 2136.2 ms, 384 KiB
+22050 Hz target 3: best 557.3 ms worst 371.5 ms, 48 KiB
+22050 Hz target 23: best 4272.5 ms worst 4086.7 ms, 368 KiB
+22050 Hz target 24: best 4458.2 ms worst 4272.5 ms, 384 KiB
+
+== G. demo WAV ==
+132300 frames * 4 + 60 = 529260
+
+== H. maps sharing a track (loops.tsv used_by_map_entry vs alundra-project/Maps/music-index.json) ==
+music-index.json top-level type: dict ['0', '1', '2', '3', '4']
+track 7: 20 maps in loops.tsv
+track 16: 137 maps in loops.tsv
+track 21: 56 maps in loops.tsv
+track 25: 2 maps in loops.tsv
+track 30: 48 maps in loops.tsv

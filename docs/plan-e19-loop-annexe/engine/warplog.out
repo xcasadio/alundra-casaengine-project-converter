@@ -1,0 +1,66 @@
+line     3  15:48:10 -> 15:48:30  span 20s (bounds 19-21s)  lines 1196  loads 1119
+    before: [Info] Asset catalog loaded: 22417 assets from D:\development\repo\alundra-casaengine-project-converter\alundra
+    after : 15:48:34 [Debug] AlundraWorldProxy: entity[10] -> FlagToDestroy (effectId=-1).
+line  1262  15:49:29 -> 15:49:29  span 0s (bounds 0-1s)  lines  247  loads  160
+    before: [Info] AlundraWarpDirector: departure through portal 1 to map 390, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:49:31 [Info] AlundraWarpDirector: departure through portal 1 to map 389, TransitionEffectId=0 (treated as effect 0 - D-T-7).
+line  1510  15:49:31 -> 15:49:31  span 0s (bounds 0-1s)  lines  140  loads   51
+    before: [Info] AlundraWarpDirector: departure through portal 1 to map 389, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:50:10 [Info] AlundraWarpDirector: departure through portal 1 to map 390, TransitionEffectId=0 (treated as effect 0 - D-T-7).
+line  1651  15:50:10 -> 15:50:11  span 1s (bounds 0-2s)  lines  245  loads  160
+    before: [Info] AlundraWarpDirector: departure through portal 1 to map 390, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:50:20 [Info] AlundraWarpDirector: departure through portal 1 to map 389, TransitionEffectId=0 (treated as effect 0 - D-T-7).
+line  1897  15:50:21 -> 15:50:35  span 14s (bounds 13-15s)  lines  167  loads   78
+    before: [Info] AlundraWarpDirector: departure through portal 1 to map 389, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:50:41 [Info] AlundraWarpDirector: departure through portal 2 to map 390, TransitionEffectId=0 (treated as effect 0 - D-T-7).
+line  2065  15:50:42 -> 15:50:42  span 0s (bounds 0-1s)  lines  245  loads  160
+    before: [Info] AlundraWarpDirector: departure through portal 2 to map 390, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:50:50 [Info] AlundraWarpDirector: departure through portal 2 to map 389, TransitionEffectId=0 (treated as effect 0 - D-T-7).
+line  2311  15:50:51 -> 15:50:51  span 0s (bounds 0-1s)  lines  140  loads   51
+    before: [Info] AlundraWarpDirector: departure through portal 2 to map 389, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:50:56 [Info] AlundraWarpDirector: departure through portal 1 to map 390, TransitionEffectId=0 (treated as effect 0 - D-T-7).
+line  2452  15:50:56 -> 15:50:57  span 1s (bounds 0-2s)  lines  245  loads  160
+    before: [Info] AlundraWarpDirector: departure through portal 1 to map 390, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:50:57 [Info] AlundraWarpDirector: departure through portal 1 to map 389, TransitionEffectId=0 (treated as effect 0 - D-T-7).
+line  2698  15:50:57 -> 15:50:58  span 1s (bounds 0-2s)  lines  140  loads   51
+    before: [Info] AlundraWarpDirector: departure through portal 1 to map 389, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:51:02 [Info] AlundraWarpDirector: departure through portal 0 to map 390, TransitionEffectId=0 (treated as effect 0 - D-T-7).
+line  2839  15:51:02 -> 15:51:03  span 1s (bounds 0-2s)  lines  245  loads  160
+    before: [Info] AlundraWarpDirector: departure through portal 0 to map 390, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:51:08 [Info] AlundraWarpDirector: departure through portal 0 to map 389, TransitionEffectId=0 (treated as effect 0 - D-T-7).
+line  3085  15:51:08 -> 15:51:09  span 1s (bounds 0-2s)  lines  140  loads   51
+    before: [Info] AlundraWarpDirector: departure through portal 0 to map 389, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:51:13 [Info] AlundraWarpDirector: departure through portal 3 to map 390, TransitionEffectId=0 (treated as effect 0 - D-T-7).
+line  3226  15:51:14 -> 15:51:14  span 0s (bounds 0-1s)  lines  245  loads  160
+    before: [Info] AlundraWarpDirector: departure through portal 3 to map 390, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:51:22 [Info] AlundraWarpDirector: departure through opcode 0x53 (ChangeMap) to map index 476, TransitionEffectId=4.
+line  3472  15:51:22 -> 15:51:22  span 0s (bounds 0-1s)  lines   79  loads   37
+    before: [Info] AlundraWarpDirector: departure through opcode 0x53 (ChangeMap) to map index 476, TransitionEffectId=4.
+    after : 15:51:26 [Warning] AlundraEventProgramRunner: opcode 0x4c ('Set text flags') not implemented; skipping by its known size (2) (V1 deviation).
+line  3557  15:51:46 -> 15:51:48  span 2s (bounds 1-3s)  lines 1333  loads 1245
+    before: [Info] AlundraWarpDirector: departure through opcode 0x53 (ChangeMap) to map index 478, TransitionEffectId=2.
+    after : 15:51:52 [Debug] AlundraWorldProxy: entity[3] -> FlagToDestroy (search-destroyed).
+line  4897  15:52:33 -> 15:52:33  span 0s (bounds 0-1s)  lines   61  loads   12
+    before: [Info] AlundraWarpDirector: departure through opcode 0x53 (ChangeMap) to map index 476, TransitionEffectId=0.
+    after : 15:52:35 [Warning] AlundraEventProgramRunner: opcode 0x4c ('Set text flags') not implemented; skipping by its known size (2) (V1 deviation).
+line  5058  15:53:15 -> 15:53:18  span 3s (bounds 2-4s)  lines  111  loads   52
+    before: [Info] AlundraWarpDirector: departure through opcode 0x53 (ChangeMap) to map index 392, TransitionEffectId=4.
+    after : 15:54:48 [Info] AlundraWarpDirector: departure through portal 0 to map 391, TransitionEffectId=0 (treated as effect 0 - D-T-7).
+line  5170  15:54:48 -> 15:54:49  span 1s (bounds 0-2s)  lines  323  loads  267
+    before: [Info] AlundraWarpDirector: departure through portal 0 to map 391, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:54:52 [Warning] AlundraEventProgramRunner: opcode 0x4c ('Set text flags') not implemented; skipping by its known size (2) (V1 deviation).
+line  5507  15:55:12 -> 15:55:34  span 22s (bounds 21-23s)  lines  132  loads   98
+    before: [Info] AlundraWarpDirector: departure through opcode 0x53 (ChangeMap) to map index 416, TransitionEffectId=2.
+    after : 15:55:48 [Info] AlundraWarpDirector: departure through opcode 0x53 (ChangeMap) to map index 163, TransitionEffectId=2.
+line  5640  15:55:48 -> 15:55:48  span 0s (bounds 0-1s)  lines  317  loads  250
+    before: [Info] AlundraWarpDirector: departure through opcode 0x53 (ChangeMap) to map index 163, TransitionEffectId=2.
+    after : 15:58:51 [Debug] AlundraWorldProxy: entity[0] -> FlagToDestroy (search-destroyed).
+line  5969  15:59:05 -> 15:59:05  span 0s (bounds 0-1s)  lines   87  loads   15
+    before: [Info] AlundraWarpDirector: departure through portal 2 to map 163, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:59:12 [Info] AlundraWarpDirector: departure through portal 0 to map 162, TransitionEffectId=0 (treated as effect 0 - D-T-7).
+line  6057  15:59:13 -> 15:59:14  span 1s (bounds 0-2s)  lines  734  loads  654
+    before: [Info] AlundraWarpDirector: departure through portal 0 to map 162, TransitionEffectId=0 (treated as effect 0 - 
+    after : 15:59:22 [Info] AlundraWarpDirector: departure of a loaded save to map 163 (effect 0).
+line  6793  15:59:22 -> 15:59:22  span 0s (bounds 0-1s)  lines  403  loads  325
+    before: [Info] AlundraSaveGameDirector: F9: slot 'slot1' loaded and validated; departing to map 163 tile (36, 9, 2), ap
+    after : <eof>

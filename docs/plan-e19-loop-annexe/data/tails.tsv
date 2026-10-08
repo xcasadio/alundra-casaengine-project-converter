@@ -1,0 +1,9 @@
+idx	End	today_Frames	endframe_peak	endframe_rms	first_silent_frame_after_end_rel	last_audible_frame_after_end_rel	audible_frames_after_end	last_nonzero_frame_after_end_rel	rendered_after_end	max_silent_run_0_end
+26	1106	1107	11585	4290.0	113	112	113	1799	1800	39
+36	496	497	12408	4046.4	102	103	103	1799	1800	26
+37	605	606	129	40.1	14	13	14	1799	1800	18
+38	419	420	8760	3157.5	106	110	108	1799	1800	20
+40	540	541	50	18.5	0	1	1	1799	1800	18
+42	663	664	22466	6008.0	105	107	107	1799	1800	31
+43	807	808	7667	2423.5	92	91	92	1799	1800	45
+44	122	123	0	0.0	0	-1	0	-1	1800	123

@@ -1,0 +1,14 @@
+D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/CasaEngine.Demos/Content/Audio/menu_screenclick.wav
+  chunks [('fmt ', 12, 16), ('data', 36, 155232)]
+  fmt tag=1 ch=2 rate=44100 align=4 bits=16  data_offset=44 data_bytes=155232 frames=38808 seconds=0.880
+  rms/0.1s: [5095, 9806, 7607, 4514, 2613, 373, 179, 77, 18]
+D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/CasaEngine.Demos/Content/Audio/racing_game_music_1.wav
+  chunks [('fmt ', 12, 18), ('fact', 38, 4), ('data', 50, 24762332)]
+  fmt tag=1 ch=2 rate=22050 align=4 bits=16  data_offset=58 data_bytes=24762332 frames=6190583 seconds=280.752
+  rms first 1 s/0.1: [4565, 5363, 4936, 4811, 5114, 6775, 5642, 4447, 3829, 4716]
+  rms last 1 s/0.1: [385, 727, 480, 235, 152, 291, 295, 94, 40, 9]
+  first frame (48, 48) last frame (0, 0)
+D:/development/repo/alundra-casaengine-project-converter/data-extracted/sound/bgm/bgm_045.wav
+  chunks [('fmt ', 12, 16), ('data', 36, 1120140)]
+  fmt tag=1 ch=2 rate=44100 align=4 bits=16  data_offset=44 data_bytes=1120140 frames=280035 seconds=6.350
+  rms/0.1s: [901, 998, 1090, 917, 969, 1101, 1201, 2506, 3218, 3922, 4238, 3850, 3505, 3364, 3118, 2674, 2305, 2329, 1920, 2297, 2189, 1997, 1778, 1855, 1461, 1841, 1607, 1595, 1679, 1794, 1608, 1912, 2037, 1853, 1698, 1798, 1584, 1668, 1624, 1725, 1593, 1691, 1588, 1788, 2021, 1854, 1605, 1627, 1597, 1752, 1861, 1781, 1590, 1660, 1699, 1871, 2154, 1825, 1739, 1750, 1635, 1808, 1877, 1693]

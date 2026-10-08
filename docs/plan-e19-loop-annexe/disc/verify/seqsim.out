@@ -1,0 +1,46 @@
+1 0x5a4800 T0 141 LS 714 J [7965, 15215, 22466] end None cnt (98, 127, 714) | ana J [7965, 15215, 22466] end None | bgm.json Frames 7966 True
+2 0x5d4800 T0 125 LS 114 J [3992, 7870, 11748] end None cnt (98, 127, 114) | ana J [3992, 7870, 11748] end None | bgm.json Frames 3993 True
+3 0x5ee800 T0 251 LS 18 J [2313, 4607, 6901] end None cnt (98, 127, 18) | ana J [2313, 4607, 6901] end None | bgm.json Frames 2314 True
+4 0x60e000 T0 120 LS 29 J [5874, 11718, 17563] end None cnt (98, 127, 29) | ana J [5874, 11718, 17563] end None | bgm.json Frames 5875 True
+5 0x639800 T0 104 LS 35 J [8019, 16002, 23986] end None cnt (98, 127, 35) | ana J [8019, 16002, 23986] end None | bgm.json Frames 8020 True
+6 0x663000 T0 69 LS 35 J [5725, 11415, 17105] end None cnt (98, 127, 35) | ana J [5725, 11415, 17105] end None | bgm.json Frames 5726 True
+7 0x67f800 T0 171 LS 83 J [10638, 21192, 31746] end None cnt (98, 127, 83) | ana J [10638, 21192, 31746] end None | bgm.json Frames 10639 True
+8 0x6af000 T0 88 LS 29 J [5290, 10551, 15812] end None cnt (98, 127, 29) | ana J [5290, 10551, 15812] end None | bgm.json Frames 5291 True
+9 0x6d0800 T0 96 LS 35 J [6402, 12768, 19135] end None cnt (98, 127, 35) | ana J [6402, 12768, 19135] end None | bgm.json Frames 6403 True
+10 0x6ee800 T0 80 LS 63 J [5955, 11848, 17741] end None cnt (98, 127, 63) | ana J [5955, 11848, 17741] end None | bgm.json Frames 5956 True
+11 0x70e000 T0 69 LS 204 J [5455, 10707, 15958] end None cnt (98, 127, 204) | ana J [5455, 10707, 15958] end None | bgm.json Frames 5456 True
+12 0x734000 T0 75 LS 126 J [3454, 6782, 10110] end None cnt (98, 127, 127) | ana J [3454, 6782, 10110] end None | bgm.json Frames 3455 True
+13 0x73d000 T0 75 LS 127 J [6567, 13007, 19447] end None cnt (98, 127, 127) | ana J [6567, 13007, 19447] end None | bgm.json Frames 6568 True
+14 0x75c800 T0 144 LS 1899 J [14551, 27202, 39853] end None cnt (98, 127, 1899) | ana J [14552, 27204, 39856] end None | bgm.json Frames 14400 False
+15 0x790000 T0 93 LS 87 J [7644, 15202, 22759] end None cnt (98, 127, 87) | ana J [7644, 15202, 22759] end None | bgm.json Frames 7645 True
+16 0x7ba800 T0 152 LS 441 J [8178, 15914, 23651] end None cnt (98, 127, 441) | ana J [8178, 15914, 23651] end None | bgm.json Frames 8179 True
+17 0x7e7000 T0 112 LS 63 J [7949, 15834, 23719] end None cnt (98, 127, 63) | ana J [7949, 15834, 23719] end None | bgm.json Frames 7950 True
+18 0x810800 T0 85 LS 35 J [5117, 10199, 15280] end None cnt (98, 127, 35) | ana J [5117, 10199, 15280] end None | bgm.json Frames 5118 True
+19 0x838800 T0 229 LS 104 J [3835, 7566, 11296] end None cnt (98, 127, 104) | ana J [3835, 7566, 11296] end None | bgm.json Frames 3836 True
+20 0x85e000 T0 149 LS 47 J [5330, 10614, 15897] end None cnt (98, 127, 47) | ana J [5330, 10614, 15897] end None | bgm.json Frames 5331 True
+21 0x888800 T0 85 LS 35 J [6754, 13474, 20193] end None cnt (98, 127, 35) | ana J [6754, 13474, 20193] end None | bgm.json Frames 6755 True
+22 0x8ac800 T0 88 LS 35 J [7071, 14107, 21142] end None cnt (98, 127, 35) | ana J [7071, 14107, 21142] end None | bgm.json Frames 7072 True
+23 0x8ca800 T0 88 LS 44 J [7404, 14764, 22124] end None cnt (98, 127, 44) | ana J [7404, 14764, 22124] end None | bgm.json Frames 7405 True
+24 0x8f5800 T0 144 LS 599 J [4599, 8598, 12598] end None cnt (98, 127, 599) | ana J [4599, 8598, 12598] end None | bgm.json Frames 4600 True
+25 0x91f800 T0 69 LS 1358 J [7272, 13186, 19099] end None cnt (98, 127, 1359) | ana J [7272, 13186, 19099] end None | bgm.json Frames 7273 True
+26 0x943800 T0 80 LS None J [] end 1106 cnt None | ana J [] end 1106 | bgm.json Frames 1107 True
+27 0x96c000 T0 85 LS 487 J [7263, 14039, 20814] end None cnt (98, 127, 487) | ana J [7263, 14039, 20814] end None | bgm.json Frames 7264 True
+28 0x996800 T0 64 LS 148 J [5871, 11594, 17317] end None cnt (98, 127, 148) | ana J [5871, 11594, 17317] end None | bgm.json Frames 5872 True
+29 0x9ab800 T0 139 LS 103 J [5282, 10462, 15641] end None cnt (98, 127, 103) | ana J [5282, 10462, 15641] end None | bgm.json Frames 5283 True
+30 0x9d1000 T0 107 LS 483 J [10215, 19947, 29678] end None cnt (98, 127, 484) | ana J [10215, 19947, 29678] end None | bgm.json Frames 10216 True
+31 0x9f9000 T0 56 LS 441 J [6000, 11559, 17118] end None cnt (98, 127, 441) | ana J [6000, 11559, 17118] end None | bgm.json Frames 6001 True
+32 0xa1e000 T0 85 LS 168 J [6220, 12273, 18325] end None cnt (98, 127, 168) | ana J [6220, 12273, 18325] end None | bgm.json Frames 6221 True
+33 0xa45800 T0 128 LS 50 J [5900, 11750, 17600] end None cnt (98, 127, 51) | ana J [5900, 11750, 17600] end None | bgm.json Frames 5901 True
+34 0xa72800 T0 97 LS 109 J [3746, 7383, 11019] end None cnt (98, 127, 109) | ana J [3746, 7383, 11019] end None | bgm.json Frames 3747 True
+35 0xa84800 T0 73 LS 6938 J [13744, 20549, 27355] end None cnt (98, 127, 6939) | ana J [13744, 20549, 27355] end None | bgm.json Frames 13745 True
+36 0xa9c800 T0 179 LS None J [] end 496 cnt None | ana J [] end 496 | bgm.json Frames 497 True
+37 0xabe000 T0 73 LS None J [] end 605 cnt None | ana J [] end 605 | bgm.json Frames 606 True
+38 0xadc000 T0 229 LS None J [] end 419 cnt None | ana J [] end 419 | bgm.json Frames 420 True
+39 0xafe800 T0 99 LS 35 J [2255, 4474, 6694] end None cnt (98, 127, 35) | ana J [2255, 4474, 6694] end None | bgm.json Frames 2256 True
+40 0xb08000 T0 101 LS None J [] end 540 cnt None | ana J [] end 540 | bgm.json Frames 541 True
+41 0xb20800 T0 27 LS 35 J [2943, 5853, 8762] end None cnt (98, 127, 35) | ana J [2943, 5853, 8762] end None | bgm.json Frames 2944 True
+42 0xb26800 T0 152 LS None J [] end 663 cnt None | ana J [] end 663 | bgm.json Frames 664 True
+43 0xb4a800 T0 107 LS None J [] end 807 cnt None | ana J [] end 807 | bgm.json Frames 808 True
+44 0xb62000 T0 67 LS None J [] end 122 cnt None | ana J [] end 122 | bgm.json Frames 123 True
+45 0xb7c000 T0 227 LS 42 J [380, 718, 1057] end None cnt (6, 127, 42) | ana J [380, 718, 1057] end None | bgm.json Frames 381 True
+46 0xb8d800 T0 227 LS 42 J [380, 718, 1057] end None cnt (6, 127, 42) | ana J [380, 718, 1057] end None | bgm.json Frames 381 True

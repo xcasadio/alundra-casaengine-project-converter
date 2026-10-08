@@ -1,0 +1,46 @@
+1 P [7251, 7250, 7251] seq12 True seq23 True DIFF notes12 {'ch6 bend None->64': 83, 'ch2 bend None->64': 37, 'ch4 vol 110->80': 106} notes23 {} extraJ1 [((12, 45), ('retrigger', 1834))] lostJ1 [(11, 49), (12, 74)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 2368} jit23 {1: 6011}
+2 P [3878, 3878, 3878] seq12 True seq23 True DIFF notes12 {'ch1 bend None->64': 1, 'ch2 bend None->64': 4, 'ch3 bend None->64': 2} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {} jit23 {}
+3 P [2295, 2294, 2294] seq12 True seq23 True DIFF notes12 {'ch2 bend None->0': 12} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 2978} jit23 {1: 869}
+4 P [5845, 5844, 5845] seq12 True seq23 True same notes12 {} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 2344} jit23 {1: 4836}
+5 P [7984, 7983, 7984] seq12 True seq23 True DIFF notes12 {'ch3 bend None->65': 43} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 2025} jit23 {1: 3775}
+6 P [5690, 5690, 5690] seq12 True seq23 True DIFF notes12 {'ch0 pan 64->107': 1, 'ch1 pan 64->107': 1} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {1: 226} jit23 {1: 392}
+7 P [10555, 10554, 10554] seq12 True seq23 True DIFF notes12 {'ch3 vol 100->21': 1, 'ch3 bend None->64': 30, 'ch4 vol 100->21': 198, 'ch8 vol 100->0': 48, 'ch0 bend None->68': 6, 'ch1 bend None->64': 14} notes23 {} extraJ1 [] lostJ1 [(9, 60), (9, 63), (13, 49), (14, 66)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 6125} jit23 {1: 3844}
+8 P [5261, 5261, 5261] seq12 True seq23 True DIFF notes12 {'ch0 bend None->68': 4, 'ch8 bend None->64': 1} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {1: 379} jit23 {1: 239}
+9 P [6367, 6366, 6367] seq12 True seq23 True DIFF notes12 {'ch1 bend None->64': 1, 'ch6 vol 100->0': 1} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 2417} jit23 {1: 2342}
+10 P [5892, 5893, 5893] seq12 True seq23 True DIFF notes12 {'ch6 vol 100->1': 1} notes23 {} extraJ1 [((7, 52), ('retrigger', 3616))] lostJ1 [(4, 64)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {1: 971} jit23 {-1: 614}
+11 P [5251, 5252, 5251] seq12 True seq23 True DIFF notes12 {'ch6 bend None->64': 10, 'ch9 bend None->64': 1} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {1: 1888} jit23 {-1: 2384}
+12 P [3328, 3328, 3328] seq12 True seq23 True DIFF notes12 {'ch0 bend None->0': 5, 'ch4 bend None->0': 5, 'ch1 bend None->0': 5} notes23 {} extraJ1 [] lostJ1 [(2, 57), (2, 62), (2, 67), (3, 48), (3, 53)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {} jit23 {}
+13 P [6440, 6440, 6440] seq12 True seq23 True DIFF notes12 {'ch1 pan 64->127': 1, 'ch5 bend None->64': 1} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {1: 563} jit23 {1: 73}
+14 P [12652, 12651, 12651] seq12 True seq23 True DIFF notes12 {'ch2 bend None->64': 282, 'ch3 bend None->64': 244, 'ch0 pan 64->127': 1} notes23 {} extraJ1 [] lostJ1 [(11, 28)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 8718} jit23 {1: 2374}
+15 P [7557, 7558, 7557] seq12 True seq23 True DIFF notes12 {'ch5 vol 100->110': 13, 'ch1 bend None->64': 1} notes23 {} extraJ1 [] lostJ1 [(9, 30), (10, 64)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {1: 1796} jit23 {-1: 2307}
+16 P [7737, 7736, 7737] seq12 True seq23 True DIFF notes12 {'ch7 vol 75->100': 1, 'ch11 bend None->64': 6, 'ch0 bend None->64': 10, 'ch4 bend None->64': 16, 'ch1 pan 64->127': 1} notes23 {} extraJ1 [] lostJ1 [(6, 94), (9, 49)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 2988} jit23 {1: 3245}
+17 P [7886, 7885, 7885] seq12 True seq23 True DIFF notes12 {'ch8 bend None->126': 8, 'ch3 pan 80->0': 1, 'ch3 bend None->64': 233, 'ch1 bend None->32': 15} notes23 {} extraJ1 [] lostJ1 [(2, 68), (2, 76)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 3876} jit23 {1: 1523}
+18 P [5082, 5082, 5081] seq12 True seq23 True DIFF notes12 {'ch0 vol 100->0': 1, 'ch1 vol 100->0': 1, 'ch3 pan 64->127': 1, 'ch8 vol 100->0': 1, 'ch2 vol 100->2': 16, 'ch2 bend None->64': 4} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 737} jit23 {-1: 700}
+19 P [3731, 3731, 3730] seq12 True seq23 True DIFF notes12 {'ch3 bend None->64': 80, 'ch4 bend None->64': 66, 'ch0 bend None->65': 1, 'ch10 pan 64->127': 1} notes23 {} extraJ1 [] lostJ1 [(9, 36)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 799} jit23 {-1: 833}
+20 P [5283, 5284, 5283] seq12 True seq23 True same notes12 {} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {1: 876} jit23 {-1: 3232}
+21 P [6719, 6720, 6719] seq12 True seq23 True DIFF notes12 {'ch7 bend None->64': 249, 'ch10 pan 64->20': 1, 'ch0 bend None->64': 1, 'ch1 bend None->64': 1, 'ch5 pan 64->90': 1} notes23 {} extraJ1 [((7, 40), ('retrigger', 114))] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {1: 2024} jit23 {-1: 2885}
+22 P [7036, 7036, 7035] seq12 True seq23 True same notes12 {} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 214} jit23 {-1: 297}
+23 P [7360, 7360, 7360] seq12 True seq23 True DIFF notes12 {'ch1 bend None->64': 1} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 1, 1: 330} jit23 {1: 53}
+24 P [4000, 3999, 4000] seq12 True seq23 True DIFF notes12 {'ch1 bend None->64': 1, 'ch7 bend None->64': 158} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 2214} jit23 {1: 3435}
+25 P [5914, 5914, 5913] seq12 True seq23 True DIFF notes12 {'ch9 vol 110->100': 14, 'ch11 bend None->64': 2, 'ch5 pan 64->15': 8} notes23 {} extraJ1 [((5, 60), ('retrigger', 4365))] lostJ1 [(5, 65), (7, 53), (7, 58), (8, 46), (8, 51), (8, 61)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 923} jit23 {-1: 521}
+26 one-shot end 1106
+27 P [6776, 6776, 6775] seq12 True seq23 True DIFF notes12 {'ch7 bend None->0': 26, 'ch0 bend None->64': 2} notes23 {} extraJ1 [] lostJ1 [(1, 73), (1, 76), (10, 59), (10, 60)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 482} jit23 {-1: 466}
+28 P [5723, 5723, 5723] seq12 True seq23 True DIFF notes12 {'ch8 bend None->0': 1, 'ch3 bend None->127': 1} notes23 {} extraJ1 [] lostJ1 [(7, 91)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {1: 236} jit23 {1: 101}
+29 P [5179, 5180, 5179] seq12 True seq23 True DIFF notes12 {'ch6 bend 127->64': 15, 'ch3 bend None->75': 146, 'ch0 bend None->0': 29, 'ch1 bend None->64': 13} notes23 {} extraJ1 [] lostJ1 [(6, 44)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {1: 1417} jit23 {-1: 1442}
+30 P [9732, 9732, 9731] seq12 True seq23 True DIFF notes12 {'ch2 bend None->69': 62} notes23 {} extraJ1 [] lostJ1 [(5, 78), (5, 84), (5, 89), (6, 59), (7, 48), (10, 60)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 615} jit23 {-1: 902}
+31 P [5559, 5559, 5559] seq12 True seq23 True DIFF notes12 {'ch5 pan 64->0': 1, 'ch0 bend None->68': 9} notes23 {} extraJ1 [((6, 55), ('retrigger', 305))] lostJ1 [(2, 64), (3, 81), (3, 84)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {1: 693} jit23 {1: 462}
+32 P [6052, 6053, 6052] seq12 True seq23 True DIFF notes12 {'ch7 bend None->64': 122, 'ch2 bend None->64': 45, 'ch6 vol 100->110': 11} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {1: 497} jit23 {-1: 3819}
+33 P [5850, 5850, 5850] seq12 True seq23 True DIFF notes12 {} notes23 {} extraJ1 [] lostJ1 [(0, 87), (6, 75), (10, 87)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 733} jit23 {-1: 978}
+34 P [3637, 3637, 3636] seq12 True seq23 True DIFF notes12 {'ch3 pan 64->30': 1, 'ch1 pan 64->40': 1, 'ch2 pan 64->40': 1} notes23 {} extraJ1 [] lostJ1 [(9, 60)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 857} jit23 {-1: 918}
+35 P [6806, 6805, 6806] seq12 True seq23 True DIFF notes12 {} notes23 {} extraJ1 [] lostJ1 [(6, 66), (6, 69), (6, 72), (6, 77)] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 930} jit23 {1: 855}
+36 one-shot end 496
+37 one-shot end 605
+38 one-shot end 419
+39 P [2220, 2219, 2220] seq12 True seq23 True DIFF notes12 {'ch2 bend None->64': 1} notes23 {} extraJ1 [] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {-1: 218} jit23 {1: 434}
+40 one-shot end 540
+41 P [2908, 2910, 2909] seq12 True seq23 True DIFF notes12 {} notes23 {} extraJ1 [((2, 72), ('retrigger', 2610))] lostJ1 [] J1vsJ2 ['(0, 98):None->127'] onJ1==onJ2 True jit12 {1: 340, 2: 44} jit23 {-1: 351}
+42 one-shot end 663
+43 one-shot end 807
+44 one-shot end 122
+45 P [338, 338, 339] seq12 True seq23 True DIFF notes12 {} notes23 {} extraJ1 [] lostJ1 [(2, 60)] J1vsJ2 ['(0, 6):None->127'] onJ1==onJ2 True jit12 {1: 7} jit23 {1: 14}
+46 P [338, 338, 339] seq12 True seq23 True DIFF notes12 {} notes23 {} extraJ1 [] lostJ1 [(1, 48), (1, 60)] J1vsJ2 ['(0, 6):None->127'] onJ1==onJ2 True jit12 {1: 6} jit23 {1: 16}

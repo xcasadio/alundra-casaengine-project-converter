@@ -1,0 +1,68 @@
+T-L1 loop start 600 - after Play
+  buffers=3 bytes=[4000, 1600, 1600] total=7200
+  frames=['[0..999]', '[600..999]', '[600..999]']
+T-L1 loop start 600 - after ConsumeBuffers(3) + Update
+  buffers=6 bytes=[4000, 1600, 1600, 1600, 1600, 1600] total=12000
+  frames=['[0..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]']
+  concatenation matches f(i) over 3000 frames
+T-L3 loop start 0 (default) - after Play
+  buffers=3 bytes=[4000, 4000, 4000] total=12000
+  frames=['[0..999]', '[0..999]', '[0..999]']
+T-L3 loop start 0 (default) - after ConsumeBuffers(3) + Update
+  buffers=6 bytes=[4000, 4000, 4000, 4000, 4000, 4000] total=24000
+  frames=['[0..999]', '[0..999]', '[0..999]', '[0..999]', '[0..999]', '[0..999]']
+  concatenation matches f(i) over 6000 frames
+T-L2 1024-B buffers - after Play
+  buffers=3 bytes=[1024, 1024, 1024] total=3072
+  frames=['[0..255]', '[256..511]', '[512..767]']
+T-L2 - after two ConsumeBuffers(3) + Update
+  buffers=9 bytes=[1024, 1024, 1024, 928, 1024, 576, 1024, 576, 1024] total=8224
+  frames=['[0..255]', '[256..511]', '[512..767]', '[768..999]', '[600..855]', '[856..999]', '[600..855]', '[856..999]', '[600..855]']
+  concatenation matches f(i) over 2056 frames
+T-L4 not looped, loop start 600 - after Play
+  buffers=1 bytes=[4000] total=4000
+  frames=['[0..999]']
+  finishing=True
+T-L5 loop start 1000 (out of range) - after Play
+  buffers=3 bytes=[4000, 4000, 4000] total=12000
+  frames=['[0..999]', '[0..999]', '[0..999]']
+  concatenation matches f(i) over 3000 frames
+T-B1 today (no bound) - after Play
+  buffers=16 bytes=[16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384, 16384] total=262144
+  frames=['[0..4095]', '[4096..8191]', '[8192..12287]', '[12288..16383]', '[16384..20479]', '[20480..24575]', '[24576..28671]', '[28672..32767]', '[32768..36863]', '[36864..40959]', '[40960..45055]', '[45056..49151]', '[49152..53247]', '[53248..57343]', '[57344..61439]', '[61440..65535]']
+T-B1 proposed (bound 3) - after Play
+  buffers=3 bytes=[16384, 16384, 16384] total=49152
+  frames=['[0..4095]', '[4096..8191]', '[8192..12287]']
+T-B1 proposed - after one Update
+  buffers=6 bytes=[16384, 16384, 16384, 16384, 16384, 16384] total=98304
+  frames=['[0..4095]', '[4096..8191]', '[8192..12287]', '[12288..16383]', '[16384..20479]', '[20480..24575]']
+T-B2 today: SPINS (no bound)
+T-B2 proposed - after Play
+  buffers=3 bytes=[4000, 1600, 1600] total=7200
+  frames=['[0..999]', '[600..999]', '[600..999]']
+  concatenation matches f(i) over 1800 frames
+T-B2 proposed - after one Update
+  buffers=6 bytes=[4000, 1600, 1600, 1600, 1600, 1600] total=12000
+  frames=['[0..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]', '[600..999]']
+  concatenation matches f(i) over 3000 frames
+
+header fmt18+LIST6: data offset 60; naive byte 2444 -> data byte 2384 -> frame 596
+racing_game_music_1.wav layout fmt18+fact4: data offset 58 (wavinfo.out says 58)
+
+44100 Hz stereo 16-bit: 176400 B/s, 16384 B = 4096 frames = 92.88 ms; target 3: best 278.6 ms, worst 185.8 ms
+   target  3: best   278.6 ms, worst   185.8 ms, memory 48 KiB
+   target  6: best   557.3 ms, worst   464.4 ms, memory 96 KiB
+   target 12: best  1114.6 ms, worst  1021.7 ms, memory 192 KiB
+   target 23: best  2136.2 ms, worst  2043.4 ms, memory 368 KiB
+   target 24: best  2229.1 ms, worst  2136.2 ms, memory 384 KiB
+22050 Hz stereo 16-bit: 88200 B/s, 16384 B = 4096 frames = 185.76 ms; target 3: best 557.3 ms, worst 371.5 ms
+   target  3: best   557.3 ms, worst   371.5 ms, memory 48 KiB
+   target  6: best  1114.6 ms, worst   928.8 ms, memory 96 KiB
+   target 12: best  2229.1 ms, worst  2043.4 ms, memory 192 KiB
+   target 23: best  4272.5 ms, worst  4086.7 ms, memory 368 KiB
+   target 24: best  4458.2 ms, worst  4272.5 ms, memory 384 KiB
+track 14: J2 27204 -> 79979804 bytes (76.3 MiB) resident if played by PlayClip
+track 7: J2 21192 -> 62304524 bytes (59.4 MiB) resident if played by PlayClip
+track 25: J2 13186 -> 38766884 bytes (37.0 MiB) resident if played by PlayClip
+track 45: J2 718 -> 2110964 bytes (2.0 MiB) resident if played by PlayClip
+LoopStartSample examples: 25 -> 5344920  14 (extractor) -> 10695720  45/46 -> 279300  max sample offset (J2 track 14) -> 19994940

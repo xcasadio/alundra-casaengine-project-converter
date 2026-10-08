@@ -1,0 +1,13 @@
+14 first divergence at event 11350 bin (11613, 42704, 'on') ana (11614, 42704, 'on')
+  bin tempos near: [(11613, 42698, 147)]
+  ana tempos near: [(11613, 42698, 147)]
+  bin events in frame 11613 [(11613, 42678, 'off'), (11613, 42682, 'on'), (11613, 42686, 'on'), (11613, 42690, 'on'), (11613, 42694, 'off'), (11613, 42704, 'on')]
+  ana events in frame 11613 [(11613, 42678, 'off'), (11613, 42682, 'on'), (11613, 42686, 'on'), (11613, 42690, 'on'), (11613, 42694, 'off')]
+marker frame vs loop-position event frame:
+  track 11 marker frame 203 LS 204
+  track 13 marker frame 126 LS 127
+  track 15 marker frame 86 LS 87
+  track 27 marker frame 486 LS 487
+  track 28 marker frame 147 LS 148
+  track 29 marker frame 102 LS 103
+  track 31 marker frame 440 LS 441

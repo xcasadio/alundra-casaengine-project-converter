@@ -1,0 +1,14 @@
+AlundraMusicPlayerTests.cs PlayCalls actual 22 claimed 22 equal
+AlundraBgmFadeDirectorTests.cs PlayCalls actual 40 claimed 40 equal
+AlundraWarpDepartureTests.cs PlayCalls actual 27 claimed 27 equal
+AlundraBgmFadeDirectorTests.cs CurrentVoiceForTests actual 3 claimed 3 equal
+AlundraMusicPlayerTests.cs CurrentVoiceForTests actual 6 claimed 6 equal
+AlundraWarpDepartureTests.cs CurrentVoiceForTests actual 2 claimed 2 equal
+AlundraBgmFadeDirectorTests.cs IsCurrentVoiceAlive actual 20 claimed 20 equal
+AlundraMusicPlayerTests.cs IsCurrentVoiceAlive actual 6 claimed 6 equal
+AlundraWarpDepartureTests.cs IsCurrentVoiceAlive actual 12 claimed 12 equal
+AlundraBgmFadeDirectorTests.cs REG actual 15 claimed 15 equal
+AlundraMusicPlayerTests.cs REG actual 11 claimed 11 equal
+AlundraWarpDepartureTests.cs REG actual 11 claimed 11 equal
+AlundraBgmFadeDirectorTests.cs GetVoiceBus actual 1 claimed 1 equal
+AlundraMusicPlayerTests.cs GetVoiceBus actual 3 claimed 3 equal
