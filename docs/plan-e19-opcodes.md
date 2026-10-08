@@ -10792,7 +10792,7 @@ Release puis en Debug (3158 + les 5 lignes de la garde), aucun autre ne bouge ; 
 - ✅ **Recette M7-4** (auteur ; « Tout est ok » le 2026-10-08) : la barrière de la banque 151 (cartes 48 à 53, 435 à 438) et l'interrupteur tricolore (75, 137) : l'image
   s'affiche figée (hypothèse non tracée : quels scripts choisissent ces animations).
 
-#### 1.2s.9 E19.m8 — Petits points du lanceur, commentaires et gardes de tests (tri du 2026-10-08) 🚧 (planifiée le 2026-10-08 ; M8-a et M8-b faites)
+#### 1.2s.9 E19.m8 — Petits points du lanceur, commentaires et gardes de tests (tri du 2026-10-08) 🧪 (planifiée le 2026-10-08 ; M8-a, M8-b et M8-c faites, vérification neuve à faire)
 
 Sans décision de l'auteur ; aucun déclencheur de risque (pas de comportement de la chaîne : 0 site atteignable de `0x5F` ; des
 libellés, des commentaires et des tests) ; un vérificateur neuf sur l'ensemble à la fin. Faits : le tri du 2026-10-08
@@ -10833,6 +10833,10 @@ M-26, M-44). Trois commits, dans l'ordre :
   appel et 0 avertissement pour `Guid.Empty` ; mutation : retirer le `continue` → 1 appel, 1 avertissement) ; le débordement d'entier
   de `SoundAsset.ReadInteger` (L-a : `9223372036854775808` donne 0 et un seul avertissement ; mutation : retirer le `try`) ;
   `CasaEngine.Tests` bâti à part ; pointeur du parent monté (`merge-base --is-ancestor`).
+  *(fait le 2026-10-08 : moteur `a24fe31d` sur `chantier/e19-suite3`, `AnAbsentSheet_NeverReachesTheLoader_AndIsNoWarning` et
+  `Load_ALoopStartBeyondALong_KeepsZeroAndWarnsOnce`, verts, puis rouges sous leur mutation faite par script (le saut de
+  `Guid.Empty` retiré : le chargeur reçoit la planche absente ; le `catch` retiré : `OverflowException`), sources restaurées ;
+  `CasaEngine.Tests` 4229/4229, les deux solutions du moteur bâties ; `1b2b616a` ancêtre de `a24fe31d`, pointeur monté.)*
 - **Fichiers** (liste fermée) : `Alundra/Scripts/EventOpcodeSizeTable.cs`, `Alundra/Scripts/AlundraEventProgramRunner.cs` (commentaires),
   `Alundra/Scripts/AlundraGameState.cs` (commentaire), `Alundra.Tests/AlundraEventProgramRunnerTests.cs`, `docs/intro-trace-389.txt`,
   `docs/intro-programs-389.txt`, un nouveau `Alundra.Tests/AlundraMissingAnimationWaitCorpusTests.cs`,
