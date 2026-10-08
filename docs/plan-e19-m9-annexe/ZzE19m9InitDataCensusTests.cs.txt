@@ -1,0 +1,469 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using Alundra.Scripts;
+using Xunit;
+using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
+
+namespace Alundra.Tests;
+
+/// <summary>
+/// THROWAWAY (E19.m9 discovery, O-E19-34 / M-09): measures what the Array.Clear(state.Parameters) of InitializeEventData changes.
+/// Writes under docs/plan-e19-m9-annexe/. No production change.
+/// </summary>
+public class ZzE19m9InitDataCensusTests
+{
+    private const string SlotLetters = "ABCDEF";
+
+    /// <summary>Stateful opcodes of the PORT (a marker in Parameters[1], data in Parameters[2..3]).</summary>
+    private static readonly Dictionary<int, string> PortedStateful = new()
+    {
+        { 0x0B, "WalkUntilBeyondRadius" }, { 0x1C, "RepeatAnimation" }, { 0x1D, "RepeatAnimationColl" }, { 0x1E, "Walk" },
+        { 0x1F, "WalkColl" }, { 0x20, "WaitZDistance" }, { 0x21, "WaitZDistanceOrContact" }, { 0x22, "WaitHeightTarget" },
+        { 0x23, "WaitHeightTargetOrContact" }, { 0x37, "Wait" },
+    };
+
+    /// <summary>Opcodes whose BINARY handler uses state +8.. but that the port does not implement (skipped by size).</summary>
+    private static readonly Dictionary<int, string> BinaryOnlyStateful = new()
+    {
+        { 0x5F, "wait(+8..+0x1C) not ported" }, { 0x66, "copies global state into entity state, not ported" },
+        { 0x6A, "stores hero pos in +0xC..+0x14, not ported" }, { 0x6B, "reads +0xC, not ported" }, { 0x6C, "reads +0x10, not ported" },
+        { 0x6D, "reads +0x14, not ported" }, { 0xB2, "+4/+8/+0xC, not ported" },
+    };
+
+    internal sealed record Site(int Map, bool Chain, char Slot, int Program, int Pc, int Opcode, string Operands, int Entities, string Class);
+
+    private static string OutDir()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, "docs")))
+        {
+            dir = dir.Parent;
+        }
+
+        var path = Path.Combine(dir!.FullName, "docs", "plan-e19-m9-annexe");
+        Directory.CreateDirectory(path);
+        return path;
+    }
+
+    internal static IReadOnlyList<int> AllMaps(string root)
+    {
+        using var json = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Maps", "world-index.json")));
+        return json.RootElement.EnumerateObject().Select(p => int.Parse(p.Name, CultureInfo.InvariantCulture)).OrderBy(i => i).ToList();
+    }
+
+    internal static (List<Site> Sites, Dictionary<string, int> FirstOps, List<string> Failures, int Programs) RunCensus(string root)
+    {
+        var sites = new List<Site>();
+        var firstOps = new Dictionary<string, int>(); // "slot:op" -> distinct program count
+        var failures = new List<string>();
+        var programs = 0;
+        foreach (var map in AllMaps(root))
+        {
+            try
+            {
+                var (document, tileMap) = LoadMap(root, map);
+                var roots = ReadRoots(tileMap, document);
+                var chain = ChainMaps.Contains(map);
+                foreach (var group in roots.GroupBy(r => r))
+                {
+                    var (slot, index) = group.Key;
+                    var table = document.TableFor(SlotLetters.IndexOf(slot));
+                    var pc = table[index];
+                    if (pc >= document.Codes.Length)
+                    {
+                        continue;
+                    }
+
+                    programs++;
+                    var op = document.Codes[pc] & 0xFF;
+                    var key = $"{slot}:0x{op:X2}";
+                    firstOps[key] = firstOps.GetValueOrDefault(key) + 1;
+                    string? cls = PortedStateful.TryGetValue(op, out var n) ? "ported:" + n
+                        : BinaryOnlyStateful.ContainsKey(op) ? "binary-only:" + BinaryOnlyStateful[op] : null;
+                    if (cls == null)
+                    {
+                        continue;
+                    }
+
+                    EventOpcodeSizeTable.Entries.TryGetValue((byte)op, out var entry);
+                    var size = Math.Max(entry?.Size ?? 1, 1);
+                    var operands = string.Join(",", Enumerable.Range(1, size - 1).Where(i => pc + i < document.Codes.Length).Select(i => document.Codes[pc + i] & 0xFF));
+                    sites.Add(new Site(map, chain, slot, index, pc, op, operands, group.Count(), cls));
+                }
+            }
+            catch (Exception e)
+            {
+                failures.Add($"map {map}: {e.GetType().Name}: {e.Message}");
+            }
+        }
+
+        return (sites, firstOps, failures, programs);
+    }
+
+    [Fact]
+    public void Census()
+    {
+        var root = SaveGameDirectorTestSupport.FindProjectRoot();
+        var (sites, firstOps, failures, programs) = RunCensus(root);
+        var dir = OutDir();
+
+        var tsv = new StringBuilder("map\tchain\tslot\tprogram\tentry_pc\topcode\toperands\tentities\tclass\n");
+        foreach (var s in sites.OrderBy(s => s.Slot).ThenBy(s => s.Map).ThenBy(s => s.Program))
+        {
+            tsv.Append($"{s.Map}\t{(s.Chain ? "chain" : "off")}\t{s.Slot}\t{s.Program}\t{s.Pc}\t0x{s.Opcode:X2}\t{s.Operands}\t{s.Entities}\t{s.Class}\n");
+        }
+
+        File.WriteAllText(Path.Combine(dir, "census.tsv"), tsv.ToString());
+
+        var sum = new StringBuilder();
+        sum.AppendLine($"maps in world-index: {AllMaps(root).Count}; failures: {failures.Count}");
+        foreach (var f in failures)
+        {
+            sum.AppendLine("  FAIL " + f);
+        }
+
+        sum.AppendLine($"distinct (map,slot,program) entries examined (slot A..F, index&0x7F nonzero, in table, table[index]!=0): {programs}");
+        sum.AppendLine("Sites = distinct (map,slot,program) whose FIRST instruction is a stateful opcode; Entities = records using them.");
+        sum.AppendLine();
+        sum.AppendLine("== Totals by slot (ported-stateful only): sites / entities, chain | off-chain ==");
+        foreach (var slot in SlotLetters)
+        {
+            var ss = sites.Where(s => s.Slot == slot && s.Class.StartsWith("ported")).ToList();
+            sum.AppendLine($"  {slot}: sites {ss.Count} (chain {ss.Count(s => s.Chain)} | off {ss.Count(s => !s.Chain)}); entities {ss.Sum(s => s.Entities)} (chain {ss.Where(s => s.Chain).Sum(s => s.Entities)} | off {ss.Where(s => !s.Chain).Sum(s => s.Entities)})");
+        }
+
+        sum.AppendLine();
+        sum.AppendLine("== Totals by slot and opcode (sites / entities; chain sites in brackets) ==");
+        foreach (var g in sites.GroupBy(s => (s.Slot, s.Opcode, s.Class)).OrderBy(g => g.Key.Slot).ThenBy(g => g.Key.Opcode))
+        {
+            sum.AppendLine($"  {g.Key.Slot} 0x{g.Key.Opcode:X2} {g.Key.Class}: sites {g.Count()} entities {g.Sum(s => s.Entities)} [chain sites {g.Count(s => s.Chain)}, chain entities {g.Where(s => s.Chain).Sum(s => s.Entities)}]");
+        }
+
+        sum.AppendLine();
+        sum.AppendLine("== Slots A/D/E/F (always re-initialized) vs B/C (re-initialized after a clear), ported-stateful ==");
+        var adef = sites.Where(s => "ADEF".Contains(s.Slot) && s.Class.StartsWith("ported")).ToList();
+        var bc = sites.Where(s => "BC".Contains(s.Slot) && s.Class.StartsWith("ported")).ToList();
+        sum.AppendLine($"  A/D/E/F: {adef.Count} sites, {adef.Sum(s => s.Entities)} entities; chain {adef.Count(s => s.Chain)} sites");
+        sum.AppendLine($"  B/C    : {bc.Count} sites, {bc.Sum(s => s.Entities)} entities; chain {bc.Count(s => s.Chain)} sites");
+        sum.AppendLine();
+        sum.AppendLine("== Sites with entry_pc == 0 (the port's key is CodeIndex, 0 collides with a cleared marker) ==");
+        foreach (var s in sites.Where(s => s.Pc == 0))
+        {
+            sum.AppendLine($"  map {s.Map} {s.Slot}[{s.Program}] 0x{s.Opcode:X2}");
+        }
+
+        sum.AppendLine();
+        sum.AppendLine("== Chain sites (all slots) ==");
+        foreach (var s in sites.Where(s => s.Chain).OrderBy(s => s.Map).ThenBy(s => s.Slot))
+        {
+            sum.AppendLine($"  map {s.Map} {s.Slot}[{s.Program}] @{s.Pc} 0x{s.Opcode:X2}({s.Operands}) x{s.Entities}  {s.Class}");
+        }
+
+        sum.AppendLine();
+        sum.AppendLine("== First opcode of every distinct entry, by slot (all opcodes of interest + total) ==");
+        foreach (var slot in SlotLetters)
+        {
+            var total = firstOps.Where(k => k.Key[0] == slot).Sum(k => k.Value);
+            sum.AppendLine($"  {slot}: total {total}; " + string.Join(", ", firstOps.Where(k => k.Key[0] == slot).OrderByDescending(k => k.Value).Take(8).Select(k => $"{k.Key[2..]}={k.Value}")));
+        }
+
+        File.WriteAllText(Path.Combine(dir, "census-summary.txt"), sum.ToString());
+    }
+
+    // =========================================================================================
+    // Part 4: dynamic measurement. "as-is" = the real RunScript (InitializeEventData clears Parameters);
+    // "keep"  = a hand emulation of the binary: InitializeEventData runs, then Parameters[1..9] are put back
+    // to what they were before it (the binary stores only +0 and +4), then RunOneScriptCall. No production edit.
+    // =========================================================================================
+
+    private sealed class Harness : IEventProgramRunner
+    {
+        private readonly AlundraEventProgramRunner _runner;
+        private readonly bool _keep;
+        private readonly EventProgramState _keepScratch = new();
+        public int EntryPc;
+        public bool Passed;
+
+        public Harness(EventProgramDocument doc, bool keep, int entryPc, int maxIterations = 1)
+        {
+            _keep = keep;
+            EntryPc = entryPc;
+            _runner = new AlundraEventProgramRunner(doc, new AlundraGameState()) { MaxIterationsPerCall = maxIterations };
+            _runner.TraceSink = r =>
+            {
+                if (r.CodeIndex == EntryPc && r.Kind == EventTraceKind.Implemented && r.Size != 0)
+                {
+                    Passed = true;
+                }
+            };
+        }
+
+        public void RunScript(AlundraEntityScriptProxy entity, int slot)
+        {
+            if (!_keep)
+            {
+                _runner.RunScript(entity, slot);
+                return;
+            }
+
+            var own = slot is ScriptHelper.ProgramBMap or ScriptHelper.ProgramCTick;
+            var state = own ? entity.EventProgramState : _keepScratch;
+            if (own && state.Codes != null)
+            {
+                _runner.RunScript(entity, slot); // resumed path: identical in both modes.
+                return;
+            }
+
+            var saved = (int[])state.Parameters.Clone();
+            _runner.InitializeEventData(entity, slot, state);
+            for (var i = 1; i < saved.Length; i++)
+            {
+                state.Parameters[i] = saved[i];
+            }
+
+            entity.MapEventProgramId = slot;
+            _runner.RunOneScriptCall(entity, state, slot);
+        }
+
+        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        {
+        }
+    }
+
+    private static EventProgramDocument Synthetic(int n)
+    {
+        // pc 0 = a dummy End (so the wait is not at pc 0), X = Wait n at pc 1, Y = Wait 3 at pc 4.
+        var tbl = new[] { 0, 1, 4 };
+        return new EventProgramDocument
+        {
+            MapIndex = 1, EventCodesATable = tbl, EventCodesBTable = tbl, EventCodesCTable = tbl, EventCodesDTable = tbl,
+            EventCodesETable = tbl, EventCodesFTable = tbl,
+            Codes = new[] { 0xFF, 0x37, n, 0xFF, 0x37, 3, 0xFF },
+        };
+    }
+
+    private static string Cap(int v, int cap) => v < 0 ? $">{cap} (never)" : v.ToString(CultureInfo.InvariantCulture);
+
+    /// <summary>Calls until the first instruction ends; -1 when it does not within the cap.</summary>
+    private static int SyntheticCalls(int slot, int n, bool keep, bool interleave, int cap)
+    {
+        var h = new Harness(Synthetic(n), keep, 1);
+        var x = new AlundraEntityScriptProxy();
+        x.ProgramIndexes[slot] = 1 | 0x80;
+        var y = new AlundraEntityScriptProxy();
+        y.ProgramIndexes[slot] = 2 | 0x80;
+        for (var call = 1; call <= cap; call++)
+        {
+            h.RunScript(x, slot);
+            if (h.Passed)
+            {
+                return call;
+            }
+
+            if (interleave)
+            {
+                h.RunScript(y, slot);
+            }
+        }
+
+        return -1;
+    }
+
+    private static AlundraMapEvent MakeEvent(int program) =>
+        new() { Id = 0, X1 = 0, Y1 = 0, X2 = 10, Y2 = 10, ProgramBMap = program | 0x80, OriginalProgramBMap = program | 0x80 };
+
+    /// <summary>In-zone ticks until the first wait of a real B program ends, for a zone-visit pattern:
+    /// "continuous", "once" (one exit after j in-zone ticks) or "flicker" (1 in, 1 out, ...).</summary>
+    private static int BCalls(EventProgramDocument doc, int program, int entryPc, bool keep, string pattern, int j, int cap)
+    {
+        var h = new Harness(doc, keep, entryPc);
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true };
+        var ev = MakeEvent(program);
+        var inTicks = 0;
+        var tick = 0;
+        while (inTicks < cap)
+        {
+            tick++;
+            var inside = pattern switch
+            {
+                "once" => tick != j + 1,
+                "flicker" => tick % 2 == 1,
+                _ => true,
+            };
+            hero.TileX = inside ? 5 : 50;
+            hero.TileY = 5;
+            AlundraWorldProxy.RunMapEventsPass(hero, new[] { ev }, h, playerControlFlags: 0);
+            if (inside)
+            {
+                inTicks++;
+                if (h.Passed)
+                {
+                    return inTicks;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    /// <summary>Calls until a first instruction of a real C program ends, with a clear of the entity's state
+    /// (the cross-entity clear of RunOneScriptCall: Sp = 0, Codes = null) after j calls. j = 0: no clear.</summary>
+    private static int CCalls(EventProgramDocument doc, int program, int entryPc, int opcode, int radiusPx, bool keep, int j, int cap)
+    {
+        var h = new Harness(doc, keep, entryPc);
+        var e = new AlundraEntityScriptProxy();
+        e.ProgramIndexes[ScriptHelper.ProgramCTick] = program | 0x80;
+        for (var call = 1; call <= cap; call++)
+        {
+            h.RunScript(e, ScriptHelper.ProgramCTick);
+            if (h.Passed)
+            {
+                return call;
+            }
+
+            if (j > 0 && call == j)
+            {
+                e.EventProgramState.Sp = 0;
+                e.EventProgramState.Codes = null;
+                if (opcode == 0x0B)
+                {
+                    e.PosX += (radiusPx + 1) << 16; // the entity walked meanwhile, as the clear happens
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    [Fact]
+    public void Dynamic()
+    {
+        var root = SaveGameDirectorTestSupport.FindProjectRoot();
+        var (sites, _, _, _) = RunCensus(root);
+        var sb = new StringBuilder();
+        sb.AppendLine("# Dynamic measurement (E19.m9 part 4)");
+        sb.AppendLine();
+        sb.AppendLine("MEASURED with the real AlundraEventProgramRunner (MaxIterationsPerCall = 1, TraceSink to detect the end of the first instruction).");
+        sb.AppendLine("`as-is` = production RunScript (InitializeEventData -> Array.Clear(Parameters)).");
+        sb.AppendLine("`keep`  = EMULATION written in the throwaway test: runner.InitializeEventData runs, then Parameters[1..9] are restored to their pre-call values,");
+        sb.AppendLine("          then runner.RunOneScriptCall; resumed B/C calls go through the real RunScript. For A/D/E/F the emulated state is ONE object kept across calls");
+        sb.AppendLine("          (the binary's global state). Nothing in production is edited.");
+        sb.AppendLine("A call count N+2 for `Wait N`: call 1 sets the marker, calls 2..N+1 count, call N+2 ends (counter >= N).");
+        sb.AppendLine();
+
+        sb.AppendLine("## 4a. SYNTHETIC slots D and F (NO corpus site exists, see census): program X = [Wait N, End], called every frame");
+        sb.AppendLine();
+        sb.AppendLine("| slot | N | as-is | keep | as-is + other program of the slot between calls | keep + other program between calls |");
+        sb.AppendLine("|---|---|---|---|---|---|");
+        foreach (var slot in new[] { ScriptHelper.ProgramDTouch, ScriptHelper.ProgramFInteract })
+        {
+            foreach (var n in new[] { 1, 10, 60 })
+            {
+                sb.AppendLine($"| {SlotLetters[slot]} | {n} | {Cap(SyntheticCalls(slot, n, false, false, 300), 300)} | {Cap(SyntheticCalls(slot, n, true, false, 300), 300)} | "
+                    + $"{Cap(SyntheticCalls(slot, n, false, true, 300), 300)} | {Cap(SyntheticCalls(slot, n, true, true, 300), 300)} |");
+            }
+        }
+
+        sb.AppendLine();
+        sb.AppendLine("## 4b. REAL B programs (map events) whose first instruction is Wait, driven through the real RunMapEventsPass");
+        sb.AppendLine("In-zone ticks until the first Wait ends. continuous = hero stays in; once = hero leaves for ONE tick after j in-zone ticks (j = (N+2)/2, min 1) then returns;");
+        sb.AppendLine("flicker = 1 tick in, 1 tick out, forever (cap 400 in-zone ticks).");
+        sb.AppendLine();
+        sb.AppendLine("| map | B | pc | N | continuous as-is | continuous keep | once as-is | once keep | flicker as-is | flicker keep |");
+        sb.AppendLine("|---|---|---|---|---|---|---|---|---|---|");
+        var bSites = sites.Where(s => s.Slot == 'B' && s.Opcode == 0x37).OrderByDescending(s => s.Chain).ThenBy(s => s.Map).ThenBy(s => s.Program).ToList();
+        var docs = new Dictionary<int, EventProgramDocument>();
+        int bDiffOnce = 0, bDiffFlicker = 0, bDiffCont = 0, bChainDiffOnce = 0, bChainDiffFlicker = 0;
+        foreach (var s in bSites)
+        {
+            if (!docs.TryGetValue(s.Map, out var doc))
+            {
+                docs[s.Map] = doc = LoadMap(root, s.Map).Document;
+            }
+
+            var n = int.Parse(s.Operands.Split(',')[0], CultureInfo.InvariantCulture);
+            var j = Math.Max(1, (n + 2) / 2);
+            var c1 = BCalls(doc, s.Program, s.Pc, false, "continuous", 0, 400);
+            var c2 = BCalls(doc, s.Program, s.Pc, true, "continuous", 0, 400);
+            var o1 = BCalls(doc, s.Program, s.Pc, false, "once", j, 400);
+            var o2 = BCalls(doc, s.Program, s.Pc, true, "once", j, 400);
+            var f1 = BCalls(doc, s.Program, s.Pc, false, "flicker", 0, 400);
+            var f2 = BCalls(doc, s.Program, s.Pc, true, "flicker", 0, 400);
+            bDiffCont += c1 != c2 ? 1 : 0;
+            bDiffOnce += o1 != o2 ? 1 : 0;
+            bDiffFlicker += f1 != f2 ? 1 : 0;
+            if (s.Chain)
+            {
+                bChainDiffOnce += o1 != o2 ? 1 : 0;
+                bChainDiffFlicker += f1 != f2 ? 1 : 0;
+                sb.AppendLine($"| {s.Map} (chain) | B[{s.Program}] | {s.Pc} | {n} | {Cap(c1, 400)} | {Cap(c2, 400)} | {Cap(o1, 400)} (j={j}) | {Cap(o2, 400)} | {Cap(f1, 400)} | {Cap(f2, 400)} |");
+            }
+        }
+
+        sb.AppendLine();
+        sb.AppendLine($"All {bSites.Count} B Wait-first sites ({bSites.Count(s => s.Chain)} on the chain): the result differs as-is vs keep -> continuous {bDiffCont}, once {bDiffOnce} (chain {bChainDiffOnce}), flicker {bDiffFlicker} (chain {bChainDiffFlicker}).");
+        sb.AppendLine("Off-chain rows are computed but not listed.");
+
+        sb.AppendLine();
+        sb.AppendLine("## 4c. REAL C programs, first instruction stateful, after a cross-entity clear (Sp = 0, Codes = null) following j calls");
+        sb.AppendLine("Calls until the first instruction ends (0x0B: the entity is moved radius+1 px at the clear, then stays; cap 60). j=0: no clear (baseline).");
+        sb.AppendLine();
+        sb.AppendLine("| map | C | pc | op | operands | baseline as-is | baseline keep | clear as-is | clear keep | j |");
+        sb.AppendLine("|---|---|---|---|---|---|---|---|---|---|");
+        var cSites = sites.Where(s => s.Slot == 'C' && (s.Opcode == 0x37 || s.Opcode == 0x0B || s.Opcode == 0x1E)).OrderByDescending(s => s.Chain).ThenBy(s => s.Map).ThenBy(s => s.Program).ToList();
+        int cDiff = 0, cChainDiff = 0, cTotal = 0;
+        foreach (var s in cSites)
+        {
+            if (!docs.TryGetValue(s.Map, out var doc))
+            {
+                docs[s.Map] = doc = LoadMap(root, s.Map).Document;
+            }
+
+            var ops = s.Operands.Split(',').Select(o => int.Parse(o, CultureInfo.InvariantCulture)).ToArray();
+            var n = s.Opcode == 0x37 ? ops[0] : 0;
+            var radius = s.Opcode == 0x0B ? (ops[2] << 8) | ops[1] : 0;
+            var j = s.Opcode == 0x37 ? Math.Max(1, (n + 2) / 2) : 1;
+            var b1 = CCalls(doc, s.Program, s.Pc, s.Opcode, radius, false, 0, 60);
+            var b2 = CCalls(doc, s.Program, s.Pc, s.Opcode, radius, true, 0, 60);
+            var k1 = CCalls(doc, s.Program, s.Pc, s.Opcode, radius, false, j, 60);
+            var k2 = CCalls(doc, s.Program, s.Pc, s.Opcode, radius, true, j, 60);
+            cTotal++;
+            cDiff += k1 != k2 ? 1 : 0;
+            cChainDiff += s.Chain && k1 != k2 ? 1 : 0;
+            if (s.Chain || s.Opcode != 0x37)
+            {
+                sb.AppendLine($"| {s.Map}{(s.Chain ? " (chain)" : "")} | C[{s.Program}] | {s.Pc} | 0x{s.Opcode:X2} | {s.Operands} | {Cap(b1, 60)} | {Cap(b2, 60)} | {Cap(k1, 60)} | {Cap(k2, 60)} | {j} |");
+            }
+        }
+
+        sb.AppendLine();
+        sb.AppendLine($"{cTotal} C sites measured (0x37, 0x0B, 0x1E first): the clear changes the outcome at {cDiff} of them (chain {cChainDiff}).");
+        sb.AppendLine();
+        sb.AppendLine("## 4d. Replica of the existing test RunScript_DefaultSlot_AlwaysReInitializes_EvenAfterASuspend (slot A, Codes {0x01, 0x37, 5, 0x1A, 3, 0xFF}, 8 calls)");
+        foreach (var first in new[] { false, true })
+        {
+            foreach (var keep in new[] { false, true })
+            {
+                var codes = first ? new[] { 0xFF, 0x37, 5, 0x1A, 3, 0xFF } : new[] { 0x01, 0x37, 5, 0x1A, 3, 0xFF };
+                var doc = new EventProgramDocument { EventCodesATable = new[] { first ? 1 : 0 }, Codes = codes };
+                var h = new Harness(doc, keep, -1, 1000);
+                var e = new AlundraEntityScriptProxy();
+                e.ProgramIndexes[ScriptHelper.ProgramALoad] = 0x80;
+                for (var i = 0; i < 8; i++)
+                {
+                    h.RunScript(e, ScriptHelper.ProgramALoad);
+                }
+
+                sb.AppendLine($"- Wait is {(first ? "the FIRST instruction (table points at pc 1)" : "the SECOND instruction (as in the test)")}, {(keep ? "keep" : "as-is")}: TargetAnimationId after 8 calls = {e.TargetAnimationId} (the test asserts 0).");
+            }
+        }
+
+        File.WriteAllText(Path.Combine(OutDir(), "dynamic.md"), sb.ToString());
+    }
+}

@@ -10855,6 +10855,81 @@ M-26, M-44). Trois commits, dans l'ordre :
   table des tailles les nomme à l'envers ; à corriger par la prochaine tranche qui touche ce fichier (contrôle :
   `rg -n "size table calls|size table's backwards" Alundra/Scripts/AlundraEventProgramRunner.cs` ne rend rien).
 
+#### 1.2s.10 E19.m9 — `InitializeEventData` garde les paramètres, comme le binaire (O-E19-34, M-09) ⏳ (planifiée le 2026-10-08 ; découverte faite le 2026-10-08)
+
+DLL seule. Pas de décision de l'auteur : le binaire tranche. Tout le recensement est vu sans défaut visible de l'original à trancher ;
+voir **Limite** plus bas. Relecture du plan, puis vérificateur neuf. Ce sont l'état de l'interpréteur et 46 sites de la chaîne.
+Faits et valeurs : `docs/plan-e19-m9-annexe/`
+(`README.md`, `binary.md`, `census.tsv`, `census-summary.txt`, `dynamic.md`, `impact.md`, la source du test de mesure en `.cs.txt`).
+
+**Découverte.**
+- **[binaire]** `InitializeEventData` (`0x80041EE4`) n'écrit que deux mots de l'état : `sw a0, 4(a2)` (le pc, `0x80041F5C`) et
+  `sw a0, 0(a2)` (le début du programme, `0x80041F60`). Correspondance avec le portage :
+  - `+0` = `Parameters[0]` ; `+4` = `CodeIndex`, `Sp` et `Codes` ;
+  - `+8` = `Parameters[1]`, le repère des attentes, remis à 0 après chaque instruction qui avance (`0x8004232C`) et sur `0x00`
+    (`0x800421F4`) ;
+  - `+0xC` à `+0x28` = `Parameters[2..9]` ; `+0x2C` = `Result` ; `+0x30` = `_30` ; `+0x34` = `_34`.
+
+  Les autres écritures de ces champs :
+  - l'effacement d'un état (`0x80042344`-`0x80042350`, `0x80042314`-`0x80042318`) ne remet à zéro que `+0` et `+4` ;
+  - le réarmement hors zone (`0x8003C7F0`-`0x8003C800`) remet à zéro `+0`, `+4` et `Result`.
+
+  B et C ont l'état de leur entité ; A, D, E et F partagent un état global (`0x8013D9E8`), toujours réinitialisé (table `0x80023E10`).
+- **[dépôt]** Seul `InitializeEventData` efface `Parameters` (`Array.Clear`, `AlundraEventProgramRunner.cs:352`). La fin d'appel avec
+  effacement (`EndCall`) et le réarmement d'E19.j (`AlundraWorldProxy.cs:2602-2605`) gardent déjà `Parameters`.
+- **Opcodes à état** (repère dans `Parameters[1]`) : `0x0B`, `0x1C`/`0x1D`, `0x1E`/`0x1F`, `0x20`/`0x21`, `0x22`/`0x23`, `0x37`. Une instruction
+  qui avance remet le repère à 0, si bien que l'écart ne joue que pour un programme réinitialisé pendant sa **première** instruction.
+- **Recensement** (483 cartes, 7134 entrées) :
+  - A, D, E et F : **0 site** ;
+  - B : 154 sites, tous `0x37`, dont 11 sur la chaîne (162 `B[5]`, 163 `B[2]`, `B[3]` et `B[4]`, 169 `B[3]`, 176 `B[3]`, `B[4]` et `B[5]`,
+    183 `B[3]`, 185 `B[1]`, 392 `B[3]`) ;
+  - C : 291 sites (243 `0x37`, 47 `0x0B`, 1 `0x1E`), dont 35 sur la chaîne ;
+  - aucun site à l'entrée 0 ; les cartes 389, 390, 476, 478, 391 et 416 n'ont aucun site.
+- **Mesuré avec le vrai lanceur** (la conservation est émulée dans le test de mesure) :
+  - **B** : quand le héros reste dans la zone, le résultat est le même. Après une sortie de zone pendant l'attente, le portage
+    recommence le compte et le binaire le continue (392 `B[3]`, `0x37 60` : 62 ticks dans la zone contre 93 avec une sortie après
+    31). Quand le héros entre un tick sur deux, le portage ne finit jamais, et le binaire finit à N + 2 ;
+  - **C** après un effacement pendant l'attente : un appel de plus pour `0x37` ; pour `0x0B`, le portage ne finit jamais. Aucun site
+    du recensement ne produit cet effacement, posé à la main dans la mesure ;
+  - **D/F** synthétiques (aucun site réel) : le portage ne finit jamais ; le binaire finit à l'appel N + 2, sauf si un autre programme
+    du même état partagé s'intercale.
+
+- **Limite** : la conséquence en jeu est une **attente cumulée** dans les zones d'événements de carte. Un héros qui sort puis revient
+  continue le compte au lieu de le recommencer. C'est le comportement du binaire ; rien ne le désigne comme un défaut. Si l'auteur y
+  voit un défaut de l'original, c'est une question à part, sans effet sur cette tranche.
+- **M9-R1** : `InitializeEventData` n'écrit que l'entrée (`Parameters[0]`) et le pc (`CodeIndex`, `Sp`, `Codes`) ; `Parameters[1..9]` gardent
+  leur valeur.
+- **M9-R2** : rien d'autre ne change. Les chemins d'effacement du portage gardent déjà ces champs, comme le binaire. Seul le
+  commentaire d'en-tête du test `RunScript_DefaultSlot_AlwaysReInitializes_EvenAfterASuspend` change : son raisonnement (« un
+  `Parameters[1]` fraîchement effacé ») devient « l'instruction `0x01` qui avance remet le repère à 0 » ; son assertion ne change pas.
+  La mesure redonne 0 après 8 appels.
+- **Avis P3 d'E19.m8 repris** (ce fichier est touché) : les résumés de `WaitUntilFlagOn` et `WaitUntilFlagOff`
+  (`AlundraEventProgramRunner.cs:2202`, `:2213`) ne disent plus que la table des tailles les nomme à l'envers.
+- **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraEventProgramRunner.cs` (la ligne et ses commentaires, les deux résumés de l'avis
+  P3) ; `Alundra.Tests/AlundraEventProgramRunnerTests.cs` (le commentaire du test cité) ; un nouveau
+  `Alundra.Tests/AlundraInitializeEventDataTests.cs` ; ce plan ; l'annexe ; le backlog (M-09).
+- ⏳ **M9-1 — Tests d'abord**, rouges au HEAD :
+  - **(a)** créneau D, programme synthétique `0x01, 0xFF, 0x37 3, 0x1A 9, 0xFF` (entrée 2, jamais à 0), appelé une fois par appel :
+    l'animation 9 est posée à l'appel 5 (N + 2) et pas avant. Rouge : jamais au HEAD ;
+  - **(b)** données réelles, 392 `B[3]` (`0x37 60` à `@156`), par la vraie passe des événements de carte (`RunMapEventsPass`) et le vrai
+    lanceur, zone factice : le héros est dans la zone 31 ticks, en sort 1 tick, puis y revient. L'attente finit au 62e tick dans la
+    zone. Rouge : le 93e au HEAD ;
+  - **(c)** créneau C synthétique, effacé à la main pendant sa première attente (`Sp = 0`, `Codes = null`, ce que fait `EndCall` avec
+    effacement) après j appels : l'attente finit à l'appel N + 2, comme sans effacement. Rouge au HEAD : j appels de plus, le compte
+    recommence (annexe : 4 contre 3 pour N = 1 et j = 1) ;
+  - **(d)** garde : après réinitialisation, `Parameters[0]` vaut l'entrée et `CodeIndex` aussi (vert au HEAD).
+- ⏳ **M9-2 — Code** (M9-R1), commentaires (M9-R2, avis P3).
+- ⏳ **M9-3 — Vérification** : vérificateur neuf.
+- **Acceptation** :
+  - (a), (b) et (c) rouges, puis tout vert ;
+  - `Alundra.Tests` en Release puis en Debug, sans aucun test existant qui bouge ;
+  - `cmp` égal ; les six traces identiques (la 389 n'a aucun site) ;
+  - les arcs des cartes à sites (179, 176, 185, 10, 163, 162, 165, 164, 172) inchangés : le recensement d'E19.j ne trouve aucune
+    rentrée sur la chaîne hors 476 `B[3]`, un programme vide.
+- **Arrêts** : un test existant ou un arc qui bouge, ce qui voudrait dire une rentrée réelle sur la chaîne, à expliquer avant tout ; une
+  trace qui change ; une valeur de (a) à (c) qui contredit l'annexe ; un fichier hors de la liste.
+- **Retour arrière** : revert.
+
 ### 1.2u Recette de l'auteur du 2026-10-05 ✅ (constat consigné ; deux défauts enquêtés ; suites réglées : O-E19-60 (E19.s2), O-E19-61 (X2), O-E19-62 (§1.2w), (tri du 2026-10-08))
 
 **Constat de l'auteur** (DLL et export de `cc948ec`, deux captures) :
@@ -11839,7 +11914,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-31 | **Cartes sous-marines 159 et 160** (« Fairy cave underwater ») **[binaire, données]** : gravité 3, `ZViscosity` 256 et octet d'en-tête `+8` (exporté sous le nom `SlideEffectId`) à 1, contre 128, 4096 et 0 sur les 481 autres cartes ; l'octet `+8` décale `ForceX` et `ForceY` avant le déplacement (`srav` en `0x8003675C`) : le héros y va deux fois moins vite et un saut dure 178 ticks. La DLL ne lit pas ce décalage (aucun consommateur). Hors de la chaîne. | à placer |
 | O-E19-32 | **Planifié en E19.v (§1.2z) le 2026-10-08, après mesure : hors chaîne (aucun portail de la chaîne n'arrive en l'air ; la 476 arrive en `0xD`, pas en `0x36`).** **`LoadingMap` (`0x36`) en l'air** **[binaire]** : `MovePlayer` passe en `0x2D` quand le héros arrive au-dessus du sol (`0x800325E8`) ; la DLL laisse `0x36` sans effet (`AlundraPlayerManager.cs:256-263`). La 476 fait arriver le héros à 48 px au-dessus du sol (`0x53` de la 390 `@688`). Non porté en E19.d2c2. | à placer |
 | O-E19-33 | **Scène d'avant le rêve** (179 `B[1]`, jour 3) et rêve 44 : la scène n'est atteignable qu'après le jour 2 (combat, E14) et aucun préréglage ne la couvre ; le rêve demande le combat. Question à l'auteur : faut-il un préréglage `day3-start` (179, case (12,22), z1, G203, G1660, table [162] = 176) et un arc de 179 `B[1]` ? Hors d'E19.e en attendant. **Complément du 2026-10-03** (découverte d'E19.l) : la scène d'avant le rêve (179 `B[1] @183`) retire le livre d'Elna (objet 88), donné à la 117 `@167` ; un préréglage `day3-start` fidèle porterait `NumberOfItems[177]` = 1. | à placer |
-| O-E19-34 | **Paramètres effacés au redémarrage d'un programme** (découverte d'E19.j, D7) : `InitializeEventData` efface tous les paramètres (`Array.Clear`, `AlundraEventProgramRunner.cs:352`) alors que le binaire ne réécrit que l'entrée et le pc (`0x80041EE4`) et garde +8..+0x28 (clé d'attente, compteur de `0x37`…) : un programme suspendu sur son premier `0x37` continue son compte dans le binaire et le recommence dans la DLL ; 19 programmes B à zone bornée et 243 programmes C commencent par `0x37`, 47 par `0x0B`. | E19.m |
+| O-E19-34 | **Planifié en E19.m9 (§1.2s.10) le 2026-10-08 après découverte (`docs/plan-e19-m9-annexe/`) : A, D, E et F n'ont aucun site ; 154 B et 291 C, dont 46 sur la chaîne.** **Paramètres effacés au redémarrage d'un programme** (découverte d'E19.j, D7) : `InitializeEventData` efface tous les paramètres (`Array.Clear`, `AlundraEventProgramRunner.cs:352`) alors que le binaire ne réécrit que l'entrée et le pc (`0x80041EE4`) et garde +8..+0x28 (clé d'attente, compteur de `0x37`…) : un programme suspendu sur son premier `0x37` continue son compte dans le binaire et le recommence dans la DLL ; 19 programmes B à zone bornée et 243 programmes C commencent par `0x37`, 47 par `0x0B`. | E19.m |
 | O-E19-35 | **Termes additifs du suivi et écrivains natifs du balancement** (audit d'E19.k1, P4-a et P4-b) : la formule du suivi caméra du binaire ajoute aussi `0x800DD870` (X) et `0x800DD874` (Y), effacés à chaque tick et au chargement, le terme Y écrit par du code natif (`0x8007F350`) ; la structure du balancement (`0x800E4338`) a d'autres écrivains natifs que `0x8E`/`0x8F` : la magie séisme la sauvegarde et la restaure (`0x80035D00`/`0x80034E08`) et pose Flag (`0x80035DF4`), des comportements d'entités l'écrivent (`0x80061E78`, `0x8006224C`…). L'instance de session d'E19.k1 doit leur servir. | E14 |
 | O-E19-36 | **Pistes XA (`0xB9`, `0xBA`)** (découverte d'E19.l, question Q-A1 à l'auteur) : `0xB9 [v]` lance la piste XA `v` (table de 13 entrées en `0x800C4818`) ; la piste 11 suit chaque objet reçu (fanfare, d'après le contexte des scripts), 7 à 10 sont des thèmes d'événement ; 42 sites dans 26 cartes, aucun sur la chaîne. Les entendre demande trois travaux : décoder les pistes depuis l'image brute `Alundra (France).bin` (l'`ARAN_XA.XA` extrait a perdu l'audio), un lecteur de flux ponctuel dans le moteur, et `0xBA` « occupé » tant qu'une piste joue (contraire de D-E11-5 : la boîte « vous avez obtenu » attendrait la fin de la fanfare). Sinon, un sans-effet explicite et journalisé garde le silence d'aujourd'hui. **Question** : veut-il entendre les pistes XA ? | auteur, puis une tranche XA |
 | O-E19-37 | **`0x87` et `0x95`** (prédicats d'attaque) : ils lisent `TouchingEntity`, l'attaque courante et les boîtes de coup, que rien n'écrit dans la DLL ; restés sautés jusqu'à E14 (sur la chaîne, 10 `C[75] @6418` rend 0 dans toutes les scènes, comme le saut). Avec eux, la question Q-A2 : sur la 226 (le poulet, `C[14]`), quatre sites de `0x95` lisent les index 8 à 11 au-delà de la table des armes ; le binaire lit les octets suivants (seul 10, la flèche, peut correspondre), la décompilation lèverait une exception : copier ou corriger ? | E14 |

@@ -1,0 +1,80 @@
+maps in world-index: 483; failures: 0
+distinct (map,slot,program) entries examined (slot A..F, index&0x7F nonzero, in table, table[index]!=0): 7134
+Sites = distinct (map,slot,program) whose FIRST instruction is a stateful opcode; Entities = records using them.
+
+== Totals by slot (ported-stateful only): sites / entities, chain | off-chain ==
+  A: sites 0 (chain 0 | off 0); entities 0 (chain 0 | off 0)
+  B: sites 154 (chain 11 | off 143); entities 154 (chain 11 | off 143)
+  C: sites 291 (chain 35 | off 256); entities 324 (chain 35 | off 289)
+  D: sites 0 (chain 0 | off 0); entities 0 (chain 0 | off 0)
+  E: sites 0 (chain 0 | off 0); entities 0 (chain 0 | off 0)
+  F: sites 0 (chain 0 | off 0); entities 0 (chain 0 | off 0)
+
+== Totals by slot and opcode (sites / entities; chain sites in brackets) ==
+  B 0x37 ported:Wait: sites 154 entities 154 [chain sites 11, chain entities 11]
+  C 0x0B ported:WalkUntilBeyondRadius: sites 47 entities 68 [chain sites 3, chain entities 3]
+  C 0x1E ported:Walk: sites 1 entities 1 [chain sites 0, chain entities 0]
+  C 0x37 ported:Wait: sites 243 entities 255 [chain sites 32, chain entities 32]
+  C 0x6A binary-only:stores hero pos in +0xC..+0x14, not ported: sites 13 entities 13 [chain sites 0, chain entities 0]
+
+== Slots A/D/E/F (always re-initialized) vs B/C (re-initialized after a clear), ported-stateful ==
+  A/D/E/F: 0 sites, 0 entities; chain 0 sites
+  B/C    : 445 sites, 478 entities; chain 46 sites
+
+== Sites with entry_pc == 0 (the port's key is CodeIndex, 0 collides with a cleared marker) ==
+
+== Chain sites (all slots) ==
+  map 10 C[19] @3328 0x37(1) x1  ported:Wait
+  map 10 C[20] @3408 0x37(1) x1  ported:Wait
+  map 10 C[21] @3480 0x37(1) x1  ported:Wait
+  map 10 C[22] @3584 0x37(1) x1  ported:Wait
+  map 10 C[23] @3636 0x0B(9,100,0) x1  ported:WalkUntilBeyondRadius
+  map 10 C[36] @4264 0x37(1) x1  ported:Wait
+  map 10 C[37] @4364 0x37(1) x1  ported:Wait
+  map 10 C[39] @4464 0x0B(8,48,0) x1  ported:WalkUntilBeyondRadius
+  map 10 C[43] @4616 0x0B(8,64,0) x1  ported:WalkUntilBeyondRadius
+  map 10 C[72] @6360 0x37(30) x1  ported:Wait
+  map 162 B[5] @432 0x37(10) x1  ported:Wait
+  map 162 C[2] @736 0x37(1) x1  ported:Wait
+  map 163 B[2] @216 0x37(1) x1  ported:Wait
+  map 163 B[3] @332 0x37(1) x1  ported:Wait
+  map 163 B[4] @448 0x37(1) x1  ported:Wait
+  map 164 C[2] @240 0x37(1) x1  ported:Wait
+  map 165 C[5] @984 0x37(1) x1  ported:Wait
+  map 165 C[3] @804 0x37(1) x1  ported:Wait
+  map 165 C[4] @880 0x37(1) x1  ported:Wait
+  map 165 C[8] @1144 0x37(1) x1  ported:Wait
+  map 165 C[9] @1180 0x37(1) x1  ported:Wait
+  map 165 C[23] @2284 0x37(1) x1  ported:Wait
+  map 165 C[22] @2236 0x37(1) x1  ported:Wait
+  map 169 B[3] @256 0x37(10) x1  ported:Wait
+  map 172 C[8] @588 0x37(1) x1  ported:Wait
+  map 172 C[9] @624 0x37(1) x1  ported:Wait
+  map 172 C[23] @1728 0x37(1) x1  ported:Wait
+  map 172 C[22] @1680 0x37(1) x1  ported:Wait
+  map 176 B[3] @272 0x37(10) x1  ported:Wait
+  map 176 B[4] @372 0x37(1) x1  ported:Wait
+  map 176 B[5] @420 0x37(1) x1  ported:Wait
+  map 176 C[2] @828 0x37(30) x1  ported:Wait
+  map 179 C[8] @1092 0x37(1) x1  ported:Wait
+  map 179 C[9] @1128 0x37(1) x1  ported:Wait
+  map 179 C[23] @2260 0x37(1) x1  ported:Wait
+  map 180 C[3] @88 0x37(1) x1  ported:Wait
+  map 180 C[5] @208 0x37(1) x1  ported:Wait
+  map 182 C[2] @72 0x37(1) x1  ported:Wait
+  map 182 C[1] @20 0x37(1) x1  ported:Wait
+  map 183 B[3] @288 0x37(10) x1  ported:Wait
+  map 185 B[1] @48 0x37(1) x1  ported:Wait
+  map 185 C[1] @160 0x37(1) x1  ported:Wait
+  map 185 C[2] @248 0x37(1) x1  ported:Wait
+  map 185 C[3] @324 0x37(1) x1  ported:Wait
+  map 185 C[4] @380 0x37(1) x1  ported:Wait
+  map 392 B[3] @156 0x37(60) x1  ported:Wait
+
+== First opcode of every distinct entry, by slot (all opcodes of interest + total) ==
+  A: total 835; 0x31=270, 0x1A=130, 0x62=77, 0x30=57, 0x63=55, 0x85=55, 0x41=37, 0x54=20
+  B: total 1714; 0x30=323, 0x00=300, 0x31=182, 0x36=156, 0x37=154, 0xBD=115, 0x85=75, 0x55=54
+  C: total 3143; 0x36=789, 0x00=713, 0x1A=323, 0x37=243, 0x30=211, 0x2B=136, 0x73=91, 0x62=68
+  D: total 551; 0x05=255, 0x87=136, 0x2B=81, 0xBD=29, 0x31=15, 0x00=12, 0x30=12, 0x1A=4
+  E: total 31; 0x85=16, 0x00=8, 0x05=4, 0x1B=2, 0xBD=1
+  F: total 860; 0x05=393, 0x27=150, 0x10=145, 0x0D=92, 0x00=20, 0x30=19, 0x31=15, 0xBD=6
