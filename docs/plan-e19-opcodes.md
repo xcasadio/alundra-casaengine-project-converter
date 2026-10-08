@@ -10971,10 +10971,12 @@ prête (champ, déplacement, `FillQueue`, plafond de tampons, valeurs de test), 
 musique par le service de musique du moteur avec le point de boucle ; `LoopDetected` vaut vrai aussi sur les pistes sans boucle :
 un champ `Looping` à part est nécessaire.
 
-#### 1.2w.1 E19.L-a — Point de boucle de la musique en flux (moteur) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102 ; planifiée le 2026-10-08 ; T1 : relecture à faire ; T2 : attend la réponse de l'auteur sur la profondeur)
+#### 1.2w.1 E19.L-a — Point de boucle de la musique en flux (moteur) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102 ; planifiée le 2026-10-08 ; T1 : relecture n°1 READY (faits), REVISE (exécution : liste des tests d'abord incomplète), révisée ; relecture n°2 à faire ; T2 : attend la réponse de l'auteur sur la profondeur)
 
 Moteur seul (sous-module, branche `chantier/e19-suite2` du moteur, au-dessus de `f86a981b`, le merge du navigateur de démos de l'auteur ;
-la montée du pointeur du parent à la fin de L-a fera entrer ce merge dans le parent : question à l'auteur). Déclencheur de risque :
+la montée du pointeur du parent à la fin de L-a fera entrer ce merge dans le parent : question à l'auteur ; écart consigné à R-BR (1), qui
+veut une base au commit épinglé `acbb1ae3` : si l'auteur refuse le merge, T1 est reporté par `cherry-pick` sur une branche partie
+d'`acbb1ae3` et la base de `CasaEngine.Tests` est remesurée). Déclencheur de risque :
 champ sérialisé nouveau et lecteur de flux (relecture et vérificateur neuf). Faits et valeurs : `docs/plan-e19-loop-annexe/la-1008/`
 (`notes.md`, `sim.py`, `sim.out` ; `verify/verify.md` l'emporte : les valeurs ont été rejouées par de vrais tests dans une copie, toutes
 égales ; sept corrections M1 à M7) et la conception du 2026-10-05 (`engine/`).
@@ -10993,21 +10995,24 @@ lit les nombres en flottants (16 777 217 deviendrait 16 777 216) ; `CreatePrevie
 - **LA-R4** : `Play` vérifie le point de boucle une fois, pour une piste bouclée seulement ; une valeur à la fin ou au-delà : un
   avertissement (soumis au délai unique de 5 s du lecteur pour tous ses avertissements) et retour à 0 ; la valeur est gardée sur la piste.
 - **LA-R5** : les deux sites de boucle se placent au point de boucle ; `Acquire` et `Channel.Reset` reçoivent l'argument, `Reset` l'écrit
-  avant `Volatile.Write(ref State, ActiveState)` (`StreamingWorker.cs:213`).
+  avant `Volatile.Write(ref State, ActiveState)` (`StreamingWorker.cs:213`) (aucun test ne peut épingler cet ordre).
 - **LA-R6** : la lecture s'arrête toujours à la fin des données : chaque couture soumet un tampon court ; aucun remplissage à travers la
-  couture (il ne gagnerait que 90 ms à la profondeur 24).
+  couture (il ne gagnerait que 90 ms à la profondeur 24 ; choix de conduite de la session, D-E19-102).
 - **LA-R7** (hors de portée) : fin de boucle, fondu du moteur, points de boucle des sons résidents (un son non diffusé en flux ignore la
   clé), interface des backends, la DLL et les données (L-b).
-- **LA-T2 — profondeur** (tâche à part, **en attente de l'auteur**) : `DefaultQueuedBufferTarget` de 3 à 24 (marge à la couture 2046 ms
-  contre 96 ms ; pire arrêt mesuré 351,5 ms, O-E19-63 ; coût : 384 Kio de file et un anneau de 768 Kio par piste jouée, une lecture de 384 Kio
+- **LA-T2 — profondeur** (tâche à part, **en attente de l'auteur**) : `DefaultQueuedBufferTarget` de 3 à 24 (marge à la couture 2045 ms
+  contre 96 ms ; pire couture : 81 trames, piste 13, verify M2 ; pire arrêt mesuré 351,5 ms, O-E19-63 ; coût : 384 Kio de file et un anneau de 768 Kio par piste jouée, une lecture de 384 Kio
   dans `Play` ; le mélangeur logiciel accepte 64 tampons par voix) ; `audio-system.md` réécrit pour 44,1 kHz ; deux tests bougent
   (`Play_StartsAStreamAndQueuesAhead`, `Update_TopsTheQueueBackUp` : 24, 22, 24 avec `SampleCount` = 106 496).
 - **Fichiers** (liste fermée) : `SoundAsset.cs` ; `Streaming/WavStreamReader.cs`, `Streaming/WavFormatInfo.cs`, `Streaming/MusicPlayer.cs`,
   `Streaming/StreamingWorker.cs`, `Streaming/StereoVoiceMixer.cs` (ligne de doc de T2) ; `EditorAssetJsonSerializer.cs`,
   `SoundAssetInspectorPanel.cs` ; tests `WavStreamReaderTests.cs`, nouveau `MusicPlayerLoopStartTests.cs` (l'aide de la rampe dedans),
-  `SoundAssetTests.cs` (la liste fixe des fichiers de démo de `Loader_DemoSoundFiles_HaveTheVariationDefaults` reçoit le nouveau fichier),
+  `SoundAssetTests.cs` (la liste fixe des fichiers de démo de `Loader_DemoSoundFiles_HaveTheVariationDefaults` reçoit le nouveau fichier,
+  modification attendue, et son résumé est mis à jour),
   `SoundAssetEditorSerializationTests.cs`, `Editor/SoundAssetInspectorPanelTests.cs`, `MusicPlayerTests.cs` (T2) ; démo `AudioDemo.cs`
-  (touche libre parmi A, E, Q, U, W, X, Y, Z), `loop_point_demo.wav` (529 260 o, données à l'offset 60, généré) et `loop_point_demo.sound`
+  (touche libre parmi A, E, Q, U, W, X, Y, Z), `loop_point_demo.wav` (529 260 o, données à l'offset 60, généré ; **le versionner dans le
+  moteur attend la réponse de l'auteur**, sinon la démo fabrique le son en mémoire ; le générateur est versionné dans
+  `docs/plan-e19-loop-annexe/la-1008/`) et `loop_point_demo.sound`
   (point de boucle 44 100), `AssetInfos.json`, `Content.mgcb` ; docs `docs/engine/audio-system.md` (§3, §5, §9, §11, et le commentaire de
   `GetPosition` qui dit « revient à zéro »), ADR-0072 du moteur (revérifiée sur toutes les branches) et son index,
   `ai-agent/tasks/e19la-music-loop-start-tasks.md`, `ai-agent/README.md` ; parent : ce plan et le pointeur.
@@ -11020,21 +11025,25 @@ lit les nombres en flottants (16 777 217 deviendrait 16 777 216) ; `CreatePrevie
   qui rend toujours 0 en attente) 7200 o après `Play`, 12 000 o après une mise à jour, sous une garde de 10 s ; W1 position 2400 puis trames
   (600, 10 600) à (603, 10 603) ; W4 la première trame lue après `SeekToSample(0)` sur un en-tête qui n'est pas de 44 o (canal droit 10 000) ;
   W7 (`fmt` de 18 o, données à 46) : un déplacement naïf donne (10 599, 600) ; asset et sérialiseur : S1/S4 5 344 920 lu et relu, S5 clé
-  absente à 0, S6 16 777 217 gardé exactement, P1 la copie de l'aperçu garde 600.
+  absente à 0, S6 16 777 217 gardé exactement, P1 la copie de l'aperçu garde 600. **La liste complète est celle de
+  `la-1008/notes.md` §3** (W1 à W7, S1 à S7, L1 à L8, B2, P1 ; W4 comme écrit ci-dessus, verify M5), dont W2, W3 (−1 et 1000 lèvent),
+  W5, W6 (aucune allocation au déplacement), S2, S3 (−5 donne 0) et S7 (`"600"`, 600,5 et `true` donnent chacun 0 et un avertissement) :
+  chaque règle LA-R1 à LA-R4 a au moins un test nommé.
 - ⏳ **LA-1 — T1 code** (LA-R1 à LA-R6), démo, docs, ADR-0072 ; mutations, chacune rouge sur ses tests : offset des données ignoré (W1, W4,
   W7, L6), rembobinage dans `FillQueue` (L1, L2, L6, B2), rembobinage dans le travailleur (L2w), plafond par appel retiré (B2), décalage de un
-  dans la borne (W3, L5), clé non écrite (S4), clé écrite à 0 (S5), lecture flottante (S6), copie de l'aperçu absente (P1).
+  dans la borne (W3, L5), clé non écrite (S4), clé écrite à 0 (S5), lecture flottante (S6, S7), copie de l'aperçu absente (P1).
 - ⏳ **LA-2 — T2** (après la réponse de l'auteur), commit à part, révocable seul.
 - ⏳ **LA-3 — Pointeur** (après la réponse de l'auteur sur le merge du navigateur de démos), `merge-base --is-ancestor acbb1ae3 <nouveau>`.
 - ⏳ **LA-4 — Vérification** par un vérificateur neuf.
 - **Acceptation** : tests rouges puis verts ; chaque mutation rougit ses tests ; les deux solutions se construisent ; `CasaEngine.Tests` bâti à
   part (hors du `.sln`) et vert contre une base remesurée (4194 au `f86a981b`) ; la démo tourne depuis `CasaEngine.Demos/` (capture du
   back-buffer, journal sans avertissement ; l'écoute revient à l'auteur) ; `Alundra.Tests` inchangé en nombre, en Release puis en Debug,
-  `cmp`, traces. **Arrêts** : un test existant qui bouge (hors des deux de T2), un fichier hors de la liste, une collision d'ADR.
+  `cmp`, traces. **Arrêts** : un test existant qui bouge (hors des deux de T2 et de la ligne ajoutée à la liste de `SoundAssetTests`), un
+  fichier hors de la liste, une collision d'ADR.
   **Retour arrière** : revert des commits du moteur (T1 et T2 séparément).
 
 
-### 1.2y E19.u — Ordre d'image du déclencheur de l'inventaire (D-E19-103, O-E19-78) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; planifiée le 2026-10-08 ; relecture à faire)
+### 1.2y E19.u — Ordre d'image du déclencheur de l'inventaire (D-E19-103, O-E19-78) 🚧 (découverte du 2026-10-08 faite et contre-vérifiée ; planifiée le 2026-10-08 ; relecture n°1 READY (deux angles) ; exécution en cours)
 
 DLL seule. Déclencheur de risque : ordre des passes du monde par tick (relecture et vérificateur neuf). Faits et valeurs :
 `docs/plan-e19-u-annexe/` (`notes.md`, `candidate-pending.diff.txt`, `AlundraInventoryTriggerFrameOrderTests.cs.txt`, `bin-out.txt`,
@@ -11079,7 +11088,8 @@ La contre-vérification redonne ces valeurs et trois autres fenêtres (fermeture
   warp (D-E13D-30) ; dans le binaire, le warp part et l'inventaire reste armé (le défaut d'origine que D-E13D-30 corrige) ; le
   commentaire du déclencheur (`AlundraInventoryDirector.cs`, garde du warp) est revu ; (3) les sons de l'inventaire viennent après ceux des
   événements de carte du même tick, et le point de tête du portrait suit un héros déplacé par un événement de carte du même tick, comme
-  dans le binaire.
+  dans le binaire ; (4) non confirmé dans le binaire : un Start au tick où l'écran de sauvegarde se ferme ouvre maintenant l'inventaire
+  (perdu au HEAD ; le processus de carte mémoire du binaire n'est pas émulé).
 - **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraWorldProxy.cs` (le comportement ; deux coutures de test, `EffectFrozenOfTickForTests`
   et `PendingTriggersGateForTests` ; la première boucle et ses commentaires retirés ; le commentaire de la porte des déclencheurs ; le
   commentaire qui dit que `TickPad` ne porte que les fronts du dernier tick) ; commentaires seulement : `Alundra/Scripts/AlundraInventoryDirector.cs`
