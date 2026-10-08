@@ -840,13 +840,14 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return Wait(v, state);
 
             case 0x36: // Wait until flag on - Script_54_036 @ 0x8003E35C (EntityEventHandlers.cs:1166-1176);
-                       // EventCodeDebugger/EventOpcodeSizeTable names this "Wait flag off", which is misleading -
-                       // it returns 3 (advance) when the flag bit IS SET, and 0 (suspend) when it is clear.
+                       // EventCodeDebugger names this "Wait flag off", which is misleading (EventOpcodeSizeTable
+                       // swaps it back since E19.m8 M-02) - it returns 3 (advance) when the flag bit IS SET, and
+                       // 0 (suspend) when it is clear.
                 return WaitUntilFlagOn(v);
 
-            case 0x35: // Wait flag on - Script_53_035 @ 0x8003E2DC (EntityEventHandlers.cs:1152-1163): the
-                       // mirror image of 0x36 above, and the size table's name for THIS one reads
-                       // backwards for exactly the same reason - it returns 3 (advance) once the flag bit
+            case 0x35: // Wait until flag off - Script_53_035 @ 0x8003E2DC (EntityEventHandlers.cs:1152-1163): the
+                       // mirror image of 0x36 above, and EventCodeDebugger's name for THIS one ("Wait flag on")
+                       // reads backwards for exactly the same reason - it returns 3 (advance) once the flag bit
                        // IS CLEAR, and 0 (suspend, re-tested next call) while it is SET.
                 return WaitUntilFlagOff(v);
 
@@ -2525,7 +2526,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
     /// <summary>0x57/0x58 (E19.l1): the relative signed jump the binary reads at <c>v[1 + 2d]</c> (low then high byte),
     /// <c>d</c> being an <see cref="AlundraEntityScriptProxy.AnimationDirection"/> (0 to 3). The delta is taken from the
-    /// instruction's own start and there is never a fall-through to <c>pc + 9</c>.</summary>
+    /// instruction's own start and there is never a fall-through to <c>pc + 9</c>. The <c>&amp; 3</c> is this port's bounds
+    /// guard, absent from the binary; with <c>d</c> always 0 to 3 it never changes the result (E19.m8 M-26).</summary>
     private static int DirectionalJump(int[] v, int direction)
     {
         var index = 1 + 2 * (direction & 3);

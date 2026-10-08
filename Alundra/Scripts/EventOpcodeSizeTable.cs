@@ -22,8 +22,13 @@ namespace Alundra.Scripts;
 /// the source's "Check TargetDirection" - the binary shows this opcode compares CurrentAnimationId, not
 /// TargetDirection (D-E16-27, docs/plan-e16-etat-partie.md).
 ///
-/// One size deviates from the source table: <c>0x78</c> is 3 bytes here, not the source's 4 - the binary
-/// (0x8003FB10) reads only v[1]/v[2] (D-E16-21, docs/plan-e16-etat-partie.md).
+/// Two sizes deviate from the source table: <c>0x78</c> is 3 bytes here, not the source's 4 - the binary
+/// (0x8003FB10) reads only v[1]/v[2] (D-E16-21, docs/plan-e16-etat-partie.md); <c>0x5F</c> is 8 bytes here,
+/// not the source's 1 - the binary returns 8 (E19.m8 M-01, docs/plan-e19-opcodes.md section 0.2.5; 0 reachable sites).
+///
+/// Two names are swapped back (E19.m8 M-02): the source names <c>0x35</c> "Wait flag on" and <c>0x36</c>
+/// "Wait flag off", backwards - 0x35 advances once the flag bit is CLEAR and 0x36 once it is SET (see the
+/// case 0x35/0x36 comments on <see cref="AlundraEventProgramRunner"/>'s dispatch).
 ///
 /// Two names are made explicit (E19.d D8, no size change): <c>0x24</c> waits UNTIL the logic entity's ForceAdjusted is nonzero
 /// (0x8003DB70) and <c>0x40</c> also asks for the running program state to be cleared (<c>g_clearProgramState</c>, 0x8003E7B8).
@@ -91,8 +96,8 @@ public static class EventOpcodeSizeTable
         { 0x32, new(3, "Toggle flag") },
         { 0x33, new(9, "Check flags on") },
         { 0x34, new(9, "Check flags off") },
-        { 0x35, new(3, "Wait flag on") },
-        { 0x36, new(3, "Wait flag off") },
+        { 0x35, new(3, "Wait until flag off") },
+        { 0x36, new(3, "Wait until flag on") },
         { 0x37, new(2, "Wait") },
         { 0x38, new(5, "Set MapIdToInternalMapIndex") },
         { 0x39, new(1, "Wait for dialog") },
@@ -133,7 +138,7 @@ public static class EventOpcodeSizeTable
         { 0x5C, new(4, "Dialog with entity") },
         { 0x5D, new(2, "Set entity Status = 3") },
         { 0x5E, new(4, "Set forceZ for entities") },
-        { 0x5F, new(1, "Wait for anim or distance") },
+        { 0x5F, new(8, "Wait for anim or distance") },
         { 0x60, new(2, "Is riding entity") },
         { 0x61, new(2, "Is riding entity 2") },
         { 0x62, new(4, "Set entities flags (low 16 bits)") },

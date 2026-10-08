@@ -335,6 +335,21 @@ public class AlundraEventProgramRunnerTests
     }
 
     [Fact]
+    public void UnknownOpcode_0x5F_SkipsEightBytes_AsTheBinary()
+    {
+        // E19.m8 M-01 (docs/plan-e19-opcodes.md §0.2.5): 0x5F has no handler (0 reachable sites) and the binary
+        // returns 8, not the decompiled table's 1 - skipped by 8 it lands on SetAnim(4) at @8.
+        var document = NewDocument(0x5F, 0, 0, 0, 0, 0, 0, 0, 0x1A, 4, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(4u, entity.TargetAnimationId);
+    }
+
+    [Fact]
     public void UnknownOpcode_NoKnownSize_TerminatesScriptCall()
     {
         // 0xC5 is past the last named opcode (0xC4) and not 0xFF - no size entry at all.
@@ -420,7 +435,8 @@ public class AlundraEventProgramRunnerTests
     [Fact]
     public void WaitUntilFlagOn_FlagClear_SuspendsAtSameCodeIndex()
     {
-        // Script_54_036 (0x36) - despite EventOpcodeSizeTable naming it "Wait flag off", it suspends
+        // Script_54_036 (0x36) - despite EventCodeDebugger naming it "Wait flag off" (EventOpcodeSizeTable swaps it
+        // back since E19.m8 M-02), it suspends
         // (returns 0) while the flag bit is CLEAR and only advances once it is SET - see the case 0x36
         // comment on AlundraEventProgramRunner.Dispatch. flag = v2<<8|v1 = 1<<8|44 = 300; bit = 44&0x1f = 12.
         var document = NewDocument(0x36, 44, 1, 0x1A, 9, 0xFF);

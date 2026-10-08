@@ -123,7 +123,7 @@ Static disassembly of every program map 389 ("Ship Klark (beginning)-389") refer
   391: 0x00 Break [implemented - Break, handled by the main loop] params=[]
   392: 0x00 Break [implemented - Break, handled by the main loop] params=[]
   393: 0x00 Break [implemented - Break, handled by the main loop] params=[]
-  394: 0x36 Wait flag off [implemented] params=[92,3]
+  394: 0x36 Wait until flag on [implemented] params=[92,3]
   397: 0x11 Player gain control [implemented] params=[]
   398: 0xFF End
 
@@ -412,7 +412,7 @@ Static disassembly of every program map 389 ("Ship Klark (beginning)-389") refer
 
 -- masked index 11 - offset 1168 --
   1168: 0x30 If flag on [implemented] params=[92,3,173,0]
-  1173: 0x36 Wait flag off [implemented] params=[232,131]
+  1173: 0x36 Wait until flag on [implemented] params=[232,131]
   1176: 0x09 Set direction [implemented] params=[8]
   1178: 0x37 Wait [implemented] params=[15]
   1180: 0x09 Set direction [implemented] params=[24]
@@ -488,7 +488,7 @@ Static disassembly of every program map 389 ("Ship Klark (beginning)-389") refer
   1356: 0x30 If flag on [implemented] params=[92,3,9,0]
   1361: 0x02 Goto [implemented] params=[72,0]
   1364: 0x00 Break [implemented - Break, handled by the main loop] params=[]
-  1365: 0x36 Wait flag off [implemented] params=[12,128]
+  1365: 0x36 Wait until flag on [implemented] params=[12,128]
   1368: 0x10 Player lose control [implemented] params=[]
   1369: 0x59 Set entity anim [implemented] params=[129,0]
   1372: 0x27 Face player [implemented] params=[]
@@ -501,7 +501,7 @@ Static disassembly of every program map 389 ("Ship Klark (beginning)-389") refer
   1389: 0x00 Break [implemented - Break, handled by the main loop] params=[]
   1390: 0x0D Dialog [implemented] params=[129,1]
   1393: 0x50 Set dialog choice [implemented] params=[4]
-  1395: 0x36 Wait flag off [implemented] params=[231,131]
+  1395: 0x36 Wait until flag on [implemented] params=[231,131]
   1398: 0x44 Wait dialog choice [implemented] params=[]
   1399: 0x51 Get dialog choice [implemented] params=[]
   1400: 0x03 If true goto [implemented] params=[10,0]
@@ -519,7 +519,7 @@ Static disassembly of every program map 389 ("Ship Klark (beginning)-389") refer
   1428: 0x02 Goto [implemented] params=[193,255]
   1431: 0x00 Break [implemented - Break, handled by the main loop] params=[]
   1432: 0x00 Break [implemented - Break, handled by the main loop] params=[]
-  1433: 0x36 Wait flag off [implemented] params=[233,131]
+  1433: 0x36 Wait until flag on [implemented] params=[233,131]
   1436: 0x67 Camera follow entity [implemented] params=[12]
   1438: 0x5B Turn entity with anim [implemented] params=[128,1,64]
   1442: 0x1F Walk with collision [implemented] params=[16,0]
@@ -557,7 +557,7 @@ Static disassembly of every program map 389 ("Ship Klark (beginning)-389") refer
   1518: 0xFF End
 
 -- masked index 15 - offset 1520 --
-  1520: 0x36 Wait flag off [implemented] params=[234,131]
+  1520: 0x36 Wait until flag on [implemented] params=[234,131]
   1523: 0x5B Turn entity with anim [implemented] params=[128,6,64]
   1527: 0x1F Walk with collision [implemented] params=[16,0]
   1530: 0x5B Turn entity with anim [implemented] params=[128,6,67]

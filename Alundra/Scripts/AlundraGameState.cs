@@ -124,8 +124,10 @@ public sealed class AlundraGameState
 
     /// <summary>E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-9): the same pad advanced once per LOGIC
     /// tick, with the original's press edges and key repeat - see <see cref="AlundraTickPad"/>'s own doc.
-    /// Fed from <see cref="LastPadState"/> by <see cref="AlundraWorldProxy.Update"/>'s own per-tick pad
-    /// pass; read by the per-tick consumers that need the original's frame-exact edges (the inventory).</summary>
+    /// Fed from <see cref="LastPadState"/> at the head of every logic tick of <see cref="AlundraWorldProxy.Update"/>'s
+    /// pass loop (E19.u U-R1, ADR-0050); read by the per-tick consumers that need the original's frame-exact edges:
+    /// the inventory reads the current tick's, while the dialogue pass (Square), the choice box and the save screen
+    /// get the words of the tick before, which the proxy captures tick by tick (D-E19-99).</summary>
     public readonly AlundraTickPad TickPad = new();
 
     /// <summary>

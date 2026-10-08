@@ -10792,7 +10792,7 @@ Release puis en Debug (3158 + les 5 lignes de la garde), aucun autre ne bouge ; 
 - ✅ **Recette M7-4** (auteur ; « Tout est ok » le 2026-10-08) : la barrière de la banque 151 (cartes 48 à 53, 435 à 438) et l'interrupteur tricolore (75, 137) : l'image
   s'affiche figée (hypothèse non tracée : quels scripts choisissent ces animations).
 
-#### 1.2s.9 E19.m8 — Petits points du lanceur, commentaires et gardes de tests (tri du 2026-10-08) ⏳ (planifiée le 2026-10-08)
+#### 1.2s.9 E19.m8 — Petits points du lanceur, commentaires et gardes de tests (tri du 2026-10-08) 🚧 (planifiée le 2026-10-08 ; M8-a faite)
 
 Sans décision de l'auteur ; aucun déclencheur de risque (pas de comportement de la chaîne : 0 site atteignable de `0x5F` ; des
 libellés, des commentaires et des tests) ; un vérificateur neuf sur l'ensemble à la fin. Faits : le tri du 2026-10-08
@@ -10807,6 +10807,10 @@ M-26, M-44). Trois commits, dans l'ordre :
   `0x5F` (`AlundraEventProgramRunnerTests.cs`). Les traces de référence `docs/intro-trace-389.txt` et `docs/intro-programs-389.txt`,
   qui impriment ces libellés, sont régénérées : seules leurs lignes de libellé changent (5 et 6 lignes), rien d'autre ; l'audit de la
   chaîne (`AlundraStoryChainOpcodeAudit`) reste vert, `0x5F` y est déjà rangé parmi les attentes.
+  *(fait le 2026-10-08 : test `UnknownOpcode_0x5F_SkipsEightBytes_AsTheBinary` rouge d'abord (0 au lieu de 4), puis vert ;
+  `Alundra.Tests` 3229/3229 en Release puis en Debug, `cmp` identique ; les deux traces régénérées ne changent que leurs 5 et
+  6 lignes de `0x36` ; les quatre traces du héros identiques. Le `& 3` est gardé comme garde de bornes du portage, consigné en
+  commentaire.)*
 - **M8-b — Gardes de tests (DLL, tests seuls)** : M-07 / O-E19-14 un test de corpus qui compte les sites `0x1C`/`0x1D` atteignables
   dont l'animation manque au préfab de l'acteur : exactement les trois Flammes (35 `@1228`, 38 `@850`, 39 `@726`), mesuré sur l'export
   courant (un autre compte se tranche par une preuve, jamais par une épingle silencieuse) ; M-20 l'arc A17 affirme que la boîte de
