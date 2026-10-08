@@ -11133,7 +11133,7 @@ vérifié ; miroir `robocopy /MIR` depuis PowerShell ; `diff -rq` final vide (45
   bouge hors de la liste, un fichier hors de la liste. **Retour arrière** : revert du commit de l'analyseur, du pointeur et du commit des
   tests du parent ; les dossiers renommés remis en place et le miroir refait, ou l'extracteur `a958d86` relancé (déterministe, 45 s).
 
-###### E19.L-b2 — Convertisseur et export ⏳
+###### E19.L-b2 — Convertisseur et export 🧪 (faite le 2026-10-08 : `bab2f84` tests, `eb2db6e` code, doc, images et export en place ; vérification à faire)
 
 Après L-b1 (miroir fait et vérifié).
 
@@ -11148,10 +11148,10 @@ Après L-b1 (miroir fait et vérifié).
   (`docs/plan-e19-f2b1-annexe/pixels/centred.png`, `centred_x2.png`, `docs/plan-e19-f3-annexe/view/pixels/overlap_mrow_V1_t19_x1.png`,
   `overlap_mrow_V1_t19_x2.png`, `overlap_mrow_V2_t22_x1.png` ; verify M2), mises à jour par leurs compositeurs ou par l'échange exact
   (82, 90, 57) → (74, 82, 57) (82 n'est jamais une valeur `<< 3` ; texels attendus : 8, 32, 90, 360, 90) ; ce plan.
-- ⏳ **LB2-0 — Tests d'abord** (rouges) : les champs lus et écrits ; puis, après l'export, les trois tests GPU qui comparent les images de
+- ✅ **LB2-0 — Tests d'abord** (rouges) : les champs lus et écrits ; puis, après l'export, les trois tests GPU qui comparent les images de
   référence (`Alundra.Tests/UI/AlundraTextBoxPixelTests.cs:230`, `Alundra.Tests/UI/AlundraChoicePixelTests.cs:295` et `:304`) passent
   rouges sur les anciennes images, puis verts sur les nouvelles.
-- ⏳ **LB2-1 — Code et export** : **manifeste « avant »** = celui de l'`alundra-project/` en place au début de L-b2, export des **anciennes**
+- ✅ **LB2-1 — Code et export** : **manifeste « avant »** = celui de l'`alundra-project/` en place au début de L-b2, export des **anciennes**
   données par le convertisseur du HEAD fait par E19.m7 (L-b1 ne touche pas l'export ; vérifier qu'aucun export n'a eu lieu depuis :
   manifeste égal à `docs/plan-e19-loop-annexe/lb-1008/m7-manifest-after.txt`, sauf `report.json` ; sinon, arrêt) ; export complet en place ;
   un fichier changé en plus des 48 vient d'abord, à vérifier, de la montée du pointeur du moteur (merge `f86a981b`) avant d'être
@@ -11161,6 +11161,17 @@ Après L-b1 (miroir fait et vérifié).
   2026-10-05 ; 20 352 o ; **un `bgm-manifest.json` différent est un arrêt** pour diagnostic) ; `AssetInfos.json` et les compteurs du rapport inchangés ; taille totale **rebasée** sur l'export
   « avant » (taille « avant » + 643 184 772 o, soit environ 1 955 084 838 o, à l'écart de `report.json` près, verify M3), nombre de fichiers inchangé ; double export : seul `report.json` diffère ; convertisseur
   vert ; `Alundra.Tests` en Release puis en Debug (les trois tests GPU verts), `cmp`, traces.
+**Fait le 2026-10-08 (LB2-0, LB2-1).** Manifeste « avant » égal à celui d'E19.m7 sauf `report.json`. `bab2f84` (3 rouges sur 4 nouveaux cas :
+lecture de la piste 25 et de la piste 42, écriture et ordre des champs ; le cas « clés absentes » vert par construction), `eb2db6e`
+(`GetNullableBoolean`, `ReadBgm`, trois propriétés de `BgmEntry` après `AssetId`, `audio-manifests.md`, les cinq images). Export en place :
+**exactement 48 fichiers changés** (les 47 prévus et `UI/Textures/font3.png`), 0 ajouté, 0 retiré ; `bgm-manifest.json` au SHA-1 du modèle
+`8f302c1a…`, 20 352 o ; `AssetInfos.json` et les compteurs inchangés ; taille hors DLL : « avant » + 643 184 772 o exactement (le rapport compte
+aussi la DLL et le PDB, qui ont grossi depuis E19.m7) ; double export : seul `report.json`. Images : échange de 8, 32, 90, 360 et 90 texels,
+rien d'autre ; les trois tests GPU rouges sur les anciennes images, verts sur les nouvelles. Convertisseur **848** ; `Alundra.Tests` **3222** en
+Release puis en Debug ; `cmp` ; traces. Un test a échoué une fois dans la première suite Release, le cas du warp d'E19.u : **défaut de test
+introduit par E19.u, trouvé et corrigé** (`f8bca08`) : un fondu d'écran laissé posé à la couleur de départ par une classe de tests
+précédente fait poser le fondu du départ dès son premier tick, et le directeur du warp abandonne alors le départ (pas de `GameManager` en
+montage) ; reproduit par une sonde temporaire, la classe remet maintenant le directeur des fondus à zéro.
 - ⏳ **LB2-2 — Vérification** par un vérificateur neuf. **Arrêts** : un fichier exporté hors des 48, un `bgm-manifest.json` différent du
   modèle, un test qui bouge hors des trois tests GPU, un fichier hors de la liste. **Retour arrière** : revert du convertisseur et des
   images ; données de `data-extracted.bak-lb` remises (retour arrière de L-b1) et export refait : manifeste égal à « avant » sauf
