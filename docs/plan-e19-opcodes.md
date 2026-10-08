@@ -11061,7 +11061,7 @@ pointeur.
   **Retour arrière** : revert des commits du moteur (T1 et T2 séparément).
 
 
-#### 1.2w.2 E19.L-b — Données, convertisseur et DLL de la boucle au repère, avec O-E19-66 ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102, D-E19-106 ; planifiée le 2026-10-08 en L-b1, L-b2, L-b3 ; relecture n°1 REVISE (les trois tranches), révisée ; relecture n°2 : L-b1 READY, L-b2 READY, L-b3 READY (faits) et REVISE (exécution : index des ADR, test d'`IsAlive` non compté), disposition FIX ; nouvelle époque pour L-b3, relecture de clôture à faire)
+#### 1.2w.2 E19.L-b — Données, convertisseur et DLL de la boucle au repère, avec O-E19-66 ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102, D-E19-106 ; planifiée le 2026-10-08 en L-b1, L-b2, L-b3 ; relecture n°1 REVISE (les trois tranches), révisée ; relecture n°2 : L-b1 READY, L-b2 READY, L-b3 READY (faits) et REVISE (exécution : index des ADR, test d'`IsAlive` non compté), disposition FIX ; nouvelle époque pour L-b3, relecture de clôture READY ; les trois tranches READY, exécution après L-a)
 
 Faits et valeurs : `docs/plan-e19-loop-annexe/` (`data/` : l'oracle du 2026-10-05, `oracle_sha256.tsv`, `predicted_*_changes.txt` ; `lb-1008/` :
 la découverte du 2026-10-08, `notes.md`, `proto_extractor.patch` ; `lb-1008/verify/verify.md` l'emporte, corrections M1 à M8). **[F]** Le
