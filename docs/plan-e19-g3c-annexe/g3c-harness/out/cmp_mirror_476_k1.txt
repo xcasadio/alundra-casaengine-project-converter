@@ -1,0 +1,5 @@
+dump=dump_mirror_476_k1.bin backbuffer=320x240 k=1 scene=mirror_476 frame=320x240 prediction_sha1=44417c5ee8e73983d9f531c55af1a58ac79f4cf9
+compared=76770 noise_skipped=30 opaque_or_background=65010 (differ 0) blended_pm1=11760 (differ 0, max |diff| seen 0) exact_ties_kept=1540 (differ 0)
+probes=12 differ=0
+result=PASS differences=0
+

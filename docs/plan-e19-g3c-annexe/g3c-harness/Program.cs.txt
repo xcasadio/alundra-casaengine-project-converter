@@ -1,0 +1,267 @@
+// E19.g G3c-3 pixel harness (out of the repository). Hosts a CasaEngineGame on the real export (project file
+// alundra-project\AlundraGame.json) with an EMPTY world (no map) holding one Camera2dComponent; the engine's default runtime
+// bootstrapper makes the view over that camera (VirtualResolutionLayout.Apply, IntegerFit, sets Zoom = k). Then drives the DLL's
+// public AlundraEffectStage and captures the back-buffer in process.
+//
+// Environment: G3C_SCENE, G3C_K (1|3), G3C_OUT (output dir), G3C_PROJECT (AlundraGame.json), G3C_EXPECTED (g3c_expected.json).
+using System.Globalization;
+using System.Text;
+using System.Text.Json;
+using Alundra.Scripts;
+using CasaEngine.Core.Logging;
+using CasaEngine.Engine.Environment;
+using CasaEngine.Framework.Application;
+using CasaEngine.Framework.Configuration.Project;
+using CasaEngine.Framework.Scene.Entities;
+using CasaEngine.Framework.Scene.Entities.Components;
+using CasaEngine.Framework.Scene.World;
+using CasaEngine.Framework.UI;
+using Microsoft.Xna.Framework;
+
+public static class Program
+{
+    [STAThread]
+    static int Main()
+    {
+        var scene = Environment.GetEnvironmentVariable("G3C_SCENE");
+        var k = int.Parse(Environment.GetEnvironmentVariable("G3C_K"), CultureInfo.InvariantCulture);
+        var outDir = Environment.GetEnvironmentVariable("G3C_OUT");
+        var projectFile = Environment.GetEnvironmentVariable("G3C_PROJECT");
+        var expectedFile = Environment.GetEnvironmentVariable("G3C_EXPECTED");
+        Directory.CreateDirectory(outDir);
+        var tag = $"{scene}_k{k}";
+        try
+        {
+            Logs.AddLogger(new FileLogger(Path.Combine(outDir, $"log_{tag}.txt")));
+            Logs.Verbosity = LogVerbosity.Info;
+
+            // The gameplay assembly is the one already loaded (HintPath reference to the deployed Alundra.dll).
+            GameSettings.AssemblyManager.AssemblyLoader = _ => typeof(AlundraEffectStage).Assembly;
+
+            var ctx = GameSettings.CreateRuntimeContext();
+            ctx.UIViewRuntimeFactory = new MguiViewRuntimeFactory();
+            // Loads the real project (settings, ProjectPath = alundra-project, AssetInfos.json catalog, gameplay assembly).
+            ProjectSettingsHelper.Load(projectFile, ctx);
+            // Back-buffer exactly 320 k x 240 k (CasaEngineGame.Initialize applies these to the GraphicsDeviceManager; the game is
+            // built without a project file name so that Initialize does not load the project again over them).
+            ctx.ProjectSettings.DebugWidth = 320 * k;
+            ctx.ProjectSettings.DebugHeight = 240 * k;
+            ctx.ProjectSettings.DebugIsFullScreen = false;
+            ctx.ProjectSettings.VSyncEnabled = false;
+            ctx.ProjectSettings.AllowUserResizing = false;
+
+            var spec = JsonDocument.Parse(File.ReadAllText(expectedFile)).RootElement.GetProperty("scenes").EnumerateArray()
+                .First(e => e.GetProperty("name").GetString() == scene);
+
+            using var game = new G3cGame(ctx, spec, scene, k, outDir);
+            game.Run();
+            File.WriteAllText(Path.Combine(outDir, $"report_{tag}.txt"), game.Report.ToString());
+            return game.Failed ? 2 : 0;
+        }
+        catch (Exception e)
+        {
+            File.WriteAllText(Path.Combine(outDir, $"exception_{tag}.txt"), e.ToString());
+            return 1;
+        }
+    }
+}
+
+public sealed class G3cGame : CasaEngineGame
+{
+    private readonly JsonElement _spec;
+    private readonly string _scene;
+    private readonly int _k;
+    private readonly string _outDir;
+    private Camera2dComponent _camera;
+    private int _updates;
+    private int _draws;
+    private bool _armed;
+    private bool _dumped;
+    public StringBuilder Report { get; } = new();
+    public bool Failed { get; private set; }
+
+    public G3cGame(EngineRuntimeContext ctx, JsonElement spec, string scene, int k, string outDir)
+        : base(null, runtimeContext: ctx)
+    {
+        _spec = spec;
+        _scene = scene;
+        _k = k;
+        _outDir = outDir;
+        ContentPath = Path.Combine(AppContext.BaseDirectory, "Content");
+        InactiveSleepTime = TimeSpan.Zero;
+    }
+
+    private void Say(string line) => Report.AppendLine(line);
+
+    protected override void LoadContentPrivate()
+    {
+        // An empty world (no map, no tile) with one 2D camera entity; the bootstrapper picks the first CameraComponent of the world.
+        var world = new World();
+        var entity = new Entity { Name = "G3cCamera" };
+        _camera = new Camera2dComponent();
+        entity.AddComponent(_camera);
+        entity.Initialize();
+        world.AddEntity(entity);
+        GameManager.SetWorldToLoad(world);
+    }
+
+    protected override void Update(GameTime gameTime)
+    {
+        _updates++;
+        if (_updates == 1)
+        {
+            // Frame 1: the world loads and the default view is bootstrapped over the 2D camera.
+            base.Update(gameTime);
+            return;
+        }
+
+        if (_updates == 2)
+        {
+            Setup();
+            if (!Failed)
+            {
+                base.Update(gameTime); // THE engine update: EffectQuadComponent resolves the sheets and submits the pushed frame.
+                _armed = true;
+            }
+            else
+            {
+                Exit();
+            }
+
+            return;
+        }
+
+        base.Update(gameTime);
+        if (_updates > 40)
+        {
+            Say("TIMEOUT: no capture after 40 updates");
+            Failed = true;
+            Exit();
+        }
+    }
+
+    private void Setup()
+    {
+        var pp = GraphicsDevice.PresentationParameters;
+        Say($"scene={_scene} k={_k}");
+        Say($"backbuffer={pp.BackBufferWidth}x{pp.BackBufferHeight} expected={320 * _k}x{240 * _k} client={Window.ClientBounds.Width}x{Window.ClientBounds.Height}");
+        if (pp.BackBufferWidth != 320 * _k || pp.BackBufferHeight != 240 * _k)
+        {
+            Say("FAIL: back-buffer size differs from 320k x 240k");
+            Failed = true;
+            return;
+        }
+
+        var view = GameManager.ViewManager.ActiveView;
+        if (view == null)
+        {
+            Say("FAIL: no active view");
+            Failed = true;
+            return;
+        }
+
+        Say($"views={GameManager.ViewManager.Views.Count} activeView.Camera is the harness Camera2d: {ReferenceEquals(view.Camera, _camera)}");
+        Say($"virtual resolution project setting: {(ActiveVirtualResolution == null ? "none" : ActiveVirtualResolution.Width + "x" + ActiveVirtualResolution.Height + " " + ActiveVirtualResolution.Mode)}");
+        Say($"zoom after bootstrap (set by VirtualResolutionLayout.Apply, IntegerFit) = {_camera.Zoom}");
+        Say($"world environment BackgroundMode={GameManager.CurrentWorld.EnvironmentSettings.BackgroundMode}");
+
+        // Background: the view's clear colour (the pipeline clears the back-buffer with it, LegacyClearColor mode).
+        view.ClearColor = new Microsoft.Xna.Framework.Color(24, 40, 56, 255);
+        Say("background mechanism: RenderView.ClearColor = (24, 40, 56) on the default view (cleared by RenderPipeline)");
+
+        // Camera: Zoom = k explicitly (asserted equal to what the layout set), Target integer.
+        var scroll = _spec.GetProperty("scroll");
+        var sx = scroll[0].GetInt32();
+        var sy = scroll[1].GetInt32();
+        _camera.Zoom = _k;
+        _camera.Target = new Vector3(sx + 160, -(sy + 120), 0f);
+        var t = _camera.Target;
+        var rx = (int)t.X - 160;
+        var ry = -(int)t.Y - 120;
+        Say($"camera Zoom={_camera.Zoom} Target=({t.X}, {t.Y}, {t.Z}) recomputed scroll=({rx}, {ry}) scene scroll=({sx}, {sy}) match={rx == sx && ry == sy}");
+        if (rx != sx || ry != sy || _camera.Zoom != _k)
+        {
+            Failed = true;
+            return;
+        }
+
+        // The DLL: public surfaces only.
+        var harness = _spec.GetProperty("harness");
+        var worldName = harness.GetProperty("world_name").GetString();
+        var bank = AlundraEffectBankLoader.Load(EngineEnvironment.ProjectPath, worldName);
+        var stage = new AlundraEffectStage();
+        var service = EffectQuadComponent.Service;
+        stage.AttachService(service);
+        stage.Load(bank);
+        foreach (var call in harness.GetProperty("setup").EnumerateArray())
+        {
+            var name = call.GetProperty("call").GetString();
+            var a = call.GetProperty("args").EnumerateArray().ToArray();
+            switch (name)
+            {
+                case "Reservoir.SpawnPlaced":
+                    stage.Reservoir.SpawnPlaced(a[0].GetInt32(), a[1].GetInt32(), a[2].GetInt32(), a[3].GetInt32());
+                    break;
+                case "Reservoir.SetAnimation":
+                    stage.Reservoir.SetAnimation(a[0].GetInt32(), a[1].GetInt32());
+                    break;
+                case "Reservoir.Create":
+                    stage.Reservoir.Create(a[0].GetBoolean(), a[1].GetInt32(), a[2].GetInt32(), a[3].GetInt32(), a[4].GetInt32(), a[5].GetInt32());
+                    break;
+                case "CaptureHeroTile":
+                    stage.CaptureHeroTile(a[0].GetInt32(), a[1].GetInt32());
+                    break;
+                case "SpawnLoadEffects":
+                    stage.SpawnLoadEffects();
+                    break;
+                default:
+                    throw new InvalidOperationException("unknown setup call " + name);
+            }
+
+            Say($"setup {name}({string.Join(", ", a.Select(x => x.ToString()))})");
+        }
+
+        var n = harness.GetProperty("run_frame").GetProperty("count").GetInt32();
+        for (var i = 0; i < n; i++)
+        {
+            stage.RunFrame(1, new[] { false });
+        }
+
+        Say($"RunFrame(1, [false]) x {n}");
+
+        // The camera passed to PushFrame is the one the active view renders with (SpriteRendererComponent draws with
+        // GameManager.ViewManager.ActiveView?.Camera): taken from the view itself.
+        var viewCamera = view.Camera as Camera2dComponent;
+        stage.PushFrame(viewCamera);
+        Say($"PushFrame(ActiveView.Camera) camera-is-harness-camera={ReferenceEquals(viewCamera, _camera)} sheets={service.SheetCount} v={service.SheetsVersion} ids=[{string.Join(", ", Enumerable.Range(0, service.SheetCount).Select(i => service.GetSheetId(i)))}] quads={service.QuadCount}");
+    }
+
+    protected override void Draw(GameTime gameTime)
+    {
+        _draws++;
+        base.Draw(gameTime);
+        if (!_armed || _dumped)
+        {
+            return;
+        }
+
+        _dumped = true;
+        var device = GraphicsDevice;
+        var width = device.PresentationParameters.BackBufferWidth;
+        var height = device.PresentationParameters.BackBufferHeight;
+        var data = new byte[width * height * 4];
+        device.GetBackBufferData(data);
+        var path = Path.Combine(_outDir, $"dump_{_scene}_k{_k}.bin");
+        using (var stream = File.Create(path))
+        using (var writer = new BinaryWriter(stream))
+        {
+            writer.Write(width);
+            writer.Write(height);
+            writer.Write(_k);
+            writer.Write(data);
+        }
+
+        Say($"updates={_updates} draws={_draws} dump={path} {width}x{height}");
+        Exit();
+    }
+}

@@ -1,0 +1,5 @@
+dump=dump_abr_378_k1.bin backbuffer=320x240 k=1 scene=abr_378 frame=320x240 prediction_sha1=02882ecc61c77812e7a5551038c49f30e6a20953
+compared=76800 noise_skipped=0 opaque_or_background=60672 (differ 0) blended_pm1=16128 (differ 0, max |diff| seen 0) exact_ties_kept=0 (differ 0)
+probes=8 differ=0
+result=PASS differences=0
+

@@ -9314,7 +9314,7 @@ l'aura à k = 1 égale au marcheur matériel (0 pixel différent)), `7007e5a` (5
 construction pure interne, câblage du mandataire, `docs/formats/effects.md`, `docs/editeur-couverture-dll.md`, ADR-0049, plus grand numéro
 de toutes les branches 0048). Mesures : `Alundra.Tests` **3214** en Release puis en Debug (3163 + 51), aucun test existant ne bouge,
 `cmp` égal, traces. Écart de citation corrigé : les clés du préfab d'entité sont aux lignes 544 à 553 d'`Alundra.entity`.
-- ⏳ **G3c-3 — Preuve au pixel** : harnais hors dépôt (référence `Alundra.dll` par `HintPath`, jamais par `ProjectReference` : la copie
+- ✅ **G3c-3 — Preuve au pixel** : harnais hors dépôt (référence `Alundra.dll` par `HintPath`, jamais par `ProjectReference` : la copie
   d'après-build écrit dans `alundra-project/`) : un `CasaEngineGame` sur le vrai export, **back-buffer d'exactement 320k × 240k** (donc
   w = 320k, h = 240k), caméra `Zoom = k`, `Target = (scrollX + 160, −(scrollY + 120))` à composantes entières (la DLL calcule son
   défilement d'élimination par `ToOriginalScrollSpace`, figé sur une vue de 320 × 240 : `(int)Target.X − 160`, `−(int)Target.Y − 120`) ; le
@@ -9332,6 +9332,12 @@ de toutes les branches 0048). Mesures : `Alundra.Tests` **3214** en Release puis
   (G2b-4 et G4). Résiduel accepté : la ligne de production qui prend le service (`world.Game?.EffectQuadComponent?.Service`) n'est
   couverte que par la recette G4 (le test du mandataire attache le service à la main, comme pour les fonds). Les mesures d'avant et
   d'après se font sur le même état du moteur (le checkout porte `f86a981b`).
+**Fait le 2026-10-08 (G3c-3).** Harnais hors dépôt (versionné dans `docs/plan-e19-g3c-annexe/g3c-harness/`) : back-buffer de 320 × 240 et
+960 × 720, la caméra rendue par la vue active passée à `PushFrame`, fond (24, 40, 56) par la couleur d'effacement de la vue, défilement
+recalculé égal à celui de chaque scène, deux planches et le bon nombre de quads par capture. Les **16 captures** (8 scènes × k = 1 et 3)
+passent `g3c_compare.py` avec **0 pixel différent** (écart maximal 0, égalités exactes gardées comprises, toutes les sondes égales),
+la 163 et la 391 comprises. Résiduels, sans bloquer : à k = 1 l'aura égale le marcheur matériel (0 pixel différent hors bruit) ; à × 3,
+l'aura diffère de l'image × 1 agrandie sur 1,65 à 1,76 % des pixels (D-E19-92 : plus lisse que la PS1 agrandie).
 - ⏳ **G3c-4 — Vérification** par un vérificateur neuf.
 - **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; `g3c_compare.py` sort 0 pour chaque scène à × 1 et × 3 :
   hors des zones de bruit, pixels opaques exacts, pixels mêlés d'un mode PSX (`Mode0` à `Mode3`) à ±1 par canal (règle de

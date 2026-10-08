@@ -1,0 +1,5 @@
+dump=dump_rays_163_k1.bin backbuffer=320x240 k=1 scene=rays_163 frame=320x240 prediction_sha1=8be82e40f923b8d1a9c06f5030faea08b6359e49
+compared=76800 noise_skipped=0 opaque_or_background=73588 (differ 0) blended_pm1=3212 (differ 0, max |diff| seen 0) exact_ties_kept=0 (differ 0)
+probes=13 differ=0
+result=PASS differences=0
+

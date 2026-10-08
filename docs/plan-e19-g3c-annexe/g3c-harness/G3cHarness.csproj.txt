@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- E19.g G3c-3 pixel harness, out of the repository. References COPIES of the built engine assemblies (lib-debug) and the
+       DEPLOYED alundra-project\Alundra.dll by HintPath; no ProjectReference to any repository project. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <RollForward>Major</RollForward>
+    <TieredCompilation>false</TieredCompilation>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <AssemblyName>G3cHarness</AssemblyName>
+    <RootNamespace>G3cHarness</RootNamespace>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <LibDir>$(MSBuildProjectDirectory)\..\lib-debug</LibDir>
+    <DeployedAlundra>D:\development\repo\alundra-casaengine-project-converter\alundra-project\Alundra.dll</DeployedAlundra>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CasaEngine"><HintPath>$(LibDir)\CasaEngine.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="MonoGame.Framework"><HintPath>$(LibDir)\MonoGame.Framework.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="MGUI.MonoGame.Integration"><HintPath>$(LibDir)\MGUI.MonoGame.Integration.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="MGUI.Core"><HintPath>$(LibDir)\MGUI.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="MGUI.Shared"><HintPath>$(LibDir)\MGUI.Shared.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="MGUI.Rendering.Abstractions"><HintPath>$(LibDir)\MGUI.Rendering.Abstractions.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Alundra"><HintPath>$(DeployedAlundra)</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <Target Name="CopyEngineSet" AfterTargets="Build">
+    <ItemGroup>
+      <EngineFile Include="$(LibDir)\**\*.*" Exclude="$(LibDir)\Alundra.dll;$(LibDir)\Alundra.pdb;$(LibDir)\Alundra.Tests.*;$(LibDir)\testhost*;$(LibDir)\xunit*;$(LibDir)\Microsoft.TestPlatform*;$(LibDir)\Microsoft.VisualStudio.*;$(LibDir)\*.runtimeconfig.json;$(LibDir)\*.deps.json" />
+      <NativeFile Include="$(LibDir)\runtimes\win-x64\native\*.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(NativeFile)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(EngineFile)" DestinationFiles="@(EngineFile->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(DeployedAlundra)" DestinationFolder="$(OutDir)" />
+  </Target>
+</Project>

@@ -1,0 +1,12 @@
+scene=mirror_327 k=1
+backbuffer=320x240 expected=320x240 client=320x240
+views=1 activeView.Camera is the harness Camera2d: True
+virtual resolution project setting: 320x240 IntegerFit
+zoom after bootstrap (set by VirtualResolutionLayout.Apply, IntegerFit) = 1
+world environment BackgroundMode=LegacyClearColor
+background mechanism: RenderView.ClearColor = (24, 40, 56) on the default view (cleared by RenderPipeline)
+camera Zoom=1 Target=(960, -112, 0) recomputed scroll=(800, -8) scene scroll=(800, -8) match=True
+setup Reservoir.Create(True, 0, 3, 62914560, 10485760, 3145729)
+RunFrame(1, [false]) x 4
+PushFrame(ActiveView.Camera) camera-is-harness-camera=True sheets=2 v=2 ids=[79a92f9f-17a9-515c-8d1d-3849dd8e901c, 7bae9c36-fb7b-5172-86b9-144078478291] quads=3
+updates=2 draws=1 dump=C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\g3c-harness\out\dump_mirror_327_k1.bin 320x240

@@ -1,0 +1,5 @@
+dump=dump_aura_t2_k1.bin backbuffer=320x240 k=1 scene=aura_t2 frame=320x240 prediction_sha1=607a9e7d2191a26b79505160234876dce51a8609
+compared=76714 noise_skipped=86 opaque_or_background=69239 (differ 0) blended_pm1=7475 (differ 0, max |diff| seen 0) exact_ties_kept=25 (differ 0)
+probes=17 differ=0
+result=PASS differences=0
+

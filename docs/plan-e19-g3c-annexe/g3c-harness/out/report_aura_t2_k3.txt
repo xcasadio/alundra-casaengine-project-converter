@@ -1,0 +1,12 @@
+scene=aura_t2 k=3
+backbuffer=960x720 expected=960x720 client=960x720
+views=1 activeView.Camera is the harness Camera2d: True
+virtual resolution project setting: 320x240 IntegerFit
+zoom after bootstrap (set by VirtualResolutionLayout.Apply, IntegerFit) = 3
+world environment BackgroundMode=LegacyClearColor
+background mechanism: RenderView.ClearColor = (24, 40, 56) on the default view (cleared by RenderPipeline)
+camera Zoom=3 Target=(960, -112, 0) recomputed scroll=(800, -8) scene scroll=(800, -8) match=True
+setup Reservoir.SpawnPlaced(0, 960, 160, 48)
+RunFrame(1, [false]) x 3
+PushFrame(ActiveView.Camera) camera-is-harness-camera=True sheets=2 v=2 ids=[397c312b-36a6-5e1a-9a30-b9c314a6cc6f, 7bae9c36-fb7b-5172-86b9-144078478291] quads=8
+updates=2 draws=1 dump=C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\g3c-harness\out\dump_aura_t2_k3.bin 960x720

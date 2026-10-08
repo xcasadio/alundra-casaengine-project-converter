@@ -1,0 +1,5 @@
+dump=dump_mirror_327_k3.bin backbuffer=960x720 k=3 scene=mirror_327 frame=960x720 prediction_sha1=d5e110bfc89e3b53e787ba17934fadb82aeecc77
+compared=691200 noise_skipped=0 opaque_or_background=686574 (differ 0) blended_pm1=4626 (differ 0, max |diff| seen 0) exact_ties_kept=0 (differ 0)
+probes=8 differ=0
+result=PASS differences=0
+

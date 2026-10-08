@@ -1,0 +1,5 @@
+dump=dump_pieces_391_k1.bin backbuffer=320x240 k=1 scene=pieces_391 frame=320x240 prediction_sha1=801a081a47c2a7091c5918124890d931de0d5872
+compared=76800 noise_skipped=0 opaque_or_background=76800 (differ 0) blended_pm1=0 (differ 0, max |diff| seen 0) exact_ties_kept=0 (differ 0)
+probes=10 differ=0
+result=PASS differences=0
+
