@@ -62,3 +62,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0046 | The effect opcodes queue their operation on the effect stage and apply it at the tick that emitted it | Accepted | 2026-10-06 |
 | ADR-0047 | The save screen reads the pad word of the previous tick, like the dialogue pass | Accepted | 2026-10-06 |
 | ADR-0048 | The life vessel raises the stats at once and queues its effects from a pure native function | Accepted | 2026-10-07 |
+| ADR-0049 | The world pushes the effect quads to the engine every rendered frame, ordered like the entities | Accepted | 2026-10-08 |

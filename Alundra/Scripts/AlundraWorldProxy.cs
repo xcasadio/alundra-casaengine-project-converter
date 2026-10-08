@@ -686,6 +686,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // when the service is null but world.Game is not (§4 arrêt in production).
         _backdropStage.AttachService(world.Game?.ScrollingLayerComponent?.Service);
 
+        // E19.g G3c (docs/plan-e19-opcodes.md, G3C-R5, ADR-0049): the engine-side effect quad service, attached BEFORE the effect stage's Load below (which pushes the sheets); a null service
+        // (headless montages, no Game) makes the stage's push a no-op.
+        _effectStage.AttachService(world.Game?.EffectQuadComponent?.Service);
+
         // D-E9d: the sibling cellular mechanism - same attach-before-Load shape. E19.m2 (D-E19-66, ADR-0032):
         // this world's FallRespawn cells (if any) draw from the C library rand() of the original
         // (AlundraLibcRandom, a stream of its own - not the game's AlundraRandom) - wired here,
@@ -2424,6 +2428,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         _backdropStage.PushFrame(
             AlundraWarpDirector.Instance.IsTransitionInProgress ? 0 : ticksThisFrame,
             _cameraDirector.ResolvedCamera);
+
+        // E19.g G3c (G3C-R5): the effect quads, pushed at EVERY rendered frame right after the backdrops, outside every gate: a tick frozen by PlayerControlFlags & 0x48 or a warp departure (0 tick)
+        // updates nothing but the slots are still drawn. The engine submits them from its own component's Update, after this one.
+        _effectStage.PushFrame(_cameraDirector.ResolvedCamera);
 
         // E10.b (docs/plan-e10-fondu.md, §1.6/D-E10-8): the fade pass - positioned here purely for
         // frame-order consistency with the camera/backdrop block above, NOT because it depends on

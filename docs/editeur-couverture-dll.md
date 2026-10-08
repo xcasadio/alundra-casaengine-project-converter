@@ -47,6 +47,7 @@ les créer, ni préserver leurs liens.
 |---|---|---|
 | `Maps/**/events/*.events.json` | `EventProgramDocument` | tout le bytecode de la carte |
 | `Maps/**/backdrop/*.backdrop.json` | `BackdropLoader` | parallaxe/fusion des fonds |
+| `Maps/**/effects/*.effects.json`, `Data/effects/effects-global.json` | `AlundraEffectBankLoader` (E19.g G3a), `AlundraEffectStage` (G3c) | enregistrements d'effets de la carte et tables d'animations ; la DLL pousse chaque image au `EffectQuadService` du moteur ; les planches (`SheetTextureAssetId`) sont, elles, des assets `.texture` du catalogue |
 | `Maps/world-index.json` | les deux ci-dessus + musique | id de carte → chemin du monde |
 | `Maps/music-index.json` | `AlundraMusicIndexTable` | carte → piste musicale |
 | `Sounds/sfx-manifest.json` | `AlundraSoundBank` | id de bruitage → fichiers/boucles |
