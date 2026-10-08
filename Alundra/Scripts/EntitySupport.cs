@@ -189,9 +189,10 @@ internal static class EntitySupport
     /// <summary>
     /// E19.h3 (H3-R2), port of the ceiling half of the binary's vertical step (<c>0x80036D94</c>) for a rising entity, in the DLL's convention (<c>ModdedPosZ = PosZ + ModZ</c>,
     /// <c>Depth = SizeZ * 65536 - 1</c>, a floor is its height without the binary's +1). <paramref name="force"/> is the rise of the tick (<c>&gt; 0</c>); the top of the box
-    /// is <c>PosZ + ModZ + Depth</c> and its target that plus <paramref name="force"/>. The absolute ceiling is tested first: a target whose top plus one (the conversion
-    /// of the binary's convention) goes past <see cref="AbsoluteCeiling"/> puts <c>PosZ</c> at <c>0x77FFFFF - Depth - ModZ - 1</c>. Otherwise, for an eligible subject, any
-    /// collidable (not the entity) whose <c>ModdedPosZ</c> is above the current top and at or below the target, and whose XY box overlaps (the semi-open rule of
+    /// is <c>PosZ + ModZ + Depth</c> and its target that plus <paramref name="force"/>. The absolute ceiling is tested first but does not end the search (E19.m13, M-45): a
+    /// target whose top plus one (the conversion of the binary's convention) goes past <see cref="AbsoluteCeiling"/> is capped at <c>AbsoluteCeiling - 2</c> (the binary's
+    /// <c>0x77FFFFF</c>) and is a contact. Then, for an eligible subject only (a non eligible one keeps the absolute-ceiling contact, <c>0x80036F18</c>), any
+    /// collidable (not the entity) whose <c>ModdedPosZ</c> is above the current top and at or below the current target (the capped one), and whose XY box overlaps (the semi-open rule of
     /// <see cref="TryFindSupport"/>), lowers the target to its <c>ModdedPosZ - 1</c> (the lowest wins) and <paramref name="newPosZ"/> is the <c>PosZ</c> that puts the top there.
     /// Returns true on a contact (the caller sets <c>CollidedWithEntityZ</c> and, with gravity, clears <c>ForceZ</c>).
     /// </summary>
@@ -201,21 +202,26 @@ internal static class EntitySupport
         var top = entity.PosZ + entity.ModZ + entity.Depth;
         var targetTop = top + force;
 
+        var contact = false;
         if (targetTop + 1 > AbsoluteCeiling)
         {
-            newPosZ = 0x77FFFFF - entity.Depth - entity.ModZ - 1;
-            return true;
+            targetTop = AbsoluteCeiling - 2;
+            contact = true;
         }
 
         newPosZ = 0;
         if (!IsEligibleSubject(entity))
         {
-            return false;
+            if (contact)
+            {
+                newPosZ = targetTop - entity.Depth - entity.ModZ;
+            }
+
+            return contact;
         }
 
         var moddedPosX = entity.PosX + entity.ModX;
         var moddedPosY = entity.PosY + entity.ModY;
-        var contact = false;
 
         for (var i = 0; i < collidables.Count; i++)
         {

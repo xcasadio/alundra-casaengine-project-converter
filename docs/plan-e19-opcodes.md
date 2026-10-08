@@ -7398,8 +7398,9 @@ recherche, H3-1 gagne UH-APEX-REVERT, le risque disparaît).
   ModZ`, `Depth = SizeZ × 65536 − 1`) : `haut = PosZ + ModZ + Depth`, `haut cible = haut + F` ; si le héros est un sujet
   éligible (`IsEligibleSubject`), toute collidable `c` autre que lui avec `haut < c.ModdedPosZ <= haut cible` et le
   recouvrement XY semi-ouvert → `haut cible = c.ModdedPosZ − 1`, contact (le plus bas l'emporte) ; contact : `PosZ = haut cible
-  − Depth − ModZ`. Plafond absolu, constante du binaire testée avant tout : si `haut cible + 1 > 0x7800000`, `PosZ =
-  0x77FFFFF − Depth − ModZ − 1`, contact (le `+ 1` de conversion ne vaut que pour cette constante). Contact :
+  − Depth − ModZ`. Plafond absolu, constante du binaire testée en premier : si `haut cible + 1 > 0x7800000`, `PosZ =
+  0x77FFFFF − Depth − ModZ − 1`, contact (le `+ 1` de conversion ne vaut que pour cette constante). **E19.m13 (2026-10-09)** : le plafond
+  absolu ne court-circuite rien ; la cible est plafonnée, et le balayage des entités continue avec cette borne (`0x80036DC4`-`0x80036F18`). Contact :
   `CollidedWithEntityZ` = 1, `ForceZ` = 0 avec Gravity ; l'état continue (H3-R1 peut jouer au même tick). Fonction
   `TryFindCeiling` au patron de `TryFindSupport`. Un plafond **mobile** (l'entité au-dessus doit d'abord bouger) relève de
   D5 : seul le plafond immobile est porté.
@@ -11228,7 +11229,7 @@ DLL. Faits : `docs/plan-e19-m-annexe/night-discovery-2026-10-09/G4b.json`.
     lus posent un statut non nul, et dans le binaire le statut 0 veut aussi dire emplacement libre, donc le refus reste fidèle. À
     relire si un futur chemin de lancement laissait le statut à 0.
 
-#### 1.2s.14 E19.m13 — Portes de l'aimantation au sommet (M-11, O-E19-44) et plafond absolu suivi du balayage des entités (M-45) (G4a) ⏳ (planifiée le 2026-10-09, nuit en mode AUTO)
+#### 1.2s.14 E19.m13 — Portes de l'aimantation au sommet (M-11, O-E19-44) et plafond absolu suivi du balayage des entités (M-45) (G4a) ✅ (planifiée le 2026-10-09, nuit en mode AUTO ; relecture READY ; faite et CONFIRMED le 2026-10-09)
 
 DLL. Faits : `docs/plan-e19-m-annexe/night-discovery-2026-10-09/G4a.json`, désassemblage relu par le critique. Saut du héros : relecture
 du plan, puis vérificateur neuf.
@@ -11279,6 +11280,35 @@ du plan, puis vérificateur neuf.
     chute, avec `ForceZ` non nul).
 
   **Arrêts** : une mesure qui contredit une valeur déduite ; un test existant ou une trace qui bouge. **Retour arrière** : revert.
+- ✅ **Fait le 2026-10-09** par un exécuteur, puis vérifié par un vérificateur neuf, **CONFIRMED**.
+  - **Binaire relu** par le vérificateur : `0x80037798`-`0x800377A8`, `0x80037938`-`0x80037948`, `0x80036DC4`-`0x80036DDC` et
+    `0x80036F18`.
+  - **Rouges au HEAD**, exactement les trois prévus : UH_GATE_XY (tick 1 au sol), UH_GATE_BLOCKED (préconditions tenues) et le toit à
+    1900 px (tick 2 à 123731967). Les 12 autres tests du fichier sont verts au HEAD, dont UH-APEX-DOWN, UH-APEX-UP, SJ-14, UH-12 et UH-CAP,
+    inchangés.
+  - **Gardes livrées** : le contrôle est/nord, le toit à 1925 px, `UH_APEX_REVERT_Walking` (l'ancien corps est gardé sous `UH_APEX_REST`)
+    et les bords de fenêtre à 35 et 36 px.
+  - **Mutations par script**, chacune rougit comme prévu et chaque fichier est restauré à l'octet près :
+    - porte 2 retirée : UH_GATE_BLOCKED ;
+    - deux portes retirées : UH_GATE_XY et UH_GATE_BLOCKED ;
+    - porte 1 seule retirée : tout reste vert, c'est le mutant équivalent annoncé ;
+    - retour anticipé du plafond remis : le toit à 1900 ;
+    - cible non plafonnée : le toit à 1925 et UH-CAP ;
+    - fenêtre élargie ou rétrécie : les bords à 36 et 35 px ;
+    - annulation retirée : `UH_APEX_REVERT_Walking`.
+  - **Campagne** : `Alundra.Tests` 3263/3263 en Release puis en Debug ; `cmp` identique ; traces inchangées.
+  - **Arrêt « valeur déduite contredite » : il a joué, et la session l'a tranché.** Le tick 1 du toit à 1900 px était déduit à 121634816
+    (1856 px) ; il est mesuré à 121536512 (1854,5 px).
+    - La même valeur sort sans toit, et sur le code du HEAD : c'est un fait du montage. Le héros part de 1791,5 px après la mise en
+      place et monte de 63 px au premier tick. Le correctif n'y est pour rien.
+    - La déduction de `G4a.json` était fausse sur ce point.
+    - Le test n'épingle pas la valeur mesurée au tick 1, seulement une plage (1792 < `PosZ` < 1900 px, contact 0), comme UH-CAP le fait
+      déjà.
+    - Toutes les valeurs qui portent la preuve concordent exactement : ticks 2 à 5, le toit à 1925, les portes et les bords.
+  - **Reportés** :
+    - l'épingle de la porte Gravity : montage instable, le héros est à 0 dès le tick 1, même au HEAD. Elle va à T6 ;
+    - le chemin « sujet non éligible au plafond absolu » (`0x80036F18`) : porté, mais sans test (P4) ;
+    - M-45 (a) est clos sans changement (écriture morte).
 
 ### 1.2u Recette de l'auteur du 2026-10-05 ✅ (constat consigné ; deux défauts enquêtés ; suites réglées : O-E19-60 (E19.s2), O-E19-61 (X2), O-E19-62 (§1.2w), (tri du 2026-10-08))
 
@@ -12275,7 +12305,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-41 | **Tranché le 2026-10-03 (D-E19-57 : porté pour toutes les entités, son à l'arrivée compris ; l'audit d'E19.t corrige deux faits de la découverte : Melzas n'apparaît pas au chargement, le livre joue 204 une seule fois).** **Sons des changements d'animation** (découverte d'E19.h, surface C, question Q-H1 à l'auteur) : le binaire (`UpdateAnimation` `0x80038BB0`-`0x80038BC8`) joue le son de l'animation à chaque changement d'animation de **toute** entité (nouvelle animation, nouvelle ligne de direction, fin de chaîne, `0x1C`, et l'apparition, `InitializeEntity`) ; identifiant `Sfx`, + 0x100 si le bit 0x20 de l'octet 0xD ; la DLL ne joue que le décollage du héros (R8). Porté, il ajoute des sons dans des scènes de la chaîne : 476 (Melzas, 219 au chargement et à `0x8A @553`, 220 à `0x59 @572`), 392 (la course du héros à `0x5B @64`, son 13), le livre de la 178 et de la 179 (204 deux fois), la boule de fer de la 135 (120 à chaque cycle) ; un héros qui arrive par `0x53` en animation de saut réentend le son du décollage. **Questions** : porter la règle pour toutes les entités maintenant (recommandé : oui, comme l'original) ? garder le son à l'arrivée (recommandé : oui, même porte que les autres sons) ? | auteur, puis une sous-tranche d'E19.h |
 | O-E19-42 | **Tranché le 2026-10-03 (D-E19-58 : le glissement de la DLL est gardé).** **Résolution exacte des contacts** (découverte d'E19.h, surface B, question Q-H2 à l'auteur) : le binaire divise le pas conjointement en 16.16 (`ComputeXYPosition` `0x80037730`) ; une poussée en diagonale contre un PNJ ou contre la pointe d'un coin arrête net Alundra, et le contact est en unités 16.16 (le dernier demi-pas peut s'arrêter 1 à 3 unités avant à l'est et au sud, `ForceAdjusted` un tick plus tard) ; dans la DLL elle glisse le long, et arrive au contact un tick plus tôt à l'est et au sud (O-E19-28 a à d). Le porter demande un plan moteur (un résolveur horizontal tenu par le jeu) et une ADR ; quelques épingles de contact relationnelles bougent de 0 à 3 unités. D-E19-9 ne promettait que le glissement (E19.h4). **Question** : porter la résolution exacte (étape 2), ou accepter le glissement de la DLL ? (recommandé : étape 1 maintenant, étape 2 seulement si l'auteur veut la sensation exacte). | auteur, puis plan moteur |
 | O-E19-43 | **Cycle de palettes de `0xA4`** (E19.k2) : `0xA4 [b1, b2 > 0]` lance un programme de cycle de palettes (`0x80186790`) dont le décalage (`0x800C490C`) s'ajoute à l'octet de palette des tuiles et des couches cellulaires (`0x8005C574`, `0x8005CDBC`, `0x8005D544`) : la carte entière change de couleurs. Non porté par E19.k2 (trace `Degraded`) ; hors chaîne (carte 471 selon la découverte). Il demande un décalage de palette des tuiles dans le moteur. | plus tard (moteur) |
-| O-E19-44 | **Portes manquantes de l'aimantation au sommet** (vérification d'E19.h3, P3) : dans le binaire, l'aimantation (`0x80037848`) n'est atteinte que si le pas XY demande une force (`+0xE4`/`+0xE8` non nuls, sinon saut de `0x800377A0` à `0x80037DC0`) et elle est défaite quand le pas est entièrement bloqué (`0x80037938`-`0x80037948` rendent X, Y et Z) ; la DLL aimante dès que Gravity et `ForceZ == 0`. Émulation : saut sur place sous une boîte dont le bas est à 34 px, le binaire touche le plafond (t1 131072) et atterrit à t4, la DLL s'aimante au sol dès t1. Aucun plafond du corpus n'est à moins de 40 px du terrain. | E19.m |
+| O-E19-44 | **Fait par E19.m13 le 2026-10-09 (CONFIRMED) : les deux portes portées ; la porte 2 approchée par le déplacement réel du tick (écart borné, consigné ; choix de la session à confirmer).** **Portes manquantes de l'aimantation au sommet** (vérification d'E19.h3, P3) : dans le binaire, l'aimantation (`0x80037848`) n'est atteinte que si le pas XY demande une force (`+0xE4`/`+0xE8` non nuls, sinon saut de `0x800377A0` à `0x80037DC0`) et elle est défaite quand le pas est entièrement bloqué (`0x80037938`-`0x80037948` rendent X, Y et Z) ; la DLL aimante dès que Gravity et `ForceZ == 0`. Émulation : saut sur place sous une boîte dont le bas est à 34 px, le binaire touche le plafond (t1 131072) et atterrit à t4, la DLL s'aimante au sol dès t1. Aucun plafond du corpus n'est à moins de 40 px du terrain. | E19.m |
 | O-E19-45 | **Tranché le 2026-10-03 (D-E19-59 : convention de la DLL à l'apparition, `0x8A` et `0x64` dans la même ADR).** **Convention de `PosZ` à l'apparition** (conception d'E19.h1b) : la DLL tient partout `PosZ` = celle du binaire moins 1 (atterrissage à `T`), sauf à l'apparition (`z − ModZ + 1`, fabrique ~657) et dans `0x8A`/`0x64`. Le `+ 1` est perdu au premier tirage de tête d'image pour une entité à contrôleur, ce qui la fait passer à travers un appui exact ; c'est ce que masque aujourd'hui l'appui d'apparition sans portée (O-E19-15). **Question** : passer l'apparition en convention de la DLL (abandonner le `+ 1`, relever à `max(PosZ, T)`), décision transversale à consigner en ADR, ou garder la convention du binaire à l'apparition et la traiter autrement ? Recommandation : convention de la DLL à l'apparition (la fabrique ; `0x8A` et `0x64` à examiner dans la même ADR). | auteur, puis E19.h1b et E19.h2 |
 | O-E19-46 | **Tranché le 2026-10-03 (D-E19-47 : 320 × 240 à bandes, recalculé en temps réel).** **Hauteur affichée** (recette du 2026-10-03, 476) : la DLL montre 320 × 236 (`AlundraCameraMath.CameraDisplayHeight` 236, fenêtre 1280 × 944, valeur de la décompilation) ; le binaire fixe ses environnements de dessin et d'affichage à 320 × 240 (`0x800424AC`, `SetDefDrawEnv`/`SetDefDispEnv` 0x140 × 0xF0) : quatre lignes de moins dans la DLL. La fenêtre est aussi redimensionnable sans bandes (`AllowUserResizing`, zoom fixé par monde sur la hauteur) : élargie, l'image ne couvre plus les côtés. **Question** : passer à 240 (1280 × 960), et que faire d'une fenêtre redimensionnée (bandes, zoom recalculé, ou taille fixe) ? | auteur |
 | O-E19-47 | **Réglé le 2026-10-03 (R3, D-E19-45, ADR-0024).** **Entités détruites jamais recyclées** (recette du 2026-10-03, carte 15) : `0x2C` et les autres recherches par id brut trouvent le mandataire d'une entité détruite, qui reste dans la liste avec son `EntityRefId` ; la scène des Murggs devant le manoir de Tarn (`B[1] @108`-`@111`) tourne sans fin et le contrôle ne revient pas ; même blocage hors combat ailleurs (carte 6, `B[2] @239`). R3 (D-E19-45). | E19.r |

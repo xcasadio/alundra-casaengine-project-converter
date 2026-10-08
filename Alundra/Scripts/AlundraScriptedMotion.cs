@@ -202,7 +202,7 @@ internal static class AlundraScriptedMotion
 
         RunOneKinematicTick(entity, animSetAnimationId);
 
-        // E19.h3 (H3-R1): after the XY step, a hero still in the state snaps at the top of its jump.
+        // E19.h3 (H3-R1): after the XY step, a hero still in the state snaps at the top of its jump. E19.m13 (M-11): only with an XY force and an accepted step.
         if (airborne && entity.HeroAirborne)
         {
             SnapHeroAtApex(entity);
@@ -390,10 +390,27 @@ internal static class AlundraScriptedMotion
     /// under the box at the position after the step; if the hero is at most 3 px above it (<c>PosZ - T' &lt;= 0x30000</c>) or at most 3 px + 1 unit under it
     /// (<c>T' - PosZ &lt;= 0x30001</c>), <c>PosZ = T'</c> unless an entity occupies the box at <c>T'</c> (the positional search of
     /// <see cref="AlundraEntityCollision"/>, no skipped flags: the snap is then undone, <c>PosZ</c> unchanged). The state is not left: the next tick lands by the strict test.
+    /// E19.m13 (M-11): the binary reaches the snap only through two more gates. Gate 1 (<c>0x800377A0</c>, <c>0x800377A8</c>): <c>FinalForceX</c> or <c>FinalForceY</c> non zero,
+    /// else it jumps to <c>0x80037DC0</c>. Gate 2 (<c>0x80037938</c>-<c>0x80037948</c>): at least one step attempt accepted, since a refused attempt gives back X, Y and Z (the single
+    /// slide, <c>0x800379A0</c>, rewrites the forces and re-enters at <c>0x80037798</c>). Gate 2 is an APPROXIMATION of the binary's per-attempt test (which propagates Z from one
+    /// attempt to the next): it reads the real displacement of the tick, <c>LastTickDeltaX/Y</c> (slide included); the gap is bounded and no case of the corpus tells them apart.
+    /// Gate 1 is kept for fidelity although it is an equivalent mutant in this model (no force implies no displacement, so gate 2 already returns).
     /// </summary>
     private static void SnapHeroAtApex(AlundraEntityScriptProxy hero)
     {
         if ((hero.Flags & EntityFlags.Gravity) == 0 || hero.ForceZ != 0)
+        {
+            return;
+        }
+
+        // Gate 1 (0x800377A0/0x800377A8): no XY force, no snap.
+        if (hero.FinalForceX == 0 && hero.FinalForceY == 0)
+        {
+            return;
+        }
+
+        // Gate 2 (0x80037938-0x80037948): no accepted step (the slide included), no snap.
+        if (hero.LastTickDeltaX == 0 && hero.LastTickDeltaY == 0)
         {
             return;
         }
