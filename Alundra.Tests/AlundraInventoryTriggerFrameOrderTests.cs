@@ -40,6 +40,10 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
         AlundraSaveScreenDirector.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
+        // The warp case reads the screen fade: a fade an earlier test class left settled at the departure colour
+        // makes the departure's own fade settle on its first tick, and the warp director then aborts it (no
+        // GameManager in this montage), so the test depended on the order of the test classes.
+        AlundraScreenFadeDirector.Instance.ResetForTests();
     }
 
     private static DialogueBoxMontage Build()
