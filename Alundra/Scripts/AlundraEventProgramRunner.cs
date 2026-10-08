@@ -327,7 +327,10 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>Port of EntityEventHandlers.InitializeEventData @ 0x80041ee4 for slot A - see class doc
-    /// on the 0x80 bit fallback. Internal for direct unit testing of the A-table &amp; 0x7f resolution.</summary>
+    /// on the 0x80 bit fallback. Internal for direct unit testing of the A-table &amp; 0x7f resolution.
+    /// E19.m9 (O-E19-34): the binary writes only the program's start (+0, <c>Parameters[0]</c>) and the pc (+4,
+    /// <c>CodeIndex</c>/<c>Sp</c>/<c>Codes</c>) - 0x80041F5C/0x80041F60; <c>Parameters[1..9]</c> (+8 to +0x28, the marker and the data
+    /// of a pending wait) keep their values, so a program re-initialized while its first instruction waits goes on counting.</summary>
     internal void InitializeEventData(AlundraEntityScriptProxy entity, int programSlot, EventProgramState state)
     {
         var programIndex = entity.ProgramIndexes[programSlot];
@@ -349,7 +352,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             state.CodeIndex = table[maskedIndex];
         }
 
-        Array.Clear(state.Parameters);
+        // E19.m9: no clear of Parameters[1..9] - the binary keeps them (see this method's own doc).
         state.Codes = _codes;
 
         if (_codes == null || _codes.Length == 0 || state.CodeIndex >= _codes.Length)
@@ -2199,8 +2202,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// <summary>Script_54_036 (0x36) - a pure-flag suspend/advance test, same shape as
     /// <see cref="FlagBranch"/> but WITHOUT a goto (it is only ever used as a suspend gate, not a
     /// branch): returns 3 (advance past the instruction) once the flag bit is SET, 0 (suspend, retry
-    /// next frame) while it is clear. The size table calls this "Wait flag off", which is backwards -
-    /// see the case 0x36 comment on <see cref="Dispatch"/>.</summary>
+    /// next frame) while it is clear. EventCodeDebugger calls this "Wait flag off", which is backwards
+    /// (the size table swaps it back since E19.m8 M-02) - see the case 0x36 comment on <see cref="Dispatch"/>.</summary>
     private int WaitUntilFlagOn(int[] v)
     {
         var flag = (uint)((v[2] << 8) | v[1]);
@@ -2210,7 +2213,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
     /// <summary>Script_53_035 (0x35) - mirror image of <see cref="WaitUntilFlagOn"/> (0x36): returns 3
     /// (advance) once the flag bit is CLEAR, 0 (suspend, retry next frame) while it is SET. See case
-    /// 0x35's own comment on <see cref="Dispatch"/> for the size table's backwards name.</summary>
+    /// 0x35's own comment on <see cref="Dispatch"/> for EventCodeDebugger's backwards name (the size table swaps it back since
+    /// E19.m8 M-02).</summary>
     private int WaitUntilFlagOff(int[] v)
     {
         var flag = (uint)((v[2] << 8) | v[1]);

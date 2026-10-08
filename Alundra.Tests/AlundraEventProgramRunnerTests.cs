@@ -1350,12 +1350,13 @@ public class AlundraEventProgramRunnerTests
     public void RunScript_DefaultSlot_AlwaysReInitializes_EvenAfterASuspend()
     {
         // Slot A (Load), like D/E, never resumes - see the shared-scratch-state doc. @0: 0x01 no-op
-        // (1 byte, just so the Wait below does not coincidentally start at CodeIndex 0 - Wait keys its
-        // own re-entrancy off "Parameters[1] != CodeIndex", and a freshly-cleared Parameters[1] is
-        // already 0); @1: 0x37 Wait(5) (2 bytes, would suspend for 5 frames if ever allowed to keep
-        // counting) - if RunScript resumed instead of re-initializing, enough calls would eventually
-        // reach past it; since it always re-initializes, every call restarts Wait's own counter from
-        // scratch, so SetAnim(3) is never reached no matter how many calls are made.
+        // (1 byte, so the Wait below is not the program's first instruction - Wait keys its own
+        // re-entrancy off "Parameters[1] != CodeIndex", and the 0x01 that advances puts Parameters[1]
+        // back to 0 at every call); @1: 0x37 Wait(5) (2 bytes, would suspend for 5 frames if ever
+        // allowed to keep counting) - if RunScript resumed instead of re-initializing, enough calls would
+        // eventually reach past it; since it always re-initializes and runs the 0x01 first, every call
+        // restarts Wait's own counter, so SetAnim(3) is never reached no matter how many calls are made.
+        // (A first-instruction Wait keeps counting across re-initializations: E19.m9, AlundraInitializeEventDataTests.)
         var document = new EventProgramDocument
         {
             EventCodesATable = new[] { 0 },

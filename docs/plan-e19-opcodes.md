@@ -10855,7 +10855,7 @@ M-26, M-44). Trois commits, dans l'ordre :
   table des tailles les nomme à l'envers ; à corriger par la prochaine tranche qui touche ce fichier (contrôle :
   `rg -n "size table calls|size table's backwards" Alundra/Scripts/AlundraEventProgramRunner.cs` ne rend rien).
 
-#### 1.2s.10 E19.m9 — `InitializeEventData` garde les paramètres, comme le binaire (O-E19-34, M-09) ⏳ (planifiée le 2026-10-08 ; découverte faite le 2026-10-08)
+#### 1.2s.10 E19.m9 — `InitializeEventData` garde les paramètres, comme le binaire (O-E19-34, M-09) 🧪 (planifiée le 2026-10-08, relecture READY ; M9-1 et M9-2 faites le 2026-10-08, vérification neuve à faire)
 
 DLL seule. Pas de décision de l'auteur : le binaire tranche. Tout le recensement est vu sans défaut visible de l'original à trancher ;
 voir **Limite** plus bas. Relecture du plan, puis vérificateur neuf. Ce sont l'état de l'interpréteur et 46 sites de la chaîne.
@@ -10908,7 +10908,7 @@ Faits et valeurs : `docs/plan-e19-m9-annexe/`
 - **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraEventProgramRunner.cs` (la ligne et ses commentaires, les deux résumés de l'avis
   P3) ; `Alundra.Tests/AlundraEventProgramRunnerTests.cs` (le commentaire du test cité) ; un nouveau
   `Alundra.Tests/AlundraInitializeEventDataTests.cs` ; ce plan ; l'annexe ; le backlog (M-09).
-- ⏳ **M9-1 — Tests d'abord**, rouges au HEAD :
+- ✅ **M9-1 — Tests d'abord**, rouges au HEAD :
   - **(a)** créneau D, programme synthétique `0x01, 0xFF, 0x37 3, 0x1A 9, 0xFF` (entrée 2, jamais à 0), appelé une fois par appel :
     l'animation 9 est posée à l'appel 5 (N + 2) et pas avant. Rouge : jamais au HEAD ;
   - **(b)** données réelles, 392 `B[3]` (`0x37 60` à `@156`), par la vraie passe des événements de carte (`RunMapEventsPass`) et le vrai
@@ -10918,7 +10918,13 @@ Faits et valeurs : `docs/plan-e19-m9-annexe/`
     effacement) après j appels : l'attente finit à l'appel N + 2, comme sans effacement. Rouge au HEAD : j appels de plus, le compte
     recommence (annexe : 4 contre 3 pour N = 1 et j = 1) ;
   - **(d)** garde : après réinitialisation, `Parameters[0]` vaut l'entrée et `CodeIndex` aussi (vert au HEAD).
-- ⏳ **M9-2 — Code** (M9-R1), commentaires (M9-R2, avis P3).
+- ✅ **M9-2 — Code** (M9-R1), commentaires (M9-R2, avis P3).
+  *(fait le 2026-10-08 : nouveau `AlundraInitializeEventDataTests`, rouges d'abord exactement comme prévu : (a) l'animation 9 manque à
+  l'appel 5, (b) 93 ticks dans la zone au lieu de 62, (c) l'animation 9 manque à l'appel 5 ; (d) vert. Code : la ligne `Array.Clear`
+  retirée, le résumé d'`InitializeEventData` dit ce que le binaire écrit ; les deux résumés de l'avis P3 d'E19.m8 corrigés (le contrôle
+  `rg` ne rend plus rien) ; le commentaire du test `RunScript_DefaultSlot_AlwaysReInitializes_EvenAfterASuspend` réécrit, son assertion
+  inchangée et verte. `Alundra.Tests` 3243/3243 en Release puis en Debug (3239 + 4) ; aucun test existant ni aucun arc ne bouge, y
+  compris ceux des cartes à sites ; `cmp` égal ; les six traces identiques.)*
 - ⏳ **M9-3 — Vérification** : vérificateur neuf.
 - **Acceptation** :
   - (a), (b) et (c) rouges, puis tout vert ;
