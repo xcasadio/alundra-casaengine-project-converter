@@ -161,4 +161,31 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
         m.RunFrames(40);
         Assert.False(AlundraInventoryDirector.Instance.IsActive);
     }
+
+    [Fact]
+    public void MapEventStartingAWarp_OnTheTriggerTick_StartsTheWarp_AndTheTriggerRefusesStart()
+    {
+        // Behaviour change of E19.u (ADR-0050, gap 2), added with the fix and values measured on the fixed code (it is also red on the code before the fix: the departure does not start). A map event that starts a departure on the tick
+        // Start is pressed: the trigger now runs after it and refuses Start through its warp guard (D-E13D-30). Before E19.u the inventory opened first,
+        // posted MenuOpen and froze the map events, so the departure did not start on that tick. The binary starts the warp and leaves the inventory armed
+        // (the defect D-E13D-30 corrects).
+        using var m = Build();
+        var started = false;
+        m.MapEventScript = () =>
+        {
+            if (!started && m.Frame == P)
+            {
+                AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(1, 0, 0, 0, 0, 0, m.Proxy.PlayerEntity!, m.State);
+                started = true;
+            }
+        };
+        m.PadForFrame = f => f == P ? AlundraPadState.Start : 0u;
+        m.RunFrames(P + 1);
+        Assert.True(started);
+        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.False(AlundraInventoryDirector.Instance.IsActive);
+        Assert.Equal(0u, m.State.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+        m.RunFrames(2);
+        Assert.False(AlundraInventoryDirector.Instance.IsActive);
+    }
 }

@@ -256,7 +256,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
     }
 
     /// <summary>The production call site: the REAL <see cref="AlundraWorldProxy.Update(float)"/> ticks the
-    /// sub-inventory's presenter inside its per-tick pad loop, so Start then R1 through the real loop end with the
+    /// sub-inventory's presenter inside the inventory block of its loop of the passes, so Start then R1 through the real loop end with the
     /// sub-inventory screen pushed and its view model written. Without the presenter's call in that loop the screen
     /// would never appear in game (a mutation removing it fails this test).</summary>
     [Fact]

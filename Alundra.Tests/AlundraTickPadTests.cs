@@ -106,7 +106,7 @@ public class AlundraTickPadTests
     /// <summary>
     /// The point of D-E13D-9: the same held press, sampled once per rendered frame, gives the same edges
     /// per LOGIC tick whatever the number of ticks each rendered frame carries - including frames with zero
-    /// and with two ticks. The pass mirrors AlundraWorldProxy.Update's own per-tick pad loop: each frame
+    /// and with two ticks. The pass mirrors AlundraWorldProxy.Update's pad pass (the head of each tick of its loop of the passes, E19.u): each frame
     /// samples one hold state, then runs its ticks.
     /// </summary>
     [Theory]

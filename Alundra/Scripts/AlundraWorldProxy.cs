@@ -595,6 +595,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     private bool EffectGateOfThisTick() => (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0;
 
+    /// <summary>The gate of the map events, the entities and the pending triggers: <c>PlayerControlFlags &amp; GameplayBlockedMask</c>, or a warp transition in progress (T4, D-T-6).</summary>
+    private bool GameplayGateNow() => (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
+        || AlundraWarpDirector.Instance.IsTransitionInProgress;
+
     /// <summary>Test-only seam (E19.u, docs/plan-e19-u-annexe/): the effect gate of each logic tick of the last <see cref="Update"/> (see <see cref="_effectFrozenOfTick"/>).</summary>
     internal IReadOnlyList<bool> EffectFrozenOfTickForTests => _effectFrozenOfTick;
 
@@ -2187,62 +2191,20 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         // E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-9): the pad the inventory reads, advanced once
         // per LOGIC tick from this frame's sampled hold state. The original refreshes g_padState1 at the
-        // head of every 50 Hz frame, before anything reads it (GameEngine.cs:1518), so this pass runs
-        // first. "Dehors": the original never gates its pad update (PadManager.UpdatePads runs from the
-        // main loop), so neither does this. LastPadState was sampled THIS frame by the player's own
+        // head of every 50 Hz frame, before anything reads it (GameEngine.cs:1518), so the pad pass is
+        // the FIRST thing of each tick of the loop of the passes below (E19.u U-R1, ADR-0050). "Dehors":
+        // the original never gates its pad update (PadManager.UpdatePads runs from the main loop), so
+        // neither does this. LastPadState was sampled THIS frame by the player's own
         // AlundraEntityScriptProxy.Update, which runs before this proxy (World.cs:443-491). A consumer of
-        // TickPad's edges must read them inside this same loop, right after each Update: after the loop,
-        // a two-tick frame would have overwritten the first tick's edge.
-        // E13.d D4 (docs/plan-e13d-inventaire.md): the inventory director's own tick reads TickPad's
-        // edges - it runs RIGHT HERE, inside this same loop, immediately after each Update call, exactly
-        // as this loop's own comment above warns ("a consumer of TickPad's edges must read them inside
-        // this same loop... after the loop, a two-tick frame would have overwritten the first tick's
-        // edge") - it is the trigger check's own site too (GameEngine.cs:1567-1576 sits right after
-        // UpdateWorld(), and this per-tick loop is the closest the port's own structure gets to that).
-        //
-        // E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-21/22): the sub-inventory director's own
-        // Tick(), then the post-process, run right after - the port's equivalent of the original's own
-        // Update-then-render split (plan §1.2): the main inventory's trigger is the "Update" half, the two
-        // directors' per-frame work and AlundraInventoryPostProcess.Run the "render" half, the post-process
-        // AFTER both directors for THIS tick, as the original runs it after all thirteen of its callbacks
-        // (GraphicManager.cs:1677-1706 - its own post-process runs after its own callback-table loop).
+        // TickPad's edges must read them inside that same loop, in the tick that advanced them: after the
+        // loop, a two-tick frame would have overwritten the first tick's edge. The consumers are the
+        // inventory block at the END of each tick (E19.u U-R2, below) and the recordings of the next
+        // paragraph.
         // E19.f2a F2-R1 (docs/plan-e19-opcodes.md section 1.2j.3): the pad pass records the square button of EACH tick (hold and rising edge): the
-        // pass of the dialogue box, in the loop of the map events below, reads the square of the tick BEFORE, as the binary's box reads the pad
+        // pass of the dialogue box, in the same loop, reads the square of the tick BEFORE, as the binary's box reads the pad
         // sampled during the previous frame.
         _squareOfTick.Clear();
         _choicePadOfTick.Clear();
-        for (var padTick = 0; padTick < ticksThisFrame; padTick++)
-        {
-            GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
-            _squareOfTick.Add(((GameState.TickPad.ButtonsHold & AlundraPadState.Square) != 0, (GameState.TickPad.ButtonsJustPressed & AlundraPadState.Square) != 0));
-            _choicePadOfTick.Add((GameState.TickPad.ButtonsJustPressed, GameState.TickPad.ButtonsJustPressedByInterval));
-            UpdateInventoryPortraitHeadPoint();
-            AlundraInventoryDirector.Instance.Tick(PlayerEntity);
-            AlundraSubInventoryDirector.Instance.Tick();
-            AlundraInventoryPostProcess.Instance.Run();
-
-            // docs/plan-portrait-inventaire.md P4/PI8: the portrait steps once per tick HERE, after both
-            // directors' per-frame work and the post-process and before the presenters - the original's own
-            // DisplayUserInterface (0x8002be64) runs right after the callbacks and the post-process
-            // (0x80048054 at 0x8002be5c) inside RenderScene. A start or a return made in this tick's render
-            // half therefore steps in this same tick, and the trigger's opening (this tick's Update half)
-            // too, which is the original's next render.
-            AlundraInventoryPortrait.Instance.Step();
-
-            // E13.d D5 (docs/plan-e13d-inventaire.md): the presenter, right after the director's own
-            // Tick() for this SAME tick - same "presenter runs immediately after its director, inside the
-            // per-tick loop" shape the HUD's own hudTick loop uses, needed here for the same reason this
-            // loop's own comment above already gives for the director itself (a consumer of TickPad's
-            // edges - and here, of the director's own per-tick state - must not wait until after the
-            // loop). Null until a view is wired (TryWireInventoryScreenOnce production path, or
-            // AttachInventoryPresenterForTests in tests).
-            _inventoryPresenter?.Tick();
-
-            // E13.d SI4: the sub-inventory's own presenter, right after the main's, same tick - the two
-            // screens are never pushed together (D-E13D-26), so their push/remove order here never matters,
-            // but running both inside the loop keeps every presenter reading this SAME tick's director state.
-            _subInventoryPresenter?.Tick();
-        }
 
         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
         // on this very frame has to find a live presenter (see the method's own doc).
@@ -2267,21 +2229,29 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // box must freeze this pass even if that internal guard's own shape ever changes.
         // E19.f2a F2-R1 (docs/plan-e19-opcodes.md section 1.2j.3, ADR-0029): ONE loop of the logic ticks that always runs, the game blocked or not. At each
         // tick k it does, in the order of the binary's frame (RenderScene, whose callback dispatcher 0x80048054 runs the dialogue box, then Update(0)):
-        // (1) the pass of the dialogue box, on the square button of the tick k-1 (the last tick of the previous frame for k = 0); (2) the gate read again
+        // (0) the pad pass (E19.u U-R1: the sample of the tick, first, as the binary's pad sampler opens Update(0)); (1) the pass of the dialogue box, on the square button of the tick k-1 (the last tick of the previous frame for k = 0); (2) the gate read again
         // (GameplayBlockedMask, the transition of a warp), since the box may have been released or opened by this very pass; (3) when the hero exists and
-        // the gate is open, the map events then the recycling (R3). Frame-counted map-event chronology (GameEngine.RunMapEvents originally ran once per the
+        // the gate is open, the map events then the recycling (R3); (4) E19.u U-R2 (ADR-0050): the INVENTORY BLOCK, at the end of the tick, whether the hero exists and the gate is open or not
+        // (the binary's trigger sits after UpdateWorld, 0x8002BC6C, and the inventory's slots 4 and 6 are in the RenderScene that follows). Frame-counted map-event chronology (GameEngine.RunMapEvents originally ran once per the
         // fixed 50 Hz frame). A frame of several ticks interleaves the box and the map events tick by tick (B0 M0 B1 M1), like the binary. The scripts of the
         // entities already ran this frame, before this proxy (see this method's own doc): the origin table of F2-R1 follows from that order.
         _effectFrozenOfTick.Clear();
+        // E19.u U-R3: the gate the pending event triggers read (RunPendingEventTriggers, below) is the one left by the map events of the LAST tick, before that tick's inventory block (the binary's UpdateEntities
+        // runs before the trigger): read again at the end of each tick, before the block. With no tick this frame it is the gate as it stands.
+        var pendingTriggersGate = GameplayGateNow();
         for (var tick = 0; tick < ticksThisFrame; tick++)
         {
+            GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
+            _squareOfTick.Add(((GameState.TickPad.ButtonsHold & AlundraPadState.Square) != 0, (GameState.TickPad.ButtonsJustPressed & AlundraPadState.Square) != 0));
+            _choicePadOfTick.Add((GameState.TickPad.ButtonsJustPressed, GameState.TickPad.ButtonsJustPressedByInterval));
+
             _effectStage.BeginSource(tick, 0); // E19.g G3b (G3B-R3): the effect operations the map events of this tick emit are marked with it (rank 0).
             var (squareHeld, squarePressed) = tick == 0 ? _squareOfLastTick : _squareOfTick[tick - 1];
             // E19.f3a F3A-R3: the pass of the director also runs the choice box (slot 3, right after the text box's), on the pad words of the tick before, like the Square.
             var (choicePressed, choiceInterval) = tick == 0 ? _choicePadOfLastTick : _choicePadOfTick[tick - 1];
             AlundraDialogueDirector.Instance.Pass(squareHeld, squarePressed, choicePressed, choiceInterval);
 
-            // E19.f2b1c F2B1C-R4: the text box screen reads what the pass just drew, before the gate is read and before the `continue` below (the pass runs whether the
+            // E19.f2b1c F2B1C-R4: the text box screen reads what the pass just drew, before the gate is read and before the map-events pass below (the pass runs whether the
             // hero exists and the gate is open or not), and once per pass: a frame of several ticks draws only its last pass, but each pass is applied in order.
             _textBoxPresenter?.Tick();
 
@@ -2292,7 +2262,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // E19.f3c F3C-R1 (D-E19-93, docs/plan-e19-opcodes.md): the save screen - its state machine then its transition's render, as UpdateMemoryCardProcess
             // then UpdateUserInterface in the original's RenderScene (GraphicManager.cs:62-63) - runs AFTER the pass of the dialogue box and its choice box, as the
             // binary's slot 10 (the file menu) after its slot 3 (the choice) in the dispatcher's ascending order: the answer written by a close pass is read in
-            // the same tick. F3C-R2: it gets the pad words recorded per tick (TickPad only holds the last tick's edges here); D-E19-99: those of the tick BEFORE (the last tick of the
+            // the same tick. F3C-R2: it gets the pad words recorded per tick (E19.u: TickPad itself is advanced at the head of the tick, the same value for the pass of the tick, but the pass reads the recordings); D-E19-99: those of the tick BEFORE (the last tick of the
             // previous frame at tick 0), the tuple the pass above reads: the memory-card process and the slots 0, 3 and 10 all run in RenderScene, before the pad sampler of the frame's Update(0).
             // The gate below is read after it, so the MenuOpen it posts freezes the map events of the same tick. Never open together with an inventory: the inventory's trigger refuses while it is
             // active (J9). Its presenter reads the state the director just reached (E16.e T4, L5).
@@ -2300,29 +2270,60 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             AlundraSaveScreenDirector.Instance.Tick(screenPressed, screenInterval);
             _saveScreenPresenter?.Tick();
 
-            var tickBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
-                || AlundraWarpDirector.Instance.IsTransitionInProgress;
-            if (PlayerEntity == null || tickBlocked)
+            if (PlayerEntity != null && !GameplayGateNow())
             {
-                _effectFrozenOfTick.Add(EffectGateOfThisTick()); // E19.g G3a (G3A-R6): the gate of the tick, `continue` paths included.
-                continue;
+                // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the passes after the first of a catch-up frame stand for ticks whose
+                // UpdateAnimation (0x80038B6C) already switched the animations a previous pass asked for, clearing their Hold flag:
+                // clear it here too, so a 0x1C does not count the same Hold end again. A no-op at 0 or 1 tick per frame.
+                if (tick > 0)
+                {
+                    AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches(_spawnedEntities);
+                }
+
+                RunMapEventsPass(PlayerEntity, _mapEvents, EventProgramRunner, GameState.PlayerControlFlags);
+
+                // E19.r R3 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): the recycling of the destroyed entities, right after each pass of the map
+                // events, as the binary's UpdateEntities (0x8003B3A0) opens with UpdateDestroyedEntities (0x80038634) after RunMapEvents.
+                RecycleDestroyedEntities();
             }
 
-            // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the passes after the first of a catch-up frame stand for ticks whose
-            // UpdateAnimation (0x80038B6C) already switched the animations a previous pass asked for, clearing their Hold flag:
-            // clear it here too, so a 0x1C does not count the same Hold end again. A no-op at 0 or 1 tick per frame.
-            if (tick > 0)
-            {
-                AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches(_spawnedEntities);
-            }
+            _effectFrozenOfTick.Add(EffectGateOfThisTick()); // E19.g G3a (G3A-R6): the gate of the tick, read after the map events of the tick (also when they did not run).
+            pendingTriggersGate = GameplayGateNow(); // E19.u U-R3: before the inventory block of this tick.
 
-            RunMapEventsPass(PlayerEntity, _mapEvents, EventProgramRunner, GameState.PlayerControlFlags);
+            // E19.u U-R2 (docs/plan-e19-opcodes.md section 1.2y, D-E19-103, ADR-0050): the INVENTORY BLOCK, at the end of the tick, after the dialogue pass, the save screen and the map events of the same tick,
+            // every tick (no early exit skips it). It is the binary's Update(k) trigger (0x8002BC6C-0x8002BD00, after UpdateWorld) followed by RenderScene(k+1)'s inventory slots 4 and 6, the post-process and the
+            // portrait: the tick k of the port is Update(k) plus RenderScene(k+1) for the inventory (AlundraInventoryDirector's class doc). A box released or a map event run by this very tick is therefore seen by the
+            // trigger, and the map events freeze one tick later than the trigger's opening, like the binary.
+            UpdateInventoryPortraitHeadPoint();
+            AlundraInventoryDirector.Instance.Tick(PlayerEntity);
 
-            // E19.r R3 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): the recycling of the destroyed entities, right after each pass of the map
-            // events, as the binary's UpdateEntities (0x8003B3A0) opens with UpdateDestroyedEntities (0x80038634) after RunMapEvents.
-            RecycleDestroyedEntities();
+            // E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-21/22): the sub-inventory director's own
+            // Tick(), then the post-process, run right after - the port's equivalent of the original's own
+            // Update-then-render split (plan §1.2): the main inventory's trigger is the "Update" half, the two
+            // directors' per-frame work and AlundraInventoryPostProcess.Run the "render" half, the post-process
+            // AFTER both directors for THIS tick, as the original runs it after all thirteen of its callbacks
+            // (GraphicManager.cs:1677-1706 - its own post-process runs after its own callback-table loop).
+            AlundraSubInventoryDirector.Instance.Tick();
+            AlundraInventoryPostProcess.Instance.Run();
 
-            _effectFrozenOfTick.Add(EffectGateOfThisTick()); // E19.g G3a (G3A-R6): read after the map events of the tick.
+            // docs/plan-portrait-inventaire.md P4/PI8: the portrait steps once per tick HERE, after both
+            // directors' per-frame work and the post-process and before the presenters - the original's own
+            // DisplayUserInterface (0x8002be64) runs right after the callbacks and the post-process
+            // (0x80048054 at 0x8002be5c) inside RenderScene. A start or a return made in this tick's render
+            // half therefore steps in this same tick, and the trigger's opening (this tick's Update half)
+            // too, which is the original's next render.
+            AlundraInventoryPortrait.Instance.Step();
+
+            // E13.d D5 (docs/plan-e13d-inventaire.md): the presenter, right after the director's own
+            // Tick() for this SAME tick (a consumer of the director's own per-tick state must run inside
+            // the tick that produced it). Null until a view is wired (TryWireInventoryScreenOnce production
+            // path, or AttachInventoryPresenterForTests in tests).
+            _inventoryPresenter?.Tick();
+
+            // E13.d SI4: the sub-inventory's own presenter, right after the main's, same tick - the two
+            // screens are never pushed together (D-E13D-26), so their push/remove order here never matters,
+            // but running both inside the loop keeps every presenter reading this SAME tick's director state.
+            _subInventoryPresenter?.Tick();
         }
 
         _effectStage.EndSource();
@@ -2333,9 +2334,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             _choicePadOfLastTick = _choicePadOfTick[ticksThisFrame - 1];
         }
 
-        // The triggers in waiting read the gate again after the loop: the box passes above may have opened or released one.
-        gameplayBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
-            || AlundraWarpDirector.Instance.IsTransitionInProgress;
+        // The triggers in waiting read the gate as the loop left it: the box passes above may have opened or released one. E19.u U-R3: that is the gate after the map events of the LAST tick, read before
+        // that tick's inventory block (the binary's UpdateEntities runs before the trigger), not the gate at the end of the loop.
+        gameplayBlocked = pendingTriggersGate;
         _pendingTriggersGate = gameplayBlocked;
 
         // E7.b (docs/plan-e7-mutation-tuiles.md, "coalescer par frame"): applies at most one overlay

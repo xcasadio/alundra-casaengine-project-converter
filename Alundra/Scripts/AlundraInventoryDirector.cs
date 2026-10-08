@@ -22,6 +22,14 @@ namespace Alundra.Scripts;
 /// while a warp transition runs (<see cref="AlundraWarpDirector.IsTransitionInProgress"/>, SD5, D-E13D-38) - the
 /// original simply never runs the trigger during its transition loop; see <see cref="TryTrigger"/>.</para>
 ///
+/// <para><b>Where it sits in the tick</b> (E19.u, docs/plan-e19-opcodes.md section 1.2y, D-E19-103, ADR-0050):
+/// <see cref="AlundraWorldProxy.Update"/> calls <see cref="Tick"/> at the END of each logic tick, every tick,
+/// after the pass of the dialogue box, the save screen and the map events of that same tick. The binary's trigger
+/// sits in <c>Update(k)</c> after <c>UpdateWorld</c> (0x8002bc6c, after the map events 0x8003c67c, the entities
+/// and the effects), and the box released by the <c>RenderScene</c> before it (0x8004501c clears bits 0x18 of
+/// the control flags) is seen by it. The tick k of the port is <c>Update(k)</c> plus <c>RenderScene(k+1)</c>
+/// for the inventory, so the map events freeze one tick after the trigger's opening, like the binary.</para>
+///
 /// <para><b>The setup callback's timing</b> (D4's own open point): <c>DisplayInventory</c>
 /// (<c>MainInventoryManager.cs:443-499</c>) only ARMS the setup callback, through
 /// <c>GraphicManager.SetTransitionType(6)</c> (<c>GraphicManager.cs:1710-1742</c>): that call copies the
@@ -363,6 +371,8 @@ public sealed class AlundraInventoryDirector
             return;
         }
 
+        // E19.u: the trigger site. This call runs at the end of the tick (see the class doc), so the control flags and the
+        // warp state it tests are those the dialogue pass and the map events of THIS tick left, as in the binary's Update.
         if (!IsActive)
         {
             if (TryTrigger(_gameState, player))
@@ -415,7 +425,9 @@ public sealed class AlundraInventoryDirector
         // departure tick, unlike the original: HandleWarpTransition (0x80031340) is reached from the entity and
         // event pass inside UpdateWorld (0x8002bc4c, the last link through handler tables per the decompilation),
         // before this test, so a press on that exact frame armed the inventory, which then opened on the arrival
-        // map - a defect of the original, corrected (D-E13D-30).
+        // map - a defect of the original, corrected (D-E13D-30). Since E19.u (ADR-0050) this holds for a warp that a
+        // map event starts on the very tick Start is pressed too: the trigger runs after that tick's map events, sees
+        // the warp and refuses; before E19.u the inventory opened first and froze the map events, so that warp did not start.
         if (AlundraWarpDirector.Instance.IsTransitionInProgress)
         {
             return false;

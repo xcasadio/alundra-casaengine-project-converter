@@ -88,8 +88,8 @@ internal sealed class PrefixRecordingPresenter : IDialoguePresenter
 /// E19.f2a F2A-3: the production order of a logic tick, at the proxy's own <see cref="AlundraWorldProxy.Update"/> (the same headless world as
 /// <see cref="AlundraDialogueFramePassTests"/>), with the scripts as lambdas: the montage runs, each frame, <b>the scripts of the entities first</b> (the engine
 /// updates every entity, scripts included, BEFORE the world's own proxy, <c>World.Update</c>, which is why an entity script sees a box one tick early), under the
-/// gate the entities obey (<c>GameplayBlockedMask</c>), then <see cref="AlundraWorldProxy.Update"/> - the pad pass, then at each tick the pass of the box, the gate
-/// read again, and the map events (each map-event script is called once per tick the gate lets the map events run: a record whose zone holds the player).
+/// gate the entities obey (<c>GameplayBlockedMask</c>), then <see cref="AlundraWorldProxy.Update"/> - at each tick the pad pass, the pass of the box, the gate
+/// read again, and the map events (each map-event script is called once per tick the gate lets the map events run: a record whose zone holds the player), and last the inventory block (E19.u).
 /// A test writes the square button of a frame with <see cref="PadForFrame"/>; <see cref="Frame"/> is the number of frames done, so inside a script it is the index of
 /// the frame being run.
 /// </summary>

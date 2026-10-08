@@ -117,7 +117,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     }
 
     /// <summary>One logic tick, both directors then the post-process - <see cref="AlundraWorldProxy"/>'s
-    /// own per-tick pad loop order (E13.d SI3).</summary>
+    /// inventory block order, at the end of each tick of its loop of the passes (E13.d SI3, E19.u).</summary>
     private static void Tick(AlundraGameState state, uint hold)
     {
         state.TickPad.Update(hold);

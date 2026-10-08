@@ -921,7 +921,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         // WIRING inside Update (the per-tick loop next to the dialogue/HUD ones), not the attach path.
         AlundraInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, ItemTablesFixture.LoadReal(), worldProxy.SoundPlayer);
 
-        // Open, through the real world proxy's own per-tick pad loop (Start held for exactly one 1-tick
+        // Open, through the real world proxy's loop of the passes (the pad pass at the head of the tick, the inventory block at its end; Start held for exactly one 1-tick
         // frame gives one edge), then settle the 18-call slide the same way.
         worldProxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Start };
         worldProxy.Update(0.02f);

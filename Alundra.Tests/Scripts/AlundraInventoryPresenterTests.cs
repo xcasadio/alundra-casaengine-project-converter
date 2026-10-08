@@ -188,7 +188,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
 
     /// <summary>
     /// The production call site: every test above ticks the presenter by hand, so removing
-    /// <c>_inventoryPresenter?.Tick()</c> from <see cref="AlundraWorldProxy.Update(float)"/>'s per-tick pad loop
+    /// <c>_inventoryPresenter?.Tick()</c> from <see cref="AlundraWorldProxy.Update(float)"/>'s loop of the passes (the inventory block at the end of each tick, E19.u)
     /// left them all green (docs/plan-e13d-sous-inventaire.md §6 point 6). This one goes through that real loop -
     /// the main inventory's version of
     /// <c>AlundraSubInventoryPresenterTests.WorldUpdate_StartThenR1_PushesTheSubInventoryScreenThroughTheRealLoop</c>.

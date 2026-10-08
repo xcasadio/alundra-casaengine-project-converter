@@ -63,3 +63,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0047 | The save screen reads the pad word of the previous tick, like the dialogue pass | Accepted | 2026-10-06 |
 | ADR-0048 | The life vessel raises the stats at once and queues its effects from a pure native function | Accepted | 2026-10-07 |
 | ADR-0049 | The world pushes the effect quads to the engine every rendered frame, ordered like the entities | Accepted | 2026-10-08 |
+| ADR-0050 | The inventory trigger runs at the end of the tick, after the dialogue pass and the map events, like the binary | Accepted | 2026-10-08 |

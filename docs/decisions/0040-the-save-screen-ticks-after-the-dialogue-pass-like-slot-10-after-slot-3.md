@@ -12,12 +12,12 @@
 ## Decision
 
 - `AlundraWorldProxy.Update` ticks the save screen (its state machine, then its transition's render) and its presenter in the second loop, right after the choice presenter and before the gameplay gate, so the `MenuOpen` it posts still freezes the map events of the same tick.
-- In that loop `GameState.TickPad` only holds the edges of the last tick of the frame: the screen receives the pad words recorded per tick by the proxy (ADR-0047: those of the tick BEFORE, not of its own tick), through `AlundraSaveScreenDirector.Tick(uint justPressed, uint justPressedByInterval)`. The argument-less `Tick()` keeps reading `TickPad` for the hosts that drive the director by hand.
+- In that loop `GameState.TickPad` only holds the edges of the last tick of the frame: the screen receives the pad words recorded per tick by the proxy (ADR-0047: those of the tick BEFORE, not of its own tick), through `AlundraSaveScreenDirector.Tick(uint justPressed, uint justPressedByInterval)`. The argument-less `Tick()` keeps reading `TickPad` for the hosts that drive the director by hand. [Amended by ADR-0050 (E19.u): the pad pass is now the first thing of each tick of that loop, so `TickPad` holds the edges of the CURRENT tick there, not of the last tick of the frame; the recorded words of the tick before are still what the screen reads.]
 - The existing test that moved: `DownDuringTheQuestion_ThenOui_WritesTheFrozenSlot_Once` 20 to 19. The test helpers follow the new order. New tests drive the real proxy in frames of 1, 2 and 3 ticks.
 
 ## Consequences
 
 - The question's timings now match the binary's (earliest accepted answer at S+37 for OUI, S+38 for NON; late answers one tick earlier than before).
 - The screen's state machine also runs after the dialogue pass. No real flow can tell: the book waits 61 ticks after closing its box before starting the screen, and scripted boxes cannot open under `MenuOpen`.
-- `AlundraInventoryDirector` reads the screen's `IsActive` in the first loop: on ticks 1 and following of a multi-tick frame it no longer sees the screen state of the same frame. Negligible.
+- `AlundraInventoryDirector` reads the screen's `IsActive` in the first loop: on ticks 1 and following of a multi-tick frame it no longer sees the screen state of the same frame. Negligible. [Obsolete since ADR-0050 (E19.u): the inventory block now runs at the END of each tick, after the save screen of the same tick, so the trigger sees the screen state of its own tick, at any number of ticks per frame.]
 - The age of the pad word the screen reads stays a known gap (binary 19 samples between the press that opens the question and the earliest press the choice can take, port 18): O-E19-75, D-E19-99, a separate slice. [Resolved by ADR-0047 (E19.f3d): the screen now reads the pad word of the tick before, so the age is 19 samples.]
