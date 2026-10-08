@@ -10980,7 +10980,7 @@ prête (champ, déplacement, `FillQueue`, plafond de tampons, valeurs de test), 
 musique par le service de musique du moteur avec le point de boucle ; `LoopDetected` vaut vrai aussi sur les pistes sans boucle :
 un champ `Looping` à part est nécessaire.
 
-#### 1.2w.1 E19.L-a — Point de boucle de la musique en flux (moteur) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102 ; planifiée le 2026-10-08 ; T1 : relecture n°1 READY (faits), REVISE (exécution : liste des tests d'abord incomplète), révisée ; relecture n°2 READY ; T1 faite et CONFIRMED le 2026-10-08 sans la démo (moteur `674549cc` tests, `bc3bd023` code et ADR-0072 ; vérificateur neuf : diff relu ligne par ligne, débordement d'entier sondé, valeurs des tests égales à l'annexe et à un modèle indépendant, 30 rouges rejoués, mutations rouges, `CasaEngine.Tests` 4225, deux solutions, `Alundra.Tests` 3222 en Release puis en Debug, `cmp`, traces, liste fermée, ADR-0072 libre ; avis P4 : aucun test n'épingle le débordement d'entier ; un test d'allocation hors du changement, `L14_AdvancingAllocatesNothing`, a échoué une fois puis réussi) ; T2, la démo et le pointeur tranchés par l'auteur le 2026-10-08 (D-E19-104, D-E19-107, D-E19-105) : exécution)
+#### 1.2w.1 E19.L-a — Point de boucle de la musique en flux (moteur) ⏳ (découverte du 2026-10-08 faite et contre-vérifiée ; D-E19-102 ; planifiée le 2026-10-08 ; T1 : relecture n°1 READY (faits), REVISE (exécution : liste des tests d'abord incomplète), révisée ; relecture n°2 READY ; T1 faite et CONFIRMED le 2026-10-08 sans la démo (moteur `674549cc` tests, `bc3bd023` code et ADR-0072 ; vérificateur neuf : diff relu ligne par ligne, débordement d'entier sondé, valeurs des tests égales à l'annexe et à un modèle indépendant, 30 rouges rejoués, mutations rouges, `CasaEngine.Tests` 4225, deux solutions, `Alundra.Tests` 3222 en Release puis en Debug, `cmp`, traces, liste fermée, ADR-0072 libre ; avis P4 : aucun test n'épingle le débordement d'entier ; un test d'allocation hors du changement, `L14_AdvancingAllocatesNothing`, a échoué une fois puis réussi) ; T2, la démo et le pointeur tranchés par l'auteur le 2026-10-08 (D-E19-104, D-E19-107, D-E19-105) et faits le 2026-10-08 (moteur `359d21c1` T2 et ADR-0073, `15610ee4` démo ; parent `b83b3f5` pointeur et générateur), vérification à faire)
 
 Moteur seul (sous-module, branche `chantier/e19-suite2` du moteur, au-dessus de `f86a981b`, le merge du navigateur de démos de l'auteur ;
 la montée du pointeur du parent à la fin de L-a fera entrer ce merge dans le parent : question à l'auteur ; écart consigné à R-BR (1), qui
@@ -11050,8 +11050,17 @@ mutation rougit ses tests (offset ignoré : 13 ; rembobinage dans `FillQueue` : 
 décalée : W3 et L5 ; clé non écrite : S4 ; clé à 0 : 11 ; lecture flottante : S6 et S7 ; copie absente : P1) ; les deux solutions se
 construisent ; `Alundra.Tests` **3222** en Release puis en Debug, `cmp` égal, traces. Non faits (attendent l'auteur) : la démo, T2, le
 pointeur.
-- ⏳ **LA-2 — T2** (D-E19-104), commit à part, révocable seul ; puis la démo (LA-1, partie démo, D-E19-107), commit à part.
-- ⏳ **LA-3 — Pointeur** (D-E19-105 : il inclut le merge `f86a981b`), `merge-base --is-ancestor acbb1ae3 <nouveau>`.
+- ✅ **LA-2 — T2** (D-E19-104), commit à part, révocable seul ; puis la démo (LA-1, partie démo, D-E19-107), commit à part.
+- ✅ **LA-3 — Pointeur** (D-E19-105 : il inclut le merge `f86a981b`), `merge-base --is-ancestor acbb1ae3 <nouveau>`.
+**Fait le 2026-10-08 (LA-2, démo, LA-3).** Moteur `359d21c1` (`DefaultQueuedBufferTarget` 3 → 24 ; `MusicPlayerTests` : 24, puis 22 et 24 avec
+`SampleCount` = 106 496 ; `audio-system.md` §5 ; **ADR-0073** du moteur, nouvelle et non un amendement d'ADR-0072, les règles de l'index
+interdisant de réécrire une ADR acceptée) puis `15610ee4` (démo : `loop_point_demo.wav` de 529 260 o, SHA-256 `e41d8680…33ec`, données à
+l'offset 60, produit deux fois à l'identique par `docs/plan-e19-loop-annexe/la-1008/gen_loop_point_demo.py` ; `loop_point_demo.sound` en flux,
+bouclé, point 44 100 ; touche Q ; ligne de `SoundAssetTests` et son résumé ; `audio-system.md` §11). Démo lancée depuis
+`CasaEngine.Demos/` : capture du back-buffer « position 3,0 s, 24 tampons en file », journal sans avertissement ; l'écoute revient à l'auteur.
+Parent `b83b3f5` (pointeur `15610ee4`, `acbb1ae3` ancêtre ; le générateur). Mesures : `CasaEngine.Tests` **4227** (4225 + 2 lignes de théorie du
+nouveau `.sound`) ; deux solutions ; `Alundra.Tests` **3222** en Release puis en Debug, rien ne bouge ; `cmp` ; traces.
+
 - 🧪 **LA-4 — Vérification** : T1 vérifiée **CONFIRMED** le 2026-10-08 (voir l'en-tête) ; T2, la démo et le pointeur restent à vérifier quand ils seront faits.
 - **Acceptation** : tests rouges puis verts ; chaque mutation rougit ses tests ; les deux solutions se construisent ; `CasaEngine.Tests` bâti à
   part (hors du `.sln`) et vert contre une base remesurée (4194 au `f86a981b`) ; la démo tourne depuis `CasaEngine.Demos/` (capture du
