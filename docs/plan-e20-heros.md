@@ -1016,10 +1016,10 @@ pseudo-aléatoire une fois par image (E20.e0) ; la réutilisation des cases libr
 
 #### Tâches
 
-- ⏳ **C1 — Fiches d'équilibre.** Charger `Data/balance.json` une fois (table mise en cache, accès par `IAlundraScriptHost`, comme les
+- ✅ **C1 — Fiches d'équilibre.** Charger `Data/balance.json` une fois (table mise en cache, accès par `IAlundraScriptHost`, comme les
   tables d'objets) ; choisir la fiche comme `0x80044550` avec le seuil `D` de la carte ; à la création de chaque entité, poser la fiche,
   `Hp` et `HpMax` ; le héros prend la fiche 0. Le cas où la DLL ne trouve pas l'en-tête du sprite est documenté.
-- ⏳ **C2 — Attaque courante et boîte de l'image au tick.** À chaque changement d'animation que l'horloge voit (`StepAnimationClock`,
+- ✅ **C2 — Attaque courante et boîte de l'image au tick.** À chaque changement d'animation que l'horloge voit (`StepAnimationClock`,
   fin enchaînée, changement de direction, animation de départ), recharger `CurrentAttack` et l'octet d'animation (`+0xB4`) pour la passe
   de coups ; tenir, par entité, le curseur (animation, tick logique) qui donne la boîte de l'image courante d'après les
   `collision_keyframes` (règle de D6), y compris au tick du changement et dans les ticks d'une image de rattrapage. Ce qui change en fin

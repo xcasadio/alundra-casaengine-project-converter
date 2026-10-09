@@ -281,6 +281,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     AlundraItemTables? IAlundraScriptHost.ItemTables => ItemTables;
 
     /// <summary>
+    /// E20.c1a C1 (docs/plan-e20-heros.md section 1.5): the 512 balance entries (<c>Data/balance.json</c>), loaded once per project like <see cref="ItemTables"/>. Internal and assignable so tests swap in their own.
+    /// An entity gets its record from them at its creation (<see cref="AlundraEntityScriptProxy.InitializeBalance"/>), at the threshold <see cref="BalanceThreshold"/> of the map.
+    /// </summary>
+    internal AlundraBalanceTables BalanceTables = AlundraBalanceTables.GetOrCreate(EngineEnvironment.ProjectPath);
+
+    /// <summary>E20.c1a C1: the balance threshold of the loaded map (its property <c>D</c>, <see cref="AlundraBalanceTables.ResolveThreshold"/>), read once when the entities are created.</summary>
+    internal int BalanceThreshold;
+
+    AlundraBalanceTables? IAlundraScriptHost.BalanceTables => BalanceTables;
+
+    int IAlundraScriptHost.BalanceThreshold => BalanceThreshold;
+
+    /// <summary>
     /// Port of the original global <c>g_activeCollisionEntity</c>: the entity currently involved in the
     /// active collision pair, used by the pick phase to decide whether a touch downgrades all the way
     /// to an interact (slot F). Null in V1 (no collision system driving it yet); settable internally for
@@ -750,6 +763,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         }
 
         _tileMapData = tileMapData;
+        BalanceThreshold = AlundraBalanceTables.ResolveThreshold(tileMapData); // E20.c1a C1: the threshold of the balance chain, before any entity is created.
 
         // D-T-3 (docs/plan-transitions-carte.md, slice T1): the session carrier's own map-entry
         // disposition (D-T-13) is applied HERE, at the very START of this installation block - strictly
@@ -866,6 +880,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 if (spawnedProxy != null)
                 {
                     spawnedProxy.ScriptHost = this;
+                    spawnedProxy.InitializeBalance(BalanceTables, BalanceThreshold); // E20.c1a C1.
                 }
 
                 world.AddEntity(entity);
@@ -1947,6 +1962,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 + $"'{world.Name}'; Flags/SpriteProgramIndexes/AnimSetsByAnim left at their defaults.");
         }
 
+        // E20.c1a C1: InitializeEntity's balance part for the hero (0x80039E30-0x80039E4C): record 0 of the table (sprite index 0) at the threshold of the map, Hp and HpMax from it, and the first switch's
+        // attack and animation byte. After the header (the animation sets and the sprite index are only known from there).
+        proxy.InitializeBalance(BalanceTables, BalanceThreshold);
+
         // E19.t T-R2 (D-E19-57, D-E19-61): the arrival is an appearance, so the sound of its animation is asked here, with the world's player (the group of
         // the new map). After the header above: the hero's animation sets are only known from there. The first switch of the animation is exempt (R2).
         RequestAppearanceSound(proxy);
@@ -3020,6 +3039,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             if (spawnedProxy != null)
             {
                 spawnedProxy.ScriptHost = this;
+                spawnedProxy.InitializeBalance(BalanceTables, BalanceThreshold); // E20.c1a C1.
             }
 
             _world.AddEntity(entity);

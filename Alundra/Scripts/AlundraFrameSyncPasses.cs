@@ -119,8 +119,11 @@ internal static class AlundraFrameSyncPasses
             // E19.d2c2 D4: nothing is pending at the end of the frame (a switch seen at a tick, then cancelled by the entity's script before this validation): the
             // lock of the impulse taken at that tick is lowered, or the next switch would get no impulse.
             proxy.ZImpulseTaken = false;
+            proxy.NoteSwitchCancelled(); // E20.c1a C2: a switch the clock loaded and the script cancelled: the box cursor goes back to the animation the sprite never left.
             return;
         }
+
+        proxy.BoxSwitchLoaded = false; // E20.c1a C2: validated, the sprite now holds the animation of the box cursor (its logical tick follows the cursor).
 
         // E19.d2c1 R1/R2: the validation of the switch. The tick that saw it pending already took its Z impulse (the lock is raised): the lock is
         // lowered. A validation on a frame without a tick (no lock) owes the impulse to the first tick that follows, except for the animation of an
@@ -240,6 +243,13 @@ internal static class AlundraFrameSyncPasses
             TakeZImpulse(proxy);
         }
 
+        // E20.c1a C2: the switch block of UpdateAnimation (0x80038B18-0x80038BAC) reloads the animation byte (+0xB4), the current attack (+0x1C8) and the frame box at the tick that sees the switch,
+        // for every entity (a sprite-less one included); the hit pass of that tick reads them. SyncAnimation, at the end of the frame, is unchanged (D-E19-13).
+        if (switchPending)
+        {
+            proxy.NoteSwitchPendingAtTick();
+        }
+
         var sprite = proxy.LogicalClockSprite;
         if (sprite == null)
         {
@@ -256,14 +266,17 @@ internal static class AlundraFrameSyncPasses
         if (proxy.AnimationSwitchTickOwed)
         {
             proxy.AnimationSwitchTickOwed = false;
+            proxy.NoteOwedSwitchTick(); // E20.c1a C2: the tick owed to a switch the end of the frame validated is the switch tick of the binary.
             return;
         }
 
         sprite.AdvanceLogicalTicks(1);
+        proxy.NoteAnimationAdvanced();
         if (proxy.PendingChainRestartFlag != 0)
         {
             proxy.AnimationSwitchTicksReserved++;
             TakeZImpulse(proxy); // the end of a chain switches animation on this very tick in the binary (0x80038D54-0x80038D68).
+            proxy.NoteChainEndSwitch();
         }
     }
 

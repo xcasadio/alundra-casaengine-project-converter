@@ -107,6 +107,15 @@ public interface IAlundraScriptHost
     AlundraItemTables? ItemTables => null;
 
     /// <summary>
+    /// E20.c1a C1 (docs/plan-e20-heros.md section 1.5): this world's balance tables (<c>Data/balance.json</c>), from which an entity gets its record, life, attack and responses at its creation
+    /// (<see cref="AlundraEntityScriptProxy.InitializeBalance"/>). A default interface member, null like <see cref="ItemTables"/>: a host without tables creates entities with no record.
+    /// </summary>
+    AlundraBalanceTables? BalanceTables => null;
+
+    /// <summary>E20.c1a C1: the balance threshold of the loaded map (its property <c>D</c>), the level up to which the chain of a record is walked (<see cref="AlundraBalanceTables.Select"/>). 0 by default.</summary>
+    int BalanceThreshold => 0;
+
+    /// <summary>
     /// T3's own seam for T4 (docs/plan-transitions-carte.md §3: "le prédicat ... exposé par une couture
     /// que T4 remplira"). Called by <see cref="AlundraPlayerManager.MovePlayer"/>, at most once per
     /// call, exactly when <see cref="AlundraPortalTrigger.TryGetTrigger"/> returns non-null - the moment

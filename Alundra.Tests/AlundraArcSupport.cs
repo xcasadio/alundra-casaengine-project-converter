@@ -228,6 +228,8 @@ internal sealed class ArcRun : IDisposable
             // catalog, empty in the test process - the same block, from the export's own catalog file.
             Assert.True(Proxy.SpriteRecordCatalog.TryGet(HeroPrefabId(root), out var heroHeader));
             AlundraWorldProxy.ApplyHeroSpriteHeader(Hero, heroHeader);
+            // E20.c1a C1: the balance record of the hero (record 0), which AdoptPlayerPawn gives it in production once the header resolves (here the header comes after the adoption).
+            Hero.InitializeBalance(Proxy.BalanceTables, Proxy.BalanceThreshold);
             if (spec.RealController)
             {
                 // In this process AdoptPlayerPawn derived the walkability mask BEFORE the header (empty catalog):
@@ -371,23 +373,23 @@ internal sealed class ArcRun : IDisposable
     /// <summary>One frame the engine's way: every spawned entity's own <c>Update</c> - the hero's included, whose
     /// controller samples the pad - then the world's. In <see cref="ArcSpec.RealController"/> mode the world's own
     /// <c>Update</c> runs instead of the entity loop.</summary>
-    public void OneFrame()
+    public void OneFrame(float elapsed = 0.02f)
     {
         if (_realWorld is not null)
         {
             // The world already updates every entity added with AddEntity, the spawned ones included: the loop below
             // would update them twice.
-            _realWorld.Update(0.02f);
+            _realWorld.Update(elapsed);
         }
         else
         {
             foreach (var entity in Entities.ToList())
             {
-                entity.Update(0.02f);
+                entity.Update(elapsed);
             }
         }
 
-        Proxy.Update(0.02f);
+        Proxy.Update(elapsed);
         Frame++;
         _heldPreviousFrame = _held;
         _dialogueHoldPreviousFrame = _dialogueHold;
@@ -395,10 +397,10 @@ internal sealed class ArcRun : IDisposable
     }
 
     /// <summary>One frame with a pad button held (and just pressed) during it.</summary>
-    public void Press(uint button)
+    public void Press(uint button, float elapsed = 0.02f)
     {
         _hold = button;
-        OneFrame();
+        OneFrame(elapsed);
         _hold = 0;
     }
 

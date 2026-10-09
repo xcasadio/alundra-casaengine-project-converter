@@ -1,0 +1,183 @@
+#nullable enable
+using CasaEngine.Framework.Scene.Entities;
+using CasaEngine.Framework.Scene.Entities.Components;
+
+namespace Alundra.Scripts;
+
+/// <summary>
+/// E20.c1a (docs/plan-e20-heros.md section 1.5): the state the hit pass of the binary (<see cref="AlundraHitPass"/>, <c>UpdateBalanceRecords</c> <c>0x80039300</c>) reads on each entity, and what keeps it in step with
+/// the animation clock of the tick: the balance record (<c>+0x1C4</c>), the current attack (<c>+0x1C8</c>), the animation byte of the clock (<c>+0xB4</c>) and the box of the frame shown at the tick (<c>+0x1D4</c>, whose
+/// values are <see cref="CollisionOffsetX"/> to <see cref="CollisionHeight"/> and whose <c>HitBox</c> is <see cref="HitBoxX"/> to <see cref="HitBoxZ"/>).
+/// <para>
+/// <b>Why not <see cref="AnimFlags"/> and <see cref="CurrentAnimationId"/>.</b> The DLL writes them at the end of the frame only (<see cref="AlundraFrameSyncPasses.SyncAnimation"/>, D-E19-13, kept), while the binary changes them
+/// in the tick that sees the switch (<c>0x80038B18-0x80038BAC</c>) and the hit pass of that very tick already reads them. So the clock (<see cref="AlundraFrameSyncPasses.StepAnimationClock"/>) tells this class every switch
+/// it sees (<see cref="NoteSwitchPendingAtTick"/>, <see cref="NoteOwedSwitchTick"/>, <see cref="NoteChainEndSwitch"/>, and the spawn, <see cref="InitializeBalance"/>), and it reloads the attack and the byte then, and
+/// keeps its own <b>cursor</b>: the animation and direction shown, and the number of ticks since the switch. The frame box is read from that cursor (<see cref="AlundraFrameBoxTimeline"/>), never from the sprite, which
+/// still holds the old animation in the rest of a catch-up frame.
+/// </para>
+/// </summary>
+public partial class AlundraEntityScriptProxy
+{
+    /// <summary>The balance record of the entity (<c>+0x1C4</c>): chosen at the creation by <see cref="InitializeBalance"/>; null in the degraded cases (no table, a spawn whose sprite header did not resolve).</summary>
+    public AlundraBalanceRecord? BalanceRecord; //1c4
+
+    /// <summary>The attack the entity deals while its current animation plays (<c>+0x1C8</c>): reloaded at every switch the clock sees; null when its record has none.</summary>
+    public AlundraBalanceAttack? CurrentAttack; //1c8
+
+    /// <summary>The binary's <c>+0xB4</c>: byte <c>0xD</c> of the animation set, loaded at every switch the clock sees (the bit <c>0x40</c> makes the entity untouchable). <see cref="AnimFlags"/> is the same byte, one frame late.</summary>
+    public int HitAnimByte; //b4
+
+    /// <summary>True when the frame shown now has a box (<c>+0x1D4 != 0</c>); refreshed by <see cref="EvaluateFrameBox"/> (the hit pass asks only for the entities that can attack).</summary>
+    public bool HasFrameBox; //1d4
+
+    /// <summary>The animation of the cursor (the target of the last switch the clock saw, or the spawn animation).</summary>
+    internal uint BoxAnimationId;
+
+    /// <summary>The direction row of the cursor's animation.</summary>
+    internal int BoxDirection;
+
+    /// <summary>The ticks since the switch of the cursor's animation: 0 at the tick of the switch (its frame 0 is shown, uncounted), then one more per tick the clock advances.</summary>
+    internal int BoxTicks;
+
+    /// <summary>True from the tick the clock loaded a switch until <see cref="AlundraFrameSyncPasses.SyncAnimation"/> validates it at the end of the frame: the sprite still holds the old animation, so the cursor counts the ticks itself.</summary>
+    internal bool BoxSwitchLoaded;
+
+    private AlundraFrameBoxTimeline? _boxTimeline;
+    private bool _boxTimelineResolved;
+
+    /// <summary>The entity this proxy stands for in the fields of the binary that hold an entity (<c>TouchingEntity</c>, <c>+0x224</c>): the entity of the world, or the one that carries the proxy.</summary>
+    internal Entity? SelfEntity => LogicContextEntity ?? Owner;
+
+    /// <summary>
+    /// <c>InitializeEntity</c> (<c>0x80039D04</c>), balance part (<c>0x80039E30-0x80039E4C</c>, <c>0x80039EA8</c>): the record of the sprite (<see cref="SpriteType"/>, 0 for the hero) at the level <paramref name="threshold"/> of the
+    /// map, <see cref="Hp"/> and <see cref="HpMax"/> from its maximum life, and the first switch the creation makes (the attack, the animation byte and the box of the animation 0). Does nothing without tables, or when the
+    /// sprite header did not resolve at the spawn (<see cref="SpriteType"/> is -1): the binary has no such case.
+    /// </summary>
+    internal void InitializeBalance(AlundraBalanceTables? tables, int threshold)
+    {
+        if (tables == null || SpriteType < 0)
+        {
+            return;
+        }
+
+        var record = tables.Select(SpriteType, threshold);
+        if (record == null)
+        {
+            return;
+        }
+
+        BalanceRecord = record;
+        Hp = record.MaxHp;
+        HpMax = record.MaxHp;
+
+        var changed = AlundraFrameSyncPasses.TryResolveAnimationTarget(this, out _, out var direction);
+        LoadAnimationSwitch(TargetAnimationId, changed ? direction : AnimationDirection, fromClock: false);
+    }
+
+    /// <summary>
+    /// The switch block of <c>UpdateAnimation</c> (<c>0x80038B18-0x80038BAC</c>): the animation byte <c>+0xB4</c> from the animation set, the current attack from the record, and the box cursor at the frame 0 of the new
+    /// animation. <paramref name="fromClock"/>: a tick of the clock saw it (see <see cref="BoxSwitchLoaded"/>).
+    /// </summary>
+    internal void LoadAnimationSwitch(uint animationId, int direction, bool fromClock)
+    {
+        HitAnimByte = AnimSetsByAnim != null && AnimSetsByAnim.TryGetValue((int)animationId, out var set) ? set.Acceleration : 0;
+        CurrentAttack = BalanceRecord?.AttackForAnimation(animationId);
+        BoxAnimationId = animationId;
+        BoxDirection = direction;
+        BoxTicks = 0;
+        BoxSwitchLoaded = fromClock;
+        _boxTimeline = null;
+        _boxTimelineResolved = false;
+        HasFrameBox = false;
+    }
+
+    /// <summary>
+    /// The clock found a switch pending at this tick (a new target, a new direction, or a chain restart). The first tick that sees it loads it (the binary switches at once); the later ticks of the same catch-up frame
+    /// (<see cref="AlundraFrameSyncPasses.SyncAnimation"/> has not validated it yet, so it still looks pending) are ticks of the new animation: the cursor only counts them.
+    /// </summary>
+    internal void NoteSwitchPendingAtTick()
+    {
+        var changed = AlundraFrameSyncPasses.TryResolveAnimationTarget(this, out _, out var direction);
+        if (!changed)
+        {
+            direction = AnimationDirection; // a restart onto the same animation (a self-chain): the row does not change.
+        }
+
+        if (BoxSwitchLoaded && BoxAnimationId == TargetAnimationId && BoxDirection == direction)
+        {
+            BoxTicks++;
+            return;
+        }
+
+        LoadAnimationSwitch(TargetAnimationId, direction, fromClock: true);
+    }
+
+    /// <summary>The clock consumed the tick owed to a switch the end of the frame validated without a tick to spend on it: this tick is the switch tick of the binary (the frame 0, uncounted).</summary>
+    internal void NoteOwedSwitchTick() => LoadAnimationSwitch(TargetAnimationId, AnimationDirection, fromClock: false);
+
+    /// <summary>The clock advanced the animation by one tick: the cursor follows.</summary>
+    internal void NoteAnimationAdvanced() => BoxTicks++;
+
+    /// <summary>The tick's advance ended a Chain animation: the binary jumps straight into the switch block (<c>0x80038D54-0x80038D68</c>) at this very tick, with the chained animation in <see cref="TargetAnimationId"/>.</summary>
+    internal void NoteChainEndSwitch()
+    {
+        var changed = AlundraFrameSyncPasses.TryResolveAnimationTarget(this, out _, out var direction);
+        LoadAnimationSwitch(TargetAnimationId, changed ? direction : AnimationDirection, fromClock: true);
+    }
+
+    /// <summary>
+    /// The end of the frame validated nothing (the switch the clock loaded was cancelled by a script before the validation): the sprite never left its animation, so the cursor goes back to what the sprite shows.
+    /// </summary>
+    internal void NoteSwitchCancelled()
+    {
+        if (!BoxSwitchLoaded)
+        {
+            return;
+        }
+
+        LoadAnimationSwitch(CurrentAnimationId, AnimationDirection, fromClock: false);
+        BoxTicks = LogicalClockSprite?.LogicalTick ?? 0;
+    }
+
+    /// <summary>Test-only: the logical tick of the sprite's clock that the box cursor stands for (<see cref="BoxTicks"/> wrapped or saturated by the duration of its animation); null without a timeline.</summary>
+    internal int? CursorLogicalTickForTests()
+    {
+        EvaluateFrameBox();
+        return _boxTimeline?.LogicalTick(BoxTicks);
+    }
+
+    /// <summary>
+    /// The frame box shown at this tick (<c>0x80038C2C-0x80038CB8</c>): offsets <c>&lt;&lt; 16</c> into <see cref="CollisionOffsetX"/> to <see cref="CollisionOffsetZ"/>, sizes <c>(n &lt;&lt; 16) - 1</c> into
+    /// <see cref="CollisionWidth"/>, <see cref="CollisionDepth"/> and <see cref="CollisionHeight"/> (an attacker's size 0 stays -1, <c>0x80038C80</c>). Sets and returns <see cref="HasFrameBox"/>.
+    /// </summary>
+    internal bool EvaluateFrameBox()
+    {
+        if (!_boxTimelineResolved)
+        {
+            _boxTimelineResolved = true;
+            var sprite = LogicalClockSprite ?? Owner?.GetComponent<AnimatedSpriteComponent>();
+            _boxTimeline = sprite != null && AlundraFrameSyncPasses.TrySelectAnimationByNameSuffix(sprite, BoxAnimationId, BoxDirection, out var selected) && selected != null
+                ? AlundraFrameBoxTimeline.For(selected)
+                : null;
+        }
+
+        if (_boxTimeline != null && _boxTimeline.TryGetBox(BoxTicks, out var box))
+        {
+            unchecked
+            {
+                CollisionOffsetX = box.OffsetX << 16;
+                CollisionOffsetY = box.OffsetY << 16;
+                CollisionOffsetZ = box.OffsetZ << 16;
+                CollisionWidth = (box.Width << 16) - 1;
+                CollisionDepth = (box.Depth << 16) - 1;
+                CollisionHeight = (box.Height << 16) - 1;
+            }
+
+            HasFrameBox = true;
+            return true;
+        }
+
+        HasFrameBox = false;
+        return false;
+    }
+}

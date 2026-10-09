@@ -14,7 +14,7 @@ using Microsoft.Xna.Framework;
 
 namespace Alundra.Scripts;
 
-public class AlundraEntityScriptProxy : GameplayProxy
+public partial class AlundraEntityScriptProxy : GameplayProxy
 {
     public bool IsLoadedNormalOrDeactivated =>
                 Status is EntityStatus.Loaded or EntityStatus.Normal or EntityStatus.Deactivated;
