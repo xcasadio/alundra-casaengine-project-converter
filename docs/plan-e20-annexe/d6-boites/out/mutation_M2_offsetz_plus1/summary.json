@@ -1,0 +1,65 @@
+{
+ "sources_read": 484,
+ "sprite_records_read_total": 2658,
+ "banks_canonical": 395,
+ "banks_with_a_record": 301,
+ "animations_in_banks": 9620,
+ "frames_with_record": 30585,
+ "exact": 30546,
+ "mismatch": 39,
+ "mismatch_classes": {
+  "VALUE_DIFF": 39
+ },
+ "banks_with_a_mismatch": [
+  "100",
+  "12",
+  "145",
+  "168",
+  "6",
+  "63",
+  "alundra_21"
+ ],
+ "nobox_frames_checked": 21161,
+ "nobox_mismatch": 0,
+ "animations_with_quads_but_no_anim2d_file": 0,
+ "anim2d_files_in_export": 9620,
+ "anim2d_name_collisions": 0,
+ "anim2d_files_not_matched_by_a_decoded_animation": 0,
+ "export_anomalies": {},
+ "range_checks": {
+  "records_all_occurrences": 196999,
+  "offset_outside_int8": 0,
+  "size_outside_uint8": 0,
+  "size_negative": 0,
+  "min_per_field": {
+   "OffsetX": -112,
+   "OffsetY": -79,
+   "OffsetZ": -22,
+   "Width": 2,
+   "Depth": 1,
+   "Height": 1
+  },
+  "max_per_field": {
+   "OffsetX": 60,
+   "OffsetY": 62,
+   "OffsetZ": 48,
+   "Width": 178,
+   "Depth": 158,
+   "Height": 254
+  }
+ },
+ "index_checks": {
+  "frames": 459286,
+  "real": 369006,
+  "index_FFFF": 172007,
+  "transition": 90280,
+  "index_valid": 196999,
+  "distinct_indexes": 5363,
+  "distinct_records": 5363
+ },
+ "duplicate_bank_occurrences": {
+  "occurrences": 2263,
+  "identical_on_delay_quads_record_index": 2263
+ },
+ "duplicate_bank_differences_first50": []
+}

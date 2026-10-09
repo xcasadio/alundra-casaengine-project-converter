@@ -1,0 +1,71 @@
+== before tick 1 (after InitializeEntity + the plan starting values)
+  status +0x10                 0x00000002  2
+  HP +0x14                     0x0000000A  10
+  HP max +0x18                 0x0000000A  10
+  +0x20                        0x00000000  0
+  flags +0x6C                  0x0003118C  201100
+  sprite record +0x64          0x801A0000  -2145779712
+  TargetAnimationId +0x88      0x00000000  0
+  TargetDirection +0x8C        0x00000018  24
+  CurrentAnimationId +0x90     0x00000000  0
+  AnimDirection +0x98          0x00000003  3
+  IsOnGround +0x144            0x00000001  1
+  CollidedWithEntityZ +0x140   0x00000000  0
+  +0x180                       0x00000000  0
+  +0x188                       0x00000000  0
+  +0x1C4 balance sheet         0x801441F8  -2146156040
+  +0x1CC invulnerability       0x00000000  0
+  +0x220 HitCounter            0x00000000  0
+  +0x224 TouchingEntity        0x00000000  0
+  PosX +0x114                  0x00640000  6553600
+  PosY +0x118                  0x00640000  6553600
+  PosZ +0x11C                  0x00000001  1
+  ModX +0x1E4                  0xFFF60000  -655360
+  ModY +0x1E8                  0xFFF90000  -458752
+  ModZ +0x1EC                  0x00000000  0
+  W +0x1F0                     0x0014FFFF  1376255
+  H +0x1F4                     0x000EFFFF  983039
+  D +0x1F8                     0x001FFFFF  2097151
+  [0x80127000] boots level     0
+  [0x80176318] -> g_playerStats 0x801EB82C: Hp 1, HpMax 1, WeaponId +0xA 1, armour +0xC 0
+  [0x80134360] last entity     0
+  [0x800DC4B8] state flags     0x0
+  [0x80127108] [0x8012710C] [0x80127110] [0x80127114]: 0 0 0x0 0
+  balance sheet bytes at 0x801441F8: FF A9 0A 00 00 00 00 00 00 00 00 00 00 00 4D 00
+  working copy 0x80127008 bytes:   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+== after one tick with no input
+  status +0x10                 0x00000002  2
+  HP +0x14                     0x0000000A  10
+  HP max +0x18                 0x0000000A  10
+  +0x20                        0x00000000  0
+  flags +0x6C                  0x0003118C  201100
+  sprite record +0x64          0x801A0000  -2145779712
+  TargetAnimationId +0x88      0x00000000  0
+  TargetDirection +0x8C        0x00000018  24
+  CurrentAnimationId +0x90     0x00000000  0
+  AnimDirection +0x98          0x00000003  3
+  IsOnGround +0x144            0x00000001  1
+  CollidedWithEntityZ +0x140   0x00000001  1
+  +0x180                       0x00000000  0
+  +0x188                       0x00000000  0
+  +0x1C4 balance sheet         0x801441F8  -2146156040
+  +0x1CC invulnerability       0x00000000  0
+  +0x220 HitCounter            0x00000000  0
+  +0x224 TouchingEntity        0x00000000  0
+  PosX +0x114                  0x00640000  6553600
+  PosY +0x118                  0x00640000  6553600
+  PosZ +0x11C                  0x00000001  1
+  ModX +0x1E4                  0xFFF60000  -655360
+  ModY +0x1E8                  0xFFF90000  -458752
+  ModZ +0x1EC                  0x00000000  0
+  W +0x1F0                     0x0014FFFF  1376255
+  H +0x1F4                     0x000EFFFF  983039
+  D +0x1F8                     0x001FFFFF  2097151
+  [0x80127000] boots level     0
+  [0x80176318] -> g_playerStats 0x801EB82C: Hp 10, HpMax 10, WeaponId +0xA 1, armour +0xC 0
+  [0x80134360] last entity     0
+  [0x800DC4B8] state flags     0x0
+  [0x80127108] [0x8012710C] [0x80127110] [0x80127114]: 0 0 0x0 0
+  balance sheet bytes at 0x801441F8: FF A9 0A 00 00 00 00 00 00 00 00 00 00 00 4D 00
+  working copy 0x80127008 bytes:   FF 0F 00 10 10 10 10 10 10 10 10 10 10 10 00 FF
+kit added by the new-game loop: [1, 17, 25]

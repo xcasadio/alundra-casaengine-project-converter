@@ -9,6 +9,10 @@ quand il est touché. E14 garde l'IA native des ennemis et des PNJ.
 la première tranche exécutable, E20.0 (§1.2). Les tranches suivantes se planifient et s'approuvent
 chacune à part, comme en E19. Décisions de l'auteur : §0.1 et ADR-0052.
 
+**Avancement (2026-10-09)** : enveloppe et E20.0 approuvées par l'auteur (mode ASK) ; E19 fusionnée dans `main`
+(parent `8e023d8`, moteur `b2205d9f`), qui est donc la base de la branche. E20.0 : D1 à D9 faites et contre-vérifiées
+(§0.2.10) ; le détail d'E20.a attend les réponses de l'auteur aux questions O-E20-7 à O-E20-10 et aux options du §2.
+
 | Unité | Revue avant approbation | Après exécution |
 |---|---|---|
 | Enveloppe (ce plan) + E20.0 | plan-verifier | contre-vérification indépendante des faits, critique de complétude |
@@ -247,14 +251,14 @@ contre-vérification divergent, la contre-vérification est retenue (critique, �
   attr & 0x80) × r) >> 4`, au moins 1 ; `r & 0xC0 == 0x40` tue ; `0x80` et `0xC0` ne changent rien.
   L'animation du héros lue ici (`0x80146DF8`) est figée par la passe de coups du tick N, et lue au tick
   N+1. Les trois fiches d'équipement (`0x80146E00`) sont remplies par `UpdateItemEffectState`
-  (`0x800307E8`) ; quels objets les remplissent : [décompilation] seulement (E20.0, D4).
+  (`0x800307E8`) ; le détail, lu dans le binaire, est au §0.2.10.
 - [données] Seuil d'équilibre : la fiche d'un ennemi se choisit par l'octet `+0xB` de l'en-tête de
   carte (`0x8002C39C`, `0x80044550`) [binaire]. Le champ exporté `BalanceLevel` est l'octet `+9` (2 sur
   toutes les cartes, l'effet de bris des tuiles) ; le vrai seuil est exporté sous `D` (0 à 11).
 - [binaire] Le héros touché (`0x80031A68`) : avec un `TouchingEntity`, `ComputeNewHp(héros)` et la
   direction du toucheur vers le héros ; sinon, si `+0x1CC == 0` et `[0x80127000] < 3`, les cases
   dangereuses coûtent 0 à 3 PV (table `0x80028B8C`), sans armure. Puis `0x31` (`0x3A` sur pente 4),
-  `+0x1CC = 0x78`, objet porté lâché (`0x8002F884(2)`), appel de `0x8003634C` (rôle inconnu, E20.0 D5).
+  `+0x1CC = 0x78`, objet porté lâché (`0x8002F884(2)`), appel de `0x8003634C` (pilote de l'objet en cours d'usage, §0.2.10).
   Clignotement : l'entité n'est pas dessinée quand `(+0x1CC & 3) == 3` (`0x800385F0`). PV nuls testés
   seulement un tick sans dégât : la mort part un tick après le coup.
 - [binaire] Prédicats : `0x86` **pose** `+0x1CC` (`0x8003FFD4`, la décompilation dit « ajoute ») ;
@@ -344,6 +348,74 @@ Le port suit le binaire sur chacun de ces points :
 - Les points d'E19 encore ouverts qui touchent au mouvement du héros (l'approximation de la porte 2
   d'E19.m13, dans `AlundraScriptedMotion.cs`) restent à E19, mais attendent la fusion d'E20.a.
 
+#### 0.2.10 Mesures d'E20.0 (2026-10-09)
+
+Source : `docs/plan-e20-annexe/` (`d1-oracle-moveplayer/`, `d2-oracle-coups/`, `d6-boites/`, `e20-0-rapports/`). Chaque fait porteur
+venu du binaire a été recalculé par un second agent ; les corrections de ces contre-vérifications sont prises ici.
+
+- **Oracles.**
+  - [binaire] D1 : l'oracle de `MovePlayer` (vrai code, toutes les passes du tick sauf les effets et les coups) redonne S-A et S-B
+    champ par champ, 216 valeurs chacun, 0 écart, recontrôlé par un second interpréteur et par des mutations. Limites : l'annexe de
+    référence vient elle-même d'une émulation du même binaire (E19.d2c) ; seul le saut est validé.
+  - [binaire] D2 : l'oracle de la passe de coups passe ses six cas de validation, 11 cas de plus, 3000 ensembles tirés au hasard
+    contre un modèle indépendant, et 13 mutations.
+  - [données] D6 : les `collision_keyframes` exportées redonnent exactement les enregistrements décodés, 30 585 images sur 30 585,
+    sur tout le corpus ; les 21 161 images sans boîte n'en ont pas non plus dans l'export. **D-E20-6 est tranchée : la DLL lit
+    l'export, sans changement du convertisseur.** Limite : D6 ne relit pas les octets du disque. Non prouvé : la correspondance
+    au tick d'un changement d'animation (la DLL réserve ce tick ; le binaire montre déjà l'image 0 de la nouvelle animation) et
+    d'un changement de direction (le binaire relance l'animation) ; c'est à E20.a et E20.c1.
+- **Rythme.**
+  - [binaire] Une image du jeu : rendu, lecture du pad (`0x8002BB5C`, routine `0x8002E250`, égale à `AlundraTickPad.Update`),
+    `UpdateWorld` (`0x8002BC4C`), déclencheur du menu, puis une avance du générateur pseudo-aléatoire (`0x8002BD14`). Le pad
+    avance donc une fois par tick, juste avant `UpdateWorld`.
+  - [binaire] `UpdateWorld` (`0x8002E058`) : événements de carte (`0x8003C67C`), puis entités (`0x8003B388`), puis la réserve
+    d'effets animés (`0x8003C410`, 128 fiches à `0x80138608`).
+  - [binaire] Le masque `0x48` saute les événements de carte et toute mise à jour des entités sauf les listes ; caméra et dessin
+    continuent.
+  - [binaire] `0x80038634` précède les événements et tient le nombre de cases ; la passe des compteurs (`0x80038998`) couvre les
+    cases 0 à `[0x80134360]` sans filtre de statut. Dans `0x800386D0`, les entités commencent à la case 1, et la passe se répète
+    tant qu'un gestionnaire a tourné.
+- **Générateur pseudo-aléatoire** [binaire] : son état est `0x80098708` (valeur de l'image `0xB017C93D`), pas `0x800A8708` ;
+  corrigé dans D1, D2 et ce plan. Il avance une fois par image après `UpdateWorld`, en plus de chaque tirage (environ 600 sites).
+- **Équipement** [binaire] (`UpdateItemEffectState`, `0x800307E8`, appelé à chaque tick par `MovePlayer` en `0x80032914`, suivi de
+  `SetPlayerHpMax` et `SetPlayerHp`) :
+  - fiche [0] : l'armure (catégorie 2) possédée de plus haut numéro ; fiche [1] : l'arme équipée (catégorie 1) ; fiche [2] : l'objet
+    équipé (catégorie 3), avec réécriture d'`ItemId` (`0x8004E51C`) ;
+  - recopie 255 octets de la fiche [0] (ou de `+0x1C4`) dans la table de défense du héros `0x80127008`, combine les 11 réponses des
+    trois fiches, pose le niveau des bottes dans `[0x80127000]` (0 en nouvelle partie), et fait la régénération, d'une période de
+    `MaxHp + 1` ticks (le binaire teste `MaxHp < compteur`, la décompilation `<=`) ;
+  - kit de la nouvelle partie : l'épée de base ajoute 1 de puissance aux seules attaques qui ont `attr & 0x80` ; la veste en tissu
+    donne des réponses 0x10 (dégâts × 1) ; les bottes normales ne comptent pas.
+- **`0x8003634C`** [binaire] : il fait avancer, à chaque tick, l'objet en cours d'usage (`[0x80127164]` : graines, cape, bombe,
+  livres, rouleaux) et rend 1 sans rien faire quand aucun objet n'est en cours. Le chemin des dégâts le fait seulement avancer d'un
+  tick ; l'annulation est `0x800350C0`, appelée par d'autres chemins. Second appel à chaque tick normal (`0x80031CC4`).
+- **Coups, précisions** [binaire] :
+  - les effets 4 et 5 ne s'attachent que si la réponse n'est pas `0x80` ; une réponse 0 n'est pas une immunité (1 PV au moins) ;
+    `0x40` (tué net) apparaît 1058 fois dans le corpus ;
+  - la passe de coups lit la réponse du héros dans `+0x1C4` (fiche 0, jamais immunisée), `ComputeNewHp(héros)` dans `0x80127008` ;
+  - le héros, comme cible, n'est que de classe B : seuls les attaquants qui ont `HitsClassB` l'atteignent ;
+  - `+0x1CC = 0x78` après un coup exclut le héros des cibles pendant 120 ticks : c'est son invulnérabilité ; `+0x1D0 = 0x19` ne
+    bloque que 25 ticks entre deux coups ;
+  - `ComputeNewHp` lit l'attaque de l'attaquant au moment de l'appel, au tick N+1 ; des gestionnaires natifs d'ennemis lisent aussi
+    le `TouchingEntity` du héros (E14) ;
+  - un délai d'image nul fige l'image jusqu'au changement d'animation (`0x80038BE0`).
+- **Dégâts au contact** [données, binaire] : 2600 enregistrements de 211 cartes blessent le héros par simple contact une fois
+  E20.c1 faite, dès l'attente ou la marche pour 96,6 % d'entre eux. Carte 14 : 16 sur 25 (Beannoïde, guêpes, poissons, ronces,
+  rochers) ; carte 15 : 8 sur 25 (orques, ronces, Muruta). E20.c1 seule montre des étincelles au contact, sans perte de PV ; la
+  perte vient avec E20.c2.
+- **Tick de la DLL** [DLL] : le moteur met à jour chaque entité avec tous ses ticks de l'image, puis le monde
+  (`World.cs:517-585`) ; `MovePlayer` passe une fois par image même sans tick ; les sondes `Slope_18c` et `FloorHeight` du héros
+  sont rafraîchies une fois par image ; 433 appels `.Update(` dans 72 fichiers de tests dépendent de cette forme. Proposition de
+  D7 : une boucle de ticks pilotée par le monde, dans l'ordre du binaire, autour d'un corps de tick par entité partagé
+  (`e20-0-rapports/D7-tick-de-la-dll.md`, avec un brouillon de contrat d'E20.a que la critique juge incomplet).
+- **Course au stick** [binaire] : seules les consultations du départ (`0x80031FD0`) et de la reprise (`0x8003219C`) refusent un
+  stick près d'une diagonale ; le cône de la course accepte déjà les deux diagonales voisines.
+- **Nage** [binaire] : la branche de pente 4 (`0x8003260C`) lit le front de bouton (`0x80126F2A`) pour plonger (`& 0xD0` donne
+  `0x28`) ; la DLL fait aujourd'hui marcher le héros sur l'eau. 54 cartes ont de l'eau profonde.
+- **Butin** [binaire] : tiré à l'apparition de l'entité (`0x80039D04` puis `0x80032A40`, résultat en `+0x3C`), lâché à sa mort
+  (`0x8003A59C` puis `0x80032B90`), avec un veto au lâcher pour les objets `0x26`, `0x51` et `0x52`. `SpawnWarpEntity` a 102
+  appelants.
+
 ---
 
 ## 1. Tranches
@@ -355,7 +427,7 @@ Le port suit le binaire sur chacun de ces points :
 | **E20.0** (§1.2) | Découverte complémentaire, sans toucher au code : oracles d'émulation de `MovePlayer` et de la passe de coups, dégâts au contact des ennemis, puissance de l'équipement, `0x8003634C`, preuve des boîtes exportées (D-E20-6), inventaire du passage par tick (D-E20-2), règle du stick (D-E20-8) | recalcul indépendant, contre-vérification du binaire, critique | — |
 | E20.a | Passe du héros par tick (D-E20-2) et **structure du tick**, dont E20.a est propriétaire : `MovePlayer` à chaque tick logique sur `AlundraTickPad`, à la place du binaire ; les passes communes à toutes les entités, une fois par tick, à la place du binaire : la passe des compteurs (`+0x1C`, effacements, décomptes) et le point d'accroche de la passe de coups (vide jusqu'à E20.c1) ; l'inversion entités / événements de carte corrigée ou gardée comme écart, selon E20.0 (D7) et l'auteur ; les trois appels dans l'ordre du binaire, bouchonnés (`TryUseItem` 1, `PlayerTryAction` 0, `PlayerTryAttack` 0) ; les appels du prologue bouchonnés ; O-E19-80 ; retrait des contournements du rythme par image | tous les tests ; un test avec 0, 1 et 2 ticks dans une image : chaque passe commune tourne une fois par tick, dans l'ordre du binaire ; traces du héros re-mesurées avec l'écart expliqué ; sonde du vrai jeu sur la nouvelle partie et sur une arrivée `0x52`/`0x53` | Marche, saut, échelle, dialogues, inventaire, livre : rien ne change |
 | E20.b | Coup d'épée sans dégâts : table des armes en entier, `PlayerTryAttack` (relâchement d'abord, puis appui), garde `0x2000`, son 3, attaques au sol et en l'air, états d'attaque, priorités (Carré sur Croix, interaction d'abord) | oracle de `MovePlayer` ; arcs au vrai préfab | Carré frappe au sol et en l'air, avec le son ; le héros freine |
-| E20.c1 | Passe de coups et dégâts aux cibles (D-E20-3) : fiches d'équilibre (seuil `D`), PV des entités, `CurrentAttack`, boîtes par image (D-E20-6), `HitBox`, `UpdateBalanceRecords` au point d'accroche d'E20.a, avec effets 4, 5 et 9, animation figée, dégâts avec l'équipement, `0x86`, `0x87`, `0x95`, réactions scriptées (leviers) | oracle de `0x80039300` et `0x8004464C` sur des ensembles tirés au hasard ; un test où un coup écrit au tick N est lu par les événements du tick N+1 puis effacé par la passe des compteurs, avec deux ticks dans une image ; le premier attaquant l'emporte ; arcs des leviers posés directement | Un coup sur un Beannoïde de la 14 : étincelles (sa réaction vient d'E14) |
+| E20.c1 | Passe de coups et dégâts aux cibles (D-E20-3) : fiches d'équilibre (seuil `D`), PV des entités, `CurrentAttack`, boîtes par image (D-E20-6), `HitBox`, `UpdateBalanceRecords` au point d'accroche d'E20.a, avec effets 4, 5 et 9, animation figée, dégâts avec l'équipement, `0x86`, `0x87`, `0x95`, réactions scriptées (leviers) | oracle de `0x80039300` et `0x8004464C` sur des ensembles tirés au hasard ; un test où un coup écrit au tick N est lu par les événements du tick N+1 puis effacé par la passe des compteurs, avec deux ticks dans une image ; le premier attaquant l'emporte ; arcs des leviers posés directement | Un coup sur un Beannoïde de la 14 : étincelles (sa réaction vient d'E14) ; au contact d'un ennemi de la 14 ou de la 15, étincelles sans perte de PV (§0.2.10) |
 | *E14.a* (autre étape) | Muruta et Beannoïde (D-E20-4), planifiée après E20.c1 | plan d'E14 | Le hall de la 115 |
 | E20.c2 | Le héros touché : entrée `0x80031A68` (toucheur et cases dangereuses), `0x31`/`0x3A`, invulnérabilité `0x78` et clignotement, PV vers `PlayerStats` et le HUD, `0x8003634C`, chemin `controlFlags == 0x20`, pas de mort (D-E20-5) | oracle de `0x80031A68` ; arcs | Les cœurs baissent au contact, le héros clignote, il ne meurt pas |
 | E20.d | Course : les cinq états, entrée et sorties, cône, reprise, rebond, charge `0x04` (ses coups viennent d'E20.c1), escalade prioritaire, arrondi du stick (D-E20-8) ; le test épinglé « Triangle seul donne Idle » s'inverse | oracle de `MovePlayer` ; arcs | Courir, s'arrêter, reprendre, foncer, buter contre un mur, sauter d'un rebord, entrer dans l'eau |
@@ -375,7 +447,7 @@ Le port suit le binaire sur chacun de ces points :
 - **Mise à jour de ce plan** : chaque tranche remet au §0.2 ce qu'elle a mesuré, puis fait détailler,
   relire et approuver la suivante. Une tranche qui touche le convertisseur fait un export complet.
 
-### 1.2 E20.0 — Découverte complémentaire ⏳
+### 1.2 E20.0 — Découverte complémentaire 🚧 (D1 à D9 faites et contre-vérifiées le 2026-10-09 ; reste le détail d'E20.a, après les réponses de l'auteur)
 
 **But.** Lever les inconnues qui changeraient E20.a à E20.c2, et construire les oracles qui
 serviront de preuve aux tranches de code.
@@ -389,7 +461,7 @@ change leur découpage.
 
 #### Tâches
 
-- ⏳ **D1 — Oracle de `MovePlayer`.**
+- ✅ **D1 — Oracle de `MovePlayer`.**
   - Copier dans `docs/plan-e20-annexe/tools/` les outils de `docs/plan-e19-h2-annexe/tools/` et
     `docs/plan-e19-o9-annexe/run_update_animation.py`, sans modifier les annexes d'E19. Ce dernier
     importe `emu` d'un dossier `lib/` absent de son annexe : la copie le fait pointer sur le `emu.py`
@@ -410,13 +482,13 @@ change leur découpage.
   - Appels sortants bouchonnés, chacun journalisé : son `0x800490FC` (note l'identifiant) ; effets
     `0x8003BDD8` et `0x8003BE74` (notent l'identifiant et les arguments, rendent l'adresse d'une case
     d'effet factice remise à zéro) ; apparition `0x80039F58` (note, rend 0). Le générateur
-    pseudo-aléatoire du binaire (`0x800A8708`) tourne en vrai code, avec une graine notée.
+    pseudo-aléatoire du binaire (`0x80098708`) tourne en vrai code, avec une graine notée.
   - Pad : le scénario donne le mot tenu de chaque tick. Le harnais écrit tenu, appuyé et relâché en
     `0x80126F28`, `0x80126F2A` et `0x80126F2C`, calculés comme `AlundraTickPad.Update`
     (`AlundraTickPad.cs:56-58`) ; D1 relit la routine de pad du binaire et note tout écart.
     `[0x800DC4B8]` vaut 0.
   - Case du héros : les champs de physique posés comme dans `zsim.py`, plus les pointeurs de sprite
-    (`+0x64`) et de fiche d'équilibre (`+0x1C4`, et `0x80127008` pour le héros). Valeurs de départ, pour
+    (`+0x64`) et de fiche d'équilibre (`+0x1C4` ; `0x80127008` est la table de défense du héros, refaite à chaque tick, §0.2.10). Valeurs de départ, pour
     que `MovePlayer` ne prenne aucune sortie anticipée : PV `+0x14` = 10 et PV max = 10, dans le
     champ que lit `SetPlayerHpMax` à la fin de `MovePlayer` (`0x80032920`) (nouvelle partie) ; `+0x20` = 0 ; `+0x180` et `+0x188` = 0 ; `+0x224` (`TouchingEntity`) et `+0x1CC` = 0 ;
     `[0x80127000]` = 0 ; arme : `WeaponId` (`+0xA` des statistiques pointées par `0x80176318`) = 1,
@@ -437,7 +509,7 @@ change leur découpage.
       ForceY, ForceZ, PosX − départ, PosY − départ et IsOnGround de l'annexe, et le PosZ de l'annexe
       plus 1 (l'annexe suit la convention de la DLL, sans le +1 du binaire, D-E19-59). Un seul écart
       fait échouer D1.
-- ⏳ **D2 — Oracle de la passe de coups** : `0x80039300`, `0x8003A374` et `0x8004464C` en vrai code
+- ✅ **D2 — Oracle de la passe de coups** : `0x80039300`, `0x8003A374` et `0x8004464C` en vrai code
   sur des ensembles d'entités synthétiques, tirés au hasard avec une graine notée. Les listes sont
   construites par `0x800384F4` en vrai code ; les fiches d'équilibre viennent de `Data/balance.json`.
   - **Validation de l'oracle**, sur des cas écrits à la main, dont le résultat attendu vient du §0.2.5 :
@@ -456,15 +528,15 @@ change leur découpage.
       la touche, et le `HitCounter` du second reste à 0 ;
     - plusieurs cibles : un attaquant sur deux cibles les touche toutes les deux, `HitCounter` 2.
   - Un seul cas faux fait échouer D2.
-- ⏳ **D3 — Dégâts au contact.** Pour chaque ennemi des cartes 14, 15, 115 à 117, 44 et 362, et en
+- ✅ **D3 — Dégâts au contact.** Pour chaque ennemi des cartes 14, 15, 115 à 117, 44 et 362, et en
   total sur le corpus : quelles animations ont une boîte et une attaque non nulle, donc blessent le
   héros par simple contact une fois E20.c1 faite. Le résultat dit ce qu'E20.c1 change sur les cartes
   que l'auteur traverse déjà.
-- ⏳ **D4 — Puissance de l'équipement** : dans le binaire, `UpdateItemEffectState` (`0x800307E8`),
+- ✅ **D4 — Puissance de l'équipement** : dans le binaire, `UpdateItemEffectState` (`0x800307E8`),
   quels objets remplissent les trois fiches de `0x80146E00`, et la part de l'épée de base, de la veste
   et des bottes.
-- ⏳ **D5 — `0x8003634C`** : ce que le chemin des dégâts annule.
-- ⏳ **D6 — Boîtes par image (D-E20-6)**, sur tout le corpus.
+- ✅ **D5 — `0x8003634C`** : ce que le chemin des dégâts annule.
+- ✅ **D6 — Boîtes par image (D-E20-6)**, sur tout le corpus.
   - Pour chaque banque de sprites des données décodées (`data-extracted/data`, celles que lit
     `SpriteBankReader`) et chaque image qui a un enregistrement de collision : retrouver, depuis les
     `collision_keyframes` exportées, les six valeurs (décalages X, Y et Z ; largeur, profondeur et
@@ -479,7 +551,7 @@ change leur découpage.
     format passe par un ADR avant E20.c1.
   - Limite : D6 compare l'export aux enregistrements décodés par l'extracteur, sans relire les octets
     du disque. Un défaut de l'extracteur passerait inaperçu ; les recettes d'E20.c1 restent le filet.
-- ⏳ **D7 — Inventaire du tick de la DLL (D-E20-2).**
+- ✅ **D7 — Inventaire du tick de la DLL (D-E20-2).**
   - L'ordre réel d'un tick dans la DLL : la boucle de ticks de chaque entité
     (`AlundraEntityScriptProxy.cs:1312-1325`), les ticks du héros (`:1399-1426`), le tick du monde, les
     événements de carte, la mise à jour d'`AlundraTickPad`, les passes du dialogue et de l'inventaire
@@ -495,11 +567,30 @@ change leur découpage.
     E20.a et ce que coûterait de la garder comme écart documenté. L'auteur tranche avec le plan
     d'E20.a.
   - Livrable : le contrat d'E20.a, prêt à relire.
-- ⏳ **D8 — Règle d'arrondi du stick (D-E20-8)** : relire le chemin d'entrée
+- ✅ **D8 — Règle d'arrondi du stick (D-E20-8)** : relire le chemin d'entrée
   (`AlundraPlayerController`, `ComputePadState`) et proposer une règle exacte pour le départ et la
   reprise de la course au stick ; elle est soumise à l'auteur.
-- ⏳ **D9 — Propriétaires restants** : butin et objet ramassable (O-E20-3), projectiles du héros
+- ✅ **D9 — Propriétaires restants** : butin et objet ramassable (O-E20-3), projectiles du héros
   (O-E20-4), nage et wagonnet (O-E20-1) ; ce que chacun demande, pour que l'auteur tranche.
+
+#### Résultats (2026-10-09)
+
+Rapports et contre-vérifications : `docs/plan-e20-annexe/e20-0-rapports/` ; faits retenus : §0.2.10.
+
+- **D1** ✅ : PASS sur S-A et S-B (216 valeurs chacun, 0 écart) ; `0x80038634` tourne en vrai code ; la routine de pad du binaire
+  égale `AlundraTickPad.Update`. Outil : `docs/plan-e20-annexe/d1-oracle-moveplayer/` (`python -B tools/run_all.py`, code de sortie
+  0 si PASS), et non `docs/plan-e20-annexe/tools/` : chaque oracle garde ses outils dans son dossier.
+- **D2** ✅ : PASS sur les six cas ; `docs/plan-e20-annexe/d2-oracle-coups/`.
+- **D3** ✅ : voir « Dégâts au contact » au §0.2.10.
+- **D4, D5** ✅ : voir « Équipement » et « `0x8003634C` » au §0.2.10.
+- **D6** ✅ : exact sur tout le corpus ; D-E20-6 tranchée ; `docs/plan-e20-annexe/d6-boites/`.
+- **D7** ✅ : inventaire du tick et proposition de structure ; ses faits du binaire sont confirmés (une précision sur le masque
+  `0x48`). Le brouillon de contrat d'E20.a doit encore fixer : le sort d'`UpdateItemEffectState` et de `0x8003634C`, le pad avancé
+  juste avant le tick, la porte par tick, l'ordre des listes (premier attaquant), la place des effets, les contraintes de l'horloge
+  d'animation transmises à E20.b et E20.c1, la comparaison de la trace par tick de la DLL à l'oracle D1, un plafond chiffré de
+  réécritures de montages de test.
+- **D8** ✅ : règle proposée au §2 (O-E20-2).
+- **D9** ✅ : options au §2 (O-E20-1, O-E20-3, O-E20-4) ; détail corrigé sur la nage (front de bouton).
 
 #### Acceptation
 
@@ -531,12 +622,16 @@ change leur découpage.
 
 | Point | Question | Où elle se tranche |
 |---|---|---|
-| O-E20-1 | La nage (pente 4) et le wagonnet : le plan d'E19 les donnait à E14 ; l'auteur ne s'est pas encore prononcé | E20.0, D9 |
-| O-E20-2 | La règle exacte de l'arrondi du stick (D-E20-8) | E20.0, D8, puis l'auteur |
-| O-E20-3 | Le butin et l'objet ramassable (`0x80032968`, `0x80032B90`, `0x80032C7C`, gestionnaire C255) servent aussi aux ennemis et aux coffres : E20.e ou E14 | E20.0, D9, puis l'auteur |
-| O-E20-4 | Les gestionnaires natifs des projectiles du héros (flèches, boules de feu et de glace, vague de l'épée, bombe) : E20.f ou E14 | E20.0, D9, puis l'auteur |
+| O-E20-1 | La nage (pente 4) et le wagonnet : le plan d'E19 les donnait à E14. D9 propose : la nage en tranche E20.i ; le wagonnet hors d'E20 (il n'a rien dans `MovePlayer`) | l'auteur |
+| O-E20-2 | La règle exacte de l'arrondi du stick (D-E20-8). Proposition de D8 : seulement au départ et à la reprise de la course, quand clavier et croix ne donnent aucune direction et que le stick donne une diagonale, prendre l'axe dominant du stick ; à moins de ε de 45° (ε = 1/16, à régler par une mesure du stick en E20.d), garder l'axe du regard actuel | l'auteur |
+| O-E20-3 | Le butin et l'objet ramassable (`0x80032968`, `0x80032B90`, `0x80032C7C`, gestionnaire C255) servent aussi aux ennemis. D9 propose une tranche dédiée avant E20.e, qui porte aussi `SpawnWarpEntity` (102 appelants, partagé avec E14) | l'auteur |
+| O-E20-4 | Les gestionnaires natifs des projectiles du héros. D9 propose de partager : E20.f porte l'apparition et les gestionnaires propres au héros (vague de l'épée C61, flèches chargées C94 ; la bombe E12 en E20.h) ; ceux que des ennemis partagent peut-être (flèches E17, glace C60, feu C54) vont à E14 | l'auteur |
 | O-E20-5 | La barricade de la 392 : l'original la franchit-il en soulevant ou en grimpant ? | E20.g |
 | O-E20-6 | Une fois E18 faite, D-E20-5 tombe ; le prérequis SC8 d'E18 (PV ≥ 1 au chargement) reste à trancher | E18 |
+| O-E20-7 | Ordre événements de carte / entités : le corriger dans E20.a (ordre du binaire : pad, événements de carte, entités ; mesure préalable des épingles qui bougent), ou le garder comme écart documenté | auteur, avant E20.a |
+| O-E20-8 | Structure du tick : boucle de ticks pilotée par le monde dans la DLL (proposition de D7), ou pas fixe de 1/50 s du moteur (migration M3, différée par l'auteur le 2026-08-26) | auteur, avant E20.a |
+| O-E20-9 | La passe des compteurs efface `RidingEntity` (`+0x12C`) ; la DLL ne recalcule le porteur qu'une fois par image : ne pas l'effacer, écart documenté, jusqu'à un recalcul par tick | auteur, avant E20.a |
+| O-E20-10 | `UpdateItemEffectState` (table de défense, bottes, régénération, PV) et `0x8003634C` : bouchons dans E20.a et portage dans E20.c2, ou portage dès E20.a | auteur, avant E20.a |
 
 ## 3. Hors périmètre
 

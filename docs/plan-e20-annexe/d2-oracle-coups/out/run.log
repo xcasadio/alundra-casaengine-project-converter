@@ -1,0 +1,26 @@
+balance.json encoded: 613 records, 0 differ from the disc DATA/BALANCE.BIN, 0 table entries differ, length 11169 vs 11169
+1 reordered class mask                   PASS (2/2)
+2 overlap in raw 16.16                   PASS (36/36)
+3 response 0x80 / 0xC0                   PASS (2/2)
+4 minimum damage                         PASS (3/3)
+5 first attacker                         PASS (3/3)
+6 several targets                        PASS (1/1)
+x1 skip conditions                       PASS (14/14)
+x2 class C and class combinations        PASS (5/5)
+x3 effects attached by attribute         PASS (7/7)
+x4 zero sizes                            PASS (4/4)
+x5 spark centre                          PASS (2/2)
+x6 equipment sum                         PASS (1/1)
+x7 hero sheet                            PASS (3/3)
+x8 response 0x40                         PASS (1/1)
+x9 latch                                 PASS (1/1)
+x10 latch with an empty list             PASS (1/1)
+x11 counters pass                        PASS (1/1)
+random sets: 3000, disagreements: 0, stats {'sets': 3000, 'hits': 1363, 'touched': 525, 'kills': 155, 'multi_target': 164, 'hero_touched': 13, 'effect4': 88, 'effect5': 15, 'dmg_calls': 525, 'immune_80': 838, 'sets_with_hit': 986, 'touch_resp_00': 470, 'touch_with_equipment_bit': 153, 'attacker_attr_zero': 111, 'min_damage_applied': 49, 'touch_resp_C0': 24, 'touch_resp_40': 20, 'touch_resp_other': 11}
+# coverage of the executed instructions over all runs (every distinct PC executed; the debug printf branches need [0x800DC058] < 0 and are not reachable here)
+# UpdateBalanceRecords 0x80039300-0x80039780: 248 of 288 instruction words executed; not executed: 80039534 80039538 8003953C 80039540 80039544 80039548 8003954C 80039550 80039554 80039558 8003955C 80039560 80039564 80039568 8003956C 80039570 80039574 80039578 8003957C 80039580 80039584 80039588 8003958C 80039590 80039594 80039598 8003959C 800395A0 800395A4 800395A8 800395AC 800395B0 800395B4 800395B8 800395BC 800395C0 800395C4 800395C8 800395CC 800395D0
+# spark routine 0x80039188-0x80039300: 94 of 94 instruction words executed; not executed: 
+# ComputeNewHp 0x8003A374-0x8003A59C: 56 of 138 instruction words executed; not executed: 8003A3E0 8003A3E4 8003A3E8 8003A3EC 8003A3F0 8003A3F4 8003A3F8 8003A3FC 8003A400 8003A404 8003A408 8003A40C 8003A410 8003A414 8003A418 8003A41C 8003A420 8003A424 8003A428 8003A42C 8003A430 8003A434 8003A438 8003A43C 8003A440 8003A444 8003A448 8003A44C 8003A450 8003A454 8003A458 8003A45C 8003A460 8003A464 8003A468 8003A46C 8003A470 8003A474 8003A478 8003A47C 8003A480 8003A484 8003A488 8003A48C 8003A490 8003A494 8003A498 8003A49C 8003A4A0 8003A4A4 8003A4A8 8003A4AC 8003A4B0 8003A4B4 8003A4B8 8003A4BC 8003A4C0 8003A4C4 8003A4C8 8003A4CC 8003A4D0 8003A4D4 8003A4D8 8003A4DC 8003A4E0 8003A4E4 8003A4E8 8003A4EC 8003A4F0 8003A4F4 8003A4F8 8003A4FC 8003A500 8003A504 8003A508 8003A50C 8003A510 8003A514 8003A518 8003A51C 8003A520 8003A524
+# ResolveBalanceTarget 0x8004464C-0x80044820: 83 of 117 instruction words executed; not executed: 80044660 80044664 80044668 8004466C 80044670 80044674 80044678 80044790 80044794 80044798 8004479C 800447A0 800447A4 800447A8 800447AC 800447B0 800447B4 800447B8 800447BC 800447C0 800447C4 800447C8 800447DC 800447E0 800447E4 800447E8 800447EC 800447F0 800447F4 800447F8 800447FC 80044800 80044804 80044808
+SUMMARY: 300 sets, 0 differing between emu.py and mips.py
+mutations: all caught

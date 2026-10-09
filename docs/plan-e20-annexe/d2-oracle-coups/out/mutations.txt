@@ -1,0 +1,14 @@
+baseline (no mutation): failing cases none
+CAUGHT HitsClassA bit dropped from the class mask           800393A0: 30420001 -> 30420000 (andi v0,v0,1 after srl $s2,2)  failing cases: case 1 (1/2 runs), case 2 (18/36 runs), case 3 (2/2 runs), case 4 (3/3 runs), case 5 (3/3 runs), case 6 (1/1 runs)  expected case 1: caught
+CAUGHT HitsClassB bit dropped from the class mask           800393A8: 30630008 -> 30630000 (andi v1,v1,8 after sll $s2,2)  failing cases: case 1 (1/2 runs)  expected case 1: caught
+CAUGHT overlap not enlarged by one, X axis, d >= 0          80039480: 24420001 -> 24420000 (addiu v0,v0,1 (target size + 1))  failing cases: case 2 (3/36 runs)  expected case 2: caught
+CAUGHT overlap not enlarged by one, Y axis, d >= 0          800394C0: 24420001 -> 24420000 (addiu v0,v0,1)  failing cases: case 2 (3/36 runs)  expected case 2: caught
+CAUGHT overlap not enlarged by one, Z axis, d >= 0          80039500: 24420001 -> 24420000 (addiu v0,v0,1)  failing cases: case 2 (3/36 runs)  expected case 2: caught
+CAUGHT overlap not enlarged by one, X axis, d < 0           80039494: 25430001 -> 25430000 (addiu v1,t2,1 (attacker size + 1))  failing cases: case 2 (3/36 runs)  expected case 2: caught
+CAUGHT overlap enlarged by two, X axis, d >= 0              80039480: 24420001 -> 24420002 (addiu v0,v0,1)  failing cases: case 2 (3/36 runs)  expected case 2: caught
+CAUGHT response 0x80 no longer immune                       800395EC: 1043001F -> 00000000 (beq v0,v1,0x8003966c)  failing cases: case 3 (1/2 runs)  expected case 3: caught
+CAUGHT minimum damage 1 -> 0                                80044764: 24050001 -> 24050000 (addiu a1,zero,1)  failing cases: case 4 (2/3 runs)  expected case 4: caught
+CAUGHT target +0x1D0 no longer blocks a second attacker     80039424: 144000C9 -> 00000000 (bnez v0,0x8003974c)  failing cases: case 5 (3/3 runs)  expected case 5: caught
+CAUGHT attacker stops after its first target                80039758: 1440FF28 -> 00000000 (bnez v0,0x800393fc)  failing cases: case 1 (2/2 runs), case 2 (18/36 runs), case 3 (2/2 runs), case 4 (3/3 runs), case 5 (3/3 runs), case 6 (1/1 runs)  expected case 6: caught
+CAUGHT HitCounter not incremented                           80039680: AE220220 -> 00000000 (sw v0,0x220(s1))  failing cases: case 1 (2/2 runs), case 2 (18/36 runs), case 3 (2/2 runs), case 5 (3/3 runs), case 6 (1/1 runs)  expected case 1: caught
+CAUGHT TouchingEntity not stored                            80039668: AE110224 -> 00000000 (sw s1,0x224(s0))  failing cases: case 1 (2/2 runs), case 2 (18/36 runs), case 3 (1/2 runs), case 4 (3/3 runs), case 5 (3/3 runs), case 6 (1/1 runs)  expected case 1: caught

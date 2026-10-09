@@ -1,0 +1,16 @@
+--- accesses with displacement 0x1c4
+8002f8a4 lw $v0, 0x1c4($a3)
+8002f9ac lw $v0, 0x1c4($a3)
+80038b44 lw $a1, 0x1c4($s0)
+8003955c lw $a1, 0x1c4($s0)
+800395d4 lw $v0, 0x1c4($s0)
+80039e38 sw $v0, 0x1c4($s0)
+8003a3b4 lw $a1, 0x1c4($s2)
+--- lui 0x8012 followed within 12 instructions by an immediate in 0x7008..0x7107
+800309b8 addiu $a3, $v0, 0x7008  (lui at 800309b4)
+80030a64 addiu $a3, $v0, 0x7008  (lui at 80030a58)
+80030a64 addiu $a3, $v0, 0x7008  (lui at 80030a60)
+80030b5c addiu $v0, $v0, 0x7008  (lui at 80030b58)
+80030f84 addiu $a0, $a0, 0x7008  (lui at 80030f80)
+8003a3b0 addiu $a1, $v0, 0x7008  (lui at 8003a380)
+8003a3b0 addiu $a1, $v0, 0x7008  (lui at 8003a3a8)

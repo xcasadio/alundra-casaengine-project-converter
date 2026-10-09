@@ -1,0 +1,3 @@
+# D2 random sets: seed 20261009, 3000 sets, each run on the REAL passes and compared with model.py
+# stats: {'sets': 3000, 'hits': 1363, 'touched': 525, 'kills': 155, 'multi_target': 164, 'hero_touched': 13, 'effect4': 88, 'effect5': 15, 'dmg_calls': 525, 'immune_80': 838, 'sets_with_hit': 986, 'touch_resp_00': 470, 'touch_with_equipment_bit': 153, 'attacker_attr_zero': 111, 'min_damage_applied': 49, 'touch_resp_C0': 24, 'touch_resp_40': 20, 'touch_resp_other': 11}
+# disagreements between the real code and the model: 0

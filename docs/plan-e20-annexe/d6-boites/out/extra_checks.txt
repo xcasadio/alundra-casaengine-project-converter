@@ -1,0 +1,12 @@
+A. frame classes (transition, byte0 bit7, has images, has record) -> count, canonical banks
+  ('transition=False', 'bit7=True', 'images=True', 'record=False') : 21161
+  ('transition=False', 'bit7=True', 'images=True', 'record=True') : 30585
+  ('transition=True', 'bit7=False', 'images=False', 'record=False') : 9620
+B. {'zero_delay_displayed_frames': 5}
+   zero-delay displayed frame: anim=bank151_anim1_down frame=0 record=None
+   zero-delay displayed frame: anim=bank151_anim1_up frame=0 record=None
+   zero-delay displayed frame: anim=bank151_anim1_left frame=0 record=None
+   zero-delay displayed frame: anim=bank127_anim0_left frame=0 record=None
+   zero-delay displayed frame: anim=bank127_anim0_right frame=0 record=None
+C. tick-level {'ticks_compared': 173408, 'equal': 173408, 'animations_with_record': 5568}
+D. {'animations': 9620}

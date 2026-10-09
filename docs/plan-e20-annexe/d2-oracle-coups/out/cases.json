@@ -1,0 +1,584 @@
+[
+ {
+  "case": "1 reordered class mask",
+  "verdict": "PASS",
+  "ok": 2,
+  "total": 2,
+  "runs": [
+   {
+    "label": "HitsClassA only (slot 2 flags 0x1 must be hit, slot 3 flags 0x8 must not)",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "HitsClassB only (slot 2 flags 0x8 must be hit, slot 3 flags 0x1 must not)",
+    "ok": true,
+    "diffs": []
+   }
+  ]
+ },
+ {
+  "case": "2 overlap in raw 16.16",
+  "verdict": "PASS",
+  "ok": 36,
+  "total": 36,
+  "runs": [
+   {
+    "label": "axis X, target 1 px, attacker box 1 px, d=(n<<16)-1 = 65535 (0xFFFF) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis X, target 1 px, attacker box 1 px, d=n<<16 = 65536 (0x10000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis X, target 1 px, attacker box 1 px, d=-((m<<16)-1) = -65535 (0xFFFF0001) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis X, target 1 px, attacker box 1 px, d=-(m<<16) = -65536 (0xFFFF0000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis X, target 5 px, attacker box 4 px, d=(n<<16)-1 = 327679 (0x4FFFF) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis X, target 5 px, attacker box 4 px, d=n<<16 = 327680 (0x50000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis X, target 5 px, attacker box 4 px, d=-((m<<16)-1) = -262143 (0xFFFC0001) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis X, target 5 px, attacker box 4 px, d=-(m<<16) = -262144 (0xFFFC0000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis X, target 16 px, attacker box 12 px, d=(n<<16)-1 = 1048575 (0xFFFFF) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis X, target 16 px, attacker box 12 px, d=n<<16 = 1048576 (0x100000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis X, target 16 px, attacker box 12 px, d=-((m<<16)-1) = -786431 (0xFFF40001) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis X, target 16 px, attacker box 12 px, d=-(m<<16) = -786432 (0xFFF40000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Y, target 1 px, attacker box 1 px, d=(n<<16)-1 = 65535 (0xFFFF) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Y, target 1 px, attacker box 1 px, d=n<<16 = 65536 (0x10000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Y, target 1 px, attacker box 1 px, d=-((m<<16)-1) = -65535 (0xFFFF0001) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Y, target 1 px, attacker box 1 px, d=-(m<<16) = -65536 (0xFFFF0000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Y, target 5 px, attacker box 4 px, d=(n<<16)-1 = 327679 (0x4FFFF) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Y, target 5 px, attacker box 4 px, d=n<<16 = 327680 (0x50000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Y, target 5 px, attacker box 4 px, d=-((m<<16)-1) = -262143 (0xFFFC0001) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Y, target 5 px, attacker box 4 px, d=-(m<<16) = -262144 (0xFFFC0000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Y, target 16 px, attacker box 12 px, d=(n<<16)-1 = 1048575 (0xFFFFF) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Y, target 16 px, attacker box 12 px, d=n<<16 = 1048576 (0x100000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Y, target 16 px, attacker box 12 px, d=-((m<<16)-1) = -786431 (0xFFF40001) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Y, target 16 px, attacker box 12 px, d=-(m<<16) = -786432 (0xFFF40000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Z, target 1 px, attacker box 1 px, d=(n<<16)-1 = 65535 (0xFFFF) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Z, target 1 px, attacker box 1 px, d=n<<16 = 65536 (0x10000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Z, target 1 px, attacker box 1 px, d=-((m<<16)-1) = -65535 (0xFFFF0001) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Z, target 1 px, attacker box 1 px, d=-(m<<16) = -65536 (0xFFFF0000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Z, target 5 px, attacker box 4 px, d=(n<<16)-1 = 327679 (0x4FFFF) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Z, target 5 px, attacker box 4 px, d=n<<16 = 327680 (0x50000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Z, target 5 px, attacker box 4 px, d=-((m<<16)-1) = -262143 (0xFFFC0001) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Z, target 5 px, attacker box 4 px, d=-(m<<16) = -262144 (0xFFFC0000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Z, target 16 px, attacker box 12 px, d=(n<<16)-1 = 1048575 (0xFFFFF) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Z, target 16 px, attacker box 12 px, d=n<<16 = 1048576 (0x100000) -> MISS",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Z, target 16 px, attacker box 12 px, d=-((m<<16)-1) = -786431 (0xFFF40001) -> HIT",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "axis Z, target 16 px, attacker box 12 px, d=-(m<<16) = -786432 (0xFFF40000) -> MISS",
+    "ok": true,
+    "diffs": []
+   }
+  ]
+ },
+ {
+  "case": "3 response 0x80 / 0xC0",
+  "verdict": "PASS",
+  "ok": 2,
+  "total": 2,
+  "runs": [
+   {
+    "label": "response 0x80 (corpus record #1 @1193, attribute 1)",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "response 0xC0 (no corpus record has one: copy of corpus record #330 with response[attr 1] = 0xC0)",
+    "ok": true,
+    "diffs": []
+   }
+  ]
+ },
+ {
+  "case": "4 minimum damage",
+  "verdict": "PASS",
+  "ok": 3,
+  "total": 3,
+  "runs": [
+   {
+    "label": "attack power 1 attr 1 (corpus record #31), target response 8 (corpus record #49): 1*8>>4 = 0; HP 10 -> 9",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "control: power 3, response 8: 3*8>>4 = 1; HP 10 -> 9",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "minimum at HP 1: 1*8>>4 = 0 -> 1 damage, HP 1 -> 0, dead",
+    "ok": true,
+    "diffs": []
+   }
+  ]
+ },
+ {
+  "case": "5 first attacker",
+  "verdict": "PASS",
+  "ok": 3,
+  "total": 3,
+  "runs": [
+   {
+    "label": "attackers 1,2 target 3: first in the list = slot 1",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attackers 3,1 target 2 (target between them): first in the list = slot 1",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attackers 5,4 target 9: first in the list = slot 4",
+    "ok": true,
+    "diffs": []
+   }
+  ]
+ },
+ {
+  "case": "6 several targets",
+  "verdict": "PASS",
+  "ok": 1,
+  "total": 1,
+  "runs": [
+   {
+    "label": "one attacker (slot 1), targets slots 2 and 3 in range, slot 4 out of range",
+    "ok": true,
+    "diffs": []
+   }
+  ]
+ },
+ {
+  "case": "x1 skip conditions",
+  "verdict": "PASS",
+  "ok": 14,
+  "total": 14,
+  "runs": [
+   {
+    "label": "target +0x1D0 != 0",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "target +0x1CC != 0",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "target AnimFlags & 0x40",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "target +0x20 != 0 (not in the list)",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "target status 1 (not in the list)",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "target status 5 (not in the list)",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "target status 3 (in the list)",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "control: target with none of the above",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attacker without box (+0x1D4 = 0)",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attacker without attack (+0x1C8 = 0)",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attacker with attribute byte 0",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attacker without flags",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attacker +0x20 != 0 (not in the list)",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attacker status 5 (not in the list)",
+    "ok": true,
+    "diffs": []
+   }
+  ],
+  "extra": true
+ },
+ {
+  "case": "x2 class C and class combinations",
+  "verdict": "PASS",
+  "ok": 5,
+  "total": 5,
+  "runs": [
+   {
+    "label": "HitsClassC vs ClassC",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "HitsClassC vs ClassA",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "HitsClassA vs ClassC",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "HitsClassA|HitsClassB|HitsClassC vs ClassB",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attacker with the target class bits only (ClassA|ClassB|ClassC) vs ClassA",
+    "ok": true,
+    "diffs": []
+   }
+  ],
+  "extra": true
+ },
+ {
+  "case": "x3 effects attached by attribute",
+  "verdict": "PASS",
+  "ok": 7,
+  "total": 7,
+  "runs": [
+   {
+    "label": "attack attribute 6 (synthetic attack record, power 3): effect 4 attached, then 3 sparks",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attack attribute 10 (synthetic attack record, power 3): effect 4 attached, then 3 sparks",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attack attribute 7 (synthetic attack record, power 3): effect 5 attached, then 3 sparks",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attack attribute 9 (synthetic attack record, power 3): effect 5 attached, then 3 sparks",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attack attribute 1 (synthetic attack record, power 3): effect None attached, then 3 sparks",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attack attribute 11 (synthetic attack record, power 3): effect None attached, then 3 sparks",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attribute 6 on an immune (0x80) target: NO effect attached, 3 sparks",
+    "ok": true,
+    "diffs": []
+   }
+  ],
+  "extra": true
+ },
+ {
+  "case": "x4 zero sizes",
+  "verdict": "PASS",
+  "ok": 4,
+  "total": 4,
+  "runs": [
+   {
+    "label": "target size stored 0, d = 0",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "target size stored 0, d = 1",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attacker size stored -1 (n = 0), d = 0",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "attacker size stored -1 (n = 0), d = -1",
+    "ok": true,
+    "diffs": []
+   }
+  ],
+  "extra": true
+ },
+ {
+  "case": "x5 spark centre",
+  "verdict": "PASS",
+  "ok": 2,
+  "total": 2,
+  "runs": [
+   {
+    "label": "centre, positive coordinates",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "centre, negative odd sum (truncation toward zero, not floor)",
+    "ok": true,
+    "diffs": []
+   }
+  ],
+  "extra": true
+ },
+ {
+  "case": "x6 equipment sum",
+  "verdict": "PASS",
+  "ok": 1,
+  "total": 1,
+  "runs": [
+   {
+    "label": "equipment sum, hero anim latched 2 (changed to 9 after the hit pass): (10 + 8 + 5) * 16 >> 4 = 23; HP 40 -> 17",
+    "ok": true,
+    "diffs": []
+   }
+  ],
+  "extra": true
+ },
+ {
+  "case": "x7 hero sheet",
+  "verdict": "PASS",
+  "ok": 3,
+  "total": 3,
+  "runs": [
+   {
+    "label": "hero: +0x1C4 sheet neutral (touched), 0x80127008 sheet immune to attribute 1: touched, HP unchanged",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "hero: +0x1C4 sheet immune (the hit pass reads it), 0x80127008 sheet neutral: NOT touched, HP unchanged",
+    "ok": true,
+    "diffs": []
+   },
+   {
+    "label": "hero: damage from the 0x80127008 sheet (response 8): power 3 * 8 >> 4 = 1, HP 10 -> 9 (with the +0x1C4 sheet it would be 3)",
+    "ok": true,
+    "diffs": []
+   }
+  ],
+  "extra": true
+ },
+ {
+  "case": "x8 response 0x40",
+  "verdict": "PASS",
+  "ok": 1,
+  "total": 1,
+  "runs": [
+   {
+    "label": "response 0x40 (corpus record #31): HP goes to 0 whatever the damage",
+    "ok": true,
+    "diffs": []
+   }
+  ],
+  "extra": true
+ },
+ {
+  "case": "x9 latch",
+  "verdict": "PASS",
+  "ok": 1,
+  "total": 1,
+  "runs": [
+   {
+    "label": "hero TargetAnimationId 7 at the hit pass, 9 later: [0x80146DF8] = 7",
+    "ok": true,
+    "diffs": []
+   }
+  ],
+  "extra": true
+ },
+ {
+  "case": "x10 latch with an empty list",
+  "verdict": "PASS",
+  "ok": 1,
+  "total": 1,
+  "runs": [
+   {
+    "label": "no entity at all (empty list): the delay slot of 0x80039344 still latches the hero animation 7 into [0x80146DF8]",
+    "ok": true,
+    "diffs": []
+   }
+  ],
+  "extra": true
+ },
+ {
+  "case": "x11 counters pass",
+  "verdict": "PASS",
+  "ok": 1,
+  "total": 1,
+  "runs": [
+   {
+    "label": "after the hit pass and the damage, the counters pass (next tick): TouchingEntity and HitCounter cleared, +0x1D0 0x19 -> 0x18",
+    "ok": true,
+    "diffs": []
+   }
+  ],
+  "extra": true
+ }
+]
