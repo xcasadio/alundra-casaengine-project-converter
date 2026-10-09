@@ -489,12 +489,14 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | E20.h | Objets du Rond (`TryUseItem`) : graines, bombes (gestionnaire E12), magie, potions ; le couvercle de la 362 | oracle ; arcs | La 362 |
 | E20.i | Nage (D-E20-16) : branche de pente 4 (`0x8003260C`), états `0x0F`, `0x1D`, `0x28`, `0x3A` et `0x3B`, plongée au front de bouton | oracle ; arcs | Nager et plonger en eau profonde (la 416 en a) |
 
-- **Ordre** : E20.0 → E20.a → E20.b → E20.c1a → E20.c1b-1 → E20.c1b-2 → E20.c2 → E20.d → E20.e0 → E20.e → E20.f → E20.g → E20.h → E20.i.
+- **Ordre** (d'origine ; pour les tranches qui restent après E20.c1b-2, il est **remplacé** par la révision du 2026-10-10 ci-dessous,
+  seule à faire foi) : E20.0 → E20.a → E20.b → E20.c1a → E20.c1b-1 → E20.c1b-2 → E20.c2 → E20.d → E20.e0 → E20.e → E20.f → E20.g → E20.h → E20.i.
   E14.a se planifie dès qu'E20.c1b-1 est faite (ses gestionnaires appellent `ComputeNewHp`). Le hall de la 115 devient jouable avec
   E20.a, E20.b, E20.c1a, E20.c1b-1 et E14.a. E20.c1b est découpée en c1b-1 et c1b-2 le 2026-10-09, sur la proposition de la
   contre-vérification de sa découverte (`docs/plan-e20-annexe/e20-c1b/check.md`). Découpage d'E20.c1 en c1a et c1b décidé le 2026-10-09 sur la proposition de la
   contre-vérification de la découverte (`docs/plan-e20-annexe/e20-c1/check.md`).
-- **Dépendances** : tout dépend d'E20.a (le rythme par tick, le relâchement, et la structure du tick, dont
+- **Dépendances** (d'origine ; pour les tranches qui restent, **remplacées** par le tableau de la révision du 2026-10-10 ; les
+  arêtes qui n'y figurent plus y ont un bouchon nommé) : tout dépend d'E20.a (le rythme par tick, le relâchement, et la structure du tick, dont
   E20.a est propriétaire ; E20.c1 branche la passe de coups à la place qu'E20.a a créée). E20.c1 dépend
   d'E20.0 (D6) pour les boîtes. La charge `0x04` d'E20.d ne touche rien sans E20.c1. E20.e a besoin des
   boîtes d'E20.c1 pour couper l'herbe et du butin d'E20.e0. E20.f a besoin d'E20.c1, d'E20.e0 et d'E20.e.
@@ -505,6 +507,94 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
   - **E20.i** : E20.a ; E20.c2 pour l'état blessé dans l'eau (`0x3A`).
 - **Mise à jour de ce plan** : chaque tranche remet au §0.2 ce qu'elle a mesuré, puis fait détailler,
   relire et approuver la suivante. Une tranche qui touche le convertisseur fait un export complet.
+
+#### Révision de l'enveloppe pour les armes, les objets et les collisions (2026-10-10, mode AUTO)
+
+**Révision 1.** Relecture : **REVISE**, deux points corrigés : le passage d'E17, C60 et E9 à E20.f changeait D-E20-18 sans
+l'auteur (Q-N1 devient bloquante pour E20.f5 et E20.f6, les trois enregistrements `0x0C` de la 309 sont notés) ; l'ordre et les
+dépendances d'origine sont marqués comme remplacés, et la bombe E12 rejoint les appelants de la coupe de l'herbe.
+**Révision 2.** Seconde relecture : **REVISE**, un point corrigé (FIX) : E20.h3 et E20.h4 exigent E20.h0 (leur départ passe par
+`0x8003499C` et le pilote `0x8003634C`) et, par lui, E20.c2a (le soin de l'eau). Une seule relecture de clôture suit.
+**Révision 3 et pause.** La relecture de clôture rend **REVISE** (troisième) : E20.f3 doit exiger E20.f1, E20.g2 doit exiger
+E20.e0b ; les deux points sont corrigés ci-dessus (FIX, preuves : `f-weapons.md` ligne 32, `h-g-deps.md` lignes 177, 195, 212). La règle
+de relecture plafonne la boucle : la révision n'est **pas READY** et reste **en pause** jusqu'au retour de l'auteur, qui doit de toute
+façon répondre à Q-N1 à Q-N3. Cette nuit ne tournent que les tranches sans prérequis de la ligne E20.f déjà approuvée (E20.f0, f1,
+f2), chacune relue à part ; chaque relecture de tranche vérifie aussi ses prérequis contre les points d'entrée du binaire.
+
+L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
+lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
+`f-check.md`, `order-critic.md`). Elle change l'enveloppe ainsi.
+
+**Faits porteurs** (contre-vérifiés) :
+- [données, binaire] **Les gestionnaires des projectiles du héros ne servent qu'au héros.** E17 (flèches), C60 et E9 (boules de feu
+  et de glace), C61 et E10 (vague), C94 (flèche chargée) ne sont utilisés que par les sprites communs 3 à 15 et 27 à 29 ; aucun sprite
+  de carte ne les utilise. Le seul autre lanceur, la torche (E20 `0x8007F6C8`), efface les six mots de programme de sa copie
+  (`0x8007F740`-`0x8007F74C`) : C60 et E9 n'y tournent jamais. C54 (`0x80078E34`) est un gestionnaire d'ennemi (carte 326), sans
+  rapport avec la baguette de feu. Trois enregistrements de la carte 309 placent le sprite commun `0x0C` (C60/E9) : en portant C60
+  et E9 pour ce type, ils prendraient vie (fidèle, mais point de vigilance). Le critère de D-E20-18 (« propres au héros » → E20.f ;
+  « que des ennemis partagent » → E14) donnerait donc E17, C60 et E9 à E20.f ; mais D-E20-18 les nomme pour E14 : changer leur
+  propriétaire revient à l'auteur. **Question bloquante Q-N1** pour E20.f5 et E20.f6 ; C54 reste à E14.
+- [binaire, données] **Rien n'associe un indice de sprite global à un préfab dans le projet exporté** : le convertisseur garde la
+  correspondance en mémoire (`SpriteWriter.cs:394`, `:494`). Les bancs de carte sont dédupliqués globalement
+  (`SpriteBankReader.cs:174-217`) : une seule table de 256 entrées par page. Un export qui ajoute `BankKey` et `BreakEffect` (octet
+  `+0x1E` de l'en-tête, lu par `DestroyEntity` `0x8003A5E8`) à chaque entrée de `Data/sprite-records.json` sert la page globale, la page
+  des cartes et D-E14-2 (avancé ici, prérequis de la flèche chargée, effet 8 ; à confirmer, Q-N2).
+- [binaire] **Une entité née dans un tick y tourne aussitôt** : statut, programme A, compteurs, listes, animation, physique ; une
+  flèche avance de 3 px dans son tick de naissance. La DLL la fait tourner une image plus tard (`TookPartInFrame`,
+  `AlundraWorldProxy.cs:2617-2638`) ; la DLL peut l'inclure elle-même dans le reste du tick, sans changement du moteur (`e0-check.md`
+  point 1). Cela répond à O-E20-11.
+- [binaire] Le binaire réutilise la première case libre (1 à 63, plafond 63) ; la DLL ajoute en fin de liste (O-E20-13).
+- [binaire] L'avance du générateur (`0x8002BD0C`-`0x8002BD34`) a lieu une fois par appel de la fonction d'image, même quand les
+  entités sont gelées ; la DLL n'en a pas. E9 et l'étincelle de charge tirent dans le générateur seulement quand l'effet est créé.
+- [DLL] Seul le héros a un pas vertical par tick (`AlundraScriptedMotion.cs:194`, `:198`) ; les flèches volent à Z constant avec
+  `NoObstacleSlide`, les boules tombent, une flèche qui rebondit prend la gravité : il faut un pas vertical et de vol pour les autres
+  entités (K0).
+- [DLL] `RunSpriteEvent` ne tourne que le livre et E0/E1 ; le registre par type de sprite (D-E14-1) est un prérequis d'E20.f, d'E20.g et
+  d'E20.h.
+- [binaire] Porter précède une partie des objets : les graines et la bombe naissent portées (`hero+0x2C`, `0x80034224`, `0x8003453C`).
+  Les soins écrivent les PV de l'entité du héros (`+0x14`), recopiés vers `PlayerStats` en fin de `MovePlayer` : ils demandent le
+  modèle de PV d'E20.c2a.
+- [binaire] La coupe de l'herbe (`CheckAndTriggerTileEffect`), appelée par le héros (`0x8002FDC0`), C61, C94 et la bombe E12
+  (`0x8007F2D4`), reste à E20.e : bouchon nommé à sa place dans E20.f3, E20.f4 et E20.h3, porté en vrai par E20.e. Le
+  rebond du fléau est une fin autonome de `CreatePlayerAnimationEffects` (`0x80030434`-`0x80030654`) : il n'attend pas E20.e.
+- [DLL] La branche verrouillée de `MovePlayer` n'efface ni la charge ni le pointeur d'arme (`AlundraPlayerManager.cs:220-223`), alors
+  que le binaire le fait (`0x80031BEC`, `0x80031BF8`) : un tir en attente part après le déverrouillage. Corrigé par E20.f1.
+
+**Tranches, dans l'ordre de la nuit** (chacune détaillée, relue, exécutée et vérifiée avant la suivante ; elles touchent les mêmes
+fichiers, donc l'une après l'autre) :
+
+| Tranche | Contenu | Prérequis |
+|---|---|---|
+| E20.f0 | Moyens de test : `Preset` gagne l'arme, les PM et les PV ; aides `Give`/`Equip` de `ArcRun` ; opcodes `0xC0`/`0xC1` | — |
+| E20.f1 | Charge et relâchement : `UpdatePlayerWeaponEffect`, branche de relâchement de `PlayerTryAttack`, gerbe de 16 étincelles, aura (effet 3 attaché) par un accès de l'hôte aux effets, effacements de la charge et du pointeur dans les branches gelée et verrouillée ; l'arc et la baguette arment le pointeur, le tir reste un bouchon compté | — |
+| E20.f2 | Rebond du fléau : squelette de `CreatePlayerAnimationEffects(mode)`, fin du fléau réelle, le reste en bouchons nommés pour E20.e | — |
+| E20.e0x | Convertisseur : `BankKey` et `BreakEffect` dans `Data/sprite-records.json` ; export complet, preuve par manifeste et double export ; ADR de format | — |
+| E20.e0a | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance, registre des natifs par type (D-E14-1, part d'E14.a0 avancée) | E20.e0x |
+| E20.e0b | Générateur avancé une fois par tick ; tirage du butin à la création (écrit le contenu, rien ne tombe) ; `DestroyEntity(e, fx)` avec l'effet de bris | E20.e0a |
+| E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a |
+| E20.f3 | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.f1 (le relâchement chargé lance la vague et la flèche chargée), E20.e0a, e0b |
+| E20.f4 | Flèche chargée : C94, E1 avec l'effet 8 | E20.f3, e0k |
+| E20.f5 | Flèches : E17 | E20.f3, e0k ; **réponse à Q-N1** |
+| E20.f6 | Boules de feu et de glace : C60, E9 ; vigilance sur les trois enregistrements `0x0C` de la carte 309 | E20.f3, e0b, e0k ; **réponse à Q-N1** |
+| E20.c2-0, E20.c2a | Oracle d'E20.c2 ; modèle de PV sur l'entité, fin de `MovePlayer` sur toutes les sorties, `UpdateItemEffectState` (D-E20-19 à D-E20-22) — pas la blessure | — |
+| E20.h0, E20.h1 | Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a |
+| E20.g1, E20.g2 | Soulever et porter ; lancer et briser | E20.e0a, e0k ; E20.e0b pour g2 (`DestroyEntity(e, -1)` avec l'effet de bris et l'effacement du porteur `+0x2C`) |
+| E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 (cadre de l'usage : `0x8002ED64`, `0x8003499C`, pilote `0x8003634C`), donc E20.c2a ; E20.g1, g2 |
+| E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 | E20.g1, g2 ; Q-N3 |
+
+Sans réponse à Q-N1, la nuit passe d'E20.f4 à E20.c2-0 et laisse E20.f5 et E20.f6 en attente. Ensuite : butin et objet ramassable
+(E20.e0c, avec E20.e ou E14.a), E20.e, E14.a, la blessure (E20.c2b), E20.d, E20.i.
+
+**Questions pour l'auteur.**
+- **Q-N1 (bloque E20.f5 et E20.f6)** : D-E20-18 donne E17 (flèches) et C60 (glace) à E14, sur la prémisse que des ennemis les
+  partagent ; le recensement montre qu'ils ne servent qu'au héros (avec E9), C54 étant un gestionnaire de boss. Passent-ils à E20.f ?
+  Recommandé : oui ; sinon, l'arc et les baguettes restent inutilisables jusqu'à E14.
+- **Q-N2 (non bloquante)** : l'export de l'effet de bris (D-E14-2) avance d'E14.a à E20.e0x, dans le même export que `BankKey` : c'est
+  un prérequis d'E20.f4 (C94 et E1, déjà à E20.f par D-E20-18). La session principale l'avance et le note. Recommandé : oui.
+- **Q-N3 (bloque E20.g3 seulement)** : « collisions » désigne-t-il bien E20.g (caisses et jarres solides), ou aussi l'eau profonde
+  qui doit bloquer le héros sans les bottes (O-E19-22, sans propriétaire) ?
+- Par défaut fidèle, sans question : le plafond de 63 cases, la participation au tick de naissance (dans la DLL), la flèche normale qui
+  vole 16 px au-dessus du sol du héros et passe au-dessus des ennemis bas, la cape de sable reportée (elle n'est dans aucune tranche).
 
 ### 1.2 E20.0 — Découverte complémentaire 🚧 (D1 à D9 faites et contre-vérifiées le 2026-10-09 ; reste le détail d'E20.a, après les réponses de l'auteur)
 
@@ -1439,6 +1529,213 @@ production) ; le Z du pilier de la 117 ; `0xB9`.
   changement de production. Chaque arrêt remonte à la session principale, qui diagnostique.
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.c1b-2.
+
+### 1.8 E20.f0 — Moyens de test des armes et opcodes `0xC0`/`0xC1` ⏳
+
+Relecture : **READY** dès la première lecture (2026-10-10).
+
+**But.** Donner aux tranches des armes et des objets leurs moyens de test, dans la DLL et en jeu, et porter les deux opcodes qui
+imposent une arme : des sauvegardes de test qui portent l'arme choisie, les PM et les PV ; des aides d'arc pour donner et équiper une
+arme ; `0xC0` et `0xC1`.
+
+**Faits porteurs** (`docs/plan-e20-annexe/e20-armes/test-means.md` §1, §2, §7 ; `f-weapons.md` §10 ; `f-check.md`, lignes 37 à 39, 43
+à 46, et correction C10) :
+- [binaire] `0xC0` (`0x80041CDC`, taille 2) : `SetPlayerWeaponId(opérande + 1)` (`0x8004E484`), puis `[0x800DC4B8] |= 0x80` ;
+  `0xC1` (`0x80041D18`, taille 1) : `[0x800DC4B8] &= ~0x80`. Sites : carte 472 B[5] `@327` (opérande 0) et `@378` ; carte 473 B[1]
+  `@198` (opérande 1) et `@289`. Le bit `0x80` n'arrête ni `PlayerTryAttack` ni la branche `0x34` de `MovePlayer` ; l'ouverture de
+  l'inventaire (`0x8002BB68`), la porte de téléportation (`0x8002F1C4`) et `TryUseItem` (`0x8002ED80`, son 3, rend 1) testent la valeur
+  entière `!= 0`. La DLL a la constante (`AlundraGameState.cs:86`), pas les opcodes.
+- [DLL] Donner une arme dans un arc : `state.NumberOfItems[2 * item + 1] = 1`, puis `AlundraPlayerManager.SetPlayerWeaponId(state,
+  tables, slot)` (précédent `AlundraHeroAttackTests.cs:484-488`) ; PM par `SetPlayerMpMax` puis `SetPlayerMp` ; PV, argent et objet du
+  Rond par `SetPlayerHp`, `SetMoney`, `SetCurrentItemId`. Dans un emplacement, le rang le plus haut l'emporte (toutes les lignes d'arme
+  ont le bit 0 posé) : l'objet 1 du kit ne gêne jamais l'épée d'acier (`f-check.md` ligne 43, correction C10).
+- [DLL] `AlundraTestSaves.Preset` n'a ni arme, ni PM, ni PV, ni argent (`AlundraTestSaves.cs:36-46`) ; `TryBuild` part du kit de
+  nouvelle partie (`:112-134`) ; deux noms seulement, épinglés par `AlundraTestSavesTests.cs:69-72` ; l'outil se lance hors de l'app
+  Claude (`docs/test-saves.md:9-10`).
+
+**Périmètre.** `Alundra/Scripts/` : les cas `0xC0` et `0xC1` de `Dispatch` (et leurs étiquettes de `EventOpcodeSizeTable.cs`) ; les
+portes de l'inventaire et de la téléportation si elles ne testent pas déjà la valeur entière (à vérifier, voir T2) ; `AlundraTestSaves`
+(champs `Weapon`, `Item`, `Hp`, `HpMax`, `Mp`, `MpMax`, `Money`, facultatifs, appliqués par les vrais setters, bornés par
+`CheckPreset`) et les nouveaux préréglages ; `Alundra.Tests/` (aides `Give`, `Equip`, `SetMp`, `SetItem` de `ArcRun`, tests) ;
+`docs/test-saves.md` ; ce plan.
+
+**Hors périmètre.** `TryUseItem` reste un bouchon (E20.h, qui portera son test du bit) ; la création des fichiers de sauvegarde (action
+de l'auteur, hors de l'app) ; tout comportement d'arme.
+
+#### Tâches
+
+- ⏳ **T1 — Opcodes `0xC0` et `0xC1`.** Ports exacts, tailles 2 et 1 ; tests sur les vrais octets des cartes 472 et 473 (arme
+  équipée = emplacement 1 puis 2, bit `0x80` posé puis effacé).
+- ⏳ **T2 — Portes de la valeur entière.** Lire comment la DLL ouvre l'inventaire et déclenche une téléportation ; si l'une d'elles
+  ne teste pas la valeur entière de `PlayerControlFlags` comme le binaire, l'aligner ; un test pose `0x80` seul et vérifie que
+  l'inventaire ne s'ouvre pas et qu'aucune téléportation ne part. Si la porte de la DLL teste déjà la valeur entière, le test seul.
+- ⏳ **T3 — Préréglages.** Champs facultatifs de `Preset`, appliqués après le kit par les setters de la DLL, bornés par `CheckPreset` ;
+  préréglages `arsenal-a-m14` (armes 1, 5, 9, 14, 16, 7), `arsenal-b-m14` (1, 4, 6, 10, 14, 16, 7, livres 44, 46, 48, 50), `steel-m14`
+  (arme 2), `demon-m14` (arme 3), `fire-m303` (comme `arsenal-a`, emplacement d'arme 5, la baguette de feu), `arrow-m16` (comme `arsenal-a`, emplacement d'arme 2,
+  l'arc du chasseur) ; les autres choisissent l'emplacement 1, avec
+  PV 4/10, PM 4/4, bombe 35 (1), herbes 36 (9), élixirs 37 et 38, fortifiant 41, parchemins 43, 45, 47, 49 (`test-means.md` §7) ; les
+  cases d'arrivée passent `CheckInitialMap` et les bornes de caméra, sinon prendre une destination de portail de la même carte et le
+  noter ; l'épingle des deux noms devient la liste complète ; `docs/test-saves.md` à jour.
+- ⏳ **T4 — Aides d'arc.** `Give(params int[] items)`, `Equip(int slot)`, `SetMp(int max, int mp)`, `SetItem(int item)` dans
+  `AlundraArcSupport.cs`, par les vrais setters.
+
+#### Acceptation
+
+- `0xC0` à la 472 `@327` équipe l'emplacement 1 et pose `0x80` ; à la 473 `@198`, l'emplacement 2 ; `0xC1` efface `0x80` ; tailles 2 et
+  1 ; aucun opcode sauté sur ces programmes.
+- Avec `0x80` seul, l'inventaire ne s'ouvre pas et aucune téléportation ne part ; `PlayerTryAttack` frappe encore.
+- Chaque préréglage se construit, se recharge (aller-retour de sauvegarde) et donne l'arme choisie (`GetItemIdFromCurrentWeapon`), les
+  PV, les PM et les objets attendus ; `CheckPreset` refuse une valeur hors bornes.
+- Un arc donne l'arc du chasseur (objet 5) et l'équipe : l'arme courante est l'objet 5.
+- Build Release puis Debug ; `Alundra.Tests` sans échec ; traces inchangées ; verifier frais.
+- Recette de l'auteur (matin) : générer les sauvegardes hors de l'app (`docs/test-saves.md`) ; elles serviront aux recettes des armes.
+
+#### Arrêts, budget, retour arrière
+
+- **Arrêts** : une règle de sauvegarde qui refuse une combinaison sans case de remplacement ; une porte qui demanderait un changement
+  du moteur.
+- **Budget** : un `executor` ; un verifier frais.
+- **Retour arrière** : `git revert` des commits d'E20.f0.
+
+### 1.9 E20.f1 — Charge et relâchement ⏳
+
+**But.** Le héros charge son arme en tenant Carré, voit l'aura, entend les sons de charge, et relâche une attaque chargée exactement
+comme le binaire : épées et fléau d'acier frappent avec leur animation chargée par la passe de coups ; l'arc de William et les
+baguettes arment leur tir, qui reste un bouchon compté jusqu'à E20.f3 (l'apparition vient d'E20.e0a). Les branches gelée et verrouillée
+de `MovePlayer` effacent la charge et le tir en attente, comme le binaire.
+
+**Faits porteurs** (`docs/plan-e20-annexe/e20-armes/f-weapons.md` §1 à §3, contre-vérifiés par `f-check.md` lignes 5 à 19, 33, 35, et
+corrections C2 à C5, C13) :
+- [binaire] `UpdatePlayerWeaponEffect` (`0x8002F49C`, appelé en `0x80031D68`, après le pad et la saisie d'échelle, avant
+  `UpdateWeaponStepProgression`) : compteur `0x80126FFC`, +1 plafonné à 60 quand `(Hold | Released) & 0x80`, l'octet 0 de la fiche
+  d'arme non nul et le drapeau b0 de l'animation courante (`0x80028D14 + 2 × (+0x88)` ; b0 vrai pour 0 à 4, `0x0E`, `0x29` à `0x2D`,
+  `0x35`, `0x3E`), sinon remis à 0. Compteur < 11 : la poignée de l'aura (`0x80126FF8`) est relâchée (son `+0x68` mis à 0). Compteur
+  ≥ 11 : l'effet 3 attaché au héros est créé si la poignée est nulle ou si son `+0x7D` vaut 0 (`0x8003BE74(0, 3, 0, héros, 1, 0, 0,
+  z 0x100000)`) ; puis, seulement quand `+0x1C & 3 == 0`, le son `0x2A` si le compteur est < 60 ; à 60, l'étincelle de maintien
+  (effet `0x10`, position du héros + Z `0x100000` décalée par deux tirages du générateur, forces du héros moins le décalage), puis le son
+  `0x1AD` si `+0x1C & 7 == 0`, sinon `0x1AC` ; les deux tirages n'ont lieu que si l'effet est créé.
+- [binaire] `PlayerTryAttack` (`0x8002EAF4`) teste le relâchement avant l'appui : compteur < 60 ou héros en l'air : rien (D-E20-9) ;
+  sinon gerbe de 16 effets `0x10` (pour i de 0 à 15 : X + `tab1[2i] × 3 << 10`, Y + `tab2[2i] × 3 << 10`, tables `0x80023654` et
+  `0x80023694`, amplitudes 768 et 512 ; forces `tab[(2i + 0x18) & 0x1F] × 448` ; Z + `0x100000` ; aucun tirage), son `0x2B`, pointeur
+  = `0x80028C79 + 13w + 8`, compteur de pas 0, `+0x88` = l'animation chargée, rend 1. Fiches chargeables : 1, 2, 3, 4, 5, 7, 9.
+- [binaire] Premier tick compté = S + D + 1 (appui au tick S, coup de D ticks) ; aura 10 ticks plus tard ; compteur à 60 à S + D + 60 ;
+  premier relâchement réussi à S + D + 60. Un relâchement en l'air avec le compteur à 60 ne fait rien et le compteur retombe à 0.
+- [binaire] Le compteur et le pointeur sont effacés ensemble à sept endroits ; dans le périmètre de la DLL d'aujourd'hui : la branche
+  `+0x20` (`0x80031BB4`, `0x80031BC0`) et la branche verrouillée `& 0x34` (`0x80031BEC`, `0x80031BF8`). La DLL n'efface que le
+  pointeur dans la première (`AlundraPlayerManager.cs:211`) et rien dans la seconde (`:220-223`). Les autres endroits sont la blessure
+  (E20.c2b), la branche `+0x188 & 0x80` (E7) et la mort (E18).
+- [oracle] `scratchpad/disc-weapons/f-weapons/` (`probe.py`, `tools/`, sorties `out/C2-steel.txt`, `C6-william.txt`, `C10-crusher.txt`,
+  `C14-ice.txt`, `C16-fire.txt`) : le vrai code d'`UpdatePlayerWeaponEffect`, de `PlayerTryAttack` et de `MovePlayer`, tick par tick
+  (compteur, animation, pointeur, compteur de pas, appels d'effet et de son, appel d'apparition).
+
+**Périmètre.** `Alundra/Scripts/` : `UpdatePlayerWeaponEffect` (aujourd'hui un bouchon, `AlundraPlayerManager.cs:533`), la branche de
+relâchement de `PlayerTryAttack`, la gerbe, l'aura et l'étincelle par un accès de l'hôte au stade des effets (`IAlundraScriptHost`, le
+réservoir a `CreateAttached` et `Free`, `AlundraEffectReservoir.cs:205`, `:237`), les deux effacements ; le bouchon de tir
+(`SpawnWeaponProjectile`) compte ses appels avec leurs arguments ; tests ; l'oracle copié dans
+`docs/plan-e20-annexe/e20-f1/oracle/`.
+
+**Hors périmètre.** L'apparition réelle des projectiles (E20.e0a, E20.f3) ; l'avance du générateur une fois par tick (E20.e0b) ; les
+effacements de la blessure, d'E7 et de la mort ; le rebond du fléau (E20.f2).
+
+#### Tâches
+
+- ⏳ **T1 — Oracle.** Copier les outils de la découverte (`probe.py` et `tools/`) dans `docs/plan-e20-annexe/e20-f1/oracle/`, les
+  relancer et garder leurs sorties (`out/`) ; vérifier qu'elles égalent celles de la découverte. Dire si l'oracle fait tourner l'avance
+  du générateur par image ; sinon, les comparaisons de tirages portent sur les seuls tirages de l'étincelle.
+- ⏳ **T2 — Accès aux effets.** Un accès de l'hôte au stade des effets, sans changement du moteur, qui crée un effet attaché et lit sa
+  vie (`+0x7D`) ; si l'effet 3 ou `0x10` manque des données exportées, arrêt.
+- ⏳ **T3 — Charge.** `UpdatePlayerWeaponEffect` à sa place exacte dans `MovePlayer`, sur le pad du tick ; l'aura ; les sons ;
+  l'étincelle et ses deux tirages.
+- ⏳ **T4 — Relâchement.** La branche de relâchement de `PlayerTryAttack` (gerbe, son, pointeur de la fiche chargée, animation) ; le
+  relâchement en l'air perdu ; le bouchon de tir appelé au tick et avec les arguments du binaire (type, X, Y, Z + `(z << 16)`, direction
+  `{0, 0x10, 8, 0x18}[direction de la boîte]`, D-E14-6).
+- ⏳ **T5 — Effacements.** Compteur et pointeur effacés dans la branche `+0x20` et dans la branche verrouillée ; l'aura reste jusqu'au
+  tick normal suivant, comme le binaire.
+- ⏳ **T6 — Tests.**
+
+#### Acceptation
+
+- Contre l'oracle, tick par tick, pour `C2-steel`, `C6-william`, `C10-crusher`, `C14-ice` et `C16-fire` : compteur, animation, pointeur
+  (fiche et décalage), compteur de pas, appels d'effet (identifiant, attaché ou non, Z), sons, appels du bouchon de tir (tick, type, X, Y,
+  Z, direction). Exemples tirés de `C2-steel` : compteur 1 au tick 1 (appui), 0 au tick 2, 1 au tick 23 ; aura et son 42 au tick 33,
+  son 42 tous les 4 ticks ; compteur 60 au tick 82 ; étincelle et son 428 au tick 85, 429 au tick 89 ; relâchement au tick 91 (animation
+  `0x18`, 16 étincelles, son 43) ; tir de type 27 au tick 112 (Z 1, direction `0x18`).
+- Relâchement à S + D + 59 : échoue ; à S + D + 60 : réussit. Relâchement en l'air : perdu, compteur 0 au tick suivant.
+- Gerbe : les 16 positions et forces égales à l'oracle.
+- Tirages : l'état du générateur après chaque étincelle égale celui de l'oracle.
+- Une charge interrompue par un verrouillage (`0x34`) : pas de tir après le déverrouillage ; compteur et pointeur à 0.
+- Le coup chargé `0x18` de l'épée d'acier touche un Beannoïde de la 14 par la passe de coups existante (puissance de la ligne
+  `anim + 1` de la fiche du héros).
+- Build Release puis Debug ; `Alundra.Tests` sans échec ; traces inchangées ; aucun test existant ne change sans raison du binaire ;
+  verifier frais.
+- Recette de l'auteur : avec `steel-m14`, tenir Carré : l'aura et les sons de charge, puis le coup chargé au relâchement.
+
+#### Arrêts, budget, retour arrière
+
+- **Arrêts** : un écart à l'oracle que le binaire n'explique pas ; un effet dont les données manquent ; un besoin de changer le moteur.
+- **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
+- **Retour arrière** : `git revert` des commits d'E20.f1.
+
+### 1.10 E20.f2 — Rebond du fléau ⏳
+
+**But.** Le fléau de fer et le fléau d'acier rebondissent comme dans le binaire, quand ils touchent une cible ou un mur : le héros
+passe dans l'état de rebond (`0x08`, `0x1F`, `0x25`, `0x26`) au tick qui suit. La fonction `CreatePlayerAnimationEffects(mode)` entre
+dans la DLL comme squelette à sa place exacte : la fin du fléau est réelle, le reste (pas, poussières, coupe de l'herbe) reste en
+bouchons nommés pour E20.e.
+
+**Faits porteurs** (`docs/plan-e20-annexe/e20-armes/f-weapons.md` §4, `test-means.md` lignes 130, 153 à 156 et 241, contre-vérifiés par
+`f-check.md` ligne 20 et correction C14) :
+- [binaire] `CreatePlayerAnimationEffects` (`0x8002FB14`) est appelé en mode 0 en `0x80031C3C` (après la sortie `+0x20` et la gravité,
+  avant l'entrée de la blessure `0x80031C44`) et en mode 1 dans la branche verrouillée ; sa fin `0x80030434`-`0x80030654`, gardée par
+  `bnez $s5` en `0x800303D8` (mode 0 seulement), n'agit que pour `+0x88` (l'état choisi au tick précédent) = `0x12`, `0x16` (fer,
+  indice 0) ou `0x40`, `0x42` (acier, indice 1). Rien avant cette fin n'écrit `+0x88` : elle se porte seule.
+- [binaire] Déclencheurs : `HitCounter` (`+0x220`) non nul ; ou, si une boîte d'image existe, un mur sous un coin de la boîte (les quatre
+  coins X, X + taille, Y, Y + taille de la `HitBox`, Z = Z de la `HitBox` ; colonne par `0x80127168` (px / 24, bornée 0 à `0x33`),
+  rangée `y >> 20` (bornée 0 à `0x3B`), cellule `*[0x800DD86C] + 0x604`, pas de rangée 416 ; mur si `HitBoxZ < hauteur << 20` ou si
+  la praticabilité a le bit `0x40` ; le premier coin en mur l'emporte). Résultat : `+0x88 = octet[0x800228A4 + 2 × indice + (en l'air ?
+  1 : 0)]`, octets `08 1F 25 26`. Le rebond n'ajoute aucune force.
+- [binaire] Ordre : la passe de coups écrit `HitCounter` à la fin du tick N ; `MovePlayer` le lit au tick N+1 ; la passe des compteurs
+  l'efface ensuite.
+- [données] États de rebond : vitesse 0, son 28 ; `0x08` et `0x25` durent 16 ticks puis enchaînent sur 0 ; `0x1F` et `0x26` durent 11
+  ticks puis enchaînent sur `0x2D` ; tous sont déjà dans les groupes d'attaque d'E20.b.
+- [oracle] Sondes de la découverte (`scratchpad/disc-weapons/f-weapons/out/F-*.txt`) : `F-iron-ground` (`0x08` au tick 6, son 28, repos
+  au tick 22), `F-steel-ground` (`0x25` au tick 6), `F-iron-air` (`0x1F` au tick 8, `0x2D` au tick 19, atterrissage au tick 22),
+  `F-steel-air`, `F-iron-walk` (aucune force), `F-iron-wall1`, `F-iron-wall2`, `F-steel-wall2`, `F-iron-wk40` (murs : rebond au tick 10),
+  `F-iron-nohit` (rien). Avec un vrai Beannoïde de la 14 (`test-means.md` ligne 154) : fer, contact au tick 11, `0x08` du tick 12 au tick
+  27, repos au 28 ; acier, contact au 12, `0x25` du 13 au 28, repos au 29.
+
+**Périmètre.** `Alundra/Scripts/` : le squelette de `CreatePlayerAnimationEffects(mode)` à ses deux places (mode 0 entre la gravité et
+l'entrée de la blessure, mode 1 dans la branche verrouillée), la fin du fléau réelle sur la `HitBox` rangée (E20.c1b-1) et le magasin
+de cellules (`AlundraCellStore`) ; les autres parties en bouchons nommés ; tests ; l'oracle copié dans
+`docs/plan-e20-annexe/e20-f2/oracle/`.
+
+**Hors périmètre.** Les pas, poussières et la coupe de l'herbe (E20.e) ; les poteaux de la 69 restent inertes (leurs gestionnaires
+natifs D31/E15 sont à E14).
+
+#### Tâches
+
+- ⏳ **T1 — Oracle.** Copier `probe.py` et `tools/` de la découverte dans `docs/plan-e20-annexe/e20-f2/oracle/`, relancer les sondes
+  `F-*`, garder les sorties ; elles égalent celles de la découverte.
+- ⏳ **T2 — Squelette et fin du fléau.** Port exact ; lecteur de cellule aligné sur l'indexation du binaire (colonne, rangée, bornes) ;
+  tests.
+- ⏳ **T3 — Arcs.** Sur la 14, les deux fléaux contre un Beannoïde ; sur la 69 (`Coastal Cave-69`, enregistrement 0, poteau en
+  (132, 232, z 0)), le contact et le rebond, après une fumée de chargement.
+
+#### Acceptation
+
+- Contre l'oracle, tick par tick : animation cible, son, forces, pour chaque sonde `F-*`.
+- Sur la 14 : fer, `0x08` du tick 12 au 27 et repos au 28 ; acier, `0x25` du 13 au 28 et repos au 29 (ticks comptés depuis l'appui).
+- Sans cible ni mur : aucun rebond ; le fléau finit au repos au tick 32 (fer) ou 35 (acier).
+- Les états de rebond ne changent ni la marche ni le saut au-delà de l'oracle (`F-iron-air` : atterrissage au tick 22).
+- Build Release puis Debug ; `Alundra.Tests` sans échec ; traces inchangées ; verifier frais.
+- Recette de l'auteur : avec `arsenal-a-m14`, emplacement 3 : le fléau rebondit sur un Beannoïde et contre un mur.
+
+#### Arrêts, budget, retour arrière
+
+- **Arrêts** : le lecteur de cellule de la DLL ne peut pas égaler l'indexation du binaire ; la 69 ne se charge pas (garder la 14 et le
+  noter) ; un écart à l'oracle sans raison du binaire.
+- **Budget** : un `executor` ; un verifier frais.
+- **Retour arrière** : `git revert` des commits d'E20.f2.
 
 ---
 
