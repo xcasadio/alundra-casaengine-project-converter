@@ -1308,7 +1308,7 @@ production) ; le Z du pilier de la 117 ; `0xB9`.
 
 #### Tâches
 
-- ⏳ **L0 — Fumée et contrôle du binaire.**
+- ✅ **L0 — Fumée et contrôle du binaire.** (2026-10-09. Fumée : `AlundraLeverSmokeTests`, cinq salles, chacune construite en 0,5 à 1,3 s (carte 117 : 0,7 à 1,3 s), six images en 0,05 à 0,07 s de plus, aucun écart. Binaire : le coup d'épée est permis sur la pente 1, voir `e20-c1b2/l0-pente.md` : l'entrée 1 de la table de `MovePlayer` (`0x80022D1C`) va à `0x80031D68` comme les entrées 0, 2, 3, 5 et 7 ; `PlayerTryAttack` ne lit jamais `+0x18C`.)
   - Un arc de fumée par salle (115, 116, 117 bascule, 117 levier 22, 44) : construction, 6 images, `AssertNoUnexpectedError`,
     enregistrements attendus présents, absents ceux qui ne doivent pas apparaître ; temps d'un arc mesuré.
   - Décoder dans `ALUN_CD.EXE` le traitement de la pente du héros (`+0x18C`) par `MovePlayer` (`0x80031B50`) et `PlayerTryAttack` pour la
