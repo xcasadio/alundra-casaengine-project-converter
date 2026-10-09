@@ -1,0 +1,4 @@
+# H3 of E20.c1 re-run with this folder's copy of the tools (c1world.run) against e20-c1/oracle/out/H3.json, then hworld's A1 against the same file
+H3 re-run: rows True, start state True, experiments True
+A1 rows 1..45 against H3: 4005 values compared (hero and target columns 43, RNG word, latch, journal), differences: none; start state differences: none
+A1 tick 18 (the hurt) against H3 tick 18: differences none; row: anim_target 0x31, dir_target 8, HP 9, +0x1CC 119, force_x -196608, journal ['sound(23)']

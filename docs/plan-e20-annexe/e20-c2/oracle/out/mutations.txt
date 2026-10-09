@@ -1,0 +1,50 @@
+# one-word patches of the emulated binary (RAM only); the expected change is written in hmut.py before any run; CAUGHT = predicate holds and the independent model disagrees
+CAUGHT toucher branch forced off (0x80031A88 beqz s0 -> b: the damage entry never takes the toucher branch) [A1, A1]
+         expected: A1: no hurt at all (no hazard cell): HP stays 10 for the 140 ticks and the animation is never 0x31 (baseline: hurt at tick 18, HP 9, animation 0x31)
+         predicate holds; independent model disagrees with the change (A1: hero HP per tick equals the ,hero +0x1CC per tick (0x77 o,hurt animation 0x31 / 0x3A o,hurt direction (GetDirection,stats mirror,hurt timeline 0x31 x4, 0x1C )
+CAUGHT direction operands: the X difference reversed (0x80031AA8 subu a0,v1,a0 -> subu a0,a0,v1) [A4, A4]
+         expected: A4: the knock-back direction at the hurt tick (tick 2) is mirrored about the vertical axis for every bearing: d -> (-d) & 31 (so E and W swap, N and S stay)
+         predicate holds; independent model disagrees with the change (A4-E: hurt direction (GetDirection; A4-W: hurt direction (GetDirection; A4-S: agrees; A4-N: agrees; A4-SE: hurt direction (GetDirection; A4-SW: hurt direction (GetDirection; A4-NE: hurt direction (Get)
+CAUGHT boots test slti 3 -> 4 (0x80031AD8): boots level 3 no longer protects [B1, B1-boots3]
+         expected: B1: with boots level 3 the hazard now hurts: cost 1 -> HP 9 at tick 2, cost 3 -> HP 7 at tick 2 (baseline: HP 10, no hurt)
+         predicate holds; independent model disagrees with the change (B1-080-b1c: hero HP per tick equals the ,hero +0x1CC per tick (0x77 o,stats mirror; B1-180-b1c: hero HP per tick equals the ,hero +0x1CC per tick (0x77 o,stats mirror)
+CAUGHT cost index shift srl 7 -> srl 8 (0x80031AF0) [B1, B1-cost]
+         expected: B1: cell word 0x80 gives index 0 -> no hurt (HP 10), 0x100 gives index 1 -> cost 1 (HP 9, baseline 8), 0x180 gives index 1 -> cost 1 (HP 9, baseline 7)
+         predicate holds; independent model disagrees with the change (B1-080-kit: hero HP per tick equals the ,hero +0x1CC per tick (0x77 o,hurt animation 0x31 / 0x3A o,hurt direction (GetDirection,stats mirror; B1-100-kit: hero HP per tick equals the ,stats mirror; B1-)
+CAUGHT invulnerability value 0x78 -> 0x77 (0x80031C90) [A1 + A6, A1]
+         expected: A1: +0x1CC at the hurt tick (18) is 118 (baseline 119), the hero is NOT hidden on the hurt tick (baseline hidden), 29 hidden ticks in 18..137 (baseline 30)
+         predicate holds; independent model disagrees with the change (A1: hero +0x1CC per tick (0x77 o)
+CAUGHT invulnerability value 0x78 -> 0x77, the window boundary (A6) [A6, A6]
+         expected: A6: contact restored at hurt + 118 (tick 120): first touch after the hurt at tick 121 in the baseline, at 120 with the shorter window; contact restored at hurt + 119 (tick 121): touch at 121 in both
+         predicate holds; independent model disagrees with the change (A6-back120: hero +0x1CC per tick (0x77 o; A6-back121: hero +0x1CC per tick (0x77 o)
+CAUGHT 0x31 / 0x3A selector inverted (0x80031C78 bne s2,4 -> beq) [A1 + C1, A1+C1]
+         expected: A1: the hurt on land is 0x3A (baseline 0x31) at tick 18; C1-bean: the hurt in deep water is 0x31 (baseline 0x3A) at tick 2
+         predicate holds; independent model disagrees with the change (A1: hurt animation 0x31 / 0x3A o,hurt timeline 0x31 x4, 0x1C ; C1-bean: hurt animation 0x31 / 0x3A o)
+CAUGHT blink mask andi 3 -> 7 (0x800385F0) [A1, A1]
+         expected: A1: the hero is visible on the hurt tick (+0x1CC 119 & 7 = 7, baseline hidden) and hidden on 15 ticks of 18..137 instead of 30
+         predicate holds; independent model disagrees with the change (A1: draw list)
+CAUGHT regeneration comparison inverted (0x80030CD4 slt v0,v0,v1 -> slt v0,v1,v0) [F1, F1-short]
+         expected: F1: HP +1 on every call of the END regeneration until HpMax; the setup warm-up is such a call, so the start state (tick 0) already reads 6, then HP 7, 8, 9, 10 at ticks 1..4 (baseline 5 for 200 ticks)
+         predicate holds; independent model disagrees with the change (F1: hero HP per tick equals the ,stats mirror,regeneration counters 0x8012)
+CAUGHT regeneration counter step 2 (0x80030CC4 addiu v1,v1,1 -> 2) [F1, F1-long]
+         expected: F1: the period halves: HP 6 at tick 101 and 7 at tick 202 (baseline 6 at 201)
+         predicate holds; independent model disagrees with the change (F1: hero HP per tick equals the ,stats mirror,regeneration counters 0x8012)
+CAUGHT regeneration pad gate removed (0x80030C5C bnez v0 -> nop) [F2, F2]
+         expected: F2: Up held at tick 100 no longer zeroes the counters: HP 6 at tick 201 (baseline: 5 at 201, 6 at 301)
+         predicate holds; independent model disagrees with the change (F2: hero HP per tick equals the ,stats mirror,regeneration counters 0x8012)
+CAUGHT whole-word compare with 0x20 removed (0x80031C0C bne v1,v0 -> nop) [D1, D1]
+         expected: D1: flags 0x24, 0x30, 0x10, 0x04 and 0xA0 now reach the damage entry: HP 9 at tick 2 (baseline 10); flags 0x20 unchanged (HP 9 in both)
+         predicate holds; independent model disagrees with the change (D1-20: agrees; D1-24: hero HP per tick equals the ,hero +0x1CC per tick (0x77 o,stats mirror; D1-30: hero HP per tick equals the ,hero +0x1CC per tick (0x77 o,stats mirror; D1-10: hero HP per tick equ)
+CAUGHT SetPlayerHp clamp direction (0x8004DD44 slt v0,v0,a0 -> slt v0,a0,v0) [E3, E3]
+         expected: E3: stats HpMax 12, HP 4: the clamp now stores HpMax when HP < HpMax: the hero is created with HP 12 (baseline 4) and the stats read 12
+         predicate holds; independent model disagrees with the change (E3-12-4: hero HP per tick equals the ,stats mirror)
+CAUGHT hazard HP floor inverted (0x80031B14 slt v0,a0,v1 -> slt v0,v1,a0) [B2, B2]
+         expected: B2: HP 2 with cost 3: the entity HP is -1 after the hurt (baseline 0, the stats clamp it to 0)
+         predicate holds; independent model disagrees with the change (B2-hp2-cost3: hero HP per tick equals the )
+OK     CONTROL: debug-print read of ComputeNewHp patched (0x8003A3E0 lw -> nop; reached only when [0x800DC058] < 0) [A1, A1]
+         expected: nothing changes: every row of A1 (140 ticks) equal
+         predicate holds; independent model still agrees with the change (A1: agrees)
+CAUGHT CONTROL: the tick dispatcher without the [0x800DC4B8] & 0x48 gate (world.tick behaviour): the 0x48 line of D1 MUST change [D1, D1-gate]
+         expected: D1 with flags 0x48, 0x08, 0x40, 0x28: with the gate the hero's +0x1C stays at its start value and nothing moves; without it +0x1C increments every tick and the touch is registered (TouchingEntity at tick 1) -> the line changes and the model's gate rule disagrees (this one is the tick-dispatcher check, not a binary mutation)
+         predicate holds; independent model disagrees with the change (D1-48: hero HP per tick equals the ,hero +0x1CC per tick (0x77 o,stats mirror,tick gate [0x800DC4B8] & 0x4; D1-08: hero HP per tick equals the ,hero +0x1CC per tick (0x77 o,stats mirror,tick gate [0x8)
+MUTATIONS: 16, all as expected

@@ -1,0 +1,23 @@
+# executed instructions of the functions under test (union over the baseline runs of every scenario, emu.py); an instruction is listed as not executed when no run reached it
+damage entry 0x80031A68 (toucher branch, hazard branch, cost table, floor)                                                                               58 of   58 executed
+MovePlayer from the CheckAndExecuteWarp call to the death test 0x80031B94-0x80031CD0 (frozen exit, locked branch, 0x20 compare, normal path, hurt block)   75 of   79 executed
+      not executed: 0x80031BB4-0x80031BC0
+UpdateItemEffectState regeneration block, gates and loop 0x80030C20-0x80030D40                                                                           71 of   72 executed
+      not executed: 0x80030D20   [unreachable with the real records: regeneration cap `HP + gain > HpMax -> HpMax`: a gain above 1 needs two regenerating records, and only the accessory record carries a non-zero byte 2 (armour and weapon records carry 0)]
+UpdateItemEffectState whole body 0x800307E8-0x80030D40                                                                                                  311 of  342 executed
+      not executed: 0x80030A78-0x80030AC8
+      not executed: 0x80030BBC-0x80030BCC
+      not executed: 0x80030BD8
+      not executed: 0x80030BF8-0x80030BFC
+      not executed: 0x80030C08
+      not executed: 0x80030D20   [unreachable with the real records: regeneration cap `HP + gain > HpMax -> HpMax`: a gain above 1 needs two regenerating records, and only the accessory record carries a non-zero byte 2 (armour and weapon records carry 0)]
+MovePlayer epilogue END 0x80032914-0x80032938 (UpdateItemEffectState, SetPlayerHpMax, SetPlayerHp)                                                        9 of    9 executed
+SetPlayerHpMax 0x8004DC68 and SetPlayerHp 0x8004DD30 and the getters 0x8004DC50 / 0x8004DD18                                                             55 of   77 executed
+      not executed: 0x8004DCC0-0x8004DD14
+state 0x1C handler 0x80032558-0x800325A4 and its Idle flip 0x8003270C-0x8003272C                                                                         17 of   19 executed
+      not executed: 0x8003259C-0x800325A0
+state 0x31 handler 0x80032680-0x8003268C                                                                                                                  3 of    3 executed
+states 0x3A / 0x3B handler 0x80031DB4-0x80031DF8 (water)                                                                                                  0 of   17 executed
+      not executed: 0x80031DB4-0x80031DF4
+lists pass draw-list part 0x800385C0-0x80038620 (the blink)                                                                                              24 of   24 executed
+IncreaseHpMaxAndCreateEffect 0x800333AC (vessel, E2)                                                                                                     15 of   15 executed

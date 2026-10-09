@@ -1,0 +1,103 @@
+# E20.c2-0 hurt-hero oracle: summary (every value computed by the emulated binary; see notes.md for the layout, the setup and the limits)
+
+## verdicts
+PASS  D1 gate: S-A and S-B, 216 values each, 0 differences (tools/run_all.py of the copied base, exit code 0)
+PASS  D1 gate: the 19 files of out/d1 equal E20.c1b's out/d1 byte for byte (differences: none)
+PASS  H3 re-run with the copied tools equals e20-c1/oracle/out/H3.json (rows equal, start state equal, ComputeNewHp experiments equal)
+PASS  A1 rows 1..45 equal H3 of E20.c1 on every common column (4005 values); the tick-18 row equals H3's
+PASS  independent model equals the oracle on every rule of every run (1412 rule checks over 105 runs, 0 differences)
+PASS  two interpreters (emu.py, mips.py) agree on every run (rows, slots after every tick, journal, RNG), 105 runs / 7979 ticks
+PASS  mutation tests: every mutation caught (predicate written beforehand + independent model disagrees), every control as expected (14 mutations, 1 patch control, 1 dispatcher check)
+PASS  coverage: every instruction of 0x80031A68, of the regeneration block 0x80030C20-0x80030D40 and of the END epilogue executed (one documented unreachable instruction, 0x80030D20)
+PASS  load-delay hazard check over every executed instruction
+
+## scenarios (kept: A1 A2 A4 A6 B1 B2 D1 E2 E3 F1 F2 F4 F5 G; informational: C1 E1)
+A1   2 runs   460 ticks
+A2  20 runs   800 ticks
+A4  12 runs    96 ticks
+A6   7 runs  1052 ticks
+B1  12 runs  1500 ticks
+B2   3 runs   240 ticks
+D1  16 runs   930 ticks
+E1   3 runs   300 ticks  (informational)
+E2   5 runs    50 ticks
+E3   4 runs    12 ticks
+F1   1 runs   450 ticks
+F2   1 runs   450 ticks
+F4   2 runs   500 ticks
+F5   2 runs   900 ticks
+G   13 runs    39 ticks
+C1   2 runs   200 ticks  (informational)
+total 105 runs, 7979 ticks
+
+## key values
+A1 (H3, 200 ticks): hit written on the hero at tick 17, hurt (+0x1CC rises) at 18: HP 10 -> 9, animation 0x31, direction 24 -> 8, +0x1CC 119, sound [0, 0]; hidden 30 of the 120 ticks from the hurt; animation timeline t1 0x1, t18 0x31, t22 0x1C, t33 0x0, t34 0x1; hero HP at tick 200: 9 (stats 9/10); no second touch (the hero walks through the Beannoid during the window)
+A1-pad0 (pad 0 at 20 px, 260 ticks): touched at 1, hurt at 2, HP [9]; position x 232 -> 198.90625
+A2 (Orc, attribute 0x02 power 4): hero HP after the hurt (tick 2) by inventory and stats (HP/HpMax):
+   kit       sheet response for nibble 2 = 0x10: 12/12 -> 8 (stats 8) | 5/12 -> 1 (stats 1) | 3/3 -> 0 (stats 0)
+   leather   sheet response for nibble 2 = 0x0C: 12/12 -> 9 (stats 9) | 5/12 -> 2 (stats 2) | 3/3 -> 0 (stats 0)
+   ancient   sheet response for nibble 2 = 0x08: 12/12 -> 10 (stats 10) | 5/12 -> 3 (stats 3) | 3/3 -> 1 (stats 1)
+   silver    sheet response for nibble 2 = 0x04: 12/12 -> 11 (stats 11) | 5/12 -> 4 (stats 4) | 3/3 -> 2 (stats 2)
+   noarmour  sheet response for nibble 2 = 0x00: 12/12 -> 11 (stats 11) | 5/12 -> 4 (stats 4) | 3/3 -> 2 (stats 2)
+   bracelet  sheet response for nibble 2 = 0x0F: 12/12 -> 9 (stats 9) | 5/12 -> 2 (stats 2) | 3/3 -> 0 (stats 0)
+A4 (direction +0x8C at the hurt tick by bearing (vx, vy) = hero - Beannoid, px): E (14,0) -> 24, W (-14,0) -> 8, S (0,10) -> 0, N (0,-10) -> 16, SE (10,8) -> 27, SW (-10,8) -> 5, NE (10,-8) -> 21, NW (-10,-8) -> 11, ENE (16,-3) -> 23, WSW (-16,3) -> 7, SSE (3,12) -> 31, NNW (-3,-12) -> 15
+A6 (hurt at T = 2; hero put back in contact at tick t): first touch after the hurt / second hurt: t=119 (T+117): touch [121], hurt [122], t=120 (T+118): touch [121], hurt [122], t=121 (T+119): touch [121], hurt [122], t=122 (T+120): touch [122], hurt [123], t=123 (T+121): touch [123], hurt [124], t=124 (T+122): touch [124], hurt [125]
+A6-keep (contact kept for 260 ticks): touched at 1,121,241, hurt at 2,122,242, HP [9, 8, 7]
+B1 (hazard cost x boots level; hurt ticks and hero HP after each hurt):
+   word 0x80: boots 0: hurts 2,122 HP [9, 8] | boots 1: hurts 2,122 HP [9, 8] | boots 2: hurts 2,122 HP [9, 8] | boots 3: hurts none HP []
+   word 0x100: boots 0: hurts 2,122 HP [8, 6] | boots 1: hurts 2,122 HP [8, 6] | boots 2: hurts 2,122 HP [8, 6] | boots 3: hurts none HP []
+   word 0x180: boots 0: hurts 2,122 HP [7, 4] | boots 1: hurts 2,122 HP [7, 4] | boots 2: hurts 2,122 HP [7, 4] | boots 3: hurts none HP []
+B2 (HP floor): B2-hp2-cost3: HP [0] (stats [0]); B2-hp1-cost1: HP [0] (stats [0]); B2-hp3-cost3: HP [0] (stats [0])
+D1 (flags: hurt ticks / hero HP at the end / stats HP after tick 1 / hero +0x1C at tick 1 and 60 / touched at / number of animation changes):
+   0x00: hurts 2, HP 9, stats HP 10, +0x1C 1 / 60, touched 1, anim changes 3
+   0x20: hurts 2, HP 9, stats HP 10, +0x1C 1 / 60, touched 1, anim changes 0
+   0x24: hurts none, HP 10, stats HP 10, +0x1C 1 / 60, touched 1,26,51, anim changes 0
+   0x30: hurts none, HP 10, stats HP 10, +0x1C 1 / 60, touched 1,26,51, anim changes 0
+   0x10: hurts none, HP 10, stats HP 10, +0x1C 1 / 60, touched 1,26,51, anim changes 0
+   0x04: hurts none, HP 10, stats HP 10, +0x1C 1 / 60, touched 1,26,51, anim changes 0
+   0x28: hurts none, HP 10, stats HP 6, +0x1C 0 / 0, touched none, anim changes 0
+   0x08: hurts none, HP 10, stats HP 6, +0x1C 0 / 0, touched none, anim changes 0
+   0x40: hurts none, HP 10, stats HP 6, +0x1C 0 / 0, touched none, anim changes 0
+   0x48: hurts none, HP 10, stats HP 6, +0x1C 0 / 0, touched none, anim changes 0
+   0x80: hurts 2, HP 9, stats HP 10, +0x1C 1 / 60, touched 1, anim changes 3
+   0xA0: hurts none, HP 10, stats HP 10, +0x1C 1 / 60, touched 1,26,51, anim changes 0
+D1-20-release: hurts 2,122, touched 1,121, HP [9, 8]
+D1-48-hold-hidden: +0x1CC at ticks 2..14 = [119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119]; hero hidden at ticks 2-20; +0x1C at ticks 2..14 = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+D1-48-hold-visible: +0x1CC at ticks 2..14 = [119, 118, 118, 118, 118, 118, 118, 118, 118, 118, 118, 118, 118]; hero hidden at ticks 2; +0x1C at ticks 2..14 = [2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+D1-48-hold-release: +0x1CC at ticks 2..14 = [119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 118, 117, 116]; hero hidden at ticks 2-11,15,19,23,27; +0x1C at ticks 2..14 = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 5]
+A2-syn-kit (Beannoid with the synthetic attack 0x02 / 4): hero HP after the hurt 8, hurt at 2 (Orc, same inventory: 8)
+A2-syn-leather (Beannoid with the synthetic attack 0x02 / 4): hero HP after the hurt 9, hurt at 2 (Orc, same inventory: 9)
+E1-hp1-bean (informational): hurts 2, HP [0], anim_target changes t2 0x31, t6 0x1C, t17 0x39, t67 0x4E, flags changes t76 0x4
+E1-hp2-orc (informational): hurts 2, HP [0], anim_target changes t2 0x31, t6 0x1C, t17 0x39, t67 0x4E, flags changes t76 0x4
+E1-hp2-cost3 (informational): hurts 2, HP [0], anim_target changes t2 0x31, t6 0x1C, t17 0x39, t67 0x4E, flags changes t76 0x4
+E2-stats-hp: entity HP/HpMax at ticks 2,3,4 = [(10, 10), (10, 10), (10, 10)]; stats = [(10, 10), (10, 10), (10, 10)]
+E2-stats-hpmax: entity HP/HpMax at ticks 2,3,4 = [(10, 10), (10, 10), (10, 10)]; stats = [(10, 10), (10, 10), (10, 10)]
+E2-vessel: entity HP/HpMax at ticks 2,3,4 = [(5, 10), (11, 11), (11, 11)]; stats = [(5, 10), (11, 11), (11, 11)]
+E2-vessel49: entity HP/HpMax at ticks 2,3,4 = [(49, 49), (50, 50), (50, 50)]; stats = [(49, 49), (50, 50), (50, 50)]
+E2-vessel50: entity HP/HpMax at ticks 2,3,4 = [(50, 50), (51, 51), (51, 51)]; stats = [(50, 50), (50, 50), (50, 50)]
+E3-12-4: stats set 4/12 -> entity at spawn 4/12; after tick 1: entity 4/12, stats 4/12
+E3-60-70: stats set 70/60 -> entity at spawn 50/50; after tick 1: entity 50/50, stats 50/50
+E3-5-9: stats set 9/5 -> entity at spawn 5/5; after tick 1: entity 5/5, stats 5/5
+E3-neg: stats set -3/-1 -> entity at spawn 0/0; after tick 1: entity 0/0, stats 0/0
+F1: HP +1 at ticks [201, 402] (HP 5 -> 7); counters max [0, 0, 200]
+F2: HP +1 at ticks [301] (HP 5 -> 6); counters max [0, 0, 200]
+F4-full: HP +1 at ticks [] (HP 10 -> 10); counters max [0, 0, 0]
+F4-zero: HP +1 at ticks [] (HP 0 -> 0); counters max [0, 0, 0]
+F5-ring37: HP +1 at ticks [201, 402] (HP 5 -> 7); counters max [0, 0, 200]
+F5-armour-weapon: HP +1 at ticks [] (HP 5 -> 5); counters max [0, 0, 0]
+G (boots level / sheet responses 1..11 after the first tick):
+   kit        boots 0, sheet 10 10 10 10 10 10 10 10 10 10 10
+   b19        boots 0, sheet 10 10 10 10 10 10 10 10 10 10 10
+   b1a        boots 1, sheet 10 10 10 10 10 10 10 10 10 10 10
+   b1b        boots 2, sheet 10 10 10 10 10 10 10 10 10 10 10
+   b1c        boots 3, sheet 10 10 10 10 10 10 10 10 10 10 10
+   b1a1c      boots 3, sheet 10 10 10 10 10 10 10 10 10 10 10
+   b1b1a      boots 2, sheet 10 10 10 10 10 10 10 10 10 10 10
+   leather    boots 0, sheet 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C
+   ancient    boots 0, sheet 08 08 08 08 08 08 08 08 08 08 08
+   silver     boots 0, sheet 04 04 04 04 04 04 04 04 04 04 04
+   noarmour   boots 0, sheet 00 00 00 00 00 00 00 00 00 00 00
+   bracelet   boots 0, sheet 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F
+   charm      boots 0, sheet 0F 0F 0F 0F 0F 80 0F 0F 0F 0F 0F
+C1-bean (informational): touched 1, hurt 2, slope_18c 4, anim_target changes t2 0x3A, t6 0x3B, t15 0x1D, hero x 232 -> 196.84375
+C1-fish (informational): touched 1, hurt 2, slope_18c 4, anim_target changes t2 0x3A, t6 0x3B, t15 0x1D, hero x 242 -> 206.84375
