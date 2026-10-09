@@ -1,6 +1,6 @@
 # ADR-0029: The dialogue text box follows the binary to the tick
 
-- **Status**: Accepted
+- **Status**: Accepted; D-E19-64 (the one-tick shift due to the engine updating entities before the world proxy) superseded by ADR-0053
 - **Date**: 2026-10-05 (decisions D-E19-62 to D-E19-64 of the author, 2026-10-03; D-E19-71 and D-E19-77, 2026-10-05)
 - **Source**: this chantier: `docs/plan-e19-opcodes.md` section 1.2j.3 E19.f2a (rules F2-R1 to F2-R6), D-E19-62, D-E19-63, D-E19-64, D-E19-71, D-E19-77; values in `docs/plan-e19-f2a-valeurs.md`. Replaces the "flags set at the display of the page" rule of D-E12-4 (ADR-0025 kept the markers, this ADR draws them at their glyph).
 

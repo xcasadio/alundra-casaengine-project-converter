@@ -42,7 +42,7 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0026 | Absolute writes of Z follow the DLL convention (binary minus 1) at spawn, 0x8A and 0x64 | Accepted | 2026-10-03 |
 | ADR-0027 | The native image is 320x240 at an integer scale with black bands | Accepted | 2026-10-03 |
 | ADR-0028 | Every animation switch plays its sound, appearances included | Accepted | 2026-10-03 |
-| ADR-0029 | The dialogue text box follows the binary to the tick | Accepted | 2026-10-05 |
+| ADR-0029 | The dialogue text box follows the binary to the tick | Accepted; D-E19-64 (the one-tick entity shift) superseded by ADR-0053 | 2026-10-05 |
 | ADR-0030 | The extractor writes a per-texel alpha code, effect sheets, dialogue portraits and the odd last column | Accepted | 2026-10-03 |
 | ADR-0031 | The entity sprite sheets are written in the Compact layout, one cell per Signature | Proposed | 2026-10-03 |
 | ADR-0032 | The cellular rain respawn draws the C library rand() of the binary | Accepted | 2026-10-03 |
@@ -66,3 +66,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0050 | The inventory trigger runs at the end of the tick, after the dialogue pass and the map events, like the binary | Accepted | 2026-10-08 |
 | ADR-0051 | The game streams its music with the loop point of the sequence | Accepted | 2026-10-08 |
 | ADR-0052 | The hero's run, attack, carrying and item use, with the shared hit pass, form task E20 apart from E14 | Accepted | 2026-10-09 |
+| ADR-0053 | The DLL drives each logic tick in the binary's order, and E20 owns swimming, loot and the hero's projectiles | Accepted | 2026-10-09 |
