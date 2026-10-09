@@ -188,6 +188,23 @@ public class AlundraPortalDetectionTests : IDisposable
         Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
     }
 
+    /// <summary>E20.f0 T2: the warp gate is the whole value (binary <c>0x8002F1C4</c>: <c>lw</c> then <c>bnez</c>): the scripted weapon lock 0x80 alone refuses the warp,
+    /// and the same position with the flag clear triggers it.</summary>
+    [Fact]
+    public void PortalFloorBranch_OnlyTheScriptedWeaponBit0x80Set_ReturnsNull_AndTriggersOnceCleared()
+    {
+        var portals = new List<AlundraPortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
+        var player = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0x8000, animationDirection: 1);
+        var state = new AlundraGameState { PlayerControlFlags = AlundraGameState.PlayerControlBits.ForcedWeapon };
+        var pad = new AlundraPadState { ButtonsHold = 0x1000 };
+
+        Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
+
+        state.PlayerControlFlags = 0;
+
+        Assert.NotNull(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
+    }
+
     [Fact]
     public void PortalFloorBranch_RequiredKeyNotHeld_ReturnsNull()
     {

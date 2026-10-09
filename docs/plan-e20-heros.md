@@ -1569,9 +1569,12 @@ de l'auteur, hors de l'app) ; tout comportement d'arme.
   `0x80041D18` : `&= ~0x80`, rend 1) ; `AlundraWeaponLockOpcodesTests` (15 tests) : octets réels 472 `@327`/`@378` et 473 `@198`/`@289`, emplacement 1 puis 2
   (objets 1 et 5), `0x80` posé puis effacé sans toucher aux autres bits, `Result` intact, tailles 2 et 1, opérande hors 1..6 refusé par le setter, aucun opcode sauté sur
   les programmes B[5] de la 472 et B[1] de la 473.
-- ⏳ **T2 — Portes de la valeur entière.** Lire comment la DLL ouvre l'inventaire et déclenche une téléportation ; si l'une d'elles
+- ✅ **T2 — Portes de la valeur entière.** Lire comment la DLL ouvre l'inventaire et déclenche une téléportation ; si l'une d'elles
   ne teste pas la valeur entière de `PlayerControlFlags` comme le binaire, l'aligner ; un test pose `0x80` seul et vérifie que
-  l'inventaire ne s'ouvre pas et qu'aucune téléportation ne part. Si la porte de la DLL teste déjà la valeur entière, le test seul.
+  l'inventaire ne s'ouvre pas et qu'aucune téléportation ne part. Si la porte de la DLL teste déjà la valeur entière, le test seul. Constat : les deux portes de la DLL testent déjà la valeur entière
+  (`AlundraInventoryDirector.TryTrigger` : `PlayerControlFlags != 0` ; `AlundraPortalTrigger`, branche du sol de portail : `!= 0`, la branche du trou n'en teste aucune,
+  comme le binaire `0x8002F180`-`0x8002F1BC` ; binaire relu : `lw` puis `bnez` à `0x8002BB68` et `0x8002F1C4`) : aucun changement de production, trois tests avec `0x80` seul
+  (inventaire fermé puis ouvert une fois le bit effacé, téléportation refusée puis déclenchée, `PlayerTryAttack` frappe encore alors que le verrou `0x04` l'arrête).
 - ⏳ **T3 — Préréglages.** Champs facultatifs de `Preset`, appliqués après le kit par les setters de la DLL, bornés par `CheckPreset` ;
   préréglages `arsenal-a-m14` (armes 1, 5, 9, 14, 16, 7), `arsenal-b-m14` (1, 4, 6, 10, 14, 16, 7, livres 44, 46, 48, 50), `steel-m14`
   (arme 2), `demon-m14` (arme 3), `fire-m303` (comme `arsenal-a`, emplacement d'arme 5, la baguette de feu), `arrow-m16` (comme `arsenal-a`, emplacement d'arme 2,

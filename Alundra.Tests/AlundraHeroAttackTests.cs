@@ -257,6 +257,26 @@ public sealed class AlundraHeroAttackTests : IDisposable
         Assert.Equal(4, blocked); // the four cells (3, 5), (4, 5), (3, 6), (4, 6).
     }
 
+    /// <summary>E20.f0 T2: the scripted weapon lock 0x80 stops neither <c>MovePlayer</c>'s input branch (mask 0x34) nor <c>PlayerTryAttack</c>: the swing starts as with the flag
+    /// clear (record pointer set, animation 0x10); the control-lock bit 0x04 does stop it.</summary>
+    [Fact]
+    public void ScriptedWeaponBit0x80_DoesNotStopTheSwing_ButTheControlLockDoes()
+    {
+        var (locked, _) = Start(AttackOracleTrace.Load("AT1"));
+        locked.Host.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.ForcedWeapon;
+        locked.Step(Square);
+
+        Assert.Equal(0x10u, locked.Hero.TargetAnimationId);
+        Assert.NotEqual(0u, locked.Hero.WeaponRecordPointer);
+        Assert.Equal(0x80u, locked.Host.GameState.PlayerControlFlags);
+
+        var (control, _) = Start(AttackOracleTrace.Load("AT1"));
+        control.Host.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked;
+        control.Step(Square);
+
+        Assert.NotEqual(0x10u, control.Hero.TargetAnimationId);
+    }
+
     [Fact]
     public void AT10_WithoutAWeapon_TheBasicSwordsRecordSwings()
         => Run("AT10", noWeapon: true);

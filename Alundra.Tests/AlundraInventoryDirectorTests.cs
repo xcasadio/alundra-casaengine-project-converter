@@ -205,6 +205,27 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         Assert.False(director.IsActive);
     }
 
+    /// <summary>E20.f0 T2: the gate is the WHOLE value, as the binary's (<c>0x8002BB68</c>: <c>lw</c> then <c>bnez</c>): the scripted weapon lock 0x80 alone, which
+    /// belongs to neither the input mask 0x34 nor the gameplay mask 0x48, shuts the inventory; the same press with the flag clear opens it.</summary>
+    [Fact]
+    public void Trigger_Refused_WhenOnlyTheScriptedWeaponBit0x80IsSet_AndOpensOnceItIsCleared()
+    {
+        var state = NewState();
+        state.PlayerControlFlags = AlundraGameState.PlayerControlBits.ForcedWeapon;
+        var director = NewDirector(state);
+
+        Tick(state, director, AlundraPadState.Start);
+
+        Assert.False(director.IsActive);
+        Assert.Equal(0x80u, state.PlayerControlFlags);
+
+        Tick(state, director, 0);
+        state.PlayerControlFlags = 0;
+        Tick(state, director, AlundraPadState.Start);
+
+        Assert.True(director.IsActive);
+    }
+
     [Fact]
     public void Trigger_Refused_WhenPlayerIsBlockedByEntity()
     {
