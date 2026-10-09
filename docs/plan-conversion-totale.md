@@ -744,6 +744,10 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   (poursuite, patrouille). Hors intro : seuls A0/E0 sont requis avant (E1). **Sauf** le gestionnaire
   du livre de sauvegarde (`AI_ProcessWarpTransitionState`), porté par E16.e (D-E16-12, 2026-09-27).
 - **Dépendances** : E4, E5.
+- **Partage avec E20 (décision de l'auteur du 2026-10-09, D-E20-1, D-E20-3, ADR-0052)** : la course, l'attaque, porter et lancer,
+  les objets du Rond et la passe de coups commune sont dans E20 ([plan-e20-heros.md](plan-e20-heros.md)). E14 garde les
+  gestionnaires C, D et E propres à chaque type de sprite. Sa première tranche, **E14.a**, porte les Muruta et les Beannoïde,
+  juste après E20.c1 (D-E20-4).
 
 ### E15 — Tout le texte d'Alundra en Yarn ✅ (close le 2026-09-28, recette en jeu validée : `docs/plan-e15-yarn.md`)
 
@@ -933,6 +937,23 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   la carte 10 et le saut scripté d'Alundra avec `0x25`), puis E19.e.
 - **Dépendances** : E16 (drapeaux). E14, E17 et E18 ne sont pas nécessaires à la chaîne.
 
+### E20 — Le héros : course, attaque et coups ⏳ (ouverte le 2026-10-09, plan proposé)
+
+- **But** : porter ce que le héros fait de ses boutons d'action (course de Triangle, attaque de Carré,
+  porter et lancer, objets du Rond), la passe de coups commune à tout le jeu (`UpdateBalanceRecords`,
+  `0x80039300`), les dégâts et la réaction du héros touché.
+- **Pourquoi** : aucune étape ne portait la course ni l'attaque. Le plan d'E19 les renvoyait à E14, qui
+  ne parle que de l'IA des ennemis et des PNJ. Le premier combat obligatoire de l'histoire est le hall
+  du manoir de Tarn (115) : quatre Muruta à tuer avant que les portails se rouvrent.
+- **Plan** : [plan-e20-heros.md](plan-e20-heros.md) ; décisions D-E20-1 à D-E20-10, ADR-0052.
+  - E20.0 découverte complémentaire, puis E20.a passe du héros par tick, E20.b coup d'épée, E20.c1
+    passe de coups, E20.c2 héros touché, E20.d course, E20.e effets et herbe coupée, E20.f autres
+    armes, E20.g porter et lancer, E20.h objets du Rond.
+  - Avant E18, le héros perd des PV mais ne meurt pas (D-E20-5).
+- **Dépendances** : E19 tel qu'au commit `8e023d8` de `chantier/e19-suite3` (E19.v2 compris), base de la
+  branche `chantier/e20-heros` ; O-E19-80 passe à E20.a. E14.a (Muruta et Beannoïde) suit E20.c1 ;
+  le hall de la 115 devient jouable avec E20.a, E20.b, E20.c1 et E14.a.
+
 ## 5. Règles de travail
 
 - Fidélité **de comportement observable** dès qu'un système moteur remplace un système original ;
@@ -979,3 +1000,4 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
 | E17 cinématiques en `.cutscene` | ⏳ ouverte le 2026-09-27, prérequis moteur | |
 | E18 mort et « Réessayer » (avec correction de la décompilation) | ⏳ ouverte le 2026-09-28, non planifiée | |
 | E19 opcodes de l'interpréteur (chaîne du bateau, puis corpus) | 🚧 ouverte le 2026-09-29, enveloppe approuvée ; **E19.a, E19.a2, E19.a3 ✅** (recettes en jeu validées le 2026-10-01 : le capitaine, la pièce B, la cabine jusqu'à la 476, le marin 12 de la 389) — E19.a : entité de contexte, `0x42`/`0x43`, `0x59`, garde de boucle ; E19.a2 : un pas bloqué avance jusqu'au contact (moteur, ADR-0045 du moteur, ADR-0016) ; E19.a3 : `ForceAdjusted` seulement au tick sans avance, comme le binaire (ADR-0017) ; **E19.b 🧪** (carte 476, code et arcs A2 et A4 faits le 2026-10-01 : `0xC4` sans nom, `0x8A`, hygiène reportée ; vérifiée CONFIRMED ; reste la recette en jeu T6 de l'auteur) ; **E19.c1 🧪** (cartes 478 et 416 : `0x0B` avec détour, `0x08`, `0x0C`, `0x3A`, `0x5E`, `0x73`/`0x74`, `0x89`, `0x1C`/`0x1D` et le pont des fins d'animation ; arcs A3, A7 et A4p en vrais préfabs ; retard d'animation gardé, D-E19-13 ; code et arcs faits et vérifiés CONFIRMED le 2026-10-01 ; un P1 introduit — `0x1C` sur une Loop bloque Wendell à Inoa — est corrigé par E19.c2, sans merge d'E19.c1 avant celui d'E19.c2 ; reste la recette en jeu T9 de l'auteur) ; **E19.c2 🧪** (horloge logique exacte des fins d'animation dans le moteur, rendu en temps réel, correction des Loop figées ; DLL : pilotage à chaque tick logique, signal de boucle, garde de `0x1C` sous rattrapage, repli de la passe de tri ; arcs A9 — Wendell à Inoa rend la main — et A3 resserré, hygiène d'E19.c1 ; tout fait et vérifié CONFIRMED le 2026-10-01 ; reste la recette en jeu C8 de l'auteur) ; **E19.d proposée** (392, 391 et 163 jusqu'au premier livre : `0x24` avec recensement, `0x40`/`0x41` complets, défaut d'atterrissage de la DLL qui bloquait la 391, vrai héros dans les arcs ; ADR-0020) ; rien poussé ; merge : moteur d'abord | `docs/plan-e19-opcodes.md`, ADR-0015 à ADR-0019 ; branche `chantier/e19-opcodes`, `cab5e4c` à `db59cc9` puis `c48cf5e` à `d174586`, puis E19.a3 `8a01fa1` et `354b80a`, puis E19.b `c885926` à `b987da3`, puis E19.c1 `d1d2bea` à `6023e4c`, puis E19.c2 `54029c4` à `4cab666` et les docs ; moteur `chantier/field-move-to-contact`, `d51089f5` à `7fae9959`, mergée dans `main` du moteur par l'auteur le 2026-10-01 (`74e97293`) ; moteur d'E19.c2 `chantier/animation-logical-end-clock`, `1561fd07` à `b40888f1` (pointeur du parent sur `b40888f1`) |
+| E20 le héros : course, attaque et coups | ⏳ ouverte le 2026-10-09, plan proposé (enveloppe et E20.0) | `docs/plan-e20-heros.md`, ADR-0052 ; branche `chantier/e20-heros` |
