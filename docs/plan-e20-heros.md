@@ -964,7 +964,7 @@ apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.b.
 
-### 1.5 E20.c1a — La passe de coups ⏳
+### 1.5 E20.c1a — La passe de coups 🧪 (faite et CONFIRMED le 2026-10-09, `7c1b0b3`, `42d2e15` ; reste la recette en jeu de l'auteur)
 
 **Révision 1 (2026-10-09).** Relecture : **REVISE**, quatre points, tous corrigés : les cas de D2 qui demandent `ComputeNewHp`
 passent à E20.c1b ; la source de l'animation figée du héros est nommée et comparée ; les fenêtres de comparaison de `H3` et de
@@ -1071,6 +1071,34 @@ pseudo-aléatoire une fois par image (E20.e0) ; la réutilisation des cases libr
 - Verifier frais.
 - Recette en jeu de l'auteur, carte 14 : un coup d'épée sur un Beannoïde fait des étincelles et ne le blesse pas encore ; en marchant
   dans un Beannoïde, des étincelles sur le héros toutes les 25 ticks, sans perte de cœurs.
+
+#### Résultats (2026-10-09)
+
+- **Commits** : `7c1b0b3` (C1, C2) et `42d2e15` (C3, C4, C5), regroupés parce que C3 à C5 ne sont pas verts séparément.
+- **Code** : `AlundraBalanceTables` (chargée une fois par projet, accès par `IAlundraScriptHost.BalanceTables` et `BalanceThreshold`, seuil
+  `D` lu dans la carte) ; `InitializeBalance` aux trois lieux de création (héros, carte, `0x2D`) ; un fichier partiel
+  `AlundraEntityScriptProxy.HitPass.cs` (fiche, attaque courante, octet `+0xB4`, boîte, curseur de l'image) ; `AlundraFrameBoxTimeline`
+  (règle de D6) ; `StepAnimationClock` recharge l'attaque, l'octet et le curseur au changement, au tick dû, à la fin enchaînée et à la
+  création, sans toucher à `SyncAnimation` ; `AlundraHitPass` (passe pure) ; la liste au pas « listes » ; une place vide pour
+  `0x80038E84` (`RunActiveEffectsPass`) ; `AlundraNativeEffects.CreateHitSparks` ; `TouchingEntity` reçoit l'entité du moteur de
+  l'attaquant (`LogicContextEntity ?? Owner`).
+- **Oracle** : égal sur `H1`, `H1-near`, `H1-edge`, `H2`, `H4a`, `H4b`, `H5`, `H7`, `H8` en entier ; `H3` (ticks 1 à 18) et `H1-both`
+  (ticks 1 et 2) avec les exclusions prévues ; `H6` avec un Beannoïde reconfiguré sur la fiche 382 (le sprite de la carte 69 manque à la
+  14), sans comparer la boîte ni le programme de la cible ; les bords de la portée (aire décalée d'une case pour éviter un mur). Un
+  héros touché par un Beannoïde l'est aux ticks 1, 26, 51 et 76, `+0x1CC` restant à 0 (attente de c1a jusqu'à E20.c2). À dx −10, la DLL
+  touche au tick 12 alors que l'oracle ne touche pas : le héros de l'oracle est blessé au tick 2, ce qui coupe son coup (E20.c2).
+- **D2** : cas 1, 2, 5, 6 et la partie de 3 sur la passe. **Rattrapage** : `H1` et `H1-near` rejoués à 2, 3 et 4 ticks par image et en
+  calages mêlés ; le curseur égale le tick logique du sprite après chaque image. **Octet `0x40`** au tick du contact, dans les deux sens,
+  aussi par le tick dû et en images de deux ticks. **Arc réel** sur la 14 : un Beannoïde touché au tick 5, D au tick 6, PV inchangés.
+- **Tests** : `Alundra.Tests` 3402 sur 3402 en Release et en Debug ; traces du héros et de l'intro inchangées ; un seul test existant
+  modifié, l'ordre du tick d'`AlundraTickStructureTests`, qui gagne la place de `0x80038E84` entre la physique et la passe.
+- **Vérification** : verifier frais **CONFIRMED** (aucun P0 à P2) : règles redécodées dans le binaire, trois mutations attrapées.
+  **Coups dans le vrai jeu** : aucun dans l'intro ni sur les arcs de la chaîne (389 jusqu'au drapeau 860, 390, 391, 392, 179), et aucun
+  possible : sur ces cartes, aucun masque de classe n'atteint le héros ; le seul coup de toute la suite est la petite boule de fer de
+  la 127 sur le héros, fidèle au binaire. La sonde du vrai jeu montre la même nouvelle partie. P4 reportés : l'élargissement d'une unité
+  n'est prouvé que par le cas 2 de D2 ; un test parcourt la plus courte des deux listes de cibles ; les tirages des étincelles se font
+  quand l'étage les applique (E20.e0) ; `Pos + Mod` lu à la passe plutôt que la copie de la physique.
+- **Reste** : la recette en jeu de l'auteur sur la carte 14.
 
 #### Arrêts, budget, retour arrière
 
