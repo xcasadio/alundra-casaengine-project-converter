@@ -1314,7 +1314,7 @@ production) ; le Z du pilier de la 117 ; `0xB9`.
   - Décoder dans `ALUN_CD.EXE` le traitement de la pente du héros (`+0x18C`) par `MovePlayer` (`0x80031B50`) et `PlayerTryAttack` pour la
     valeur 1 : si le binaire y empêche le coup d'épée, arrêt. Le résultat va dans l'annexe `e20-c1b2/`.
 - ✅ **L1 — 115, levier nord-ouest** (arc A ci-dessous). (2026-10-09. `AlundraLeverArcTests.A_Map115_…` : toutes les valeurs de l'arc A égales à l'attente écrite d'avance, y compris les INFERENCE (Z du levier 24, passage de `0x1C` à H+33, écarts 21, 21, 21) ; un arc : 0,5 s.)
-- ⏳ **L2 — 116, les deux leviers et le pont** (arc B).
+- ✅ **L2 — 116, les deux leviers et le pont** (arc B). (2026-10-09. `AlundraLeverBridgeArcTests.B_Map116_…` : toutes les valeurs de l'arc B égales à l'attente, y compris H1+33 (INFERENCE) ; un arc : 0,5 s. Nuance de lecture : les pcs de `B[1]` sont filtrés sous 300, car l'`End` de `B[2]` (`@308`) se répète à chaque tick dans l'emplacement B ; ce n'est pas un écart du plan.)
 - ⏳ **L3 — 117, la bascule, quatre coups** (arc C).
 - ⏳ **L4 — 117 levier 22 et 44 levier 7** (arcs D et E).
 - ⏳ **L5 — P3 reporté d'E20.c1b-1.** `MapsWithoutSkippedSite` (`Alundra.Tests/AlundraStoryChainOpcodeAudit.cs:49`) passe à 30 cartes
