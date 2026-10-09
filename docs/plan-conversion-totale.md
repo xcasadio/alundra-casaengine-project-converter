@@ -751,6 +751,19 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
 - **Reçus d'E20 (2026-10-09, D-E20-17, D-E20-18, ADR-0053)** : E14 réutilise l'apparition d'entités et le butin d'E20.e0 ; elle
   porte les gestionnaires de projectiles que des ennemis partagent peut-être (flèches E17, glace C60, feu C54). Le wagonnet n'a
   pas de propriétaire : l'auteur le désignera (D-E20-16).
+- **Décisions de l'auteur pour E14.a (2026-10-09, « fait toutes les recommandations », ADR-0055)** — découverte :
+  `docs/plan-e14-annexe/e14a/` :
+  - **D-E14-1** : un gestionnaire natif est enregistré par type de sprite ; une entrée (emplacement, code) ne tourne que pour les types
+    listés, tout autre natif reste un no-op compté ;
+  - **D-E14-2** : le convertisseur exporte l'octet de l'effet de bris (`+0x1E` de l'en-tête du sprite) dans E14.a, avec un export
+    complet ; le champ exact est fixé par le plan d'E14.a et par sa propre ADR de format ;
+  - **D-E14-3** : le butin reste à E20.e0 ; d'ici là, un ennemi tué ne lâche rien ;
+  - **D-E14-4** : E14.a passe avant la blessure du héros (E20.c2), qui remesure ses arcs ; l'ordre donné ensuite par l'auteur
+    (D-E20-24 : armes, objets, collisions) place E14.a après ces tranches ;
+  - **D-E14-5** : un interrupteur coupe les gestionnaires natifs dans les arènes d'oracle d'E20.c1a et E20.c1b ; en jeu, les
+    Beannoïde de la 14 s'animent ;
+  - **D-E14-6** : les nouveaux gestionnaires lisent les valeurs du tick (direction et animation de la boîte), comme le binaire ;
+  - **D-E14-7** : recette d'E14.a : le hall de la 115 et la grille de la 116 ; la 362 et la vague de la 44 viennent avec.
 
 ### E15 — Tout le texte d'Alundra en Yarn ✅ (close le 2026-09-28, recette en jeu validée : `docs/plan-e15-yarn.md`)
 

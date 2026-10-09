@@ -120,6 +120,24 @@ Après E20.0, l'auteur a répondu le 2026-10-09 aux questions O-E20-1 à O-E20-4
   flèches chargées C94) ; la bombe (E12) va en E20.h ; les gestionnaires que des ennemis partagent peut-être (flèches E17,
   glace C60, feu C54) vont à E14.
 
+Après la découverte d'E20.c2, l'auteur a répondu le 2026-10-09 « fait toutes les recommandations » (questions 1 à 5 de
+`docs/plan-e20-annexe/e20-c2/check.md` §d, ADR-0054), puis a donné l'ordre de la suite :
+
+- **D-E20-19** (modifie D-E20-14) — `UpdateItemEffectState` est porté dans E20.c2 ; le pilote d'objet `0x8003634C` et
+  `UpdatePlayerCarriedEntity(2)` restent des bouchons nommés à leur place exacte jusqu'à E20.h et E20.g, qui les portent.
+- **D-E20-20** — Avant E18, à 0 PV, le héros affiche 0 cœur, garde la main, et sa régénération s'arrête, comme l'original ; seule
+  la branche de mort manque.
+- **D-E20-21** — Le clignotement d'invulnérabilité vaut pour toute entité, comme l'original, celles que `0x86` rend invulnérables
+  comprises.
+- **D-E20-22** — E20.c2 porte `0xC3` (soin complet) et `0xBC` (PV max + n), en écrivant dans l'entité du héros.
+- **D-E20-23** — Touché en eau profonde, le héros garde la règle de l'original (`0x3A` sur la pente 4) jusqu'à E20.i ; la blessure
+  brève qui en résulte dans la DLL est un écart documenté.
+- **D-E20-24** — **Ordre de la suite** (« Je veux dans l'ordre : les armes, l'utilisation des objets et les collisions ») : E20.f
+  (armes), puis E20.h (objets du Rond), puis les collisions, que la session principale lit comme E20.g (porter et lancer ; caisses et
+  jarres redeviennent des obstacles, fin des écarts D-E19-28 et D-E19-46) — lecture à confirmer par l'auteur. Les prérequis de chaque
+  tranche passent avant elle (par exemple l'apparition d'E20.e0 avant les projectiles) ; E14.a et la blessure d'E20.c2 suivent.
+  Mode AUTO accordé par l'auteur pour la nuit du 2026-10-09 (ni push ni merge).
+
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
 

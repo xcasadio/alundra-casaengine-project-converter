@@ -67,3 +67,5 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0051 | The game streams its music with the loop point of the sequence | Accepted | 2026-10-08 |
 | ADR-0052 | The hero's run, attack, carrying and item use, with the shared hit pass, form task E20 apart from E14 | Accepted | 2026-10-09 |
 | ADR-0053 | The DLL drives each logic tick in the binary's order, and E20 owns swimming, loot and the hero's projectiles | Accepted | 2026-10-09 |
+| ADR-0054 | The hurt hero keeps the original's rules before E18, and the next E20 slices follow the author's order | Accepted | 2026-10-09 |
+| ADR-0055 | Native enemy handlers are registered per sprite type, read per-tick values, and arrive with the Muruta and the Beannoide | Accepted | 2026-10-09 |
