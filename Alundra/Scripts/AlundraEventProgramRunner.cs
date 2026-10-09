@@ -637,6 +637,27 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 _gameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.ControlLocked;
                 return 1;
 
+            case 0xC0: // Set equipped weapon - Script_192_0C0 @ 0x80041CDC (E20.f0 T1), PER THE BINARY: SetPlayerWeaponId(v1 + 1) (0x8004E484, the operand is a byte so
+                       // the slot is 1..256 and only 1..6 is accepted), then PlayerControlFlags |= 0x80 (ForcedWeapon). Size 2, Result untouched. The bit stops the
+                       // inventory (0x8002BB68), the warp gate (0x8002F1C4) and TryUseItem (0x8002ED80), which test the whole value; it stops neither
+                       // PlayerTryAttack nor MovePlayer's 0x34 branch. Without item tables the weapon cannot be resolved (the setter's discarded lookup needs them):
+                       // degraded, the bit is still posed.
+                if (_worldContext.ItemTables is { } weaponTables)
+                {
+                    AlundraPlayerManager.SetPlayerWeaponId(_gameState, weaponTables, v[1] + 1);
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xC0, "SetEquippedWeapon", "item tables");
+                }
+
+                _gameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ForcedWeapon;
+                return 2;
+
+            case 0xC1: // Clear the scripted weapon lock - Script_193_0C1 @ 0x80041D18 (E20.f0 T1): PlayerControlFlags &= ~0x80. Size 1.
+                _gameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.ForcedWeapon;
+                return 1;
+
             case 0x16: // High gravity - Script_22_016
                 entity.Flags |= EntityFlags.Gravity;
                 entity.ResyncControllerFromFlags();

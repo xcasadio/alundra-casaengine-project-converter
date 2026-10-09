@@ -1564,8 +1564,11 @@ de l'auteur, hors de l'app) ; tout comportement d'arme.
 
 #### Tâches
 
-- ⏳ **T1 — Opcodes `0xC0` et `0xC1`.** Ports exacts, tailles 2 et 1 ; tests sur les vrais octets des cartes 472 et 473 (arme
-  équipée = emplacement 1 puis 2, bit `0x80` posé puis effacé).
+- ✅ **T1 — Opcodes `0xC0` et `0xC1`.** Ports exacts, tailles 2 et 1 ; tests sur les vrais octets des cartes 472 et 473 (arme
+  équipée = emplacement 1 puis 2, bit `0x80` posé puis effacé). Fait : binaire relu (`0x80041CDC` : `lbu` de l'octet 1, `+1`, `jal 0x8004E484`, puis `|= 0x80`, rend 2 ;
+  `0x80041D18` : `&= ~0x80`, rend 1) ; `AlundraWeaponLockOpcodesTests` (15 tests) : octets réels 472 `@327`/`@378` et 473 `@198`/`@289`, emplacement 1 puis 2
+  (objets 1 et 5), `0x80` posé puis effacé sans toucher aux autres bits, `Result` intact, tailles 2 et 1, opérande hors 1..6 refusé par le setter, aucun opcode sauté sur
+  les programmes B[5] de la 472 et B[1] de la 473.
 - ⏳ **T2 — Portes de la valeur entière.** Lire comment la DLL ouvre l'inventaire et déclenche une téléportation ; si l'une d'elles
   ne teste pas la valeur entière de `PlayerControlFlags` comme le binaire, l'aligner ; un test pose `0x80` seul et vérifie que
   l'inventaire ne s'ouvre pas et qu'aucune téléportation ne part. Si la porte de la DLL teste déjà la valeur entière, le test seul.
