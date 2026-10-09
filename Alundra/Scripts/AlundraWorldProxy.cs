@@ -294,6 +294,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     int IAlundraScriptHost.BalanceThreshold => BalanceThreshold;
 
     /// <summary>
+    /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): the three equipment records (<c>0x80146E00-0x80146E14</c>), one set per world. The hero's tick fills them (<see cref="AlundraPlayerManager"/>, <c>UpdateItemEffectState</c>
+    /// steps 2 to 5); they are emptied when the map is loaded (<c>InitializeItems</c> <c>0x80044520</c>), here with the threshold.
+    /// </summary>
+    internal AlundraEquipmentRecords EquipmentRecords = new();
+
+    AlundraEquipmentRecords? IAlundraScriptHost.EquipmentRecords => EquipmentRecords;
+
+    AlundraEquipmentRecords? IEntityWorldContext.EquipmentRecords => EquipmentRecords;
+
+    /// <summary>
     /// Port of the original global <c>g_activeCollisionEntity</c>: the entity currently involved in the
     /// active collision pair, used by the pick phase to decide whether a touch downgrades all the way
     /// to an interact (slot F). Null in V1 (no collision system driving it yet); settable internally for
@@ -764,6 +774,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         _tileMapData = tileMapData;
         BalanceThreshold = AlundraBalanceTables.ResolveThreshold(tileMapData); // E20.c1a C1: the threshold of the balance chain, before any entity is created.
+        EquipmentRecords.Clear(); // E20.c1b K2: 0x80044520 zeroes the three equipment pointers at every map load.
 
         // D-T-3 (docs/plan-transitions-carte.md, slice T1): the session carrier's own map-entry
         // disposition (D-T-13) is applied HERE, at the very START of this installation block - strictly

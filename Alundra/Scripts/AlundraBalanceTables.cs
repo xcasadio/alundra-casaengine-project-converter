@@ -228,13 +228,32 @@ public sealed class AlundraBalanceTables
             return null;
         }
 
-        var record = _entries[spriteIndex];
+        return WalkChain(_entries[spriteIndex], threshold);
+    }
+
+    private static AlundraBalanceRecord? WalkChain(AlundraBalanceRecord? record, int threshold)
+    {
         while (record != null && record.Level < threshold && record.Next != null)
         {
             record = record.Next;
         }
 
         return record;
+    }
+
+    /// <summary>
+    /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): the record of the item <paramref name="itemId"/> as <c>0x800445C0</c> chooses it: entry <c>itemId + 0x1E</c> (the entries <c>0x1F-0x7F</c> are the 97 items), the chain
+    /// walked up to <paramref name="threshold"/>. UNLIKE <see cref="Select"/> there is NO remapping of <c>0x1F-0x7F</c> to <c>0x1E</c> (that is <c>0x80044550</c>, the sprite lookup, which would collapse every item onto one
+    /// entry). An item past <c>0x61</c> (the guard <c>n &lt; 0x62</c>; the binary prints and ends the program there) or below 0 gives null.
+    /// </summary>
+    public AlundraBalanceRecord? SelectEquipment(int itemId, int threshold)
+    {
+        if ((uint)itemId >= 0x62)
+        {
+            return null;
+        }
+
+        return WalkChain(_entries[itemId + 0x1E], threshold);
     }
 
     /// <summary>The raw entry (the first level of the chain) of an index, with no remapping; for the tests.</summary>

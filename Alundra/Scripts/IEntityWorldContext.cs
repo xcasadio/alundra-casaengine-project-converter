@@ -108,6 +108,12 @@ public interface IEntityWorldContext
     IAlundraSoundPlayer? SoundPlayer => null;
 
     /// <summary>
+    /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): this world's three equipment records (<c>0x80146E00-0x80146E14</c>), read by the damage calculation (<see cref="AlundraDamage"/>) of the native handlers that
+    /// decide on a hit (E14.a) and of the hero's entry (E20.c2). A default interface member, null like <see cref="ItemTables"/>.
+    /// </summary>
+    AlundraEquipmentRecords? EquipmentRecords => null;
+
+    /// <summary>
     /// This world's item tables (E19.l2, docs/plan-e19-opcodes.md section 1.2m.2) - back the "give item" branch of opcode
     /// 0x82 (max count per item). A default interface member, same "degraded, skip" shape as <see cref="SoundPlayer"/>:
     /// null makes that branch a degraded no-op. <see cref="AlundraWorldProxy"/> returns its own tables.

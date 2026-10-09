@@ -459,8 +459,8 @@ public static class AlundraPlayerManager
         // TargetAnimationId is none of the values ported above keeps it unchanged.
 
         // PlayerManager.cs:947-950, binary 0x80032914 (END: UpdateItemEffectState, then SetPlayerHpMax/SetPlayerHp). E20.a A4 (D-E20-14): UpdateItemEffectState is a named stub
-        // until E20.c2; the two HP setters are not called from this site.
-        UpdateItemEffectState(player);
+        // until E20.c2 (E20.c1b K2 fills the three equipment records in it); the two HP setters are not called from this site.
+        UpdateItemEffectState(player, state, host);
     }
 
     /// <summary>E20.a A4 stub of <c>TryUseItem</c> (<c>0x8002ED64</c>): non-zero means "carry on this tick". The binary returns 1 whenever the Circle button has no rising edge
@@ -580,10 +580,65 @@ public static class AlundraPlayerManager
     {
     }
 
-    /// <summary>E20.a A4 stub (D-E20-14) of <c>UpdateItemEffectState</c> (<c>0x800307E8</c>, called at the end of every normal tick, <c>0x80032914</c>, before the HP copies):
-    /// equipment sheets, defence table and regeneration. Ported in E20.c2.</summary>
-    private static void UpdateItemEffectState(AlundraEntityScriptProxy player)
+    /// <summary>
+    /// <c>UpdateItemEffectState</c> (<c>0x800307E8</c>, called at the end of every normal tick, <c>0x80032914</c>, before the HP copies). E20.c1b K2 ports its steps 2 to 5 only (the three equipment records,
+    /// <see cref="FillEquipmentRecords"/>, into the world's <see cref="IAlundraScriptHost.EquipmentRecords"/>); the rest stays the named stub of E20.a A4 (D-E20-14) for E20.c2: the boots level (step 1), the
+    /// 255-byte copy to <c>0x80127008</c> and the combination of the responses (step 6), the regeneration and the HP copies (step 7). A host without the seam, tables or records does nothing.
+    /// </summary>
+    private static void UpdateItemEffectState(AlundraEntityScriptProxy player, AlundraGameState state, IAlundraScriptHost? host)
     {
+        if (host?.EquipmentRecords is { } records && host.ItemTables is { } itemTables && host.BalanceTables is { } balanceTables)
+        {
+            FillEquipmentRecords(state, itemTables, balanceTables, host.BalanceThreshold, records);
+        }
+    }
+
+    /// <summary>The "armour" category of the equipment records: <c>byte[0x800C5F7C + 8 n + 6] &amp; 0x7F</c> (<see cref="AlundraItemTables.DropField3"/>, equal to the binary on the 98 rows).</summary>
+    internal const int ArmourCategory = 2;
+
+    /// <summary>The "weapon" category of the equipment records.</summary>
+    internal const int WeaponCategory = 1;
+
+    /// <summary>The "accessory" category of the equipment records.</summary>
+    internal const int AccessoryCategory = 3;
+
+    /// <summary>The highest item id an equipment record can describe (<c>0x61</c>; <c>0x800445C0</c> guards <c>n &lt; 0x62</c>).</summary>
+    internal const int LastEquipmentItem = 0x61;
+
+    /// <summary>
+    /// Steps 2 to 5 of <c>UpdateItemEffectState</c> (<c>0x800307E8</c>), E20.c1b K2, docs/plan-e20-heros.md section 1.6: the six words <c>0x80146E00-0x80146E14</c> are cleared, then
+    /// <list type="number">
+    /// <item><description>record 0 is the armour: the owned item of the highest number whose category (<see cref="AlundraItemTables.DropField3"/> <c>&amp; 0x7F</c>) is 2, scanning <c>0x61</c> down to 0;</description></item>
+    /// <item><description>record 1 is the weapon: <see cref="GetItemIdFromCurrentWeapon"/> when it answers 1 to <c>0x61</c> with the category 1;</description></item>
+    /// <item><description>record 2 is the accessory: <see cref="SetItemIdFromCurrentItemId"/> (which also rewrites <c>ItemId</c>, as the binary's <c>0x8004E0F8</c> does: the tick is a second caller beside the HUD) when it answers 1 to
+    /// <c>0x61</c> with the category 3.</description></item>
+    /// </list>
+    /// The record of item <c>n</c> is <see cref="AlundraBalanceTables.SelectEquipment"/>, with NO remapping of the index (the sprite lookup remaps <c>0x1F-0x7F</c> to <c>0x1E</c>, the equipment lookup does not).
+    /// </summary>
+    internal static void FillEquipmentRecords(AlundraGameState state, AlundraItemTables itemTables, AlundraBalanceTables balanceTables, int threshold, AlundraEquipmentRecords records)
+    {
+        records.Clear();
+
+        for (var n = LastEquipmentItem; n >= 0; n--)
+        {
+            if (GetNumberOfItem(state, n) > 0 && (itemTables.DropField3[n] & 0x7F) == ArmourCategory)
+            {
+                records.Set(AlundraEquipmentRecords.Armour, balanceTables.SelectEquipment(n, threshold), n);
+                break;
+            }
+        }
+
+        var weapon = GetItemIdFromCurrentWeapon(state, itemTables);
+        if (weapon is >= 1 and <= LastEquipmentItem && (itemTables.DropField3[(int)weapon] & 0x7F) == WeaponCategory)
+        {
+            records.Set(AlundraEquipmentRecords.Weapon, balanceTables.SelectEquipment((int)weapon, threshold), (int)weapon);
+        }
+
+        var accessory = SetItemIdFromCurrentItemId(state, itemTables);
+        if (accessory is >= 1 and <= LastEquipmentItem && (itemTables.DropField3[(int)accessory] & 0x7F) == AccessoryCategory)
+        {
+            records.Set(AlundraEquipmentRecords.Accessory, balanceTables.SelectEquipment((int)accessory, threshold), (int)accessory);
+        }
     }
 
     /// <summary>E20.a A4 stub (D-E20-14) of the item-in-use driver <c>0x8003634C</c> at its second site (<c>0x80031CC4</c>, every normal tick): the binary returns 1 without doing anything

@@ -116,6 +116,12 @@ public interface IAlundraScriptHost
     int BalanceThreshold => 0;
 
     /// <summary>
+    /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): this world's three equipment records (<c>0x80146E00-0x80146E14</c>), which the hero's <see cref="AlundraPlayerManager.MovePlayer"/> fills at every tick
+    /// (<c>UpdateItemEffectState</c> steps 2 to 5). A default interface member, null like <see cref="BalanceTables"/>: a host without the seam keeps no equipment.
+    /// </summary>
+    AlundraEquipmentRecords? EquipmentRecords => null;
+
+    /// <summary>
     /// T3's own seam for T4 (docs/plan-transitions-carte.md §3: "le prédicat ... exposé par une couture
     /// que T4 remplira"). Called by <see cref="AlundraPlayerManager.MovePlayer"/>, at most once per
     /// call, exactly when <see cref="AlundraPortalTrigger.TryGetTrigger"/> returns non-null - the moment

@@ -1166,9 +1166,9 @@ les PV du héros (E20.c2) ; tout appel de `ComputeNewHp` en production (gestionn
 
 #### Tâches
 
-- ⏳ **K1 — Fonctions de dégâts.** `ResolveBalanceTarget` et `ComputeNewHp` en fonctions pures (fiche de la cible, attaque, PV, les trois
+- ✅ **K1 — Fonctions de dégâts.** `ResolveBalanceTarget` et `ComputeNewHp` en fonctions pures (fiche de la cible, attaque, PV, les trois
   fiches d'équipement, l'animation figée) ; l'octet 2 de la fiche pour un quartet 0.
-- ⏳ **K2 — Fiches d'équipement.** Sélection sans remappage (`n + 0x1E`, rien au-delà de `0x61`) ; les trois fiches remplies à chaque
+- ✅ **K2 — Fiches d'équipement.** Sélection sans remappage (`n + 0x1E`, rien au-delà de `0x61`) ; les trois fiches remplies à chaque
   tick dans `UpdateItemEffectState` (le reste du bouchon demeure pour E20.c2) ; le tick devient un second appelant de la réécriture
   d'`ItemId`, comme le binaire ; effacement au chargement de carte.
 - ⏳ **K3 — `HitBox` rangée.** Écrite après le mouvement de chaque tick pour toute entité qui a une boîte (`0x80038064`, appelée par
