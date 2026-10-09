@@ -63,6 +63,39 @@ public sealed class AlundraLoadingMapAirArrivalTests
         Assert.Equal(Idle, samples.Single(s => s.Frame == landing.Frame + 1).Target);
     }
 
+    /// <summary>E19.v2 (V-R4): the first frame of a New Game in the real game (probe of 2026-10-09): the controller has not
+    /// resolved the ground yet (IsOnGround 0) and the logical Z is still under the terrain. The hero is not in the air: the
+    /// LoadingMap case leaves the arrival animation (it took the jump pose, which the intro's lock then froze).</summary>
+    [Fact]
+    public void V1d_LoadingMapWithAnUnresolvedGroundAndTheZUnderTheTerrain_StaysLoadingMap()
+    {
+        var rig = JumpHeroRig.Build(FlatCells.Create(cell: (_, _) => (0, 1)), z: 16f);
+        var hero = rig.Hero;
+        hero.TargetAnimationId = LoadingMap;
+        hero.PosZ = 0;
+        hero.IsOnGround = 0;
+        Assert.Equal(1048576, hero.ComputeTerrainHeight());
+
+        AlundraPlayerManager.MovePlayer(hero, default, new AlundraGameState(), host: null);
+
+        Assert.Equal(LoadingMap, hero.TargetAnimationId);
+    }
+
+    /// <summary>E19.v2 (V-R4) guard: above its terrain and not on the ground, the hero in LoadingMap does take 0x2D.</summary>
+    [Fact]
+    public void V1e_LoadingMapAboveTheTerrainAndNotOnTheGround_Gives0x2D()
+    {
+        var rig = JumpHeroRig.Build(FlatCells.Create(cell: (_, _) => (0, 1)), z: 16f);
+        var hero = rig.Hero;
+        hero.TargetAnimationId = LoadingMap;
+        hero.PosZ = 2097152;
+        hero.IsOnGround = 0;
+
+        AlundraPlayerManager.MovePlayer(hero, default, new AlundraGameState(), host: null);
+
+        Assert.Equal(AirStill, hero.TargetAnimationId);
+    }
+
     [Fact]
     public void V1c_AnArrivalOnTheGround_KeepsTheArrivalAnimationUntilItsChain_ThenIdle()
     {

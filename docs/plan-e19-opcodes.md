@@ -11837,7 +11837,7 @@ câblés avant leur premier tick (le bloc vient après leur câblage ; consigné
   un événement de carte pendant qu'on presse Start (la boîte l'emporte) ; un passage de carte franchi en pressant Start (le warp part,
   l'inventaire ne s'ouvre pas).
 
-### 1.2z E19.v — `LoadingMap` en l'air : la pose `0x2D` dès l'arrivée (O-E19-32) 🧪 (planifiée le 2026-10-08, relecture READY ; faite et CONFIRMED le 2026-10-08, `ed3cd7a` ; recette V-4 hors chaîne, quand une de ces cartes sera atteignable)
+### 1.2z E19.v — `LoadingMap` en l'air : la pose `0x2D` dès l'arrivée (O-E19-32) 🧪 (planifiée le 2026-10-08, relecture READY ; faite et CONFIRMED le 2026-10-08, `ed3cd7a` ; recette V-4 hors chaîne, quand une de ces cartes sera atteignable ; **régression du début de partie signalée par l'auteur le 2026-10-09, corrigée par E19.v2 (V-R4)**)
 
 DLL seule. Pas de décision de l'auteur : le binaire tranche, et D-E19-39 range les états de saut du héros dans E19.d2c. Machine
 d'états du héros : relecture du plan, puis vérificateur neuf. Faits et valeurs : `docs/plan-e19-v-annexe/` (`README.md`,
@@ -11934,6 +11934,33 @@ fait pas. Les arrivées en `0x36` sont le portail, F9 et la nouvelle partie ; `0
   - une image d'atterrissage qui change sans explication ;
   - un fichier hors de la liste.
 - **Retour arrière** : revert.
+- 🧪 **E19.v2 — Régression du début de partie** (2026-10-09, signalée par l'auteur avec une capture : au début de la partie, sur la 389,
+  Alundra s'affiche en pose de saut au lieu d'être immobile).
+  - **Reproduite sur le vrai jeu** par un harnais hors dépôt (scratchpad `probe-src/`). Le harnais dérive `CasaEngineGame`, lance
+    `alundra-project/AlundraGame.json` et journalise le héros image par image.
+  - **Mesuré** :
+    - dès la première image, le héros est en `0x2D` et verrouillé (`0x4`), avec `IsOnGround` 0 et le contrôleur pas encore au sol ;
+    - son `PosZ` logique vaut 0 sous le pont à 80 px ; il passe à 80 px à l'image 2 ;
+    - il reste ensuite en `0x2D`, puisque le verrou de l'intro arrête `MovePlayer`.
+
+    Le montage `ArcRun` ne reproduisait pas ce cas : il ajoute le pion dès son constructeur, si bien que le contrôleur est déjà au sol à
+    l'image 1.
+  - **Cause** : dans la DLL, les événements de carte passent après les entités. La première image d'une partie fait donc tourner
+    `MovePlayer` avant le verrou de l'intro, alors que le binaire fait passer les événements de carte d'abord (D1 d'E19.h2). Ce
+    `MovePlayer` lit un `IsOnGround` venu d'un contrôleur pas encore résolu, et non d'une vraie chute. E19.v le prenait pour un héros
+    en l'air.
+  - **V-R4** : la branche `LoadingMap` exige en plus que le héros soit au-dessus de son terrain (`PosZ > ComputeTerrainHeight()`). C'est
+    la règle du plancher du binaire : en `0x800380F8`, un Z qui n'est pas au-dessus du sol est « au sol ». Un mandataire nu de test garde
+    `IsHeroInTheAir` seul.
+  - **Tests** :
+    - `V1d_…StaysLoadingMap` : vrai contrôleur, terrain de 16 px, `PosZ` 0, `IsOnGround` 0. Rouge sur la production du HEAD (45 au lieu
+      de 54) ;
+    - `V1e_…Gives0x2D` : la garde au-dessus du terrain, verte ;
+    - `V1b`, l'arrivée à 432 px, reste verte.
+  - **Campagne** : `Alundra.Tests` 3265/3265 en Release puis en Debug ; `cmp` identique ; traces inchangées.
+  - **Vrai jeu après le correctif** (même harnais) : `0x36` jusqu'à l'image 36, Idle à l'image 37, puis immobile.
+  - **Limite** : une arrivée exactement sur le dessus d'une entité, à la première image, avant que la règle du dessus affleurant ne joue,
+    serait jugée au-dessus du terrain. Aucun cas connu ; les arrivées viennent des cases.
 - **Recette V-4** (auteur, hors chaîne, quand une de ces cartes deviendra atteignable) : arriver par une porte haute, par exemple celle
   de la 20 vers le puits 311 ou de la 37 vers l'antre de Nirude (38). Le héros tombe en pose de saut dès l'arrivée, et non plus en pose
   d'arrivée.

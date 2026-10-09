@@ -264,7 +264,7 @@ public static class AlundraPlayerManager
         // this call (V-R1: no stick direction, no 0x2C). "In the air" is the common tail's predicate (V-R2, IsHeroInTheAir).
         if (player.TargetAnimationId == LoadingMapAnimationId)
         {
-            if (IsHeroInTheAir(player))
+            if (IsHeroInTheAir(player) && IsAboveItsTerrain(player))
             {
                 player.TargetAnimationId = AirStillAnimationId;
             }
@@ -452,6 +452,16 @@ public static class AlundraPlayerManager
     /// when the hero has a controller, <see cref="AlundraEntityScriptProxy.HeroAirborne"/> for a bare proxy of a test.</summary>
     private static bool IsHeroInTheAir(AlundraEntityScriptProxy player)
         => player.Controller != null ? player.IsOnGround == 0 : player.HeroAirborne;
+
+    /// <summary>E19.v2 (docs/plan-e19-opcodes.md section 1.2z, V-R4): the binary's <c>IsOnGround</c> is the floor rule (the hero is
+    /// on the ground when its Z is not above the floor, 0x800380F8). At map entry the DLL's <see cref="AlundraEntityScriptProxy.IsOnGround"/>
+    /// comes from the engine controller, which has not resolved the ground yet on the first frame of a freshly placed pawn: on a
+    /// New Game the first <see cref="MovePlayer"/> runs before the intro's lock (the map events pass after the entities in the DLL)
+    /// with <c>IsGrounded</c> false and the logical Z still under the 80 px deck, and the LoadingMap case wrongly took the jump pose,
+    /// which the lock then froze. A hero at or under its terrain is not in the air. A bare proxy of a test (no controller) keeps
+    /// <see cref="IsHeroInTheAir"/> alone.</summary>
+    private static bool IsAboveItsTerrain(AlundraEntityScriptProxy player)
+        => player.Controller == null || player.PosZ > player.ComputeTerrainHeight();
 
     /// <summary>
     /// Engine-only addition (docs/plan-echelles-chiffrage.md É4, no equivalent original call): the
