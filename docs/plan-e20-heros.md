@@ -460,7 +460,7 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | E20.b | Coup d'épée sans dégâts : table des armes en entier, `PlayerTryAttack` (relâchement d'abord, puis appui), garde `0x2000`, son 3, attaques au sol et en l'air, états d'attaque, priorités (Carré sur Croix, interaction d'abord) | oracle de `MovePlayer` ; arcs au vrai préfab | Carré frappe au sol et en l'air, avec le son ; le héros freine |
 | E20.c1a (§1.5) | La passe de coups : fiches d'équilibre (seuil `D`), PV des entités, `CurrentAttack` et boîte de l'image au tick (D-E20-6, règle de D6), `HitBox`, liste des cibles, `UpdateBalanceRecords` au point d'accroche d'E20.a (immunité, premier attaquant, plusieurs cibles), étincelles (effet 9) ; les effets 4 et 5 vont à E20.f | oracle de la passe avec le héros et un vrai Beannoïde (`e20-c1/oracle/`) ; les six cas de D2 ; un arc au vrai préfab sur la 14 | Un coup sur un Beannoïde de la 14 : étincelles ; au contact d'un ennemi, étincelles toutes les 25 ticks, sans perte de PV |
 | E20.c1b-1 (§1.6) | Dégâts, équipement et opcodes : `ComputeNewHp` et `ResolveBalanceTarget` (fonctions pures), les trois fiches d'équipement (la partie d'`UpdateItemEffectState` dont dépendent les dégâts) et leur effacement au chargement de carte, `HitBox` tenue à chaque tick, `0x71`, `0x86`, `0x87`, `0x95` ; ferme la régression de c1a (programmes D qui décident sur un `Result` périmé faute de `0x87`) | oracle K1 à K3 (`e20-c1b/oracle/`) ; cas de D2 sur les PV ; `0x87` et `0x95` dans de vrais programmes D | Sur la 14, l'entité qui n'accepte que la bombe ne réagit plus à l'épée |
-| E20.c1b-2 | Les réactions scriptées : leviers de la 115 nord-ouest et de la 116, bascule de la 117, leviers de la 44, par des arcs posés directement (sans oracle du binaire : attentes tirées des programmes) ; le couvercle de la 362 attend la bombe (E20.h) | arcs | Les leviers réagissent au coup d'épée, quand on peut les atteindre (après le hall de la 115) |
+| E20.c1b-2 (§1.7) | Les réactions scriptées : leviers de la 115 nord-ouest et de la 116, bascule et levier 22 de la 117, leviers de la 44, par des arcs qui partent d'une arrivée dans la zone du levier (sans oracle du binaire : attentes tirées des programmes) ; le P3 reporté de c1b-1 ; le couvercle de la 362 attend la bombe (E20.h) | arcs | Les leviers réagissent au coup d'épée, quand on peut les atteindre (après le hall de la 115) |
 | *E14.a* (autre étape) | Muruta et Beannoïde (D-E20-4), planifiée après E20.c1 | plan d'E14 | Le hall de la 115 |
 | E20.c2 | Le héros touché : entrée `0x80031A68` (toucheur et cases dangereuses), `0x31`/`0x3A`, invulnérabilité `0x78` et clignotement, PV vers `PlayerStats` et le HUD, `UpdateItemEffectState` (table de défense, bottes, régénération) et le pilote `0x8003634C` en vrai (D-E20-14), chemin `controlFlags == 0x20`, pas de mort (D-E20-5) | oracle de `0x80031A68` ; arcs | Les cœurs baissent au contact, le héros clignote, il ne meurt pas |
 | E20.d | Course : les cinq états, entrée et sorties, cône, reprise, rebond, charge `0x04` (ses coups viennent d'E20.c1), escalade prioritaire, arrondi du stick (D-E20-8) ; le test épinglé « Triangle seul donne Idle » s'inverse | oracle de `MovePlayer` ; arcs | Courir, s'arrêter, reprendre, foncer, buter contre un mur, sauter d'un rebord ; sur l'eau profonde, le héros marche encore (la nage est E20.i) |
@@ -1241,6 +1241,162 @@ les PV du héros (E20.c2) ; tout appel de `ComputeNewHp` en production (gestionn
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.c1b-1.
 
+### 1.7 E20.c1b-2 — Les leviers réagissent au coup d'épée ⏳
+
+Relecture : **READY** dès la première lecture (2026-10-09). Exécution lancée sans soumission à l'auteur, à sa demande.
+
+**But.** Prouver, par des arcs au vrai préfab et au vrai contrôleur, que les leviers de la 115 nord-ouest et de la 116, la bascule et
+le levier 22 de la 117 et les leviers de la 44 réagissent à un coup d'épée exactement comme leurs programmes le disent : drapeaux,
+animations, réécritures de cases, perte et reprise de la main, au tick près quand le bytecode le fixe. Aucune ligne de production
+n'est attendue : depuis E20.c1a et E20.c1b-1, tous les opcodes de ces chemins sont portés ; un écart trouvé est un défaut à
+diagnostiquer, jamais une attente à refaire. La tranche ferme aussi le P3 reporté d'E20.c1b-1.
+
+**Faits porteurs** (découverte du 2026-10-09, `docs/plan-e20-annexe/e20-c1b2/` : trois rapports et leur contre-vérification
+`check.md`, qui les corrige ; elle corrige aussi `e20-c1b/faits-leviers-opcodes-dll.md`, dont les « cases » sont les cases d'affichage
+`XPos/2`, `YPos/2`, et dont le « placement direct » est impossible) :
+- [DLL, binaire] Un enregistrement n'apparaît au chargement que si le bit `0x40` de `SpriteDirection` est posé et que la case du héros,
+  à ce moment, est dans la zone `XMin..XMax × YMin..YMax` de l'enregistrement (`AlundraEntitySpawnFactory.cs:79-155`, appelé par
+  `AlundraWorldProxy.cs:857-875` ; binaire `0x8003A20C`-`0x8003A278`, seul l'appel du chargement `0x8003B308` passe `a2 = 0`).
+  `ArcSpec.HeroTileX/Y` est écrit après `InitializeWithWorld` (`AlundraArcSupport.cs:209`, puis `:249-261`) : chaque arc part donc d'un
+  `Arrival` dans la zone. Zones : 115 enregistrement 2 : x 0..9, y 5..16 ; 116 enregistrements 39 et 40 : x 0..7, y 0..27 ; 117
+  enregistrement 0 (bascule) : x 17..34, y 4..16 ; 117 enregistrement 22 : x 0..16, y 33..59 ; 44 : toute la carte. Les
+  enregistrements 0 et 1 de la 115 (sprite 42) et 7 et 8 de la 116 (plaques) n'apparaissent jamais (bit `0x40` effacé, aucune
+  activation).
+- [DLL, binaire] Position d'un enregistrement : `(XPos·12 + 12, YPos·8 + 8, Height·8)` px (`EntityRecordMapper.cs:177-204`, binaire
+  `0x8003A2B0`-`0x8003A2E0`). Leviers : 115 enregistrement 2 en (60,120), Z 24 ; 116 enregistrements 39 et 40 en (864,424) et (1104,424),
+  Z 128 ; 117 bascule en (528,192), Z 16 ; 117 enregistrement 22 en (96,640), Z 32 ; 44 enregistrements 7 à 12 en (144,440), (432,472),
+  (384,936), (672,376), (1080,904), (936,408), Z 128. Corps 24 × 16 × 16, décalage (−12, −8, 0) ; la bascule est un obstacle, les
+  leviers non.
+- [binaire, DLL] `0x37 Wait n` passe n + 1 ticks après son premier appel (`0x8003E3DC`, `Wait` `AlundraEventProgramRunner.cs:2601`) ;
+  un drapeau temporaire `Tn` est `0x8000 + n`, effacé à chaque entrée de carte (`AlundraGameState.cs:351`), donc `ArcSpec.Flags` ne
+  peut pas en poser.
+- [DLL] Ordre du tick : événements de carte, puis `MovePlayer` et les programmes des entités, compteurs, listes, horloge, physique,
+  passe de coups. Le programme D de la cible tourne au tick qui suit le coup (H + 1), C reprend à H + 2 ; un drapeau posé par C ou D est
+  vu par un programme B au tick suivant. `0x1C [1]` après un `0x1A` du même tick s sur une animation tenue de L ticks passe à s + L + 1
+  (épingle T-D1 d'E19).
+- [données] Masque de coups du héros `0x801` ; fiches 305 (leviers) et 308 (bascule) : réponse 16 aux quartets 1 à 7. L'épée de base
+  touche à l'appui même aux placements retenus (modèle de portée qui redonne le balayage de l'oracle de c1a : contact au tick 1 pour
+  dx −9 à 38).
+- [DLL] Aucun opcode sauté sur ces chemins ; le seul opcode non porté de ces quatre cartes est `0xB9` (117 B[1] `@171`, scène du
+  livre), qu'aucun arc n'atteint.
+- [DLL] Ce qui tourne à la charge : 115, l'événement 0 seul (B[1] referme la porte au premier tick) ; 116, B[1] (le pont, muet tant que
+  T1 et T2 ne sont pas posés tous deux ; sa première écriture `0x85` change la case (42,24), de GP 18 à GP 2) et B[2] (son 149) ; 117
+  salle de la bascule, B[2] prend la main 24 ticks et B[5] joue des sons ; 117 salle du levier 22, B[6] (sons) ; 44 avec G1633 et sans
+  G1634, rien près des leviers (la vague B[3] ne part que sur la case (43..44, 20)).
+- [décompilation, à confirmer au binaire] Les cases autour des leviers de la 116 ont la propriété de sol 2, que la DLL lit comme une
+  pente 1 (`Slope_18c`) ; le `switch` de `MovePlayer` n'en fait rien et le coup reste permis. Le binaire tranche (tâche L0).
+
+**Périmètre.** Tests seulement (`Alundra.Tests/`) : un arc par réaction, des aides de test si besoin (enregistreur de sons horodaté,
+lecture d'un rectangle de cases, noms des mondes) ; le P3 reporté d'E20.c1b-1 ; ce plan.
+
+**Hors périmètre.** Le couvercle de la 362 (E20.h) ; les plaques et la grille de la 116 et les Beannoïdes (E14.a) ; la vague de la 44 ;
+l'atteignabilité en jeu des quatre salles (O-E20-14) ; la pente des cases (aucun accès de lecture : ce serait un changement de
+production) ; le Z du pilier de la 117 ; `0xB9`.
+
+#### Règles communes des arcs
+
+- `ArcSpec(…, RealController: true, Prefabs: true, Arrival: …)`, animation d'arrivée `ResetAnimationId` ; nom unique par arc
+  (`E20c1b2-…`) ; `AssertNoUnexpectedError` et `AssertNothingSkippedOrExceeded` dans chaque arc.
+- Avant l'appui : héros `IsOnGround == 1`, `PlayerControlFlags == 0`, `TargetAnimationId == 0`, position égale au placement.
+- H est `arc.Frame` avant `Press(Square)`. Les images de la trace sont absolues : on affirme les écarts entre images de trace.
+- Drapeaux temporaires lus par `ArcChecks.IsTemporarySet(n)` ou par les pc de la trace (`FramesOf`), jamais par `GetFlag(0x8000 + n)`,
+  qui rend le mot entier. Cases lues par `AlundraCellStore` (`GetFloorTileId`, `GetHeight`, `GetWalkability`, `GetGroundProperty`,
+  `GetWallTileStack`). Les sons sont facultatifs (enregistreur injecté, `Contains`).
+- Toute valeur est écrite avant l'exécution. Les valeurs marquées INFERENCE reposent sur l'horloge d'animation ou la marche des
+  portes ; un écart sur elles arrête aussi (constat d'horloge ou de mouvement hors c1b-2), on ne refait jamais l'attente sur le
+  résultat.
+
+#### Tâches
+
+- ⏳ **L0 — Fumée et contrôle du binaire.**
+  - Un arc de fumée par salle (115, 116, 117 bascule, 117 levier 22, 44) : construction, 6 images, `AssertNoUnexpectedError`,
+    enregistrements attendus présents, absents ceux qui ne doivent pas apparaître ; temps d'un arc mesuré.
+  - Décoder dans `ALUN_CD.EXE` le traitement de la pente du héros (`+0x18C`) par `MovePlayer` (`0x80031B50`) et `PlayerTryAttack` pour la
+    valeur 1 : si le binaire y empêche le coup d'épée, arrêt. Le résultat va dans l'annexe `e20-c1b2/`.
+- ⏳ **L1 — 115, levier nord-ouest** (arc A ci-dessous).
+- ⏳ **L2 — 116, les deux leviers et le pont** (arc B).
+- ⏳ **L3 — 117, la bascule, quatre coups** (arc C).
+- ⏳ **L4 — 117 levier 22 et 44 levier 7** (arcs D et E).
+- ⏳ **L5 — P3 reporté d'E20.c1b-1.** `MapsWithoutSkippedSite` (`Alundra.Tests/AlundraStoryChainOpcodeAudit.cs:49`) passe à 30 cartes
+  (la 10 et la 164 y entrent) ; le site `(10, C, 75, 6418)` de `KnownScenePredicateSites` est retiré selon la convention d'E19 (un
+  opcode porté sort des listes), ou gardé avec sa raison écrite ; les commentaires « 0x95 … not ported »
+  (`AlundraEntityContactArcTests.cs:173`, `AlundraHeroJumpArcTests.cs:66`) et les ensembles `AssertSkippedWithin` qui autorisent encore
+  `(0x95, 6418)` sont mis à jour.
+
+#### Acceptation
+
+**Arc A — 115, levier nord-ouest (enregistrement 2).**
+- Monde `Tarn's Manor-115` (zone `Tarn's Manor`), aucun drapeau, arrivée au pixel (84,120), Z `1 << 20`, direction 8 (ouest).
+- Charge : enregistrements 0 et 1 absents ; enregistrement 2 en (60,120), classe A posée, Z lu et affirmé (24 attendu, INFERENCE ; 16
+  donnerait aussi le contact) ; après la première image, cases (4,6) et (5,6) en image A : W1, H4, GP16, tuiles 8514 et 8515.
+- H (contact au tick de l'appui) : `TouchingEntity` du levier = le héros, `FrameCollisionTickCounter` 25, `HitCounter` du héros 1, un
+  appel d'étincelles.
+- H+1 : D (case 3) aux pc 1476, 1477, 1480 ; classe A effacée ; T2 posé.
+- H+2 : C aux pc 1200, 1203, 1206, 1208 ; T2 effacé ; animation cible 2.
+- H+33 (INFERENCE) : pc 1210, 1212 ; T1 posé ; animation 1.
+- H+34 : B[1] passe pc 135 ; cases en image B (W1, H3). H+55 : image C (W1, H2). H+76 : image D (W0, H1, GP144, franchissable). H+97 :
+  pc 168 (Break). Écarts exacts 21, 21, 21 ; image du T1 + 1 = image du passage de pc 135.
+- Un second appui après H+25 : `HitCounter` 0 et aucun programme D (usage unique). La main n'est jamais perdue.
+
+**Arc B — 116, leviers 39 et 40, le pont.**
+- Monde `Tarn's Manor-116`, arrivée case (3,20) (pixel (84,328)), direction 8 ; puis `PlaceHero(866,424,128)`, regard ouest, assise.
+- Charge : enregistrements 39 et 40 présents, 7 et 8 absents ; références des cases du pont lues après la première image.
+- Levier 39, coup H1 : H1+1, D[5] aux pc 1076, 1077, 1080, 1083, T1 et T101 posés ; H1+2, C aux pc 702, 703, 720, animation 2, et B[1]
+  aux pc 164, 169, 163 (pas d'extension) ; H1+33 (INFERENCE), classe A reposée, T101 effacé.
+- Héros libre (H1+21 au plus tôt), `PlaceHero(1106,424,128)`, regard ouest, assise.
+- Levier 40, coup H2 : H2+1, T2 posé ; t0 = H2+2, B[1] pc 174, main perdue, animation cible du héros 0, cases (40..42, 20) =
+  [H10, GP0, 16574 | H10, GP0, 16575 | H8, GP2, 58146], piles de murs [49979, 49989] et [49980, 49990] en x 40 et 41 ; à t0+9, +18, +27,
+  +36, rangées 21, 22, 23, 24 depuis la source (29,27), troisième tuile 58173 ; t0+45, main rendue (pc 225).
+- Retrait : nouvel appui sur le levier 40 à H3 ≥ H2+48 ; r = H3+2, pc 227, 232, 241, rangée 24 rendue depuis (30,23) ; rangées 23, 22,
+  21, 20 à r+9, +18, +27, +36 ; main rendue à r+45 ; cases finales égales aux références de la première image.
+
+**Arc C — 117, la bascule (enregistrement 0).**
+- Monde `Tarn's Manor (unused broken)-117`, arrivée au pixel (500,192), Z `1 << 20`, direction 24 (est).
+- Charge : image T0 = 1, pc 284, main perdue ; les plateformes S0, S1, S2 (rectangles 2 × 4 en (21,4), (25,4), (29,4)) reçoivent F0 à
+  T0, F1 à T0+6, F2 à T0+12, F3 à T0+18 (modèles 2 × 4 en x 42, 44, 46, 48, y 4) ; pc 380 à T0+24, puis main libre ; A[1] a posé T1 et
+  effacé T2 à T5.
+- Coup N : N+1, D aux pc 1184, 1185, 1209, 1212, 1215, 1236, 1239 (T1 effacé, T4 et T5 posés) ; N+2, direction cible 16, animation 1 ;
+  N+9 (INFERENCE), direction 24, animation 0, T5 effacé, S1 ← F2 ; N+15, S1 ← F1 ; N+21, S1 ← F0, GP de (25,6) et (26,6) = 130 ; N+27,
+  classe A posée. S1 lu par la pile de murs de la rangée 5 (F0 : `…8678, 8688, 8698, 8708` / `…8679, 8689, 8699, 8709`) et le GP de la
+  rangée 6.
+- Coups 2 à 4, chacun au moins 27 ticks après le précédent : (S0, S1, S2) = (F0, F3, F3), puis (F3, F3, F0), puis (F3, F3, F3) ;
+  directions finales 0, 8, 16.
+
+**Arc D — 117, levier 22 et pilier.**
+- Même monde, arrivée au pixel (72,640), Z `2 << 20`, direction 24.
+- Avant le coup : le pilier (enregistrement 2) précède le levier 22 dans l'ordre des cases.
+- N+1 : T230 posé, classe A effacée ; N+2 : T230 effacé, animation 2 ; N+33 (INFERENCE) : T231 posé, animation 1.
+- Pilier : `0x36` passe à N+34, animation 3 à N+55, fin du programme à N+96 (INFERENCE : l'animation 3 enchaîne sur la 0,
+  `AnimationEndClassifier.cs:51-63`) ; son Z n'est pas affirmé.
+
+**Arc E — 44, levier 7.**
+- Monde `Wendels Nightmare-44`, drapeau G1633, arrivée au pixel (120,440), Z `8 << 20`, direction 24.
+- N+1 : D aux pc 2320 à 2353 ; T80 posé, main perdue, `Flags & 1 == 0` sur les enregistrements 7 à 12.
+- N+2 : pc 1556, 1559, 1562 (Break) ; T80 effacé. N+3 : pc 1563 (animation cible du héros 0), animation 2 sur les six leviers, premier
+  appel de pc 1584. N+34 (INFERENCE) : pc 1584 passe, animation 1 sur les six. N+35 : T81 posé. N+36 : chaque porte exécute son
+  `0x1A [2]` et son premier `0x1E`.
+- N+101 ± 1 (INFERENCE : 64 ticks de marche à 1,5 px par tick d'est en ouest et 1 px du nord au sud, plus le tick de retard de
+  D-E19-13) : T10 à T70 posés, pc 1630. Exactement un tick plus tard : pc 1631 à 1676, classe A sur les six leviers, T10 à T70
+  effacés, main rendue. Positions finales des portes à ±2 px (`e20-c1b2/maps-117-44.md` §3.1, colonne « P1 end »).
+- Variante sans G1633 : le coup ne fait tourner que 2320 puis 2353 ; ni main perdue ni T80.
+
+**Pour toute la tranche.**
+- Build Release puis Debug ; `Alundra.Tests` sans échec ; aucun changement de production ni du moteur ; traces du héros et de l'intro
+  inchangées ; aucun test existant ne change hors de L5.
+- Verifier frais.
+- Recette en jeu de l'auteur, quand les salles seront atteignables (O-E20-14) : un coup d'épée anime le levier et ouvre la porte vers
+  la 116 (115) ; les deux leviers étendent le pont, un troisième coup le retire (116) ; la bascule tourne et réécrit les plateformes,
+  le levier 22 fait bouger le pilier (117) ; les sept trappes s'ouvrent (44).
+
+#### Arrêts, budget, retour arrière
+
+- **Arrêts** : une carte qui ne se charge pas dans `ArcRun`, ou un chargeur qui demande un `GraphicsDevice` ou un changement du moteur ;
+  une réaction qui diffère d'une valeur fixée par le bytecode ; un passage de `0x1C` autre que s + L + 1, ou une marche des portes autre
+  que 64 ticks ± 1 ; un opcode sauté sur un chemin de levier ; le binaire qui empêche le coup sur la pente 1 (L0) ; le besoin d'un
+  changement de production. Chaque arrêt remonte à la session principale, qui diagnostique.
+- **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
+- **Retour arrière** : `git revert` des commits d'E20.c1b-2.
+
 ---
 
 ## 2. Points ouverts
@@ -1259,6 +1415,7 @@ les PV du héros (E20.c2) ; tout appel de `ComputeNewHp` en production (gestionn
 | O-E20-12 | Le contact au sol du héros est lu une fois par image, en tête d'image (E19.d2c1 R6) : la perte du sol au bord d'un rebord et un sol qui s'abaisse en cours d'image arrivent un tick après le binaire (`AT8`, `AT8n`, `AT8b` d'E20.b). L'aligner demanderait de relire le contact à chaque tick | à placer (E20.d, où la course quitte souvent un rebord, ou une tranche à part) |
 | O-E20-13 | La DLL ajoute les entités neuves en fin de liste, alors que le binaire réutilise la première case libre (`FindFreeEntitySlot`) : après un recyclage en cours de carte, l'ordre de la passe de coups (« premier attaquant ») peut différer | à mesurer avec E20.e0 (apparitions) ou E14 |
 | O-E20-11 | Une entité neuve tourne-t-elle dans le même tick dans le binaire (répétition de `0x800386D0`, contrôle de D7 : non vérifié) ? E20.a garde la règle d'aujourd'hui (premier tick à l'image suivante) | à mesurer, avec E20.e0 |
+| O-E20-14 | Atteignabilité en jeu des salles des leviers : la 115 nord-ouest après le hall (E14.a) ; la 116 derrière la grille (E14.a) ; la salle de la bascule de la 117, où la bascule n'apparaît que si l'on arrive par les portails internes 2, 4 ou 6 de la 117 (les arrivées depuis la 115 et la 116 sont hors de sa zone) ; la 44, dont on ne sait pas si le chemin vers les leviers passe par la case de la vague (43..44, 20) | recette de l'auteur, après E14.a |
 | O-E20-10 | **Tranché le 2026-10-09 (D-E20-14).** `UpdateItemEffectState` (table de défense, bottes, régénération, PV) et `0x8003634C` : bouchons dans E20.a et portage dans E20.c2, ou portage dès E20.a | — |
 
 ## 3. Hors périmètre
