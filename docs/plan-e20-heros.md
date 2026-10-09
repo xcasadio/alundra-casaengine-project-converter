@@ -1772,7 +1772,7 @@ Projet de section prêt (`docs/plan-e20-annexe/e20-f1/check.md`, « Draft revisi
 - Faits déjà établis : clé du héros `((PosY + (IDSV << 16)) & 0xFFFF0000) + (short)(PosZ >> 16)`, égale au tri du binaire
   (`0x800399B8`) sur les 150 ticks de C2-steel ; ancre par `IAlundraEffectAnchor` sur le proxy, sans changement du moteur.
 
-### 1.10 E20.f2 — Rebond du fléau 🧪 (T1 à T3 faites le 2026-10-10 ; reste le verifier frais, puis la recette de l'auteur)
+### 1.10 E20.f2 — Rebond du fléau 🧪 (faite et CONFIRMED le 2026-10-10, `a0248ff`, `8748e0f`, `02725d5` ; reste la recette de l'auteur)
 
 **Révision 1 (2026-10-10).** Relecture : **REVISE**, deux points corrigés : les nombres de la 14 et de la 69 viennent d'un autre
 pilote de la découverte (`test-means/weapons_vs_target.py`, `weapons_vs_post.py` et leur oracle), désormais copié par T1, et leur
@@ -1855,6 +1855,30 @@ natifs D31/E15 sont à E14).
 - Les états de rebond ne changent ni la marche ni le saut au-delà de l'oracle (`F-iron-air` : atterrissage au tick 22).
 - Build Release puis Debug ; `Alundra.Tests` sans échec ; traces inchangées ; verifier frais.
 - Recette de l'auteur : avec `arsenal-a-m14`, emplacement 3 : le fléau rebondit sur un Beannoïde et contre un mur.
+
+#### Résultats (2026-10-10)
+
+- **Commits** : `a0248ff` (T1, oracle copié et relancé : les 10 sondes `F-*` identiques au bit près, lignes des pilotes retrouvées),
+  `8748e0f` (T2), `02725d5` (T3).
+- **Code** : `AlundraPlayerAnimationEffects.cs` : squelette de `CreatePlayerAnimationEffects(mode)` avec les trois aiguillages du
+  binaire (`0x800228AC`, `0x800229CC`, `0x80022A74`) et le verrou d'atterrissage `0x800A8F30` ; mode 0 juste après le drapeau de gravité,
+  mode 1 en tête de la branche verrouillée (les deux seuls sites) ; fin du fléau réelle ; bouchons nommés qui comptent leurs appels :
+  pas de course et de marche, atterrissage, coupe de l'herbe (E20.e), alarme des PV bas (E20.c2a). Lecteur de cellule
+  `AlundraCellsCollisionField.TryReadBinaryCell` (grille du binaire, 52 × 60 pour les 483 cartes, bornes du binaire).
+- **Acceptation** : les 10 sondes `F-*` égales à l'oracle tick par tick, aux exclusions nommées près ; sur la 14, fer contact 11, `0x08` du
+  12 au 27, repos 28 ; acier contact 12, `0x25` du 13 au 28, repos 29 ; cible à 160 px : repos 32 et 35 ; sur la 69, le poteau touché au
+  tick 9 dans les quatre cas, rebond du 10 au 25, repos au 26 (relations c + 1 à c + 16, c + 17).
+- **Correction du plan** : une partie des `sound(0)` attribués aux bouchons vient du changement d'animation (`UpdateAnimation`, retour
+  `0x80038BD0`) ; seuls l'atterrissage (tick 22 en l'air : son 11 et effet 7) et le son de pas (tick 30 de la marche) viennent de la
+  fonction ; le test affirme le bouchon de pas au tick 30.
+- **Tests** : 147 tests du fléau ; `Alundra.Tests` 3710 sur 3710 en Release et en Debug ; traces inchangées ; aucun test existant
+  changé (un commentaire).
+- **Vérification** : verifier frais **CONFIRMED** (aucun P0 à P2) : fin du fléau, tables et sites redécodés ; oracle relancé à
+  l'identique ; trois mutations attrapées ; les six écarts de l'exécuteur justifiés par le binaire.
+- **Reportés** : P3 : les sondes de mur ne comparent que l'animation cible (forces et sol vérifiés à part par le verifier : égaux) ;
+  P4 : la branche verrouillée n'efface pas encore la charge ni le pointeur (fait par E20.f1a T4) ; P4 : le verrou d'atterrissage est
+  par proxy, global dans le binaire (sans effet tant que le bouchon d'atterrissage est vide ; à revoir avec E20.e).
+- **Reste** : la recette de l'auteur (`arsenal-a-m14`, emplacement 3 : le fléau rebondit sur un Beannoïde et contre un mur).
 
 #### Arrêts, budget, retour arrière
 
