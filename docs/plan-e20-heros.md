@@ -1530,7 +1530,7 @@ production) ; le Z du pilier de la 117 ; `0xB9`.
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.c1b-2.
 
-### 1.8 E20.f0 — Moyens de test des armes et opcodes `0xC0`/`0xC1` 🧪
+### 1.8 E20.f0 — Moyens de test des armes et opcodes `0xC0`/`0xC1` 🧪 (faite et CONFIRMED le 2026-10-10, `41c8d23` à `ab20420` ; reste la recette de l'auteur : générer les sauvegardes hors de l'app)
 
 Relecture : **READY** dès la première lecture (2026-10-10). Mise en œuvre faite le 2026-10-10 (T1 à T4 ✅, build Release et Debug, 3563 tests sans échec dans les deux configurations, traces inchangées) ; reste le verifier frais et la recette de l'auteur.
 
@@ -1600,6 +1600,27 @@ de l'auteur, hors de l'app) ; tout comportement d'arme.
 - Un arc donne l'arc du chasseur (objet 5) et l'équipe : l'arme courante est l'objet 5.
 - Build Release puis Debug ; `Alundra.Tests` sans échec ; traces inchangées ; verifier frais.
 - Recette de l'auteur (matin) : générer les sauvegardes hors de l'app (`docs/test-saves.md`) ; elles serviront aux recettes des armes.
+
+#### Résultats (2026-10-10)
+
+- **Commits** : `41c8d23` (T1), `4c3111a` (T2), `d537100` (T3), `ab20420` (T4).
+- **T1** : `0xC0` et `0xC1` portés (`AlundraEventProgramRunner.cs`, étiquettes de `EventOpcodeSizeTable.cs`) ; le binaire pose `0x80`
+  sans condition, même quand le setter refuse l'opérande, et la DLL de même ; tests sur les vrais octets des cartes 472 et 473
+  (`AlundraWeaponLockOpcodesTests`, 15 tests), programmes parcourus sans opcode sauté.
+- **T2** : les portes de l'inventaire (`AlundraInventoryDirector.cs:395`) et du sol de portail (`AlundraPortalTrigger.cs:114`) testaient
+  déjà la valeur entière, comme le binaire (`0x8002BB68`, `0x8002F1C4`) : aucun changement de production, trois tests avec `0x80` seul
+  (inventaire fermé, téléportation refusée, `PlayerTryAttack` frappe encore).
+- **T3** : `Preset` gagne `Weapon`, `Item`, `Hp`, `HpMax`, `Mp`, `MpMax`, `Money` (facultatifs, vrais setters, bornes du binaire :
+  argent 0 à 9999, `0x8004DF80` ; objet 0 à 98, `0x8004E4D8`) ; six préréglages, cases d'arrivée du plan validées par les vraies règles ;
+  l'épingle porte les huit noms ; `docs/test-saves.md` à jour ; une ligne `stats:` dans l'affichage de l'outil.
+- **T4** : `Give`, `Equip`, `SetMp`, `SetItem` dans `AlundraArcSupport.cs`, par les vrais setters.
+- **Tests** : `Alundra.Tests` 3563 sur 3563 en Release et en Debug ; traces inchangées.
+- **Vérification** : verifier frais **CONFIRMED** (aucun P0 à P2) : opcodes et portes redécodés, deux mutations attrapées.
+- **Reportés** : P3 : la case d'arrivée (8, 6) de la 14 est libre et plate mais sans tuile de sol (TileId 65535, comme l'arène de
+  `HitArena`) : le héros pourrait y apparaître sur fond noir ; à voir à la recette, sinon choisir une autre case. P4 : sans tables
+  d'objets (hors monde réel), `0xC0` n'enregistre pas l'arme ; `Give` ne signale pas un objet déjà à son maximum (sans effet sur les armes).
+- **Reste** : l'auteur génère les sauvegardes hors de l'app (`dotnet run --project tools/AlundraTestSaves -c Debug -- <projet>
+  <préréglage>`, `docs/test-saves.md`).
 
 #### Arrêts, budget, retour arrière
 
