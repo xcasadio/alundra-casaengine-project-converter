@@ -7,16 +7,17 @@ quand il est touché. E14 garde l'IA native des ennemis et des PNJ.
 
 **Statut** : proposé le 2026-10-09, sur la branche `chantier/e20-heros` (base : §0.3), avec l'enveloppe (§1.1) et
 la première tranche exécutable, E20.0 (§1.2). Les tranches suivantes se planifient et s'approuvent
-chacune à part, comme en E19. Décisions de l'auteur : §0.1 et ADR-0052.
+chacune à part, comme en E19. Décisions de l'auteur : §0.1, ADR-0052 et ADR-0053.
 
 **Avancement (2026-10-09)** : enveloppe et E20.0 approuvées par l'auteur (mode ASK) ; E19 fusionnée dans `main`
 (parent `8e023d8`, moteur `b2205d9f`), qui est donc la base de la branche. E20.0 : D1 à D9 faites et contre-vérifiées
-(§0.2.10) ; le détail d'E20.a attend les réponses de l'auteur aux questions O-E20-7 à O-E20-10 et aux options du §2.
+(§0.2.10). Réponses de l'auteur aux questions de la découverte : D-E20-11 à D-E20-18. E20.a est détaillée au §1.3,
+relue READY, et attend l'approbation de l'auteur.
 
 | Unité | Revue avant approbation | Après exécution |
 |---|---|---|
 | Enveloppe (ce plan) + E20.0 | plan-verifier | contre-vérification indépendante des faits, critique de complétude |
-| E20.a à E20.h | plan-verifier, tranche par tranche | verifier frais |
+| E20.a à E20.i | plan-verifier, tranche par tranche | verifier frais |
 
 Aucune tranche ne touche aux secrets ni à une entrée non fiable. E20.c2 change les PV du héros, que la
 sauvegarde garde déjà et valide (E16.c) : pas de nouveau format, pas de revue de sécurité. Si une
@@ -36,6 +37,13 @@ passent par des agents en lecture seule, avec une contre-vérification du binair
 - D1 nomme chaque passe du tick, vraie ou bouchonnée, la source des données d'animation, et un critère
   exact (S-A et S-B, champ par champ, convention du +1) ;
 - D2 reçoit six cas de validation ; D6 couvre tout le corpus, avec sa limite.
+
+**Révision 3 (2026-10-09).** Après les réponses de l'auteur (D-E20-11 à D-E20-18) : enveloppe **REVISE** (la ligne d'E20.a
+n'avait pas suivi les décisions ; les prérequis d'E20.e0, E20.h et E20.i manquaient ; le wagonnet avait un propriétaire que
+l'auteur n'a pas nommé) et E20.a **REVISE** (aucune preuve que le rendu de l'image reste à jour ; aucune règle pour les entités
+qui apparaissent en cours d'image). Tous corrigés : ligne d'E20.a, revue étendue à E20.i, recette d'E20.d sans la nage,
+prérequis par tranche, wagonnet sans propriétaire (§3), deux tests de plus dans A8, règle d'appartenance au tick, O-E20-11.
+Relectures neuves de la révision 3 : enveloppe **READY**, E20.a **READY**. E20.a attend l'approbation de l'auteur.
 
 **Révision 2 (2026-10-09).** Relecture neuve de la révision 1 : enveloppe **READY** ; E20.0
 **REVISE**, deux points, tous deux corrigés (FIX) :
@@ -88,6 +96,28 @@ l'auteur le 2026-10-09, après une découverte en lecture seule (§0.2).
 - **D-E20-10** — **Porter, lancer et les objets du Rond sont dans E20**, après le combat (E20.g et
   E20.h). La 362 demande une bombe posée sur un couvercle, et la barricade de caisses de la 392 se passe
   dans l'original en soulevant ou en grimpant.
+
+Après E20.0, l'auteur a répondu le 2026-10-09 aux questions O-E20-1 à O-E20-4 et O-E20-7 à O-E20-10 (« 1 a, 2 a, 3 a, 4a,
+5 oui, 6 a, 7 a, 8 a ») :
+
+- **D-E20-11** — **L'ordre des entités et des événements de carte suit le binaire** : à chaque tick, les événements de carte
+  passent avant le bloc des entités. E20.a le corrige, après avoir mesuré les épingles qui bougent. Cette décision remplace
+  l'écart d'un tick que l'auteur avait accepté pour la boîte de texte (D-E19-64, ADR-0029).
+- **D-E20-12** — **La DLL pilote elle-même une boucle de ticks dans l'ordre du binaire** ; pas de pas fixe dans le moteur (la
+  migration M3 reste différée).
+- **D-E20-13** — **La passe des compteurs n'efface pas `RidingEntity`** tant que la DLL ne recalcule le porteur qu'une fois par
+  image. Écart documenté.
+- **D-E20-14** — **`UpdateItemEffectState` et le pilote `0x8003634C`** sont des bouchons dans E20.a et sont portés dans E20.c2.
+- **D-E20-15** — **Règle du stick** (précise D-E20-8) : seulement au départ et à la reprise de la course, quand le clavier et la
+  croix ne donnent aucune direction et que le stick donne une diagonale, la course prend l'axe dominant du stick ; à moins de ε
+  de 45°, elle garde l'axe du regard actuel. ε = 1/16, à régler en E20.d d'après une mesure du stick. La marche ne change pas.
+- **D-E20-16** — **La nage forme la tranche E20.i** ; le wagonnet reste hors d'E20 (il n'a rien dans `MovePlayer`). Il n'a pas
+  de propriétaire : l'auteur le désignera plus tard.
+- **D-E20-17** — **Une tranche dédiée, E20.e0, avant E20.e** : l'apparition d'une entité par indice de sprite global
+  (`SpawnWarpEntity`), le butin et l'objet ramassable. Elle sert aussi à E14.
+- **D-E20-18** — **Projectiles partagés** : E20.f porte l'apparition et les gestionnaires propres au héros (vague de l'épée C61,
+  flèches chargées C94) ; la bombe (E12) va en E20.h ; les gestionnaires que des ennemis partagent peut-être (flèches E17,
+  glace C60, feu C54) vont à E14.
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
@@ -425,25 +455,31 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | Tranche | Contenu | Preuve | Recette en jeu |
 |---|---|---|---|
 | **E20.0** (§1.2) | Découverte complémentaire, sans toucher au code : oracles d'émulation de `MovePlayer` et de la passe de coups, dégâts au contact des ennemis, puissance de l'équipement, `0x8003634C`, preuve des boîtes exportées (D-E20-6), inventaire du passage par tick (D-E20-2), règle du stick (D-E20-8) | recalcul indépendant, contre-vérification du binaire, critique | — |
-| E20.a | Passe du héros par tick (D-E20-2) et **structure du tick**, dont E20.a est propriétaire : `MovePlayer` à chaque tick logique sur `AlundraTickPad`, à la place du binaire ; les passes communes à toutes les entités, une fois par tick, à la place du binaire : la passe des compteurs (`+0x1C`, effacements, décomptes) et le point d'accroche de la passe de coups (vide jusqu'à E20.c1) ; l'inversion entités / événements de carte corrigée ou gardée comme écart, selon E20.0 (D7) et l'auteur ; les trois appels dans l'ordre du binaire, bouchonnés (`TryUseItem` 1, `PlayerTryAction` 0, `PlayerTryAttack` 0) ; les appels du prologue bouchonnés ; O-E19-80 ; retrait des contournements du rythme par image | tous les tests ; un test avec 0, 1 et 2 ticks dans une image : chaque passe commune tourne une fois par tick, dans l'ordre du binaire ; traces du héros re-mesurées avec l'écart expliqué ; sonde du vrai jeu sur la nouvelle partie et sur une arrivée `0x52`/`0x53` | Marche, saut, échelle, dialogues, inventaire, livre : rien ne change |
+| E20.a (§1.3) | Le tick de la DLL suit le binaire, dont E20.a est propriétaire : le monde pilote la boucle des ticks (D-E20-12) ; à chaque tick, le pad, les passes de la boîte, les événements de carte, puis le bloc des entités, l'inversion étant corrigée après la mesure A0 (D-E20-11) ; `MovePlayer` à chaque tick sur `AlundraTickPad` (D-E20-2) ; passe des compteurs (`+0x1C`, effacements, décomptes, `RidingEntity` gardé, D-E20-13) ; point d'accroche de la passe de coups (vide jusqu'à E20.c1) ; les trois appels dans l'ordre du binaire, les appels du prologue, `UpdateItemEffectState` et `0x8003634C` en bouchons (D-E20-14) ; O-E19-80 ; retrait des contournements du rythme par image | tests de structure (0, 1 et 2 ticks par image, coup écrit au tick N lu au tick N+1 puis effacé, rendu de l'image à jour, entités apparues en cours d'image) ; oracle D1 ; épingles justifiées ; traces re-mesurées ; sonde du vrai jeu | Marche, saut, échelle, dialogues, inventaire, livre : rien ne change, sauf le décalage d'un tick entre les entités et les événements de carte (D-E20-11) |
 | E20.b | Coup d'épée sans dégâts : table des armes en entier, `PlayerTryAttack` (relâchement d'abord, puis appui), garde `0x2000`, son 3, attaques au sol et en l'air, états d'attaque, priorités (Carré sur Croix, interaction d'abord) | oracle de `MovePlayer` ; arcs au vrai préfab | Carré frappe au sol et en l'air, avec le son ; le héros freine |
 | E20.c1 | Passe de coups et dégâts aux cibles (D-E20-3) : fiches d'équilibre (seuil `D`), PV des entités, `CurrentAttack`, boîtes par image (D-E20-6), `HitBox`, `UpdateBalanceRecords` au point d'accroche d'E20.a, avec effets 4, 5 et 9, animation figée, dégâts avec l'équipement, `0x86`, `0x87`, `0x95`, réactions scriptées (leviers) | oracle de `0x80039300` et `0x8004464C` sur des ensembles tirés au hasard ; un test où un coup écrit au tick N est lu par les événements du tick N+1 puis effacé par la passe des compteurs, avec deux ticks dans une image ; le premier attaquant l'emporte ; arcs des leviers posés directement | Un coup sur un Beannoïde de la 14 : étincelles (sa réaction vient d'E14) ; au contact d'un ennemi de la 14 ou de la 15, étincelles sans perte de PV (§0.2.10) |
 | *E14.a* (autre étape) | Muruta et Beannoïde (D-E20-4), planifiée après E20.c1 | plan d'E14 | Le hall de la 115 |
-| E20.c2 | Le héros touché : entrée `0x80031A68` (toucheur et cases dangereuses), `0x31`/`0x3A`, invulnérabilité `0x78` et clignotement, PV vers `PlayerStats` et le HUD, `0x8003634C`, chemin `controlFlags == 0x20`, pas de mort (D-E20-5) | oracle de `0x80031A68` ; arcs | Les cœurs baissent au contact, le héros clignote, il ne meurt pas |
-| E20.d | Course : les cinq états, entrée et sorties, cône, reprise, rebond, charge `0x04` (ses coups viennent d'E20.c1), escalade prioritaire, arrondi du stick (D-E20-8) ; le test épinglé « Triangle seul donne Idle » s'inverse | oracle de `MovePlayer` ; arcs | Courir, s'arrêter, reprendre, foncer, buter contre un mur, sauter d'un rebord, entrer dans l'eau |
-| E20.e | Effets du héros et herbe coupée : `CreatePlayerAnimationEffects` (pas, poussière de marche, de course et d'atterrissage), `CheckAndTriggerTileEffect`, butin (propriétaire de l'objet ramassable : O-E20-3) | oracle ; arcs | Pas et poussière ; l'herbe se coupe à l'épée et à la charge ; argent et cœurs tombent |
-| E20.f | Autres armes (D-E20-7) : charge et aura, fléau et rebond, baguettes, arcs, `SpawnWarpEntity` par indice global, projectiles (O-E20-4), `0xC0`/`0xC1` | oracle ; arcs | Sauvegarde de test avec les armes (à créer) |
+| E20.c2 | Le héros touché : entrée `0x80031A68` (toucheur et cases dangereuses), `0x31`/`0x3A`, invulnérabilité `0x78` et clignotement, PV vers `PlayerStats` et le HUD, `UpdateItemEffectState` (table de défense, bottes, régénération) et le pilote `0x8003634C` en vrai (D-E20-14), chemin `controlFlags == 0x20`, pas de mort (D-E20-5) | oracle de `0x80031A68` ; arcs | Les cœurs baissent au contact, le héros clignote, il ne meurt pas |
+| E20.d | Course : les cinq états, entrée et sorties, cône, reprise, rebond, charge `0x04` (ses coups viennent d'E20.c1), escalade prioritaire, arrondi du stick (D-E20-8) ; le test épinglé « Triangle seul donne Idle » s'inverse | oracle de `MovePlayer` ; arcs | Courir, s'arrêter, reprendre, foncer, buter contre un mur, sauter d'un rebord ; sur l'eau profonde, le héros marche encore (la nage est E20.i) |
+| E20.e0 | Apparition d'entités et butin (D-E20-17) : `SpawnWarpEntity` (`0x80039F58`, 102 appelants) par indice de sprite global, tirage du butin à l'apparition (`0x80032A40`), lâcher à la mort (`0x80032B90`) avec son veto, objet ramassable (gestionnaire C255), avance du générateur pseudo-aléatoire une fois par tick après la mise à jour du monde (`0x8002BD14`) | oracle ; arcs | Rien de visible seul ; recette avec E20.e |
+| E20.e | Effets du héros et herbe coupée : `CreatePlayerAnimationEffects` (pas, poussière de marche, de course et d'atterrissage), `CheckAndTriggerTileEffect`, butin tiré par E20.e0 | oracle ; arcs | Pas et poussière ; l'herbe se coupe à l'épée et à la charge ; argent et cœurs tombent et se ramassent |
+| E20.f | Autres armes (D-E20-7) : charge et aura, fléau et rebond, baguettes, arcs, projectiles par l'apparition d'E20.e0 et les gestionnaires propres au héros, vague de l'épée C61 et flèches chargées C94 (D-E20-18), `0xC0`/`0xC1` | oracle ; arcs | Sauvegarde de test avec les armes (à créer) |
 | E20.g | Porter, poser, lancer (`PlayerTryAction`, `UpdatePlayerCarriedEntity`) ; caisses et jarres redeviennent des obstacles (fin de l'écart D-E19-28/D-E19-46) ; barricade de la 392 (O-E20-5) | oracle ; arcs | Soulever et lancer une caisse ; la 392 |
-| E20.h | Objets du Rond (`TryUseItem`) : graines, bombes, magie, potions ; le couvercle de la 362 | oracle ; arcs | La 362 |
+| E20.h | Objets du Rond (`TryUseItem`) : graines, bombes (gestionnaire E12), magie, potions ; le couvercle de la 362 | oracle ; arcs | La 362 |
+| E20.i | Nage (D-E20-16) : branche de pente 4 (`0x8003260C`), états `0x0F`, `0x1D`, `0x28`, `0x3A` et `0x3B`, plongée au front de bouton | oracle ; arcs | Nager et plonger en eau profonde (la 416 en a) |
 
-- **Ordre** : E20.0 → E20.a → E20.b → E20.c1 → E20.c2 → E20.d → E20.e → E20.f → E20.g → E20.h.
+- **Ordre** : E20.0 → E20.a → E20.b → E20.c1 → E20.c2 → E20.d → E20.e0 → E20.e → E20.f → E20.g → E20.h → E20.i.
   E14.a se planifie dès qu'E20.c1 est faite. Le hall de la 115 devient jouable avec E20.a, E20.b,
   E20.c1 et E14.a.
 - **Dépendances** : tout dépend d'E20.a (le rythme par tick, le relâchement, et la structure du tick, dont
   E20.a est propriétaire ; E20.c1 branche la passe de coups à la place qu'E20.a a créée). E20.c1 dépend
   d'E20.0 (D6) pour les boîtes. La charge `0x04` d'E20.d ne touche rien sans E20.c1. E20.e a besoin des
-  boîtes d'E20.c1 pour couper l'herbe. E20.f a besoin d'E20.c1 et d'E20.e. E20.h a besoin d'E20.g
-  pour poser la bombe, si la découverte de la tranche le confirme.
+  boîtes d'E20.c1 pour couper l'herbe et du butin d'E20.e0. E20.f a besoin d'E20.c1, d'E20.e0 et d'E20.e.
+  - **E20.e0** : E20.a (le tick et l'avance du générateur une fois par tick) ; son lâcher à la mort ne se voit qu'avec des morts,
+    donc avec E20.c1 et E14.
+  - **E20.h** : E20.e0 (faire apparaître la bombe), E20.c1 (`0x87` et le couvercle de la 362), E20.e (la coupe de l'herbe par la
+    bombe) et E20.g (poser ou lancer la bombe, si la découverte de la tranche le confirme).
+  - **E20.i** : E20.a ; E20.c2 pour l'état blessé dans l'eau (`0x3A`).
 - **Mise à jour de ce plan** : chaque tranche remet au §0.2 ce qu'elle a mesuré, puis fait détailler,
   relire et approuver la suivante. Une tranche qui touche le convertisseur fait un export complet.
 
@@ -616,25 +652,164 @@ Rapports et contre-vérifications : `docs/plan-e20-annexe/e20-0-rapports/` ; fai
   D-E20-10 ; un besoin d'écrire hors de `docs/`.
 - Retour arrière : `git revert` des commits de documentation.
 
+### 1.3 E20.a — Le tick de la DLL suit le binaire ⏳
+
+**But.** Chaque tick logique de la DLL suit l'ordre du binaire (§0.2.1, §0.2.10) : le pad, les passes de la boîte de dialogue et
+de l'écran de sauvegarde (inchangées), les événements de carte, puis le bloc des entités (`MovePlayer`, les programmes des
+entités, la passe des compteurs, les listes, l'horloge d'animation, la physique, le point d'accroche de la passe de coups), puis
+le bloc de l'inventaire (inchangé). Le héros lit le pad du tick. Pour le joueur, rien ne change, sauf l'écart d'un tick qui
+séparait les entités des événements de carte (D-E20-11).
+
+**Décisions appliquées** : D-E20-2, D-E20-11, D-E20-12, D-E20-13, D-E20-14. **Faits porteurs** : §0.2.1, §0.2.2, §0.2.10 et
+le rapport D7 (`docs/plan-e20-annexe/e20-0-rapports/D7-tick-de-la-dll.md`).
+
+**Périmètre.** DLL `Alundra/Scripts/` : `AlundraWorldProxy.cs` (boucle des ticks), `AlundraEntityScriptProxy.cs` (corps de tick
+par entité, branche du héros, mode autonome), `AlundraPlayerManager.cs`, `AlundraPlayerController.cs` (`AlundraPadState`),
+`AlundraTickPad.cs`, `AlundraEventProgramRunner.cs` (`0x2F`, modes 0 et 1), `AlundraFrameSyncPasses.cs` si les synchronisations
+de fin d'image changent de place. Tests `Alundra.Tests/` : montages, épingles justifiées, nouveaux tests. Traces
+`docs/hero-trace-389-*.txt` et `docs/intro-*` re-mesurées. Ce plan et un ADR si le contrat d'exécution prend une décision que
+l'ADR-0053 ne couvre pas. Ni le moteur, ni le convertisseur, ni l'export, ni `CasaEngine.Launcher/Program.cs`.
+
+**Hors périmètre.** L'attaque, la course, l'usage d'objet (bouchons) ; la passe de coups (E20.c1) et l'entrée des dégâts du héros
+(E20.c2) ; `UpdateItemEffectState` et le pilote `0x8003634C` (bouchons, D-E20-14) ; l'effacement de `RidingEntity` (D-E20-13) ;
+la réserve d'effets (`_effectStage.RunFrame`, inchangée) ; la synchronisation d'animation par image (D-E19-13, gardée) ; le pas
+fixe du moteur (D-E20-12) ; les modes 2 et suivants de `0x2F`.
+
+#### Tâches
+
+- ⏳ **A0 — Mesure de l'inversion, avant tout commit de code.** Dans la copie de travail, faire passer les événements de carte avant
+  le pas des entités, au plus près de ce qu'E20.a fera, sans rien d'autre ; lancer `Alundra.Tests` ; relever chaque test, épingle
+  et point de trace (intro, arcs de la chaîne, `AlundraDialogueBoxOrderTests`, `AlundraAnimationSoundTests`) qui change, avec
+  l'ancienne valeur, la nouvelle et la raison du binaire. Puis restaurer les seuls fichiers touchés (`git restore <fichier>`).
+  Livrable : `docs/plan-e20-annexe/e20-a/a0-mesure.md`. Un changement sans raison du binaire est un arrêt.
+- ⏳ **A1 — Le pad du tick.** `AlundraPadState` gagne `ButtonsReleased` ; une construction depuis `AlundraTickPad` (tenu, appuyé,
+  relâché) ; `MovePlayer` et `CheckEntityInteraction` lisent ce pad ; `0x2F` modes 0 et 1 lisent aussi le pad du tick (ils lisent
+  aujourd'hui le front de l'image, une fois par tick, `AlundraEventProgramRunner.cs:1738-1764`).
+- ⏳ **A2 — Un corps de tick par entité, piloté par le monde.**
+  - Extraire d'`AlundraEntityScriptProxy.Update` un corps de tick unique par entité : choix du programme, programme, horloge
+    d'animation, mouvement et appui pour les entités ; `MovePlayer`, horloge d'animation, `Tick` et sondes pour le héros.
+  - En production, le monde déroule les ticks (A3). L'entité garde, une fois par image, l'échantillon du pad (héros) et la
+    récupération de la racine ; `SyncAnimation` et `SyncTransform` voient les ticks de l'image en cours : aucune image de retard
+    visuel de plus qu'aujourd'hui. Le mécanisme est au choix de l'exécutant, décrit dans le code et dans ce plan.
+  - Sans monde pilote (montages, faux hôtes), l'entité garde sa propre boucle de ticks, sur le même corps, avec `MovePlayer` à
+    chaque tick : les montages existants continuent de marcher.
+- ⏳ **A3 — L'ordre du tick k dans le monde** (`AlundraWorldProxy.Update`), dans l'ordre du binaire :
+  1. le pad (`TickPad.Update`, inchangé) ;
+  2. la boîte de dialogue, le texte, le choix, l'écran de sauvegarde (inchangés, ADR-0029, ADR-0047) ;
+  3. la porte (`GameplayGateNow`) ;
+  4. héros présent et porte ouverte : les événements de carte, puis le recyclage (inchangés) ;
+  5. **le bloc des entités**, porte ouverte : `MovePlayer` du héros sur le pad du tick (A1) ; les programmes des entités dans
+     l'ordre des cases, et le ré-examen des déclencheurs en attente (`RunPendingEventTriggers`, déplacé de l'après-boucle dans le
+     tick, comme la répétition de `0x800386D0`) ; la passe des compteurs (A5) ; les listes ; l'horloge d'animation de chaque
+     entité ; la physique (héros : `Tick`, puis `UpdateVramFlags`, `UpdateGroundSlope` et `UpdateFloorHeight` dans le tick ; les
+     autres : mouvement scripté et appui) ; un point d'accroche vide pour la passe de coups. Porte fermée : seules les listes
+     tournent (`0x8003B408`) ;
+  6. le bloc de l'inventaire (inchangé, ADR-0050).
+
+  L'ordre des cases est celui de `_spawnedEntities`, le héros d'abord ; le « premier attaquant » d'E20.c1 en dépend.
+
+  **Entités qui apparaissent ou disparaissent en cours d'image** : la règle d'aujourd'hui est gardée. `World.AddEntity` ne fait que
+  mettre en file (`AlundraWorldProxy.cs:860-868`) ; une entité qui apparaît pendant une image (par un événement de carte ou un
+  programme) fait son premier tick dans l'image suivante, une fois intégrée par le moteur (`Owner.World` posé) ; une entité
+  détruite ou retirée ne fait plus de tick. Le binaire pourrait faire tourner une entité neuve dans le même tick, par la
+  répétition de `0x800386D0` (non vérifié, O-E20-11) : ce n'est pas l'objet d'E20.a.
+
+  **Publication de l'image** : D-E19-13 reste vrai. L'animation qu'un programme demande n'est appliquée au sprite qu'en fin
+  d'image (`SyncAnimation`) ; dans les ticks d'une image, le mouvement lit l'animation courante telle que l'image précédente l'a
+  laissée. Mais `SyncAnimation` et `SyncTransform` publient l'état d'après le dernier tick de l'image en cours : le moteur met à
+  jour les entités avant le monde (`World.cs:533-583`), donc les laisser dans `AlundraEntityScriptProxy.Update`, avant les ticks
+  du monde, ajouterait une image de retard visible.
+- ⏳ **A4 — Le héros à chaque tick.**
+  - `MovePlayer` passe une fois par tick, et zéro fois dans une image sans tick.
+  - Retirer `JumpStartTickStamp`, sa garde et le cachet du saut (`AlundraPlayerManager.cs:294-301`, `:443`), devenus sans objet.
+  - Idle, Moving et les états de saut appellent `TryUseItem` (bouchon : rend 1), `PlayerTryAction` (rend 0),
+    `CheckEntityInteraction` (existant, Idle et Moving seulement) et `PlayerTryAttack` (rend 0), dans l'ordre du binaire (§0.2.2).
+  - Le prologue appelle `UpdatePlayerWeaponEffect`, `UpdateWeaponStepProgression` et `UpdatePlayerCarriedEntity(0)`, bouchons à
+    leur place (`0x80031D68-0x80031D78`) ; la fin appelle `UpdateItemEffectState`, suivi des copies de PV existantes, et le pilote
+    `0x8003634C` à son second site (`0x80031CC4`), bouchons (D-E20-14).
+  - Chaque bouchon est une méthode nommée d'après le binaire, documentée, sans effet.
+- ⏳ **A5 — La passe des compteurs** (`0x80038998`), une fois par tick, sur toutes les entités, après les programmes : `+0x1C` + 1,
+  `DamagedTickCounter` et `FrameCollisionTickCounter` décrémentés s'ils ne sont pas nuls, `TouchingEntity` et `HitCounter`
+  effacés ; `RidingEntity` gardé (D-E20-13). Inventorier d'abord les lecteurs de ces champs dans la DLL (`0x47` et `0x48` lisent
+  `HitCounter` ; le choix E/D lit `TouchingEntity` ; `+0x1C` et `+0x1CC` : à relever).
+- ⏳ **A6 — Premières images (O-E19-80).** Sonder le vrai jeu (méthode d'E19.v2) sur une nouvelle partie et sur une arrivée par
+  `0x52` ou `0x53` suivie d'un verrou ; appliquer la règle du plancher à la queue commune seulement si le cas se montre.
+- ⏳ **A7 — Tests, traces, plan.**
+  - Chaque épingle qui change est listée ici, avec l'ancienne valeur, la nouvelle et sa raison (le binaire, ou l'oracle D1 quand il
+    couvre le cas). Attendues d'après D7 : SJ6b (155136 au second tick, à vérifier sur l'oracle), SJ5b et SJ5c (Croix tenue
+    jusqu'au premier tick), SJ4 et SJ4b retirés avec le cachet, et ce que A0 relève.
+  - Nouveau fichier `AlundraTickStructureTests` (A8).
+  - Traces de référence du héros et de l'intro re-mesurées, chaque écart expliqué.
+
+#### Acceptation
+
+- Build Release puis Debug ; `Alundra.Tests` sans échec ; aucun changement dans le moteur.
+- **A8, structure du tick** (`AlundraTickStructureTests`), avec des images de 0, 1 et 2 ticks :
+  - le nombre d'appels à `MovePlayer` égale le nombre de ticks ; une image sans tick ne change pas le héros ;
+  - l'ordre d'un tick est : pad, passes de la boîte, événements de carte, `MovePlayer`, programmes des entités, compteurs, listes,
+    horloge, physique, point d'accroche, inventaire ;
+  - une valeur posée au point d'accroche au tick k (un `TouchingEntity`) est vue par le choix des programmes au tick k+1, puis
+    effacée par la passe des compteurs du même tick k+1 ; cela tient aussi quand k et k+1 tombent dans la même image ;
+  - porte fermée, le bloc des entités ne fait tourner que les listes ;
+  - **rendu à jour**, par un vrai `World.Update` (la boucle des entités du moteur, puis le monde), avec des images de 1 et de 2
+    ticks : après l'appel, la transformation publiée et l'animation résolue (`CurrentAnimationId`, ou l'image du sprite) du héros
+    et d'une entité égalent leur état après le dernier tick de cette même image. Le test échoue sur une variante qui laisse
+    `SyncAnimation` et `SyncTransform` dans l'`Update` de l'entité, avant les ticks du monde ;
+  - **entité neuve** : une entité qu'un événement de carte fait apparaître au tick k d'une image de 2 ticks fait son premier tick
+    au premier tick de l'image suivante, avant comme après E20.a.
+- **Oracle D1** : UH-1 et UH-2 (`AlundraHeroFallAndPadJumpTests.cs`) restent verts ; leurs valeurs égalent la sortie de l'oracle
+  (`docs/plan-e20-annexe/d1-oracle-moveplayer/out/`), champ par champ, avec la convention du +1. Chaque épingle du saut qui change
+  (A7) est re-dérivée de l'oracle.
+- **Épingles** : la liste d'A7 est complète ; aucun autre test ne change.
+- **Traces** : celles du héros et de l'intro sont re-mesurées, chaque écart expliqué dans ce plan.
+- **Vrai jeu** : la sonde d'E19.v2 sur une nouvelle partie montre Alundra immobile au début ; A6 est rendue.
+- **Vérification** : un verifier frais confirme ce qui précède.
+- **Recette en jeu de l'auteur** : la marche, le saut, l'échelle, les dialogues, l'inventaire et le livre de sauvegarde se
+  comportent comme avant, de la nouvelle partie jusqu'au premier livre (163).
+
+#### Arrêts, budget, retour arrière
+
+- **Arrêts** :
+  - un point épinglé de l'intro ou un arc de la chaîne qui bouge sans raison du binaire (A0 ou A7) ;
+  - une régression des premières images du vrai jeu ;
+  - un test qui change sans raison du binaire ;
+  - plus de dix fichiers de test à réécrire en dehors des épingles listées en A7 : le mode autonome (A2) ne remplit pas son rôle,
+    la question revient à l'auteur ;
+  - tout contact avec `CasaEngine.Launcher/Program.cs`.
+- **Budget** : un `executor` sous contrat, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de
+  correction et de re-vérification, chacune sur un état réellement changé.
+- **Retour arrière** : `git revert` des commits d'E20.a.
+
+#### Contraintes transmises aux tranches suivantes
+
+- **E20.b et E20.c1** : l'horloge d'animation de la DLL réserve le tick d'un changement d'animation, alors que le binaire montre
+  l'image 0 de la nouvelle animation dès ce tick, avec sa boîte et son attaque (`0x80038BAC`) ; un changement de direction relance
+  l'animation dans le binaire (`0x80038B08`). Les deux tranches le vérifient contre l'oracle D1.
+- **E20.c1** : la passe de coups se branche au point d'accroche d'A3, dans l'ordre des cases.
+- **E20.e** : la réserve d'effets reste par image jusque-là.
+
 ---
 
 ## 2. Points ouverts
 
 | Point | Question | Où elle se tranche |
 |---|---|---|
-| O-E20-1 | La nage (pente 4) et le wagonnet : le plan d'E19 les donnait à E14. D9 propose : la nage en tranche E20.i ; le wagonnet hors d'E20 (il n'a rien dans `MovePlayer`) | l'auteur |
-| O-E20-2 | La règle exacte de l'arrondi du stick (D-E20-8). Proposition de D8 : seulement au départ et à la reprise de la course, quand clavier et croix ne donnent aucune direction et que le stick donne une diagonale, prendre l'axe dominant du stick ; à moins de ε de 45° (ε = 1/16, à régler par une mesure du stick en E20.d), garder l'axe du regard actuel | l'auteur |
-| O-E20-3 | Le butin et l'objet ramassable (`0x80032968`, `0x80032B90`, `0x80032C7C`, gestionnaire C255) servent aussi aux ennemis. D9 propose une tranche dédiée avant E20.e, qui porte aussi `SpawnWarpEntity` (102 appelants, partagé avec E14) | l'auteur |
-| O-E20-4 | Les gestionnaires natifs des projectiles du héros. D9 propose de partager : E20.f porte l'apparition et les gestionnaires propres au héros (vague de l'épée C61, flèches chargées C94 ; la bombe E12 en E20.h) ; ceux que des ennemis partagent peut-être (flèches E17, glace C60, feu C54) vont à E14 | l'auteur |
+| O-E20-1 | **Tranché le 2026-10-09 (D-E20-16).** La nage (pente 4) et le wagonnet : le plan d'E19 les donnait à E14. D9 propose : la nage en tranche E20.i ; le wagonnet hors d'E20 (il n'a rien dans `MovePlayer`) | — |
+| O-E20-2 | **Tranché le 2026-10-09 (D-E20-15).** La règle exacte de l'arrondi du stick (D-E20-8). Proposition de D8 : seulement au départ et à la reprise de la course, quand clavier et croix ne donnent aucune direction et que le stick donne une diagonale, prendre l'axe dominant du stick ; à moins de ε de 45° (ε = 1/16, à régler par une mesure du stick en E20.d), garder l'axe du regard actuel | — |
+| O-E20-3 | **Tranché le 2026-10-09 (D-E20-17).** Le butin et l'objet ramassable (`0x80032968`, `0x80032B90`, `0x80032C7C`, gestionnaire C255) servent aussi aux ennemis. D9 propose une tranche dédiée avant E20.e, qui porte aussi `SpawnWarpEntity` (102 appelants, partagé avec E14) | — |
+| O-E20-4 | **Tranché le 2026-10-09 (D-E20-18).** Les gestionnaires natifs des projectiles du héros. D9 propose de partager : E20.f porte l'apparition et les gestionnaires propres au héros (vague de l'épée C61, flèches chargées C94 ; la bombe E12 en E20.h) ; ceux que des ennemis partagent peut-être (flèches E17, glace C60, feu C54) vont à E14 | — |
 | O-E20-5 | La barricade de la 392 : l'original la franchit-il en soulevant ou en grimpant ? | E20.g |
 | O-E20-6 | Une fois E18 faite, D-E20-5 tombe ; le prérequis SC8 d'E18 (PV ≥ 1 au chargement) reste à trancher | E18 |
-| O-E20-7 | Ordre événements de carte / entités : le corriger dans E20.a (ordre du binaire : pad, événements de carte, entités ; mesure préalable des épingles qui bougent), ou le garder comme écart documenté | auteur, avant E20.a |
-| O-E20-8 | Structure du tick : boucle de ticks pilotée par le monde dans la DLL (proposition de D7), ou pas fixe de 1/50 s du moteur (migration M3, différée par l'auteur le 2026-08-26) | auteur, avant E20.a |
-| O-E20-9 | La passe des compteurs efface `RidingEntity` (`+0x12C`) ; la DLL ne recalcule le porteur qu'une fois par image : ne pas l'effacer, écart documenté, jusqu'à un recalcul par tick | auteur, avant E20.a |
-| O-E20-10 | `UpdateItemEffectState` (table de défense, bottes, régénération, PV) et `0x8003634C` : bouchons dans E20.a et portage dans E20.c2, ou portage dès E20.a | auteur, avant E20.a |
+| O-E20-7 | **Tranché le 2026-10-09 (D-E20-11).** Ordre événements de carte / entités : le corriger dans E20.a (ordre du binaire : pad, événements de carte, entités ; mesure préalable des épingles qui bougent), ou le garder comme écart documenté | — |
+| O-E20-8 | **Tranché le 2026-10-09 (D-E20-12).** Structure du tick : boucle de ticks pilotée par le monde dans la DLL (proposition de D7), ou pas fixe de 1/50 s du moteur (migration M3, différée par l'auteur le 2026-08-26) | — |
+| O-E20-9 | **Tranché le 2026-10-09 (D-E20-13).** La passe des compteurs efface `RidingEntity` (`+0x12C`) ; la DLL ne recalcule le porteur qu'une fois par image : ne pas l'effacer, écart documenté, jusqu'à un recalcul par tick | — |
+| O-E20-11 | Une entité neuve tourne-t-elle dans le même tick dans le binaire (répétition de `0x800386D0`, contrôle de D7 : non vérifié) ? E20.a garde la règle d'aujourd'hui (premier tick à l'image suivante) | à mesurer, avec E20.e0 |
+| O-E20-10 | **Tranché le 2026-10-09 (D-E20-14).** `UpdateItemEffectState` (table de défense, bottes, régénération, PV) et `0x8003634C` : bouchons dans E20.a et portage dans E20.c2, ou portage dès E20.a | — |
 
 ## 3. Hors périmètre
 
+- Le wagonnet (cartes 61 à 68 et 329) : sans propriétaire, à désigner par l'auteur (D-E20-16).
+- Les gestionnaires de projectiles que des ennemis partagent peut-être (flèches E17, glace C60, feu C54) : E14 (D-E20-18).
 - L'IA native des ennemis, des PNJ et des boss (E14), dont les Muruta et les Beannoïde (E14.a,
   D-E20-4) et leurs morts et butins propres.
 - La mort, « Réessayer », `0xBB`, l'objet `0x27` et Start+Select (E18).

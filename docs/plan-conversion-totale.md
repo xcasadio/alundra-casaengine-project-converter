@@ -748,6 +748,9 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   les objets du Rond et la passe de coups commune sont dans E20 ([plan-e20-heros.md](plan-e20-heros.md)). E14 garde les
   gestionnaires C, D et E propres à chaque type de sprite. Sa première tranche, **E14.a**, porte les Muruta et les Beannoïde,
   juste après E20.c1 (D-E20-4).
+- **Reçus d'E20 (2026-10-09, D-E20-17, D-E20-18, ADR-0053)** : E14 réutilise l'apparition d'entités et le butin d'E20.e0 ; elle
+  porte les gestionnaires de projectiles que des ennemis partagent peut-être (flèches E17, glace C60, feu C54). Le wagonnet n'a
+  pas de propriétaire : l'auteur le désignera (D-E20-16).
 
 ### E15 — Tout le texte d'Alundra en Yarn ✅ (close le 2026-09-28, recette en jeu validée : `docs/plan-e15-yarn.md`)
 
@@ -945,10 +948,10 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
 - **Pourquoi** : aucune étape ne portait la course ni l'attaque. Le plan d'E19 les renvoyait à E14, qui
   ne parle que de l'IA des ennemis et des PNJ. Le premier combat obligatoire de l'histoire est le hall
   du manoir de Tarn (115) : quatre Muruta à tuer avant que les portails se rouvrent.
-- **Plan** : [plan-e20-heros.md](plan-e20-heros.md) ; décisions D-E20-1 à D-E20-10, ADR-0052.
+- **Plan** : [plan-e20-heros.md](plan-e20-heros.md) ; décisions D-E20-1 à D-E20-18, ADR-0052 et ADR-0053.
   - E20.0 découverte complémentaire, puis E20.a passe du héros par tick, E20.b coup d'épée, E20.c1
-    passe de coups, E20.c2 héros touché, E20.d course, E20.e effets et herbe coupée, E20.f autres
-    armes, E20.g porter et lancer, E20.h objets du Rond.
+    passe de coups, E20.c2 héros touché, E20.d course, E20.e0 apparition d'entités et butin, E20.e effets et
+    herbe coupée, E20.f autres armes, E20.g porter et lancer, E20.h objets du Rond, E20.i nage.
   - Avant E18, le héros perd des PV mais ne meurt pas (D-E20-5).
 - **Dépendances** : E19 tel qu'au commit `8e023d8` de `chantier/e19-suite3` (E19.v2 compris), base de la
   branche `chantier/e20-heros` ; O-E19-80 passe à E20.a. E14.a (Muruta et Beannoïde) suit E20.c1 ;
