@@ -1241,7 +1241,7 @@ les PV du héros (E20.c2) ; tout appel de `ComputeNewHp` en production (gestionn
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.c1b-1.
 
-### 1.7 E20.c1b-2 — Les leviers réagissent au coup d'épée ⏳
+### 1.7 E20.c1b-2 — Les leviers réagissent au coup d'épée 🧪 (faite le 2026-10-09, `faaf00f` et les commits suivants ; reste le verifier frais et la recette en jeu de l'auteur)
 
 Relecture : **READY** dès la première lecture (2026-10-09). Exécution lancée sans soumission à l'auteur, à sa demande.
 
