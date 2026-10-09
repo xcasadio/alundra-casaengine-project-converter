@@ -1,0 +1,22 @@
+# D1 mutation tests: does the comparison with the annex notice a change of the oracle?
+# columns: mutation | S-A verdict (differences) | S-B verdict (differences) | trace identical to baseline (compared fields)
+baseline                                                   | S-A PASS (0 differences)         | S-B PASS (0 differences)         | same/same
+skip pass 0x80038634 (entity slots)                        | S-A PASS (0 differences)         | S-B PASS (0 differences)         | same/same
+skip pass 0x80038998 (counters)                            | S-A PASS (0 differences)         | S-B PASS (0 differences)         | same/same
+skip pass 0x800384F4 (lists)                               | S-A FAIL (84 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+skip pass 0x80038E18 (animation)                           | S-A FAIL (102 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+skip pass 0x80038364 (physics)                             | S-A FAIL (83 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+skip pass 0x800386D0 (events: MovePlayer)                  | S-A FAIL (102 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+gravity 100 instead of 128                                 | S-A FAIL (56 differences; first: tick 2) | S-B FAIL (62 differences; first: tick 2) | differs/differs
+ZViscosity 512 instead of 4096                             | S-A FAIL (64 differences; first: tick 2) | S-B FAIL (84 differences; first: tick 2) | differs/differs
+hero HP 0 (+0x14 = 0): death branch                        | S-A FAIL (105 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+hero +0x20 = 1: early exit                                 | S-A FAIL (84 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+hero +0x1CC = 5 (invulnerability counter)                  | S-A PASS (0 differences)         | S-B PASS (0 differences)         | same/same
+[0x800DC4B8] = 0x20: locked branch                         | S-A FAIL (102 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+Cross held on every tick (no new edge after tick 1)        | S-A PASS (0 differences)         | S-B PASS (0 differences)         | same/same
+start direction 8 (left) instead of 24                     | S-A PASS (0 differences)         | S-B PASS (0 differences)         | same/same
+S-A after 3 idle ticks (hero at rest before tick 1)        | S-A VERDICT PASS: 216 values compared, 0 differences
+start position (101, 203) px                               | S-A PASS | S-B PASS
+start position (333, 500) px                               | S-A PASS | S-B PASS
+start position (23, 17) px                                 | S-A PASS | S-B PASS
+start position (700, 300) px                               | S-A PASS | S-B PASS

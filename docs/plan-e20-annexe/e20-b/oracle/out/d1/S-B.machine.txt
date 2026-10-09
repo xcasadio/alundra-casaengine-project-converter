@@ -1,0 +1,119 @@
+# functions entered by jal/jalr during the scenario (address: count)
+8002e910: 6
+8002eaf4: 27
+8002ed64: 27
+8002eeac: 27
+8002f120: 27
+8002f49c: 27
+8002f768: 27
+8002f884: 27
+8002fb14: 27
+800307e8: 27
+80031a68: 27
+80031b50: 27
+8003634c: 27
+800364c8: 27
+80036614: 27
+800366fc: 27
+800367e4: 54
+80036828: 27
+80036bfc: 17
+80036d94: 10
+80036f34: 27
+800370c4: 54
+80037488: 27
+800375e0: 27
+80037730: 27
+80037e34: 27
+80037f28: 27
+80038064: 27
+80038ab4: 27
+8003bdd8: 3
+800445c0: 54
+800490fc: 5
+8004dc68: 27
+8004dd30: 27
+8004e030: 54
+8004e0f8: 27
+8004e18c: 54
+8004e268: 54
+8004e428: 216
+# reads of bytes nobody had written during the SETUP (real init code), must be empty: empty
+# reads of bytes nobody had written during the ticks (pc, address, size: count), must be empty
+# MovePlayer 0x80031B50: points that must be reached (R) or must not be reached (N) for the hero to run the normal path
+80031ba4 R REACHED  entry reads the hero +0x20
+80031bc4 R REACHED  +0x20 == 0: the tick goes on (the exit at 0x80031BB4 is not taken)
+80031bb4 N not hit  early exit: +0x20 != 0
+80031bdc N not hit  locked branch: [0x800DC4B8] & 0x34
+80031c30 R REACHED  free branch: flag 0x100 set, CreatePlayerAnimationEffects(0)
+80031c44 R REACHED  damage entry 0x80031A68 called
+80031c58 N not hit  damage taken (result != -1): state 0x31/0x3A
+80031ca0 R REACHED  no damage: continue
+800327a4 N not hit  branch of death: +0x14 == 0
+80032768 N not hit  branch +0x188 & 0x80
+80031d68 R REACHED  prologue calls 0x8002F49C, 0x8002F768, 0x8002F884(0)
+80031d8c R REACHED  state switch (table 0x80022D3C)
+80032914 R REACHED  epilogue: 0x800307E8, SetPlayerHpMax, SetPlayerHp
+# journal of stubbed calls (tick, kind, args)
+(-60, 'sound', 0)
+(-60, 'pass_38E84_effects_stub', None)
+(-60, 'pass_39300_hits_stub', None)
+(-59, 'pass_38E84_effects_stub', None)
+(-59, 'pass_39300_hits_stub', None)
+(-58, 'pass_38E84_effects_stub', None)
+(-58, 'pass_39300_hits_stub', None)
+(1, 'sound', 10)
+(1, 'pass_38E84_effects_stub', None)
+(1, 'pass_39300_hits_stub', None)
+(2, 'sound', 0)
+(2, 'pass_38E84_effects_stub', None)
+(2, 'pass_39300_hits_stub', None)
+(3, 'pass_38E84_effects_stub', None)
+(3, 'pass_39300_hits_stub', None)
+(4, 'pass_38E84_effects_stub', None)
+(4, 'pass_39300_hits_stub', None)
+(5, 'pass_38E84_effects_stub', None)
+(5, 'pass_39300_hits_stub', None)
+(6, 'pass_38E84_effects_stub', None)
+(6, 'pass_39300_hits_stub', None)
+(7, 'pass_38E84_effects_stub', None)
+(7, 'pass_39300_hits_stub', None)
+(8, 'pass_38E84_effects_stub', None)
+(8, 'pass_39300_hits_stub', None)
+(9, 'pass_38E84_effects_stub', None)
+(9, 'pass_39300_hits_stub', None)
+(10, 'pass_38E84_effects_stub', None)
+(10, 'pass_39300_hits_stub', None)
+(11, 'pass_38E84_effects_stub', None)
+(11, 'pass_39300_hits_stub', None)
+(12, 'pass_38E84_effects_stub', None)
+(12, 'pass_39300_hits_stub', None)
+(13, 'pass_38E84_effects_stub', None)
+(13, 'pass_39300_hits_stub', None)
+(14, 'pass_38E84_effects_stub', None)
+(14, 'pass_39300_hits_stub', None)
+(15, 'pass_38E84_effects_stub', None)
+(15, 'pass_39300_hits_stub', None)
+(16, 'pass_38E84_effects_stub', None)
+(16, 'pass_39300_hits_stub', None)
+(17, 'pass_38E84_effects_stub', None)
+(17, 'pass_39300_hits_stub', None)
+(18, 'pass_38E84_effects_stub', None)
+(18, 'pass_39300_hits_stub', None)
+(19, 'pass_38E84_effects_stub', None)
+(19, 'pass_39300_hits_stub', None)
+(20, 'pass_38E84_effects_stub', None)
+(20, 'pass_39300_hits_stub', None)
+(21, 'pass_38E84_effects_stub', None)
+(21, 'pass_39300_hits_stub', None)
+(22, 'sound', 11)
+(22, 'effect_3BDD8', [0, 7, 0, 10127872, 6553600, 1, 93, 93, 107, 107])
+(22, 'effect_3BDD8', [0, 7, 0, 10127872, 6553600, 1, 93, 93, 107, 107])
+(22, 'effect_3BDD8', [0, 7, 0, 10127872, 6553600, 1, 93, 93, 107, 107])
+(22, 'sound', 0)
+(22, 'pass_38E84_effects_stub', None)
+(22, 'pass_39300_hits_stub', None)
+(23, 'pass_38E84_effects_stub', None)
+(23, 'pass_39300_hits_stub', None)
+(24, 'pass_38E84_effects_stub', None)
+(24, 'pass_39300_hits_stub', None)

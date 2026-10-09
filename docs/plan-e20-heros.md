@@ -12,7 +12,8 @@ chacune à part, comme en E19. Décisions de l'auteur : §0.1, ADR-0052 et ADR-0
 **Avancement (2026-10-09)** : enveloppe et E20.0 approuvées par l'auteur (mode ASK) ; E19 fusionnée dans `main`
 (parent `8e023d8`, moteur `b2205d9f`), qui est donc la base de la branche. E20.0 : D1 à D9 faites et contre-vérifiées
 (§0.2.10). Réponses de l'auteur aux questions de la découverte : D-E20-11 à D-E20-18. E20.a (§1.3), approuvée par l'auteur,
-est faite et CONFIRMED par un verifier frais le 2026-10-09 ; reste sa recette en jeu.
+est faite et CONFIRMED par un verifier frais le 2026-10-09 ; reste sa recette en jeu. Sur la demande de l'auteur (« enchaîne
+directement »), les tranches suivantes s'enchaînent sans lui être soumises : E20.b est détaillée au §1.4.
 
 | Unité | Revue avant approbation | Après exécution |
 |---|---|---|
@@ -819,6 +820,114 @@ fixe du moteur (D-E20-12) ; les modes 2 et suivants de `0x2F`.
   l'animation dans le binaire (`0x80038B08`). Les deux tranches le vérifient contre l'oracle D1.
 - **E20.c1** : la passe de coups se branche au point d'accroche d'A3, dans l'ordre des cases.
 - **E20.e** : la réserve d'effets reste par image jusque-là.
+
+### 1.4 E20.b — Le coup d'épée, sans dégâts ⏳
+
+**Révision 1 (2026-10-09).** Relecture : **REVISE** (pas de trace d'oracle du coup en l'air en marchant ; pas de test sur le vrai
+préfab ni sur les tables d'objets du monde ; scénarios comparés mal nommés). Corrigé : trace `AT12` ajoutée à l'oracle (même
+montage, sortie stable, `run_e20b.py` rend 0), faits rattachés chacun à sa trace, B5 et l'acceptation nomment chaque fichier, test du
+vrai préfab et test des tables du monde ajoutés.
+Relecture neuve de la révision 1 : **READY** (2026-10-09). Exécution lancée sans soumission à l'auteur, à sa demande.
+
+**But.** Carré frappe comme dans le binaire : au sol, en l'air, avec l'arme équipée, aux mêmes ticks que l'oracle, avec le même son,
+le même freinage et les mêmes priorités (Carré sur Croix ; interaction d'abord). Le coup ne touche encore rien (E20.c1).
+
+**Mode d'exécution** : l'auteur a demandé le 2026-10-09 d'enchaîner les tranches sans lui soumettre chaque plan (relecture,
+exécution et vérification restent obligatoires ; arrêt sur une décision qui lui revient).
+
+**Faits porteurs** (découverte du 2026-10-09, `docs/plan-e20-annexe/e20-b/`, contre-vérifiée ; §0.2.4) :
+- [binaire] Aiguillage de `MovePlayer` (table `0x80022D3C`) : le groupe au sol (`0x80031E18`) reçoit `0x04`, `0x08`, `0x09`, `0x10` à
+  `0x13`, `0x18`, `0x19`, `0x25`, `0x3F`, `0x40`, `0x44`, `0x49` ; le groupe en l'air (`0x80031DF8`) reçoit `0x0A`, `0x14` à `0x17`, `0x1F`,
+  `0x26`, `0x41`, `0x42`, `0x46`, `0x4B`. Au sol, un héros en l'air passe en `0x2D` ; en l'air, un héros au sol passe en `0` ; les deux
+  appellent ensuite `TryUseItem` (`0x8002ED64`, résultat ignoré). Ni l'un ni l'autre ne lit le pad ni ne touche la direction.
+- [binaire] `PlayerTryAttack` (`0x8002EAF4`) : garde `+0x180 & 0x2000` ; relâchement d'abord (minuterie ≥ 60 et au sol : attaque
+  chargée, E20.f ; sinon 0) ; puis l'appui : fiche `0x80028C79 + 13 w`, plus 4 en l'air ; animation 0 : son 3, rend 0 ; sinon
+  `0x80127110` = la fiche, `0x80127114` = 0, `+0x88` = l'animation, rend 1. La fiche courante `0x8012710C` est posée en tête de
+  `MovePlayer` (`0x80031B70-0x80031B8C`, `byte[0x80028C14 + objet]`) et par l'initialisation (`0x80031A4C`).
+- [binaire] Tables : `0x80028C14` (100 octets, objet vers fiche ; sans arme, `0x80028C13` = 0 donne la fiche 0), `0x80028C78` (12 fiches
+  de 13 octets), `0x80028D14` (deux drapeaux par animation, `0x50` animations) ; valeurs dans `e20-b/faits-binaire-dll.md` §1.
+- [binaire] `UpdateWeaponStepProgression` (`0x8002F768`) est du vrai code dans l'oracle : il efface le pointeur au tick qui suit l'appui
+  pour une arme de mêlée, et compte jusqu'au délai de la fiche pour un tir (l'apparition est E20.e0 et E20.f).
+- [oracle] Chaque fait ci-dessous a sa trace dans `docs/plan-e20-annexe/e20-b/oracle/out/` :
+  - épée de base, appui au tick 1 : `0x10` et son 29 dès le tick 1, retour à `0` au tick 22 (21 ticks) (`AT1`) ; un appui au tick 22
+    est perdu, le premier accepté est au tick 23 (`AT6`, `at6-sweep.txt`) ; Carré tenu ne refrappe pas (`AT5`) ;
+  - en marchant : ForceX 79872 au tick de l'appui, puis 0, Moving au tick 23 si la direction reste tenue (`AT2`) ;
+  - en l'air (`0x14`) : 10 ticks, retour à `0x2D` (`AT3`) ; un coup en l'air encore en cours à l'atterrissage est coupé ce tick-là
+    (`AT3b`, `AT3c`) ; en marchant, l'arc vertical ne change pas, mais ForceX décroît de 4 par tick pendant le coup (150524 au tick 6),
+    vaut 75244 au tick du retour puis 112886, et le héros va un peu moins loin (`AT12`) ;
+  - Carré et Croix au même tick : le coup (`AT4`) ;
+  - une case de propriété de sol `0x20` sous un des quatre coins de l'empreinte empêche le coup ; une case éloignée non (`AT7`, `AT7c`,
+    `at7-cellmap.txt`) ; Carré et Croix sur une telle case : le saut (`AT7d`) ;
+  - coup au bord d'un rebord : `0x2D` au tick qui suit la perte du sol (`AT8`, témoin `AT8n`) ; sol qui s'abaisse pendant le coup
+    (`AT8b`) ;
+  - sans arme : la fiche 0 (`AT10`) ; la direction est celle du tick de l'appui (`AT11`).
+- [oracle] Par arme : animations, sons, fiches, ticks de fin et appels d'apparition dans `e20-b/oracle/out/weapons.txt`.
+- [DLL] Le son du coup vient déjà du changement d'animation (E19.t) ; la fin d'animation de la DLL devrait tomber au même tick que
+  l'oracle (horloge logique, réservation du tick de l'appui), sauf un risque : dans une image de deux ticks où le premier est le tick de
+  retour et le second un nouvel appui, `ZImpulseTaken` pourrait faire perdre le son du second coup (`AlundraFrameSyncPasses.cs:231`,
+  `:257-258`).
+
+**Périmètre.** DLL `Alundra/Scripts/` : `AlundraPlayerManager.cs` (portage de `PlayerTryAttack` et de `UpdateWeaponStepProgression`
+sans l'apparition, groupes d'attaque, fiche courante), une classe de tables d'armes, `IAlundraScriptHost.cs` (accès aux tables
+d'objets), `AlundraFrameSyncPasses.cs` seulement si le son d'une image de rattrapage est faux (B6) ; tests `Alundra.Tests/` ; ce plan.
+
+**Hors périmètre.** Boîtes, `CurrentAttack` et dégâts (E20.c1) ; minuterie de charge, aura, attaque chargée, rebond du fléau (E20.f) ;
+apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant de `PlayerTryAttack`, en `0x29` (E20.d).
+
+#### Tâches
+
+- ⏳ **B1 — Tables d'armes et fiche courante.** Une classe de tables (`AlundraWeaponTables`, nom au choix de l'exécutant) recopie les
+  trois tables du binaire, chacune avec son adresse, comme `AnimationTables` le fait déjà pour d'autres tables. La fiche courante
+  (`0x8012710C`) est un champ d'état posé en tête de `MovePlayer` et à l'initialisation. Les tables d'objets (`AlundraItemTables`)
+  arrivent par `IAlundraScriptHost` (membre par défaut nul ; le monde les fournit ; un montage peut les poser) ; sans tables, l'arme
+  vaut « aucune », donc la fiche 0, comme le binaire sans arme.
+- ⏳ **B2 — `PlayerTryAttack`**, porté tel quel : garde `0x2000`, relâchement d'abord (la minuterie reste à 0 jusqu'à E20.f, donc ce
+  chemin rend 0), appui, fiche au sol ou en l'air, animation 0 avec le son 3 (`ScriptHost.SoundPlayer`), écriture du pointeur, du
+  compteur et de l'animation. Les deux champs `0x80127110` et `0x80127114` deviennent des champs d'état.
+- ⏳ **B3 — Les groupes d'attaque** dans `MovePlayer`, exactement les identifiants de l'aiguillage du binaire, avec `TryUseItem`
+  appelé ensuite (bouchon, résultat ignoré). `0x04`, `0x08`, `0x09`, `0x0A`, `0x1F`, `0x25` et `0x26` entrent aussi dans les groupes,
+  comme dans le binaire, même si E20.b ne les atteint pas encore.
+- ⏳ **B4 — `UpdateWeaponStepProgression`**, porté sans l'apparition : effacement du pointeur et compteur jusqu'au délai, d'après les
+  drapeaux de `0x80028D14` ; l'apparition reste un bouchon nommé (E20.e0, E20.f).
+- ⏳ **B5 — Tests contre l'oracle.**
+  - Étendre un montage (par exemple `JumpHeroRig`) avec l'horloge d'animation et le pont des fins pour les animations d'attaque, dans
+    les quatre directions.
+  - Comparer, tick par tick et champ par champ, la DLL à ces traces de `docs/plan-e20-annexe/e20-b/oracle/out/` : `AT1`, `AT2`, `AT3`, `AT3b`, `AT3c`,
+    `AT4`, `AT5`, `AT6`, `AT7`, `AT7c`, `AT7d`, `AT8`, `AT8b`, `AT8n`, `AT10`, `AT11`, `AT12` ; plus la règle des coins d'`at7-cellmap.txt`
+    et le balayage d'`at6-sweep.txt` (appui au tick 22 perdu, au tick 23 un second coup). Pour chaque arme d'AT9 (`at9/AT9g-item*`,
+    `at9/AT9a-item*`, `weapons.txt`) : l'animation choisie, le son, le pointeur et le compteur ; la minuterie de charge est exclue
+    (E20.f), comme `X1` et `X2`.
+  - **Vrai préfab** : au moins un test sur le préfab exporté du héros (`ArcRun` avec `Prefabs: true` et un héros libre, ou un montage
+    bâti sur le préfab et les `.anim2d` exportés), qui montre un coup au sol et un coup en l'air à l'épée de base : son 29 au tick de
+    l'appui S, `0x10` de S à S+20, Idle à S+21 (le tick 22 de l'oracle) ; en l'air, `0x14` sur 10 ticks puis `0x2D`.
+  - **Tables du monde** : un test avec `AlundraWorldProxy` pour hôte montre que ses tables d'objets ne sont pas nulles et qu'une arme
+    équipée autre que l'épée de base choisit sa propre fiche (l'épée d'acier donne `0x3F`).
+  - Ajouter : la prise d'échelle qui l'emporte sur un état d'attaque (pente 6, `0x80031D20`) ; une image de deux ticks dont le premier
+    est le tick de retour et le second un nouvel appui (le son 29 doit sonner, comme le binaire).
+- ⏳ **B6 — Le son d'un coup dans une image de rattrapage.** Si B5 montre le son manquant, corriger `TakeZImpulse` pour que chaque
+  changement d'animation d'une image de rattrapage joue son son, comme le binaire (`0x80038BB0` à chaque changement) ; ce code sert à
+  toutes les entités : les tests de son existants restent verts, et le changement est expliqué ici.
+- ⏳ **B7 — Les trois P4 d'E20.a** : le commentaire faux d'A10J (`AlundraHeroJumpArcTests.cs`, vers 173-176), les commentaires périmés
+  des bouchons (`AlundraPlayerManager.cs`, en-tête de classe, vers 284-288 et 478-479), une assertion sur la position publiée du héros
+  dans le test du rendu (`AlundraTickStructureTests.cs`, vers 295-325).
+
+#### Acceptation
+
+- Build Release puis Debug ; `Alundra.Tests` sans échec dans les deux ; aucun changement du moteur.
+- B5 : chaque trace nommée en B5 est égalée tick par tick sur les champs comparés (animation courante et cible, direction, ForceX,
+  ForceY, ForceZ, PosX, PosY, PosZ avec la convention du +1, IsOnGround, pointeur et compteur), avec le son 29 (ou 3 pour le bâton) au
+  bon tick ; le test du vrai préfab et celui des tables du monde passent.
+- Les traces de référence du héros et de l'intro ne changent pas (aucune ne presse Carré).
+- Verifier frais.
+- Recette en jeu de l'auteur : Carré (touche X, ou X à la manette) frappe à l'épée au sol, avec son son, et le héros freine ; pendant un
+  saut, le coup en l'air ; tenir Carré ne refrappe pas ; un coup ne traverse ni ne blesse rien encore.
+
+#### Arrêts, budget, retour arrière
+
+- **Arrêts** : un écart à l'oracle que le binaire n'explique pas ; un test existant qui change sans raison du binaire ; un besoin de
+  toucher au moteur.
+- **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
+- **Retour arrière** : `git revert` des commits d'E20.b.
 
 ---
 

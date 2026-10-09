@@ -1,0 +1,4 @@
+S-A: start {"tick": 0, "hold": 0, "anim_cur": 0, "anim_target": 0, "dir": 24, "force_x": 0, "force_y": 0, "force_z": 0, "pos_x": 6553600, "pos_y": 6553600, "pos_z": 1, "on_ground": 1, "coll_z": 0, "b0": 0, "cnt1c": 0, "sprint_cnt_80126FF4": 0, "charge_cnt_80126FFC": 0}
+S-A: warm-up ticks 0, comparison ticks 24, uninitialised-read sites 0
+S-B: start {"tick": 0, "hold": 8192, "anim_cur": 1, "anim_target": 1, "dir": 24, "force_x": 159744, "force_y": 0, "force_z": 0, "pos_x": 6952960, "pos_y": 6553600, "pos_z": 1, "on_ground": 1, "coll_z": 1, "b0": 0, "cnt1c": 3, "sprint_cnt_80126FF4": 0, "charge_cnt_80126FFC": 0}
+S-B: warm-up ticks 3, comparison ticks 24, uninitialised-read sites 0

@@ -1,0 +1,456 @@
+# E20.b attack oracle - summary computed by run_attacks.py (every number below comes from the emulated binary)
+# conventions: tick = logic tick, 1-based; the row of tick t is the state AFTER the passes of tick t; PosZ binary raw (rest = terrain + 1, so 1 on the flat field), DLL = raw - 1
+# pad words: Up 0x1000, Right 0x2000, Down 0x4000, Left 0x8000, Triangle 0x10, Circle 0x20, Cross 0x40, Square 0x80
+
+== AT1  Idle, Square edge at tick 1, nothing after (60 ticks)
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 0
+anim_target changes (tick, from, to): t1 0x00->0x10, t22 0x10->0x00
+anim_cur changes (tick, from, to):    t1 0x00->0x10, t22 0x10->0x00
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t1 0x80028C79/0, t2 0x00/0
+force_x non-zero: never
+force_y non-zero: never
+force_z non-zero: never
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(29)
+   t22: sound(0)
+=> swing animation 0x10 starts on tick 1 (anim_target and anim_cur both set on the press tick); chains to anim 0x00 on tick 22 (the swing is on screen for ticks 1..21, 21 ticks)
+
+== AT2  steady Moving east, Square edge at tick 1, Right still held (60 ticks; 3 warm-up ticks -3..-1)
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x01 anim_target 0x01 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 159744
+anim_target changes (tick, from, to): t1 0x01->0x10, t22 0x10->0x00, t23 0x00->0x01
+anim_cur changes (tick, from, to):    t1 0x01->0x10, t22 0x10->0x00, t23 0x00->0x01
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t1 0x80028C79/0, t2 0x00/0
+force_x non-zero: ticks 1..60
+force_y non-zero: never
+force_z non-zero: never
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 6070272, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(29)
+   t22: sound(0)
+   t23: sound(0)
+   t30: sound(0)
+   t46: sound(0)
+   t53: sound(0)
+warm-up last row: anim_cur 0x01 force_x 159744 pos_x 6952960
+
+== AT3  standing jump (Cross edge tick 1), Square edge at tick 5 (air swing ends before the landing)
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 0
+anim_target changes (tick, from, to): t1 0x00->0x2B, t2 0x2B->0x2D, t5 0x2D->0x14, t15 0x14->0x2D, t22 0x2D->0x00
+anim_cur changes (tick, from, to):    t1 0x00->0x2B, t2 0x2B->0x2D, t5 0x2D->0x14, t15 0x14->0x2D, t22 0x2D->0x00
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t5 0x80028C7D/0, t6 0x00/0
+force_x non-zero: never
+force_y non-zero: never
+force_z non-zero: ticks 1..21
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(10)
+   t2: sound(0)
+   t5: sound(29)
+   t15: sound(0)
+   t22: sound(11)
+   t22: effect_3BDD8(a0=0,id=7,a2=0,a3=0x640000,stack=640000,1,5D,5D,6B,6B) x3
+   t22: sound(0)
+vs the S-A jump arc (D1 oracle, same inputs without the Square): ticks 1..24 differing fields: none (identical forces, positions, IsOnGround)
+
+== AT3b  standing jump, Square edge at tick 14 (air swing still running when the hero lands)
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 0
+anim_target changes (tick, from, to): t1 0x00->0x2B, t2 0x2B->0x2D, t14 0x2D->0x14, t22 0x14->0x00
+anim_cur changes (tick, from, to):    t1 0x00->0x2B, t2 0x2B->0x2D, t14 0x2D->0x14, t22 0x14->0x00
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t14 0x80028C7D/0, t15 0x00/0
+force_x non-zero: never
+force_y non-zero: never
+force_z non-zero: ticks 1..21
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(10)
+   t2: sound(0)
+   t14: sound(29)
+   t22: sound(11)
+   t22: effect_3BDD8(a0=0,id=7,a2=0,a3=0x640000,stack=640000,1,5D,5D,6B,6B) x3
+   t22: sound(0)
+vs the S-A jump arc (D1 oracle, same inputs without the Square): ticks 1..24 differing fields: none (identical forces, positions, IsOnGround)
+
+== AT3c  standing jump, Square edge at tick 19 (air swing, landing two ticks later)
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 0
+anim_target changes (tick, from, to): t1 0x00->0x2B, t2 0x2B->0x2D, t19 0x2D->0x14, t22 0x14->0x00
+anim_cur changes (tick, from, to):    t1 0x00->0x2B, t2 0x2B->0x2D, t19 0x2D->0x14, t22 0x14->0x00
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t19 0x80028C7D/0, t20 0x00/0
+force_x non-zero: never
+force_y non-zero: never
+force_z non-zero: ticks 1..21
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(10)
+   t2: sound(0)
+   t19: sound(29)
+   t22: sound(11)
+   t22: effect_3BDD8(a0=0,id=7,a2=0,a3=0x640000,stack=640000,1,5D,5D,6B,6B) x3
+   t22: sound(0)
+vs the S-A jump arc (D1 oracle, same inputs without the Square): ticks 1..24 differing fields: none (identical forces, positions, IsOnGround)
+
+== AT4  Square and Cross edges on the same tick (tick 1) from Idle
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 0
+anim_target changes (tick, from, to): t1 0x00->0x10, t22 0x10->0x00
+anim_cur changes (tick, from, to):    t1 0x00->0x10, t22 0x10->0x00
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t1 0x80028C79/0, t2 0x00/0
+force_x non-zero: never
+force_y non-zero: never
+force_z non-zero: never
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(29)
+   t22: sound(0)
+
+== AT5  Square held ticks 1..30 (released at tick 31)
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 0
+anim_target changes (tick, from, to): t1 0x00->0x10, t22 0x10->0x00
+anim_cur changes (tick, from, to):    t1 0x00->0x10, t22 0x10->0x00
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t1 0x80028C79/0, t2 0x00/0
+force_x non-zero: never
+force_y non-zero: never
+force_z non-zero: never
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(29)
+   t22: sound(0)
+swing starts (anim_target set with a record pointer): [1]
+
+== AT6  Square edges at ticks 1, [4, 10, 16] (during the swing) and 23 (the tick after the chain back, AT1 chain tick = 22)
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 0
+anim_target changes (tick, from, to): t1 0x00->0x10, t22 0x10->0x00, t23 0x00->0x10, t44 0x10->0x00
+anim_cur changes (tick, from, to):    t1 0x00->0x10, t22 0x10->0x00, t23 0x00->0x10, t44 0x10->0x00
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t1 0x80028C79/0, t2 0x00/0, t23 0x80028C79/0, t24 0x00/0
+force_x non-zero: never
+force_y non-zero: never
+force_z non-zero: never
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(29)
+   t22: sound(0)
+   t23: sound(29)
+   t44: sound(0)
+swing starts (rec pointer set): [1, 23]
+# AT6 sweep: Square edge at tick 1, then ONE more edge at tick p (Square down on p only).  Columns: p | second swing started | tick the animation target became the swing | anim_cur at p
+p=18 | second swing no  | at tick - | anim_target at p-1/p: 0x10/0x10 | anim_cur at p-1/p: 0x10/0x10
+p=19 | second swing no  | at tick - | anim_target at p-1/p: 0x10/0x10 | anim_cur at p-1/p: 0x10/0x10
+p=20 | second swing no  | at tick - | anim_target at p-1/p: 0x10/0x10 | anim_cur at p-1/p: 0x10/0x10
+p=21 | second swing no  | at tick - | anim_target at p-1/p: 0x10/0x10 | anim_cur at p-1/p: 0x10/0x10
+p=22 | second swing no  | at tick - | anim_target at p-1/p: 0x10/0x00 | anim_cur at p-1/p: 0x10/0x00
+p=23 | second swing YES | at tick 23 | anim_target at p-1/p: 0x00/0x10 | anim_cur at p-1/p: 0x00/0x10
+p=24 | second swing YES | at tick 24 | anim_target at p-1/p: 0x00/0x10 | anim_cur at p-1/p: 0x00/0x10
+p=25 | second swing YES | at tick 25 | anim_target at p-1/p: 0x00/0x10 | anim_cur at p-1/p: 0x00/0x10
+
+== AT7  as AT1, every cell has ground property 0x20 (cell word & 0x2000), 30 ticks
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 0
+anim_target changes (tick, from, to): 
+anim_cur changes (tick, from, to):    
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: never
+force_x non-zero: never
+force_y non-zero: never
+force_z non-zero: never
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+hero +0x180 (CombinedVramFlagsOR) after tick 1: 0x2000; PlayerTryAttack entered: True; success tail reached: False
+
+# AT7 cell map: ONE cell flagged (ground property 0x20) at a time; hero at (100,100) px -> cell column 4, row 6.  hero +0x180 after tick 1 | swing (anim_target set) | cell
+cell col 2 row 4 | +0x180 = 0x0 | swing YES
+cell col 3 row 4 | +0x180 = 0x0 | swing YES
+cell col 4 row 4 | +0x180 = 0x0 | swing YES
+cell col 5 row 4 | +0x180 = 0x0 | swing YES
+cell col 6 row 4 | +0x180 = 0x0 | swing YES
+cell col 2 row 5 | +0x180 = 0x0 | swing YES
+cell col 3 row 5 | +0x180 = 0x2000 | swing no (blocked)
+cell col 4 row 5 | +0x180 = 0x2000 | swing no (blocked)
+cell col 5 row 5 | +0x180 = 0x0 | swing YES
+cell col 6 row 5 | +0x180 = 0x0 | swing YES
+cell col 2 row 6 | +0x180 = 0x0 | swing YES
+cell col 3 row 6 | +0x180 = 0x2000 | swing no (blocked)
+cell col 4 row 6 | +0x180 = 0x2000 | swing no (blocked)
+cell col 5 row 6 | +0x180 = 0x0 | swing YES
+cell col 6 row 6 | +0x180 = 0x0 | swing YES
+cell col 2 row 7 | +0x180 = 0x0 | swing YES
+cell col 3 row 7 | +0x180 = 0x0 | swing YES
+cell col 4 row 7 | +0x180 = 0x0 | swing YES
+cell col 5 row 7 | +0x180 = 0x0 | swing YES
+cell col 6 row 7 | +0x180 = 0x0 | swing YES
+cell col 2 row 8 | +0x180 = 0x0 | swing YES
+cell col 3 row 8 | +0x180 = 0x0 | swing YES
+cell col 4 row 8 | +0x180 = 0x0 | swing YES
+cell col 5 row 8 | +0x180 = 0x0 | swing YES
+cell col 6 row 8 | +0x180 = 0x0 | swing YES
+AT7c control (far cell flagged): swing YES, +0x180 = 0x0
+
+== AT7d  gated field (every cell 0x2000), Square + Cross edges on tick 1
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 0
+anim_target changes (tick, from, to): t1 0x00->0x2B, t2 0x2B->0x2D, t22 0x2D->0x00
+anim_cur changes (tick, from, to):    t1 0x00->0x2B, t2 0x2B->0x2D, t22 0x2D->0x00
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: never
+force_x non-zero: never
+force_y non-zero: never
+force_z non-zero: ticks 1..21
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(10)
+   t2: sound(0)
+   t22: sound(11)
+   t22: effect_3BDD8(a0=0,id=7,a2=0,a3=0x640000,stack=640000,1,5D,5D,6B,6B) x3
+   t22: sound(0)
+
+== AT11  Idle facing east (dir 24); tick 1 = Left + Square, then Up held on every tick
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 0
+anim_target changes (tick, from, to): t1 0x00->0x10, t22 0x10->0x00, t23 0x00->0x01
+anim_cur changes (tick, from, to):    t1 0x00->0x10, t22 0x10->0x00, t23 0x00->0x01
+dir_target changes: t1 24->8, t23 8->16
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t1 0x80028C79/0, t2 0x00/0
+force_x non-zero: never
+force_y non-zero: ticks 23..60
+force_z non-zero: never
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta -3993600
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(29)
+   t22: sound(0)
+   t23: sound(0)
+   t33: sound(0)
+   t49: sound(0)
+   t53: sound(0)
+anim_dir (+0x98) / dir_cur (+0x94) per tick 1..4,21..24: t1:2/8 t2:2/8 t3:2/8 t4:2/8 t21:2/8 t22:2/8 t23:1/16 t24:1/16
+
+== AT12  steady Moving east, tick 1 Right + Cross edge (walking jump), tick 6 Square edge (air swing), Right held through tick 30 (30 ticks; 3 warm-up ticks -3..-1)
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x01 anim_target 0x01 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 159744
+anim_target changes (tick, from, to): t1 0x01->0x02, t2 0x02->0x2C, t6 0x2C->0x14, t16 0x14->0x2D, t17 0x2D->0x2C, t22 0x2C->0x01
+anim_cur changes (tick, from, to):    t1 0x01->0x02, t2 0x02->0x2C, t6 0x2C->0x14, t16 0x14->0x2D, t17 0x2D->0x2C, t22 0x2C->0x01
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t6 0x80028C7D/0, t7 0x00/0
+force_x non-zero: ticks 1..30
+force_y non-zero: never
+force_z non-zero: ticks 1..21
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 4494854, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(10)
+   t2: sound(0)
+   t6: sound(29)
+   t16: sound(0)
+   t17: sound(0)
+   t22: sound(11)
+   t22: effect_3BDD8(a0=0,id=7,a2=0,a3=0x98D006,stack=640000,1,5D,5D,6B,6B) x3
+   t22: sound(0)
+   t30: sound(0)
+=> air swing animation 0x14 starts on tick 6; chains to anim 0x2D on tick 16
+first tick with IsOnGround 1 after the jump: 21; PosX - start (16.16) per tick 1..25: t1:159744 t2:314880 t3:465408 t4:615936 t5:766464 t6:916988 t7:1067508 t8:1218024 t9:1368536 t10:1519044 t11:1669548 t12:1820048 t13:1970544 t14:2121036 t15:2271524 t16:2346768 t17:2459654 t18:2610182 t19:2760710 t20:2911238 t21:3061766 t22:3216902 t23:3376646 t24:3536390 t25:3696134
+
+== AT8  walking off a ledge during a ground swing.  Field: columns 0..4 (x < 120 px) height byte 1 (terrain 16 px), columns 5.. height 0.
+search of the start column (observed condition: hero on the platform after the warm-up, swing started on tick 1, IsOnGround 0 after tick 1): start x = 123 px
+search table (start x, grounded on the platform after warm-up, left the ground on tick 1, x after warm-up px): 121,1,0,127.09; 122,1,0,128.09; 123,1,1,129.09; 124,0,1,130.09; 125,0,1,131.09
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x01 anim_target 0x01 dir_target 24 on_ground 1 pos_z 1048577 (pos_z_dll 1048576) terrain 1048576 force_x 159744
+anim_target changes (tick, from, to): t1 0x01->0x10, t2 0x10->0x2D, t3 0x2D->0x2C, t10 0x2C->0x01
+anim_cur changes (tick, from, to):    t1 0x01->0x10, t2 0x10->0x2D, t3 0x2D->0x2C, t10 0x2C->0x01
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t1 0x80028C79/0, t2 0x00/0
+force_x non-zero: ticks 1..60
+force_y non-zero: never
+force_z non-zero: ticks 2..8
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 9200640, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(29)
+   t2: sound(0)
+   t3: sound(0)
+   t10: sound(11)
+   t10: effect_3BDD8(a0=0,id=7,a2=0,a3=0x913E00,stack=640000,1,5D,5D,6B,6B) x3
+   t10: sound(0)
+   t14: sound(0)
+   t30: sound(0)
+   t40: sound(0)
+   t46: sound(0)
+-- AT8n control (start x = 122 px, one pixel to the left): anim_cur changes: t1 0x01->0x10, t22 0x10->0x00, t23 0x00->0x01, t24 0x01->0x2C, t32 0x2C->0x01; on_ground after tick 1..3: [1, 1, 1]
+== AT8b  floor drop under an Idle hero (field changed by the harness before tick 7: all cells 1 -> 0, so the hero loses the ground in the middle of the swing)
+weapon: slot 1, item now 1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1048577 (pos_z_dll 1048576) terrain 1048576 force_x 0
+anim_target changes (tick, from, to): t1 0x00->0x10, t8 0x10->0x2D, t15 0x2D->0x00
+anim_cur changes (tick, from, to):    t1 0x00->0x10, t8 0x10->0x2D, t15 0x2D->0x00
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t1 0x80028C79/0, t2 0x00/0
+force_x non-zero: never
+force_y non-zero: never
+force_z non-zero: ticks 7..13
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(29)
+   t8: sound(0)
+   t15: sound(11)
+   t15: effect_3BDD8(a0=0,id=7,a2=0,a3=0x640000,stack=640000,1,5D,5D,6B,6B) x3
+   t15: sound(0)
+
+== AT9  weapon table exercised (details in weapons.txt)
+Steel Edge         ground item  2 slot 1 -> item 2, weapon record  1, chargeable byte 1 | press t1 -> anim 0x3F (sound at press ['sound(29)']) | record @0x80028C86 = (anim,type,delay,z) ['3F', '00', '00', '00'] | pointer set t1, cleared t2 with counter 0 | spawn none | swing ends ['t22 0x3F->0x00'] | max charge timer 1
+Steel Edge         air    item  2 slot 1 -> item 2, weapon record  1, chargeable byte 1 | press t5 -> anim 0x41 (sound at press ['sound(29)']) | record @0x80028C8A = (anim,type,delay,z) ['41', '00', '00', '00'] | pointer set t5, cleared t6 with counter 0 | spawn none | swing ends ['t15 0x41->0x2D', 't22 0x2D->0x00'] | max charge timer 1
+Demon Buster       ground item  3 slot 1 -> item 3, weapon record  2, chargeable byte 1 | press t1 -> anim 0x44 (sound at press ['sound(29)']) | record @0x80028C93 = (anim,type,delay,z) ['44', '00', '00', '00'] | pointer set t1, cleared t2 with counter 0 | spawn none | swing ends ['t22 0x44->0x00'] | max charge timer 1
+Demon Buster       air    item  3 slot 1 -> item 3, weapon record  2, chargeable byte 1 | press t5 -> anim 0x46 (sound at press ['sound(29)']) | record @0x80028C97 = (anim,type,delay,z) ['46', '00', '00', '00'] | pointer set t5, cleared t6 with counter 0 | spawn none | swing ends ['t15 0x46->0x2D', 't22 0x2D->0x00'] | max charge timer 1
+Holy Sword Elnard  ground item  4 slot 1 -> item 4, weapon record  3, chargeable byte 1 | press t1 -> anim 0x49 (sound at press ['sound(29)']) | record @0x80028CA0 = (anim,type,delay,z) ['49', '00', '00', '00'] | pointer set t1, cleared t2 with counter 0 | spawn none | swing ends ['t22 0x49->0x00'] | max charge timer 1
+Holy Sword Elnard  air    item  4 slot 1 -> item 4, weapon record  3, chargeable byte 1 | press t5 -> anim 0x4B (sound at press ['sound(29)']) | record @0x80028CA4 = (anim,type,delay,z) ['4B', '00', '00', '00'] | pointer set t5, cleared t6 with counter 0 | spawn none | swing ends ['t15 0x4B->0x2D', 't22 0x2D->0x00'] | max charge timer 1
+Chain Throw        ground item  9 slot 3 -> item 9, weapon record  6, chargeable byte 0 | press t1 -> anim 0x12 (sound at press ['sound(35)']) | record @0x80028CC7 = (anim,type,delay,z) ['12', '00', '00', '00'] | pointer set t1, cleared t2 with counter 0 | spawn none | swing ends ['t32 0x12->0x00'] | max charge timer 0
+Chain Throw        air    item  9 slot 3 -> item 9, weapon record  6, chargeable byte 0 | press t5 -> anim 0x16 (sound at press ['sound(35)']) | record @0x80028CCB = (anim,type,delay,z) ['16', '00', '00', '00'] | pointer set t5, cleared t6 with counter 0 | spawn none | swing ends ['t22 0x16->0x00'] | max charge timer 0
+Crusher            ground item 10 slot 3 -> item 10, weapon record  7, chargeable byte 1 | press t1 -> anim 0x40 (sound at press ['sound(35)']) | record @0x80028CD4 = (anim,type,delay,z) ['40', '00', '00', '00'] | pointer set t1, cleared t2 with counter 0 | spawn none | swing ends ['t35 0x40->0x00'] | max charge timer 1
+Crusher            air    item 10 slot 3 -> item 10, weapon record  7, chargeable byte 1 | press t5 -> anim 0x42 (sound at press ['sound(35)']) | record @0x80028CD8 = (anim,type,delay,z) ['42', '00', '00', '00'] | pointer set t5, cleared t6 with counter 0 | spawn none | swing ends ['t22 0x42->0x00'] | max charge timer 1
+Hunter's Bow       ground item  5 slot 2 -> item 5, weapon record  8, chargeable byte 0 | press t1 -> anim 0x13 (sound at press ['sound(32)']) | record @0x80028CE1 = (anim,type,delay,z) ['13', '03', '08', '10'] | pointer set t1, cleared t10 with counter 8 | spawn ['t10 spawn(owner=80127D30,table=0,type=3,x=6553600,y=6553600,z=1048577,dir=0x18)'] | swing ends ['t24 0x13->0x00'] | max charge timer 0
+Hunter's Bow       air    item  5 slot 2 -> item 5, weapon record  8, chargeable byte 0 | press t5 -> anim 0x17 (sound at press ['sound(32)']) | record @0x80028CE5 = (anim,type,delay,z) ['17', '03', '00', '10'] | pointer set t5, cleared t6 with counter 0 | spawn ['t6 spawn(owner=80127D30,table=0,type=3,x=6553600,y=6553600,z=2359297,dir=0x18)'] | swing ends ['t19 0x17->0x2D', 't22 0x2D->0x00'] | max charge timer 0
+William's Bow      ground item  6 slot 2 -> item 6, weapon record  9, chargeable byte 1 | press t1 -> anim 0x13 (sound at press ['sound(32)']) | record @0x80028CEE = (anim,type,delay,z) ['13', '04', '08', '10'] | pointer set t1, cleared t10 with counter 8 | spawn ['t10 spawn(owner=80127D30,table=0,type=4,x=6553600,y=6553600,z=1048577,dir=0x18)'] | swing ends ['t24 0x13->0x00'] | max charge timer 1
+William's Bow      air    item  6 slot 2 -> item 6, weapon record  9, chargeable byte 1 | press t5 -> anim 0x17 (sound at press ['sound(32)']) | record @0x80028CF2 = (anim,type,delay,z) ['17', '04', '08', '10'] | pointer set t5, cleared t14 with counter 8 | spawn ['t14 spawn(owner=80127D30,table=0,type=4,x=6553600,y=6553600,z=2752513,dir=0x18)'] | swing ends ['t19 0x17->0x2D', 't22 0x2D->0x00'] | max charge timer 1
+Fireball Rod       ground item 16 slot 5 -> item 16, weapon record  4, chargeable byte 1 | press t1 -> anim 0x11 (sound at press ['sound(37)']) | record @0x80028CAD = (anim,type,delay,z) ['11', '0B', '0A', '20'] | pointer set t1, cleared t12 with counter 10 | spawn ['t12 spawn(owner=80127D30,table=0,type=11,x=6553600,y=6553600,z=2097153,dir=0x18)'] | swing ends ['t32 0x11->0x00'] | max charge timer 1
+Fireball Rod       air    item 16 slot 5 -> item 16, weapon record  4, chargeable byte 1 | press t5 -> anim 0x15 (sound at press ['sound(37)']) | record @0x80028CB1 = (anim,type,delay,z) ['15', '0B', '0A', '20'] | pointer set t5, cleared t16 with counter 10 | spawn ['t16 spawn(owner=80127D30,table=0,type=11,x=6553600,y=6553600,z=3571713,dir=0x18)'] | swing ends ['t22 0x15->0x00'] | max charge timer 1
+Drifting Ice Rod   ground item 14 slot 4 -> item 14, weapon record  5, chargeable byte 1 | press t1 -> anim 0x11 (sound at press ['sound(37)']) | record @0x80028CBA = (anim,type,delay,z) ['11', '0E', '0A', '20'] | pointer set t1, cleared t12 with counter 10 | spawn ['t12 spawn(owner=80127D30,table=0,type=14,x=6553600,y=6553600,z=2097153,dir=0x18)'] | swing ends ['t32 0x11->0x00'] | max charge timer 1
+Drifting Ice Rod   air    item 14 slot 4 -> item 14, weapon record  5, chargeable byte 1 | press t5 -> anim 0x15 (sound at press ['sound(37)']) | record @0x80028CBE = (anim,type,delay,z) ['15', '0E', '0A', '20'] | pointer set t5, cleared t16 with counter 10 | spawn ['t16 spawn(owner=80127D30,table=0,type=14,x=6553600,y=6553600,z=3571713,dir=0x18)'] | swing ends ['t22 0x15->0x00'] | max charge timer 1
+Magic staff        ground item  7 slot 6 -> item 7, weapon record 10, chargeable byte 0 | press t1 -> anim 0x00 (sound at press ['sound(3)']) | record @0 = (anim,type,delay,z) None | pointer set tNone, cleared tNone with counter None | spawn none | swing ends no change (no swing) | max charge timer 0
+Magic staff        air    item  7 slot 6 -> item 7, weapon record 10, chargeable byte 0 | press t5 -> anim 0x2D (sound at press ['sound(3)']) | record @0 = (anim,type,delay,z) None | pointer set tNone, cleared tNone with counter None | spawn none | swing ends ['t22 0x2D->0x00'] | max charge timer 0
+Item 008 (extra)   ground item  8 slot 1 -> item 8, weapon record 11, chargeable byte 0 | press t1 -> anim 0x10 (sound at press ['sound(29)']) | record @0x80028D08 = (anim,type,delay,z) ['10', '00', '00', '00'] | pointer set t1, cleared t2 with counter 0 | spawn none | swing ends ['t22 0x10->0x00'] | max charge timer 0
+Item 008 (extra)   air    item  8 slot 1 -> item 8, weapon record 11, chargeable byte 0 | press t5 -> anim 0x14 (sound at press ['sound(29)']) | record @0x80028D0C = (anim,type,delay,z) ['14', '00', '00', '00'] | pointer set t5, cleared t6 with counter 0 | spawn none | swing ends ['t15 0x14->0x2D', 't22 0x2D->0x00'] | max charge timer 0
+
+== AT10  no weapon equipped (WeaponId -1): the binary reads the byte at 0x80028C13
+weapon: slot 65535, item now -1, weapon record index 0 (kit [1, 17, 25], item props None)
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 0
+anim_target changes (tick, from, to): t1 0x00->0x10, t22 0x10->0x00
+anim_cur changes (tick, from, to):    t1 0x00->0x10, t22 0x10->0x00
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t1 0x80028C79/0, t2 0x00/0
+force_x non-zero: never
+force_y non-zero: never
+force_z non-zero: never
+charge_timer non-zero: never
+charge timer 0x80126FFC max 0
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(29)
+   t22: sound(0)
+byte at 0x80028C13 = 0
+
+== X1  (informational, not asked) Steel Edge, Square held 1..90, released at 91
+weapon: slot 1, item now 2, weapon record index 1 (kit [1, 17, 25], item props [1, 1, 1, 1, 32])
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 0
+anim_target changes (tick, from, to): t1 0x00->0x3F, t22 0x3F->0x00, t91 0x00->0x18
+anim_cur changes (tick, from, to):    t1 0x00->0x3F, t22 0x3F->0x00, t91 0x00->0x18
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t1 0x80028C86/0, t2 0x00/0, t91 0x80028C8E/0, t92 0x80028C8E/1, t93 0x80028C8E/2, t94 0x80028C8E/3, t95 0x80028C8E/4, t96 0x80028C8E/5, t97 0x80028C8E/6, t98 0x80028C8E/7, t99 0x80028C8E/8, t100 0x80028C8E/9, t101 0x80028C8E/10, t102 0x80028C8E/11, t103 0x80028C8E/12, t104 0x80028C8E/13, t105 0x80028C8E/14, t106 0x80028C8E/15, t107 0x80028C8E/16, t108 0x80028C8E/17, t109 0x80028C8E/18, t110 0x80028C8E/19, t111 0x80028C8E/20, t112 0x00/20
+force_x non-zero: never
+force_y non-zero: never
+force_z non-zero: never
+charge_timer non-zero: ticks 1..91
+charge timer 0x80126FFC max 60
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(29)
+   t22: sound(0)
+   t33: effect_3BE74(a0=0,id=3,a2=0,a3=0x80127D30,stack=1,0,0,100000,0,0)
+   t33: sound(42)
+   t37: sound(42)
+   t41: sound(42)
+   t45: sound(42)
+   t49: sound(42)
+   t53: sound(42)
+   t57: sound(42)
+   t61: sound(42)
+   t65: sound(42)
+   t69: sound(42)
+   t73: sound(42)
+   t77: sound(42)
+   t81: sound(42)
+   t85: effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001,80127D30,800E0000,0,0)
+   t85: sound(428)
+   t89: effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001,80127D30,800E0000,0,0)
+   t89: sound(429)
+   t91: effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001,80127D30,18,0,0) x16
+   t91: sound(43)
+   t91: sound(0)
+   t112: spawn(owner=80127D30,table=0,type=27,x=6553600,y=6553600,z=1,dir=0x18)
+
+== X2  (informational, not asked) Steel Edge, Square held 1..89, jump at tick 80, release in the air at tick 90 (charge full)
+weapon: slot 1, item now 2, weapon record index 1 (kit [1, 17, 25], item props [1, 1, 1, 1, 32])
+start: anim_cur 0x00 anim_target 0x00 dir_target 24 on_ground 1 pos_z 1 (pos_z_dll 0) terrain 0 force_x 0
+anim_target changes (tick, from, to): t1 0x00->0x3F, t22 0x3F->0x00, t80 0x00->0x2B, t81 0x2B->0x2D, t101 0x2D->0x00
+anim_cur changes (tick, from, to):    t1 0x00->0x3F, t22 0x3F->0x00, t80 0x00->0x2B, t81 0x2B->0x2D, t101 0x2D->0x00
+dir_target changes: none
+record pointer 0x80127110 / counter 0x80127114 (tick, pointer, counter) when they change: t1 0x80028C86/0, t2 0x00/0
+force_x non-zero: never
+force_y non-zero: never
+force_z non-zero: ticks 80..100
+charge_timer non-zero: ticks 1..90
+charge timer 0x80126FFC max 60
+final on_ground 1, final pos_z 1, pos_x delta (16.16) 0, pos_y delta 0
+journal of sound / effect / spawn calls (tick: call; "xN" = N identical calls on that tick):
+   t1: sound(29)
+   t22: sound(0)
+   t33: effect_3BE74(a0=0,id=3,a2=0,a3=0x80127D30,stack=1,0,0,100000,0,0)
+   t33: sound(42)
+   t37: sound(42)
+   t41: sound(42)
+   t45: sound(42)
+   t49: sound(42)
+   t53: sound(42)
+   t57: sound(42)
+   t61: sound(42)
+   t65: sound(42)
+   t69: sound(42)
+   t73: sound(42)
+   t77: sound(42)
+   t80: sound(10)
+   t81: sound(42)
+   t81: sound(0)
+   t85: effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,240001,80127D30,800E0000,0,0)
+   t85: sound(428)
+   t89: effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,2B0001,80127D30,800E0000,0,0)
+   t89: sound(429)
+   t101: sound(11)
+   t101: effect_3BDD8(a0=0,id=7,a2=0,a3=0x640000,stack=640000,1,5D,5D,6B,6B) x3
+   t101: sound(0)
+charge timer per tick 80..93: t80:58 t81:59 t82:60 t83:60 t84:60 t85:60 t86:60 t87:60 t88:60 t89:60 t90:60 t91:0 t92:0 t93:0; on_ground per tick 88..92: t88:0 t89:0 t90:0 t91:0 t92:0
+

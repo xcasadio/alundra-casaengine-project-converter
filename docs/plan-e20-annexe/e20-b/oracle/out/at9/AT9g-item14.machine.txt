@@ -1,0 +1,204 @@
+# functions entered by jal/jalr during the scenario (address: count)
+8002e910: 39
+8002eaf4: 39
+8002ed64: 70
+8002eeac: 39
+8002f120: 70
+8002f49c: 70
+8002f768: 70
+8002f884: 70
+8002fb14: 70
+800307e8: 70
+80031a68: 70
+80031b50: 70
+8003634c: 70
+800364c8: 70
+80036614: 70
+800366fc: 70
+800367e4: 140
+80036828: 70
+80036bfc: 70
+800370c4: 140
+800375e0: 70
+80037730: 70
+80037e34: 70
+80037f28: 70
+80038064: 70
+80038ab4: 70
+80039f58: 1
+800445c0: 140
+800490fc: 2
+8004dc68: 70
+8004dd30: 70
+8004e030: 140
+8004e0f8: 70
+8004e18c: 140
+8004e2c8: 140
+8004e428: 560
+# reads of bytes nobody had written during the ticks (pc, address, size: count), must be empty: empty
+# MovePlayer 0x80031B50 reach points (R must be reached, N must not)
+80031ba4 R REACHED  entry reads the hero +0x20
+80031bc4 R REACHED  +0x20 == 0: the tick goes on (the exit at 0x80031BB4 is not taken)
+80031bb4 N not hit  early exit: +0x20 != 0
+80031bdc N not hit  locked branch: [0x800DC4B8] & 0x34
+80031c30 R REACHED  free branch: flag 0x100 set, CreatePlayerAnimationEffects(0)
+80031c44 R REACHED  damage entry 0x80031A68 called
+80031c58 N not hit  damage taken (result != -1): state 0x31/0x3A
+80031ca0 R REACHED  no damage: continue
+800327a4 N not hit  branch of death: +0x14 == 0
+80032768 N not hit  branch +0x188 & 0x80
+80031d68 R REACHED  prologue calls 0x8002F49C, 0x8002F768, 0x8002F884(0)
+80031d8c R REACHED  state switch (table 0x80022D3C)
+80032914 R REACHED  epilogue: 0x800307E8, SetPlayerHpMax, SetPlayerHp
+# attack code points
+8002eaf4 REACHED  PlayerTryAttack entered
+8002eb4c not hit  release path of PlayerTryAttack (charge release)
+8002ec8c REACHED  press path of PlayerTryAttack
+8002ed14 REACHED  success tail: pointer, counter, TargetAnimationId written
+8002ed30 not hit  animation 0 of the record: sound 3
+8002ed3c REACHED  return 0
+8002f768 REACHED  UpdateWeaponStepProgression entered
+# journal of stubbed calls (tick, kind, args)
+(1, 'sound', 37)
+(1, 'pass_38E84_effects_stub', None)
+(1, 'pass_39300_hits_stub', None)
+(2, 'pass_38E84_effects_stub', None)
+(2, 'pass_39300_hits_stub', None)
+(3, 'pass_38E84_effects_stub', None)
+(3, 'pass_39300_hits_stub', None)
+(4, 'pass_38E84_effects_stub', None)
+(4, 'pass_39300_hits_stub', None)
+(5, 'pass_38E84_effects_stub', None)
+(5, 'pass_39300_hits_stub', None)
+(6, 'pass_38E84_effects_stub', None)
+(6, 'pass_39300_hits_stub', None)
+(7, 'pass_38E84_effects_stub', None)
+(7, 'pass_39300_hits_stub', None)
+(8, 'pass_38E84_effects_stub', None)
+(8, 'pass_39300_hits_stub', None)
+(9, 'pass_38E84_effects_stub', None)
+(9, 'pass_39300_hits_stub', None)
+(10, 'pass_38E84_effects_stub', None)
+(10, 'pass_39300_hits_stub', None)
+(11, 'pass_38E84_effects_stub', None)
+(11, 'pass_39300_hits_stub', None)
+(12, 'spawn_39F58', [2148695344, 0, 14, 6553600, 6553600, 2097153, 24, 24])
+(12, 'pass_38E84_effects_stub', None)
+(12, 'pass_39300_hits_stub', None)
+(13, 'pass_38E84_effects_stub', None)
+(13, 'pass_39300_hits_stub', None)
+(14, 'pass_38E84_effects_stub', None)
+(14, 'pass_39300_hits_stub', None)
+(15, 'pass_38E84_effects_stub', None)
+(15, 'pass_39300_hits_stub', None)
+(16, 'pass_38E84_effects_stub', None)
+(16, 'pass_39300_hits_stub', None)
+(17, 'pass_38E84_effects_stub', None)
+(17, 'pass_39300_hits_stub', None)
+(18, 'pass_38E84_effects_stub', None)
+(18, 'pass_39300_hits_stub', None)
+(19, 'pass_38E84_effects_stub', None)
+(19, 'pass_39300_hits_stub', None)
+(20, 'pass_38E84_effects_stub', None)
+(20, 'pass_39300_hits_stub', None)
+(21, 'pass_38E84_effects_stub', None)
+(21, 'pass_39300_hits_stub', None)
+(22, 'pass_38E84_effects_stub', None)
+(22, 'pass_39300_hits_stub', None)
+(23, 'pass_38E84_effects_stub', None)
+(23, 'pass_39300_hits_stub', None)
+(24, 'pass_38E84_effects_stub', None)
+(24, 'pass_39300_hits_stub', None)
+(25, 'pass_38E84_effects_stub', None)
+(25, 'pass_39300_hits_stub', None)
+(26, 'pass_38E84_effects_stub', None)
+(26, 'pass_39300_hits_stub', None)
+(27, 'pass_38E84_effects_stub', None)
+(27, 'pass_39300_hits_stub', None)
+(28, 'pass_38E84_effects_stub', None)
+(28, 'pass_39300_hits_stub', None)
+(29, 'pass_38E84_effects_stub', None)
+(29, 'pass_39300_hits_stub', None)
+(30, 'pass_38E84_effects_stub', None)
+(30, 'pass_39300_hits_stub', None)
+(31, 'pass_38E84_effects_stub', None)
+(31, 'pass_39300_hits_stub', None)
+(32, 'sound', 0)
+(32, 'pass_38E84_effects_stub', None)
+(32, 'pass_39300_hits_stub', None)
+(33, 'pass_38E84_effects_stub', None)
+(33, 'pass_39300_hits_stub', None)
+(34, 'pass_38E84_effects_stub', None)
+(34, 'pass_39300_hits_stub', None)
+(35, 'pass_38E84_effects_stub', None)
+(35, 'pass_39300_hits_stub', None)
+(36, 'pass_38E84_effects_stub', None)
+(36, 'pass_39300_hits_stub', None)
+(37, 'pass_38E84_effects_stub', None)
+(37, 'pass_39300_hits_stub', None)
+(38, 'pass_38E84_effects_stub', None)
+(38, 'pass_39300_hits_stub', None)
+(39, 'pass_38E84_effects_stub', None)
+(39, 'pass_39300_hits_stub', None)
+(40, 'pass_38E84_effects_stub', None)
+(40, 'pass_39300_hits_stub', None)
+(41, 'pass_38E84_effects_stub', None)
+(41, 'pass_39300_hits_stub', None)
+(42, 'pass_38E84_effects_stub', None)
+(42, 'pass_39300_hits_stub', None)
+(43, 'pass_38E84_effects_stub', None)
+(43, 'pass_39300_hits_stub', None)
+(44, 'pass_38E84_effects_stub', None)
+(44, 'pass_39300_hits_stub', None)
+(45, 'pass_38E84_effects_stub', None)
+(45, 'pass_39300_hits_stub', None)
+(46, 'pass_38E84_effects_stub', None)
+(46, 'pass_39300_hits_stub', None)
+(47, 'pass_38E84_effects_stub', None)
+(47, 'pass_39300_hits_stub', None)
+(48, 'pass_38E84_effects_stub', None)
+(48, 'pass_39300_hits_stub', None)
+(49, 'pass_38E84_effects_stub', None)
+(49, 'pass_39300_hits_stub', None)
+(50, 'pass_38E84_effects_stub', None)
+(50, 'pass_39300_hits_stub', None)
+(51, 'pass_38E84_effects_stub', None)
+(51, 'pass_39300_hits_stub', None)
+(52, 'pass_38E84_effects_stub', None)
+(52, 'pass_39300_hits_stub', None)
+(53, 'pass_38E84_effects_stub', None)
+(53, 'pass_39300_hits_stub', None)
+(54, 'pass_38E84_effects_stub', None)
+(54, 'pass_39300_hits_stub', None)
+(55, 'pass_38E84_effects_stub', None)
+(55, 'pass_39300_hits_stub', None)
+(56, 'pass_38E84_effects_stub', None)
+(56, 'pass_39300_hits_stub', None)
+(57, 'pass_38E84_effects_stub', None)
+(57, 'pass_39300_hits_stub', None)
+(58, 'pass_38E84_effects_stub', None)
+(58, 'pass_39300_hits_stub', None)
+(59, 'pass_38E84_effects_stub', None)
+(59, 'pass_39300_hits_stub', None)
+(60, 'pass_38E84_effects_stub', None)
+(60, 'pass_39300_hits_stub', None)
+(61, 'pass_38E84_effects_stub', None)
+(61, 'pass_39300_hits_stub', None)
+(62, 'pass_38E84_effects_stub', None)
+(62, 'pass_39300_hits_stub', None)
+(63, 'pass_38E84_effects_stub', None)
+(63, 'pass_39300_hits_stub', None)
+(64, 'pass_38E84_effects_stub', None)
+(64, 'pass_39300_hits_stub', None)
+(65, 'pass_38E84_effects_stub', None)
+(65, 'pass_39300_hits_stub', None)
+(66, 'pass_38E84_effects_stub', None)
+(66, 'pass_39300_hits_stub', None)
+(67, 'pass_38E84_effects_stub', None)
+(67, 'pass_39300_hits_stub', None)
+(68, 'pass_38E84_effects_stub', None)
+(68, 'pass_39300_hits_stub', None)
+(69, 'pass_38E84_effects_stub', None)
+(69, 'pass_39300_hits_stub', None)
+(70, 'pass_38E84_effects_stub', None)
+(70, 'pass_39300_hits_stub', None)
