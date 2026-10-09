@@ -1530,9 +1530,9 @@ production) ; le Z du pilier de la 117 ; `0xB9`.
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.c1b-2.
 
-### 1.8 E20.f0 — Moyens de test des armes et opcodes `0xC0`/`0xC1` ⏳
+### 1.8 E20.f0 — Moyens de test des armes et opcodes `0xC0`/`0xC1` 🧪
 
-Relecture : **READY** dès la première lecture (2026-10-10).
+Relecture : **READY** dès la première lecture (2026-10-10). Mise en œuvre faite le 2026-10-10 (T1 à T4 ✅, build Release et Debug, 3563 tests sans échec dans les deux configurations, traces inchangées) ; reste le verifier frais et la recette de l'auteur.
 
 **But.** Donner aux tranches des armes et des objets leurs moyens de test, dans la DLL et en jeu, et porter les deux opcodes qui
 imposent une arme : des sauvegardes de test qui portent l'arme choisie, les PM et les PV ; des aides d'arc pour donner et équiper une
@@ -1585,8 +1585,10 @@ de l'auteur, hors de l'app) ; tout comportement d'arme.
   le kit et les compteurs par `SetPlayerHpMax`, `SetPlayerHp`, `SetPlayerMpMax`, `SetPlayerMp`, `SetMoney`, `SetPlayerWeaponId`, `SetCurrentItemId` ; `CheckPreset` refuse hors bornes, 16 cas) ;
   les six préréglages aux cases du plan, toutes acceptées par les vraies règles de sauvegarde (14 : (8, 6, 0) ; 303 : (38, 11, 1) ; 16 : (34, 31, 3)), aucune destination de portail
   de remplacement nécessaire ; `item` laissé à 0 dans les préréglages (le plan n'en choisit aucun) ; l'outil affiche aussi les stats (`--dry-run` non lancé : action de l'auteur).
-- ⏳ **T4 — Aides d'arc.** `Give(params int[] items)`, `Equip(int slot)`, `SetMp(int max, int mp)`, `SetItem(int item)` dans
-  `AlundraArcSupport.cs`, par les vrais setters.
+- ✅ **T4 — Aides d'arc.** `Give(params int[] items)`, `Equip(int slot)`, `SetMp(int max, int mp)`, `SetItem(int item)` dans
+  `AlundraArcSupport.cs`, par les vrais setters. Fait : `Give` passe par `AddOneItemIfUnlocked` (le donneur de l'opcode `0x82`), `Equip` par `SetPlayerWeaponId`, `SetMp` par
+  `SetPlayerMpMax` puis `SetPlayerMp`, `SetItem` par `SetCurrentItemId` ; `AlundraArcInventoryHelpersTests` (5 tests) : sur la 10 depuis une arrivée, `Give(5)` puis `Equip(2)` donne
+  l'objet 5 comme arme courante et Carré tire l'animation `0x13` ; plafond 4 des PM ; un identifiant d'objet hors table est refusé par le setter.
 
 #### Acceptation
 
