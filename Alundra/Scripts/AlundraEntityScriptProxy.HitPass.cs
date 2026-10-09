@@ -72,6 +72,28 @@ public partial class AlundraEntityScriptProxy
 
         var changed = AlundraFrameSyncPasses.TryResolveAnimationTarget(this, out _, out var direction);
         LoadAnimationSwitch(TargetAnimationId, changed ? direction : AnimationDirection, fromClock: false);
+        StoreHitBox(); // E20.c1b K3: the creation (0x80039F30) stores the HitBox of the first frame too.
+    }
+
+    /// <summary>
+    /// E20.c1b K3 (docs/plan-e20-heros.md section 1.6): the stored HitBox (<c>+0x1FC/+0x200/+0x204</c>) of the helper <c>0x80038064</c>: <c>Pos + CollisionOffset</c> (<c>0x80038094-0x800380B0</c>, not <c>ModdedPos</c>), written
+    /// ONLY when the frame shown has a box (<c>+0x1D4 != 0</c>), after the movement of every tick (the end of <see cref="TickPhysics"/>, <c>0x800384BC</c>) and at the creation (<c>0x80039F30</c>), for every entity and
+    /// not only for the attackers of the hit pass. The opcode <c>0x95</c> reads it (docs/plan-e20-annexe/e20-c1b/check.md: the STORED box, not a recomputed one). The hit pass of E20.c1a still computes the
+    /// same value for its own attackers at its own point of the tick; nothing moves between the two, so the results are unchanged.
+    /// </summary>
+    internal void StoreHitBox()
+    {
+        if (!EvaluateFrameBox())
+        {
+            return;
+        }
+
+        unchecked
+        {
+            HitBoxX = PosX + CollisionOffsetX;
+            HitBoxY = PosY + CollisionOffsetY;
+            HitBoxZ = PosZ + CollisionOffsetZ;
+        }
     }
 
     /// <summary>

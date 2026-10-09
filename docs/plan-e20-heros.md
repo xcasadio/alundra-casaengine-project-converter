@@ -1171,7 +1171,7 @@ les PV du héros (E20.c2) ; tout appel de `ComputeNewHp` en production (gestionn
 - ✅ **K2 — Fiches d'équipement.** Sélection sans remappage (`n + 0x1E`, rien au-delà de `0x61`) ; les trois fiches remplies à chaque
   tick dans `UpdateItemEffectState` (le reste du bouchon demeure pour E20.c2) ; le tick devient un second appelant de la réécriture
   d'`ItemId`, comme le binaire ; effacement au chargement de carte.
-- ⏳ **K3 — `HitBox` rangée.** Écrite après le mouvement de chaque tick pour toute entité qui a une boîte (`0x80038064`, appelée par
+- ✅ **K3 — `HitBox` rangée.** Écrite après le mouvement de chaque tick pour toute entité qui a une boîte (`0x80038064`, appelée par
   `0x80038364`) et à la création (`0x80039F30`) ; la passe de coups de c1a garde son résultat (le verifier frais vérifie qu'aucun test de
   c1a ne bouge).
 - ⏳ **K4 — Opcodes.** `0x71`, `0x86` (pose), `0x87`, `0x95` (avec la `HitBox` rangée, le +1 de Z de l'ADR-0026 sur le seul rectangle, la

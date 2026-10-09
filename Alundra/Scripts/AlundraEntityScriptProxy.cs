@@ -1454,9 +1454,16 @@ public partial class AlundraEntityScriptProxy : GameplayProxy
             return;
         }
 
+        TickMotion();
+        StoreHitBox(); // E20.c1b K3: 0x80038364 ends the pass of every entity with the helper 0x80038064, which stores the HitBox the opcode 0x95 reads.
+    }
+
+    /// <summary>The movement half of <see cref="TickPhysics"/> (the hero's tick and probes, the scripted movement and the support of the others).</summary>
+    private void TickMotion()
+    {
         if (IsPlayer)
         {
-            if (ScriptHost.PlayerController != null)
+            if (ScriptHost!.PlayerController != null)
             {
                 AlundraPlayerManager.Tick(this, 1);
                 RunHeroProbes();
@@ -1472,7 +1479,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy
             AlundraScriptedMotion.TickScriptedNpc(this);
         }
 
-        EvaluateEntitySupport(ScriptHost.Collidables);
+        EvaluateEntitySupport(ScriptHost!.Collidables);
     }
 
     /// <summary>
