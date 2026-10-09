@@ -1629,84 +1629,148 @@ de l'auteur, hors de l'app) ; tout comportement d'arme.
 - **Budget** : un `executor` ; un verifier frais.
 - **Retour arrière** : `git revert` des commits d'E20.f0.
 
-### 1.9 E20.f1 — Charge et relâchement ⏳
+### 1.9 E20.f1 — Charge et relâchement : E20.f1a sans l'aura ⏳, E20.f1b l'aura (en attente de l'auteur)
 
-**But.** Le héros charge son arme en tenant Carré, voit l'aura, entend les sons de charge, et relâche une attaque chargée exactement
-comme le binaire : épées et fléau d'acier frappent avec leur animation chargée par la passe de coups ; l'arc de William et les
-baguettes arment leur tir, qui reste un bouchon compté jusqu'à E20.f3 (l'apparition vient d'E20.e0a). Les branches gelée et verrouillée
-de `MovePlayer` effacent la charge et le tir en attente, comme le binaire.
+**Révision 1 (2026-10-10).** Relecture : **REVISE**, cinq points : la condition de l'aura était inversée ; l'oracle ne journalisait ni
+le réservoir ni le générateur ; le moment de création des effets n'était pas choisi ; l'aura n'avait ni ancre ni clé de profondeur ;
+E20.f0 n'était pas un prérequis. Une découverte ciblée les a résolus (`docs/plan-e20-annexe/e20-f1/` : `depth-key.md`,
+`effect-model.md`, `oracle-ext.md`, contre-vérifiés par `check.md`). Elle montre que l'aura demande trois décisions d'architecture :
+une création immédiate des effets par le héros, qui fait exception à ADR-0046 (les scripts ne lisent pas le réservoir) ; une règle de
+tri des effets attachés, qui amende ADR-0049 ; la correction d'un défaut de l'original (poignée périmée, O-E20-15). En mode AUTO, la
+session principale ne change pas l'architecture sans l'auteur : **E20.f1 est coupée** en E20.f1a (la charge sans l'aura, dans le modèle
+d'effets existant, cette nuit) et E20.f1b (l'aura, en attente de l'auteur ; projet de section prêt dans `e20-f1/check.md`).
+Erratum : `f-weapons.md` ligne 122 inverse le test de `+0x7D` (voir ci-dessous).
+**Révision 2 (E20.f1a).** Seconde relecture : **REVISE**, trois points corrigés (FIX) : le bouchon de l'aura est spécifié sans
+lecture du réservoir ; l'écart d'ordre du son de l'étincelle et sa règle de comparaison sont écrits ; E20.f2 devient un prérequis
+(même fichier), les ancres de ligne deviennent des ancres de symbole. Une seule relecture de clôture suit.
+Relecture de clôture d'E20.f1a : **READY** (2026-10-10).
 
-**Faits porteurs** (`docs/plan-e20-annexe/e20-armes/f-weapons.md` §1 à §3, contre-vérifiés par `f-check.md` lignes 5 à 19, 33, 35, et
-corrections C2 à C5, C13) :
-- [binaire] `UpdatePlayerWeaponEffect` (`0x8002F49C`, appelé en `0x80031D68`, après le pad et la saisie d'échelle, avant
-  `UpdateWeaponStepProgression`) : compteur `0x80126FFC`, +1 plafonné à 60 quand `(Hold | Released) & 0x80`, l'octet 0 de la fiche
-  d'arme non nul et le drapeau b0 de l'animation courante (`0x80028D14 + 2 × (+0x88)` ; b0 vrai pour 0 à 4, `0x0E`, `0x29` à `0x2D`,
-  `0x35`, `0x3E`), sinon remis à 0. Compteur < 11 : la poignée de l'aura (`0x80126FF8`) est relâchée (son `+0x68` mis à 0). Compteur
-  ≥ 11 : l'effet 3 attaché au héros est créé si la poignée est nulle ou si son `+0x7D` vaut 0 (`0x8003BE74(0, 3, 0, héros, 1, 0, 0,
-  z 0x100000)`) ; puis, seulement quand `+0x1C & 3 == 0`, le son `0x2A` si le compteur est < 60 ; à 60, l'étincelle de maintien
-  (effet `0x10`, position du héros + Z `0x100000` décalée par deux tirages du générateur, forces du héros moins le décalage), puis le son
-  `0x1AD` si `+0x1C & 7 == 0`, sinon `0x1AC` ; les deux tirages n'ont lieu que si l'effet est créé.
-- [binaire] `PlayerTryAttack` (`0x8002EAF4`) teste le relâchement avant l'appui : compteur < 60 ou héros en l'air : rien (D-E20-9) ;
-  sinon gerbe de 16 effets `0x10` (pour i de 0 à 15 : X + `tab1[2i] × 3 << 10`, Y + `tab2[2i] × 3 << 10`, tables `0x80023654` et
-  `0x80023694`, amplitudes 768 et 512 ; forces `tab[(2i + 0x18) & 0x1F] × 448` ; Z + `0x100000` ; aucun tirage), son `0x2B`, pointeur
-  = `0x80028C79 + 13w + 8`, compteur de pas 0, `+0x88` = l'animation chargée, rend 1. Fiches chargeables : 1, 2, 3, 4, 5, 7, 9.
-- [binaire] Premier tick compté = S + D + 1 (appui au tick S, coup de D ticks) ; aura 10 ticks plus tard ; compteur à 60 à S + D + 60 ;
-  premier relâchement réussi à S + D + 60. Un relâchement en l'air avec le compteur à 60 ne fait rien et le compteur retombe à 0.
-- [binaire] Le compteur et le pointeur sont effacés ensemble à sept endroits ; dans le périmètre de la DLL d'aujourd'hui : la branche
-  `+0x20` (`0x80031BB4`, `0x80031BC0`) et la branche verrouillée `& 0x34` (`0x80031BEC`, `0x80031BF8`). La DLL n'efface que le
-  pointeur dans la première (`AlundraPlayerManager.cs:211`) et rien dans la seconde (`:220-223`). Les autres endroits sont la blessure
-  (E20.c2b), la branche `+0x188 & 0x80` (E7) et la mort (E18).
-- [oracle] `scratchpad/disc-weapons/f-weapons/` (`probe.py`, `tools/`, sorties `out/C2-steel.txt`, `C6-william.txt`, `C10-crusher.txt`,
-  `C14-ice.txt`, `C16-fire.txt`) : le vrai code d'`UpdatePlayerWeaponEffect`, de `PlayerTryAttack` et de `MovePlayer`, tick par tick
-  (compteur, animation, pointeur, compteur de pas, appels d'effet et de son, appel d'apparition).
+#### E20.f1a — La charge et le relâchement, sans l'aura
 
-**Périmètre.** `Alundra/Scripts/` : `UpdatePlayerWeaponEffect` (aujourd'hui un bouchon, `AlundraPlayerManager.cs:533`), la branche de
-relâchement de `PlayerTryAttack`, la gerbe, l'aura et l'étincelle par un accès de l'hôte au stade des effets (`IAlundraScriptHost`, le
-réservoir a `CreateAttached` et `Free`, `AlundraEffectReservoir.cs:205`, `:237`), les deux effacements ; le bouchon de tir
-(`SpawnWeaponProjectile`) compte ses appels avec leurs arguments ; tests ; l'oracle copié dans
+**Prérequis.** E20.f0 (CONFIRMED : `Give`, `Equip` ; la sauvegarde `steel-m14` pour la recette) ; **E20.f2 terminée** (commits faits) :
+les deux tranches modifient `AlundraPlayerManager.cs` dans les mêmes branches de `MovePlayer` (branche `+0x20`, branche verrouillée,
+site de `UpdatePlayerWeaponEffect`) ; f1a part de l'état laissé par f2.
+
+**But.** Le héros charge son arme en tenant Carré, entend les sons de charge, voit l'étincelle de maintien quand la charge est pleine,
+et relâche une attaque chargée exactement comme le binaire : gerbe de 16 étincelles, son, animation chargée qui frappe par la passe de
+coups ; l'arc de William et les baguettes arment leur tir, qui reste un bouchon compté jusqu'à E20.f3. Les branches gelée et
+verrouillée de `MovePlayer` effacent la charge et le tir en attente. L'aura (effet 3 attaché) n'est pas dans cette tranche : son appel
+reste un bouchon nommé, compté, à sa place exacte.
+
+**Faits porteurs** (`f-weapons.md` §1 à §3 avec l'erratum, `f-check.md` lignes 5 à 19, 33, 35, corrections C2 à C5 et C13 ;
+`e20-f1/`) :
+- [binaire] `UpdatePlayerWeaponEffect` (`0x8002F49C`, appelé en `0x80031D68`, avant `PlayerTryAttack`) : compteur `0x80126FFC`, +1
+  plafonné à 60 quand `(Hold | Released) & 0x80`, l'octet 0 de la fiche d'arme non nul et le drapeau b0 de l'animation courante
+  (`0x80028D14 + 2 × (+0x88)`), sinon 0. Compteur < 11 : libération de l'aura (`0x8002F730`-`0x8002F744`). Compteur ≥ 11, à chaque tick :
+  création de l'aura si la poignée est nulle **ou si le `+0x7D` (drapeau de destruction) de son emplacement est non nul**
+  (`0x8002F570`-`0x8002F58C` ; erratum de `f-weapons.md` ligne 122) ; puis, seulement si `+0x1C & 3 == 0` (valeur d'avant la passe des
+  compteurs) : son `0x2A` si le compteur est < 60 ; à 60, l'étincelle (effet `0x10` en X, Y, Z + `0x100000`) ; si elle n'est pas créée,
+  rien d'autre (`0x8002F61C`) ; sinon son `0x1AD` si `+0x1C & 7 == 0`, sinon `0x1AC`, puis deux tirages `r1`, `r2` (état = `r2`),
+  `jx = hi(r1 × 0x60001) − 0x30000`, `jy = hi(r2 × 0x40001) − 0x20000`, X += 20·jx, Y += 20·jy, forces = forces du héros
+  (`+0xC4`/`+0xC8`) − (jx, jy).
+- [binaire] `PlayerTryAttack` (`0x8002EAF4`) : relâchement testé avant l'appui ; compteur < 60 ou héros en l'air : rien (D-E20-9) ;
+  sinon gerbe de 16 effets `0x10` (tables `0x80023654`/`0x80023694`, Z + `0x100000`, aucun tirage ; un effet nul saute ses seules
+  écritures, `0x8002EBBC`), son `0x2B`, pointeur `0x80028C79 + 13w + 8`, compteur de pas 0, `+0x88` = l'animation chargée. Au tick du
+  relâchement, une étincelle puis la gerbe peuvent naître (C10, C14, C16 au tick 101 : 17 créations).
+- [binaire] Premier tick compté = S + D + 1 ; compteur à 60 à S + D + 60 ; premier relâchement réussi à S + D + 60 ; relâchement en
+  l'air perdu. Compteur et pointeur effacés ensemble ; dans le périmètre : la branche `+0x20` (`0x80031BB4`, `0x80031BC0`) et la
+  branche verrouillée (`0x80031BEC`, `0x80031BF8`) ; la DLL n'efface que le pointeur dans la première (`AlundraPlayerManager.cs:211`)
+  et rien dans la seconde (`:220-223`).
+- [DLL, ADR-0046, ADR-0048] Les effets passent par la file du stade (`Emit`), appliquée par `RunFrame` au tick d'émission ; les
+  étincelles de coup et la fiole de vie tirent dans le générateur au moment de l'application (`AlundraNativeEffects.cs:52-53`,
+  `:83-85`). L'étincelle de maintien et la gerbe suivent ce modèle : l'opération en file crée l'effet et, **seulement s'il est créé**,
+  joue le son (`0x1AC`/`0x1AD`) et fait les deux tirages de l'étincelle. Écart documenté, déjà admis par ADR-0048 (écart 2) : les
+  tirages et le son de l'étincelle ont lieu à l'application, dans l'ordre de la file ; l'ordre des tirages entre l'étincelle (émise par
+  `MovePlayer`) et les étincelles de coup (émises par la passe de coups, plus tard dans le tick) reste celui du binaire. **Écart
+  d'ordre des sons** : le son de l'étincelle (`0x1AC`/`0x1AD`) est joué à l'application, donc après tous les sons joués tout de suite
+  pendant les ticks logiques de l'image (son `0x2B` du relâchement, sons de changement d'animation) ; le binaire le joue avant. Ticks
+  concernés dans les scénarios : C10, C14 et C16 au tick 101 (étincelle puis relâchement).
+- [convention Z] `PosZ` de la DLL = binaire − 1 (ADR-0026) ; les effets prennent le Z du binaire (`PosZ + 1`, ADR-0049) : le Z d'un
+  effet de la DLL égale celui de l'oracle ; le bouchon de tir garde la convention de la DLL (`Z oracle = Z DLL + 1`).
+- [oracle] `scratchpad/disc-f1/oracle-ext/` (vrai code de création du binaire, réservoir réel de 128 emplacements, mot du générateur
+  avant et après chaque ligne, `+0x1C`, poignée de l'aura avec `+0x68`/`+0x7D`, champs de chaque effet créé à la fin de la logique du
+  tick, avant toute mise à jour) ; colonnes communes égales à la découverte ; sorties identiques d'une relance à l'autre ; pas d'avance
+  du générateur par image (comme la DLL d'aujourd'hui).
+
+**Bouchon de l'aura (`AuraStub`), contrat exact.** Il ne lit jamais le réservoir ni `Destroying`/`+0x7D` (la condition corrigée est
+écrite pour E20.f1b, pas évaluée ici). Il tient un seul état, un booléen « aura vivante en principe », et deux compteurs :
+- appel `Check` à chaque tick où le compteur de charge est ≥ 11, au site de la création (`0x8002F570`) ; si le booléen est faux, il
+  compte une « création » et le passe à vrai (modèle de la poignée nulle) ;
+- appel `Release` au premier tick où le compteur est < 11 alors que le booléen est vrai (`0x8002F730`, poignée non nulle) : il compte
+  une libération et repasse le booléen à faux ;
+- il ne modélise pas le renouvellement par `+0x7D` (tous les 97 ticks d'une charge tenue) : c'est E20.f1b.
+
+**Périmètre.** `Alundra/Scripts/` : `UpdatePlayerWeaponEffect` (bouchon aujourd'hui, dans `AlundraPlayerManager`) sans l'aura (le
+bouchon `AuraStub` ci-dessus) ; la branche de relâchement de
+`PlayerTryAttack` ; l'étincelle et la gerbe par des opérations en file, sur le modèle d'`AlundraNativeEffects.CreateHitSparks` ; les
+deux effacements ; le bouchon de tir qui compte ses appels et leurs arguments ; tests ; l'oracle copié dans
 `docs/plan-e20-annexe/e20-f1/oracle/`.
 
-**Hors périmètre.** L'apparition réelle des projectiles (E20.e0a, E20.f3) ; l'avance du générateur une fois par tick (E20.e0b) ; les
-effacements de la blessure, d'E7 et de la mort ; le rebond du fléau (E20.f2).
+**Hors périmètre.** L'aura et tout ce qui lit le réservoir depuis `MovePlayer` (E20.f1b) ; l'apparition des projectiles (E20.e0a,
+E20.f3) ; l'avance du générateur par image (E20.e0b) ; les autres effacements (blessure, E7, mort).
 
-#### Tâches
+##### Tâches
 
-- ⏳ **T1 — Oracle.** Copier les outils de la découverte (`probe.py` et `tools/`) dans `docs/plan-e20-annexe/e20-f1/oracle/`, les
-  relancer et garder leurs sorties (`out/`) ; vérifier qu'elles égalent celles de la découverte. Dire si l'oracle fait tourner l'avance
-  du générateur par image ; sinon, les comparaisons de tirages portent sur les seuls tirages de l'étincelle.
-- ⏳ **T2 — Accès aux effets.** Un accès de l'hôte au stade des effets, sans changement du moteur, qui crée un effet attaché et lit sa
-  vie (`+0x7D`) ; si l'effet 3 ou `0x10` manque des données exportées, arrêt.
-- ⏳ **T3 — Charge.** `UpdatePlayerWeaponEffect` à sa place exacte dans `MovePlayer`, sur le pad du tick ; l'aura ; les sons ;
-  l'étincelle et ses deux tirages.
-- ⏳ **T4 — Relâchement.** La branche de relâchement de `PlayerTryAttack` (gerbe, son, pointeur de la fiche chargée, animation) ; le
-  relâchement en l'air perdu ; le bouchon de tir appelé au tick et avec les arguments du binaire (type, X, Y, Z + `(z << 16)`, direction
+- ⏳ **T1 — Oracle.** Copier dans `docs/plan-e20-annexe/e20-f1/oracle/`, depuis `scratchpad/disc-f1/oracle-ext/` : `ext.py`,
+  `probe_ext.py`, `probe_orig.py`, `tools/`, `out/`, `out_orig/`, `summary.txt` ; deux chemins seulement changent (`EFFECTS_GLOBAL`,
+  `probe_ext.py:303`, relatif à la racine du dépôt ; la section `DISCOVERY`, `:63`, sautée si le dossier manque). Relancer
+  `python probe_ext.py` ; les 17 fichiers de `out/` égalent au bit près ceux de `oracle-ext/out/`.
+- ⏳ **T2 — Charge.** `UpdatePlayerWeaponEffect(player, pad, host)` à sa place exacte (le site de son appel dans `MovePlayer`, après
+  le pad et la saisie d'échelle, avant `UpdateWeaponStepProgression`) : compteur sur le héros, `AuraStub`, sons, étincelle en file.
+- ⏳ **T3 — Relâchement.** Branche de relâchement de `PlayerTryAttack` : gerbe en file (Z = `PosZ + 1 + 0x100000`), son `0x2B`,
+  pointeur, animation chargée ; relâchement en l'air perdu ; bouchon de tir au tick et avec les arguments du binaire (direction
   `{0, 0x10, 8, 0x18}[direction de la boîte]`, D-E14-6).
-- ⏳ **T5 — Effacements.** Compteur et pointeur effacés dans la branche `+0x20` et dans la branche verrouillée ; l'aura reste jusqu'au
-  tick normal suivant, comme le binaire.
-- ⏳ **T6 — Tests.**
+- ⏳ **T4 — Effacements.** Compteur et pointeur dans la branche `+0x20` (`BlockedByEntity`) et la branche verrouillée (masque `0x34`)
+  de `MovePlayer`, telles que les laisse E20.f2 (ancres de symbole, pas de numéros de ligne).
+- ⏳ **T5 — Tests.**
 
-#### Acceptation
+##### Acceptation
 
-- Contre l'oracle, tick par tick, pour `C2-steel`, `C6-william`, `C10-crusher`, `C14-ice` et `C16-fire` : compteur, animation, pointeur
-  (fiche et décalage), compteur de pas, appels d'effet (identifiant, attaché ou non, Z), sons, appels du bouchon de tir (tick, type, X, Y,
-  Z, direction). Exemples tirés de `C2-steel` : compteur 1 au tick 1 (appui), 0 au tick 2, 1 au tick 23 ; aura et son 42 au tick 33,
-  son 42 tous les 4 ticks ; compteur 60 au tick 82 ; étincelle et son 428 au tick 85, 429 au tick 89 ; relâchement au tick 91 (animation
-  `0x18`, 16 étincelles, son 43) ; tir de type 27 au tick 112 (Z 1, direction `0x18`).
-- Relâchement à S + D + 59 : échoue ; à S + D + 60 : réussit. Relâchement en l'air : perdu, compteur 0 au tick suivant.
-- Gerbe : les 16 positions et forces égales à l'oracle.
-- Tirages : l'état du générateur après chaque étincelle égale celui de l'oracle.
-- Une charge interrompue par un verrouillage (`0x34`) : pas de tir après le déverrouillage ; compteur et pointeur à 0.
-- Le coup chargé `0x18` de l'épée d'acier touche un Beannoïde de la 14 par la passe de coups existante (puissance de la ligne
-  `anim + 1` de la fiche du héros).
+- Contre l'oracle, tick par tick, pour C2-steel, C6-william, C10-crusher, C14-ice et C16-fire : compteur, animation, pointeur, compteur
+  de pas, sons, `AuraStub` (C2-steel : `Check` du tick 33 au tick 91, soit 59 appels, une seule « création » au tick 33, `Release` au
+  tick 92, comme le `aura=` de l'oracle effacé au tick 92), appels du bouchon de tir (tick, type, X, Y, Z avec
+  `Z oracle = Z DLL + 1`, direction).
+- Pour chaque étincelle et chaque effet de gerbe, lus après leur création et avant leur première mise à jour (par un point d'accès de
+  test du stade) : identifiant, X, Y, Z (égal à l'oracle), forces ; les indices d'emplacement ne sont pas comparés (l'aura de l'oracle
+  occupe un emplacement que la DLL n'occupe pas encore). Mots du générateur en paires (entrée, sortie), le générateur posé sur le mot
+  d'entrée de l'oracle.
+- Règle de comparaison des sons : chaque tick, liste ordonnée ; la liste attendue de la DLL est celle de l'oracle, sauf aux ticks qui
+  portent une étincelle et d'autres sons, où le son de l'étincelle passe en dernier (écart d'ordre ci-dessus). Exemple : C10 au tick
+  101, oracle `428, 43, 43` (d'après `oracle-ext/out/C10-crusher.txt` ligne 105) → DLL `43, 43, 428`.
+- Exemples tirés de C2-steel : compteur 1 au tick 1, 0 au tick 2, 1 au tick 23 ; premier `Check` et « création » de l'aura au tick 33 ; son 42 tous les 4 ticks ;
+  compteur 60 au tick 82 ; étincelle au tick 85, mot `12345678 > 24D2C78A`, position (8274740, 4686300), forces (−86057, 93365), son 428 ;
+  tick 89 : son 429, `24D2C78A > AFBE9EAC` ; relâchement au tick 91 : animation `0x18`, 16 effets aux positions de `summary.txt` §4,
+  son 43 ; tir de type 27 au tick 112 (Z oracle 1, direction `0x18`).
+- Tick de relâchement de C10 (tick 101) : étincelle puis gerbe, 17 créations dans l'ordre de l'oracle.
+- Réservoir plein : l'étincelle non créée n'a ni son ni tirage, la suivante part du mot inchangé ; cinq emplacements libres : 5 effets
+  de gerbe, 11 nuls, son 43, pointeur et `0x18` présents.
+- Relâchement à S + D + 59 : échoue ; à S + D + 60 : réussit. Relâchement en l'air : perdu. Charge interrompue par `0x34` : pas de tir
+  après le déverrouillage, compteur et pointeur à 0. Le coup `0x18` de l'épée d'acier touche un Beannoïde de la 14.
 - Build Release puis Debug ; `Alundra.Tests` sans échec ; traces inchangées ; aucun test existant ne change sans raison du binaire ;
   verifier frais.
-- Recette de l'auteur : avec `steel-m14`, tenir Carré : l'aura et les sons de charge, puis le coup chargé au relâchement.
+- Recette de l'auteur : avec `steel-m14`, tenir Carré : les sons de charge et l'étincelle de maintien, puis la gerbe et le coup chargé au
+  relâchement (l'aura viendra avec E20.f1b).
 
-#### Arrêts, budget, retour arrière
+##### Arrêts, budget, retour arrière
 
-- **Arrêts** : un écart à l'oracle que le binaire n'explique pas ; un effet dont les données manquent ; un besoin de changer le moteur.
+- **Arrêts** : un écart à l'oracle que le binaire n'explique pas ; un effet dont les données manquent ; un besoin de changer le moteur ;
+  un besoin de lire le réservoir depuis `MovePlayer` (c'est E20.f1b) ; E20.f2 pas terminée.
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
-- **Retour arrière** : `git revert` des commits d'E20.f1.
+- **Retour arrière** : `git revert` des commits d'E20.f1a.
+
+#### E20.f1b — L'aura (en attente de l'auteur)
+
+Projet de section prêt (`docs/plan-e20-annexe/e20-f1/check.md`, « Draft revision ») ; il demande trois décisions de l'auteur :
+- **Q-N4 (ADR-0056)** : le héros crée et libère ses effets tout de suite (`CreateNow`, `CreateAttachedNow`, `FreeNow`), garde
+  l'emplacement comme poignée et lit `Destroying` au tick même ; tout le reste reste en file (ADR-0046). Exact à un tick par image ; écarts
+  pour N ≥ 2 (une image sans aura au renouvellement, ordre des tirages, indice d'emplacement). Recommandé : oui.
+- **Q-N5 (amendement d'ADR-0049)** : un effet attaché se trie sur la coordonnée du sprite de son ancre plus `DepthOffset`, pour que
+  l'aura se dessine au-dessus du héros comme dans le binaire (sinon elle passe dessous). Recommandé : oui.
+- **O-E20-15 (défaut de l'original)** : si l'aura expire pendant un verrouillage et que son emplacement est repris, le premier tick
+  normal libère l'effet qui l'occupe (`0x8002F730`-`0x8002F744`, aucun test). Reproduire, ou corriger par un numéro de génération
+  (recommandé : corriger, c'est un pointeur pendant avéré).
+- Faits déjà établis : clé du héros `((PosY + (IDSV << 16)) & 0xFFFF0000) + (short)(PosZ >> 16)`, égale au tri du binaire
+  (`0x800399B8`) sur les 150 ticks de C2-steel ; ancre par `IAlundraEffectAnchor` sur le proxy, sans changement du moteur.
 
 ### 1.10 E20.f2 — Rebond du fléau 🧪 (T1 à T3 faites le 2026-10-10 ; reste le verifier frais, puis la recette de l'auteur)
 
@@ -1799,6 +1863,78 @@ natifs D31/E15 sont à E14).
 - **Budget** : un `executor` ; un verifier frais.
 - **Retour arrière** : `git revert` des commits d'E20.f2.
 
+### 1.11 E20.c2-0 — Oracle du héros touché ⏳
+
+**Révision 1 (2026-10-10).** Relecture : **REVISE**, un point corrigé : le harnais de base refait en Python le répartiteur du tick
+(`0x8003B388`) sans la porte `[0x800DC4B8] & 0x48`, qui ne laisse tourner que la passe des listes ; D1 l'aurait enregistré comme le
+binaire. Un répartiteur propre à `hworld` suit maintenant la porte, avec sa règle dans le modèle et sa mutation de contrôle.
+Relecture neuve : **READY** (2026-10-10). Exécution lancée en parallèle d'E20.f2 (dossier d'oracle seulement, aucun build).
+
+**But.** Construire l'oracle d'E20.c2 (le vrai code d'`ALUN_CD.EXE` dans l'émulateur MIPS des tranches précédentes), sans toucher à la
+DLL : l'entrée de la blessure `0x80031A68` (toucheur et cases dangereuses), les états `0x31`, `0x1C` et `0x3A`, l'invulnérabilité
+`0x78` et le clignotement, les PV portés par l'entité et leur miroir dans les stats, `UpdateItemEffectState` (bottes, fiche du héros,
+régénération) et le chemin `controlFlags == 0x20`. Il sert d'acceptation à E20.c2a (modèle de PV) et à E20.c2b (la blessure), quel que
+soit l'ordre que l'auteur retiendra. Cette tranche relève de la ligne E20.c2 approuvée (« oracle de `0x80031A68` ») ; le découpage en
+c2-0, c2a et c2b vient de la contre-vérification de sa découverte (`docs/plan-e20-annexe/e20-c2/check.md` §c).
+
+**Faits porteurs** (`docs/plan-e20-annexe/e20-c2/` : `c2-binary.md`, `c2-dll.md`, `c2-oracle.md`, contre-vérifiés par `check.md`) :
+- [binaire] Les faits de `c2-oracle.md` §3 (chemin normal, bloc de la blessure, branche du toucheur, branche des cases dangereuses,
+  queue sans coup, table de la mort `0x80022FBC`, branche verrouillée, épilogue `UpdateItemEffectState`), confirmés par `check.md`
+  lignes 1 à 39 et 41 à 47.
+- [binaire] L'ordre des passes du tick (`check.md` ligne 73, `0x8003B388`-`0x8003B408`) ; la liste des entités dessinées (statut 2
+  ou 3 et `(+0x1CC & 3) != 3`, `0x800385D0`-`0x8003860C`), d'où le clignotement : caché au tick de la blessure, puis un tick sur quatre.
+- [oracle] La base est l'oracle d'E20.c1b (`docs/plan-e20-annexe/e20-c1b/oracle/tools/`, qui contient déjà `world.py`, `c1world.py`,
+  `kworld.py`, `kmodel.py`, `kmut.py`, `kcheck.py`, `mips.py`, `interp2.py`) plus `scen.py` d'E20.c1 ; les ajouts de `c2-oracle.md` §2
+  (PV du héros pris des stats par les vrais getters, échauffement de la fiche `0x80127008` par un vrai appel de `0x800307E8`, mots BSS,
+  peintre de cellules dangereuses et d'eau, l'Orque de la 15 et le Poisson de la 14 comme cibles, attaques synthétiques, inventaires,
+  colonnes) se font sans modifier un fichier copié.
+
+**Périmètre.** Un dossier neuf `docs/plan-e20-annexe/e20-c2/oracle/` : copies identiques au bit près des outils de base, et les
+fichiers neufs `hworld.py`, `hscen.py`, `hmodel.py`, `hmut.py`, `run_c2.py`, leurs sorties (`out/`, JSON compact) et un résumé. Ce plan.
+**Hors périmètre** : toute modification de la DLL, des tests C# ou du convertisseur ; les scénarios A3, A5, A7, B3, B4, C2, C3, D2, F3,
+F6 et le groupe H de `c2-oracle.md` (retirés par `check.md` §c ; A3 et A5 pourront revenir avec E20.c2b si elle en a besoin).
+
+#### Tâches
+
+- ⏳ **T1 — Base.** Copier les outils de base ; relancer la porte D1 (S-A et S-B : 216 valeurs chacun, 0 écart) et `H3` d'E20.c1 : les
+  colonnes communes égalent celles de c1 au bit près.
+- ⏳ **T2 — Monde et colonnes.** `hworld.py` selon `c2-oracle.md` §2, avec un répartiteur du tick propre, utilisé par les deux
+  interprètes (sans modifier `world.py` ni `interp2.py`) : quand `[0x800DC4B8] & 0x48` est posé, seule la passe des listes `0x800384F4`
+  tourne, comme le binaire (`0x8003B388`-`0x8003B408`, `check.md` ligne 73) ; sinon les huit passes ; colonnes de `c2-oracle.md` §4 plus `visible` (le héros dans la
+  liste `0x80134250` à la fin du tick) et le miroir des stats (`stats_hp`, `stats_hpmax`).
+- ⏳ **T3 — Scénarios.** `hscen.py`, d'après `c2-oracle.md` §2 et `check.md` §c : A1 (`H3` prolongé à 200 ticks, et une variante au
+  pad 0 au contact à 20 px), A2 (armure × PV contre l'Orque), A4 (relèvements), A6 (fenêtre d'invulnérabilité, bord du tick
+  hurt + 118 à + 122), B1 et B2 (cases dangereuses × bottes, plancher de PV), D1 (balayage de `[0x800DC4B8]`, `0xA0` compris), E2 et E3
+  (l'entité l'emporte sur les stats ; création depuis les stats), F1, F2, F4, F5 (régénération), G (bottes et fiche, façon K1) ; C1
+  (eau, `0x3A`) et E1 (PV 0) à titre d'information pour E20.i et E18. L'oracle ne contient aucune valeur attendue, seulement des entrées.
+- ⏳ **T4 — Modèle indépendant.** `hmodel.py`, écrit d'après le plan et les rapports (pas d'après le code émulé), nourri des seules
+  entrées et colonnes de géométrie : dégâts par la règle de `ResolveBalanceTarget` (E20.c1b) sur la fiche du héros ; coût et plancher
+  des cases dangereuses ; suite de `+0x1CC` et phase du clignotement ; porte `& 0x48` : compteur `+0x1C`, `+0x1CC`, position et PV du
+  héros figés d'un tick à l'autre, la colonne `visible` encore tenue par la passe des listes ; bornes des stats ; compteurs de régénération ; bottes.
+- ⏳ **T5 — Second interprète, mutations, couverture, manifeste.** Tous les scénarios aussi par `mips.py`/`interp2`, comparés texte à
+  texte ; mutations de `c2-oracle.md` §5 qui portent sur les scénarios gardés (chacune avec son changement attendu écrit d'avance dans
+  `hmut.py`), plus un contrôle du répartiteur : sans la porte, la ligne D1 à `0x48` doit changer ; couverture de `0x80031A68`, du bloc de régénération et de l'épilogue ; deux relances donnent le même manifeste ;
+  `run_c2.py` enchaîne le tout.
+
+#### Acceptation
+
+- La porte D1 est inchangée ; les colonnes communes de `H3` égalent celles d'E20.c1 au bit près ; la ligne du tick 18 d'A1 égale celle de
+  `H3`.
+- D1 à `0x48` (et à `0x08`, `0x40`, `0x28`) : `+0x1C`, `+0x1CC`, position et PV du héros inchangés d'un tick à l'autre, `visible` tenue,
+  identiquement dans les deux interprètes.
+- Le modèle indépendant égale l'oracle sur chaque règle listée en T4, pour chaque scénario concerné.
+- Le second interprète égale le premier sur chaque scénario.
+- Chaque mutation retenue est attrapée par le scénario désigné.
+- Deux relances donnent le même manifeste ; `python -B docs/plan-e20-annexe/e20-c2/oracle/run_c2.py` sort 0.
+- Aucun fichier de la DLL, des tests C# ou du convertisseur ne change ; verifier frais.
+
+#### Arrêts, budget, retour arrière
+
+- **Arrêts** : la ligne du tick 18 d'A1 diffère de `H3` ; la porte D1 bouge ; un outil copié devrait être modifié ; un scénario demande
+  un appel non bouchonné qui sort du périmètre du héros (le noter et le retirer, pas l'improviser).
+- **Budget** : un `executor` ; un verifier frais (avec un redécodage du binaire).
+- **Retour arrière** : `git revert` des commits d'E20.c2-0.
+
 ---
 
 ## 2. Points ouverts
@@ -1818,6 +1954,7 @@ natifs D31/E15 sont à E14).
 | O-E20-13 | La DLL ajoute les entités neuves en fin de liste, alors que le binaire réutilise la première case libre (`FindFreeEntitySlot`) : après un recyclage en cours de carte, l'ordre de la passe de coups (« premier attaquant ») peut différer | à mesurer avec E20.e0 (apparitions) ou E14 |
 | O-E20-11 | Une entité neuve tourne-t-elle dans le même tick dans le binaire (répétition de `0x800386D0`, contrôle de D7 : non vérifié) ? E20.a garde la règle d'aujourd'hui (premier tick à l'image suivante) | à mesurer, avec E20.e0 |
 | O-E20-14 | Atteignabilité en jeu des salles des leviers : la 115 nord-ouest après le hall (E14.a) ; la 116 derrière la grille (E14.a) ; la salle de la bascule de la 117, où la bascule n'apparaît que si l'on arrive par les portails internes 2, 4 ou 6 de la 117 (les arrivées depuis la 115 et la 116 sont hors de sa zone) ; la 44, dont on ne sait pas si le chemin vers les leviers passe par la case de la vague (43..44, 20) | recette de l'auteur, après E14.a |
+| O-E20-15 | Poignée d'aura périmée (`0x8002F730`-`0x8002F744`) : reproduire le défaut de l'original, ou le corriger par un numéro de génération (recommandé) | l'auteur, avec E20.f1b |
 | O-E20-10 | **Tranché le 2026-10-09 (D-E20-14).** `UpdateItemEffectState` (table de défense, bottes, régénération, PV) et `0x8003634C` : bouchons dans E20.a et portage dans E20.c2, ou portage dès E20.a | — |
 
 ## 3. Hors périmètre
