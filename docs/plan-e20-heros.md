@@ -1241,7 +1241,7 @@ les PV du héros (E20.c2) ; tout appel de `ComputeNewHp` en production (gestionn
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.c1b-1.
 
-### 1.7 E20.c1b-2 — Les leviers réagissent au coup d'épée 🧪 (faite le 2026-10-09, `faaf00f` et les commits suivants ; reste le verifier frais et la recette en jeu de l'auteur)
+### 1.7 E20.c1b-2 — Les leviers réagissent au coup d'épée 🧪 (faite et CONFIRMED le 2026-10-09, `faaf00f` à `1c2de24` ; reste la recette en jeu de l'auteur, quand les salles seront atteignables, O-E20-14)
 
 Relecture : **READY** dès la première lecture (2026-10-09). Exécution lancée sans soumission à l'auteur, à sa demande.
 
@@ -1387,6 +1387,31 @@ production) ; le Z du pilier de la 117 ; `0xB9`.
 - Recette en jeu de l'auteur, quand les salles seront atteignables (O-E20-14) : un coup d'épée anime le levier et ouvre la porte vers
   la 116 (115) ; les deux leviers étendent le pont, un troisième coup le retire (116) ; la bascule tourne et réécrit les plateformes,
   le levier 22 fait bouger le pilier (117) ; les sept trappes s'ouvrent (44).
+
+#### Résultats (2026-10-09)
+
+- **Commits** : `faaf00f` (L0), `712edd2` (L1), `4488943` (L2), `b4abc3d` (L3), `07e1191` (L4), `1c2de24` (L5) ; tests et documents
+  seulement, aucun changement de production ni du moteur.
+- **Tests** : `AlundraLeverSmokeTests` (cinq salles), `AlundraLeverArcTests` (A), `AlundraLeverBridgeArcTests` (B),
+  `AlundraLeverBasculeArcTests` (C), `AlundraLeverPillarArcTests` (D), `AlundraLeverDoorsArcTests` (E, avec et sans G1633) ; aides de
+  test dans `AlundraLeverArcSupport.cs` (enregistreur de sons horodaté, lecture d'un rectangle de cases, noms des mondes).
+  `Alundra.Tests` 3491 sur 3491 en Release et en Debug ; traces du héros et de l'intro inchangées ; un arc dure 0,5 à 1 s.
+- **Acceptation** : toutes les valeurs d'A à E égalent le plan, écrites avant l'exécution, y compris les INFERENCE (fin d'animation
+  tenue à s + L + 1 ; Z 24 du levier de la 115 ; pilier de la 117 à N+96 ; portes de la 44 à N+101, le plan admettant ± 1 ; positions
+  des portes à ± 2 px). Aucun défaut du DLL trouvé : les leviers réagissent déjà au coup d'épée depuis E20.c1a et E20.c1b-1.
+- **L0** : le binaire permet le coup sur la pente 1 (`MovePlayer` lit `+0x18C` une seule fois, `0x80031B98` ; la table `0x80022D1C`
+  n'envoie ailleurs que les pentes 4 et 6 ; `PlayerTryAttack` `0x8002EAF4` ne lit pas la pente) : `e20-c1b2/l0-pente.md`.
+- **L5** : `MapsWithoutSkippedSite` compte 30 cartes ; `KnownScenePredicateSites` est vide ; les commentaires « 0x95 not ported » et
+  les tolérances `(0x95, 6418)` ont disparu.
+- **Vérification** : verifier frais **CONFIRMED** (aucun P0 à P2) : valeurs recoupées au bytecode, deux mutations du DLL attrapées
+  (`0x85` sauté sur une case du pont, `Wait` décalé d'un tick), chaque commit de tests compile, verdict de la pente redécodé.
+- **Écarts acceptés** : l'arc C compte T0 à l'image de trace 0 (le plan disait « T0 = 1 », numérotation seulement) ; l'arc B lit les pc
+  de B[1] sous 300, B[2] répétant son `End` en 308.
+- **Reportés (P4)** : des tolérances `(0x2B, 6413)` et `(0x58, …)` d'opcodes déjà portés restent dans `AssertSkippedWithin` (sans effet
+  sur le résultat, détection un peu affaiblie ; antérieures à c1b-2) ; la doc de `AssertHeroReady` est collée au-dessus d'`AssertTuples`
+  (`AlundraLeverArcSupport.cs:145`) ; le retrait du pont de l'arc B compare les rangées 23 à 20 aux rectangles sources lus pendant
+  l'exécution (l'égalité finale aux références de la première image compense).
+- **Reste** : la recette en jeu de l'auteur, quand les salles seront atteignables (O-E20-14).
 
 #### Arrêts, budget, retour arrière
 
