@@ -821,7 +821,7 @@ fixe du moteur (D-E20-12) ; les modes 2 et suivants de `0x2F`.
 - **E20.c1** : la passe de coups se branche au point d'accroche d'A3, dans l'ordre des cases.
 - **E20.e** : la réserve d'effets reste par image jusque-là.
 
-### 1.4 E20.b — Le coup d'épée, sans dégâts ⏳
+### 1.4 E20.b — Le coup d'épée, sans dégâts 🧪 (faite et CONFIRMED le 2026-10-09, `0766cf8`, `0295395`, `768a6f6` ; reste la recette en jeu de l'auteur)
 
 **Révision 1 (2026-10-09).** Relecture : **REVISE** (pas de trace d'oracle du coup en l'air en marchant ; pas de test sur le vrai
 préfab ni sur les tables d'objets du monde ; scénarios comparés mal nommés). Corrigé : trace `AT12` ajoutée à l'oracle (même
@@ -922,6 +922,39 @@ apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant
 - Recette en jeu de l'auteur : Carré (touche X, ou X à la manette) frappe à l'épée au sol, avec son son, et le héros freine ; pendant un
   saut, le coup en l'air ; tenir Carré ne refrappe pas ; un coup ne traverse ni ne blesse rien encore.
 
+#### Résultats (2026-10-09)
+
+- **Commits** : `0766cf8` (B1 à B4, et le P4 des commentaires des bouchons), `0295395` (B5, B6), `768a6f6` (les deux autres P4). Écart :
+  les tâches sont regroupées, B1 à B4 ne pouvant pas être vertes séparément et B5 ayant besoin de B6.
+- **Code** : `AlundraWeaponTables` recopie les trois tables du binaire (vérifiées octet par octet par le verifier) ; la fiche courante,
+  le pointeur et le compteur sont des champs du héros (`CurrentWeaponRecord`, `WeaponRecordPointer`, `WeaponStepCounter`) ; les tables
+  d'objets arrivent par `IAlundraScriptHost.ItemTables` (le monde les fournit) ; `PlayerTryAttack`, les deux groupes d'attaque et
+  `UpdateWeaponStepProgression` (apparition en bouchon, `SpawnWeaponProjectile`) suivent le désassemblage ; la branche `+0x20` efface
+  aussi le pointeur, comme le binaire (`0x80031BB0-0x80031BC0`).
+- **Oracle** : la DLL égale l'oracle tick par tick sur `AT1`, `AT2`, `AT3`, `AT3b`, `AT3c`, `AT4`, `AT5`, `AT6`, `AT7`, `AT7c`, `AT7d`,
+  `AT10`, `AT11`, `AT12`, les 22 traces d'AT9, `at6-sweep.txt` et `at7-cellmap.txt` ; les tests chargent les fichiers de traces.
+  Exceptions documentées, toutes dues à du code antérieur à E20.b :
+  - `AT8` et `AT8n` : le contact au sol est lu un tick après le binaire (lecture de la racine en tête d'image, E19.d2c1 R6) ; seule cette
+    colonne est décalée, les décisions sont exactes ;
+  - `AT8b` (sol abaissé au milieu de l'image) : la chute est d'un tick en retard (ticks 7 à 15) et le retour à Idle vient au tick 16
+    au lieu de 15 ; ces colonnes ne sont pas comparées ; la décision du coup (gardé au tick 7, `0x2D` au tick 8) est exacte ;
+  - le son 11 de l'atterrissage n'est pas comparé (non porté : `CreatePlayerAnimationEffects`, E20.e).
+- **B6** : nécessaire. Dans une image de deux ticks dont le premier ramène le héros à Idle et le second lance un nouveau coup, le son 29
+  manquait et le second coup finissait un tick trop tôt. `StepAnimationClock` retient maintenant la cible de l'impulsion
+  (`ZImpulseTakenForTarget`) : un changement vers une autre cible dans la même image prend sa propre impulsion et son son, et relance
+  la réservation de ticks, comme `UpdateAnimation` à chaque changement. Sans B6, seuls les deux tests de B6 échouent : le reste de la
+  suite n'en dépend pas. Ce cas ne se produit pas par une vraie image (le pad n'a qu'un front par image) ; le test pilote les passes à
+  la main.
+- **Autres tests** : le vrai préfab (carte 10, arrivée par portail, pad libre) montre le coup au sol (son 29 en S, `0x10` de S à S+20,
+  Idle en S+21) et le coup en l'air (`0x14` sur 10 ticks puis `0x2D`) ; le monde fournit ses tables (l'épée d'acier donne la fiche 1,
+  `0x3F`) ; la prise d'échelle l'emporte sur un coup en cours.
+- **Tests** : `Alundra.Tests` 3325 sur 3325 en Release et en Debug ; traces du héros et de l'intro inchangées ; la sonde du vrai jeu
+  montre la même nouvelle partie qu'avant.
+- **Vérification** : verifier frais **CONFIRMED** (aucun P0 à P2) ; P3 : les exclusions d'AT8 étaient à écrire dans le plan (fait
+  ici) ; P4 : les points ci-dessus, et un changement de direction seul après un changement de cible dans la même image ne reçoit
+  toujours pas de seconde impulsion (antérieur).
+- **Reste** : la recette en jeu de l'auteur.
+
 #### Arrêts, budget, retour arrière
 
 - **Arrêts** : un écart à l'oracle que le binaire n'explique pas ; un test existant qui change sans raison du binaire ; un besoin de
@@ -944,6 +977,7 @@ apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant
 | O-E20-7 | **Tranché le 2026-10-09 (D-E20-11).** Ordre événements de carte / entités : le corriger dans E20.a (ordre du binaire : pad, événements de carte, entités ; mesure préalable des épingles qui bougent), ou le garder comme écart documenté | — |
 | O-E20-8 | **Tranché le 2026-10-09 (D-E20-12).** Structure du tick : boucle de ticks pilotée par le monde dans la DLL (proposition de D7), ou pas fixe de 1/50 s du moteur (migration M3, différée par l'auteur le 2026-08-26) | — |
 | O-E20-9 | **Tranché le 2026-10-09 (D-E20-13).** La passe des compteurs efface `RidingEntity` (`+0x12C`) ; la DLL ne recalcule le porteur qu'une fois par image : ne pas l'effacer, écart documenté, jusqu'à un recalcul par tick | — |
+| O-E20-12 | Le contact au sol du héros est lu une fois par image, en tête d'image (E19.d2c1 R6) : la perte du sol au bord d'un rebord et un sol qui s'abaisse en cours d'image arrivent un tick après le binaire (`AT8`, `AT8n`, `AT8b` d'E20.b). L'aligner demanderait de relire le contact à chaque tick | à placer (E20.d, où la course quitte souvent un rebord, ou une tranche à part) |
 | O-E20-11 | Une entité neuve tourne-t-elle dans le même tick dans le binaire (répétition de `0x800386D0`, contrôle de D7 : non vérifié) ? E20.a garde la règle d'aujourd'hui (premier tick à l'image suivante) | à mesurer, avec E20.e0 |
 | O-E20-10 | **Tranché le 2026-10-09 (D-E20-14).** `UpdateItemEffectState` (table de défense, bottes, régénération, PV) et `0x8003634C` : bouchons dans E20.a et portage dans E20.c2, ou portage dès E20.a | — |
 
