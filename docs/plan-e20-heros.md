@@ -1689,10 +1689,22 @@ effacements de la blessure, d'E7 et de la mort ; le rebond du fléau (E20.f2).
 
 ### 1.10 E20.f2 — Rebond du fléau ⏳
 
+**Révision 1 (2026-10-10).** Relecture : **REVISE**, deux points corrigés : les nombres de la 14 et de la 69 viennent d'un autre
+pilote de la découverte (`test-means/weapons_vs_target.py`, `weapons_vs_post.py` et leur oracle), désormais copié par T1, et leur
+géométrie est écrite ; les événements de l'oracle que produit la tête de `CreatePlayerAnimationEffects`, laissée en bouchons, sont
+nommés et exclus par une règle écrite, et l'alarme des PV bas reçoit un nom et un propriétaire.
+**Révision 2.** Seconde relecture : **REVISE**, un point corrigé (FIX) : la géométrie du pilote du poteau et du cas sans cible
+est réécrite telle qu'il l'a simulée (champ plat de l'oracle de c1, dx 40 ; cible hors de portée à 160 px) ; l'arc sur la vraie 69
+n'affirme plus de nombres de l'oracle, seulement les relations fixées par le binaire. Une seule relecture de clôture suit.
+Relecture de clôture : **READY** (2026-10-10).
+
 **But.** Le fléau de fer et le fléau d'acier rebondissent comme dans le binaire, quand ils touchent une cible ou un mur : le héros
 passe dans l'état de rebond (`0x08`, `0x1F`, `0x25`, `0x26`) au tick qui suit. La fonction `CreatePlayerAnimationEffects(mode)` entre
-dans la DLL comme squelette à sa place exacte : la fin du fléau est réelle, le reste (pas, poussières, coupe de l'herbe) reste en
-bouchons nommés pour E20.e.
+dans la DLL comme squelette à sa place exacte : la fin du fléau est réelle, le reste reste en bouchons nommés : les pas et les sons
+du cycle de marche, l'atterrissage (son 11 et poussières, effet 7 par `0x8003BDD8`, qui tire dans le générateur ;
+`0x80030224`-`0x800303CC`) et la coupe de l'herbe (`0x8002FDC0`) pour E20.e ; l'alarme des PV bas (`0x800303DC`-`0x80030430`, mode 0
+seulement : quand PV max ≥ 5 × PV, décrément de `[0x800A8F2C]`, à −1 son `0x190` et remise à `0x2D`) pour E20.c2a, qui porte le modèle
+de PV.
 
 **Faits porteurs** (`docs/plan-e20-annexe/e20-armes/f-weapons.md` §4, `test-means.md` lignes 130, 153 à 156 et 241, contre-vérifiés par
 `f-check.md` ligne 20 et correction C14) :
@@ -1712,8 +1724,13 @@ bouchons nommés pour E20.e.
 - [oracle] Sondes de la découverte (`scratchpad/disc-weapons/f-weapons/out/F-*.txt`) : `F-iron-ground` (`0x08` au tick 6, son 28, repos
   au tick 22), `F-steel-ground` (`0x25` au tick 6), `F-iron-air` (`0x1F` au tick 8, `0x2D` au tick 19, atterrissage au tick 22),
   `F-steel-air`, `F-iron-walk` (aucune force), `F-iron-wall1`, `F-iron-wall2`, `F-steel-wall2`, `F-iron-wk40` (murs : rebond au tick 10),
-  `F-iron-nohit` (rien). Avec un vrai Beannoïde de la 14 (`test-means.md` ligne 154) : fer, contact au tick 11, `0x08` du tick 12 au tick
-  27, repos au 28 ; acier, contact au 12, `0x25` du 13 au 28, repos au 29.
+  `F-iron-nohit` (rien). Pilote `scratchpad/disc-weapons/test-means/weapons_vs_target.py` (oracle `test-means/oracle/`, monde de
+  la 14 de l'oracle de c1, héros 40 px à l'ouest d'un Beannoïde, regard 24, Carré au tick 1, comme `H1`) : fer, contact au tick 11,
+  `0x08` du 12 au 27, repos au 28 ; acier, contact au 12, `0x25` du 13 au 28, repos au 29 ; sans cible (dx 100) : repos au 32 (fer) ou
+  au 35 (acier) — dans le pilote, la cible hors de portée est à la case 30, soit 160 px du héros (le libellé « dx=100 » du pilote est
+  inexact). Pilote `weapons_vs_post.py` : le sprite 126 de la 69 (le poteau) est posé dans le champ plat de l'oracle de c1 (monde de la
+  14, `c1world.py:84`, `:177-178`), à la case (20, 11, 0), soit 252 px ; héros en (212, 96), regard 24, dx 40 : contact au tick 9,
+  `0x08` ou `0x25` du 10 au 25, repos au 26. La géométrie de la vraie 69 (poteau en (132, 232), héros à 22 px) n'a pas été simulée.
 
 **Périmètre.** `Alundra/Scripts/` : le squelette de `CreatePlayerAnimationEffects(mode)` à ses deux places (mode 0 entre la gravité et
 l'entrée de la blessure, mode 1 dans la branche verrouillée), la fin du fléau réelle sur la `HitBox` rangée (E20.c1b-1) et le magasin
@@ -1725,18 +1742,31 @@ natifs D31/E15 sont à E14).
 
 #### Tâches
 
-- ⏳ **T1 — Oracle.** Copier `probe.py` et `tools/` de la découverte dans `docs/plan-e20-annexe/e20-f2/oracle/`, relancer les sondes
-  `F-*`, garder les sorties ; elles égalent celles de la découverte.
+- ⏳ **T1 — Oracle.** Copier dans `docs/plan-e20-annexe/e20-f2/oracle/` : `f-weapons/probe.py` et `f-weapons/tools/` (sondes `F-*`),
+  `test-means/weapons_vs_target.py`, `test-means/weapons_vs_post.py` et `test-means/oracle/` (dossiers de la découverte sous
+  `scratchpad/disc-weapons/`) ; relancer et garder les sorties (`out/`) ; elles égalent celles de la découverte sur les colonnes
+  communes, et contiennent les lignes 11/12..27/28, 12/13..28/29, 32/35 et 9/10..25/26 citées plus haut.
 - ⏳ **T2 — Squelette et fin du fléau.** Port exact ; lecteur de cellule aligné sur l'indexation du binaire (colonne, rangée, bornes) ;
   tests.
-- ⏳ **T3 — Arcs.** Sur la 14, les deux fléaux contre un Beannoïde ; sur la 69 (`Coastal Cave-69`, enregistrement 0, poteau en
-  (132, 232, z 0)), le contact et le rebond, après une fumée de chargement.
+- ⏳ **T3 — Arcs.** Sur la 14 (`HitArena`), les deux fléaux contre un Beannoïde, dans la géométrie du pilote, et sans cible (cible à
+  160 px) ; sur la 69 (`Coastal Cave-69`, poteau de l'enregistrement 0), après une fumée de chargement, un arc qui n'affirme que les
+  relations du binaire (voir l'acceptation).
 
 #### Acceptation
 
-- Contre l'oracle, tick par tick : animation cible, son, forces, pour chaque sonde `F-*`.
-- Sur la 14 : fer, `0x08` du tick 12 au 27 et repos au 28 ; acier, `0x25` du 13 au 28 et repos au 29 (ticks comptés depuis l'appui).
-- Sans cible ni mur : aucun rebond ; le fléau finit au repos au tick 32 (fer) ou 35 (acier).
+- Contre l'oracle, tick par tick : animation cible, son, forces, pour chaque sonde `F-*`. Sont exclus, par une règle écrite dans le
+  test, les seuls événements de la tête laissée en bouchons : le son 11 et les poussières d'atterrissage (effet 7), et les `sound(0)`
+  des pas et du cycle de marche ; le test affirme à la place que le bouchon nommé correspondant est appelé à ces ticks-là. Exemples :
+  `F-iron-air` tick 22 (atterrissage), `F-iron-walk` ticks 23 et 30.
+- Sur la 14 (`HitArena`, héros 40 px à l'ouest du Beannoïde, regard 24, Carré au tick 1 ; sortie du pilote) : fer, contact au 11, `0x08`
+  du 12 au 27 et repos au 28 ; acier, contact au 12, `0x25` du 13 au 28 et repos au 29.
+- Sans cible à portée (cible à 160 px, comme le pilote) ni mur : aucun rebond ; repos au tick 32 (fer) ou 35 (acier).
+- Le poteau dans la géométrie du pilote (champ plat, dx 40) n'est pas rejoué dans la DLL : l'arène de la DLL ne porte pas le sprite 126
+  ; la sortie du pilote reste une preuve de l'oracle seulement.
+- Sur la vraie 69 (poteau de l'enregistrement 0 ; héros en (110, 232) regard est, puis en (154, 232) regard ouest ; valeurs
+  INFERENCE de `test-means.md` ligne 241) : le fléau touche le poteau (contact au tick c, mesuré), puis, fixé par le binaire : rebond
+  (`0x08` ou `0x25`) du tick c + 1 au tick c + 16, repos au tick c + 17 ; si un coin de la boîte touche un mur avant le poteau, le rebond
+  part du mur au tick suivant, ce que le test distingue par `HitCounter`. Aucun nombre de l'oracle n'est affirmé sur cet arc.
 - Les états de rebond ne changent ni la marche ni le saut au-delà de l'oracle (`F-iron-air` : atterrissage au tick 22).
 - Build Release puis Debug ; `Alundra.Tests` sans échec ; traces inchangées ; verifier frais.
 - Recette de l'auteur : avec `arsenal-a-m14`, emplacement 3 : le fléau rebondit sur un Beannoïde et contre un mur.
@@ -1744,7 +1774,7 @@ natifs D31/E15 sont à E14).
 #### Arrêts, budget, retour arrière
 
 - **Arrêts** : le lecteur de cellule de la DLL ne peut pas égaler l'indexation du binaire ; la 69 ne se charge pas (garder la 14 et le
-  noter) ; un écart à l'oracle sans raison du binaire.
+  noter) ; un écart à l'oracle sans raison du binaire, hors des exclusions nommées.
 - **Budget** : un `executor` ; un verifier frais.
 - **Retour arrière** : `git revert` des commits d'E20.f2.
 
