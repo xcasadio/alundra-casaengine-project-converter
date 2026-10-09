@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -141,11 +141,13 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
     public void SJ5b_AFrameWithoutTick_BetweenThePressAndTheFirstTick_DoesNotLoseTheJump()
     {
         var rig = FreeRig();
-        rig.Step(Cross, Cross, 0.001f); // no logic tick on the frame of the edge.
-        Assert.Equal(43u, rig.Hero.TargetAnimationId);
+        // E20.a A4 (D-E20-2): MovePlayer runs once per tick and not at all on a frame without tick, on the pad of the tick; the edge is the first tick that sees the Cross held,
+        // so the Cross must be held until that tick (a press and a release between two ticks has no edge, the binary's pad is sampled once per tick).
+        rig.Step(Cross, Cross, 0.001f); // no logic tick on this frame: nothing runs for the hero.
+        Assert.Equal(0u, rig.Hero.TargetAnimationId);
         Assert.Equal(0, rig.Hero.PosZ);
 
-        rig.Step(0, 0, 0.02f); // the first tick: the tail must not rewrite the take-off to Idle.
+        rig.Step(Cross, 0, 0.02f); // the first tick: the Cross is held, the pad of the tick has its rising edge, the hero takes off and the impulse is taken at once.
         Assert.Equal(43u, rig.Hero.TargetAnimationId);
         Assert.Equal(JumpHeights[0], rig.Hero.PosZ);
     }
@@ -157,7 +159,8 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         var posZ = new List<int>();
         for (var frame = 1; frame <= 6; frame++)
         {
-            rig.Step(frame == 1 ? Cross : 0, frame == 1 ? Cross : 0, 1f / 144f);
+            // E20.a A4: the Cross is held until the first tick (frame 3), like a player's thumb; released after it.
+            rig.Step(frame <= 3 ? Cross : 0, frame == 1 ? Cross : 0, 1f / 144f);
             posZ.Add(rig.Hero.PosZ);
         }
 
@@ -178,14 +181,15 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         var rig = FreeRig();
         SteadyWalk(rig);
         rig.Step(Right | Cross, Cross, 0.04f);
-        Assert.Equal(2u, rig.Hero.TargetAnimationId);
+        // E20.a A4: MovePlayer now runs at each of the two ticks like the binary's: tick 1 takes off (animation 2), tick 2 is in the air and picks 0x2C with a direction held
+        // (ForceX 155136, the value of tick 2 pinned by UH2 and the D1 oracle); the old pin (2 and 159744) was the per-frame decision, an accepted step of the plan now gone.
+        Assert.Equal(44u, rig.Hero.TargetAnimationId);
         Assert.Equal(622592, rig.Hero.PosZ);
-        // The binary decides the move per tick (0x2C at the second tick: ForceX 155136); the port decides per frame: an accepted step of the plan.
-        Assert.Equal(159744, rig.Hero.ForceX);
+        Assert.Equal(155136, rig.Hero.ForceX);
 
         var standing = FreeRig();
         standing.Step(Cross, Cross, 0.04f);
-        Assert.Equal(43u, standing.Hero.TargetAnimationId);
+        Assert.Equal(45u, standing.Hero.TargetAnimationId); // E20.a A4: tick 2 is in the air with no direction held: 0x2D (SJ5 pins the same state one tick later), not the take-off 43 of the per-frame decision.
         Assert.Equal(622592, standing.Hero.PosZ);
     }
 

@@ -227,7 +227,11 @@ public sealed class AlundraShipCorridorArcTests
             Assert.True(heroAtTheEndOfFrame[frame].Y > heroAtTheEndOfFrame[frame - 1].Y, $"frame {frame}: PosY does not grow");
         }
 
-        Assert.Equal((50523408, 16302440), heroAtTheEndOfFrame[225]);
+        // E20.a (D-E20-11): the map program locks the control at frame 220 and the hero, which now moves AFTER the map events of the tick, takes the roll force from that tick
+        // (logged: forces -30576/102440, -61152/98384 x4 from 220 instead of from 221), so at 225 it has done 6 roll ticks instead of 5; the roll's Y force (98384-102440) is
+        // below the straight walk's (106496) it replaces, hence a smaller Y with a larger X shift. The unlock of frame 225 (0x11 @124) precedes the hero's tick, so the last tick
+        // uses the ramp-down force (-30576, 102440).
+        Assert.Equal((50492832, 16298384), heroAtTheEndOfFrame[225]);
 
         Assert.Equal(239, arc.Frame); // the departure happened during frame 238, before the next poll (241).
         Assert.Equal(1, arc.Trace.Count(t => t.Slot == B && t.Pc == 107 && t.Opcode == 0x2F));

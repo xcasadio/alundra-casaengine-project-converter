@@ -1747,8 +1747,10 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // (D-E7-9) - degraded no-op (Result = 0, once-logged warning), never an exception,
                        // since this runs on the production dispatch path.
             {
+                // E20.a A1 (D-E20-2): modes 0 and 1 read the pad of the TICK (AlundraGameState.TickPad, advanced at the head of each logic tick), the binary's g_padState1 -
+                // not the snapshot of the rendered frame, whose edge a two-tick frame would read twice and a tickless frame never.
                 var padFlag = (uint)((v[2] << 8) | v[1]);
-                var padState = _gameState.LastPadState;
+                var padState = _gameState.TickPad;
 
                 if (v[3] == 0)
                 {

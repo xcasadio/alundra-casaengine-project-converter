@@ -75,6 +75,14 @@ public interface IAlundraScriptHost
     int LogicTicksThisFrame(float elapsedTime);
 
     /// <summary>
+    /// E20.a A2 (docs/plan-e20-heros.md section 1.3, D-E20-12): true when the host runs the logic ticks of its entities itself, in the binary's order
+    /// (<see cref="AlundraWorldProxy.Update"/>: the entity block of each tick, <c>0x8003B388</c>), so that <see cref="AlundraEntityScriptProxy.Update"/> only
+    /// samples the pad, pulls the root pose and records that it took part in the frame. False (the default) for a rig or a fake host that has no such
+    /// driver: the entity then runs its own loop of ticks (<c>AlundraEntityScriptProxy.RunSelfDrivenTicks</c>), over the same tick passes.
+    /// </summary>
+    bool DrivesEntityTicks => false;
+
+    /// <summary>
     /// T3 (docs/plan-transitions-carte.md §1.1/§3): this world's own parsed "Portals" object-layer
     /// records (see <see cref="AlundraWorldProxy.BuildPortals"/>), in slot order - the exact list
     /// <see cref="AlundraPortalScanner.FindPortalAtTile"/> scans. Default-implemented as an empty list

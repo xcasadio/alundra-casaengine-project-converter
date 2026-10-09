@@ -157,13 +157,15 @@ public class IntroTraceHarnessTests
         //      [234,131] = 0x83EA.
         // Every intermediate frame above is the number this run actually reproduced (re-derived
         // independently from AnimSets Speed/threshold and Wait counts) - the chain sums to 1034.
-        Assert.Equal(1034, flag83EAFrame);
+        // E20.a (D-E20-11): the chain starts when sailor 11's wait on the flag 0x83E8 (set by a MAP EVENT) ends: the map events now run before the entity pass, so he sees the flag in
+        // the same tick (frame 554 instead of 555) and the whole chain, and the flag at its end, come one frame sooner: 1034 -> 1033 (see docs/plan-e20-annexe/e20-a/epingles.md).
+        Assert.Equal(1033, flag83EAFrame);
 
         // 0x83E9 @ 1202 - sailor 11 continues: 1034 0x5B; 1034-1124 0x1F walk[168,0] (dir east,
         // 1.875 px/tick -> ceil(168/1.875)=90+1=91, observed 91 incl. - EXACT); 1124 0x1A anim0;
         // 1124-1140 Wait(15)=17 incl.; 1140 0x5B x2; 1140-1201 Wait(60)=62 incl.; 1201 Break; 1202 0x5B,
         // 0x05 Flag on [233,131] = 0x83E9.
-        Assert.Equal(1202, flag83E9Frame);
+        Assert.Equal(1201, flag83E9Frame); // E20.a: 1202 -> 1201, the same one-frame shift of the chain (the walk and the waits after it keep their lengths).
 
         // flag 860 @ 1704 - sailor 12 (Tick 140) wakes on 0x83E9 (its own 0x36 wait releases the SAME
         // frame, 1202, matching every other same-frame flag-release in this trace), walks/turns (pure
@@ -179,14 +181,15 @@ public class IntroTraceHarnessTests
         // column is height class 5 (80px, docs/plan-e4-deplacement-scripte.md's own map-389 AlundraCells
         // data) - fall distance 160-80 = 80px at 1 px/tick = EXACTLY 80 ticks: observed 1625->1704 = 80 -
         // EXACT; 1704 0x05 Flag on [92,3] = flag 860.
-        Assert.Equal(1704, flag860Frame);
+        // E20.a (D-E20-11): sailor 12's chain is one frame sooner (1704 -> 1703), and B1's wait on flag 860 (a MAP EVENT) now sees an ENTITY's write one tick later: 0x11 stays at 1704.
+        Assert.Equal(1703, flag860Frame);
 
         // 0x11 @ 1704 - B1's own g_playerControlFlags release: flag 860 set this SAME frame (see above,
         // no extra latency) satisfies B1's long-suspended 0x36 wait, which then falls straight through to
         // 0x11 within the same RunMapEventsPass call (no intervening suspend between them - both dispatch
         // the same frame the flag was set, matching every other same-frame flag-release pattern in this
         // trace).
-        Assert.Equal(1704, opcode11Frame);
+        Assert.Equal(1704, opcode11Frame); // one frame after the flag now (the map events precede the entities: 0x8003C67C before 0x8003B388).
 
         // Trace still stops by condition (a) - 0x11 on map-event 0 - not condition (b)/(c).
         Assert.Contains("opcode 0x11", sim.StopReason);
@@ -825,10 +828,8 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     // ------------------------------------------------------------------------------------------------
 
     /// <summary>
-    /// One frame: entities first, then the world - same order as the production
-    /// <see cref="AlundraWorldProxy"/>, since the engine's own <c>World.Update</c> always updates every
-    /// entity (<c>GameplayProxy.Update</c>, here <see cref="AlundraEntityScriptProxy.Update"/>) before the
-    /// world's own <c>GameplayProxy.Update</c> (CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:443-491).
+    /// One frame: the map events, then the entities, then the pending triggers - the order of the production <see cref="AlundraWorldProxy"/> since E20.a (the binary's
+    /// <c>UpdateWorld</c>: map events, then entities).
     /// </summary>
     private void RunFrame()
     {
@@ -870,17 +871,19 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         // never run at all (silently, before E4.e this was unobservable - no NPC's own kinematics ran
         // before this tranche either way, gated on Controller != null, which was never true for a bare
         // harness proxy).
-        foreach (var entity in entitiesThisFrame)
-        {
-            entity.Update(AlundraScriptedMotion.FixedTickSeconds);
-        }
-
+        // E20.a (D-E20-11): the map events run BEFORE the entities of the tick, the order of UpdateWorld (RunMapEvents 0x8003C67C, then UpdateEntities 0x8003B388), as the production
+        // world now does; they used to come after the entity updates.
         if (PlayerEntity != null)
         {
             for (var tick = 0; tick < ticksThisFrame; tick++)
             {
                 AlundraWorldProxy.RunMapEventsPass(PlayerEntity, _mapEvents, _wrapperRunner, _gameState.PlayerControlFlags);
             }
+        }
+
+        foreach (var entity in entitiesThisFrame)
+        {
+            entity.Update(AlundraScriptedMotion.FixedTickSeconds);
         }
 
         for (var tick = 0; tick < ticksThisFrame; tick++)

@@ -153,6 +153,10 @@ public static class AlundraPlayerManager
         return active;
     }
 
+    /// <summary>E20.a A8 test-only seam: the number of calls of <see cref="MovePlayer"/> (the structure tests of the tick count them: one per logic tick, none in a frame without tick). Per thread, so tests running in parallel do not count each other.</summary>
+    [ThreadStatic]
+    internal static int MovePlayerCallCountForTests;
+
     /// <summary>Test-only seam - see <see cref="_debugIgnoreControlLockOverrideForTests"/>'s own doc.
     /// Pass null to restore the real environment-variable-derived value.</summary>
     internal static void SetDebugIgnoreControlLockOverrideForTests(bool? value)
@@ -168,6 +172,8 @@ public static class AlundraPlayerManager
     /// </summary>
     public static void MovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host)
     {
+        MovePlayerCallCountForTests++;
+
         // E12.d: `host` is REQUIRED at every call site (no default) - null means "no world" and skips
         // CheckEntityInteraction below, a documented degraded mode the ~19 direct movement-only test
         // callers opt into EXPLICITLY with `host: null` (never silently by omission - the
@@ -214,6 +220,9 @@ public static class AlundraPlayerManager
         // effect system yet).
         player.Flags |= EntityFlags.Gravity;
 
+        // E20.a A4 (D-E20-14): the second call of the item driver, once per normal tick before the pad is read (binary 0x80031CC4). Stub until E20.c2.
+        UpdateItemUseDriver(player);
+
         // PlayerManager.cs:61-353 (CheckAndExecuteWarp's warp-facing branch, HP==0 death branch,
         // TileAttributes&0x80 warp-tile branch) - NOT PORTED, see this class' own doc for why each is
         // safe to skip for a fresh New Game / flat-ground V1 scenario.
@@ -255,8 +264,11 @@ public static class AlundraPlayerManager
             player.TargetAnimationId = ClimbingAnimationId;
         }
 
-        // PlayerManager.cs:355-357 (UpdatePlayerWeaponEffect/UpdateWeaponStepProgression/
-        // UpdatePlayerCarriedEntity) - NOT PORTED (no weapon/carry system).
+        // PlayerManager.cs:355-357, binary 0x80031D68-0x80031D78: before the switch of states, every tick on a terrain. E20.a A4: the three calls are named stubs, in the order of the
+        // binary (the weapon and carrying systems come with E20.b, E20.d and E20.g).
+        UpdatePlayerWeaponEffect(player);
+        UpdateWeaponStepProgression(player);
+        UpdatePlayerCarriedEntity(player, 0);
 
         // LoadingMap(0x36) case, binary 0x800325E8 (PlayerManager.cs:914-922; E19.v, O-E19-32): on the ground the case ends and the
         // hero stays LoadingMap - its exit is then the animation Chain bridge (anim 54's trailing control frame chains to anim 0/Idle,
@@ -278,25 +290,29 @@ public static class AlundraPlayerManager
         {
             player.TargetDirection = dir;
 
-            var interact = CheckEntityInteraction(player, in pad, state, host);
-            if (interact == 2)
+            // E20.a A4, binary 0x80031E38 (section 0.2.2 of the plan): TryUseItem (0 ends the tick), PlayerTryAction (non-zero ends it), CheckEntityInteraction (2 gives Idle and ends
+            // the tick, another non-zero value ends it), then the common tail.
+            if (TryUseItem(player, in pad) != 0 && PlayerTryAction(player, in pad) == 0)
             {
-                player.TargetAnimationId = IdleAnimationId;
-            }
-            else if (interact == 0)
-            {
-                ApplyGroundOrAirTail(player, in pad, buttonsHold);
+                var interact = CheckEntityInteraction(player, in pad, state, host);
+                if (interact == 2)
+                {
+                    player.TargetAnimationId = IdleAnimationId;
+                }
+                else if (interact == 0)
+                {
+                    ApplyGroundOrAirTail(player, in pad, buttonsHold);
+                }
             }
         }
-        // E19.d2c2 S1 (binary 0x80031E84 and the common tail 0x80031EA8): the jump states keep the direction of the stick WITHOUT the interaction check, then take
-        // the same tail. The take-off states (2, 0x2B) are not rewritten while no tick ran since the tail wrote them (JumpStartTickStamp): MovePlayer runs once per
-        // rendered frame, the binary's once per tick, and a frame without tick must not lose the jump between the press and the tick that takes the impulse.
+        // E19.d2c2 S1 (binary 0x80031E84 and the common tail 0x80031EA8): the jump states keep the direction of the stick WITHOUT the interaction check, then take the same tail.
+        // E20.a A4: MovePlayer now runs once per tick like the binary's, so the take-off states are rewritten by the tail every tick (the stamp that spared them on a frame without
+        // tick, JumpStartTickStamp, is gone); like Idle and Moving they call TryUseItem then PlayerTryAction first (0x80031E84).
         else if (player.TargetAnimationId is JumpWalkingAnimationId or JumpStandingAnimationId or AirMovingAnimationId or AirStillAnimationId)
         {
-            var takeOff = player.TargetAnimationId is JumpWalkingAnimationId or JumpStandingAnimationId;
-            if (!takeOff || player.JumpStartTickStamp != player.MotionTickCount)
+            player.TargetDirection = dir;
+            if (TryUseItem(player, in pad) != 0 && PlayerTryAction(player, in pad) == 0)
             {
-                player.TargetDirection = dir;
                 ApplyGroundOrAirTail(player, in pad, buttonsHold);
             }
         }
@@ -412,19 +428,64 @@ public static class AlundraPlayerManager
         // PlayerManager.cs:385-943 (every other TargetAnimationId case) - NOT PORTED; an entity whose
         // TargetAnimationId is neither of the three ported values above keeps it unchanged.
 
-        // PlayerManager.cs:947-950 (END: UpdateItemEffectState, SetPlayerHpMax/SetPlayerHp) - NOT PORTED.
+        // PlayerManager.cs:947-950, binary 0x80032914 (END: UpdateItemEffectState, then SetPlayerHpMax/SetPlayerHp). E20.a A4 (D-E20-14): UpdateItemEffectState is a named stub
+        // until E20.c2; the two HP setters are not called from this site.
+        UpdateItemEffectState(player);
+    }
+
+    /// <summary>E20.a A4 stub of <c>TryUseItem</c> (<c>0x8002ED64</c>): non-zero means "carry on this tick". The binary returns 1 whenever the Circle button has no rising edge
+    /// (<c>0x8002EDA8</c>); a stub returning 0 would end the tick and kill every attack, jump and run (critique C10). The use of an item (the Circle) is E20.h.</summary>
+    private static int TryUseItem(AlundraEntityScriptProxy player, in AlundraPadState pad) => 1;
+
+    /// <summary>E20.a A4 stub of <c>PlayerTryAction</c> (<c>0x8002EEAC</c>): 0 means "no action, carry on" (<c>0x8002EFC8</c>: nothing carried and nothing to lift). Lifting, carrying and throwing are E20.g.</summary>
+    private static int PlayerTryAction(AlundraEntityScriptProxy player, in AlundraPadState pad) => 0;
+
+    /// <summary>E20.a A4 stub of <c>PlayerTryAttack</c>, first call of the common tail (<c>0x80031EA8</c>): 0 means "no attack started". The attack is E20.b.</summary>
+    private static int PlayerTryAttack(AlundraEntityScriptProxy player, in AlundraPadState pad) => 0;
+
+    /// <summary>E20.a A4 stub of <c>UpdatePlayerWeaponEffect</c> (<c>0x8002F49C</c>, called at <c>0x80031D68</c>): no weapon system yet.</summary>
+    private static void UpdatePlayerWeaponEffect(AlundraEntityScriptProxy player)
+    {
+    }
+
+    /// <summary>E20.a A4 stub of <c>UpdateWeaponStepProgression</c> (<c>0x8002F768</c>, called at <c>0x80031D70</c>): no weapon system yet.</summary>
+    private static void UpdateWeaponStepProgression(AlundraEntityScriptProxy player)
+    {
+    }
+
+    /// <summary>E20.a A4 stub of <c>UpdatePlayerCarriedEntity</c> (<c>0x8002F884</c>, called with 0 at <c>0x80031D78</c>): nothing is carried yet (E20.g).</summary>
+    private static void UpdatePlayerCarriedEntity(AlundraEntityScriptProxy player, int mode)
+    {
+    }
+
+    /// <summary>E20.a A4 stub (D-E20-14) of <c>UpdateItemEffectState</c> (<c>0x800307E8</c>, called at the end of every normal tick, <c>0x80032914</c>, before the HP copies):
+    /// equipment sheets, defence table and regeneration. Ported in E20.c2.</summary>
+    private static void UpdateItemEffectState(AlundraEntityScriptProxy player)
+    {
+    }
+
+    /// <summary>E20.a A4 stub (D-E20-14) of the item-in-use driver <c>0x8003634C</c> at its second site (<c>0x80031CC4</c>, every normal tick): the binary returns 1 without doing anything
+    /// when no item is in use. Ported in E20.c2.</summary>
+    private static void UpdateItemUseDriver(AlundraEntityScriptProxy player)
+    {
     }
 
     /// <summary>
     /// E19.d2c2 S1: the common tail of the Idle/Moving and jump states (binary <c>0x80031EA8</c>), in this order. In the air (the controller's ground contact
     /// when the hero has a controller, <see cref="AlundraEntityScriptProxy.HeroAirborne"/> for a bare proxy of a test): 0x2C with a direction held, else 0x2D.
     /// On the ground: the edge of the Cross (<c>ButtonsJustPressed</c>) takes off - the walking jump (2) with a direction held, else the standing one (0x2B) -
-    /// unless the cells forbid it (<c>VramOR &amp; 0x4000</c>: the case ends, nothing changes, not even the Moving), and the tick stamp is taken; otherwise
+    /// unless the cells forbid it (<c>VramOR &amp; 0x4000</c>: the case ends, nothing changes, not even the Moving); otherwise
     /// Moving or Idle. <c>TryUseItem</c>, <c>PlayerTryAction</c>, <c>PlayerTryAttack</c> and the run of the Triangle stay no-ops of the port. The
     /// <c>LoadingMap</c> case reads the same predicate (E19.v, <see cref="IsHeroInTheAir"/>).
     /// </summary>
     private static void ApplyGroundOrAirTail(AlundraEntityScriptProxy player, in AlundraPadState pad, uint buttonsHold)
     {
+        // E20.a A4, binary 0x80031EA8: PlayerTryAttack first (non-zero ends the tick, so the Square wins over the Cross); the stub never attacks.
+        if (PlayerTryAttack(player, in pad) != 0)
+        {
+            return;
+        }
+
         var airborne = IsHeroInTheAir(player);
         if (airborne)
         {
@@ -440,7 +501,6 @@ public static class AlundraPlayerManager
             }
 
             player.TargetAnimationId = buttonsHold != 0 ? JumpWalkingAnimationId : JumpStandingAnimationId;
-            player.JumpStartTickStamp = player.MotionTickCount;
             return;
         }
 

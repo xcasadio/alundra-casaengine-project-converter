@@ -280,11 +280,12 @@ internal sealed class ArcRun : IDisposable
 
     /// <summary>
     /// E19.h4 (docs/plan-e19-opcodes.md §1.2n.4, H4-1): the guard <c>ArcsWithoutSlide</c>. Every arc of the real controller made exactly the second steps along a wall this table
-    /// gives (0 for an arc absent from it) when it ends. The three arcs that slide are the hero, without <c>NoObstacleSlide</c>, against ONE cell corner, as the binary does, with
-    /// every pin intact: A10J at (47827968 ; 51838976) going north (corner [0] alone), A14 at (25767936 ; 9961472) going south (direction 0, corner [2] alone), A18 at
-    /// (62312448 ; 9895936) going north (direction 16, corner [0] alone).
+    /// gives (0 for an arc absent from it) when it ends. The arcs that slide are the hero, without <c>NoObstacleSlide</c>, against a cell corner, as the binary does: A10J at (47827968 ; 51838976) going north (corner [0] alone),
+    /// A14 going south (direction 0, corner [2]) twice since E20.a; A18 slid once at (62312448 ; 9895936) before E20.a and no longer does.
     /// </summary>
-    private static readonly Dictionary<string, int> ArcsThatSlide = new() { ["A10J"] = 1, ["A14"] = 1, ["A18"] = 1 };
+    private static readonly Dictionary<string, int> ArcsThatSlide = new() { ["A10J"] = 1, ["A14"] = 2 };
+    // E20.a (D-E20-11): A14 makes 2 second steps (the hero walks one tick earlier against the map programs: a second corner contact, measured, a0-mesure.md) and A18 none (a map event
+    // spawns an entity at frame 278 that the lists, now refreshed before the physics of the tick, already count as an obstacle: no second step along the wall).
 
     /// <summary>The second steps along a wall that the entities of the world made (the hero's included).</summary>
     public int TotalSlideCount => Proxy == null ? 0 : Entities.Concat(new[] { Hero }).Distinct().Sum(e => e.SlideCount);

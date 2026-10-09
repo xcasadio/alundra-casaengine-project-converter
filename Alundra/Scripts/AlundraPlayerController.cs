@@ -42,6 +42,21 @@ public readonly struct AlundraPadState
     /// <c>ButtonsJustPressed</c>. Not yet consumed by <see cref="AlundraPlayerManager"/> (E2's own ported
     /// subset is direction-only), kept for the next opcodes/animations that will need it.</summary>
     public uint ButtonsJustPressed { get; init; }
+
+    /// <summary>E20.a A1 (docs/plan-e20-heros.md section 1.3): buttons that went up on this tick, the original's <c>ButtonsReleased</c> (pad +0x14). Only a pad built from
+    /// <see cref="AlundraTickPad"/> (<see cref="FromTickPad"/>) carries it; the per-frame snapshot of <see cref="AlundraPlayerController.BuildPadState"/> leaves it 0.</summary>
+    public uint ButtonsReleased { get; init; }
+
+    /// <summary>
+    /// E20.a A1 (D-E20-2): the pad of ONE logic tick, as the binary's <c>MovePlayer</c> reads it (<c>g_padState1</c>, refreshed once per tick just before <c>UpdateWorld</c>,
+    /// <c>0x8002BB5C</c>): hold (<c>0x80126F28</c>), pressed edge (<c>0x80126F2A</c>) and released edge, from <paramref name="tickPad"/> (<see cref="AlundraGameState.TickPad"/> in a driven world).
+    /// </summary>
+    public static AlundraPadState FromTickPad(AlundraTickPad tickPad) => new()
+    {
+        ButtonsHold = tickPad.ButtonsHold,
+        ButtonsJustPressed = tickPad.ButtonsJustPressed,
+        ButtonsReleased = tickPad.ButtonsReleased,
+    };
 }
 
 /// <summary>

@@ -503,10 +503,14 @@ public sealed class AlundraVisionAndCoastArcTests
         // triggered by the helper's presses at f530 + 100, the release at f530 + 118) and Wendell's 0x39 waits for it: the wait of 91 frames ends BEFORE the
         // box is released, so the rest of the program comes at f530 + 119, one tick after the release (an entity script sees it a tick late, F2-R1). The 0x39
         // is first executed at f530 + 91 (FrameOf gives its first execution); it blocks until the release.
-        Assert.Equal(f530 + 119, frameAfterTheBoxClosed);
+        // E20.a (D-E20-11), measured: the box opened by an entity program has its first pass at N+1 (ADR-0029, binary row), so the helper's alternate-frame presses (odd
+        // frames from f530 + 1) meet the typing on the other parity of the box's own pass index; the typing is done at f530 + 79 instead of f530 + 99 (the logs of the box:
+        // typed at frame 83 instead of 103, closing two frames later in both, released 18 frames after the trigger), and the box is released at f530 + 99 instead of f530 + 119.
+        // Wendell sees the release in the entity block of the same tick (the box pass precedes it).
+        Assert.Equal(f530 + 99, frameAfterTheBoxClosed);
         Assert.Equal(f530 + 91, FrameOf(arc, CProgram, 543, 0x39));
-        Assert.Equal(f530 + 119, FrameOf(arc, CProgram, 544, 0x06));
-        Assert.Equal(f530 + 119, FrameOf(arc, CProgram, 547, 0x11));
+        Assert.Equal(f530 + 98, FrameOf(arc, CProgram, 544, 0x06)); // the image of the release itself: frameAfterTheBoxClosed is the counter after that image.
+        Assert.Equal(f530 + 98, FrameOf(arc, CProgram, 547, 0x11));
 
         // The end: the hand is back, T0 is clear, one box opened.
         Assert.Equal(0u, ArcRun.State.PlayerControlFlags);

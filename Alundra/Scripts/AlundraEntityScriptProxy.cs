@@ -275,14 +275,6 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// </summary>
     internal bool HeadPullFlushOnEntity;
 
-    /// <summary>
-    /// Engine-only (E19.d2c2 S1, docs/plan-e19-opcodes.md §1.2h.3.2): the <see cref="MotionTickCount"/> at which <c>MovePlayer</c> last wrote the take-off
-    /// animation (2 or <c>0x2B</c>), -1 for never. <c>MovePlayer</c> runs once per rendered frame while the binary's runs once per tick: while no tick has run
-    /// since (a frame without tick) it does not rewrite the take-off target, so the jump is not lost between the press and the first tick that takes the
-    /// impulse. Not copied by <see cref="Clone"/>.
-    /// </summary>
-    internal int JumpStartTickStamp = -1;
-
     /// <summary>The impulse (<see cref="AnimSetEntry.IsZForceApplied"/>) of <paramref name="animationId"/> in this entity's animation sets, 0 when it has none.</summary>
     internal int ZImpulseOf(uint animationId)
         => AnimSetsByAnim != null && AnimSetsByAnim.TryGetValue((int)animationId, out var entry) ? entry.IsZForceApplied : 0;
@@ -1160,6 +1152,11 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// <see cref="AlundraFrameSyncPasses.SyncTransform"/>, moved here from the world's own per-frame passes -
     /// see those methods' own doc on why the world no longer loops over every spawned entity for this).
     ///
+    /// E20.a A2 (docs/plan-e20-heros.md section 1.3): the paragraphs below describe the SELF-DRIVEN mode, the one of a rig or a fake host with no driver of ticks
+    /// (<see cref="IAlundraScriptHost.DrivesEntityTicks"/> false). In production the world drives: this method only samples the pad, pulls the root pose and records
+    /// that the entity took part in the frame (<see cref="TookPartInFrame"/>); the ticks of all the entities, in the order of the binary, then SyncAnimation and
+    /// SyncTransform after the last tick, are <see cref="AlundraWorldProxy.Update"/>'s (the map events now run BEFORE the entities of each tick, D-E20-11).
+    ///
     /// Accepted deviation (documented per docs/plan-conversion-totale.md §5): the original picks EVERY
     /// entity, THEN runs every picked entity, THEN syncs every entity's animation/transform, all as three
     /// separate manager-level passes. Here each entity picks, runs and syncs itself in one call, in the
@@ -1213,6 +1210,30 @@ public class AlundraEntityScriptProxy : GameplayProxy
             }
         }
 
+        // E20.a A2 (docs/plan-e20-heros.md section 1.3, D-E20-12): when the host drives the logic ticks of its entities itself (AlundraWorldProxy.Update, in the binary's
+        // order: the entity block of each tick, 0x8003B388), this method keeps only what is per RENDERED frame: the pad sample above, the pull of the root pose (the engine
+        // moved the controllers at the head of this very frame) and the record that this entity took part in the frame (the engine integrated it: an entity spawned during the
+        // frame is not integrated yet and so has no tick until the next one). The ticks, then SyncAnimation and SyncTransform, are the host's: the engine updates the entities
+        // BEFORE the world proxy (World.cs:533-584), so publishing here would show the state from before the ticks of this frame, one frame late.
+        // E20.a A1/A4: in the self-driven mode the hero's pad of each tick is advanced here, ungated, like the binary's pad pass (0x8002BB5C runs whatever the gate): a button pressed
+        // while a box is open must not look like a fresh edge when the box closes.
+        if (IsPlayer && !ScriptHost.DrivesEntityTicks && ScriptHost.PlayerController != null)
+        {
+            AdvanceSelfDrivenPads(ScriptHost.LogicTicksThisFrame(elapsedTime));
+        }
+
+        if (ScriptHost.DrivesEntityTicks)
+        {
+            TookPartInFrame = true;
+            if (!gameplayBlocked)
+            {
+                PullRootPose();
+                SyncAnimationDue = true;
+            }
+
+            return;
+        }
+
         if (!gameplayBlocked)
         {
             RunGameplayBlockableUpdate(elapsedTime);
@@ -1221,9 +1242,39 @@ public class AlundraEntityScriptProxy : GameplayProxy
         AlundraFrameSyncPasses.SyncTransform(Owner);
     }
 
+    /// <summary>
+    /// E20.a A2: set by <see cref="Update"/> when the host drives the ticks (<see cref="IAlundraScriptHost.DrivesEntityTicks"/>): the engine called this entity's update
+    /// this frame, so the host ticks it. Cleared by the host at the end of its frame.
+    /// </summary>
+    internal bool TookPartInFrame;
+
+    /// <summary>
+    /// E20.a A2: set by <see cref="Update"/> when the host drives the ticks and the gate (<see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/>) was open at the
+    /// head of the frame, the condition under which this entity's <see cref="AlundraFrameSyncPasses.SyncAnimation"/> ran (T2, "dedans"). Consumed by the host's end-of-frame publication.
+    /// </summary>
+    internal bool SyncAnimationDue;
+
     /// <summary>Everything <see cref="Update"/> skips while <see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/>
-    /// is posed - see that method's own T2 doc for the exhaustive per-pass placement this reproduces.</summary>
+    /// is posed - see that method's own T2 doc for the exhaustive per-pass placement this reproduces. The self-driven mode only (a host with no
+    /// <see cref="IAlundraScriptHost.DrivesEntityTicks"/>): the pull of the root pose, the loop of ticks of <see cref="RunSelfDrivenTicks"/>, then SyncAnimation.</summary>
     private void RunGameplayBlockableUpdate(float elapsedTime)
+    {
+        PullRootPose();
+        RunSelfDrivenTicks(elapsedTime);
+
+        // T2 (docs/plan-transitions-carte.md §1.5): "dedans" - port of UpdateAnimation's target-
+        // resolution half, dispatched INSIDE the original's own GameplayBlockedMask `if`
+        // (EntityManager.cs:384). Runs at the end of THIS gameplay-blockable block, not from the
+        // caller (Update) below - so it is skipped, along with everything else above, whenever
+        // GameplayBlockedMask is posed (Update never calls this method at all in that case).
+        AlundraFrameSyncPasses.SyncAnimation(Owner);
+    }
+
+    /// <summary>
+    /// The per-frame head of the gameplay-blockable block: the root pose of a controller-driven entity pulled into the logical position, and the ground reading with it. Shared by
+    /// the self-driven mode (<see cref="RunGameplayBlockableUpdate"/>) and the host-driven one (<see cref="Update"/>).
+    /// </summary>
+    private void PullRootPose()
     {
         // E3.d ("DLL - propriete de la racine par frame" item 1, docs/plan-e3-collisions.md): for a
         // controller-driven entity the root is this frame's source of truth - CharacterMotionSystem
@@ -1284,184 +1335,153 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 HeadPullFlushOnEntity = true;
             }
         }
+    }
 
+    /// <summary>
+    /// E20.a A2 (docs/plan-e20-heros.md section 1.3): the self-driven mode, for a rig or a fake host with no driver of ticks (<see cref="IAlundraScriptHost.DrivesEntityTicks"/>
+    /// false): this entity runs ALL the ticks of the frame in its own loop (entity-major), each over the same tick passes the host drives in the binary's order
+    /// (<see cref="TickPrograms"/>, <see cref="TickAnimationClock"/>, <see cref="TickPhysics"/>, <see cref="MovePlayerOnTickPad"/>), so the montages that call
+    /// <see cref="Update"/> directly keep working. E20.a A4: the hero's <c>MovePlayer</c> runs at EVERY tick, on a pad of the tick (<see cref="SelfDrivenTickPad"/>, advanced here from the hold
+    /// state <see cref="Update"/> published, as the world advances <see cref="AlundraGameState.TickPad"/> in a driven world), and not at all in a frame without tick.
+    /// </summary>
+    private void RunSelfDrivenTicks(float elapsedTime)
+    {
+        var ticksThisFrame = ScriptHost!.LogicTicksThisFrame(elapsedTime);
         if (!IsPlayer)
         {
-            // ONE-CLOCK fix (user-reported stall, sailor entity 12 of map 389 stuck on opcode 0x1F at pc
-            // 1470 - see AlundraScriptedMotion's own class doc for the full diagnosis, and
-            // AlundraLogicClock's own class doc for the original pacing bug this clock first fixed): the
-            // whole per-entity logic tick - script pick/run, THEN kinematic motion, THEN Z support - now
-            // runs as ONE fused loop over ticksThisFrame, exactly the original's own per-fixed-frame order
-            // (EntityManager.UpdateEntitiesEvents THEN UpdateEntitiesPhysics, EntityManager.cs:367-395).
-            // ticksThisFrame is usually 1 (a display frame roughly matches 50 Hz) but can be 0 (a fast
-            // render frame, nothing to tick) or up to AlundraScriptedMotion.MaxTicksPerFrame under catch-up
-            // (a stalled/slow frame) - see AlundraLogicClock's own class doc.
-            //
-            // Motion and Z support used to run OUTSIDE this loop, gated by their own separate mechanisms
-            // (motion by its own per-entity PhysicsTickAccumulator fed raw elapsedTime every RENDERED
-            // frame; support already correctly gated on ticksThisFrame, but as its OWN separate loop) - two
-            // accumulators stepping at the same nominal 50 Hz rate but never agreeing on WHICH rendered
-            // frame carries a tick. AlundraEntityScriptProxy.ForceAdjusted (cleared then possibly re-set
-            // inside the motion tick) was therefore usually cleared on a frame that carried no motion
-            // sub-step and set only on a frame that did - a 0x1F (Walk with collision)'s own script-side
-            // read of ForceAdjusted this same fused loop almost always saw a stale 0 instead of the
-            // previous tick's real outcome, so its "movement was curtailed" exit never fired and the walk
-            // never ended. Fusing all three into one loop over the SAME ticksThisFrame count removes the
-            // second clock entirely: one logic tick is always exactly one script pass, one motion sub-step,
-            // and one support step, in that order, every time.
-            var ticksThisFrame = ScriptHost.LogicTicksThisFrame(elapsedTime);
+            // ONE-CLOCK fix (AlundraScriptedMotion's own class doc, AlundraLogicClock's own class doc): the whole per-entity logic tick - script pick/run, THEN the animation clock,
+            // THEN kinematic motion, THEN Z support - runs as ONE fused loop over ticksThisFrame, the original's own per-fixed-frame order (EntityManager.UpdateEntitiesEvents THEN
+            // UpdateEntitiesPhysics, EntityManager.cs:367-395). ticksThisFrame is usually 1 but can be 0 (a fast render frame) or up to AlundraScriptedMotion.MaxTicksPerFrame
+            // under catch-up. E20.a: the three passes are the tick body the host also drives, pass by pass, over all the entities (AlundraWorldProxy.RunEntityBlock).
             var effectStage = (ScriptHost as IEntityWorldContext)?.EffectStage; // E19.g G3b (G3B-R3): the effect operations of this entity's script carry its tick (rank 1).
             for (var tick = 0; tick < ticksThisFrame; tick++)
             {
                 effectStage?.BeginSource(tick, 1);
-                PickEventTrigger();
-                RunPickedEvent(ScriptHost.Runner);
-
-                // E19.c2 (docs/plan-e19-opcodes.md §1.2f, ADR-0019): the logical clock of the animation ends steps once per
-                // tick, right after this entity's script and before its motion - the binary's order (events, then
-                // UpdateAnimation, then physics, 0x8003B388). A switch the script just asked for reserves the tick (the old
-                // animation neither advances nor ends on it); otherwise the animation advances one tick and may end, which
-                // 0x1C/0x1D then see at the next tick, as in the binary. The sprites themselves keep drawing in real time.
-                AlundraFrameSyncPasses.StepAnimationClock(this);
-
-                // E4.b (docs/plan-e4-deplacement-scripte.md): scripted mover for every controller-driven
-                // NPC - port of PhysicsEngine.UpdateEntityPhysics (:1579-1598) restricted to the
-                // flat-ground half already ported for the hero (AlundraPlayerManager/AlundraScriptedMotion's
-                // own class docs). Runs AFTER this tick's own pick/run above so a Load/Tick program that
-                // just set TargetDirection/TargetAnimationId THIS tick (0x09/0x1A, or 0x5B/0x5A once E4.c
-                // lands) is already visible to this tick's own motion, matching the original's own
-                // MovePlayer-then-physics order.
-                //
-                // Pre-read finding (E4.b item 1a, docs/plan-e4-deplacement-scripte.md): the original's
-                // UpdateEntityPhysics reads entity.AnimationSet, not TargetAnimationId directly - that
-                // field is only reassigned by EntityManager.UpdateAnimation (EntityManager.cs:203-248) at
-                // the exact moment the animation actually SWITCHES (CurrentAnimationId != TargetAnimationId),
-                // i.e. it tracks the CURRENTLY PLAYING animation, not the just-written target. This proxy's
-                // own equivalent of that reassignment site is AlundraWorldProxy.SyncAnimation - it likewise
-                // only updates CurrentAnimationId when TryResolveAnimationTarget reports a change - so
-                // AlundraScriptedMotion.TickScriptedNpc below is keyed off CurrentAnimationId, not
-                // TargetAnimationId (unlike the hero's own AlundraPlayerManager.Tick, out of E4.b's scope to
-                // change). Documented accepted deviation: SyncAnimation runs at the END of this same Update
-                // call (below), so this tick sees CurrentAnimationId as of the END of the PREVIOUS frame -
-                // one frame of latency behind a same-frame TargetAnimationId write, exactly the same shape
-                // as this class' own documented one-frame World/entity latency (see this method's own doc,
-                // "Accepted deviation" paragraph) - "à défaut d'équivalent exact, utiliser l'anim courante
-                // synchronisée et documenter l'écart" per the plan. E19.c2: this lag (kept, D-E19-13) concerns the
-                // MOTION only; the ends of the animations that 0x1C/0x1D see come from the logical clock stepped
-                // just above, exact at the tick (a switch owes its tick, see AlundraFrameSyncPasses.SyncAnimation).
-                //
-                // E4.e (docs/plan-e4-deplacement-scripte.md): unconditional, not gated on Controller != null
-                // - the original applies UpdateEntityPhysics to every entity in g_activeEntities regardless
-                // of whether it carries a body/controller (PhysicsEngine.cs:12-14's own loop has no such
-                // gate); RunOneKinematicTick's own Controller-null branch (AlundraScriptedMotion, "PosX +=
-                // FinalForceX" else-arm) already existed for exactly this case - it is what the pre-E3 hero
-                // used - and is production-safe: every body-carrying entity keeps a real
-                // CharacterControllerComponent (E4.a), so this fallback only ever executes for the
-                // harness's own bare proxies (no Owner/World at all) or a genuinely controller-less
-                // sprite-only prefab (11 on map 389, whose Speed is 0 for every AnimSet they carry - this
-                // is a no-op integration for them in practice).
-                //
-                // E19.d2b (D-E19-29): only an entity that is Normal or Deactivated moves (the binary's physics list takes the
-                // statuses 2 and 3): one flagged for destruction stays where it was while it waits to be recycled.
-                if (Status.IsActive())
-                {
-                    AlundraScriptedMotion.TickScriptedNpc(this);
-                }
-
-                // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): entity-vs-entity Z support
-                // clamp - AFTER this tick's own motion above, so a walk that just moved this entity out of
-                // a platform's XY footprint loses support the SAME tick (matching the original's own "hors
-                // de l'empreinte: plus de support" behaviour), not one tick late. See
-                // EvaluateEntitySupport's own doc. EvaluateEntitySupport's own ForceZ gravity-decay branch
-                // is a per-TICK quantity (ForceZ -= Gravity&lt;&lt;8, PhysicsEngine.cs:1460-1476, ported
-                // verbatim inside that method) - the original evaluates CheckEntityCollisionDown once per
-                // its own fixed frame too (i.e. once per logic tick here).
-                EvaluateEntitySupport(ScriptHost.Collidables);
+                TickPrograms();
+                TickAnimationClock();
+                TickPhysics();
             }
 
             effectStage?.EndSource();
         }
         else
         {
-            // E2: port of PlayerManager.MovePlayer, called at the head of the original's own
-            // UpdateEntitiesEvents (EntityManager.cs:808) - now this proxy's own per-frame tick instead
-            // (decision D2) - plus the kinematic integration PhysicsEngine.UpdateEntitiesPhysics normally
-            // drives for the player (see AlundraPlayerManager's own class doc). A no-op whenever this
-            // world has no AlundraPlayerController possessing a pawn yet (see IAlundraScriptHost.PlayerController's
-            // own doc - headless test harnesses in particular construct their own player proxy with no
-            // controller at all, by design). MovePlayer itself deliberately stays per RENDERED frame (input
-            // sampling, unchanged by the ONE-CLOCK fix - see AlundraLogicClock's own class doc on what
-            // stays per-frame vs per-tick); only the kinematic integration below is now driven by the SAME
-            // ticksThisFrame the NPC branch above uses, instead of its own separately-accumulated elapsed
-            // time (ONE-CLOCK fix, AlundraScriptedMotion's own class doc) - the hero's own observable
-            // per-tick behaviour is unchanged, only the source of the tick count.
-            var playerController = ScriptHost.PlayerController;
-            var heroTicksThisFrame = ScriptHost.LogicTicksThisFrame(elapsedTime);
-            if (playerController != null)
+            // E2: port of PlayerManager.MovePlayer, called at the head of the original's own UpdateEntitiesEvents (EntityManager.cs:808) - plus the kinematic integration
+            // PhysicsEngine.UpdateEntitiesPhysics drives for the player. A no-op whenever this world has no AlundraPlayerController possessing a pawn yet (headless test harnesses
+            // construct their own player proxy with no controller at all, by design). E20.a A4: once per TICK, first (0x800386EC), then the animation clock and the physics of the tick.
+            // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the hero's animation clock steps at every tick, whether or not a controller possesses the pawn, interleaved with the
+            // kinematic tick: a Chain that MovePlayer asked for reserves the tick before the motion reads TargetAnimationId.
+            for (var tick = 0; tick < ticksThisFrame; tick++)
             {
-                // D-E7-8 (docs/plan-e7-mutation-tuiles.md, slice E7.c): this frame's pad snapshot is
-                // already published, unconditionally, at the head of Update (see the T2 regression-fix
-                // comment there for why it may not live inside this gated block) - so MovePlayer here
-                // consumes exactly the value event opcode 0x2F and the dialogue director already saw
-                // this frame, which is the single-global behaviour the original has.
-                var pad = ScriptHost.GameState.LastPadState;
-                AlundraPlayerManager.MovePlayer(this, in pad, ScriptHost.GameState, ScriptHost);
-            }
-
-            // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the hero's animation clock steps at every tick, whether or not a
-            // controller possesses the pawn (the binary animates the player whatever its input; production always has a
-            // controller), interleaved with the kinematic tick: a Chain that MovePlayer asked for reserves the tick before the
-            // motion reads TargetAnimationId. Tick(this, 1) once per tick is Tick(this, n).
-            for (var tick = 0; tick < heroTicksThisFrame; tick++)
-            {
-                AlundraFrameSyncPasses.StepAnimationClock(this);
-                if (playerController != null)
-                {
-                    AlundraPlayerManager.Tick(this, 1);
-
-                    // E19.d2c1 R7: the water, ice and x160 rules read VramOR at the next tick, so it is refreshed after every tick of the hero (the binary's
-                    // UpdateTileAttributes ends each physics pass). The end-of-frame call below stays: a frame without tick, a portal read.
-                    UpdateVramFlags();
-                }
-            }
-
-            if (playerController != null)
-            {
-
-                // E1 (docs/plan-echelles-chiffrage.md É1): alimente Slope_18c AFTER this frame's own
-                // MovePlayer+Tick, exactly like the original's UpdateTileAttributes runs at the end of
-                // the physics pass (PhysicsEngine.cs:1706-1826) - so next frame's MovePlayer reads THIS
-                // frame's freshly computed value, the same one-frame latency the original already has
-                // (see UpdateGroundSlope's own doc, and docs/plan-echelles-chiffrage.md §2's "fait qui
-                // simplifie la conception").
-                UpdateGroundSlope();
-
-                // T3 (D-T-10, docs/plan-transitions-carte.md §1.6/§3): alimente CombinedVramFlagsOR/AND,
-                // same restriction, same gates and the exact same one-frame latency as UpdateGroundSlope
-                // just above (both read this same frame's freshly-integrated position, and both are what
-                // the ORIGINAL's own UpdateTileAttributes computes from the SAME corner loop at the end of
-                // its physics pass, PhysicsEngine.cs:1740-1768) - so next frame's MovePlayer (via
-                // AlundraPortalTrigger.TryGetTrigger) reads THIS frame's freshly computed value, exactly
-                // like the original's own CheckAndExecuteWarp reads the previous frame's
-                // CombinedVramFlagsAND (PlayerManager.cs:29 runs before UpdateTileAttributes has run again
-                // this frame).
-                UpdateVramFlags();
-
-                // E2 (docs/plan-echelles-chiffrage.md E2): alimente FloorHeight, same restriction and same
-                // one-frame latency as UpdateGroundSlope just above (see UpdateFloorHeight's own doc) - both
-                // are pure post-tick probes over this same frame's freshly-integrated position, independent
-                // of each other (the original's own UpdateTileAttributes computes them independently too,
-                // hitz at PhysicsEngine.cs:1702-1703 before ever touching Slope_18c's own corners).
-                UpdateFloorHeight();
+                MovePlayerOnTickPad(_selfDrivenPadOfTick[Math.Min(tick, _selfDrivenPadOfTick.Length - 1)]);
+                TickAnimationClock();
+                TickPhysics();
             }
         }
+    }
 
-        // T2 (docs/plan-transitions-carte.md §1.5): "dedans" - port of UpdateAnimation's target-
-        // resolution half, dispatched INSIDE the original's own GameplayBlockedMask `if`
-        // (EntityManager.cs:384). Runs at the end of THIS gameplay-blockable block, not from the
-        // caller (Update) below - so it is skipped, along with everything else above, whenever
-        // GameplayBlockedMask is posed (Update never calls this method at all in that case).
-        AlundraFrameSyncPasses.SyncAnimation(Owner);
+    /// <summary>E20.a A4: the pad of the tick of this hero in the self-driven mode (a driven world uses <see cref="AlundraGameState.TickPad"/>, which it advances itself).</summary>
+    internal readonly AlundraTickPad SelfDrivenTickPad = new();
+
+    private readonly AlundraPadState[] _selfDrivenPadOfTick = new AlundraPadState[16];
+
+    /// <summary>E20.a A4: advances <see cref="SelfDrivenTickPad"/> once per logic tick of this frame from the hold state <see cref="Update"/> published, and keeps each tick's pad for
+    /// <see cref="RunSelfDrivenTicks"/>.</summary>
+    private void AdvanceSelfDrivenPads(int ticks)
+    {
+        for (var tick = 0; tick < ticks && tick < _selfDrivenPadOfTick.Length; tick++)
+        {
+            SelfDrivenTickPad.Update(ScriptHost!.GameState.LastPadState.ButtonsHold);
+            _selfDrivenPadOfTick[tick] = AlundraPadState.FromTickPad(SelfDrivenTickPad);
+        }
+    }
+
+    /// <summary>
+    /// E20.a A2: the script half of one logic tick of this entity (not the hero: <see cref="IsPlayer"/> is excluded from the pick/run half, the original's own pass never picks or runs
+    /// slot 0): <see cref="PickEventTrigger"/> then <see cref="RunPickedEvent"/> (the binary's <c>0x800386D0</c>, phase 1 then phase 2).
+    /// </summary>
+    internal void TickPrograms()
+    {
+        if (IsPlayer || ScriptHost == null)
+        {
+            return;
+        }
+
+        PickEventTrigger();
+        RunPickedEvent(ScriptHost.Runner);
+    }
+
+    /// <summary>
+    /// E20.a A2: the animation-clock half of one logic tick of this entity, <see cref="AlundraFrameSyncPasses.StepAnimationClock"/> (the binary's <c>0x80038E18</c>, after the lists and
+    /// before the physics). E19.c2 (docs/plan-e19-opcodes.md §1.2f, ADR-0019): it steps once per tick, right after the entity's script and before its motion; a switch the script just
+    /// asked for reserves the tick, otherwise the animation advances one tick and may end, which 0x1C/0x1D see at the next tick. The sprites themselves keep drawing in real time.
+    /// </summary>
+    internal void TickAnimationClock() => AlundraFrameSyncPasses.StepAnimationClock(this);
+
+    /// <summary>
+    /// E20.a A2: the physics half of one logic tick of this entity (the binary's <c>0x80038364</c>).
+    /// <list type="bullet">
+    /// <item><description>The hero: <see cref="AlundraPlayerManager.Tick"/> (the kinematic integration), then the probes <see cref="RunHeroProbes"/> inside the tick, as the binary's
+    /// <c>UpdateTileAttributes</c> ends each physics pass (E19.d2c1 R7: the water, ice and x160 rules read the VRAM flags at the next tick). Nothing without a controller.</description></item>
+    /// <item><description>Another entity: E4.b scripted mover (port of <c>PhysicsEngine.UpdateEntityPhysics</c>, restricted to the flat-ground half already ported for the hero), keyed off
+    /// <see cref="CurrentAnimationId"/> as the last SyncAnimation left it (D-E19-13: the animation a script asks for is applied to the sprite at the end of the frame, so the motion of the
+    /// ticks of a frame reads the animation as the previous frame left it); then E4.f entity-vs-entity Z support, AFTER the motion so a walk that just left a platform's footprint loses
+    /// support the SAME tick. E19.d2b (D-E19-29): only an entity that is Normal or Deactivated moves (the binary's physics list takes the statuses 2 and 3); the support runs for all.</description></item>
+    /// </list>
+    /// </summary>
+    internal void TickPhysics()
+    {
+        if (ScriptHost == null)
+        {
+            return;
+        }
+
+        if (IsPlayer)
+        {
+            if (ScriptHost.PlayerController != null)
+            {
+                AlundraPlayerManager.Tick(this, 1);
+                RunHeroProbes();
+            }
+
+            return;
+        }
+
+        // E4.e: unconditional, not gated on Controller != null - the original applies UpdateEntityPhysics to every entity in g_activeEntities; RunOneKinematicTick's own
+        // Controller-null branch is production-safe (every body-carrying entity keeps a real CharacterControllerComponent, E4.a).
+        if (Status.IsActive())
+        {
+            AlundraScriptedMotion.TickScriptedNpc(this);
+        }
+
+        EvaluateEntitySupport(ScriptHost.Collidables);
+    }
+
+    /// <summary>
+    /// The hero's tile-attribute probes, after its position is integrated: <see cref="UpdateGroundSlope"/> (E1, Slope_18c), <see cref="UpdateVramFlags"/> (T3, CombinedVramFlagsOR/AND) and
+    /// <see cref="UpdateFloorHeight"/> (E2, FloorHeight), independent of each other as in the original's <c>UpdateTileAttributes</c> (PhysicsEngine.cs:1706-1826). E20.a: per tick, with the
+    /// physics (they were once per frame, after the ticks); the next tick's MovePlayer reads the values this tick left.
+    /// </summary>
+    internal void RunHeroProbes()
+    {
+        UpdateGroundSlope();
+        UpdateVramFlags();
+        UpdateFloorHeight();
+    }
+
+    /// <summary>
+    /// E20.a A4: the hero's <c>MovePlayer</c> (<c>0x80031B50</c>), once per logic tick, on <paramref name="pad"/>, the pad of that tick (<see cref="AlundraPadState.FromTickPad"/>:
+    /// hold, rising edge and release of the tick, D-E20-2). A no-op without a controller possessing the pawn.
+    /// </summary>
+    internal void MovePlayerOnTickPad(in AlundraPadState pad)
+    {
+        var host = ScriptHost;
+        if (host?.PlayerController == null)
+        {
+            return;
+        }
+
+        AlundraPlayerManager.MovePlayer(this, in pad, host.GameState, host);
     }
 
     /// <summary>

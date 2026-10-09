@@ -677,15 +677,15 @@ fixe du moteur (D-E20-12) ; les modes 2 et suivants de `0x2F`.
 
 #### Tâches
 
-- ⏳ **A0 — Mesure de l'inversion, avant tout commit de code.** Dans la copie de travail, faire passer les événements de carte avant
+- ✅ **A0 — Mesure de l'inversion, avant tout commit de code.** Dans la copie de travail, faire passer les événements de carte avant
   le pas des entités, au plus près de ce qu'E20.a fera, sans rien d'autre ; lancer `Alundra.Tests` ; relever chaque test, épingle
   et point de trace (intro, arcs de la chaîne, `AlundraDialogueBoxOrderTests`, `AlundraAnimationSoundTests`) qui change, avec
   l'ancienne valeur, la nouvelle et la raison du binaire. Puis restaurer les seuls fichiers touchés (`git restore <fichier>`).
   Livrable : `docs/plan-e20-annexe/e20-a/a0-mesure.md`. Un changement sans raison du binaire est un arrêt.
-- ⏳ **A1 — Le pad du tick.** `AlundraPadState` gagne `ButtonsReleased` ; une construction depuis `AlundraTickPad` (tenu, appuyé,
+- ✅ **A1 — Le pad du tick.** `AlundraPadState` gagne `ButtonsReleased` ; une construction depuis `AlundraTickPad` (tenu, appuyé,
   relâché) ; `MovePlayer` et `CheckEntityInteraction` lisent ce pad ; `0x2F` modes 0 et 1 lisent aussi le pad du tick (ils lisent
   aujourd'hui le front de l'image, une fois par tick, `AlundraEventProgramRunner.cs:1738-1764`).
-- ⏳ **A2 — Un corps de tick par entité, piloté par le monde.**
+- ✅ **A2 — Un corps de tick par entité, piloté par le monde.**
   - Extraire d'`AlundraEntityScriptProxy.Update` un corps de tick unique par entité : choix du programme, programme, horloge
     d'animation, mouvement et appui pour les entités ; `MovePlayer`, horloge d'animation, `Tick` et sondes pour le héros.
   - En production, le monde déroule les ticks (A3). L'entité garde, une fois par image, l'échantillon du pad (héros) et la
@@ -693,7 +693,7 @@ fixe du moteur (D-E20-12) ; les modes 2 et suivants de `0x2F`.
     visuel de plus qu'aujourd'hui. Le mécanisme est au choix de l'exécutant, décrit dans le code et dans ce plan.
   - Sans monde pilote (montages, faux hôtes), l'entité garde sa propre boucle de ticks, sur le même corps, avec `MovePlayer` à
     chaque tick : les montages existants continuent de marcher.
-- ⏳ **A3 — L'ordre du tick k dans le monde** (`AlundraWorldProxy.Update`), dans l'ordre du binaire :
+- ✅ **A3 — L'ordre du tick k dans le monde** (`AlundraWorldProxy.Update`), dans l'ordre du binaire :
   1. le pad (`TickPad.Update`, inchangé) ;
   2. la boîte de dialogue, le texte, le choix, l'écran de sauvegarde (inchangés, ADR-0029, ADR-0047) ;
   3. la porte (`GameplayGateNow`) ;
@@ -719,7 +719,7 @@ fixe du moteur (D-E20-12) ; les modes 2 et suivants de `0x2F`.
   laissée. Mais `SyncAnimation` et `SyncTransform` publient l'état d'après le dernier tick de l'image en cours : le moteur met à
   jour les entités avant le monde (`World.cs:533-583`), donc les laisser dans `AlundraEntityScriptProxy.Update`, avant les ticks
   du monde, ajouterait une image de retard visible.
-- ⏳ **A4 — Le héros à chaque tick.**
+- ✅ **A4 — Le héros à chaque tick.**
   - `MovePlayer` passe une fois par tick, et zéro fois dans une image sans tick.
   - Retirer `JumpStartTickStamp`, sa garde et le cachet du saut (`AlundraPlayerManager.cs:294-301`, `:443`), devenus sans objet.
   - Idle, Moving et les états de saut appellent `TryUseItem` (bouchon : rend 1), `PlayerTryAction` (rend 0),
@@ -728,13 +728,13 @@ fixe du moteur (D-E20-12) ; les modes 2 et suivants de `0x2F`.
     leur place (`0x80031D68-0x80031D78`) ; la fin appelle `UpdateItemEffectState`, suivi des copies de PV existantes, et le pilote
     `0x8003634C` à son second site (`0x80031CC4`), bouchons (D-E20-14).
   - Chaque bouchon est une méthode nommée d'après le binaire, documentée, sans effet.
-- ⏳ **A5 — La passe des compteurs** (`0x80038998`), une fois par tick, sur toutes les entités, après les programmes : `+0x1C` + 1,
+- ✅ **A5 — La passe des compteurs** (`0x80038998`), une fois par tick, sur toutes les entités, après les programmes : `+0x1C` + 1,
   `DamagedTickCounter` et `FrameCollisionTickCounter` décrémentés s'ils ne sont pas nuls, `TouchingEntity` et `HitCounter`
   effacés ; `RidingEntity` gardé (D-E20-13). Inventorier d'abord les lecteurs de ces champs dans la DLL (`0x47` et `0x48` lisent
   `HitCounter` ; le choix E/D lit `TouchingEntity` ; `+0x1C` et `+0x1CC` : à relever).
 - ⏳ **A6 — Premières images (O-E19-80).** Sonder le vrai jeu (méthode d'E19.v2) sur une nouvelle partie et sur une arrivée par
   `0x52` ou `0x53` suivie d'un verrou ; appliquer la règle du plancher à la queue commune seulement si le cas se montre.
-- ⏳ **A7 — Tests, traces, plan.**
+- ✅ **A7 — Tests, traces, plan.**
   - Chaque épingle qui change est listée ici, avec l'ancienne valeur, la nouvelle et sa raison (le binaire, ou l'oracle D1 quand il
     couvre le cas). Attendues d'après D7 : SJ6b (155136 au second tick, à vérifier sur l'oracle), SJ5b et SJ5c (Croix tenue
     jusqu'au premier tick), SJ4 et SJ4b retirés avec le cachet, et ce que A0 relève.

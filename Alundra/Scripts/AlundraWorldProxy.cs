@@ -639,6 +639,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     private bool _firstFrameStillOpen = true;
 
+    /// <summary>E20.a A2 (D-E20-12): this proxy runs the logic ticks of its entities, in the binary's order (<see cref="RunEntityBlock"/>); see <see cref="IAlundraScriptHost.DrivesEntityTicks"/>.</summary>
+    /// <remarks>
+    /// True for a world attached to a game (production, and the montages that give the world a <c>Game</c> and update the entities then this proxy, as <c>World.Update</c> does, World.cs:533-584).
+    /// False for a bare <c>World</c> with no game (a montage that builds the proxies by hand, in any order): that world has no driver, so its entities keep their own loop of ticks
+    /// (<c>AlundraEntityScriptProxy.RunSelfDrivenTicks</c>) and this proxy keeps the lists and the pending-trigger re-scan once per frame, after them, as before E20.a.
+    /// </remarks>
+    public bool DrivesEntityTicks => _world?.Game != null;
+
     /// <summary>See <see cref="IAlundraScriptHost.LogicTicksThisFrame"/>'s own doc; the sticky first-frame
     /// floor is documented on <see cref="_firstFrameStillOpen"/> itself.</summary>
     public int LogicTicksThisFrame(float elapsedTime)
@@ -2238,8 +2246,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // E19.u U-R3: the gate the pending event triggers read (RunPendingEventTriggers, below) is the one left by the map events of the LAST tick, before that tick's inventory block (the binary's UpdateEntities
         // runs before the trigger): read again at the end of each tick, before the block. With no tick this frame it is the gate as it stands.
         var pendingTriggersGate = GameplayGateNow();
+        var drivesEntityTicks = DrivesEntityTicks; // E20.a A2/A3 (docs/plan-e20-heros.md section 1.3).
         for (var tick = 0; tick < ticksThisFrame; tick++)
         {
+            TickTraceForTests?.Invoke("pad");
             GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
             _squareOfTick.Add(((GameState.TickPad.ButtonsHold & AlundraPadState.Square) != 0, (GameState.TickPad.ButtonsJustPressed & AlundraPadState.Square) != 0));
             _choicePadOfTick.Add((GameState.TickPad.ButtonsJustPressed, GameState.TickPad.ButtonsJustPressedByInterval));
@@ -2248,6 +2258,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             var (squareHeld, squarePressed) = tick == 0 ? _squareOfLastTick : _squareOfTick[tick - 1];
             // E19.f3a F3A-R3: the pass of the director also runs the choice box (slot 3, right after the text box's), on the pad words of the tick before, like the Square.
             var (choicePressed, choiceInterval) = tick == 0 ? _choicePadOfLastTick : _choicePadOfTick[tick - 1];
+            TickTraceForTests?.Invoke("box");
             AlundraDialogueDirector.Instance.Pass(squareHeld, squarePressed, choicePressed, choiceInterval);
 
             // E19.f2b1c F2B1C-R4: the text box screen reads what the pass just drew, before the gate is read and before the map-events pass below (the pass runs whether the
@@ -2279,6 +2290,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                     AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches(_spawnedEntities);
                 }
 
+                TickTraceForTests?.Invoke("mapEvents");
                 RunMapEventsPass(PlayerEntity, _mapEvents, EventProgramRunner, GameState.PlayerControlFlags);
 
                 // E19.r R3 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): the recycling of the destroyed entities, right after each pass of the map
@@ -2289,10 +2301,18 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             _effectFrozenOfTick.Add(EffectGateOfThisTick()); // E19.g G3a (G3A-R6): the gate of the tick, read after the map events of the tick (also when they did not run).
             pendingTriggersGate = GameplayGateNow(); // E19.u U-R3: before the inventory block of this tick.
 
+            // E20.a A3 (D-E20-11, D-E20-12): the ENTITY BLOCK of the tick (UpdateEntities, 0x8003B388), right after the map events and the recycling (0x8003C67C then 0x80038634) and before the
+            // inventory block (the Update(k) trigger sits after UpdateWorld). The gate it reads is the one the map events just left (0x8003B394).
+            if (drivesEntityTicks)
+            {
+                RunEntityBlock(tick, pendingTriggersGate);
+            }
+
             // E19.u U-R2 (docs/plan-e19-opcodes.md section 1.2y, D-E19-103, ADR-0050): the INVENTORY BLOCK, at the end of the tick, after the dialogue pass, the save screen and the map events of the same tick,
             // every tick (no early exit skips it). It is the binary's Update(k) trigger (0x8002BC6C-0x8002BD00, after UpdateWorld) followed by RenderScene(k+1)'s inventory slots 4 and 6, the post-process and the
             // portrait: the tick k of the port is Update(k) plus RenderScene(k+1) for the inventory (AlundraInventoryDirector's class doc). A box released or a map event run by this very tick is therefore seen by the
             // trigger, and the map events freeze one tick later than the trigger's opening, like the binary.
+            TickTraceForTests?.Invoke("inventory");
             UpdateInventoryPortraitHeadPoint();
             AlundraInventoryDirector.Instance.Tick(PlayerEntity);
 
@@ -2333,6 +2353,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             _choicePadOfLastTick = _choicePadOfTick[ticksThisFrame - 1];
         }
 
+        // E20.a A4: a frame without logic tick has no UpdateWorld in the binary, so no entity block at all: no MovePlayer, no probes, no lists. The hero is only published below.
+
+        // E20.a A2: the publication of the frame. The engine updated the entities BEFORE this proxy (World.cs:533-584), and the ticks ran here, so SyncAnimation (the target-resolution half of
+        // UpdateAnimation, "dedans": only for an entity whose gate was open as the frame opened) and SyncTransform (a render-position publish, unconditional) show the state after the LAST tick
+        // of this frame. D-E19-13 is kept: the animation a program asked for is applied to the sprite here, at the end of the frame.
+        if (drivesEntityTicks)
+        {
+            PublishEntityFrame();
+        }
+
         // The triggers in waiting read the gate as the loop left it: the box passes above may have opened or released one. E19.u U-R3: that is the gate after the map events of the LAST tick, read before
         // that tick's inventory block (the binary's UpdateEntities runs before the trigger), not the gate at the end of the loop.
         gameplayBlocked = pendingTriggersGate;
@@ -2347,29 +2377,25 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         if (_spawnedEntities.Count != 0)
         {
-            // T2 (§1.5's own table row): "dehors" - port of UpdateEntityLists, which the original runs in
-            // the branch's own `else` (EntityManager.cs:391), i.e. unconditionally of the gate this same
-            // table gates RunPendingEventTriggers/RunMapEventsPass behind.
-            RefreshUpdateProxiesAndCollidables();
-
-            // Decision D3's own catch-up rescan - same frame-counted shape as RunMapEventsPass above (the
-            // original's own do/while re-scan ran once per fixed frame too). C1: this still runs BEFORE
-            // the camera block below - the original's own re-scan (EntityManager.cs's UpdateEntitiesEvents
-            // phase-2 loop) is itself part of UpdateEntities, which the look-at update only follows at the
-            // very end (see this method's own C1 comment above) - so anything a re-scanned entity's 0x67/
-            // 0x64/0x69 does must be visible to THIS frame's camera too, not just the map-events pass'.
-            //
-            // T2 (§1.5's own table row): "dedans" - second boucle of UpdateEntitiesEvents
-            // (EntityManager.cs:380), frozen behind the same GameplayBlockedMask gate as the pass above.
-            if (!gameplayBlocked)
+            // E20.a A3: with a driven world the lists (UpdateEntityLists, "dehors", EntityManager.cs:391) and the catch-up re-scan of the pending event triggers (decision D3, the
+            // do/while of UpdateEntitiesEvents, EntityManager.cs:874-921) are in the entity block of each tick (RunEntityBlock), where the binary has them. A world with no driver (see DrivesEntityTicks) keeps the shape it had: its entities ran their own ticks before this proxy, so the lists
+            // and the re-scan come once here.
+            if (!drivesEntityTicks)
             {
-                for (var tick = 0; tick < ticksThisFrame; tick++)
-                {
-                    _effectStage.BeginSource(tick, 2); // E19.g G3b (G3B-R3): the pending triggers come after the entities (rank 2).
-                    RunPendingEventTriggers(_updateProxies, EventProgramRunner);
-                }
+                // T2 (§1.5's own table row): "dehors" - port of UpdateEntityLists (EntityManager.cs:391), unconditionally of the gate.
+                RefreshUpdateProxiesAndCollidables();
 
-                _effectStage.EndSource();
+                // Decision D3's own catch-up rescan, frame-counted like RunMapEventsPass; T2 (§1.5): "dedans", frozen behind the same gate as the pass above.
+                if (!gameplayBlocked)
+                {
+                    for (var tick = 0; tick < ticksThisFrame; tick++)
+                    {
+                        _effectStage.BeginSource(tick, 2); // E19.g G3b (G3B-R3): the pending triggers come after the entities (rank 2).
+                        RunPendingEventTriggers(_updateProxies, EventProgramRunner);
+                    }
+
+                    _effectStage.EndSource();
+                }
             }
 
             // Wall/sprite depth interleave (Slice B) - see WallPlacementOverlay's class doc. Gated on the
@@ -2546,6 +2572,194 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // exactly once, right next to CloseFrame - see _firstFrameStillOpen's own doc. Idempotent past
         // the very first frame (already false), so this unconditional write is safe on every later call.
         _firstFrameStillOpen = false;
+    }
+
+    /// <summary>The entities the entity block of the current tick drives (<see cref="CollectTickEntities"/>): the hero first, then the others in the order of <see cref="_spawnedEntities"/>.</summary>
+    private readonly List<AlundraEntityScriptProxy> _tickEntities = new();
+
+    /// <summary>The proxies the pending-trigger re-scan of the current tick walks (rebuilt just before it, so an entity a script spawned this very tick is in it).</summary>
+    private readonly List<AlundraEntityScriptProxy> _pendingScan = new();
+
+    /// <summary>
+    /// E20.a A3 (docs/plan-e20-heros.md section 1.3): the membership of the entity block. The engine integrates a spawned entity at the head of the NEXT frame
+    /// (<c>World.AddEntity</c> only queues, <see cref="AlundraEntityScriptProxy.Update"/> then records <see cref="AlundraEntityScriptProxy.TookPartInFrame"/>), so an entity that appears during a
+    /// frame has its first tick in the next one; an entity recycled (<see cref="RecycleDestroyedEntities"/>) leaves <see cref="_spawnedEntities"/> and no longer ticks. The order is the one of the slots:
+    /// the hero first (slot 0, <c>MovePlayer</c> first in <c>0x800386D0</c>), then <see cref="_spawnedEntities"/> in creation order (the "first attacker" of the hit pass of E20.c1 depends on it).
+    /// </summary>
+    private void CollectTickEntities()
+    {
+        _tickEntities.Clear();
+        var hero = PlayerEntity;
+        if (hero is { TookPartInFrame: true })
+        {
+            _tickEntities.Add(hero);
+        }
+
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is AlundraEntityScriptProxy { TookPartInFrame: true } proxy && !ReferenceEquals(proxy, hero))
+            {
+                _tickEntities.Add(proxy);
+            }
+        }
+    }
+
+    /// <summary>
+    /// E20.a A3 (docs/plan-e20-heros.md section 1.3, D-E20-11, D-E20-12): the entity block of ONE logic tick, in the order of the binary's <c>UpdateEntities</c> (<c>0x8003B388</c>):
+    /// when the gate (<c>g_playerControlFlags &amp; 0x48</c>, or a warp in progress) is closed (<paramref name="gateClosed"/>), only the lists (<c>0x8003B408</c>); otherwise
+    /// <list type="number">
+    /// <item><description>the hero's <c>MovePlayer</c> (first call of <c>0x800386D0</c>, <c>0x800386EC</c>), on the pad of the tick;</description></item>
+    /// <item><description>the programs of the entities in slot order (<c>0x800386D0</c>, phase 1 then 2), then the re-scan of the pending triggers (the do/while of that same pass,
+    /// <see cref="RunPendingEventTriggers"/>);</description></item>
+    /// <item><description>the counters pass (<c>0x80038998</c>, <see cref="RunCountersPass"/>, empty until A5);</description></item>
+    /// <item><description>the lists (<c>0x800384F4</c>, <see cref="RefreshUpdateProxiesAndCollidables"/>);</description></item>
+    /// <item><description>the animation clock of every entity (<c>0x80038E18</c>);</description></item>
+    /// <item><description>the physics of every entity (<c>0x80038364</c>: the hero's tick and probes, the scripted movement and support of the others);</description></item>
+    /// <item><description>the hit-pass hook (<c>0x80039300</c>, <see cref="RunHitPassHook"/>, empty until E20.c1).</description></item>
+    /// </list>
+    /// An entity's own state is not published here: <see cref="PublishEntityFrame"/> does it once, after the last tick of the frame (D-E19-13 kept).
+    /// </summary>
+    private void RunEntityBlock(int tick, bool gateClosed)
+    {
+        if (gateClosed)
+        {
+            TickTraceForTests?.Invoke("lists");
+            if (_spawnedEntities.Count != 0)
+            {
+                RefreshUpdateProxiesAndCollidables();
+            }
+
+            return;
+        }
+
+        CollectTickEntities();
+        _effectStage.BeginSource(tick, 1); // E19.g G3b (G3B-R3): the effect operations of the entities of this tick carry its tick (rank 1), the pending triggers rank 2.
+
+        // E20.a A4 (D-E20-2): MovePlayer once per tick, first of the block (0x800386EC), on the pad of the tick (AlundraTickPad, with the release edge).
+        var hero = PlayerEntity;
+        TickTraceForTests?.Invoke("movePlayer");
+        if (hero is { TookPartInFrame: true })
+        {
+            hero.MovePlayerOnTickPad(AlundraPadState.FromTickPad(GameState.TickPad));
+        }
+
+        TickTraceForTests?.Invoke("programs");
+        for (var i = 0; i < _tickEntities.Count; i++)
+        {
+            _tickEntities[i].TickPrograms();
+        }
+
+        // The re-scan of the binary's pass: an entity whose trigger another script set during this tick runs at once. Over a list rebuilt now, so a spawn of this very tick is in it.
+        TickTraceForTests?.Invoke("pending");
+        _effectStage.BeginSource(tick, 2);
+        _pendingScan.Clear();
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
+            {
+                _pendingScan.Add(proxy);
+            }
+        }
+
+        RunPendingEventTriggers(_pendingScan, EventProgramRunner);
+        _effectStage.BeginSource(tick, 1);
+
+        TickTraceForTests?.Invoke("counters");
+        RunCountersPass();
+
+        TickTraceForTests?.Invoke("lists");
+        if (_spawnedEntities.Count != 0)
+        {
+            RefreshUpdateProxiesAndCollidables();
+        }
+
+        TickTraceForTests?.Invoke("clock");
+        for (var i = 0; i < _tickEntities.Count; i++)
+        {
+            _tickEntities[i].TickAnimationClock();
+        }
+
+        TickTraceForTests?.Invoke("physics");
+        for (var i = 0; i < _tickEntities.Count; i++)
+        {
+            _tickEntities[i].TickPhysics();
+        }
+
+        TickTraceForTests?.Invoke("hit");
+        RunHitPassHook();
+        _effectStage.EndSource();
+    }
+
+    /// <summary>
+    /// E20.a A5 (D-E20-13): the counters pass of the binary (<c>0x80038998</c>, once per tick after the programs, over the slots 0 to the highest, hero included, NO status filter):
+    /// <c>+0x1C</c> + 1 (<see cref="AlundraEntityScriptProxy.FrameCounter"/>), <c>+0x1CC</c> and <c>+0x1D0</c> (<see cref="AlundraEntityScriptProxy.DamagedTickCounter"/>,
+    /// <see cref="AlundraEntityScriptProxy.FrameCollisionTickCounter"/>) decremented when non-zero, <c>+0x224</c> (<see cref="AlundraEntityScriptProxy.TouchingEntity"/>) and
+    /// <c>+0x220</c> (<see cref="AlundraEntityScriptProxy.HitCounter"/>) cleared. <c>+0x12C</c> (<c>RidingEntity</c>) is NOT cleared: the DLL recomputes the carrier once per frame
+    /// (<see cref="RefreshUpdateProxiesAndCollidables"/>), D-E20-13 (documented deviation until the riding is recomputed in the tick).
+    /// Readers of these fields in the DLL (inventory of E20.a): <c>HitCounter</c> by opcodes 0x47/0x48 and by the pick of the Deactivate slot (<c>DeactivateOnHit</c>);
+    /// <c>TouchingEntity</c> by the pick (slot D instead of C); the others by nothing yet (0x86 and 0x87 are not implemented, E14). Writers: none yet (the hit pass, E20.c1).
+    /// </summary>
+    private void RunCountersPass()
+    {
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is not AlundraEntityScriptProxy proxy)
+            {
+                continue;
+            }
+
+            proxy.FrameCounter++;
+            if (proxy.DamagedTickCounter != 0)
+            {
+                proxy.DamagedTickCounter--;
+            }
+
+            if (proxy.FrameCollisionTickCounter != 0)
+            {
+                proxy.FrameCollisionTickCounter--;
+            }
+
+            proxy.TouchingEntity = null;
+            proxy.HitCounter = 0;
+        }
+    }
+
+    /// <summary>E20.a A3 hook: the hit pass of the binary (<c>0x80039300</c>, last of the entity block). Empty until E20.c1 plugs the pass in here, in the order of the slots.</summary>
+    private void RunHitPassHook()
+    {
+        HitPassHookForTests?.Invoke();
+    }
+
+    /// <summary>E20.a A8 test-only seam: runs at the hit-pass hook of each tick (where E20.c1 plugs the pass in), so a test can write what that pass writes (a <c>TouchingEntity</c>).</summary>
+    internal Action? HitPassHookForTests;
+
+    /// <summary>E20.a A8 test-only seam: told the name of each pass of the tick as it starts, in the order the binary runs them (pad, box, mapEvents, movePlayer, programs, pending,
+    /// counters, lists, clock, physics, hit, inventory); a closed gate gives pad, box, lists, inventory.</summary>
+    internal Action<string>? TickTraceForTests;
+
+    /// <summary>
+    /// E20.a A2: the publication of the frame, after the last tick: for each entity the engine updated this frame, <see cref="AlundraFrameSyncPasses.SyncAnimation"/> (only if its gate was open as
+    /// the frame opened, T2 "dedans") then <see cref="AlundraFrameSyncPasses.SyncTransform"/> (unconditional). It used to run in <see cref="AlundraEntityScriptProxy.Update"/>, before the ticks of the
+    /// frame, which now belong to this proxy. Clears the per-frame records of the entities.
+    /// </summary>
+    private void PublishEntityFrame()
+    {
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is not AlundraEntityScriptProxy { TookPartInFrame: true } proxy)
+            {
+                continue;
+            }
+
+            if (proxy.SyncAnimationDue)
+            {
+                AlundraFrameSyncPasses.SyncAnimation(entity);
+            }
+
+            AlundraFrameSyncPasses.SyncTransform(entity);
+            proxy.TookPartInFrame = false;
+            proxy.SyncAnimationDue = false;
+        }
     }
 
     /// <summary>

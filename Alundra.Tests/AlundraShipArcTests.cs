@@ -129,11 +129,14 @@ public sealed class AlundraShipArcTests
         using var arc = new ArcRun(new ArcSpec("A1", Zone, Map390, flags, 44, 23, 4, 900));
         Assert.Equal(228u, ArcRun.State.GameFlags[27]);
 
-        // E19.r R3: the first captain destroys itself in its load program (A[2] @433, G870 set), during the entity pass of the first image, and is recycled
-        // in that same image (the box of B3 opens at the image 4 at the earliest): its proxy is captured before the image, then is Destroyed and unlisted.
+        // E19.r R3: the first captain destroys itself in its load program (A[2] @433, G870 set), during the entity pass of the first image. E20.a (D-E20-11): the recycling
+        // (0x80038634) is the FIRST call of UpdateEntities, before the programs, so the flagged captain is recycled at the head of the NEXT tick, not in the same image
+        // (it was, when the entities ran before the map events): the proxy is captured before the image, FlagToDestroy and still listed after it, Destroyed and unlisted one image later.
         var captain1 = arc.EntityByRecord(2) ?? throw new Xunit.Sdk.XunitException("record 2 did not spawn");
         arc.OneFrame(); // the load programs of the first frame.
         var captain2 = arc.EntityByRecord(3) ?? throw new Xunit.Sdk.XunitException("record 3 (the second captain) did not spawn");
+        Assert.Equal(EntityStatus.FlagToDestroy, captain1.Status);
+        arc.OneFrame(); // the recycling at the head of the second tick.
         Assert.Equal(EntityStatus.Destroyed, captain1.Status);
         Assert.Null(arc.EntityByRecord(2));
         Assert.NotEqual(EntityStatus.FlagToDestroy, captain2.Status);

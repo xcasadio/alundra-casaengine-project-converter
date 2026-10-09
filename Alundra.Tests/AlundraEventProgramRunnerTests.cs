@@ -2851,7 +2851,9 @@ public class AlundraEventProgramRunnerTests
     {
         // Real map-389 params [0,16,0]: flag = (v2<<8)|v1 = (16<<8)|0 = 0x1000 = Up, snapshot 0 (Hold).
         var document = NewDocument(0x2F, 0, 16, 0, 0xFF);
-        var gameState = new AlundraGameState { LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Up } };
+        // E20.a A1: 0x2F modes 0 and 1 read the pad of the TICK (AlundraGameState.TickPad), not the snapshot of the rendered frame.
+        var gameState = new AlundraGameState();
+        gameState.TickPad.Update(AlundraPadState.Up);
         var runner = NewRunner(document, gameState: gameState);
         var entity = NewEntity();
 
@@ -2866,7 +2868,8 @@ public class AlundraEventProgramRunnerTests
     public void CheckPadButtons_0x2F_ButtonNotHeld_ResultZero()
     {
         var document = NewDocument(0x2F, 0, 16, 0, 0xFF);
-        var gameState = new AlundraGameState { LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Down } };
+        var gameState = new AlundraGameState();
+        gameState.TickPad.Update(AlundraPadState.Down);
         var runner = NewRunner(document, gameState: gameState);
         var entity = NewEntity();
 
@@ -2880,10 +2883,9 @@ public class AlundraEventProgramRunnerTests
     public void CheckPadButtons_0x2F_Mode1_ReadsButtonsJustPressed_NotButtonsHold()
     {
         var document = NewDocument(0x2F, 0, 16, 1, 0xFF); // v3=1 -> ButtonsJustPressed
-        var gameState = new AlundraGameState
-        {
-            LastPadState = new AlundraPadState { ButtonsHold = 0, ButtonsJustPressed = AlundraPadState.Up },
-        };
+        // E20.a A1: the edge of the tick pad (the pad went from nothing to Up on this tick); a held Up on a later tick has none.
+        var gameState = new AlundraGameState();
+        gameState.TickPad.Update(AlundraPadState.Up);
         var runner = NewRunner(document, gameState: gameState);
         var entity = NewEntity();
 
@@ -2891,6 +2893,11 @@ public class AlundraEventProgramRunnerTests
         runner.RunOneScriptCall(entity, state);
 
         Assert.Equal(1, state.Result);
+
+        gameState.TickPad.Update(AlundraPadState.Up);
+        var stateHeld = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, stateHeld);
+        Assert.Equal(0, stateHeld.Result);
     }
 
     [Theory]
@@ -2922,7 +2929,8 @@ public class AlundraEventProgramRunnerTests
         // A pad state with ONLY bit 0 held (0x0001). v1 carries the LOW byte, v2 the HIGH byte
         // (flag = v[2]<<8|v[1]) - two disjoint single-bit masks prove each operand lands in its own byte
         // position, not that they are simply OR'd/ignored.
-        var gameState = new AlundraGameState { LastPadState = new AlundraPadState { ButtonsHold = 0x0001 } };
+        var gameState = new AlundraGameState();
+        gameState.TickPad.Update(0x0001);
 
         // v1=0x01 (low byte) -> flag = 0x0001 - matches the held bit.
         var document = NewDocument(0x2F, 0x01, 0x00, 0, 0xFF);
@@ -2982,7 +2990,10 @@ public class AlundraEventProgramRunnerTests
 
         player.Update(1f / 50f); // real production frame - the player branch runs MovePlayer for real.
 
-        // A real 0x2F dispatch now reads what THIS Update call published, not a hand-set gameState.
+        // E20.a A1: the world's tick pad pass (AlundraWorldProxy.Update, head of each tick) samples the hold state this Update published into the pad 0x2F reads.
+        host.GameState.TickPad.Update(host.GameState.LastPadState.ButtonsHold);
+
+        // A real 0x2F dispatch now reads what THIS Update call published (through the tick pad), not a hand-set gameState.
         var document = NewDocument(0x2F, 0, 16, 0, 0xFF); // mask 0x1000 = Up, snapshot 0 (Hold).
         var runner = NewRunner(document, gameState: host.GameState);
         var state = new EventProgramState { Codes = document.CodesAsBytes() };

@@ -64,7 +64,7 @@ public sealed class AlundraHeightTargetSitesTests
         }
 
         // 115 B[2]: the block of the descent, the hero in the zone, the dialogue button pressed.
-        yield return new Site("s115_rec19", 115, 10, 55, 0, 19, 1, 367, 0x22, 6000, 756, 1077, 321, 3145727) { Dialogue = true };
+        yield return new Site("s115_rec19", 115, 10, 55, 0, 19, 1, 367, 0x22, 6000, 757, 1078, 321, 3145727) { Dialogue = true }; // E20.a (D-E20-11): 756/1077 -> 757/1078, the dialogue of this site is opened by an entity program: its first pass is at N+1.
     }
 
     public static IEnumerable<object[]> SiteIds() => AllSites().Select(s => new object[] { s.Id });

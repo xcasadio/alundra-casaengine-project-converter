@@ -316,7 +316,9 @@ public sealed class AlundraDay3SceneArcTests
         // (the branch of 0x03 @1059 that goes to 0x05 @1072).
         Assert.True(arc.Has(B, 945, 0x05) && arc.Has(B, 953, 0x05), "0x05 @945 and @953 never ran");
         Assert.True(FrameOf(arc, B, 945) <= FrameOf(arc, B, 953), "T1 (@945) is set before G1655 (@953)");
-        Assert.True(s.FirstSet.ContainsKey(1), "T1 never set");
+        // E20.a (D-E20-11): T1 (set by B[14] @945 at frame 324) is cleared by Ronan's program C[1] (0x06 @971) in the SAME tick, because the map events now run before the entity block;
+        // the end-of-frame sampling of ArcSamples can no longer see it. Its setting is the instruction asserted above (0x05 @945 ran) and the clear is the one below.
+        Assert.True(arc.Has(C, 971, 0x06), "Ronan's 0x06 @971 (clears T1) never ran");
         Assert.True(IsSet(1655), "G1655");
         Assert.True(s.FirstSet.ContainsKey(0), "T0 (set by Yarn) never set");
         Assert.True(s.FirstSet[0] <= FrameOf(arc, C, 1056) + 1, "T0 is set before the choice");

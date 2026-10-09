@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,10 +99,12 @@ public sealed class AlundraHeroJumpArcTests
         {
             327680, 622592, 884736, 1114112, 1310720, 1474560, 1605632, 1703936, 1769472, 1802240, 1802240, 1769472, 1703936, 1605632, 1474560, 1310720, 1114112,
         };
+        // E20.a (D-E20-11): the animation 2 written by the map program B @2451 at F0+158 is seen by the hero's MovePlayer in the SAME tick (the map events precede the hero, 0x8003C67C
+        // before 0x80031B50), so the jump starts at F0+158 and every pose below is one image earlier than before (F0+159+i -> F0+158+i).
         for (var i = 0; i < jump.Length; i++)
         {
-            var pose = afterImage[f0 + 159 + i];
-            Assert.True(jump[i] == pose.Z, $"PosZ after F0+{159 + i}: {pose.Z}, {jump[i]} expected");
+            var pose = afterImage[f0 + 158 + i];
+            Assert.True(jump[i] == pose.Z, $"PosZ after F0+{158 + i}: {pose.Z}, {jump[i]} expected");
             Assert.Equal(0, pose.IsOnGround);
             if (i >= 1)
             {
@@ -110,9 +112,9 @@ public sealed class AlundraHeroJumpArcTests
             }
         }
 
-        Assert.Equal(new[] { 32409600, 32564736, 32715264 }, new[] { afterImage[f0 + 159].X, afterImage[f0 + 160].X, afterImage[f0 + 161].X });
-        var xAir = afterImage[f0 + 161].X;
-        for (var image = f0 + 162; image <= f0 + 176; image++)
+        Assert.Equal(new[] { 32409600, 32564736, 32715264 }, new[] { afterImage[f0 + 158].X, afterImage[f0 + 159].X, afterImage[f0 + 160].X });
+        var xAir = afterImage[f0 + 160].X;
+        for (var image = f0 + 161; image <= f0 + 175; image++)
         {
             xAir += 150528;
             Assert.True(xAir == afterImage[image].X, $"PosX after F0+{image - f0}: {afterImage[image].X}, {xAir} expected");
@@ -156,9 +158,11 @@ public sealed class AlundraHeroJumpArcTests
         // y = 775 at F0+253 and `0x24 @6400` returns at F0+255 (the plan derived F0+257 without the truncation), `0x19 @6410` at F0+266 (37 [10] returns at s+11),
         // and he is flagged for destruction by the native E at F0+267, the tick after his deactivation. They move back to F0+257, F0+268 and F0+269 with O-E19-29.
         static void Near(int expected, int actual, string what) => Assert.True(Math.Abs(expected - actual) <= 1, $"{what}: {actual}, {expected} (+-1) expected");
-        Near(f0 + 101, FrameOf(arc, C, 6389), "Giles 1A [3] @6389");
-        Near(f0 + 119, FramesOf(arc, C, 6393, 0x25)[^1], "Giles 0x25 @6393 returns 1");
-        Near(f0 + 119, FrameOf(arc, C, 6394), "Giles @6394 starts");
+        // E20.a (D-E20-11): Giles's programs (entity C) see the writes of the map programs B in the SAME tick (0x8003C67C before 0x8003B388), so his whole timeline is one image earlier
+        // relative to F0 (the impulse at F0+100, the landing at F0+118, 0x24 @6400 at F0+254, 0x19 @6410 at F0+265, flagged at F0+266, recycled at the head of F0+267).
+        Near(f0 + 100, FrameOf(arc, C, 6389), "Giles 1A [3] @6389");
+        Near(f0 + 118, FramesOf(arc, C, 6393, 0x25)[^1], "Giles 0x25 @6393 returns 1");
+        Near(f0 + 118, FrameOf(arc, C, 6394), "Giles @6394 starts");
         var gilesStart = giles[FrameOf(arc, C, 6394) - 1].Pose;
         Assert.InRange(gilesStart.X / 65536.0, 521.5, 522.5);
         Assert.NotEqual(0, gilesStart.X & 0xFFFF);
@@ -166,19 +170,23 @@ public sealed class AlundraHeroJumpArcTests
         Assert.InRange(gilesEnd.X / 65536.0, 732.3, 733.3);
         // The mechanism of O-E19-29 itself: his Y step is 2.0 px (131072) at the images F0+241 to F0+244 (each landing on a new height rounds X down), then the 1.625 px (106496)
         // of the ramp; he goes towards the smaller Y, so the steps are negative.
-        for (var image = f0 + 241; image <= f0 + 245; image++)
+        // E20.a, measured: the run of 2.0 px steps (the landings of O-E19-29, a known deviation of the port, not the binary's behaviour) is F0+237 to F0+243 (7 images, after one transitional
+        // step of 147456 at F0+236), then the 1.625 px steps; it was F0+241 to F0+244 (4 images). Giles's walk ends at the same distance from his start (136 images); the landings start 3
+        // images sooner relative to it; the one-image shift of his timeline is the tick order, the phase of the landings against the ramp is a consequence not isolated by a trace (O-E19-29
+        // pins a deviation of the port, not the binary, and is left as it is).
+        for (var image = f0 + 237; image <= f0 + 245; image++)
         {
             var step = giles[image].Pose.Y - giles[image - 1].Pose.Y;
-            Assert.True(step == -(image <= f0 + 244 ? 131072 : 106496), $"Giles's Y step at F0+{image - f0}: {step}");
+            Assert.True(step == -(image <= f0 + 243 ? 131072 : 106496), $"Giles's Y step at F0+{image - f0}: {step}");
         }
 
-        Near(f0 + 255, FrameOf(arc, C, 6401), "Giles 0x24 @6400 returns");
+        Near(f0 + 254, FrameOf(arc, C, 6401), "Giles 0x24 @6400 returns");
         Assert.InRange(giles[FrameOf(arc, C, 6401)].Pose.Y / 65536.0, 775 - 2.5, 775 + 2.5);
         Assert.Equal(0, giles[FrameOf(arc, C, 6401)].Pose.X & 0xFFFF); // the truncation of O-E19-29 on the ramp.
-        Near(f0 + 266, FrameOf(arc, C, 6410), "Giles 0x19 @6410");
-        // E19.r R3: flagged for destruction by the native E in his update at F0+267 and recycled at the end of that same image: the end-of-image sample never
-        // sees FlagToDestroy; from F0+267 his proxy is Destroyed and record 98 is no longer listed.
-        Assert.DoesNotContain(giles.Values, g => g.Status == EntityStatus.FlagToDestroy);
+        Near(f0 + 265, FrameOf(arc, C, 6410), "Giles 0x19 @6410");
+        // E19.r R3, E20.a (D-E20-11): flagged for destruction by the native E in his update at F0+266 and recycled at the head of the NEXT tick (0x80038634 opens UpdateEntities): the
+        // end-of-image sample sees FlagToDestroy at F0+266 once, then his proxy is Destroyed and record 98 is no longer listed.
+        Assert.Contains(giles.Values, g => g.Status == EntityStatus.FlagToDestroy);
         Assert.NotNull(gilesProxy);
         Assert.Equal(EntityStatus.Destroyed, gilesProxy!.Status);
         Assert.Null(arc.EntityByRecord(98));

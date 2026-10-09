@@ -226,49 +226,29 @@ public sealed class AlundraHeroJumpStatesTests
         foreach (var start in new[] { JumpWalking, JumpStanding })
         {
             var hero = Hero(start);
-            hero.JumpStartTickStamp = -1;
             Move(hero, Pad(Right));
             Assert.Equal(Moving, hero.TargetAnimationId);
         }
     }
 
     // -----------------------------------------------------------------------------------------
-    // SJ-4 - the stamp of the tick.
+    // SJ-4 - no stamp of the tick (E20.a A4: MovePlayer runs once per tick like the binary's).
     // -----------------------------------------------------------------------------------------
 
     [Fact]
-    public void SJ4_TheTakeOffTargetIsKeptUntilATickRan_ThenTheTailRewritesIt()
+    public void SJ4_TheTakeOffTargetIsRewrittenByTheTailAtEveryCall_NoStampSparesItAnymore()
     {
+        // E20.a A4 (binary 0x80031E84 then the tail 0x80031EA8): the take-off states (2, 0x2B) are ordinary jump states; on the ground, with no Cross edge, the tail
+        // gives Moving or Idle at the next tick, whatever ran in between. The oracle (D1) agrees: the impulse of the animation lifts the hero before the next tick.
         var hero = Hero(JumpWalking);
-        hero.JumpStartTickStamp = hero.MotionTickCount;
         Move(hero, Pad());
-        Assert.Equal(JumpWalking, hero.TargetAnimationId); // no tick since the take-off: not rewritten.
+        Assert.Equal(Idle, hero.TargetAnimationId);
 
-        AlundraPlayerManager.Tick(hero, 1);
-        Move(hero, Pad());
-        Assert.Equal(Idle, hero.TargetAnimationId); // a tick ran: the ground tail.
-
-        // The stamp is the one the tail takes when it writes the take-off (2 or 0x2B).
         var standing = Hero(Idle);
         Move(standing, Pad(Cross, Cross));
         Assert.Equal(JumpStanding, standing.TargetAnimationId);
-        Assert.Equal(standing.MotionTickCount, standing.JumpStartTickStamp);
-        Move(standing, Pad());
-        Assert.Equal(JumpStanding, standing.TargetAnimationId); // a second frame without tick: still the take-off.
-        AlundraPlayerManager.Tick(standing, 1);
         Move(standing, Pad());
         Assert.Equal(Idle, standing.TargetAnimationId);
-    }
-
-    [Fact]
-    public void SJ4b_ATakeOffWithoutAStampOfThisTick_IsRewrittenByTheTail_EvenOnAFrameWithoutTick()
-    {
-        // The guard of the stamp: the standing take-off (JumpStanding) on the ground is kept only when its stamp equals the tick count; a stamp of an earlier tick, or none
-        // (MotionTickCount - 1, i.e. -1, the default value without a stamp), lets the tail rewrite it to Idle.
-        var hero = Hero(JumpStanding);
-        hero.JumpStartTickStamp = hero.MotionTickCount - 1;
-        Move(hero, Pad());
-        Assert.Equal(Idle, hero.TargetAnimationId);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -299,7 +279,6 @@ public sealed class AlundraHeroJumpStatesTests
         }
 
         Assert.Equal(0, rig.Hero.IsZForceApplied);
-        Assert.Equal(-1, rig.Hero.JumpStartTickStamp);
     }
 
     [Fact]
@@ -315,6 +294,8 @@ public sealed class AlundraHeroJumpStatesTests
         rig.Step(Cross, 0);
         Assert.Equal(Idle, rig.Hero.CurrentAnimationId);
 
+        // E20.a A1: the edge of the tick pad needs the button to have been up on the previous tick (the binary's pressed = new & ~old): let go, then press again.
+        rig.Step(0, 0);
         rig.Step(Cross, Cross);
         Assert.Equal(JumpStanding, rig.Hero.CurrentAnimationId);
         Assert.Equal(JumpHeights[0], rig.Hero.PosZ);

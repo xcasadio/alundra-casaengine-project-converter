@@ -259,8 +259,9 @@ public sealed class AlundraInoaDayOneArcTests
         // E19.f2a (annex V-97 to V-99, simulated; the margins 2 and 3 are the periods of Bergus and of Wendell): T104 is cleared at 697, T102 set at 698 and
         // cleared at 791, T105 set at 792 and cleared at 947.
         Assert.Equal(697, samples.FlagEdges[3].Cleared);
-        Assert.Equal((698, 791), (samples.FlagEdges[4].Set, samples.FlagEdges[4].Cleared));
-        Assert.Equal((792, 947), (samples.FlagEdges[5].Set, samples.FlagEdges[5].Cleared));
+        // E20.a (D-E20-11): T102 is set by a program read by a map event of the next tick (0x8003C67C now precedes the entity pass): 698 -> 699; the clear at 791 is Wendell's own poll.
+        Assert.Equal((699, 791), (samples.FlagEdges[4].Set, samples.FlagEdges[4].Cleared));
+        Assert.Equal((793, 947), (samples.FlagEdges[5].Set, samples.FlagEdges[5].Cleared)); // E20.a: set +1 (it follows T102's clear at 791 through a map event read one tick later); the clear at 947 is Meade's own poll.
         int[] flight =
         {
             348160, 663552, 946176, 1196032, 1413120, 1597440, 1748992, 1867776, 1953792, 2007040, 2027520, 2015232, 1970176, 1892352, 1781760, 1638400,
@@ -417,7 +418,10 @@ public sealed class AlundraInoaDayOneArcTests
         var record4 = arc.EntityByRecord(4)!;
         Assert.Equal(EntityStatus.Deactivated, record4.Status); // at the frame of the end ...
         arc.OneFrame();
-        // ... and destroyed by the native E handler the frame after (D-E19-29), in its update, then recycled at the end of the same image (E19.r R3).
+        // ... and destroyed by the native E handler the frame after (D-E19-29), in its update. E20.a (D-E20-11): the recycling (0x80038634) opens the NEXT tick, so the
+        // record is flagged at the end of that image (it was recycled in the same image when the entities ran before the map events) and Destroyed one image later.
+        Assert.Equal(EntityStatus.FlagToDestroy, record4.Status);
+        arc.OneFrame();
         Assert.Equal(EntityStatus.Destroyed, record4.Status);
         Assert.Null(arc.EntityByRecord(4));
 
@@ -434,7 +438,8 @@ public sealed class AlundraInoaDayOneArcTests
 
         // T200 is set by the step of its glyph, 28 passes after the opening of box 131 (0x0D @325) and seen the frame after, T201 at the pass of the text that follows the
         // press (69 frames later: the cursor of the page, the 0x4C 3 and the 0x4D of @350-@351, the press of the arcs' rule). E19.f2a, annex V-104 and V-105.
-        Assert.Equal(FrameOf(arc, C, 325) + 29, samples.FirstSet[200]);
+        // E20.a (D-E20-11): the box 131 is opened by an entity program (C@325), so its first pass is at N+1 (ADR-0029 row N+1, T+18) instead of N: the glyph's step and T200 are one frame later.
+        Assert.Equal(FrameOf(arc, C, 325) + 30, samples.FirstSet[200]);
         Assert.Equal(samples.FirstSet[200] + 69, samples.FirstSet[201]);
 
         // The absolute frames (E19.f2a, annex V-106 to V-111: simulated, +/- 2 for Septimus's period; they were 5, 9, 10, 11, 48 and 175 with the box of the early ports).

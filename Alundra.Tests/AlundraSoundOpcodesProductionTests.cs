@@ -81,7 +81,7 @@ public class AlundraSoundOpcodesProductionTests
                     break;
                 case 61:
                     id61Count++;
-                    Assert.Equal(1087, frame);
+                    Assert.Equal(1086, frame); // E20.a (D-E20-11): sailor 11's chain is one frame sooner (the map event that releases his wait now runs before him), 1087 -> 1086.
                     break;
                 default:
                     Assert.Fail($"Unexpected sfxId {sfxId} requested at frame {frame} - only 300/301/302/61 are dispatched in the intro (§1.1).");

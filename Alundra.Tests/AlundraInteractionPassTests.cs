@@ -106,7 +106,8 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
         return player;
     }
 
-    private static AlundraPadState SquarePress() => new() { ButtonsJustPressed = AlundraPadState.Square };
+    // E20.a A1: the hero reads the pad of the tick, whose edge is derived from the hold state: a press is a hold with its edge.
+    private static AlundraPadState SquarePress() => new() { ButtonsHold = AlundraPadState.Square, ButtonsJustPressed = AlundraPadState.Square };
 
     // -----------------------------------------------------------------------------------------
     // P-a - the contact at its production site (mutations №2 and №7). E19.d2b B4 (T-REG-E12D-2, D-E19-29): the overlap pass of the end of

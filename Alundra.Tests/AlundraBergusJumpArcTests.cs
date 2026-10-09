@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using Alundra.Scripts;
@@ -62,25 +62,30 @@ public sealed class AlundraBergusJumpArcTests
         var f = FrameOf(arc, B, 411);
         Assert.Equal(1058, f);
         Assert.Equal(f + 4, FramesOf(arc, B, 413, 0x37)[^1]);
-        Assert.Equal(Enumerable.Range(f + 4, 20).ToList(), FramesOf(arc, B, 415, 0x25));
-        Assert.Equal(f + 23, FrameOf(arc, B, 416));
-        Assert.Equal(2277, FrameOf(arc, B, 451));
+        // E20.a (D-E20-11): Bergus's jump is written by the map program B and moved by the entity block of the SAME tick (0x8003C67C before 0x8003B388), no longer one image
+        // later, while the poll of the landing (also B, before the entity block) sees it one tick later: the wait executes 19 times, F+4 to F+22, and the rest of the scene comes
+        // one image sooner (2277 -> 2276).
+        Assert.Equal(Enumerable.Range(f + 4, 19).ToList(), FramesOf(arc, B, 415, 0x25));
+        Assert.Equal(f + 22, FrameOf(arc, B, 416));
+        Assert.Equal(2276, FrameOf(arc, B, 451));
 
-        // 3. Bergus (record 8): above his rest at the images F+1 to F+22 (the state at the end of the image) by the flight list of UJ-1, at rest from F+23.
+        // 3. Bergus (record 8): above his rest at the images F to F+21 since E20.a (F+1 to F+22 before; the state at the end of the image) by the flight list of UJ-1, at rest from F+23.
         int[] flight =
         {
             348160, 663552, 946176, 1196032, 1413120, 1597440, 1748992, 1867776, 1953792, 2007040, 2027520, 2015232, 1970176, 1892352, 1781760, 1638400,
             1462272, 1253376, 1011712, 737280, 430080, 90112,
         };
         int HeightAfterImage(int image) => samples.Single(s => s.Frame == image + 1).PosZ;
-        var rest = HeightAfterImage(f);
+        // E20.a (D-E20-11): the jump written by B at the image F is moved by the entity block of that same tick, so the flight list starts at F (it started at F+1) and
+        // Bergus is at rest again from F+22; the rest height is the one of the image before.
+        var rest = HeightAfterImage(f - 1);
         for (var i = 0; i < flight.Length; i++)
         {
-            Assert.Equal(rest + flight[i], HeightAfterImage(f + 1 + i));
+            Assert.Equal(rest + flight[i], HeightAfterImage(f + i));
         }
 
+        Assert.Equal(rest, HeightAfterImage(f + 22));
         Assert.Equal(rest, HeightAfterImage(f + 23));
-        Assert.Equal(rest, HeightAfterImage(f + 24));
 
         AssertNoUnexpectedError(arc);
     }
