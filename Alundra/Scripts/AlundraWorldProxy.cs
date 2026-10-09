@@ -277,6 +277,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     AlundraItemTables? IEntityWorldContext.ItemTables => ItemTables;
 
+    /// <summary>E20.b B1: the same tables for the hero's <c>MovePlayer</c>, which resolves the equipped weapon from them.</summary>
+    AlundraItemTables? IAlundraScriptHost.ItemTables => ItemTables;
+
     /// <summary>
     /// Port of the original global <c>g_activeCollisionEntity</c>: the entity currently involved in the
     /// active collision pair, used by the pick phase to decide whether a touch downgrades all the way

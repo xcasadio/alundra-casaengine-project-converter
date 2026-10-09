@@ -379,6 +379,17 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public int HitBoxOriginZ;
     public int _17c;
     public uint CombinedVramFlagsOR;
+
+    /// <summary>E20.b B1: the weapon record of the equipped weapon (<see cref="AlundraWeaponTables"/>), the binary's <c>0x8012710C</c>. Posed at the head of every <see cref="AlundraPlayerManager.MovePlayer"/>
+    /// (<c>0x80031B8C</c>), read by <c>PlayerTryAttack</c>; 0 (the basic sword's record) until then. Hero only.</summary>
+    internal int CurrentWeaponRecord;
+
+    /// <summary>E20.b B2: the pending-spawn pointer of a weapon, the binary's <c>0x80127110</c>: the address (in the executable) of the animation byte of the record <c>PlayerTryAttack</c> chose, 0 when
+    /// none. <c>UpdateWeaponStepProgression</c> clears it at the tick after the press unless the record spawns a projectile. Hero only.</summary>
+    internal uint WeaponRecordPointer;
+
+    /// <summary>E20.b B2: the tick counter that goes with <see cref="WeaponRecordPointer"/>, the binary's <c>0x80127114</c> (reset by the press, counted up to the delay of the record). Hero only.</summary>
+    internal int WeaponStepCounter;
     public uint CombinedVramFlagsAND;
     public int TileAttributes; //188
     public int Slope_18c; //18c

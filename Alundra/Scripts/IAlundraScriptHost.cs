@@ -100,6 +100,13 @@ public interface IAlundraScriptHost
     IAlundraSoundPlayer? SoundPlayer => null;
 
     /// <summary>
+    /// E20.b B1 (docs/plan-e20-heros.md section 1.4): this world's item tables, which <see cref="AlundraPlayerManager.MovePlayer"/> reads at its head to resolve the equipped weapon
+    /// (<c>GetItemIdFromCurrentWeapon</c>, then the weapon record of <see cref="AlundraWeaponTables"/>). A default interface member, null like <see cref="SoundPlayer"/>, so no other host needs to
+    /// change: without tables the hero has no weapon, which the binary reads as record 0 (the basic sword's). <see cref="AlundraWorldProxy"/> returns its own tables; a rig may set some.
+    /// </summary>
+    AlundraItemTables? ItemTables => null;
+
+    /// <summary>
     /// T3's own seam for T4 (docs/plan-transitions-carte.md §3: "le prédicat ... exposé par une couture
     /// que T4 remplira"). Called by <see cref="AlundraPlayerManager.MovePlayer"/>, at most once per
     /// call, exactly when <see cref="AlundraPortalTrigger.TryGetTrigger"/> returns non-null - the moment

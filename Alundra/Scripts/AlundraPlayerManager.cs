@@ -24,11 +24,10 @@ namespace Alundra.Scripts;
 /// <item><description>Pad -&gt; direction, PlayerManager.cs:199-205: <c>buttonsHold = ButtonsHold &gt;&gt;
 /// 0xc</c>, <see cref="AnimationTables.DirectionByButtons"/>, invalid combination falls back to the
 /// entity's current <c>TargetDirection</c>.</description></item>
-/// <item><description>Idle(0x00)/Moving(0x01) case, PlayerManager.cs:363-383, SIMPLIFIED per E2's own
-/// scope: <c>TargetDirection = dir</c>; <c>buttonsHold != 0 -&gt; Moving</c> else <c>Idle</c>. The
-/// original's own <c>TryUseItem</c>/<c>PlayerTryAction</c>/<c>CheckEntityInteraction</c>/<c>PlayerTryAttack</c>
-/// calls (item use, carried-entity/NPC interaction, weapon attack) are NOT ported - no item/interaction/
-/// combat system exists yet.</description></item>
+/// <item><description>Idle(0x00)/Moving(0x01) case, PlayerManager.cs:363-383 (binary <c>0x80031E38</c>): <c>TargetDirection = dir</c>, then (E20.a A4) <c>TryUseItem</c>, <c>PlayerTryAction</c>
+/// and <c>CheckEntityInteraction</c> in the binary's order, then the common tail: <c>PlayerTryAttack</c> (E20.b), the jump of the Cross, <c>buttonsHold != 0 -&gt; Moving</c> else <c>Idle</c>.
+/// <c>TryUseItem</c> and <c>PlayerTryAction</c> are named stubs (E20.h and E20.g: the use of an item and lifting/carrying are not ported yet).</description></item>
+/// <item><description>The attack groups, binary <c>0x80031E18</c> and <c>0x80031DF8</c> (E20.b): a swing in progress only keeps its side of the ground (see <see cref="MovePlayer"/>).</description></item>
 /// <item><description>LoadingMap(0x36) case, binary 0x800325E8 (PlayerManager.cs:914-922): on the ground the
 /// case ends and the hero stays LoadingMap - its exit is then the animation Chain bridge
 /// (<c>AlundraWorldProxy.OnAnimationFinished</c>, 2026-08-23 "Correctif fins d'animation" - anim 54's trailing
@@ -39,8 +38,8 @@ namespace Alundra.Scripts;
 ///
 /// NOT ported (out of E2's own scope, unconditionally, regardless of <c>TargetAnimationId</c>):
 /// <list type="bullet">
-/// <item><description><c>g_activeCollisionEntity = null</c>; weapon flags (<c>GetItemIdFromCurrentWeapon</c>,
-/// <c>g_currentWeaponFlags</c>) - PlayerManager.cs:23-27,61-79 (no weapon system). <c>CheckAndExecuteWarp</c>'s
+/// <item><description><c>g_activeCollisionEntity = null</c>; <c>g_currentWeaponFlags</c> - PlayerManager.cs:23-27,61-79 (the weapon record is resolved at the head of <see cref="MovePlayer"/> since
+/// E20.b, from <c>GetItemIdFromCurrentWeapon</c>, but the flags the later weapon systems read are not ported). <c>CheckAndExecuteWarp</c>'s
 /// TRIGGER half (PlayerManager.cs:29,3424-3459) IS now ported (T3, docs/plan-transitions-carte.md §1.2.a) -
 /// see this method's own T3 comment at its call site; its TRANSFER half (<c>HandleWarpTransition</c>,
 /// PlayerManager.cs:3488-3541) is NOT ported (T4's own scope).</description></item>
@@ -58,10 +57,10 @@ namespace Alundra.Scripts;
 /// of the current animation. <see cref="AlundraEntityScriptProxy.Slope_18c"/> itself has been alimented
 /// since E1 (<see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>) from the real map 389 cell data
 /// every frame, reading 6 on the four ladder cells - see that method's own doc.</description></item>
-/// <item><description><c>UpdatePlayerWeaponEffect</c>/<c>UpdateWeaponStepProgression</c>/
-/// <c>UpdatePlayerCarriedEntity</c> - PlayerManager.cs:355-357 (no weapon/carry system).</description></item>
+/// <item><description><c>UpdatePlayerWeaponEffect</c> and <c>UpdatePlayerCarriedEntity</c> - PlayerManager.cs:355-357 (named stubs: the weapon effects and charge are E20.f, carrying E20.g);
+/// <c>UpdateWeaponStepProgression</c> is ported without its projectile spawn (E20.b B4, the spawn is a named stub, E20.e0/E20.f).</description></item>
 /// <item><description>Every <c>TargetAnimationId</c> case other than Idle/Moving/LoadingMap/Climbing/
-/// ClimbStill - jump, sprint, attack (all weapon types), pickup/carry/throw, swimming, sand, spell cast,
+/// ClimbStill, the jump states and the attack groups - sprint, the charged attacks, pickup/carry/throw, swimming, sand, spell cast,
 /// damage-taken, victory pose, etc. - PlayerManager.cs:385-943. An entity whose <c>TargetAnimationId</c>
 /// is none of the five ported values simply keeps it unchanged (no case matches, same shape as the
 /// original's own <c>default: AnimateWarpEffect(); break;</c>, itself not ported since it is a pure
@@ -174,6 +173,11 @@ public static class AlundraPlayerManager
     {
         MovePlayerCallCountForTests++;
 
+        // E20.b B1, binary 0x80031B70-0x80031B8C (the very head of MovePlayer): the weapon record of the equipped weapon, byte[0x80028C14 + GetItemIdFromCurrentWeapon()]. Without item tables (a host that has none)
+        // the hero has no weapon, which the binary reads the same way: item -1 gives byte[0x80028C13] = 0, the record of the basic sword.
+        player.CurrentWeaponRecord = AlundraWeaponTables.RecordIndexOfItem(
+            host?.ItemTables is { } itemTables ? GetItemIdFromCurrentWeapon(state, itemTables) : NoItem);
+
         // E12.d: `host` is REQUIRED at every call site (no default) - null means "no world" and skips
         // CheckEntityInteraction below, a documented degraded mode the ~19 direct movement-only test
         // callers opt into EXPLICITLY with `host: null` (never silently by omission - the
@@ -203,6 +207,8 @@ public static class AlundraPlayerManager
         // anyway for forward parity once something does set it.
         if (player.BlockedByEntity != null)
         {
+            // E20.b B2, binary 0x80031BB0-0x80031BC0: this branch also clears the charge timer (E20.f) and the pending-spawn pointer of the weapon before END.
+            player.WeaponRecordPointer = 0;
             return;
         }
 
@@ -265,7 +271,7 @@ public static class AlundraPlayerManager
         }
 
         // PlayerManager.cs:355-357, binary 0x80031D68-0x80031D78: before the switch of states, every tick on a terrain. E20.a A4: the three calls are named stubs, in the order of the
-        // binary (the weapon and carrying systems come with E20.b, E20.d and E20.g).
+        // binary (the weapon effects, the run and carrying come with E20.f, E20.d and E20.g; E20.b ported UpdateWeaponStepProgression without its spawn).
         UpdatePlayerWeaponEffect(player);
         UpdateWeaponStepProgression(player);
         UpdatePlayerCarriedEntity(player, 0);
@@ -282,7 +288,7 @@ public static class AlundraPlayerManager
             }
         }
         // PlayerManager.cs:361-383 (Idle/Moving case) - E12.d ports CheckEntityInteraction into it
-        // (TryUseItem/PlayerTryAction/PlayerTryAttack stay unported no-ops, E2's scope): res==2 (button
+        // (TryUseItem and PlayerTryAction are named stubs, PlayerTryAttack is the common tail's, E20.b): res==2 (button
         // interact) forces Idle and ends the case; res==1 (auto-touch interact) ends it WITHOUT
         // updating the animation this tick; res==0 falls through to the normal animation update -
         // exactly the original's `if (iVar2 != 0) { if (iVar2 != 2) break; ... Idle ... }` shape.
@@ -425,8 +431,32 @@ public static class AlundraPlayerManager
             }
         }
 
+        // E20.b B3, binary 0x80031E18 (the ground attack group) and 0x80031DF8 (the air attack group), reached through the jump table 0x80022D3C: the states of an attack in progress do nothing but keep
+        // the swing on the right side of the ground. Neither reads the pad, writes the direction or calls PlayerTryAttack (the swing ends by the animation Chain, E19.c2); both then call TryUseItem,
+        // whose result is ignored, and end.
+        else if (IsGroundAttackGroup(player.TargetAnimationId))
+        {
+            // A swing of the ground group whose hero has lost the ground (a ledge) gives the air state at the next tick.
+            if (IsHeroInTheAir(player))
+            {
+                player.TargetAnimationId = AirStillAnimationId;
+            }
+
+            TryUseItem(player, in pad);
+        }
+        else if (IsAirAttackGroup(player.TargetAnimationId))
+        {
+            // A swing of the air group whose hero has landed is cut at once: Idle.
+            if (!IsHeroInTheAir(player))
+            {
+                player.TargetAnimationId = IdleAnimationId;
+            }
+
+            TryUseItem(player, in pad);
+        }
+
         // PlayerManager.cs:385-943 (every other TargetAnimationId case) - NOT PORTED; an entity whose
-        // TargetAnimationId is neither of the three ported values above keeps it unchanged.
+        // TargetAnimationId is none of the values ported above keeps it unchanged.
 
         // PlayerManager.cs:947-950, binary 0x80032914 (END: UpdateItemEffectState, then SetPlayerHpMax/SetPlayerHp). E20.a A4 (D-E20-14): UpdateItemEffectState is a named stub
         // until E20.c2; the two HP setters are not called from this site.
@@ -440,17 +470,109 @@ public static class AlundraPlayerManager
     /// <summary>E20.a A4 stub of <c>PlayerTryAction</c> (<c>0x8002EEAC</c>): 0 means "no action, carry on" (<c>0x8002EFC8</c>: nothing carried and nothing to lift). Lifting, carrying and throwing are E20.g.</summary>
     private static int PlayerTryAction(AlundraEntityScriptProxy player, in AlundraPadState pad) => 0;
 
-    /// <summary>E20.a A4 stub of <c>PlayerTryAttack</c>, first call of the common tail (<c>0x80031EA8</c>): 0 means "no attack started". The attack is E20.b.</summary>
-    private static int PlayerTryAttack(AlundraEntityScriptProxy player, in AlundraPadState pad) => 0;
+    /// <summary>The bit of <see cref="AlundraEntityScriptProxy.CombinedVramFlagsOR"/> (a ground property of 0x20 under a corner of the footprint) on which the Square does not strike (<c>0x8002EB24</c>).</summary>
+    private const uint NoAttackVramFlag = 0x2000;
+
+    /// <summary>The "no animation" answer of a weapon record: a press only plays the sound 3 (<c>0x8002ED30</c>).</summary>
+    private const int NoAttackSoundId = 3;
+
+    /// <summary>
+    /// E20.b B2: port of <c>PlayerTryAttack</c> (<c>0x8002EAF4</c>), first call of the common tail (<c>0x80031EA8</c>); the second call, in the run preparation (0x29, <c>0x80031F74</c>), is E20.d.
+    /// Rends 1 when a swing starts (the caller ends its tick), else 0.
+    /// <list type="number">
+    /// <item><description>A footprint corner on a ground property of 0x20 (<c>CombinedVramFlagsOR &amp; 0x2000</c>): nothing, not even a sound.</description></item>
+    /// <item><description>A release of the Square comes first (<c>0x8002EB38</c>): the charged attack needs the charge timer at 60 and the ground (E20.f); the timer stays 0 until then, so this path
+    /// returns 0 and a release never reaches the press test (D-E20-9: a press followed by a release in the same tick does not strike, which the tick pad cannot even produce).</description></item>
+    /// <item><description>The press of the Square (<c>ButtonsJustPressed</c>): the animation byte of the weapon record, the ground one or, in the air, the one 4 bytes after
+    /// (<c>0x80028C79 + 13 w</c>, <see cref="AlundraWeaponTables.AnimationAddress"/>). Animation 0 (the staff, no weapon record animation): the sound 3, 0. Otherwise the pending-spawn pointer
+    /// (<c>0x80127110</c>) takes the address, its counter (<c>0x80127114</c>) 0, and the target animation (<c>+0x88</c>) the animation; the sound of the swing comes from the change of animation
+    /// itself (E19.t).</description></item>
+    /// </list>
+    /// </summary>
+    private static int PlayerTryAttack(AlundraEntityScriptProxy player, in AlundraPadState pad)
+    {
+        if ((player.CombinedVramFlagsOR & NoAttackVramFlag) != 0)
+        {
+            return 0;
+        }
+
+        if ((pad.ButtonsReleased & AlundraPadState.Square) != 0)
+        {
+            // The charged attack (0x8002EB4C-0x8002EC88): charge timer >= 60 on the ground, E20.f. The timer is not ported yet and is always below 60.
+            return 0;
+        }
+
+        if ((pad.ButtonsJustPressed & AlundraPadState.Square) == 0)
+        {
+            return 0;
+        }
+
+        var address = AlundraWeaponTables.AnimationAddress(player.CurrentWeaponRecord, IsHeroInTheAir(player));
+        var animation = AlundraWeaponTables.RecordByte(address);
+        if (animation == 0)
+        {
+            player.ScriptHost?.SoundPlayer?.PlaySfx(NoAttackSoundId);
+            return 0;
+        }
+
+        player.WeaponRecordPointer = address;
+        player.WeaponStepCounter = 0;
+        player.TargetAnimationId = animation;
+        return 1;
+    }
+
+    /// <summary>E20.b B3: the ids the jump table <c>0x80022D3C</c> sends to the ground attack group <c>0x80031E18</c> (the swings and charges of the ground, the bounces of the flail 08 and 25, 04 and 09).</summary>
+    private static bool IsGroundAttackGroup(uint animationId)
+        => animationId is 0x04 or 0x08 or 0x09 or 0x10 or 0x11 or 0x12 or 0x13 or 0x18 or 0x19 or 0x25 or 0x3F or 0x40 or 0x44 or 0x49;
+
+    /// <summary>E20.b B3: the ids the jump table <c>0x80022D3C</c> sends to the air attack group <c>0x80031DF8</c>.</summary>
+    private static bool IsAirAttackGroup(uint animationId)
+        => animationId is 0x0A or 0x14 or 0x15 or 0x16 or 0x17 or 0x1F or 0x26 or 0x41 or 0x42 or 0x46 or 0x4B;
 
     /// <summary>E20.a A4 stub of <c>UpdatePlayerWeaponEffect</c> (<c>0x8002F49C</c>, called at <c>0x80031D68</c>): no weapon system yet.</summary>
     private static void UpdatePlayerWeaponEffect(AlundraEntityScriptProxy player)
     {
     }
 
-    /// <summary>E20.a A4 stub of <c>UpdateWeaponStepProgression</c> (<c>0x8002F768</c>, called at <c>0x80031D70</c>): no weapon system yet.</summary>
+    /// <summary>E20.b test seam: the number of calls of <see cref="SpawnWeaponProjectile"/> (the tick at which a bow or a wand would spawn its projectile; the oracle journals the same call). Per thread.</summary>
+    [ThreadStatic]
+    internal static int WeaponSpawnCallCountForTests;
+
+    /// <summary>
+    /// E20.b B4: port of <c>UpdateWeaponStepProgression</c> (<c>0x8002F768</c>, called at <c>0x80031D70</c>, every tick before the state switch), without the spawn. With a pending pointer
+    /// (<see cref="AlundraEntityScriptProxy.WeaponRecordPointer"/>): a record whose type (<c>ptr[1]</c>) is 0, or whose current animation does not carry the "spawns after the delay" flag of
+    /// <see cref="AlundraWeaponTables.AnimationFlagsAddress"/>, clears the pointer (the melee swings: at the tick after the press); otherwise the counter counts up to the delay of the record
+    /// (<c>ptr[2]</c>), then the projectile is spawned (<see cref="SpawnWeaponProjectile"/>) and the pointer cleared.
+    /// </summary>
     private static void UpdateWeaponStepProgression(AlundraEntityScriptProxy player)
     {
+        var pointer = player.WeaponRecordPointer;
+        if (pointer == 0)
+        {
+            return;
+        }
+
+        if (AlundraWeaponTables.RecordByte(pointer + 1) == 0 || !AlundraWeaponTables.AnimationSpawnsAfterDelay(player.TargetAnimationId))
+        {
+            player.WeaponRecordPointer = 0;
+            return;
+        }
+
+        if (player.WeaponStepCounter < AlundraWeaponTables.RecordByte(pointer + 2))
+        {
+            player.WeaponStepCounter++;
+            return;
+        }
+
+        SpawnWeaponProjectile(player, pointer);
+        player.WeaponRecordPointer = 0;
+    }
+
+    /// <summary>E20.b B4 stub of the spawn call <c>0x80039F58</c> of <c>UpdateWeaponStepProgression</c> (<c>0x8002F818</c>): the projectile of a bow or a wand, at the hero's X and Y, at his Z plus the
+    /// height <c>ptr[3]</c> of the record. Ported in E20.e0 (the apparition of an entity by sprite index) and E20.f (the weapons); counted only for the tests.</summary>
+    private static void SpawnWeaponProjectile(AlundraEntityScriptProxy player, uint recordPointer)
+    {
+        WeaponSpawnCallCountForTests++;
     }
 
     /// <summary>E20.a A4 stub of <c>UpdatePlayerCarriedEntity</c> (<c>0x8002F884</c>, called with 0 at <c>0x80031D78</c>): nothing is carried yet (E20.g).</summary>
@@ -475,12 +597,12 @@ public static class AlundraPlayerManager
     /// when the hero has a controller, <see cref="AlundraEntityScriptProxy.HeroAirborne"/> for a bare proxy of a test): 0x2C with a direction held, else 0x2D.
     /// On the ground: the edge of the Cross (<c>ButtonsJustPressed</c>) takes off - the walking jump (2) with a direction held, else the standing one (0x2B) -
     /// unless the cells forbid it (<c>VramOR &amp; 0x4000</c>: the case ends, nothing changes, not even the Moving); otherwise
-    /// Moving or Idle. <c>TryUseItem</c>, <c>PlayerTryAction</c>, <c>PlayerTryAttack</c> and the run of the Triangle stay no-ops of the port. The
+    /// Moving or Idle. <c>TryUseItem</c> and <c>PlayerTryAction</c> are the stubs of E20.a (the use of an item and lifting are not ported yet) and the run of the Triangle is E20.d. The
     /// <c>LoadingMap</c> case reads the same predicate (E19.v, <see cref="IsHeroInTheAir"/>).
     /// </summary>
     private static void ApplyGroundOrAirTail(AlundraEntityScriptProxy player, in AlundraPadState pad, uint buttonsHold)
     {
-        // E20.a A4, binary 0x80031EA8: PlayerTryAttack first (non-zero ends the tick, so the Square wins over the Cross); the stub never attacks.
+        // E20.a A4, binary 0x80031EA8: PlayerTryAttack first (non-zero ends the tick, so the Square wins over the Cross); <see cref="PlayerTryAttack"/> starts the swing of the equipped weapon (E20.b).
         if (PlayerTryAttack(player, in pad) != 0)
         {
             return;
