@@ -458,7 +458,8 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | **E20.0** (§1.2) | Découverte complémentaire, sans toucher au code : oracles d'émulation de `MovePlayer` et de la passe de coups, dégâts au contact des ennemis, puissance de l'équipement, `0x8003634C`, preuve des boîtes exportées (D-E20-6), inventaire du passage par tick (D-E20-2), règle du stick (D-E20-8) | recalcul indépendant, contre-vérification du binaire, critique | — |
 | E20.a (§1.3) | Le tick de la DLL suit le binaire, dont E20.a est propriétaire : le monde pilote la boucle des ticks (D-E20-12) ; à chaque tick, le pad, les passes de la boîte, les événements de carte, puis le bloc des entités, l'inversion étant corrigée après la mesure A0 (D-E20-11) ; `MovePlayer` à chaque tick sur `AlundraTickPad` (D-E20-2) ; passe des compteurs (`+0x1C`, effacements, décomptes, `RidingEntity` gardé, D-E20-13) ; point d'accroche de la passe de coups (vide jusqu'à E20.c1) ; les trois appels dans l'ordre du binaire, les appels du prologue, `UpdateItemEffectState` et `0x8003634C` en bouchons (D-E20-14) ; O-E19-80 ; retrait des contournements du rythme par image | tests de structure (0, 1 et 2 ticks par image, coup écrit au tick N lu au tick N+1 puis effacé, rendu de l'image à jour, entités apparues en cours d'image) ; oracle D1 ; épingles justifiées ; traces re-mesurées ; sonde du vrai jeu | Marche, saut, échelle, dialogues, inventaire, livre : rien ne change, sauf le décalage d'un tick entre les entités et les événements de carte (D-E20-11) |
 | E20.b | Coup d'épée sans dégâts : table des armes en entier, `PlayerTryAttack` (relâchement d'abord, puis appui), garde `0x2000`, son 3, attaques au sol et en l'air, états d'attaque, priorités (Carré sur Croix, interaction d'abord) | oracle de `MovePlayer` ; arcs au vrai préfab | Carré frappe au sol et en l'air, avec le son ; le héros freine |
-| E20.c1 | Passe de coups et dégâts aux cibles (D-E20-3) : fiches d'équilibre (seuil `D`), PV des entités, `CurrentAttack`, boîtes par image (D-E20-6), `HitBox`, `UpdateBalanceRecords` au point d'accroche d'E20.a, avec effets 4, 5 et 9, animation figée, dégâts avec l'équipement, `0x86`, `0x87`, `0x95`, réactions scriptées (leviers) | oracle de `0x80039300` et `0x8004464C` sur des ensembles tirés au hasard ; un test où un coup écrit au tick N est lu par les événements du tick N+1 puis effacé par la passe des compteurs, avec deux ticks dans une image ; le premier attaquant l'emporte ; arcs des leviers posés directement | Un coup sur un Beannoïde de la 14 : étincelles (sa réaction vient d'E14) ; au contact d'un ennemi de la 14 ou de la 15, étincelles sans perte de PV (§0.2.10) |
+| E20.c1a (§1.5) | La passe de coups : fiches d'équilibre (seuil `D`), PV des entités, `CurrentAttack` et boîte de l'image au tick (D-E20-6, règle de D6), `HitBox`, liste des cibles, `UpdateBalanceRecords` au point d'accroche d'E20.a (immunité, premier attaquant, plusieurs cibles), étincelles (effet 9) ; les effets 4 et 5 vont à E20.f | oracle de la passe avec le héros et un vrai Beannoïde (`e20-c1/oracle/`) ; les six cas de D2 ; un arc au vrai préfab sur la 14 | Un coup sur un Beannoïde de la 14 : étincelles ; au contact d'un ennemi, étincelles toutes les 25 ticks, sans perte de PV |
+| E20.c1b | Les conséquences : `ComputeNewHp` et `ResolveBalanceTarget` (fonctions pures, oracle D2), les trois fiches d'équipement (la partie d'`UpdateItemEffectState` dont dépendent les dégâts), `0x86`, `0x87`, `0x95`, `0x71`, les réactions scriptées (leviers de la 115, de la 116, bascule de la 117, leviers de la 44) | oracle D2 ; arcs des leviers posés directement | Les leviers réagissent au coup d'épée (quand on peut les atteindre : après le hall de la 115) |
 | *E14.a* (autre étape) | Muruta et Beannoïde (D-E20-4), planifiée après E20.c1 | plan d'E14 | Le hall de la 115 |
 | E20.c2 | Le héros touché : entrée `0x80031A68` (toucheur et cases dangereuses), `0x31`/`0x3A`, invulnérabilité `0x78` et clignotement, PV vers `PlayerStats` et le HUD, `UpdateItemEffectState` (table de défense, bottes, régénération) et le pilote `0x8003634C` en vrai (D-E20-14), chemin `controlFlags == 0x20`, pas de mort (D-E20-5) | oracle de `0x80031A68` ; arcs | Les cœurs baissent au contact, le héros clignote, il ne meurt pas |
 | E20.d | Course : les cinq états, entrée et sorties, cône, reprise, rebond, charge `0x04` (ses coups viennent d'E20.c1), escalade prioritaire, arrondi du stick (D-E20-8) ; le test épinglé « Triangle seul donne Idle » s'inverse | oracle de `MovePlayer` ; arcs | Courir, s'arrêter, reprendre, foncer, buter contre un mur, sauter d'un rebord ; sur l'eau profonde, le héros marche encore (la nage est E20.i) |
@@ -469,9 +470,10 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | E20.h | Objets du Rond (`TryUseItem`) : graines, bombes (gestionnaire E12), magie, potions ; le couvercle de la 362 | oracle ; arcs | La 362 |
 | E20.i | Nage (D-E20-16) : branche de pente 4 (`0x8003260C`), états `0x0F`, `0x1D`, `0x28`, `0x3A` et `0x3B`, plongée au front de bouton | oracle ; arcs | Nager et plonger en eau profonde (la 416 en a) |
 
-- **Ordre** : E20.0 → E20.a → E20.b → E20.c1 → E20.c2 → E20.d → E20.e0 → E20.e → E20.f → E20.g → E20.h → E20.i.
-  E14.a se planifie dès qu'E20.c1 est faite. Le hall de la 115 devient jouable avec E20.a, E20.b,
-  E20.c1 et E14.a.
+- **Ordre** : E20.0 → E20.a → E20.b → E20.c1a → E20.c1b → E20.c2 → E20.d → E20.e0 → E20.e → E20.f → E20.g → E20.h → E20.i.
+  E14.a se planifie dès qu'E20.c1b est faite (ses gestionnaires appellent `ComputeNewHp`). Le hall de la 115 devient jouable avec
+  E20.a, E20.b, E20.c1a, E20.c1b et E14.a. Découpage d'E20.c1 en c1a et c1b décidé le 2026-10-09 sur la proposition de la
+  contre-vérification de la découverte (`docs/plan-e20-annexe/e20-c1/check.md`).
 - **Dépendances** : tout dépend d'E20.a (le rythme par tick, le relâchement, et la structure du tick, dont
   E20.a est propriétaire ; E20.c1 branche la passe de coups à la place qu'E20.a a créée). E20.c1 dépend
   d'E20.0 (D6) pour les boîtes. La charge `0x04` d'E20.d ne touche rien sans E20.c1. E20.e a besoin des
@@ -962,6 +964,121 @@ apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.b.
 
+### 1.5 E20.c1a — La passe de coups ⏳
+
+**Révision 1 (2026-10-09).** Relecture : **REVISE**, quatre points, tous corrigés : les cas de D2 qui demandent `ComputeNewHp`
+passent à E20.c1b ; la source de l'animation figée du héros est nommée et comparée ; les fenêtres de comparaison de `H3` et de
+`H1-both` sont bornées, avec ce que c1a attend après ; des rejeux à deux ticks par image et un test de l'octet `0x40` au tick même du
+contact sont ajoutés.
+
+**Révision 2 (2026-10-09).** Seconde relecture : **REVISE**, un point, tranché **FIX** : l'animation figée du héros n'est plus comparée à
+l'oracle au tick 18 de `H3` ni au tick 2 de `H1-both`, où le héros de l'oracle est déjà blessé (E20.c2) ; c1a y attend son propre
+`TargetAnimationId`. C'est le second REVISE de la tranche : une seule relecture de clôture suit.
+Relecture de clôture : **READY** (2026-10-09). Exécution lancée sans soumission à l'auteur, à sa demande.
+
+**But.** Chaque tick, après la physique, la DLL fait la passe de coups du binaire (`UpdateBalanceRecords`, `0x80039300`) : les boîtes
+d'attaque de l'image courante contre les corps des cibles, avec les mêmes règles et le même résultat que l'oracle. Un coup pose
+`TouchingEntity`, le délai de 25 ticks (`+0x1D0`), le compteur de coups de l'attaquant, et fait trois étincelles. Les dégâts eux-mêmes
+viennent avec E20.c1b ; aucune barre de vie ne bouge dans cette tranche.
+
+**Faits porteurs** (découverte du 2026-10-09, `docs/plan-e20-annexe/e20-c1/`, contre-vérifiée ; §0.2.5, §0.2.10) :
+- [binaire] La liste de la passe est celle de `0x800384F4`, refaite après les programmes et les compteurs : statut 2 ou 3, `+0x20 == 0`,
+  ordre des cases, le héros d'abord. Entre la physique et la passe de coups tourne `0x80038E84` (les effets attachés aux entités).
+- [binaire] En tête de la passe, même avec une liste vide, l'animation du héros est figée dans `0x80146DF8` : c'est `+0x88` du héros
+  (`TargetAnimationId`, `0x80039314` puis `0x80039348`), tel qu'il est à ce moment du tick, donc après l'horloge d'animation (qui peut
+  l'avoir changé par une fin enchaînée, `0x80038D60`) ; ce n'est pas l'animation courante.
+- [binaire] À chaque changement d'animation (`0x80038B18-0x80038BAC`, y compris la fin enchaînée `0x80038D54` et la relance par
+  changement de direction `0x80038B08`), `+0xB4` reçoit l'octet `0xD` de la fiche d'animation et `CurrentAttack` (`+0x1C8`) est rechargé :
+  `Attacks[animation cible + 1]`, sinon `Attacks[0]`, sinon rien. La boîte de l'image (`+0x1D4`) suit l'image courante : décalages signés
+  `<< 16`, tailles `(n << 16) − 1` (0 pour une cible de taille nulle), index `0xFFFF` : pas de boîte. `HitBox` = position + décalage.
+- [binaire] À la création (`0x80039E30-0x80039E4C`) : `+0x1C4` = la fiche d'équilibre (sprite, remappage `0x1F`-`0x7F` vers `0x1E`, chaîne
+  par niveau jusqu'au seuil de la carte, `0x80044550`), `+0x14` = `+0x18` = MaxHp ; l'animation et la boîte existent dès ce tick.
+- [données] Le seuil est la propriété `D` de la carte exportée (texte) ; `Data/balance.json` porte les 512 chaînes, lues par personne
+  aujourd'hui.
+- [oracle] Épée de base sur un Beannoïde de la 14 (fiche 335, MaxHp 9) : contact au tick 5 du coup (au tick 1 si la cible est assez
+  proche) ; 3 étincelles au centre du recouvrement ; au tick 6, le Beannoïde choisit D, puis la passe des compteurs efface ; un second
+  contact dans le même coup est bloqué par `+0x1D0` ; portée de dx −9 à 59 px de face ; deux cibles dans la portée : toutes deux
+  touchées ; un Beannoïde en animation à octet `0x40` n'est jamais touché ; le héros qui marche dans un Beannoïde est touché au contact
+  (tick 17 de `H3`).
+- [DLL] Aucun de ces champs n'est écrit aujourd'hui ; `CurrentAttack`, `BalanceRecord` et `FrameCollision` sont commentés ;
+  `ModdedPos` n'est écrit qu'à la création ; `AnimFlags` et l'animation courante ne changent qu'en fin d'image (`SyncAnimation`,
+  D-E19-13) ; `TouchingEntity` est une `Entity` du moteur ; les tailles s'appellent `Width/Height/Depth` pour une cible (Y, puis Z) et
+  `CollisionWidth/CollisionDepth/CollisionHeight` pour un attaquant.
+
+**Périmètre.** DLL `Alundra/Scripts/` : une table des fiches d'équilibre (chargée une fois, comme `AlundraItemTables`, avec un accès
+par l'hôte), l'initialisation des entités et du héros, les champs `+0x1C4`, `+0x1C8`, `+0x1D4` et la boîte de l'image, le
+rechargement à chaque changement d'animation, la liste de la passe, `UpdateBalanceRecords`, les étincelles ; tests ; ce plan.
+
+**Hors périmètre.** `ComputeNewHp`, `ResolveBalanceTarget`, fiches d'équipement, `0x86`, `0x87`, `0x95`, `0x71`, leviers (E20.c1b) ;
+l'entrée des dégâts du héros (E20.c2) ; les effets 4 et 5 attachés à la cible (E20.f : ils demandent une ancre d'effet et une clé de
+profondeur que la DLL n'a pas ; l'épée ne les déclenche jamais) ; la passe `0x80038E84` elle-même (E20.e) ; l'avance du générateur
+pseudo-aléatoire une fois par image (E20.e0) ; la réutilisation des cases libres (O-E20-13).
+
+#### Tâches
+
+- ⏳ **C1 — Fiches d'équilibre.** Charger `Data/balance.json` une fois (table mise en cache, accès par `IAlundraScriptHost`, comme les
+  tables d'objets) ; choisir la fiche comme `0x80044550` avec le seuil `D` de la carte ; à la création de chaque entité, poser la fiche,
+  `Hp` et `HpMax` ; le héros prend la fiche 0. Le cas où la DLL ne trouve pas l'en-tête du sprite est documenté.
+- ⏳ **C2 — Attaque courante et boîte de l'image au tick.** À chaque changement d'animation que l'horloge voit (`StepAnimationClock`,
+  fin enchaînée, changement de direction, animation de départ), recharger `CurrentAttack` et l'octet d'animation (`+0xB4`) pour la passe
+  de coups ; tenir, par entité, le curseur (animation, tick logique) qui donne la boîte de l'image courante d'après les
+  `collision_keyframes` (règle de D6), y compris au tick du changement et dans les ticks d'une image de rattrapage. Ce qui change en fin
+  d'image (`SyncAnimation`, D-E19-13) ne change pas.
+- ⏳ **C3 — La liste et la passe.** Construire la liste au pas « listes » du bloc des entités (statut 2 ou 3, `BlockedByEntity` nul, le
+  héros d'abord, ordre de `_spawnedEntities`) ; ajouter, entre la physique et le point d'accroche, une place vide pour `0x80038E84` ;
+  porter `UpdateBalanceRecords` au point d'accroche : figer l'animation du héros (`0x80146DF8`) même avec une liste vide, en copiant
+  le `TargetAnimationId` du héros tel qu'il est au point d'accroche, après l'horloge d'animation du tick (jamais `CurrentAnimationId`,
+  qui ne change qu'en fin d'image) ; masque de
+  classes réordonné ; cibles sautées ; recouvrement élargi d'une unité, `HitBox` de l'attaquant contre `Pos + Mod` de la cible ;
+  réponse de la cible (`(r & 0xC0) == 0x80` : pas de `TouchingEntity`) ; `+0x1D0 = 0x19` ; compteur de l'attaquant ; plusieurs cibles,
+  premier attaquant.
+- ⏳ **C4 — Étincelles.** Trois effets 9 au centre du recouvrement, par la réserve d'effets et l'étage d'effets du tick, avec les trois
+  tirages du générateur pour chacun quand l'effet a pu être créé (même formule que le vase de vie, les trois axes à `0x20001`).
+- ⏳ **C5 — Tests.**
+  - Contre l'oracle `docs/plan-e20-annexe/e20-c1/oracle/out/` (`python -B docs/plan-e20-annexe/e20-c1/oracle/tools/run_c1.py`), tick par
+    tick, sur les champs de la passe : contact, `TouchingEntity`, `+0x1D0`, compteurs de coups, animation figée du héros
+    (`0x80146DF8`, colonne du journal de l'oracle ; au tick 1 de `H1-near`, 16, soit `0x10`), programme choisi au tick suivant, nombre,
+    effet et centre des étincelles.
+    - Traces comparées en entier : `H1`, `H1-near`, `H1-edge`, `H2`, `H4a`, `H4b`, `H5`, `H6`, `H7`, `H8`, et les bords de la portée de
+      `reach-sweep.txt`.
+    - `H3` : ticks 0 à 18, champs de la passe seulement, effacement et choix du programme du tick 18 compris ; l'animation figée du
+      héros n'est comparée que jusqu'au tick 17 : au tick 18, le héros de l'oracle est déjà dans l'état blessé (`0x31`, entrée
+      `0x80031A68` dans `MovePlayer`), qui est E20.c2, et c1a y attend son propre `TargetAnimationId`, 1 (la marche). Au-delà du tick
+      18, le héros de l'oracle est blessé (`+0x1CC = 0x78`, recul) : ces ticks sont exclus. Ce que c1a attend ensuite, vérifié par un
+      test à part : tant que le contact dure, un nouveau coup sur le héros tous les 25 ticks, `+0x1CC` restant à 0.
+    - `H1-both` : ticks 0 à 2, même règle ; l'animation figée du héros n'est comparée que jusqu'au tick 1, et c1a attend 16 (`0x10`,
+      le coup) au tick 2 ; au-delà du tick 2, exclu, avec la même attente pour c1a.
+    - Les vitesses des étincelles, tirées du générateur, sont exclues tant que son avance par image n'est pas portée (E20.e0).
+  - Les cas de validation de D2 (`docs/plan-e20-annexe/d2-oracle-coups/`) qui relèvent de la passe, refaits sur la passe de la DLL : 1
+    (masque réordonné), 2 (recouvrement en unités brutes), 5 (premier attaquant), 6 (plusieurs cibles), et la partie de 3 sur
+    `TouchingEntity`, `+0x1D0` et le compteur de coups. Le cas 4 (dégât minimal) et la partie de 3 sur les PV vont à E20.c1b.
+  - **Images de rattrapage** : `H1` et `H1-near` rejoués avec deux ticks par image, dans deux calages (le tick de l'appui en premier tick
+    d'image ; puis, après une image d'un tick, le tick du contact et la fin du coup en second tick d'image) : mêmes ticks de contact,
+    mêmes boîtes, mêmes étincelles que l'oracle, tick par tick.
+  - **Octet `0x40` au tick du contact** : une cible qui passe dans une animation à octet `0x40` au tick même où son corps recouvre pour
+    la première fois la boîte d'un attaquant n'est pas touchée ; dans le sens inverse, une cible qui quitte une telle animation ce
+    tick-là est touchée. Attente tirée de l'ordre du binaire : `+0xB4` est posé par l'horloge (`0x80038B68`) avant le test de la passe
+    (`0x80039444`).
+  - La chaîne du coup avec la vraie passe : écrit au tick N, lu par le choix des programmes au tick N+1, effacé par les compteurs, dans
+    une image de deux ticks.
+  - Un arc au vrai préfab sur la carte 14 : le héros frappe un Beannoïde réel ; étincelles, `TouchingEntity`, D choisi au tick suivant
+    (le D natif du Beannoïde reste sans effet jusqu'à E14).
+
+#### Acceptation
+
+- Build Release puis Debug ; `Alundra.Tests` sans échec ; aucun changement du moteur ; traces du héros et de l'intro inchangées.
+- C5 égale l'oracle sur chaque trace nommée, champ par champ, avec les exclusions écrites ci-dessus.
+- Verifier frais.
+- Recette en jeu de l'auteur, carte 14 : un coup d'épée sur un Beannoïde fait des étincelles et ne le blesse pas encore ; en marchant
+  dans un Beannoïde, des étincelles sur le héros toutes les 25 ticks, sans perte de cœurs.
+
+#### Arrêts, budget, retour arrière
+
+- **Arrêts** : un écart à l'oracle que le binaire n'explique pas ; un test existant qui change sans raison du binaire ; un besoin de
+  toucher au moteur ; un changement de l'ordre de fin d'image (D-E19-13) qui ne serait pas propre à la passe.
+- **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
+- **Retour arrière** : `git revert` des commits d'E20.c1a.
+
 ---
 
 ## 2. Points ouverts
@@ -978,6 +1095,7 @@ apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant
 | O-E20-8 | **Tranché le 2026-10-09 (D-E20-12).** Structure du tick : boucle de ticks pilotée par le monde dans la DLL (proposition de D7), ou pas fixe de 1/50 s du moteur (migration M3, différée par l'auteur le 2026-08-26) | — |
 | O-E20-9 | **Tranché le 2026-10-09 (D-E20-13).** La passe des compteurs efface `RidingEntity` (`+0x12C`) ; la DLL ne recalcule le porteur qu'une fois par image : ne pas l'effacer, écart documenté, jusqu'à un recalcul par tick | — |
 | O-E20-12 | Le contact au sol du héros est lu une fois par image, en tête d'image (E19.d2c1 R6) : la perte du sol au bord d'un rebord et un sol qui s'abaisse en cours d'image arrivent un tick après le binaire (`AT8`, `AT8n`, `AT8b` d'E20.b). L'aligner demanderait de relire le contact à chaque tick | à placer (E20.d, où la course quitte souvent un rebord, ou une tranche à part) |
+| O-E20-13 | La DLL ajoute les entités neuves en fin de liste, alors que le binaire réutilise la première case libre (`FindFreeEntitySlot`) : après un recyclage en cours de carte, l'ordre de la passe de coups (« premier attaquant ») peut différer | à mesurer avec E20.e0 (apparitions) ou E14 |
 | O-E20-11 | Une entité neuve tourne-t-elle dans le même tick dans le binaire (répétition de `0x800386D0`, contrôle de D7 : non vérifié) ? E20.a garde la règle d'aujourd'hui (premier tick à l'image suivante) | à mesurer, avec E20.e0 |
 | O-E20-10 | **Tranché le 2026-10-09 (D-E20-14).** `UpdateItemEffectState` (table de défense, bottes, régénération, PV) et `0x8003634C` : bouchons dans E20.a et portage dans E20.c2, ou portage dès E20.a | — |
 

@@ -1,0 +1,30 @@
+# one-word patches of the emulated binary (RAM only) with the expected change written beforehand in tools/checks.py; CAUGHT = the expected change happened
+CAUGHT class mask: HitsClassA bit dropped (0x800393A0 andi 1 -> 0) [H1]
+         expected: the hero's swing no longer reaches the ClassA Beannoid: no hit on the target at any tick
+CAUGHT class mask: HitsClassB bit dropped (0x800393A8 andi 8 -> 0) [H3]
+         expected: the Beannoid no longer reaches the hero: no hit on the hero, hero HP stays 10 for all 45 ticks
+CAUGHT target +0x1D0 guard removed (0x80039424 bnez -> nop) [H4a]
+         expected: the target is hit on every overlapping tick: ticks 6..11 of swing 1 (blocked in the baseline) and tick 27 of swing 2 (baseline: first hit of swing 2 at 30)
+CAUGHT AnimFlags 0x40 skip removed (0x80039448 bnez -> nop) [H4b]
+         expected: the target in animation 6 (flag 0x40) is hit at tick 5 like the H1 target (baseline H4b: no hit in 40 ticks)
+CAUGHT hit window value 0x19 -> 0x10 (0x8003966C) [H1]
+         expected: +0x1D0 is 16 on the hit tick (baseline 25), so it decrements to 0 nine ticks earlier
+CAUGHT spark loop count 3 -> 2 (0x800391A8) [H1]
+         expected: 2 effect-9 calls on the hit tick (baseline 3)
+CAUGHT equipment power term dropped (0x8004473C addu t0,t0,v0 -> nop) [H1]
+         expected: ComputeNewHp with the filled equipment records deals 1 (baseline 2): the equipment power no longer counts
+CAUGHT counters pass skipped [H1]
+         expected: HitCounter of the hero and TouchingEntity of the target are NOT cleared at tick 6 and +0x1D0 never decrements
+CAUGHT hit pass skipped [H1]
+         expected: no hit at any tick, HitCounter stays 0
+CAUGHT hero swing box one pixel wider (data byte of the frame-2 box, +1 width)
+         expected: the box of frame 2 (ticks 5-6) is 1 px wider: the baseline run at the reach limit still hits, and the run at reach + 1 (H2 position) now hits
+         got: baseline H1-edge hits [5], mutated H1-edge hits [5]; baseline H2 hits [], mutated H2 hits [5]
+CAUGHT immunity test removed (0x800395EC beq on (response & 0xC0) == 0x80 -> nop) [H6]
+         expected: the 0x80 response no longer skips the TouchingEntity store: the target's TouchingEntity is the hero (slot 0) at the hit tick (baseline: none), +0x1D0 and the hero HitCounter as before
+CAUGHT target +0x1D0 guard removed (0x80039424 bnez -> nop) [H7]
+         expected: the second attacker (slot 2) is no longer blocked by the hero's hit on the same tick: on tick 1 its HitCounter is 1 (baseline 0) and the target's TouchingEntity is slot 2 (baseline slot 0)
+OK     CONTROL: other random seed [H1]
+         expected: nothing but the RNG word changes (the spark arguments do not depend on the random draws)
+OK     CONTROL: effects pass 0x80038E84 skipped (it is a stub) [H1]
+         expected: rows unchanged (the stub only journals)

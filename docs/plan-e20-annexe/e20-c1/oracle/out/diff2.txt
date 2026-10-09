@@ -1,0 +1,13 @@
+# every scenario run on emu.py (the oracle) and on mips.py (a separate interpreter, via interp2.py), tick by tick
+H1        40 ticks: rows equal, slots (hero + 1 targets, 660 bytes each, every tick) equal, journal equal, ComputeNewHp experiments (1) equal, RNG word equal -> OK
+H1-near   40 ticks: rows equal, slots (hero + 1 targets, 660 bytes each, every tick) equal, journal equal, ComputeNewHp experiments (1) equal, RNG word equal -> OK
+H1-both   40 ticks: rows equal, slots (hero + 1 targets, 660 bytes each, every tick) equal, journal equal, ComputeNewHp experiments (1) equal, RNG word equal -> OK
+H1-edge   40 ticks: rows equal, slots (hero + 1 targets, 660 bytes each, every tick) equal, journal equal, ComputeNewHp experiments (1) equal, RNG word equal -> OK
+H2        40 ticks: rows equal, slots (hero + 1 targets, 660 bytes each, every tick) equal, journal equal, ComputeNewHp experiments (0) equal, RNG word equal -> OK
+H3        45 ticks: rows equal, slots (hero + 1 targets, 660 bytes each, every tick) equal, journal equal, ComputeNewHp experiments (0) equal, RNG word equal -> OK
+H4a       60 ticks: rows equal, slots (hero + 1 targets, 660 bytes each, every tick) equal, journal equal, ComputeNewHp experiments (2) equal, RNG word equal -> OK
+H4b       40 ticks: rows equal, slots (hero + 1 targets, 660 bytes each, every tick) equal, journal equal, ComputeNewHp experiments (0) equal, RNG word equal -> OK
+H5        40 ticks: rows equal, slots (hero + 2 targets, 660 bytes each, every tick) equal, journal equal, ComputeNewHp experiments (2) equal, RNG word equal -> OK
+H6        40 ticks: rows equal, slots (hero + 1 targets, 660 bytes each, every tick) equal, journal equal, ComputeNewHp experiments (0) equal, RNG word equal -> OK
+H7        40 ticks: rows equal, slots (hero + 2 targets, 660 bytes each, every tick) equal, journal equal, ComputeNewHp experiments (3) equal, RNG word equal -> OK
+H8        40 ticks: rows equal, slots (hero + 1 targets, 660 bytes each, every tick) equal, journal equal, ComputeNewHp experiments (1) equal, RNG word equal -> OK

@@ -1,0 +1,142 @@
+# E20.c1 reach of the basic-sword ground swing (anim 0x10, direction east) against a Beannoid, measured with the real code.
+# dx = target x - hero x (px); dy = hero y - target y (px); both integer px; the hero does not move during the swing; Square at tick 1; 22 ticks per run.
+# contact = the real hit pass wrote +0x1D0 = 0x19 on the target at that tick.  Model = scen.hit_model (independent rule of plan 0.2.5) on the same rows: 0 mismatches over 364 runs.
+
+## X sweep at dy = 0
+reach: contact for dx in [-9, 59] (every dx in between has a contact: yes); no contact for dx < -9 and dx > 59 within the swept range [-40, 80]
+the Beannoid body box touches the hero (hit written on the hero) for dx in [-18, 20] at dy = 0 (every dx in between: yes); the hero then goes to the hurt state, which ends his swing
+dx	contact ticks on the target	tick at which the target touches the hero
+-40	-	-
+-39	-	-
+-38	-	-
+-37	-	-
+-36	-	-
+-35	-	-
+-34	-	-
+-33	-	-
+-32	-	-
+-31	-	-
+-30	-	-
+-29	-	-
+-28	-	-
+-27	-	-
+-26	-	-
+-25	-	-
+-24	-	-
+-23	-	-
+-22	-	-
+-21	-	-
+-20	-	-
+-19	-	-
+-18	-	1
+-17	-	1
+-16	-	1
+-15	-	1
+-14	-	1
+-13	-	1
+-12	-	1
+-11	-	1
+-10	-	1
+-9	1	1
+-8	1	1
+-7	1	1
+-6	1	1
+-5	1	1
+-4	1	1
+-3	1	1
+-2	1	1
+-1	1	1
+0	1	1
+1	1	1
+2	1	1
+3	1	1
+4	1	1
+5	1	1
+6	1	1
+7	1	1
+8	1	1
+9	1	1
+10	1	1
+11	1	1
+12	1	1
+13	1	1
+14	1	1
+15	1	1
+16	1	1
+17	1	1
+18	1	1
+19	1	1
+20	1	1
+21	1	-
+22	1	-
+23	1	-
+24	1	-
+25	1	-
+26	1	-
+27	1	-
+28	1	-
+29	1	-
+30	1	-
+31	1	-
+32	1	-
+33	1	-
+34	1	-
+35	1	-
+36	1	-
+37	1	-
+38	1	-
+39	5	-
+40	5	-
+41	5	-
+42	5	-
+43	5	-
+44	5	-
+45	5	-
+46	5	-
+47	5	-
+48	5	-
+49	5	-
+50	5	-
+51	5	-
+52	5	-
+53	5	-
+54	5	-
+55	5	-
+56	5	-
+57	5	-
+58	5	-
+59	5	-
+60	-	-
+61	-	-
+62	-	-
+63	-	-
+64	-	-
+65	-	-
+66	-	-
+67	-	-
+68	-	-
+69	-	-
+70	-	-
+71	-	-
+72	-	-
+73	-	-
+74	-	-
+75	-	-
+76	-	-
+77	-	-
+78	-	-
+79	-	-
+80	-	-
+
+## first contact tick by dx (runs of equal value)
+dx -40..-10: first contact tick -
+dx -9..38: first contact tick 1
+dx 39..59: first contact tick 5
+dx 60..80: first contact tick -
+
+## Y window at fixed dx (dy = hero y - target y)
+dx 20: contact for dy in [-21, 24]; first contact tick by dy: -21:1, -20:1, -19:1, -18:1, -17:1, -16:1, -15:1, -14:1, -13:1, -12:1, -11:1, -10:1, -9:1, -8:1, -7:1, -6:1, -5:1, -4:1, -3:1, -2:1, -1:1, 0:1, 1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 13:5, 14:5, 15:7, 16:7, 17:7, 18:7, 19:7, 20:7, 21:7, 22:7, 23:12, 24:12
+dx 40: contact for dy in [-13, 22]; first contact tick by dy: -13:5, -12:5, -11:5, -10:5, -9:5, -8:5, -7:5, -6:5, -5:5, -4:5, -3:5, -2:5, -1:5, 0:5, 1:5, 2:5, 3:5, 4:5, 5:5, 6:5, 7:5, 8:5, 9:5, 10:5, 11:5, 12:5, 13:5, 14:5, 15:7, 16:7, 17:7, 18:7, 19:7, 20:7, 21:7, 22:7
+dx 55: contact for dy in [-13, 14]; first contact tick by dy: -13:5, -12:5, -11:5, -10:5, -9:5, -8:5, -7:5, -6:5, -5:5, -4:5, -3:5, -2:5, -1:5, 0:5, 1:5, 2:5, 3:5, 4:5, 5:5, 6:5, 7:5, 8:5, 9:5, 10:5, 11:5, 12:5, 13:5, 14:5
+
+## model mismatches (kind, dx, dy, real ticks, model ticks): none
