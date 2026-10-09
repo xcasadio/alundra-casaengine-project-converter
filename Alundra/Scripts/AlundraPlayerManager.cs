@@ -212,19 +212,21 @@ public static class AlundraPlayerManager
             return;
         }
 
-        // PlayerManager.cs:38-57 (locked branch): CreatePlayerAnimationEffects(1), UpdatePlayerCarriedEntity(1),
+        // PlayerManager.cs:38-57 (locked branch): CreatePlayerAnimationEffects(1) (E20.f2: the skeleton, binary 0x80031BDC; its stubs do nothing yet), UpdatePlayerCarriedEntity(1),
         // AnimateWarpEffect, and the ForcedSequence facing resolution are ALL no-ops on a fresh New Game -
-        // nothing ported yet drives carried entities, warp effects, or forced-sequence facing - so this
-        // whole branch is a deliberate no-op: the player simply does not move or change animation while
+        // nothing ported yet drives carried entities, warp effects, or forced-sequence facing - so the rest of
+        // this branch is a deliberate no-op: the player simply does not move or change animation while
         // g_playerControlFlags carries any of ControlLocked/MessageBox/ForcedSequence.
         if (!DebugIgnoreControlLock && (state.PlayerControlFlags & AlundraGameState.PlayerControlBits.InputBlockedMask) != 0)
         {
+            AlundraPlayerAnimationEffects.Create(player, AlundraPlayerAnimationEffects.LockedMode);
             return;
         }
 
-        // PlayerManager.cs:59-60 (free branch header). CreatePlayerAnimationEffects(0) - not ported (no
-        // effect system yet).
+        // PlayerManager.cs:59-60 (free branch header), binary 0x80031C38. E20.f2: CreatePlayerAnimationEffects(0) comes right after the gravity flag (0x80031C3C) and before the entry of the damage
+        // (0x80031C44, E20.c2) and the second call of the item driver (0x80031CC4): the flail bounce is real, the steps, the landing, the grass cut and the low-life alarm are named stubs.
         player.Flags |= EntityFlags.Gravity;
+        AlundraPlayerAnimationEffects.Create(player, AlundraPlayerAnimationEffects.FreeMode);
 
         // E20.a A4 (D-E20-14): the second call of the item driver, once per normal tick before the pad is read (binary 0x80031CC4). Stub until E20.c2.
         UpdateItemUseDriver(player);

@@ -397,6 +397,9 @@ public partial class AlundraEntityScriptProxy : GameplayProxy
 
     /// <summary>E20.b B2: the tick counter that goes with <see cref="WeaponRecordPointer"/>, the binary's <c>0x80127114</c> (reset by the press, counted up to the delay of the record). Hero only.</summary>
     internal int WeaponStepCounter;
+
+    /// <summary>E20.f2: the landing latch of <c>CreatePlayerAnimationEffects</c>, the binary's <c>0x800A8F30</c>: set when the landing part ran, cleared by every state that is not a landing state; the locked mode (1) does not land again while it is set. Hero only.</summary>
+    internal int LandingLatch;
     public uint CombinedVramFlagsAND;
     public int TileAttributes; //188
     public int Slope_18c; //18c

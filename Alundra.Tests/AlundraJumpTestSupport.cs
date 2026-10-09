@@ -364,6 +364,9 @@ internal static class HeroAttackClock
         new(0x18, 0, 1, 0, 0, 46), new(0x19, 0, 1, 36, 0, 58),
         new(0x3F, 0, 1, 29, 0, 21), new(0x44, 0, 1, 29, 0, 21), new(0x49, 0, 1, 29, 0, 21), new(0x40, 0, 1, 35, 0, 34),
         new(0x41, 0, 15, 29, 0x2D, 10), new(0x46, 0, 15, 29, 0x2D, 10), new(0x4B, 0, 15, 29, 0x2D, 10), new(0x42, 0, 15, 35, 0x2D, 31),
+        // E20.f2: the four rebound states of the flails (sound 28, speed and acceleration 0; the ticks of the exported animations, the same in the four directions): 0x08 and 0x25 on the ground (16 ticks, then Idle),
+        // 0x1F and 0x26 in the air (11 ticks, then 0x2D).
+        new(0x08, 0, 0, 28, 0, 16), new(0x25, 0, 0, 28, 0, 16), new(0x1F, 0, 0, 28, 0x2D, 11), new(0x26, 0, 0, 28, 0x2D, 11),
     };
 
     private static Animation2d Make(int id, string direction, float seconds, AnimationType type)
