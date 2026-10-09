@@ -1,0 +1,12 @@
+basic sword            dx=40 first touch tick=5 attack(attr,power,anim)=(129, 1, 16) anims=[(1, '0x10'), (22, '0x0')] spawns=[] stats={'weapon_id': 1, 'item_id': 0}
+Steel Edge             dx=40 first touch tick=5 attack(attr,power,anim)=(129, 2, 63) anims=[(1, '0x3f'), (22, '0x0')] spawns=[] stats={'weapon_id': 1, 'item_id': 0}
+Demon Buster           dx=40 first touch tick=5 attack(attr,power,anim)=(129, 4, 68) anims=[(1, '0x44'), (22, '0x0')] spawns=[] stats={'weapon_id': 1, 'item_id': 0}
+Holy Sword             dx=40 first touch tick=5 attack(attr,power,anim)=(129, 8, 73) anims=[(1, '0x49'), (22, '0x0')] spawns=[] stats={'weapon_id': 1, 'item_id': 0}
+item 8                 dx=40 first touch tick=5 attack(attr,power,anim)=(129, 1, 16) anims=[(1, '0x10'), (22, '0x0')] spawns=[] stats={'weapon_id': 1, 'item_id': 0}
+Chain Throw (flail)    dx=40 first touch tick=11 attack(attr,power,anim)=(130, 3, 18) anims=[(1, '0x12'), (12, '0x8'), (28, '0x0')] spawns=[] stats={'weapon_id': 3, 'item_id': 0}
+Crusher                dx=40 first touch tick=12 attack(attr,power,anim)=(130, 6, 64) anims=[(1, '0x40'), (13, '0x25'), (29, '0x0')] spawns=[] stats={'weapon_id': 3, 'item_id': 0}
+Hunter's Bow           dx=40 first touch tick=None attack(attr,power,anim)=None anims=[(1, '0x13'), (24, '0x0')] spawns=[(10, [2148695344, 0, 3, 13893632, 6291456, 1048577, 24, 24])] stats={'weapon_id': 2, 'item_id': 0}
+William's Bow          dx=40 first touch tick=None attack(attr,power,anim)=None anims=[(1, '0x13'), (24, '0x0')] spawns=[(10, [2148695344, 0, 4, 13893632, 6291456, 1048577, 24, 24])] stats={'weapon_id': 2, 'item_id': 0}
+Ice Rod                dx=40 first touch tick=None attack(attr,power,anim)=None anims=[(1, '0x11'), (32, '0x0')] spawns=[(12, [2148695344, 0, 14, 13893632, 6291456, 2097153, 24, 24])] stats={'weapon_id': 4, 'item_id': 0}
+Fire Rod               dx=40 first touch tick=None attack(attr,power,anim)=None anims=[(1, '0x11'), (32, '0x0')] spawns=[(12, [2148695344, 0, 11, 13893632, 6291456, 2097153, 24, 24])] stats={'weapon_id': 5, 'item_id': 0}
+Magic staff            dx=40 first touch tick=None attack(attr,power,anim)=None anims=[(1, '0x0')] spawns=[] stats={'weapon_id': 6, 'item_id': 0}

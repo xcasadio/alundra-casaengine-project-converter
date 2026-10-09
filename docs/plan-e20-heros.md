@@ -1708,7 +1708,7 @@ effacements de la blessure, d'E7 et de la mort ; le rebond du fléau (E20.f2).
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
 - **Retour arrière** : `git revert` des commits d'E20.f1.
 
-### 1.10 E20.f2 — Rebond du fléau ⏳
+### 1.10 E20.f2 — Rebond du fléau 🚧
 
 **Révision 1 (2026-10-10).** Relecture : **REVISE**, deux points corrigés : les nombres de la 14 et de la 69 viennent d'un autre
 pilote de la découverte (`test-means/weapons_vs_target.py`, `weapons_vs_post.py` et leur oracle), désormais copié par T1, et leur
@@ -1763,10 +1763,10 @@ natifs D31/E15 sont à E14).
 
 #### Tâches
 
-- ⏳ **T1 — Oracle.** Copier dans `docs/plan-e20-annexe/e20-f2/oracle/` : `f-weapons/probe.py` et `f-weapons/tools/` (sondes `F-*`),
+- ✅ **T1 — Oracle.** Copier dans `docs/plan-e20-annexe/e20-f2/oracle/` : `f-weapons/probe.py` et `f-weapons/tools/` (sondes `F-*`),
   `test-means/weapons_vs_target.py`, `test-means/weapons_vs_post.py` et `test-means/oracle/` (dossiers de la découverte sous
   `scratchpad/disc-weapons/`) ; relancer et garder les sorties (`out/`) ; elles égalent celles de la découverte sur les colonnes
-  communes, et contiennent les lignes 11/12..27/28, 12/13..28/29, 32/35 et 9/10..25/26 citées plus haut.
+  communes, et contiennent les lignes 11/12..27/28, 12/13..28/29, 32/35 et 9/10..25/26 citées plus haut. **Résultat (2026-10-10)** : copie sous `docs/plan-e20-annexe/e20-f2/oracle/` (`f-weapons/probe.py`, `f-weapons/tools/`, `test-means/weapons_vs_*.py`, `test-means/oracle/`) ; sorties dans `f-weapons/out/` (les dix sondes `F-*`, identiques octet pour octet à celles de la découverte) et `test-means/out/` (`weapons_vs_target.txt`, `weapons_vs_post.txt`) ; lignes citées retrouvées : fer 11/`0x08` 12..27/repos 28, acier 12/`0x25` 13..28/repos 29, sans cible 32 (fer) et 35 (acier), poteau 9/`0x08` ou `0x25` 10..25/repos 26.
 - ⏳ **T2 — Squelette et fin du fléau.** Port exact ; lecteur de cellule aligné sur l'indexation du binaire (colonne, rangée, bornes) ;
   tests.
 - ⏳ **T3 — Arcs.** Sur la 14 (`HitArena`), les deux fléaux contre un Beannoïde, dans la géométrie du pilote, et sans cible (cible à
