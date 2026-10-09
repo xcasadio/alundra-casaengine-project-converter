@@ -306,6 +306,11 @@ public sealed class AlundraTickStructureTests : IDisposable
             }
         };
         rig.Hold = AlundraPadState.Right;
+        var heroStartX = rig.Hero.PosX;
+
+        // The walk from rest to the east: the first tick moves 79872 (half the step of the animation 1), the following ones 159744. One tick: 79872; two ticks: 319488 each; one tick: 159744.
+        var expectedSteps = new[] { 79872, 319488, 319488, 159744 };
+        var frameIndex = 0;
 
         foreach (var dt in new[] { OneTick, TwoTicks, TwoTicks, OneTick })
         {
@@ -319,6 +324,13 @@ public sealed class AlundraTickStructureTests : IDisposable
 
             // The hero: the animation MovePlayer asked for at the last tick of this frame is the one resolved at its end.
             Assert.Equal(rig.Hero.TargetAnimationId, rig.Hero.CurrentAnimationId);
+
+            // And its published position (E20.b B7, P4 of E20.a): the hero has a controller, so the root is the truth and the tick pushes the logical position onto it (to the sub-pixel,
+            // not the whole pixel of ResolveLogicalPosition, which is the NPCs' rule): the root shown after the frame is the logical position after the last tick of this frame, and it
+            // moved by the sum of the steps of the ticks of the frame (the Right is held).
+            Assert.Equal(rig.Hero.PosX / 65536.0, rig.HeroEntity.RootComponent!.LocalTransform.Position.X, 4);
+            Assert.Equal(expectedSteps[frameIndex++], rig.Hero.PosX - heroStartX);
+            heroStartX = rig.Hero.PosX;
         }
 
         Assert.Equal(1u, rig.Hero.CurrentAnimationId);

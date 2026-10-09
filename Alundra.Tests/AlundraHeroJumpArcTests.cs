@@ -170,10 +170,10 @@ public sealed class AlundraHeroJumpArcTests
         Assert.InRange(gilesEnd.X / 65536.0, 732.3, 733.3);
         // The mechanism of O-E19-29 itself: his Y step is 2.0 px (131072) at the images F0+241 to F0+244 (each landing on a new height rounds X down), then the 1.625 px (106496)
         // of the ramp; he goes towards the smaller Y, so the steps are negative.
-        // E20.a, measured: the run of 2.0 px steps (the landings of O-E19-29, a known deviation of the port, not the binary's behaviour) is F0+237 to F0+243 (7 images, after one transitional
-        // step of 147456 at F0+236), then the 1.625 px steps; it was F0+241 to F0+244 (4 images). Giles's walk ends at the same distance from his start (136 images); the landings start 3
-        // images sooner relative to it; the one-image shift of his timeline is the tick order, the phase of the landings against the ramp is a consequence not isolated by a trace (O-E19-29
-        // pins a deviation of the port, not the binary, and is left as it is).
+        // E20.a, measured, and corrected by the fresh verifier of E20.a (E20.b B7): the run of 2.0 px steps (the landings of O-E19-29, a known deviation of the port, not the binary's behaviour)
+        // is F0+237 to F0+243 (7 images, after one transitional step of 147456 at F0+236), then the 1.625 px steps. It was already 7 images long before E20.a (F0+238 to F0+244, after one step of
+        // 147456 at F0+237); the old assertion only covered F0+241 to F0+244. The only change is the one-image shift of Giles's whole timeline, the tick order of D-E20-11: his trajectory is
+        // identical from F0+96 to F0+265 once aligned by one image. O-E19-29 pins a deviation of the port, not the binary, and is left as it is.
         for (var image = f0 + 237; image <= f0 + 245; image++)
         {
             var step = giles[image].Pose.Y - giles[image - 1].Pose.Y;
