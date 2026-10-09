@@ -1,0 +1,112 @@
+# K3: the real handlers 0x71, 0x86, 0x87, 0x95 (direct call and real program runner 0x8004205C); see tools/k3.py for the program state layout
+
+== K3 world: kit inventory, 5 ticks, Square at tick 1, A armed before tick 5; slots: hero 0, T 1 (map record 0), T2 2 (1), A 3 (2), V 4 (3), U 5 (4), record 5 unspawned
+   at the end of tick 5: hero: Touching=None HitCounter=2 Flags=0x3118C attr=0x81 hp=10 +0x1CC=0; T: Touching=0 HitCounter=0 Flags=0x103 attr=0x01 hp=9 +0x1CC=0; T2: Touching=0 HitCounter=0 Flags=0x103 attr=0x01 hp=9 +0x1CC=0; A: Touching=None HitCounter=1 Flags=0x107 attr=0x04 hp=9 +0x1CC=0; V: Touching=3 HitCounter=0 Flags=0x103 attr=0x01 hp=9 +0x1CC=0; U: Touching=None HitCounter=0 Flags=0x103 attr=0x01 hp=9 +0x1CC=0
+   world as designed (T,T2 touched by the hero, V touched by A, hero HitCounter 2, A HitCounter 1): yes
+   program state: owner entity (default T) state struct = owner + 0x234, pc cell = owner + 0x238 (-> program at 0x801EA400), Result word = owner + 0x260, self pointer = owner + 0x230; handler addresses from the table 0x80098FAC: 0x71 -> 0x8003FA10, 0x86 -> 0x8003FFD4, 0x87 -> 0x80040048, 0x95 -> 0x800407C0
+== K3 0x71 [0x71]: Result = HitCounter (+0x220) of the self entity (handler 0x8003FA10)
+   self = hero (HitCounter in memory 2)                                   size 1  Result 0x2  no entity field written  | expected 2            got 2            OK  runner==direct yes
+   self = T (HitCounter in memory 0)                                      size 1  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   self = T2 (HitCounter in memory 0)                                     size 1  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   self = A (HitCounter in memory 1)                                      size 1  Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   self = V (HitCounter in memory 0)                                      size 1  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   self = U (HitCounter in memory 0)                                      size 1  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+== K3 0x86 [0x86, search, lo, hi]: +0x1CC := lo | hi << 8 on every match (handler 0x8003FFD4); Result untouched (sentinel 0xAAAA5555 kept)
+   search record 0 (T), value 0x012C                                            size 4 Result untouched +0x1CC after hero=0 T=12C T2=0 A=0 V=0 U=0 (matched ['T']) | expected hero=0 T=12C T2=0 A=0 V=0 U=0  OK  runner==direct yes
+   search record 0 shared by T and U (U.+0x48 := 0 by the harness), value 0x1234 size 4 Result untouched +0x1CC after hero=0 T=1234 T2=0 A=0 V=0 U=1234 (matched ['T', 'U']) | expected hero=0 T=1234 T2=0 A=0 V=0 U=1234  OK  runner==direct yes
+   search record 5 (enabled map record, no entity): no match                    size 4 Result untouched +0x1CC after hero=0 T=0 T2=0 A=0 V=0 U=0 (matched []) | expected hero=0 T=0 T2=0 A=0 V=0 U=0  OK  runner==direct yes
+   SET not add: T.+0x1CC preset 0x0100, value 0x0002                            size 4 Result untouched +0x1CC after hero=0 T=2 T2=0 A=0 V=0 U=0 (matched ['T']) | expected hero=0 T=2 T2=0 A=0 V=0 U=0  OK  runner==direct yes
+   maximum value 0xFFFF                                                         size 4 Result untouched +0x1CC after hero=0 T=FFFF T2=0 A=0 V=0 U=0 (matched ['T']) | expected hero=0 T=FFFF T2=0 A=0 V=0 U=0  OK  runner==direct yes
+   search 0x80 (self) with owner A, self T                                      size 4 Result untouched +0x1CC after hero=0 T=5 T2=0 A=0 V=0 U=0 (matched ['T']) | expected hero=0 T=5 T2=0 A=0 V=0 U=0  OK  runner==direct yes
+   search 0x81 (slot 0, the hero)                                               size 4 Result untouched +0x1CC after hero=7 T=0 T2=0 A=0 V=0 U=0 (matched ['hero']) | expected hero=7 T=0 T2=0 A=0 V=0 U=0  OK  runner==direct yes
+   search 0x82 (every active entity, slot 0 included)                           size 4 Result untouched +0x1CC after hero=9 T=9 T2=9 A=9 V=9 U=9 (matched ['hero', 'T', 'T2', 'A', 'V', 'U']) | expected hero=9 T=9 T2=9 A=9 V=9 U=9  OK  runner==direct yes
+   value 0 clears: T.+0x1CC preset 0x0055                                       size 4 Result untouched +0x1CC after hero=0 T=0 T2=0 A=0 V=0 U=0 (matched ['T']) | expected hero=0 T=0 T2=0 A=0 V=0 U=0  OK  runner==direct yes
+== K3 0x87 [0x87, search, typeIdx]: Result 1 iff a match is touched by an attacker whose frame box and attack are set and attack attribute nibble == byte[0x80098FA4 + typeIdx] (handler 0x80040048)
+   bytes 0x80098FA4..0x80098FAF: 01 02 03 04 05 05 06 07 58 D1 03 80  (indices 0..7 = the nibble table; 8..11 are the first bytes of the handler table 0x80098FAC)
+   state: T and T2 touched by the hero (attr 0x81), V touched by A (attr 0x04), U untouched
+   T (hero sword, nibble 1) typeIdx 0 -> nibble 1                         size 3  Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   T (hero sword, nibble 1) typeIdx 1 -> nibble 2                         size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   T (hero sword, nibble 1) typeIdx 2 -> nibble 3                         size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   T (hero sword, nibble 1) typeIdx 3 -> nibble 4                         size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   T (hero sword, nibble 1) typeIdx 4 -> nibble 5                         size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   T (hero sword, nibble 1) typeIdx 5 -> nibble 5                         size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   T (hero sword, nibble 1) typeIdx 6 -> nibble 6                         size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   T (hero sword, nibble 1) typeIdx 7 -> nibble 7                         size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   => T (touched by the hero's sword): Result 1 for typeIdx [0] only
+   T2 (hero sword) typeIdx 0                                              size 3  Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   V (A, nibble 4) typeIdx 3 -> nibble 4                                  size 3  Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   V (A, nibble 4) typeIdx 0 -> nibble 1                                  size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   U (untouched) typeIdx 0                                                size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   U (untouched) typeIdx 3                                                size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   search 0x80 (self = T, the lever case) typeIdx 0                       size 3  Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   search 0x80 (self = T) typeIdx 3                                       size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   search 0x80 (self = V) typeIdx 3                                       size 3  Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   record 0 shared by T and U (U.+0x48 := 0): typeIdx 0                   size 3  Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   record 3 shared by V and U (U.+0x48 := 3): typeIdx 3                   size 3  Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   record 5 (no entity): typeIdx 0                                        size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   T touched by the hero but hero.+0x1D4 (frame box) := 0: typeIdx 0      size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   T touched by the hero but hero.+0x1C8 (attack) := 0: typeIdx 0         size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   T touched by the hero but the attack attribute byte := 0: typeIdx 0    size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   T.+0x224 (TouchingEntity) := 0: typeIdx 0                              size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   V (A, nibble 4) typeIdx 8 -> byte 0x58                                 size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   V (A, nibble 4) typeIdx 9 -> byte 0xD1                                 size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   V (A, nibble 4) typeIdx 10 -> byte 0x03                                size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   V (A, nibble 4) typeIdx 11 -> byte 0x80                                size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   V with A attack := synthetic attr 0x03 power 2 (nibble 3): typeIdx 2 -> byte 0x03 size 3  Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   V with A attack := synthetic attr 0x03 power 2 (nibble 3): typeIdx 8 -> byte 0x58 size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   V with A attack := synthetic attr 0x03 power 2 (nibble 3): typeIdx 9 -> byte 0xD1 size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   V with A attack := synthetic attr 0x03 power 2 (nibble 3): typeIdx 10 -> byte 0x03 size 3  Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   V with A attack := synthetic attr 0x03 power 2 (nibble 3): typeIdx 11 -> byte 0x80 size 3  Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   V with A attack := synthetic attr 0x05 (nibble 5): typeIdx 4 -> byte 0x05 size 3  Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   V with A attack := synthetic attr 0x05 (nibble 5): typeIdx 5 -> byte 0x05 size 3  Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+== K3 0x95 [0x95, x, y, z, wx, hy, _, maskLo, maskHi, typeIdx] (handler 0x800407C0): origin (24x, 16y, 16z) px, size X and Z = 24 wx px, Y = 16 hy px; any attacker slot 0..N with status 2/3, +0x20 == 0, frame box, attack with non-zero attribute, Flags & mask != 0, attribute nibble == byte[0x80098FA4 + typeIdx], whose HitBox overlaps the rectangle
+   hero at the end of tick 5: swing HitBox (raw 16.16) X 15269888 Y 5767168 Z 1 = (233.00000, 88.00000, 0.00002) px, attacker sizes [1900543, 983039, 983039] (stored (n << 16) - 1), Flags 0x3118C, attack attr 0x81 nibble 1; other attackers: T/T2/V Flags 0x103 attr 0x01, A Flags 0x107 attr 0x04
+   rectangles in units around the hero box: x unit 9 (box starts in it), box ends in x unit 10, y unit 5 / 6
+   IN: rect (9,5,0) 2 x 2 units around the hero box, hero-only mask 0x0008, typeIdx 0 (sword) size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   same rect, typeIdx 3 (nibble 4: no attacker of that kind there)        size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   same rect, mask 0x0040 (no entity has the bit)                         size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   same rect, mask 0 (early exit at 0x80040818)                           size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   OUT in X, rectangle entirely right of the box: x unit 11               size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   OUT in X, rectangle entirely left of the box: x unit 0                 size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   OUT in Y, rectangle below the box: y unit 7                            size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   OUT in Y, rectangle above the box: y unit 0, 1 unit high               size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   OUT in Z, rectangle from z unit 3 (48 px): the box (z 0..15 px) is below it size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   all-bits mask 0xFFFF, same rect (T, T2 attack boxes qualify as well), typeIdx 0 size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   rect around A (x unit 14, y unit 5), mask 0x0004, typeIdx 3 (A is nibble 4) size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   same rect, typeIdx 0 (sword nibble): A is nibble 4, V (flags 0x103 & 0x0004 = 0) does not qualify size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   same rect, mask 0x0100, typeIdx 0 (V and A share bit 8; V attr 0x01)   size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   boundaries (hero HitBox written by the harness; rect x,y,z = (10,6,0) 1 x 1 units: X [15728640, 17301504), Y [6291456, 7340032), Z [0, 1572864) raw):
+   hero box X axis: d = 0 (inside), rect (10,6,0,1,1)                     size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   hero box X axis: d = size - 1 (last inside), rect (10,6,0,1,1)         size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   hero box X axis: d = size (first outside), rect (10,6,0,1,1)           size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   hero box X axis: d = -asize (last inside on the negative side), rect (10,6,0,1,1) size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   hero box X axis: d = -asize - 1 (first outside), rect (10,6,0,1,1)     size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   hero box Y axis: d = 0 (inside), rect (10,6,0,1,1)                     size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   hero box Y axis: d = size - 1 (last inside), rect (10,6,0,1,1)         size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   hero box Y axis: d = size (first outside), rect (10,6,0,1,1)           size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   hero box Y axis: d = -asize (last inside on the negative side), rect (10,6,0,1,1) size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   hero box Y axis: d = -asize - 1 (first outside), rect (10,6,0,1,1)     size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   hero box Z axis: d = 0 (inside), rect (10,6,0,1,1)                     size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   hero box Z axis: d = size - 1 (last inside), rect (10,6,0,1,1)         size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   hero box Z axis: d = size (first outside), rect (10,6,0,1,1)           size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   hero box Z axis: d = -asize (last inside on the negative side), rect (10,6,0,1,1) size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   hero box Z axis: d = -asize - 1 (first outside), rect (10,6,0,1,1)     size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   typeIdx 8..11 read the bytes 0x80098FAC.. = 58 D1 03 80 (first bytes of the handler table); the attribute nibble is at most 15 so only 0x03 (idx 10) can match
+   rect around A, mask 0x0004, A attack nibble 3: typeIdx 2 -> byte 0x03  size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   rect around A, mask 0x0004, A attack nibble 3: typeIdx 3 -> byte 0x04  size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   rect around A, mask 0x0004, A attack nibble 3: typeIdx 8 -> byte 0x58  size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   rect around A, mask 0x0004, A attack nibble 3: typeIdx 9 -> byte 0xD1  size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   rect around A, mask 0x0004, A attack nibble 3: typeIdx 10 -> byte 0x03 size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   rect around A, mask 0x0004, A attack nibble 3: typeIdx 11 -> byte 0x80 size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   rect around A, mask 0x0004, A attack nibble 4 (real): typeIdx 8        size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   rect around A, mask 0x0004, A attack nibble 4 (real): typeIdx 9        size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   rect around A, mask 0x0004, A attack nibble 4 (real): typeIdx 10       size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   rect around A, mask 0x0004, A attack nibble 4 (real): typeIdx 11       size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   IN rect, hero-only mask, hero status 1 (not 2/3)                       size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   IN rect, hero-only mask, hero +0x20 := 1                               size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   IN rect, hero-only mask, hero frame box +0x1D4 := 0                    size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   IN rect, hero-only mask, hero attack +0x1C8 := 0                       size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   IN rect, hero-only mask, hero attack attribute byte := 0               size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   IN rect around A, mask 0x0004, typeIdx 3, [0x80134360] := 2 (A is slot 3: not scanned) size 10 Result 0x0  no entity field written  | expected 0            got 0            OK  runner==direct yes
+   IN rect around A, mask 0x0004, typeIdx 3, [0x80134360] := 3 (A scanned: the bound is inclusive) size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes
+   IN rect, program byte 6 := 0x55 (the unused byte)                      size 10 Result 0x1  no entity field written  | expected 1            got 1            OK  runner==direct yes

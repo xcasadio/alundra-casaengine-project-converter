@@ -1,0 +1,10446 @@
+{
+ "all": {
+  "A10": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 12 >= hp: 0",
+     "model_hp": 0,
+     "power": 1,
+     "response": 16,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 12,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 88,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 12",
+     "model_hp": 88,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HERO": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 73,
+     "model_how": "dmg 19 >= hp: 0",
+     "model_hp": 0,
+     "power": 8,
+     "response": 16,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 19,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 81,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "dmg 19",
+     "model_hp": 81,
+     "power": 8,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 73,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 8,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 8,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 73,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 8,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 8,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 73,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 8,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 8,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 73,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 8,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 8,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 8,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 92,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "dmg 8",
+     "model_hp": 92,
+     "power": 8,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HT": [
+   [
+    "A's own attack (attr 0x01 power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 199,
+     "power": 1,
+     "response": 12,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x01 power 16",
+    {
+     "attr": 1,
+     "damage": 12,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 188,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 12",
+     "model_hp": 188,
+     "power": 16,
+     "response": 12,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16 (equipment term, latch as is)",
+    {
+     "attr": 129,
+     "damage": 20,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 180,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 20",
+     "model_hp": 180,
+     "power": 16,
+     "response": 12,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "NH": [
+   [
+    "A's own attack (attr 0x01: no equipment bit)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is",
+    {
+     "attr": 129,
+     "damage": 12,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 88,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 12",
+     "model_hp": 88,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging)",
+    {
+     "attr": 129,
+     "damage": 12,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 88,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 12",
+     "model_hp": 88,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16, latch := 0x10",
+    {
+     "attr": 129,
+     "damage": 27,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x801444D0",
+      "0x80144795"
+     ],
+     "hp_after": 73,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 27",
+     "model_hp": 73,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, equipment records ALL nulled",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "meta": {
+   "atk_attr": 129,
+   "atk_power": 8,
+   "equipment": "[0] item 18 [], [1] item 4 [(1, 8)], [2] item 51 [(1, 3)]",
+   "hero_anim": 73,
+   "hit_tick": 5,
+   "latch": 73
+  }
+ },
+ "bracelet": {
+  "A10": "same as HERO",
+  "HERO": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 7,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 7,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HT": [
+   [
+    "A's own attack (attr 0x01 power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 199,
+     "power": 1,
+     "response": 15,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x01 power 16",
+    {
+     "attr": 1,
+     "damage": 15,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 185,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 15",
+     "model_hp": 185,
+     "power": 16,
+     "response": 15,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16 (equipment term, latch as is)",
+    {
+     "attr": 129,
+     "damage": 15,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 185,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 15",
+     "model_hp": 185,
+     "power": 16,
+     "response": 15,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "NH": [
+   [
+    "A's own attack (attr 0x01: no equipment bit)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging)",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16, latch := 0x10",
+    {
+     "attr": 129,
+     "damage": 17,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447B7"
+     ],
+     "hp_after": 83,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 17",
+     "model_hp": 83,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, equipment records ALL nulled",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "meta": {
+   "atk_attr": 129,
+   "atk_power": 1,
+   "equipment": "[0] item 17 [], [1] item 1 [(1, 1)], [2] item 53 []",
+   "hero_anim": 16,
+   "hit_tick": 5,
+   "latch": 16
+  }
+ },
+ "charm": {
+  "A10": "same as HERO",
+  "HERO": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 7,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 7,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HT": [
+   [
+    "A's own attack (attr 0x01 power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 199,
+     "power": 1,
+     "response": 15,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x01 power 16",
+    {
+     "attr": 1,
+     "damage": 15,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 185,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 15",
+     "model_hp": 185,
+     "power": 16,
+     "response": 15,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16 (equipment term, latch as is)",
+    {
+     "attr": 129,
+     "damage": 15,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 185,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 15",
+     "model_hp": 185,
+     "power": 16,
+     "response": 15,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "NH": [
+   [
+    "A's own attack (attr 0x01: no equipment bit)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging)",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16, latch := 0x10",
+    {
+     "attr": 129,
+     "damage": 17,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447C6"
+     ],
+     "hp_after": 83,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 17",
+     "model_hp": 83,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, equipment records ALL nulled",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "meta": {
+   "atk_attr": 129,
+   "atk_power": 1,
+   "equipment": "[0] item 17 [], [1] item 1 [(1, 1)], [2] item 54 []",
+   "hero_anim": 16,
+   "hit_tick": 5,
+   "latch": 16
+  }
+ },
+ "holy": {
+  "A10": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 9 >= hp: 0",
+     "model_hp": 0,
+     "power": 1,
+     "response": 16,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 91,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 9",
+     "model_hp": 91,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HERO": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 73,
+     "model_how": "dmg 16 >= hp: 0",
+     "model_hp": 0,
+     "power": 8,
+     "response": 16,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 8,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 73,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 8,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 8,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 73,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 8,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 8,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 73,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 8,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 8,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 73,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 8,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 8,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 8,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 92,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "dmg 8",
+     "model_hp": 92,
+     "power": 8,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 73,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HT": [
+   [
+    "A's own attack (attr 0x01 power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 199,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x01 power 16",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 184,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 16",
+     "model_hp": 184,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16 (equipment term, latch as is)",
+    {
+     "attr": 129,
+     "damage": 24,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 176,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 24",
+     "model_hp": 176,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "NH": [
+   [
+    "A's own attack (attr 0x01: no equipment bit)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 91,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 9",
+     "model_hp": 91,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging)",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 91,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 9",
+     "model_hp": 91,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16, latch := 0x10",
+    {
+     "attr": 129,
+     "damage": 24,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        8
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444D0",
+      "null"
+     ],
+     "hp_after": 76,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 24",
+     "model_hp": 76,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, equipment records ALL nulled",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "meta": {
+   "atk_attr": 129,
+   "atk_power": 8,
+   "equipment": "[0] item 17 [], [1] item 4 [(1, 8)], [2] null",
+   "hero_anim": 73,
+   "hit_tick": 5,
+   "latch": 73
+  }
+ },
+ "kit": {
+  "A10": "same as HERO",
+  "HERO": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 7,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 7,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HT": [
+   [
+    "A's own attack (attr 0x01 power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 199,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x01 power 16",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 184,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 16",
+     "model_hp": 184,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16 (equipment term, latch as is)",
+    {
+     "attr": 129,
+     "damage": 17,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 183,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 17",
+     "model_hp": 183,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "NH": [
+   [
+    "A's own attack (attr 0x01: no equipment bit)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging)",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16, latch := 0x10",
+    {
+     "attr": 129,
+     "damage": 17,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 83,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 17",
+     "model_hp": 83,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, equipment records ALL nulled",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "synthetic 3-attack record in [2], A attr 0x81 power 1, latch := 16",
+    {
+     "attr": 129,
+     "damage": 4,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        2
+       ],
+       [
+        1,
+        3
+       ],
+       [
+        1,
+        5
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801EA200"
+     ],
+     "hp_after": 96,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 4",
+     "model_hp": 96,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "synthetic 3-attack record in [2], A attr 0x81 power 1, latch := 0",
+    {
+     "attr": 129,
+     "damage": 5,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        2
+       ],
+       [
+        1,
+        3
+       ],
+       [
+        1,
+        5
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801EA200"
+     ],
+     "hp_after": 95,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 5",
+     "model_hp": 95,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "synthetic 3-attack record in [2], A attr 0x81 power 1, latch := 1",
+    {
+     "attr": 129,
+     "damage": 7,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        2
+       ],
+       [
+        1,
+        3
+       ],
+       [
+        1,
+        5
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801EA200"
+     ],
+     "hp_after": 93,
+     "hp_before": 100,
+     "latch": 1,
+     "model_how": "dmg 7",
+     "model_hp": 93,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "synthetic 3-attack record in [2], A attr 0x81 power 1, latch := 2",
+    {
+     "attr": 129,
+     "damage": 4,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        2
+       ],
+       [
+        1,
+        3
+       ],
+       [
+        1,
+        5
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801EA200"
+     ],
+     "hp_after": 96,
+     "hp_before": 100,
+     "latch": 2,
+     "model_how": "dmg 4",
+     "model_hp": 96,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "synthetic 3-attack record in [2], A attr 0x81 power 1, latch := -1",
+    {
+     "attr": 129,
+     "damage": 4,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        2
+       ],
+       [
+        1,
+        3
+       ],
+       [
+        1,
+        5
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801EA200"
+     ],
+     "hp_after": 96,
+     "hp_before": 100,
+     "latch": -1,
+     "model_how": "dmg 4",
+     "model_hp": 96,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "meta": {
+   "atk_attr": 129,
+   "atk_power": 1,
+   "equipment": "[0] item 17 [], [1] item 1 [(1, 1)], [2] null",
+   "hero_anim": 16,
+   "hit_tick": 5,
+   "latch": 16
+  }
+ },
+ "leather": {
+  "A10": "same as HERO",
+  "HERO": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 7,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 7,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HT": [
+   [
+    "A's own attack (attr 0x01 power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 199,
+     "power": 1,
+     "response": 12,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x01 power 16",
+    {
+     "attr": 1,
+     "damage": 12,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 188,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 12",
+     "model_hp": 188,
+     "power": 16,
+     "response": 12,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16 (equipment term, latch as is)",
+    {
+     "attr": 129,
+     "damage": 12,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 188,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 12",
+     "model_hp": 188,
+     "power": 16,
+     "response": 12,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "NH": [
+   [
+    "A's own attack (attr 0x01: no equipment bit)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging)",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16, latch := 0x10",
+    {
+     "attr": 129,
+     "damage": 17,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x801445A6",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 83,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 17",
+     "model_hp": 83,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, equipment records ALL nulled",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "meta": {
+   "atk_attr": 129,
+   "atk_power": 1,
+   "equipment": "[0] item 18 [], [1] item 1 [(1, 1)], [2] null",
+   "hero_anim": 16,
+   "hit_tick": 5,
+   "latch": 16
+  }
+ },
+ "noarmour": {
+  "A10": "same as HERO",
+  "HERO": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 7,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 7,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HT": [
+   [
+    "A's own attack (attr 0x01 power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 199,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x01 power 16",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 199,
+     "power": 16,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16 (equipment term, latch as is)",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 199,
+     "power": 16,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "NH": [
+   [
+    "A's own attack (attr 0x01: no equipment bit)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging)",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16, latch := 0x10",
+    {
+     "attr": 129,
+     "damage": 17,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "0x8014449D",
+      "null"
+     ],
+     "hp_after": 83,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 17",
+     "model_hp": 83,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, equipment records ALL nulled",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "meta": {
+   "atk_attr": 129,
+   "atk_power": 1,
+   "equipment": "[0] null, [1] item 1 [(1, 1)], [2] null",
+   "hero_anim": 16,
+   "hit_tick": 5,
+   "latch": 16
+  }
+ },
+ "noweapon": {
+  "A10": "same as HERO",
+  "HERO": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 8,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HT": [
+   [
+    "A's own attack (attr 0x01 power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 199,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x01 power 16",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 184,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 16",
+     "model_hp": 184,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16 (equipment term, latch as is)",
+    {
+     "attr": 129,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 184,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 16",
+     "model_hp": 184,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "NH": [
+   [
+    "A's own attack (attr 0x01: no equipment bit)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging)",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16, latch := 0x10",
+    {
+     "attr": 129,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "null",
+      "null"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, equipment records ALL nulled",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "meta": {
+   "atk_attr": 129,
+   "atk_power": 1,
+   "equipment": "[0] item 17 [], [1] null, [2] null",
+   "hero_anim": 16,
+   "hit_tick": 5,
+   "latch": 16
+  }
+ },
+ "ring": {
+  "A10": "same as HERO",
+  "HERO": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 5,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 4,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 5",
+     "model_hp": 4,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 5,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 95,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 5",
+     "model_hp": 95,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HT": [
+   [
+    "A's own attack (attr 0x01 power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 199,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x01 power 16",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 184,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 16",
+     "model_hp": 184,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16 (equipment term, latch as is)",
+    {
+     "attr": 129,
+     "damage": 20,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 180,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 20",
+     "model_hp": 180,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "NH": [
+   [
+    "A's own attack (attr 0x01: no equipment bit)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is",
+    {
+     "attr": 129,
+     "damage": 5,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 95,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 5",
+     "model_hp": 95,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging)",
+    {
+     "attr": 129,
+     "damage": 5,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 95,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 5",
+     "model_hp": 95,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16, latch := 0x10",
+    {
+     "attr": 129,
+     "damage": 20,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 80,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 20",
+     "model_hp": 80,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, equipment records ALL nulled",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "meta": {
+   "atk_attr": 129,
+   "atk_power": 1,
+   "equipment": "[0] item 17 [], [1] item 1 [(1, 1)], [2] item 51 [(1, 3)]",
+   "hero_anim": 16,
+   "hit_tick": 5,
+   "latch": 16
+  }
+ },
+ "rings2": {
+  "A10": "same as HERO",
+  "HERO": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 5,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 4,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 5",
+     "model_hp": 4,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 5,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 95,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 5",
+     "model_hp": 95,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447A6"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HT": [
+   [
+    "A's own attack (attr 0x01 power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 199,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x01 power 16",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 184,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 16",
+     "model_hp": 184,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16 (equipment term, latch as is)",
+    {
+     "attr": 129,
+     "damage": 20,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 180,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 20",
+     "model_hp": 180,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "NH": [
+   [
+    "A's own attack (attr 0x01: no equipment bit)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is",
+    {
+     "attr": 129,
+     "damage": 5,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 95,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 5",
+     "model_hp": 95,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging)",
+    {
+     "attr": 129,
+     "damage": 5,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 95,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 5",
+     "model_hp": 95,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16, latch := 0x10",
+    {
+     "attr": 129,
+     "damage": 20,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      [
+       [
+        1,
+        3
+       ]
+      ]
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x80144795"
+     ],
+     "hp_after": 80,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 20",
+     "model_hp": 80,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, equipment records ALL nulled",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "meta": {
+   "atk_attr": 129,
+   "atk_power": 1,
+   "equipment": "[0] item 17 [], [1] item 1 [(1, 1)], [2] item 52 [(1, 3)]",
+   "hero_anim": 16,
+   "hit_tick": 5,
+   "latch": 16
+  }
+ },
+ "steel": {
+  "A10": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 3,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 6,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 3",
+     "model_hp": 6,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 3,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 97,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 3",
+     "model_hp": 97,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HERO": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 4,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 5,
+     "hp_before": 9,
+     "latch": 63,
+     "model_how": "dmg 4",
+     "model_hp": 5,
+     "power": 2,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 4,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 96,
+     "hp_before": 100,
+     "latch": 63,
+     "model_how": "dmg 4",
+     "model_hp": 96,
+     "power": 2,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 63,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 2,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 63,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 2,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 63,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 63,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 63,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 2,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 63,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 2,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 63,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 2,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 63,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 2,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 63,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 2,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 63,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 63,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 63,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HT": [
+   [
+    "A's own attack (attr 0x01 power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 199,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x01 power 16",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 184,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 16",
+     "model_hp": 184,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16 (equipment term, latch as is)",
+    {
+     "attr": 129,
+     "damage": 18,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 182,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 18",
+     "model_hp": 182,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "NH": [
+   [
+    "A's own attack (attr 0x01: no equipment bit)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is",
+    {
+     "attr": 129,
+     "damage": 3,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 97,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 3",
+     "model_hp": 97,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging)",
+    {
+     "attr": 129,
+     "damage": 3,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 97,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 3",
+     "model_hp": 97,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16, latch := 0x10",
+    {
+     "attr": 129,
+     "damage": 18,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        2
+       ]
+      ],
+      null
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x801444AE",
+      "null"
+     ],
+     "hp_after": 82,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 18",
+     "model_hp": 82,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, equipment records ALL nulled",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "meta": {
+   "atk_attr": 129,
+   "atk_power": 2,
+   "equipment": "[0] item 17 [], [1] item 2 [(1, 2)], [2] null",
+   "hero_anim": 63,
+   "hit_tick": 5,
+   "latch": 63
+  }
+ },
+ "tonic": {
+  "A10": "same as HERO",
+  "HERO": [
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 7,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 7,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "natural record, response 0x10",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 8,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 8,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x00",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 0 -> minimum 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 0,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 9,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 0,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x40",
+    {
+     "attr": 129,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 1,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0x80",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x80: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 128,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 9,
+     "hp_before": 9,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 9,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "copy of the record with response[nibble 1] = 0xC0",
+    {
+     "attr": 129,
+     "damage": 0,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 100,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0xC0: unchanged",
+     "model_hp": 100,
+     "power": 1,
+     "response": 192,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 84,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 16",
+     "model_hp": 84,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40",
+    {
+     "attr": 132,
+     "damage": 100,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 0,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "response top bits 0x40: kill",
+     "model_hp": 0,
+     "power": 2,
+     "response": 64,
+     "ret": 1,
+     "uninit": []
+    }
+   ]
+  ],
+  "HT": [
+   [
+    "A's own attack (attr 0x01 power 1)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 199,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 199,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x01 power 16",
+    {
+     "attr": 1,
+     "damage": 16,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 184,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 16",
+     "model_hp": 184,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16 (equipment term, latch as is)",
+    {
+     "attr": 129,
+     "damage": 17,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 183,
+     "hp_before": 200,
+     "latch": 0,
+     "model_how": "dmg 17",
+     "model_hp": 183,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "NH": [
+   [
+    "A's own attack (attr 0x01: no equipment bit)",
+    {
+     "attr": 1,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging)",
+    {
+     "attr": 129,
+     "damage": 2,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 98,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 2",
+     "model_hp": 98,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 16, latch := 0x10",
+    {
+     "attr": 129,
+     "damage": 17,
+     "equal": true,
+     "equip_attacks": [
+      [],
+      [
+       [
+        1,
+        1
+       ]
+      ],
+      []
+     ],
+     "equip_ptrs": [
+      "0x80144597",
+      "0x8014449D",
+      "0x801447E4"
+     ],
+     "hp_after": 83,
+     "hp_before": 100,
+     "latch": 16,
+     "model_how": "dmg 17",
+     "model_hp": 83,
+     "power": 16,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ],
+   [
+    "A attack := synthetic attr 0x81 power 1, equipment records ALL nulled",
+    {
+     "attr": 129,
+     "damage": 1,
+     "equal": true,
+     "equip_attacks": [
+      null,
+      null,
+      null
+     ],
+     "equip_ptrs": [
+      "null",
+      "null",
+      "null"
+     ],
+     "hp_after": 99,
+     "hp_before": 100,
+     "latch": 0,
+     "model_how": "dmg 1",
+     "model_hp": 99,
+     "power": 1,
+     "response": 16,
+     "ret": 0,
+     "uninit": []
+    }
+   ]
+  ],
+  "meta": {
+   "atk_attr": 129,
+   "atk_power": 1,
+   "equipment": "[0] item 17 [], [1] item 1 [(1, 1)], [2] item 56 []",
+   "hero_anim": 16,
+   "hit_tick": 5,
+   "latch": 16
+  }
+ }
+}

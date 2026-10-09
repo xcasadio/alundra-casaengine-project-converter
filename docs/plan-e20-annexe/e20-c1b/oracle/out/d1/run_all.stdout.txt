@@ -1,0 +1,135 @@
+S-A: start {"tick": 0, "hold": 0, "anim_cur": 0, "anim_target": 0, "dir": 24, "force_x": 0, "force_y": 0, "force_z": 0, "pos_x": 6553600, "pos_y": 6553600, "pos_z": 1, "on_ground": 1, "coll_z": 0, "b0": 0, "cnt1c": 0, "sprint_cnt_80126FF4": 0, "charge_cnt_80126FFC": 0}
+S-A: warm-up ticks 0, comparison ticks 24, uninitialised-read sites 0
+S-B: start {"tick": 0, "hold": 8192, "anim_cur": 1, "anim_target": 1, "dir": 24, "force_x": 159744, "force_y": 0, "force_z": 0, "pos_x": 6952960, "pos_y": 6553600, "pos_z": 1, "on_ground": 1, "coll_z": 1, "b0": 0, "cnt1c": 3, "sprint_cnt_80126FF4": 0, "charge_cnt_80126FFC": 0}
+S-B: warm-up ticks 3, comparison ticks 24, uninitialised-read sites 0
+# D1 comparison: oracle (emulated ALUN_CD.EXE) vs docs/plan-e19-d2c-valeurs.md B.1, field by field
+# the annex PosZ is in the DLL convention; the oracle PosZ minus 1 is compared (plan: annex + 1 = binary)
+== S-A: 24 oracle ticks vs 24 annex ticks
+   Current animation per tick     24/24 equal
+   ForceZ per tick                24/24 equal
+   PosZ (DLL, no +1) per tick     24/24 equal
+   ForceX per tick                24/24 equal
+   ForceY per tick                24/24 equal
+   PosX - start (16.16)           24/24 equal
+   PosY - start (16.16)           24/24 equal
+   IsOnGround after tick          24/24 equal
+   CollidedWithEntityZ            24/24 equal
+   VERDICT PASS: 216 values compared, 0 differences
+== S-B: 24 oracle ticks vs 24 annex ticks
+   Current animation per tick     24/24 equal
+   ForceZ per tick                24/24 equal
+   PosZ (DLL, no +1) per tick     24/24 equal
+   ForceX per tick                24/24 equal
+   ForceY per tick                24/24 equal
+   PosX - start (16.16)           24/24 equal
+   PosY - start (16.16)           24/24 equal
+   IsOnGround after tick          24/24 equal
+   CollidedWithEntityZ            24/24 equal
+   VERDICT PASS: 216 values compared, 0 differences
+OVERALL: PASS
+== before tick 1 (after InitializeEntity + the plan starting values)
+  status +0x10                 0x00000002  2
+  HP +0x14                     0x0000000A  10
+  HP max +0x18                 0x0000000A  10
+  +0x20                        0x00000000  0
+  flags +0x6C                  0x0003118C  201100
+  sprite record +0x64          0x801A0000  -2145779712
+  TargetAnimationId +0x88      0x00000000  0
+  TargetDirection +0x8C        0x00000018  24
+  CurrentAnimationId +0x90     0x00000000  0
+  AnimDirection +0x98          0x00000003  3
+  IsOnGround +0x144            0x00000001  1
+  CollidedWithEntityZ +0x140   0x00000000  0
+  +0x180                       0x00000000  0
+  +0x188                       0x00000000  0
+  +0x1C4 balance sheet         0x801441F8  -2146156040
+  +0x1CC invulnerability       0x00000000  0
+  +0x220 HitCounter            0x00000000  0
+  +0x224 TouchingEntity        0x00000000  0
+  PosX +0x114                  0x00640000  6553600
+  PosY +0x118                  0x00640000  6553600
+  PosZ +0x11C                  0x00000001  1
+  ModX +0x1E4                  0xFFF60000  -655360
+  ModY +0x1E8                  0xFFF90000  -458752
+  ModZ +0x1EC                  0x00000000  0
+  W +0x1F0                     0x0014FFFF  1376255
+  H +0x1F4                     0x000EFFFF  983039
+  D +0x1F8                     0x001FFFFF  2097151
+  [0x80127000] boots level     0
+  [0x80176318] -> g_playerStats 0x801EB82C: Hp 1, HpMax 1, WeaponId +0xA 1, armour +0xC 0
+  [0x80134360] last entity     0
+  [0x800DC4B8] state flags     0x0
+  [0x80127108] [0x8012710C] [0x80127110] [0x80127114]: 0 0 0x0 0
+  balance sheet bytes at 0x801441F8: FF A9 0A 00 00 00 00 00 00 00 00 00 00 00 4D 00
+  working copy 0x80127008 bytes:   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+== after one tick with no input
+  status +0x10                 0x00000002  2
+  HP +0x14                     0x0000000A  10
+  HP max +0x18                 0x0000000A  10
+  +0x20                        0x00000000  0
+  flags +0x6C                  0x0003118C  201100
+  sprite record +0x64          0x801A0000  -2145779712
+  TargetAnimationId +0x88      0x00000000  0
+  TargetDirection +0x8C        0x00000018  24
+  CurrentAnimationId +0x90     0x00000000  0
+  AnimDirection +0x98          0x00000003  3
+  IsOnGround +0x144            0x00000001  1
+  CollidedWithEntityZ +0x140   0x00000001  1
+  +0x180                       0x00000000  0
+  +0x188                       0x00000000  0
+  +0x1C4 balance sheet         0x801441F8  -2146156040
+  +0x1CC invulnerability       0x00000000  0
+  +0x220 HitCounter            0x00000000  0
+  +0x224 TouchingEntity        0x00000000  0
+  PosX +0x114                  0x00640000  6553600
+  PosY +0x118                  0x00640000  6553600
+  PosZ +0x11C                  0x00000001  1
+  ModX +0x1E4                  0xFFF60000  -655360
+  ModY +0x1E8                  0xFFF90000  -458752
+  ModZ +0x1EC                  0x00000000  0
+  W +0x1F0                     0x0014FFFF  1376255
+  H +0x1F4                     0x000EFFFF  983039
+  D +0x1F8                     0x001FFFFF  2097151
+  [0x80127000] boots level     0
+  [0x80176318] -> g_playerStats 0x801EB82C: Hp 10, HpMax 10, WeaponId +0xA 1, armour +0xC 0
+  [0x80134360] last entity     0
+  [0x800DC4B8] state flags     0x0
+  [0x80127108] [0x8012710C] [0x80127110] [0x80127114]: 0 0 0x0 0
+  balance sheet bytes at 0x801441F8: FF A9 0A 00 00 00 00 00 00 00 00 00 00 00 4D 00
+  working copy 0x80127008 bytes:   FF 0F 00 10 10 10 10 10 10 10 10 10 10 10 00 FF
+kit added by the new-game loop: [1, 17, 25]
+hero (slot 0) status 2 alone, [0x80134360] preset 7          -> 0 (expected 0: the hero is the last non-empty slot)
+every slot empty, [0x80134360] preset 7                       -> 0
+slots 0:2, 5:1, 9:3, 20:0                                     -> 9 (expected 9)
+slot 3 status 4 + staging entity (status 1, marker at +0x100)  -> [0x80134360] 0; slot 3: status 1, index +0 = 3, +0x100 = 0xABCD1234, +0x290 = 0x5A5A5A5A
+second run of the pass on the same array                      -> 3 (the copied slot is now counted)
+the hero slot is read by the pass (its +0x10), and the pass writes the one word [0x80134360] that 0x800384F4 and 0x800386D0 use as the entity count.
+S-A hold sequence: 24 ticks equal (4 words each)
+S-B hold sequence: 27 ticks equal (4 words each)
+long holds (repeat after 20 ticks): 128 ticks equal (4 words each)
+random sequence 00 (300 ticks): 300 ticks equal (4 words each)
+random sequence 01 (300 ticks): 300 ticks equal (4 words each) ... VERDICT: the port equals the binary routine on every tick of every sequence
+# D1 mutation tests: does the comparison with the annex notice a change of the oracle?
+# columns: mutation | S-A verdict (differences) | S-B verdict (differences) | trace identical to baseline (compared fields)
+baseline                                                   | S-A PASS (0 differences)         | S-B PASS (0 differences)         | same/same
+skip pass 0x80038634 (entity slots)                        | S-A PASS (0 differences)         | S-B PASS (0 differences)         | same/same
+skip pass 0x80038998 (counters)                            | S-A PASS (0 differences)         | S-B PASS (0 differences)         | same/same
+skip pass 0x800384F4 (lists)                               | S-A FAIL (84 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+skip pass 0x80038E18 (animation)                           | S-A FAIL (102 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+skip pass 0x80038364 (physics)                             | S-A FAIL (83 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+skip pass 0x800386D0 (events: MovePlayer)                  | S-A FAIL (102 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+gravity 100 instead of 128                                 | S-A FAIL (56 differences; first: tick 2) | S-B FAIL (62 differences; first: tick 2) | differs/differs
+ZViscosity 512 instead of 4096                             | S-A FAIL (64 differences; first: tick 2) | S-B FAIL (84 differences; first: tick 2) | differs/differs
+hero HP 0 (+0x14 = 0): death branch                        | S-A FAIL (105 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+hero +0x20 = 1: early exit                                 | S-A FAIL (84 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+hero +0x1CC = 5 (invulnerability counter)                  | S-A PASS (0 differences)         | S-B PASS (0 differences)         | same/same
+[0x800DC4B8] = 0x20: locked branch                         | S-A FAIL (102 differences; first: tick 1) | S-B RUN ERROR: warm-up did not reach two Moving ticks at ForceX 159744 | differs/n/a
+Cross held on every tick (no new edge after tick 1)        | S-A PASS (0 differences)         | S-B PASS (0 differences)         | same/same
+start direction 8 (left) instead of 24                     | S-A PASS (0 differences)         | S-B PASS (0 differences)         | same/same
+S-A after 3 idle ticks (hero at rest before tick 1)        | S-A VERDICT PASS: 216 values compared, 0 differences
+start position (101, 203) px                               | S-A PASS | S-B PASS
+start position (333, 500) px                               | S-A PASS | S-B PASS
+start position (23, 17) px                                 | S-A PASS | S-B PASS
+start position (700, 300) px                               | S-A PASS | S-B PASS
+executed distinct instructions: 3432; executed loads checked: 702; loaded register read by the next instruction: 0
+VERDICT: no executed load is followed by a use of its register: ignoring the load delay slot does not change the result

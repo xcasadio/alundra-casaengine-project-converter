@@ -1,0 +1,25 @@
+# D1 comparison: oracle (emulated ALUN_CD.EXE) vs docs/plan-e19-d2c-valeurs.md B.1, field by field
+# the annex PosZ is in the DLL convention; the oracle PosZ minus 1 is compared (plan: annex + 1 = binary)
+== S-A: 24 oracle ticks vs 24 annex ticks
+   Current animation per tick     24/24 equal
+   ForceZ per tick                24/24 equal
+   PosZ (DLL, no +1) per tick     24/24 equal
+   ForceX per tick                24/24 equal
+   ForceY per tick                24/24 equal
+   PosX - start (16.16)           24/24 equal
+   PosY - start (16.16)           24/24 equal
+   IsOnGround after tick          24/24 equal
+   CollidedWithEntityZ            24/24 equal
+   VERDICT PASS: 216 values compared, 0 differences
+== S-B: 24 oracle ticks vs 24 annex ticks
+   Current animation per tick     24/24 equal
+   ForceZ per tick                24/24 equal
+   PosZ (DLL, no +1) per tick     24/24 equal
+   ForceX per tick                24/24 equal
+   ForceY per tick                24/24 equal
+   PosX - start (16.16)           24/24 equal
+   PosY - start (16.16)           24/24 equal
+   IsOnGround after tick          24/24 equal
+   CollidedWithEntityZ            24/24 equal
+   VERDICT PASS: 216 values compared, 0 differences
+OVERALL: PASS

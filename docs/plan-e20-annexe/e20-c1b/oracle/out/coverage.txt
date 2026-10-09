@@ -1,0 +1,35 @@
+# executed instructions of the functions under test (union over every machine of the baseline runs, emu.py); an instruction is listed as not executed when no run reached it
+ComputeNewHp 0x8003A374                                                                        56 of  138 executed
+      not executed: 0x8003A3E0-0x8003A524
+ResolveBalanceTarget 0x8004464C                                                                83 of  117 executed
+      not executed: 0x80044660-0x80044678, 0x80044790-0x800447C8, 0x800447DC-0x80044808
+UpdateItemEffectState 0x800307E8 (records, sheet; debug printing from 0x80030D40)             280 of  342 executed
+      not executed: 0x80030A78-0x80030AC8, 0x80030C88-0x80030D28
+UpdateItemEffectState 0x80030D40-0x80030FC4 (debug printing only, gated by [0x800DC058] < 0)   17 of  161 executed
+      not executed: 0x80030D54-0x80030F90
+0x800445C0 item record chooser                                                                 23 of   36 executed
+      not executed: 0x800445D0-0x800445E0, 0x8004461C-0x80044638
+0x8004E030 GetItemIdFromCurrentWeapon                                                          50 of   50 executed
+0x8004E0F8 SetItemIdFromCurrentItemId                                                          28 of   28 executed
+0x8004E18C GetItemIdFromSlotId                                                                 48 of   53 executed
+      not executed: 0x8004E1A4-0x8004E1B4
+0x8004E428 GetNumberOfItem                                                                     18 of   23 executed
+      not executed: 0x8004E450-0x8004E460
+0x8004E484 SetPlayerWeaponId                                                                   19 of   21 executed
+      not executed: 0x8004E4B8-0x8004E4BC
+0x8004E4D8 SetCurrentItemId                                                                    17 of   22 executed
+      not executed: 0x8004E500-0x8004E510
+0x8004E530 AddItem                                                                             30 of   35 executed
+      not executed: 0x8004E558-0x8004E568
+0x8004205C program runner (loop and dispatch)                                                 112 of  211 executed
+      not executed: 0x800420A4-0x800420B0, 0x80042108-0x800421B8, 0x800421C4-0x8004222C, 0x80042294-0x800422B0, 0x8004230C-0x80042320, 0x8004234C-0x80042350, 0x8004235C-0x80042374
+0x8003C914 search entry                                                                        12 of   16 executed
+      not executed: 0x8003C930-0x8003C93C
+0x8003C954 search (the codes used: record id, 0x80, 0x81, 0x82)                                95 of  371 executed
+      not executed: 0x8003CAAC-0x8003CEF8
+0x80039BD0 map record lookup                                                                   20 of   26 executed
+      not executed: 0x80039C18-0x80039C2C
+0x71 handler 0x8003FA10                                                                         5 of    5 executed
+0x86 handler 0x8003FFD4                                                                        29 of   29 executed
+0x87 handler 0x80040048                                                                        50 of   50 executed
+0x95 handler 0x800407C0                                                                       122 of  122 executed

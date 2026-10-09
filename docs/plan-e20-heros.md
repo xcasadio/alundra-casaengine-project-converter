@@ -459,7 +459,8 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | E20.a (§1.3) | Le tick de la DLL suit le binaire, dont E20.a est propriétaire : le monde pilote la boucle des ticks (D-E20-12) ; à chaque tick, le pad, les passes de la boîte, les événements de carte, puis le bloc des entités, l'inversion étant corrigée après la mesure A0 (D-E20-11) ; `MovePlayer` à chaque tick sur `AlundraTickPad` (D-E20-2) ; passe des compteurs (`+0x1C`, effacements, décomptes, `RidingEntity` gardé, D-E20-13) ; point d'accroche de la passe de coups (vide jusqu'à E20.c1) ; les trois appels dans l'ordre du binaire, les appels du prologue, `UpdateItemEffectState` et `0x8003634C` en bouchons (D-E20-14) ; O-E19-80 ; retrait des contournements du rythme par image | tests de structure (0, 1 et 2 ticks par image, coup écrit au tick N lu au tick N+1 puis effacé, rendu de l'image à jour, entités apparues en cours d'image) ; oracle D1 ; épingles justifiées ; traces re-mesurées ; sonde du vrai jeu | Marche, saut, échelle, dialogues, inventaire, livre : rien ne change, sauf le décalage d'un tick entre les entités et les événements de carte (D-E20-11) |
 | E20.b | Coup d'épée sans dégâts : table des armes en entier, `PlayerTryAttack` (relâchement d'abord, puis appui), garde `0x2000`, son 3, attaques au sol et en l'air, états d'attaque, priorités (Carré sur Croix, interaction d'abord) | oracle de `MovePlayer` ; arcs au vrai préfab | Carré frappe au sol et en l'air, avec le son ; le héros freine |
 | E20.c1a (§1.5) | La passe de coups : fiches d'équilibre (seuil `D`), PV des entités, `CurrentAttack` et boîte de l'image au tick (D-E20-6, règle de D6), `HitBox`, liste des cibles, `UpdateBalanceRecords` au point d'accroche d'E20.a (immunité, premier attaquant, plusieurs cibles), étincelles (effet 9) ; les effets 4 et 5 vont à E20.f | oracle de la passe avec le héros et un vrai Beannoïde (`e20-c1/oracle/`) ; les six cas de D2 ; un arc au vrai préfab sur la 14 | Un coup sur un Beannoïde de la 14 : étincelles ; au contact d'un ennemi, étincelles toutes les 25 ticks, sans perte de PV |
-| E20.c1b | Les conséquences : `ComputeNewHp` et `ResolveBalanceTarget` (fonctions pures, oracle D2), les trois fiches d'équipement (la partie d'`UpdateItemEffectState` dont dépendent les dégâts), `0x86`, `0x87`, `0x95`, `0x71`, les réactions scriptées (leviers de la 115, de la 116, bascule de la 117, leviers de la 44) | oracle D2 ; arcs des leviers posés directement | Les leviers réagissent au coup d'épée (quand on peut les atteindre : après le hall de la 115) |
+| E20.c1b-1 (§1.6) | Dégâts, équipement et opcodes : `ComputeNewHp` et `ResolveBalanceTarget` (fonctions pures), les trois fiches d'équipement (la partie d'`UpdateItemEffectState` dont dépendent les dégâts) et leur effacement au chargement de carte, `HitBox` tenue à chaque tick, `0x71`, `0x86`, `0x87`, `0x95` ; ferme la régression de c1a (programmes D qui décident sur un `Result` périmé faute de `0x87`) | oracle K1 à K3 (`e20-c1b/oracle/`) ; cas de D2 sur les PV ; `0x87` et `0x95` dans de vrais programmes D | Sur la 14, l'entité qui n'accepte que la bombe ne réagit plus à l'épée |
+| E20.c1b-2 | Les réactions scriptées : leviers de la 115 nord-ouest et de la 116, bascule de la 117, leviers de la 44, par des arcs posés directement (sans oracle du binaire : attentes tirées des programmes) ; le couvercle de la 362 attend la bombe (E20.h) | arcs | Les leviers réagissent au coup d'épée, quand on peut les atteindre (après le hall de la 115) |
 | *E14.a* (autre étape) | Muruta et Beannoïde (D-E20-4), planifiée après E20.c1 | plan d'E14 | Le hall de la 115 |
 | E20.c2 | Le héros touché : entrée `0x80031A68` (toucheur et cases dangereuses), `0x31`/`0x3A`, invulnérabilité `0x78` et clignotement, PV vers `PlayerStats` et le HUD, `UpdateItemEffectState` (table de défense, bottes, régénération) et le pilote `0x8003634C` en vrai (D-E20-14), chemin `controlFlags == 0x20`, pas de mort (D-E20-5) | oracle de `0x80031A68` ; arcs | Les cœurs baissent au contact, le héros clignote, il ne meurt pas |
 | E20.d | Course : les cinq états, entrée et sorties, cône, reprise, rebond, charge `0x04` (ses coups viennent d'E20.c1), escalade prioritaire, arrondi du stick (D-E20-8) ; le test épinglé « Triangle seul donne Idle » s'inverse | oracle de `MovePlayer` ; arcs | Courir, s'arrêter, reprendre, foncer, buter contre un mur, sauter d'un rebord ; sur l'eau profonde, le héros marche encore (la nage est E20.i) |
@@ -470,9 +471,10 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | E20.h | Objets du Rond (`TryUseItem`) : graines, bombes (gestionnaire E12), magie, potions ; le couvercle de la 362 | oracle ; arcs | La 362 |
 | E20.i | Nage (D-E20-16) : branche de pente 4 (`0x8003260C`), états `0x0F`, `0x1D`, `0x28`, `0x3A` et `0x3B`, plongée au front de bouton | oracle ; arcs | Nager et plonger en eau profonde (la 416 en a) |
 
-- **Ordre** : E20.0 → E20.a → E20.b → E20.c1a → E20.c1b → E20.c2 → E20.d → E20.e0 → E20.e → E20.f → E20.g → E20.h → E20.i.
-  E14.a se planifie dès qu'E20.c1b est faite (ses gestionnaires appellent `ComputeNewHp`). Le hall de la 115 devient jouable avec
-  E20.a, E20.b, E20.c1a, E20.c1b et E14.a. Découpage d'E20.c1 en c1a et c1b décidé le 2026-10-09 sur la proposition de la
+- **Ordre** : E20.0 → E20.a → E20.b → E20.c1a → E20.c1b-1 → E20.c1b-2 → E20.c2 → E20.d → E20.e0 → E20.e → E20.f → E20.g → E20.h → E20.i.
+  E14.a se planifie dès qu'E20.c1b-1 est faite (ses gestionnaires appellent `ComputeNewHp`). Le hall de la 115 devient jouable avec
+  E20.a, E20.b, E20.c1a, E20.c1b-1 et E14.a. E20.c1b est découpée en c1b-1 et c1b-2 le 2026-10-09, sur la proposition de la
+  contre-vérification de sa découverte (`docs/plan-e20-annexe/e20-c1b/check.md`). Découpage d'E20.c1 en c1a et c1b décidé le 2026-10-09 sur la proposition de la
   contre-vérification de la découverte (`docs/plan-e20-annexe/e20-c1/check.md`).
 - **Dépendances** : tout dépend d'E20.a (le rythme par tick, le relâchement, et la structure du tick, dont
   E20.a est propriétaire ; E20.c1 branche la passe de coups à la place qu'E20.a a créée). E20.c1 dépend
@@ -1098,7 +1100,10 @@ pseudo-aléatoire une fois par image (E20.e0) ; la réutilisation des cases libr
   la 127 sur le héros, fidèle au binaire. La sonde du vrai jeu montre la même nouvelle partie. P4 reportés : l'élargissement d'une unité
   n'est prouvé que par le cas 2 de D2 ; un test parcourt la plus courte des deux listes de cibles ; les tirages des étincelles se font
   quand l'étage les applique (E20.e0) ; `Pos + Mod` lu à la passe plutôt que la copie de la physique.
-- **Reste** : la recette en jeu de l'auteur sur la carte 14.
+- **Reste** : la recette en jeu de l'auteur sur la carte 14 (sans risque : l'entité de la 14 dont le programme D teste `0x87` est
+  immunisée contre l'épée). La découverte de c1b a trouvé une régression introduite par c1a (P2) : un coup fait tourner le programme D
+  de la cible, et des programmes D commencent par `0x87`, que la DLL sautait ; frappés à l'épée, les interrupteurs de feu des cartes 92,
+  110, 303, 337 et 343 décidaient donc sur un `Result` périmé. E20.c1b-1 la ferme (§1.6).
 
 #### Arrêts, budget, retour arrière
 
@@ -1106,6 +1111,100 @@ pseudo-aléatoire une fois par image (E20.e0) ; la réutilisation des cases libr
   toucher au moteur ; un changement de l'ordre de fin d'image (D-E19-13) qui ne serait pas propre à la passe.
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.c1a.
+
+### 1.6 E20.c1b-1 — Dégâts, équipement et opcodes des coups ⏳
+
+**Révision 1 (2026-10-09).** Relecture : **REVISE** : la cible du test de régression (l'entité de la 14 au programme D `@544`) est
+immunisée contre l'épée, le test ne pouvait pas échouer. Corrigé : cible réelle touchable (l'interrupteur de feu de la 303, entité 4),
+`Result` partagé non nul posé avant le coup, échec constaté avant K4, recette réécrite.
+Relecture neuve de la révision 1 : **READY** (2026-10-09). Exécution lancée sans soumission à l'auteur, à sa demande.
+
+**But.** Les fonctions de dégâts du binaire existent dans la DLL et donnent les mêmes PV que l'oracle ; les trois fiches d'équipement
+sont tenues comme dans le binaire ; les opcodes `0x71`, `0x86`, `0x87` et `0x95` sont portés. Surtout, la régression introduite par E20.c1a
+est fermée : depuis c1a, un coup pose `TouchingEntity`, donc le programme D de la cible tourne ; 181 de ces programmes commencent par
+`0x87`, que la DLL sautait, si bien qu'ils décidaient sur un `Result` périmé (P2 introduit par c1a, trouvé par la contre-vérification de
+la découverte de c1b, bloquant : corrigé ici en priorité).
+
+**Faits porteurs** (découverte du 2026-10-09, `docs/plan-e20-annexe/e20-c1b/`, contre-vérifiée) :
+- [binaire] `ResolveBalanceTarget` (`0x8004464C`) : fiche nulle, attaque nulle ou attribut 0 : PV inchangés ; `r` = octet `2 + (attr &
+  0xF)` de la fiche de la cible ; `r & 0xC0 == 0x40` : 0 ; `0x80` ou `0xC0` : inchangés ; sinon `((puissance + somme des fiches
+  d'équipement si attr & 0x80) × r) >> 4`, au moins 1, PV planchers à 0. Pour chaque fiche d'équipement non nulle :
+  `Attacks[g + 1 < count ? g + 1 : 0].Power`, `g` étant l'animation figée `0x80146DF8`. Le terme d'équipement vaut pour tout attaquant,
+  pas seulement le héros. `ComputeNewHp` (`0x8003A374`) : la fiche est `0x80127008` pour le héros (E20.c2), `+0x1C4` sinon ; l'attaque
+  est le `+0x1C8` du `TouchingEntity` au moment de l'appel, sans test de nullité ; il rend `PV == 0`.
+- [binaire] Fiches d'équipement (`0x800307E8`, étapes 2 à 5) : effacement des six mots `0x80146E00`-`0x80146E14` ; fiche 0 = l'armure
+  possédée de plus haut numéro (catégorie 2, balayage de `0x61` à 0) ; fiche 1 = l'arme (`0x8004E030`, catégorie 1) ; fiche 2 = l'objet
+  (`0x8004E0F8`, catégorie 3), qui réécrit `ItemId` ; catégorie = `byte[0x800C5F7C + 8 n + 6] & 0x7F`, déjà exportée
+  (`AlundraItemTables.DropField3`, égale au binaire sur les 98 lignes) ; fiche de l'objet `n` = entrée `n + 0x1E` sans le remappage de
+  `0x80044550` (`0x800445C0`, garde `n < 0x62`) ; les trois pointeurs sont remis à zéro à chaque chargement de carte (`0x80044520`).
+- [binaire] Opcodes : `0x71` (taille 1) : `Result` = `HitCounter` de l'entité ; `0x86` (taille 4, `[recherche, lo, hi]`) **pose**
+  `+0x1CC = lo | hi << 8` sur chaque entité trouvée, sans toucher `Result` ; `0x87` (taille 3, `[recherche, typeIdx]`) : `Result` 1 si une
+  entité trouvée a un `TouchingEntity` dont la boîte et l'attaque existent, l'attribut non nul et le quartet égal à
+  `byte[0x80098FA4 + typeIdx]`, sinon 0 ; `0x95` (taille 10, `[x, y, z, wx, hy, _, maskLo, maskHi, typeIdx]`) : rectangle X = x·24,
+  Y = y·16, Z = z·16 px, tailles X et Z = wx·24, Y = hy·16 ; masque nul : 0 ; balaie les cases 0 à max (statut 2 ou 3, `+0x20 == 0`,
+  boîte, attaque non nulle, `Flags & masque`, quartet) avec la `HitBox` **rangée** (`+0x1FC`, écrite par `0x80038064` après le mouvement
+  et à la création) et le recouvrement élargi d'une unité. La table des quartets a 12 octets lus : `01 02 03 04 05 05 06 07 58 D1 03
+  80` (les indices 8 à 11 de la carte 226 lisent au-delà ; seul l'indice 10 peut correspondre, comme le quartet 3).
+- [binaire] Les programmes A, D, E et F partagent un état global (`0x8013D9E8`, `Result` en `0x8013DA14`) ; la DLL le modélise déjà
+  (`_slotAScratchState`) ; 181 des 182 sites de `0x87` sont dans des programmes D.
+- [oracle] `docs/plan-e20-annexe/e20-c1b/oracle/out/` (`python -B docs/plan-e20-annexe/e20-c1b/oracle/tools/run_c1b.py`) : K1 (fiches et
+  feuille du héros pour six inventaires), K2 (PV d'un Beannoïde touché pour chaque inventaire, réponses 0, `0x40`, `0x80`, `0xC0`,
+  attaque sans le bit `0x80`, attaquant autre que le héros, règle d'index sur une fiche de trois attaques), K3 (les quatre opcodes, cas
+  limites compris). Avec l'épée d'acier ou l'épée sacrée, le héros frappe avec `0x3F` ou `0x49` : la puissance de l'arme compte deux
+  fois (attaque et fiche).
+
+**Périmètre.** DLL `Alundra/Scripts/` : une classe des fonctions de dégâts (pures, entrées passées en paramètres), la sélection d'une
+fiche d'équipement, les trois fiches tenues par le monde avec un accès par l'hôte et par le contexte d'entité, leur remplissage dans
+`UpdateItemEffectState` (étapes 2 à 5 seulement) et leur effacement au chargement de carte, la tenue de `HitBox` à chaque tick pour
+toute entité qui a une boîte et à la création, les quatre opcodes, la table des quartets ; l'étiquette fausse de `0x86`
+(`EventOpcodeSizeTable.cs`) et les commentaires périmés (`AlundraEventProgramRunner.cs` vers 747, `AlundraWorldProxy.cs` vers 2727) ;
+tests ; ce plan.
+
+**Hors périmètre.** Les arcs des leviers (E20.c1b-2) ; la feuille du héros `0x80127008`, sa combinaison, les bottes, la régénération et
+les PV du héros (E20.c2) ; tout appel de `ComputeNewHp` en production (gestionnaires D natifs : E14.a ; entrée du héros : E20.c2) ;
+`0xB9` (reste sauté, question déjà ouverte en E19) ; le couvercle de la 362 (E20.h).
+
+#### Tâches
+
+- ⏳ **K1 — Fonctions de dégâts.** `ResolveBalanceTarget` et `ComputeNewHp` en fonctions pures (fiche de la cible, attaque, PV, les trois
+  fiches d'équipement, l'animation figée) ; l'octet 2 de la fiche pour un quartet 0.
+- ⏳ **K2 — Fiches d'équipement.** Sélection sans remappage (`n + 0x1E`, rien au-delà de `0x61`) ; les trois fiches remplies à chaque
+  tick dans `UpdateItemEffectState` (le reste du bouchon demeure pour E20.c2) ; le tick devient un second appelant de la réécriture
+  d'`ItemId`, comme le binaire ; effacement au chargement de carte.
+- ⏳ **K3 — `HitBox` rangée.** Écrite après le mouvement de chaque tick pour toute entité qui a une boîte (`0x80038064`, appelée par
+  `0x80038364`) et à la création (`0x80039F30`) ; la passe de coups de c1a garde son résultat (le verifier frais vérifie qu'aucun test de
+  c1a ne bouge).
+- ⏳ **K4 — Opcodes.** `0x71`, `0x86` (pose), `0x87`, `0x95` (avec la `HitBox` rangée, le +1 de Z de l'ADR-0026 sur le seul rectangle, la
+  table de 12 octets) dans `Dispatch`, tailles 1, 4, 3 et 10 ; corriger l'étiquette de `0x86` et les commentaires périmés.
+- ⏳ **K5 — Tests.**
+  - Contre l'oracle : K1 (les trois fiches de chaque inventaire), K2 (chaque valeur de PV, avec l'état réel de chaque arme), K3 (chaque
+    cas des quatre opcodes, indices 8 à 11 compris).
+  - Les cas de D2 sur les PV : la moitié de 3 (`0xC0` laisse les PV) et 4 (dégât minimal).
+  - `0x87` et `0x95` exécutés dans de vrais programmes D, par l'interpréteur et son état partagé.
+  - **Régression de c1a fermée**, sur une vraie cible que l'épée touche : l'interrupteur de feu de la carte 303, entité 4 (sprite 51 de
+    la carte, fiche d'équilibre 307, réponse 16 au quartet 1 de l'épée, donc ni `0x80` ni `0xC0` ; `MoreFlags` 129, classe A, que le
+    masque du héros atteint ; programme D `@700` = `0x87 [128, 6]` (le feu), puis un saut si `Result` est nul, puis la pose d'un drapeau
+    et `0x2B` ; données : `data-extracted/data/map_303.json`, `alundra-project/Data/balance.json`). Le test place d'abord un `Result`
+    partagé non nul (l'état partagé des programmes A, D, E et F, `_slotAScratchState`), puis le héros frappe l'interrupteur à l'épée :
+    sur le code d'avant K4, le drapeau est posé (on le constate avant d'ajouter K4) ; avec K4, `0x87` rend 0 et rien n'est posé. Mêmes
+    interrupteurs sur les cartes 92, 110, 337 et 343 (recensement par `0x87` en tête du programme D, cible touchable par l'épée : 60
+    entités sur 143).
+
+#### Acceptation
+
+- Build Release puis Debug ; `Alundra.Tests` sans échec ; aucun changement du moteur ; traces du héros et de l'intro inchangées ;
+  aucun test de c1a ne change.
+- K5 égale l'oracle sur chaque valeur nommée.
+- Verifier frais.
+- Recette en jeu de l'auteur : rien de nouveau à voir tant qu'aucune carte à interrupteurs de feu (92, 110, 303, 337, 343) n'est
+  atteignable ; alors, un coup d'épée sur un interrupteur de feu fait des étincelles et ne l'allume pas.
+
+#### Arrêts, budget, retour arrière
+
+- **Arrêts** : un écart à l'oracle que le binaire n'explique pas ; un test existant qui change sans raison du binaire ; un besoin de
+  toucher au moteur.
+- **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
+- **Retour arrière** : `git revert` des commits d'E20.c1b-1.
 
 ---
 

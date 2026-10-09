@@ -1,0 +1,76 @@
+--- bank127 anim0 left: direction left, first-frame delay 0x80, 1 quad(s), 600 ticks
+    SpriteRef.Images over all ticks: ['0x80181402'] (frame 0 image set = 0x80181402); image count values [1]
+    AnimCompleteCounter at end: 0; distinct frame-ptr offsets [17]
+    tick    0 dir 2 NextFrameDelay 0x00000000 framePtr+17 counter 0 images 0x80181402 n 1 force 0
+    tick    1 dir 2 NextFrameDelay 0xFFFFFFFF framePtr+17 counter 0 images 0x80181402 n 1 force 0
+    tick    2 dir 2 NextFrameDelay 0xFFFFFFFE framePtr+17 counter 0 images 0x80181402 n 1 force 0
+    tick    3 dir 2 NextFrameDelay 0xFFFFFFFD framePtr+17 counter 0 images 0x80181402 n 1 force 0
+    tick  598 dir 2 NextFrameDelay 0xFFFFFDAA framePtr+17 counter 0 images 0x80181402 n 1 force 0
+    tick  599 dir 2 NextFrameDelay 0xFFFFFDA9 framePtr+17 counter 0 images 0x80181402 n 1 force 0
+--- bank127 anim0 right: direction right, first-frame delay 0x80, 1 quad(s), 600 ticks
+    SpriteRef.Images over all ticks: ['0x80181402'] (frame 0 image set = 0x80181402); image count values [1]
+    AnimCompleteCounter at end: 0; distinct frame-ptr offsets [23]
+    tick    0 dir 3 NextFrameDelay 0x00000000 framePtr+23 counter 0 images 0x80181402 n 1 force 0
+    tick    1 dir 3 NextFrameDelay 0xFFFFFFFF framePtr+23 counter 0 images 0x80181402 n 1 force 0
+    tick    2 dir 3 NextFrameDelay 0xFFFFFFFE framePtr+23 counter 0 images 0x80181402 n 1 force 0
+    tick    3 dir 3 NextFrameDelay 0xFFFFFFFD framePtr+23 counter 0 images 0x80181402 n 1 force 0
+    tick  598 dir 3 NextFrameDelay 0xFFFFFDAA framePtr+23 counter 0 images 0x80181402 n 1 force 0
+    tick  599 dir 3 NextFrameDelay 0xFFFFFDA9 framePtr+23 counter 0 images 0x80181402 n 1 force 0
+--- bank127 anim0 down: direction down, first-frame delay 0x82, 1 quad(s), 600 ticks
+    SpriteRef.Images over all ticks: ['0x80181402'] (frame 0 image set = 0x80181402); image count values [1]
+    AnimCompleteCounter at end: 299; distinct frame-ptr offsets [5]
+    tick    0 dir 0 NextFrameDelay 0x00000002 framePtr+5 counter 0 images 0x80181402 n 1 force 0
+    tick    1 dir 0 NextFrameDelay 0x00000001 framePtr+5 counter 0 images 0x80181402 n 1 force 0
+    tick    2 dir 0 NextFrameDelay 0x00000002 framePtr+5 counter 1 images 0x80181402 n 1 force 0
+    tick    3 dir 0 NextFrameDelay 0x00000001 framePtr+5 counter 1 images 0x80181402 n 1 force 0
+    tick  598 dir 0 NextFrameDelay 0x00000002 framePtr+5 counter 299 images 0x80181402 n 1 force 0
+    tick  599 dir 0 NextFrameDelay 0x00000001 framePtr+5 counter 299 images 0x80181402 n 1 force 0
+--- bank151 anim1 down: direction down, first-frame delay 0x80, 4 quad(s), 600 ticks
+    SpriteRef.Images over all ticks: ['0x80181402'] (frame 0 image set = 0x80181402); image count values [4]
+    AnimCompleteCounter at end: 0; distinct frame-ptr offsets [5]
+    tick    0 dir 0 NextFrameDelay 0x00000000 framePtr+5 counter 0 images 0x80181402 n 4 force 0
+    tick    1 dir 0 NextFrameDelay 0xFFFFFFFF framePtr+5 counter 0 images 0x80181402 n 4 force 0
+    tick    2 dir 0 NextFrameDelay 0xFFFFFFFE framePtr+5 counter 0 images 0x80181402 n 4 force 0
+    tick    3 dir 0 NextFrameDelay 0xFFFFFFFD framePtr+5 counter 0 images 0x80181402 n 4 force 0
+    tick  598 dir 0 NextFrameDelay 0xFFFFFDAA framePtr+5 counter 0 images 0x80181402 n 4 force 0
+    tick  599 dir 0 NextFrameDelay 0xFFFFFDA9 framePtr+5 counter 0 images 0x80181402 n 4 force 0
+--- bank151 anim1 left: direction left, first-frame delay 0x80, 4 quad(s), 600 ticks
+    SpriteRef.Images over all ticks: ['0x80181402'] (frame 0 image set = 0x80181402); image count values [4]
+    AnimCompleteCounter at end: 0; distinct frame-ptr offsets [17]
+    tick    0 dir 2 NextFrameDelay 0x00000000 framePtr+17 counter 0 images 0x80181402 n 4 force 0
+    tick    1 dir 2 NextFrameDelay 0xFFFFFFFF framePtr+17 counter 0 images 0x80181402 n 4 force 0
+    tick    2 dir 2 NextFrameDelay 0xFFFFFFFE framePtr+17 counter 0 images 0x80181402 n 4 force 0
+    tick    3 dir 2 NextFrameDelay 0xFFFFFFFD framePtr+17 counter 0 images 0x80181402 n 4 force 0
+    tick  598 dir 2 NextFrameDelay 0xFFFFFDAA framePtr+17 counter 0 images 0x80181402 n 4 force 0
+    tick  599 dir 2 NextFrameDelay 0xFFFFFDA9 framePtr+17 counter 0 images 0x80181402 n 4 force 0
+--- bank151 anim1 up: direction up, first-frame delay 0x80, 4 quad(s), 600 ticks
+    SpriteRef.Images over all ticks: ['0x80181402'] (frame 0 image set = 0x80181402); image count values [4]
+    AnimCompleteCounter at end: 0; distinct frame-ptr offsets [11]
+    tick    0 dir 1 NextFrameDelay 0x00000000 framePtr+11 counter 0 images 0x80181402 n 4 force 0
+    tick    1 dir 1 NextFrameDelay 0xFFFFFFFF framePtr+11 counter 0 images 0x80181402 n 4 force 0
+    tick    2 dir 1 NextFrameDelay 0xFFFFFFFE framePtr+11 counter 0 images 0x80181402 n 4 force 0
+    tick    3 dir 1 NextFrameDelay 0xFFFFFFFD framePtr+11 counter 0 images 0x80181402 n 4 force 0
+    tick  598 dir 1 NextFrameDelay 0xFFFFFDAA framePtr+11 counter 0 images 0x80181402 n 4 force 0
+    tick  599 dir 1 NextFrameDelay 0xFFFFFDA9 framePtr+11 counter 0 images 0x80181402 n 4 force 0
+--- bank151 anim1 right: direction right, first-frame delay 0x8A, 4 quad(s), 600 ticks
+    SpriteRef.Images over all ticks: ['0x80181402'] (frame 0 image set = 0x80181402); image count values [4]
+    AnimCompleteCounter at end: 59; distinct frame-ptr offsets [23]
+    tick    0 dir 3 NextFrameDelay 0x0000000A framePtr+23 counter 0 images 0x80181402 n 4 force 0
+    tick    1 dir 3 NextFrameDelay 0x00000009 framePtr+23 counter 0 images 0x80181402 n 4 force 0
+    tick    2 dir 3 NextFrameDelay 0x00000008 framePtr+23 counter 0 images 0x80181402 n 4 force 0
+    tick    3 dir 3 NextFrameDelay 0x00000007 framePtr+23 counter 0 images 0x80181402 n 4 force 0
+    tick  598 dir 3 NextFrameDelay 0x00000002 framePtr+23 counter 59 images 0x80181402 n 4 force 0
+    tick  599 dir 3 NextFrameDelay 0x00000001 framePtr+23 counter 59 images 0x80181402 n 4 force 0
+--- bank127 anim0 left (wrap check): direction left, first-frame delay 0x80, 1 quad(s), 40 ticks, NextFrameDelay poked to 1 before tick 20
+    SpriteRef.Images over all ticks: ['0x80181402'] (frame 0 image set = 0x80181402); image count values [1]
+    AnimCompleteCounter at end: 1; distinct frame-ptr offsets [17]
+    tick    0 dir 2 NextFrameDelay 0x00000000 framePtr+17 counter 0 images 0x80181402 n 1 force 0
+    tick    1 dir 2 NextFrameDelay 0xFFFFFFFF framePtr+17 counter 0 images 0x80181402 n 1 force 0
+    tick    2 dir 2 NextFrameDelay 0xFFFFFFFE framePtr+17 counter 0 images 0x80181402 n 1 force 0
+    tick    3 dir 2 NextFrameDelay 0xFFFFFFFD framePtr+17 counter 0 images 0x80181402 n 1 force 0
+    tick   38 dir 2 NextFrameDelay 0xFFFFFFEE framePtr+17 counter 1 images 0x80181402 n 1 force 0
+    tick   39 dir 2 NextFrameDelay 0xFFFFFFED framePtr+17 counter 1 images 0x80181402 n 1 force 0
+    tick   19 dir 2 NextFrameDelay 0xFFFFFFED framePtr+17 counter 0 images 0x80181402 n 1
+    tick   20 dir 2 NextFrameDelay 0x00000000 framePtr+17 counter 1 images 0x80181402 n 1
+    tick   21 dir 2 NextFrameDelay 0xFFFFFFFF framePtr+17 counter 1 images 0x80181402 n 1
+    tick   22 dir 2 NextFrameDelay 0xFFFFFFFE framePtr+17 counter 1 images 0x80181402 n 1

@@ -1,0 +1,6 @@
+# K1, K2, K3 run twice: once through emu.py (the oracle) and once through mips.py (a separately written interpreter, via interp2.py).
+# Every call of a function of the binary made by the K scripts (and every tick) goes through the interpreter under test; the whole output text is compared.
+K1 output text (366 lines): identical
+K2 output text (395 lines): identical
+K3 output text (110 lines): identical
+calls of binary functions made through emu.py: 2605; through mips.py: 2605

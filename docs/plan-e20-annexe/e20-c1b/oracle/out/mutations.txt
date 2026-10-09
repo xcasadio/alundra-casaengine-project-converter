@@ -1,0 +1,61 @@
+# one-word patches of the emulated binary (RAM only); the expected change is written in tools/kmut.py before any run; CAUGHT = predicate holds and the independent model disagrees
+CAUGHT equipment power term dropped (0x8004473C addu t0,t0,v0 -> nop) [k2]
+         expected: hero hit on the natural Beannoid at HP 100: kit 98 -> 99 (the sword record no longer adds 1), Holy Sword (hero attack 8 + record 8) 84 -> 92
+         predicate holds; independent model disagrees with the patch
+CAUGHT minimum damage 1 forced (0x8004475C bnez a1 -> nop: the damage is always set to 1) [k2]
+         expected: Holy Sword natural hit at HP 100: 84 -> 99 (damage 1 whatever the formula gives); the kit stays at 98 -> 99
+         predicate holds; independent model disagrees with the patch
+CAUGHT kill response test removed (0x800446B4 beq a1,0x40 -> nop) [k2]
+         expected: the copy of the record with response 0x40 no longer kills: kit HP 9 stays 9 (baseline 0)
+         predicate holds; independent model disagrees with the patch
+CAUGHT response with no top bits no longer reaches the damage code (0x800446AC beqz a1 -> nop) [k2]
+         expected: a plain response 0x10 leaves HP unchanged: kit natural hit at HP 100 stays 100 (baseline 98)
+         predicate holds; independent model disagrees with the patch
+CAUGHT damage shift 4 -> 3 (0x80044758 sra a1,t4,4 -> sra a1,t4,3) [k2]
+         expected: the damage doubles: kit natural hit at HP 100: 98 -> 96
+         predicate holds; independent model disagrees with the patch
+CAUGHT attack index g + 1 -> g + 2 in the bound test (0x800446E4 addiu t3,v0,1 -> 2) [k2]
+         expected: synthetic 3-attack record, latch 1: the index test g+2 < 3 fails, Attacks[0] (+2) is used instead of Attacks[2] (+5): HP 93 -> 96
+         predicate holds; independent model disagrees with the patch
+CAUGHT the hero working sheet is used for every target (0x8003A3A0 bne s2,hero -> nop) [k2]
+         expected: the copy of the record with response 0x00 is ignored (the hero sheet response 0x10 is used): kit HP 100 -> 99 becomes 98
+         predicate holds; independent model disagrees with the patch
+CAUGHT the attack is read from the target itself instead of the toucher (0x8003A3BC lw a0,0x1c8(v1) -> 0x1c8(s2)) [k2]
+         expected: the Beannoid's own attack (attr 0x01, power 1, no equipment bit) is used: kit natural hero hit at HP 100: 98 -> 99
+         predicate holds; independent model disagrees with the patch
+CAUGHT record [0] category test removed (0x800308D0 bne v0,2 -> nop) [k1]
+         expected: record [0] of the kit becomes the highest owned item of any category, the normal boots (25): item word 47 -> 55
+         predicate holds; independent model disagrees with the patch
+CAUGHT response combination: 0x80 branch forced (0x80030BA4 bne a0,0x80 -> nop) [k1]
+         expected: every response of the kit sheet becomes 0x80: sheet[3] 0x10 -> 0x80
+         predicate holds; independent model disagrees with the patch
+CAUGHT weapon record stored in slot [2] (0x80030940 sw v0,8(v1) -> sw v0,0x10(v1)) [k1]
+         expected: kit record [1] pointer becomes null and record [2] gets the sword record pointer
+         predicate holds; independent model disagrees with the patch
+CAUGHT 0x86 stores zero (0x8004002C sw s0,0x1cc(v0) -> sw zero) [k3]
+         expected: after [0x86, 0, 0x2C, 0x01] T.+0x1CC stays 0 (baseline 0x12C)
+         predicate holds; independent model disagrees with the patch
+CAUGHT 0x87 nibble comparison removed (0x800400E0 bne v0,s0 -> nop) [k3]
+         expected: T touched by the hero sword (nibble 1) answers 1 to typeIdx 3 (nibble 4): baseline 0
+         predicate holds; independent model disagrees with the patch
+CAUGHT 0x95 mask test removed (0x800408BC beqz -> nop) [k3]
+         expected: the mask 0x0040 that no entity has now matches: Result 0 -> 1
+         predicate holds; independent model disagrees with the patch
+CAUGHT 0x95 reads typeIdx from byte 8 instead of byte 9 (0x80040824 lbu 9 -> 8) [k3]
+         expected: typeIdx 3 is taken as index 0 (maskHi = 0): the hero sword rectangle answers 1 (baseline 0)
+         predicate holds; independent model disagrees with the patch
+CAUGHT 0x95 Y size one raw unit larger (0x80040808 addiu t7,v1,-1 -> 0) [k3]
+         expected: the first outside point on the Y axis (d = size) is now inside: Result 0 -> 1
+         predicate holds; independent model disagrees with the patch
+CAUGHT 0x71 reads +0x224 instead of +0x220 (0x8003FA10 lw 0x220 -> 0x224) [k3]
+         expected: Result of 0x71 on the hero is his TouchingEntity (0) instead of HitCounter 2; on T it is the pointer to the hero 0x80127D30
+         predicate holds; independent model disagrees with the patch
+OK     CONTROL: debug-print read of ComputeNewHp patched (0x8003A3E0 lw -> nop; reached only when [0x800DC058] < 0) [k2]
+         expected: nothing changes: every value of the K2 probe equal
+         predicate holds; independent model still agrees with the patch
+OK     CONTROL: spark loop count 3 -> 2 (0x800391A8, the hit pass) [k3]
+         expected: nothing the K3 probe records changes (the sparks do not feed the opcodes)
+         predicate holds; independent model still agrees with the patch
+OK     CONTROL: spark loop count 3 -> 2 (0x800391A8) [k2]
+         expected: nothing the K2 probe records changes (damage does not depend on the sparks)
+         predicate holds; independent model still agrees with the patch

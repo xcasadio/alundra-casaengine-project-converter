@@ -1,0 +1,368 @@
+# K1: equipment records and hero sheet, real UpdateItemEffectState 0x800307E8 (every value read from the emulated machine; see notes.md)
+
+== K1 kit: new-game kit: Basic sword (1), cloth jacket (17), normal boots (25), weapon slot 1
+   before the call: stats WeaponId 1 ItemId 0; GetItemIdFromCurrentWeapon (0x8004E030) = 1; owned counts {1: 1, 17: 1, 25: 1}
+   after  the call: stats WeaponId 1 ItemId 0 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item 1; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x80144597 (blob + 1951), item word 47 (= item 17 + 0x1E); level 255 size 15 MaxHp 0; responses 10 10 10 10 10 10 10 10 10 10 10; AttackCount 0 []
+   record [1] at 0x80146E08: pointer 0x8014449D (blob + 1701), item word 31 (= item 1 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 1)]
+   record [2] at 0x80146E10: pointer 0x00000000 (null), item word 0
+   hero sheet 0x80127008 (255 bytes), base = record [0]; header FF 0F 00; responses [3..13] = 10 10 10 10 10 10 10 10 10 10 10; AttackCount [14] = 0
+      +000: FF 0F 00 10 10 10 10 10 10 10 10 10 10 10 00 FF
+      +016: 0F 00 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 00 FF 0F
+      +032: 00 08 08 08 08 08 08 08 08 08 08 08 00 FF 0F 00
+      +048: 04 04 04 04 04 04 04 04 04 04 04 00 FF 0F 00 40
+      +064: 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40
+      +080: 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40
+      +096: 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40
+      +112: 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40
+      +128: 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40
+      +144: 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40
+      +160: 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40
+      +176: 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40
+      +192: 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40
+      +208: 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40
+      +224: 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+      +240: FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 0; record words [(2148812183, 47), (2148811933, 31), (0, 0)] (SAME as the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+
+== K1 steel: Steel Edge (item 2) owned and equipped (slot 1, rank 1 beats the Basic sword), kit otherwise
+   before the call: stats WeaponId 1 ItemId 0; GetItemIdFromCurrentWeapon (0x8004E030) = 2; owned counts {1: 1, 2: 1, 17: 1, 25: 1}
+   after  the call: stats WeaponId 1 ItemId 0 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item 2; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x80144597 (blob + 1951), item word 47 (= item 17 + 0x1E); level 255 size 15 MaxHp 0; responses 10 10 10 10 10 10 10 10 10 10 10; AttackCount 0 []
+   record [1] at 0x80146E08: pointer 0x801444AE (blob + 1718), item word 32 (= item 2 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 2)]
+   record [2] at 0x80146E10: pointer 0x00000000 (null), item word 0
+   hero sheet 0x80127008 (255 bytes), base = record [0]; header FF 0F 00; responses [3..13] = 10 10 10 10 10 10 10 10 10 10 10; AttackCount [14] = 0
+      +000: FF 0F 00 10 10 10 10 10 10 10 10 10 10 10 00 FF
+      +016: 0F 00 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 00 FF 0F
+      +032: 00 08 08 08 08 08 08 08 08 08 08 08 00 FF 0F 00
+      +048: 04 04 04 04 04 04 04 04 04 04 04 00 FF 0F 00 40
+      +064: 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40
+      +080: 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40
+      +096: 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40
+      +112: 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40
+      +128: 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40
+      +144: 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40
+      +160: 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40
+      +176: 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40
+      +192: 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40
+      +208: 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40
+      +224: 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+      +240: FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 0; record words [(2148812183, 47), (2148811950, 32), (0, 0)] (SAME as the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+
+== K1 holy: Holy Sword Elnard (item 4) owned and equipped (slot 1, rank 3), kit otherwise
+   before the call: stats WeaponId 1 ItemId 0; GetItemIdFromCurrentWeapon (0x8004E030) = 4; owned counts {1: 1, 4: 1, 17: 1, 25: 1}
+   after  the call: stats WeaponId 1 ItemId 0 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item 4; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x80144597 (blob + 1951), item word 47 (= item 17 + 0x1E); level 255 size 15 MaxHp 0; responses 10 10 10 10 10 10 10 10 10 10 10; AttackCount 0 []
+   record [1] at 0x80146E08: pointer 0x801444D0 (blob + 1752), item word 34 (= item 4 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 8)]
+   record [2] at 0x80146E10: pointer 0x00000000 (null), item word 0
+   hero sheet 0x80127008 (255 bytes), base = record [0]; header FF 0F 00; responses [3..13] = 10 10 10 10 10 10 10 10 10 10 10; AttackCount [14] = 0
+      +000: FF 0F 00 10 10 10 10 10 10 10 10 10 10 10 00 FF
+      +016: 0F 00 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 00 FF 0F
+      +032: 00 08 08 08 08 08 08 08 08 08 08 08 00 FF 0F 00
+      +048: 04 04 04 04 04 04 04 04 04 04 04 00 FF 0F 00 40
+      +064: 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40
+      +080: 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40
+      +096: 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40
+      +112: 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40
+      +128: 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40
+      +144: 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40
+      +160: 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40
+      +176: 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40
+      +192: 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40
+      +208: 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40
+      +224: 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+      +240: FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 0; record words [(2148812183, 47), (2148811984, 34), (0, 0)] (SAME as the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+
+== K1 ring: ring 0x33 owned and set as the equipped item (SetCurrentItemId 0x33), kit otherwise
+   before the call: stats WeaponId 1 ItemId 51; GetItemIdFromCurrentWeapon (0x8004E030) = 1; owned counts {1: 1, 17: 1, 25: 1, 51: 1}
+   after  the call: stats WeaponId 1 ItemId 51 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item 1; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x80144597 (blob + 1951), item word 47 (= item 17 + 0x1E); level 255 size 15 MaxHp 0; responses 10 10 10 10 10 10 10 10 10 10 10; AttackCount 0 []
+   record [1] at 0x80146E08: pointer 0x8014449D (blob + 1701), item word 31 (= item 1 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 1)]
+   record [2] at 0x80146E10: pointer 0x80144795 (blob + 2461), item word 81 (= item 51 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 3)]
+   hero sheet 0x80127008 (255 bytes), base = record [0]; header FF 0F 00; responses [3..13] = 10 10 10 10 10 10 10 10 10 10 10; AttackCount [14] = 0
+      +000: FF 0F 00 10 10 10 10 10 10 10 10 10 10 10 00 FF
+      +016: 0F 00 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 00 FF 0F
+      +032: 00 08 08 08 08 08 08 08 08 08 08 08 00 FF 0F 00
+      +048: 04 04 04 04 04 04 04 04 04 04 04 00 FF 0F 00 40
+      +064: 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40
+      +080: 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40
+      +096: 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40
+      +112: 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40
+      +128: 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40
+      +144: 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40
+      +160: 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40
+      +176: 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40
+      +192: 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40
+      +208: 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40
+      +224: 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+      +240: FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 51; record words [(2148812183, 47), (2148811933, 31), (2148812693, 81)] (SAME as the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+
+== K1 leather: leather armour 0x12 owned (the cloth jacket 17 stays owned; the highest owned armour wins), kit otherwise
+   before the call: stats WeaponId 1 ItemId 0; GetItemIdFromCurrentWeapon (0x8004E030) = 1; owned counts {1: 1, 17: 1, 18: 1, 25: 1}
+   after  the call: stats WeaponId 1 ItemId 0 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item 1; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x801445A6 (blob + 1966), item word 48 (= item 18 + 0x1E); level 255 size 15 MaxHp 0; responses 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C; AttackCount 0 []
+   record [1] at 0x80146E08: pointer 0x8014449D (blob + 1701), item word 31 (= item 1 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 1)]
+   record [2] at 0x80146E10: pointer 0x00000000 (null), item word 0
+   hero sheet 0x80127008 (255 bytes), base = record [0]; header FF 0F 00; responses [3..13] = 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C; AttackCount [14] = 0
+      +000: FF 0F 00 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 00 FF
+      +016: 0F 00 08 08 08 08 08 08 08 08 08 08 08 00 FF 0F
+      +032: 00 04 04 04 04 04 04 04 04 04 04 04 00 FF 0F 00
+      +048: 40 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40
+      +064: 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40
+      +080: 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40
+      +096: 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40
+      +112: 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40
+      +128: 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40
+      +144: 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40
+      +160: 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40
+      +176: 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40
+      +192: 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40
+      +208: 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40
+      +224: 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+      +240: FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 0; record words [(2148812198, 48), (2148811933, 31), (0, 0)] (SAME as the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+
+== K1 noweapon: no weapon owned: Basic sword absent, weapon slot 1 still selected
+   before the call: stats WeaponId 1 ItemId 0; GetItemIdFromCurrentWeapon (0x8004E030) = -1; owned counts {1: 0, 17: 1, 25: 1}
+   after  the call: stats WeaponId 1 ItemId 0 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item -1; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x80144597 (blob + 1951), item word 47 (= item 17 + 0x1E); level 255 size 15 MaxHp 0; responses 10 10 10 10 10 10 10 10 10 10 10; AttackCount 0 []
+   record [1] at 0x80146E08: pointer 0x00000000 (null), item word 0
+   record [2] at 0x80146E10: pointer 0x00000000 (null), item word 0
+   hero sheet 0x80127008 (255 bytes), base = record [0]; header FF 0F 00; responses [3..13] = 10 10 10 10 10 10 10 10 10 10 10; AttackCount [14] = 0
+      +000: FF 0F 00 10 10 10 10 10 10 10 10 10 10 10 00 FF
+      +016: 0F 00 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 00 FF 0F
+      +032: 00 08 08 08 08 08 08 08 08 08 08 08 00 FF 0F 00
+      +048: 04 04 04 04 04 04 04 04 04 04 04 00 FF 0F 00 40
+      +064: 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40
+      +080: 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40
+      +096: 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40
+      +112: 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40
+      +128: 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40
+      +144: 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40
+      +160: 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40
+      +176: 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40
+      +192: 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40
+      +208: 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40
+      +224: 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+      +240: FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 0; record words [(2148812183, 47), (0, 0), (0, 0)] (SAME as the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+
+== K1 all: EXTRA: Holy Sword + leather armour 0x12 + ring 0x33 equipped (all three records non-null)
+   before the call: stats WeaponId 1 ItemId 51; GetItemIdFromCurrentWeapon (0x8004E030) = 4; owned counts {1: 1, 4: 1, 17: 1, 18: 1, 25: 1, 51: 1}
+   after  the call: stats WeaponId 1 ItemId 51 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item 4; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x801445A6 (blob + 1966), item word 48 (= item 18 + 0x1E); level 255 size 15 MaxHp 0; responses 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C; AttackCount 0 []
+   record [1] at 0x80146E08: pointer 0x801444D0 (blob + 1752), item word 34 (= item 4 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 8)]
+   record [2] at 0x80146E10: pointer 0x80144795 (blob + 2461), item word 81 (= item 51 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 3)]
+   hero sheet 0x80127008 (255 bytes), base = record [0]; header FF 0F 00; responses [3..13] = 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C; AttackCount [14] = 0
+      +000: FF 0F 00 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 00 FF
+      +016: 0F 00 08 08 08 08 08 08 08 08 08 08 08 00 FF 0F
+      +032: 00 04 04 04 04 04 04 04 04 04 04 04 00 FF 0F 00
+      +048: 40 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40
+      +064: 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40
+      +080: 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40
+      +096: 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40
+      +112: 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40
+      +128: 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40
+      +144: 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40
+      +160: 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40
+      +176: 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40
+      +192: 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40
+      +208: 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40
+      +224: 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+      +240: FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 51; record words [(2148812198, 48), (2148811984, 34), (2148812693, 81)] (SAME as the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+
+== K1 noarmour: EXTRA: no armour owned (record [0] null: the sheet comes from the hero +0x1C4 record)
+   before the call: stats WeaponId 1 ItemId 0; GetItemIdFromCurrentWeapon (0x8004E030) = 1; owned counts {1: 1, 17: 0, 25: 1}
+   after  the call: stats WeaponId 1 ItemId 0 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item 1; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x00000000 (null), item word 0
+   record [1] at 0x80146E08: pointer 0x8014449D (blob + 1701), item word 31 (= item 1 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 1)]
+   record [2] at 0x80146E10: pointer 0x00000000 (null), item word 0
+   hero sheet 0x80127008 (255 bytes), base = hero +0x1C4 record; header FF A9 0A; responses [3..13] = 00 00 00 00 00 00 00 00 00 00 00; AttackCount [14] = 77
+      +000: FF A9 0A 00 00 00 00 00 00 00 00 00 00 00 4D 00
+      +016: 00 00 00 00 00 00 00 00 00 85 02 00 00 00 00 00
+      +032: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+      +048: 00 81 01 00 00 82 03 00 00 81 01 00 00 82 03 00
+      +064: 00 81 08 82 0C 81 64 81 64 00 00 00 00 00 00 00
+      +080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+      +096: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+      +112: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 81
+      +128: 64 00 00 00 00 00 00 00 00 00 00 00 00 00 00 81
+      +144: 02 82 06 81 02 82 06 82 0C 81 04 00 00 81 04 00
+      +160: 00 00 00 81 08 00 00 81 08 FF 0F 00 80 80 80 80
+      +176: 80 80 80 80 80 80 80 00 FF 11 00 80 80 80 10 80
+      +192: 10 80 80 80 10 80 01 04 05 FF 11 00 80 80 80 80
+      +208: 80 80 80 80 80 80 80 01 83 01 FF 11 00 80 80 80
+      +224: 80 80 80 80 80 80 80 80 01 83 02 FF 0F 00 80 80
+      +240: 80 80 80 80 80 80 80 80 80 00 FF 0F 00 80 80
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 0; record words [(0, 0), (2148811933, 31), (0, 0)] (SAME as the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+
+== K1 bracelet: EXTRA: Super bracelet 0x35 equipped (responses 15)
+   before the call: stats WeaponId 1 ItemId 53; GetItemIdFromCurrentWeapon (0x8004E030) = 1; owned counts {1: 1, 17: 1, 25: 1, 53: 1}
+   after  the call: stats WeaponId 1 ItemId 53 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item 1; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x80144597 (blob + 1951), item word 47 (= item 17 + 0x1E); level 255 size 15 MaxHp 0; responses 10 10 10 10 10 10 10 10 10 10 10; AttackCount 0 []
+   record [1] at 0x80146E08: pointer 0x8014449D (blob + 1701), item word 31 (= item 1 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 1)]
+   record [2] at 0x80146E10: pointer 0x801447B7 (blob + 2495), item word 83 (= item 53 + 0x1E); level 255 size 15 MaxHp 0; responses 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F; AttackCount 0 []
+   hero sheet 0x80127008 (255 bytes), base = record [0]; header FF 0F 00; responses [3..13] = 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F; AttackCount [14] = 0
+      +000: FF 0F 00 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F 00 FF
+      +016: 0F 00 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 00 FF 0F
+      +032: 00 08 08 08 08 08 08 08 08 08 08 08 00 FF 0F 00
+      +048: 04 04 04 04 04 04 04 04 04 04 04 00 FF 0F 00 40
+      +064: 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40
+      +080: 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40
+      +096: 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40
+      +112: 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40
+      +128: 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40
+      +144: 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40
+      +160: 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40
+      +176: 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40
+      +192: 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40
+      +208: 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40
+      +224: 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+      +240: FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 53; record words [(2148812183, 47), (2148811933, 31), (2148812727, 83)] (SAME as the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+
+== K1 charm: EXTRA: Charm of Nava 0x36 equipped (response index 6 = 0x80)
+   before the call: stats WeaponId 1 ItemId 54; GetItemIdFromCurrentWeapon (0x8004E030) = 1; owned counts {1: 1, 17: 1, 25: 1, 54: 1}
+   after  the call: stats WeaponId 1 ItemId 54 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item 1; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x80144597 (blob + 1951), item word 47 (= item 17 + 0x1E); level 255 size 15 MaxHp 0; responses 10 10 10 10 10 10 10 10 10 10 10; AttackCount 0 []
+   record [1] at 0x80146E08: pointer 0x8014449D (blob + 1701), item word 31 (= item 1 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 1)]
+   record [2] at 0x80146E10: pointer 0x801447C6 (blob + 2510), item word 84 (= item 54 + 0x1E); level 255 size 15 MaxHp 0; responses 0F 0F 0F 0F 0F 80 0F 0F 0F 0F 0F; AttackCount 0 []
+   hero sheet 0x80127008 (255 bytes), base = record [0]; header FF 0F 00; responses [3..13] = 0F 0F 0F 0F 0F 80 0F 0F 0F 0F 0F; AttackCount [14] = 0
+      +000: FF 0F 00 0F 0F 0F 0F 0F 80 0F 0F 0F 0F 0F 00 FF
+      +016: 0F 00 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 00 FF 0F
+      +032: 00 08 08 08 08 08 08 08 08 08 08 08 00 FF 0F 00
+      +048: 04 04 04 04 04 04 04 04 04 04 04 00 FF 0F 00 40
+      +064: 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40
+      +080: 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40
+      +096: 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40
+      +112: 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40
+      +128: 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40
+      +144: 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40
+      +160: 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40
+      +176: 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40
+      +192: 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40
+      +208: 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40
+      +224: 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+      +240: FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 54; record words [(2148812183, 47), (2148811933, 31), (2148812742, 84)] (SAME as the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+
+== K1 tonic: EXTRA: Tonic 0x38 equipped (regeneration record, MaxHp field 200)
+   before the call: stats WeaponId 1 ItemId 56; GetItemIdFromCurrentWeapon (0x8004E030) = 1; owned counts {1: 1, 17: 1, 25: 1, 56: 1}
+   after  the call: stats WeaponId 1 ItemId 56 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item 1; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x80144597 (blob + 1951), item word 47 (= item 17 + 0x1E); level 255 size 15 MaxHp 0; responses 10 10 10 10 10 10 10 10 10 10 10; AttackCount 0 []
+   record [1] at 0x80146E08: pointer 0x8014449D (blob + 1701), item word 31 (= item 1 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 1)]
+   record [2] at 0x80146E10: pointer 0x801447E4 (blob + 2540), item word 86 (= item 56 + 0x1E); level 255 size 15 MaxHp 200; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 0 []
+   hero sheet 0x80127008 (255 bytes), base = record [0]; header FF 0F 00; responses [3..13] = 10 10 10 10 10 10 10 10 10 10 10; AttackCount [14] = 0
+      +000: FF 0F 00 10 10 10 10 10 10 10 10 10 10 10 00 FF
+      +016: 0F 00 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 00 FF 0F
+      +032: 00 08 08 08 08 08 08 08 08 08 08 08 00 FF 0F 00
+      +048: 04 04 04 04 04 04 04 04 04 04 04 00 FF 0F 00 40
+      +064: 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40
+      +080: 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40
+      +096: 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40
+      +112: 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40
+      +128: 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40
+      +144: 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40
+      +160: 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40
+      +176: 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40
+      +192: 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40
+      +208: 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40
+      +224: 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+      +240: FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 56; record words [(2148812183, 47), (2148811933, 31), (2148812772, 86)] (SAME as the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+
+== K1 rings2: EXTRA: rings 0x33 and 0x34 (same slot 20, ranks 0 and 1) owned, 0x33 set: the first call uses 0x33, then ItemId becomes 0x34
+   before the call: stats WeaponId 1 ItemId 51; GetItemIdFromCurrentWeapon (0x8004E030) = 1; owned counts {1: 1, 17: 1, 25: 1, 51: 1, 52: 1}
+   after  the call: stats WeaponId 1 ItemId 52 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item 1; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x80144597 (blob + 1951), item word 47 (= item 17 + 0x1E); level 255 size 15 MaxHp 0; responses 10 10 10 10 10 10 10 10 10 10 10; AttackCount 0 []
+   record [1] at 0x80146E08: pointer 0x8014449D (blob + 1701), item word 31 (= item 1 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 1)]
+   record [2] at 0x80146E10: pointer 0x80144795 (blob + 2461), item word 81 (= item 51 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(1, 3)]
+   hero sheet 0x80127008 (255 bytes), base = record [0]; header FF 0F 00; responses [3..13] = 10 10 10 10 10 10 10 10 10 10 10; AttackCount [14] = 0
+      +000: FF 0F 00 10 10 10 10 10 10 10 10 10 10 10 00 FF
+      +016: 0F 00 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 00 FF 0F
+      +032: 00 08 08 08 08 08 08 08 08 08 08 08 00 FF 0F 00
+      +048: 04 04 04 04 04 04 04 04 04 04 04 00 FF 0F 00 40
+      +064: 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40
+      +080: 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40
+      +096: 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40
+      +112: 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40
+      +128: 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40
+      +144: 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40
+      +160: 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40
+      +176: 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40
+      +192: 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40
+      +208: 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40
+      +224: 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+      +240: FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 52; record words [(2148812183, 47), (2148811933, 31), (2148812710, 82)] (DIFFERENT from the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+
+== K1 data: every item that can fill an equipment record (category 1 weapon -> record [1], 2 armour -> record [0], 3 accessory -> record [2]); record = entry item + 0x1E of the disc BALANCE.BIN at level D = 0
+   item 0x01 (  1) cat 1 slot  1 rank 0 | record blob+1701 level 255 size 17 MaxHp 0 responses all 40 | AttackCount 1 attacks [(1, 1)]
+   item 0x02 (  2) cat 1 slot  1 rank 1 | record blob+1718 level 255 size 17 MaxHp 0 responses all 40 | AttackCount 1 attacks [(1, 2)]
+   item 0x03 (  3) cat 1 slot  1 rank 2 | record blob+1735 level 255 size 17 MaxHp 0 responses all 40 | AttackCount 1 attacks [(1, 4)]
+   item 0x04 (  4) cat 1 slot  1 rank 3 | record blob+1752 level 255 size 17 MaxHp 0 responses all 40 | AttackCount 1 attacks [(1, 8)]
+   item 0x05 (  5) cat 1 slot  2 rank 0 | record blob+1769 level 255 size 15 MaxHp 0 responses all 40 | AttackCount 0 attacks []
+   item 0x06 (  6) cat 1 slot  2 rank 1 | record blob+1784 level 255 size 15 MaxHp 0 responses all 40 | AttackCount 0 attacks []
+   item 0x07 (  7) cat 1 slot  6 rank 1 | record blob+1799 level 255 size 15 MaxHp 0 responses all 40 | AttackCount 0 attacks []
+   item 0x08 (  8) cat 1 slot  1 rank 4 | record blob+1814 level 255 size 17 MaxHp 0 responses all 40 | AttackCount 1 attacks [(6, 50)]
+   item 0x09 (  9) cat 1 slot  3 rank 0 | record blob+1831 level 255 size 15 MaxHp 0 responses all 40 | AttackCount 0 attacks []
+   item 0x0A ( 10) cat 1 slot  3 rank 1 | record blob+1846 level 255 size 15 MaxHp 0 responses all 40 | AttackCount 0 attacks []
+   item 0x0E ( 14) cat 1 slot  4 rank 1 | record blob+1906 level 255 size 15 MaxHp 0 responses all 40 | AttackCount 0 attacks []
+   item 0x10 ( 16) cat 1 slot  5 rank 1 | record blob+1936 level 255 size 15 MaxHp 0 responses all 40 | AttackCount 0 attacks []
+   item 0x11 ( 17) cat 2 slot  7 rank 0 | record blob+1951 level 255 size 15 MaxHp 0 responses all 10 | AttackCount 0 attacks []
+   item 0x12 ( 18) cat 2 slot  7 rank 1 | record blob+1966 level 255 size 15 MaxHp 0 responses all 0C | AttackCount 0 attacks []
+   item 0x13 ( 19) cat 2 slot  7 rank 2 | record blob+1981 level 255 size 15 MaxHp 0 responses all 08 | AttackCount 0 attacks []
+   item 0x14 ( 20) cat 2 slot  7 rank 3 | record blob+1996 level 255 size 15 MaxHp 0 responses all 04 | AttackCount 0 attacks []
+   item 0x33 ( 51) cat 3 slot 20 rank 0 | record blob+2461 level 255 size 17 MaxHp 0 responses all 40 | AttackCount 1 attacks [(1, 3)]
+   item 0x34 ( 52) cat 3 slot 20 rank 1 | record blob+2478 level 255 size 17 MaxHp 0 responses all 40 | AttackCount 1 attacks [(1, 3)]
+   item 0x35 ( 53) cat 3 slot 21 rank 0 | record blob+2495 level 255 size 15 MaxHp 0 responses all 0F | AttackCount 0 attacks []
+   item 0x36 ( 54) cat 3 slot 31 rank 1 | record blob+2510 level 255 size 15 MaxHp 0 responses 0F 0F 0F 0F 0F 80 0F 0F 0F 0F 0F | AttackCount 0 attacks []
+   item 0x37 ( 55) cat 3 slot 22 rank 0 | record blob+2525 level 255 size 15 MaxHp 200 responses all 40 | AttackCount 0 attacks []
+   item 0x38 ( 56) cat 3 slot 22 rank 1 | record blob+2540 level 255 size 15 MaxHp 200 responses all 40 | AttackCount 0 attacks []
+   AttackCount distribution over these items: 0: 15 items, 1: 7 items (so the attack index rule g + 1 < count ? g + 1 : 0 always selects Attacks[0] for real equipment)
+
+== K1 dependency of the outputs on the input bytes (inventory "all": Holy Sword in slot [1], leather armour in slot [0], ring 0x33 in slot [2])
+   structure measured (flip of 1 bit pattern in {0x01, 0x40, 0x80} of one blob byte, real function re-run): every sheet byte i outside [3..13] changed only with byte i of record [0] (the 255-byte copy), every response byte i in [3..13] only with byte i of record [0], [1] and [2]; deviations: none; record pointers / item words / boots depend on no record byte: confirmed
+   record [0] byte 3 (response of nibble 1): xor 0x01: sheet[3]; xor 0x40: sheet[3]; xor 0x80: sheet[3]
+   record [1] byte 3 (response of nibble 1): xor 0x01: no change; xor 0x40: sheet[3]; xor 0x80: no change
+   record [2] byte 3 (response of nibble 1): xor 0x01: no change; xor 0x40: sheet[3]; xor 0x80: no change
+   record [0] header bytes (level, size, MaxHp, AttackCount): byte 0: sheet[0] | sheet[0] | sheet[0]; byte 1: sheet[1] | sheet[1] | sheet[1]; byte 2: sheet[2] | sheet[2] | sheet[2]; byte 14: sheet[14] | sheet[14] | sheet[14]
+   record [1] header bytes (level, size, MaxHp, AttackCount): byte 0: - | - | -; byte 1: - | - | -; byte 2: - | - | -; byte 14: - | - | -
+   record [2] header bytes (level, size, MaxHp, AttackCount): byte 0: - | - | -; byte 1: - | - | -; byte 2: - | - | -; byte 14: - | - | -
+   inventory side (kit + one more item n; then n also set as the equipped item):
+      items 0x0-0x1,0x5-0x7,0x9-0x11,0x15-0x19,0x1D-0x32,0x39-0x62: AddItem changes records none; AddItem + SetCurrentItemId changes records none
+      items 0x33-0x38: AddItem changes records none; AddItem + SetCurrentItemId changes records [2]
+      items 0x1A-0x1C: AddItem changes records none, boots level; AddItem + SetCurrentItemId changes records none
+      items 0x12-0x14: AddItem changes records [0], hero sheet; AddItem + SetCurrentItemId changes records [0]
+      items 0x2-0x4,0x8: AddItem changes records [1]; AddItem + SetCurrentItemId changes records [1]
+   weapon slot side (kit, SetPlayerWeaponId(s)): s=-1 -> changes records [1] (record [1] item word 0); s=1 -> changes records none (record [1] item word 31); s=2 -> changes records [1] (record [1] item word 0); s=3 -> changes records [1] (record [1] item word 0); s=4 -> changes records [1] (record [1] item word 0); s=5 -> changes records [1] (record [1] item word 0); s=6 -> changes records [1] (record [1] item word 0)
+   inventory-side model comparison: every one of the 99 AddItem, 99 AddItem+SetCurrentItemId and 7 SetPlayerWeaponId variants equals the model
+   response combination sweep: 4730 (b, A, B) triples (9 x 9 x 9 grid + 4000 random, seed 20261010), 11 per call of the real function: all equal to kmodel.combine_response; result values seen: 34 distinct (0x80 x 2593, 0x40 x 511, 0x1F x 929, 0x00 x 118, 0x10 x 58)
