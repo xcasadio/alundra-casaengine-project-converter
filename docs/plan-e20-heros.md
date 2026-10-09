@@ -821,7 +821,7 @@ fixe du moteur (D-E20-12) ; les modes 2 et suivants de `0x2F`.
 - **E20.c1** : la passe de coups se branche au point d'accroche d'A3, dans l'ordre des cases.
 - **E20.e** : la réserve d'effets reste par image jusque-là.
 
-### 1.4 E20.b — Le coup d'épée, sans dégâts 🧪 (faite et CONFIRMED le 2026-10-09, `0766cf8`, `0295395`, `768a6f6` ; reste la recette en jeu de l'auteur)
+### 1.4 E20.b — Le coup d'épée, sans dégâts ✅ (faite et CONFIRMED le 2026-10-09, `0766cf8`, `0295395`, `768a6f6` ; recette en jeu validée par l'auteur le 2026-10-09)
 
 **Révision 1 (2026-10-09).** Relecture : **REVISE** (pas de trace d'oracle du coup en l'air en marchant ; pas de test sur le vrai
 préfab ni sur les tables d'objets du monde ; scénarios comparés mal nommés). Corrigé : trace `AT12` ajoutée à l'oracle (même
@@ -953,7 +953,7 @@ apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant
 - **Vérification** : verifier frais **CONFIRMED** (aucun P0 à P2) ; P3 : les exclusions d'AT8 étaient à écrire dans le plan (fait
   ici) ; P4 : les points ci-dessus, et un changement de direction seul après un changement de cible dans la même image ne reçoit
   toujours pas de seconde impulsion (antérieur).
-- **Reste** : la recette en jeu de l'auteur.
+- **Recette en jeu** : validée par l'auteur le 2026-10-09 (« recette en jeu d'E20.b OK »).
 
 #### Arrêts, budget, retour arrière
 
