@@ -63,15 +63,15 @@ public class AlundraStoryChainSkippedOpcodesTests
     }
 
     [Fact]
-    public void Rule4_ScenePredicatesAreOnlyAtTheOneKnownSite()
+    public void Rule4_NoScenePredicateIsSkipped_NoKnownSiteIsLeft()
     {
         var offenders = Rule4ScenePredicates(TheList());
 
-        Assert.True(offenders.Count == 0, $"{offenders.Count} level-S predicate or branch line(s) beyond the one known site: {Show(offenders)}");
+        Assert.True(offenders.Count == 0, $"{offenders.Count} level-S predicate or branch line(s) (no known site is left): {Show(offenders)}");
     }
 
     [Fact]
-    public void TheListIsOnTheChainAndTheNineteenMapsWithoutASiteHaveNone()
+    public void TheListIsOnTheChainAndTheThirtyMapsWithoutASiteHaveNone()
     {
         var list = TheList();
 
@@ -80,7 +80,7 @@ public class AlundraStoryChainSkippedOpcodesTests
         Assert.Equal(7, ExemptCombatMaps.Distinct().Count());
         Assert.Empty(list.Select(l => l.Site.Map).Distinct().Except(ChainMaps));
         Assert.Empty(MapsWithoutSkippedSite.Intersect(list.Select(l => l.Site.Map)));
-        Assert.Equal(28, MapsWithoutSkippedSite.Length);
+        Assert.Equal(30, MapsWithoutSkippedSite.Length);
         Assert.Empty(MapsWithoutSkippedSite.Except(ChainMaps));
         Assert.Equal(list.Count, list.Select(l => l.Site).Distinct().Count()); // the key is unique.
     }
@@ -267,18 +267,16 @@ public class AlundraStoryChainSkippedOpcodesTests
     }
 
     [Fact]
-    public void Rule4_APredicateOrBranchAtLevelSOutsideTheOneKnownSiteIsFlagged()
+    public void Rule4_APredicateOrBranchAtLevelSIsFlagged_NoKnownSiteIsLeft()
     {
-        var known = new[]
-        {
-            Line(10, 'C', 75, 6418, 0x95, 'S'),
-        };
+        // E20.c1b-1: the opcode 0x95 is ported, the site (10, C, 75, 6418) left the lists and the known sites are an empty set (E19 convention: a ported opcode leaves the lists).
+        var none = Array.Empty<ListedSite>();
 
-        Assert.Empty(Rule4ScenePredicates(known));
-        Assert.Empty(Rule4ScenePredicates(known.Append(Line(163, 'B', 2, 297, 0x82, 'O')))); // optional: allowed
-        Assert.Empty(Rule4ScenePredicates(known.Append(Line(1, 'B', 1, 5, 0xA2, 'S')))); // not in the closed set
-        Assert.Single(Rule4ScenePredicates(known.Append(Line(163, 'B', 2, 297, 0x82, 'S'))));
-        Assert.Single(Rule4ScenePredicates(known.Append(Line(10, 'C', 76, 6418, 0x95, 'S')))); // same pc, other program
+        Assert.Empty(Rule4ScenePredicates(none));
+        Assert.Empty(Rule4ScenePredicates(none.Append(Line(163, 'B', 2, 297, 0x82, 'O')))); // optional: allowed
+        Assert.Empty(Rule4ScenePredicates(none.Append(Line(1, 'B', 1, 5, 0xA2, 'S')))); // not in the closed set
+        Assert.Single(Rule4ScenePredicates(none.Append(Line(163, 'B', 2, 297, 0x82, 'S'))));
+        Assert.Single(Rule4ScenePredicates(none.Append(Line(10, 'C', 75, 6418, 0x95, 'S')))); // the old known site is a site like another now.
     }
 
     [Fact]

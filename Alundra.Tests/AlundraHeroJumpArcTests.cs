@@ -63,7 +63,7 @@ public sealed class AlundraHeroJumpArcTests
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 2463, 0x53), "B[20] executes 0x53 @2463");
 
         // 1. Nothing is skipped but what the measure shows (no opcode of the scene is missing: the jump waits for its landing).
-        AssertSkippedWithin(arc, new HashSet<(int, int)> { (0x2B, 6413), (0x95, 6418) });
+        AssertSkippedWithin(arc, new HashSet<(int, int)> { (0x2B, 6413) });
 
         // The effects (E19.g G3b): the three 0x90 (@6406 the record 3, @2689 the record 5, @2828 the record 0) are executed and each leaves its slot.
         effects.AssertClean();

@@ -43,10 +43,10 @@ internal static class AlundraStoryChainOpcodeAudit
     /// <summary>The seven combat maps, exempt (E14 owns them).</summary>
     public static readonly int[] ExemptCombatMaps = { 14, 15, 44, 115, 116, 117, 362 };
 
-    /// <summary>The twenty-eight chain maps with no skipped site (the 135, 162, 169, 174, 176, 181, 183, 391 and 476 with E19.g G3b, whose only sites were the nine effect opcodes; the 178 and 185 with E19.h4, whose only sites were the slide bit 0x45/0x46; the 392 joined them with E19.k1, its one site being the camera sway 0x8E;
+    /// <summary>The thirty chain maps with no skipped site (the 10 and 164 with E20.c1b-1 (docs/plan-e20-heros.md section 1.6): the one site of the 10 was the hit predicate 0x95 of the scene, now ported, and the 164 has no site left; the 135, 162, 169, 174, 176, 181, 183, 391 and 476 with E19.g G3b, whose only sites were the nine effect opcodes; the 178 and 185 with E19.h4, whose only sites were the slide bit 0x45/0x46; the 392 joined them with E19.k1, its one site being the camera sway 0x8E;
     /// the 165, 172, 180 and 182 with E19.l1, whose only sites were the directional branch 0x58; the 163 and 179 with E19.l2, whose
     /// only sites were the item and money opcodes).</summary>
-    public static readonly int[] MapsWithoutSkippedSite = { 135, 162, 163, 165, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 389, 390, 391, 392, 416, 476, 478 };
+    public static readonly int[] MapsWithoutSkippedSite = { 10, 135, 162, 163, 164, 165, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 389, 390, 391, 392, 416, 476, 478 };
 
     /// <summary>Wait opcodes (rule 3): an instruction that waits must never be skipped.</summary>
     public static readonly int[] WaitOpcodes = { 0x20, 0x21, 0x22, 0x23, 0x26, 0x47, 0x48, 0x5F };
@@ -54,12 +54,9 @@ internal static class AlundraStoryChainOpcodeAudit
     /// <summary>The closed set of rule 4: the predicates and branches that write <c>Result</c> or jump.</summary>
     public static readonly int[] PredicateOpcodes = { 0x52, 0x58, 0x82, 0x83, 0x84, 0x87, 0x95, 0x99, 0x9A, 0x9F };
 
-    /// <summary>The one known level-S site of rule 4 (the two 164 sites of the directional branch 0x58 left with E19.l1, the 179 site of
-    /// the item use 0x84 with E19.l2).</summary>
-    public static readonly ProgramSite[] KnownScenePredicateSites =
-    {
-        new(10, 'C', 75, 6418),
-    };
+    /// <summary>The known level-S sites of rule 4: none left (the two 164 sites of the directional branch 0x58 left with E19.l1, the 179 site of
+    /// the item use 0x84 with E19.l2, the 10 site (C 75, pc 6418) of the hit predicate 0x95 with E20.c1b-1, where the opcode is ported and a ported opcode leaves the lists).</summary>
+    public static readonly ProgramSite[] KnownScenePredicateSites = Array.Empty<ProgramSite>();
 
     private const string SlotLetters = "ABCDEF";
 
@@ -434,7 +431,7 @@ internal static class AlundraStoryChainOpcodeAudit
     }
 
     /// <summary>Rule 4: among the level-S lines, the predicates and branches of <see cref="PredicateOpcodes"/> are only at the
-    /// one known site.</summary>
+    /// known sites (none now).</summary>
     public static IReadOnlyList<ListedSite> Rule4ScenePredicates(IEnumerable<ListedSite> list)
     {
         return list.Where(l => l.Tier == 'S'

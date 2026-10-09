@@ -170,10 +170,10 @@ public sealed class AlundraEntityContactArcTests
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 2003, 0x53), "B[14] executes 0x53 @2003");
 
         // 2. Only the instructions the measure shows are skipped.
-        // 0x58, 0x95 and 0x2B (not ported, no effect on the scene); the two 0x25 of the bouquets are ported (E19.d2c1 R4), the two 0x90 since E19.g G3b.
+        // The 0x95 is ported since E20.c1b-1 and left this set; the other entries are older allowances, left as they were (a superset allowance cannot fail); the two 0x25 of the bouquets are ported (E19.d2c1 R4), the two 0x90 since E19.g G3b.
         AssertSkippedWithin(arc, new HashSet<(int, int)>
         {
-            (0x58, 5470), (0x2B, 6413), (0x95, 6418), (0x58, 4666),
+            (0x58, 5470), (0x2B, 6413), (0x58, 4666),
         });
 
         // The effects (E19.g G3b): the two 0x90 (@2689 the record 5, @2828 the record 0) are executed and each leaves its slot.
@@ -297,7 +297,7 @@ public sealed class AlundraEntityContactArcTests
         // 2. Only the instructions the measure shows are skipped.
         AssertSkippedWithin(arc, new HashSet<(int, int)>
         {
-            (0x2B, 6413), (0x95, 6418), (0x4C, 3833), (0x4C, 3847), (0x4D, 3849),
+            (0x2B, 6413), (0x4C, 3833), (0x4C, 3847), (0x4D, 3849),
         });
 
         // The effects (E19.g G3b): the two 0x90 (@2689 the record 5, @2828 the record 0) are executed and each leaves its slot.
