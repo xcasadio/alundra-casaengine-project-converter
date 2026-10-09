@@ -53,3 +53,12 @@ are in `a0-mesure.md`. The jump pins are re-derived from the D1 oracle (`docs/pl
 - `AlundraDialogueBoxOrderTests` (K1-entity, K4, K7) and `AlundraAnimationSoundTests:281`: they run the entities through fake hosts or a bare `World` (self-driven), so
   they do not see the production order; they stay as they are.
 - UH-1, UH-2 and the other jump pins: equal to the oracle, unchanged.
+
+## Correction after the verification (2026-10-09)
+
+The fresh verifier of E20.a (CONFIRMED) re-ran arc A10J with a per-image dump of Giles on HEAD and on the code of `1e25740`:
+aligned by one image, his trajectory is identical from `F0+96` to `F0+265` (X, Y, Z, deltas, animation). The run of 2.0 px steps
+was already 7 images long before E20.a (`F0+238..244`, after one step of 147456 at `F0+237`); the old test asserted only
+`F0+241..244`. The row "Giles's run of 2.0 px steps" above is therefore wrong when it says the run grew and that its cause is not
+isolated: the only change is the one-image shift of the tick order. The test comment in `Alundra.Tests/AlundraHeroJumpArcTests.cs`
+(about lines 173-176) carries the same wording; it is corrected with E20.b (P4, deferred).

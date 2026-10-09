@@ -11,8 +11,8 @@ chacune à part, comme en E19. Décisions de l'auteur : §0.1, ADR-0052 et ADR-0
 
 **Avancement (2026-10-09)** : enveloppe et E20.0 approuvées par l'auteur (mode ASK) ; E19 fusionnée dans `main`
 (parent `8e023d8`, moteur `b2205d9f`), qui est donc la base de la branche. E20.0 : D1 à D9 faites et contre-vérifiées
-(§0.2.10). Réponses de l'auteur aux questions de la découverte : D-E20-11 à D-E20-18. E20.a est détaillée au §1.3,
-relue READY, et attend l'approbation de l'auteur.
+(§0.2.10). Réponses de l'auteur aux questions de la découverte : D-E20-11 à D-E20-18. E20.a (§1.3), approuvée par l'auteur,
+est faite et CONFIRMED par un verifier frais le 2026-10-09 ; reste sa recette en jeu.
 
 | Unité | Revue avant approbation | Après exécution |
 |---|---|---|
@@ -652,7 +652,7 @@ Rapports et contre-vérifications : `docs/plan-e20-annexe/e20-0-rapports/` ; fai
   D-E20-10 ; un besoin d'écrire hors de `docs/`.
 - Retour arrière : `git revert` des commits de documentation.
 
-### 1.3 E20.a — Le tick de la DLL suit le binaire ⏳
+### 1.3 E20.a — Le tick de la DLL suit le binaire 🧪 (faite et CONFIRMED le 2026-10-09, `b68fefc` et `ce15e7a` ; reste la recette en jeu de l'auteur)
 
 **But.** Chaque tick logique de la DLL suit l'ordre du binaire (§0.2.1, §0.2.10) : le pad, les passes de la boîte de dialogue et
 de l'écran de sauvegarde (inchangées), les événements de carte, puis le bloc des entités (`MovePlayer`, les programmes des
@@ -779,6 +779,38 @@ fixe du moteur (D-E20-12) ; les modes 2 et suivants de `0x2F`.
 - **Budget** : un `executor` sous contrat, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de
   correction et de re-vérification, chacune sur un état réellement changé.
 - **Retour arrière** : `git revert` des commits d'E20.a.
+
+#### Résultats (2026-10-09)
+
+- **Commits** : `b68fefc` (A0 à A5, A7, A8 : le code, les épingles et la trace de l'intro) et `ce15e7a` (A6). Écart au contrat : deux
+  commits au lieu d'un par tâche, A1 à A5 touchant les mêmes fonctions sans état intermédiaire vert ; la mention de co-auteur de ces
+  commits nomme le modèle de l'exécutant (« Claude Sonnet 5.5 »).
+- **Structure** : `AlundraWorldProxy.Update` déroule, à chaque tick, le pad, les passes de la boîte, la porte, les événements de carte
+  et le recyclage, puis `RunEntityBlock` (`MovePlayer` sur `AlundraPadState.FromTickPad`, programmes dans l'ordre des cases avec le
+  ré-examen des déclencheurs, `RunCountersPass`, listes, horloge, physique avec les sondes du héros, `RunHitPassHook`), puis
+  l'inventaire ; porte fermée, seules les listes tournent ; une image sans tick ne fait rien au héros. `PublishEntityFrame`
+  publie l'état d'après le dernier tick. Le monde pilote les ticks quand il a un `Game` (`DrivesEntityTicks`) ; un montage sans jeu
+  garde la boucle de l'entité (`RunSelfDrivenTicks`), sans passe des compteurs.
+- **A0** : sans l'inversion, la nouvelle structure laisse la suite verte (3265 sur 3265). Avec elle, 13 tests bougent, chacun avec
+  son mécanisme dans l'ordre du binaire (`docs/plan-e20-annexe/e20-a/a0-mesure.md`), dont A17 : T1 posé par la carte et effacé
+  par Ronan dans le même tick, pas un blocage. A14 et A5r gardent la réserve acceptée par l'auteur (leur compte exact repose sur
+  du code porté avant E20.a).
+- **Épingles** : la liste complète est dans `docs/plan-e20-annexe/e20-a/epingles.md` ; SJ6b égale le tick 2 de l'oracle D1 ;
+  l'intro avance de 1 image sur quatre repères (`flag83EA` 1034 → 1033, `flag83E9` 1202 → 1201, `flag860` 1704 → 1703, son 61
+  1087 → 1086), la trace de l'intro est re-mesurée (les lignes des événements de carte passent avant celles des entités) ; les
+  traces du héros ne changent pas. Correction du verifier : la course de Giles d'A10J ne s'est pas allongée, elle est seulement
+  décalée d'une image.
+- **A6** : la sonde du vrai jeu montre Alundra immobile au début d'une nouvelle partie (`0x36` puis `0x0`, jamais une pose de saut)
+  et après une arrivée suivie d'un verrou ; la règle du plancher n'est pas appliquée (`docs/plan-e20-annexe/e20-a/a6-sonde.md`).
+  Non sondé : une arrivée sans verrou.
+- **A8** : `AlundraTickStructureTests`, 10 tests sur un vrai `World.Update` ; le test du rendu échoue bien quand les synchronisations
+  reviennent avant les ticks du monde.
+- **Tests** : `Alundra.Tests` 3274 sur 3274 en Release et en Debug.
+- **Vérification** : verifier frais **CONFIRMED** (aucun P0 à P2). Trois P4 reportés à E20.b, qui touche les mêmes endroits : la
+  phrase fausse sur A10J dans le commentaire de `AlundraHeroJumpArcTests.cs` (vers 173-176) ; le commentaire périmé de
+  `AlundraPlayerManager.cs` (vers 284-288) qui appelle encore les bouchons « no-ops non portés » ; une assertion sur la position
+  publiée du héros dans le test du rendu.
+- **Reste** : la recette en jeu de l'auteur (de la nouvelle partie au premier livre, rien ne change sauf le décalage d'un tick).
 
 #### Contraintes transmises aux tranches suivantes
 
