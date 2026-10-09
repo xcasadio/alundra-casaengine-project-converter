@@ -1,0 +1,1518 @@
+# the independent model (hmodel.py) on every run: one line per rule; a rule holds when the model equals the oracle on every tick it applies to
+== A1 (200 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A1-pad0 (260 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-kit-12-12 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-kit-5-12 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-kit-3-3 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-leather-12-12 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-leather-5-12 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-leather-3-3 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-ancient-12-12 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-ancient-5-12 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-ancient-3-3 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-silver-12-12 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-silver-5-12 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-silver-3-3 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-noarmour-12-12 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-noarmour-5-12 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-noarmour-3-3 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-bracelet-12-12 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-bracelet-5-12 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-bracelet-3-3 (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-syn-kit (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A2-syn-leather (40 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A4-E (8 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A4-W (8 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A4-S (8 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A4-N (8 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A4-SE (8 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A4-SW (8 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A4-NE (8 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A4-NW (8 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A4-ENE (8 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A4-WSW (8 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A4-SSE (8 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A4-NNW (8 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A6-back119 (132 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A6-back120 (132 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A6-back121 (132 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A6-back122 (132 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A6-back123 (132 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A6-back124 (132 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== A6-keep (260 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (3 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== B1-080-kit (125 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== B1-080-b1a (125 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== B1-080-b1b (125 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== B1-080-b1c (125 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== B1-100-kit (125 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== B1-100-b1a (125 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== B1-100-b1b (125 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== B1-100-b1c (125 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== B1-180-kit (125 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== B1-180-b1a (125 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== B1-180-b1b (125 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== B1-180-b1c (125 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== B2-hp2-cost3 (80 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== B2-hp1-cost1 (80 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== B2-hp3-cost3 (80 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== D1-00 (60 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== D1-20 (60 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== D1-24 (60 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== D1-30 (60 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== D1-10 (60 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== D1-04 (60 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== D1-28 (60 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== D1-08 (60 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== D1-40 (60 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== D1-48 (60 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== D1-80 (60 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== D1-A0 (60 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== D1-20-release (140 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (1 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== D1-48-hold-hidden (20 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== D1-48-hold-visible (20 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== D1-48-hold-release (30 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== E1-hp1-bean (100 ticks)  [informational scenario]
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== E1-hp2-orc (100 ticks)  [informational scenario]
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== E1-hp2-cost3 (100 ticks)  [informational scenario]
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== E2-stats-hp (10 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== E2-stats-hpmax (10 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== E2-vessel (10 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== E2-vessel49 (10 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== E2-vessel50 (10 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== E3-12-4 (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== E3-60-70 (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== E3-5-9 (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== E3-neg (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== F1 (450 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== F2 (450 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== F4-full (250 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== F4-zero (250 ticks)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== F5-ring37 (450 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== F5-armour-weapon (450 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== G-kit (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== G-b19 (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== G-b1a (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== G-b1b (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== G-b1c (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== G-b1a1c (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== G-b1b1a (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== G-leather (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== G-ancient (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== G-silver (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== G-noarmour (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== G-bracelet (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== G-charm (3 ticks)
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (0 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      no unwritten-byte read during the run
+== C1-bean (100 ticks)  [informational scenario]
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
+== C1-fish (100 ticks)  [informational scenario]
+   HOLDS      hit pass: ticks of every ordered pair equal scen.hit_model (2 pairs)
+   HOLDS      boots level equals the model of the inventory on every row
+   HOLDS      hero sheet responses 1..11 equal kmodel.model_sheet on every row
+   HOLDS      hero HP per tick equals the model (damage rule, hazard cost and floor, regeneration)
+   HOLDS      hero HpMax per tick equals the model
+   HOLDS      hero +0x1CC per tick (0x77 on the hurt tick, then down by one, held by the tick gate)
+   HOLDS      hurt animation 0x31 / 0x3A on the hurt tick (unchanged by the locked 0x20 entry)
+   HOLDS      hurt direction (GetDirection of hero - toucher, or +0x8C + 0x10)
+   HOLDS      draw list: hero in it iff (+0x1CC & 3) != 3 (and the count of the list)
+   HOLDS      stats mirror: clamp(HpMax, 50), clamp(HP, HpMax), frozen by the tick gate
+   HOLDS      regeneration counters 0x80126FE8/EC/F0 per tick
+   HOLDS      tick gate [0x800DC4B8] & 0x48: +0x1C, position, TouchingEntity frozen
+   HOLDS      hurt timeline 0x31 x4, 0x1C x11, Idle with the direction flipped (0 hurts checked)
+   HOLDS      no unwritten-byte read during the run
