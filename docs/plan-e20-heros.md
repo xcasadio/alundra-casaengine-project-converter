@@ -1112,7 +1112,7 @@ pseudo-aléatoire une fois par image (E20.e0) ; la réutilisation des cases libr
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.c1a.
 
-### 1.6 E20.c1b-1 — Dégâts, équipement et opcodes des coups ⏳
+### 1.6 E20.c1b-1 — Dégâts, équipement et opcodes des coups 🧪 (faite et CONFIRMED le 2026-10-09, `745c27d`, `3051332`, `80c71b3` ; reste la recette en jeu de l'auteur, quand une carte à interrupteurs de feu sera atteignable)
 
 **Révision 1 (2026-10-09).** Relecture : **REVISE** : la cible du test de régression (l'entité de la 14 au programme D `@544`) est
 immunisée contre l'épée, le test ne pouvait pas échouer. Corrigé : cible réelle touchable (l'interrupteur de feu de la 303, entité 4),
@@ -1198,6 +1198,41 @@ les PV du héros (E20.c2) ; tout appel de `ComputeNewHp` en production (gestionn
 - Verifier frais.
 - Recette en jeu de l'auteur : rien de nouveau à voir tant qu'aucune carte à interrupteurs de feu (92, 110, 303, 337, 343) n'est
   atteignable ; alors, un coup d'épée sur un interrupteur de feu fait des étincelles et ne l'allume pas.
+
+#### Résultats (2026-10-09)
+
+- **Commits** : `745c27d` (K1, K2), `3051332` (K3), `80c71b3` (K4, K5).
+- **Code** : `AlundraDamage` (`ResolveBalanceTarget` et `ComputeNewHp`, pures) ; `AlundraEquipmentRecords`, tenues par le monde et
+  lues par l'hôte et le contexte d'entité ; `AlundraBalanceTables.SelectEquipment` (entrée `n + 0x1E` sans remappage, rien au-delà de
+  `0x61`) ; `FillEquipmentRecords` dans `UpdateItemEffectState` (étapes 2 à 5, le reste du bouchon demeure pour E20.c2) ; effacement au
+  chargement de carte ; `StoreHitBox` après la physique de chaque tick et à la création ; `AlundraHitOpcodes` (`0x87`, `0x95`, table de
+  12 octets) ; les cas `0x71`, `0x86`, `0x87`, `0x95` de `Dispatch` ; l'étiquette de `0x86` et les commentaires périmés corrigés.
+- **Oracle** : K1, K2 et K3 égaux sur chaque valeur nommée (les 96 vérifications de K3 dans l'oracle, deux interpréteurs) ; cas 3 (la
+  moitié sur les PV) et 4 de D2 égaux.
+- **Régression de c1a fermée** : le test des interrupteurs de feu de la 303 (programmes D `@700` et `@724`) échoue sans le cas `0x87`
+  (constaté par l'exécuteur avant K4, puis par le verifier en désactivant le cas : `0x87` sauté, `Result` partagé 7, classe A perdue) et
+  passe avec.
+- **Tests** : `Alundra.Tests` 3480 sur 3480 en Release et en Debug ; traces du héros et de l'intro inchangées ; aucun test de c1a
+  modifié ; trois lignes de la carte 10 retirées de `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` (convention d'E19 : un opcode
+  porté sort de la liste, qui est maintenant vide).
+- **Vérification** : verifier frais **CONFIRMED** (aucun P0 à P2) : règles redécodées dans le binaire (`0x8004464C`, `0x8003A374`,
+  `0x800307E8`, `0x800445C0`, `0x80044520`, `0x8003FA10`, `0x8003FFD4`, `0x80040048`, `0x800407C0`, `0x80038064`) ; trois mutations
+  attrapées (cas `0x87`, +1 de Z de `0x95`, `StoreHitBox`) ; tests d'oracle non tautologiques ; sonde du vrai jeu inchangée.
+- **Écarts acceptés** : `0x95` balaie toutes les entités apparues, le héros d'abord (même ensemble que les cases 0 à la plus haute) ;
+  `ComputeNewHp` sans `TouchingEntity` laisse les PV (le binaire lirait l'adresse `0x1C8` ; aucun appelant en production) ; les
+  positions des entités de K3 sont posées par l'exécuteur, chaque résultat attendu étant une ligne de K3.
+- **Reportés** :
+  - P3 : `MapsWithoutSkippedSite` (`Alundra.Tests/AlundraStoryChainOpcodeAudit.cs:49`) compte 28 cartes au lieu de 30 (la 164 manque
+    depuis E19.l1, la 10 depuis c1b-1) ; le site `(10, C, 75, 6418)` de `KnownScenePredicateSites` et les commentaires « 0x95 not
+    ported » (`AlundraEntityContactArcTests.cs:173`, `AlundraHeroJumpArcTests.cs:66`) sont périmés. Tests seulement : E20.c1b-2.
+  - P4 : la `HitBox` rangée est écrite pour toute entité dont la physique tourne, le binaire ne le fait que pour la liste de physique
+    (`0x80127B28`) ; la passe de c1a recalcule la boîte au lieu de lire la copie rangée (même valeur tant que `0x80038E84` ne déplace
+    rien) : à revoir en E20.e ou E14.
+  - P4 : `AlundraEquipmentRecords.Clear()` efface aussi les mots d'objet, `0x80044520` seulement les pointeurs : E20.c2.
+  - P4 : un index de type au-delà de 11 rend −1, le binaire relirait plus loin (aucun site connu au-delà de 11).
+  - P4 : un changement d'animation annulé en fin d'image entre le coup et le programme D remettrait `HasFrameBox` à faux (spéculatif,
+    non reproduit).
+- **Reste** : la recette en jeu de l'auteur, quand une carte à interrupteurs de feu (92, 110, 303, 337, 343) sera atteignable.
 
 #### Arrêts, budget, retour arrière
 
