@@ -65,3 +65,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0049 | The world pushes the effect quads to the engine every rendered frame, ordered like the entities | Accepted | 2026-10-08 |
 | ADR-0050 | The inventory trigger runs at the end of the tick, after the dialogue pass and the map events, like the binary | Accepted | 2026-10-08 |
 | ADR-0051 | The game streams its music with the loop point of the sequence | Accepted | 2026-10-08 |
+| ADR-0052 | The hero's run, attack, carrying and item use, with the shared hit pass, form task E20 apart from E14 | Accepted | 2026-10-09 |
