@@ -28,7 +28,7 @@ public sealed class AlundraTickStructureTests : IDisposable
 
     private static readonly string[] OpenTick =
     {
-        "pad", "box", "mapEvents", "movePlayer", "programs", "pending", "counters", "lists", "clock", "physics", "hit", "inventory",
+        "pad", "box", "mapEvents", "movePlayer", "programs", "pending", "counters", "lists", "clock", "physics", "activeEffects", "hit", "inventory",
     };
 
     public AlundraTickStructureTests() => ResetGlobals();

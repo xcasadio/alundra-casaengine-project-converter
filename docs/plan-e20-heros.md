@@ -1024,7 +1024,7 @@ pseudo-aléatoire une fois par image (E20.e0) ; la réutilisation des cases libr
   de coups ; tenir, par entité, le curseur (animation, tick logique) qui donne la boîte de l'image courante d'après les
   `collision_keyframes` (règle de D6), y compris au tick du changement et dans les ticks d'une image de rattrapage. Ce qui change en fin
   d'image (`SyncAnimation`, D-E19-13) ne change pas.
-- ⏳ **C3 — La liste et la passe.** Construire la liste au pas « listes » du bloc des entités (statut 2 ou 3, `BlockedByEntity` nul, le
+- ✅ **C3 — La liste et la passe.** Construire la liste au pas « listes » du bloc des entités (statut 2 ou 3, `BlockedByEntity` nul, le
   héros d'abord, ordre de `_spawnedEntities`) ; ajouter, entre la physique et le point d'accroche, une place vide pour `0x80038E84` ;
   porter `UpdateBalanceRecords` au point d'accroche : figer l'animation du héros (`0x80146DF8`) même avec une liste vide, en copiant
   le `TargetAnimationId` du héros tel qu'il est au point d'accroche, après l'horloge d'animation du tick (jamais `CurrentAnimationId`,
@@ -1032,9 +1032,9 @@ pseudo-aléatoire une fois par image (E20.e0) ; la réutilisation des cases libr
   classes réordonné ; cibles sautées ; recouvrement élargi d'une unité, `HitBox` de l'attaquant contre `Pos + Mod` de la cible ;
   réponse de la cible (`(r & 0xC0) == 0x80` : pas de `TouchingEntity`) ; `+0x1D0 = 0x19` ; compteur de l'attaquant ; plusieurs cibles,
   premier attaquant.
-- ⏳ **C4 — Étincelles.** Trois effets 9 au centre du recouvrement, par la réserve d'effets et l'étage d'effets du tick, avec les trois
+- ✅ **C4 — Étincelles.** Trois effets 9 au centre du recouvrement, par la réserve d'effets et l'étage d'effets du tick, avec les trois
   tirages du générateur pour chacun quand l'effet a pu être créé (même formule que le vase de vie, les trois axes à `0x20001`).
-- ⏳ **C5 — Tests.**
+- ✅ **C5 — Tests.**
   - Contre l'oracle `docs/plan-e20-annexe/e20-c1/oracle/out/` (`python -B docs/plan-e20-annexe/e20-c1/oracle/tools/run_c1.py`), tick par
     tick, sur les champs de la passe : contact, `TouchingEntity`, `+0x1D0`, compteurs de coups, animation figée du héros
     (`0x80146DF8`, colonne du journal de l'oracle ; au tick 1 de `H1-near`, 16, soit `0x10`), programme choisi au tick suivant, nombre,

@@ -58,4 +58,36 @@ public static class AlundraNativeEffects
             }
         }
     }
+
+    /// <summary>The global effect of a hit: the spark (<c>0x8003BDD8(0, 9, 0, x, y, z)</c>, bank 0, effect 9).</summary>
+    private const int HitSparkEffect = 9;
+
+    /// <summary>The number of sparks of one hit (<c>0x800391A8</c>, the loop of <c>0x80039188</c> counts down from 3).</summary>
+    public const int HitSparkCount = 3;
+
+    /// <summary>
+    /// The sparks of a hit (<c>0x80039188</c>, called by the hit pass <c>0x80039300</c> at <c>0x80039740</c>): three global effects 9 at the centre of the overlap (<paramref name="centreX"/>, <paramref name="centreY"/>,
+    /// <paramref name="centreZ"/>, 16.16, no offset). For each one that was created, three numbers are drawn from <see cref="AlundraRandom"/> in a row (<c>x' = x * 0x7D2B89DD + 0xE06A02E7</c>) and give its three forces,
+    /// all with the same formula (<c>high word of r * 0x20001, minus 0x10000</c>, <c>0x80039290</c>, <c>0x800392A4</c>, <c>0x800392BC</c>): unlike the vessel's sparks, the three axes use <c>0x20001</c> and there is no
+    /// vertical lift. A full reservoir creates fewer sparks and draws fewer numbers (none for a slot that was not created).
+    /// </summary>
+    public static void CreateHitSparks(AlundraEffectReservoir reservoir, int centreX, int centreY, int centreZ)
+    {
+        unchecked
+        {
+            for (var i = 0; i < HitSparkCount; i++)
+            {
+                var spark = reservoir.Create(false, HitSparkEffect, 0, centreX, centreY, centreZ);
+                if (spark != null)
+                {
+                    var r1 = (uint)AlundraRandom.Next();
+                    var r2 = (uint)AlundraRandom.Next();
+                    var r3 = (uint)AlundraRandom.Next();
+                    spark.ForceX = (int)(((ulong)r1 * 0x20001) >> 32) - 0x10000;
+                    spark.ForceY = (int)(((ulong)r2 * 0x20001) >> 32) - 0x10000;
+                    spark.ForceZ = (int)(((ulong)r3 * 0x20001) >> 32) - 0x10000;
+                }
+            }
+        }
+    }
 }

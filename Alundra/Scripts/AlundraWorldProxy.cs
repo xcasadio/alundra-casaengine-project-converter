@@ -2695,6 +2695,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             RefreshUpdateProxiesAndCollidables();
         }
 
+        BuildHitList();
+
         TickTraceForTests?.Invoke("clock");
         for (var i = 0; i < _tickEntities.Count; i++)
         {
@@ -2706,6 +2708,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         {
             _tickEntities[i].TickPhysics();
         }
+
+        TickTraceForTests?.Invoke("activeEffects");
+        RunActiveEffectsPass();
 
         TickTraceForTests?.Invoke("hit");
         RunHitPassHook();
@@ -2746,17 +2751,74 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         }
     }
 
-    /// <summary>E20.a A3 hook: the hit pass of the binary (<c>0x80039300</c>, last of the entity block). Empty until E20.c1 plugs the pass in here, in the order of the slots.</summary>
+    /// <summary>
+    /// E20.c1a C3: the slot of the binary's <c>0x80038E84</c>, which runs between the physics and the hit pass (the effects attached to the entities). Empty on purpose: it belongs to E20.e. The DLL keeps its reserve of effects
+    /// per frame (<see cref="AlundraEffectStage.RunFrame"/>), and nothing in the hit pass reads what that pass writes (the random generator is the one thing it could advance, per frame in the binary too, <c>0x8002BD14</c>).
+    /// </summary>
+    private void RunActiveEffectsPass()
+    {
+    }
+
+    /// <summary>The list of the hit pass (<c>0x800384F4</c>, <c>0x80127B28</c>), rebuilt at the lists step of each tick.</summary>
+    private readonly List<AlundraEntityScriptProxy> _hitList = new();
+
+    /// <summary>E20.c1a C3: the hit pass of the binary (<c>UpdateBalanceRecords</c>), with the latch of the hero's animation (<c>0x80146DF8</c>) it keeps for the damage calculation of E20.c1b.</summary>
+    private readonly AlundraHitPass _hitPass = new();
+
+    /// <summary>The binary's <c>0x80146DF8</c>: <c>+0x88</c> of the hero, latched at the head of every hit pass, after the animation clock of the tick (E20.c1a C3; read one tick later by the damage calculation, E20.c1b).</summary>
+    internal uint HeroAnimationLatch => _hitPass.HeroAnimationLatch;
+
+    /// <summary>E20.c1a test-only seam: told the centre (16.16, the DLL's Z convention) of the overlap of each hit the pass writes, before the three sparks are queued.</summary>
+    internal Action<int, int, int>? HitSparksForTests;
+
+    private Action<int, int, int>? _emitHitSparks;
+
+    /// <summary>
+    /// E20.c1a C3: the list of <c>0x800384F4</c>, as the lists step of a tick builds it: the entities of the slots (the hero first, then <c>_spawnedEntities</c> in creation order, the order of the slots) whose status is Normal
+    /// or Deactivated and whose <c>BlockedByEntity</c> (<c>+0x20</c>) is null. It is NOT <see cref="_tickEntities"/> (built before the programs, so with the statuses of before them) and not the engine's update list.
+    /// The pass sees the statuses as they were when the list was built, as the binary's does.
+    /// </summary>
+    private void BuildHitList()
+    {
+        _hitList.Clear();
+        var hero = PlayerEntity;
+        if (hero != null && hero.Status.IsActive() && hero.BlockedByEntity == null)
+        {
+            _hitList.Add(hero);
+        }
+
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is AlundraEntityScriptProxy proxy
+                && !ReferenceEquals(proxy, hero)
+                && proxy.Status.IsActive()
+                && proxy.BlockedByEntity == null)
+            {
+                _hitList.Add(proxy);
+            }
+        }
+    }
+
+    /// <summary>E20.c1a C4: the three sparks (effect 9) of a hit, at the centre of the overlap, queued on the effect stage of the tick that wrote the hit (rank 1, the entities).</summary>
+    private void EmitHitSparks(int centreX, int centreY, int centreZ)
+    {
+        HitSparksForTests?.Invoke(centreX, centreY, centreZ);
+        _effectStage.Emit(reservoir => AlundraNativeEffects.CreateHitSparks(reservoir, centreX, centreY, centreZ));
+    }
+
+    /// <summary>E20.a A3 hook, E20.c1a C3: the hit pass of the binary (<c>0x80039300</c>, last of the entity block), over the list built at the lists step.</summary>
     private void RunHitPassHook()
     {
         HitPassHookForTests?.Invoke();
+        _emitHitSparks ??= EmitHitSparks; // one delegate for the life of the world: the tick allocates nothing.
+        _hitPass.Run(_hitList, PlayerEntity, _emitHitSparks);
     }
 
     /// <summary>E20.a A8 test-only seam: runs at the hit-pass hook of each tick (where E20.c1 plugs the pass in), so a test can write what that pass writes (a <c>TouchingEntity</c>).</summary>
     internal Action? HitPassHookForTests;
 
     /// <summary>E20.a A8 test-only seam: told the name of each pass of the tick as it starts, in the order the binary runs them (pad, box, mapEvents, movePlayer, programs, pending,
-    /// counters, lists, clock, physics, hit, inventory); a closed gate gives pad, box, lists, inventory.</summary>
+    /// counters, lists, clock, physics, activeEffects, hit, inventory); a closed gate gives pad, box, lists, inventory.</summary>
     internal Action<string>? TickTraceForTests;
 
     /// <summary>
