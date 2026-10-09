@@ -196,6 +196,13 @@ public class AlundraEntityScriptProxy : GameplayProxy
     internal bool ZImpulseTaken;
 
     /// <summary>
+    /// Engine-only (E20.b B6): the target animation the lock <see cref="ZImpulseTaken"/> was raised for. A pending switch to ANOTHER target than this one is a new switch of the same
+    /// catch-up frame (a Chain the clock raised at one tick, then the hero's press at the next): it takes its own impulse and its own sound, as the binary's <c>UpdateAnimation</c> does at
+    /// every change (<c>0x80038BB0</c>), and restarts the count of the ticks it reserved. Meaningful only while <see cref="ZImpulseTaken"/> is up. Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal uint ZImpulseTakenForTarget;
+
+    /// <summary>
     /// Engine-only (E19.d2c1 R1): an impulse owed to a switch that <see cref="AlundraFrameSyncPasses.SyncAnimation"/> validated on a frame without
     /// a logic tick (a target written by a map event, for example): the first <see cref="AlundraFrameSyncPasses.StepAnimationClock"/> that follows
     /// takes it, from <see cref="CurrentAnimationId"/>, before anything else. Not copied by <see cref="Clone"/>.

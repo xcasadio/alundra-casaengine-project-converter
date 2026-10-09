@@ -288,7 +288,8 @@ internal sealed class JumpHeroRig
         float z = 0f,
         float groundSnapDistance = -1f,
         bool gravityFlag = true,
-        bool freePad = false)
+        bool freePad = false,
+        bool attackClock = false)
     {
         var pad = new HeroPad();
         var controller = new AlundraPlayerController { PadStateProviderForTests = () => freePad ? pad.State : default };
@@ -327,11 +328,80 @@ internal sealed class JumpHeroRig
         };
         hero.CurrentAnimationId = 0;
         hero.TargetAnimationId = 0;
+        if (attackClock)
+        {
+            HeroAttackClock.Install(entity, hero);
+        }
+
         host.All.Insert(0, hero);
 
         var rig = new JumpHeroRig { World = world, Host = host, Hero = hero, HeroEntity = entity, Pad = pad };
         rig.Update(); // the settling update.
         return rig;
+    }
+}
+
+/// <summary>
+/// E20.b B5: the sprite clock and the animation-end bridge of the hero montage for the swings. The hero pawn of <see cref="HeroWorldFixture.BuildHeroPawn"/> has an
+/// <see cref="AnimatedSpriteComponent"/> with no animation, so its logical clock never runs and no Chain ever fires. <see cref="Install"/> gives it one synthetic animation per
+/// (animation, direction) of the swings and of the states around them, of the length of the binary in logic ticks (<c>round(DurationSeconds x 50)</c> is the tick of the end), an
+/// <see cref="AnimationEndInfo"/> chain per (animation, direction) like the export's, the animation sets (speed, acceleration, sound) of the table of
+/// <c>docs/plan-e20-annexe/e20-b/faits-binaire-dll.md</c> section 3, and the bridge of <see cref="AlundraEntitySpawnFactory.SubscribeAnimationEndBridge"/>. The lengths are the binary's
+/// frame-delay sums, which the exported <c>.anim2d</c> files reproduce (checked offline for every id and direction of the table, 0 mismatches).
+/// </summary>
+internal static class HeroAttackClock
+{
+    /// <summary>One animation of the montage: the animation set (<paramref name="Speed"/>, <paramref name="Acceleration"/>, <paramref name="Sfx"/>), the chain target (-1: none, the animation loops or
+    /// holds) and the length in logic ticks, <paramref name="Ticks"/> for the directions down, up and left and <paramref name="TicksRight"/> for the right one.</summary>
+    public readonly record struct Entry(int Id, int Speed, int Acceleration, int Sfx, int ChainTo, int Ticks, int TicksRight = 0);
+
+    /// <summary>The swings of the weapon table (ids and values of <c>faits-binaire-dll.md</c> section 3) and the states around them.</summary>
+    public static readonly Entry[] Table =
+    {
+        new(0x00, 0, 0, 0, -1, 50), new(0x01, 208, 1, 0, -1, 50), new(0x02, 208, 1, 10, -1, 50), new(0x2B, 0, 1, 10, -1, 50), new(0x2C, 196, 1, 0, -1, 50), new(0x2D, 0, 1, 0, -1, 50),
+        new(0x10, 0, 1, 29, 0, 21), new(0x11, 0, 1, 37, 0, 31), new(0x12, 0, 1, 35, 0, 31), new(0x13, 0, 1, 32, 0, 23),
+        new(0x14, 0, 15, 29, 0x2D, 10), new(0x15, 0, 15, 37, 0x2D, 25, 24), new(0x16, 0, 15, 35, 0x2D, 28, 27), new(0x17, 0, 15, 32, 0x2D, 15, 14),
+        new(0x18, 0, 1, 0, 0, 46), new(0x19, 0, 1, 36, 0, 58),
+        new(0x3F, 0, 1, 29, 0, 21), new(0x44, 0, 1, 29, 0, 21), new(0x49, 0, 1, 29, 0, 21), new(0x40, 0, 1, 35, 0, 34),
+        new(0x41, 0, 15, 29, 0x2D, 10), new(0x46, 0, 15, 29, 0x2D, 10), new(0x4B, 0, 15, 29, 0x2D, 10), new(0x42, 0, 15, 35, 0x2D, 31),
+    };
+
+    private static Animation2d Make(int id, string direction, float seconds, AnimationType type)
+    {
+        var spriteId = Guid.Parse("bbbbbbbb-0000-0000-0000-000000000001");
+        var data = new Animation2dData { Name = $"bank_anim{id}_{direction}", AnimationType = type };
+        data.Parts.Add(new Animation2dPartData { Id = "sprite", DefaultSpriteId = spriteId });
+        var track = new Animation2dTrackData { TargetPartId = "sprite", Property = Animation2dTrackProperty.Sprite };
+        track.SpriteKeyframes.Add(new Animation2dGuidKeyframeData(0f, spriteId));
+        track.SpriteKeyframes.Add(new Animation2dGuidKeyframeData(seconds, spriteId));
+        data.Tracks.Add(track);
+        return new Animation2d(data);
+    }
+
+    /// <summary>Gives <paramref name="hero"/> the animations, the end table, the animation sets and the bridge of <see cref="Table"/>, and settles it facing east with a stable first switch.</summary>
+    public static void Install(Entity entity, AlundraEntityScriptProxy hero)
+    {
+        var sprite = entity.GetComponent<AnimatedSpriteComponent>()!;
+        var sets = new Dictionary<int, AnimSetEntry>(hero.AnimSetsByAnim!);
+        var endTable = new Dictionary<int, AnimationEndInfo>();
+        foreach (var entry in Table)
+        {
+            sets[entry.Id] = new AnimSetEntry { Anim = entry.Id, Speed = entry.Speed, Acceleration = entry.Acceleration, Sfx = entry.Sfx, IsZForceApplied = sets.TryGetValue(entry.Id, out var existing) ? existing.IsZForceApplied : 0 };
+            for (var direction = 0; direction < AnimationTables.DirectionNames.Length; direction++)
+            {
+                var ticks = direction == 3 && entry.TicksRight != 0 ? entry.TicksRight : entry.Ticks;
+                var once = entry.ChainTo >= 0;
+                sprite.AddAnimation(Make(entry.Id, AnimationTables.DirectionNames[direction], ticks * 0.02f, once ? AnimationType.Once : AnimationType.Loop));
+                if (once)
+                {
+                    endTable[entry.Id * AlundraEntitySpawnFactory.IdsvDirectionStride + direction] = new AnimationEndInfo { Kind = AnimationEndKind.Chain, ChainTargetAnimationId = entry.ChainTo };
+                }
+            }
+        }
+
+        hero.AnimSetsByAnim = sets;
+        hero.AnimationEndByAnimDirection = endTable;
+        AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
     }
 }
 

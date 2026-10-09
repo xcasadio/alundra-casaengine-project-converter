@@ -889,7 +889,7 @@ apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant
   comme dans le binaire, même si E20.b ne les atteint pas encore.
 - ✅ **B4 — `UpdateWeaponStepProgression`**, porté sans l'apparition : effacement du pointeur et compteur jusqu'au délai, d'après les
   drapeaux de `0x80028D14` ; l'apparition reste un bouchon nommé (E20.e0, E20.f).
-- ⏳ **B5 — Tests contre l'oracle.**
+- ✅ **B5 — Tests contre l'oracle.**
   - Étendre un montage (par exemple `JumpHeroRig`) avec l'horloge d'animation et le pont des fins pour les animations d'attaque, dans
     les quatre directions.
   - Comparer, tick par tick et champ par champ, la DLL à ces traces de `docs/plan-e20-annexe/e20-b/oracle/out/` : `AT1`, `AT2`, `AT3`, `AT3b`, `AT3c`,
@@ -904,7 +904,7 @@ apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant
     équipée autre que l'épée de base choisit sa propre fiche (l'épée d'acier donne `0x3F`).
   - Ajouter : la prise d'échelle qui l'emporte sur un état d'attaque (pente 6, `0x80031D20`) ; une image de deux ticks dont le premier
     est le tick de retour et le second un nouvel appui (le son 29 doit sonner, comme le binaire).
-- ⏳ **B6 — Le son d'un coup dans une image de rattrapage.** Si B5 montre le son manquant, corriger `TakeZImpulse` pour que chaque
+- ✅ **B6 — Le son d'un coup dans une image de rattrapage.** Si B5 montre le son manquant, corriger `TakeZImpulse` pour que chaque
   changement d'animation d'une image de rattrapage joue son son, comme le binaire (`0x80038BB0` à chaque changement) ; ce code sert à
   toutes les entités : les tests de son existants restent verts, et le changement est expliqué ici.
 - ⏳ **B7 — Les trois P4 d'E20.a** : le commentaire faux d'A10J (`AlundraHeroJumpArcTests.cs`, vers 173-176), les commentaires périmés

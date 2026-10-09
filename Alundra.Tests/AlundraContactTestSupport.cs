@@ -71,6 +71,9 @@ internal sealed class ContactHost : IAlundraScriptHost
     /// <summary>E19.d2c1 R8: the sound player the host hands to the hero's take-off (null: none, as the default member of the interface).</summary>
     public IAlundraSoundPlayer? SoundPlayer { get; set; }
 
+    /// <summary>E20.b B1: the item tables the host hands to the hero's <c>MovePlayer</c> (null: none, as the default member of the interface, so the hero has no weapon and swings the basic sword).</summary>
+    public AlundraItemTables? ItemTables { get; set; }
+
     /// <summary>Every proxy of the world, in world order (the hero first).</summary>
     public List<AlundraEntityScriptProxy> All { get; } = new();
 
@@ -86,8 +89,12 @@ internal sealed class ContactHost : IAlundraScriptHost
         Destroyed.Add((entity, effectId));
     }
 
+    /// <summary>E20.b B5: called when an entity asks for the ticks of the frame, i.e. after the head-of-frame pull of its ground state and before its first tick: where a map event of the tick (a mutation of the cells) lands.</summary>
+    public Action? BeforeTicks { get; set; }
+
     public int LogicTicksThisFrame(float elapsedTime)
     {
+        BeforeTicks?.Invoke();
         var ticks = _clock.TicksThisFrame(elapsedTime);
         _clock.CloseFrame();
         return ticks;

@@ -227,8 +227,16 @@ internal static class AlundraFrameSyncPasses
         }
 
         var switchPending = proxy.PendingChainRestartFlag != 0 || TryResolveAnimationTarget(proxy, out _, out _);
-        if (switchPending && !proxy.ZImpulseTaken)
+        if (switchPending && (!proxy.ZImpulseTaken || proxy.ZImpulseTakenForTarget != proxy.TargetAnimationId))
         {
+            // E20.b B6: a lock raised for ANOTHER target belongs to an earlier switch of this catch-up frame (a Chain the clock raised at a previous tick, then a press at this one): this is a
+            // new switch, with its own impulse and sound (the binary's UpdateAnimation acts at every change), and the ticks reserved so far belong to the animation that just ended, not to
+            // this one: SyncAnimation compensates only the ticks reserved from the switch it validates (reserved - 1).
+            if (proxy.ZImpulseTaken)
+            {
+                proxy.AnimationSwitchTicksReserved = 0;
+            }
+
             TakeZImpulse(proxy);
         }
 
@@ -270,6 +278,7 @@ internal static class AlundraFrameSyncPasses
 
         GiveImpulse(proxy, proxy.TargetAnimationId);
         proxy.ZImpulseTaken = true;
+        proxy.ZImpulseTakenForTarget = proxy.TargetAnimationId;
     }
 
     /// <summary>
