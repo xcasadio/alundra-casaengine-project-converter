@@ -1313,7 +1313,7 @@ production) ; le Z du pilier de la 117 ; `0xB9`.
     enregistrements attendus présents, absents ceux qui ne doivent pas apparaître ; temps d'un arc mesuré.
   - Décoder dans `ALUN_CD.EXE` le traitement de la pente du héros (`+0x18C`) par `MovePlayer` (`0x80031B50`) et `PlayerTryAttack` pour la
     valeur 1 : si le binaire y empêche le coup d'épée, arrêt. Le résultat va dans l'annexe `e20-c1b2/`.
-- ⏳ **L1 — 115, levier nord-ouest** (arc A ci-dessous).
+- ✅ **L1 — 115, levier nord-ouest** (arc A ci-dessous). (2026-10-09. `AlundraLeverArcTests.A_Map115_…` : toutes les valeurs de l'arc A égales à l'attente écrite d'avance, y compris les INFERENCE (Z du levier 24, passage de `0x1C` à H+33, écarts 21, 21, 21) ; un arc : 0,5 s.)
 - ⏳ **L2 — 116, les deux leviers et le pont** (arc B).
 - ⏳ **L3 — 117, la bascule, quatre coups** (arc C).
 - ⏳ **L4 — 117 levier 22 et 44 levier 7** (arcs D et E).

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Alundra.Scripts;
+using Xunit;
 
 namespace Alundra.Tests;
 
@@ -100,6 +101,18 @@ internal static class LeverArcs
     /// <summary>The frames at which the pc of the slot ran (any opcode).</summary>
     public static List<int> FramesAt(ArcRun arc, int slot, int pc) => arc.Trace.Where(t => t.Slot == slot && t.Pc == pc).Select(t => t.Frame).ToList();
 
+    /// <summary>The pcs that ran in the slot during the tick <paramref name="tick"/> (the frame of the trace), in order.</summary>
+    public static int[] Pcs(ArcRun arc, int slot, int tick) => arc.Trace.Where(t => t.Slot == slot && t.Frame == tick).Select(t => t.Pc).ToArray();
+
+    /// <summary>Runs the arc through the tick <paramref name="tick"/> (the trace frame <paramref name="tick"/> has run when this returns).</summary>
+    public static void RunThrough(ArcRun arc, int tick)
+    {
+        while (arc.Frame <= tick)
+        {
+            arc.OneFrame();
+        }
+    }
+
     /// <summary>The first frame at or after <paramref name="fromFrame"/> at which (slot, pc) ran, or -1.</summary>
     public static int FirstFrameAtOrAfter(ArcRun arc, int slot, int pc, int fromFrame)
     {
@@ -121,5 +134,26 @@ internal static class LeverArcs
         {
             arc.OneFrame();
         }
+    }
+
+    public static bool Temp(uint n) => ArcChecks.IsTemporarySet(n);
+
+    public static bool ClassA(AlundraEntityScriptProxy e) => (e.Flags & EntityFlags.ClassA) != 0;
+
+    public static bool Locked() => (AlundraGameState.Instance.PlayerControlFlags & AlundraGameState.PlayerControlBits.ControlLocked) != 0;
+
+    /// <summary>The hero stands free and where the arc put it: on the ground, nothing locks the pad, Idle.</summary>
+    /// <summary>The tuples (walkability, height, ground property, floor tile) of the cells.</summary>
+    public static void AssertTuples(IReadOnlyList<LeverCell> cells, params (int Walkability, int Height, int GroundProperty, int Tile)[] expected)
+    {
+        Assert.Equal(expected, cells.Select(c => (c.Walkability, c.Height, c.GroundProperty, c.FloorTile)).ToArray());
+    }
+
+    public static void AssertHeroReady(ArcRun arc, int x, int y, int z)
+    {
+        Assert.Equal(1, arc.Hero.IsOnGround);
+        Assert.Equal(0u, AlundraGameState.Instance.PlayerControlFlags);
+        Assert.Equal(0u, arc.Hero.TargetAnimationId);
+        Assert.Equal((x, y, z), (arc.Hero.PosX >> 16, arc.Hero.PosY >> 16, arc.Hero.PosZ >> 16));
     }
 }
