@@ -1,0 +1,158 @@
+# C1: INFORMATIONAL (E20.i): deep water everywhere (Slope_18c 4), boots 0x1B; hurt state 0x3A / 0x3B
+# computed by the emulated ALUN_CD.EXE (France): real tick passes (gated by [0x800DC4B8] & 0x48 as 0x8003B388 does), real hit pass, real MovePlayer / UpdateItemEffectState; effects, sound, spawn and the
+# targets' own programs are journalled stubs (c1world.py).  Per-tick values are the state AFTER the passes of that tick; tick 0 = start state.  The oracle holds no expected value: see hmodel.py / hmut.py.
+# status: INFORMATIONAL (the model is still run on it, but the death branch and the water states are outside the model)
+
+### C1-bean: water everywhere (cell word 0x800), boots 0x1B, Beannoid contact at 20 px, 100 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 100, inventory b1b, stats HP/HpMax set 10/10 -> entity 10/10, events {}, flags_every_tick None, cell word 0x800, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: 2
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1
+hero HP (+0x14) changes: t2 10->9
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t2 10->9 | none
+hero anim_target (+0x88) changes: t2 0x0->0x3A, t6 0x3A->0x3B, t15 0x3B->0x1D
+hero dir_target (+0x8C) changes: t2 24->8, t15 8->24
+hero +0x1CC at the first hurt tick(s): [119]
+hero not in the draw list (blink) at ticks: 2,6,10,14,18,22,26,30,34,38,42,46,...(25 ranges)
+sounds (tick, id): [(2, 23), (6, 0), (15, 0)]
+control flags [0x800DC4B8] changes: none; boots level 2
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 196.84375; slope_18c at the end 4; VramOR at the end 0x800
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	2	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x800	4	0	1	2	10	10	2	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x0	0x3A	8	0x3A	229	96	-196608	1	-	119	24	2	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	sound(23)
+3	0x0000	0x0	0x3A	8	0x3A	226	96	-196608	1	-	118	23	3	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+6	0x0000	0x0	0x3B	8	0x3B	217.18750	96	-184320	1	-	115	20	6	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	sound(0)
+7	0x0000	0x0	0x3B	8	0x3B	214.56250	96	-172032	1	-	114	19	7	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+10	0x0000	0x0	0x3B	8	0x3B	207.81250	96	-135168	1	-	111	16	10	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+11	0x0000	0x0	0x3B	8	0x3B	205.93750	96	-122880	1	-	110	15	11	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+14	0x0000	0x0	0x3B	8	0x3B	201.43750	96	-86016	1	-	107	12	14	9	10	0x800	4	1	0	1	9	10	2	0/0/0	0	0x0	-
+15	0x0000	0x0	0x1D	24	0x1D	200.28906	96	-75264	1	-	106	11	15	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	sound(0)
+16	0x0000	0x0	0x1D	24	0x1D	199.30469	96	-64512	1	-	105	10	16	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+18	0x0000	0x0	0x1D	24	0x1D	197.82812	96	-43008	1	-	103	8	18	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+19	0x0000	0x0	0x1D	24	0x1D	197.33594	96	-32256	1	-	102	7	19	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+22	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	99	4	22	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+23	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	98	3	23	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+26	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	95	0	26	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+27	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	94	0	27	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+30	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	91	0	30	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+31	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	90	0	31	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+34	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	87	0	34	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+35	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	86	0	35	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+38	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	83	0	38	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+39	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	82	0	39	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+42	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	79	0	42	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+43	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	78	0	43	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+46	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	75	0	46	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+47	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	74	0	47	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+50	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	71	0	50	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+51	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	70	0	51	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+54	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	67	0	54	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+55	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	66	0	55	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+58	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	63	0	58	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+59	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	62	0	59	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+62	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	59	0	62	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+63	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	58	0	63	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+66	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	55	0	66	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+67	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	54	0	67	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+70	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	51	0	70	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+71	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	50	0	71	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+74	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	47	0	74	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+75	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	46	0	75	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+78	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	43	0	78	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+79	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	42	0	79	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+82	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	39	0	82	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+83	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	38	0	83	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+86	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	35	0	86	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+87	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	34	0	87	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+90	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	31	0	90	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+91	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	30	0	91	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+94	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	27	0	94	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+95	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	26	0	95	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+98	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	23	0	98	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+99	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	22	0	99	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+100	0x0000	0x0	0x1D	24	0x1D	196.84375	96	0	1	-	21	0	100	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+
+model: 14 rules, all hold
+
+### C1-fish: water everywhere, boots 0x1B, the Fish of map 14 in animation 3 (frame box present) 10 px east, 100 ticks
+# hero start px (242, 96), pad {}, after-last 0x0, ticks 100, inventory b1b, stats HP/HpMax set 10/10 -> entity 10/10, events {}, flags_every_tick None, cell word 0x800, target kind real sprite 136 of map 14 (Fish), balance record index 392 (attack 0: attribute 0x01, power 1)
+hurt entries (+0x1CC rises) at ticks: 2
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1
+hero HP (+0x14) changes: t2 10->9
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t2 10->9 | none
+hero anim_target (+0x88) changes: t2 0x0->0x3A, t6 0x3A->0x3B, t15 0x3B->0x1D
+hero dir_target (+0x8C) changes: t2 24->8, t15 8->24
+hero +0x1CC at the first hurt tick(s): [119]
+hero not in the draw list (blink) at ticks: 2,6,10,14,18,22,26,30,34,38,42,46,...(25 ranges)
+sounds (tick, id): [(1, 150), (2, 23), (6, 0), (15, 0), (21, 0)]
+control flags [0x800DC4B8] changes: none; boots level 2
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 242, end 206.84375; slope_18c at the end 4; VramOR at the end 0x800
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	242	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	2	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	242	96	0	1	slot1	0	25	1	10	10	0x800	4	0	1	2	10	10	2	0/0/0	0	0x0	sound(150) | effect(id=9, cx=249.99998, cy=96.50389, cz=5.50000 px) | effect(id=9, cx=249.99998, cy=96.50389, cz=5.50000 px) | effect(id=9, cx=249.99998, cy=96.50389, cz=5.50000 px)
+2	0x0000	0x0	0x3A	8	0x3A	239	96	-196608	1	-	119	24	2	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	sound(23)
+3	0x0000	0x0	0x3A	8	0x3A	236	96	-196608	1	-	118	23	3	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+6	0x0000	0x0	0x3B	8	0x3B	227.18750	96	-184320	1	-	115	20	6	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	sound(0)
+7	0x0000	0x0	0x3B	8	0x3B	224.56250	96	-172032	1	-	114	19	7	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+10	0x0000	0x0	0x3B	8	0x3B	217.81250	96	-135168	1	-	111	16	10	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+11	0x0000	0x0	0x3B	8	0x3B	215.93750	96	-122880	1	-	110	15	11	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+14	0x0000	0x0	0x3B	8	0x3B	211.43750	96	-86016	1	-	107	12	14	9	10	0x800	4	1	0	1	9	10	2	0/0/0	0	0x0	-
+15	0x0000	0x0	0x1D	24	0x1D	210.28906	96	-75264	1	-	106	11	15	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	sound(0)
+16	0x0000	0x0	0x1D	24	0x1D	209.30469	96	-64512	1	-	105	10	16	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+18	0x0000	0x0	0x1D	24	0x1D	207.82812	96	-43008	1	-	103	8	18	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+19	0x0000	0x0	0x1D	24	0x1D	207.33594	96	-32256	1	-	102	7	19	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+21	0x0000	0x0	0x1D	24	0x1D	206.84375	96	-10752	1	-	100	5	21	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	sound(0)
+22	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	99	4	22	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+23	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	98	3	23	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+26	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	95	0	26	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+27	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	94	0	27	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+30	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	91	0	30	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+31	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	90	0	31	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+34	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	87	0	34	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+35	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	86	0	35	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+38	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	83	0	38	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+39	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	82	0	39	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+42	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	79	0	42	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+43	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	78	0	43	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+46	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	75	0	46	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+47	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	74	0	47	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+50	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	71	0	50	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+51	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	70	0	51	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+54	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	67	0	54	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+55	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	66	0	55	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+58	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	63	0	58	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+59	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	62	0	59	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+62	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	59	0	62	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+63	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	58	0	63	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+66	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	55	0	66	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+67	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	54	0	67	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+70	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	51	0	70	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+71	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	50	0	71	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+74	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	47	0	74	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+75	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	46	0	75	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+78	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	43	0	78	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+79	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	42	0	79	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+82	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	39	0	82	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+83	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	38	0	83	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+86	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	35	0	86	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+87	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	34	0	87	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+90	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	31	0	90	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+91	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	30	0	91	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+94	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	27	0	94	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+95	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	26	0	95	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+98	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	23	0	98	9	10	0x800	4	0	0	1	9	10	2	0/0/0	0	0x0	-
+99	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	22	0	99	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+100	0x0000	0x0	0x1D	24	0x1D	206.84375	96	0	1	-	21	0	100	9	10	0x800	4	0	1	2	9	10	2	0/0/0	0	0x0	-
+
+model: 14 rules, all hold
+

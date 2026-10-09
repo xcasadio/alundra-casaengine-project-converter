@@ -1,0 +1,57 @@
+# F5: only the accessory regenerates: ring 0x37 (regenerates), holy sword + cloth armour (does not), 450 ticks
+# computed by the emulated ALUN_CD.EXE (France): real tick passes (gated by [0x800DC4B8] & 0x48 as 0x8003B388 does), real hit pass, real MovePlayer / UpdateItemEffectState; effects, sound, spawn and the
+# targets' own programs are journalled stubs (c1world.py).  Per-tick values are the state AFTER the passes of that tick; tick 0 = start state.  The oracle holds no expected value: see hmodel.py / hmut.py.
+# status: kept scenario
+
+### F5-ring37: ring 0x37 equipped, HP 5 / 10
+# hero start px (192, 96), pad {}, after-last 0x0, ticks 450, inventory ring37, stats HP/HpMax set 5/10 -> entity 5/10, events {}, flags_every_tick None, cell word none, target kind none
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: none
+hero HP (+0x14) changes: t201 5->6, t402 6->7
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t201 5->6, t402 6->7 | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: none; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 200], resets (tick, from): []
+hero position x (px): start 192, end 192; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	0	5	10	0x0	0	0	0	0	5	10	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	1	5	10	0x0	0	0	1	1	5	10	0	0/0/1	0	0x0	-
+201	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	201	6	10	0x0	0	0	1	1	6	10	0	0/0/0	0	0x0	-
+402	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	402	7	10	0x0	0	0	1	1	7	10	0	0/0/0	0	0x0	-
+450	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	450	7	10	0x0	0	0	1	1	7	10	0	0/0/48	0	0x0	-
+
+model: 13 rules, all hold
+
+### F5-armour-weapon: holy sword and cloth armour only, HP 5 / 10
+# hero start px (192, 96), pad {}, after-last 0x0, ticks 450, inventory holy, stats HP/HpMax set 5/10 -> entity 5/10, events {}, flags_every_tick None, cell word none, target kind none
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: none
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: none | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: none; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 192, end 192; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	0	5	10	0x0	0	0	0	0	5	10	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	1	5	10	0x0	0	0	1	1	5	10	0	0/0/0	0	0x0	-
+450	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	450	5	10	0x0	0	0	1	1	5	10	0	0/0/0	0	0x0	-
+
+model: 13 rules, all hold
+

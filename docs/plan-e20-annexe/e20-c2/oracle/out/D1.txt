@@ -1,0 +1,612 @@
+# D1: control-flag sweep [0x800DC4B8]: the tick gate & 0x48, the locked branch & 0x34, exactly 0x20 reaches the damage entry
+# computed by the emulated ALUN_CD.EXE (France): real tick passes (gated by [0x800DC4B8] & 0x48 as 0x8003B388 does), real hit pass, real MovePlayer / UpdateItemEffectState; effects, sound, spawn and the
+# targets' own programs are journalled stubs (c1world.py).  Per-tick values are the state AFTER the passes of that tick; tick 0 = start state.  The oracle holds no expected value: see hmodel.py / hmut.py.
+# status: kept scenario
+
+### D1-00: [0x800DC4B8] := 0x00 from tick 1; stats HP poked to 6 (real SetPlayerHp) before tick 1; pad-0 contact at 20 px, 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {1: [('flags', 0), ('stats_hp', 6)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: 2
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1
+hero HP (+0x14) changes: t2 10->9
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t2 10->9 | none
+hero anim_target (+0x88) changes: t2 0x0->0x31, t6 0x31->0x1C, t17 0x1C->0x0
+hero dir_target (+0x8C) changes: t2 24->8, t17 8->24
+hero +0x1CC at the first hurt tick(s): [119]
+hero not in the draw list (blink) at ticks: 2,6,10,14,18,22,26,30,34,38,42,46,...(15 ranges)
+sounds (tick, id): [(2, 23), (6, 0), (17, 0)]
+control flags [0x800DC4B8] changes: none; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 198.90625; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x0	0x31	8	0x31	229	96	-196608	1	-	119	24	2	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	sound(23)
+3	0x0000	0x0	0x31	8	0x31	226	96	-196608	1	-	118	23	3	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+6	0x0000	0x0	0x1C	8	0x1C	217.18750	96	-184320	1	-	115	20	6	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	sound(0)
+7	0x0000	0x0	0x1C	8	0x1C	214.56250	96	-172032	1	-	114	19	7	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+10	0x0000	0x0	0x1C	8	0x1C	207.81250	96	-135168	1	-	111	16	10	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+11	0x0000	0x0	0x1C	8	0x1C	205.93750	96	-122880	1	-	110	15	11	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+14	0x0000	0x0	0x1C	8	0x1C	201.43750	96	-86016	1	-	107	12	14	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+15	0x0000	0x0	0x1C	8	0x1C	200.31250	96	-73728	1	-	106	11	15	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+17	0x0000	0x0	0x0	24	0x0	198.90625	96	-30720	1	-	104	9	17	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	sound(0)
+18	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	103	8	18	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+19	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	102	7	19	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+22	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	99	4	22	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+23	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	98	3	23	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+26	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	95	0	26	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+27	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	94	0	27	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+30	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	91	0	30	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+31	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	90	0	31	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+34	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	87	0	34	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+35	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	86	0	35	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+38	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	83	0	38	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+39	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	82	0	39	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+42	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	79	0	42	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+43	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	78	0	43	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+46	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	75	0	46	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+47	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	74	0	47	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+50	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	71	0	50	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+51	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	70	0	51	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+54	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	67	0	54	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+55	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	66	0	55	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+58	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	63	0	58	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+59	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	62	0	59	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+60	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	61	0	60	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+
+model: 13 rules, all hold
+
+### D1-20: [0x800DC4B8] := 0x20 from tick 1; stats HP poked to 6 (real SetPlayerHp) before tick 1; pad-0 contact at 20 px, 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {1: [('flags', 32), ('stats_hp', 6)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: 2
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1
+hero HP (+0x14) changes: t2 10->9
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t2 10->9 | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): [119]
+hero not in the draw list (blink) at ticks: 2,6,10,14,18,22,26,30,34,38,42,46,...(15 ranges)
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: t1 0x0->0x20; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 232; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x20	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	119	24	2	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+3	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	118	23	3	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+6	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	115	20	6	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+7	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	114	19	7	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+10	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	111	16	10	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+11	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	110	15	11	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+14	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	107	12	14	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+15	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	106	11	15	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+18	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	103	8	18	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+19	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	102	7	19	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+22	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	99	4	22	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+23	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	98	3	23	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+26	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	95	0	26	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+27	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	94	0	27	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+30	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	91	0	30	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+31	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	90	0	31	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+34	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	87	0	34	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+35	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	86	0	35	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+38	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	83	0	38	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+39	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	82	0	39	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+42	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	79	0	42	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+43	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	78	0	43	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+46	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	75	0	46	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+47	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	74	0	47	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+50	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	71	0	50	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+51	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	70	0	51	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+54	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	67	0	54	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+55	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	66	0	55	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+58	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	63	0	58	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+59	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	62	0	59	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+60	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	61	0	60	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+
+model: 12 rules, all hold
+
+### D1-24: [0x800DC4B8] := 0x24 from tick 1; stats HP poked to 6 (real SetPlayerHp) before tick 1; pad-0 contact at 20 px, 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {1: [('flags', 36), ('stats_hp', 6)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1,26,51
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: none | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: t1 0x0->0x24; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 232; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x24	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x24	0x0	24	0x0	232	96	0	1	-	0	24	2	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+26	0x0000	0x24	0x0	24	0x0	232	96	0	1	slot1	0	25	26	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+27	0x0000	0x24	0x0	24	0x0	232	96	0	1	-	0	24	27	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+51	0x0000	0x24	0x0	24	0x0	232	96	0	1	slot1	0	25	51	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+52	0x0000	0x24	0x0	24	0x0	232	96	0	1	-	0	24	52	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+60	0x0000	0x24	0x0	24	0x0	232	96	0	1	-	0	16	60	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+
+model: 12 rules, all hold
+
+### D1-30: [0x800DC4B8] := 0x30 from tick 1; stats HP poked to 6 (real SetPlayerHp) before tick 1; pad-0 contact at 20 px, 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {1: [('flags', 48), ('stats_hp', 6)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1,26,51
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: none | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: t1 0x0->0x30; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 232; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x30	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x30	0x0	24	0x0	232	96	0	1	-	0	24	2	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+26	0x0000	0x30	0x0	24	0x0	232	96	0	1	slot1	0	25	26	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+27	0x0000	0x30	0x0	24	0x0	232	96	0	1	-	0	24	27	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+51	0x0000	0x30	0x0	24	0x0	232	96	0	1	slot1	0	25	51	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+52	0x0000	0x30	0x0	24	0x0	232	96	0	1	-	0	24	52	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+60	0x0000	0x30	0x0	24	0x0	232	96	0	1	-	0	16	60	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+
+model: 12 rules, all hold
+
+### D1-10: [0x800DC4B8] := 0x10 from tick 1; stats HP poked to 6 (real SetPlayerHp) before tick 1; pad-0 contact at 20 px, 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {1: [('flags', 16), ('stats_hp', 6)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1,26,51
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: none | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: t1 0x0->0x10; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 232; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x10	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x10	0x0	24	0x0	232	96	0	1	-	0	24	2	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+26	0x0000	0x10	0x0	24	0x0	232	96	0	1	slot1	0	25	26	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+27	0x0000	0x10	0x0	24	0x0	232	96	0	1	-	0	24	27	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+51	0x0000	0x10	0x0	24	0x0	232	96	0	1	slot1	0	25	51	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+52	0x0000	0x10	0x0	24	0x0	232	96	0	1	-	0	24	52	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+60	0x0000	0x10	0x0	24	0x0	232	96	0	1	-	0	16	60	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+
+model: 12 rules, all hold
+
+### D1-04: [0x800DC4B8] := 0x04 from tick 1; stats HP poked to 6 (real SetPlayerHp) before tick 1; pad-0 contact at 20 px, 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {1: [('flags', 4), ('stats_hp', 6)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1,26,51
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: none | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: t1 0x0->0x4; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 232; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x4	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x4	0x0	24	0x0	232	96	0	1	-	0	24	2	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+26	0x0000	0x4	0x0	24	0x0	232	96	0	1	slot1	0	25	26	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+27	0x0000	0x4	0x0	24	0x0	232	96	0	1	-	0	24	27	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+51	0x0000	0x4	0x0	24	0x0	232	96	0	1	slot1	0	25	51	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+52	0x0000	0x4	0x0	24	0x0	232	96	0	1	-	0	24	52	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+60	0x0000	0x4	0x0	24	0x0	232	96	0	1	-	0	16	60	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+
+model: 12 rules, all hold
+
+### D1-28: [0x800DC4B8] := 0x28 from tick 1; stats HP poked to 6 (real SetPlayerHp) before tick 1; pad-0 contact at 20 px, 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {1: [('flags', 40), ('stats_hp', 6)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: none
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t1 10->6 | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: t1 0x0->0x28; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 232; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x28	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+60	0x0000	0x28	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+
+model: 12 rules, all hold
+
+### D1-08: [0x800DC4B8] := 0x08 from tick 1; stats HP poked to 6 (real SetPlayerHp) before tick 1; pad-0 contact at 20 px, 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {1: [('flags', 8), ('stats_hp', 6)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: none
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t1 10->6 | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: t1 0x0->0x8; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 232; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x8	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+60	0x0000	0x8	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+
+model: 12 rules, all hold
+
+### D1-40: [0x800DC4B8] := 0x40 from tick 1; stats HP poked to 6 (real SetPlayerHp) before tick 1; pad-0 contact at 20 px, 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {1: [('flags', 64), ('stats_hp', 6)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: none
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t1 10->6 | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: t1 0x0->0x40; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 232; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x40	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+60	0x0000	0x40	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+
+model: 12 rules, all hold
+
+### D1-48: [0x800DC4B8] := 0x48 from tick 1; stats HP poked to 6 (real SetPlayerHp) before tick 1; pad-0 contact at 20 px, 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {1: [('flags', 72), ('stats_hp', 6)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: none
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t1 10->6 | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: t1 0x0->0x48; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 232; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x48	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+60	0x0000	0x48	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+
+model: 12 rules, all hold
+
+### D1-80: [0x800DC4B8] := 0x80 from tick 1; stats HP poked to 6 (real SetPlayerHp) before tick 1; pad-0 contact at 20 px, 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {1: [('flags', 128), ('stats_hp', 6)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: 2
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1
+hero HP (+0x14) changes: t2 10->9
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t2 10->9 | none
+hero anim_target (+0x88) changes: t2 0x0->0x31, t6 0x31->0x1C, t17 0x1C->0x0
+hero dir_target (+0x8C) changes: t2 24->8, t17 8->24
+hero +0x1CC at the first hurt tick(s): [119]
+hero not in the draw list (blink) at ticks: 2,6,10,14,18,22,26,30,34,38,42,46,...(15 ranges)
+sounds (tick, id): [(2, 23), (6, 0), (17, 0)]
+control flags [0x800DC4B8] changes: t1 0x0->0x80; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 198.90625; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x80	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x80	0x31	8	0x31	229	96	-196608	1	-	119	24	2	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	sound(23)
+3	0x0000	0x80	0x31	8	0x31	226	96	-196608	1	-	118	23	3	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+6	0x0000	0x80	0x1C	8	0x1C	217.18750	96	-184320	1	-	115	20	6	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	sound(0)
+7	0x0000	0x80	0x1C	8	0x1C	214.56250	96	-172032	1	-	114	19	7	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+10	0x0000	0x80	0x1C	8	0x1C	207.81250	96	-135168	1	-	111	16	10	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+11	0x0000	0x80	0x1C	8	0x1C	205.93750	96	-122880	1	-	110	15	11	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+14	0x0000	0x80	0x1C	8	0x1C	201.43750	96	-86016	1	-	107	12	14	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+15	0x0000	0x80	0x1C	8	0x1C	200.31250	96	-73728	1	-	106	11	15	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+17	0x0000	0x80	0x0	24	0x0	198.90625	96	-30720	1	-	104	9	17	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	sound(0)
+18	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	103	8	18	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+19	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	102	7	19	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+22	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	99	4	22	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+23	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	98	3	23	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+26	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	95	0	26	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+27	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	94	0	27	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+30	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	91	0	30	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+31	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	90	0	31	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+34	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	87	0	34	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+35	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	86	0	35	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+38	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	83	0	38	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+39	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	82	0	39	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+42	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	79	0	42	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+43	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	78	0	43	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+46	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	75	0	46	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+47	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	74	0	47	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+50	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	71	0	50	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+51	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	70	0	51	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+54	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	67	0	54	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+55	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	66	0	55	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+58	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	63	0	58	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+59	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	62	0	59	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+60	0x0000	0x80	0x0	24	0x0	198.90625	96	0	1	-	61	0	60	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+
+model: 13 rules, all hold
+
+### D1-A0: [0x800DC4B8] := 0xA0 from tick 1; stats HP poked to 6 (real SetPlayerHp) before tick 1; pad-0 contact at 20 px, 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {1: [('flags', 160), ('stats_hp', 6)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1,26,51
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: none | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: t1 0x0->0xA0; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 232; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0xA0	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0xA0	0x0	24	0x0	232	96	0	1	-	0	24	2	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+26	0x0000	0xA0	0x0	24	0x0	232	96	0	1	slot1	0	25	26	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+27	0x0000	0xA0	0x0	24	0x0	232	96	0	1	-	0	24	27	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+51	0x0000	0xA0	0x0	24	0x0	232	96	0	1	slot1	0	25	51	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+52	0x0000	0xA0	0x0	24	0x0	232	96	0	1	-	0	24	52	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+60	0x0000	0xA0	0x0	24	0x0	232	96	0	1	-	0	16	60	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+
+model: 12 rules, all hold
+
+### D1-20-release: [0x800DC4B8] := 0x20 from tick 1, released to 0 before tick 40; stats HP poked to 6 before tick 1; 140 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 140, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {1: [('flags', 32), ('stats_hp', 6)], 40: [('flags', 0)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: 2,122
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1,121
+hero HP (+0x14) changes: t2 10->9, t122 9->8
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t2 10->9, t122 9->8 | none
+hero anim_target (+0x88) changes: t122 0x0->0x31, t126 0x31->0x1C, t137 0x1C->0x0
+hero dir_target (+0x8C) changes: t122 24->8, t137 8->24
+hero +0x1CC at the first hurt tick(s): [119, 119]
+hero not in the draw list (blink) at ticks: 2,6,10,14,18,22,26,30,34,38,42,46,...(35 ranges)
+sounds (tick, id): [(122, 23), (126, 0), (137, 0)]
+control flags [0x800DC4B8] changes: t1 0x0->0x20, t40 0x20->0x0; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 198.90625; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x20	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	119	24	2	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+3	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	118	23	3	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+6	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	115	20	6	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+7	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	114	19	7	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+10	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	111	16	10	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+11	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	110	15	11	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+14	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	107	12	14	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+15	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	106	11	15	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+18	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	103	8	18	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+19	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	102	7	19	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+22	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	99	4	22	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+23	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	98	3	23	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+26	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	95	0	26	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+27	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	94	0	27	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+30	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	91	0	30	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+31	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	90	0	31	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+34	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	87	0	34	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+35	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	86	0	35	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+38	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	83	0	38	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+39	0x0000	0x20	0x0	24	0x0	232	96	0	1	-	82	0	39	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+40	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	81	0	40	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+42	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	79	0	42	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+43	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	78	0	43	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+46	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	75	0	46	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+47	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	74	0	47	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+50	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	71	0	50	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+51	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	70	0	51	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+54	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	67	0	54	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+55	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	66	0	55	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+58	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	63	0	58	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+59	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	62	0	59	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+62	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	59	0	62	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+63	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	58	0	63	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+66	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	55	0	66	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+67	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	54	0	67	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+70	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	51	0	70	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+71	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	50	0	71	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+74	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	47	0	74	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+75	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	46	0	75	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+78	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	43	0	78	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+79	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	42	0	79	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+82	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	39	0	82	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+83	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	38	0	83	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+86	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	35	0	86	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+87	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	34	0	87	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+90	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	31	0	90	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+91	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	30	0	91	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+94	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	27	0	94	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+95	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	26	0	95	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+98	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	23	0	98	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+99	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	22	0	99	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+102	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	19	0	102	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+103	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	18	0	103	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+106	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	15	0	106	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+107	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	14	0	107	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+110	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	11	0	110	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+111	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	10	0	111	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+114	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	7	0	114	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+115	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	6	0	115	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+118	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	3	0	118	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+119	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	2	0	119	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+121	0x0000	0x0	0x0	24	0x0	232	96	0	1	slot1	0	25	121	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+122	0x0000	0x0	0x31	8	0x31	229	96	-196608	1	-	119	24	122	8	10	0x0	0	0	0	1	8	10	0	0/0/0	0	0x0	sound(23)
+123	0x0000	0x0	0x31	8	0x31	226	96	-196608	1	-	118	23	123	8	10	0x0	0	0	1	2	8	10	0	0/0/0	0	0x0	-
+126	0x0000	0x0	0x1C	8	0x1C	217.18750	96	-184320	1	-	115	20	126	8	10	0x0	0	0	0	1	8	10	0	0/0/0	0	0x0	sound(0)
+127	0x0000	0x0	0x1C	8	0x1C	214.56250	96	-172032	1	-	114	19	127	8	10	0x0	0	0	1	2	8	10	0	0/0/0	0	0x0	-
+130	0x0000	0x0	0x1C	8	0x1C	207.81250	96	-135168	1	-	111	16	130	8	10	0x0	0	0	0	1	8	10	0	0/0/0	0	0x0	-
+131	0x0000	0x0	0x1C	8	0x1C	205.93750	96	-122880	1	-	110	15	131	8	10	0x0	0	0	1	2	8	10	0	0/0/0	0	0x0	-
+134	0x0000	0x0	0x1C	8	0x1C	201.43750	96	-86016	1	-	107	12	134	8	10	0x0	0	0	0	1	8	10	0	0/0/0	0	0x0	-
+135	0x0000	0x0	0x1C	8	0x1C	200.31250	96	-73728	1	-	106	11	135	8	10	0x0	0	0	1	2	8	10	0	0/0/0	0	0x0	-
+137	0x0000	0x0	0x0	24	0x0	198.90625	96	-30720	1	-	104	9	137	8	10	0x0	0	0	1	2	8	10	0	0/0/0	0	0x0	sound(0)
+138	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	103	8	138	8	10	0x0	0	0	0	1	8	10	0	0/0/0	0	0x0	-
+139	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	102	7	139	8	10	0x0	0	0	1	2	8	10	0	0/0/0	0	0x0	-
+140	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	101	6	140	8	10	0x0	0	0	1	2	8	10	0	0/0/0	0	0x0	-
+
+model: 13 rules, all hold
+
+### D1-48-hold-hidden: hurt at tick 2 (+0x1CC 119, hero hidden); [0x800DC4B8] := 0x48 before tick 3 (frozen +0x1CC 119 -> the lists pass keeps him out of the draw list), 20 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 20, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {3: [('flags', 72)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: 2
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1
+hero HP (+0x14) changes: t2 10->9
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t2 10->9 | none
+hero anim_target (+0x88) changes: t2 0x0->0x31
+hero dir_target (+0x8C) changes: t2 24->8
+hero +0x1CC at the first hurt tick(s): [119]
+hero not in the draw list (blink) at ticks: 2-20
+sounds (tick, id): [(2, 23)]
+control flags [0x800DC4B8] changes: t3 0x0->0x48; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 229; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x0	0x31	8	0x31	229	96	-196608	1	-	119	24	2	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	sound(23)
+3	0x0000	0x48	0x31	8	0x31	229	96	-196608	1	-	119	24	2	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+20	0x0000	0x48	0x31	8	0x31	229	96	-196608	1	-	119	24	2	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+
+model: 13 rules, all hold
+
+### D1-48-hold-visible: as above from tick 4 (frozen +0x1CC 118 -> the hero stays in the draw list), 20 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 20, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {4: [('flags', 72)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: 2
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1
+hero HP (+0x14) changes: t2 10->9
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t2 10->9 | none
+hero anim_target (+0x88) changes: t2 0x0->0x31
+hero dir_target (+0x8C) changes: t2 24->8
+hero +0x1CC at the first hurt tick(s): [119]
+hero not in the draw list (blink) at ticks: 2
+sounds (tick, id): [(2, 23)]
+control flags [0x800DC4B8] changes: t4 0x0->0x48; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 226; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x0	0x31	8	0x31	229	96	-196608	1	-	119	24	2	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	sound(23)
+3	0x0000	0x0	0x31	8	0x31	226	96	-196608	1	-	118	23	3	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+4	0x0000	0x48	0x31	8	0x31	226	96	-196608	1	-	118	23	3	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+20	0x0000	0x48	0x31	8	0x31	226	96	-196608	1	-	118	23	3	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+
+model: 13 rules, all hold
+
+### D1-48-hold-release: as D1-48-hold-hidden, released to 0 before tick 12: the countdown and the blink resume, 30 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 30, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {3: [('flags', 72)], 12: [('flags', 0)]}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: 2
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1
+hero HP (+0x14) changes: t2 10->9
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t2 10->9 | none
+hero anim_target (+0x88) changes: t2 0x0->0x31, t15 0x31->0x1C, t26 0x1C->0x0
+hero dir_target (+0x8C) changes: t2 24->8, t26 8->24
+hero +0x1CC at the first hurt tick(s): [119]
+hero not in the draw list (blink) at ticks: 2-11,15,19,23,27
+sounds (tick, id): [(2, 23), (15, 0), (26, 0)]
+control flags [0x800DC4B8] changes: t3 0x0->0x48, t12 0x48->0x0; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 198.90625; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x0	0x31	8	0x31	229	96	-196608	1	-	119	24	2	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	sound(23)
+3	0x0000	0x48	0x31	8	0x31	229	96	-196608	1	-	119	24	2	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+12	0x0000	0x0	0x31	8	0x31	226	96	-196608	1	-	118	23	3	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+15	0x0000	0x0	0x1C	8	0x1C	217.18750	96	-184320	1	-	115	20	6	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	sound(0)
+16	0x0000	0x0	0x1C	8	0x1C	214.56250	96	-172032	1	-	114	19	7	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+19	0x0000	0x0	0x1C	8	0x1C	207.81250	96	-135168	1	-	111	16	10	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+20	0x0000	0x0	0x1C	8	0x1C	205.93750	96	-122880	1	-	110	15	11	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+23	0x0000	0x0	0x1C	8	0x1C	201.43750	96	-86016	1	-	107	12	14	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+24	0x0000	0x0	0x1C	8	0x1C	200.31250	96	-73728	1	-	106	11	15	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+26	0x0000	0x0	0x0	24	0x0	198.90625	96	-30720	1	-	104	9	17	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	sound(0)
+27	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	103	8	18	9	10	0x0	0	0	0	1	9	10	0	0/0/0	0	0x0	-
+28	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	102	7	19	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+30	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	100	5	21	9	10	0x0	0	0	1	2	9	10	0	0/0/0	0	0x0	-
+
+model: 13 rules, all hold
+

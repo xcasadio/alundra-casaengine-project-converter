@@ -1,0 +1,106 @@
+# E3: hero created from the stats by the real SetPlayerHpMax / SetPlayerHp and the two getters
+# computed by the emulated ALUN_CD.EXE (France): real tick passes (gated by [0x800DC4B8] & 0x48 as 0x8003B388 does), real hit pass, real MovePlayer / UpdateItemEffectState; effects, sound, spawn and the
+# targets' own programs are journalled stubs (c1world.py).  Per-tick values are the state AFTER the passes of that tick; tick 0 = start state.  The oracle holds no expected value: see hmodel.py / hmut.py.
+# status: kept scenario
+
+### E3-12-4: stats HpMax 12, HP 4
+# hero start px (192, 96), pad {}, after-last 0x0, ticks 3, inventory kit, stats HP/HpMax set 4/12 -> entity 4/12, events {}, flags_every_tick None, cell word none, target kind none
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: none
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: none | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: none; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 192, end 192; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	0	4	12	0x0	0	0	0	0	4	12	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	1	4	12	0x0	0	0	1	1	4	12	0	0/0/0	0	0x0	-
+3	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	3	4	12	0x0	0	0	1	1	4	12	0	0/0/0	0	0x0	-
+
+model: 13 rules, all hold
+
+### E3-60-70: stats HpMax 60 (clamped to 50), HP 70
+# hero start px (192, 96), pad {}, after-last 0x0, ticks 3, inventory kit, stats HP/HpMax set 70/60 -> entity 50/50, events {}, flags_every_tick None, cell word none, target kind none
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: none
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: none | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: none; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 192, end 192; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	0	50	50	0x0	0	0	0	0	50	50	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	1	50	50	0x0	0	0	1	1	50	50	0	0/0/0	0	0x0	-
+3	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	3	50	50	0x0	0	0	1	1	50	50	0	0/0/0	0	0x0	-
+
+model: 13 rules, all hold
+
+### E3-5-9: stats HpMax 5, HP 9 (clamped to 5)
+# hero start px (192, 96), pad {}, after-last 0x0, ticks 3, inventory kit, stats HP/HpMax set 9/5 -> entity 5/5, events {}, flags_every_tick None, cell word none, target kind none
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: none
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: none | none
+hero anim_target (+0x88) changes: none
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): none
+control flags [0x800DC4B8] changes: none; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 192, end 192; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	0	5	5	0x0	0	0	0	0	5	5	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	1	5	5	0x0	0	0	1	1	5	5	0	0/0/0	0	0x0	-
+3	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	3	5	5	0x0	0	0	1	1	5	5	0	0/0/0	0	0x0	-
+
+model: 13 rules, all hold
+
+### E3-neg: stats HpMax -1, HP -3 (both 0)
+# hero start px (192, 96), pad {}, after-last 0x0, ticks 3, inventory kit, stats HP/HpMax set -3/-1 -> entity 0/0, events {}, flags_every_tick None, cell word none, target kind none
+hurt entries (+0x1CC rises) at ticks: none
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: none
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: none | none
+hero anim_target (+0x88) changes: t1 0x0->0x39
+hero dir_target (+0x8C) changes: none
+hero +0x1CC at the first hurt tick(s): none
+hero not in the draw list (blink) at ticks: none
+sounds (tick, id): [(1, 0)]
+control flags [0x800DC4B8] changes: none; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 192, end 192; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	192	96	0	1	-	0	0	0	0	0	0x0	0	0	0	0	0	0	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0x39	24	0x39	192	96	0	1	-	0	0	1	0	0	0x0	0	0	1	1	0	0	0	0/0/0	0	0x0	sound(0)
+2	0x0000	0x0	0x39	24	0x39	192	96	0	1	-	0	0	2	0	0	0x0	0	0	1	1	0	0	0	0/0/0	0	0x0	-
+3	0x0000	0x0	0x39	24	0x39	192	96	0	1	-	0	0	3	0	0	0x0	0	0	1	1	0	0	0	0/0/0	0	0x0	-
+
+model: 13 rules, all hold
+
