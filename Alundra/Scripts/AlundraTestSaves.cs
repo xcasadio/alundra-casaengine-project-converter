@@ -32,7 +32,14 @@ public static class AlundraTestSaves
     /// <summary>The first persistent flag id a save cannot hold: 64 words of 32 bits.</summary>
     private const uint FirstUnsavedFlag = AlundraSaveGame.GameFlagWordCount * 32;
 
-    /// <summary>One test save: where the hero arrives and what differs from a new game.</summary>
+    /// <summary>
+    /// One test save: where the hero arrives and what differs from a new game. The seven last fields are optional (E20.f0 T3, docs/plan-e20-heros.md section 1.8): a
+    /// <c>null</c> keeps the new game's value, otherwise the value goes through the DLL's own setter after the new-game kit and the item counters
+    /// (<see cref="AlundraPlayerManager.SetPlayerHpMax"/>, <see cref="AlundraPlayerManager.SetPlayerHp"/>, <see cref="AlundraPlayerManager.SetPlayerMpMax"/>,
+    /// <see cref="AlundraPlayerManager.SetPlayerMp"/>, <see cref="AlundraPlayerManager.SetMoney"/>, <see cref="AlundraPlayerManager.SetPlayerWeaponId"/>,
+    /// <see cref="AlundraPlayerManager.SetCurrentItemId"/>), and <see cref="CheckPreset"/> refuses a value outside the save's domains instead of letting a setter clamp it.
+    /// <c>Weapon</c> is the equipped weapon SLOT (-1 or 1 to 6), <c>Item</c> the Circle item.
+    /// </summary>
     public sealed record Preset(
         string Name,
         string Slot,
@@ -43,7 +50,50 @@ public static class AlundraTestSaves
         IReadOnlyList<uint> FlagsToSet,
         IReadOnlyList<uint> FlagsToClear,
         IReadOnlyList<(int Index, ushort Value)> MapTableEntries,
-        IReadOnlyList<(int Index, short Count)> ItemCounts);
+        IReadOnlyList<(int Index, short Count)> ItemCounts,
+        int? Weapon = null,
+        int? Item = null,
+        int? Hp = null,
+        int? HpMax = null,
+        int? Mp = null,
+        int? MpMax = null,
+        int? Money = null);
+
+    /// <summary>The raw <c>NumberOfItems</c> index of an item's counter: <c>2 * item + 1</c>.</summary>
+    private static int CounterIndex(int item) => 2 * item + 1;
+
+    /// <summary>
+    /// What every weapon test save carries besides its weapons (docs/plan-e20-annexe/e20-armes/test-means.md section 7): the bomb (35, one), the herbs (36, nine), the
+    /// strength and magic elixirs (37, 38), the fortifier (41) and the four scrolls (43, 45, 47, 49). The kit's basic sword (item 1) stays: the highest rank of a slot
+    /// wins whatever the lower ones (f-check.md row 43, correction C10).
+    /// </summary>
+    private static readonly (int Item, short Count)[] TestKitItems =
+    [
+        (35, 1), (36, 9), (37, 1), (38, 1), (41, 1), (43, 1), (45, 1), (47, 1), (49, 1),
+    ];
+
+    private static IReadOnlyList<(int Index, short Count)> Loadout(params int[] extraItems)
+    {
+        var counts = new List<(int Index, short Count)>();
+        foreach (var (item, count) in TestKitItems)
+        {
+            counts.Add((CounterIndex(item), count));
+        }
+
+        foreach (var item in extraItems)
+        {
+            counts.Add((CounterIndex(item), 1));
+        }
+
+        return counts;
+    }
+
+    /// <summary>A weapon test save: the loadout above on a map, the weapon slot equipped, life 4 of 10 and magic 4 of 4 (herbs and the staff need both to be testable).</summary>
+    private static Preset WeaponPreset(string name, int mapId, int tileX, int tileY, int tileZ, int weaponSlot, params int[] extraItems)
+        => new(
+            name, "test-" + name, mapId, tileX, tileY, tileZ,
+            [], [], [], Loadout(extraItems),
+            Weapon: weaponSlot, Hp: 4, HpMax: 10, Mp: 4, MpMax: 4);
 
     /// <summary>
     /// The presets, values written in advance (docs/plan-e19-opcodes.md, S1). Flags: G203 = word 6 bit 11, G204 =
@@ -65,6 +115,16 @@ public static class AlundraTestSaves
             [203u],
             [(162, (ushort)183), (176, (ushort)183)],
             []),
+
+        // E20.f0 T3: the weapon test saves (docs/plan-e20-annexe/e20-armes/test-means.md section 7). The weapon items by slot: 1 sword (1, 2, 3, 4, 8), 2 bows (5, 6), 3 flails (9, 10),
+        // 4 ice rod (14), 5 fire rod (16), 6 magic staff (7); the books 44, 46, 48, 50 win over the scrolls of their slot. Map 14 is the Beannoides arena (tile (8, 6, 0)); the
+        // fire rod save arrives on map 303 (38, 11, 1) and the bow save on map 16 (34, 31, 3), where the arenas A3 and A4 stand.
+        WeaponPreset("arsenal-a-m14", 14, 8, 6, 0, 1, 5, 9, 14, 16, 7),
+        WeaponPreset("arsenal-b-m14", 14, 8, 6, 0, 1, 4, 6, 10, 14, 16, 7, 44, 46, 48, 50),
+        WeaponPreset("steel-m14", 14, 8, 6, 0, 1, 2),
+        WeaponPreset("demon-m14", 14, 8, 6, 0, 1, 3),
+        WeaponPreset("fire-m303", 303, 38, 11, 1, 5, 5, 9, 14, 16, 7),
+        WeaponPreset("arrow-m16", 16, 34, 31, 3, 2, 5, 9, 14, 16, 7),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>
@@ -133,6 +193,42 @@ public static class AlundraTestSaves
             state.NumberOfItems[index] = count;
         }
 
+        // E20.f0 T3: the optional fields, through the setters of the DLL (maxima before the values they bound, the weapon after the counters it resolves).
+        if (preset.HpMax is { } hpMax)
+        {
+            AlundraPlayerManager.SetPlayerHpMax(state, hpMax);
+        }
+
+        if (preset.Hp is { } hp)
+        {
+            AlundraPlayerManager.SetPlayerHp(state, (short)hp);
+        }
+
+        if (preset.MpMax is { } mpMax)
+        {
+            AlundraPlayerManager.SetPlayerMpMax(state, (short)mpMax);
+        }
+
+        if (preset.Mp is { } mp)
+        {
+            AlundraPlayerManager.SetPlayerMp(state, (short)mp);
+        }
+
+        if (preset.Money is { } money)
+        {
+            AlundraPlayerManager.SetMoney(state, (short)money);
+        }
+
+        if (preset.Weapon is { } weapon)
+        {
+            AlundraPlayerManager.SetPlayerWeaponId(state, rules.ItemTables, weapon);
+        }
+
+        if (preset.Item is { } item)
+        {
+            AlundraPlayerManager.SetCurrentItemId(state, (uint)item);
+        }
+
         var captured = AlundraSaveGame.Capture(state, preset.MapId, preset.TileX, preset.TileY, preset.TileZ);
         if (!captured.TryValidate(rules, out var validationError))
         {
@@ -179,6 +275,52 @@ public static class AlundraTestSaves
             {
                 return Format($"preset '{preset.Name}': item counter index {index} is outside 0..{AlundraSaveGame.NumberOfItemsLength - 1}");
             }
+        }
+
+        return CheckStats(preset);
+    }
+
+    /// <summary>The optional stat fields against the domains of the save (<see cref="AlundraSaveGame"/>): a setter would clamp a value outside them silently.</summary>
+    private static string CheckStats(Preset preset)
+    {
+        var newGame = new AlundraGameState();
+        AlundraPlayerManager.InitializeNewGameStats(newGame);
+        var hpMax = preset.HpMax ?? newGame.PlayerStats.HpMax;
+        var mpMax = preset.MpMax ?? newGame.PlayerStats.MpMax;
+
+        if (preset.HpMax is { } declaredHpMax && (declaredHpMax < 0 || declaredHpMax > AlundraSaveGame.MaxHpMax))
+        {
+            return Format($"preset '{preset.Name}': hpMax {declaredHpMax} is outside 0..{AlundraSaveGame.MaxHpMax}");
+        }
+
+        if (preset.Hp is { } hp && (hp < 0 || hp > hpMax))
+        {
+            return Format($"preset '{preset.Name}': hp {hp} is outside 0..{hpMax} (the maximum)");
+        }
+
+        if (preset.MpMax is { } declaredMpMax && (declaredMpMax < 0 || declaredMpMax > AlundraSaveGame.MaxMpMax))
+        {
+            return Format($"preset '{preset.Name}': mpMax {declaredMpMax} is outside 0..{AlundraSaveGame.MaxMpMax}");
+        }
+
+        if (preset.Mp is { } mp && (mp < 0 || mp > mpMax))
+        {
+            return Format($"preset '{preset.Name}': mp {mp} is outside 0..{mpMax} (the maximum)");
+        }
+
+        if (preset.Money is { } money && (money < 0 || money > AlundraSaveGame.MaxMoney))
+        {
+            return Format($"preset '{preset.Name}': money {money} is outside 0..{AlundraSaveGame.MaxMoney}");
+        }
+
+        if (preset.Weapon is { } weapon && weapon != -1 && (weapon < 1 || weapon > AlundraSaveGame.MaxWeaponId))
+        {
+            return Format($"preset '{preset.Name}': weapon {weapon} is outside -1 or 1..{AlundraSaveGame.MaxWeaponId}");
+        }
+
+        if (preset.Item is { } item && (item < 0 || item >= AlundraPlayerManager.ItemsCount))
+        {
+            return Format($"preset '{preset.Name}': item {item} is outside 0..{AlundraPlayerManager.ItemsCount - 1}");
         }
 
         return string.Empty;

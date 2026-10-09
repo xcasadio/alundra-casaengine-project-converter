@@ -1575,13 +1575,16 @@ de l'auteur, hors de l'app) ; tout comportement d'arme.
   (`AlundraInventoryDirector.TryTrigger` : `PlayerControlFlags != 0` ; `AlundraPortalTrigger`, branche du sol de portail : `!= 0`, la branche du trou n'en teste aucune,
   comme le binaire `0x8002F180`-`0x8002F1BC` ; binaire relu : `lw` puis `bnez` à `0x8002BB68` et `0x8002F1C4`) : aucun changement de production, trois tests avec `0x80` seul
   (inventaire fermé puis ouvert une fois le bit effacé, téléportation refusée puis déclenchée, `PlayerTryAttack` frappe encore alors que le verrou `0x04` l'arrête).
-- ⏳ **T3 — Préréglages.** Champs facultatifs de `Preset`, appliqués après le kit par les setters de la DLL, bornés par `CheckPreset` ;
+- ✅ **T3 — Préréglages.** Champs facultatifs de `Preset`, appliqués après le kit par les setters de la DLL, bornés par `CheckPreset` ;
   préréglages `arsenal-a-m14` (armes 1, 5, 9, 14, 16, 7), `arsenal-b-m14` (1, 4, 6, 10, 14, 16, 7, livres 44, 46, 48, 50), `steel-m14`
   (arme 2), `demon-m14` (arme 3), `fire-m303` (comme `arsenal-a`, emplacement d'arme 5, la baguette de feu), `arrow-m16` (comme `arsenal-a`, emplacement d'arme 2,
   l'arc du chasseur) ; les autres choisissent l'emplacement 1, avec
   PV 4/10, PM 4/4, bombe 35 (1), herbes 36 (9), élixirs 37 et 38, fortifiant 41, parchemins 43, 45, 47, 49 (`test-means.md` §7) ; les
   cases d'arrivée passent `CheckInitialMap` et les bornes de caméra, sinon prendre une destination de portail de la même carte et le
-  noter ; l'épingle des deux noms devient la liste complète ; `docs/test-saves.md` à jour.
+  noter ; l'épingle des deux noms devient la liste complète ; `docs/test-saves.md` à jour. Fait : champs `Weapon`, `Item`, `Hp`, `HpMax`, `Mp`, `MpMax`, `Money` (facultatifs, appliqués après
+  le kit et les compteurs par `SetPlayerHpMax`, `SetPlayerHp`, `SetPlayerMpMax`, `SetPlayerMp`, `SetMoney`, `SetPlayerWeaponId`, `SetCurrentItemId` ; `CheckPreset` refuse hors bornes, 16 cas) ;
+  les six préréglages aux cases du plan, toutes acceptées par les vraies règles de sauvegarde (14 : (8, 6, 0) ; 303 : (38, 11, 1) ; 16 : (34, 31, 3)), aucune destination de portail
+  de remplacement nécessaire ; `item` laissé à 0 dans les préréglages (le plan n'en choisit aucun) ; l'outil affiche aussi les stats (`--dry-run` non lancé : action de l'auteur).
 - ⏳ **T4 — Aides d'arc.** `Give(params int[] items)`, `Equip(int slot)`, `SetMp(int max, int mp)`, `SetItem(int item)` dans
   `AlundraArcSupport.cs`, par les vrais setters.
 

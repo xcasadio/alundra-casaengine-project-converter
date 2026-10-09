@@ -212,6 +212,7 @@ internal static class Program
         output.WriteLine("item counters: " + (preset.ItemCounts.Count == 0
             ? "(new game only)"
             : string.Join(", ", preset.ItemCounts.Select(e => $"[{e.Index}] = {e.Count}"))));
+        output.WriteLine($"stats: HP {save.Hp}/{save.HpMax}, MP {save.Mp}/{save.MpMax}, money {save.Money}, weapon slot {save.WeaponId}, item {save.ItemId}");
         output.WriteLine($"slot: {preset.Slot}");
         output.WriteLine($"file: {slotPath}");
     }

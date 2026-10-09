@@ -44,6 +44,13 @@ build in Debug, a Release DLL has no F9. Then start the game and press F9.
 Each preset is the new game (HP 10/10, MP 0/0, no gold, weapon 1, items 1, 17 and 25, game time 0, no retries) plus
 what is listed. The slot is fixed, `test-<preset>`.
 
+A preset may also set the equipped weapon SLOT (`Weapon`: -1 or 1 to 6), the Circle item (`Item`), life (`Hp`, `HpMax`), magic
+(`Mp`, `MpMax`) and gold (`Money`). They are optional (a missing one keeps the new game's value), applied after the new-game kit and
+the item counters through the DLL's own setters, and refused outside the save's domains (HP max 0 to 50, HP 0 to its max, MP max 0 to
+4, MP 0 to its max, gold 0 to 9999, weapon -1 or 1 to 6, item 0 to 98): they are never clamped silently.
+
+### Story presets
+
 | Preset | Map, tile, z | Flags posed | Flags cleared | Map table |
 |---|---|---|---|---|
 | `day3-after-dream` | 179, (17, 7), 1 | G203, G1651, G1660 | none | `[162] = 176` |
@@ -52,6 +59,30 @@ what is listed. The slot is fixed, `test-<preset>`.
 Expected: `day3-after-dream` starts the scene of map 179 at the first tick, then 176, 179, 176 and map 10, where the
 scripted jump stalls until E19.d2c; `day4-meeting` lands on map 185, where the four villagers must be spoken to before
 the meeting starts, and Septimus stalls until E19.d2b.
+
+### Weapon presets (E20.f0)
+
+For the weapon and item recipes. All six carry the loadout of `docs/plan-e20-annexe/e20-armes/test-means.md` section 7: HP 4/10 (so
+that the herbs heal), MP 4/4, the bomb (35), nine herbs (36), the two elixirs (37, 38), the fortifier (41) and the four scrolls (43, 45,
+47, 49), on top of the kit's items 1, 17 and 25. No flag is posed and the map table stays the identity. The arrival tile is
+accepted by the save rules (the map exists and the tile is inside it and inside the camera limits); that it is a free cell is the
+author's to see in the game.
+
+The weapon items by slot: 1 sword (1, 2, 3, 4, 8), 2 bows (5, 6), 3 flails (9, 10), 4 ice rod (14), 5 fire rod (16), 6 magic staff
+(7). In a slot the highest rank owned is the one equipped, so the kit's item 1 never hides a better sword. The books (44, 46, 48,
+50) win over the scroll of their slot.
+
+| Preset | Map, tile, z | Weapons owned (item numbers) | Equipped slot, then item |
+|---|---|---|---|
+| `arsenal-a-m14` | 14, (8, 6), 0 | 1 (kit), 5, 9, 14, 16, 7 | 1, item 1 (basic sword) |
+| `arsenal-b-m14` | 14, (8, 6), 0 | 1 (kit), 4, 6, 10, 14, 16, 7 and the books 44, 46, 48, 50 | 1, item 4 (Holy Sword) |
+| `steel-m14` | 14, (8, 6), 0 | 1 (kit), 2 | 1, item 2 (Steel Edge) |
+| `demon-m14` | 14, (8, 6), 0 | 1 (kit), 3 | 1, item 3 (Demon Buster) |
+| `fire-m303` | 303, (38, 11), 1 | as `arsenal-a-m14` | 5, item 16 (fire rod) |
+| `arrow-m16` | 16, (34, 31), 3 | as `arsenal-a-m14` | 2, item 5 (hunter's bow) |
+
+From `arsenal-a-m14` the inventory (Start) reaches the slots 1 to 6 as items 1, 5, 9, 14, 16, 7; from `arsenal-b-m14` as items
+4, 6, 10, 14, 16, 7. The tool is run, as above, outside the Claude app, in Debug; the author generates the files.
 
 ## What a save cannot carry
 

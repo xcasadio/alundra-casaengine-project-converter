@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Alundra.Scripts;
@@ -57,6 +58,17 @@ public sealed class AlundraTestSavesTests : IDisposable
 
     public static TheoryData<string> PresetNames => new() { Day3.Name, Day4.Name };
 
+    // E20.f0 T3: the six weapon presets, then the full list in the order of the table. The weapon presets are written by hand from the plan's table (section 1.8, test-means.md
+    // section 7), never read from the code under test.
+    private static readonly string[] WeaponPresetNames =
+        ["arsenal-a-m14", "arsenal-b-m14", "steel-m14", "demon-m14", "fire-m303", "arrow-m16"];
+
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames];
+
+    public static TheoryData<string> WeaponNames => new(WeaponPresetNames);
+
+    public static TheoryData<string> EveryPresetName => new(AllPresetNames);
+
     private static Expected For(string name) => name == Day3.Name ? Day3 : Day4;
 
     private static AlundraSaveGame Build(string name)
@@ -67,9 +79,9 @@ public sealed class AlundraTestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheTwoPresets_AreListed_InTheOrderOfTheTable()
+    public void TheEightPresets_AreListed_InTheOrderOfTheTable()
     {
-        Assert.Equal([Day3.Name, Day4.Name], AlundraTestSaves.Presets.Select(p => p.Name));
+        Assert.Equal(AllPresetNames, AlundraTestSaves.Presets.Select(p => p.Name));
     }
 
     [Theory]
@@ -145,7 +157,7 @@ public sealed class AlundraTestSavesTests : IDisposable
     }
 
     [Theory]
-    [MemberData(nameof(PresetNames))]
+    [MemberData(nameof(EveryPresetName))]
     public void ABuiltPreset_IsAcceptedByTheRealRules(string name)
     {
         var save = Build(name);
@@ -154,7 +166,7 @@ public sealed class AlundraTestSavesTests : IDisposable
     }
 
     [Theory]
-    [MemberData(nameof(PresetNames))]
+    [MemberData(nameof(EveryPresetName))]
     public void TwoConstructions_AreEqual_ByteForByte(string name)
     {
         var a = Build(name);
@@ -204,7 +216,7 @@ public sealed class AlundraTestSavesTests : IDisposable
     }
 
     [Theory]
-    [MemberData(nameof(PresetNames))]
+    [MemberData(nameof(EveryPresetName))]
     public void TheSlotOfAPreset_IsTestDashItsName_AndFollowsTheSlotNameRule(string name)
     {
         Assert.True(AlundraTestSaves.TryFind(name, out var preset));
@@ -334,6 +346,172 @@ public sealed class AlundraTestSavesTests : IDisposable
 
         Assert.Null(save);
         Assert.Contains("item counter index " + index, error);
+    }
+
+    // ---- E20.f0 T3: the weapon presets and the optional fields (docs/plan-e20-heros.md section 1.8) ----------
+
+    /// <summary>The loadout every weapon preset carries, as RAW counter indices (2 * item + 1), written by hand: the bomb 35 (71), the herbs 36 (73, nine), the elixirs 37 and 38
+    /// (75, 77), the fortifier 41 (83) and the scrolls 43, 45, 47, 49 (87, 91, 95, 99); plus the kit's items 1, 17, 25 (3, 35, 51).</summary>
+    private static readonly (int Index, int Count)[] CommonCounters =
+        [(3, 1), (35, 1), (51, 1), (71, 1), (73, 9), (75, 1), (77, 1), (83, 1), (87, 1), (91, 1), (95, 1), (99, 1)];
+
+    /// <summary>Hand-written rows: preset, map, tile, equipped weapon slot, the extra raw counters (weapons, books), the item the equipped slot resolves to.</summary>
+    private sealed record WeaponExpected(string Name, int Map, int X, int Y, int Z, int Slot, (int Index, int Count)[] Extra, uint CurrentItem);
+
+    // Weapon items: 2 -> 5, 3 -> 7, 4 -> 9, 5 -> 11, 6 -> 13, 7 -> 15, 9 -> 19, 10 -> 21, 14 -> 29, 16 -> 33; books 44 -> 89, 46 -> 93, 48 -> 97, 50 -> 101.
+    private static readonly (int Index, int Count)[] ArsenalAWeapons = [(11, 1), (19, 1), (29, 1), (33, 1), (15, 1)]; // items 5, 9, 14, 16, 7.
+
+    private static readonly WeaponExpected[] WeaponRows =
+    [
+        new("arsenal-a-m14", 14, 8, 6, 0, 1, ArsenalAWeapons, 1),
+        new("arsenal-b-m14", 14, 8, 6, 0, 1, [(9, 1), (13, 1), (21, 1), (29, 1), (33, 1), (15, 1), (89, 1), (93, 1), (97, 1), (101, 1)], 4), // items 4, 6, 10, 14, 16, 7 and the four books.
+        new("steel-m14", 14, 8, 6, 0, 1, [(5, 1)], 2), // item 2; the kit's item 1 stays, the higher rank wins (correction C10).
+        new("demon-m14", 14, 8, 6, 0, 1, [(7, 1)], 3), // item 3.
+        new("fire-m303", 303, 38, 11, 1, 5, ArsenalAWeapons, 16),
+        new("arrow-m16", 16, 34, 31, 3, 2, ArsenalAWeapons, 5),
+    ];
+
+    private static WeaponExpected Row(string name) => WeaponRows.Single(r => r.Name == name);
+
+    [Theory]
+    [MemberData(nameof(WeaponNames))]
+    public void AWeaponPreset_IsTheNewGamePlusItsLoadout_InEveryField(string name)
+    {
+        var row = Row(name);
+
+        var save = Build(name);
+
+        Assert.Equal(row.Map, save.InitialMapId);
+        Assert.Equal((row.X, row.Y, row.Z), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        Assert.All(save.GameFlags, word => Assert.Equal(0u, word));
+        for (var i = 0; i < 500; i++)
+        {
+            Assert.Equal((ushort)i, save.MapIdToInternalMapIndexTable[i]);
+        }
+
+        var expectedCounts = new int[256];
+        foreach (var (index, count) in CommonCounters.Concat(row.Extra))
+        {
+            expectedCounts[index] = count;
+        }
+
+        Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+
+        // Life 4 of 10, magic 4 of 4, no gold, the preset's weapon slot, no Circle item, no falcon.
+        Assert.Equal(
+            ((short)4, (short)10, (short)4, (short)4, (short)0, (short)row.Slot, (short)0, (short)0, (short)0),
+            (save.Hp, save.HpMax, save.Mp, save.MpMax, save.Money, save.WeaponId, save.ItemId, save.FalconTemp, save.Falcon));
+        Assert.Equal(0u, save.GameTime);
+        Assert.Equal((byte)0, save.DeathRetryCount);
+    }
+
+    [Theory]
+    [MemberData(nameof(WeaponNames))]
+    public void AWeaponPreset_ReloadedByTheLoadPath_GivesTheChosenWeapon_TheLifeTheMagicAndTheObjects(string name)
+    {
+        var row = Row(name);
+        var rules = RealRules();
+        var reloaded = new AlundraGameState();
+
+        Build(name).ApplyTo(reloaded); // the state a load puts in place: the aller-retour of the save.
+
+        Assert.Equal(row.CurrentItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(reloaded, rules.ItemTables));
+        Assert.Equal(((short)4, (short)10, (short)4, (short)4), (reloaded.PlayerStats.Hp, reloaded.PlayerStats.HpMax, reloaded.PlayerStats.Mp, reloaded.PlayerStats.MpMax));
+        Assert.Equal((short)row.Slot, reloaded.PlayerStats.WeaponId);
+        Assert.Equal(9, reloaded.NumberOfItems[73]); // the herbs.
+        Assert.Equal(1, reloaded.NumberOfItems[71]); // the bomb.
+        foreach (var (index, count) in CommonCounters.Concat(row.Extra))
+        {
+            Assert.Equal(count, reloaded.NumberOfItems[index]);
+        }
+    }
+
+    [Fact]
+    public void ArsenalA_And_ArsenalB_GiveOneWeaponPerSlot_TheHighestRankOfTheSlotEquipped()
+    {
+        var rules = RealRules();
+        var expected = new Dictionary<string, uint[]>
+        {
+            // Slots 1 to 6: the sword (arsenal-b: the Holy Sword 4 over the kit's dagger 1), the bow, the flail, the ice rod, the fire rod, the staff.
+            ["arsenal-a-m14"] = [1, 5, 9, 14, 16, 7],
+            ["arsenal-b-m14"] = [4, 6, 10, 14, 16, 7],
+        };
+
+        foreach (var (name, items) in expected)
+        {
+            var state = new AlundraGameState();
+            Build(name).ApplyTo(state);
+            for (var slot = 1; slot <= 6; slot++)
+            {
+                AlundraPlayerManager.SetPlayerWeaponId(state, rules.ItemTables, slot);
+                Assert.Equal(items[slot - 1], AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, rules.ItemTables));
+            }
+        }
+    }
+
+    [Fact]
+    public void TheOptionalFields_AreAppliedThroughTheSetters_AfterTheKit_AndTheEdgesAreAccepted()
+    {
+        var preset = new AlundraTestSaves.Preset(
+            "custom", "test-custom", 14, 8, 6, 0, [], [], [], [(5, (short)1)],
+            Weapon: -1, Item: 36, Hp: 50, HpMax: 50, Mp: 4, MpMax: 4, Money: 9999);
+
+        Assert.True(AlundraTestSaves.TryBuild(preset, RealRules(), out var save, out var error), error);
+
+        Assert.Equal(
+            ((short)50, (short)50, (short)4, (short)4, (short)9999, (short)-1, (short)36),
+            (save!.Hp, save.HpMax, save.Mp, save.MpMax, save.Money, save.WeaponId, save.ItemId));
+        Assert.Equal(1, save.NumberOfItems[5]);
+    }
+
+    [Fact]
+    public void WithoutTheOptionalFields_ThePresetKeepsTheNewGamesValues()
+    {
+        var preset = new AlundraTestSaves.Preset("custom", "test-custom", 14, 8, 6, 0, [], [], [], []);
+
+        Assert.True(AlundraTestSaves.TryBuild(preset, RealRules(), out var save, out var error), error);
+
+        Assert.Equal(
+            ((short)10, (short)10, (short)0, (short)0, (short)0, (short)1, (short)0),
+            (save!.Hp, save.HpMax, save.Mp, save.MpMax, save.Money, save.WeaponId, save.ItemId));
+    }
+
+    private static AlundraTestSaves.Preset WithFields(
+        int? weapon = null, int? item = null, int? hp = null, int? hpMax = null, int? mp = null, int? mpMax = null, int? money = null)
+        => new("custom", "test-custom", 14, 8, 6, 0, [], [], [], [], weapon, item, hp, hpMax, mp, mpMax, money);
+
+    public static TheoryData<string, int?, int?, int?, int?, int?, int?, int?> OutOfDomain => new()
+    {
+        // field named in the message, then weapon, item, hp, hpMax, mp, mpMax, money.
+        { "hpMax ", null, null, null, 51, null, null, null },
+        { "hpMax ", null, null, null, -1, null, null, null },
+        { "hp ", null, null, 11, 10, null, null, null }, // 11 over the maximum declared with it.
+        { "hp ", null, null, 11, null, null, null, null }, // 11 over the new game's maximum 10.
+        { "hp ", null, null, -1, null, null, null, null },
+        { "mpMax ", null, null, null, null, null, 5, null },
+        { "mpMax ", null, null, null, null, null, -1, null },
+        { "mp ", null, null, null, null, 5, 4, null },
+        { "mp ", null, null, null, null, 1, null, null }, // 1 over the new game's magic maximum 0.
+        { "money ", null, null, null, null, null, null, 10000 },
+        { "money ", null, null, null, null, null, null, -1 },
+        { "weapon ", 0, null, null, null, null, null, null },
+        { "weapon ", 7, null, null, null, null, null, null },
+        { "weapon ", -2, null, null, null, null, null, null },
+        { "item ", null, 99, null, null, null, null, null },
+        { "item ", null, -1, null, null, null, null, null },
+    };
+
+    [Theory]
+    [MemberData(nameof(OutOfDomain))]
+    public void AnOptionalFieldOutsideItsDomain_IsRefusedByCheckPreset_NotClamped(
+        string field, int? weapon, int? item, int? hp, int? hpMax, int? mp, int? mpMax, int? money)
+    {
+        var ok = AlundraTestSaves.TryBuild(WithFields(weapon, item, hp, hpMax, mp, mpMax, money), RealRules(), out var save, out var error);
+
+        Assert.False(ok);
+        Assert.Null(save);
+        Assert.Contains("preset 'custom'", error);
+        Assert.Contains(field, error);
     }
 
     // ---- The existing application path (the pattern of AlundraSaveGameApplyTests) ----------------------------
