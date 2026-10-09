@@ -1711,10 +1711,10 @@ E20.f3) ; l'avance du générateur par image (E20.e0b) ; les autres effacements 
 
 ##### Tâches
 
-- ⏳ **T1 — Oracle.** Copier dans `docs/plan-e20-annexe/e20-f1/oracle/`, depuis `scratchpad/disc-f1/oracle-ext/` : `ext.py`,
+- ✅ **T1 — Oracle.** Copier dans `docs/plan-e20-annexe/e20-f1/oracle/`, depuis `scratchpad/disc-f1/oracle-ext/` : `ext.py`,
   `probe_ext.py`, `probe_orig.py`, `tools/`, `out/`, `out_orig/`, `summary.txt` ; deux chemins seulement changent (`EFFECTS_GLOBAL`,
   `probe_ext.py:303`, relatif à la racine du dépôt ; la section `DISCOVERY`, `:63`, sautée si le dossier manque). Relancer
-  `python probe_ext.py` ; les 17 fichiers de `out/` égalent au bit près ceux de `oracle-ext/out/`.
+  `python probe_ext.py` ; les 17 fichiers de `out/` égalent au bit près ceux de `oracle-ext/out/`. **Résultat (2026-10-10)** : copie sous `docs/plan-e20-annexe/e20-f1/oracle/` (`ext.py`, `probe_ext.py`, `probe_orig.py`, `tools/`, `out/`, `out_orig/`, `summary.txt`) ; `EFFECTS_GLOBAL` est calculé depuis la racine du dépôt et la section `DISCOVERY` est sautée (`os.path.isdir`) ; `python -B probe_ext.py` relancé : les 17 fichiers de `out/` sont identiques au bit près à ceux de `oracle-ext/out/` (`diff -rq`), le `summary.txt` régénéré ne diffère que par la section `DISCOVERY` sautée ; `out_baseline/` (la sonde d'origine relancée, 5 fichiers) est ajouté, il est écrit par le script.
 - ⏳ **T2 — Charge.** `UpdatePlayerWeaponEffect(player, pad, host)` à sa place exacte (le site de son appel dans `MovePlayer`, après
   le pad et la saisie d'échelle, avant `UpdateWeaponStepProgression`) : compteur sur le héros, `AuraStub`, sons, étincelle en file.
 - ⏳ **T3 — Relâchement.** Branche de relâchement de `PlayerTryAttack` : gerbe en file (Z = `PosZ + 1 + 0x100000`), son `0x2B`,

@@ -1,0 +1,171 @@
+# C2-steel item=2  setup_effect_calls=0  frame_rng=True: x = x*0x7D2B89DD + 0xE06A02E7 after every tick (0x8002BD0C-0x8002BD34)
+# columns = discovery columns (probe.py + b0) then fc=hero +0x1C at the start>end of the tick (MovePlayer sees the START value), rng=before>afterPasses>afterFrameAdvance, aura=handle(+68,+7D)
+t  1 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 1 ptr=80028C86 cnt= 0 hc=0 b0=0 fc=0>1 rng=12345678>12345678>B806E07F aura=--------  sound(29)
+t  2 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=1>2 rng=B806E07F>B806E07F>24D2C78A aura=--------  
+t  3 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=2>3 rng=24D2C78A>24D2C78A>5D571F09 aura=--------  
+t  4 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=3>4 rng=5D571F09>5D571F09>AFBE9EAC aura=--------  
+t  5 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=4>5 rng=AFBE9EAC>AFBE9EAC>3DC70963 aura=--------  
+t  6 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=5>6 rng=3DC70963>3DC70963>A3E4185E aura=--------  
+t  7 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=6>7 rng=A3E4185E>A3E4185E>6B275A0D aura=--------  
+t  8 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=7>8 rng=6B275A0D>6B275A0D>E9C2B520 aura=--------  
+t  9 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=8>9 rng=E9C2B520>E9C2B520>ECCE7F87 aura=--------  
+t 10 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=9>10 rng=ECCE7F87>ECCE7F87>279A5972 aura=--------  
+t 11 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=10>11 rng=279A5972>279A5972>5AAD3C51 aura=--------  
+t 12 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=11>12 rng=5AAD3C51>5AAD3C51>8BD96DD4 aura=--------  
+t 13 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=12>13 rng=8BD96DD4>8BD96DD4>ED8046EB aura=--------  
+t 14 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=13>14 rng=ED8046EB>ED8046EB>3693FEC6 aura=--------  
+t 15 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=14>15 rng=3693FEC6>3693FEC6>AAC6E9D5 aura=--------  
+t 16 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=15>16 rng=AAC6E9D5>AAC6E9D5>090BDCC8 aura=--------  
+t 17 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=16>17 rng=090BDCC8>090BDCC8>C666A38F aura=--------  
+t 18 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=17>18 rng=C666A38F>C666A38F>6091BC5A aura=--------  
+t 19 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=18>19 rng=6091BC5A>6091BC5A>D123C699 aura=--------  
+t 20 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=19>20 rng=D123C699>D123C699>A24755FC aura=--------  
+t 21 hold=0080 anim_t=3F anim_c=3F fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=0 fc=20>21 rng=A24755FC>A24755FC>A2571973 aura=--------  
+t 22 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt= 0 hc=0 b0=1 fc=21>22 rng=A2571973>A2571973>0F8A862E aura=--------  sound(0)
+t 23 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 1 ptr=00000000 cnt= 0 hc=0 b0=1 fc=22>23 rng=0F8A862E>0F8A862E>6C88769D aura=--------  
+t 24 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 2 ptr=00000000 cnt= 0 hc=0 b0=1 fc=23>24 rng=6C88769D>6C88769D>2F116D70 aura=--------  
+t 25 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 3 ptr=00000000 cnt= 0 hc=0 b0=1 fc=24>25 rng=2F116D70>2F116D70>E7D66C97 aura=--------  
+t 26 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 4 ptr=00000000 cnt= 0 hc=0 b0=1 fc=25>26 rng=E7D66C97>E7D66C97>BCFF9042 aura=--------  
+t 27 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 5 ptr=00000000 cnt= 0 hc=0 b0=1 fc=26>27 rng=BCFF9042>BCFF9042>4252DDE1 aura=--------  
+t 28 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 6 ptr=00000000 cnt= 0 hc=0 b0=1 fc=27>28 rng=4252DDE1>4252DDE1>9C7BF724 aura=--------  
+t 29 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 7 ptr=00000000 cnt= 0 hc=0 b0=1 fc=28>29 rng=9C7BF724>9C7BF724>65BCA0FB aura=--------  
+t 30 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 8 ptr=00000000 cnt= 0 hc=0 b0=1 fc=29>30 rng=65BCA0FB>65BCA0FB>3F904E96 aura=--------  
+t 31 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 9 ptr=00000000 cnt= 0 hc=0 b0=1 fc=30>31 rng=3F904E96>3F904E96>6B3E2065 aura=--------  
+t 32 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=10 ptr=00000000 cnt= 0 hc=0 b0=1 fc=31>32 rng=6B3E2065>6B3E2065>76590718 aura=--------  
+t 33 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=11 ptr=00000000 cnt= 0 hc=0 b0=1 fc=32>33 rng=76590718>76590718>9918FA9F aura=80138608(2,0)  effect_3BE74(a0=0,id=3,a2=0,a3=0x80127D30,stack=1,0,0,100000,0,0) | sound(42)
+      call att id=0x03 slot#000 @80138608 rng_in=76590718  x=6553600 y=6553600 z=1 fx=0 fy=0  +68=2 +7D=0  [+34=1 +38=80127D30 +60=1 +48=0 +4C=0 +50=0x100000]
+t 34 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=12 ptr=00000000 cnt= 0 hc=0 b0=1 fc=33>34 rng=9918FA9F>9918FA9F>24CE752A aura=80138608(2,0)  
+t 35 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=13 ptr=00000000 cnt= 0 hc=0 b0=1 fc=34>35 rng=24CE752A>24CE752A>5366A229 aura=80138608(2,0)  
+t 36 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=14 ptr=00000000 cnt= 0 hc=0 b0=1 fc=35>36 rng=5366A229>5366A229>0EAEF14C aura=80138608(2,0)  
+t 37 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=15 ptr=00000000 cnt= 0 hc=0 b0=1 fc=36>37 rng=0EAEF14C>0EAEF14C>D055FD83 aura=80138608(2,0)  sound(42)
+t 38 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=16 ptr=00000000 cnt= 0 hc=0 b0=1 fc=37>38 rng=D055FD83>D055FD83>4B51F7FE aura=80138608(2,0)  
+t 39 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=17 ptr=00000000 cnt= 0 hc=0 b0=1 fc=38>39 rng=4B51F7FE>4B51F7FE>718E072D aura=80138608(2,0)  
+t 40 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=18 ptr=00000000 cnt= 0 hc=0 b0=1 fc=39>40 rng=718E072D>718E072D>176C49C0 aura=80138608(2,0)  
+t 41 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=19 ptr=00000000 cnt= 0 hc=0 b0=1 fc=40>41 rng=176C49C0>176C49C0>2F9D6DA7 aura=80138608(2,0)  sound(42)
+t 42 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=20 ptr=00000000 cnt= 0 hc=0 b0=1 fc=41>42 rng=2F9D6DA7>2F9D6DA7>310D0B12 aura=80138608(2,0)  
+t 43 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=21 ptr=00000000 cnt= 0 hc=0 b0=1 fc=42>43 rng=310D0B12>310D0B12>D99F3371 aura=80138608(2,0)  
+t 44 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=22 ptr=00000000 cnt= 0 hc=0 b0=1 fc=43>44 rng=D99F3371>D99F3371>C25BE474 aura=80138608(2,0)  
+t 45 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=23 ptr=00000000 cnt= 0 hc=0 b0=1 fc=44>45 rng=C25BE474>C25BE474>DA7C4F0B aura=80138608(2,0)  sound(42)
+t 46 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=24 ptr=00000000 cnt= 0 hc=0 b0=1 fc=45>46 rng=DA7C4F0B>DA7C4F0B>A9E02266 aura=80138608(2,0)  
+t 47 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=25 ptr=00000000 cnt= 0 hc=0 b0=1 fc=46>47 rng=A9E02266>A9E02266>0E724AF5 aura=80138608(2,0)  
+t 48 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=26 ptr=00000000 cnt= 0 hc=0 b0=1 fc=47>48 rng=0E724AF5>0E724AF5>BB58D568 aura=80138608(2,0)  
+t 49 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=27 ptr=00000000 cnt= 0 hc=0 b0=1 fc=48>49 rng=BB58D568>BB58D568>C6C6E5AF aura=80138608(2,0)  sound(42)
+t 50 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=28 ptr=00000000 cnt= 0 hc=0 b0=1 fc=49>50 rng=C6C6E5AF>C6C6E5AF>F26DF1FA aura=80138608(2,0)  
+t 51 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=29 ptr=00000000 cnt= 0 hc=0 b0=1 fc=50>51 rng=F26DF1FA>F26DF1FA>B6D0B1B9 aura=80138608(2,0)  
+t 52 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=30 ptr=00000000 cnt= 0 hc=0 b0=1 fc=51>52 rng=B6D0B1B9>B6D0B1B9>90C2709C aura=80138608(2,0)  
+t 53 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=31 ptr=00000000 cnt= 0 hc=0 b0=1 fc=52>53 rng=90C2709C>90C2709C>FCBCB593 aura=80138608(2,0)  sound(42)
+t 54 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=32 ptr=00000000 cnt= 0 hc=0 b0=1 fc=53>54 rng=FCBCB593>FCBCB593>532F6DCE aura=80138608(2,0)  
+t 55 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=33 ptr=00000000 cnt= 0 hc=0 b0=1 fc=54>55 rng=532F6DCE>532F6DCE>19B90BBD aura=80138608(2,0)  
+t 56 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=34 ptr=00000000 cnt= 0 hc=0 b0=1 fc=55>56 rng=19B90BBD>19B90BBD>5E304A10 aura=80138608(2,0)  
+t 57 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=35 ptr=00000000 cnt= 0 hc=0 b0=1 fc=56>57 rng=5E304A10>5E304A10>486C82B7 aura=80138608(2,0)  sound(42)
+t 58 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=36 ptr=00000000 cnt= 0 hc=0 b0=1 fc=57>58 rng=486C82B7>486C82B7>C7C7C9E2 aura=80138608(2,0)  
+t 59 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=37 ptr=00000000 cnt= 0 hc=0 b0=1 fc=58>59 rng=C7C7C9E2>C7C7C9E2>85E33D01 aura=80138608(2,0)  
+t 60 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=38 ptr=00000000 cnt= 0 hc=0 b0=1 fc=59>60 rng=85E33D01>85E33D01>CD6635C4 aura=80138608(2,0)  
+t 61 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=39 ptr=00000000 cnt= 0 hc=0 b0=1 fc=60>61 rng=CD6635C4>CD6635C4>A058511B aura=80138608(2,0)  sound(42)
+t 62 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=40 ptr=00000000 cnt= 0 hc=0 b0=1 fc=61>62 rng=A058511B>A058511B>5E987A36 aura=80138608(2,0)  
+t 63 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=41 ptr=00000000 cnt= 0 hc=0 b0=1 fc=62>63 rng=5E987A36>5E987A36>08846985 aura=80138608(2,0)  
+t 64 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=42 ptr=00000000 cnt= 0 hc=0 b0=1 fc=63>64 rng=08846985>08846985>C18847B8 aura=80138608(2,0)  
+t 65 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=43 ptr=00000000 cnt= 0 hc=0 b0=1 fc=64>65 rng=C18847B8>C18847B8>C55964BF aura=80138608(2,0)  sound(42)
+t 66 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=44 ptr=00000000 cnt= 0 hc=0 b0=1 fc=65>66 rng=C55964BF>C55964BF>449532CA aura=80138608(2,0)  
+t 67 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=45 ptr=00000000 cnt= 0 hc=0 b0=1 fc=66>67 rng=449532CA>449532CA>1752F549 aura=80138608(2,0)  
+t 68 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=46 ptr=00000000 cnt= 0 hc=0 b0=1 fc=67>68 rng=1752F549>1752F549>408ED3EC aura=80138608(2,0)  
+t 69 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=47 ptr=00000000 cnt= 0 hc=0 b0=1 fc=68>69 rng=408ED3EC>408ED3EC>DFC441A3 aura=80138608(2,0)  sound(42)
+t 70 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=48 ptr=00000000 cnt= 0 hc=0 b0=1 fc=69>70 rng=DFC441A3>DFC441A3>B157E79E aura=80138608(2,0)  
+t 71 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=49 ptr=00000000 cnt= 0 hc=0 b0=1 fc=70>71 rng=B157E79E>B157E79E>11CA844D aura=80138608(2,0)  
+t 72 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=50 ptr=00000000 cnt= 0 hc=0 b0=1 fc=71>72 rng=11CA844D>11CA844D>6EFA6E60 aura=80138608(2,0)  
+t 73 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=51 ptr=00000000 cnt= 0 hc=0 b0=1 fc=72>73 rng=6EFA6E60>6EFA6E60>1DCCABC7 aura=80138608(2,0)  sound(42)
+t 74 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=52 ptr=00000000 cnt= 0 hc=0 b0=1 fc=73>74 rng=1DCCABC7>1DCCABC7>2774CCB2 aura=80138608(2,0)  
+t 75 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=53 ptr=00000000 cnt= 0 hc=0 b0=1 fc=74>75 rng=2774CCB2>2774CCB2>BDAFFA91 aura=80138608(2,0)  
+t 76 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=54 ptr=00000000 cnt= 0 hc=0 b0=2 fc=75>76 rng=BDAFFA91>BDAFFA91>B1C7EB14 aura=80138608(2,0)  
+t 77 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=55 ptr=00000000 cnt= 0 hc=0 b0=2 fc=76>77 rng=B1C7EB14>B1C7EB14>9729A72B aura=80138608(2,0)  sound(42)
+t 78 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=56 ptr=00000000 cnt= 0 hc=0 b0=2 fc=77>78 rng=9729A72B>9729A72B>BD0E5606 aura=80138608(2,0)  
+t 79 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=57 ptr=00000000 cnt= 0 hc=0 b0=2 fc=78>79 rng=BD0E5606>BD0E5606>22D57C15 aura=80138608(2,0)  
+t 80 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=58 ptr=00000000 cnt= 0 hc=0 b0=2 fc=79>80 rng=22D57C15>22D57C15>4AA45E08 aura=80138608(2,0)  
+t 81 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=59 ptr=00000000 cnt= 0 hc=0 b0=2 fc=80>81 rng=4AA45E08>4AA45E08>F9F977CF aura=80138608(2,0)  sound(42)
+t 82 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=60 ptr=00000000 cnt= 0 hc=0 b0=2 fc=81>82 rng=F9F977CF>F9F977CF>60A9379A aura=80138608(2,0)  
+t 83 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=60 ptr=00000000 cnt= 0 hc=0 b0=2 fc=82>83 rng=60A9379A>60A9379A>6A1E6CD9 aura=80138608(2,0)  
+t 84 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=60 ptr=00000000 cnt= 0 hc=0 b0=2 fc=83>84 rng=6A1E6CD9>6A1E6CD9>02611B3C aura=80138608(2,0)  
+t 85 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=60 ptr=00000000 cnt= 0 hc=0 b0=2 fc=84>85 rng=02611B3C>4E40656E>A3C370DD aura=80138608(2,0)  effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001,80127D30,800E0000,0,0) | sound(428)
+      call new id=0x10 slot#001 @80138688 rng_in=02611B3C  x=8670120 y=5534740 z=1048577 fx=-105826 fy=50943  +68=2 +7D=0
+t 86 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=60 ptr=00000000 cnt= 0 hc=0 b0=2 fc=85>86 rng=A3C370DD>A3C370DD>B5A7B6B0 aura=80138608(2,0)  
+t 87 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=60 ptr=00000000 cnt= 0 hc=0 b0=2 fc=86>87 rng=B5A7B6B0>B5A7B6B0>1286E8D7 aura=80138608(2,0)  
+t 88 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=60 ptr=00000000 cnt= 0 hc=0 b0=2 fc=87>88 rng=1286E8D7>1286E8D7>28991382 aura=80138608(2,0)  
+t 89 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=60 ptr=00000000 cnt= 0 hc=0 b0=2 fc=88>89 rng=28991382>D7EE0464>3A09513B aura=80138608(2,0)  effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001,80127D30,800E0000,0,0) | sound(429)
+      call new id=0x10 slot#002 @80138708 rng_in=28991382  x=7316620 y=8354400 z=1048577 fx=-38151 fy=-90040  +68=2 +7D=0
+t 90 hold=0080 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=60 ptr=00000000 cnt= 0 hc=0 b0=2 fc=89>90 rng=3A09513B>3A09513B>6AD6B5D6 aura=80138608(2,0)  
+t 91 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg=60 ptr=80028C8E cnt= 0 hc=0 b0=2 fc=90>91 rng=6AD6B5D6>6AD6B5D6>0C0682A5 aura=80138608(2,0)  effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001 x16 | sound(43) x2
+      call new id=0x10 slot#003 @80138788 rng_in=6AD6B5D6  x=6553600 y=8126464 z=1048577 fx=344064 fy=0  +68=2 +7D=0
+      call new id=0x10 slot#004 @80138808 rng_in=6AD6B5D6  x=5650432 y=8006656 z=1048577 fx=318080 fy=87808  +68=2 +7D=0
+      call new id=0x10 slot#005 @80138888 rng_in=6AD6B5D6  x=4885504 y=7665664 z=1048577 fx=243264 fy=162176  +68=2 +7D=0
+      call new id=0x10 slot#006 @80138908 rng_in=6AD6B5D6  x=4372480 y=7155712 z=1048577 fx=131712 fy=211904  +68=2 +7D=0
+      call new id=0x10 slot#007 @80138988 rng_in=6AD6B5D6  x=4194304 y=6553600 z=1048577 fx=0 fy=229376  +68=2 +7D=0
+      call new id=0x10 slot#008 @80138A08 rng_in=6AD6B5D6  x=4372480 y=5951488 z=1048577 fx=-131712 fy=211904  +68=2 +7D=0
+      call new id=0x10 slot#009 @80138A88 rng_in=6AD6B5D6  x=4885504 y=5441536 z=1048577 fx=-243264 fy=162176  +68=2 +7D=0
+      call new id=0x10 slot#010 @80138B08 rng_in=6AD6B5D6  x=5650432 y=5100544 z=1048577 fx=-318080 fy=87808  +68=2 +7D=0
+      call new id=0x10 slot#011 @80138B88 rng_in=6AD6B5D6  x=6553600 y=4980736 z=1048577 fx=-344064 fy=0  +68=2 +7D=0
+      call new id=0x10 slot#012 @80138C08 rng_in=6AD6B5D6  x=7456768 y=5100544 z=1048577 fx=-318080 fy=-87808  +68=2 +7D=0
+      call new id=0x10 slot#013 @80138C88 rng_in=6AD6B5D6  x=8221696 y=5441536 z=1048577 fx=-243264 fy=-162176  +68=2 +7D=0
+      call new id=0x10 slot#014 @80138D08 rng_in=6AD6B5D6  x=8734720 y=5951488 z=1048577 fx=-131712 fy=-211904  +68=2 +7D=0
+      call new id=0x10 slot#015 @80138D88 rng_in=6AD6B5D6  x=8912896 y=6553600 z=1048577 fx=0 fy=-229376  +68=2 +7D=0
+      call new id=0x10 slot#016 @80138E08 rng_in=6AD6B5D6  x=8734720 y=7155712 z=1048577 fx=131712 fy=-211904  +68=2 +7D=0
+      call new id=0x10 slot#017 @80138E88 rng_in=6AD6B5D6  x=8221696 y=7665664 z=1048577 fx=243264 fy=-162176  +68=2 +7D=0
+      call new id=0x10 slot#018 @80138F08 rng_in=6AD6B5D6  x=7456768 y=8006656 z=1048577 fx=318080 fy=-87808  +68=2 +7D=0
+t 92 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt= 1 hc=0 b0=2 fc=91>92 rng=0C0682A5>0C0682A5>40AA1858 aura=--------  
+t 93 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt= 2 hc=0 b0=2 fc=92>93 rng=40AA1858>40AA1858>C9101EDF aura=--------  
+t 94 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt= 3 hc=0 b0=2 fc=93>94 rng=C9101EDF>C9101EDF>264F006A aura=--------  
+t 95 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt= 4 hc=0 b0=2 fc=94>95 rng=264F006A>264F006A>0DA41869 aura=--------  
+t 96 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt= 5 hc=0 b0=2 fc=95>96 rng=0DA41869>0DA41869>D6C6468C aura=--------  
+t 97 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt= 6 hc=0 b0=2 fc=96>97 rng=D6C6468C>D6C6468C>9AD9D5C3 aura=--------  
+t 98 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt= 7 hc=0 b0=2 fc=97>98 rng=9AD9D5C3>9AD9D5C3>409DE73E aura=--------  
+t 99 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt= 8 hc=0 b0=2 fc=98>99 rng=409DE73E>409DE73E>46E4D16D aura=--------  
+t100 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt= 9 hc=0 b0=2 fc=99>100 rng=46E4D16D>46E4D16D>EE552300 aura=--------  
+t101 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt=10 hc=0 b0=2 fc=100>101 rng=EE552300>EE552300>10A439E7 aura=--------  
+t102 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt=11 hc=0 b0=2 fc=101>102 rng=10A439E7>10A439E7>A5F99E52 aura=--------  
+t103 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt=12 hc=0 b0=2 fc=102>103 rng=A5F99E52>A5F99E52>606791B1 aura=--------  
+t104 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt=13 hc=0 b0=2 fc=103>104 rng=606791B1>606791B1>6C8581B4 aura=--------  
+t105 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt=14 hc=0 b0=2 fc=104>105 rng=6C8581B4>6C8581B4>AF504F4B aura=--------  
+t106 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt=15 hc=0 b0=2 fc=105>106 rng=AF504F4B>AF504F4B>23C699A6 aura=--------  
+t107 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt=16 hc=0 b0=2 fc=106>107 rng=23C699A6>23C699A6>E7F87D35 aura=--------  
+t108 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt=17 hc=0 b0=2 fc=107>108 rng=E7F87D35>E7F87D35>05D676A8 aura=--------  
+t109 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt=18 hc=0 b0=2 fc=108>109 rng=05D676A8>05D676A8>A64659EF aura=--------  
+t110 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt=19 hc=0 b0=2 fc=109>110 rng=A64659EF>A64659EF>DF6B8D3A aura=--------  
+t111 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=80028C8E cnt=20 hc=0 b0=2 fc=110>111 rng=DF6B8D3A>DF6B8D3A>5994F7F9 aura=--------  
+t112 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=111>112 rng=5994F7F9>5994F7F9>2A8B55DC aura=--------  spawn(owner=80127D30,table=0,type=27,x=6553600,y=6553600,z=1,dir=0x18)
+t113 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=112>113 rng=2A8B55DC>2A8B55DC>0399DDD3 aura=--------  
+t114 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=113>114 rng=0399DDD3>0399DDD3>9D656D0E aura=--------  
+t115 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=114>115 rng=9D656D0E>9D656D0E>2FAFA5FD aura=--------  
+t116 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=115>116 rng=2FAFA5FD>2FAFA5FD>755FB350 aura=--------  
+t117 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=116>117 rng=755FB350>755FB350>996D9EF7 aura=--------  
+t118 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=117>118 rng=996D9EF7>996D9EF7>4C9B6D22 aura=--------  
+t119 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=118>119 rng=4C9B6D22>4C9B6D22>1EB46B41 aura=--------  
+t120 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=119>120 rng=1EB46B41>1EB46B41>B07B6304 aura=--------  
+t121 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=120>121 rng=B07B6304>B07B6304>D897A15B aura=--------  
+t122 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=121>122 rng=D897A15B>D897A15B>89F30176 aura=--------  
+t123 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=122>123 rng=89F30176>89F30176>DFCC6BC5 aura=--------  
+t124 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=123>124 rng=DFCC6BC5>DFCC6BC5>C4A678F8 aura=--------  
+t125 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=124>125 rng=C4A678F8>C4A678F8>248528FF aura=--------  
+t126 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=125>126 rng=248528FF>248528FF>1023DE0A aura=--------  
+t127 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=126>127 rng=1023DE0A>1023DE0A>2EE20B89 aura=--------  
+t128 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=127>128 rng=2EE20B89>2EE20B89>26BD492C aura=--------  
+t129 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=128>129 rng=26BD492C>26BD492C>645EB9E3 aura=--------  
+t130 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=129>130 rng=645EB9E3>645EB9E3>47CBF6DE aura=--------  
+t131 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=130>131 rng=47CBF6DE>47CBF6DE>DFE4EE8D aura=--------  
+t132 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=131>132 rng=DFE4EE8D>DFE4EE8D>976467A0 aura=--------  
+t133 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=132>133 rng=976467A0>976467A0>D56C1807 aura=--------  
+t134 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=133>134 rng=D56C1807>D56C1807>6BC37FF2 aura=--------  
+t135 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=134>135 rng=6BC37FF2>6BC37FF2>2F4DF8D1 aura=--------  
+t136 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=2 fc=135>136 rng=2F4DF8D1>2F4DF8D1>48FCA854 aura=--------  
+t137 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=136>137 rng=48FCA854>48FCA854>62B8476B aura=--------  sound(0)
+t138 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=137>138 rng=62B8476B>62B8476B>F5B0ED46 aura=--------  
+t139 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=138>139 rng=F5B0ED46>F5B0ED46>B1E34E55 aura=--------  
+t140 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=139>140 rng=B1E34E55>B1E34E55>BFD71F48 aura=--------  
+t141 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=140>141 rng=BFD71F48>BFD71F48>05F58C0F aura=--------  
+t142 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=141>142 rng=05F58C0F>05F58C0F>46DCF2DA aura=--------  
+t143 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=142>143 rng=46DCF2DA>46DCF2DA>87BC5319 aura=--------  
+t144 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=143>144 rng=87BC5319>87BC5319>00A9207C aura=--------  
+t145 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=144>145 rng=00A9207C>00A9207C>F5A169F3 aura=--------  
+t146 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=145>146 rng=F5A169F3>F5A169F3>C14684AE aura=--------  
+t147 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=146>147 rng=C14684AE>C14684AE>B685AB1D aura=--------  
+t148 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=147>148 rng=B685AB1D>B685AB1D>E1403FF0 aura=--------  
+t149 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=148>149 rng=E1403FF0>E1403FF0>A468A517 aura=--------  
+t150 hold=0000 anim_t=00 anim_c=00 fx=      0 fy=      0 fz=      0 pz=      0 gnd=1 chg= 0 ptr=00000000 cnt=20 hc=0 b0=3 fc=149>150 rng=A468A517>A468A517>C4F6D6C2 aura=--------  

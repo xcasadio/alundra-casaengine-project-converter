@@ -1,0 +1,154 @@
+# Extended oracle run (probe_ext.py)  files: out/<name>.txt (+ .json), out_baseline/<name>.txt (stored probe regenerated), out_orig/<name>.txt (stored discovery outputs)
+setup_effect_calls per scenario: {'C2-steel': 0, 'C6-william': 0, 'C10-crusher': 0, 'C14-ice': 0, 'C16-fire': 0}
+
+## 1. Shared columns: stored discovery output vs regenerated stored probe vs extended oracle
+Comparison after removing the b0= and pz= columns from every side:
+Row fields compared at row level (every key of attack.ROW_FIELDS + chg/ptr/cnt/weapon_rec + events text) between the stored probe.py run and the extension:
+  C2-steel     rows 150/150 | row-level differences: 0 | stored(-b0) vs regenerated: 1 line diffs (152 vs 152 lines) | stored vs extended(-new cols): 1 line diffs (150 vs 150 lines)
+     d1 sample: 't 91 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 gnd=1 chg=60 ptr=80028C8E cnt= 0 hc=0  effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001,80127D30,18,0,0) | effect_3BDD8(' vs 't 91 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 gnd=1 chg=60 ptr=80028C8E cnt= 0 hc=0  effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001 x16 | sound(43) x2'
+     d2 sample: 't 91 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 gnd=1 chg=60 ptr=80028C8E cnt= 0 hc=0  effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001,80127D30,18,0,0) | effect_3BDD8(' vs 't 91 hold=0000 anim_t=18 anim_c=18 fx=      0 fy=      0 fz=      0 gnd=1 chg=60 ptr=80028C8E cnt= 0 hc=0  effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001 x16 | sound(43) x2'
+     explained line t91: stored events (uncollapsed) == the row event list joined by " | " : True (18 events)
+  C6-william   rows 150/150 | row-level differences: 0 | stored(-b0) vs regenerated: 0 line diffs (152 vs 152 lines) | stored vs extended(-new cols): 0 line diffs (150 vs 150 lines)
+  C10-crusher  rows 160/160 | row-level differences: 0 | stored(-b0) vs regenerated: 0 line diffs (162 vs 162 lines) | stored vs extended(-new cols): 0 line diffs (160 vs 160 lines)
+  C14-ice      rows 160/160 | row-level differences: 0 | stored(-b0) vs regenerated: 0 line diffs (162 vs 162 lines) | stored vs extended(-new cols): 0 line diffs (160 vs 160 lines)
+  C16-fire     rows 160/160 | row-level differences: 0 | stored(-b0) vs regenerated: 0 line diffs (162 vs 162 lines) | stored vs extended(-new cols): 0 line diffs (160 vs 160 lines)
+
+## 2. Effect checks against the formulas read in the disassembly (burst 0x8002EB6C-0x8002EC48, hold spark 0x8002F5EC-0x8002F71C)
+C2-steel:
+   spark t85 slot#1: rng 12345678 > 24D2C78A (2 LCG steps, matches formula: True) ; jx=86057 jy=-93365 ; slot fields equal the formula: True ; fc_in=84 (&3=0 &7=4) sound ['sound(428)']
+   spark t89 slot#2: rng 24D2C78A > AFBE9EAC (2 LCG steps, matches formula: True) ; jx=-53237 jy=48891 ; slot fields equal the formula: True ; fc_in=88 (&3=0 &7=0) sound ['sound(429)']
+   burst t91: 16/16 tuples equal the formula, 16 distinct slots (#3..#18), preceded by 0 spark(s) in the same tick, rng AFBE9EAC>AFBE9EAC (changed by the spark only: True)
+   aura handle t33: 00000000 -> 80138608 (slot#0)
+   aura handle t92: 80138608 -> 00000000 (slot#-1)
+   end of run: pool slot#000 +68=0 +7D=0
+   effect calls total 19, distinct slots 19, NULL returns 0, max pool use 19 of 128
+C6-william:
+   spark t85 slot#1: rng 12345678 > 24D2C78A (2 LCG steps, matches formula: True) ; jx=86057 jy=-93365 ; slot fields equal the formula: True ; fc_in=84 (&3=0 &7=4) sound ['sound(428)']
+   spark t89 slot#2: rng 24D2C78A > AFBE9EAC (2 LCG steps, matches formula: True) ; jx=-53237 jy=48891 ; slot fields equal the formula: True ; fc_in=88 (&3=0 &7=0) sound ['sound(429)']
+   burst t91: 16/16 tuples equal the formula, 16 distinct slots (#3..#18), preceded by 0 spark(s) in the same tick, rng AFBE9EAC>AFBE9EAC (changed by the spark only: True)
+   aura handle t35: 00000000 -> 80138608 (slot#0)
+   aura handle t92: 80138608 -> 00000000 (slot#-1)
+   end of run: pool slot#000 +68=0 +7D=0
+   effect calls total 19, distinct slots 19, NULL returns 0, max pool use 19 of 128
+C10-crusher:
+   spark t97 slot#1: rng 12345678 > 24D2C78A (2 LCG steps, matches formula: True) ; jx=86057 jy=-93365 ; slot fields equal the formula: True ; fc_in=96 (&3=0 &7=0) sound ['sound(429)']
+   spark t101 slot#2: rng 24D2C78A > AFBE9EAC (2 LCG steps, matches formula: True) ; jx=-53237 jy=48891 ; slot fields equal the formula: True ; fc_in=100 (&3=0 &7=4) sound ['sound(428)']
+   burst t101: 16/16 tuples equal the formula, 16 distinct slots (#3..#18), preceded by 1 spark(s) in the same tick, rng 24D2C78A>AFBE9EAC (changed by the spark only: True)
+   aura handle t46: 00000000 -> 80138608 (slot#0)
+   aura handle t102: 80138608 -> 00000000 (slot#-1)
+   end of run: pool slot#000 +68=0 +7D=0
+   effect calls total 19, distinct slots 19, NULL returns 0, max pool use 19 of 128
+C14-ice:
+   spark t93 slot#1: rng 12345678 > 24D2C78A (2 LCG steps, matches formula: True) ; jx=86057 jy=-93365 ; slot fields equal the formula: True ; fc_in=92 (&3=0 &7=4) sound ['sound(428)']
+   spark t97 slot#2: rng 24D2C78A > AFBE9EAC (2 LCG steps, matches formula: True) ; jx=-53237 jy=48891 ; slot fields equal the formula: True ; fc_in=96 (&3=0 &7=0) sound ['sound(429)']
+   spark t101 slot#3: rng AFBE9EAC > A3E4185E (2 LCG steps, matches formula: True) ; jx=-101718 jy=36753 ; slot fields equal the formula: True ; fc_in=100 (&3=0 &7=4) sound ['sound(428)']
+   burst t101: 16/16 tuples equal the formula, 16 distinct slots (#4..#19), preceded by 1 spark(s) in the same tick, rng AFBE9EAC>A3E4185E (changed by the spark only: True)
+   aura handle t43: 00000000 -> 80138608 (slot#0)
+   aura handle t102: 80138608 -> 00000000 (slot#-1)
+   end of run: pool slot#000 +68=0 +7D=0
+   effect calls total 20, distinct slots 20, NULL returns 0, max pool use 20 of 128
+C16-fire:
+   spark t93 slot#1: rng 12345678 > 24D2C78A (2 LCG steps, matches formula: True) ; jx=86057 jy=-93365 ; slot fields equal the formula: True ; fc_in=92 (&3=0 &7=4) sound ['sound(428)']
+   spark t97 slot#2: rng 24D2C78A > AFBE9EAC (2 LCG steps, matches formula: True) ; jx=-53237 jy=48891 ; slot fields equal the formula: True ; fc_in=96 (&3=0 &7=0) sound ['sound(429)']
+   spark t101 slot#3: rng AFBE9EAC > A3E4185E (2 LCG steps, matches formula: True) ; jx=-101718 jy=36753 ; slot fields equal the formula: True ; fc_in=100 (&3=0 &7=4) sound ['sound(428)']
+   burst t101: 16/16 tuples equal the formula, 16 distinct slots (#4..#19), preceded by 1 spark(s) in the same tick, rng AFBE9EAC>A3E4185E (changed by the spark only: True)
+   aura handle t43: 00000000 -> 80138608 (slot#0)
+   aura handle t102: 80138608 -> 00000000 (slot#-1)
+   end of run: pool slot#000 +68=0 +7D=0
+   effect calls total 20, distinct slots 20, NULL returns 0, max pool use 20 of 128
+
+### C2-steel release tick (t91): the 16 burst tuples
+hero at the calls: x=6553600 y=6553600 z=1 (raw 16.16 / binary convention)
+ i  slot  addr      X          Y          Z         ForceX   ForceY   | formula check (tab1[2i]=0 tab2[2i]=512 ...)
+ 0  #003  80138788    6553600    8126464    1048577   344064        0   OK  (tab1[2i]=0 tab2[2i]=512)
+ 1  #004  80138808    5650432    8006656    1048577   318080    87808   OK  (tab1[2i]=-294 tab2[2i]=473)
+ 2  #005  80138888    4885504    7665664    1048577   243264   162176   OK  (tab1[2i]=-543 tab2[2i]=362)
+ 3  #006  80138908    4372480    7155712    1048577   131712   211904   OK  (tab1[2i]=-710 tab2[2i]=196)
+ 4  #007  80138988    4194304    6553600    1048577        0   229376   OK  (tab1[2i]=-768 tab2[2i]=0)
+ 5  #008  80138A08    4372480    5951488    1048577  -131712   211904   OK  (tab1[2i]=-710 tab2[2i]=-196)
+ 6  #009  80138A88    4885504    5441536    1048577  -243264   162176   OK  (tab1[2i]=-543 tab2[2i]=-362)
+ 7  #010  80138B08    5650432    5100544    1048577  -318080    87808   OK  (tab1[2i]=-294 tab2[2i]=-473)
+ 8  #011  80138B88    6553600    4980736    1048577  -344064        0   OK  (tab1[2i]=0 tab2[2i]=-512)
+ 9  #012  80138C08    7456768    5100544    1048577  -318080   -87808   OK  (tab1[2i]=294 tab2[2i]=-473)
+10  #013  80138C88    8221696    5441536    1048577  -243264  -162176   OK  (tab1[2i]=543 tab2[2i]=-362)
+11  #014  80138D08    8734720    5951488    1048577  -131712  -211904   OK  (tab1[2i]=710 tab2[2i]=-196)
+12  #015  80138D88    8912896    6553600    1048577        0  -229376   OK  (tab1[2i]=768 tab2[2i]=0)
+13  #016  80138E08    8734720    7155712    1048577   131712  -211904   OK  (tab1[2i]=710 tab2[2i]=196)
+14  #017  80138E88    8221696    7665664    1048577   243264  -162176   OK  (tab1[2i]=543 tab2[2i]=362)
+15  #018  80138F08    7456768    8006656    1048577   318080   -87808   OK  (tab1[2i]=294 tab2[2i]=473)
+
+### C2-steel around the first hold spark (t83..t90), rng = before>afterPasses>afterFrameAdvance
+t 83 chg=60 fc=82>83 rng=12345678>12345678>12345678 aura=80138608(2,0)  
+t 84 chg=60 fc=83>84 rng=12345678>12345678>12345678 aura=80138608(2,0)  
+t 85 chg=60 fc=84>85 rng=12345678>24D2C78A>24D2C78A aura=80138608(2,0)  effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001,80127D30
+      call new id=0x10 slot#001 @80138688 rng_in=12345678  x=8274740 y=4686300 z=1048577 fx=-86057 fy=93365  +68=2 +7D=0
+        decode: s0=12345678 s1=B806E07F s2=24D2C78A jx=hi(s1*0x60001)-0x30000=86057 jy=hi(s2*0x40001)-0x20000=-93365 ; x=heroX+20*jx=8274740 y=heroY+20*jy=4686300 fx=heroFX-jx=-86057 fy=heroFY-jy=93365 (hero x=6553600 y=6553600 fx=0 fy=0)
+t 86 chg=60 fc=85>86 rng=24D2C78A>24D2C78A>24D2C78A aura=80138608(2,0)  
+t 87 chg=60 fc=86>87 rng=24D2C78A>24D2C78A>24D2C78A aura=80138608(2,0)  
+t 88 chg=60 fc=87>88 rng=24D2C78A>24D2C78A>24D2C78A aura=80138608(2,0)  
+t 89 chg=60 fc=88>89 rng=24D2C78A>AFBE9EAC>AFBE9EAC aura=80138608(2,0)  effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001,80127D30
+      call new id=0x10 slot#002 @80138708 rng_in=24D2C78A  x=5488860 y=7531420 z=1048577 fx=53237 fy=-48891  +68=2 +7D=0
+        decode: s0=24D2C78A s1=5D571F09 s2=AFBE9EAC jx=hi(s1*0x60001)-0x30000=-53237 jy=hi(s2*0x40001)-0x20000=48891 ; x=heroX+20*jx=5488860 y=heroY+20*jy=7531420 fx=heroFX-jx=53237 fy=heroFY-jy=-48891 (hero x=6553600 y=6553600 fx=0 fy=0)
+t 90 chg=60 fc=89>90 rng=AFBE9EAC>AFBE9EAC>AFBE9EAC aura=80138608(2,0)  
+
+## 3. The per-frame RNG advance 0x8002BD0C-0x8002BD34 and the seed
+FACT (tools/world.py:187) the oracle ticks with PASSES = 80038634, 800386D0, 80038998, 800384F4, 80038E18, 80038364, 80038E84, 80039300 ; tick() = pad update + these 8 passes (world.py:198+)
+FACT (xref.py) 0x8002BD0C-0x8002BD34 lies in the function 0x8002BAEC (start 0x8002BAEC, epilogue 0x8002BD58), called only from 0x8002C3E4 and 0x8002C404; that function calls the tick wrapper 0x8002E058 (jal at 0x8002BC4C), which calls 0x8003B388 (jal 0x8002E108) then the effect pass 0x8003C410
+FACT coverage of the C2-steel run (m.cov, 3002 distinct PCs): 0x8002BAEC executed=False, 0x8002BD0C executed=False, 0x8002BD34 executed=False, 0x8002E058 executed=False, 0x8003C410 executed=False
+FACT rng word changes only at spark ticks: [(85, '12345678>24D2C78A'), (89, '24D2C78A>AFBE9EAC')]
+FACT seed: attack.py:51 setup(seed=0x12345678) and attack.py:77 m.poke(0x80098708, seed); row 0 of every run holds 12345678 ; the EXE image itself holds B017C93D at 0x80098708
+Model frame_rng=True (C2-steel): first hold spark (t85) enters with rng 02611B3C (no-advance run: 12345678)
+   spark t85 slot#1: rng 02611B3C > 4E40656E (2 LCG steps, matches formula: True) ; jx=105826 jy=-50943 ; slot fields equal the formula: True ; fc_in=84 (&3=0 &7=4) sound ['sound(428)']
+   spark t89 slot#2: rng 28991382 > D7EE0464 (2 LCG steps, matches formula: True) ; jx=38151 jy=90040 ; slot fields equal the formula: True ; fc_in=88 (&3=0 &7=0) sound ['sound(429)']
+   burst t91: 16/16 tuples equal the formula, 16 distinct slots (#3..#18), preceded by 0 spark(s) in the same tick, rng 6AD6B5D6>6AD6B5D6 (changed by the spark only: True)
+Model seed=image (0xB017C93D), no frame advance: first hold spark enters with rng B017C93D, jitter-derived slot x=4276880 y=8030340 fx=113836 fy=-73837
+
+## 4. Aura re-creation path (effect 3, handle 0x80126FF8, destroy flag +0x7D)
+A0 (C2-steel, +0x7D left at 0): effect-3 creates at (tick, slot) = [(33, 0)] ; charge ticks t33..t82 = 50 ticks with timer >= 11 (timers 11..60) ; effect-3 creates inside them: 1
+A1 (+0x7D := 1 on the live aura slot just before t50; free pass modelled): effect-3 creates at (tick, slot) = [(33, 0), (50, 1)]
+t 48 chg=26 fc=47>48 rng=12345678>12345678>12345678 aura=80138608(2,0)  
+t 49 chg=27 fc=48>49 rng=12345678>12345678>12345678 aura=80138608(2,0)  sound(42)
+t 50 chg=28 fc=49>50 rng=12345678>12345678>12345678 aura=80138688(2,0)  effect_3BE74(a0=0,id=3,a2=0,a3=0x80127D30,stack=1,0,0,100000,0,0)
+      call att id=0x03 slot#001 @80138688 rng_in=12345678  x=6553600 y=6553600 z=1 fx=0 fy=0  +68=2 +7D=0  [+34=1 +38=80127D30 +60=1 +48=0 +4C=0 +50=0x100000]
+t 51 chg=29 fc=50>51 rng=12345678>12345678>12345678 aura=80138688(2,0)  
+t 52 chg=30 fc=51>52 rng=12345678>12345678>12345678 aura=80138688(2,0)  
+   after t48  handle=80138608  slot#000 +68=2 +7D=0 | slot#h +68=2 +7D=0
+   after t49  handle=80138608  slot#000 +68=2 +7D=0 | slot#h +68=2 +7D=0
+   after t50  handle=80138688  slot#000 +68=0 +7D=1 | slot#h +68=2 +7D=0
+   after t51  handle=80138688  slot#000 +68=0 +7D=1 | slot#h +68=2 +7D=0
+   after t52  handle=80138688  slot#000 +68=0 +7D=1 | slot#h +68=2 +7D=0
+A1b (same, free pass NOT modelled): effect-3 creates at [(33, 0), (50, 1)] ; old slot#000 stays allocated (+68=2 +7D=1), handle -> slot#1
+A2 (+0x7D := 1 before t60 and before t70): effect-3 creates at [(33, 0), (60, 1), (70, 0)]
+A3 (control: charge dropped at t26, timer < 11 at the poke): effect-3 creates [] ; aura handle at t45 = 00000000
+
+## 5. Pool full (create returns NULL): what the binary does with a NULL
+P1 (C2-steel, pool filled before t30, freed before t60; filled before t84, freed before t88): NULL returns (tick, effect id) = [(33, 3), (34, 3), (35, 3), (36, 3), (37, 3), (38, 3), (39, 3), (40, 3), (41, 3), (42, 3), (43, 3), (44, 3), (45, 3), (46, 3), (47, 3), (48, 3), (49, 3), (50, 3), (51, 3), (52, 3), (53, 3), (54, 3), (55, 3), (56, 3), (57, 3), (58, 3), (59, 3), (85, 16)]
+t 33 chg=11 fc=32>33 rng=12345678>12345678>12345678 aura=--------  effect_3BE74(a0=0,id=3,a2=0,a3=0x80127D30,stack=1,0,0,100000,0,0) | sound(42)
+      call att id=0x03 -> NULL (pool full)
+t 34 chg=12 fc=33>34 rng=12345678>12345678>12345678 aura=--------  effect_3BE74(a0=0,id=3,a2=0,a3=0x80127D30,stack=1,0,0,100000,0,0)
+      call att id=0x03 -> NULL (pool full)
+t 37 chg=15 fc=36>37 rng=12345678>12345678>12345678 aura=--------  effect_3BE74(a0=0,id=3,a2=0,a3=0x80127D30,stack=1,0,0,100000,0,0) | sound(42)
+      call att id=0x03 -> NULL (pool full)
+t 59 chg=37 fc=58>59 rng=12345678>12345678>12345678 aura=--------  effect_3BE74(a0=0,id=3,a2=0,a3=0x80127D30,stack=1,0,0,100000,0,0)
+      call att id=0x03 -> NULL (pool full)
+t 60 chg=38 fc=59>60 rng=12345678>12345678>12345678 aura=80138608(2,0)  effect_3BE74(a0=0,id=3,a2=0,a3=0x80127D30,stack=1,0,0,100000,0,0)
+      call att id=0x03 slot#000 @80138608 rng_in=12345678  x=6553600 y=6553600 z=1 fx=0 fy=0  +68=2 +7D=0  [+34=1 +38=80127D30 +60=1 +48=0 +4C=0 +50=0x100000]
+t 61 chg=39 fc=60>61 rng=12345678>12345678>12345678 aura=80138608(2,0)  sound(42)
+t 85 chg=60 fc=84>85 rng=12345678>12345678>12345678 aura=80138608(2,0)  effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001,80127D30,800E0000,0,0)
+      call new id=0x10 -> NULL (pool full)
+t 89 chg=60 fc=88>89 rng=12345678>24D2C78A>24D2C78A aura=80138608(2,0)  effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001,80127D30,800E0000,0,0) | sound(429)
+      call new id=0x10 slot#001 @80138688 rng_in=12345678  x=8274740 y=4686300 z=1048577 fx=-86057 fy=93365  +68=2 +7D=0
+   => with a NULL from the aura create the handle stays 0 and the create is retried at EVERY charge tick; the sound 0x2A (42) does not depend on the result; the spark with a NULL plays NO 0x1AC/0x1AD and draws NO random word (rng t85 12345678>12345678, t89 enters with 12345678)
+P2 (C2-steel, only 5 free slots at the release tick t91): burst creates -> ['#123', '#124', '#125', '#126', '#127', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL']
+   events of t91: ['sound(43)', 'sound(0)'] ; pointer 80028C8E, step counter 0, anim 18 (the release still completes: sound 43 plays, pointer set)
+   the 5 created tuples are the ones of i = 0..4 (the NULL ones are skipped without shifting the others): [(6553600, 8126464, 344064, 0), (5650432, 8006656, 318080, 87808), (4885504, 7665664, 243264, 162176), (4372480, 7155712, 131712, 211904), (4194304, 6553600, 0, 229376)]
+
+## 6. Natural expiry of the aura (MODEL: the effect update is not run by the oracle; +0x7D is set by the harness at the script end read from the exported bank)
+exported bank Data/effects/effects-global.json (alundra-project): effect 3 animations (End, frames, sum of delays) = [('Destroy', 24, 96), ('Loop', 12, 48)] ; effect 16 = [('Destroy', 7, 14)] -> life used: {3: 96, 16: 14}
+A5 (C2-steel held for 300 ticks): effect-3 creates at (tick, slot) = [(33, 0), (130, 5), (227, 4)] ; hold sparks at 54 ticks (first [85, 89, 93], last 297) ; max slots alive 5
+t128 chg=60 fc=127>128 rng=0F8A862E>0F8A862E>0F8A862E aura=80138608(2,0)  
+t129 chg=60 fc=128>129 rng=0F8A862E>2F116D70>2F116D70 aura=80138608(2,1)  effect_3BDD8(a0=0,id=16,a2=0,a3=0x640000,stack=640000,100001,80127D30,800E0000,0,0) | sound(429)
+t130 chg=60 fc=129>130 rng=2F116D70>2F116D70>2F116D70 aura=80138888(2,0)  effect_3BE74(a0=0,id=3,a2=0,a3=0x80127D30,stack=1,0,0,100000,0,0)
+      call att id=0x03 slot#005 @80138888 rng_in=2F116D70  x=6553600 y=6553600 z=1 fx=0 fy=0  +68=2 +7D=0  [+34=1 +38=80127D30 +60=1 +48=0 +4C=0 +50=0x100000]
+t131 chg=60 fc=130>131 rng=2F116D70>2F116D70>2F116D70 aura=80138888(2,0)  
+   at the end of the run 4 slots are alive (aura + sparks younger than their life); the period of the aura is 97 ticks (create at N, +0x7D set at the pass of N+96, re-create at N+97)
