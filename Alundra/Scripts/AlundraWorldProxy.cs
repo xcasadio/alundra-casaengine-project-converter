@@ -2735,7 +2735,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <c>+0x220</c> (<see cref="AlundraEntityScriptProxy.HitCounter"/>) cleared. <c>+0x12C</c> (<c>RidingEntity</c>) is NOT cleared: the DLL recomputes the carrier once per frame
     /// (<see cref="RefreshUpdateProxiesAndCollidables"/>), D-E20-13 (documented deviation until the riding is recomputed in the tick).
     /// Readers of these fields in the DLL (inventory of E20.a): <c>HitCounter</c> by opcodes 0x47/0x48 and by the pick of the Deactivate slot (<c>DeactivateOnHit</c>);
-    /// <c>TouchingEntity</c> by the pick (slot D instead of C); the others by nothing yet (0x86 and 0x87 are not implemented, E14). Writers: none yet (the hit pass, E20.c1).
+    /// <c>TouchingEntity</c> by the pick (slot D instead of C) and by the opcode 0x87; <c>DamagedTickCounter</c> is written by the opcode 0x86 (E20.c1b) and read by the hit pass, <c>HitCounter</c> is read by 0x71 too.
+    /// Writers: the hit pass (E20.c1a: <c>TouchingEntity</c>, <c>FrameCollisionTickCounter</c>, <c>HitCounter</c>) and 0x86.
     /// </summary>
     private void RunCountersPass()
     {

@@ -165,6 +165,9 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// </summary>
     private readonly EventProgramState _slotAScratchState = new();
 
+    /// <summary>E20.c1b K4 test seam: the state shared by the programs A, D, E and F (the binary's <c>0x8013D9E8</c>, whose <see cref="EventProgramState.Result"/> is <c>0x8013DA14</c>).</summary>
+    internal EventProgramState SharedProgramStateForTests => _slotAScratchState;
+
     public AlundraEventProgramRunner(EventProgramDocument? document, AlundraGameState gameState, IEntityWorldContext? worldContext = null)
     {
         _document = document;
@@ -744,9 +747,53 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return entity.ForceAdjusted != 0 || entity.CollidedWithEntityZ != 0 ? 1 : 0;
 
             case 0x47: // Wait hit or force adjusted - Script_71_047 @ 0x8003E984 (E19.h1 H1-1), PER THE BINARY: returns 1 when the LOGIC entity's
-                       // HitCounter (+0x220) or ForceAdjusted (+0x13C) is nonzero, else 0; Result untouched. HitCounter stays 0 until E14 writes it
-                       // (a flame then advances until a wall stops it, like the original when nobody hits it). Size 1.
+                       // HitCounter (+0x220) or ForceAdjusted (+0x13C) is nonzero, else 0; Result untouched. HitCounter is written by the hit pass (E20.c1a: the attacker's
+                       // counter grows with each hit it lands) and cleared by the counters pass of the next tick. Size 1.
                 return entity.HitCounter != 0 || entity.ForceAdjusted != 0 ? 1 : 0;
+
+            case 0x71: // Get hit counter - Script_113_071 @ 0x8003FA10 (E20.c1b K4), PER THE BINARY: Result = the LOGIC entity's HitCounter (+0x220). Size 1.
+                state.Result = entity.HitCounter;
+                return 1;
+
+            case 0x86: // Set DamagedTickCounter - Script_134_086 @ 0x8003FFD4 (E20.c1b K4), PER THE BINARY: +0x1CC = v2 | v3 << 8 on every entity the search v1 finds. A SET, not
+                       // an add (the size table used to say "Add"); Result untouched. The counters pass decrements it, the hit pass skips a target whose counter is not 0. Size 4.
+            {
+                var counter = v[2] | (v[3] << 8);
+                foreach (var match in EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity))
+                {
+                    match.DamagedTickCounter = counter;
+                }
+
+                return 4;
+            }
+
+            case 0x87: // Check touched by attack type - Script_135_087 @ 0x80040048 (E20.c1b K4), PER THE BINARY: Result = 1 when some entity the search v1 finds is touched (+0x224) by an
+                       // entity with a frame box and an attack of a non-zero attribute whose nibble is byte[0x80098FA4 + v2] (AlundraHitOpcodes.TypeNibbles: sword 0, hammer 1, arrow 2,
+                       // bomb 3, ...), else 0. 181 of its 182 sites are in programs D, which share one state with A, E and F (the binary's 0x8013D9E8): skipping it left a stale Result. Size 3.
+            {
+                var touched = false;
+                foreach (var match in EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity))
+                {
+                    if (AlundraHitOpcodes.IsTouchedByAttackType(match, v[2]))
+                    {
+                        touched = true;
+                        break;
+                    }
+                }
+
+                state.Result = touched ? 1 : 0;
+                return 3;
+            }
+
+            case 0x95: // Check entities attacking a box - Script_149_095 @ 0x800407C0 (E20.c1b K4), PER THE BINARY: [x, y, z, wx, hy, unused, maskLo, maskHi, typeIdx]; the rectangle is
+                       // (24 x, 16 y, 16 z) px with the sizes (24 wx, 16 hy, 24 wx) px (the Z size is the X size); Result = 1 when an attacker (hero first) whose Flags have a bit of
+                       // the mask, with a frame box and an attack of the type typeIdx, has its STORED HitBox (AlundraEntityScriptProxy.StoreHitBox) in it; a zero mask answers 0. Size 10.
+            {
+                state.Result = AlundraHitOpcodes.AnyAttackerInRectangle(
+                    _worldContext.SpawnedEntities, _worldContext.PlayerEntity, v[7] | (v[8] << 8), v[9],
+                    (v[1] * 24) << 16, (v[2] * 16) << 16, (v[3] * 16) << 16, (v[4] * 24) << 16, (v[5] * 16) << 16) ? 1 : 0;
+                return 10;
+            }
 
             case 0x48: // Wait hit or Z contact - Script_72_048 @ 0x8003E9B0 (E19.h1 H1-1), PER THE BINARY: returns 1 when the LOGIC entity's
                        // HitCounter (+0x220) or CollidedWithEntityZ (+0x140) is nonzero, else 0. Size 1.

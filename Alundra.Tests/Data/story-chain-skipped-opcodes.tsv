@@ -1,4 +1,1 @@
 map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optional,X=offchain)	pinned_by_arc
-10	D	1	rec1 Bloc transparent (1×1×2)	6688	0x87	If TouchingEntity anim value	PREDICAT coup recu	E19.l/E14	O	
-10	D	3	rec102 Bloc transparent (1×1×2)	6704	0x87	If TouchingEntity anim value	PREDICAT coup recu	E19.l/E14	O	
-10	C	75	rec104 Bloc transparent (1×1×2)	6418	0x95	Check entities attacking hitbox	PREDICAT coup recu	E19.l/E14	S	A10J / T-A10v / T-B9

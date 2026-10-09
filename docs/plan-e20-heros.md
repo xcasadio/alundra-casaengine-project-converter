@@ -1174,9 +1174,9 @@ les PV du héros (E20.c2) ; tout appel de `ComputeNewHp` en production (gestionn
 - ✅ **K3 — `HitBox` rangée.** Écrite après le mouvement de chaque tick pour toute entité qui a une boîte (`0x80038064`, appelée par
   `0x80038364`) et à la création (`0x80039F30`) ; la passe de coups de c1a garde son résultat (le verifier frais vérifie qu'aucun test de
   c1a ne bouge).
-- ⏳ **K4 — Opcodes.** `0x71`, `0x86` (pose), `0x87`, `0x95` (avec la `HitBox` rangée, le +1 de Z de l'ADR-0026 sur le seul rectangle, la
+- ✅ **K4 — Opcodes.** `0x71`, `0x86` (pose), `0x87`, `0x95` (avec la `HitBox` rangée, le +1 de Z de l'ADR-0026 sur le seul rectangle, la
   table de 12 octets) dans `Dispatch`, tailles 1, 4, 3 et 10 ; corriger l'étiquette de `0x86` et les commentaires périmés.
-- ⏳ **K5 — Tests.**
+- ✅ **K5 — Tests.**
   - Contre l'oracle : K1 (les trois fiches de chaque inventaire), K2 (chaque valeur de PV, avec l'état réel de chaque arme), K3 (chaque
     cas des quatre opcodes, indices 8 à 11 compris).
   - Les cas de D2 sur les PV : la moitié de 3 (`0xC0` laisse les PV) et 4 (dégât minimal).
