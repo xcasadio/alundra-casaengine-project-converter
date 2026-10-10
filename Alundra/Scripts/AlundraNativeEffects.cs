@@ -164,6 +164,17 @@ public static class AlundraNativeEffects
         }
     }
 
+    /// <summary>
+    /// E14.a1b (D-E14-9, ADR-0060): the break effect <c>DestroyEntity</c> (<c>0x8003A59C</c>) creates for a non-zero effect <paramref name="fx"/> (<c>0x8003A5F8-0x8003A618</c>): <c>0x8003BE74(0, fx, 0, e ; 1, 0, 0, 0)</c>, a global
+    /// effect of animation 0 attached to <paramref name="anchor"/> (mode 1), starting at its position (X, Y, and the binary's Z, <see cref="IAlundraEffectAnchor.PosZ"/>), its depth key one above the anchor's, no offset, no sound and
+    /// no number drawn. The lowest free slot, nothing when the reservoir is full (the destruction goes on all the same). The anchor is the snapshot of <see cref="AlundraFrozenEffectAnchor"/>, taken by the caller at the destruction.
+    /// </summary>
+    public static AlundraEffectSlot? CreateBreakEffect(AlundraEffectReservoir reservoir, int fx, IAlundraEffectAnchor anchor)
+        => reservoir.CreateAttached(false, fx, 0, anchor, BreakEffectDepthOffset, 0, 0, 0);
+
+    /// <summary>The depth offset of the break effect, the first of the four stack arguments of <c>0x8003BE74</c> that <c>DestroyEntity</c> writes (<c>0x8003A5F8-0x8003A618</c>; the three offsets after it are 0): one above the key of the destroyed entity.</summary>
+    public const int BreakEffectDepthOffset = 1;
+
     /// <summary>The global effect of a hit: the spark (<c>0x8003BDD8(0, 9, 0, x, y, z)</c>, bank 0, effect 9).</summary>
     private const int HitSparkEffect = 9;
 
