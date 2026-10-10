@@ -2547,7 +2547,7 @@ les effets d'eau (E20.e), les objets du Rond dans l'eau et le son 3 (E20.h), l'a
   direction avant le `MovePlayer` d'un tick donné (la sortie du bloc de blessure, sans l'entrée).
 - ✅ **T4 — Tests et arcs.** Acceptation ci-dessous ; un arc au vrai préfab sur l'étang de la 14 (bottes 0x1B) : tomber de la berge,
   `0x1D` puis `0x0F`, plonger, buter contre la berge ; le même sans bottes, épinglé comme écart (il nage).
-- ⏳ **T5 — Sauvegarde de test** `swim-m14` : carte 14, bottes 0x1B, tuile proposée (40, 48, 1) sur la berge (à vérifier : marchable,
+- ✅ **T5 — Sauvegarde de test** `swim-m14` : carte 14, bottes 0x1B, tuile proposée (40, 48, 1) sur la berge (à vérifier : marchable,
   hors zone d'événement).
 - ⏳ **T6 — Plan.** Résultats, §0.2, lignes O-E19-22 et O-E20-16, D-E20-23 caduque, arête de dépendance d'E20.c2b, recette d'E20.d
   (« sur l'eau profonde, le héros nage »).

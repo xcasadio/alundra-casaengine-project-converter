@@ -84,6 +84,19 @@ The weapon items by slot: 1 sword (1, 2, 3, 4, 8), 2 bows (5, 6), 3 flails (9, 1
 From `arsenal-a-m14` the inventory (Start) reaches the slots 1 to 6 as items 1, 5, 9, 14, 16, 7; from `arsenal-b-m14` as items
 4, 6, 10, 14, 16, 7. The tool is run, as above, outside the Claude app, in Debug; the author generates the files.
 
+### Swim preset (E20.i)
+
+| Preset | Map, tile, z | Owned | Equipped |
+|---|---|---|---|
+| `swim-m14` | 14, (40, 48), 1 | the kit's items 1, 17, 25 and the swim boots (item 0x1B, level 2) | the basic sword |
+
+The arrival tile is on the bank (height 1) of the pond of map 14: 81 deep cells at the tiles x 40 to 46, y 43 to 59 (height 0), a bank of 16
+pixels all around. Walk south off the bank into the water: the hero falls, floats, then swims (0x1D, 0x0F); the Triangle, the Cross
+and the Square start a burst of 42 ticks (0x28), the Circle does not. Known gaps of the port: no splash, no wake, no ripple of the burst
+(E20.e); a hero without the swim boots swims too, where the original stops him at the edge of the deep water (O-E19-22); the pond has
+no exit at the same level but its south edge, a bank is a wall for the swimmer. Do not go near the cascade of map 416 (currents,
+O-E20-16).
+
 ## What a save cannot carry
 
 - the temporary flags (id 0x8000 and above): the tool refuses them;

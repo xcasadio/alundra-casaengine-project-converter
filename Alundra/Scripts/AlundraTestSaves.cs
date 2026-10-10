@@ -125,6 +125,11 @@ public static class AlundraTestSaves
         WeaponPreset("demon-m14", 14, 8, 6, 0, 1, 3),
         WeaponPreset("fire-m303", 303, 38, 11, 1, 5, 5, 9, 14, 16, 7),
         WeaponPreset("arrow-m16", 16, 34, 31, 3, 2, 5, 9, 14, 16, 7),
+
+        // E20.i T5 (docs/plan-e20-heros.md section 1.14): the swim. Map 14, tile (40, 48, 1), on the bank of the pond (81 deep cells at the tiles x 40 to 46, y 43 to 59, height 0; the bank is height 1, walkable, no
+        // portal floor), with the swim boots (item 0x1B, level 2) on top of the new game's kit. Walk south off the bank into the water. Without the boots the original stops the hero at the edge of the deep water;
+        // this port does not port that wall yet (O-E19-22), the hero swims either way.
+        new Preset("swim-m14", "test-swim-m14", 14, 40, 48, 1, [], [], [], [(CounterIndex(0x1B), 1)]),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>

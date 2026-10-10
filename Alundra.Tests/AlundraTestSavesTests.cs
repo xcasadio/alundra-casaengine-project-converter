@@ -63,7 +63,10 @@ public sealed class AlundraTestSavesTests : IDisposable
     private static readonly string[] WeaponPresetNames =
         ["arsenal-a-m14", "arsenal-b-m14", "steel-m14", "demon-m14", "fire-m303", "arrow-m16"];
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames];
+    // E20.i T5: the swim preset, then the full list in the order of the table.
+    private const string SwimPresetName = "swim-m14";
+
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName];
 
     public static TheoryData<string> WeaponNames => new(WeaponPresetNames);
 
@@ -79,7 +82,7 @@ public sealed class AlundraTestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheEightPresets_AreListed_InTheOrderOfTheTable()
+    public void TheNinePresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, AlundraTestSaves.Presets.Select(p => p.Name));
     }
@@ -372,6 +375,29 @@ public sealed class AlundraTestSavesTests : IDisposable
     ];
 
     private static WeaponExpected Row(string name) => WeaponRows.Single(r => r.Name == name);
+
+    [Fact]
+    public void TheSwimPreset_IsTheNewGamePlusTheSwimBoots_OnTheBankOfThePondOfMap14()
+    {
+        var rules = RealRules();
+        var save = Build(SwimPresetName);
+
+        Assert.Equal(14, save.InitialMapId);
+        Assert.Equal((40, 48, 1), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        Assert.All(save.GameFlags, word => Assert.Equal(0u, word));
+
+        // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51) and the boots 0x1B (raw index 55), nothing else.
+        var expectedCounts = new int[256];
+        expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = expectedCounts[55] = 1;
+        Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+        Assert.Equal(((short)10, (short)10, (short)0, (short)0, (short)0, (short)1, (short)0), (save.Hp, save.HpMax, save.Mp, save.MpMax, save.Money, save.WeaponId, save.ItemId));
+
+        // The state a load puts in place owns the boots of level 2.
+        var reloaded = new AlundraGameState();
+        save.ApplyTo(reloaded);
+        Assert.Equal(1, reloaded.NumberOfItems[2 * 0x1B + 1]);
+        Assert.True(save.TryValidate(rules, out var error), error);
+    }
 
     [Theory]
     [MemberData(nameof(WeaponNames))]
