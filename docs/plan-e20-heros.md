@@ -2961,6 +2961,10 @@ Découverte en lecture seule du 2026-10-10 (conception, puis critique adversaria
 scratchpad de la session : `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/e20/e0x_design.md` et `e0x_critic.md`, scripts sous
 `disc-e20e0x/`). Risque : format de données (comme E14.a1a).
 
+**Révision 1 (2026-10-10).** Relecture : **REVISE**, un point corrigé (FIX) : le texte exact de `Data/map-sprite-indices.json` est
+fixé (clés `"N"`, extrait octet pour octet d'une carte vide et d'une carte avec indices, `[]`, fins de ligne, ni BOM ni saut de ligne
+final, liste des cartes de `DiscoverNativeMapIndices`) ; la règle de validité qui fait foi est écrite, avec son contrôle croisé.
+
 **But.** Le projet exporté dit, pour chaque préfab, de quelle table de sprites et de quel indice il vient (`BankKey`), et, pour chaque
 carte, quels indices de la page des cartes sont valides (D-E20-33) : E20.e0a pourra traduire l'indice de `SpawnWarpEntity` en préfab, et
 refuser un indice absent de la carte courante, comme le binaire.
@@ -2991,10 +2995,31 @@ refuser un indice absent de la carte courante, comme le binaire.
 - `BankKey` : chaîne JSON, **premier membre** de chaque entrée de `Data/sprite-records.json`, toujours écrite ; valeurs
   `"alundra_N"` (151) et `"N"` (244, sans zéros), exactement `SpriteBank.BankKey`. Une entrée sans clé est une erreur dure du
   rapport (comme l'invariant `SpriteRecords.Exported == Entities.Prefabs`). `SpriteRecordHeader` ne change pas.
-- Nouveau fichier `Data/map-sprite-indices.json` : un objet dont les clés sont les numéros des cartes `map_<N>` (chaînes, ordre
-  numérique croissant, **toutes** les cartes, `map_alundra` exclu) et les valeurs le tableau trié des indices de la page des cartes dont
-  l'entrée de table n'est pas −1 (tableau vide pour une carte sans indice) ; écrit avec les mêmes options de sérialisation que
-  `sprite-records.json` (même indentation, mêmes fins de ligne), hors du catalogue des assets.
+- Nouveau fichier `Data/map-sprite-indices.json`, hors du catalogue des assets :
+  - objet racine ; une clé par carte, **le numéro seul en chaîne** (`"388"`, jamais `"map_388"`), pour **chaque** carte que liste
+    `DiscoverNativeMapIndices` (les 483 fichiers `map_<N>.json`, N de 0 à 482 ; `map_alundra` exclu), en ordre numérique croissant ;
+  - valeur : le tableau, trié en ordre croissant, des indices i (0 à 255) de la page des cartes **dont la fiche `SpriteRecords[i]` n'est
+    pas nulle** (règle qui fait foi ; dans les données, c'est exactement `SpriteTable[i] != -1`, que T0 vérifie pour les 483 cartes et
+    que le convertisseur contrôle aussi : un écart entre les deux est une erreur dure du rapport) ; tableau vide `[]` pour une carte sans
+    indice ou un fichier sans `SpriteInfo.SpriteRecords` ;
+  - texte : celui de `JsonSerializer.Serialize` avec les options de `sprite-records.json` (`WriteIndented = true` seul), écrit par
+    `File.WriteAllText` : UTF-8 sans BOM, fins de ligne CRLF, 2 espaces par niveau, un nombre par ligne, `[]` pour un tableau vide, aucun
+    saut de ligne après l'accolade finale. Début exact du fichier (CRLF à chaque fin de ligne) et entrée de la carte 388 :
+
+    ```
+    {
+      "0": [],
+      "1": [
+    …
+      "388": [
+        121,
+        122,
+        237,
+        253,
+        254,
+        255
+      ],
+    ```
 - Pas de nouveau compteur dans `report.json`.
 
 **Périmètre.** `alundra-casaengine-project-converter/` : `Writers/SpriteWriter.cs` (`SpriteRecordJson.BankKey` en premier,
@@ -3016,8 +3041,8 @@ et une page de format pour le nouveau fichier (ou une section de la même page) 
   SHA-1 ; les comptes ; les valeurs témoins. Attendu pour `sprite-records.json` : **2 571 585 o (+10 080), SHA-1
   `88d723066fd2e6232a6f815dad8de9b0c05c64e4`**, insertion pure de 395 lignes `    "BankKey": "…",` juste après chaque ligne
   `  "<guid>": {`. Pour `map-sprite-indices.json` : 483 clés (toutes les cartes), 2 507 indices en tout, 65 tableaux vides ; taille et
-  SHA-1 calculés par le script selon la sérialisation de `sprite-records.json` (indentation et fins de ligne lues dans le fichier
-  actuel). Outils de manifeste (`manifest.py`, `diff_manifests.py`) copiés dans l'annexe. Manifeste `m0` : 24 103 fichiers, SHA-1
+  SHA-1 calculés par le script selon le texte exact fixé ci-dessus (Décisions) ; le script vérifie aussi, carte par carte, que les
+  fiches non nulles et les entrées de table différentes de −1 coïncident. Outils de manifeste (`manifest.py`, `diff_manifests.py`) copiés dans l'annexe. Manifeste `m0` : 24 103 fichiers, SHA-1
   `662056ce…` (un écart s'explique avant d'aller plus loin). Compte de tests du convertisseur (849) et d'`Alundra.Tests` relevés.
 - ⏳ **T1 — Export de référence au HEAD**, avant toute modification du convertisseur. Fenêtre calme : aucun build, aucune suite, aucun
   Launcher ni éditeur sur `alundra-project/` ; `Alundra.dll` déverrouillé. Depuis la racine :
@@ -3042,8 +3067,9 @@ et une page de format pour le nouveau fichier (ou une section de la même page) 
   `e3a39ec4-45d5-55f2-85e9-894c7b6e4a08` (Muruta), `"79"` → `1ef8f16c-605f-58c3-af19-b6bb602fc40f` (Beannoïde), `"alundra_7"` →
   `62670cc6-953d-5fb2-ad61-8f130b96bf1f` (flèche chargée), `"alundra_2"` → `4d0c2294-87b6-50da-99ca-d789281cc580` (bombe),
   `"alundra_0"` → `192c2eeb-…` (premier global), `"255"` → `14fa90f8-4764-531c-b751-091b644580d7`.
-- `Data/map-sprite-indices.json` égal à sa prédiction au bit près : 483 cartes, 2 507 indices, 65 vides ; les cartes 388, 432 et 451 sans
-  l'indice 213 ; les cartes 95 et 322 avec 233 à 236.
+- `Data/map-sprite-indices.json` égal à sa prédiction au bit près : 483 clés (`"0"` à `"482"`), 2 507 indices, 65 tableaux vides
+  (dont `"0"`) ; `"388"` = [121, 122, 237, 253, 254, 255] et `"451"` identique, `"432"` = [29, 253, 254, 255] (aucun ne contient 213) ;
+  `"95"` et `"322"` contiennent 233 à 236.
 - Tout ce qui suit est relatif à l'export de référence de T1 : `AssetInfos.json` égal à celui de `m1` (`a09917c3…` attendu) ; `report.json`
   de l'export 1 : `Errors` 0, mêmes `Warnings`, mêmes `Verify.*`, mêmes compteurs (aucun ajouté ni retiré), `OutputFileCount` de T1 + 1 ;
   `OutputSizeBytes` = valeur de T1 + 10 080 + taille de `map-sprite-indices.json` + écarts de la DLL, du PDB et du `report.json` présent
