@@ -1789,7 +1789,7 @@ E20.f3) ; l'avance du générateur par image (E20.e0b) ; les autres effacements 
 #### E20.f1b — L'aura (en attente de l'auteur)
 
 Projet de section prêt (`docs/plan-e20-annexe/e20-f1/check.md`, « Draft revision ») ; il demande trois décisions de l'auteur :
-- **Q-N4 (ADR-0056)** : le héros crée et libère ses effets tout de suite (`CreateNow`, `CreateAttachedNow`, `FreeNow`), garde
+- **Q-N4 (une nouvelle ADR ; ADR-0056 est prise par E20.c2a, le projet de `e20-f1/check.md` qui la cite est à renuméroter)** : le héros crée et libère ses effets tout de suite (`CreateNow`, `CreateAttachedNow`, `FreeNow`), garde
   l'emplacement comme poignée et lit `Destroying` au tick même ; tout le reste reste en file (ADR-0046). Exact à un tick par image ; écarts
   pour N ≥ 2 (une image sans aura au renouvellement, ordre des tirages, indice d'emplacement). Recommandé : oui.
 - **Q-N5 (amendement d'ADR-0049)** : un effet attaché se trie sur la coordonnée du sprite de son ancre plus `DepthOffset`, pour que
@@ -2014,7 +2014,7 @@ F6 et le groupe H de `c2-oracle.md` (retirés par `check.md` §c ; A3 et A5 pour
 - **Budget** : un `executor` ; un verifier frais (avec un redécodage du binaire).
 - **Retour arrière** : `git revert` des commits d'E20.c2-0.
 
-### 1.12 E20.c2a — Les PV portés par le héros, la fin de `MovePlayer` et `UpdateItemEffectState` 🧪 (faite le 2026-10-10, `c7da0c9`, `c8c99e0`, `b5e100e`, `f95989b` et le commit de T5 ; reste le verifier frais et la recette de l'auteur)
+### 1.12 E20.c2a — Les PV portés par le héros, la fin de `MovePlayer` et `UpdateItemEffectState` 🧪 (faite et CONFIRMED le 2026-10-10, `c7da0c9` à `259c76d` ; reste la recette de l'auteur)
 
 Relecture : **READY** dès la première lecture (2026-10-10). Exécution après E20.f1a et la vérification d'E20.c2-0.
 
@@ -2076,7 +2076,7 @@ le pilote d'objet (E20.h) ; la mort (E18).
   `LifePulledFromStats` sur le héros adopté, et `EndOfMovePlayer` (miroir gardé par ce drapeau : les montages nus des tests, de vie 0, ne
   sont pas touchés) est appelé aux trois sorties, la branche `BlockedByEntity`, la branche du masque `0x34` et le chemin normal. Suite
   complète Release 3738/3738 sans test modifié ; les épingles d'arcs et les traces sont inchangées (stats à 10/10).
-- ⏳ **T2 — `UpdateItemEffectState`.** Étapes 1, 6 et 7 ; fiche du héros ; compteurs en session ; bottes partagées ; `Clear()`.
+- ✅ **T2 — `UpdateItemEffectState`.** Étapes 1, 6 et 7 ; fiche du héros ; compteurs en session ; bottes partagées ; `Clear()`.
 - ✅ **T3 — Fiole, `0xBC`, `0xC3`.** Écritures dans l'entité (repli sur les stats sans héros, comme aujourd'hui) ; calage du HUD de
   `0xC3` ; amendement d'ADR-0048. Fait : la fiole (`IncreaseHpMaxAndFill(état, héros)`), `0xBC` et `0xC3` écrivent l'entité d'un héros qui
   a repris ses PV (`LifePulledFromStats`), sinon les stats (repli, mêmes bornes) ; `0xC3` cale les quatre compteurs affichés du HUD
@@ -2120,7 +2120,7 @@ le pilote d'objet (E20.h) ; la mort (E18).
 
 #### Résultats (2026-10-10)
 
-- **Commits** : T1 `c7da0c9`, T2 `c8c99e0`, T3 `b5e100e`, T4 `f95989b`, T5 le commit des tests (`git log` de la branche).
+- **Commits** : T1 `c7da0c9`, T2 `c8c99e0`, T3 `b5e100e` (ADR-0056), T4 `f95989b`, T5 `259c76d`.
 - **Suite** : Release et Debug 3841/3841 (3738 avant la tranche, 103 tests neufs), `Alundra.dll` de `alundra-project` identique à celle de
   Debug. Aucune épingle d'arc ou de trace n'a bougé (stats à 10/10), les tests de sauvegarde E16 sont verts, `docs/hero-trace-389-*` et
   `docs/intro-*` inchangés au contenu près (bruit de fin de ligne restauré).
@@ -2146,6 +2146,16 @@ le pilote d'objet (E20.h) ; la mort (E18).
   recalcule la fiche et les bottes à l'installation sans l'effet de bord de `ItemId` et laisse les pointeurs vides comme le chargement de
   carte ; le niveau des bottes est aussi recalculé à la demande par la physique (le retard d'un tick du binaire est sans effet) ; le pilote
   d'objet et la mort restent non portés.
+- **Vérification** : verifier frais **CONFIRMED** (aucun P0 à P2) : fin de `MovePlayer`, reprise, étapes 1, 6, 7, `0x80044520`,
+  `0xBC`, `0xC3`, `0x8004B730`, fiole et alarme redécodés (compteur de l'alarme en `0x80098F2C`, coquille du plan corrigée) ; oracle de
+  l'alarme relancé à l'identique ; mutations attrapées (fin de `MovePlayer` retirée de la sortie verrouillée : 21 échecs ; comparaisons
+  de la régénération et de l'alarme ; `Clear()` ; calage du HUD) ; persistance des PV dans une même session prouvée par un test
+  temporaire du verifier (ré-adoption, verrouillage, chargement, sauvegarde) ; ADR-0056 et la ligne d'état d'ADR-0048 conformes.
+- **Reportés** : P3 : aucun test livré n'épingle la reprise de production (`AlundraWorldProxy.cs`, `AdoptPlayerPawn`) : le montage
+  `ArcSupport` la refait et masque son oubli ; à ajouter : un test qui passe par le vrai `AdoptPlayerPawn` après l'`InitializeBalance` du
+  montage (modèle de la ré-adoption du verifier). P4 : le résumé de sauvegarde lit le PV max des stats, le binaire celui du héros
+  (`0x80031198`) : « 50 » au lieu de « 51 » après une fiole bue à 50/50 (sans doute inatteignable) ; P4 : formulation « BSS » du compteur
+  de l'alarme (il est dans l'image chargée, à 0).
 
 #### Arrêts, budget, retour arrière
 
@@ -2153,6 +2163,258 @@ le pilote d'objet (E20.h) ; la mort (E18).
   l'oracle sans raison du binaire ; un besoin de changer le moteur.
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
 - **Retour arrière** : `git revert` des commits d'E20.c2a.
+
+### 1.13 E20.d — La course ⏳ (proposée le 2026-10-10 ; découpée en E20.d1 et E20.d2)
+
+**Révision 1 (2026-10-10).** Relecture d'E20.d1 : **REVISE**, deux points corrigés : le prérequis est E20.c2a CONFIRMED (arrêt
+sinon, base des épingles nommée) ; la tolérance d'O-E19-42 ne vaut que pour le mur est (± 1 tick), les autres murs sont exacts.
+Relecture neuve d'E20.d1 : **READY** (2026-10-10). Exécution après le verdict CONFIRMED d'E20.c2a.
+
+Découverte en lecture seule du 2026-10-10 (`docs/plan-e20-annexe/e20-d/` : `run-binary.md`, `run-dll.md`, `run-oracle.md`, contre-vérifiées
+par `check.md` : handlers redécodés, G1, G4, G5, G6 de l'oracle rejoués à l'identique). Cette section reprend le projet de `check.md`
+§3. Les traces iront dans `docs/plan-e20-annexe/e20-d/oracle/` (T0). Cette nuit : E20.d1 seulement ; E20.d2 attend la mesure du
+stick par l'auteur (Q-D1).
+
+**But.** Le héros court comme dans le binaire :
+- Triangle tenu, 25 ticks de préparation, puis la course à 258048 par tick ;
+- l'arrêt glissé, la reprise, la charge `0x04`, le rebond contre un mur ;
+- la chute d'un rebord et l'escalade, prioritaire sur le rebond ;
+- au stick, l'arrondi de D-E20-15.
+
+Le test « Triangle seul donne Idle » s'inverse.
+
+**Découpage.**
+- **E20.d1 — la course au clavier et à la croix.** Tout ce que fait le binaire, prouvé tick par tick par l'oracle.
+- **E20.d2 — l'arrondi du stick (D-E20-15).** Un ajout du port, limité aux deux lectures de la table de départ. Il demande que le pad
+  transporte l'échantillon du stick, et une mesure du stick par l'auteur. Après E20.d1.
+
+**Prérequis.**
+- Exigés : E20.a, E20.b, E20.c1a, E20.f1a (le relâchement chargé passe aussi par `0x29`), E20.f2, et **E20.c2a CONFIRMED par son
+  verifier frais**, ses éventuelles corrections commitées (mêmes branches de `MovePlayer`, épilogue). Aucune tâche d'E20.d1, T0
+  comprise, ne part avant ce verdict ; la base des épingles « inchangées » est la tête de la branche après la synthèse d'E20.c2a.
+- Non exigés :
+  - E20.e : sans elle, le son 12, la poussière et l'atterrissage (son 11, effet 7) restent des bouchons et ne sont pas comparés ;
+  - E20.c2b : sans elle, les colonnes de la blessure ne sont pas comparées.
+
+**Faits porteurs.**
+- [binaire] Table des états `0x80022D3C` :
+  - `0x29` va à `0x80031F54`, `0x03` à `0x80031FF4`, `0x2A` à `0x80032118` ;
+  - `0x04` va au groupe au sol `0x80031E18`, déjà porté ;
+  - `0x3E` et `0x1C` vont à `0x80032558`.
+- [binaire] La pente 4 (table `0x80022D1C`) mène à `0x8003260C`. Cette branche n'atteint ni la queue ni ces états.
+- [binaire] Queue `0x80031EA8`, dans cet ordre :
+  - `PlayerTryAttack` ;
+  - en l'air, `0x2C` ou `0x2D` ;
+  - front de Croix (sauf `VramOR & 0x4000`) ;
+  - Triangle **tenu** (`hold & 0x10`) : `0x29` et `+0xB0 = 0` (`0x80031F14`-`0x80031F30`) ;
+  - sinon Moving ou Idle.
+- [binaire] `0x29`, dans cet ordre :
+  - `TryUseItem` (0 finit le tick), `PlayerTryAction` (≠ 0 finit le tick), `PlayerTryAttack` (≠ 0 finit le tick) ;
+  - `TargetDirection` = la direction à 8 voies, écrite même au tick en l'air ;
+  - en l'air, `0x2D` ; Triangle relâché, Idle ; `+0xB0 == 0`, fin ;
+  - `0x80022CAC[nibble]` (haut `0x10`, droite `0x18`, bas `0`, gauche `8`, −1 ailleurs) : −1 finit le tick, sinon `TargetDirection`
+    prend la valeur et l'état passe à `0x03`.
+- [binaire] `0x03`, dans cet ordre :
+  - `PlayerTryAction`, puis en l'air `0x2D` ;
+  - `ForceAdjusted` : effet 9, `0x8003BDD8(0, 9, 0, X, Y, Z + 0x100000)`, sans force ; puis `0x3E` et `TargetDirection += 0x10` ;
+  - nibble nul : `0x2A`, compteur `0x80126FF4 = 1` ;
+  - Triangle relâché, ou `dir` hors de la ligne `0x80022CEC + 12 × regard` (bas {1C,0,4}, haut {C,10,14}, gauche {4,8,C},
+    droite {14,18,1C}) : `0x2A`, compteur 0 ;
+  - `hold & 0xE0` : `0x04`.
+
+  Pas de `TryUseItem`. `TargetDirection` n'est jamais écrite hors du rebond.
+- [binaire] `0x2A`, dans cet ordre :
+  - `TryUseItem`, `PlayerTryAction`, puis en l'air `0x2D` ;
+  - compteur nul : fin ;
+  - `ForceAdjusted` ou Triangle relâché : compteur 0 ;
+  - sinon compteur + 1. Sous 11, un bit de direction le remet à 0. À 11 et plus, la table de départ : −1 finit le tick et garde le
+    compteur, sinon reprise.
+
+  Seul `MovePlayer` touche le compteur (cinq sites).
+- [binaire] `0x3E` et `0x1C` :
+  - `TryUseItem` à 0 donne `TargetDirection += 0x10` (`0x8003270C`) ;
+  - sinon, si `+0xAC == 1` : `TargetDirection += 0x10`, puis Idle au sol et **1 en l'air**.
+- [binaire] Regard : `UpdateAnimation` le recalcule à chaque tick (`0x80038AD8`). Un changement de regard relance l'animation à
+  l'image 0 sans toucher `+0xB0` : tourner pendant la préparation la retarde.
+- [binaire] La porte d'escalade de pente 6 (`0x80031D20`) précède l'aiguillage ; elle est déjà portée.
+- [binaire] Eau profonde :
+  - sans bottes de niveau ≥ 2, c'est un mur (`0x80037504`, O-E19-22) ;
+  - avec, la pente 4 donne `0x1D` puis `0x0F`, la nage (E20.i).
+- [données] Durées exportées, dans les quatre directions, égales aux fiches du binaire : `0x29` 24 ticks en boucle, `0x03` 30 en
+  boucle, `0x04` 32 enchaîné sur 0, `0x2A` 16 enchaîné sur 0, `0x3E` 10, tenu.
+- [DLL] Rien de la course n'est porté ; `0x04` est déjà dans `IsGroundAttackGroup`. Déjà génériques :
+  - vitesses ; sons de changement d'animation (13, 14, 83, 28) ; impulsion Z de `0x3E` (1024) ;
+  - invulnérabilité `0x40` ; charge comptée ; attaque Tackle rechargée au changement d'animation.
+
+  `AnimationDirection` n'est posé qu'en fin d'image.
+
+**Défauts proposés (écarts écrits dans le code et ici).**
+- **Eau profonde** (recette de l'enveloppe : « le héros marche encore ») :
+  - sur la pente 4, la queue ne teste pas Triangle ;
+  - un état de course (`0x29`, `0x03`, `0x2A`, `0x04`, `0x3E`, `0x1C`) passe à Idle, à la place de `0x1D`, avec l'écriture de
+    direction du binaire : retournée pour `0x3E` et `0x1C` (`0x80032658`), inchangée sinon ;
+  - E20.i remplacera ce garde par la branche `0x8003260C` ;
+  - le mur d'eau profonde sans bottes (O-E19-22) reste hors d'E20.d (Q-N3).
+- **Regard du tick.** Le cône lit le regard que le binaire aurait posé au tick précédent (et en E20.d2, l'égalité du stick aussi) :
+  - il se calcule une fois en tête de `MovePlayer`, avant toute écriture, par `TryResolveAnimationTarget` ;
+  - il est exact à 1 et 2 ticks par image, et quel que soit le nombre de ticks dans `0x03` (direction cardinale, table idempotente) ;
+  - c'est la valeur du binaire, pas un écart.
+- **Compteur de reprise** : un champ du héros, à côté de `WeaponChargeTimer`. Il équivaut au global du binaire, puisque `0x03` le
+  pose toujours avant d'entrer dans `0x2A`.
+- **`0x1C`** : le gestionnaire est partagé avec `0x3E`. La première tranche qui arrive, d'E20.c2b ou d'E20.d, branche les deux
+  numéros.
+- **O-E20-12 hors d'E20.d.**
+  - À 1 tick par image, les décisions sont exactes (AT8, AT8n). Le rebord s'épingle comme AT8 : la colonne `on_ground` est comparée
+    au tick d'avant, au tick de la perte.
+  - Une lecture par tick demande la règle de recollement au sol de 3 px (`0x80037848`). Elle déplacerait UH7, AT8, AT8n, AT8b et les
+    traces highground : tranche à part.
+
+**Hors périmètre.**
+- Pas, poussière, son 12 et atterrissage (E20.e) ; blessure et entrée des dégâts (E20.c2b) ; nage et mur d'eau profonde (E20.i,
+  O-E19-22) ; porter (E20.g, `PlayerTryAction` reste un bouchon) ; objets du Rond (E20.h).
+- Rognage au bord de la carte (O-E19-17) ; glissement exact (O-E19-42).
+- Rebond contre une entité solide : inconnu dans l'oracle, à observer en recette.
+
+#### E20.d1 — Tâches
+
+- ⏳ **T0 — Oracle dans l'annexe (commit docs).**
+  - Copier `base/` et `out/` du dossier de `run-oracle` (`C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20d/run-oracle/`) dans
+    `docs/plan-e20-annexe/e20-d/oracle/`, sans `work/` ni `d1/`.
+  - Rendre `tools/compare.py` identique à `e20-c2/oracle/tools/compare.py`.
+  - Écrire un README court : commande de rejeu, groupes G1 à G10, colonnes, limites.
+  - Preuve : `manifest.py` redonne `out/manifest.txt`.
+- ⏳ **T1 — Tables et champs.**
+  - Tables `0x80022CAC` et `0x80022CEC`, avec un test octet par octet contre l'exe.
+  - Champ du compteur `0x80126FF4`.
+  - Constantes `0x03`, `0x04`, `0x29`, `0x2A`, `0x3E`, `0x1C`.
+  - Aide « regard du tick ».
+- ⏳ **T2 — Entrée et états.**
+  - Triangle dans `ApplyGroundOrAirTail`, après le bloc de la Croix, avec `AnimCompleteCounter = 0`.
+  - Branches `0x29`, `0x03`, `0x2A`, `0x3E`/`0x1C`, dans l'ordre du binaire, y compris le second appel de `PlayerTryAttack` et la
+    branche `TryUseItem == 0`.
+  - Effet 9 du rebond par l'étage d'effets, à Z = `PosZ + 1 + 0x100000`.
+  - Garde de la pente 4.
+  - SJ3 inversé : « Triangle seul » donne `0x29`, `AnimCompleteCounter` 0, direction gardée.
+- ⏳ **T3 — Moyens de test.**
+  - `HeroAttackClock` gagne les cinq états (durées ci-dessus) et la fin Hold ; aucun test d'E20.b ne doit bouger.
+  - Un lecteur du format de l'oracle d'E20.c2-0 : celui d'E20.c2a T5 s'il existe, sinon un neuf.
+- ⏳ **T4 — Tests** (acceptation ci-dessous) **et arcs** au vrai préfab (carte 10 ou 14 ; l'échelle de la 389 en courant vers le
+  haut).
+- ⏳ **T5 — Plan.** Résultats, §0.2.3 corrigé, ligne d'O-E20-12 mise à jour.
+
+#### E20.d1 — Acceptation
+
+À 1 tick par image, champ par champ contre l'oracle : `anim_target`, `anim_cur`, `dir_target`, forces, positions relatives,
+`pos_z_dll`, `on_ground` (règle d'AT8 au tick de la perte), `sprint_cnt`, `charge_cnt`, sons de changement d'animation, effet 9.
+
+- **G1, départs.**
+  - Quatre cardinales : `0x29` aux ticks 1-25, course au 26 ; ForceX 64512, 129024, 193536, 258048 aux ticks 26-29 (Y ±43008 à
+    ±172032) ; son 13 au 26.
+  - T seul, Gauche+Droite et les quatre diagonales : `0x29` sans fin, forces nulles ; direction 0x14, 0x1C, 0x04, 0x0C ; regard
+    3, 3, 2, 2 depuis l'est.
+  - Direction ajoutée au tick 10, 24, 25, 30 ou 40 : départ au 26, 26, 26, 30, 40.
+  - Demi-tour au 10 : départ au 35 ; au 20 : départ au 45.
+  - Diagonale 1-29 puis Droite : départ au 30 ; diagonale 1-9 puis Droite : départ au 26.
+  - Marche puis Triangle : `0x29` au 20, force 0 dès ce tick, départ au 45.
+  - Saut et Triangle : `0x29` au 22, départ au 47.
+  - Triangle relâché au 10 : Idle au 10, Moving dès le 11.
+- **G3, cône (52 cas).** La course continue pour sa direction, les deux diagonales voisines, Gauche+Droite et Haut+Bas. Sinon `0x2A`
+  au 41, compteur 0 ; compteur 1 si toutes les directions sont relâchées.
+- **G4, arrêt et reprise.**
+  - Arrêt : `0x2A` aux ticks 41-56 ; ForceX 249984, puis −8064 par tick jusqu'à 129024 ; Idle au 57 (64512) ; 0 au 58.
+  - Reprise au tick même de l'appui pour k = 10 à 16 (ticks 51 à 57), avec la force reprise : k = 12 donne 161280, puis 185472,
+    209664, 233856, 258048, et le son 13.
+  - k ≤ 9 ou k ≥ 17 : Idle au 57, `0x29` 58-82, course au 83.
+  - Haut ou Gauche à k = 10-12 : direction 0x10 ou 0x08. Haut+Droite : pas de reprise, compteur gardé.
+- **G5, rebond.**
+  - Mur ouest : contact au 76, `ForceAdjusted` au 77.
+    - `0x3E` aux ticks 78-88 : direction 08→18, ForceX +196608, ForceZ 262144, effet 9 à Z + 16 px, son 28, recul de 33 px,
+      sommet à 18 px.
+    - `0x01` au 89 (ForceX 18432), `0x2C` 90-94, `0x29` au 95.
+  - Mur nord : `0x3E` 55-65. Mur sud : `0x3E` au 95.
+  - Mur est : `0x3E` au 87 dans le binaire. Si la DLL rebondit au 86, c'est l'écart O-E19-42 / D-E19-58, écrit.
+  - Course partie collée au mur : `0x3E` au 27. Pad relâché : `0x2D` 99-103, puis Idle.
+  - Une marche montante de 16 ou 32 px fait rebondir comme un mur ; en marchant, Moving sans rebond. Carré pendant le rebond : rien.
+- **G6, rebord.** `0x2D` au 90 (ForceX 129024), `0x2C` 91-100 (139776, puis 150528), atterrissage au 100, `0x29` au 101.
+  - Chute de 16 px : `0x29` au 98. Chute de 64 px : au 106.
+  - Triangle relâché en l'air : `0x01` au 101. Tout relâché : Idle.
+  - Carré en l'air : `0x14` 93-100, Idle au 101, `0x29` au 102.
+- **G7, charge `0x04`.**
+  - Carré, Croix ou Rond pendant un tick au 40 : `0x04` 40-71, son 83, ForceX 254016 puis −4032 par tick (93,52 px) ; Idle au 72,
+    `0x29` 73-97, course au 98.
+  - Dans `0x2A` : rien. Dans la préparation : Carré donne `0x10` aux ticks 10-30, Idle au 31, course au 57 ; Croix et Rond : rien.
+  - Épée sacrée, Carré tenu dès le 30 : compteur 1, 16, 31, 60 aux ticks 30, 45, 60, 90.
+  - Beannoïde de la 14 (s = 44) : coup au 61 avec 3 étincelles, comparé jusqu'au tick 64 (blessure au 65, E20.c2b) ; balayage
+    s = 30 à 62 aux ticks de l'oracle.
+- **G8, échelle.** Pente 6 au 51, `ForceAdjusted` au 53, `0x0E` au 54, sans `0x3E`. Sans échelle : `0x3E` au 54.
+- **G9.**
+  - Eau peu profonde : ForceX 129024 sans bottes, 258048 avec.
+  - Glace : 20160, 60480, 141120 aux ticks 30, 40, 60.
+  - Eau profonde (garde, écart) : au tick où les quatre coins sont sur la pente 4, Idle au tick suivant, puis la marche.
+- **2 ticks par image.** Un départ qui change le regard (diagonale puis Haut) ne sort pas du cône. Les épingles de rattrapage
+  d'E20.c1a ne changent pas.
+- **Épingles et preuves générales.**
+  - Seule SJ3 change. Traces du héros et de l'intro inchangées ; sonde du vrai jeu inchangée.
+  - Build Release puis Debug ; `Alundra.Tests` sans échec ; verifier frais.
+- **Recette de l'auteur, au clavier et à la croix.**
+  - Courir, s'arrêter, reprendre entre 10 et 16 images après l'arrêt, foncer, buter contre un mur (petit saut en arrière), sauter
+    d'un rebord, grimper en courant vers le haut.
+  - Sur l'eau profonde, le héros marche.
+  - Fermer l'inventaire par Triangle en le gardant tenu lance la préparation, comme l'original.
+
+#### E20.d2 — Tâches
+
+- ⏳ **S1 — L'échantillon du stick.**
+  - `AlundraPadState` gagne : les bits de direction du clavier et de la croix (D), les bits du stick (S), et x, y signés
+    (`ButtonState.Value` des actions `Move*Stick`). Valeurs par défaut nulles : les initialiseurs existants ne changent pas de sens.
+  - `ComputePadState` garde le OU dans `ButtonsHold`.
+  - `AlundraTickPad` ne change pas. L'échantillon de l'image est recopié dans chaque pad de tick : au `FromTickPad` du bloc des
+    entités, et dans le mode autonome.
+- ⏳ **S2 — La règle**, aux deux lectures seulement : le départ dans `0x29`, la reprise dans `0x2A` à 11 et plus.
+  - Elle ne joue que si D est vide et S est une diagonale.
+  - \|x\| − \|y\| > ε : bit horizontal ; \|y\| − \|x\| > ε : bit vertical ; sinon l'axe du regard du tick. ε = 1/16 (D8).
+  - Tout le reste garde le OU : la marche, le cône, la fenêtre courte, les sorties.
+- ⏳ **S3 — La sonde.** Une variable d'environnement, comme `DebugIgnoreControlLock`, journalise x, y, D, S et le nibble choisi à
+  chaque lecture. Pas de `Program.cs`.
+- ⏳ **S4 — Tests.**
+  - `ComputePadState` avec des valeurs analogiques.
+  - Balayage de 0 à 359° aux rayons 1, 0,75 et 0,6, contre la règle écrite.
+  - Les 48 départs et les 15 reprises de G10 : le nibble choisi par la règle égale celui de l'oracle.
+  - G1 rejoué au clavier, inchangé.
+- ⏳ **S5 — Mesure de l'auteur.** ε réglé ou gardé ; D-E20-15 complétée.
+
+**Acceptation d'E20.d2.** S4 vert ; E20.d1 inchangée ; verifier frais. Recette au stick : une diagonale franche part sur son axe
+dominant, une diagonale à 45° sur l'axe du regard, et la marche ne change pas.
+
+#### Arrêts, budget, retour arrière (E20.d1 et E20.d2)
+
+- **Arrêts.**
+  - Un écart à l'oracle que ni O-E19-42 (mur est seulement : `0x3E` au tick 86 ou 87, les ticks suivants décalés d'autant ; les murs
+    ouest, nord et sud sont exacts), ni la colonne `on_ground` (O-E20-12), ni E20.e ou E20.c2b non portées n'expliquent.
+  - E20.c2a revient REFUTED ou INCONCLUSIVE de son verifier : E20.d1 ne part pas.
+  - Un test qui change autre que SJ3 sans raison du binaire.
+  - Un besoin de toucher au moteur ; un repère de l'intro ou un arc de la chaîne qui bouge.
+  - En E20.d2, une modification de la marche.
+  - Tout contact avec `CasaEngine.Launcher/Program.cs`.
+- **Budget**, par sous-tranche : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
+- **Retour arrière** : `git revert` des commits de la sous-tranche.
+
+**Questions pour l'auteur.**
+- **Q-D1** (bloque seulement la clôture d'E20.d2) : la mesure du stick. Avec quelle manette ? Vous lancez le jeu avec la sonde de S3
+  et renvoyez x, y aux huit directions. On garde ε = 1/16 si la mesure ne montre rien ?
+- **Q-D2** (non bloquante, le défaut s'applique) : sur l'eau profonde, le garde fait marcher le héros à la place de la course.
+  Préférez-vous porter d'abord le mur d'eau profonde sans bottes (O-E19-22, Q-N3), qui rendrait la course fidèle avec l'équipement
+  de départ ?
+
+**Corrections du §0.2.3** (à reporter) :
+- la préparation dure 25 ticks, et un changement de regard la relance ;
+- poussière de `0x29` : aucune pendant la première boucle, puis toutes les 8 images (`+0xB0` à 1 ou 2), puis toutes les 4 (E20.e) ;
+- `0x3E` dure 11 ticks puis passe à `0x01` en l'air : c'est le chemin normal ;
+- sans bottes de niveau ≥ 2, l'eau profonde est un mur (O-E19-22).
+
+**Ligne O-E20-12** : « à 1 tick par image, les décisions sont exactes ; l'écart ne se voit qu'à 2 ticks et plus par image ; la
+lecture par tick demande la règle de recollement au sol de 3 px `0x80037848` et la re-dérivation de UH7, AT8, AT8n, AT8b et des
+traces highground ; tranche à part après E20.d ».
 
 ---
 
