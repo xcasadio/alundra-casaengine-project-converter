@@ -2,7 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-10-08
-- **Source**: this chantier: `docs/plan-e19-opcodes.md`, "E19.L-b3" (section 1.2w.2) with D-E19-102 and D-E19-106, and the evidence in `docs/plan-e19-loop-annexe/` (`data/notes.md` sections 4.3, 4.4 and 5; `lb-1008/notes.md`; `lb-1008/verify/verify.md`). Engine counterparts: CasaEngine ADR-0072 (a streamed music track loops back to its loop-start sample) and ADR-0073 (the default music queue is 24 buffers deep). Data side: ADR-0003 (manifest fallback precedent).
+- **Source**: this chantier: `docs/plan-e19-opcodes.md`, "E19.L-b3" (section 1.2w.2) with D-E19-102 and D-E19-106, and the evidence in `docs/plan-e19-loop-annexe/` (`data/notes.md` sections 4.3, 4.4 and 5; `lb-1008/notes.md`; `lb-1008/verify/verify.md`). Engine counterparts: CasaEngine ADR-0074 (a streamed music track loops back to its loop-start sample; numbered ADR-0072 until the engine merge of 2026-10-10) and ADR-0073 (the default music queue is 24 buffers deep). Data side: ADR-0003 (manifest fallback precedent).
 
 ## Context
 
