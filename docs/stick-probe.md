@@ -9,7 +9,9 @@ behaviour: the run keeps the OR of the keyboard, d-pad and stick bits.
 Active only when the environment variable `ALUNDRA_DEBUG_STICK_PROBE` is `1` when the game process starts (read once). Without
 it nothing is written.
 
-Two kinds of line, written through the engine logs (`Logs.WriteInfo`), so they land in `log.txt` next to the other traces:
+Two kinds of line, written through the engine logs (`Logs.WriteInfo`), so they land in `log.txt` next to the other traces. In
+`log.txt` the logger prefixes every line with the time and the level, so a real line reads
+`HH:mm:ss [Info] StickProbe 0.7071 0.7071 0 3000`: the fields below start after `[Info] `.
 
 ```
 StickProbe <x> <y> <D> <S>        once per rendered frame
@@ -39,7 +41,8 @@ StickProbe start <state> <nibble>  at each read of the run's start table
    - nothing touched, for a few seconds (the rest values).
    While holding a diagonal, also hold Triangle for about a second (the preparation then the run: the `start 29` lines appear).
 4. Quit the game. The journal is `log.txt` in the working directory of the launched process, rewritten at each launch: copy it
-   before starting the game again. It also holds the other traces: `rg StickProbe log.txt` keeps the probe lines.
+   before starting the game again. It also holds the other traces: `rg StickProbe log.txt` keeps the probe lines (plus one start-up
+warning line, `AlundraStickProbe: ALUNDRA_DEBUG_STICK_PROBE=1 ...`, which says the probe is on).
 5. Send the file (or its `StickProbe` lines).
 
 The working directory of the process depends on how the author starts the game; the launcher opens `log.txt` relative to it

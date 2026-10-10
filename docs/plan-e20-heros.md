@@ -1823,7 +1823,7 @@ E20.f3) ; l'avance du générateur par image (E20.e0b) ; les autres effacements 
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
 - **Retour arrière** : `git revert` des commits d'E20.f1a.
 
-#### E20.f1b — L'aura 🧪 (faite le 2026-10-10 : D-E20-28 à D-E20-30, ADR-0057 ; verifier frais et recette de l'auteur en attente)
+#### E20.f1b — L'aura 🧪 (faite et CONFIRMED le 2026-10-10, `3e01c11` à `4cb98b8` : D-E20-28 à D-E20-30, ADR-0057, ADR-0059 proposée ; recette de l'auteur en attente)
 
 **Révision 1 (2026-10-10).** Relecture : **REVISE**, un point corrigé : une libération immédiate rendait l'emplacement de l'aura avant
 l'application des créations en file des ticks précédents de la même image (la gerbe du tick 91 prenait l'emplacement 0 dans une image
@@ -1983,6 +1983,23 @@ inchangées (garde `git diff --ignore-cr-at-eol` passée).
 (4) Un hôte sans stade ne crée pas d'aura ; l'indice d'emplacement du héros passe avant les opérations en file de l'image (écart (3) de D-E20-28).
 (5) ADR-0059 reste **Proposée** (l'auteur la confirme) ; aucune ADR nouvelle. La levée de clé par voisin ou porteur reste hors périmètre (écart écrit dans `AlundraEntityDepthKey`).
 (6) Restent : le verifier frais, la recette de l'auteur (avec `steel-m14`, tenir Carré : l'aura au-dessus du héros, renouvelée sur une charge longue).
+
+**Vérification (2026-10-10) : CONFIRMED** par deux verifiers frais (workflow, l'un après l'autre). Rejeu : `Alundra.Tests` 4694/4694 en Release et en Debug,
+`cmp` de la DLL, traces inchangées, chaque point de l'acceptation relu contre le code et les tests. Adversarial : suite Debug 4694/4694, `keyprobe.py` relancé
+(sortie identique au bit près, 150 lignes OK), `FreeAtTick`, marque `FirstUpdateTick` (effacée même sans tick, y compris au départ de warp), ordre de dessin,
+clé générique pour toute entité (rien de propre au héros), couverture du bouchon retiré : aucun contre-exemple. Remarques P4, dispositions :
+- l'écart (3) de D-E20-28 existe **aussi à un tick par image** : un effet mis en file par un événement de carte du même tick (rang 0) est appliqué par
+  `RunFrame` après l'aura créée tout de suite par `MovePlayer` ; seuls les indices d'emplacement sont permutés (avec un seul emplacement libre, c'est
+  l'effet de la carte qui échoue au lieu de l'aura) : **écart consigné ici**, D-E20-28 se lit « exact à un tick par image, sauf l'ordre des
+  emplacements face aux effets en file du même tick » ;
+- un Z du héros négatif d'au moins 2 px sur une ligne frontière mettrait l'aura un seau d'élévation sous le sprite (la clé porte le Z signé, le seau du
+  sprite non) : **limite consignée**, cas improbable (hauteurs de terrain positives ou nulles) ;
+- commentaires périmés (`AlundraEffectReservoir.cs` « No entity of the DLL implements it yet », `AlundraPlayerManager.cs` « The aura stub is left as it
+  is », ticks 323-325 dans `AlundraHeroAuraWorldTests.cs`) : **reportés à E14.a1b**, qui travaille dans ces fichiers ;
+- l'exemple littéral du cas « renouvellement à 3 ticks par image » (227/324/325) n'est pas celui du test (33/130/131, écart (1) ci-dessus) : **gardé tel
+  quel**, l'écart est écrit.
+**Retour arrière** : la suppression d'`AlundraAuraStub.cs` est dans le commit de plan `6f9131e` de la session principale (index partagé pendant
+l'exécution) ; un retour arrière d'E20.f1b doit aussi restaurer ce fichier.
 
 ##### Arrêts, budget, retour arrière
 
@@ -2667,7 +2684,7 @@ tests existants (inversé : Triangle seul donne `0x29`, compteur `0`, direction 
 **Acceptation d'E20.d2.** S4 vert ; E20.d1 inchangée ; verifier frais. Recette au stick : une diagonale franche part sur son axe
 dominant, une diagonale à 45° sur l'axe du regard, et la marche ne change pas.
 
-#### E20.d2a — Résultats (2026-10-10, branche `chantier/e20-heros`)
+#### E20.d2a — Résultats (2026-10-10, branche `chantier/e20-heros`) — 🧪 faite et CONFIRMED, mesure de l'auteur en attente
 
 Commits : S1 et S3 avec leurs tests `2c16358` ; ce plan et `docs/stick-probe.md` (T finale). `Alundra.Tests` : 4646 avant, 4661 après (+15),
 sans échec en Release et en Debug ; `Alundra.dll` du projet égale celle de `Alundra/bin/Debug` (`cmp`). Traces du héros et de l'intro
@@ -2695,6 +2712,12 @@ inchangées (aucune différence hors fins de ligne). Aucune modification de la m
 - **Marche de l'auteur** : `docs/stick-probe.md`. La recette de l'auteur (mesure du stick, Q-D1) reste à faire ; elle ouvre E20.d2b.
 - **Non fait, par le plan** : S2 (la règle), le reste de S4, S5 : E20.d2b. Le verifier frais d'E20.d2a reste à lancer par la session
   principale.
+- **Vérification (2026-10-10) : CONFIRMED** par deux verifiers frais (workflow). Rejeu : `Alundra.Tests` 4661/4661 en Release et en Debug,
+  `cmp`, traces ; dérivation de x et y relue contre `InputMapping` et le mapping exporté (`MoveDownStick`/`MoveLeftStick` inversés, zone morte
+  0,5). Adversarial : aucun axe doublé ni inversé, échantillon présent dans chaque pad de tick, sonde sans allocation sans la variable, décisions
+  de départ et de reprise inchangées, journal bien dans `log.txt`. Remarques P4 : le `<summary>` d'`ActionBits` se retrouve sur `DirectionMask`
+  (**reporté** à E20.d2b, qui retouche ce fichier) ; les lignes réelles de `log.txt` portent l'heure et `[Info]` avant `StickProbe`, et le filtre
+  `rg` garde aussi la ligne d'avertissement du démarrage : **corrigé dans `docs/stick-probe.md`** (doc seule).
 
 #### Arrêts, budget, retour arrière (E20.d1 et E20.d2)
 
