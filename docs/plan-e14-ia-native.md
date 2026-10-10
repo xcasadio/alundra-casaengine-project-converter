@@ -87,7 +87,7 @@ Choix de la session principale (à confirmer par l'approbation de ce plan) :
 Ordre : E14.a0 (prérequis des armes, avant E20.e0a, qui en dépend), puis, après les armes, les objets et les collisions (D-E20-24),
 E14.a0b puis E14.a1. **D-E14-8 (2026-10-10)** : l'auteur les avance tous avant les armes, les objets et les collisions.
 
-### 1.1a E14.a0 — Le registre et l'interrupteur ✅
+### 1.1a E14.a0 — Le registre et l'interrupteur ✅ (CONFIRMED le 2026-10-10, verifier commun avec E14.a0b)
 
 Relecture : **READY** dès la première lecture (2026-10-10).
 
@@ -116,7 +116,7 @@ frais (commun avec E14.a0b, à la frontière d'intégration la plus petite).
 
 **Arrêts.** Une épingle du lanceur qui bouge ; un besoin de changer le moteur. **Retour arrière** : `git revert`.
 
-### 1.2 E14.a0b — Infrastructure des ennemis ✅ (après E14.a0, D-E14-8 ; le registre est E14.a0 ; exécutée le 2026-10-10, verifier frais à lancer)
+### 1.2 E14.a0b — Infrastructure des ennemis ✅ (après E14.a0, D-E14-8 ; le registre est E14.a0 ; exécutée et CONFIRMED le 2026-10-10)
 
 **Prérequis.** E14.a0 (le registre et l'interrupteur). D-E14-8 : E14.a passe en premier ; E14.a0b suit E14.a0 sans attendre les
 armes.
@@ -204,6 +204,21 @@ l'avance du générateur par tick (E20.e0b).
 - Un besoin de changer le moteur.
 
 **Budget** : un `executor`, deux tentatives au plus ; un verifier frais. **Retour arrière** : `git revert`.
+
+**Vérification (2026-10-10) : CONFIRMED** (E14.a0 et E14.a0b ensemble, au HEAD `51bd341`, après la fusion du moteur `1959b27`).
+Verifier frais : `Alundra.Tests` 4646/4646 en Release puis en Debug, `cmp` de la DLL, traces inchangées ; oracle relancé
+(`run_e14a0b.py`, 2 min 46 s, tout PASS, `out/manifest.txt` identique, aucun fichier suivi changé) ; dispatch de `RunSpriteEvent` relu
+(compteur, livre, E0/E1, puis registre) ; registre vide en production (aucun `Register` hors des tests) ; épingles de
+`SpriteEventRunCount` inchangées depuis `a2187e6` ; les tests des aides lisent l'oracle mot à mot ; dix mutations du port faites hors
+du dépôt, chaque famille d'aides attrapée ; aucun lecteur de production ne voit un `FloorHeight` ou des `MapHeights` différents pour
+une entité autre que le héros (le moteur n'en lit aucun ; seul `AlundraPlayerManager` lit celui du héros) ; argument de la garde
+`SpriteType < 0` vérifié (le registre filtre par type ; les 9 741 entités des cartes exportées ont toutes un `SpriteTableIndex`).
+Remarques P4, dispositions de la session principale :
+- test du verrou côté monde tautologique (`AlundraEnemyHitReactionTests`, il ne distingue pas `=> HeroAnimationLatch` de `=> 0` quand
+  le verrou vaut 0) : **reporté** (à renforcer quand E14.a1b lance D1 avec un verrou non nul) ;
+- `Register` accepte le type −1 : **contrôle ajouté à E14.a1b** (aucune inscription ne liste −1) ;
+- le support par une autre entité dans `ComputeFloorHeight` n'est pas couvert par l'oracle h2 : **reporté à E14.a1b** (un vecteur
+  avec un ennemi posé sur une entité, si l'oracle en offre un ; sinon noté comme limite).
 
 ### 1.3 E14.a1 — Découpage ⏳ (détaillé le 2026-10-10)
 
@@ -369,6 +384,9 @@ Arc G116 : 10 appels de D1, 5 par Beannoïde, PV 9→7→5→3→1→0 ; pour ch
 H+24 ; `FrameOf(C, 323)` = E1 le plus tardif + 1 ; enregistrement 6 : `TargetAnimationId` 3 ; enregistrements 17 et 41 à 44 vivants ;
 deux effets 8 ; `AssertNoUnexpectedError`. Mutations réelles, par script, chacune rouge : C1 portée `slti` 3→4 ; D1 animation 5→6 ;
 ancre vivante au lieu de l'ancre figée (image de 2 ticks) ; `fx -1` non résolu. Suite en Release puis en Debug ; `cmp` ; traces.
+
+**Contrôles venus de la vérification d'E14.a0b** : aucune inscription du registre ne liste le type −1 ; le test du verrou côté
+monde distingue l'implémentation de `=> 0` (verrou non nul) ; un vecteur avec un ennemi posé sur une entité si l'oracle en a un.
 
 **Arrêts.** Un vecteur en écart après deux tentatives ; une épingle de l'arène c1a ou c1b qui bouge ; le décalage H+1/H+23/H+24 qui
 diffère dans la DLL (diagnostiquer, ne jamais déplacer l'épingle) ; un arc qui bouge sans attribution à un effet de bris légitime

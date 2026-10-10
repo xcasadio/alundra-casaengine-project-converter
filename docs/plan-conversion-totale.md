@@ -765,8 +765,10 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   - **D-E14-6** : les nouveaux gestionnaires lisent les valeurs du tick (direction et animation de la boîte), comme le binaire ;
   - **D-E14-7** : recette d'E14.a : le hall de la 115 et la grille de la 116 ; la 362 et la vague de la 44 viennent avec.
   - **D-E14-8** (2026-10-10, ADR-0058) : E14.a passe en premier, avant les armes ; son plan est approuvé.
-- **Plan d'E14.a proposé (2026-10-10, relu READY, à approuver par l'auteur)** : [plan-e14-ia-native.md](plan-e14-ia-native.md) — E14.a0
-  (registre et interrupteur, prérequis des armes), E14.a0b (infrastructure des ennemis), E14.a1 (Beannoïde et Muruta).
+- **Plan d'E14.a (2026-10-10, approuvé par l'auteur, D-E14-8)** : [plan-e14-ia-native.md](plan-e14-ia-native.md) — E14.a0
+  (registre et interrupteur) et E14.a0b (infrastructure des ennemis) **faites et CONFIRMED le 2026-10-10** ; E14.a1 (Beannoïde et
+  Muruta) détaillée en E14.a1a (export de l'octet de bris), E14.a1b (effet de bris pour tous les appelants de `DestroyEntity`,
+  D-E14-9, ADR-0060 ; Beannoïde ; grille de la 116) et E14.a1c (Muruta ; hall de la 115) ; E14.a1a READY.
 
 ### E15 — Tout le texte d'Alundra en Yarn ✅ (close le 2026-09-28, recette en jeu validée : `docs/plan-e15-yarn.md`)
 
