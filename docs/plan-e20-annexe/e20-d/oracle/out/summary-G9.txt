@@ -1,0 +1,18 @@
+== G9 water and ice ==
+  deep-boots     0:00 1-25:29 26-89:03 90:1D 91-130:0F
+  deep-noboots   0:00 1-25:29 26-86:03 87-97:3E 98:01 99-103:2C 104-110:29
+  allwater-run   0:00 1:1D 2-80:0F
+  allwater-walk  0:00 1:1D 2-60:0F
+  allwater-T     0:00 1-40:1D
+  shallow        0:00 1-25:29 26-80:03
+  shallow-boots  0:00 1-25:29 26-80:03
+  ice            0:00 1-25:29 26-60:03 61-76:2A 77-120:00
+  flat-ref       0:00 1-25:29 26-80:03
+deep water with boots: first tick slope 4 89 (box fully in water, pos_x 346.09), anim at that tick 03, next ticks 88-89:03 90:1D 91-97:0F; Triangle still held
+deep water without boots: ForceAdjusted first tick 86, bounce 0x3E first tick 87, x at the wall 325.00
+shallow        ForceX at ticks 30/40/60: [129024, 129024, 129024]; step per tick @60 1.9688 px; vram_or@60 0x18
+shallow-boots  ForceX at ticks 30/40/60: [258048, 258048, 258048]; step per tick @60 3.9375 px; vram_or@60 0x18
+ice            ForceX at ticks 30/40/60: [20160, 60480, 141120]; step per tick @60 2.1491 px; vram_or@60 0x20
+flat-ref       ForceX at ticks 30/40/60: [258048, 258048, 258048]; step per tick @60 3.9375 px; vram_or@60 0x0
+ice after release (tick 61..): ForceX [141120, 140845, 140570, 139745, 138370, 119632, 34192, 0]
+

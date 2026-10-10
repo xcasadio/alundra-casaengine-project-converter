@@ -1,0 +1,62 @@
+== G2 keep running ==
+R2-long: timeline 0:00 1-25:29 26-120:03; ForceX plateau 258048; distance per tick 3.9375 px; step sounds 26:13 33:12 41:12 49:12 57:12 65:12 73:12 81:12 89:12 97:12 105:12 113:12; dust ticks [29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77, 81, 85, 89, 93, 97, 101, 105, 109, 113, 117]
+R2-mapedge: timeline 0:00 1-25:29 26-62:03 63-73:3E 74:01 75-79:2C 80:29; final x 1213.91; ForceAdjusted first tick 62
+
+== G3 the cone: run 40 ticks (sprint from tick 26), then change the pad at tick 41 for 14 ticks (hero at (624,480)) ==
+run U (facing up):
+   switch to none+T   first non-Sprint tick 41   anim@54 2A  sprintCnt@41 1 @54 14  dirT 10->10 facing@54 1
+   switch to T+U      first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 10->10 facing@54 1
+   switch to T+R      first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 10->10 facing@54 1
+   switch to T+D      first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 10->10 facing@54 1
+   switch to T+L      first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 10->10 facing@54 1
+   switch to T+UR     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 10->10 facing@54 1
+   switch to T+DR     first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 10->10 facing@54 1
+   switch to T+DL     first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 10->10 facing@54 1
+   switch to T+UL     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 10->10 facing@54 1
+   switch to T+LR     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 10->10 facing@54 1
+   switch to T+UD     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 10->10 facing@54 1
+   switch to dir-only first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 10->10 facing@54 1
+   switch to nothing  first non-Sprint tick 41   anim@54 2A  sprintCnt@41 1 @54 0  dirT 10->10 facing@54 1
+run R (facing right):
+   switch to none+T   first non-Sprint tick 41   anim@54 2A  sprintCnt@41 1 @54 14  dirT 18->18 facing@54 3
+   switch to T+U      first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 18->18 facing@54 3
+   switch to T+R      first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 18->18 facing@54 3
+   switch to T+D      first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 18->18 facing@54 3
+   switch to T+L      first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 18->18 facing@54 3
+   switch to T+UR     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 18->18 facing@54 3
+   switch to T+DR     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 18->18 facing@54 3
+   switch to T+DL     first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 18->18 facing@54 3
+   switch to T+UL     first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 18->18 facing@54 3
+   switch to T+LR     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 18->18 facing@54 3
+   switch to T+UD     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 18->18 facing@54 3
+   switch to dir-only first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 18->18 facing@54 3
+   switch to nothing  first non-Sprint tick 41   anim@54 2A  sprintCnt@41 1 @54 0  dirT 18->18 facing@54 3
+run D (facing down):
+   switch to none+T   first non-Sprint tick 41   anim@54 2A  sprintCnt@41 1 @54 14  dirT 00->00 facing@54 0
+   switch to T+U      first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 00->00 facing@54 0
+   switch to T+R      first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 00->00 facing@54 0
+   switch to T+D      first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 00->00 facing@54 0
+   switch to T+L      first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 00->00 facing@54 0
+   switch to T+UR     first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 00->00 facing@54 0
+   switch to T+DR     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 00->00 facing@54 0
+   switch to T+DL     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 00->00 facing@54 0
+   switch to T+UL     first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 00->00 facing@54 0
+   switch to T+LR     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 00->00 facing@54 0
+   switch to T+UD     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 00->00 facing@54 0
+   switch to dir-only first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 00->00 facing@54 0
+   switch to nothing  first non-Sprint tick 41   anim@54 2A  sprintCnt@41 1 @54 0  dirT 00->00 facing@54 0
+run L (facing left):
+   switch to none+T   first non-Sprint tick 41   anim@54 2A  sprintCnt@41 1 @54 14  dirT 08->08 facing@54 2
+   switch to T+U      first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 08->08 facing@54 2
+   switch to T+R      first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 08->08 facing@54 2
+   switch to T+D      first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 08->08 facing@54 2
+   switch to T+L      first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 08->08 facing@54 2
+   switch to T+UR     first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 08->08 facing@54 2
+   switch to T+DR     first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 08->08 facing@54 2
+   switch to T+DL     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 08->08 facing@54 2
+   switch to T+UL     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 08->08 facing@54 2
+   switch to T+LR     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 08->08 facing@54 2
+   switch to T+UD     first non-Sprint tick None anim@54 03  sprintCnt@41 0 @54 0  dirT 08->08 facing@54 2
+   switch to dir-only first non-Sprint tick 41   anim@54 2A  sprintCnt@41 0 @54 0  dirT 08->08 facing@54 2
+   switch to nothing  first non-Sprint tick 41   anim@54 2A  sprintCnt@41 1 @54 0  dirT 08->08 facing@54 2
+

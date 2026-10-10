@@ -1,0 +1,258 @@
+# INDEX of the run-oracle traces (one .txt and one .json per scenario; the .txt is the per-tick trace, the .json the same columns, column-major)
+# pad pieces: tick:hold (the hold word holds from that tick until the next piece); letters U R D L = d-pad, T O X S = Triangle Circle Cross Square
+# file | ticks | hero start px | pad | dash override | layout | targets | inventory | description
+g10/R10-resume-k05-UR-H | 76 | (624, 480) | 1:RT 41:T 46:URT | 1:None 46:2 | flat | - | kit | Triangle + Right 1-40, Triangle only for 5 ticks, then Triangle + Up + Right with dash override 2
+g10/R10-resume-k05-UR-V | 76 | (624, 480) | 1:RT 41:T 46:URT | 1:None 46:1 | flat | - | kit | Triangle + Right 1-40, Triangle only for 5 ticks, then Triangle + Up + Right with dash override 1
+g10/R10-resume-k05-UR-none | 76 | (624, 480) | 1:RT 41:T 46:URT | 1:None 46:None | flat | - | kit | Triangle + Right 1-40, Triangle only for 5 ticks, then Triangle + Up + Right with dash override None
+g10/R10-resume-k10-UR-H | 81 | (624, 480) | 1:RT 41:T 51:URT | 1:None 51:2 | flat | - | kit | Triangle + Right 1-40, Triangle only for 10 ticks, then Triangle + Up + Right with dash override 2
+g10/R10-resume-k10-UR-V | 81 | (624, 480) | 1:RT 41:T 51:URT | 1:None 51:1 | flat | - | kit | Triangle + Right 1-40, Triangle only for 10 ticks, then Triangle + Up + Right with dash override 1
+g10/R10-resume-k10-UR-none | 81 | (624, 480) | 1:RT 41:T 51:URT | 1:None 51:None | flat | - | kit | Triangle + Right 1-40, Triangle only for 10 ticks, then Triangle + Up + Right with dash override None
+g10/R10-resume-k11-UR-H | 82 | (624, 480) | 1:RT 41:T 52:URT | 1:None 52:2 | flat | - | kit | Triangle + Right 1-40, Triangle only for 11 ticks, then Triangle + Up + Right with dash override 2
+g10/R10-resume-k11-UR-V | 82 | (624, 480) | 1:RT 41:T 52:URT | 1:None 52:1 | flat | - | kit | Triangle + Right 1-40, Triangle only for 11 ticks, then Triangle + Up + Right with dash override 1
+g10/R10-resume-k11-UR-none | 82 | (624, 480) | 1:RT 41:T 52:URT | 1:None 52:None | flat | - | kit | Triangle + Right 1-40, Triangle only for 11 ticks, then Triangle + Up + Right with dash override None
+g10/R10-resume-k12-UR-H | 83 | (624, 480) | 1:RT 41:T 53:URT | 1:None 53:2 | flat | - | kit | Triangle + Right 1-40, Triangle only for 12 ticks, then Triangle + Up + Right with dash override 2
+g10/R10-resume-k12-UR-V | 83 | (624, 480) | 1:RT 41:T 53:URT | 1:None 53:1 | flat | - | kit | Triangle + Right 1-40, Triangle only for 12 ticks, then Triangle + Up + Right with dash override 1
+g10/R10-resume-k12-UR-none | 83 | (624, 480) | 1:RT 41:T 53:URT | 1:None 53:None | flat | - | kit | Triangle + Right 1-40, Triangle only for 12 ticks, then Triangle + Up + Right with dash override None
+g10/R10-resume-k16-UR-H | 87 | (624, 480) | 1:RT 41:T 57:URT | 1:None 57:2 | flat | - | kit | Triangle + Right 1-40, Triangle only for 16 ticks, then Triangle + Up + Right with dash override 2
+g10/R10-resume-k16-UR-V | 87 | (624, 480) | 1:RT 41:T 57:URT | 1:None 57:1 | flat | - | kit | Triangle + Right 1-40, Triangle only for 16 ticks, then Triangle + Up + Right with dash override 1
+g10/R10-resume-k16-UR-none | 87 | (624, 480) | 1:RT 41:T 57:URT | 1:None 57:None | flat | - | kit | Triangle + Right 1-40, Triangle only for 16 ticks, then Triangle + Up + Right with dash override None
+g10/R10-start-E-DL-H | 50 | (624, 480) | 1:DLT | 1:8 | flat | - | kit | hero facing E (dir 24); Triangle + DL (diagonal bits) from tick 1; dash override nibble 8
+g10/R10-start-E-DL-V | 50 | (624, 480) | 1:DLT | 1:4 | flat | - | kit | hero facing E (dir 24); Triangle + DL (diagonal bits) from tick 1; dash override nibble 4
+g10/R10-start-E-DL-none | 50 | (624, 480) | 1:DLT | 1:None | flat | - | kit | hero facing E (dir 24); Triangle + DL (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-E-DR-H | 50 | (624, 480) | 1:RDT | 1:2 | flat | - | kit | hero facing E (dir 24); Triangle + DR (diagonal bits) from tick 1; dash override nibble 2
+g10/R10-start-E-DR-V | 50 | (624, 480) | 1:RDT | 1:4 | flat | - | kit | hero facing E (dir 24); Triangle + DR (diagonal bits) from tick 1; dash override nibble 4
+g10/R10-start-E-DR-none | 50 | (624, 480) | 1:RDT | 1:None | flat | - | kit | hero facing E (dir 24); Triangle + DR (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-E-UL-H | 50 | (624, 480) | 1:ULT | 1:8 | flat | - | kit | hero facing E (dir 24); Triangle + UL (diagonal bits) from tick 1; dash override nibble 8
+g10/R10-start-E-UL-V | 50 | (624, 480) | 1:ULT | 1:1 | flat | - | kit | hero facing E (dir 24); Triangle + UL (diagonal bits) from tick 1; dash override nibble 1
+g10/R10-start-E-UL-none | 50 | (624, 480) | 1:ULT | 1:None | flat | - | kit | hero facing E (dir 24); Triangle + UL (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-E-UR-H | 50 | (624, 480) | 1:URT | 1:2 | flat | - | kit | hero facing E (dir 24); Triangle + UR (diagonal bits) from tick 1; dash override nibble 2
+g10/R10-start-E-UR-V | 50 | (624, 480) | 1:URT | 1:1 | flat | - | kit | hero facing E (dir 24); Triangle + UR (diagonal bits) from tick 1; dash override nibble 1
+g10/R10-start-E-UR-none | 50 | (624, 480) | 1:URT | 1:None | flat | - | kit | hero facing E (dir 24); Triangle + UR (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-N-DL-H | 50 | (624, 480) | 1:DLT | 1:8 | flat | - | kit | hero facing N (dir 16); Triangle + DL (diagonal bits) from tick 1; dash override nibble 8
+g10/R10-start-N-DL-V | 50 | (624, 480) | 1:DLT | 1:4 | flat | - | kit | hero facing N (dir 16); Triangle + DL (diagonal bits) from tick 1; dash override nibble 4
+g10/R10-start-N-DL-none | 50 | (624, 480) | 1:DLT | 1:None | flat | - | kit | hero facing N (dir 16); Triangle + DL (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-N-DR-H | 50 | (624, 480) | 1:RDT | 1:2 | flat | - | kit | hero facing N (dir 16); Triangle + DR (diagonal bits) from tick 1; dash override nibble 2
+g10/R10-start-N-DR-V | 50 | (624, 480) | 1:RDT | 1:4 | flat | - | kit | hero facing N (dir 16); Triangle + DR (diagonal bits) from tick 1; dash override nibble 4
+g10/R10-start-N-DR-none | 50 | (624, 480) | 1:RDT | 1:None | flat | - | kit | hero facing N (dir 16); Triangle + DR (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-N-UL-H | 50 | (624, 480) | 1:ULT | 1:8 | flat | - | kit | hero facing N (dir 16); Triangle + UL (diagonal bits) from tick 1; dash override nibble 8
+g10/R10-start-N-UL-V | 50 | (624, 480) | 1:ULT | 1:1 | flat | - | kit | hero facing N (dir 16); Triangle + UL (diagonal bits) from tick 1; dash override nibble 1
+g10/R10-start-N-UL-none | 50 | (624, 480) | 1:ULT | 1:None | flat | - | kit | hero facing N (dir 16); Triangle + UL (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-N-UR-H | 50 | (624, 480) | 1:URT | 1:2 | flat | - | kit | hero facing N (dir 16); Triangle + UR (diagonal bits) from tick 1; dash override nibble 2
+g10/R10-start-N-UR-V | 50 | (624, 480) | 1:URT | 1:1 | flat | - | kit | hero facing N (dir 16); Triangle + UR (diagonal bits) from tick 1; dash override nibble 1
+g10/R10-start-N-UR-none | 50 | (624, 480) | 1:URT | 1:None | flat | - | kit | hero facing N (dir 16); Triangle + UR (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-S-DL-H | 50 | (624, 480) | 1:DLT | 1:8 | flat | - | kit | hero facing S (dir 0); Triangle + DL (diagonal bits) from tick 1; dash override nibble 8
+g10/R10-start-S-DL-V | 50 | (624, 480) | 1:DLT | 1:4 | flat | - | kit | hero facing S (dir 0); Triangle + DL (diagonal bits) from tick 1; dash override nibble 4
+g10/R10-start-S-DL-none | 50 | (624, 480) | 1:DLT | 1:None | flat | - | kit | hero facing S (dir 0); Triangle + DL (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-S-DR-H | 50 | (624, 480) | 1:RDT | 1:2 | flat | - | kit | hero facing S (dir 0); Triangle + DR (diagonal bits) from tick 1; dash override nibble 2
+g10/R10-start-S-DR-V | 50 | (624, 480) | 1:RDT | 1:4 | flat | - | kit | hero facing S (dir 0); Triangle + DR (diagonal bits) from tick 1; dash override nibble 4
+g10/R10-start-S-DR-none | 50 | (624, 480) | 1:RDT | 1:None | flat | - | kit | hero facing S (dir 0); Triangle + DR (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-S-UL-H | 50 | (624, 480) | 1:ULT | 1:8 | flat | - | kit | hero facing S (dir 0); Triangle + UL (diagonal bits) from tick 1; dash override nibble 8
+g10/R10-start-S-UL-V | 50 | (624, 480) | 1:ULT | 1:1 | flat | - | kit | hero facing S (dir 0); Triangle + UL (diagonal bits) from tick 1; dash override nibble 1
+g10/R10-start-S-UL-none | 50 | (624, 480) | 1:ULT | 1:None | flat | - | kit | hero facing S (dir 0); Triangle + UL (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-S-UR-H | 50 | (624, 480) | 1:URT | 1:2 | flat | - | kit | hero facing S (dir 0); Triangle + UR (diagonal bits) from tick 1; dash override nibble 2
+g10/R10-start-S-UR-V | 50 | (624, 480) | 1:URT | 1:1 | flat | - | kit | hero facing S (dir 0); Triangle + UR (diagonal bits) from tick 1; dash override nibble 1
+g10/R10-start-S-UR-none | 50 | (624, 480) | 1:URT | 1:None | flat | - | kit | hero facing S (dir 0); Triangle + UR (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-W-DL-H | 50 | (624, 480) | 1:DLT | 1:8 | flat | - | kit | hero facing W (dir 8); Triangle + DL (diagonal bits) from tick 1; dash override nibble 8
+g10/R10-start-W-DL-V | 50 | (624, 480) | 1:DLT | 1:4 | flat | - | kit | hero facing W (dir 8); Triangle + DL (diagonal bits) from tick 1; dash override nibble 4
+g10/R10-start-W-DL-none | 50 | (624, 480) | 1:DLT | 1:None | flat | - | kit | hero facing W (dir 8); Triangle + DL (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-W-DR-H | 50 | (624, 480) | 1:RDT | 1:2 | flat | - | kit | hero facing W (dir 8); Triangle + DR (diagonal bits) from tick 1; dash override nibble 2
+g10/R10-start-W-DR-V | 50 | (624, 480) | 1:RDT | 1:4 | flat | - | kit | hero facing W (dir 8); Triangle + DR (diagonal bits) from tick 1; dash override nibble 4
+g10/R10-start-W-DR-none | 50 | (624, 480) | 1:RDT | 1:None | flat | - | kit | hero facing W (dir 8); Triangle + DR (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-W-UL-H | 50 | (624, 480) | 1:ULT | 1:8 | flat | - | kit | hero facing W (dir 8); Triangle + UL (diagonal bits) from tick 1; dash override nibble 8
+g10/R10-start-W-UL-V | 50 | (624, 480) | 1:ULT | 1:1 | flat | - | kit | hero facing W (dir 8); Triangle + UL (diagonal bits) from tick 1; dash override nibble 1
+g10/R10-start-W-UL-none | 50 | (624, 480) | 1:ULT | 1:None | flat | - | kit | hero facing W (dir 8); Triangle + UL (diagonal bits) from tick 1; dash override nibble None
+g10/R10-start-W-UR-H | 50 | (624, 480) | 1:URT | 1:2 | flat | - | kit | hero facing W (dir 8); Triangle + UR (diagonal bits) from tick 1; dash override nibble 2
+g10/R10-start-W-UR-V | 50 | (624, 480) | 1:URT | 1:1 | flat | - | kit | hero facing W (dir 8); Triangle + UR (diagonal bits) from tick 1; dash override nibble 1
+g10/R10-start-W-UR-none | 50 | (624, 480) | 1:URT | 1:None | flat | - | kit | hero facing W (dir 8); Triangle + UR (diagonal bits) from tick 1; dash override nibble None
+g1/R1-T+D | 64 | (624, 480) | 1:DT | - | flat | - | kit | Triangle + D held from tick 1, 64 ticks
+g1/R1-T+DL | 64 | (624, 480) | 1:DLT | - | flat | - | kit | Triangle + diagonal DL held from tick 1, 64 ticks (never a valid dash direction)
+g1/R1-T+DR | 64 | (624, 480) | 1:RDT | - | flat | - | kit | Triangle + diagonal DR held from tick 1, 64 ticks (never a valid dash direction)
+g1/R1-T+L | 64 | (624, 480) | 1:LT | - | flat | - | kit | Triangle + L held from tick 1, 64 ticks
+g1/R1-T+LR | 64 | (624, 480) | 1:RLT | - | flat | - | kit | Triangle + Left + Right (invalid nibble 0xA) held from tick 1, 64 ticks
+g1/R1-T+R | 64 | (624, 480) | 1:RT | - | flat | - | kit | Triangle + R held from tick 1, 64 ticks
+g1/R1-T+U | 64 | (624, 480) | 1:UT | - | flat | - | kit | Triangle + U held from tick 1, 64 ticks
+g1/R1-T+UL | 64 | (624, 480) | 1:ULT | - | flat | - | kit | Triangle + diagonal UL held from tick 1, 64 ticks (never a valid dash direction)
+g1/R1-T+UR | 64 | (624, 480) | 1:URT | - | flat | - | kit | Triangle + diagonal UR held from tick 1, 64 ticks (never a valid dash direction)
+g1/R1-T-faceW-then-R | 64 | (624, 480) | 1:RT | - | flat | - | kit | hero starts facing west (dir 8); Triangle + Right from tick 1: TargetDirection written during the wind-up
+g1/R1-T-released-in-windup-nodir | 64 | (624, 480) | 1:RT 10:- | - | flat | - | kit | Triangle + Right 1-9, pad 0 from tick 10, 64 ticks
+g1/R1-T-released-in-windup | 64 | (624, 480) | 1:RT 10:R | - | flat | - | kit | Triangle + Right 1-9, Right only from tick 10 (Triangle released in the wind-up), 64 ticks
+g1/R1-T-then-R-at-10 | 64 | (624, 480) | 1:T 10:RT | - | flat | - | kit | Triangle from tick 1, Right added at tick 10, 64 ticks
+g1/R1-T-then-R-at-24 | 64 | (624, 480) | 1:T 24:RT | - | flat | - | kit | Triangle from tick 1, Right added at tick 24, 64 ticks
+g1/R1-T-then-R-at-25 | 64 | (624, 480) | 1:T 25:RT | - | flat | - | kit | Triangle from tick 1, Right added at tick 25, 64 ticks
+g1/R1-T-then-R-at-30 | 64 | (624, 480) | 1:T 30:RT | - | flat | - | kit | Triangle from tick 1, Right added at tick 30, 64 ticks
+g1/R1-T-then-R-at-40 | 64 | (624, 480) | 1:T 40:RT | - | flat | - | kit | Triangle from tick 1, Right added at tick 40, 64 ticks
+g1/R1-T-turn-in-windup-at-20 | 80 | (624, 480) | 1:RT 20:UT | - | flat | - | kit | Triangle + Right 1-19, Triangle + Up from tick 20 (the facing changes before the first loop ends), 80 ticks
+g1/R1-T-turn-in-windup | 64 | (624, 480) | 1:RT 10:UT | - | flat | - | kit | Triangle + Right 1-9, Triangle + Up from tick 10, 64 ticks
+g1/R1-T | 64 | (624, 480) | 1:T | - | flat | - | kit | Triangle alone held from tick 1, 64 ticks
+g1/R1-cross-with-T | 80 | (624, 480) | 1:RTX 2:RT | - | flat | - | kit | Triangle + Right + Cross at tick 1 (Cross edge), Cross released at tick 2, 80 ticks
+g1/R1-diag-then-card-early | 64 | (624, 480) | 1:URT 10:RT | - | flat | - | kit | Triangle + Up + Right ticks 1-9, then Triangle + Right from 10, 64 ticks
+g1/R1-diag-then-card | 64 | (624, 480) | 1:URT 30:RT | - | flat | - | kit | Triangle + Up + Right ticks 1-29, then Triangle + Right from 30, 64 ticks
+g1/R1-diag-then-left | 64 | (624, 480) | 1:URT 30:LT | - | flat | - | kit | Triangle + Up + Right 1-29, Triangle + Left from tick 30 (reverse direction after the first loop), 64 ticks
+g1/R1-diag-then-up | 64 | (624, 480) | 1:URT 30:UT | - | flat | - | kit | Triangle + Up + Right 1-29 (wind-up, facing right), Triangle + Up from tick 30 (facing changes AFTER the first loop), 64 ticks
+g1/R1-walk-then-T | 64 | (624, 480) | 1:R 20:RT | - | flat | - | kit | Right from tick 1 (walk), Triangle added at tick 20, 64 ticks
+g2/R2-long | 120 | (100, 100) | 1:RT | - | flat | - | kit | Triangle + Right held, 120 ticks from (100,100): steady run, step sounds and dust
+g2/R2-mapedge | 80 | (1100, 100) | 1:RT | - | flat | - | kit | Triangle + Right from (1100,100) to the east map edge (x clamp 1248), 80 ticks
+g3/R3-D-T_D | 54 | (624, 480) | 1:DT 41:DT | - | flat | - | kit | run D (Triangle + D) ticks 1-40, then pad = T+D from tick 41, 54 ticks
+g3/R3-D-T_DL | 54 | (624, 480) | 1:DT 41:DLT | - | flat | - | kit | run D (Triangle + D) ticks 1-40, then pad = T+DL from tick 41, 54 ticks
+g3/R3-D-T_DR | 54 | (624, 480) | 1:DT 41:RDT | - | flat | - | kit | run D (Triangle + D) ticks 1-40, then pad = T+DR from tick 41, 54 ticks
+g3/R3-D-T_L | 54 | (624, 480) | 1:DT 41:LT | - | flat | - | kit | run D (Triangle + D) ticks 1-40, then pad = T+L from tick 41, 54 ticks
+g3/R3-D-T_LR | 54 | (624, 480) | 1:DT 41:RLT | - | flat | - | kit | run D (Triangle + D) ticks 1-40, then pad = T+LR from tick 41, 54 ticks
+g3/R3-D-T_R | 54 | (624, 480) | 1:DT 41:RT | - | flat | - | kit | run D (Triangle + D) ticks 1-40, then pad = T+R from tick 41, 54 ticks
+g3/R3-D-T_U | 54 | (624, 480) | 1:DT 41:UT | - | flat | - | kit | run D (Triangle + D) ticks 1-40, then pad = T+U from tick 41, 54 ticks
+g3/R3-D-T_UD | 54 | (624, 480) | 1:DT 41:UDT | - | flat | - | kit | run D (Triangle + D) ticks 1-40, then pad = T+UD from tick 41, 54 ticks
+g3/R3-D-T_UL | 54 | (624, 480) | 1:DT 41:ULT | - | flat | - | kit | run D (Triangle + D) ticks 1-40, then pad = T+UL from tick 41, 54 ticks
+g3/R3-D-T_UR | 54 | (624, 480) | 1:DT 41:URT | - | flat | - | kit | run D (Triangle + D) ticks 1-40, then pad = T+UR from tick 41, 54 ticks
+g3/R3-D-dir_only | 54 | (624, 480) | 1:DT 41:D | - | flat | - | kit | run D (Triangle + D) ticks 1-40, then pad = dir-only from tick 41, 54 ticks
+g3/R3-D-none_T | 54 | (624, 480) | 1:DT 41:T | - | flat | - | kit | run D (Triangle + D) ticks 1-40, then pad = none+T from tick 41, 54 ticks
+g3/R3-D-nothing | 54 | (624, 480) | 1:DT 41:- | - | flat | - | kit | run D (Triangle + D) ticks 1-40, then pad = nothing from tick 41, 54 ticks
+g3/R3-L-T_D | 54 | (624, 480) | 1:LT 41:DT | - | flat | - | kit | run L (Triangle + L) ticks 1-40, then pad = T+D from tick 41, 54 ticks
+g3/R3-L-T_DL | 54 | (624, 480) | 1:LT 41:DLT | - | flat | - | kit | run L (Triangle + L) ticks 1-40, then pad = T+DL from tick 41, 54 ticks
+g3/R3-L-T_DR | 54 | (624, 480) | 1:LT 41:RDT | - | flat | - | kit | run L (Triangle + L) ticks 1-40, then pad = T+DR from tick 41, 54 ticks
+g3/R3-L-T_L | 54 | (624, 480) | 1:LT 41:LT | - | flat | - | kit | run L (Triangle + L) ticks 1-40, then pad = T+L from tick 41, 54 ticks
+g3/R3-L-T_LR | 54 | (624, 480) | 1:LT 41:RLT | - | flat | - | kit | run L (Triangle + L) ticks 1-40, then pad = T+LR from tick 41, 54 ticks
+g3/R3-L-T_R | 54 | (624, 480) | 1:LT 41:RT | - | flat | - | kit | run L (Triangle + L) ticks 1-40, then pad = T+R from tick 41, 54 ticks
+g3/R3-L-T_U | 54 | (624, 480) | 1:LT 41:UT | - | flat | - | kit | run L (Triangle + L) ticks 1-40, then pad = T+U from tick 41, 54 ticks
+g3/R3-L-T_UD | 54 | (624, 480) | 1:LT 41:UDT | - | flat | - | kit | run L (Triangle + L) ticks 1-40, then pad = T+UD from tick 41, 54 ticks
+g3/R3-L-T_UL | 54 | (624, 480) | 1:LT 41:ULT | - | flat | - | kit | run L (Triangle + L) ticks 1-40, then pad = T+UL from tick 41, 54 ticks
+g3/R3-L-T_UR | 54 | (624, 480) | 1:LT 41:URT | - | flat | - | kit | run L (Triangle + L) ticks 1-40, then pad = T+UR from tick 41, 54 ticks
+g3/R3-L-dir_only | 54 | (624, 480) | 1:LT 41:L | - | flat | - | kit | run L (Triangle + L) ticks 1-40, then pad = dir-only from tick 41, 54 ticks
+g3/R3-L-none_T | 54 | (624, 480) | 1:LT 41:T | - | flat | - | kit | run L (Triangle + L) ticks 1-40, then pad = none+T from tick 41, 54 ticks
+g3/R3-L-nothing | 54 | (624, 480) | 1:LT 41:- | - | flat | - | kit | run L (Triangle + L) ticks 1-40, then pad = nothing from tick 41, 54 ticks
+g3/R3-R-T_D | 54 | (624, 480) | 1:RT 41:DT | - | flat | - | kit | run R (Triangle + R) ticks 1-40, then pad = T+D from tick 41, 54 ticks
+g3/R3-R-T_DL | 54 | (624, 480) | 1:RT 41:DLT | - | flat | - | kit | run R (Triangle + R) ticks 1-40, then pad = T+DL from tick 41, 54 ticks
+g3/R3-R-T_DR | 54 | (624, 480) | 1:RT 41:RDT | - | flat | - | kit | run R (Triangle + R) ticks 1-40, then pad = T+DR from tick 41, 54 ticks
+g3/R3-R-T_L | 54 | (624, 480) | 1:RT 41:LT | - | flat | - | kit | run R (Triangle + R) ticks 1-40, then pad = T+L from tick 41, 54 ticks
+g3/R3-R-T_LR | 54 | (624, 480) | 1:RT 41:RLT | - | flat | - | kit | run R (Triangle + R) ticks 1-40, then pad = T+LR from tick 41, 54 ticks
+g3/R3-R-T_R | 54 | (624, 480) | 1:RT 41:RT | - | flat | - | kit | run R (Triangle + R) ticks 1-40, then pad = T+R from tick 41, 54 ticks
+g3/R3-R-T_U | 54 | (624, 480) | 1:RT 41:UT | - | flat | - | kit | run R (Triangle + R) ticks 1-40, then pad = T+U from tick 41, 54 ticks
+g3/R3-R-T_UD | 54 | (624, 480) | 1:RT 41:UDT | - | flat | - | kit | run R (Triangle + R) ticks 1-40, then pad = T+UD from tick 41, 54 ticks
+g3/R3-R-T_UL | 54 | (624, 480) | 1:RT 41:ULT | - | flat | - | kit | run R (Triangle + R) ticks 1-40, then pad = T+UL from tick 41, 54 ticks
+g3/R3-R-T_UR | 54 | (624, 480) | 1:RT 41:URT | - | flat | - | kit | run R (Triangle + R) ticks 1-40, then pad = T+UR from tick 41, 54 ticks
+g3/R3-R-dir_only | 54 | (624, 480) | 1:RT 41:R | - | flat | - | kit | run R (Triangle + R) ticks 1-40, then pad = dir-only from tick 41, 54 ticks
+g3/R3-R-none_T | 54 | (624, 480) | 1:RT 41:T | - | flat | - | kit | run R (Triangle + R) ticks 1-40, then pad = none+T from tick 41, 54 ticks
+g3/R3-R-nothing | 54 | (624, 480) | 1:RT 41:- | - | flat | - | kit | run R (Triangle + R) ticks 1-40, then pad = nothing from tick 41, 54 ticks
+g3/R3-U-T_D | 54 | (624, 480) | 1:UT 41:DT | - | flat | - | kit | run U (Triangle + U) ticks 1-40, then pad = T+D from tick 41, 54 ticks
+g3/R3-U-T_DL | 54 | (624, 480) | 1:UT 41:DLT | - | flat | - | kit | run U (Triangle + U) ticks 1-40, then pad = T+DL from tick 41, 54 ticks
+g3/R3-U-T_DR | 54 | (624, 480) | 1:UT 41:RDT | - | flat | - | kit | run U (Triangle + U) ticks 1-40, then pad = T+DR from tick 41, 54 ticks
+g3/R3-U-T_L | 54 | (624, 480) | 1:UT 41:LT | - | flat | - | kit | run U (Triangle + U) ticks 1-40, then pad = T+L from tick 41, 54 ticks
+g3/R3-U-T_LR | 54 | (624, 480) | 1:UT 41:RLT | - | flat | - | kit | run U (Triangle + U) ticks 1-40, then pad = T+LR from tick 41, 54 ticks
+g3/R3-U-T_R | 54 | (624, 480) | 1:UT 41:RT | - | flat | - | kit | run U (Triangle + U) ticks 1-40, then pad = T+R from tick 41, 54 ticks
+g3/R3-U-T_U | 54 | (624, 480) | 1:UT 41:UT | - | flat | - | kit | run U (Triangle + U) ticks 1-40, then pad = T+U from tick 41, 54 ticks
+g3/R3-U-T_UD | 54 | (624, 480) | 1:UT 41:UDT | - | flat | - | kit | run U (Triangle + U) ticks 1-40, then pad = T+UD from tick 41, 54 ticks
+g3/R3-U-T_UL | 54 | (624, 480) | 1:UT 41:ULT | - | flat | - | kit | run U (Triangle + U) ticks 1-40, then pad = T+UL from tick 41, 54 ticks
+g3/R3-U-T_UR | 54 | (624, 480) | 1:UT 41:URT | - | flat | - | kit | run U (Triangle + U) ticks 1-40, then pad = T+UR from tick 41, 54 ticks
+g3/R3-U-dir_only | 54 | (624, 480) | 1:UT 41:U | - | flat | - | kit | run U (Triangle + U) ticks 1-40, then pad = dir-only from tick 41, 54 ticks
+g3/R3-U-none_T | 54 | (624, 480) | 1:UT 41:T | - | flat | - | kit | run U (Triangle + U) ticks 1-40, then pad = none+T from tick 41, 54 ticks
+g3/R3-U-nothing | 54 | (624, 480) | 1:UT 41:- | - | flat | - | kit | run U (Triangle + U) ticks 1-40, then pad = nothing from tick 41, 54 ticks
+g4/R4-rel01-R | 82 | (624, 480) | 1:RT 41:T 42:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-41, Triangle + Right from 42, 82 ticks
+g4/R4-rel02-R | 83 | (624, 480) | 1:RT 41:T 43:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-42, Triangle + Right from 43, 83 ticks
+g4/R4-rel03-R | 84 | (624, 480) | 1:RT 41:T 44:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-43, Triangle + Right from 44, 84 ticks
+g4/R4-rel04-R | 85 | (624, 480) | 1:RT 41:T 45:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-44, Triangle + Right from 45, 85 ticks
+g4/R4-rel05-L | 76 | (624, 480) | 1:RT 41:T 46:LT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-45, Triangle + L from 46
+g4/R4-rel05-R | 86 | (624, 480) | 1:RT 41:T 46:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-45, Triangle + Right from 46, 86 ticks
+g4/R4-rel05-U | 76 | (624, 480) | 1:RT 41:T 46:UT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-45, Triangle + U from 46
+g4/R4-rel05-UR | 76 | (624, 480) | 1:RT 41:T 46:URT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-45, Triangle + UR from 46
+g4/R4-rel06-R | 87 | (624, 480) | 1:RT 41:T 47:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-46, Triangle + Right from 47, 87 ticks
+g4/R4-rel07-R | 88 | (624, 480) | 1:RT 41:T 48:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-47, Triangle + Right from 48, 88 ticks
+g4/R4-rel08-R | 89 | (624, 480) | 1:RT 41:T 49:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-48, Triangle + Right from 49, 89 ticks
+g4/R4-rel09-R | 90 | (624, 480) | 1:RT 41:T 50:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-49, Triangle + Right from 50, 90 ticks
+g4/R4-rel10-L | 81 | (624, 480) | 1:RT 41:T 51:LT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-50, Triangle + L from 51
+g4/R4-rel10-R | 91 | (624, 480) | 1:RT 41:T 51:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-50, Triangle + Right from 51, 91 ticks
+g4/R4-rel10-U | 81 | (624, 480) | 1:RT 41:T 51:UT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-50, Triangle + U from 51
+g4/R4-rel10-UR | 81 | (624, 480) | 1:RT 41:T 51:URT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-50, Triangle + UR from 51
+g4/R4-rel11-L | 82 | (624, 480) | 1:RT 41:T 52:LT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-51, Triangle + L from 52
+g4/R4-rel11-R | 92 | (624, 480) | 1:RT 41:T 52:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-51, Triangle + Right from 52, 92 ticks
+g4/R4-rel11-U | 82 | (624, 480) | 1:RT 41:T 52:UT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-51, Triangle + U from 52
+g4/R4-rel11-UR | 82 | (624, 480) | 1:RT 41:T 52:URT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-51, Triangle + UR from 52
+g4/R4-rel12-L | 83 | (624, 480) | 1:RT 41:T 53:LT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-52, Triangle + L from 53
+g4/R4-rel12-R | 93 | (624, 480) | 1:RT 41:T 53:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-52, Triangle + Right from 53, 93 ticks
+g4/R4-rel12-U | 83 | (624, 480) | 1:RT 41:T 53:UT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-52, Triangle + U from 53
+g4/R4-rel12-UR | 83 | (624, 480) | 1:RT 41:T 53:URT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-52, Triangle + UR from 53
+g4/R4-rel13-R | 94 | (624, 480) | 1:RT 41:T 54:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-53, Triangle + Right from 54, 94 ticks
+g4/R4-rel14-R | 95 | (624, 480) | 1:RT 41:T 55:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-54, Triangle + Right from 55, 95 ticks
+g4/R4-rel15-R | 96 | (624, 480) | 1:RT 41:T 56:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-55, Triangle + Right from 56, 96 ticks
+g4/R4-rel16-R | 97 | (624, 480) | 1:RT 41:T 57:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-56, Triangle + Right from 57, 97 ticks
+g4/R4-rel17-R | 98 | (624, 480) | 1:RT 41:T 58:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-57, Triangle + Right from 58, 98 ticks
+g4/R4-rel18-R | 99 | (624, 480) | 1:RT 41:T 59:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-58, Triangle + Right from 59, 99 ticks
+g4/R4-rel19-R | 100 | (624, 480) | 1:RT 41:T 60:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-59, Triangle + Right from 60, 100 ticks
+g4/R4-rel20-L | 91 | (624, 480) | 1:RT 41:T 61:LT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-60, Triangle + L from 61
+g4/R4-rel20-R | 101 | (624, 480) | 1:RT 41:T 61:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-60, Triangle + Right from 61, 101 ticks
+g4/R4-rel20-U | 91 | (624, 480) | 1:RT 41:T 61:UT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-60, Triangle + U from 61
+g4/R4-rel20-UR | 91 | (624, 480) | 1:RT 41:T 61:URT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-60, Triangle + UR from 61
+g4/R4-rel21-R | 102 | (624, 480) | 1:RT 41:T 62:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-61, Triangle + Right from 62, 102 ticks
+g4/R4-rel22-R | 103 | (624, 480) | 1:RT 41:T 63:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-62, Triangle + Right from 63, 103 ticks
+g4/R4-rel23-R | 104 | (624, 480) | 1:RT 41:T 64:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-63, Triangle + Right from 64, 104 ticks
+g4/R4-rel24-R | 105 | (624, 480) | 1:RT 41:T 65:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-64, Triangle + Right from 65, 105 ticks
+g4/R4-rel25-R | 106 | (624, 480) | 1:RT 41:T 66:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-65, Triangle + Right from 66, 106 ticks
+g4/R4-rel26-R | 107 | (624, 480) | 1:RT 41:T 67:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-66, Triangle + Right from 67, 107 ticks
+g4/R4-rel30-R | 111 | (624, 480) | 1:RT 41:T 71:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-70, Triangle + Right from 71, 111 ticks
+g4/R4-rel40-R | 121 | (624, 480) | 1:RT 41:T 81:RT | - | flat | - | kit | Triangle + Right 1-40, Triangle only 41-80, Triangle + Right from 81, 121 ticks
+g4/R4-relT03 | 84 | (624, 480) | 1:RT 41:R 44:RT | - | flat | - | kit | Triangle + Right 1-40, Right only 3 ticks, Triangle + Right again
+g4/R4-relT12 | 93 | (624, 480) | 1:RT 41:R 53:RT | - | flat | - | kit | Triangle + Right 1-40, Right only 12 ticks, Triangle + Right again
+g4/R4-relboth05 | 86 | (624, 480) | 1:RT 41:- 46:RT | - | flat | - | kit | Triangle + Right 1-40, pad 0 for 5 ticks, Triangle + Right again
+g4/R4-relboth12 | 93 | (624, 480) | 1:RT 41:- 53:RT | - | flat | - | kit | Triangle + Right 1-40, pad 0 for 12 ticks, Triangle + Right again
+g4/R4-relboth20 | 101 | (624, 480) | 1:RT 41:- 61:RT | - | flat | - | kit | Triangle + Right 1-40, pad 0 for 20 ticks, Triangle + Right again
+g5/R5-step-16px | 110 | (100, 100) | 1:RT | - | c14-51 r0-59 hb1 | - | kit | ground rises by 16 px at col 14 (x 336), run east from (100,100), 110 ticks
+g5/R5-step-32px | 110 | (100, 100) | 1:RT | - | c14-51 r0-59 hb2 | - | kit | ground rises by 32 px at col 14 (x 336), run east from (100,100), 110 ticks
+g5/R5-walk-step-16px | 150 | (100, 100) | 1:R | - | c14-51 r0-59 hb1 | - | kit | control: walk east into the same 16 px rise, 150 ticks
+g5/R5-walk-step-32px | 150 | (100, 100) | 1:R | - | c14-51 r0-59 hb2 | - | kit | control: walk east into the same 32 px rise, 150 ticks
+g5/R5-wall-E-adjacent | 80 | (325, 100) | 1:RT | - | c14-15 r0-59 wk40 gp00 | - | kit | hero starts at x=325 (box edge touching the wall), Triangle + Right from tick 1, 80 ticks
+g5/R5-wall-E-release | 130 | (100, 100) | 1:RT 88:- | - | c14-15 r0-59 wk40 gp00 | - | kit | as R5-wall-E, the whole pad released at tick 88 (the tick after the bounce starts), 130 ticks
+g5/R5-wall-E-releaseT | 130 | (100, 100) | 1:RT 88:R | - | c14-15 r0-59 wk40 gp00 | - | kit | as R5-wall-E, Triangle released at tick 88 (Right kept), 130 ticks
+g5/R5-wall-E-square | 130 | (100, 100) | 1:RT 90:RTS 91:RT | - | c14-15 r0-59 wk40 gp00 | - | kit | as R5-wall-E, Square pressed at tick 90 during the bounce, 130 ticks
+g5/R5-wall-E-walk | 150 | (100, 100) | 1:R | - | c14-15 r0-59 wk40 gp00 | - | kit | control: walk east (Right only) into the same wall, 150 ticks
+g5/R5-wall-E | 170 | (100, 100) | 1:RT | - | c14-15 r0-59 wk40 gp00 | - | kit | wall word 0x40 at cols 14-15 (x 336), run east from (100,100), 170 ticks (several bounces)
+g5/R5-wall-N | 100 | (300, 300) | 1:UT | - | c0-51 r12-13 wk40 gp00 | - | kit | wall word 0x40 at rows 12-13 (y 192..223), run north from (300,300), 100 ticks
+g5/R5-wall-S | 100 | (300, 300) | 1:DT | - | c0-51 r30-31 wk40 gp00 | - | kit | wall word 0x40 at rows 30-31 (y 480..511), run south from (300,300), 100 ticks
+g5/R5-wall-W | 100 | (300, 100) | 1:LT | - | c2-3 r0-59 wk40 gp00 | - | kit | wall word 0x40 at cols 2-3 (x 48..95), run west from (300,100), 100 ticks
+g6/R6-drop-16px | 130 | (100, 100) | 1:RT | - | c0-13 r0-59 hb1 | - | kit | ground 16 px high for x < 336, 0 beyond; Triangle + Right from (100,100), 130 ticks
+g6/R6-drop-32px-release-all-air | 130 | (100, 100) | 1:RT 91:- | - | c0-13 r0-59 hb2 | - | kit | as R6-drop-32px, pad 0 from tick 91 (in the air)
+g6/R6-drop-32px-releaseT-air | 130 | (100, 100) | 1:RT 91:R | - | c0-13 r0-59 hb2 | - | kit | as R6-drop-32px, Triangle released at tick 91 (in the air)
+g6/R6-drop-32px-square-air | 130 | (100, 100) | 1:RT 93:RTS 94:RT | - | c0-13 r0-59 hb2 | - | kit | as R6-drop-32px, Square pressed at tick 93 in the air
+g6/R6-drop-32px | 130 | (100, 100) | 1:RT | - | c0-13 r0-59 hb2 | - | kit | ground 32 px high for x < 336, 0 beyond; Triangle + Right from (100,100), 130 ticks
+g6/R6-drop-64px | 130 | (100, 100) | 1:RT | - | c0-13 r0-59 hb4 | - | kit | ground 64 px high for x < 336, 0 beyond; Triangle + Right from (100,100), 130 ticks
+g6/R6-walk-drop-32px | 150 | (100, 100) | 1:R | - | c0-13 r0-59 hb2 | - | kit | control: walk east (Right only) off the 32 px ledge
+g7/R7-circle-sprint | 100 | (100, 100) | 1:RT 40:RTO 41:RT | - | flat | - | kit | Circle pressed at tick 40 (1 tick) while Sprint, 100 ticks
+g7/R7-circle-windup | 60 | (624, 480) | 1:RT 10:RTO 11:RT | - | flat | - | kit | Circle pressed at tick 10 (1 tick) during the wind-up, 60 ticks
+g7/R7-cross-sprint | 100 | (100, 100) | 1:RT 40:RTX 41:RT | - | flat | - | kit | Cross pressed at tick 40 (1 tick) while Sprint, 100 ticks
+g7/R7-cross-stopsprint | 90 | (100, 100) | 1:RT 41:T 45:TX 46:T | - | flat | - | kit | Right released at 41 (StopSprint), Cross pressed at tick 45, 90 ticks
+g7/R7-cross-windup | 60 | (624, 480) | 1:RT 10:RTX 11:RT | - | flat | - | kit | Cross pressed at tick 10 (1 tick) during the wind-up, 60 ticks
+g7/R7-holy-square-held-windup | 100 | (624, 480) | 1:RT 5:RTS | - | flat | - | holy | inv holy; Triangle + Right from 1; Square held from tick 5 (wind-up), 100 ticks
+g7/R7-holy-square-held | 160 | (100, 100) | 1:RT 30:RTS | - | flat | - | holy | Holy Sword Elnard owned and equipped (inv holy); Triangle + Right from 1, Square held from tick 30 to 160
+g7/R7-run-into-beannoid | 90 | (100, 96) | 1:RT | - | flat | [[20, 11, 0]] | kit | no attack: Triangle + Right from (100,96) into the Beannoid, 90 ticks
+g7/R7-square-sprint-held | 140 | (100, 100) | 1:RT 40:RTS | - | flat | - | kit | Square held from tick 40 to the end (Triangle + Right kept), 140 ticks
+g7/R7-square-sprint | 100 | (100, 100) | 1:RT 40:RTS 41:RT | - | flat | - | kit | Square pressed at tick 40 (1 tick) while Sprint, 100 ticks
+g7/R7-square-stopsprint | 90 | (100, 100) | 1:RT 41:T 45:TS 46:T | - | flat | - | kit | Right released at 41 (StopSprint), Square pressed at tick 45, 90 ticks
+g7/R7-square-windup-held | 90 | (624, 480) | 1:RT 10:RTS | - | flat | - | kit | as above, Square held from tick 10 to the end
+g7/R7-square-windup | 90 | (624, 480) | 1:RT 10:RTS 11:RT | - | flat | - | kit | Triangle + Right from 1; Square pressed at tick 10 (1 tick) during the wind-up, 90 ticks
+g7/tackle/R7-tackle-s30 | 96 | (100, 96) | 1:RT 30:RTS 31:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 30, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s32 | 96 | (100, 96) | 1:RT 32:RTS 33:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 32, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s34 | 96 | (100, 96) | 1:RT 34:RTS 35:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 34, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s36 | 96 | (100, 96) | 1:RT 36:RTS 37:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 36, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s38 | 96 | (100, 96) | 1:RT 38:RTS 39:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 38, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s40 | 96 | (100, 96) | 1:RT 40:RTS 41:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 40, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s42 | 96 | (100, 96) | 1:RT 42:RTS 43:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 42, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s44 | 96 | (100, 96) | 1:RT 44:RTS 45:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 44, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s46 | 96 | (100, 96) | 1:RT 46:RTS 47:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 46, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s48 | 96 | (100, 96) | 1:RT 48:RTS 49:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 48, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s50 | 96 | (100, 96) | 1:RT 50:RTS 51:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 50, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s52 | 96 | (100, 96) | 1:RT 52:RTS 53:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 52, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s54 | 96 | (100, 96) | 1:RT 54:RTS 55:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 54, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s56 | 96 | (100, 96) | 1:RT 56:RTS 57:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 56, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s58 | 96 | (100, 96) | 1:RT 58:RTS 59:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 58, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s60 | 96 | (100, 96) | 1:RT 60:RTS 61:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 60, Beannoid (20,11) inert
+g7/tackle/R7-tackle-s62 | 96 | (100, 96) | 1:RT 62:RTS 63:RT | - | flat | [[20, 11, 0]] | kit | hero (100,96) Triangle + Right, Square pressed at tick 62, Beannoid (20,11) inert
+g8/R8-cliff-no-ladder | 90 | (100, 392) | 1:UT | - | c0-51 r0-19 hb10; c0-51 r20-59 hb2 | - | kit | control: same without the slope-6 strip (bounce expected)
+g8/R8-ladder-sprint-UR | 60 | (100, 392) | 1:URT | - | c0-51 r0-19 hb10; c0-51 r20-59 hb2; c2-20 r20-20 wk00 gp0C | - | kit | Triangle + Up + Right (diagonal, no sprint start): wind-up only
+g8/R8-ladder-sprint-faceE | 70 | (100, 392) | 1:UT | - | c0-51 r0-19 hb10; c0-51 r20-59 hb2; c2-20 r20-20 wk00 gp0C | - | kit | hero facing east, Triangle + Up from tick 1 (TargetDirection written by the wind-up), 70 ticks
+g8/R8-ladder-sprint | 70 | (100, 392) | 1:UT | - | c0-51 r0-19 hb10; c0-51 r20-59 hb2; c2-20 r20-20 wk00 gp0C | - | kit | Triangle + Up from (100,392) facing north, 70 ticks
+g8/R8-ladder-walk | 120 | (100, 392) | 1:U | - | c0-51 r0-19 hb10; c0-51 r20-59 hb2; c2-20 r20-20 wk00 gp0C | - | kit | control: walk (Up only) into the ladder from (100,392), 120 ticks
+g9/R9-allwater-start-R | 60 | (624, 480) | 1:R | - | c0-51 r0-59 wk00 gp08 | - | b1b | all cells deep water, swim boots; Right only (swim), 60 ticks
+g9/R9-allwater-start-T-R | 80 | (624, 480) | 1:RT | - | c0-51 r0-59 wk00 gp08 | - | b1b | all cells deep water, swim boots; hero starts in the water, Triangle + Right from tick 1, 80 ticks
+g9/R9-allwater-start-T | 40 | (624, 480) | 1:T | - | c0-51 r0-59 wk00 gp08 | - | b1b | all cells deep water, swim boots; Triangle only, 40 ticks
+g9/R9-deepwater-boots2 | 130 | (100, 100) | 1:RT | - | c14-51 r0-59 wk00 gp08 | - | b1b | deep water (word 0x0800, slope 4) from col 14 (x 336) at the same height; swim boots 0x1B (level 2); Triangle + Right from (100,100), 130 ticks
+g9/R9-deepwater-noboots | 110 | (100, 100) | 1:RT | - | c14-51 r0-59 wk00 gp08 | - | kit | control: same water, kit inventory (boots level 0): the water is a wall for the hero
+g9/R9-flat-reference | 80 | (100, 100) | 1:RT | - | flat | - | kit | reference: flat dry ground, same pad as R9-shallow-water
+g9/R9-ice | 120 | (100, 100) | 1:RT 61:- | - | c0-51 r0-59 wk20 | - | kit | whole field walkability 0x20 (ice, VramOR 0x20); Triangle + Right 1-60 then released, 120 ticks
+g9/R9-shallow-water-boots1 | 80 | (100, 100) | 1:RT | - | c0-51 r0-59 wk18 | - | b1a | as above with boots 0x1A (level 1)
+g9/R9-shallow-water | 80 | (100, 100) | 1:RT | - | c0-51 r0-59 wk18 | - | kit | whole field walkability 0x18 (shallow water, VramOR 0x18), kit; Triangle + Right, 80 ticks

@@ -1,0 +1,38 @@
+== G7 attack during a run ==
+timelines:
+  sq-windup        0:00 1-9:29 10-30:10 31:00 32-56:29 57-90:03
+  sq-windup-hold   0:00 1-9:29 10-30:10 31:00 32-56:29 57:03 58-89:04 90:00
+  sq-sprint        0:00 1-25:29 26-39:03 40-71:04 72:00 73-97:29 98-100:03
+  sq-sprint-hold   0:00 1-25:29 26-39:03 40-71:04 72:00 73-97:29 98:03 99-130:04 131:00 132-140:29
+  cro-sprint       0:00 1-25:29 26-39:03 40-71:04 72:00 73-97:29 98-100:03
+  cir-sprint       0:00 1-25:29 26-39:03 40-71:04 72:00 73-97:29 98-100:03
+  cir-windup       0:00 1-25:29 26-60:03
+  cro-windup       0:00 1-25:29 26-60:03
+  sq-stop          0:00 1-25:29 26-40:03 41-56:2A 57:00 58-90:29
+  cro-stop         0:00 1-25:29 26-40:03 41-56:2A 57:00 58-90:29
+Tackle 0x04 (Square at 40, no target): starts tick 40, ends tick 71 (length 32), ForceX at start 254016, decay 4032/tick, distance 93.52 px, sounds [(40, 83), (72, 0)], dust []; then states 70-71:04 72:00 73-97:29 98-100:03
+Tackle animFlags B4 = 0x6, cur_attack = 0x80144211, frame_box = 0x801A4160
+Square in the wind-up (tick 10): anim 10 at tick 10, sword swing length 21 ticks, then 9:29 10-30:10 31:00 32-56:29 57-70:03
+Tackle into an inert Beannoid of map 14 (target at (252,96), hero from (100,96), Triangle + Right, Square 1 tick at tick s):
+   s=30  tackle tick 30..61  tackle hit on target at tick None (3 sparks: 0)  hero hurt (0x31) at tick None  target hp end 9  experiments 0
+   s=32  tackle tick 32..63  tackle hit on target at tick None (3 sparks: 0)  hero hurt (0x31) at tick None  target hp end 9  experiments 0
+   s=34  tackle tick 34..65  tackle hit on target at tick None (3 sparks: 0)  hero hurt (0x31) at tick None  target hp end 9  experiments 0
+   s=36  tackle tick 36..67  tackle hit on target at tick 66 (3 sparks: 3)  hero hurt (0x31) at tick None  target hp end 9  experiments 1
+   s=38  tackle tick 38..68  tackle hit on target at tick 64 (3 sparks: 3)  hero hurt (0x31) at tick 69  target hp end 9  experiments 1
+   s=40  tackle tick 40..66  tackle hit on target at tick 63 (3 sparks: 3)  hero hurt (0x31) at tick 67  target hp end 9  experiments 1
+   s=42  tackle tick 42..65  tackle hit on target at tick 62 (3 sparks: 3)  hero hurt (0x31) at tick 66  target hp end 9  experiments 1
+   s=44  tackle tick 44..64  tackle hit on target at tick 61 (3 sparks: 3)  hero hurt (0x31) at tick 65  target hp end 9  experiments 1
+   s=46  tackle tick 46..63  tackle hit on target at tick 60 (3 sparks: 3)  hero hurt (0x31) at tick 64  target hp end 9  experiments 1
+   s=48  tackle tick 48..62  tackle hit on target at tick 59 (3 sparks: 3)  hero hurt (0x31) at tick 63  target hp end 9  experiments 1
+   s=50  tackle tick 50..61  tackle hit on target at tick 59 (3 sparks: 3)  hero hurt (0x31) at tick 62  target hp end 9  experiments 1
+   s=52  tackle tick 52..61  tackle hit on target at tick 60 (3 sparks: 3)  hero hurt (0x31) at tick 62  target hp end 9  experiments 1
+   s=54  tackle tick 54..61  tackle hit on target at tick 61 (3 sparks: 6)  hero hurt (0x31) at tick 62  target hp end 9  experiments 1
+   s=56  tackle tick 56..61  tackle hit on target at tick 58 (3 sparks: 3)  hero hurt (0x31) at tick 62  target hp end 9  experiments 1
+   s=58  tackle tick 58..60  tackle hit on target at tick 58 (3 sparks: 3)  hero hurt (0x31) at tick 61  target hp end 9  experiments 1
+   s=60  tackle tick 60..60  tackle hit on target at tick 60 (3 sparks: 6)  hero hurt (0x31) at tick 61  target hp end 9  experiments 1
+   s=62  tackle tick None..None  tackle hit on target at tick None (3 sparks: 0)  hero hurt (0x31) at tick 61  target hp end 9  experiments 0
+   experiment at s=44: tick 62 slot 1: attack attr 133 power 2, target response 16, latched anim 4; damage live/empty/filled = 3/2/3, returns 0
+run into the Beannoid without attacking: timeline 0:00 1-25:29 26-60:03 61-64:31 65-75:1C 76:00 77-90:29; hero touched at tick 60 (target hit counter), hurt 0x31 at 61, hero HP 10 -> 9
+holy sword, Square held from 30: timeline 0:00 1-25:29 26-29:03 30-61:04 62:00 63-87:29 88:03 89-120:04 121:00 122-146:29 147:03 148-160:04; charge counter at 30/45/60/90/120/159: [1, 16, 31, 60, 60, 60]; wptr/aura at 159: 0/801e8000
+holy sword, Square held from 5 (wind-up): timeline 0:00 1-4:29 5-25:49 26:00 27-51:29 52:03 53-84:04 85:00 86-100:29; charge counter at 5/10/30/60/99: [1, 0, 4, 34, 60]
+

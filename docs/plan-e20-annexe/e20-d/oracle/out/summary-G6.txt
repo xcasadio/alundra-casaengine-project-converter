@@ -1,0 +1,27 @@
+== G6 ledge: the ground rises by hb*16 px at cols 0-13 (x < 336); run east from (100,100) over the edge ==
+timelines:
+  drop1        0:00 1-25:29 26-89:03 90:2D 91-97:2C 98-122:29 123-130:03
+  drop2        0:00 1-25:29 26-89:03 90:2D 91-100:2C 101-125:29 126-130:03
+  drop4        0:00 1-25:29 26-89:03 90:2D 91-105:2C 106-130:29
+  drop2-relT   0:00 1-25:29 26-89:03 90:2D 91-100:2C 101-130:01
+  drop2-relall 0:00 1-25:29 26-89:03 90-100:2D 101-130:00
+  drop2-sq     0:00 1-25:29 26-89:03 90:2D 91-92:2C 93-100:14 101:00 102-126:29 127-130:03
+  walk-drop2   0:00 1-102:01 103-113:2C 114-150:01
+ground contact timing at the ledge (edge x = 336 px; box = pos-10 .. pos+10): per tick pos_x, on_ground, anim_cur
+   tick 82 pos_x 318.53 ground 1 terrain 32.00 anim 03 ForceX 258048 ForceZ 0
+   tick 83 pos_x 322.47 ground 1 terrain 32.00 anim 03 ForceX 258048 ForceZ 0
+   tick 84 pos_x 326.41 ground 1 terrain 32.00 anim 03 ForceX 258048 ForceZ 0
+   tick 85 pos_x 330.34 ground 1 terrain 32.00 anim 03 ForceX 258048 ForceZ 0
+   tick 86 pos_x 334.28 ground 1 terrain 32.00 anim 03 ForceX 258048 ForceZ 0
+   tick 87 pos_x 338.22 ground 1 terrain 32.00 anim 03 ForceX 258048 ForceZ 0
+   tick 88 pos_x 342.16 ground 1 terrain 32.00 anim 03 ForceX 258048 ForceZ 0
+   tick 89 pos_x 346.09 ground 0 terrain 0.00 anim 03 ForceX 258048 ForceZ 0
+   tick 90 pos_x 348.06 ground 0 terrain 0.00 anim 2D ForceX 129024 ForceZ -32768
+   tick 91 pos_x 350.20 ground 0 terrain 0.00 anim 2C ForceX 139776 ForceZ -65536
+   tick 92 pos_x 352.49 ground 0 terrain 0.00 anim 2C ForceX 150528 ForceZ -98304
+   tick 93 pos_x 354.79 ground 0 terrain 0.00 anim 2C ForceX 150528 ForceZ -131072
+   tick 94 pos_x 357.09 ground 0 terrain 0.00 anim 2C ForceX 150528 ForceZ -163840
+first tick with on_ground 0: 89; first tick in 0x2D: 90 (gap 1 tick)
+landing: first tick on_ground 1 after the fall: 100; next tick anim 29
+air ForceX: 258048 at the last ground tick, then [258048, 129024, 139776, 150528, 150528, 150528]
+

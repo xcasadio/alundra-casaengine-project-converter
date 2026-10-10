@@ -1,0 +1,1 @@
+group G2: cross-check ON; runs compared 2 (of which with a dash override 0), ticks compared 202, mismatches 0 [], uninitialised-read sites over both engines 0

@@ -1,0 +1,5 @@
+run scenario executed first: 40 ticks, anim timeline 0-0:00 1-19:29 20-40:10
+S-A.trace.json md5 1ae0cc02dca03eababc8152b3d2038a1, unmodified D1 tools 1ae0cc02dca03eababc8152b3d2038a1: EQUAL
+S-B.trace.json md5 975c342a6a1c54607d48652a18d7d152, unmodified D1 tools 975c342a6a1c54607d48652a18d7d152: EQUAL
+compare.main exit code 0 (0 = 216 values per scenario equal to the annex)
+GATE PASS

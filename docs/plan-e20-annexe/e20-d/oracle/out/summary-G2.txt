@@ -1,0 +1,4 @@
+== G2 keep running ==
+R2-long: timeline 0:00 1-25:29 26-120:03; ForceX plateau 258048; distance per tick 3.9375 px; step sounds 26:13 33:12 41:12 49:12 57:12 65:12 73:12 81:12 89:12 97:12 105:12 113:12; dust ticks [29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77, 81, 85, 89, 93, 97, 101, 105, 109, 113, 117]
+R2-mapedge: timeline 0:00 1-25:29 26-62:03 63-73:3E 74:01 75-79:2C 80:29; final x 1213.91; ForceAdjusted first tick 62
+

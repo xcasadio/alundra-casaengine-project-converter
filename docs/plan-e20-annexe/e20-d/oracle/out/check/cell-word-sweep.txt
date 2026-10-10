@@ -1,0 +1,16 @@
+word 0x0001 -> final x 133.00  slope 0  vor 0x0 anim 01
+word 0x0002 -> final x 196.28  slope 0  vor 0x2 anim 01
+word 0x0004 -> final x 196.28  slope 0  vor 0x4 anim 01
+word 0x0008 -> final x 165.81  slope 0  vor 0x8 anim 01
+word 0x0010 -> final x 196.28  slope 0  vor 0x10 anim 01
+word 0x0020 -> final x 196.28  slope 0  vor 0x20 anim 01
+word 0x0040 -> final x 133.00  slope 0  vor 0x0 anim 01
+word 0x0080 -> final x 122.73  slope 0  vor 0x0 anim 01
+word 0x0100 -> final x 122.73  slope 0  vor 0x0 anim 01
+word 0x0200 -> final x 196.28  slope 0  vor 0x200 anim 01
+word 0x0400 -> final x 196.28  slope 0  vor 0x400 anim 01
+word 0x0800 -> final x 133.00  slope 0  vor 0x0 anim 01
+word 0x1000 -> final x 196.28  slope 0  vor 0x1000 anim 01
+word 0x2000 -> final x 196.28  slope 0  vor 0x2000 anim 01
+word 0x4000 -> final x 196.28  slope 0  vor 0x4000 anim 01
+word 0x8000 -> final x 196.28  slope 0  vor 0x8000 anim 01

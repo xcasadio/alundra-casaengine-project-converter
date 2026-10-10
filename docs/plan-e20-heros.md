@@ -2277,7 +2277,7 @@ Le test « Triangle seul donne Idle » s'inverse.
 
 #### E20.d1 — Tâches
 
-- ⏳ **T0 — Oracle dans l'annexe (commit docs).**
+- ✅ **T0 — Oracle dans l'annexe (commit docs).**
   - Copier `base/` et `out/` du dossier de `run-oracle` (`C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20d/run-oracle/`) dans
     `docs/plan-e20-annexe/e20-d/oracle/`, sans `work/` ni `d1/`.
   - Rendre `tools/compare.py` identique à `e20-c2/oracle/tools/compare.py`.

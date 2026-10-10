@@ -1,0 +1,2 @@
+coverage files 10; executed distinct instructions: 4935; executed loads checked: 942; loaded register read by the next instruction: 0
+VERDICT: no executed load is followed by a use of its register: ignoring the load delay slot does not change the result

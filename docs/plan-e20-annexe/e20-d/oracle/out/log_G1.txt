@@ -1,0 +1,56 @@
+== G1 start of a run from idle (hero at rest, facing east at (624,480), flat field, kit inventory) ==
+state timelines (anim_cur, ticks first-last:state hex):
+  U            0:00 1-25:29 26-64:03
+  R            0:00 1-25:29 26-64:03
+  D            0:00 1-25:29 26-64:03
+  L            0:00 1-25:29 26-64:03
+  UR           0:00 1-64:29
+  DR           0:00 1-64:29
+  DL           0:00 1-64:29
+  UL           0:00 1-64:29
+  T            0:00 1-64:29
+  LR           0:00 1-64:29
+  late10       0:00 1-25:29 26-64:03
+  late24       0:00 1-25:29 26-64:03
+  late25       0:00 1-25:29 26-64:03
+  late30       0:00 1-29:29 30-64:03
+  late40       0:00 1-39:29 40-64:03
+  dir-then-T   0:00 1-19:01 20-44:29 45-64:03
+  jumpT        0:00 1:02 2-21:2C 22-46:29 47-80:03
+  diagcard     0:00 1-29:29 30-64:03
+  diagcard2    0:00 1-25:29 26-64:03
+  rel-windup-dir 0:00 1-9:29 10:00 11-64:01
+  rel-windup-none 0:00 1-9:29 10-64:00
+  turn-windup  0:00 1-34:29 35-64:03
+  turn-windup20 0:00 1-44:29 45-80:03
+  diag-then-up 0:00 1-29:29 30-64:03
+  diag-then-left 0:00 1-29:29 30-64:03
+  Tonly-then-up 0:00 1-25:29 26-64:03
+sprint start (first tick anim_cur == 3), wind-up length, dir_target / facing at tick 30, plateau forces, sounds in 1..64:
+  U            start=26  dir_target@30=10 facing@30=1  fX/fY@60=0/-172032  snd=9:12 17:12 25:12 26:13 33:12 41:12 49:12 57:12
+  R            start=26  dir_target@30=18 facing@30=3  fX/fY@60=258048/0  snd=9:12 17:12 25:12 26:13 33:12 41:12 49:12 57:12
+  D            start=26  dir_target@30=00 facing@30=0  fX/fY@60=0/172032  snd=9:12 17:12 25:12 26:13 33:12 41:12 49:12 57:12
+  L            start=26  dir_target@30=08 facing@30=2  fX/fY@60=-258048/0  snd=9:12 17:12 25:12 26:13 33:12 41:12 49:12 57:12
+  UR           start=None  dir_target@30=14 facing@30=3  fX/fY@60=0/0  snd=9:12 17:12 25:12 33:12 41:12 49:12 57:12
+  DR           start=None  dir_target@30=1C facing@30=3  fX/fY@60=0/0  snd=9:12 17:12 25:12 33:12 41:12 49:12 57:12
+  DL           start=None  dir_target@30=04 facing@30=2  fX/fY@60=0/0  snd=9:12 17:12 25:12 33:12 41:12 49:12 57:12
+  UL           start=None  dir_target@30=0C facing@30=2  fX/fY@60=0/0  snd=9:12 17:12 25:12 33:12 41:12 49:12 57:12
+  T            start=None  dir_target@30=18 facing@30=3  fX/fY@60=0/0  snd=9:12 17:12 25:12 33:12 41:12 49:12 57:12
+  LR           start=None  dir_target@30=18 facing@30=3  fX/fY@60=0/0  snd=9:12 17:12 25:12 33:12 41:12 49:12 57:12
+  late10       start=26  dir_target@30=18 facing@30=3  fX/fY@60=258048/0  snd=9:12 17:12 25:12 26:13 33:12 41:12 49:12 57:12
+  late24       start=26  dir_target@30=18 facing@30=3  fX/fY@60=258048/0  snd=9:12 17:12 25:12 26:13 33:12 41:12 49:12 57:12
+  late25       start=26  dir_target@30=18 facing@30=3  fX/fY@60=258048/0  snd=9:12 17:12 25:12 26:13 33:12 41:12 49:12 57:12
+  late30       start=30  dir_target@30=18 facing@30=3  fX/fY@60=258048/0  snd=9:12 17:12 25:12 30:13 33:12 41:12 49:12 57:12
+  late40       start=40  dir_target@30=18 facing@30=3  fX/fY@60=258048/0  snd=9:12 17:12 25:12 33:12 40:13 41:12 49:12 57:12
+  dir-then-T   start=45  dir_target@30=18 facing@30=3  fX/fY@60=258048/0  snd=25:12 33:12 41:12 45:13 49:12 57:12
+  jumpT        start=47  dir_target@30=18 facing@30=3  fX/fY@60=258048/0  snd=1:10 22:11 25:12 33:12 41:12 47:13 49:12 57:12
+  diagcard     start=30  dir_target@30=18 facing@30=3  fX/fY@60=258048/0  snd=9:12 17:12 25:12 30:13 33:12 41:12 49:12 57:12
+  diagcard2    start=26  dir_target@30=18 facing@30=3  fX/fY@60=258048/0  snd=9:12 17:12 25:12 26:13 33:12 41:12 49:12 57:12
+  rel-windup-dir start=None  dir_target@30=18 facing@30=3  fX/fY@60=159744/0  snd=9:12
+  rel-windup-none start=None  dir_target@30=18 facing@30=3  fX/fY@60=0/0  snd=9:12
+  turn-windup  start=35  dir_target@30=10 facing@30=1  fX/fY@60=0/-172032  snd=9:12 17:12 25:12 33:12 35:13 41:12 49:12 57:12
+  turn-windup20 start=45  dir_target@30=10 facing@30=1  fX/fY@60=0/-172032  snd=9:12 17:12 25:12 33:12 41:12 45:13 49:12 57:12
+  diag-then-up start=30  dir_target@30=10 facing@30=1  fX/fY@60=0/-172032  snd=9:12 17:12 25:12 30:13 33:12 41:12 49:12 57:12
+  diag-then-left start=30  dir_target@30=08 facing@30=2  fX/fY@60=-258048/0  snd=9:12 17:12 25:12 30:13 33:12 41:12 49:12 57:12
+  Tonly-then-up start=26  dir_target@30=18 facing@30=3  fX/fY@60=258048/0  snd=9:12 17:12 25:12 26:13 33:12 41:12 49:12 57:12
+

@@ -1,0 +1,97 @@
+"""rhazards.py - the load-delay check of tools/hazards.py (same code, copied below) over the UNION of the PCs executed by every run of the run-oracle (out/check/cov-*.json): no executed load
+may be followed by a use of its register, so that ignoring the MIPS-I load delay slot (both interpreters do) is exact for everything these scenarios run.
+usage: python -B rhazards.py"""
+import glob
+import json
+import os
+import sys
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, 'tools'))
+import lib
+
+
+def main():
+    outdir = os.path.join(HERE, '..', 'out', 'check')
+    cov = set()
+    files = sorted(glob.glob(os.path.join(outdir, 'cov-*.json')))
+    for f in files:
+        cov |= set(json.load(open(f)))
+    print('coverage files:', len(files), 'distinct PCs:', len(cov))
+    def word(a):
+        return lib.u32(a)
+
+    def reads(w):
+        """register numbers read by the instruction word w (MIPS-I integer subset)"""
+        op = w >> 26
+        rs, rt = (w >> 21) & 31, (w >> 16) & 31
+        if op == 0:
+            fn = w & 63
+            if fn in (0x00, 0x02, 0x03): return {rt}
+            if fn in (0x08, 0x09, 0x11, 0x13): return {rs}
+            if fn in (0x10, 0x12, 0x0C, 0x0D): return set()
+            return {rs, rt}
+        if op == 1: return {rs}
+        if op in (2, 3, 0xF): return set()
+        if op in (4, 5): return {rs, rt}
+        if op in (6, 7): return {rs}
+        if op in (0x22, 0x26): return {rs, rt}                  # lwl / lwr merge the old rt
+        if 0x20 <= op <= 0x26: return {rs}                      # loads
+        if 0x28 <= op <= 0x2E: return {rs, rt}                  # stores
+        return {rs}                                             # immediates
+
+    def is_load(w):
+        return (w >> 26) in (0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26)
+
+    def is_branch(w):
+        op = w >> 26
+        return op in (1, 2, 3, 4, 5, 6, 7) or (op == 0 and (w & 63) in (8, 9))
+
+    def target(a, w):
+        op = w >> 26
+        if op in (1, 4, 5, 6, 7):
+            imm = w & 0xFFFF
+            simm = imm - 0x10000 if imm & 0x8000 else imm
+            return a + 4 + (simm << 2)
+        if op in (2, 3):
+            return ((a + 4) & 0xF0000000) | ((w & 0x3FFFFFF) << 2)
+        return None
+    nloads = 0
+    bad = []
+    for pc in sorted(cov):
+        if not (0x80020000 <= pc < 0x800CA800):
+            continue
+        w = word(pc)
+        if not is_load(w):
+            continue
+        dst = (w >> 16) & 31
+        if dst == 0:
+            continue
+        nloads += 1
+        succ = [pc + 4]
+        pw = word(pc - 4)
+        if is_branch(pw):                                       # the load sits in a delay slot: next executed = branch target or pc + 4
+            t = target(pc - 4, pw)
+            if t is not None:
+                succ.append(t)
+            elif (pw >> 26) == 0:                               # jr / jalr: target unknown statically; the load result must not be $ra-used: flag it
+                succ.append(None)
+        for sx in succ:
+            if sx is None:
+                bad.append((pc, 'load in a jr/jalr delay slot', w, 0, 0))
+                continue
+            nw = word(sx)
+            pair = (w >> 26) == 0x22 and (nw >> 26) == 0x26 and ((nw >> 16) & 31) == dst      # lwl; lwr on the same register: the architecture's unaligned-load idiom, allowed
+            if dst in reads(nw) and not pair:
+                bad.append((pc, 'next uses the loaded register', w, sx, word(sx)))
+    L = ['coverage files %d; executed distinct instructions: %d; executed loads checked: %d; loaded register read by the next instruction: %d' % (len(files), len(cov), nloads, len(bad))]
+    for b in bad:
+        L.append('  HAZARD load %08x: %s (load word %08x, next %08x word %08x)' % b)
+    L.append('VERDICT: ' + ('no executed load is followed by a use of its register: ignoring the load delay slot does not change the result' if not bad else 'HAZARDS FOUND'))
+    open(os.path.join(outdir, 'load-delay-check-run-oracle.txt'), 'w', encoding='ascii').write('\n'.join(L) + '\n')
+    print('\n'.join(L[:6]))
+
+
+
+
+if __name__ == '__main__':
+    main()

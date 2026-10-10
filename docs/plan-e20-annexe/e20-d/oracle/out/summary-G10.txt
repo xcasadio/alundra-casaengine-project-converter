@@ -1,0 +1,72 @@
+== G10 the stick (D-E20-15).  The binary has no analog input: it reads one digital hold word.  What the oracle can model is the rule's EFFECT: the dash lookups g_dashDirections[nibble] (0x80031FD0 in 0x29, 0x800321A0 in 0x2A) read an override nibble chosen by the harness; every other use of the pad keeps the ORed bits ==
+(a) start: Triangle + diagonal pad bits (as the ORed stick bits) from tick 1, override = a cardinal bit or none; hero facing the given way; 50 ticks
+   facing E  pad UR  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 3
+   facing E  pad UR  override V    (nibble 1): sprint start 26, dir_target at start 10, states 20-50: 20-25:29 26-50:03, facing@50 1
+   facing E  pad UR  override H    (nibble 2): sprint start 26, dir_target at start 18, states 20-50: 20-25:29 26-50:03, facing@50 3
+   facing E  pad DR  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 3
+   facing E  pad DR  override V    (nibble 4): sprint start 26, dir_target at start 00, states 20-50: 20-25:29 26-50:03, facing@50 0
+   facing E  pad DR  override H    (nibble 2): sprint start 26, dir_target at start 18, states 20-50: 20-25:29 26-50:03, facing@50 3
+   facing E  pad DL  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 2
+   facing E  pad DL  override V    (nibble 4): sprint start 26, dir_target at start 00, states 20-50: 20-25:29 26-50:03, facing@50 0
+   facing E  pad DL  override H    (nibble 8): sprint start 26, dir_target at start 08, states 20-50: 20-25:29 26-50:03, facing@50 2
+   facing E  pad UL  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 2
+   facing E  pad UL  override V    (nibble 1): sprint start 26, dir_target at start 10, states 20-50: 20-25:29 26-50:03, facing@50 1
+   facing E  pad UL  override H    (nibble 8): sprint start 26, dir_target at start 08, states 20-50: 20-25:29 26-50:03, facing@50 2
+   facing N  pad UR  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 1
+   facing N  pad UR  override V    (nibble 1): sprint start 26, dir_target at start 10, states 20-50: 20-25:29 26-50:03, facing@50 1
+   facing N  pad UR  override H    (nibble 2): sprint start 26, dir_target at start 18, states 20-50: 20-25:29 26-50:03, facing@50 3
+   facing N  pad DR  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 0
+   facing N  pad DR  override V    (nibble 4): sprint start 26, dir_target at start 00, states 20-50: 20-25:29 26-50:03, facing@50 0
+   facing N  pad DR  override H    (nibble 2): sprint start 26, dir_target at start 18, states 20-50: 20-25:29 26-50:03, facing@50 3
+   facing N  pad DL  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 0
+   facing N  pad DL  override V    (nibble 4): sprint start 26, dir_target at start 00, states 20-50: 20-25:29 26-50:03, facing@50 0
+   facing N  pad DL  override H    (nibble 8): sprint start 26, dir_target at start 08, states 20-50: 20-25:29 26-50:03, facing@50 2
+   facing N  pad UL  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 1
+   facing N  pad UL  override V    (nibble 1): sprint start 26, dir_target at start 10, states 20-50: 20-25:29 26-50:03, facing@50 1
+   facing N  pad UL  override H    (nibble 8): sprint start 26, dir_target at start 08, states 20-50: 20-25:29 26-50:03, facing@50 2
+   facing S  pad UR  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 1
+   facing S  pad UR  override V    (nibble 1): sprint start 26, dir_target at start 10, states 20-50: 20-25:29 26-50:03, facing@50 1
+   facing S  pad UR  override H    (nibble 2): sprint start 26, dir_target at start 18, states 20-50: 20-25:29 26-50:03, facing@50 3
+   facing S  pad DR  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 0
+   facing S  pad DR  override V    (nibble 4): sprint start 26, dir_target at start 00, states 20-50: 20-25:29 26-50:03, facing@50 0
+   facing S  pad DR  override H    (nibble 2): sprint start 26, dir_target at start 18, states 20-50: 20-25:29 26-50:03, facing@50 3
+   facing S  pad DL  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 0
+   facing S  pad DL  override V    (nibble 4): sprint start 26, dir_target at start 00, states 20-50: 20-25:29 26-50:03, facing@50 0
+   facing S  pad DL  override H    (nibble 8): sprint start 26, dir_target at start 08, states 20-50: 20-25:29 26-50:03, facing@50 2
+   facing S  pad UL  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 1
+   facing S  pad UL  override V    (nibble 1): sprint start 26, dir_target at start 10, states 20-50: 20-25:29 26-50:03, facing@50 1
+   facing S  pad UL  override H    (nibble 8): sprint start 26, dir_target at start 08, states 20-50: 20-25:29 26-50:03, facing@50 2
+   facing W  pad UR  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 3
+   facing W  pad UR  override V    (nibble 1): sprint start 26, dir_target at start 10, states 20-50: 20-25:29 26-50:03, facing@50 1
+   facing W  pad UR  override H    (nibble 2): sprint start 26, dir_target at start 18, states 20-50: 20-25:29 26-50:03, facing@50 3
+   facing W  pad DR  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 3
+   facing W  pad DR  override V    (nibble 4): sprint start 26, dir_target at start 00, states 20-50: 20-25:29 26-50:03, facing@50 0
+   facing W  pad DR  override H    (nibble 2): sprint start 26, dir_target at start 18, states 20-50: 20-25:29 26-50:03, facing@50 3
+   facing W  pad DL  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 2
+   facing W  pad DL  override V    (nibble 4): sprint start 26, dir_target at start 00, states 20-50: 20-25:29 26-50:03, facing@50 0
+   facing W  pad DL  override H    (nibble 8): sprint start 26, dir_target at start 08, states 20-50: 20-25:29 26-50:03, facing@50 2
+   facing W  pad UL  override none (nibble None): sprint start None, dir_target at start -, states 20-50: 20-50:29, facing@50 2
+   facing W  pad UL  override V    (nibble 1): sprint start 26, dir_target at start 10, states 20-50: 20-25:29 26-50:03, facing@50 1
+   facing W  pad UL  override H    (nibble 8): sprint start 26, dir_target at start 08, states 20-50: 20-25:29 26-50:03, facing@50 2
+(b) resume: Triangle + Right 1-40, Triangle only 41..40+k, then the diagonal Up+Right from 41+k with override Right (nibble 2) or none; 60 ticks after
+   k=5  override none: resume tick None (re-press at 46) dir_target - states 41-56:2A 57:00 58-75:29
+   k=5  override H   : resume tick None (re-press at 46) dir_target - states 41-56:2A 57:00 58-75:29
+   k=5  override V   : resume tick None (re-press at 46) dir_target - states 41-56:2A 57:00 58-75:29
+   k=10 override none: resume tick None (re-press at 51) dir_target - states 41-56:2A 57:00 58-80:29
+   k=10 override H   : resume tick 51 (re-press at 51) dir_target 18 states 41-50:2A 51-80:03
+   k=10 override V   : resume tick 51 (re-press at 51) dir_target 10 states 41-50:2A 51-80:03
+   k=11 override none: resume tick None (re-press at 52) dir_target - states 41-56:2A 57:00 58-81:29
+   k=11 override H   : resume tick 52 (re-press at 52) dir_target 18 states 41-51:2A 52-81:03
+   k=11 override V   : resume tick 52 (re-press at 52) dir_target 10 states 41-51:2A 52-81:03
+   k=12 override none: resume tick None (re-press at 53) dir_target - states 41-56:2A 57:00 58-82:29
+   k=12 override H   : resume tick 53 (re-press at 53) dir_target 18 states 41-52:2A 53-82:03
+   k=12 override V   : resume tick 53 (re-press at 53) dir_target 10 states 41-52:2A 53-82:03
+   k=16 override none: resume tick None (re-press at 57) dir_target - states 41-56:2A 57:00 58-86:29
+   k=16 override H   : resume tick 57 (re-press at 57) dir_target 18 states 41-56:2A 57-86:03
+   k=16 override V   : resume tick 57 (re-press at 57) dir_target 10 states 41-56:2A 57-86:03
+(c) the rule applied to a stick sweep (pure Python on the plan's text; radius 1.0 and 0.75; eps 1/16; hero facing East / North): angle -> bits, override, kind
+   radius 1.00 facing axis H: 0-30 deg bits 2 ov None cardinal-or-none; 31-42 deg bits 3 ov 2 H; 43-47 deg bits 3 ov 2 tie->facing H; 48-60 deg bits 3 ov 1 V; 61-120 deg bits 1 ov None cardinal-or-none; 121-132 deg bits 9 ov 1 V; 133-137 deg bits 9 ov 8 tie->facing H; 138-149 deg bits 9 ov 8 H; 150-209 deg bits 8 ov None cardinal-or-none; 210-222 deg bits C ov 8 H; 223-227 deg bits C ov 8 tie->facing H; 228-240 deg bits C ov 4 V; 241-299 deg bits 4 ov None cardinal-or-none; 300-312 deg bits 6 ov 4 V; 313-317 deg bits 6 ov 2 tie->facing H; 318-330 deg bits 6 ov 2 H; 331-359 deg bits 2 ov None cardinal-or-none
+   radius 1.00 facing axis V: 0-30 deg bits 2 ov None cardinal-or-none; 31-42 deg bits 3 ov 2 H; 43-47 deg bits 3 ov 1 tie->facing V; 48-60 deg bits 3 ov 1 V; 61-120 deg bits 1 ov None cardinal-or-none; 121-132 deg bits 9 ov 1 V; 133-137 deg bits 9 ov 1 tie->facing V; 138-149 deg bits 9 ov 8 H; 150-209 deg bits 8 ov None cardinal-or-none; 210-222 deg bits C ov 8 H; 223-227 deg bits C ov 4 tie->facing V; 228-240 deg bits C ov 4 V; 241-299 deg bits 4 ov None cardinal-or-none; 300-312 deg bits 6 ov 4 V; 313-317 deg bits 6 ov 4 tie->facing V; 318-330 deg bits 6 ov 2 H; 331-359 deg bits 2 ov None cardinal-or-none
+   radius 0.75 facing axis H: 0-41 deg bits 2 ov None cardinal-or-none; 42-48 deg bits 3 ov 2 tie->facing H; 49-131 deg bits 1 ov None cardinal-or-none; 132-138 deg bits 9 ov 8 tie->facing H; 139-221 deg bits 8 ov None cardinal-or-none; 222-228 deg bits C ov 8 tie->facing H; 229-311 deg bits 4 ov None cardinal-or-none; 312-318 deg bits 6 ov 2 tie->facing H; 319-359 deg bits 2 ov None cardinal-or-none
+   radius 0.75 facing axis V: 0-41 deg bits 2 ov None cardinal-or-none; 42-48 deg bits 3 ov 1 tie->facing V; 49-131 deg bits 1 ov None cardinal-or-none; 132-138 deg bits 9 ov 1 tie->facing V; 139-221 deg bits 8 ov None cardinal-or-none; 222-228 deg bits C ov 4 tie->facing V; 229-311 deg bits 4 ov None cardinal-or-none; 312-318 deg bits 6 ov 4 tie->facing V; 319-359 deg bits 2 ov None cardinal-or-none
+

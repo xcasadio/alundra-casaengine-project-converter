@@ -1,0 +1,29 @@
+# mutation tests of the run oracle (one-word patches of the emulated binary; expected change written in rmut.py before the run)
+PASS M1 resume window threshold 11 -> 13
+       patch: 0x80032190: 2842000B -> 2842000D
+       expected: re-press at counter 11 no longer resumes at tick 51 (the fresh wind-up Sprint comes later), re-press at counter 13 still resumes at 53
+       observed: k=10 resumes at tick 51 -> 83; k=12 resumes at tick 53 -> 53
+PASS M2 cone row east: 0x14 -> 0x15
+       patch: 0x80022D10: 00000014 -> 00000015
+       expected: Up+Right (0x14) leaves the cone: StopSprint at tick 41
+       observed: Up+Right while running east: StopSprint first tick None -> 41
+PASS M3a tail test Triangle -> Circle only (the 0x29 handler still tests Triangle)
+       patch: 0x80031F1C: 30420010 -> 30420020
+       expected: baseline: Circle does nothing, Right walks (Moving 01); patched: 0x29 and Idle alternate every tick, never Sprint
+       observed: Circle + Right, anim_cur ticks 1-8: ['01', '01', '01', '01', '01', '01', '01', '01'] -> ['29', '00', '29', '00', '29', '00', '29', '00']
+PASS M3b both Triangle tests (0x80031F1C and 0x80031FB0) -> Circle
+       patch: 0x80031F1C: 30420010 -> 30420020, 0x80031FB0: 30420010 -> 30420020
+       expected: Triangle no longer starts the run, Circle does (sprint at 26)
+       observed: Triangle: sprint at 26 -> None; Circle: sprint at None -> 26
+PASS M4 sprint dash mask 0xE0 -> 0xC0
+       patch: 0x80032104: 304200E0 -> 304200C0
+       expected: Circle (0x20) no longer starts the Tackle
+       observed: Circle during Sprint: Tackle at tick 40 -> None
+PASS M5 sprint wall test +0x13C -> +0x140
+       patch: 0x80032018: 8E02013C -> 8E020140
+       expected: the bounce happens at the first Sprint tick instead of at the wall (tick 87)
+       observed: bounce 0x3E first tick 87 -> 27
+PASS C1 control: first word of the death branch (never executed) -> 0xFFFFFFFF
+       observed: traces of two scenarios identical on every tick and column: True; address executed in the baseline: False
+
+VERDICT PASS: every mutation caught, control unchanged

@@ -1,0 +1,54 @@
+== G4 stop and resume: Triangle + Right ticks 1-40 (Sprint from 26), pad released at 41 for k ticks, then pressed again ==
+(a) release the d-pad only (Triangle kept) for k ticks then Triangle + Right again; "resume" = first tick >= 41 with anim_cur 3 again:
+   k=1  resume tick None (=- after the re-press at 42)  sprintCnt at re-press 1  states 41-56:2A
+   k=2  resume tick 83   (=re-press+40 after the re-press at 43)  sprintCnt at re-press 2  states 41-56:2A 57:00
+   k=3  resume tick 83   (=re-press+39 after the re-press at 44)  sprintCnt at re-press 3  states 41-56:2A 57:00 58:29
+   k=4  resume tick 83   (=re-press+38 after the re-press at 45)  sprintCnt at re-press 4  states 41-56:2A 57:00 58-59:29
+   k=5  resume tick 83   (=re-press+37 after the re-press at 46)  sprintCnt at re-press 5  states 41-56:2A 57:00 58-60:29
+   k=6  resume tick 83   (=re-press+36 after the re-press at 47)  sprintCnt at re-press 6  states 41-56:2A 57:00 58-61:29
+   k=7  resume tick 83   (=re-press+35 after the re-press at 48)  sprintCnt at re-press 7  states 41-56:2A 57:00 58-62:29
+   k=8  resume tick 83   (=re-press+34 after the re-press at 49)  sprintCnt at re-press 8  states 41-56:2A 57:00 58-63:29
+   k=9  resume tick 83   (=re-press+33 after the re-press at 50)  sprintCnt at re-press 9  states 41-56:2A 57:00 58-64:29
+   k=10 resume tick 51   (=re-press+0 after the re-press at 51)  sprintCnt at re-press 10  states 41-50:2A 51-65:03
+   k=11 resume tick 52   (=re-press+0 after the re-press at 52)  sprintCnt at re-press 11  states 41-51:2A 52-66:03
+   k=12 resume tick 53   (=re-press+0 after the re-press at 53)  sprintCnt at re-press 12  states 41-52:2A 53-67:03
+   k=13 resume tick 54   (=re-press+0 after the re-press at 54)  sprintCnt at re-press 13  states 41-53:2A 54-68:03
+   k=14 resume tick 55   (=re-press+0 after the re-press at 55)  sprintCnt at re-press 14  states 41-54:2A 55-69:03
+   k=15 resume tick 56   (=re-press+0 after the re-press at 56)  sprintCnt at re-press 15  states 41-55:2A 56-70:03
+   k=16 resume tick 57   (=re-press+0 after the re-press at 57)  sprintCnt at re-press 16  states 41-56:2A 57-71:03
+   k=17 resume tick 83   (=re-press+25 after the re-press at 58)  sprintCnt at re-press 17  states 41-56:2A 57:00 58-72:29
+   k=18 resume tick 83   (=re-press+24 after the re-press at 59)  sprintCnt at re-press 17  states 41-56:2A 57:00 58-73:29
+   k=19 resume tick 83   (=re-press+23 after the re-press at 60)  sprintCnt at re-press 17  states 41-56:2A 57:00 58-74:29
+   k=20 resume tick 83   (=re-press+22 after the re-press at 61)  sprintCnt at re-press 17  states 41-56:2A 57:00 58-75:29
+   k=21 resume tick 83   (=re-press+21 after the re-press at 62)  sprintCnt at re-press 17  states 41-56:2A 57:00 58-76:29
+   k=22 resume tick 83   (=re-press+20 after the re-press at 63)  sprintCnt at re-press 17  states 41-56:2A 57:00 58-77:29
+   k=23 resume tick 83   (=re-press+19 after the re-press at 64)  sprintCnt at re-press 17  states 41-56:2A 57:00 58-78:29
+   k=24 resume tick 83   (=re-press+18 after the re-press at 65)  sprintCnt at re-press 17  states 41-56:2A 57:00 58-79:29
+   k=25 resume tick 83   (=re-press+17 after the re-press at 66)  sprintCnt at re-press 17  states 41-56:2A 57:00 58-80:29
+   k=26 resume tick 83   (=re-press+16 after the re-press at 67)  sprintCnt at re-press 17  states 41-56:2A 57:00 58-81:29
+   k=30 resume tick 83   (=re-press+12 after the re-press at 71)  sprintCnt at re-press 17  states 41-56:2A 57:00 58-82:29 83-85:03
+   k=40 resume tick 83   (=re-press+2 after the re-press at 81)  sprintCnt at re-press 17  states 41-56:2A 57:00 58-82:29 83-95:03
+(b) re-press in another direction after k ticks (Up, Left, Up+Right):
+   k=5  then U : resume tick None dir_target -  facing 1  states 41-56:2A 57:00 58-75:29
+   k=5  then L : resume tick None dir_target -  facing 2  states 41-56:2A 57:00 58-75:29
+   k=5  then UR: resume tick None dir_target -  facing 3  states 41-56:2A 57:00 58-75:29
+   k=10 then U : resume tick 51   dir_target 10  facing 1  states 41-50:2A 51-80:03
+   k=10 then L : resume tick 51   dir_target 08  facing 2  states 41-50:2A 51-80:03
+   k=10 then UR: resume tick None dir_target -  facing 3  states 41-56:2A 57:00 58-80:29
+   k=11 then U : resume tick 52   dir_target 10  facing 1  states 41-51:2A 52-81:03
+   k=11 then L : resume tick 52   dir_target 08  facing 2  states 41-51:2A 52-81:03
+   k=11 then UR: resume tick None dir_target -  facing 3  states 41-56:2A 57:00 58-81:29
+   k=12 then U : resume tick 53   dir_target 10  facing 1  states 41-52:2A 53-82:03
+   k=12 then L : resume tick 53   dir_target 08  facing 2  states 41-52:2A 53-82:03
+   k=12 then UR: resume tick None dir_target -  facing 3  states 41-56:2A 57:00 58-82:29
+   k=20 then U : resume tick 86   dir_target 10  facing 1  states 41-56:2A 57:00 58-85:29 86-90:03
+   k=20 then L : resume tick 86   dir_target 08  facing 2  states 41-56:2A 57:00 58-85:29 86-90:03
+   k=20 then UR: resume tick None dir_target -  facing 3  states 41-56:2A 57:00 58-90:29
+(c) release Triangle too (pad 0) for k ticks, then Triangle + Right: no resume possible (sprintCnt 0)
+   k=5  first Sprint after the release: 83  states 41-56:2A 57:00 58-82:29 83-86:03  sprintCnt@41 1
+   k=12 first Sprint after the release: 83  states 41-56:2A 57:00 58-82:29 83-93:03  sprintCnt@41 1
+   k=20 first Sprint after the release: 86  states 41-56:2A 57-60:00 61-85:29 86-101:03  sprintCnt@41 1
+(d) release Triangle only (Right kept), re-press Triangle after k ticks
+   k=3  states 40:03 41-56:2A 57:00 58-82:29 83-84:03
+   k=12 states 40:03 41-56:2A 57:00 58-82:29 83-93:03
+

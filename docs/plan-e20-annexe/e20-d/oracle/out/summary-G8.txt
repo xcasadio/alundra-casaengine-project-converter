@@ -1,0 +1,9 @@
+== G8 ladder (slope 6): cliff of 8 units at rows <= 19, platform hb 2 below, strip of slope-6 cells (word 0x0C00) on row 20, cols 2-20 ==
+  sprint       0:00 1-25:29 26-53:03 54-70:0E
+  noladder     0:00 1-25:29 26-53:03 54-64:3E 65:01 66-70:2C 71-90:29
+  walk         0:00 1-42:01 43-120:0E
+  sprint-late  0:00 1-25:29 26-53:03 54-70:0E
+  diag         0:00 1-60:29
+sprint -> ladder: slope 6 first tick 51, ForceAdjusted first tick 53, climb 0x0E first tick 54 (priority over the Sprint bounce 0x3E: None)
+control without ladder: bounce 0x3E first tick 54, ForceAdjusted first tick 53
+
