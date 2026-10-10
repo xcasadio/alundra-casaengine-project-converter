@@ -57,7 +57,7 @@ namespace Alundra.Scripts;
 /// of the current animation. <see cref="AlundraEntityScriptProxy.Slope_18c"/> itself has been alimented
 /// since E1 (<see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>) from the real map 389 cell data
 /// every frame, reading 6 on the four ladder cells - see that method's own doc.</description></item>
-/// <item><description><c>UpdatePlayerWeaponEffect</c> and <c>UpdatePlayerCarriedEntity</c> - PlayerManager.cs:355-357 (named stubs: the weapon effects and charge are E20.f, carrying E20.g);
+/// <item><description><c>UpdatePlayerCarriedEntity</c> - PlayerManager.cs:355-357 (named stub: carrying is E20.g; <c>UpdatePlayerWeaponEffect</c> is ported by E20.f1a without the aura, whose call is the named stub <see cref="AlundraAuraStub"/> until E20.f1b);
 /// <c>UpdateWeaponStepProgression</c> is ported without its projectile spawn (E20.b B4, the spawn is a named stub, E20.e0/E20.f).</description></item>
 /// <item><description>Every <c>TargetAnimationId</c> case other than Idle/Moving/LoadingMap/Climbing/
 /// ClimbStill, the jump states and the attack groups - sprint, the charged attacks, pickup/carry/throw, swimming, sand, spell cast,
@@ -274,7 +274,7 @@ public static class AlundraPlayerManager
 
         // PlayerManager.cs:355-357, binary 0x80031D68-0x80031D78: before the switch of states, every tick on a terrain. E20.a A4: the three calls are named stubs, in the order of the
         // binary (the weapon effects, the run and carrying come with E20.f, E20.d and E20.g; E20.b ported UpdateWeaponStepProgression without its spawn).
-        UpdatePlayerWeaponEffect(player);
+        UpdatePlayerWeaponEffect(player, in pad, host);
         UpdateWeaponStepProgression(player);
         UpdatePlayerCarriedEntity(player, 0);
 
@@ -531,9 +531,75 @@ public static class AlundraPlayerManager
     private static bool IsAirAttackGroup(uint animationId)
         => animationId is 0x0A or 0x14 or 0x15 or 0x16 or 0x17 or 0x1F or 0x26 or 0x41 or 0x42 or 0x46 or 0x4B;
 
-    /// <summary>E20.a A4 stub of <c>UpdatePlayerWeaponEffect</c> (<c>0x8002F49C</c>, called at <c>0x80031D68</c>): no weapon system yet.</summary>
-    private static void UpdatePlayerWeaponEffect(AlundraEntityScriptProxy player)
+    /// <summary>The Square charges the weapon for 60 ticks (<c>0x8002F530</c>).</summary>
+    internal const int FullChargeTimer = 60;
+
+    /// <summary>The charge counter from which the aura appears and the hold sounds play (<c>0x8002F560</c>: below 11, the aura is released).</summary>
+    internal const int AuraChargeTimer = 11;
+
+    /// <summary>The sound of the charge, every 4 ticks from the counter 11 to 59 (<c>0x8002F724</c>).</summary>
+    internal const int ChargeSfx = 0x2A;
+
+    /// <summary>
+    /// E20.f1a: port of <c>UpdatePlayerWeaponEffect</c> (<c>0x8002F49C</c>, called at <c>0x80031D68</c>, every tick on a terrain, before <c>UpdateWeaponStepProgression</c> and the switch of states, so BEFORE
+    /// <see cref="PlayerTryAttack"/> of the same tick).
+    /// <list type="number">
+    /// <item><description>The counter (<see cref="AlundraEntityScriptProxy.WeaponChargeTimer"/>, <c>0x80126FFC</c>): +1 up to 60 when the Square is held or released this tick, the weapon record of the equipped weapon is chargeable
+    /// (<c>byte[0x80028C78 + 13 w]</c> non-zero) and the animation the hero is in counts the charge (<see cref="AlundraWeaponTables.AnimationCountsCharge"/>); else 0.</description></item>
+    /// <item><description>Below 11: the aura is released (<see cref="AlundraAuraStub.Release"/>), the function ends. From 11: the aura is checked every tick (<see cref="AlundraAuraStub.Check"/>, the stub of E20.f1b).</description></item>
+    /// <item><description>Only when <c>+0x1C &amp; 3</c> is 0 (the counter of frames BEFORE the counters pass of this tick): below 60 the sound 0x2A; at 60 the hold spark, queued on the stage
+    /// (<see cref="AlundraNativeEffects.CreateChargeSpark"/>, whose sound and two numbers happen only if the effect is created, when the stage applies it).</description></item>
+    /// </list>
+    /// The stage is the host's (<see cref="IAlundraScriptHost.EffectStage"/>); a host without one creates no effect, and the sounds that do not depend on a creation still play.
+    /// </summary>
+    internal static void UpdatePlayerWeaponEffect(AlundraEntityScriptProxy player, in AlundraPadState pad, IAlundraScriptHost? host)
     {
+        if (((pad.ButtonsHold | pad.ButtonsReleased) & AlundraPadState.Square) != 0
+            && AlundraWeaponTables.RecordByte(AlundraWeaponTables.RecordsAddress + (uint)(AlundraWeaponTables.RecordSize * player.CurrentWeaponRecord)) != 0
+            && AlundraWeaponTables.AnimationCountsCharge(player.TargetAnimationId))
+        {
+            if (player.WeaponChargeTimer < FullChargeTimer)
+            {
+                player.WeaponChargeTimer++;
+            }
+        }
+        else
+        {
+            player.WeaponChargeTimer = 0;
+        }
+
+        if (player.WeaponChargeTimer < AuraChargeTimer)
+        {
+            player.AuraStub.Release();
+            return;
+        }
+
+        player.AuraStub.Check();
+        if ((player.FrameCounter & 3) != 0)
+        {
+            return;
+        }
+
+        if (player.WeaponChargeTimer < FullChargeTimer)
+        {
+            host?.SoundPlayer?.PlaySfx(ChargeSfx);
+            return;
+        }
+
+        if (host?.EffectStage is not { } stage)
+        {
+            return;
+        }
+
+        // The binary writes the hero's X, Y, Z (+0x114, +0x118, +0x11C) and forces (+0xC4, +0xC8) when it creates the effect, at this tick: captured now, applied by the stage at the tick of the emission.
+        var x = player.PosX;
+        var y = player.PosY;
+        var z = player.PosZ + 1; // the binary's frame of Z (ADR-0026: the DLL's PosZ is the binary's minus 1).
+        var forceX = player.ForceX;
+        var forceY = player.ForceY;
+        var frameCounter = player.FrameCounter;
+        var soundPlayer = host.SoundPlayer;
+        stage.Emit(reservoir => AlundraNativeEffects.CreateChargeSpark(reservoir, x, y, z, forceX, forceY, frameCounter, soundPlayer));
     }
 
     /// <summary>E20.b test seam: the number of calls of <see cref="SpawnWeaponProjectile"/> (the tick at which a bow or a wand would spawn its projectile; the oracle journals the same call). Per thread.</summary>

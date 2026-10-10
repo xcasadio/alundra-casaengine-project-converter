@@ -398,6 +398,13 @@ public partial class AlundraEntityScriptProxy : GameplayProxy
     /// <summary>E20.b B2: the tick counter that goes with <see cref="WeaponRecordPointer"/>, the binary's <c>0x80127114</c> (reset by the press, counted up to the delay of the record). Hero only.</summary>
     internal int WeaponStepCounter;
 
+    /// <summary>E20.f1a: the charge counter of the Square, the binary's <c>0x80126FFC</c> (<c>UpdatePlayerWeaponEffect</c>: +1 up to 60 while the Square is held or released on an animation that counts the charge, else 0). Cleared with
+    /// <see cref="WeaponRecordPointer"/> by the branches of <c>MovePlayer</c> that end the tick early. Hero only.</summary>
+    internal int WeaponChargeTimer;
+
+    /// <summary>E20.f1a: the named stub of the charge aura (the handle <c>0x80126FF8</c> of the binary, E20.f1b ports it). Hero only.</summary>
+    internal readonly AlundraAuraStub AuraStub = new();
+
     /// <summary>E20.f2: the landing latch of <c>CreatePlayerAnimationEffects</c>, the binary's <c>0x800A8F30</c>: set when the landing part ran, cleared by every state that is not a landing state; the locked mode (1) does not land again while it is set. Hero only.</summary>
     internal int LandingLatch;
     public uint CombinedVramFlagsAND;
@@ -1392,12 +1399,17 @@ public partial class AlundraEntityScriptProxy : GameplayProxy
             // construct their own player proxy with no controller at all, by design). E20.a A4: once per TICK, first (0x800386EC), then the animation clock and the physics of the tick.
             // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the hero's animation clock steps at every tick, whether or not a controller possesses the pawn, interleaved with the
             // kinematic tick: a Chain that MovePlayer asked for reserves the tick before the motion reads TargetAnimationId.
+            // E20.f1a: the effects the hero queues in MovePlayer (the hold spark, the burst) carry the tick (rank 1) like the other entities' do; a driven world marks them itself (AlundraWorldProxy.RunEntityBlock).
+            var heroStage = ScriptHost?.EffectStage;
             for (var tick = 0; tick < ticksThisFrame; tick++)
             {
+                heroStage?.BeginSource(tick, 1);
                 MovePlayerOnTickPad(_selfDrivenPadOfTick[Math.Min(tick, _selfDrivenPadOfTick.Length - 1)]);
                 TickAnimationClock();
                 TickPhysics();
             }
+
+            heroStage?.EndSource();
         }
     }
 

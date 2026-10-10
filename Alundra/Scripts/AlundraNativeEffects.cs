@@ -59,6 +59,97 @@ public static class AlundraNativeEffects
         }
     }
 
+    /// <summary>The global effect of the charge: the hold spark and the 16 effects of the burst (<c>0x8003BDD8(0, 0x10, 0, x, y, z + 0x100000)</c>, bank 0, effect 16: 7 frames, 14 ticks, ends with <c>Destroy</c>).</summary>
+    public const int ChargeEffect = 0x10;
+
+    /// <summary>The sound of the hold spark when <c>+0x1C &amp; 7</c> is 0 (<c>0x8002F634</c>); the other ticks of the cadence play <see cref="ChargeSparkOddSfx"/>.</summary>
+    public const int ChargeSparkEvenSfx = 0x1AD;
+
+    /// <summary>The sound of the hold spark when <c>+0x1C &amp; 7</c> is not 0 (<c>0x8002F638</c>).</summary>
+    public const int ChargeSparkOddSfx = 0x1AC;
+
+    /// <summary>The number of effects of the burst of a released charge (<c>0x8002EC48</c>: the loop counts to 16).</summary>
+    public const int ChargeBurstCount = 16;
+
+    /// <summary>The 32-direction table <c>0x80023654</c> (halfwords): the x of the burst ring and, read 24 entries on, the x of the force; 768 times the cosine.</summary>
+    private static readonly short[] BurstTableX =
+    {
+        0, -150, -294, -422, -543, -639, -710, -753, -768, -753, -710, -639, -543, -422, -294, -150,
+        0, 150, 294, 422, 543, 639, 710, 753, 768, 753, 710, 639, 543, 422, 294, 150,
+    };
+
+    /// <summary>The 32-direction table <c>0x80023694</c> (halfwords): the y of the burst ring and, read 24 entries on, the y of the force; 512 times the sine.</summary>
+    private static readonly short[] BurstTableY =
+    {
+        512, 502, 473, 426, 362, 284, 196, 100, 0, -100, -196, -284, -362, -426, -473, -502,
+        -512, -502, -473, -426, -362, -284, -196, -100, 0, 100, 196, 284, 362, 426, 473, 502,
+    };
+
+    /// <summary>
+    /// E20.f1a test seam, per thread: told each effect of the charge (the hold spark, the effects of the burst) once it is created and its fields are written, before the update of its tick (the stage applies the queued
+    /// operation, then updates the reservoir): the place to read the identifier, the position and the forces the binary's <c>0x8003BDD8</c> and the code after it leave, the oracle's "fields at the end of the logic".
+    /// </summary>
+    [System.ThreadStatic]
+    internal static System.Action<AlundraEffectSlot>? CreatedForTests;
+
+    /// <summary>
+    /// The hold spark of a full charge (<c>UpdatePlayerWeaponEffect</c>, <c>0x8002F5EC-0x8002F71C</c>), at the tick where the charge counter is 60 and <c>+0x1C &amp; 3</c> is 0: a global effect 16 at the hero
+    /// (<paramref name="heroX"/>, <paramref name="heroY"/>, <paramref name="heroZ"/> in the binary's frame of Z, so the DLL's <c>PosZ + 1</c>, ADR-0026) with z + 0x100000. ONLY IF it was created: the sound
+    /// (<see cref="ChargeSparkEvenSfx"/> when <paramref name="frameCounter"/> &amp; 7 is 0, else <see cref="ChargeSparkOddSfx"/>), then two numbers <c>r1</c>, <c>r2</c> from <see cref="AlundraRandom"/> (the state is left on
+    /// <c>r2</c>), <c>jx = hi(r1 * 0x60001) - 0x30000</c>, <c>jy = hi(r2 * 0x40001) - 0x20000</c> (unsigned products), x += 20 jx, y += 20 jy, forces = the hero's forces minus (jx, jy). A full reservoir creates
+    /// nothing: no sound, no number drawn. Queued by the hero on the stage, so the sound and the draws happen when the stage applies the operation, after the sounds of the tick (ADR-0048 deviation 2, plan section 1.9).
+    /// </summary>
+    public static void CreateChargeSpark(AlundraEffectReservoir reservoir, int heroX, int heroY, int heroZ, int heroForceX, int heroForceY, int frameCounter, IAlundraSoundPlayer? soundPlayer)
+    {
+        unchecked
+        {
+            var spark = reservoir.Create(false, ChargeEffect, 0, heroX, heroY, heroZ + 0x100000);
+            if (spark == null)
+            {
+                return;
+            }
+
+            soundPlayer?.PlaySfx((frameCounter & 7) == 0 ? ChargeSparkEvenSfx : ChargeSparkOddSfx);
+            var r1 = (uint)AlundraRandom.Next();
+            var r2 = (uint)AlundraRandom.Next();
+            var jitterX = (int)(((ulong)r1 * 0x60001) >> 32) - 0x30000;
+            var jitterY = (int)(((ulong)r2 * 0x40001) >> 32) - 0x20000;
+            spark.X += 20 * jitterX;
+            spark.Y += 20 * jitterY;
+            spark.ForceX = heroForceX - jitterX;
+            spark.ForceY = heroForceY - jitterY;
+            CreatedForTests?.Invoke(spark);
+        }
+    }
+
+    /// <summary>
+    /// The burst of a released charge (<c>PlayerTryAttack</c>, <c>0x8002EB6C-0x8002EC48</c>): 16 global effects 16 at the hero (<paramref name="heroX"/>, <paramref name="heroY"/>, <paramref name="heroZ"/> in the binary's
+    /// frame of Z) with z + 0x100000, in this order, no number drawn. Effect <c>i</c>, if created, is moved by (<c>BurstTableX[2i]</c>, <c>BurstTableY[2i]</c>) times 3072 and given the forces
+    /// (<c>BurstTableX[k]</c>, <c>BurstTableY[k]</c>) times 448, <c>k = (2i + 24) &amp; 31</c> (the ring is 96 x 64 pixels and the effects fly outwards). One that was not created (a full reservoir) skips its own writes
+    /// only (<c>0x8002EBBC</c>), the others are not shifted.
+    /// </summary>
+    public static void CreateChargeBurst(AlundraEffectReservoir reservoir, int heroX, int heroY, int heroZ)
+    {
+        unchecked
+        {
+            for (var i = 0; i < ChargeBurstCount; i++)
+            {
+                var slot = reservoir.Create(false, ChargeEffect, 0, heroX, heroY, heroZ + 0x100000);
+                if (slot == null)
+                {
+                    continue;
+                }
+
+                var force = (2 * i + 24) & 31;
+                slot.X += BurstTableX[2 * i] * 3072;
+                slot.Y += BurstTableY[2 * i] * 3072;
+                slot.ForceX = BurstTableX[force] * 448;
+                slot.ForceY = BurstTableY[force] * 448;
+                CreatedForTests?.Invoke(slot);
+            }
+        }
+    }
+
     /// <summary>The global effect of a hit: the spark (<c>0x8003BDD8(0, 9, 0, x, y, z)</c>, bank 0, effect 9).</summary>
     private const int HitSparkEffect = 9;
 

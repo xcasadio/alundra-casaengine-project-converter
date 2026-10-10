@@ -122,6 +122,13 @@ public interface IAlundraScriptHost
     AlundraEquipmentRecords? EquipmentRecords => null;
 
     /// <summary>
+    /// E20.f1a (docs/plan-e20-heros.md section 1.9): this world's effect stage, on which the hero's <see cref="AlundraPlayerManager.MovePlayer"/> queues the hold spark and the burst of the charged attack
+    /// (<see cref="AlundraEffectStage.Emit"/>, applied by <see cref="AlundraEffectStage.RunFrame"/> at the tick of the emission, ADR-0046). A default interface member, null like <see cref="SoundPlayer"/>:
+    /// a host without a stage creates no effect. <see cref="AlundraWorldProxy"/> returns its own stage (the same property implements <see cref="IEntityWorldContext.EffectStage"/>).
+    /// </summary>
+    AlundraEffectStage? EffectStage => null;
+
+    /// <summary>
     /// T3's own seam for T4 (docs/plan-transitions-carte.md §3: "le prédicat ... exposé par une couture
     /// que T4 remplira"). Called by <see cref="AlundraPlayerManager.MovePlayer"/>, at most once per
     /// call, exactly when <see cref="AlundraPortalTrigger.TryGetTrigger"/> returns non-null - the moment
