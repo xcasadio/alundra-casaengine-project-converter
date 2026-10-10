@@ -139,6 +139,13 @@ portent une direction ou une animation prennent la valeur du tick, pas celle de 
 | `+0x11C` (Z) | seconde entrée de la position relative, pour l'entité elle-même (`0x8007FEA4`) | `PosZ` |
 | `+0x158`-`+0x164` (hauteurs de coin) | `HandleAnimationDirection` (`0x80080150`-`0x80080164`) | `MapHeights[0..3]` |
 | `+0x8C` (direction cible) | `HandleAnimationDirection` (`0x80080184`, `0x800801B0`, `0x800801DC`, `0x80080208`) | `TargetDirection` |
+| `0x80098708` (mot du générateur) | `StartWalk` (lu en `0x8007FF00`, relu en `0x8007FFD4` ; écrit en `0x8007FF60`, `0x8007FFA4`, `0x8007FFF8`) | `AlundraRandom.RandomSeed` (32 bits bas, par `Next()` ; `Below(n)`) |
+| `+0x114`, `+0x118` (X, Y) de l'entité | `StartWalk` (`0x8007FF70`, `0x8007FF78`) ; D1 (`0x8007D9D4`, `0x8007D9DC`) ; D9 (`0x8007DE34`, `0x8007DE3C`) | `PosX`, `PosY` |
+| `+0x114`, `+0x118` du héros (slot 0, `0x80127D30`) | `StartWalk` (`0x8007FF6C`, `0x8007FF74`) ; D1 (`0x8007D9D8`, `0x8007D9E0`) ; D9 (`0x8007DE38`, `0x8007DE40`) | `PosX`, `PosY` du héros (`IEntityWorldContext.PlayerEntity`) |
+| `+0x224` (entité qui touche), `+0x1C4` (fiche), `+0x14` (vie), `+0x1C8` de l'attaquant | `ComputeNewHp` (`0x8003A39C`, `0x8003A3B4`, `0x8003A3B8`, `0x8003A3BC`), appelée par D1 (`0x8007D9B0`) et D9 (`0x8007DE10`) | `TouchingEntity`, `BalanceRecord`, `Hp`, `CurrentAttack` (`AlundraDamage.ComputeNewHp`) |
+| `0x80146DF8` (verrou d'animation du héros), `0x80146E00` (trois fiches d'équipement) | `ResolveBalanceTarget`, via `ComputeNewHp` | `IEntityWorldContext.HeroAnimationLatch`, `IEntityWorldContext.EquipmentRecords` |
+| écrits : `+0x88` / `+0x8C` | `StartWalk` (`0x8007FFC0` / `0x8007FF8C`, `0x8007FFB8`) ; D1 (`0x8007D9C8` / `0x8007D9F0`) ; D9 (`0x8007DE28` / `0x8007DE50`) | `TargetAnimationId` / `TargetDirection` |
+| écrits : `+0x277` (octet), `+0x282` (16 bits) | D1 `0x8007D9C0`, D9 `0x8007DE20` ; `StartWalk` `0x80080010` | `Bytes[3]` ; `AIValues[1]` |
 
 `TryAttackPlayer2` (`0x8008048C`) ne lit que le tableau des positions relatives qu'on lui passe. `HandleAnimationDirection` écrit `+0x88`
 (`0x80080230`), remet à zéro les forces `+0xBC`-`+0xD8` et écrit `+0x8C`.
@@ -166,8 +173,11 @@ l'avance du générateur par tick (E20.e0b).
   cartes 14, 115, 116 lues dans l'export, plus le spawn de production des sept Beannoïde de la 14). Formule vérifiée : `FloorHeight(DLL) = floor(binaire) − 1`, `MapHeights[k](DLL) = coin(binaire)[k] − 1`, donc `FloorHeight − MapHeights[k]` et `|dz|` du couple
   égalent ceux du binaire (même écart − 1 pour le héros et pour les ennemis ; plats et en hauteur). **Décision** : l'écriture ignore un proxy nu (`SpriteType` −1, jamais créé depuis un enregistrement de sprite) pour que l'épingle E2
   `AlundraFloorHeightTests.ProductionCallSite_NpcNeverGetsFloorHeight_StaysZero` (un pion de test nu) reste verte sans changement ; son nom (« un PNJ n'a jamais de sol ») ne dit plus la vérité pour les entités de la carte : à renommer par l'auteur ou la session principale.
-- ⏳ **T3 — Aides.** Ports exacts, table des entrées complétée ; tests contre les sorties (a) de T1, valeur par valeur ; un test qui
+- ✅ **T3 — Aides.** Ports exacts, table des entrées complétée ; tests contre les sorties (a) de T1, valeur par valeur ; un test qui
   échoue si une aide lit `AnimationDirection` alors que `BoxDirection` diffère.
+  **Fait (2026-10-10)** : `Alundra/Scripts/AlundraEnemyHelpers.cs` (position relative et sa seconde entrée, `TryAttackPlayer2`, `TryAttackPlayerFront`, `HandleAnimationDirection`, `StartWalk`, `QuarterTurnTable`, `Below`) ; `AlundraEnemyHelpersTests`
+  (16 tests : 90 000 états de l'oracle valeur par valeur ; le piège `BoxDirection` / `AnimationDirection` par un leurre `+0x9C` dans chaque état et par un test à part ; 5 mutations du port attrapées). Table des entrées complétée ci-dessus (adresses des chargements relues dans le
+  binaire, aucune contradiction entre les sources). Le squelette `HitReaction` est en T4.
 - ⏳ **T4 — Verrou du héros sur le contexte, `HitReaction`, doc.**
 
 #### Acceptation
