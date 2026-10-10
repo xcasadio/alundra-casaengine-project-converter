@@ -45,6 +45,36 @@ every entry of `Data/sprite-records.json`, between `SizeZ` and `Contents`, alway
   the time of each measure (`MeasureOutput` counts the previous report); a remainder not explained by these three terms is a stop.
 - Nothing under `alundra-project/UI/Screens/` changes (tracked by git).
 
-## Open at T0
+## Open at T0 (closed by T1: no engine-pointer effect)
 
 Nothing. The engine pointer rose since the last export (`781d3527`); T1 settles whether that changes any exported byte.
+
+## Measured (T1, T4, T5; 2026-10-10)
+
+Manifests are those of `manifest.py` (SHA-1 of the manifest text, 24 103 files each); the diffs are in `a1a/diff-*.txt`.
+
+| Manifest | SHA-1 | Against | Changed paths |
+|---|---|---|---|
+| `m0` (start) | `bc31b7a2055a1dd939ef3e4280203c94a3ef354e` | m7 (L-b2) | the 47 paths + `UI/Textures/font3.png` (`a1a/m0-vs-m7.txt`) |
+| `m1` (T1, export at HEAD, before the code) | `9a65766f91e25bde3346875455ab25d1879797b4` | `m0` | `report.json` only (`a1a/diff-m0-m1.txt`) |
+| `m2` (export 1, after the code) | `bc2bf5ad2718cdfb4ae83d03fd00ff16b2d9ebfd` | `m1` | `Data/sprite-records.json`, `report.json`; 0 added, 0 removed (`a1a/diff-m1-m2.txt`) |
+| `m3` (export 2, at once) | `c7539e312b090d2071f1c6e0247be6b07b08e996` | `m2` | `report.json` only (`a1a/diff-m2-m3.txt`) |
+
+The engine pointer rise (up to `781d3527`) changed no exported byte: T1 differs from `m0` in `report.json` only, so no rebase was needed.
+
+- `Data/sprite-records.json` after export 1: 2 561 505 bytes, SHA-1 `007f2660eb83d5a3d21aa35d7c71dd34dba0afcf`, `cmp` equal to the
+  prediction; 395 entries, histogram {0: 284, 2: 1, 8: 63, 10: 30, 11: 15, 12: 1, 13: 1} (111 non-zero); Muruta and Beannoide = 8;
+  key order `SizeZ`, `BreakEffect`, `Contents` in every entry; every entry equals the old one minus `BreakEffect`.
+- `AssetInfos.json`: `a09917c31694925076d1fc1aba5fca773f6cada2` in `m1`, `m2` and `m3`.
+- `report.json` (T1, export 1, export 2): `Errors` 0, the same 6 warnings, identical counters (169 keys, none new or missing),
+  `Verify.Assets` 22 616, `Verify.Loaded` 20 139, `Verify.ExistenceChecked` 2 477, `Phase1.StalePagesPurged` 2 415,
+  `Entities.Prefabs` and `SpriteRecords.Exported` 395, `OutputFileCount` 24 106; `Verification: PASSED` three times.
+- `OutputSizeBytes`: T1 1 955 157 660; export 1 1 955 166 800 = T1 + 9 132 (the file) + 8 (the on-disk `report.json` was 9 288 bytes at
+  export 1 against 9 280 at T1) + 0 (`Alundra.dll` 563 200 and `Alundra.pdb` 200 276 bytes, unchanged); export 2 1 955 166 799 = export 1
+  - 1 (`report.json` 9 287 against 9 288). No unexplained remainder.
+- Nothing under `alundra-project/UI/Screens/` changed (`git status` clean there).
+- `Alundra.Tests`: 4 646 tests. Release: the first full run reported 1 failure that was not captured (its output was cut to the last lines), then
+  two further full Release runs passed 4 646/4 646; Debug: 4 646/4 646 passed. The failure did not recur in these 3 later full runs
+  (not attributed: unreproduced, logs of the later runs in the executor's scratch folder). `cmp alundra-project/Alundra.dll
+  Alundra/bin/Debug/net9.0-windows/Alundra.dll` equal. The five trace files unchanged (guard passed; the end-of-line noise of four
+  files was restored).

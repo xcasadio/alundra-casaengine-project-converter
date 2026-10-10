@@ -74,3 +74,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0058 | The weapons own their projectile handlers, E14.a comes before the weapons, collisions mean carrying and solid crates, and the deep-water wall comes with the currents | Accepted | 2026-10-10 |
 | ADR-0059 | The hero's aura releases its slot at its tick and is recreated when its slot no longer holds it | Proposed | 2026-10-10 |
 | ADR-0060 | The break effect is created for every DestroyEntity caller, as the binary does | Accepted | 2026-10-10 |
+| ADR-0061 | The break-effect byte is exported in every sprite record | Accepted | 2026-10-10 |

@@ -242,7 +242,7 @@ Ordre (session principale, 2026-10-10) : E14.a1a, puis E20.d2a et E20.f1b (déj�
 puis E14.a1c. E1 ne change pas : la branche E de `RunSpriteEvent` reste hors du registre ; l'effet de bris vit dans `DestroyEntity` de
 l'hôte. Chaque tranche : relecture du plan, exécuteur, verifier frais.
 
-### 1.3a E14.a1a — L'octet de l'effet de bris dans l'export ⏳
+### 1.3a E14.a1a — L'octet de l'effet de bris dans l'export 🧪 (exécutée le 2026-10-10 ; verifier frais en attente)
 
 **Révision 1 (2026-10-10).** Relecture : **REVISE**, un point corrigé (FIX) : l'acceptation de T4 est écrite par rapport à
 l'export de référence de T1 (`m1` et son `report.json`), plus en valeurs absolues de `m0` qu'un rebasage permis par les arrêts
@@ -298,11 +298,11 @@ Relecture de clôture : **READY** (2026-10-10).
   reste hors catalogue.
 - ✅ **T3 — Code et docs.** `dotnet test alundra-casaengine-project-converter.Tests --blame-hang-timeout 60s`, au premier plan ; 848 plus
   les nouveaux, tous verts.
-- ⏳ **T4 — Export 1, puis export 2 tout de suite.** `m2` contre `m1` : changés exactement `Data/sprite-records.json` et `report.json`,
+- ✅ **T4 — Export 1, puis export 2 tout de suite.** `m2` contre `m1` : changés exactement `Data/sprite-records.json` et `report.json`,
   0 ajouté, 0 retiré ; `cmp` du fichier exporté avec le fichier prédit ; `m3` contre `m2` : `report.json` seul (D-N-7).
-- ⏳ **T5 — Suites.** `Alundra.Tests` en Release puis en Debug : même compte, sans échec (la DLL ignore la clé jusqu'à E14.a1b) ; `cmp`
+- ✅ **T5 — Suites.** `Alundra.Tests` en Release puis en Debug : même compte, sans échec (la DLL ignore la clé jusqu'à E14.a1b) ; `cmp`
   de la DLL ; traces inchangées.
-- ⏳ **T6 — ADR-0061, plan, verifier frais.**
+- 🧪 **T6 — ADR-0061, plan, verifier frais.** ADR-0061 écrit et indexé ; plan et annexe à jour ; le verifier frais est lancé par la session principale.
 
 **Acceptation.**
 - `Data/sprite-records.json` : 2 561 505 o (+9 132), SHA-1 `007f2660eb83d5a3d21aa35d7c71dd34dba0afcf`, 395 fiches ; histogramme
@@ -330,6 +330,13 @@ Relecture de clôture : **READY** (2026-10-10).
 - Tout process (build, test, Launcher, éditeur) sur l'arbre pendant un export.
 - Toute idée de supprimer `alundra-project/`, de faire un `robocopy /MIR` ou un miroir de `data-extracted/`, ou d'indexer
   `CasaEngineMonogame/CasaEngine.Launcher/Program.cs`.
+
+**Résultat de l'exécution (2026-10-10).** Toutes les acceptations mesurées, aucun arrêt : T1 ne change que `report.json` (la montée du
+moteur jusqu'à `781d3527` n'a changé aucun octet exporté, pas de rebasage) ; export 1 : `Data/sprite-records.json` et `report.json`
+seuls, fichier égal à la prédiction au bit près (SHA-1 `007f2660…`) ; export 2 : `report.json` seul ; `OutputSizeBytes` = T1 + 9 132 + 8
+(écart de taille du `report.json` présent) + 0 (DLL et PDB) ; convertisseur 849/849 ; `Alundra.Tests` 4 646/4 646 en Release et en Debug
+(une première passe Release a eu 1 échec non capturé, non reproduit en trois passes complètes ensuite). Preuves : annexe
+`docs/plan-e14-annexe/e14a/a1a-export-prediction.md`, dossier `a1a/`, ADR-0061.
 
 **Budget** : un `executor`, deux tentatives au plus ; `plan-verifier` avant l'exécution ; `verifier` frais à la fin. **Retour arrière** :
 `git revert`, puis un export complet en place.
