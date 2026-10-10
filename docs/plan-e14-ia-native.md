@@ -354,7 +354,7 @@ ajouté au commit T3 avant l'ADR (résolu au HEAD) ; le bruit de fin de ligne de
 **Budget** : un `executor`, deux tentatives au plus ; `plan-verifier` avant l'exécution ; `verifier` frais à la fin. **Retour arrière** :
 `git revert`, puis un export complet en place.
 
-### 1.3b E14.a1b — Effet de bris, Beannoïde, grille de la 116 ⏳ (exécution après E20.f1b CONFIRMED)
+### 1.3b E14.a1b — Effet de bris, Beannoïde, grille de la 116 🧪 (exécutée le 2026-10-10, `3cb5920` à `5236937` et le commit de ce texte ; verifier frais en attente)
 
 **Révision 1 (2026-10-10).** Relecture : **REVISE**, trois points corrigés (FIX) après une découverte ciblée en lecture seule
 (table des champs, projection d'E1, format JSON, puis un critique adversarial ; rapports dans le scratchpad de la session,
@@ -524,15 +524,15 @@ entrées distinctes (2 405 distinctes sur 3 140 pour le Beannoïde).
   un `notes.md` (réel, bouchons, harnais, scénarios, limites : reprendre `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/e14a1/disc_oh.md` et la projection
   d'E1 ci-dessus) ; lancer deux fois `python -B docs/plan-e14-annexe/e14a/oracle-a1/run_e14.py` (environ 500 s) : sortie 0,
   `out/summary.txt` tout PASS, `out/manifest.txt` égal à celui du scratchpad (74 fichiers).
-- ⏳ **T1 — `BreakEffect` dans la DLL.** Tests d'abord : aller-retour du catalogue ; clé absente → 0 ; l'apparition copie la valeur ;
+- ✅ **T1 — `BreakEffect` dans la DLL.** Tests d'abord : aller-retour du catalogue ; clé absente → 0 ; l'apparition copie la valeur ;
   `Clone` la copie ; épingles sur l'export réel : les préfabs du Muruta (`e3a39ec4-…`) et du Beannoïde (`1ef8f16c-…`) valent 8.
-- ⏳ **T2 — Ancre figée.** Un instantané immuable (statut 4, X, Y, `PosZ + 1`, clé d'E20.f1b) implémentant `IAlundraEffectAnchor` ; test :
+- ✅ **T2 — Ancre figée.** Un instantané immuable (statut 4, X, Y, `PosZ + 1`, clé d'E20.f1b) implémentant `IAlundraEffectAnchor` ; test :
   dans une image de 2 puis 3 ticks, l'emplacement garde la position et la clé de l'entité détruite après son recyclage.
-- ⏳ **T3 — `DestroyEntity(e, fx)`.** Tests d'abord : la projection d'E1 (C1 à C7) sur un cas construit pour chaque branche ; octet 0 →
+- ✅ **T3 — `DestroyEntity(e, fx)`.** Tests d'abord : la projection d'E1 (C1 à C7) sur un cas construit pour chaque branche ; octet 0 →
   rien ; pente → effet 6 ; VRAM (`fx = -1`) → octet de l'en-tête ; réserve pleine → rien, statut et `EventTrigger` posés ; images de 1, 2 et
   3 ticks → même emplacement ; aucun tirage ; `ContentsItemId` non nul → aucun son 84, aucune entité créée (bouchon nommé du butin) ;
   `EventTrigger = -1` écrit par la surcharge à deux arguments. Puis le code, dans l'ordre du binaire.
-- ⏳ **T4 — Beannoïde A1, C1, D1 et E1 contre l'oracle.** Le lecteur ci-dessus ; une classe de tests
+- ✅ **T4 — Beannoïde A1, C1, D1 et E1 contre l'oracle.** Le lecteur ci-dessus ; une classe de tests
   `AlundraBeannoideOracleTests` dans `[Collection(AlundraRandomStaticStateCollection.Name)]` (graine rendue) qui, pour chaque vecteur et
   chaque appel `BN-*` et `ARENA-*` : pose l'entité, le héros et l'attaquant selon la table des champs, pose `RandomSeed`, appelle le
   gestionnaire par le registre (A1, C1, D1) ou E1 par `RunPickedEvent`, puis compare les champs changés, le mot du générateur et le
@@ -544,8 +544,8 @@ entrées distinctes (2 405 distinctes sur 3 140 pour le Beannoïde).
   verrou `context.HeroAnimationLatch = U(latch)`. Sans héros (`PlayerEntity` nul, absent de l'oracle) : no-op documenté, comme
   `HitReaction`. Contrôles venus d'E14.a0b : aucune inscription ne liste le type −1 ; le test du verrou côté monde distingue
   `=> HeroAnimationLatch` de `=> 0` (verrou non nul, par D1).
-- ⏳ **T5 — Tests qui bougent, arc G116, suite complète** (§1.3d).
-- ⏳ **T6 — Plan, notes** (résultats, écarts, limites) ; le verifier frais est lancé par la session principale.
+- ✅ **T5 — Tests qui bougent, arc G116, suite complète** (§1.3d).
+- ✅ **T6 — Plan, notes** (résultats, écarts, limites ; faite, voir « Résultats » ci-dessous) ; le verifier frais est lancé par la session principale.
 
 **Arc G116** (`ArcRun` direct, natifs actifs). `LeverArcs.Zone` / `World116`, sans drapeaux, `Arrival` (84, 328, z 0) — la case
 (3,20), qui fait apparaître les enregistrements 0, 1, 17 et 41 à 44 (l'arrivée en (444,328) n'en fait apparaître aucun : la zone
@@ -574,6 +574,58 @@ Une image = un tick.
   de 2 ticks) ; `fx -1` non résolu ; `EventTrigger` non écrit par la surcharge à deux arguments.
 - Registre : 3 entrées en production ; les tests du §1.3d mis à jour ; aucune inscription ne liste −1.
 - Suite `Alundra.Tests` en Release puis en Debug sans échec ; `cmp` de la DLL ; traces inchangées ; verifier frais.
+
+##### Résultats (2026-10-10)
+
+Commits : T1 `3cb5920`, T2 `6be996a`, T3 `589c664`, T4 `6b62cf9`, T5 `5236937`, T6 (ce texte). Build Release puis Debug : `Alundra.Tests` **4736 sans échec** dans les deux configurations (4694 avant : +42 tests),
+`cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` identique, garde des traces `docs/hero-trace-389-*` et `docs/intro-trace-389.txt` passée (`git diff --ignore-cr-at-eol --exit-code`).
+
+**Ce qui est fait.** `BreakEffect` dans l'en-tête, le catalogue, le proxy et son clone (T1) ; `AlundraFrozenEffectAnchor` (instantané statut 4, X, Y, `PosZ + 1`, clé d'E20.f1b, coordonnée de tri) et
+`AlundraNativeEffects.CreateBreakEffect` (T2) ; `AlundraWorldProxy.DestroyEntity(e, fx)` dans l'ordre du binaire pour tous les appelants : bouchons nommés du butin (E20.e0), de l'effet attaché `+0x1B8` (E20.e) et de
+l'effacement du porteur (E20.g), statut 4, `EventTrigger = -1`, résolution de `fx = -1` par `BreakEffect`, création de l'effet en file au rang de la source (T3) ; `AlundraBeannoideAi` (A1, C1, D1 inscrits pour le type 335 par
+`AlundraNativeSpriteRegistry.CreateForProduction`), le lecteur `AlundraEnemyHandlerOracle`, `AlundraBeannoideOracleTests` (T4) ; les quatre tests du registre, l'arc G116 et la suite complète (T5).
+
+**Acceptation, mesurée.**
+- Vecteurs : **2 052, 0 écart** : A1 3, C1 1 185, D1 720 (champs changés, mot du générateur, journal vide : aucun son) ; E1 144 selon la projection : C1 à C7 comparés sur les 144, **108 effets** comparés (60 avec butin et son
+  exclus, 48 sans), **160 entrées de journal exclues** (80 butins X1 + 80 sons X2), mode 1 lu à l'application de la file sans mise à jour (`RunFrame` à 0 tick), mode 2 après la première mise à jour, emplacement le plus bas libre
+  (0 ou 3 occupés, alternés), le tout par `RunPickedEvent` (le vrai chemin) ; les comptes de l'oracle sont vérifiés par un test du lecteur (2 052 vecteurs, 21 scénarios, 3 140 appels).
+- Appels des scénarios : **3 140, 0 écart**, rejoués un par un d'`before` vers `after` : A1 12, C1 3 102, D1 22 (attaque `(0x81, 1)`, verrou de l'appel, kit d'équipement vérifié contre `kit.meta.equipment` de K2.json), E1 4.
+  Aucun nom changé hors de l'ensemble de clôture (16 noms).
+- Arc G116 (`AlundraBeannoideGrateArcTests`, un tick par image) : 10 appels de D1, 5 par Beannoïde, PV 9, 7, 5, 3, 1, 0. Enregistrement 0 : coups écrits aux ticks 3, 35, 67, 99, 131, D1 à H + 1 (4, 36, 68, 100, 132), **statut 4 à H + 23 = 154**,
+  recyclé à **H + 24 = 155**. Enregistrement 1 : coups aux ticks 99, 131, 163, 195, 227 (les appuis des ticks 95 et 127 touchent les deux), D1 à 100 ... 228, **statut 4 à 250** (H + 23), recyclé à **251** (H + 24).
+  `FrameOf(C, 323)` = **251 = E1 le plus tardif + 1** ; enregistrement 6 : `TargetAnimationId` 0 jusqu'à la porte, **3** à partir du tick 251 (et jusqu'au moins le tick 290) ; enregistrements 17 et 41 à 44 vivants ;
+  **deux effets de bris** : à E1 + 1 (155 et 251), exactement un emplacement `Active` d'effet 8, `RecordIndex` −1, mode 2 (le premier tick de la mise à jour l'a gelé), ancre non nulle, X et Y égaux à ceux du Beannoïde au tick de son
+  E1 (emplacements 6 puis 3) ; `AssertNoUnexpectedError`. Le décalage H + 1 / H + 23 / H + 24 est celui de l'oracle : aucun écart à diagnostiquer. Limite écrite : l'arc tourne hors de la collection du générateur et n'affirme que des
+  issues indépendantes du tirage ; ni butin, ni son 84.
+- Registre : **3 entrées en production** ; les quatre tests de §1.3d mis à jour (voir ci-dessous) ; aucune inscription ne liste −1 (test des 6 emplacements × 400 codes).
+- Traces, arcs des leviers, arène de c1a et c1b, `AlundraDay3SceneArcTests`, `AlundraInoaDayOneArcTests`, `AlundraShipBlockArcTests`, `AlundraVisionArcTests`, `AlundraHeroLifeArcTests`, `AlundraEntityContactArcTests`,
+  `AlundraTarnMurggArcTests` : **aucun ne bouge** (suite complète sans échec, aucune attribution à faire). `AlundraTarnMurggArcTests` R3-2 ne bouge pas : O-E14-2 se ferme (voir la section 2).
+
+**Les quatre tests du registre.** `ProductionRunner_RegistryIsEmpty_AndTheSwitchIsOn` devient `ProductionRunner_RegistryHoldsTheBeannoidsThreeHandlers_AndTheSwitchIsOn` (`Count` 3, les trois clés pour 335, pas pour 347) ;
+`RegisteredEntry_ListingSeveralTypes_RunsForEach` passe à la clé libre (D, 25) ; `Registering_TheSameKeyTwice_Throws_AndDisposingRemovesTheEntry` compare le `Count` à celui d'avant l'enregistrement ;
+`EmptyRegistry_EveryEntity_IsACountedNoOp` ne bouge pas en E14.a1b (ses clés (C, 25) et (D, 9) ne sont pas inscrites en production ; E14.a1c le fera). Un test ajouté : `ProductionRunner_NoRegistrationListsTheTypeMinus1`.
+Contrôle venu d'E14.a0b : le test du verrou côté monde distingue maintenant `=> HeroAnimationLatch` de `=> 0` (un coup d'épée donne un verrou non nul).
+
+**Mutations réelles** (appliquées au fichier, construites, testées, restaurées par la copie d'origine ; aucune n'est dans un commit) :
+- C1 portée `slti` 3 → 4 : 2 rouges (`TheVectors_OfTheRegistryHandlers_HaveNoDifference("C1")`, `TheCallsOfTheScenarios_...("C1")`) ;
+- D1 animation 5 → 6 : 3 rouges (vecteurs D1, appels D1, `D1_AppliesTheLatchOfTheContext_ToTheEquipmentTerm`) ;
+- ancre vivante au lieu de l'ancre figée : 3 rouges (`TheEffect_TakesTheSameSlotAndTheSameState_InAFrameOfOneTwoOrThreeTicks`, images de 1, 2 et 3 ticks) ;
+- `fx = -1` non résolu : 10 rouges (E1 vecteurs et scénarios, octet 0, E1 par `RunPickedEvent`, images de 2 et 3 ticks, pente et VRAM, `TakeTheByteOfTheHeader`, sans tirage) ;
+- `EventTrigger` non écrit par la surcharge à deux arguments : 2 rouges (`TheTwoArgumentOverload_WritesTheStatus4_AndTheLetterMinus1`, `AFullReservoir_...`) ; les tests d'E1 par `RunPickedEvent` restent verts, comme prévu (le vrai chemin réécrit −1) ;
+- hors liste : enregistrements de production retirés : 7 rouges (les tests du registre) ; `IEntityWorldContext.HeroAnimationLatch => 0` : 1 rouge.
+Écart d'ordre « tests d'abord » pour T4 : le code d'`AlundraBeannoideAi` a été écrit avant le fichier des tests d'oracle ; la preuve que les tests mordent est la mutation « enregistrements de production retirés » (7 rouges sans les gestionnaires).
+
+**Écarts et limites.**
+1. **`AlundraBalanceRecord.ByteAt` au-delà de l'enregistrement** (hors du périmètre écrit, nécessaire à l'acceptation) : 60 des 720 vecteurs de D1 portent l'attribut d'attaque `15` (octet `2 + 15 = 17` de la fiche). La fiche du Beannoïde fait
+   17 octets : le binaire lit alors le premier octet de l'enregistrement suivant du fichier (`BALANCE.BIN`), la DLL renvoyait 0 (« la donnée n'a pas une telle attaque, la lecture est exacte » : faux au-delà de la taille de la fiche). Corrigé :
+   `AlundraBalanceTables` relie chaque fiche à la suivante par le `FileOffset` exporté (613 fiches contiguës, une seule sans suivante), `ByteAt(offset >= RecordSize)` lit la suivante ; une fiche écrite à la main (sans suivante) lit 0 comme
+   avant. Test `AByteBeyondTheRecord_IsReadFromTheNextRecordOfTheFile`. Aucun attribut réel du jeu n'a ce quartet (non vérifié sur les 512 fiches : non nécessaire à l'acceptation).
+2. `AlundraEnemyHelpers.ZeroForces` ajoutée (les six mots que C1 et `HandleAnimationDirection` remettent à zéro) ; `Turn` l'utilise : même comportement, les tests d'E14.a0b restent verts.
+3. Sans héros (`PlayerEntity` nul), C1 ne fait rien et D1 applique les dégâts et l'animation sans la direction (comme `HitReaction`) : absent de l'oracle, noté.
+4. Un ennemi posé sur une entité (support par une autre entité dans `ComputeFloorHeight`, P4 d'E14.a0b) : l'oracle n'en offre aucun (`platform_28` n'existe que dans les 72 vecteurs d'E1 avec `plat = 1`, où il sert au porteur, E20.g) : **limite notée**, pas de vecteur.
+5. Le butin et son son 84 (E20.e0), `+0x1B8` (E20.e), le porteur (E20.g) restent des bouchons nommés dans `DestroyEntity` ; la levée de clé par voisin ou porteur reste l'écart écrit d'`AlundraEntityDepthKey`.
+6. Commentaires périmés d'E20.f1b corrigés dans les commits des tâches qui touchent les fichiers : `AlundraEffectReservoir.cs` (T3), `AlundraPlayerManager.cs` et `AlundraHeroAuraWorldTests.cs` (T5, ticks 129 à 131).
+7. L'arc G116 tourne hors de la collection du générateur statique : d'autres classes de tests qui tirent des nombres en parallèle peuvent entrelacer le flux ; les assertions n'en dépendent pas (deux suites complètes, Release et Debug, vertes).
 
 ##### Arrêts, budget, retour arrière
 
@@ -640,7 +692,7 @@ fermé. La grille de la 116 : animée après les deux Beannoïde. La 14 : les se
 |---|---|---|
 | O-E14-0 | **Tranché le 2026-10-10 (D-E14-8)** : E14.a0, E14.a0b et E14.a1 passent avant les armes, les objets et les collisions | — |
 | O-E14-1 | **Tranché le 2026-10-10 (D-E20-26)** : l'export de l'effet de bris reste dans E14.a1 (D-E14-2) | — |
-| O-E14-2 | Les Muruta de la 15 (scène, `0x2E [128]` `@712`, `@777`, `@890`) : le héros peut-il les toucher pendant la scène ? (`check.md` ligne 45) | E14.a1, lecture de `0x63` et des drapeaux de la scène |
+| O-E14-2 | **Fermé le 2026-10-10 (E14.a1b)** : `AlundraTarnMurggArcTests` R3-2 (carte 15) ne bouge pas avec les gestionnaires natifs du Beannoïde ; les Muruta de la 15 n'ont pas encore les leurs (E14.a1c) : à relire alors | E14.a1c |
 | Q-A1-1 | **Tranché le 2026-10-10 (D-E14-9, ADR-0060)** : l'effet de bris pour tous les appelants de `DestroyEntity(e, fx)`, comme le binaire | — |
 | O-E14-4 | **Tranché par la session principale (2026-10-10)** : l'ancre et la clé viennent d'E20.f1b (B3), exécutée avant E14.a1b ; pas de copie de B3 | — |
 | O-E14-5 | **Tranché par la session principale (2026-10-10)** : E20.e0b perd « `DestroyEntity(e, fx)` avec l'effet de bris », qu'E14.a1b fait ; E20.g2 et E20.f4 le prennent d'E14.a1b ; E20.e0x ne garde que `BankKey` et part de l'état d'E14.a1a (`docs/plan-e20-heros.md` §1.1) | — |
