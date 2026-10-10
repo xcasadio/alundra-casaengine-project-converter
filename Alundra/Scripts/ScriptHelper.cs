@@ -22,7 +22,10 @@ public static class ScriptHelper
 
     /// <summary>
     /// ScriptHelper.DirectionTable (alundra-datas-analyser AlundraTools/AlundraEngine/Gameplay/Scripts/
-    /// ScriptHelper.cs:223-241, address 0x80028b34): a 16x16 octant-angle lookup, indexed
+    /// ScriptHelper.cs:223-241): a 16x16 octant-angle lookup. E14.a0b T4: the decompilation's address comment (0x80028b34) is WRONG - that
+    /// address holds the 32-byte quarter-turn table (<see cref="AlundraEnemyHelpers.QuarterTurnTable"/>); this table is the 256 halfwords at
+    /// 0x80022488 of ALUN_CD.EXE (France), read by the routine 0x8002E814, whose thresholds are the words at 0x80022688 (<see cref="DivTable"/>), as the
+    /// E14.a0b oracle shows (10,000 states). Indexed
     /// <c>[y * 16 + x]</c> by <see cref="GetDirectionToTarget"/> after normalizing x/y into 0..15 via
     /// <see cref="DivTable"/> - the "distance to a single quadrant octant index" table.
     /// </summary>

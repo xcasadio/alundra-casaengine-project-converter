@@ -113,7 +113,7 @@ frais (commun avec E14.a0b, à la frontière d'intégration la plus petite).
 
 **Arrêts.** Une épingle du lanceur qui bouge ; un besoin de changer le moteur. **Retour arrière** : `git revert`.
 
-### 1.2 E14.a0b — Infrastructure des ennemis 🚧 (après E14.a0, D-E14-8 ; le registre est E14.a0)
+### 1.2 E14.a0b — Infrastructure des ennemis ✅ (après E14.a0, D-E14-8 ; le registre est E14.a0 ; exécutée le 2026-10-10, verifier frais à lancer)
 
 **Prérequis.** E14.a0 (le registre et l'interrupteur). D-E14-8 : E14.a passe en premier ; E14.a0b suit E14.a0 sans attendre les
 armes.
@@ -178,7 +178,10 @@ l'avance du générateur par tick (E20.e0b).
   **Fait (2026-10-10)** : `Alundra/Scripts/AlundraEnemyHelpers.cs` (position relative et sa seconde entrée, `TryAttackPlayer2`, `TryAttackPlayerFront`, `HandleAnimationDirection`, `StartWalk`, `QuarterTurnTable`, `Below`) ; `AlundraEnemyHelpersTests`
   (16 tests : 90 000 états de l'oracle valeur par valeur ; le piège `BoxDirection` / `AnimationDirection` par un leurre `+0x9C` dans chaque état et par un test à part ; 5 mutations du port attrapées). Table des entrées complétée ci-dessus (adresses des chargements relues dans le
   binaire, aucune contradiction entre les sources). Le squelette `HitReaction` est en T4.
-- ⏳ **T4 — Verrou du héros sur le contexte, `HitReaction`, doc.**
+- ✅ **T4 — Verrou du héros sur le contexte, `HitReaction`, doc.**
+  **Fait (2026-10-10)** : `IEntityWorldContext.HeroAnimationLatch` (membre par défaut, 0 ; `AlundraWorldProxy` renvoie le verrou de sa passe de coups) ; `AlundraEnemyHelpers.HitReaction(entité, animation, contexte)` (D1 = 5, D9 = 2) ; `AlundraEnemyHitReactionTests` (5 tests : 20 000 états des
+  gestionnaires D1 et D9 du binaire, `ComputeNewHp` remplacé par une souche dans l'oracle ; l'équipement et le verrou du contexte ; sans héros ; le défaut et la valeur du monde ; 4 mutations du port attrapées) ; le commentaire d'adresse faux de `ScriptHelper.DirectionTable` corrigé
+  (la table d'octants est à `0x80022488`, `0x80028B34` est la table de quart de tour).
 
 #### Acceptation
 

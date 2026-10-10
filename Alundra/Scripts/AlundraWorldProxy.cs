@@ -2805,6 +2805,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <summary>The binary's <c>0x80146DF8</c>: <c>+0x88</c> of the hero, latched at the head of every hit pass, after the animation clock of the tick (E20.c1a C3; read one tick later by the damage calculation, E20.c1b).</summary>
     internal uint HeroAnimationLatch => _hitPass.HeroAnimationLatch;
 
+    uint IEntityWorldContext.HeroAnimationLatch => HeroAnimationLatch;
+
     /// <summary>E20.c1a test-only seam: told the centre (16.16, the DLL's Z convention) of the overlap of each hit the pass writes, before the three sparks are queued.</summary>
     internal Action<int, int, int>? HitSparksForTests;
 

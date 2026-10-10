@@ -207,4 +207,23 @@ internal static class AlundraEnemyHelpers
             self.AIValues[1] = unchecked((short)(Below(16) + range));
         }
     }
+
+    /// <summary>
+    /// The skeleton of the hit handlers D1 (<c>0x8007D9A4</c>, Beannoid, animation 5) and D9 (<c>0x8007DE04</c>, Muruta, animation 2): <see cref="AlundraDamage.ComputeNewHp"/> of the entity (its touching entity's attack, its balance record, the equipment and
+    /// the hero's animation latch of <paramref name="context"/>), <see cref="AlundraEntityScriptProxy.Bytes"/>[3] = 1 when it returned true (<c>sb 0x277</c>, <c>0x8007D9C0</c>), the animation <paramref name="animation"/> (<c>+0x88</c>, <c>0x8007D9C8</c>), and the
+    /// direction away from the hero (<see cref="ScriptHelper.GetDirectionToTarget"/> of entity minus hero, <c>+0x114</c>/<c>+0x118</c> of both, <c>0x8007D9D4-0x8007D9E4</c>; written at <c>0x8007D9F0</c>). Without a hero in <paramref name="context"/> the direction is left alone.
+    /// </summary>
+    internal static void HitReaction(AlundraEntityScriptProxy self, uint animation, IEntityWorldContext context)
+    {
+        if (AlundraDamage.ComputeNewHp(self, self.BalanceRecord, context.EquipmentRecords, context.HeroAnimationLatch))
+        {
+            self.Bytes[3] = 1;
+        }
+
+        self.TargetAnimationId = animation;
+        if (context.PlayerEntity is { } hero)
+        {
+            self.TargetDirection = ScriptHelper.GetDirectionToTarget(unchecked(self.PosX - hero.PosX), unchecked(self.PosY - hero.PosY));
+        }
+    }
 }

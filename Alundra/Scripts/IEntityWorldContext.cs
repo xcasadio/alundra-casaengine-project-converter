@@ -114,6 +114,12 @@ public interface IEntityWorldContext
     AlundraEquipmentRecords? EquipmentRecords => null;
 
     /// <summary>
+    /// E14.a0b T4 (docs/plan-e14-ia-native.md section 1.2): the frozen animation of the hero (<c>0x80146DF8</c>, <see cref="AlundraHitPass.HeroAnimationLatch"/>), the second input the damage calculation of the native hit handlers needs next to
+    /// <see cref="EquipmentRecords"/> (<see cref="AlundraDamage.ComputeNewHp"/>). A default interface member, 0 like a hero that has not swung, so every existing implementer keeps compiling; <see cref="AlundraWorldProxy"/> returns its hit pass's latch.
+    /// </summary>
+    uint HeroAnimationLatch => 0;
+
+    /// <summary>
     /// This world's item tables (E19.l2, docs/plan-e19-opcodes.md section 1.2m.2) - back the "give item" branch of opcode
     /// 0x82 (max count per item). A default interface member, same "degraded, skip" shape as <see cref="SoundPlayer"/>:
     /// null makes that branch a degraded no-op. <see cref="AlundraWorldProxy"/> returns its own tables.
