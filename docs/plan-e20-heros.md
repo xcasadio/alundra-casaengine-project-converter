@@ -557,6 +557,13 @@ E20.e0b ; les deux points sont corrigés ci-dessus (FIX, preuves : `f-weapons.md
 de relecture plafonne la boucle : la révision n'est **pas READY** et reste **en pause** jusqu'au retour de l'auteur, qui doit de toute
 façon répondre à Q-N1 à Q-N3. Cette nuit ne tournent que les tranches sans prérequis de la ligne E20.f déjà approuvée (E20.f0, f1,
 f2), chacune relue à part ; chaque relecture de tranche vérifie aussi ses prérequis contre les points d'entrée du binaire.
+**Révision 4 (2026-10-10, après les réponses de l'auteur ; nouvelle époque de relecture).** L'auteur a tranché Q-N1 (D-E20-25 : E17,
+C60 et E9 passent à E20.f), Q-N2 (D-E20-26 : l'export de l'effet de bris reste dans E14.a, fait par E14.a1a) et Q-N3 (D-E20-27 :
+« collisions » = E20.g ; le mur d'eau profonde va avec les courants dans E20.i2, D-E20-31) ; il a avancé E14.a avant les armes
+(D-E14-8). Depuis : E20.f0, f1a, f1b, f2, c2-0, c2a, d1, d2a et i sont CONFIRMED ; E14.a0, a0b, a1a et a1b sont CONFIRMED (le registre
+par type, l'octet de bris exporté, `DestroyEntity(e, fx)` avec l'effet de bris pour tous ses appelants) ; E14.a1c est en cours. Le
+tableau ci-dessous est remplacé par celui de la révision 4 : tranches restantes seulement, prérequis remis à jour, ordre « armes,
+objets, collisions » avec les prérequis d'abord (D-E20-24). Une seule relecture de clôture suit.
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -597,41 +604,36 @@ lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports e
 - [DLL] La branche verrouillée de `MovePlayer` n'efface ni la charge ni le pointeur d'arme (`AlundraPlayerManager.cs:220-223`), alors
   que le binaire le fait (`0x80031BEC`, `0x80031BF8`) : un tir en attente part après le déverrouillage. Corrigé par E20.f1.
 
-**Tranches, dans l'ordre de la nuit** (chacune détaillée, relue, exécutée et vérifiée avant la suivante ; elles touchent les mêmes
-fichiers, donc l'une après l'autre) :
+**Tranches restantes (révision 4), dans l'ordre** (chacune détaillée, relue, exécutée et vérifiée avant la suivante ; elles touchent
+les mêmes fichiers, donc l'une après l'autre). Faites et CONFIRMED, hors du tableau : E20.f0, E20.f1a, E20.f1b, E20.f2, E20.c2-0,
+E20.c2a, E20.d1, E20.d2a, E20.i ; et, côté E14 : E14.a0 (registre par type et interrupteur), E14.a0b, E14.a1a (`BreakEffect` exporté,
+ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses appelants, ADR-0060).
 
-| Tranche | Contenu | Prérequis |
-|---|---|---|
-| E20.f0 | Moyens de test : `Preset` gagne l'arme, les PM et les PV ; aides `Give`/`Equip` de `ArcRun` ; opcodes `0xC0`/`0xC1` | — |
-| E20.f1 | Charge et relâchement : `UpdatePlayerWeaponEffect`, branche de relâchement de `PlayerTryAttack`, gerbe de 16 étincelles, aura (effet 3 attaché) par un accès de l'hôte aux effets, effacements de la charge et du pointeur dans les branches gelée et verrouillée ; l'arc et la baguette arment le pointeur, le tir reste un bouchon compté | — |
-| E20.f2 | Rebond du fléau : squelette de `CreatePlayerAnimationEffects(mode)`, fin du fléau réelle, le reste en bouchons nommés pour E20.e | — |
-| E20.e0x | Convertisseur : `BankKey` et `BreakEffect` dans `Data/sprite-records.json` ; export complet, preuve par manifeste et double export ; ADR de format. **2026-10-10 (O-E14-5)** : `BreakEffect` est fait par E14.a1a ; E20.e0x ne garde que `BankKey` et part de l'état d'E14.a1a | — |
-| E20.e0a | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance ; le registre des natifs par type et son interrupteur (D-E14-1) viennent d'E14.a0, qui les possède (`docs/plan-e14-ia-native.md` ; les aides des ennemis sont E14.a0b, plus tard) | E20.e0x, E14.a0 |
-| E20.e0b | Générateur avancé une fois par tick ; tirage du butin à la création (écrit le contenu, rien ne tombe) ; ~~`DestroyEntity(e, fx)` avec l'effet de bris~~ (2026-10-10, O-E14-5 : fait par E14.a1b, pour tous les appelants, D-E14-9) | E20.e0a |
-| E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a |
-| E20.f3 | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.f1 (le relâchement chargé lance la vague et la flèche chargée), E20.e0a, e0b |
-| E20.f4 | Flèche chargée : C94, E1 avec l'effet 8 | E20.f3, e0k |
-| E20.f5 | Flèches : E17 | E20.f3, e0k ; **réponse à Q-N1** |
-| E20.f6 | Boules de feu et de glace : C60, E9 ; vigilance sur les trois enregistrements `0x0C` de la carte 309 | E20.f3, e0b, e0k ; **réponse à Q-N1** |
-| E20.c2-0, E20.c2a | Oracle d'E20.c2 ; modèle de PV sur l'entité, fin de `MovePlayer` sur toutes les sorties, `UpdateItemEffectState` (D-E20-19 à D-E20-22) — pas la blessure | — |
-| E20.h0, E20.h1 | Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a |
-| E20.g1, E20.g2 | Soulever et porter ; lancer et briser | E20.e0a, e0k ; E14.a1b pour g2 (`DestroyEntity(e, -1)` avec l'effet de bris, O-E14-5) ; l'effacement du porteur `+0x2C` reste à E20.g2 |
-| E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 (cadre de l'usage : `0x8002ED64`, `0x8003499C`, pilote `0x8003634C`), donc E20.c2a ; E20.g1, g2 |
-| E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 | E20.g1, g2 ; Q-N3 |
+| # | Tranche | Contenu | Prérequis |
+|---|---|---|---|
+| 1 | E20.e0x | Convertisseur : `BankKey` dans `Data/sprite-records.json` (le `BreakEffect` y est déjà, E14.a1a) ; export complet en place, preuve par manifeste et double export ; ADR de format | E14.a1a ✅ |
+| 2 | E20.e0a | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
+| 3 | E20.e0b | Générateur avancé une fois par tick (`0x8002BD0C`-`0x8002BD34`) ; tirage du butin à la création (écrit le contenu, rien ne tombe) | E20.e0a |
+| 4 | E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a |
+| 5 | E20.f3 | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.f1 ✅, E20.e0a, E20.e0b |
+| 6 | E20.f4 | Flèche chargée : C94, E1 avec l'effet 8 (l'effet de bris vient d'E14.a1b, D-E20-26) | E20.f3, E20.e0k, E14.a1b ✅ |
+| 7 | E20.f5 | Flèches : E17 (D-E20-25) | E20.f3, E20.e0k |
+| 8 | E20.f6 | Boules de feu et de glace : C60, E9 (D-E20-25) ; vigilance sur les trois enregistrements `0x0C` de la carte 309, qui prendront vie | E20.f3, E20.e0b, E20.e0k |
+| 9 | E20.h0, E20.h1 | Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a ✅ |
+| 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées | E20.e0a, E20.e0k ; E14.a1b ✅ pour g2 |
+| 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 |
+| 12 | E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 (D-E20-27) | E20.g1, E20.g2 |
 
-Sans réponse à Q-N1, la nuit passe d'E20.f4 à E20.c2-0 et laisse E20.f5 et E20.f6 en attente. Ensuite : butin et objet ramassable
-(E20.e0c, avec E20.e ou E14.a), E20.e, E14.a, la blessure (E20.c2b), E20.d, E20.i.
+Ensuite, hors de l'ordre des armes, objets et collisions : la blessure du héros (E20.c2b, après E14.a, qui remesure ses arcs), le mur
+d'eau profonde avec les courants (E20.i2, D-E20-31 ; lecture de « 9 a » à confirmer par l'auteur), le butin et l'objet ramassable
+(E20.e0c), les effets du héros et l'herbe coupée (E20.e), la règle du stick (E20.d2b, après la mesure de l'auteur). Si E14.a1c s'arrête
+sur la chute des Muruta du hall (arrêt écrit de sa tranche : la chute des entités autres que le héros relève d'E20.e0k), E20.e0k passe
+en tête après E20.e0a, et E14.a1c reprend ensuite.
 
-**Questions pour l'auteur.**
-- **Q-N1 (bloque E20.f5 et E20.f6)** : D-E20-18 donne E17 (flèches) et C60 (glace) à E14, sur la prémisse que des ennemis les
-  partagent ; le recensement montre qu'ils ne servent qu'au héros (avec E9), C54 étant un gestionnaire de boss. Passent-ils à E20.f ?
-  Recommandé : oui ; sinon, l'arc et les baguettes restent inutilisables jusqu'à E14.
-- **Q-N2 (non bloquante)** : l'export de l'effet de bris (D-E14-2) avance d'E14.a à E20.e0x, dans le même export que `BankKey` : c'est
-  un prérequis d'E20.f4 (C94 et E1, déjà à E20.f par D-E20-18). La session principale l'avance et le note. Recommandé : oui.
-- **Q-N3 (bloque E20.g3 seulement)** : « collisions » désigne-t-il bien E20.g (caisses et jarres solides), ou aussi l'eau profonde
-  qui doit bloquer le héros sans les bottes (O-E19-22, sans propriétaire) ?
-- Par défaut fidèle, sans question : le plafond de 63 cases, la participation au tick de naissance (dans la DLL), la flèche normale qui
-  vole 16 px au-dessus du sol du héros et passe au-dessus des ennemis bas, la cape de sable reportée (elle n'est dans aucune tranche).
+**Questions de la nuit, tranchées le 2026-10-10.** Q-N1 → D-E20-25 ; Q-N2 → D-E20-26 ; Q-N3 → D-E20-27 (avec D-E20-31 pour l'eau
+profonde). Par défaut fidèle, sans question : le plafond de 63 cases, la participation au tick de naissance (dans la DLL), la flèche
+normale qui vole 16 px au-dessus du sol du héros et passe au-dessus des ennemis bas, la cape de sable reportée (elle n'est dans aucune
+tranche).
 
 ### 1.2 E20.0 — Découverte complémentaire 🚧 (D1 à D9 faites et contre-vérifiées le 2026-10-09 ; reste le détail d'E20.a, après les réponses de l'auteur)
 
