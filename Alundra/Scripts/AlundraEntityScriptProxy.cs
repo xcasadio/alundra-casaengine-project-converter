@@ -812,6 +812,12 @@ public partial class AlundraEntityScriptProxy : GameplayProxy
         // task's scope (contract item 3: "rien d'autre ne change dans la physique").
         TerrainHeight = ComputeTerrainHeight();
 
+        // E14.a0b T2: the floor and the four corner heights of every entity but the hero, at the end of the step (0x80038064 / 0x800370C4); the hero's are the probes of RunHeroProbes.
+        if (!IsPlayer)
+        {
+            UpdateEnemyGroundHeights();
+        }
+
         if (stepsWithoutController)
         {
             StepVerticalWithoutController(collidables, eligible);
@@ -2024,6 +2030,45 @@ public partial class AlundraEntityScriptProxy : GameplayProxy
         TerrainHeight = terrainHeight;
 
         FloorHeight = ComputeFloorHeight(terrainHeight);
+    }
+
+    /// <summary>
+    /// E14.a0b T2 (docs/plan-e14-ia-native.md section 1.2, <c>docs/plan-e14-annexe/e14a/oracle</c> h2): the floor (<see cref="FloorHeight"/>, <c>+0x134</c>) and the four corner heights
+    /// (<see cref="MapHeights"/>, <c>+0x158</c>-<c>+0x164</c>) of an entity other than the hero, written where the binary writes them: at the creation (<c>0x80039EE0</c>, <c>0x80039F30</c>) and at the end of every step of the physics
+    /// (<c>0x80037DF0</c>, <c>0x800384BC</c>). The corners are the four of <see cref="ComputeTerrainHeight(ICollisionField?)"/> in the binary's order (x1 y1, x2 y1, x1 y2, x2 y2); the floor is that terrain height through
+    /// <see cref="ComputeFloorHeight"/>, as the hero's (an entity that is not a collidable subject has the terrain itself, the binary's terrain + 1 in this port's convention).
+    /// The DLL's convention is the binary's minus 1 for every height (ADR-0026): the binary stores the raw corners and a floor of terrain + 1, so the corners are stored here MINUS 1, which keeps every difference
+    /// <c>FloorHeight - MapHeights[k]</c> (read by <c>HandleAnimationDirection</c> <c>0x80080144</c>) and every difference of floors (the relative position <c>0x8007FE20</c>) equal to the binary's. A corner without ground counts as 0
+    /// (the same fallback as <see cref="ComputeTerrainHeight(ICollisionField?)"/>). Does nothing without a collision field, nor for a bare proxy that was never created from a sprite record
+    /// (<see cref="SpriteType"/> is -1: the harnesses' pawns; the E2 pin <c>AlundraFloorHeightTests.ProductionCallSite_NpcNeverGetsFloorHeight_StaysZero</c> is such a pawn). Nothing but the native handlers of E14.a reads these fields.
+    /// </summary>
+    internal void UpdateEnemyGroundHeights() => UpdateEnemyGroundHeights(Owner?.World?.CollisionField);
+
+    /// <summary>The same against an explicit <paramref name="field"/> (the spawn, when the entity has no world yet).</summary>
+    internal void UpdateEnemyGroundHeights(ICollisionField? field)
+    {
+        if (field == null || SpriteType < 0)
+        {
+            return;
+        }
+
+        var x1 = (PosX + ModX) >> 16;
+        var x2 = (PosX + ModX + Width) >> 16;
+        var y1 = (PosY + ModY) >> 16;
+        var y2 = (PosY + ModY + Height) >> 16;
+        var highest = int.MinValue;
+        for (var corner = 0; corner < 4; corner++)
+        {
+            var best = int.MinValue;
+            AlundraTerrainProbe.SampleTerrainHeightCorner(field, (corner & 1) == 0 ? x1 : x2, corner < 2 ? y1 : y2, ref best);
+            MapHeights[corner] = (best == int.MinValue ? 0 : best) - 1;
+            if (best > highest)
+            {
+                highest = best;
+            }
+        }
+
+        FloorHeight = ComputeFloorHeight(highest == int.MinValue ? 0 : highest);
     }
 
     /// <summary>

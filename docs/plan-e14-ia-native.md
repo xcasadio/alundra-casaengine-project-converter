@@ -161,7 +161,11 @@ l'avance du générateur par tick (E20.e0b).
   manifeste.
   **Fait (2026-10-10)** : `docs/plan-e14-annexe/e14a/oracle/` (`notes.md`, `tools/run_e14a0b.py`, `out/`) ; neuf aides × 10 000 états tirés au hasard, égalité avec le modèle indépendant et avec le second interprète, couverture complète ; 1 711 lignes sur les cellules réelles des
   cartes 14, 115 et 116 (sol plat et en hauteur) : `floor = terrain + 1` d'une unité brute pour chaque corps et pour le héros ; 19 mutations attrapées, 2 témoins inchangés ; deux relances, même manifeste.
-- ⏳ **T2 — Sol et hauteurs de coin des ennemis.** Ports et tests contre les sorties (b) de T1.
+- ✅ **T2 — Sol et hauteurs de coin des ennemis.** Ports et tests contre les sorties (b) de T1.
+  **Fait (2026-10-10)** : `AlundraEntityScriptProxy.UpdateEnemyGroundHeights` (création : `AlundraEntitySpawnFactory.ApplySpawnInitialization` ; chaque pas : `EvaluateEntitySupport`, hors héros) ; `AlundraEnemyGroundTests` (8 tests : 1 711 lignes de l'oracle sur les
+  cartes 14, 115, 116 lues dans l'export, plus le spawn de production des sept Beannoïde de la 14). Formule vérifiée : `FloorHeight(DLL) = floor(binaire) − 1`, `MapHeights[k](DLL) = coin(binaire)[k] − 1`, donc `FloorHeight − MapHeights[k]` et `|dz|` du couple
+  égalent ceux du binaire (même écart − 1 pour le héros et pour les ennemis ; plats et en hauteur). **Décision** : l'écriture ignore un proxy nu (`SpriteType` −1, jamais créé depuis un enregistrement de sprite) pour que l'épingle E2
+  `AlundraFloorHeightTests.ProductionCallSite_NpcNeverGetsFloorHeight_StaysZero` (un pion de test nu) reste verte sans changement ; son nom (« un PNJ n'a jamais de sol ») ne dit plus la vérité pour les entités de la carte : à renommer par l'auteur ou la session principale.
 - ⏳ **T3 — Aides.** Ports exacts, table des entrées complétée ; tests contre les sorties (a) de T1, valeur par valeur ; un test qui
   échoue si une aide lit `AnimationDirection` alors que `BoxDirection` diffère.
 - ⏳ **T4 — Verrou du héros sur le contexte, `HitReaction`, doc.**

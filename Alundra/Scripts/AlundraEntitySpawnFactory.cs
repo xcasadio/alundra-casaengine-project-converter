@@ -680,6 +680,9 @@ internal static class AlundraEntitySpawnFactory
             {
                 proxy.PosZ = terrainHeight;
             }
+
+            // E14.a0b T2: the floor and the corner heights the creation leaves (0x80039EE0, 0x80039F30).
+            proxy.UpdateEnemyGroundHeights(collisionField);
         }
 
         // EntityManager.cs:123-125.
