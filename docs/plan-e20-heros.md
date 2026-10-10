@@ -2283,7 +2283,7 @@ Le test « Triangle seul donne Idle » s'inverse.
   - Rendre `tools/compare.py` identique à `e20-c2/oracle/tools/compare.py`.
   - Écrire un README court : commande de rejeu, groupes G1 à G10, colonnes, limites.
   - Preuve : `manifest.py` redonne `out/manifest.txt`.
-- ⏳ **T1 — Tables et champs.**
+- ✅ **T1 — Tables et champs.**
   - Tables `0x80022CAC` et `0x80022CEC`, avec un test octet par octet contre l'exe.
   - Champ du compteur `0x80126FF4`.
   - Constantes `0x03`, `0x04`, `0x29`, `0x2A`, `0x3E`, `0x1C`.

@@ -409,6 +409,11 @@ public partial class AlundraEntityScriptProxy : GameplayProxy
     /// <see cref="WeaponRecordPointer"/> by the branches of <c>MovePlayer</c> that end the tick early. Hero only.</summary>
     internal int WeaponChargeTimer;
 
+    /// <summary>E20.d1 T1: the resume counter of the run's stop, the binary's global <c>0x80126FF4</c> (only <c>MovePlayer</c> touches it, five sites): <c>0x03</c> sets it when the run ends (1 when the pad is
+    /// released, 0 when Triangle is released or the direction leaves the cone), <c>0x2A</c> counts it up (from 11 on a direction resumes the run) or clears it. It is a global in the binary and a field of the hero here;
+    /// the two are equivalent because <c>0x03</c> always sets it before the hero enters <c>0x2A</c>. Hero only.</summary>
+    internal int StopSprintCounter;
+
     /// <summary>E20.f1a: the named stub of the charge aura (the handle <c>0x80126FF8</c> of the binary, E20.f1b ports it). Hero only.</summary>
     internal readonly AlundraAuraStub AuraStub = new();
 

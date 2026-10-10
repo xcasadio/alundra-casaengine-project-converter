@@ -94,6 +94,40 @@ public static class AlundraPlayerManager
     /// <summary>The bit of <see cref="AlundraEntityScriptProxy.CombinedVramFlagsOR"/> (a ground property of 0x40) on which the Cross does not jump.</summary>
     private const uint NoJumpVramFlag = 0x4000;
 
+    /// <summary>PlayerAnimation 0x03 (E20.d1 T1): the run itself (the sprint), 258048 units of force per tick once the speed is up.</summary>
+    internal const uint SprintAnimationId = 0x03;
+
+    /// <summary>PlayerAnimation 0x04 (E20.d1 T1): the tackle, entered from the run by the Square, the Cross or the Circle; its tick is the ground attack group's (<see cref="IsGroundAttackGroup"/>).</summary>
+    internal const uint TackleAnimationId = 0x04;
+
+    /// <summary>PlayerAnimation 0x29 (E20.d1 T1): the preparation of the run (25 ticks), entered from the common tail by a held Triangle.</summary>
+    internal const uint PrepareSprintAnimationId = 0x29;
+
+    /// <summary>PlayerAnimation 0x2A (E20.d1 T1): the slide that ends the run (16 ticks), in which a direction resumes the run from the eleventh tick.</summary>
+    internal const uint StopSprintAnimationId = 0x2A;
+
+    /// <summary>PlayerAnimation 0x3E (E20.d1 T1): the bounce against an obstacle at run speed; it shares its tick with <see cref="HurtBounceAnimationId"/> (<c>0x80032558</c>).</summary>
+    internal const uint SprintBounceAnimationId = 0x3E;
+
+    /// <summary>PlayerAnimation 0x1C (E20.d1 T1): the recoil after a hit (reached from the hurt state 0x31, E20.c2b); the jump table <c>0x80022D3C</c> sends it to the handler of <see cref="SprintBounceAnimationId"/>.</summary>
+    internal const uint HurtBounceAnimationId = 0x1C;
+
+    /// <summary>The slope value of deep water (<c>Slope_18c</c> 4): the binary sends every state of the run to the swim there (<c>0x8003260C</c>, E20.i); until then <see cref="MovePlayer"/> walks (see the guard of the run states).</summary>
+    private const int DeepWaterSlope = 4;
+
+    /// <summary>
+    /// E20.d1 T1: the facing (<see cref="AlundraEntityScriptProxy.AnimationDirection"/>: 0 down, 1 up, 2 left, 3 right) the binary has when <c>MovePlayer</c> of this tick starts: <c>UpdateAnimation</c> (<c>0x80038AB4</c>) rewrites
+    /// <c>+0x98</c> at every tick from the previous facing and the direction (<c>+0x8C</c>) <c>MovePlayer</c> left, through the table <c>0x800237F4</c> (<c>0x80038AD8</c>). The DLL writes the field only when a frame ends
+    /// (<see cref="AlundraFrameSyncPasses.SyncAnimation"/>), so in a frame of two ticks the second one would read the facing of the frame before. The value is the one the binary would have posed, the table lookup of
+    /// <see cref="AlundraFrameSyncPasses.TryResolveAnimationTarget"/>; it is exact with one and two ticks per frame, and for any number of ticks in <c>0x03</c>, whose direction is a cardinal one (the table is idempotent on
+    /// a cardinal direction). Computed once at the head of <see cref="MovePlayer"/>, before the tick writes anything; this is the binary's own value, not a deviation.
+    /// </summary>
+    internal static int TickFacing(AlundraEntityScriptProxy player)
+    {
+        AlundraFrameSyncPasses.TryResolveAnimationTarget(player, out _, out var direction);
+        return direction;
+    }
+
     /// <summary>PlayerAnimation.LoadingMap = 0x36 (PlayerAnimation.cs:62) - the animation
     /// <c>ResetEntityState</c>/<c>AlundraWorldProxy</c>'s own pawn-adoption spawns the hero with
     /// (<see cref="AlundraGameState.ResetAnimationId"/>).</summary>
