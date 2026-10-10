@@ -242,7 +242,7 @@ Ordre (session principale, 2026-10-10) : E14.a1a, puis E20.d2a et E20.f1b (déj�
 puis E14.a1c. E1 ne change pas : la branche E de `RunSpriteEvent` reste hors du registre ; l'effet de bris vit dans `DestroyEntity` de
 l'hôte. Chaque tranche : relecture du plan, exécuteur, verifier frais.
 
-### 1.3a E14.a1a — L'octet de l'effet de bris dans l'export 🧪 (exécutée le 2026-10-10 ; verifier frais en attente)
+### 1.3a E14.a1a — L'octet de l'effet de bris dans l'export ✅ (faite et CONFIRMED le 2026-10-10, `669078d` à `0fb0954`)
 
 **Révision 1 (2026-10-10).** Relecture : **REVISE**, un point corrigé (FIX) : l'acceptation de T4 est écrite par rapport à
 l'export de référence de T1 (`m1` et son `report.json`), plus en valeurs absolues de `m0` qu'un rebasage permis par les arrêts
@@ -337,6 +337,19 @@ seuls, fichier égal à la prédiction au bit près (SHA-1 `007f2660…`) ; expo
 (écart de taille du `report.json` présent) + 0 (DLL et PDB) ; convertisseur 849/849 ; `Alundra.Tests` 4 646/4 646 en Release et en Debug
 (une première passe Release a eu 1 échec non capturé, non reproduit en trois passes complètes ensuite). Preuves : annexe
 `docs/plan-e14-annexe/e14a/a1a-export-prediction.md`, dossier `a1a/`, ADR-0061.
+
+**Vérification (2026-10-10) : CONFIRMED** par deux verifiers frais, l'un après l'autre (workflow) :
+- **rejeu** : `m4` égal à `m3` ; un export de plus ne change que `report.json` ; `Data/sprite-records.json` égal à la prédiction au bit
+  près ; compteurs de `report.json` égaux à ceux de T1 ; `OutputSizeBytes` expliqué à l'octet (+9 132, DLL et PDB du dernier build
+  Debug, `report.json` présent) ; convertisseur 849/849 ; `Alundra.Tests` 4 646/4 646 en Release et en Debug (l'échec unique de la
+  première passe Release de l'exécuteur ne se reproduit pas) ; `cmp` de la DLL ; traces inchangées ;
+- **lecture seule** (INCONCLUSIVE par construction : sa lentille interdisait l'exécution, fournie par le rejeu) : diff conforme au
+  périmètre, tests avant le code, annexe avant le code, ADR-0061 et docs de format ; recalcul indépendant des 395 fiches depuis
+  `data-extracted` (UUIDv5 recalculés) : 0 écart de `BreakEffect` ni des 15 autres champs d'en-tête ; l'ancien fichier se retrouve au
+  bit près en retirant la clé (SHA-1 `772bb8b7…`).
+Remarques P4, **reportées** : l'échec Release non capturé de l'exécuteur (non reproduit en quatre passes) ; le lien vers l'ADR-0061
+ajouté au commit T3 avant l'ADR (résolu au HEAD) ; le bruit de fin de ligne des traces ; Visual Studio (`devenv.exe`) et d'autres
+`dotnet.exe` tournaient sur la machine pendant les exports, sans effet sur la preuve (manifestes et prédiction exacts).
 
 **Budget** : un `executor`, deux tentatives au plus ; `plan-verifier` avant l'exécution ; `verifier` frais à la fin. **Retour arrière** :
 `git revert`, puis un export complet en place.
