@@ -47,15 +47,36 @@ public readonly struct AlundraPadState
     /// <see cref="AlundraTickPad"/> (<see cref="FromTickPad"/>) carries it; the per-frame snapshot of <see cref="AlundraPlayerController.BuildPadState"/> leaves it 0.</summary>
     public uint ButtonsReleased { get; init; }
 
+    /// <summary>E20.d2a S1 (D-E20-32): the direction bits (<see cref="Up"/> to <see cref="Left"/>) held by the KEYBOARD and the D-PAD (the digital actions <c>MoveUp</c> to <c>MoveRight</c>). <see cref="ButtonsHold"/> keeps the OR of these and of
+    /// <see cref="StickBitsHold"/>; 0 by default so an initializer that does not know the field keeps its meaning.</summary>
+    public uint DigitalDirectionBitsHold { get; init; }
+
+    /// <summary>E20.d2a S1: the direction bits held by the left STICK (the analog actions <c>Move*Stick</c>, pressed from the 0.5 dead zone). 0 by default.</summary>
+    public uint StickBitsHold { get; init; }
+
+    /// <summary>E20.d2a S1: the signed horizontal deflection of the left stick, positive to the right (<c>ButtonState.Value</c> of <c>MoveRightStick</c>, never a difference of the two halves, which would double it). 0 by default.</summary>
+    public float StickX { get; init; }
+
+    /// <summary>E20.d2a S1: the signed vertical deflection of the left stick, positive upward (<c>ButtonState.Value</c> of <c>MoveUpStick</c>). 0 by default.</summary>
+    public float StickY { get; init; }
+
     /// <summary>
     /// E20.a A1 (D-E20-2): the pad of ONE logic tick, as the binary's <c>MovePlayer</c> reads it (<c>g_padState1</c>, refreshed once per tick just before <c>UpdateWorld</c>,
     /// <c>0x8002BB5C</c>): hold (<c>0x80126F28</c>), pressed edge (<c>0x80126F2A</c>) and released edge, from <paramref name="tickPad"/> (<see cref="AlundraGameState.TickPad"/> in a driven world).
     /// </summary>
-    public static AlundraPadState FromTickPad(AlundraTickPad tickPad) => new()
+    public static AlundraPadState FromTickPad(AlundraTickPad tickPad) => FromTickPad(tickPad, default);
+
+    /// <summary>E20.d2a S1: the pad of the tick as <see cref="FromTickPad(AlundraTickPad)"/> builds it, plus the stick sample of the FRAME (<paramref name="frameSample"/>, <see cref="AlundraGameState.LastPadState"/>):
+    /// the digital and stick direction bits and the signed deflection, copied as they are (the tick pad itself does not carry them).</summary>
+    public static AlundraPadState FromTickPad(AlundraTickPad tickPad, in AlundraPadState frameSample) => new()
     {
         ButtonsHold = tickPad.ButtonsHold,
         ButtonsJustPressed = tickPad.ButtonsJustPressed,
         ButtonsReleased = tickPad.ButtonsReleased,
+        DigitalDirectionBitsHold = frameSample.DigitalDirectionBitsHold,
+        StickBitsHold = frameSample.StickBitsHold,
+        StickX = frameSample.StickX,
+        StickY = frameSample.StickY,
     };
 }
 
@@ -88,6 +109,8 @@ public sealed class AlundraPlayerController : PlayerController
     /// <c>Alundra/Scripts/PlayerManager.cs:413/549/964/1904/430</c>, quoted by the converter's own E2-A
     /// note in <c>docs/plan-conversion-totale.md</c> §4 for the PSX-&gt;pad mapping this mirrors).
     /// </summary>
+    private const uint DirectionMask = AlundraPadState.Up | AlundraPadState.Right | AlundraPadState.Down | AlundraPadState.Left;
+
     private static readonly (string Action, uint Bit)[] ActionBits =
     {
         ("MoveUp", AlundraPadState.Up),
@@ -265,6 +288,10 @@ public sealed class AlundraPlayerController : PlayerController
     {
         uint hold = 0;
         uint justPressed = 0;
+        uint digital = 0;
+        uint stick = 0;
+        var stickX = 0f;
+        var stickY = 0f;
 
         foreach (var (action, bit) in ActionBits)
         {
@@ -278,6 +305,27 @@ public sealed class AlundraPlayerController : PlayerController
             if (state.IsKeyPressed)
             {
                 hold |= bit;
+
+                // E20.d2a S1: who produced the direction bit, kept apart (the OR above is unchanged).
+                if (action.EndsWith("Stick", StringComparison.Ordinal))
+                {
+                    stick |= bit;
+                }
+                else if ((bit & DirectionMask) != 0)
+                {
+                    digital |= bit;
+                }
+            }
+
+            // E20.d2a S1: the signed deflection comes from ONE action per axis. The engine gives each half of an axis the same axis, inverted (MoveLeftStick.Value = -MoveRightStick.Value, MoveDownStick.Value =
+            // -MoveUpStick.Value), so a difference of the two halves would double it.
+            if (action == "MoveRightStick")
+            {
+                stickX = state.Value;
+            }
+            else if (action == "MoveUpStick")
+            {
+                stickY = state.Value;
             }
 
             if (state.IsKeyJustPressed)
@@ -286,6 +334,14 @@ public sealed class AlundraPlayerController : PlayerController
             }
         }
 
-        return new AlundraPadState { ButtonsHold = hold, ButtonsJustPressed = justPressed };
+        return new AlundraPadState
+        {
+            ButtonsHold = hold,
+            ButtonsJustPressed = justPressed,
+            DigitalDirectionBitsHold = digital,
+            StickBitsHold = stick,
+            StickX = stickX,
+            StickY = stickY,
+        };
     }
 }

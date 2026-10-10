@@ -73,6 +73,7 @@ public sealed class AlundraTickStructureTests : IDisposable
         public readonly RecordingRunner Runner = new();
         public readonly List<string> Trace = new();
         public uint Hold;
+        public AlundraPadState? Sample; // E20.d2a: when set, the whole frame sample the controller publishes (stick included); otherwise a pad of Hold alone.
         public int Tick = -1;
         public Action<string>? OnPass;
         private readonly List<Entity> _spawned;
@@ -85,7 +86,7 @@ public sealed class AlundraTickStructureTests : IDisposable
             Proxy.EventProgramRunner = Runner;
             Runner.CurrentTick = () => Tick;
 
-            var controller = new AlundraPlayerController { PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = Hold } };
+            var controller = new AlundraPlayerController { PadStateProviderForTests = () => Sample ?? new AlundraPadState { ButtonsHold = Hold } };
             typeof(AlundraWorldProxy).GetField("_playerController", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Proxy, controller);
             _spawned = (List<Entity>)typeof(AlundraWorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(Proxy)!;
 
@@ -168,6 +169,33 @@ public sealed class AlundraTickStructureTests : IDisposable
             Assert.Equal(expectedTicks, Rig.TicksOf(passes));
             Assert.Equal(expectedTicks, AlundraPlayerManager.MovePlayerCallCountForTests - before);
         }
+    }
+
+    /// <summary>E20.d2a S1: in a driven world the entity block builds the pad of each tick from the tick pad AND the frame's sample, so the stick sample reaches MovePlayer at every tick of the frame.</summary>
+    [Fact]
+    public void TheEntityBlock_HandsTheFramesStickSampleToMovePlayer_AtEachTick()
+    {
+        var rig = BuildWarmRig();
+        var seen = new List<AlundraPadState>();
+        AlundraEntityScriptProxy.PadOfTickSeenForTests = seen.Add;
+        try
+        {
+            rig.Sample = new AlundraPadState { ButtonsHold = AlundraPadState.Right, StickBitsHold = AlundraPadState.Right, DigitalDirectionBitsHold = 0, StickX = 0.9f, StickY = 0.3f };
+            rig.Frame(TwoTicks);
+        }
+        finally
+        {
+            AlundraEntityScriptProxy.PadOfTickSeenForTests = null;
+        }
+
+        Assert.Equal(2, seen.Count);
+        Assert.All(seen, p =>
+        {
+            Assert.Equal(0.9f, p.StickX);
+            Assert.Equal(0.3f, p.StickY);
+            Assert.Equal(AlundraPadState.Right, p.StickBitsHold);
+            Assert.Equal(AlundraPadState.Right, p.ButtonsHold);
+        });
     }
 
     [Fact]

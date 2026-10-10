@@ -764,6 +764,7 @@ public static class AlundraPlayerManager
             return;
         }
 
+        AlundraStickProbe.LogStartTableRead(PrepareSprintAnimationId, nibble); // E20.d2a S3
         var start = DashDirection(nibble);
         if (start < 0)
         {
@@ -877,6 +878,7 @@ public static class AlundraPlayerManager
             return;
         }
 
+        AlundraStickProbe.LogStartTableRead(StopSprintAnimationId, nibble); // E20.d2a S3
         var resume = DashDirection(nibble);
         if (resume < 0)
         {

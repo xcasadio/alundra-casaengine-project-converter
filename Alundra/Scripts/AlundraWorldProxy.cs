@@ -2698,7 +2698,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         TickTraceForTests?.Invoke("movePlayer");
         if (hero is { TookPartInFrame: true })
         {
-            hero.MovePlayerOnTickPad(AlundraPadState.FromTickPad(GameState.TickPad));
+            hero.MovePlayerOnTickPad(AlundraPadState.FromTickPad(GameState.TickPad, in GameState.LastPadState));
         }
 
         TickTraceForTests?.Invoke("programs");

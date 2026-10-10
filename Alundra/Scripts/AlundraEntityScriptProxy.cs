@@ -1253,6 +1253,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy
             if (padSource != null)
             {
                 ScriptHost.GameState.LastPadState = padSource.BuildPadState();
+                AlundraStickProbe.LogFrame(in ScriptHost.GameState.LastPadState); // E20.d2a S3: one line per frame when ALUNDRA_DEBUG_STICK_PROBE=1.
             }
         }
 
@@ -1443,7 +1444,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy
         for (var tick = 0; tick < ticks && tick < _selfDrivenPadOfTick.Length; tick++)
         {
             SelfDrivenTickPad.Update(ScriptHost!.GameState.LastPadState.ButtonsHold);
-            _selfDrivenPadOfTick[tick] = AlundraPadState.FromTickPad(SelfDrivenTickPad);
+            _selfDrivenPadOfTick[tick] = AlundraPadState.FromTickPad(SelfDrivenTickPad, in ScriptHost.GameState.LastPadState); // E20.d2a S1: the frame's stick sample rides in the pad of the tick.
         }
     }
 
@@ -1527,12 +1528,17 @@ public partial class AlundraEntityScriptProxy : GameplayProxy
         UpdateFloorHeight();
     }
 
+    /// <summary>E20.d2a test-only seam: sees the pad of each tick handed to <see cref="MovePlayerOnTickPad"/> (before the controller check). Per thread; null in production.</summary>
+    [ThreadStatic]
+    internal static Action<AlundraPadState>? PadOfTickSeenForTests;
+
     /// <summary>
     /// E20.a A4: the hero's <c>MovePlayer</c> (<c>0x80031B50</c>), once per logic tick, on <paramref name="pad"/>, the pad of that tick (<see cref="AlundraPadState.FromTickPad"/>:
     /// hold, rising edge and release of the tick, D-E20-2). A no-op without a controller possessing the pawn.
     /// </summary>
     internal void MovePlayerOnTickPad(in AlundraPadState pad)
     {
+        PadOfTickSeenForTests?.Invoke(pad);
         var host = ScriptHost;
         if (host?.PlayerController == null)
         {
