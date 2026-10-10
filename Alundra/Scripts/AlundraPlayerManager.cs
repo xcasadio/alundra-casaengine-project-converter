@@ -1295,15 +1295,59 @@ public static class AlundraPlayerManager
     }
 
     /// <summary>
-    /// The stats side of <c>IncreaseHpMaxAndCreateEffect</c> (0x800333AC, E19.g G3d, parent ADR-0048): the maximum goes up by one (capped at 50 by <see cref="SetPlayerHpMax"/>) and the life
-    /// is filled to the raised value (<see cref="SetPlayerHp"/> clamps it to the new maximum). The binary raises the hero entity and mirrors it into the stats at the end of the next
-    /// <c>MovePlayer</c>; this port has no entity-borne life yet, so the stats change at once (provisional seam, see the ADR).
+    /// The life side of <c>IncreaseHpMaxAndCreateEffect</c> (0x800333AC, E19.g G3d, ADR-0048 amended by ADR-0056). For a hero that carries its life (<see cref="AlundraEntityScriptProxy.LifePulledFromStats"/>, every hero of a
+    /// world), as the binary does (<c>0x800333D0-0x800333E4</c>): <c>HpMax += 1</c> with NO cap and <c>Hp = HpMax</c>, on the entity; the stats follow at the end of the next <see cref="MovePlayer"/> through the
+    /// clamps of <see cref="SetPlayerHpMax"/> and <see cref="SetPlayerHp"/> (a vessel at 50/50 gives an entity of 51/51 and stats of 50/50). Without such a hero (no hero, or the bare proxy of a test montage, whose
+    /// life is never mirrored) the stats are raised at once through the same setters, the former seam: the maximum + 1 capped at 50, the life filled to the raised value.
     /// </summary>
-    public static void IncreaseHpMaxAndFill(AlundraGameState state)
+    public static void IncreaseHpMaxAndFill(AlundraGameState state, AlundraEntityScriptProxy? hero = null)
     {
+        if (hero is { LifePulledFromStats: true })
+        {
+            hero.HpMax += 1;
+            hero.Hp = hero.HpMax;
+            return;
+        }
+
         var raised = state.PlayerStats.HpMax + 1;
         SetPlayerHpMax(state, raised);
         SetPlayerHp(state, (short)raised);
+    }
+
+    /// <summary>
+    /// Opcode <c>0xBC</c> (<c>Script_188_0BC</c>, <c>0x80041C00</c>): the hero's maximum life goes up by the operand byte, capped at <c>0x32</c> (<c>slti 0x33</c>); the life is not touched. Written on the entity of a
+    /// hero that carries its life; otherwise (no hero, a bare test proxy) on the stats through <see cref="SetPlayerHpMax"/>, which has the same cap.
+    /// </summary>
+    public static void IncreaseHpMax(AlundraGameState state, AlundraEntityScriptProxy? hero, int amount)
+    {
+        if (hero is { LifePulledFromStats: true })
+        {
+            var raised = hero.HpMax + amount;
+            hero.HpMax = raised < 0x33 ? raised : 0x32;
+            return;
+        }
+
+        SetPlayerHpMax(state, state.PlayerStats.HpMax + amount);
+    }
+
+    /// <summary>
+    /// Opcode <c>0xC3</c> (<c>Script_195_0C3</c>, <c>0x80041D6C</c>): <c>Hp = HpMax</c> on the hero entity (<c>0x80041D7C-0x80041D84</c>), <c>SetPlayerMp(GetPlayerMpMax())</c>, then <c>InitializeHpAndMp</c>
+    /// (<c>0x8004B730</c>): the four displayed counters of the HUD (<see cref="AlundraHudDirector"/>) jump to the maxima of the stats, so the hearts and pips fill at once instead of rolling up. Without a hero that
+    /// carries its life the stats are filled instead (<see cref="SetPlayerHp"/> to the stats' own maximum).
+    /// </summary>
+    public static void RestoreLifeAndMagic(AlundraGameState state, AlundraEntityScriptProxy? hero)
+    {
+        if (hero is { LifePulledFromStats: true })
+        {
+            hero.Hp = hero.HpMax;
+        }
+        else
+        {
+            SetPlayerHp(state, state.PlayerStats.HpMax);
+        }
+
+        SetPlayerMp(state, state.PlayerStats.MpMax);
+        AlundraHudDirector.Instance.SnapDisplayedLifeAndMagic(state.PlayerStats);
     }
 
     /// <summary>PlayerManager.SetPlayerHp (0x8004dd30, PlayerManager.cs:1734-1761, IsGodMode override at

@@ -654,6 +654,16 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 _gameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ForcedWeapon;
                 return 2;
 
+            case 0xBC: // Increase player HpMax - Script_188_0BC @ 0x80041C00 (E20.c2a T3), PER THE BINARY: the hero entity's HpMax (+0x18) += the operand byte v1, capped at 0x32; the life is not touched.
+                       // Written on the entity (the stats follow at the end of the next MovePlayer); the stats take it directly only without a hero that carries its life. Size 2, Result untouched.
+                AlundraPlayerManager.IncreaseHpMax(_gameState, _worldContext.PlayerEntity, v[1]);
+                return 2;
+
+            case 0xC3: // Restore and init HP and MP - Script_195_0C3 @ 0x80041D6C (E20.c2a T3), PER THE BINARY: hero Hp (+0x14) = HpMax (+0x18); SetPlayerMp(GetPlayerMpMax()); then InitializeHpAndMp
+                       // (0x8004B730), which snaps the four displayed counters of the HUD to the stats' maxima. Size 1, Result untouched.
+                AlundraPlayerManager.RestoreLifeAndMagic(_gameState, _worldContext.PlayerEntity);
+                return 1;
+
             case 0xC1: // Clear the scripted weapon lock - Script_193_0C1 @ 0x80041D18 (E20.f0 T1): PlayerControlFlags &= ~0x80. Size 1.
                 _gameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.ForcedWeapon;
                 return 1;
@@ -3117,7 +3127,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// </summary>
     private void UseLifeVessel()
     {
-        AlundraPlayerManager.IncreaseHpMaxAndFill(_gameState);
+        AlundraPlayerManager.IncreaseHpMaxAndFill(_gameState, _worldContext.PlayerEntity);
         _worldContext.SoundPlayer?.PlaySfx(AlundraNativeEffects.LifeVesselSfx);
 
         if (_worldContext.EffectStage is { } stage && _worldContext.PlayerEntity is { } hero)

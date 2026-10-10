@@ -285,6 +285,21 @@ public sealed class AlundraHudDirector
         System.Array.Clear(_magicPipFrame, 0, _magicPipFrame.Length);
     }
 
+    /// <summary>
+    /// E20.c2a T3, <c>InitializeHpAndMp</c> (<c>0x8004B730</c>, the end of opcode <c>0xC3</c>): the four displayed counters (<c>g_playerDataHud[0..3]</c>: life, maximum life, magic, maximum magic) all take the stats' maxima
+    /// (<c>GetPlayerHpMax</c> twice, <c>GetPlayerMpMax</c> twice), so the display is full at once. The four catch-up sub-steps are left as they are: the binary writes only the four counters, not the
+    /// full reset of <see cref="ResetDisplayForLoad"/>.
+    /// </summary>
+    internal void SnapDisplayedLifeAndMagic(AlundraPlayerStats stats)
+    {
+        System.ArgumentNullException.ThrowIfNull(stats);
+
+        Hp = stats.HpMax;
+        HpMax = stats.HpMax;
+        Mp = stats.MpMax;
+        MpMax = stats.MpMax;
+    }
+
     /// <summary>Test-only: the four catch-up sub-steps (<c>g_playerDataHud[5..8]</c>), so a test can pose and
     /// check the mid-catch-up state of SC1 without reaching into private fields.</summary>
     internal (int Hp, int HpMax, int Mp, int MpMax) SubStepsForTests => (_hpSubStep, _hpMaxSubStep, _mpSubStep, _mpMaxSubStep);

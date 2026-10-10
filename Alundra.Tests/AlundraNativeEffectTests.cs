@@ -311,17 +311,159 @@ public sealed class AlundraNativeEffectTests : IDisposable
 
     public static IEnumerable<object[]> LifeCases() => Golden.Where(r => r[0] == "P").Select(r => new object[] { int.Parse(r[1]), int.Parse(r[2]), int.Parse(r[3]), int.Parse(r[4]) });
 
+    /// <summary>E20.c2a T3: a hero that carries its life as the binary's does (pulled from the stats at its creation), the stats as given.</summary>
+    private static AlundraEntityScriptProxy CarryingHero(AlundraGameState state, int hp, int hpMax)
+    {
+        state.PlayerStats.HpMax = (short)hpMax;
+        state.PlayerStats.Hp = (short)hp;
+        var hero = HeroAt(0, 0, 0);
+        hero.HpMax = hpMax;
+        hero.Hp = hp;
+        hero.LifePulledFromStats = true;
+        return hero;
+    }
+
+    /// <summary>The END of the hero's tick (<c>0x80032914</c>) through the locked branch of <c>MovePlayer</c> (the vessel runs in a locked script): <c>UpdateItemEffectState</c>, then the two stat setters.</summary>
+    private static void LockedTick(AlundraEntityScriptProxy hero, AlundraGameState state)
+    {
+        state.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ControlLocked;
+        var pad = default(AlundraPadState);
+        AlundraPlayerManager.MovePlayer(hero, in pad, state, host: null);
+    }
+
+    // E20.c2a T3: the rows P are re-pinned "after the end of MovePlayer": the vessel writes the hero ENTITY (ADR-0056, binary 0x800333D0-0x800333E4); the stats are the mirror written by the
+    // END of the next tick (clamps 0..50 and 0..HpMax). Before, the vessel wrote the stats at once and the rows were asserted right after the opcode.
     [Theory]
     [MemberData(nameof(LifeCases))]
     public void TheLife_IsTheRowsP_TheVesselThenTheEndOfMovePlayer(int hp, int hpMax, int statsHp, int statsHpMax)
     {
         var state = new AlundraGameState();
-        state.PlayerStats.Hp = (short)hp;
-        state.PlayerStats.HpMax = (short)hpMax;
+        var hero = CarryingHero(state, hp, hpMax);
 
-        Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = HeroAt(0, 0, 0) }, state, VesselProgram);
+        Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = hero }, state, VesselProgram);
+
+        Assert.Equal((hp, hpMax), ((int)state.PlayerStats.Hp, (int)state.PlayerStats.HpMax)); // the stats have not moved: the mirror is the END's.
+        Assert.Equal((hpMax + 1, hpMax + 1), (hero.Hp, hero.HpMax)); // the entity: HpMax + 1 with no cap, the life filled.
+
+        LockedTick(hero, state);
 
         Assert.Equal((statsHp, statsHpMax), ((int)state.PlayerStats.Hp, (int)state.PlayerStats.HpMax));
+    }
+
+    [Fact]
+    public void TheVessel_At50Over50_GivesAnEntityOf51_AndStatsThatStayAtFifty()
+    {
+        var state = new AlundraGameState();
+        var hero = CarryingHero(state, 50, 50);
+
+        Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = hero }, state, VesselProgram);
+        Assert.Equal((51, 51), (hero.Hp, hero.HpMax)); // oracle E2-vessel50 at tick 3: entity 51/51, no cap on the entity.
+
+        LockedTick(hero, state);
+        LockedTick(hero, state);
+
+        Assert.Equal((51, 51), (hero.Hp, hero.HpMax));
+        Assert.Equal((50, 50), ((int)state.PlayerStats.Hp, (int)state.PlayerStats.HpMax)); // oracle E2-vessel50: the stats are clamped to 50/50 every tick.
+    }
+
+    [Fact]
+    public void TheVessel_WithoutAHeroThatCarriesItsLife_RaisesTheStatsAtOnce_TheFormerSeam()
+    {
+        var state = new AlundraGameState();
+        state.PlayerStats.Hp = 4;
+
+        Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = HeroAt(0, 0, 0) }, state, VesselProgram); // a bare proxy: its life is never mirrored.
+
+        Assert.Equal((11, 11), ((int)state.PlayerStats.Hp, (int)state.PlayerStats.HpMax));
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    // E20.c2a T3: opcodes 0xBC (HpMax + n) and 0xC3 (restore HP and MP, snap the HUD) write the hero entity
+    // ---------------------------------------------------------------------------------------------------------------------
+
+    private static readonly int[] IncreaseHpMaxBy5Program = { 0xBC, 5, 0x1A, 9, 0xFF };
+    private static readonly int[] IncreaseHpMaxBy3Program = { 0xBC, 3, 0x1A, 9, 0xFF };
+    private static readonly int[] RestoreProgram = { 0xC3, 0x1A, 9, 0xFF };
+
+    [Theory]
+    [InlineData(10, 8, 15, 8)] // Script_188_0BC 0x80041C00: HpMax += 5; the life is not touched.
+    [InlineData(48, 20, 50, 20)] // capped at 0x32 (slti 0x33).
+    [InlineData(50, 50, 50, 50)]
+    public void Opcode0xBC_RaisesTheMaximumOfTheEntityByTheOperand_CappedAt50_AndLeavesTheLife(int hpMax, int hp, int hpMaxAfter, int hpAfter)
+    {
+        var state = new AlundraGameState();
+        var hero = CarryingHero(state, hp, hpMax);
+
+        var program = Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = hero }, state, IncreaseHpMaxBy5Program);
+
+        Assert.Equal(7, program.Result); // untouched.
+        Assert.Equal((hpAfter, hpMaxAfter), (hero.Hp, hero.HpMax));
+        Assert.Equal((hp, hpMax), ((int)state.PlayerStats.Hp, (int)state.PlayerStats.HpMax)); // the stats follow at the END.
+
+        LockedTick(hero, state);
+
+        Assert.Equal((hpAfter, hpMaxAfter), ((int)state.PlayerStats.Hp, (int)state.PlayerStats.HpMax));
+    }
+
+    [Fact]
+    public void Opcode0xBC_OnAnEntityAlreadyAbove50_StillGives50()
+    {
+        var state = new AlundraGameState();
+        var hero = CarryingHero(state, 50, 50);
+        hero.HpMax = 51; // the uncapped vessel of U7 (c2-binary): the entity may hold 51.
+        hero.Hp = 51;
+
+        Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = hero }, state, IncreaseHpMaxBy3Program);
+
+        Assert.Equal(50, hero.HpMax); // 51 + 3 = 54 >= 0x33: 0x32.
+    }
+
+    [Fact]
+    public void Opcode0xBC_WithoutAHeroThatCarriesItsLife_RaisesTheStats()
+    {
+        var state = new AlundraGameState();
+        state.PlayerStats.HpMax = 12;
+        state.PlayerStats.Hp = 3;
+
+        Exec(new Host { Stage = NewStage(), Sound = new RecordingSound() }, state, IncreaseHpMaxBy5Program);
+
+        Assert.Equal((3, 17), ((int)state.PlayerStats.Hp, (int)state.PlayerStats.HpMax));
+    }
+
+    [Fact]
+    public void Opcode0xC3_FillsTheEntityLife_TheMagic_AndSnapsTheFourCountersOfTheHud()
+    {
+        var state = new AlundraGameState();
+        var hero = CarryingHero(state, 3, 12);
+        state.PlayerStats.MpMax = 4;
+        state.PlayerStats.Mp = 1;
+        var hud = AlundraHudDirector.Instance;
+        hud.ResetDisplayForLoad(new AlundraPlayerStats { Hp = 3, HpMax = 10, Mp = 1, MpMax = 2 }); // the display lags behind: 3/10 and 1/2.
+        Assert.Equal((3, 10, 1, 2), (hud.Hp, hud.HpMax, hud.Mp, hud.MpMax));
+
+        var program = Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = hero }, state, RestoreProgram);
+
+        Assert.Equal(7, program.Result); // untouched.
+        Assert.Equal(12, hero.Hp); // 0x80041D7C-0x80041D84: Hp = HpMax on the entity.
+        Assert.Equal(3, state.PlayerStats.Hp); // the stats follow at the END.
+        Assert.Equal(4, state.PlayerStats.Mp); // SetPlayerMp(GetPlayerMpMax()) at once.
+        Assert.Equal((12, 12, 4, 4), (hud.Hp, hud.HpMax, hud.Mp, hud.MpMax)); // 0x8004B730: g_playerDataHud[0..3] = HpMax, HpMax, MpMax, MpMax of the stats.
+
+        LockedTick(hero, state);
+
+        Assert.Equal(12, state.PlayerStats.Hp);
+    }
+
+    [Fact]
+    public void Opcode0xC3_WithoutAHeroThatCarriesItsLife_FillsTheStats()
+    {
+        var state = new AlundraGameState();
+        state.PlayerStats.HpMax = 12;
+        state.PlayerStats.Hp = 3;
+
+        Exec(new Host { Stage = NewStage(), Sound = new RecordingSound() }, state, RestoreProgram);
+
+        Assert.Equal(12, state.PlayerStats.Hp);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

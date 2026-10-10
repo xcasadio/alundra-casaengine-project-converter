@@ -61,7 +61,7 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0045 | The effect reservoir lives in the DLL and ticks like the binary | Accepted | 2026-10-06 |
 | ADR-0046 | The effect opcodes queue their operation on the effect stage and apply it at the tick that emitted it | Accepted | 2026-10-06 |
 | ADR-0047 | The save screen reads the pad word of the previous tick, like the dialogue pass | Accepted | 2026-10-06 |
-| ADR-0048 | The life vessel raises the stats at once and queues its effects from a pure native function | Accepted | 2026-10-07 |
+| ADR-0048 | The life vessel raises the stats at once and queues its effects from a pure native function | Accepted; the life seam (variant A) superseded by ADR-0056 | 2026-10-07 |
 | ADR-0049 | The world pushes the effect quads to the engine every rendered frame, ordered like the entities | Accepted | 2026-10-08 |
 | ADR-0050 | The inventory trigger runs at the end of the tick, after the dialogue pass and the map events, like the binary | Accepted | 2026-10-08 |
 | ADR-0051 | The game streams its music with the loop point of the sequence | Accepted | 2026-10-08 |
@@ -69,3 +69,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0053 | The DLL drives each logic tick in the binary's order, and E20 owns swimming, loot and the hero's projectiles | Accepted | 2026-10-09 |
 | ADR-0054 | The hurt hero keeps the original's rules before E18, and the next E20 slices follow the author's order | Accepted | 2026-10-09 |
 | ADR-0055 | Native enemy handlers are registered per sprite type, read per-tick values, and arrive with the Muruta and the Beannoide | Accepted | 2026-10-09 |
+| ADR-0056 | The hero's life lives on the entity and the stats mirror it at the end of every MovePlayer, as the binary does | Accepted | 2026-10-10 |

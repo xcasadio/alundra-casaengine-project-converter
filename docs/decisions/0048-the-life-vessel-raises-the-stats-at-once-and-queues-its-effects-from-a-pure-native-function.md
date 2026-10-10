@@ -1,6 +1,6 @@
 # ADR-0048: The life vessel raises the stats at once and queues its effects from a pure native function
 
-- **Status**: Accepted
+- **Status**: Accepted; the life seam (variant A, "Life" decision and deviation 1) superseded by ADR-0056
 - **Date**: 2026-10-07
 - **Source**: `docs/plan-e19-opcodes.md` (E19.g G3d, section 1.2o.6, G3D-R1 to R4); annex `docs/plan-e19-g3d-annexe/` (`discovery/notes.md`, `discovery/verify/verify.md` which wins, `discovery/lib/g3d-golden.tsv`, `discovery/lib/g3d-modes13.tsv`)
 

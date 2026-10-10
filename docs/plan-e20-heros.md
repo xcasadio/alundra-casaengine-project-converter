@@ -2077,8 +2077,13 @@ le pilote d'objet (E20.h) ; la mort (E18).
   sont pas touchés) est appelé aux trois sorties, la branche `BlockedByEntity`, la branche du masque `0x34` et le chemin normal. Suite
   complète Release 3738/3738 sans test modifié ; les épingles d'arcs et les traces sont inchangées (stats à 10/10).
 - ⏳ **T2 — `UpdateItemEffectState`.** Étapes 1, 6 et 7 ; fiche du héros ; compteurs en session ; bottes partagées ; `Clear()`.
-- ⏳ **T3 — Fiole, `0xBC`, `0xC3`.** Écritures dans l'entité (repli sur les stats sans héros, comme aujourd'hui) ; calage du HUD de
-  `0xC3` ; amendement d'ADR-0048.
+- ✅ **T3 — Fiole, `0xBC`, `0xC3`.** Écritures dans l'entité (repli sur les stats sans héros, comme aujourd'hui) ; calage du HUD de
+  `0xC3` ; amendement d'ADR-0048. Fait : la fiole (`IncreaseHpMaxAndFill(état, héros)`), `0xBC` et `0xC3` écrivent l'entité d'un héros qui
+  a repris ses PV (`LifePulledFromStats`), sinon les stats (repli, mêmes bornes) ; `0xC3` cale les quatre compteurs affichés du HUD
+  (`AlundraHudDirector.SnapDisplayedLifeAndMagic`, `0x8004B730`). ADR-0056 (nouveau fichier ; ADR-0048 marqué « partiellement
+  remplacé » dans sa ligne d'état et dans l'index, jamais réécrit). Tests : les lignes P de la fiole sont réépinglées « après la fin de
+  `MovePlayer` » (entité `HpMax + 1` sans plafond, stats inchangées juste après l'opcode, puis les valeurs du binaire après un tick
+  verrouillé) ; fiole de 50/50 : entité 51/51, stats 50/50 ; `0xBC` plafonné à 50, `0xC3` et le calage du HUD, avec leurs replis.
 - ⏳ **T4 — Alarme des PV bas.** Relire `0x800303DC`-`0x80030430` en entier ; remplacer le bouchon `PlayerLowHpAlarm` par le port exact.
 - ⏳ **T5 — Tests.**
 
