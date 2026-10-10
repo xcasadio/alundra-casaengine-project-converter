@@ -90,8 +90,13 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// handler of <see cref="NativeSprites"/>.</summary>
     public int NativeHandlerRunCount { get; private set; }
 
+    /// <summary>E14.a1c (journal of the native handlers): how many times each (slot, code) of the registry ran, all sprite types together; read by the arcs that count the calls of a handler directly (never inferred from the life points).</summary>
+    internal IReadOnlyDictionary<(int Slot, int Code), int> NativeHandlerRunCounts => _nativeHandlerRunCounts;
+
+    private readonly Dictionary<(int Slot, int Code), int> _nativeHandlerRunCounts = new();
+
     /// <summary>E14.a0 (D-E14-1): the registry of the native sprite handlers by (slot, code) and sprite type. In production it holds the
-    /// Beannoid's A1, C1 and D1 for the type 335 (E14.a1b, <see cref="AlundraBeannoideAi"/>); the Muruta's come with E14.a1c. Consulted after
+    /// Beannoid's A1, C1 and D1 for the type 335 (E14.a1b, <see cref="AlundraBeannoideAi"/>) and the Muruta's A0, C10 and D9 for the type 347 (E14.a1c, <see cref="AlundraMurutaAi"/>). Consulted after
     /// the save book and E0/E1, which stay outside it.</summary>
     internal AlundraNativeSpriteRegistry NativeSprites { get; } = AlundraNativeSpriteRegistry.CreateForProduction();
 
@@ -326,8 +331,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         }
 
         // E19.d2b (D-E19-29, O-E19-4 in part): the native handler 0x8007ED10 of slot E, reached at each tick of the Deactivated state
-        // while the scripted E program is empty, is DestroyEntity(e, -1) (0x8003A59C) for the indexes 0 and 1 (destruction only: the
-        // loot and the break effect of the other indexes belong to E14, O-E19-23). Index 2 and the other slots stay counted no-ops.
+        // while the scripted E program is empty, is DestroyEntity(e, -1) (0x8003A59C) for the indexes 0 and 1 (status 4, the letter -1 and, since E14.a1b, the break effect
+        // of the sprite header; the loot stays the named stub of E20.e0, O-E19-23). Index 2 and the other slots stay counted no-ops.
         if (entity.EventTrigger == ScriptHelper.ProgramEDeactivate
             && (entity.ProgramIndexes[ScriptHelper.ProgramEDeactivate] & 0x7f) == 0
             && (uint)entity.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] <= 1u)
@@ -346,6 +351,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 && NativeSprites.TryGet(nativeSlot, nativeCode, entity.SpriteType, out var nativeHandler))
             {
                 NativeHandlerRunCount++;
+                _nativeHandlerRunCounts[(nativeSlot, nativeCode)] = _nativeHandlerRunCounts.GetValueOrDefault((nativeSlot, nativeCode)) + 1;
                 nativeHandler!(entity, _worldContext, _gameState);
                 return;
             }

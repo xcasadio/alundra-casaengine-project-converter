@@ -62,6 +62,22 @@ public sealed class AlundraNativeSpriteRegistryTests : IDisposable
     }
 
     [Fact]
+    public void TheJournalOfTheNativeHandlers_CountsEachKeyThatRan()
+    {
+        // E14.a1c: the arcs count the calls of a handler (D9) directly from this journal, never from the life points.
+        var runner = NewRunner();
+        using var registration = runner.NativeSprites.Register(ScriptHelper.ProgramDTouch, 25, new[] { TypeA }, (_, _, _) => { });
+
+        Entity(TypeA, ScriptHelper.ProgramDTouch, 25).RunPickedEvent(runner);
+        Entity(TypeA, ScriptHelper.ProgramDTouch, 25).RunPickedEvent(runner);
+        Entity(TypeB, ScriptHelper.ProgramDTouch, 25).RunPickedEvent(runner); // another type: a counted no-op, not in the journal.
+
+        Assert.Equal(2, runner.NativeHandlerRunCount);
+        Assert.Equal(2, runner.NativeHandlerRunCounts[(ScriptHelper.ProgramDTouch, 25)]);
+        Assert.Single(runner.NativeHandlerRunCounts);
+    }
+
+    [Fact]
     public void ProductionRunner_NoRegistrationListsTheTypeMinus1()
     {
         // E14.a0b P4: Register accepts any type; the type -1 is the harnesses' bare pawn (no sprite record), which no native handler may reach.
