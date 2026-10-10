@@ -2491,7 +2491,7 @@ dominant, une diagonale à 45° sur l'axe du regard, et la marche ne change pas.
 lecture par tick demande la règle de recollement au sol de 3 px `0x80037848` et la re-dérivation de UH7, AT8, AT8n, AT8b et des
 traces highground ; tranche à part après E20.d ».
 
-### 1.14 E20.i — La nage 🧪 (faite le 2026-10-10, `7278069` à la clôture ; reste le verifier frais et la recette de l'auteur)
+### 1.14 E20.i — La nage 🧪 (faite et CONFIRMED le 2026-10-10, `7278069` à `ab672e1` ; reste la recette de l'auteur avec `swim-m14`)
 
 Découverte en lecture seule du 2026-10-10 (`docs/plan-e20-annexe/e20-i/` : `swim-binary.md`, `swim-dll.md`, `swim-oracle.md`,
 contre-vérifiées par `check.md` : tables et gestionnaires redécodés, W1 à W10 de l'oracle rejoués à l'identique). Cette section
@@ -2643,7 +2643,19 @@ trio non sauté, groupe `0x80032758` réécrit en `0x1D`, une entrée de la tabl
   - le point d'accès de la blessure (W7) pose l'état `0x3A` et la direction que l'oracle tient au tick de l'entrée, avant `MovePlayer` : la sortie du bloc de blessure, sans l'entrée (E20.c2b) ;
   - non couverts : `CheckEntityInteraction` rendant 1 ou 2 dans l'eau (décodé seulement, aucune entité touchable dans l'oracle), les objets du Rond dans l'eau (E20.h),
     `W6-poke-state*` (injection d'un pointeur d'aura : E20.f1b), `W7-hurt-keep` (la trace réinitialise la position à chaque tick), `W7-hurt-shore` (entrée sur la pente 0 : E20.c2b).
-- **À confirmer par l'auteur** : la recette décrite ci-dessus avec `swim-m14` ; la tolérance de 16 unités et l'écart de 7424 unités du mur en diagonale ; Q-N3 et Q-I1 inchangées.
+- **Vérification** : verifier frais **CONFIRMED** (aucun P0 à P2) : répartition par pente, branche `0x8003260C`, les 80 mots de la table de
+  nage, les six gestionnaires et les sorties vers la terre redécodés ; manifeste de la nage rejoué à l'identique ; quatre mutations
+  attrapées ; chaque commit de code compile ; sonde du vrai jeu inchangée.
+- **Causes établies par le verifier** : la tolérance de 16 unités couvre la quantification des flottants de la DLL (au plus 9 unités, en X,
+  seulement sur les traces en diagonale ou en rampe ; 98 traces sur 108 sont exactes ; `MinMoveDistance` n'y joue aucun rôle, contrairement
+  à la glace d'E20.d1) : le commentaire qui la rattache à O-E19-42 et à la glace est à corriger (P4) et la tolérance peut être resserrée
+  à 9 sur ces traces ; l'avance de 7424 unités en Y au mur en diagonale est bien l'écart O-E19-42 / D-E19-58 déjà accepté (division
+  conjointe en 16.16 de `0x80037730` dans le binaire, glissement par axe dans la DLL ; `SwimTick` ne touche pas la position) ; la
+  tolérance pourrait ne valoir qu'à partir du tick du contact (P4).
+- **Reportés (P4)** : le test des bords de carte rejoue le pad depuis le tick 1 à partir de l'état du tick 63 (il ne modélise pas la suite
+  de la trace) ; `b0` n'est comparé que sur les traces entièrement dans l'eau (limite du montage) ; la suite complète n'a tourné que sur
+  l'état final.
+- **À confirmer par l'auteur** : la recette décrite ci-dessus avec `swim-m14` ; Q-N3 et Q-I1 inchangées.
 
 #### Arrêts, budget, retour arrière
 
