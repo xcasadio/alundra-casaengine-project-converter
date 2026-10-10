@@ -324,7 +324,7 @@ public static class AlundraPlayerManager
             AlundraPlayerAnimationEffects.Create(player, AlundraPlayerAnimationEffects.LockedMode);
 
             // E20.f1a, binary 0x80031BE8-0x80031BF8, right after CreatePlayerAnimationEffects(1) (0x80031BDC): the locked branch clears the charge timer (0x80031BEC) and the pending-spawn pointer (0x80031BF8), so a
-            // charge or a shot pending when a lock begins fires nothing at the unlock. The aura stub is left as it is: the binary does not touch the aura's handle here (a stale handle is E20.f1b's business).
+            // charge or a shot pending when a lock begins fires nothing at the unlock. The aura's handle is left as it is: the binary does not touch it here (a stale handle is recreated or released by the aura code with its generation number, E20.f1b).
             player.WeaponChargeTimer = 0;
             player.WeaponRecordPointer = 0;
             EndOfMovePlayer(player, in pad, state, host); // E20.c2a T1: the locked branch also reaches END (0x80031C0C-0x80031C28 lead to 0x80032914): the life vessel of a locked script is mirrored at once.

@@ -181,7 +181,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
         var stage = arena.Arc.Proxy.EffectStage!;
         var handle = arena.Hero.AuraSlot;
         Assert.NotNull(handle);
-        Assert.Equal(0, Auras(arena).Count); // the old aura was freed by the frame, and the spark of the tick 325 took its slot...
+        Assert.Equal(0, Auras(arena).Count); // the old aura was freed by the frame, and the spark of the tick 131 took its slot...
         Assert.Equal(AlundraNativeEffects.ChargeEffect, handle!.TargetEffect); // ... which the handle still points at: the stale handle of the frame.
         Assert.NotEqual(arena.Hero.AuraGeneration, handle.Generation);
 
@@ -198,7 +198,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
     }
 
     /// <summary>
-    /// The written deviation (1) of D-E20-28: a frame that holds c + 96 and c + 97 (here the ticks 129 and 130, a frame of two ticks) shows ONE frame without aura: the hero of the tick 324 does not see the flag that the update 323
+    /// The written deviation (1) of D-E20-28: a frame that holds c + 96 and c + 97 (here the ticks 129 and 130, a frame of two ticks) shows ONE frame without aura: the hero of the tick 130 does not see the flag that the update 129
     /// has not set yet, the frame frees the old aura, and the next frame creates the new one. Pinned: exactly one frame without aura in the whole run, the next one has its aura.
     /// </summary>
     [Fact]
