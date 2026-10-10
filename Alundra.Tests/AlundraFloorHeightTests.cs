@@ -364,12 +364,14 @@ public class AlundraFloorHeightTests
 
     // -----------------------------------------------------------------------------------------
     // (4) Restriction (player only, same rationale as AlundraGroundSlopeTests's own NPC restriction):
-    // an NPC's own FloorHeight is never touched by this slice - it stays the C# default 0 even across
-    // several real frames, because UpdateFloorHeight's only call site is the IsPlayer branch of Update.
+    // UpdateFloorHeight's only call site is the IsPlayer branch of Update. Since E14.a0b T2 an entity
+    // created from a sprite record gets its floor from UpdateEnemyGroundHeights; a bare pawn that was
+    // never created from a sprite record (SpriteType -1, no native handler can run for it) keeps the
+    // C# default 0 even across several real frames.
     // -----------------------------------------------------------------------------------------
 
     [Fact]
-    public void ProductionCallSite_NpcNeverGetsFloorHeight_StaysZero()
+    public void ProductionCallSite_BarePawnWithoutSpriteRecord_NeverGetsFloorHeight_StaysZero()
     {
         var projectRoot = FindProjectRoot();
         if (projectRoot == null)

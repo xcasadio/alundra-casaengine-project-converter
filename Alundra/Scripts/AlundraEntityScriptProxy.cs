@@ -2040,7 +2040,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy
     /// The DLL's convention is the binary's minus 1 for every height (ADR-0026): the binary stores the raw corners and a floor of terrain + 1, so the corners are stored here MINUS 1, which keeps every difference
     /// <c>FloorHeight - MapHeights[k]</c> (read by <c>HandleAnimationDirection</c> <c>0x80080144</c>) and every difference of floors (the relative position <c>0x8007FE20</c>) equal to the binary's. A corner without ground counts as 0
     /// (the same fallback as <see cref="ComputeTerrainHeight(ICollisionField?)"/>). Does nothing without a collision field, nor for a bare proxy that was never created from a sprite record
-    /// (<see cref="SpriteType"/> is -1: the harnesses' pawns; the E2 pin <c>AlundraFloorHeightTests.ProductionCallSite_NpcNeverGetsFloorHeight_StaysZero</c> is such a pawn). Nothing but the native handlers of E14.a reads these fields.
+    /// (<see cref="SpriteType"/> is -1: the harnesses' pawns; the E2 pin <c>AlundraFloorHeightTests.ProductionCallSite_BarePawnWithoutSpriteRecord_NeverGetsFloorHeight_StaysZero</c> is such a pawn; no native handler runs for such a pawn, since the registry is keyed by sprite type). Nothing but the native handlers of E14.a reads these fields.
     /// </summary>
     internal void UpdateEnemyGroundHeights() => UpdateEnemyGroundHeights(Owner?.World?.CollisionField);
 
