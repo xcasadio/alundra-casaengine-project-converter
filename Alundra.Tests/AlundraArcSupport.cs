@@ -259,6 +259,7 @@ internal sealed class ArcRun : IDisposable
             AlundraWorldProxy.ApplyHeroSpriteHeader(Hero, heroHeader);
             // E20.c1a C1: the balance record of the hero (record 0), which AdoptPlayerPawn gives it in production once the header resolves (here the header comes after the adoption).
             Hero.InitializeBalance(Proxy.BalanceTables, Proxy.BalanceThreshold);
+            Proxy.PullHeroLifeFromStats(Hero); // E20.c2a T1: in the game the pull comes right after InitializeBalance (the headless montage runs the balance part after the adoption, which would put the life back to 10/10).
             if (spec.RealController)
             {
                 // In this process AdoptPlayerPawn derived the walkability mask BEFORE the header (empty catalog):

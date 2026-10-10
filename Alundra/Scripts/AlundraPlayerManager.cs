@@ -479,7 +479,7 @@ public static class AlundraPlayerManager
     /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>): the bare heroes of the unit tests keep the default life of 0, which would otherwise be written over the stats the test set up. This guard is the one
     /// documented deviation of the epilogue.
     /// </summary>
-    private static void EndOfMovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host)
+    internal static void EndOfMovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host)
     {
         UpdateItemEffectState(player, in pad, state, host);
 

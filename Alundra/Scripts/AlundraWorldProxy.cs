@@ -1797,6 +1797,18 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
+    /// E20.c2a T1: the life of a hero created from the player's stats, in the binary's order (<c>GetPlayerHpMax</c> then <c>GetPlayerHp</c>, <c>0x800319F8-0x80031A08</c>), which also marks it as carrying its life
+    /// (<see cref="AlundraEntityScriptProxy.LifePulledFromStats"/>). Called by <see cref="AdoptPlayerPawn"/> right after <c>InitializeBalance</c>; the headless arc montage, whose sprite header (and so the balance
+    /// record) comes after the adoption, calls it again after its own <c>InitializeBalance</c>, in the same order as the game.
+    /// </summary>
+    internal void PullHeroLifeFromStats(AlundraEntityScriptProxy hero)
+    {
+        hero.HpMax = GameState.PlayerStats.HpMax;
+        hero.Hp = GameState.PlayerStats.Hp;
+        hero.LifePulledFromStats = true;
+    }
+
+    /// <summary>
     /// E2 replacement for the old <c>SpawnPlayerEntity</c> (which used to clone a SECOND hero prefab
     /// itself): the ENGINE now spawns the hero pawn and possesses it with an <see cref="AlundraPlayerController"/>
     /// (<c>World.LoadContent</c> -&gt; <c>InitializePlayerControllers</c>, CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:221-252/282-297,
@@ -1824,7 +1836,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// (decision D2's "logical state wins" rule).
     ///
     /// Deliberately NOT ported (still out of E2's own scope - a real <c>InitializeGameState</c>/full
-    /// <c>PlayerManager</c>): <c>Hp</c>/<c>HpMax</c> (<c>PlayerManager.GetPlayerHp/HpMax</c>),
+    /// <c>PlayerManager</c>): (E20.c2a T1 ported <c>Hp</c>/<c>HpMax</c>, <see cref="PullHeroLifeFromStats"/>),
     /// <c>g_activeCollisionEntity = null</c> (this world's own <see cref="ActiveCollisionEntity"/> is now
     /// reset explicitly, in <see cref="InitializeWithWorld"/>'s own installation block - D-T-13 point 4,
     /// docs/plan-transitions-carte.md, slice T1; inert today only because this proxy is fully
@@ -1980,9 +1992,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // E20.c2a T1 (docs/plan-e20-heros.md section 1.12): the life of the hero comes from the player's stats, right after InitializeEntity, as the binary's creation of the hero does
         // (0x800319EC, then GetPlayerHpMax -> +0x18 at 0x800319F8 and GetPlayerHp -> +0x14 at 0x80031A00-0x80031A08). It must follow InitializeBalance, which sets 10/10 from the balance record: without
         // the pull the mirror at the end of MovePlayer would put the stats back to 10/10 at the first tick of every map, every load and every Continue. A load (ApplyPendingLoad) ran before this adoption.
-        proxy.HpMax = GameState.PlayerStats.HpMax;
-        proxy.Hp = GameState.PlayerStats.Hp;
-        proxy.LifePulledFromStats = true;
+        PullHeroLifeFromStats(proxy);
 
         // E20.c2a T2: the boots level and the hero's defence sheet (steps 1 to 6 of UpdateItemEffectState) are computed at the adoption too. The binary's sheet (0x80127008) is a global that the map load does
         // not touch, so a hit before the first END reads the previous map's sheet, never an empty one. The side effects of the fill are undone: the rewrite of the equipped accessory (0x8004E0F8) belongs to the

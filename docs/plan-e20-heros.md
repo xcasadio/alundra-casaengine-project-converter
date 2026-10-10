@@ -2014,7 +2014,7 @@ F6 et le groupe H de `c2-oracle.md` (retirés par `check.md` §c ; A3 et A5 pour
 - **Budget** : un `executor` ; un verifier frais (avec un redécodage du binaire).
 - **Retour arrière** : `git revert` des commits d'E20.c2-0.
 
-### 1.12 E20.c2a — Les PV portés par le héros, la fin de `MovePlayer` et `UpdateItemEffectState` 🚧
+### 1.12 E20.c2a — Les PV portés par le héros, la fin de `MovePlayer` et `UpdateItemEffectState` 🧪 (faite le 2026-10-10, `c7da0c9`, `c8c99e0`, `b5e100e`, `f95989b` et le commit de T5 ; reste le verifier frais et la recette de l'auteur)
 
 Relecture : **READY** dès la première lecture (2026-10-10). Exécution après E20.f1a et la vérification d'E20.c2-0.
 
@@ -2095,7 +2095,13 @@ le pilote d'objet (E20.h) ; la mort (E18).
   sonnent, 3/10, 11/50, 0/10 non) ; compteur gelé pendant que la vie est haute (sons aux ticks 1 et 67). Les lignes A2-*-5-12 de
   l'oracle c2-0 portent le premier son (tick 3, le tick après la blessure). Le bouchon enregistrait son appel pour les tests de
   répartition de `AlundraFlailBounceTests` : l'appel est toujours enregistré (nom conservé), aucun de ces tests ne change.
-- ⏳ **T5 — Tests.**
+- ✅ **T5 — Tests.** `Alundra.Tests/AlundraHeroLifeTests.cs` (94 tests, 2 classes) : rejeux des groupes G (13 inventaires : niveau des bottes et
+  octets 0 à 14 de la fiche, ticks 1 à 3), F (6 parcours : PV, PV max, stats et trois compteurs à chaque tick), E2 (5), D1 (8 valeurs de
+  verrouillage par les vraies sorties de `MovePlayer`), E3 (4, par `ArcRun`), l'alarme (8, contre `out-c2a/alarm.txt`), plus les règles écrites
+  du désassemblage (`CombineResponse` 14 cas, régénération, fiche réutilisable, `Clear`/`ClearAll`, sorties de `MovePlayer`, bornes du
+  miroir). Le montage `ArcRun` appelle `PullHeroLifeFromStats` après son `InitializeBalance` (l'ordre du jeu ; sans cela le montage, dont
+  l'en-tête de sprite vient après l'adoption, remettrait les PV à 10/10). Six mutations (régénération `<` en `<=`, masque du mot de
+  maintien, plafond de la combinaison, rechargement de l'alarme, reprise des stats oubliée, fiole plafonnée) sont toutes attrapées.
 
 #### Acceptation
 
@@ -2111,6 +2117,35 @@ le pilote d'objet (E20.h) ; la mort (E18).
   verifier frais.
 - Recette de l'auteur : les cœurs suivent d'une carte à l'autre ; avec un anneau de régénération, + 1 cœur toutes les 201 images sans
   toucher au pad ; à 1 PV sur 5 ou moins, l'alarme.
+
+#### Résultats (2026-10-10)
+
+- **Commits** : T1 `c7da0c9`, T2 `c8c99e0`, T3 `b5e100e`, T4 `f95989b`, T5 le commit des tests (`git log` de la branche).
+- **Suite** : Release et Debug 3841/3841 (3738 avant la tranche, 103 tests neufs), `Alundra.dll` de `alundra-project` identique à celle de
+  Debug. Aucune épingle d'arc ou de trace n'a bougé (stats à 10/10), les tests de sauvegarde E16 sont verts, `docs/hero-trace-389-*` et
+  `docs/intro-*` inchangés au contenu près (bruit de fin de ligne restauré).
+- **Tests existants modifiés** : `AlundraDamageTests.K2_TheRecordsAreFilledByTheHeroTick...` (un `Clear()` à la main ne vide plus que les
+  pointeurs, comme `0x80044520` : le mot d'objet de l'armure est conservé) ; `AlundraNativeEffectTests` lignes P de la fiole (réépinglées
+  « après la fin de `MovePlayer` » : la fiole écrit l'entité, `HpMax + 1` sans plafond, les stats suivent au tick) ;
+  `AlundraArcSupport` (la reprise des PV après son `InitializeBalance`).
+- **Valeurs d'acceptation mesurées** : G, boots 0/0/1/2/3/3/2/0/0/0/0/0/0 et fiche `10 10 10 10 10 10 10 10 10 10 10` (kit), leather `0C`,
+  ancient `08`, silver `04`, noarmour `00`, bracelet `0F`, charm `0F` avec `80` à la 6e réponse, tous égaux à l'oracle aux ticks 1, 2, 3 ;
+  F, +1 aux ticks 201 et 402 (F1, F5-ring37), 301 avec un appui au tick 100 (F2), jamais pour F4-full, F4-zero, F5-armour-weapon, compteurs
+  `[0, 0, 200]` au plus, égaux à chaque tick ; E2, l'entité l'emporte (stats 3 reprises à 10 au tick), fiole 5/10 → 11/11, 49/49 → 50/50,
+  50/50 → entité 51/51 et stats 50/50 ; E3, 4/12 → 4/12, 70/60 → 50/50, 9/5 → 5/5, −3/−1 → 0/0 ; D1, les stats pokées à 6 reviennent à 10
+  sous `0x00 0x20 0x24 0x30 0x10 0x04 0x80 0xA0` ; carte 14 à 4/12 : le héros est créé à 4/12 et les 30 images suivantes gardent 4/12, puis
+  une seconde carte (179, arrivée) reprend 4/12 et le garde (les stats du montage sont redonnées à la main entre les deux arcs : le
+  montage remet les singletons à zéro à chaque arc) ; `0xBC` 10/8 → HpMax 15, 48 → 50, 50 → 50, `0xC3` 3/12 → 12 puis stats 12 au tick,
+  PM remplis, compteurs du HUD 12/12/4/4.
+- **Alarme** (`oracle/alarm.py`, valeurs attendues écrites avant le run, 8 PASS) : PV 2/12 sur 200 ticks, sons aux ticks 1, 47, 93, 139, 185 ;
+  bornes `HpMax == 5 Hp` (2/10, 10/50, 1/50 sonnent ; 3/10, 11/50, 0/10 non) ; compteur gelé : sons aux ticks 1 et 67. Règle relue :
+  `Hp != 0` et non `HpMax < 5 Hp` sur l'entité, mode 0 seulement, compteur global `[0x80098F2C]` (et non `0x800A8F2C`) −1, son `0x190` à
+  −1 puis rechargement à `0x2D`.
+- **Écarts** : le miroir est gardé par `LifePulledFromStats` (les montages nus des tests ne sont pas touchés) ; la fiole, `0xBC` et `0xC3`
+  écrivent les stats en repli quand le héros n'a pas repris ses PV (et pas seulement quand il n'y a pas de héros) ; l'adoption
+  recalcule la fiche et les bottes à l'installation sans l'effet de bord de `ItemId` et laisse les pointeurs vides comme le chargement de
+  carte ; le niveau des bottes est aussi recalculé à la demande par la physique (le retard d'un tick du binaire est sans effet) ; le pilote
+  d'objet et la mort restent non portés.
 
 #### Arrêts, budget, retour arrière
 
