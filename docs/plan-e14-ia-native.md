@@ -207,6 +207,10 @@ l'avance du générateur par tick (E20.e0b).
 
 ### 1.3 E14.a1 — Découpage ⏳ (détaillé le 2026-10-10)
 
+**Révision 1 (2026-10-10).** Relecture de l'enveloppe : **REVISE**, un point corrigé (FIX) : §1.3d nomme les quatre tests
+d'`AlundraNativeSpriteRegistryTests` que les enregistrements de production touchent, avec la tranche et la nouvelle valeur ; la
+classe entière a été relue contre les six clés de production.
+
 Découverte en lecture seule du 2026-10-10 (quatre agents, dont une contre-vérification adversariale) : export de l'octet de bris,
 oracle avec les six gestionnaires réels, effet de bris et arcs de la 115 et de la 116. Scripts et sorties dans le scratchpad de la
 session (`C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e14a1/`, sous-dossiers `converter-export/`, `oracle-handlers/`,
@@ -224,6 +228,12 @@ l'hôte. Chaque tranche : relecture du plan, exécuteur, verifier frais.
 
 ### 1.3a E14.a1a — L'octet de l'effet de bris dans l'export ⏳
 
+**Révision 1 (2026-10-10).** Relecture : **REVISE**, un point corrigé (FIX) : l'acceptation de T4 est écrite par rapport à
+l'export de référence de T1 (`m1` et son `report.json`), plus en valeurs absolues de `m0` qu'un rebasage permis par les arrêts
+contredirait ; la taille de sortie tient compte du `report.json` précédent, compté par `MeasureOutput` (`ConversionReport.cs`)
+dans un export en place, comme L-b2 (« à l'écart de `report.json` près »). Point P3 corrigé : la montée du moteur part du
+pointeur du dernier export.
+
 **Faits porteurs.**
 - [binaire] `DestroyEntity` `0x8003A59C` : quand `fx == -1`, l'effet est l'octet `0x1E` de l'en-tête `+0x64` (`0x8003A5D8`-`0x8003A5E8`) ;
   0 = aucun effet ; sinon `0x8003BE74(0, fx, 0, e ; 1, 0, 0, 0)`, retour inutilisé.
@@ -237,7 +247,8 @@ l'hôte. Chaque tranche : relecture du plan, exécuteur, verifier frais.
 - [arbre] `alundra-project/` est la base : 24 103 fichiers hors `Alundra.dll`, `Alundra.pdb` et `.casaeditor/`, empreinte
   `bc31b7a2055a1dd939ef3e4280203c94a3ef354e` au 2026-10-10 ; il diffère de `docs/plan-e19-loop-annexe/lb-1008/m7-manifest-after.txt`
   par les 47 chemins de `docs/plan-e19-loop-annexe/data/predicted_export_changes.txt` plus `UI/Textures/font3.png` (L-b2). Le pointeur
-  du moteur a bougé depuis le dernier export (`1b2b616a` → `781d3527`, dont la fusion d'`origin/main` du 2026-10-10).
+  du moteur a bougé depuis le dernier export (2026-10-08, L-b2) : `1b2b616a`, `a24fe31d`, `b2205d9f`, puis `781d3527` (fusion
+  d'`origin/main` du 2026-10-10). Le convertisseur compte 848 tests (campagne de la fusion du 2026-10-10).
 
 **Périmètre.**
 - `SpriteBankReader.cs` : champ `BreakEffect` entre `SizeZ` et `Contents`, lu par `GetOptionalInt32(…, "BreakEffect")` ; doc de la
@@ -263,7 +274,9 @@ l'hôte. Chaque tranche : relecture du plan, exécuteur, verifier frais.
 - ⏳ **T1 — Export de référence au HEAD**, avant toute modification du convertisseur. Fenêtre calme : aucun build, aucune suite, aucun
   Launcher ni éditeur sur `alundra-project/` ; `Alundra.dll` déverrouillé. Depuis la racine :
   `dotnet run --project alundra-casaengine-project-converter -c Release -- data-extracted alundra-project` ; sortie 0 et
-  `Verification: PASSED` ; `m1` contre `m0` : seulement `report.json`.
+  `Verification: PASSED` ; `m1` contre `m0` : seulement `report.json` (sinon, l'arrêt de T1). Valeurs de référence relevées dans le
+  `report.json` de T1 : compteurs, avertissements, `Verify.*`, `OutputFileCount`, `OutputSizeBytes` ; taille du `report.json` présent
+  sur le disque avant T1 et après T1.
 - ⏳ **T2 — Tests rouges.** `"BreakEffect": 8` écrit entre `SizeZ` et `Contents` ; clé absente → écrite à 0, pas omise ; le fichier
   reste hors catalogue.
 - ⏳ **T3 — Code et docs.** `dotnet test alundra-casaengine-project-converter.Tests --blame-hang-timeout 60s`, au premier plan ; 848 plus
@@ -279,16 +292,22 @@ l'hôte. Chaque tranche : relecture du plan, exécuteur, verifier frais.
   {0: 284, 2: 1, 8: 63, 10: 30, 11: 15, 12: 1, 13: 1}, soit 111 non nuls ; `e3a39ec4-45d5-55f2-85e9-894c7b6e4a08` (Muruta) = 8 et
   `1ef8f16c-605f-58c3-af19-b6bb602fc40f` (Beannoïde) = 8 ; ordre des clés : …`SizeZ`, `BreakEffect`, `Contents`, `IdsvAnimDirs`,
   `AnimSets`[, `DialoguePortrait`] ; chaque objet égal à l'ancien, moins `BreakEffect`.
-- `AssetInfos.json` inchangé (`a09917c31694925076d1fc1aba5fca773f6cada2`).
-- `report.json` : `Errors` 0 ; les 6 `Warnings` inchangés ; `Verify.Assets` 22 616, `Verify.Loaded` 20 139,
-  `Verify.ExistenceChecked` 2 477 ; `Entities.Prefabs` et `SpriteRecords.Exported` à 395 ; `Phase1.StalePagesPurged` 2 415 ;
-  `OutputFileCount` 24 106 ; `OutputSizeBytes` + 9 132, plus l'écart de taille de la DLL et du PDB.
+- Tout ce qui suit est **relatif à l'export de référence de T1** (`m1` et son `report.json`) ; les valeurs de `m0` ci-dessous sont
+  celles attendues pour T1, pas pour T4.
+- `AssetInfos.json` égal à celui de `m1` (attendu en T1 : `a09917c31694925076d1fc1aba5fca773f6cada2`).
+- `report.json` de l'export 1 contre celui de T1 : `Errors` 0 ; mêmes `Warnings` (6 attendus en T1) ; mêmes `Verify.Assets`,
+  `Verify.Loaded`, `Verify.ExistenceChecked` (22 616, 20 139, 2 477 attendus en T1) ; `Entities.Prefabs` et `SpriteRecords.Exported`
+  égaux (395) ; même `Phase1.StalePagesPurged` (2 415 attendu) ; même `OutputFileCount` (24 106 attendu) ; aucun compteur nouveau ou
+  disparu ; `OutputSizeBytes` = valeur de T1 + 9 132 + écart de taille de la DLL et du PDB + écart de taille du `report.json` présent
+  sur le disque au moment de chaque mesure (mesuré ; un reste qui n'est pas expliqué par ces trois termes est un arrêt).
+- Export 2 contre export 1 : `m3` contre `m2`, `report.json` seul ; mêmes compteurs hors durées.
 - Rien ne change sous `alundra-project/UI/Screens/` (suivi par git) ; convertisseur vert ; `Alundra.Tests` sans échec en Release et en
   Debug ; verifier frais.
 
 **Arrêts.**
-- T1 change autre chose que `report.json` : attribuer d'abord à la montée du pointeur du moteur (`1b2b616a` → `781d3527`), rebaser
-  comme L-b2 (nouvelle base, consignée), puis seulement continuer ; un écart que la montée n'explique pas : question.
+- T1 change autre chose que `report.json` : attribuer d'abord à la montée du pointeur du moteur depuis le dernier export (jusqu'à
+  `781d3527`), rebaser comme L-b2 (nouvelle base `m1`, consignée dans l'annexe ; l'acceptation, relative à `m1`, reste valable),
+  puis seulement continuer ; un écart que la montée n'explique pas : question.
 - Après le code : tout autre chemin changé, ajouté ou retiré ; `AssetInfos.json` qui bouge ; fichier différent de la prédiction ;
   second export différent hors `report.json` ; erreur ; compteur ou avertissement non prévu.
 - Tout process (build, test, Launcher, éditeur) sur l'arbre pendant un export.
@@ -383,9 +402,18 @@ fermé. La grille de la 116 : animée après les deux Beannoïde. La 14 : les se
 
 ### 1.3d Tests qui bougent
 
-- `AlundraNativeSpriteRegistryTests` : `ProductionRunner_RegistryIsEmpty_AndTheSwitchIsOn` (`Count` 0 → 3 en E14.a1b → 6 en E14.a1c) ;
-  `RegisteredEntry_ListingSeveralTypes_RunsForEach` (sa clé (D,1), désormais enregistrée en production, devient une clé libre, par
-  exemple (D,25)).
+- `AlundraNativeSpriteRegistryTests`, relue en entier contre les six clés de production ((A,1), (C,1), (D,1) pour 335 ; (A,0),
+  (C,10), (D,9) pour 347) ; quatre tests bougent, les autres (clés (C,25), (C,26), (D,25), (E,0), (E,1), livre de sauvegarde) non :
+  - `ProductionRunner_RegistryIsEmpty_AndTheSwitchIsOn` : `Count` 0 → 3 en E14.a1b → 6 en E14.a1c (nom à mettre d'accord avec ce qu'il
+    épingle : le registre de production et l'interrupteur) ;
+  - `RegisteredEntry_ListingSeveralTypes_RunsForEach` (E14.a1b) : sa clé (D,1), enregistrée en production pour 335, devient une clé
+    libre, par exemple (D,25) ;
+  - `EmptyRegistry_EveryEntity_IsACountedNoOp` (E14.a1c) : son entité (D,9) du type 347 lancerait le vrai D9 ; elle prend une clé ou un
+    type non enregistrés en production (par exemple (D,25)), et le test garde son sens (une clé non enregistrée est un no-op compté) ;
+  - `Registering_TheSameKeyTwice_Throws_AndDisposingRemovesTheEntry` (E14.a1b) : le `Count` attendu après `Dispose` est le compte d'avant
+    l'enregistrement du test (relatif), plus jamais un 0 absolu.
+  Acceptation de la classe après E14.a1b et après E14.a1c : aucun test n'enregistre ni ne lance une clé de production pour 335 ou 347,
+  aucun n'attend un `Count` absolu de 0 hors du test du registre de production.
 - `AlundraEntityScriptProxyCloneTests` (`BreakEffect`) ; `SpriteWriterSpriteRecordsTests` (nouveaux cas, E14.a1a).
 - À attribuer s'ils bougent (effet de bris d'une destruction E0/E1, de pente ou VRAM, D-E14-9) : `AlundraDay3SceneArcTests`,
   `AlundraInoaDayOneArcTests`, `AlundraShipBlockArcTests`, `AlundraVisionArcTests`.
