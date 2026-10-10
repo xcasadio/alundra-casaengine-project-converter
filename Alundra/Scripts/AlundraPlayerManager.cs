@@ -59,7 +59,7 @@ namespace Alundra.Scripts;
 /// of the current animation. <see cref="AlundraEntityScriptProxy.Slope_18c"/> itself has been alimented
 /// since E1 (<see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>) from the real map 389 cell data
 /// every frame, reading 6 on the four ladder cells - see that method's own doc.</description></item>
-/// <item><description><c>UpdatePlayerCarriedEntity</c> - PlayerManager.cs:355-357 (named stub: carrying is E20.g; <c>UpdatePlayerWeaponEffect</c> is ported by E20.f1a without the aura, whose call is the named stub <see cref="AlundraAuraStub"/> until E20.f1b);
+/// <item><description><c>UpdatePlayerCarriedEntity</c> - PlayerManager.cs:355-357 (named stub: carrying is E20.g; <c>UpdatePlayerWeaponEffect</c> is ported by E20.f1a and E20.f1b, the aura included);
 /// <c>UpdateWeaponStepProgression</c> is ported without its projectile spawn (E20.b B4, the spawn is a named stub, E20.e0/E20.f).</description></item>
 /// <item><description>Every <c>TargetAnimationId</c> case other than Idle/Moving/LoadingMap/Climbing/
 /// ClimbStill, the jump states, the attack groups and the run - the charged attacks, pickup/carry/throw, sand, spell cast,
@@ -1032,7 +1032,7 @@ public static class AlundraPlayerManager
     /// <list type="number">
     /// <item><description>The counter (<see cref="AlundraEntityScriptProxy.WeaponChargeTimer"/>, <c>0x80126FFC</c>): +1 up to 60 when the Square is held or released this tick, the weapon record of the equipped weapon is chargeable
     /// (<c>byte[0x80028C78 + 13 w]</c> non-zero) and the animation the hero is in counts the charge (<see cref="AlundraWeaponTables.AnimationCountsCharge"/>); else 0.</description></item>
-    /// <item><description>Below 11: the aura is released (<see cref="AlundraAuraStub.Release"/>), the function ends. From 11: the aura is checked every tick (<see cref="AlundraAuraStub.Check"/>, the stub of E20.f1b).</description></item>
+    /// <item><description>Below 11: the aura is released (<see cref="ReleaseAura"/>), the function ends. From 11: the aura is created or renewed (<see cref="CreateAuraIfNeeded"/>, E20.f1b), every tick.</description></item>
     /// <item><description>Only when <c>+0x1C &amp; 3</c> is 0 (the counter of frames BEFORE the counters pass of this tick): below 60 the sound 0x2A; at 60 the hold spark, queued on the stage
     /// (<see cref="AlundraNativeEffects.CreateChargeSpark"/>, whose sound and two numbers happen only if the effect is created, when the stage applies it).</description></item>
     /// </list>
@@ -1056,11 +1056,11 @@ public static class AlundraPlayerManager
 
         if (player.WeaponChargeTimer < AuraChargeTimer)
         {
-            player.AuraStub.Release();
+            ReleaseAura(player, host);
             return;
         }
 
-        player.AuraStub.Check();
+        CreateAuraIfNeeded(player, host);
         if ((player.FrameCounter & 3) != 0)
         {
             return;
@@ -1086,6 +1086,65 @@ public static class AlundraPlayerManager
         var frameCounter = player.FrameCounter;
         var soundPlayer = host.SoundPlayer;
         stage.Emit(reservoir => AlundraNativeEffects.CreateChargeSpark(reservoir, x, y, z, forceX, forceY, frameCounter, soundPlayer));
+    }
+
+    /// <summary>The effect of the charge aura: global effect 3 (<c>0x8002F5B0</c>, <c>0x8003BE74(0, 3, 0, hero, 1, 0, 0, 0x100000)</c>, its animation 0 lasts 96 ticks and ends with <c>Destroy</c>).</summary>
+    internal const int AuraEffect = 3;
+
+    /// <summary>The depth offset of the aura (the creator's fifth argument, <c>+0x60</c>): its key is the hero's plus one, so it is drawn just after the hero.</summary>
+    internal const int AuraDepthOffset = 1;
+
+    /// <summary>The height of the aura above the hero (the creator's last argument): 16 pixels.</summary>
+    internal const int AuraOffsetZ = 0x100000;
+
+    /// <summary>
+    /// E20.f1b: the creation of the aura at <c>0x8002F570-0x8002F5BC</c>, at every tick where the charge counter is 11 or more. The binary creates when the handle (<c>0x80126FF8</c>) is null or when the <c>+0x7D</c> of
+    /// its slot (<see cref="AlundraEffectSlot.Destroying"/>) is set: the animation of the aura lasts 96 ticks, so a held charge renews the aura every 97 ticks (the old one is freed by the effect pass of the same tick).
+    /// The handle receives the result of the creation even when it is null (a full reservoir: the creation is retried at every tick). The effect is created AT ONCE and its slot read at the tick (D-E20-28, ADR-0057:
+    /// the hero's exception to the queued model of ADR-0046; <see cref="AlundraEffectStage.CreateAttachedNow"/>).
+    /// <para>
+    /// Written deviation from the binary (ADR-0059, proposed): the aura is also created again when its slot is no longer active or no longer carries the aura (<see cref="AlundraEntityScriptProxy.AuraGeneration"/>).
+    /// At one tick per frame the binary never gets there; at three ticks per frame, at the renewal, the frame frees the old aura and then applies the spark of its last tick on the freed slot, which the handle would
+    /// follow as if it were the aura. Other deviations of D-E20-28 for a frame of several ticks: a frame that holds both c + 96 and c + 97 shows one frame without aura; the spark's draws stay at the application
+    /// of the stage (E20.f1a); the hero's slot index is taken before the queued operations of the frame.
+    /// </para>
+    /// </summary>
+    private static void CreateAuraIfNeeded(AlundraEntityScriptProxy player, IAlundraScriptHost? host)
+    {
+        if (host?.EffectStage is not { } stage)
+        {
+            return;
+        }
+
+        var slot = player.AuraSlot;
+        if (slot != null && !slot.Destroying && slot.Active && slot.Generation == player.AuraGeneration)
+        {
+            return;
+        }
+
+        // The anchor is the hero itself (explicit IAlundraEffectAnchor of the proxy): the effect starts at its position, follows it and takes its depth key plus AuraDepthOffset.
+        var created = stage.CreateAttachedNow(false, AuraEffect, 0, player, AuraDepthOffset, 0, 0, AuraOffsetZ);
+        player.AuraSlot = created;
+        player.AuraGeneration = created?.Generation ?? 0;
+    }
+
+    /// <summary>
+    /// E20.f1b: the release of the aura below a charge of 11 (<c>0x8002F730-0x8002F744</c>): with a non-null handle, the binary writes 0 in the <c>+0x68</c> of its slot (status free) and clears the handle, without any
+    /// other test. Here the handle is cleared at once and the slot is released by an operation of the stage at the position of this tick (<see cref="AlundraEffectStage.FreeAtTick"/>, ADR-0059), and ONLY IF it still
+    /// holds the aura (D-E20-30, the defect of the original corrected: when the aura expired during a lock and its slot was taken by another effect, the binary frees that other effect).
+    /// </summary>
+    private static void ReleaseAura(AlundraEntityScriptProxy player, IAlundraScriptHost? host)
+    {
+        var slot = player.AuraSlot;
+        if (slot == null)
+        {
+            return;
+        }
+
+        var generation = player.AuraGeneration;
+        player.AuraSlot = null;
+        player.AuraGeneration = 0;
+        host?.EffectStage?.FreeAtTick(slot, generation);
     }
 
     /// <summary>E20.b test seam: the number of calls of <see cref="SpawnWeaponProjectile"/> (the tick at which a bow or a wand would spawn its projectile; the oracle journals the same call). Per thread.</summary>

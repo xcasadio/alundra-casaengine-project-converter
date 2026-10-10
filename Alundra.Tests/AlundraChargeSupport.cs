@@ -11,7 +11,13 @@ using Alundra.Scripts;
 namespace Alundra.Tests;
 
 /// <summary>One creation of an effect by the oracle's real <c>0x8003BDD8</c> (the hold spark or an effect of the burst): the effect, whether it was created, and the fields it holds at the end of the logic of the tick.</summary>
-internal sealed record ChargeCall(int Effect, bool Created, uint RngEntry, int X, int Y, int Z, int ForceX, int ForceY);
+/// <param name="SlotIndex">E20.f1b: the index of the slot the binary's pool gave it (<c>(slot - 0x80138608) / 0x80</c>), -1 when not created.</param>
+/// <param name="Mode">E20.f1b: the slot's <c>+0x34</c> (1 for the aura attached to the hero), 0 otherwise.</param>
+/// <param name="DepthOffset">E20.f1b: the slot's <c>+0x60</c>.</param>
+/// <param name="OffsetX">E20.f1b: the slot's <c>+0x48</c>.</param>
+/// <param name="OffsetY">E20.f1b: the slot's <c>+0x4C</c>.</param>
+/// <param name="OffsetZ">E20.f1b: the slot's <c>+0x50</c>.</param>
+internal sealed record ChargeCall(int Effect, bool Created, uint RngEntry, int X, int Y, int Z, int ForceX, int ForceY, int SlotIndex = -1, int Mode = 0, int DepthOffset = 0, int OffsetX = 0, int OffsetY = 0, int OffsetZ = 0);
 
 /// <summary>One call of the shot (<c>0x80039F58</c>) the oracle journalled: type, position and direction, in the binary's frame of Z.</summary>
 internal sealed record ChargeSpawn(int Type, int X, int Y, int Z, int Direction);
@@ -53,6 +59,11 @@ internal static class ChargeOracle
     private static readonly Regex RowLine = new(
         @"^t\s*(\d+) hold=([0-9A-F]+) anim_t=([0-9A-F]+) anim_c=([0-9A-F]+) fx=\s*(-?\d+) fy=\s*(-?\d+) fz=\s*(-?\d+) pz=\s*(-?\d+) gnd=(-?\d+) chg=\s*(-?\d+) ptr=([0-9A-F]+) cnt=\s*(-?\d+) hc=(\d+) b0=(\d+) fc=(\d+)>(\d+) rng=([0-9A-F]+)>([0-9A-F]+)>([0-9A-F]+) aura=(\S+)",
         RegexOptions.Compiled);
+
+    /// <summary>The base of the binary's effect pool (<c>0x80138608</c>) and the size of a slot (<c>0x80</c>).</summary>
+    private const long PoolBase = 0x80138608;
+
+    private const long PoolSlotSize = 0x80;
 
     private static readonly Regex SpawnCall = new(@"spawn\(owner=[0-9A-F]+,table=\d+,type=(\d+),x=(-?\d+),y=(-?\d+),z=(-?\d+),dir=0x([0-9A-F]+)\)", RegexOptions.Compiled);
 
@@ -105,7 +116,10 @@ internal static class ChargeOracle
                 calls.Add(new ChargeCall(
                     c.GetProperty("args")[1].GetInt32(), created, (uint)c.GetProperty("rng_entry").GetInt64(),
                     created ? f.GetProperty("x").GetInt32() : 0, created ? f.GetProperty("y").GetInt32() : 0, created ? f.GetProperty("z").GetInt32() : 0,
-                    created ? f.GetProperty("fx").GetInt32() : 0, created ? f.GetProperty("fy").GetInt32() : 0));
+                    created ? f.GetProperty("fx").GetInt32() : 0, created ? f.GetProperty("fy").GetInt32() : 0,
+                    created ? (int)((c.GetProperty("slot").GetInt64() - PoolBase) / PoolSlotSize) : -1,
+                    created ? f.GetProperty("s34").GetInt32() : 0, created ? f.GetProperty("s60").GetInt32() : 0,
+                    created ? f.GetProperty("s48").GetInt32() : 0, created ? f.GetProperty("s4c").GetInt32() : 0, created ? f.GetProperty("s50").GetInt32() : 0));
             }
 
             var spawns = SpawnCall.Matches(lines[i]).Select(s => new ChargeSpawn(

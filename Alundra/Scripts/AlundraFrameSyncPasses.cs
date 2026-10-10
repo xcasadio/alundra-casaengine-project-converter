@@ -430,16 +430,24 @@ internal static class AlundraFrameSyncPasses
                 continue;
             }
 
-            // E19.c2 (P4 of E19.c1): a 0x1C relaunch from a map event leaves CurrentAnimationId = ~TargetAnimationId until the
-            // entity's next sync, while this pass runs right after the map events. The binary switches back to the target
-            // before drawing, so the key is the target's.
-            var animationId = proxy.CurrentAnimationId == ~proxy.TargetAnimationId ? proxy.TargetAnimationId : proxy.CurrentAnimationId;
-            var idsv = 0;
-            var idsvKey = (int)animationId * AlundraEntitySpawnFactory.IdsvDirectionStride + proxy.AnimationDirection;
-            proxy.IdsvByAnimDirection?.TryGetValue(idsvKey, out idsv);
-
-            WallPlacementOverlay.ApplyEntitySortKey(depthSortable, proxy.PosY, idsv);
+            WallPlacementOverlay.ApplyEntitySortKey(depthSortable, proxy.PosY, ResolveIdsv(proxy));
         }
+    }
+
+    /// <summary>
+    /// The IDSV bias of the sprite an entity shows (the current (animation, direction) pair, see <see cref="RunWallInterleaveSortKeyPass"/>), shared by that pass and by the depth key of the entity as an effect
+    /// anchor (<see cref="AlundraEntityDepthKey"/>, E20.f1b) so that the two cannot diverge. 0 when the entity has no table or no entry.
+    /// </summary>
+    internal static int ResolveIdsv(AlundraEntityScriptProxy proxy)
+    {
+        // E19.c2 (P4 of E19.c1): a 0x1C relaunch from a map event leaves CurrentAnimationId = ~TargetAnimationId until the
+        // entity's next sync, while this pass runs right after the map events. The binary switches back to the target
+        // before drawing, so the key is the target's.
+        var animationId = proxy.CurrentAnimationId == ~proxy.TargetAnimationId ? proxy.TargetAnimationId : proxy.CurrentAnimationId;
+        var idsv = 0;
+        var idsvKey = (int)animationId * AlundraEntitySpawnFactory.IdsvDirectionStride + proxy.AnimationDirection;
+        proxy.IdsvByAnimDirection?.TryGetValue(idsvKey, out idsv);
+        return idsv;
     }
 
     /// <summary>
