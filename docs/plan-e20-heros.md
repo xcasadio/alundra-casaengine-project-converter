@@ -2535,7 +2535,7 @@ les effets d'eau (E20.e), les objets du Rond dans l'eau et le son 3 (E20.h), l'a
   - Preuves : les dix groupes relancés depuis l'annexe redonnent `out-swim/manifest-swim.txt` (785 lignes) ; G1 à G10 relancés
     après l'import de `sscen` redonnent `out/manifest.txt` (557). La porte D1 ne se rejoue pas en place (P4 hérité d'E20.d1 T0 :
     `compare.py` vise un niveau trop haut, `d1/out` absent) : la rejouer depuis une copie, sans modifier d'outil copié.
-- ⏳ **T1 — Table et noms.** Constantes des cinq états ; la table `0x80022E7C` en six genres, avec un test entrée par entrée contre
+- ✅ **T1 — Table et noms.** Constantes des cinq états ; la table `0x80022E7C` en six genres, avec un test entrée par entrée contre
   l'exe ; masque de plongée = `0xD0` ; bouchon nommé `0x800350C0`.
 - ⏳ **T2 — La branche et les sorties.**
   - Dans `MovePlayer`, après le pilote et la direction, avant la porte d'échelle : pente 4 → charge 0, pointeur 0,

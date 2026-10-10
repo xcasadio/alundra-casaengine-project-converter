@@ -114,8 +114,69 @@ public static class AlundraPlayerManager
     /// <summary>PlayerAnimation 0x1C (E20.d1 T1): the recoil after a hit (reached from the hurt state 0x31, E20.c2b); the jump table <c>0x80022D3C</c> sends it to the handler of <see cref="SprintBounceAnimationId"/>.</summary>
     internal const uint HurtBounceAnimationId = 0x1C;
 
-    /// <summary>The slope value of deep water (<c>Slope_18c</c> 4): the binary sends every state of the run to the swim there (<c>0x8003260C</c>, E20.i); until then <see cref="MovePlayer"/> walks (see the guard of the run states).</summary>
+    /// <summary>The slope value of deep water (<c>Slope_18c</c> 4): <see cref="MovePlayer"/> takes the swim branch there (<c>0x8003260C</c>, E20.i).</summary>
     private const int DeepWaterSlope = 4;
+
+    /// <summary>PlayerAnimation 0x0F (E20.i T1): swimming, on the surface of deep water (speed 144, 42 ticks, chained to itself, sound 22).</summary>
+    internal const uint SwimAnimationId = 0x0F;
+
+    /// <summary>PlayerAnimation 0x1D (E20.i T1): floating, the rest of the swim and the state the swim table gives to almost every other state (a 36-tick loop, no speed, deceleration shift 3).</summary>
+    internal const uint FloatAnimationId = 0x1D;
+
+    /// <summary>PlayerAnimation 0x28 (E20.i T1): the burst of the swim, a "dive" that stays on the surface (speed 176, 42 ticks, sound 21, then 0x1D); the Triangle, Cross or Square edge starts it.</summary>
+    internal const uint DiveAnimationId = 0x28;
+
+    /// <summary>PlayerAnimation 0x3A (E20.i T1): the hurt state in deep water (4 ticks, sound 23, then 0x3B); entered by the hurt block of E20.c2b, which writes 0x3A instead of 0x31 on slope 4.</summary>
+    internal const uint SwimHurtAnimationId = 0x3A;
+
+    /// <summary>PlayerAnimation 0x3B (E20.i T1): the end of the hurt in deep water (8 ticks, held until the animation sets <c>+0xAC</c>), left by the handler <c>0x800326FC</c>.</summary>
+    internal const uint SwimHurtEndAnimationId = 0x3B;
+
+    /// <summary>The buttons that start the burst of the swim, <c>pressed &amp; 0xD0</c> (<c>0x800326D0</c>): the Triangle (0x10), the Cross (0x40) and the Square (0x80); the Circle (0x20) is the item button.</summary>
+    internal const uint SwimDiveButtons = AlundraPadState.Triangle | AlundraPadState.Cross | AlundraPadState.Square;
+
+    /// <summary>The six kinds of handler the swim table <c>0x80022E7C</c> gives to the 80 states (E20.i T1); the address of each handler is in the summary of its member.</summary>
+    internal enum SwimHandler : byte
+    {
+        /// <summary><c>0x80032674</c>: the state becomes 0x1D, then <c>TryUseItem</c>; the direction is not written. Every state not cited below, Idle, the jumps and the attacks included.</summary>
+        Float = 0,
+
+        /// <summary><c>0x80032658</c> (0x1C, 0x31, 0x3E): the direction + 0x10, then 0x1D, then <c>TryUseItem</c>.</summary>
+        FlipThenFloat,
+
+        /// <summary><c>0x80032680</c> (0x28, 0x3A): <c>TryUseItem</c> only.</summary>
+        ItemOnly,
+
+        /// <summary><c>0x80032690</c> (0x0F, 0x1D): the steering of the swim.</summary>
+        Steer,
+
+        /// <summary><c>0x800326FC</c> (0x3B): the end of the hurt.</summary>
+        HurtEnd,
+
+        /// <summary><c>0x80032758</c> (15 states and every state from 0x50): the item mode is cancelled (<c>0x800350C0</c>), the state stays.</summary>
+        Skip,
+    }
+
+    /// <summary>E20.i T1: the swim table <c>0x80022E7C</c>, 80 entries indexed by <c>TargetAnimationId</c> (a state from 0x50 on is <see cref="SwimHandler.Skip"/>, <c>0x8003261C</c>).</summary>
+    internal static readonly SwimHandler[] SwimTable = BuildSwimTable();
+
+    private static SwimHandler[] BuildSwimTable()
+    {
+        var table = new SwimHandler[0x50]; // every entry starts as SwimHandler.Float (0)
+        foreach (var id in new[] { 0x0D, 0x1A, 0x1B, 0x1E, 0x27, 0x37, 0x38, 0x3D, 0x43, 0x45, 0x47, 0x48, 0x4A, 0x4C, 0x4D })
+        {
+            table[id] = SwimHandler.Skip;
+        }
+
+        table[0x1C] = table[0x31] = table[0x3E] = SwimHandler.FlipThenFloat;
+        table[0x28] = table[0x3A] = SwimHandler.ItemOnly;
+        table[0x0F] = table[0x1D] = SwimHandler.Steer;
+        table[0x3B] = SwimHandler.HurtEnd;
+        return table;
+    }
+
+    /// <summary>E20.i T1: the handler of the swim table for <paramref name="animationId"/> (<see cref="SwimHandler.Skip"/> from 0x50 on).</summary>
+    internal static SwimHandler SwimHandlerOf(uint animationId) => animationId < SwimTable.Length ? SwimTable[animationId] : SwimHandler.Skip;
 
     /// <summary>
     /// E20.d1 T1: the facing (<see cref="AlundraEntityScriptProxy.AnimationDirection"/>: 0 down, 1 up, 2 left, 3 right) the binary has when <c>MovePlayer</c> of this tick starts: <c>UpdateAnimation</c> (<c>0x80038AB4</c>) rewrites
