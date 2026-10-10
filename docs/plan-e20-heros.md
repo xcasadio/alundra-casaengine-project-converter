@@ -234,11 +234,15 @@ contre-vérification divergent, la contre-vérification est retenue (critique, �
   (`0x8002FB14`) : sons 12, 21, 19, 16 selon la pente toutes les 8 images en `0x29`, poussière toutes
   les 4 images au sol ; sur les pentes 1, 2 et 4, poussière à −0,25 fois la force et aucune force pour
   `0x04` et `0x2A` (contre-vérification, ligne 12).
-- [DLL] Rien de la course n'est porté (`AlundraPlayerManager.cs:63-69`, `:418-424`) ; un test épingle
-  « Triangle seul donne Idle » (`AlundraHeroJumpStatesTests.cs:216-219`). Vitesses, fins d'animation,
+- [DLL] La course est portée par E20.d1 (2026-10-10, §1.13) ; le test « Triangle seul donne Idle » (`AlundraHeroJumpStatesTests.cs`,
+  SJ3) est inversé. Vitesses, fins d'animation,
   son à chaque changement d'animation et impulsion Z marchent déjà pour toute animation.
   `AnimCompleteCounter` n'est pas remis à zéro au changement d'animation, comme dans le binaire
   (`0x80038AB4-0x80038E10`) ; la décompilation le remet à zéro (`EntityManager.cs:222`).
+- **Corrections d'E20.d1 (2026-10-10, mesurées sur l'oracle de la course)** : la préparation dure 25 ticks, et un changement de
+  regard la relance (une préparation retournée au tick 10 démarre au 35, au 20 au 45) ; poussière de `0x29` : aucune pendant la
+  première boucle, puis toutes les 8 images (`+0xB0` à 1 ou 2), puis toutes les 4 (E20.e) ; `0x3E` dure 11 ticks puis passe à `0x01`
+  en l'air, c'est le chemin normal ; sans bottes de niveau ≥ 2, l'eau profonde est un mur (O-E19-22).
 
 #### 0.2.4 L'attaque
 
@@ -2164,7 +2168,7 @@ le pilote d'objet (E20.h) ; la mort (E18).
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
 - **Retour arrière** : `git revert` des commits d'E20.c2a.
 
-### 1.13 E20.d — La course ⏳ (proposée le 2026-10-10 ; découpée en E20.d1 et E20.d2)
+### 1.13 E20.d — La course 🧪 (proposée le 2026-10-10 ; découpée en E20.d1 et E20.d2 ; E20.d1 exécutée le 2026-10-10, verifier frais et recette de l'auteur en attente ; E20.d2 ⏳)
 
 **Révision 1 (2026-10-10).** Relecture d'E20.d1 : **REVISE**, deux points corrigés : le prérequis est E20.c2a CONFIRMED (arrêt
 sinon, base des épingles nommée) ; la tolérance d'O-E19-42 ne vaut que pour le mur est (± 1 tick), les autres murs sont exacts.
@@ -2303,7 +2307,7 @@ Le test « Triangle seul donne Idle » s'inverse.
   vrai préfab, vraie passe de coups), `AlundraHeroRunStatesTests` (branches hors oracle). Seul manque : l'échelle de la 389 au vrai
   préfab (l'intro de la carte verrouille et déplace le héros, aucun arc de la 389 n'existe) ; elle est couverte par G8 (oracle) et
   par la recette.
-- ⏳ **T5 — Plan.** Résultats, §0.2.3 corrigé, ligne d'O-E20-12 mise à jour.
+- ✅ **T5 — Plan.** Résultats, §0.2.3 corrigé, ligne d'O-E20-12 mise à jour. Fait le 2026-10-10.
 
 #### E20.d1 — Acceptation
 
@@ -2364,6 +2368,47 @@ Le test « Triangle seul donne Idle » s'inverse.
     d'un rebord, grimper en courant vers le haut.
   - Sur l'eau profonde, le héros marche.
   - Fermer l'inventaire par Triangle en le gardant tenu lance la préparation, comme l'original.
+
+#### E20.d1 — Résultats (2026-10-10, branche `chantier/e20-heros`)
+
+Commits : T0 `af42753` (oracle dans l'annexe), T1 `fbc3ecc` (tables, champ, noms, regard du tick), T2 `aaa238c` (Triangle, quatre
+gestionnaires, effet 9, garde de la pente 4, SJ3 inversé), T3 `b5c9556` (moyens de test), T4 `358f958` (tests), T5 (ce plan).
+`Alundra.Tests` : 3851 avant la tranche, 4195 après (+344), sans échec en Release et en Debug ; `Alundra.dll` du projet égale celle de
+`Alundra/bin/Debug`. Traces du héros et de l'intro inchangées (aucune différence hors fins de ligne). Seul SJ3 change parmi les
+tests existants (inversé : Triangle seul donne `0x29`, compteur `0`, direction gardée).
+
+- **Valeurs écrites avant la première exécution, mesurées sur la DLL, toutes tenues** : G1 (26 traces, départs 26, 30, 40, 35, 45,
+  47 ; forces 64512 à 258048 aux ticks 26-29, Y ±43008 à ±172032 ; diagonales, T seul et Gauche+Droite sans fin ; Idle au 10 puis
+  Moving au 11), G3 (les 52 cas : la course continue pour sa direction, ses deux diagonales, Gauche+Droite et Haut+Bas ; sinon `0x2A`
+  au 41, compteur 0, ou 1 sans direction), G4 (arrêt 41-56 de 249984 à 129024, Idle au 57 à 64512, reprise de k = 10 à 16 avec la force
+  de la glissade, k ≤ 9 ou ≥ 17 perdu, Haut et Gauche prennent leur direction, Haut+Droite garde le compteur), G5 (mur ouest exact :
+  `0x3E` 78-88, +196608, ForceZ 262144, effet 9 à Z + 16 px, son 28, recul de 33 px, sommet à 18 px, `0x01` au 89, `0x2C` 90-94,
+  `0x29` au 95 ; mur nord 55-65 ; mur sud 95 ; course collée au mur 27 ; marches de 16 et 32 px ; marche sans rebond), G6 (`0x2D` au
+  90, `0x2C` 91-100, `0x29` au 101, 98 à 16 px, 106 à 64 px, `0x01` Triangle relâché, Idle tout relâché, `0x14` 93-100 au Carré),
+  G7 (Tackle 40-71 pour Carré, Croix ou Rond : son 83, 254016 puis −4032, 93,52 px, Idle au 72, `0x29` 73-97, course au 98 ;
+  rien dans `0x2A` ; Carré dans la préparation `0x10` 10-30, Idle 31, course 57 ; compteur de l'épée sacrée 1, 16, 31, 60 ;
+  Beannoïde de la 14 au vrai préfab, coup au 61 avec 3 étincelles, comparé jusqu'au tick qui précède la blessure, balayage s = 30 à
+  62 : 17 traces), G8 (pente 6 au 51, `ForceAdjusted` au 53, `0x0E` au 54, sans `0x3E` ; sans échelle `0x3E` au 54), G9 (eau peu
+  profonde 129024 sans bottes, 258048 avec ; glace 20160, 60480, 141120), deux ticks par image (le départ qui change le regard ne
+  sort pas du cône). Mutation réelle (regard de l'image à la place du regard du tick) : seul le test des deux ticks par image
+  devient rouge.
+- **Mur est** : la DLL rebondit au tick 86, l'oracle au 87 (O-E19-42 / D-E19-58 : elle s'arrête au contact au 84, à 14745600, quand
+  le binaire s'arrête une unité avant, à 14745599, et fait cette unité au 85). Les traces du mur est, de ses quatre variantes et des
+  marches sont comparées avec le pad de l'oracle décalé d'un tick à partir du 85 : tout le reste est exact, à une unité près au 84.
+- **Garde de l'eau profonde** : au tick où les quatre coins sont sur la pente 4 (le 89 de `R9-deepwater-boots2`), le tick suivant
+  met Idle (le binaire met `0x1D`), le suivant Moving ; Triangle sur l'eau profonde ne lance pas la préparation (le héros marche) ;
+  `0x3E` et `0x1C` retournent la direction d'abord. Le mur d'eau profonde sans bottes (`R9-deepwater-noboots`) et la nage (départs dans
+  l'eau) ne sont pas portés : E20.i et O-E19-22.
+- **Écarts écrits, hors périmètre ou en bouchon** : le pas, la poussière et l'atterrissage (sons 12 et 11, effet 7 : E20.e) ne sont
+  pas comparés ; le son 3 du Rond dans la préparation est `TryUseItem` (E20.h) ; la fin de la glace diffère de 16 unités (le mover
+  travaille en flottants ; glissement exact hors périmètre) ; le bord de la carte (`R2-mapedge`, O-E19-17) ne rebondit pas dans la DLL ;
+  la colonne `on_ground` d'un rebord est comparée au tick d'avant, au tick de la perte (O-E20-12, comme AT8) ; la blessure du héros
+  après le coup du Tackle est E20.c2b.
+- **Moyens de test** : l'Idle de la fiche du héros porte l'octet d'accélération 1 (la glissade finit à 64512 au tick 57, pas à 0) ; la
+  horloge des coups d'E20.b garde son 0 pour ne rien déplacer, et le montage de la course le corrige pour lui seul. `TryUseItem` a un
+  point d'accès de test (branches « résultat 0 » du binaire, sinon inatteignables).
+- **Non fait** : l'échelle de la 389 au vrai préfab (l'intro de la carte verrouille et déplace le héros, aucun arc n'existe sur cette
+  carte) ; la sonde du vrai jeu (harnais hors dépôt) ; le verifier frais ; la recette de l'auteur.
 
 #### E20.d2 — Tâches
 
@@ -2434,7 +2479,7 @@ traces highground ; tranche à part après E20.d ».
 | O-E20-7 | **Tranché le 2026-10-09 (D-E20-11).** Ordre événements de carte / entités : le corriger dans E20.a (ordre du binaire : pad, événements de carte, entités ; mesure préalable des épingles qui bougent), ou le garder comme écart documenté | — |
 | O-E20-8 | **Tranché le 2026-10-09 (D-E20-12).** Structure du tick : boucle de ticks pilotée par le monde dans la DLL (proposition de D7), ou pas fixe de 1/50 s du moteur (migration M3, différée par l'auteur le 2026-08-26) | — |
 | O-E20-9 | **Tranché le 2026-10-09 (D-E20-13).** La passe des compteurs efface `RidingEntity` (`+0x12C`) ; la DLL ne recalcule le porteur qu'une fois par image : ne pas l'effacer, écart documenté, jusqu'à un recalcul par tick | — |
-| O-E20-12 | Le contact au sol du héros est lu une fois par image, en tête d'image (E19.d2c1 R6) : la perte du sol au bord d'un rebord et un sol qui s'abaisse en cours d'image arrivent un tick après le binaire (`AT8`, `AT8n`, `AT8b` d'E20.b). L'aligner demanderait de relire le contact à chaque tick | à placer (E20.d, où la course quitte souvent un rebord, ou une tranche à part) |
+| O-E20-12 | Le contact au sol du héros est lu une fois par image, en tête d'image (E19.d2c1 R6) : la perte du sol au bord d'un rebord et un sol qui s'abaisse en cours d'image arrivent un tick après le binaire (`AT8`, `AT8n`, `AT8b` d'E20.b). L'aligner demanderait de relire le contact à chaque tick | Tranché le 2026-10-10 (E20.d) : à 1 tick par image, les décisions sont exactes (le rebord de la course est épinglé comme AT8) ; l'écart ne se voit qu'à 2 ticks et plus par image ; la lecture par tick demande la règle de recollement au sol de 3 px `0x80037848` et la re-dérivation de UH7, AT8, AT8n, AT8b et des traces highground : tranche à part après E20.d |
 | O-E20-13 | La DLL ajoute les entités neuves en fin de liste, alors que le binaire réutilise la première case libre (`FindFreeEntitySlot`) : après un recyclage en cours de carte, l'ordre de la passe de coups (« premier attaquant ») peut différer | à mesurer avec E20.e0 (apparitions) ou E14 |
 | O-E20-11 | Une entité neuve tourne-t-elle dans le même tick dans le binaire (répétition de `0x800386D0`, contrôle de D7 : non vérifié) ? E20.a garde la règle d'aujourd'hui (premier tick à l'image suivante) | à mesurer, avec E20.e0 |
 | O-E20-14 | Atteignabilité en jeu des salles des leviers : la 115 nord-ouest après le hall (E14.a) ; la 116 derrière la grille (E14.a) ; la salle de la bascule de la 117, où la bascule n'apparaît que si l'on arrive par les portails internes 2, 4 ou 6 de la 117 (les arrivées depuis la 115 et la 116 sont hors de sa zone) ; la 44, dont on ne sait pas si le chemin vers les leviers passe par la case de la vague (43..44, 20) | recette de l'auteur, après E14.a |
