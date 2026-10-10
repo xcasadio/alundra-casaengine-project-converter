@@ -656,29 +656,117 @@ principale :
 - **Retour arrière** : `git revert` des commits d'E14.a1b ; le dossier `oracle-a1/` (commit de docs de T0) peut rester, il ne change
   aucun comportement.
 
-### 1.3c E14.a1c — Muruta, hall de la 115 ⏳ (à relire avant exécution)
+### 1.3c E14.a1c — Muruta, hall de la 115 ⏳ (détaillée le 2026-10-10 ; exécution après E14.a1b CONFIRMED)
 
-**Périmètre.** `AlundraMurutaAi` : A0, C10, D9, enregistrés pour 347 ; D9 passe par `HitReaction(e, 2, ctx)` ; A0 écrit
-`AIValues[0] = (short)((PosZ + 1) >> 16)` (Z du binaire, ADR-0026 : `lh +0x11E` lit le Z du binaire) ; la branche carte `0x99` de
-C10 (`0x80068164`-`0x8006819C`) n'est pas portée, avec un commentaire (morte pour 347, qu'aucun enregistrement de la 153 ne place) ;
-C10 lit `BoxDirection` pour `+0x98` (D-E14-6).
+Détail écrit le 2026-10-10 sur le modèle d'E14.a1b (révision 2, READY), à partir des mêmes rapports de découverte
+(`C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/e14a1/a1b_critic.md`, `a1b_table.md`, `a1b_projection.md`, `disc_da.md` §3, `disc_oh.md`) et de l'oracle
+`docs/plan-e14-annexe/e14a/oracle-a1/` (versé par E14.a1b T0).
 
-**Tâches.** T1 tests sur `vectors-muruta.json` et `calls[]` des scénarios `MU-*` ; T2 arc H115 ; T3 recette de l'auteur ; T4 verifier
-frais.
+**But.** Le Muruta (type 347) vit comme dans `ALUN_CD.EXE` (A0, C10, D9 par le registre) ; le hall de la 115 devient jouable : quatre
+Muruta tués à l'épée, la porte de B[2] passe, G569 est posé et trois portails sont rendus.
 
-**Arc H115.** `World115`, drapeaux `{262}`, `Arrival` (252, 872) — la case (10,54), z 0, direction 16 ; jamais la case (10,56), qui
-lance le dialogue 81 de B[8] (`@1104`). Image 1 : B[2] passe par `@172, @177, @381…, @401, @403, @405, @407` ; `Give(1)`, `Equip(1)` ;
-attendre les quatre `FramesOf(C, 1469, 0x40)` ; même politique d'épée ; le héros reste dans X 0..21, Y 34..57 ; ne jamais tenir Haut.
+**Faits porteurs.**
+- [binaire] A0 `0x8006174C` : `lh +0x11E` (moitié haute du Z du binaire) écrit `+0x280` (`0x80061754`) ; dans la DLL
+  `AIValues[0] = (short)((PosZ + 1) >> 16)` (ADR-0026 : le `PosZ` de la DLL vaut celui du binaire moins 1 ; `PosZ >> 16` seul diffère
+  quand les 16 bits bas de la DLL valent `0xFFFF`).
+- [binaire] C10 `0x80068154` lit `+0x98` en deux largeurs : `lbu` en `0x8006841C` (direction `^ 1`, masquée `& 0xFF` par
+  `TryAttackPlayer2`) et `lw` en `0x800805E0` (dans `TryAttackPlayerFront`) ; les deux sont `BoxDirection` (valeur du tick, D-E14-6),
+  jamais `AnimationDirection` (même décalage par la disposition des champs). Domaine des vecteurs : −1..4.
+- [binaire] C10 lit le mot BSS `[0x800DC5A0]` en `0x80068164` (test de la carte `0x99`) ; la branche `0x80068178`-`0x8006819C` (et la
+  lecture de `+0x0C`) est morte pour 347, qu'aucun enregistrement de la 153 ne place : **non portée**, avec un commentaire.
+- [binaire] C10 lit, sur le héros, `+0x1D4` (boîte de l'image, `0x80068474`), `+0x1C8` (attaque courante, `0x80068484`) et l'octet
+  d'attribut de l'attaque (`lbu` `0x80068494`) ; un Muruta alerté dont le héros frappe (boîte et attribut non nuls) à 5 cases ou moins
+  se fend aussitôt (animation 3), quel que soit le générateur.
+- [DLL] `HasFrameBox` est rafraîchi pour chaque entité à la fin de chaque tick (`StoreHitBox` → `EvaluateFrameBox`) : C10 **lit le
+  champ** ; appeler `EvaluateFrameBox` sur un proxy nu le remettrait à faux.
+- [binaire] D9 `0x8007DE04` : `HitReaction(e, 2, ctx)` (animation 2, direction opposée au héros, `Bytes[3]`), `ComputeNewHp` ; carte 115
+  `D = 0` : Muruta de niveau 1, PV 3, deux coups d'épée de 2 (le dernier 1), espacés d'au moins 25 ticks.
+- [oracle] Appels C10 des scénarios : pointeur d'attaque du héros `0x80144229` (612 appels, attaque `(0x81, 1)`) ou `0x80144209`
+  (3 025 appels, jamais déréférencé dans les ensembles de lecture) ; vecteurs : `hero_attack` explicite.
+- [oracle] E1 : vecteurs identiques à ceux du Beannoïde hormis le générateur ; la projection d'E1 d'E14.a1b s'applique telle quelle ;
+  7 appels E1 dans les scénarios `MU-*`, tous comparés.
+- [données] Hall (`map_115.json`) : B[2] lié à MapEvents[1] (cases X 0..21, Y 34..57 ; réarmé si le héros sort) ; `@172` (G569 → fin),
+  `@177` (G262 → `@381`), `@381`-`@396` (`0x54` sur (18,44), (19,44), (2,44), (3,44)), `@401`/`@403`/`@405`/`@407` (`0x2D` des
+  enregistrements 24 à 27), `@409` son 55, `@413` `Break`, `@414`/`@419`/`@424`/`@429` (`0x2C` sur 24..27), `@434` (`0x05 [57,2]` =
+  G569), sons et `Wait` jusqu'à `@493`/`@498`/`@503` (`0x54 [x,y,0,128]` : bit de portail `0x80` sur (10,44), (11,44), (5,42)) ; B[4]
+  (`@684`) verrouille (10,44), (11,44), (5,42) et (16,42) à l'entrée quand G262 est posé ; (16,42) reste fermé (seul le chemin G659 le
+  rouvre). Enregistrements 24 à 27 : sprite 91, type 347, cases (9,46), (12,46), (9,50), (12,50), `Height 16` (128 px au-dessus du sol
+  du hall), C = 153 : `C[25]` (`@1464 2B`, `@1465 25`, `@1466 37[20]`, `@1468 2A`, `@1469 40 [2,0]`) passe au natif C10 après la chute ;
+  D et E natifs dès le départ.
+- [DLL, INCONNU] La chute de 128 px d'une entité autre que le héros passe par `StepVerticalWithoutController` ; sa durée dans la DLL
+  n'est pas mesurée ; le pas vertical et le vol des entités sont E20.e0k (non fait) : d'où l'arrêt ci-dessous.
 
-**Acceptation.** Vecteurs : 4 913 (A0 6, C10 4 043, D9 720, E1 144), 0 écart. Appels : 3 675 (A0 16, C10 3 637, D9 15, E1 7), 0 écart.
-Arc H115 : 8 appels de D9, 2 dégâts par coup, PV 3→1→0 ; pour chaque mort : D à H+1, statut 4 à H+23, recyclage à H+24 ;
-`FrameOf(B, 434)` = dernière E1 + 2 = X ; `@442` = X+41, `@461` = X+50, `@477` = X+59, `@493` = X+68 ; G569 et G262 posés ;
-`GroundProperty & 0x80` posé en (10,44), (11,44) et (5,42), éteint en (16,42) (fidèle : seul le chemin G659 le rouvre) ;
-`EntityByRecord(24..27)` nul ; quatre effets 8. Mutations : C10 masque de fin `0x1C`→`0x1F` ; D9 animation 2→3 ; A0 sans le +1 ;
-état 5 `0x40`→`0x20`. Suite complète en Release et en Debug ; `cmp` ; traces.
+**Périmètre.** `AlundraMurutaAi` : A0, C10, D9, enregistrés pour 347 (D9 par `AlundraEnemyHelpers.HitReaction(e, 2, ctx)`) ; tests
+contre l'oracle avec le lecteur d'E14.a1b (`AlundraEnemyHandlerOracle`) ; arc H115 ; tests du §1.3d pour E14.a1c (compte 6 ;
+`EmptyRegistry_EveryEntity_IsACountedNoOp` sur une clé libre).
+Reporté d'E14.a1b (commentaires seulement) : les commentaires qui contredisent maintenant `DestroyEntity(e, fx)`
+(`EntityFlags.cs` « sans effet de bris » pour la destruction VRAM, `AlundraEventProgramRunner.cs` « destruction seulement » pour E1,
+`AlundraEntityDepthKey.cs` « later », `IEntityWorldContext.cs` et `IAlundraScriptHost.cs` qui ne citent que la phase de choix).
 
-**Arrêts.** Un Muruta du hall qui n'atteint pas `@1469` dans les 600 images qui suivent son `0x2D` (la chute des entités autres que le
-héros relève d'E20.e0k : question) ; un coup qui ne fait pas 2 ; les arrêts d'E14.a1b.
+**Hors périmètre.** Ceux d'E14.a1b (butin, son 84, `+0x1B8`, porteur, avance du générateur par tick, rendu au-delà du réservoir) ; la
+branche de la carte `0x99` ; le chemin complet du hall avec sa scène (le raccourci `{262}` suffit) ; la chute des entités (E20.e0k) ;
+les Muruta de la 362 et la vague de la 44 hors recette.
+
+**Table des champs (ajouts à celle d'E14.a1b, qui reste valable).**
+
+| Champ | Nom de l'oracle | Lu / écrit par (adresse) | Membre de la DLL | Conversion | Traitement |
+|---|---|---|---|---|---|
+| `+0x98` | `animdir98` | C10 `lbu` `0x8006841C`, `lw` `0x800805E0` | `BoxDirection` | S (−1..4) | Entrée |
+| `+0x11C` (moitié haute `+0x11E`) | `posz` | A0 `lh` `0x8006174C` | `PosZ` | `H(v)` | Entrée (lire `entity_before`, jamais `inputs.posz`) |
+| `+0x158`-`+0x164` | `mh0..3` | C10 (`HandleAnimationDirection` `0x80080150`-`0x80080164`) | `MapHeights[0..3]` | `H(v)` | Entrée |
+| `+0x274` | `b0_274` | C10 | `Bytes[0]` | `(byte)v` | Entrée ; comparé |
+| `+0x280` | `ai0_280` | É : A0 `0x80061754` | `AIValues[0]` | `unchecked((short)v)` ; comparé en `(ushort)` | Comparé |
+| héros `+0x1C8` | `curattack_1C8`, `hero_attack` | C10 `0x80068484`, attribut `lbu` `0x80068494` | `CurrentAttack` du héros | pointeur ≠ 0 ⇔ non nul ; `0x80144229` → `(0x81, 1)` ; `0x80144209` → une attaque dont la lecture fait échouer le test (jamais lue) | Entrée |
+| héros `+0x1D4` | `box_1D4`, `calls[].hero.box` | C10 `0x80068474` | `HasFrameBox` (le champ) | booléen | Entrée |
+| `0x800DC5A0` | — | C10 `0x80068164` | aucun | — | non porté (branche morte) |
+
+Clôture du Muruta : les 16 noms du Beannoïde plus `ai0_280` et `b0_274` (18).
+
+##### Tâches
+
+- ⏳ **T1 — Muruta A0, C10, D9 contre l'oracle.** Tests d'abord : `AlundraMurutaOracleTests` dans
+  `[Collection(AlundraRandomStaticStateCollection.Name)]` (graine rendue), même montage qu'`AlundraBeannoideOracleTests` (table des
+  champs, héros, attaquant, kit, verrou), sur `vectors-muruta.json` et les `calls[]` des scénarios `MU-*` ; puis `AlundraMurutaAi`
+  enregistré pour 347 ; les tests du §1.3d pour E14.a1c.
+- ⏳ **T2 — Arc H115.**
+- ⏳ **T3 — Suite complète, plan, notes** (le verifier frais est lancé par la session principale).
+- ⏳ **T4 — Recette de l'auteur** (D-E14-7).
+
+**Arc H115** (`ArcRun` direct, natifs actifs). `LeverArcs.Zone` / `World115`, drapeaux `{262}`, `Arrival` (252, 872) — la case (10,54),
+z 0, direction 16 ; jamais la case (10,56), qui lance le dialogue 81 de B[8] (`@1104`) —, limite d'environ 3 000 images. Image 1 : B[2]
+passe par `@172, @177, @381…, @401, @403, @405, @407`. `Give(1)`, `Equip(1)` ; attendre les quatre `FramesOf(C, 1469, 0x40)` (passage
+au natif), chacun au plus 600 images après le `0x2D` de son Muruta. Politique d'épée d'E14.a1b (`Swordsman` : 40/34/28 px à l'ouest,
+empreinte marchable à la hauteur de la cible, direction 24, `Square`, 25 ticks entre deux appuis). Le héros reste dans X 0..21,
+Y 34..57 ; ne jamais tenir Haut sur (5,42), (10,44), (11,44), (16,42) (dialogue de B[5]).
+
+##### Acceptation
+
+Une image = un tick.
+- Vecteurs : 4 913 (A0 6, C10 4 043, D9 720, E1 144), 0 écart sur les champs changés, le mot du générateur et les sons ; E1 selon la
+  projection d'E14.a1b.
+- Appels des scénarios : 3 675 (A0 16, C10 3 637, D9 15, E1 7), rejoués un par un, 0 écart (D9 avec l'attaque `(0x81, 1)` au verrou
+  16).
+- Arc H115 : 8 appels de D9, **comptés directement** (compteur ou journal des gestionnaires natifs, pas déduits des PV ; reporté
+  d'E14.a1b), 2 dégâts par coup, PV 3→1→0 pour chaque Muruta ; pour chaque mort : D à H+1, statut 4 à H+23, recyclage à
+  H+24 ; `FrameOf(B, 434)` = dernière E1 + 2 = X (la porte d'un événement de carte passe à E1 + 2) ; `@442` = X+41, `@461` = X+50,
+  `@477` = X+59, `@493` = X+68 (`Wait N` dure N+1 images, épinglé par `AlundraLeverArcTests` A115) ; G569 et G262 posés ;
+  `GroundProperty & 0x80` posé en (10,44), (11,44) et (5,42), éteint en (16,42) ; `EntityByRecord(24..27)` nul ; quatre effets de bris
+  relevés à E1 + 1 avec le prédicat d'E14.a1b (`TargetEffect == 8`, `RecordIndex == -1`, `Mode ∈ {1, 2}`, `Anchor` non nul, X/Y du
+  Muruta tué) ; `AssertNoUnexpectedError` et `AssertNothingSkippedOrExceeded`. Ne s'affirme pas : les positions des Muruta (le
+  générateur décide de leur marche), le butin, le son 84.
+- Mutations réelles, par script, chacune rouge : C10 masque de fin `0x1C`→`0x1F` ; D9 animation 2→3 ; A0 sans le +1 ; état 5 `0x40`→`0x20` ;
+  C10 lisant `AnimationDirection` au lieu de `BoxDirection`.
+- Registre : 6 entrées en production ; aucune inscription ne liste −1 ; tests du §1.3d à jour.
+- Suite `Alundra.Tests` en Release puis en Debug sans échec ; `cmp` de la DLL ; traces inchangées ; verifier frais.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : un Muruta du hall qui n'atteint pas `@1469` dans les 600 images qui suivent son `0x2D` (la chute des entités autres que
+  le héros relève d'E20.e0k : question à l'auteur) ; un coup qui ne fait pas 2 ; les arrêts d'E14.a1b (vecteur en écart après deux
+  tentatives, épingle de l'arène c1a ou c1b qui bouge, décalages H+1/H+23/H+24 ou E1 + 2 qui diffèrent, nom changé hors clôture,
+  besoin de modifier le moteur, défaut de l'original soupçonné).
+- **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
+- **Retour arrière** : `git revert` des commits d'E14.a1c.
 
 **Recette (D-E14-7).** Le hall de la 115 : quatre Muruta tués à l'épée, un nuage de bris par mort, trois portails rendus, (16,42) reste
 fermé. La grille de la 116 : animée après les deux Beannoïde. La 14 : les sept Beannoïde dorment, se réveillent et meurent.
