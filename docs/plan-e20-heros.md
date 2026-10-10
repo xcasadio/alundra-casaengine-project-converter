@@ -569,7 +569,7 @@ fichiers, donc l'une après l'autre) :
 | E20.f1 | Charge et relâchement : `UpdatePlayerWeaponEffect`, branche de relâchement de `PlayerTryAttack`, gerbe de 16 étincelles, aura (effet 3 attaché) par un accès de l'hôte aux effets, effacements de la charge et du pointeur dans les branches gelée et verrouillée ; l'arc et la baguette arment le pointeur, le tir reste un bouchon compté | — |
 | E20.f2 | Rebond du fléau : squelette de `CreatePlayerAnimationEffects(mode)`, fin du fléau réelle, le reste en bouchons nommés pour E20.e | — |
 | E20.e0x | Convertisseur : `BankKey` et `BreakEffect` dans `Data/sprite-records.json` ; export complet, preuve par manifeste et double export ; ADR de format | — |
-| E20.e0a | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance, registre des natifs par type (D-E14-1, part d'E14.a0 avancée) | E20.e0x |
+| E20.e0a | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance ; le registre des natifs par type et son interrupteur (D-E14-1) viennent d'E14.a0, qui les possède (`docs/plan-e14-ia-native.md` ; les aides des ennemis sont E14.a0b, plus tard) | E20.e0x, E14.a0 |
 | E20.e0b | Générateur avancé une fois par tick ; tirage du butin à la création (écrit le contenu, rien ne tombe) ; `DestroyEntity(e, fx)` avec l'effet de bris | E20.e0a |
 | E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a |
 | E20.f3 | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.f1 (le relâchement chargé lance la vague et la flèche chargée), E20.e0a, e0b |
@@ -1887,7 +1887,7 @@ natifs D31/E15 sont à E14).
 - **Budget** : un `executor` ; un verifier frais.
 - **Retour arrière** : `git revert` des commits d'E20.f2.
 
-### 1.11 E20.c2-0 — Oracle du héros touché ⏳
+### 1.11 E20.c2-0 — Oracle du héros touché ✅ (faite et CONFIRMED le 2026-10-10, `1451fbb` à `fd29c18`)
 
 **Révision 1 (2026-10-10).** Relecture : **REVISE**, un point corrigé : le harnais de base refait en Python le répartiteur du tick
 (`0x8003B388`) sans la porte `[0x800DC4B8] & 0x48`, qui ne laisse tourner que la passe des listes ; D1 l'aurait enregistré comme le
@@ -1920,22 +1920,22 @@ F6 et le groupe H de `c2-oracle.md` (retirés par `check.md` §c ; A3 et A5 pour
 
 #### Tâches
 
-- ⏳ **T1 — Base.** Copier les outils de base ; relancer la porte D1 (S-A et S-B : 216 valeurs chacun, 0 écart) et `H3` d'E20.c1 : les
+- ✅ **T1 — Base.** Copier les outils de base ; relancer la porte D1 (S-A et S-B : 216 valeurs chacun, 0 écart) et `H3` d'E20.c1 : les
   colonnes communes égalent celles de c1 au bit près.
-- ⏳ **T2 — Monde et colonnes.** `hworld.py` selon `c2-oracle.md` §2, avec un répartiteur du tick propre, utilisé par les deux
+- ✅ **T2 — Monde et colonnes.** `hworld.py` selon `c2-oracle.md` §2, avec un répartiteur du tick propre, utilisé par les deux
   interprètes (sans modifier `world.py` ni `interp2.py`) : quand `[0x800DC4B8] & 0x48` est posé, seule la passe des listes `0x800384F4`
   tourne, comme le binaire (`0x8003B388`-`0x8003B408`, `check.md` ligne 73) ; sinon les huit passes ; colonnes de `c2-oracle.md` §4 plus `visible` (le héros dans la
   liste `0x80134250` à la fin du tick) et le miroir des stats (`stats_hp`, `stats_hpmax`).
-- ⏳ **T3 — Scénarios.** `hscen.py`, d'après `c2-oracle.md` §2 et `check.md` §c : A1 (`H3` prolongé à 200 ticks, et une variante au
+- ✅ **T3 — Scénarios.** `hscen.py`, d'après `c2-oracle.md` §2 et `check.md` §c : A1 (`H3` prolongé à 200 ticks, et une variante au
   pad 0 au contact à 20 px), A2 (armure × PV contre l'Orque), A4 (relèvements), A6 (fenêtre d'invulnérabilité, bord du tick
   hurt + 118 à + 122), B1 et B2 (cases dangereuses × bottes, plancher de PV), D1 (balayage de `[0x800DC4B8]`, `0xA0` compris), E2 et E3
   (l'entité l'emporte sur les stats ; création depuis les stats), F1, F2, F4, F5 (régénération), G (bottes et fiche, façon K1) ; C1
   (eau, `0x3A`) et E1 (PV 0) à titre d'information pour E20.i et E18. L'oracle ne contient aucune valeur attendue, seulement des entrées.
-- ⏳ **T4 — Modèle indépendant.** `hmodel.py`, écrit d'après le plan et les rapports (pas d'après le code émulé), nourri des seules
+- ✅ **T4 — Modèle indépendant.** `hmodel.py`, écrit d'après le plan et les rapports (pas d'après le code émulé), nourri des seules
   entrées et colonnes de géométrie : dégâts par la règle de `ResolveBalanceTarget` (E20.c1b) sur la fiche du héros ; coût et plancher
   des cases dangereuses ; suite de `+0x1CC` et phase du clignotement ; porte `& 0x48` : compteur `+0x1C`, `+0x1CC`, position et PV du
   héros figés d'un tick à l'autre, la colonne `visible` encore tenue par la passe des listes ; bornes des stats ; compteurs de régénération ; bottes.
-- ⏳ **T5 — Second interprète, mutations, couverture, manifeste.** Tous les scénarios aussi par `mips.py`/`interp2`, comparés texte à
+- ✅ **T5 — Second interprète, mutations, couverture, manifeste.** Tous les scénarios aussi par `mips.py`/`interp2`, comparés texte à
   texte ; mutations de `c2-oracle.md` §5 qui portent sur les scénarios gardés (chacune avec son changement attendu écrit d'avance dans
   `hmut.py`), plus un contrôle du répartiteur : sans la porte, la ligne D1 à `0x48` doit changer ; couverture de `0x80031A68`, du bloc de régénération et de l'épilogue ; deux relances donnent le même manifeste ;
   `run_c2.py` enchaîne le tout.
@@ -1952,12 +1952,126 @@ F6 et le groupe H de `c2-oracle.md` (retirés par `check.md` §c ; A3 et A5 pour
 - Deux relances donnent le même manifeste ; `python -B docs/plan-e20-annexe/e20-c2/oracle/run_c2.py` sort 0.
 - Aucun fichier de la DLL, des tests C# ou du convertisseur ne change ; verifier frais.
 
+#### Résultats (2026-10-10)
+
+- **Commits** : `1451fbb` (T1), `df46fc3` (T2), `c6f5f3e` (T3), `8b84ef2` (T4), `fd29c18` (T5), tous sous
+  `docs/plan-e20-annexe/e20-c2/oracle/` ; `python -B docs/plan-e20-annexe/e20-c2/oracle/run_c2.py` sort 0 en environ 300 s.
+- **Base** : outils copiés au bit près dans `tools/` ; porte D1 inchangée (216 valeurs chacun, 0 écart) ; `H3` égal à celui d'E20.c1 ;
+  les 45 premières lignes d'A1 égalent `H3` (4005 valeurs), tick 18 compris.
+- **Scénarios** : 105 parcours, 7979 ticks (A1, A2, A4, A6, B1, B2, D1 avec 12 valeurs de drapeaux plus le relâchement de `0x20` et trois
+  cas `0x48`, E2, E3, F1, F2, F4, F5, G ; C1 et E1 à titre d'information) ; répartiteur du tick qui suit la porte `& 0x48`.
+- **Contrôles** : modèle indépendant 1412 règles, 0 écart ; second interprète identique sur les 105 parcours ; 14 mutations attrapées,
+  plus un contrôle de patch et le contrôle du répartiteur ; couverture de `0x80031A68` 58/58, de la fin de `MovePlayer` 9/9, de la
+  régénération 71/72 (la seule instruction manquée est inatteignable) ; deux relances, même manifeste.
+- **Mesures utiles à E20.c2a et E20.c2b** : blessure d'A1 au tick 18 (PV 10 → 9, `0x31`, direction 24 → 8, `+0x1CC` 119, son 23), héros
+  caché 30 ticks sur 120 ; prochain coup possible à blessure + 119 (avec un contact forcé, blessures aux ticks 2, 122, 242) ; dégâts de
+  l'Orque selon l'armure : 4, 3, 2, 1, 1, 3 ; cases dangereuses : coût 1, 2, 3, bottes de niveau 3 jamais touchées ; seul le mot exact
+  `0x20` atteint l'entrée dans la branche verrouillée (PV − 1, `+0x1CC`, sans animation ni son), `0x24`, `0x30`, `0x10`, `0x04`, `0xA0`
+  perdent le coup, `0x80` seul suit le chemin normal, `0x08`, `0x28`, `0x40`, `0x48` figent tout sauf la passe des listes ; la fin de
+  `MovePlayer` tourne sous tous les verrouillages ; l'entité l'emporte sur les stats (fiole : 11/11 depuis 5/10, 51/51 depuis 50/50 avec
+  des stats bornées à 50/50) ; régénération + 1 aux ticks 201 et 402, retardée à 301 par un appui au tick 100 ; eau (C1) : `0x3A` au tick
+  de la blessure, `0x3B` à + 4, `0x1D` à + 13, le héros se déplace (l'inconnue U3 de `c2-binary.md` le donnait immobile) ; PV 0 (E1) :
+  `0x39` au tick 17, `0x4E` au tick 67, drapeau `0x4` au tick 76.
+- **Vérification** : verifier frais **CONFIRMED** (aucun P0 à P2) : sorties reproduites au bit près depuis une copie, porte `& 0x48` et
+  ordre des passes redécodés, les deux prédicats de mutation corrigés après le premier passage justifiés par le binaire (plus stricts,
+  pas plus faibles), modèle indépendant de l'émulateur.
+- **Reportés (P4)** : la ligne d'A1 de `summary.txt` affiche les deux premiers sons du parcours au lieu du son de la blessure (23) ;
+  `hmodel.py` lit les drapeaux de la ligne précédente de l'émulateur plutôt que des entrées (sans effet hors de la branche de mort) ;
+  F4-zero n'isole plus la porte `Hp != 0` après le tick 61 environ (résultat juste).
+
 #### Arrêts, budget, retour arrière
 
 - **Arrêts** : la ligne du tick 18 d'A1 diffère de `H3` ; la porte D1 bouge ; un outil copié devrait être modifié ; un scénario demande
   un appel non bouchonné qui sort du périmètre du héros (le noter et le retirer, pas l'improviser).
 - **Budget** : un `executor` ; un verifier frais (avec un redécodage du binaire).
 - **Retour arrière** : `git revert` des commits d'E20.c2-0.
+
+### 1.12 E20.c2a — Les PV portés par le héros, la fin de `MovePlayer` et `UpdateItemEffectState` ⏳
+
+Relecture : **READY** dès la première lecture (2026-10-10). Exécution après E20.f1a et la vérification d'E20.c2-0.
+
+**But.** Les PV du héros vivent sur son entité (`+0x14`, `+0x18`) comme dans le binaire : repris des stats à chaque installation du
+monde, recopiés vers les stats à la fin de `MovePlayer` sur **toutes** ses sorties ; `UpdateItemEffectState` est porté en entier sauf
+le pilote d'objet (bottes, fiche du héros, régénération) ; la fiole de vie, `0xBC` et `0xC3` écrivent l'entité ; l'alarme des PV bas
+sonne. Ce n'est pas la blessure (E20.c2b, après E14.a, D-E14-4) : le héros ne perd encore aucun PV au contact. Tranche de la ligne
+E20.c2 approuvée, découpage de `docs/plan-e20-annexe/e20-c2/check.md` §c ; décisions D-E20-19, D-E20-20, D-E20-22 (ADR-0054).
+
+**Prérequis.** E20.f1a terminée (elle touche les mêmes branches de `MovePlayer`) ; E20.c2-0 CONFIRMED (son oracle sert d'acceptation).
+
+**Faits porteurs** (`c2-binary.md` §1, §5, §6 ; `c2-dll.md` §1.4, §1.8, §1.9, §5 ; `check.md` points 1, 2, 5, 8, 9 et lignes 1 à 7, 33 à
+40 ; oracle `docs/plan-e20-annexe/e20-c2/oracle/`) :
+- [binaire] La fin de `MovePlayer` (`0x80032914`) appelle `UpdateItemEffectState`, puis `SetPlayerHpMax(héros +0x18)`, puis
+  `SetPlayerHp(héros +0x14)` ; toutes les sorties y passent, la branche gelée (`+0x20 != 0`) et la branche verrouillée (`& 0x34`)
+  comprises. La DLL sort plus tôt de ces deux branches. Les stats ne sont reprises vers l'entité qu'à la création du héros, juste après
+  `InitializeEntity` (`0x800319EC`, puis `GetPlayerHpMax` `0x800319F8` → `+0x18`, `GetPlayerHp` `0x80031A00` → `+0x14`) ; la DLL pose
+  `Hp = HpMax = 10` dans `InitializeBalance` (`AlundraEntityScriptProxy.HitPass.cs`) à chaque `AdoptPlayerPawn` : un miroir sans reprise
+  remettrait les stats à 10/10 à chaque carte.
+- [binaire] `UpdateItemEffectState` (`0x800307E8`) : étape 1, niveau des bottes `[0x80127000]` = 3 si l'objet `0x1C` est possédé, sinon 2
+  pour `0x1B`, 1 pour `0x1A`, sinon 0 ; étapes 2 à 5 faites en E20.c1b-1 ; étape 6, copie de 255 octets (fiche 0 de l'armure, ou
+  `+0x1C4` du héros sans armure) vers la fiche du héros `0x80127008`, puis combinaison des réponses 1 à 11 (règle de `c2-binary.md`
+  §5.3 : `0x80` l'emporte ; sinon `b` ou `0x10`, plus `A − 0x10` et `B − 0x10` des fiches d'arme et d'accessoire sans drapeau, bornée à 0
+  à `0x1F`) ; étape 7, régénération (portes `[0x800DC4B8] & 0x7C == 0`, `+0x20 == 0`, mot de maintien du pad `0x80126F28` nul, `Hp != 0`,
+  `Hp < HpMax` ; sinon les trois compteurs `0x80126FE8/EC/F0` à 0 ; sinon pour chaque fiche d'octet 2 non nul, compteur + 1, et au-delà
+  de l'octet 2, remise à 0 et PV + 1 ; `Hp = min(HpMax, a)`). Ces compteurs et la fiche sont des globales que rien ne remet à zéro au
+  chargement d'une carte.
+- [binaire] `0x80044520` ne remet à zéro que les trois pointeurs d'équipement ; `AlundraEquipmentRecords.Clear()` efface aussi les mots
+  d'objet (P4 reporté d'E20.c1b-1).
+- [binaire] Fiole de vie `0x800333AC` : `+0x18 += 1` sans plafond, `+0x14 = +0x18` (le plafond de 50 n'est que dans `SetPlayerHpMax`,
+  appliqué au miroir) ; la DLL écrit les stats directement (`IncreaseHpMaxAndFill`, ADR-0048).
+- [binaire] `0xBC` (`0x80041C00`, taille 2) : `+0x18` du héros += l'opérande, plafonné à `0x32` ; les PV ne changent pas. `0xC3`
+  (`0x80041D6C`, taille 1) : `+0x14 = +0x18` ; `SetPlayerMp(GetPlayerMpMax())` (`0x8004DDDC`, `0x8004DEBC`) ; puis `0x8004B730`, qui
+  cale les compteurs affichés du HUD (`[0x800A827C]` + 8, + 0xC sur `GetPlayerHpMax`, + 0x10, + 0x14 sur `GetPlayerMpMax`). Ni l'un ni
+  l'autre n'est porté aujourd'hui.
+- [binaire] Alarme des PV bas (`0x800303DC`-`0x80030430`, `CreatePlayerAnimationEffects` mode 0 seulement, aujourd'hui le bouchon
+  `PlayerLowHpAlarm` d'E20.f2) : quand PV max ≥ 5 × PV, décrément de `[0x800A8F2C]`, à −1 son `0x190` et remise à `0x2D` ; la règle
+  exacte des autres cas (PV plus hauts) est à relire dans le binaire en T5.
+- [binaire] Le pilote `0x8003634C` reste un bouchon nommé (D-E20-19) ; la branche de mort `Hp == 0` (`0x80031CA8`) reste non portée
+  (D-E20-5, D-E20-20 : à 0 PV le héros affiche 0 cœur et garde la main ; la régénération s'arrête, sa porte `Hp != 0`).
+- [oracle] `docs/plan-e20-annexe/e20-c2/oracle/` (E20.c2-0) : groupes E (l'entité l'emporte sur les stats ; création depuis les stats),
+  F (régénération : + 1 aux ticks 201 et 402, retardée à 301 par un appui au tick 100), G (bottes et fiche par inventaire), D1
+  (l'épilogue tourne sous tous les drapeaux de verrouillage).
+
+**Périmètre.** `Alundra/Scripts/` : la reprise des PV après `InitializeBalance` dans `AdoptPlayerPawn` ; l'épilogue de `MovePlayer` sur
+toutes les sorties (par les ancres de symbole : branche `BlockedByEntity`, branche du masque `0x34`, chemin normal) avec le miroir
+gardé pour les héros qui ont repris leurs PV (les montages de test nus sans reprise ne sont pas touchés, documenté) ; une fiche du héros
+réutilisable (dans `AlundraEquipmentRecords` ou à côté) calculée aussi à l'installation ; les trois compteurs dans l'état de session ;
+le niveau des bottes partagé avec `AlundraScriptedMotion` ; `UpdateItemEffectState(player, pad, host)` ; `Clear()` corrigé ; la fiole,
+`0xBC`, `0xC3` (avec le calage du HUD) ; l'alarme des PV bas ; amendement d'ADR-0048 (la fiole écrit l'entité) ; tests ; ce plan.
+
+**Hors périmètre.** La blessure, l'entrée `0x80031A68`, les états `0x31`/`0x1C`/`0x3A`, l'invulnérabilité et le clignotement (E20.c2b) ;
+le pilote d'objet (E20.h) ; la mort (E18).
+
+#### Tâches
+
+- ⏳ **T1 — Reprise et miroir.** Reprise des stats vers l'entité dans `AdoptPlayerPawn` après `InitializeBalance` ; épilogue sur toutes
+  les sorties de `MovePlayer` : `UpdateItemEffectState`, `SetPlayerHpMax(héros.HpMax)`, `SetPlayerHp(héros.Hp)`.
+- ⏳ **T2 — `UpdateItemEffectState`.** Étapes 1, 6 et 7 ; fiche du héros ; compteurs en session ; bottes partagées ; `Clear()`.
+- ⏳ **T3 — Fiole, `0xBC`, `0xC3`.** Écritures dans l'entité (repli sur les stats sans héros, comme aujourd'hui) ; calage du HUD de
+  `0xC3` ; amendement d'ADR-0048.
+- ⏳ **T4 — Alarme des PV bas.** Relire `0x800303DC`-`0x80030430` en entier ; remplacer le bouchon `PlayerLowHpAlarm` par le port exact.
+- ⏳ **T5 — Tests.**
+
+#### Acceptation
+
+- Rejeux des fonctions pures de la DLL contre l'oracle d'E20.c2-0 : groupe G (niveau des bottes et octets 3 à 13 de la fiche pour chaque
+  inventaire), groupe F (régénération : ticks des + 1, compteurs, portes), groupe E (l'entité l'emporte ; création depuis les stats, bornes
+  du miroir) ; D1 (épilogue sous verrouillage : stats tenues).
+- Un `ArcRun` qui traverse deux cartes avec les stats à 4/12 garde 4/12 ; un chargement à 4/12 survit au premier tick ; la fiole, `0xBC`
+  et `0xC3` donnent sur l'entité puis sur les stats les valeurs du binaire (fiole de 50/50 : entité 51/51, stats 50/50) ; les lignes de
+  la fiole des tests existants sont réépinglées « après la fin de `MovePlayer` », avec la raison.
+- L'alarme : le son `0x190` aux ticks de la règle relue (et contre l'oracle si l'une de ses lignes la porte ; sinon un scénario ajouté à
+  l'oracle d'E20.c2-0, fichier neuf seulement).
+- Build Release puis Debug ; `Alundra.Tests` sans échec ; tests de sauvegarde (E16) verts ; traces du héros et de l'intro inchangées ;
+  verifier frais.
+- Recette de l'auteur : les cœurs suivent d'une carte à l'autre ; avec un anneau de régénération, + 1 cœur toutes les 201 images sans
+  toucher au pad ; à 1 PV sur 5 ou moins, l'alarme.
+
+#### Arrêts, budget, retour arrière
+
+- **Arrêts** : une épingle d'arc ou de trace qui bouge alors que les stats sont à 10/10 ; un test de sauvegarde qui échoue ; un écart à
+  l'oracle sans raison du binaire ; un besoin de changer le moteur.
+- **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
+- **Retour arrière** : `git revert` des commits d'E20.c2a.
 
 ---
 
