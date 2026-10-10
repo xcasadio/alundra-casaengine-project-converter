@@ -46,8 +46,7 @@ Choix de la session principale (à confirmer par l'approbation de ce plan) :
   projectiles du héros passent par le registre ; `docs/plan-e20-annexe/e20-armes/order-critic.md` lignes 23 à 31). Ils forment
   **E14.a0**, qui les **possède**, entre dans l'ordre de D-E20-24 comme prérequis, et que la révision de l'enveloppe d'E20 (en pause) cite
   comme prérequis d'E20.e0a. Le reste de l'infrastructure (aides, sol et hauteurs de coin des ennemis, `Below(n)`, `HitReaction`, verrou
-  du héros) forme **E14.a0b**, travail d'E14.a, placé après les armes, les objets et les collisions (D-E20-24), juste avant E14.a1 ;
-  avancer E14.a0b et E14.a1 est une question à l'auteur (O-E14-0).
+  du héros) forme **E14.a0b**, travail d'E14.a. Depuis D-E14-8 (2026-10-10), E14.a0, E14.a0b et E14.a1 passent avant les armes.
 
 ### 0.3 Faits porteurs (contre-vérifiés, `check.md`)
 
@@ -83,11 +82,41 @@ Choix de la session principale (à confirmer par l'approbation de ce plan) :
 | **E14.a1** | Beannoïde (A1, C1, D1 pour le type 335) et Muruta (A0, C10, D9 pour le type 347) ; E1 inchangé ; export de l'effet de bris (D-E14-2 : convertisseur, export complet, preuve par manifeste et double export, ADR de format) ; oracle d'E20.c1 étendu (les six gestionnaires réels, A lancé) ; arènes d'E20.c1a/c1b derrière l'interrupteur ; arcs des leviers relancés | oracle appel par appel ; arcs de la 115 (quatre Muruta tués par des coups scriptés, `0x2C` passe, G569 posé `@434`, portails rendus `@493-503`) et de la 116 (Beannoïde 0 et 1 tués, grille animée) | Le hall de la 115 et la grille de la 116 |
 
 Ordre : E14.a0 (prérequis des armes, avant E20.e0a, qui en dépend), puis, après les armes, les objets et les collisions (D-E20-24),
-E14.a0b puis E14.a1. Les avancer pour jouer le hall plus tôt est une question à l'auteur (O-E14-0).
+E14.a0b puis E14.a1. **D-E14-8 (2026-10-10)** : l'auteur les avance tous avant les armes, les objets et les collisions.
 
-### 1.2 E14.a0b — Infrastructure des ennemis ⏳ (après les collisions, D-E20-24 ; le registre est E14.a0)
+### 1.1a E14.a0 — Le registre et l'interrupteur ⏳
 
-**Prérequis.** E14.a0 (le registre et l'interrupteur, faits avant les armes).
+Relecture : **READY** dès la première lecture (2026-10-10).
+
+**But.** `RunSpriteEvent` sait lancer un gestionnaire natif enregistré pour un type de sprite (D-E14-1), et un interrupteur coupe les
+gestionnaires natifs dans les tests (D-E14-5). Le registre est vide : aucun comportement ne change.
+
+**Faits porteurs.** `RunSpriteEvent` (`AlundraEventProgramRunner.cs`) tourne le livre de sauvegarde (`AlundraSaveBook.TryMatch`), puis
+E0/E1, puis compte un no-op (`SpriteEventRunCount`) ; un emplacement natif est celui dont `ProgramIndexes[slot] & 0x7F == 0`
+(`AlundraEntityScriptProxy.cs`, `RunPickedEvent`) ; le livre est filtré par type de sprite (`dll-natives.md` §1.4, le seul précédent) ;
+les arènes d'E20.c1a/c1b font suivre `RunSpriteEvent` au vrai lanceur (`AlundraHitArena.cs`, `RecordingRunner`).
+
+**Périmètre.** Un registre interne `(emplacement, code) → gestionnaire`, chaque entrée avec sa liste de types de sprite permis, appelé
+par `RunSpriteEvent` après le livre et E0/E1 ; signature des gestionnaires sur le modèle du livre (entité, contexte, état) ; une entrée
+absente ou un type non listé reste un no-op compté, avec une trace de débogage par clé ; un compteur des gestionnaires natifs lancés à
+côté de `SaveBookEventRunCount` ; un interrupteur (propriété du lanceur ou du contexte) qui coupe le registre, posé par l'arène de c1a
+et c1b ; le livre et E0/E1 restent hors du registre.
+
+**Tâches.**
+- ⏳ **T1 — Registre et interrupteur**, avec un gestionnaire de test enregistré le temps d'un test.
+- ⏳ **T2 — Tests** : une entrée pour un type tourne pour ce type et pas pour un autre ; une clé absente reste un no-op compté ;
+  l'interrupteur coupe tout ; le livre et E0/E1 ne passent pas par le registre ; les épingles de `SpriteEventRunCount`
+  (`AlundraEventProgramRunnerProgramIndexTests`, `AlundraEventProgramRunnerTests`, `AlundraSaveBookDispatchTests`) ne bougent pas.
+
+**Acceptation.** T2 vert ; registre vide en production ; `Alundra.Tests` sans échec en Release et en Debug ; traces inchangées ; verifier
+frais (commun avec E14.a0b, à la frontière d'intégration la plus petite).
+
+**Arrêts.** Une épingle du lanceur qui bouge ; un besoin de changer le moteur. **Retour arrière** : `git revert`.
+
+### 1.2 E14.a0b — Infrastructure des ennemis ⏳ (après E14.a0, D-E14-8 ; le registre est E14.a0)
+
+**Prérequis.** E14.a0 (le registre et l'interrupteur). D-E14-8 : E14.a passe en premier ; E14.a0b suit E14.a0 sans attendre les
+armes.
 
 **Périmètre.** `Alundra/Scripts/` :
 - `FloorHeight` (`+0x134`) et `MapHeights[0..3]` (`+0x158`-`+0x164`) des entités autres que le héros, écrits à la création et à la fin de

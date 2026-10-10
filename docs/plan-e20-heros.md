@@ -2453,6 +2453,38 @@ tests existants (inversé : Triangle seul donne `0x29`, compteur `0`, direction 
   à cause de son montage, sans effet en production) ; P4 : le cas de deux ticks par image vérifie le comportement, pas l'oracle champ
   par champ (ce que le plan demandait).
 
+#### E20.d2 — Découpage (D-E20-32, 2026-10-10)
+
+- **E20.d2a — la sonde** (S1 et S3, plus le test de `ComputePadState` de S4) : l'échantillon du stick voyage dans le pad, et une sonde
+  le journalise pour que l'auteur mesure sa manette. Aucun comportement ne change : la course garde le OU.
+- **E20.d2b — la règle** (S2, le reste de S4, S5) : après la mesure de l'auteur.
+
+**E20.d2a, précisions.**
+- **Prérequis** : E20.d1 et E20.i CONFIRMED (le pad du tick et la queue de la course sont dans l'état qu'elles ont laissé).
+- **S1** comme ci-dessous, avec cette dérivation (révision 1) : x = `Value` de `MoveRightStick` (= axe X du stick gauche ; l'action
+  `MoveLeftStick` porte le même axe inversé), y = `Value` de `MoveUpStick` (= axe Y, haut positif ; `MoveDownStick` porte le même axe
+  inversé) (`CasaEngineMonogame/CasaEngine/Framework/Input/InputMapping.cs:36-58`, `PlayerSetupWriter.cs:129-132`) ; jamais une
+  différence des deux moitiés, qui doublerait les valeurs. Le journal écrit x et y avec le point décimal (culture invariante), x
+  positif à droite, y positif en haut.
+- **S3, la sonde** : une variable d'environnement `ALUNDRA_DEBUG_STICK_PROBE` (même idiome que `ALUNDRA_DEBUG_IGNORE_CONTROL_LOCK`,
+  `AlundraPlayerManager.cs`, avec un forçage pour les tests) ; quand elle vaut `1`, chaque image journalise une ligne `x y D S` (x et y
+  signés du stick, D et S en hexadécimal), et chaque lecture de la table de départ de la course (départ dans `0x29`, reprise dans
+  `0x2A` à 11 et plus) une ligne de plus avec le quartet que la DLL utilise aujourd'hui (le OU). Le journal va là où la DLL écrit déjà
+  ses traces de débogage (l'exécuteur le nomme dans `docs/test-saves.md` ou une note dédiée, avec la marche à suivre pour l'auteur).
+  Pas de `Program.cs`, pas de changement du moteur.
+- **Acceptation d'E20.d2a** : `ComputePadState` avec des valeurs analogiques (x, y, D, S, et le OU inchangé dans `ButtonsHold`), le
+  faux `getButtonState` du test suivant la sémantique du moteur (`MoveLeftStick.Value = −MoveRightStick.Value`,
+  `MoveDownStick.Value = −MoveUpStick.Value`, appui seulement à partir de 0,5), avec au moins : un cas à 45° (≈ 0,707, 0,707 : |x| ≈ |y|),
+  un cas à mi-course sous la zone morte de 0,5 (x et y journalisés, S vide), un cas dans le quadrant négatif, et une poussée à fond à
+  droite qui donne x = 1 (pas 2) ; le pad
+  de tick porte l'échantillon de l'image, dans le bloc des entités et dans le mode autonome ; sans la variable, rien n'est journalisé ;
+  avec, le format est celui écrit ; E20.d1 et E20.i inchangées (G1 rejoué au clavier) ; Build Release puis Debug ; `Alundra.Tests` sans
+  échec ; traces inchangées ; verifier frais. **Recette de l'auteur** : lancer le jeu avec `ALUNDRA_DEBUG_STICK_PROBE=1`, tenir le stick
+  dans les huit directions (à fond, puis à mi-course) et dans les quatre diagonales à 45° exacts, puis envoyer le journal : `log.txt`
+  dans le dossier de travail du jeu, réécrit à chaque lancement (le copier avant de relancer).
+- **Révision 1 (2026-10-10)** : relecture REVISE, un point corrigé : la dérivation de x et y depuis les actions du moteur, et la
+  sémantique du faux `getButtonState` du test, sont écrites.
+
 #### E20.d2 — Tâches
 
 - ⏳ **S1 — L'échantillon du stick.**
