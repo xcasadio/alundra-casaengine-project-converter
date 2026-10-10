@@ -113,7 +113,7 @@ frais (commun avec E14.a0b, à la frontière d'intégration la plus petite).
 
 **Arrêts.** Une épingle du lanceur qui bouge ; un besoin de changer le moteur. **Retour arrière** : `git revert`.
 
-### 1.2 E14.a0b — Infrastructure des ennemis ⏳ (après E14.a0, D-E14-8 ; le registre est E14.a0)
+### 1.2 E14.a0b — Infrastructure des ennemis 🚧 (après E14.a0, D-E14-8 ; le registre est E14.a0)
 
 **Prérequis.** E14.a0 (le registre et l'interrupteur). D-E14-8 : E14.a passe en premier ; E14.a0b suit E14.a0 sans attendre les
 armes.
@@ -152,13 +152,15 @@ l'avance du générateur par tick (E20.e0b).
 
 #### Tâches
 
-- ⏳ **T1 — Oracle des aides.** Dans `docs/plan-e14-annexe/e14a/oracle/`, à partir de l'oracle d'E20.c1b (`docs/plan-e20-annexe/e20-c1b/
+- ✅ **T1 — Oracle des aides.** Dans `docs/plan-e14-annexe/e14a/oracle/`, à partir de l'oracle d'E20.c1b (`docs/plan-e20-annexe/e20-c1b/
   oracle/tools/`, copié au bit près) et de fichiers neufs : (a) chaque aide lancée en vrai code sur des états tirés au hasard (au moins
   10 000 par aide), sorties gardées ; (b) **sol et hauteurs de coin sur les vraies cartes** : les cellules des cartes 14, 115 et 116
   (`data-extracted/data/map_<N>.json`) chargées dans la mémoire émulée à la place du champ plat (`*[0x800DD86C] + 0x604`, 52 × 60 × 8
   octets), puis `0x800370C4` et `0x80038064` lancés pour le corps de chaque Beannoïde et Muruta de ces cartes et pour le héros posé à
   côté, sur sol plat et en hauteur (Muruta du hall à 16, Beannoïde de la grille à 20) ; second interprète ; deux relances, même
   manifeste.
+  **Fait (2026-10-10)** : `docs/plan-e14-annexe/e14a/oracle/` (`notes.md`, `tools/run_e14a0b.py`, `out/`) ; neuf aides × 10 000 états tirés au hasard, égalité avec le modèle indépendant et avec le second interprète, couverture complète ; 1 711 lignes sur les cellules réelles des
+  cartes 14, 115 et 116 (sol plat et en hauteur) : `floor = terrain + 1` d'une unité brute pour chaque corps et pour le héros ; 19 mutations attrapées, 2 témoins inchangés ; deux relances, même manifeste.
 - ⏳ **T2 — Sol et hauteurs de coin des ennemis.** Ports et tests contre les sorties (b) de T1.
 - ⏳ **T3 — Aides.** Ports exacts, table des entrées complétée ; tests contre les sorties (a) de T1, valeur par valeur ; un test qui
   échoue si une aide lit `AnimationDirection` alors que `BoxDirection` diffère.

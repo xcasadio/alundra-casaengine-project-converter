@@ -1,0 +1,2 @@
+executed distinct instructions: 1543; executed loads checked: 285; loaded register read by the next instruction: 0
+VERDICT: no executed load is followed by a use of its register: ignoring the load delay slot does not change the result

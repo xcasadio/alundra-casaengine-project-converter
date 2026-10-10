@@ -1,0 +1,85 @@
+# one-word patches of the emulated binary (RAM only); the expected change of each is written in tools/hmut.py before any run; CAUGHT = predicate holds and the independent model disagrees
+CAUGHT M1 relpos: |dx| always negated (0x8007FE50 bgez -> nop: the skip over the negu is gone) [relpos]
+         patch: 0x8007FE50 04610002 (bgez $v1, 0x8007fe5c) -> 00000000 (nop )
+         expected: the first word equals -dx on every state (the instruction after the branch, negu v1,v1, now always runs); at least one state changes
+         predicate holds; independent model disagrees with the patch
+CAUGHT M2 relpos: dy is a sum (0x8007FE44 subu -> addu) [relpos]
+         patch: 0x8007FE44 00c83023 (subu $a2, $a2, $t0) -> 00c83021 (addu $a2, $a2, $t0)
+         expected: dy = self_tile_y + hero_tile_y on every state
+         predicate holds; independent model disagrees with the patch
+CAUGHT M3 relpos2: Z read from +0x120 instead of +0x11C (0x8007FEA4 lw) [relpos2]
+         patch: 0x8007FEA4 8c84011c (lw $a0, 0x11c($a0)) -> 8c840120 (lw $a0, 0x120($a0))
+         expected: dz = self_tile_x - hero_floor on every state
+         predicate holds; independent model disagrees with the patch
+CAUGHT M4 tap2: the Z test inverted (0x8008049C bnez -> beqz) [tap2]
+         patch: 0x8008049C 14400048 (bnez $v0, 0x800805c0) -> 10400048 (beqz $v0, 0x800805c0)
+         expected: every state with d3 >= |dz| answers 0
+         predicate holds; independent model disagrees with the patch
+CAUGHT M5 tap2: direction 0 tests the opposite sign of dy (0x80080500 bgtz -> bltz) [tap2]
+         patch: 0x80080500 1c40002f (bgtz $v0, 0x800805c0) -> 0440002f (bltz $v0, 0x800805c0)
+         expected: states of direction other than 0 unchanged; direction 0 answers 0 when d3 < |dz|, a3 < |dx|, dy < 0 or d2 < |dy|, else 1
+         predicate holds; independent model disagrees with the patch
+CAUGHT M6 tapfront: the direction is read from +0x9C (AnimationDirection) instead of +0x98 (0x800805E0 lw) [tapfront]
+         patch: 0x800805E0 8c840098 (lw $a0, 0x98($a0)) -> 8c84009c (lw $a0, 0x9c($a0))
+         expected: every state answers as the model for the decoy direction (box_direction + 1) & 3
+         predicate holds; independent model disagrees with the patch
+CAUGHT M7 had: threshold = dist instead of dist + 1 (0x80080148 addiu -> nop) [had]
+         patch: 0x80080148 24c60001 (addiu $a2, $a2, 1) -> 00000000 (nop )
+         expected: every state answers as the model with dist - 1
+         predicate holds; independent model disagrees with the patch
+CAUGHT M8 had: +0xD8 not cleared on a turn (0x80080234 sw -> nop) [had]
+         patch: 0x80080234 ace000d8 (sw $zero, 0xd8($a3)) -> 00000000 (nop )
+         expected: a turn leaves the old +0xD8 word (the marker) and clears the five others; states that do not turn unchanged
+         predicate holds; independent model disagrees with the patch
+CAUGHT M9 had: last range test d < 0x10 -> d < 0x11 (0x80080210 slti) [had]
+         patch: 0x80080210 28820010 (slti $v0, $a0, 0x10) -> 28820011 (slti $v0, $a0, 0x11)
+         expected: only states whose target direction is 16 can change
+         predicate holds; independent model disagrees with the patch
+CAUGHT M10 startwalk: the chance scale 0x65 -> 0x64 (0x8007FF18 addiu) [startwalk]
+         patch: 0x8007FF18 24020065 (addiu $v0, $zero, 0x65) -> 24020064 (addiu $v0, $zero, 0x64)
+         expected: every state answers as the model with the scale 0x64
+         predicate holds; independent model disagrees with the patch
+CAUGHT M11 startwalk: the aim reads the Y of the entity for its X (0x8007FF70 lw 0x114 -> 0x118) [startwalk]
+         patch: 0x8007FF70 8e040114 (lw $a0, 0x114($s0)) -> 8e040118 (lw $a0, 0x118($s0))
+         expected: every state answers as the model with self_x := self_y
+         predicate holds; independent model disagrees with the patch
+CAUGHT M12 startwalk: the 16-bit value stored at +0x280 instead of +0x282 (0x80080010 sh) [startwalk]
+         patch: 0x80080010 a6020282 (sh $v0, 0x282($s0)) -> a6020280 (sh $v0, 0x280($s0))
+         expected: the half at +0x282 keeps its marker on every state
+         predicate holds; independent model disagrees with the patch
+CAUGHT M13 atan: the flip bit of a negative dx never set (0x8002E820 addiu t0,t0,1 -> nop) [atan]
+         patch: 0x8002E820 25080001 (addiu $t0, $t0, 1) -> 00000000 (nop )
+         expected: states with dx >= 0 unchanged; states with dx < 0 answer as the baseline does for -dx
+         predicate holds; independent model disagrees with the patch
+CAUGHT M14 d1: animation 6 instead of 5 (0x8007D9C4 addiu) [d1]
+         patch: 0x8007D9C4 24020005 (addiu $v0, $zero, 5) -> 24020006 (addiu $v0, $zero, 6)
+         expected: the animation word is 6 on every state
+         predicate holds; independent model disagrees with the patch
+CAUGHT M15 d9: the death byte written at +0x276 instead of +0x277 (0x8007DE20 sb) [d9]
+         patch: 0x8007DE20 a2020277 (sb $v0, 0x277($s0)) -> a2020276 (sb $v0, 0x276($s0))
+         expected: +0x277 keeps its old value on every state
+         predicate holds; independent model disagrees with the patch
+CAUGHT M16 d1: the hero X read from +0x118 (0x8007D9D8 lw 0x114 -> 0x118) [d1]
+         patch: 0x8007D9D8 8c440114 (lw $a0, 0x114($v0)) -> 8c440118 (lw $a0, 0x118($v0))
+         expected: the direction is the model direction of (self_x - hero_y, self_y - hero_y)
+         predicate holds; independent model disagrees with the patch
+CAUGHT M17 floor: terrain + 2 (0x80037F3C addiu t3,v1,1 -> 2) [ground]
+         patch: 0x80037F3C 246b0001 (addiu $t3, $v1, 1) -> 246b0002 (addiu $t3, $v1, 2)
+         expected: floor - terrain is 2 for every body and every hero row
+         predicate holds; independent model disagrees with the patch
+CAUGHT M18 corners: a sloped cell uses height instead of height - 1 (0x800371EC addiu -1 -> 0) [ground]
+         patch: 0x800371EC 24a2ffff (addiu $v0, $a1, -1) -> 24a20000 (addiu $v0, $a1, 0)
+         expected: terrain and corners equal the model with sub = 0 on every row (and some row differs from the baseline)
+         predicate holds; independent model disagrees with the patch
+CAUGHT M19 corners: the running value is a minimum (0x8003732C slt t2,a1 -> slt a1,t2) [ground]
+         patch: 0x8003732C 0145102a (slt $v0, $t2, $a1) -> 00aa102a (slt $v0, $a1, $t2)
+         expected: terrain = min(0, corners) on every row; the stored corners are unchanged
+         predicate holds; independent model disagrees with the patch
+OK     C1 CONTROL: an unreachable instruction of tap2 (0x800804C4 j -> nop) [tap2]
+         patch: 0x800804C4 08020170 (j 0x800805c0) -> 00000000 (nop )
+         expected: nothing changes
+         predicate holds; independent model still agrees with the patch
+OK     C2 CONTROL: an unreachable instruction of atan (0x8002E8C0 j -> nop) [atan]
+         patch: 0x8002E8C0 0800ba42 (j 0x8002e908) -> 00000000 (nop )
+         expected: nothing changes
+         predicate holds; independent model still agrees with the patch

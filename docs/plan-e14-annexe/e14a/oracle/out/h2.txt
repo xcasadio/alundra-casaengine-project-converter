@@ -1,0 +1,43 @@
+# h2: ground of the bodies and of the hero on the real cells (rows in out/h2/map_<N>.txt.gz; layout in tools/h2.py)
+map 14  Overworld 3,1           7 bodies    413 rows (variant 0/1/2: 35/35/343)   emulator == independent model (terrain, four corners, floor = terrain + 1): yes   second interpreter text identical: yes   unwritten-byte reads: 0   PASS
+        floor - terrain: body {1}, hero {1} (raw units);  terrain heights seen (px): body [16, 48, 64, 71, 79, 80, 160], hero [16, 48, 64, 79, 80]
+map 115 Tarn's Manor (hall)    11 bodies    649 rows (variant 0/1/2: 55/55/539)   emulator == independent model (terrain, four corners, floor = terrain + 1): yes   second interpreter text identical: yes   unwritten-byte reads: 0   PASS
+        floor - terrain: body {1}, hero {1} (raw units);  terrain heights seen (px): body [0, 16, 64, 80], hero [0, 16, 64, 80]
+map 116 Tarn's Manor (grate)   11 bodies    649 rows (variant 0/1/2: 55/55/539)   emulator == independent model (terrain, four corners, floor = terrain + 1): yes   second interpreter text identical: yes   unwritten-byte reads: 0   PASS
+        floor - terrain: body {1}, hero {1} (raw units);  terrain heights seen (px): body [0, 7, 15, 16, 23, 32, 48, 64, 80, 96, 160, 192, 224], hero [0, 16, 48, 80, 160]
+
+# per map: rows, rows on flat ground (body terrain 0) and raised ground, and the values the C# ports must reproduce: floor - terrain (body / hero), floor - corner[k] distinct values, |dz| range
+map 14   413 rows: body on flat ground 0, raised 413; floor - terrain body [1] hero [1]; body floor - corner[k] takes 11 distinct values (min 1, max 7340033, in raw units, 1 on flat ground); |dz| from 0 to 5242880
+map 115  649 rows: body on flat ground 392, raised 257; floor - terrain body [1] hero [1]; body floor - corner[k] takes 4 distinct values (min 1, max 4194305, in raw units, 1 on flat ground); |dz| from 0 to 4194304
+map 116  649 rows: body on flat ground 184, raised 465; floor - terrain body [1] hero [1]; body floor - corner[k] takes 13 distinct values (min 1, max 10485761, in raw units, 1 on flat ground); |dz| from 0 to 7340032
+
+# the values the real spawner left (variant 0, hero 0,0): body record, body terrain height (px) and floor - terrain / corners in raw units; hero terrain (px)
+map 14  record 0   at (132, 424) px, PosZ raw 5242881: terrain 80 px, floor 5242881 (= terrain + 1), corners [5242880, 5242880, 5242880, 5242880]; hero beside: terrain 80 px
+map 14  record 1   at (540, 552) px, PosZ raw 3145729: terrain 48 px, floor 3145729 (= terrain + 1), corners [3145728, 3145728, 3145728, 3145728]; hero beside: terrain 48 px
+map 14  record 2   at (660, 456) px, PosZ raw 5242881: terrain 80 px, floor 5242881 (= terrain + 1), corners [5242880, 5242880, 5242880, 5242880]; hero beside: terrain 80 px
+map 14  record 3   at (684, 744) px, PosZ raw 1048577: terrain 16 px, floor 1048577 (= terrain + 1), corners [1048576, 1048576, 1048576, 1048576]; hero beside: terrain 16 px
+map 14  record 4   at (156, 504) px, PosZ raw 5242881: terrain 80 px, floor 5242881 (= terrain + 1), corners [5242880, 5242880, 5242880, 5242880]; hero beside: terrain 80 px
+map 14  record 5   at (180, 840) px, PosZ raw 4194305: terrain 64 px, floor 4194305 (= terrain + 1), corners [4194304, 4194304, 4194304, 4194304]; hero beside: terrain 64 px
+map 14  record 6   at (324, 488) px, PosZ raw 5242881: terrain 80 px, floor 5242881 (= terrain + 1), corners [5242880, 5242880, 5242880, 5242880]; hero beside: terrain 80 px
+map 115 record 6   at (444, 152) px, PosZ raw 10485761: terrain 0 px, floor 1 (= terrain + 1), corners [0, 0, 0, 0]; hero beside: terrain 0 px
+map 115 record 7   at (564, 152) px, PosZ raw 10485761: terrain 0 px, floor 1 (= terrain + 1), corners [0, 0, 0, 0]; hero beside: terrain 0 px
+map 115 record 8   at (444, 184) px, PosZ raw 10485761: terrain 0 px, floor 1 (= terrain + 1), corners [0, 0, 0, 0]; hero beside: terrain 0 px
+map 115 record 9   at (564, 184) px, PosZ raw 10485761: terrain 0 px, floor 1 (= terrain + 1), corners [0, 0, 0, 0]; hero beside: terrain 0 px
+map 115 record 12  at (708, 680) px, PosZ raw 1048577: terrain 16 px, floor 1048577 (= terrain + 1), corners [1048576, 1048576, 1048576, 1048576]; hero beside: terrain 16 px
+map 115 record 13  at (708, 744) px, PosZ raw 1048577: terrain 16 px, floor 1048577 (= terrain + 1), corners [1048576, 1048576, 1048576, 1048576]; hero beside: terrain 16 px
+map 115 record 14  at (708, 808) px, PosZ raw 1048577: terrain 16 px, floor 1048577 (= terrain + 1), corners [1048576, 1048576, 1048576, 1048576]; hero beside: terrain 16 px
+map 115 record 24  at (228, 744) px, PosZ raw 8388609: terrain 0 px, floor 1 (= terrain + 1), corners [0, 0, 0, 0]; hero beside: terrain 0 px
+map 115 record 25  at (300, 744) px, PosZ raw 8388609: terrain 0 px, floor 1 (= terrain + 1), corners [0, 0, 0, 0]; hero beside: terrain 0 px
+map 115 record 26  at (228, 808) px, PosZ raw 8388609: terrain 0 px, floor 1 (= terrain + 1), corners [0, 0, 0, 0]; hero beside: terrain 0 px
+map 115 record 27  at (300, 808) px, PosZ raw 8388609: terrain 0 px, floor 1 (= terrain + 1), corners [0, 0, 0, 0]; hero beside: terrain 0 px
+map 116 record 0   at (396, 296) px, PosZ raw 10485761: terrain 160 px, floor 10485761 (= terrain + 1), corners [10485760, 10485760, 10485760, 10485760]; hero beside: terrain 160 px
+map 116 record 1   at (492, 296) px, PosZ raw 10485761: terrain 160 px, floor 10485761 (= terrain + 1), corners [10485760, 10485760, 10485760, 10485760]; hero beside: terrain 160 px
+map 116 record 17  at (1116, 568) px, PosZ raw 5242881: terrain 80 px, floor 5242881 (= terrain + 1), corners [5242880, 5242880, 5242880, 5242880]; hero beside: terrain 80 px
+map 116 record 24  at (108, 712) px, PosZ raw 2097153: terrain 0 px, floor 1 (= terrain + 1), corners [0, 0, 0, 0]; hero beside: terrain 0 px
+map 116 record 25  at (300, 712) px, PosZ raw 2097153: terrain 0 px, floor 1 (= terrain + 1), corners [0, 0, 0, 0]; hero beside: terrain 0 px
+map 116 record 26  at (108, 840) px, PosZ raw 2097153: terrain 0 px, floor 1 (= terrain + 1), corners [0, 0, 0, 0]; hero beside: terrain 0 px
+map 116 record 27  at (300, 840) px, PosZ raw 2097153: terrain 0 px, floor 1 (= terrain + 1), corners [0, 0, 0, 0]; hero beside: terrain 0 px
+map 116 record 41  at (876, 664) px, PosZ raw 3145729: terrain 48 px, floor 3145729 (= terrain + 1), corners [3145728, 3145728, 3145728, 3145728]; hero beside: terrain 48 px
+map 116 record 42  at (1092, 664) px, PosZ raw 3145729: terrain 48 px, floor 3145729 (= terrain + 1), corners [3145728, 3145728, 3145728, 3145728]; hero beside: terrain 48 px
+map 116 record 43  at (876, 728) px, PosZ raw 1048577: terrain 16 px, floor 1048577 (= terrain + 1), corners [1048576, 1048576, 1048576, 1048576]; hero beside: terrain 16 px
+map 116 record 44  at (1092, 728) px, PosZ raw 1048577: terrain 16 px, floor 1048577 (= terrain + 1), corners [1048576, 1048576, 1048576, 1048576]; hero beside: terrain 16 px
