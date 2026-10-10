@@ -26,7 +26,7 @@ public class SpriteWriterSpriteRecordsTests
                 "ProgramLoad": 5, "ProgramTick": 6, "ProgramTouch": 7, "ProgramDeactivate": 8,
                 "ProgramInteract": 9,
                 "OffsetX": -10, "OffsetY": -7, "OffsetZ": 0, "SizeX": 21, "SizeY": 15, "SizeZ": 32,
-                "Contents": 4
+                "BreakEffect": 8, "Contents": 4
                 """,
             (outputDirectory, report, prefabAssetIdsByBankKey) =>
             {
@@ -54,11 +54,47 @@ public class SpriteWriterSpriteRecordsTests
                 Assert.Equal(21, record.GetProperty("SizeX").GetInt32());
                 Assert.Equal(15, record.GetProperty("SizeY").GetInt32());
                 Assert.Equal(32, record.GetProperty("SizeZ").GetInt32());
+                Assert.Equal(8, record.GetProperty("BreakEffect").GetInt32());
                 Assert.Equal(4, record.GetProperty("Contents").GetInt32());
+
+                // BreakEffect (header +0x1E) sits between SizeZ and Contents, in the file's own key order.
+                var keys = record.EnumerateObject().Select(property => property.Name).ToList();
+                var sizeZIndex = keys.IndexOf("SizeZ");
+                Assert.True(sizeZIndex >= 0);
+                Assert.Equal("BreakEffect", keys[sizeZIndex + 1]);
+                Assert.Equal("Contents", keys[sizeZIndex + 2]);
 
                 // The asset is a plain companion, not registered like the .sprite/.entity assets are.
                 Assert.DoesNotContain(
                     EditorAssetCatalogService.AssetInfos, info => info.FileName.Contains("sprite-records"));
+            });
+    }
+
+    [Fact]
+    public void ConvertSprites_WithoutABreakEffectKey_WritesItAsZeroInsteadOfOmittingIt()
+    {
+        // The header of the zero-body-box fixture of the previous test carries no BreakEffect key:
+        // the field is still written (0 = DestroyEntity creates no effect), never omitted.
+        RunConversion(
+            sector5Id: 54,
+            headerFields: """
+                "MoreFlags": 0, "CanPickup": 0, "FlagsPortraitShadowType": 0,
+                "ProgramLoad": 0, "ProgramTick": 0, "ProgramTouch": 0, "ProgramDeactivate": 0,
+                "ProgramInteract": 0,
+                "OffsetX": 0, "OffsetY": 0, "OffsetZ": 0, "SizeX": 0, "SizeY": 0, "SizeZ": 0,
+                "Contents": 0
+                """,
+            (outputDirectory, report, prefabAssetIdsByBankKey) =>
+            {
+                Assert.Empty(report.Errors);
+
+                var prefabAssetId = prefabAssetIdsByBankKey["54"];
+                var recordsPath = Path.Combine(outputDirectory, "Data", "sprite-records.json");
+                using var document = JsonDocument.Parse(File.ReadAllText(recordsPath));
+                var record = document.RootElement.GetProperty(prefabAssetId.ToString());
+
+                Assert.True(record.TryGetProperty("BreakEffect", out var breakEffect));
+                Assert.Equal(0, breakEffect.GetInt32());
             });
     }
 

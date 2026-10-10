@@ -288,13 +288,13 @@ Relecture de clôture : **READY** (2026-10-10).
 - ✅ **T0 — Prédiction et état de départ.** Annexe écrite ; manifeste `m0` (attendu : 24 103 fichiers, empreinte ci-dessus ; un écart
   s'explique avant d'aller plus loin) ; `diff_manifests.py` de `m0` contre `m7-manifest-after.txt` : exactement les 47 chemins plus
   `UI/Textures/font3.png` ; compte de tests `Alundra.Tests` relevé.
-- ⏳ **T1 — Export de référence au HEAD**, avant toute modification du convertisseur. Fenêtre calme : aucun build, aucune suite, aucun
+- ✅ **T1 — Export de référence au HEAD**, avant toute modification du convertisseur. Fenêtre calme : aucun build, aucune suite, aucun
   Launcher ni éditeur sur `alundra-project/` ; `Alundra.dll` déverrouillé. Depuis la racine :
   `dotnet run --project alundra-casaengine-project-converter -c Release -- data-extracted alundra-project` ; sortie 0 et
   `Verification: PASSED` ; `m1` contre `m0` : seulement `report.json` (sinon, l'arrêt de T1). Valeurs de référence relevées dans le
   `report.json` de T1 : compteurs, avertissements, `Verify.*`, `OutputFileCount`, `OutputSizeBytes` ; taille du `report.json` présent
   sur le disque avant T1 et après T1.
-- ⏳ **T2 — Tests rouges.** `"BreakEffect": 8` écrit entre `SizeZ` et `Contents` ; clé absente → écrite à 0, pas omise ; le fichier
+- ✅ **T2 — Tests rouges.** `"BreakEffect": 8` écrit entre `SizeZ` et `Contents` ; clé absente → écrite à 0, pas omise ; le fichier
   reste hors catalogue.
 - ⏳ **T3 — Code et docs.** `dotnet test alundra-casaengine-project-converter.Tests --blame-hang-timeout 60s`, au premier plan ; 848 plus
   les nouveaux, tous verts.
