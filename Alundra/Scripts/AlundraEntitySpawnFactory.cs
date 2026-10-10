@@ -574,6 +574,9 @@ internal static class AlundraEntitySpawnFactory
         // E19.f4b (F4B-R3): the speaker's dialogue portrait travels with its header (null where the header has no portrait bit).
         proxy.DialoguePortrait = header.DialoguePortrait;
 
+        // E14.a1b (D-E14-9): the break effect of the header, read by DestroyEntity(e, -1).
+        proxy.BreakEffect = header.BreakEffect;
+
         // E4.b ("Spawn" item, docs/plan-e4-deplacement-scripte.md): cache Controller/RenderProjection the
         // same way AdoptPlayerPawn does for the hero (E3.d) - every prefab with a positive body box now
         // carries a CharacterControllerComponent (E4.a), so a record-spawned NPC needs the same caching

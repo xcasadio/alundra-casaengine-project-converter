@@ -43,6 +43,12 @@ public readonly struct SpriteRecordHeader
     public int Contents { get; init; }
 
     /// <summary>
+    /// E14.a1b (D-E14-2, D-E14-9, ADR-0061): the byte <c>+0x1E</c> of the sprite header, the effect <c>DestroyEntity</c> creates at the entity when it is called with <c>fx = -1</c> (E0/E1, the VRAM-flag destruction); 0 for no effect.
+    /// Exported as <c>BreakEffect</c> by E14.a1a; an export that predates it reads 0.
+    /// </summary>
+    public int BreakEffect { get; init; }
+
+    /// <summary>
     /// The speaker's dialogue portrait (see <see cref="DialoguePortraitRef"/>), or null when the record has none: the
     /// 370 prefabs whose header bit 0x80 is clear, and any export made before E19.f4a (backward-tolerant like every other field).
     /// </summary>
@@ -292,6 +298,7 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
         [JsonInclude] public int SizeX { get; set; }
         [JsonInclude] public int SizeY { get; set; }
         [JsonInclude] public int SizeZ { get; set; }
+        [JsonInclude] public int BreakEffect { get; set; }
         [JsonInclude] public int Contents { get; set; }
         [JsonInclude] public List<AnimDirIdsvJson>? IdsvAnimDirs { get; set; }
         [JsonInclude] public List<AnimSetJson>? AnimSets { get; set; }
@@ -313,6 +320,7 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
             SizeX = SizeX,
             SizeY = SizeY,
             SizeZ = SizeZ,
+            BreakEffect = BreakEffect,
             Contents = Contents,
             DialoguePortrait = Guid.TryParse(DialoguePortrait?.SpriteAssetId, out var portraitSpriteAssetId)
                 ? new DialoguePortraitRef(portraitSpriteAssetId, DialoguePortrait!.Width, DialoguePortrait.Height)

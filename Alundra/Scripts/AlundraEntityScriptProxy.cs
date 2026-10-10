@@ -122,6 +122,12 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// </summary>
     public DialoguePortraitRef? DialoguePortrait;
 
+    /// <summary>
+    /// E14.a1b (D-E14-9, ADR-0060/0061): the break effect of the sprite header (<c>+0x1E</c>, the binary reads it through the header pointer <c>+0x64</c> at <c>0x8003A5E0-0x8003A5E8</c>), written at the spawn by
+    /// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>; 0 when no header resolved and for the hero. <see cref="AlundraWorldProxy"/>'s <c>DestroyEntity(e, -1)</c> resolves its effect from it. Copied by <see cref="Clone"/>.
+    /// </summary>
+    public int BreakEffect;
+
     public uint Flags;//6c
     public readonly int[] SpriteProgramIndexes = new int[6]; //70
     public uint TargetAnimationId; //88
@@ -2515,6 +2521,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
             SpriteType = SpriteType,
             Flags = Flags,
             DialoguePortrait = DialoguePortrait,
+            BreakEffect = BreakEffect,
             TargetAnimationId = TargetAnimationId,
             TargetDirection = TargetDirection,
             CurrentAnimationId = CurrentAnimationId,
