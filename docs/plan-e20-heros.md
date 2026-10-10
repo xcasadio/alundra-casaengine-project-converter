@@ -2545,7 +2545,7 @@ les effets d'eau (E20.e), les objets du Rond dans l'eau et le son 3 (E20.h), l'a
 - ✅ **T3 — Moyens de test.** Le montage gagne l'état de départ (`hero_anim`), les inventaires `b1b` et `holy_b1b`, les cinq états
   (durées, fins, fiches) avec l'Idle à l'accélération 1 ; le lecteur charge `out-swim/` ; un point d'accès qui pose `0x3A` et la
   direction avant le `MovePlayer` d'un tick donné (la sortie du bloc de blessure, sans l'entrée).
-- ⏳ **T4 — Tests et arcs.** Acceptation ci-dessous ; un arc au vrai préfab sur l'étang de la 14 (bottes 0x1B) : tomber de la berge,
+- ✅ **T4 — Tests et arcs.** Acceptation ci-dessous ; un arc au vrai préfab sur l'étang de la 14 (bottes 0x1B) : tomber de la berge,
   `0x1D` puis `0x0F`, plonger, buter contre la berge ; le même sans bottes, épinglé comme écart (il nage).
 - ⏳ **T5 — Sauvegarde de test** `swim-m14` : carte 14, bottes 0x1B, tuile proposée (40, 48, 1) sur la berge (à vérifier : marchable,
   hors zone d'événement).
