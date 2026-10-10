@@ -370,6 +370,7 @@ l'ancre figée au statut 4) ; **FIX** des points non bloquants : C5 se lit à l'
 l'épingle `FrameOf(C, 323)` = E1 + 1 s'appuie sur l'ordre de la DLL (`RecycleDestroyedEntities` en tête du bloc des entités) ;
 `Bytes` se convertit en `byte` ; l'arc G116 tourne hors de la collection du générateur (limite écrite) ; la passe de l'oracle
 (environ 500 s) peut être rendue à la session principale. Nouvelle époque de relecture : une seule relecture de clôture suit.
+Relecture de clôture : **READY** (2026-10-10). Exécution après E20.f1b CONFIRMED.
 
 **But.** Le Beannoïde (type 335) vit comme dans `ALUN_CD.EXE` (A1, C1, D1 par le registre) et toute destruction par
 `DestroyEntity(e, fx)` crée l'effet de bris de l'en-tête comme le binaire (D-E14-9) ; la grille de la 116 s'anime après la mort des
