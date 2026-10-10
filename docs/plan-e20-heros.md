@@ -605,9 +605,9 @@ fichiers, donc l'une après l'autre) :
 | E20.f0 | Moyens de test : `Preset` gagne l'arme, les PM et les PV ; aides `Give`/`Equip` de `ArcRun` ; opcodes `0xC0`/`0xC1` | — |
 | E20.f1 | Charge et relâchement : `UpdatePlayerWeaponEffect`, branche de relâchement de `PlayerTryAttack`, gerbe de 16 étincelles, aura (effet 3 attaché) par un accès de l'hôte aux effets, effacements de la charge et du pointeur dans les branches gelée et verrouillée ; l'arc et la baguette arment le pointeur, le tir reste un bouchon compté | — |
 | E20.f2 | Rebond du fléau : squelette de `CreatePlayerAnimationEffects(mode)`, fin du fléau réelle, le reste en bouchons nommés pour E20.e | — |
-| E20.e0x | Convertisseur : `BankKey` et `BreakEffect` dans `Data/sprite-records.json` ; export complet, preuve par manifeste et double export ; ADR de format | — |
+| E20.e0x | Convertisseur : `BankKey` et `BreakEffect` dans `Data/sprite-records.json` ; export complet, preuve par manifeste et double export ; ADR de format. **2026-10-10 (O-E14-5)** : `BreakEffect` est fait par E14.a1a ; E20.e0x ne garde que `BankKey` et part de l'état d'E14.a1a | — |
 | E20.e0a | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance ; le registre des natifs par type et son interrupteur (D-E14-1) viennent d'E14.a0, qui les possède (`docs/plan-e14-ia-native.md` ; les aides des ennemis sont E14.a0b, plus tard) | E20.e0x, E14.a0 |
-| E20.e0b | Générateur avancé une fois par tick ; tirage du butin à la création (écrit le contenu, rien ne tombe) ; `DestroyEntity(e, fx)` avec l'effet de bris | E20.e0a |
+| E20.e0b | Générateur avancé une fois par tick ; tirage du butin à la création (écrit le contenu, rien ne tombe) ; ~~`DestroyEntity(e, fx)` avec l'effet de bris~~ (2026-10-10, O-E14-5 : fait par E14.a1b, pour tous les appelants, D-E14-9) | E20.e0a |
 | E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a |
 | E20.f3 | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.f1 (le relâchement chargé lance la vague et la flèche chargée), E20.e0a, e0b |
 | E20.f4 | Flèche chargée : C94, E1 avec l'effet 8 | E20.f3, e0k |
@@ -615,7 +615,7 @@ fichiers, donc l'une après l'autre) :
 | E20.f6 | Boules de feu et de glace : C60, E9 ; vigilance sur les trois enregistrements `0x0C` de la carte 309 | E20.f3, e0b, e0k ; **réponse à Q-N1** |
 | E20.c2-0, E20.c2a | Oracle d'E20.c2 ; modèle de PV sur l'entité, fin de `MovePlayer` sur toutes les sorties, `UpdateItemEffectState` (D-E20-19 à D-E20-22) — pas la blessure | — |
 | E20.h0, E20.h1 | Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a |
-| E20.g1, E20.g2 | Soulever et porter ; lancer et briser | E20.e0a, e0k ; E20.e0b pour g2 (`DestroyEntity(e, -1)` avec l'effet de bris et l'effacement du porteur `+0x2C`) |
+| E20.g1, E20.g2 | Soulever et porter ; lancer et briser | E20.e0a, e0k ; E14.a1b pour g2 (`DestroyEntity(e, -1)` avec l'effet de bris, O-E14-5) ; l'effacement du porteur `+0x2C` reste à E20.g2 |
 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 (cadre de l'usage : `0x8002ED64`, `0x8003499C`, pilote `0x8003634C`), donc E20.c2a ; E20.g1, g2 |
 | E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 | E20.g1, g2 ; Q-N3 |
 

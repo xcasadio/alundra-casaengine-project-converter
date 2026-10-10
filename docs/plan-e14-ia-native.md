@@ -36,6 +36,9 @@ l'histoire.
 - **D-E14-5** : un interrupteur coupe les gestionnaires natifs dans les arènes d'oracle d'E20.c1a et E20.c1b.
 - **D-E14-6** : les gestionnaires lisent les valeurs du tick (direction et animation de la boîte), comme le binaire.
 - **D-E14-7** : recette : le hall de la 115 et la grille de la 116 ; la 362 et la vague de la 44 viennent avec.
+- **D-E14-9** (2026-10-10, réponse à Q-A1-1, ADR-0060) : l'effet de bris est créé pour **tous** les appelants de `DestroyEntity(e, fx)`,
+  comme le binaire (E0/E1 de tout sprite dont l'octet `+0x1E` est non nul, destruction sur pente `fx 6`, destruction par le drapeau
+  VRAM `fx -1`), pas seulement pour le Muruta et le Beannoïde.
 
 Choix de la session principale (à confirmer par l'approbation de ce plan) :
 - E0/E1 et le livre de sauvegarde restent hors du registre (ils sont déjà épinglés ; `dll-natives.md` AD-2).
@@ -79,7 +82,7 @@ Choix de la session principale (à confirmer par l'approbation de ce plan) :
 |---|---|---|---|
 | **E14.a0** | Registre par type de sprite (vide) appelé par `RunSpriteEvent` après le livre et E0/E1, entrée absente = no-op compté avec une trace par clé ; interrupteur des natifs pour les tests ; prérequis des armes | un test par type de sprite ; suite inchangée (aucune épingle de `SpriteEventRunCount` ne bouge) | — |
 | **E14.a0b** (§1.2) | Infrastructure des ennemis, sans comportement visible : `FloorHeight` et `MapHeights` des entités autres que le héros, aides partagées, verrou d'animation du héros sur le contexte, `Below(n)`, squelette de la réaction aux coups (D1/D9) | aides contre le vrai code dans l'émulateur, états tirés au hasard ; sol et hauteurs sur les vraies cartes ; mutations ; suite inchangée | — |
-| **E14.a1** | Beannoïde (A1, C1, D1 pour le type 335) et Muruta (A0, C10, D9 pour le type 347) ; E1 inchangé ; export de l'effet de bris (D-E14-2 : convertisseur, export complet, preuve par manifeste et double export, ADR de format) ; oracle d'E20.c1 étendu (les six gestionnaires réels, A lancé) ; arènes d'E20.c1a/c1b derrière l'interrupteur ; arcs des leviers relancés | oracle appel par appel ; arcs de la 115 (quatre Muruta tués par des coups scriptés, `0x2C` passe, G569 posé `@434`, portails rendus `@493-503`) et de la 116 (Beannoïde 0 et 1 tués, grille animée) | Le hall de la 115 et la grille de la 116 |
+| **E14.a1** (§1.3 : E14.a1a, E14.a1b, E14.a1c) | Beannoïde (A1, C1, D1 pour le type 335) et Muruta (A0, C10, D9 pour le type 347) ; E1 inchangé ; export de l'effet de bris (D-E14-2 : convertisseur, export complet, preuve par manifeste et double export, ADR de format) ; oracle d'E20.c1 étendu (les six gestionnaires réels, A lancé) ; arènes d'E20.c1a/c1b derrière l'interrupteur ; arcs des leviers relancés | oracle appel par appel ; arcs de la 115 (quatre Muruta tués par des coups scriptés, `0x2C` passe, G569 posé `@434`, portails rendus `@493-503`) et de la 116 (Beannoïde 0 et 1 tués, grille animée) | Le hall de la 115 et la grille de la 116 |
 
 Ordre : E14.a0 (prérequis des armes, avant E20.e0a, qui en dépend), puis, après les armes, les objets et les collisions (D-E20-24),
 E14.a0b puis E14.a1. **D-E14-8 (2026-10-10)** : l'auteur les avance tous avant les armes, les objets et les collisions.
@@ -202,6 +205,195 @@ l'avance du générateur par tick (E20.e0b).
 
 **Budget** : un `executor`, deux tentatives au plus ; un verifier frais. **Retour arrière** : `git revert`.
 
+### 1.3 E14.a1 — Découpage ⏳ (détaillé le 2026-10-10)
+
+Découverte en lecture seule du 2026-10-10 (quatre agents, dont une contre-vérification adversariale) : export de l'octet de bris,
+oracle avec les six gestionnaires réels, effet de bris et arcs de la 115 et de la 116. Scripts et sorties dans le scratchpad de la
+session (`C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e14a1/`, sous-dossiers `converter-export/`, `oracle-handlers/`,
+`destroy-arcs/`, `e14a1-check/`) ; ce qui suit en reprend les faits contre-vérifiés.
+
+| Tranche | Contenu | Preuve | Prérequis |
+|---|---|---|---|
+| **E14.a1a** (risque : format de données) | `BreakEffect` dans `Data/sprite-records.json` (D-E14-2, D-E20-26) ; export complet en place, manifeste, double export ; ADR de format | prédiction au bit près ; manifestes ; convertisseur vert | E14.a0b CONFIRMED ; fenêtre calme (O-E14-7) |
+| **E14.a1b** | Oracle `oracle-a1/` ; `BreakEffect` dans la DLL ; ancre figée ; `DestroyEntity(e, fx)` crée l'effet de bris pour tous ses appelants (D-E14-9) ; Beannoïde A1, C1, D1 (type 335) ; arc de la grille de la 116 | appel par appel contre l'oracle ; arc G116 ; mutations | E14.a1a CONFIRMED ; **E20.f1b CONFIRMED** (ancre et clé, B3 ; O-E14-4) |
+| **E14.a1c** | Muruta A0, C10, D9 (type 347) ; arc du hall de la 115 ; recette | appel par appel ; arc H115 ; mutations | E14.a1b CONFIRMED |
+
+Ordre (session principale, 2026-10-10) : E14.a1a, puis E20.d2a et E20.f1b (déjà prêtes, `docs/plan-e20-heros.md`), puis E14.a1b,
+puis E14.a1c. E1 ne change pas : la branche E de `RunSpriteEvent` reste hors du registre ; l'effet de bris vit dans `DestroyEntity` de
+l'hôte. Chaque tranche : relecture du plan, exécuteur, verifier frais.
+
+### 1.3a E14.a1a — L'octet de l'effet de bris dans l'export ⏳
+
+**Faits porteurs.**
+- [binaire] `DestroyEntity` `0x8003A59C` : quand `fx == -1`, l'effet est l'octet `0x1E` de l'en-tête `+0x64` (`0x8003A5D8`-`0x8003A5E8`) ;
+  0 = aucun effet ; sinon `0x8003BE74(0, fx, 0, e ; 1, 0, 0, 0)`, retour inutilisé.
+- [données] La clé `BreakEffect` de `data-extracted/data/map_*.json` (`SpriteInfo.SpriteRecords[i].Header`) est présente dans les 2 658
+  fiches des 484 fichiers, égale toujours `Ubuff[14]` (l'octet `+0x1E`) ; les 395 banques n'ont aucun conflit entre cartes, sur aucun
+  champ de l'en-tête (le choix « première fiche » du lecteur est sûr).
+- [convertisseur] Lecteur : `ReadHeader` (`Readers/SpriteBankReader.cs`, vers `:422-442`) et la classe `SpriteRecordHeader` (vers
+  `:154-171`) ; écrivain : `SpriteRecordJson` (`Writers/SpriteWriter.cs`, vers `:1240-1267`) et `WriteSpriteRecords` (vers
+  `:1149-1222`) ; propriétés dans l'ordre de déclaration, CRLF, indentation de 2 espaces ; la DLL ignore une clé inconnue
+  (`SpriteRecordCatalog`, options par défaut), donc l'export et la DLL peuvent arriver dans n'importe quel ordre.
+- [arbre] `alundra-project/` est la base : 24 103 fichiers hors `Alundra.dll`, `Alundra.pdb` et `.casaeditor/`, empreinte
+  `bc31b7a2055a1dd939ef3e4280203c94a3ef354e` au 2026-10-10 ; il diffère de `docs/plan-e19-loop-annexe/lb-1008/m7-manifest-after.txt`
+  par les 47 chemins de `docs/plan-e19-loop-annexe/data/predicted_export_changes.txt` plus `UI/Textures/font3.png` (L-b2). Le pointeur
+  du moteur a bougé depuis le dernier export (`1b2b616a` → `781d3527`, dont la fusion d'`origin/main` du 2026-10-10).
+
+**Périmètre.**
+- `SpriteBankReader.cs` : champ `BreakEffect` entre `SizeZ` et `Contents`, lu par `GetOptionalInt32(…, "BreakEffect")` ; doc de la
+  classe (« header +0x1E, read by DestroyEntity 0x8003A59C »).
+- `SpriteWriter.cs` : propriété `BreakEffect` entre `SizeZ` et `Contents`, toujours écrite, 0 compris ; copie dans
+  `WriteSpriteRecords` ; doc de la classe. Pas de nouveau compteur dans `report.json`.
+- `SpriteWriterSpriteRecordsTests.cs` ; `docs/formats/sprite-records.md` (schéma et exemple) s'il existe, sinon la doc de format qui
+  décrit `sprite-records.json` (l'exécuteur la nomme).
+- ADR de format : **ADR-0061** (0060 est D-E14-9) ; revérifier le numéro juste avant d'écrire.
+- Annexe `docs/plan-e14-annexe/e14a/a1a-export-prediction.md`, écrite avant le code.
+
+**Hors périmètre.** La DLL (E14.a1b) ; `BankKey` (E20.e0x, qui part de l'état laissé ici) ; tout miroir de `data-extracted/`.
+
+**Outils** (copiés dans le scratchpad de l'exécuteur, jamais lancés depuis le dépôt) : `converter-export/manifest.py` et
+`diff_manifests.py` (format vérifié identique au manifeste engagé) ; `e14a1-check/bescan.py` ou `converter-export/predict_records.py`
+(mêmes octets) ; fichier prédit `converter-export/sprite-records.predicted.json` (2 561 505 o, SHA-1
+`007f2660eb83d5a3d21aa35d7c71dd34dba0afcf`). Chemins relatifs à `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e14a1/`.
+
+**Tâches.**
+- ⏳ **T0 — Prédiction et état de départ.** Annexe écrite ; manifeste `m0` (attendu : 24 103 fichiers, empreinte ci-dessus ; un écart
+  s'explique avant d'aller plus loin) ; `diff_manifests.py` de `m0` contre `m7-manifest-after.txt` : exactement les 47 chemins plus
+  `UI/Textures/font3.png` ; compte de tests `Alundra.Tests` relevé.
+- ⏳ **T1 — Export de référence au HEAD**, avant toute modification du convertisseur. Fenêtre calme : aucun build, aucune suite, aucun
+  Launcher ni éditeur sur `alundra-project/` ; `Alundra.dll` déverrouillé. Depuis la racine :
+  `dotnet run --project alundra-casaengine-project-converter -c Release -- data-extracted alundra-project` ; sortie 0 et
+  `Verification: PASSED` ; `m1` contre `m0` : seulement `report.json`.
+- ⏳ **T2 — Tests rouges.** `"BreakEffect": 8` écrit entre `SizeZ` et `Contents` ; clé absente → écrite à 0, pas omise ; le fichier
+  reste hors catalogue.
+- ⏳ **T3 — Code et docs.** `dotnet test alundra-casaengine-project-converter.Tests --blame-hang-timeout 60s`, au premier plan ; 848 plus
+  les nouveaux, tous verts.
+- ⏳ **T4 — Export 1, puis export 2 tout de suite.** `m2` contre `m1` : changés exactement `Data/sprite-records.json` et `report.json`,
+  0 ajouté, 0 retiré ; `cmp` du fichier exporté avec le fichier prédit ; `m3` contre `m2` : `report.json` seul (D-N-7).
+- ⏳ **T5 — Suites.** `Alundra.Tests` en Release puis en Debug : même compte, sans échec (la DLL ignore la clé jusqu'à E14.a1b) ; `cmp`
+  de la DLL ; traces inchangées.
+- ⏳ **T6 — ADR-0061, plan, verifier frais.**
+
+**Acceptation.**
+- `Data/sprite-records.json` : 2 561 505 o (+9 132), SHA-1 `007f2660eb83d5a3d21aa35d7c71dd34dba0afcf`, 395 fiches ; histogramme
+  {0: 284, 2: 1, 8: 63, 10: 30, 11: 15, 12: 1, 13: 1}, soit 111 non nuls ; `e3a39ec4-45d5-55f2-85e9-894c7b6e4a08` (Muruta) = 8 et
+  `1ef8f16c-605f-58c3-af19-b6bb602fc40f` (Beannoïde) = 8 ; ordre des clés : …`SizeZ`, `BreakEffect`, `Contents`, `IdsvAnimDirs`,
+  `AnimSets`[, `DialoguePortrait`] ; chaque objet égal à l'ancien, moins `BreakEffect`.
+- `AssetInfos.json` inchangé (`a09917c31694925076d1fc1aba5fca773f6cada2`).
+- `report.json` : `Errors` 0 ; les 6 `Warnings` inchangés ; `Verify.Assets` 22 616, `Verify.Loaded` 20 139,
+  `Verify.ExistenceChecked` 2 477 ; `Entities.Prefabs` et `SpriteRecords.Exported` à 395 ; `Phase1.StalePagesPurged` 2 415 ;
+  `OutputFileCount` 24 106 ; `OutputSizeBytes` + 9 132, plus l'écart de taille de la DLL et du PDB.
+- Rien ne change sous `alundra-project/UI/Screens/` (suivi par git) ; convertisseur vert ; `Alundra.Tests` sans échec en Release et en
+  Debug ; verifier frais.
+
+**Arrêts.**
+- T1 change autre chose que `report.json` : attribuer d'abord à la montée du pointeur du moteur (`1b2b616a` → `781d3527`), rebaser
+  comme L-b2 (nouvelle base, consignée), puis seulement continuer ; un écart que la montée n'explique pas : question.
+- Après le code : tout autre chemin changé, ajouté ou retiré ; `AssetInfos.json` qui bouge ; fichier différent de la prédiction ;
+  second export différent hors `report.json` ; erreur ; compteur ou avertissement non prévu.
+- Tout process (build, test, Launcher, éditeur) sur l'arbre pendant un export.
+- Toute idée de supprimer `alundra-project/`, de faire un `robocopy /MIR` ou un miroir de `data-extracted/`, ou d'indexer
+  `CasaEngineMonogame/CasaEngine.Launcher/Program.cs`.
+
+**Budget** : un `executor`, deux tentatives au plus ; `plan-verifier` avant l'exécution ; `verifier` frais à la fin. **Retour arrière** :
+`git revert`, puis un export complet en place.
+
+### 1.3b E14.a1b — Effet de bris, Beannoïde, grille de la 116 ⏳ (à relire avant exécution, après E20.f1b)
+
+**Faits porteurs.**
+- [binaire] `0x8003A59C`, dans l'ordre : (1) butin `0x80032B90`, sans effet tant que `+0x3C` vaut 0 (`0x80032BA4`) ; (2) statut 4 ;
+  (3) `+0x228 = -1` ; (4) `+0x1B8`, code mort (jamais posé dans le binaire) ; (5) `fx = -1` → octet de l'en-tête ; si `fx != 0`,
+  `0x8003BE74(0, fx, 0, e ; 1, 0, 0, 0)` : X/Y/Z lus en `+0x114/118/11C`, `+0x60 = 1`, pas de son, pas de tirage, rien quand la
+  réserve est pleine ; (6) effacement du porteur `+0x28 → +0x2C`, qui reste à E20.g.
+- [binaire] 38 sites d'appel, dont la pente (`fx = 6`, `0x8003878C` ; 26 préfabs, 16 à octet non nul : jarres, tonneaux, caisses, effet
+  10) et le drapeau VRAM (`fx = -1`, `0x800387C4` ; 107 préfabs, 18 à octet non nul) de la passe de choix ; la DLL leur passe déjà 6 et
+  −1 (`AlundraEntityScriptProxy.cs`, passe de choix).
+- [DLL] La file des effets est appliquée en fin d'image (`AlundraEffectStage.RunFrame`) ; dans une image de 2 ticks ou plus, une ancre
+  vivante est déjà recyclée au statut 0 et `MoveFollower` gèle l'emplacement sans écrire sa clé : la création prend donc une **ancre
+  figée** au moment de la destruction (statut 4, X, Y, `PosZ + 1`, clé).
+- [oracle] Mort avec un coup au tick H : D à H+1, animation 6 à H+14, E1 à H+23, case recyclée à H+24, `0x2C` d'un événement de carte
+  nul à H+25 ; pour un programme d'entité, nul dès H+24 (ordre du binaire ; à mesurer dans la DLL).
+
+**Périmètre.**
+- `SpriteRecordCatalog` (en-tête, JSON, `ToHeader`), champ `BreakEffect` du proxy, `Clone`, `ApplySpawnInitialization`.
+- Ancre et clé : celles d'E20.f1b (B3 : `AlundraEntityDepthKey.Compute`, l'aide d'IDSV partagée, l'ancre du proxy en `PosZ + 1`),
+  reprises telles quelles ; une ancre figée prise à la destruction.
+- `AlundraWorldProxy.DestroyEntity(entity, fx)` dans l'ordre du binaire, pour **tous** ses appelants (D-E14-9), avec un bouchon nommé
+  pour le butin (E20.e0).
+- `AlundraNativeEffects.CreateBreakEffect(reservoir, fx, anchor)`, fonction pure appelée par `_effectStage.Emit` (rang 1) ; `CreateNow`
+  n'est pas utilisé.
+- `AlundraBeannoideAi` : A1, C1, D1, enregistrés pour 335 ; D1 passe par `AlundraEnemyHelpers.HitReaction(e, 5, ctx)`.
+- Oracle `docs/plan-e14-annexe/e14a/oracle-a1/` (copie du scratchpad `oracle-handlers/docs/plan-e14-annexe/e14a/oracle/`, sans
+  `__pycache__`), sorties versées en texte (O-E14-6) ; tests ; arc G116.
+
+**Tâches** (détail à relire avant l'exécution) : T0 oracle (deux relances, même manifeste, 74 fichiers) ; T1 `BreakEffect` dans la DLL
+(aller-retour, clé absente → 0, `Clone`, épingles sur l'export réel : les deux préfabs valent 8) ; T2 ancre figée ; T3
+`DestroyEntity(e, fx)`, tests d'abord (E1 `fx -1` octet 8 : un emplacement, effet 8, animation 0, `DepthOffset` 1, X/Y = `PosX`/`PosY`,
+Z = `PosZ + 1` ; clé de l'entité + 1 après la première mise à jour ; libéré à la mise à jour 33 ; octet 0 → rien ; pente → effet 6 ;
+réserve pleine → rien ; images de 1, 2 et 3 ticks → même emplacement ; aucun tirage) ; T4 Beannoïde A1, C1, D1 contre
+`oracle-a1/out/vectors-beannoide.json` et `calls[]` des scénarios `BN-*` et `ARENA-*` (conversion du binaire vers la DLL : `PosZ`,
+`FloorHeight` et `MapHeights` − 1) ; T5 tests qui bougent (§1.3d), arc G116, suite complète ; T6 plan, notes, verifier frais.
+
+**Arc G116** (`ArcRun` direct, natifs actifs). `LeverArcs.Zone` / `World116`, sans drapeaux, `Arrival` (84, 328, z 0) — la case
+(3,20), qui fait apparaître les enregistrements 0, 1, 17 et 41 à 44 (l'arrivée en (444,328) n'en fait apparaître aucun : la zone
+d'apparition des enregistrements 0 et 1 est X 0..7, Y 0..29) —, limite d'environ 3 000 images, `Give(1)`, `Equip(1)`, puis
+`PlaceHero` sur le plateau (z 160). Politique d'épée copiée de `Swordsman` (`oracle-a1/e14run.py`) : cible frappable si statut 2,
+`IsOnGround`, `FrameCollisionTickCounter` 0 et animation sans le bit `0x40` ; héros posé à 40/34/28/22/16 px à l'ouest, au premier
+endroit dont les quatre coins (décalage (−10, −7), taille (21, 15)) sont marchables à la hauteur de la cible (`LeverArcs.CellAt`) ;
+direction 24 (est), `Square`, 25 ticks entre deux appuis.
+
+**Acceptation** (une image = un tick). Vecteurs : 2 052 (A1 3, C1 1 185, D1 720, E1 144), 0 écart sur les champs changés, le mot du
+générateur en sortie, les sons et l'effet. Appels des scénarios : 3 140 (A1 12, C1 3 102, D1 22, E1 4), rejoués un par un, 0 écart.
+Arc G116 : 10 appels de D1, 5 par Beannoïde, PV 9→7→5→3→1→0 ; pour chaque mort : D à H+1, statut 4 à H+23, `EntityByRecord` nul après
+H+24 ; `FrameOf(C, 323)` = E1 le plus tardif + 1 ; enregistrement 6 : `TargetAnimationId` 3 ; enregistrements 17 et 41 à 44 vivants ;
+deux effets 8 ; `AssertNoUnexpectedError`. Mutations réelles, par script, chacune rouge : C1 portée `slti` 3→4 ; D1 animation 5→6 ;
+ancre vivante au lieu de l'ancre figée (image de 2 ticks) ; `fx -1` non résolu. Suite en Release puis en Debug ; `cmp` ; traces.
+
+**Arrêts.** Un vecteur en écart après deux tentatives ; une épingle de l'arène c1a ou c1b qui bouge ; le décalage H+1/H+23/H+24 qui
+diffère dans la DLL (diagnostiquer, ne jamais déplacer l'épingle) ; un arc qui bouge sans attribution à un effet de bris légitime
+(octet non nul de l'entité détruite, lu dans l'export) ; un besoin de modifier le moteur ; un défaut de l'original soupçonné (l'auteur
+tranche).
+
+### 1.3c E14.a1c — Muruta, hall de la 115 ⏳ (à relire avant exécution)
+
+**Périmètre.** `AlundraMurutaAi` : A0, C10, D9, enregistrés pour 347 ; D9 passe par `HitReaction(e, 2, ctx)` ; A0 écrit
+`AIValues[0] = (short)((PosZ + 1) >> 16)` (Z du binaire, ADR-0026 : `lh +0x11E` lit le Z du binaire) ; la branche carte `0x99` de
+C10 (`0x80068164`-`0x8006819C`) n'est pas portée, avec un commentaire (morte pour 347, qu'aucun enregistrement de la 153 ne place) ;
+C10 lit `BoxDirection` pour `+0x98` (D-E14-6).
+
+**Tâches.** T1 tests sur `vectors-muruta.json` et `calls[]` des scénarios `MU-*` ; T2 arc H115 ; T3 recette de l'auteur ; T4 verifier
+frais.
+
+**Arc H115.** `World115`, drapeaux `{262}`, `Arrival` (252, 872) — la case (10,54), z 0, direction 16 ; jamais la case (10,56), qui
+lance le dialogue 81 de B[8] (`@1104`). Image 1 : B[2] passe par `@172, @177, @381…, @401, @403, @405, @407` ; `Give(1)`, `Equip(1)` ;
+attendre les quatre `FramesOf(C, 1469, 0x40)` ; même politique d'épée ; le héros reste dans X 0..21, Y 34..57 ; ne jamais tenir Haut.
+
+**Acceptation.** Vecteurs : 4 913 (A0 6, C10 4 043, D9 720, E1 144), 0 écart. Appels : 3 675 (A0 16, C10 3 637, D9 15, E1 7), 0 écart.
+Arc H115 : 8 appels de D9, 2 dégâts par coup, PV 3→1→0 ; pour chaque mort : D à H+1, statut 4 à H+23, recyclage à H+24 ;
+`FrameOf(B, 434)` = dernière E1 + 2 = X ; `@442` = X+41, `@461` = X+50, `@477` = X+59, `@493` = X+68 ; G569 et G262 posés ;
+`GroundProperty & 0x80` posé en (10,44), (11,44) et (5,42), éteint en (16,42) (fidèle : seul le chemin G659 le rouvre) ;
+`EntityByRecord(24..27)` nul ; quatre effets 8. Mutations : C10 masque de fin `0x1C`→`0x1F` ; D9 animation 2→3 ; A0 sans le +1 ;
+état 5 `0x40`→`0x20`. Suite complète en Release et en Debug ; `cmp` ; traces.
+
+**Arrêts.** Un Muruta du hall qui n'atteint pas `@1469` dans les 600 images qui suivent son `0x2D` (la chute des entités autres que le
+héros relève d'E20.e0k : question) ; un coup qui ne fait pas 2 ; les arrêts d'E14.a1b.
+
+**Recette (D-E14-7).** Le hall de la 115 : quatre Muruta tués à l'épée, un nuage de bris par mort, trois portails rendus, (16,42) reste
+fermé. La grille de la 116 : animée après les deux Beannoïde. La 14 : les sept Beannoïde dorment, se réveillent et meurent.
+
+### 1.3d Tests qui bougent
+
+- `AlundraNativeSpriteRegistryTests` : `ProductionRunner_RegistryIsEmpty_AndTheSwitchIsOn` (`Count` 0 → 3 en E14.a1b → 6 en E14.a1c) ;
+  `RegisteredEntry_ListingSeveralTypes_RunsForEach` (sa clé (D,1), désormais enregistrée en production, devient une clé libre, par
+  exemple (D,25)).
+- `AlundraEntityScriptProxyCloneTests` (`BreakEffect`) ; `SpriteWriterSpriteRecordsTests` (nouveaux cas, E14.a1a).
+- À attribuer s'ils bougent (effet de bris d'une destruction E0/E1, de pente ou VRAM, D-E14-9) : `AlundraDay3SceneArcTests`,
+  `AlundraInoaDayOneArcTests`, `AlundraShipBlockArcTests`, `AlundraVisionArcTests`.
+- Inchangés attendus (INFERENCE), relancés pour preuve : les leviers (`AlundraLeverArcTests`, `…BridgeArcTests`, `…BasculeArcTests`,
+  `…PillarArcTests`, `…DoorsArcTests`, `AlundraLeverSmokeTests`) ; `AlundraHeroLifeArcTests` ; `AlundraEntityContactArcTests` T-C61 ;
+  `AlundraTarnMurggArcTests` R3-2, qui ferme O-E14-2 s'il ne bouge pas. Inchangés par l'interrupteur : les classes de `HitArena` (dont
+  `AlundraEnemyGroundTests` et `AlundraEnemyHitReactionTests`).
+
 ## 2. Points ouverts
 
 | Point | Question | Où |
@@ -209,6 +401,11 @@ l'avance du générateur par tick (E20.e0b).
 | O-E14-0 | **Tranché le 2026-10-10 (D-E14-8)** : E14.a0, E14.a0b et E14.a1 passent avant les armes, les objets et les collisions | — |
 | O-E14-1 | **Tranché le 2026-10-10 (D-E20-26)** : l'export de l'effet de bris reste dans E14.a1 (D-E14-2) | — |
 | O-E14-2 | Les Muruta de la 15 (scène, `0x2E [128]` `@712`, `@777`, `@890`) : le héros peut-il les toucher pendant la scène ? (`check.md` ligne 45) | E14.a1, lecture de `0x63` et des drapeaux de la scène |
+| Q-A1-1 | **Tranché le 2026-10-10 (D-E14-9, ADR-0060)** : l'effet de bris pour tous les appelants de `DestroyEntity(e, fx)`, comme le binaire | — |
+| O-E14-4 | **Tranché par la session principale (2026-10-10)** : l'ancre et la clé viennent d'E20.f1b (B3), exécutée avant E14.a1b ; pas de copie de B3 | — |
+| O-E14-5 | **Tranché par la session principale (2026-10-10)** : E20.e0b perd « `DestroyEntity(e, fx)` avec l'effet de bris », qu'E14.a1b fait ; E20.g2 et E20.f4 le prennent d'E14.a1b ; E20.e0x ne garde que `BankKey` et part de l'état d'E14.a1a (`docs/plan-e20-heros.md` §1.1) | — |
+| O-E14-6 | **Tranché par la session principale (2026-10-10)** : les sorties d'`oracle-a1/out/` (24 Mo de texte, lues par les tests) sont versées en texte | — |
+| O-E14-7 | **Tranché par la session principale (2026-10-10)** : E14.a1a tourne seule (aucun autre exécuteur ni verifier sur l'arbre pendant ses exports) | — |
 | O-E14-3 | Le sprite C10/D18 (cartes 329, 153, 368) et le petit slime (C1/D23) partagent du code avec E14.a : ils restent inertes jusqu'à leurs propres gestionnaires (D-E14-1) | plus tard dans E14 |
 
 ## 3. Hors périmètre
