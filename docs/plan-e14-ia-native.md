@@ -362,6 +362,14 @@ ajouté au commit T3 avant l'ADR (résolu au HEAD) ; le bruit de fin de ligne de
 projection d'E1 dit ce qui est comparé et exclu, avec ses comptes ; (2) une table des champs binaire → DLL et le lecteur JSON à
 écrire remplacent le « chargeur réutilisé », qui n'existe pas sous cette forme ; (3) but, hors périmètre, budget et retour arrière
 sont écrits. Le critique a aussi **réfuté** un fait de la version précédente : `+0x1B8` n'est pas du code mort (voir les faits).
+**Révision 2 (2026-10-10).** Seconde relecture : **REVISE**, un blocage ; dispositions de la session principale (cap de deux
+relectures automatiques atteint) : **FIX** du blocage — le compte des effets de bris de l'arc G116 se fait à l'image E1 + 1 sur un
+prédicat observable (modes 1 et 2 : un emplacement de bris passe en mode 2 dès sa première mise à jour, `MoveFollower` voyant
+l'ancre figée au statut 4) ; **FIX** des points non bloquants : C5 se lit à l'application de la file sans mise à jour (`RunFrame` à
+0 tick) pour le mode 1, puis après la première mise à jour pour le mode 2 ; le rang d'`Emit` est celui de la source en cours ;
+l'épingle `FrameOf(C, 323)` = E1 + 1 s'appuie sur l'ordre de la DLL (`RecycleDestroyedEntities` en tête du bloc des entités) ;
+`Bytes` se convertit en `byte` ; l'arc G116 tourne hors de la collection du générateur (limite écrite) ; la passe de l'oracle
+(environ 500 s) peut être rendue à la session principale. Nouvelle époque de relecture : une seule relecture de clôture suit.
 
 **But.** Le Beannoïde (type 335) vit comme dans `ALUN_CD.EXE` (A1, C1, D1 par le registre) et toute destruction par
 `DestroyEntity(e, fx)` crée l'effet de bris de l'en-tête comme le binaire (D-E14-9) ; la grille de la 116 s'anime après la mort des
@@ -392,7 +400,12 @@ deux Beannoïde des enregistrements 0 et 1.
 - [DLL] `AlundraRandom.RandomSeed` est statique (64 bits, `Next()` rend les 32 bits bas) : les tests qui le posent sont dans
   `[Collection(AlundraRandomStaticStateCollection.Name)]` et rendent la graine (précédent `AlundraRandomTests.cs`).
 - [oracle] Mort avec un coup au tick H : D à H+1, animation 6 à H+14, E1 à H+23, case recyclée à H+24, `0x2C` d'un événement de carte
-  nul à H+25 ; pour un programme d'entité, nul dès H+24 (ordre du binaire ; à mesurer dans la DLL).
+  nul à H+25 ; pour un programme d'entité, nul dès H+24 (ordre du binaire ; dans la DLL, `RecycleDestroyedEntities` tourne en tête
+  du bloc des entités, ce qui donne le même ordre : l'épingle de l'arc en dépend, et un écart est un arrêt à diagnostiquer).
+- [DLL] Un emplacement créé par une opération en file est mis à jour dans le même tick que son application (`RunFrame` : opération,
+  puis `_reservoir.Tick`) ; à cette mise à jour, `MoveFollower` voit l'ancre figée au statut 4, copie position et clé, et passe en
+  mode 2. Le mode 1 ne s'observe donc qu'à l'application sans mise à jour (`RunFrame` à 0 tick applique toute la file sans
+  `Tick`).
 - [oracle] Dans les 37 appels D des scénarios, l'attaque de l'attaquant est `(attribut 0x81, puissance 1)` au verrou 16
   (`curattack_1C8 = 0x80144229` ; `docs/plan-e20-annexe/e20-c1/oracle/notes.md` ; `e20-c1b/oracle/out/K2.json`) ; les vecteurs portent la
   paire explicitement.
@@ -404,8 +417,8 @@ deux Beannoïde des enregistrements 0 et 1.
 - `AlundraWorldProxy.DestroyEntity(entity, fx)` dans l'ordre du binaire, pour **tous** ses appelants (D-E14-9) : bouchon nommé du butin
   (E20.e0), statut, `EventTrigger = -1`, bouchon nommé de la libération de l'effet attaché (`+0x1B8`, E20.e), résolution de `fx = -1`
   par `BreakEffect`, création de l'effet ; l'effacement du porteur reste à E20.g (commentaire à sa place).
-- `AlundraNativeEffects.CreateBreakEffect(reservoir, fx, anchor)`, fonction pure appelée par `_effectStage.Emit` (rang 1) ; `CreateNow`
-  n'est pas utilisé.
+- `AlundraNativeEffects.CreateBreakEffect(reservoir, fx, anchor)`, fonction pure appelée par `_effectStage.Emit` (au rang de la source
+  en cours : E1 peut venir de `RunPendingEventTriggers`, rang 2) ; `CreateNow` n'est pas utilisé.
 - `AlundraBeannoideAi` : A1, C1, D1, enregistrés pour 335 ; D1 passe par `AlundraEnemyHelpers.HitReaction(e, 5, ctx)`.
 - Oracle `docs/plan-e14-annexe/e14a/oracle-a1/` (copie du scratchpad `disc-e14a1/oracle-handlers/docs/plan-e14-annexe/e14a/oracle/`,
   sans `__pycache__`), sorties versées en texte (O-E14-6) ; lecteur JSON de test ; tests ; arc G116.
@@ -447,9 +460,9 @@ E14.a0b). « Entrée » = posé avant l'appel ; « Comparé » = comparé après
 | `+0x1C8` de l'attaquant | `attacker_attack` (vecteurs) | L : ComputeNewHp `0x8003A3BC` | `CurrentAttack` du proxy de l'attaquant | `new AlundraBalanceAttack(attr, power)` ; scénarios : `(0x81, 1)` | Entrée |
 | `+0x224` | `touching_224` | L : ComputeNewHp `0x8003A39C` | `TouchingEntity` | 0 → null ; pointeur du héros → `Entity` du héros | Entrée |
 | `+0x228` | `letter_228` | É : DestroyEntity `0x8003A5CC` (−1) | `EventTrigger` | S | Comparé −1 (la surcharge à deux arguments doit l'écrire) |
-| `+0x274` | `b0_274` | C10 | `Bytes[0]` | S | E14.a1c |
-| `+0x275` | `b1_275` | L `0x80065F78` ; É `0x80065FC0`, `0x800661A8` (C1) | `Bytes[1]` | S | Entrée ; comparé |
-| `+0x277` | `b3_277` | L : C1 `0x800661BC` ; É : D1 `0x8007D9C0` | `Bytes[3]` | S | Entrée ; comparé |
+| `+0x274` | `b0_274` | C10 | `Bytes[0]` | `(byte)v` | E14.a1c |
+| `+0x275` | `b1_275` | L `0x80065F78` ; É `0x80065FC0`, `0x800661A8` (C1) | `Bytes[1]` | `(byte)v` | Entrée ; comparé |
+| `+0x277` | `b3_277` | L : C1 `0x800661BC` ; É : D1 `0x8007D9C0` | `Bytes[3]` | `(byte)v` | Entrée ; comparé |
 | `+0x280` | `ai0_280` | É : A0 `0x80061754` | `AIValues[0]` | `unchecked((short)v)` ; comparé en `(ushort)` | E14.a1c |
 | `+0x282` | `ai1_282` | L/É : C1 (`0x80065F1C`, `0x8006600C`, `0x80066060`, …) | `AIValues[1]` | `unchecked((short)v)` ; comparé en `(ushort)` (le décrément boucle) | Entrée ; comparé |
 | héros `+0x114`, `+0x118`, `+0x120`, `+0x124`, `+0x134` | `hero_before.*`, `calls[].hero.*` | L : C1 `0x80065F90/F98` ; D1 `0x8007D9D8/E0` ; position relative | `PlayerEntity` → `PosX`, `PosY`, `TileX`, `TileY`, `FloorHeight` | `H` pour le sol | Entrée |
@@ -471,9 +484,10 @@ l'effet attaché, (5) `fx = -1` → `BreakEffect`, création si `fx != 0`, (6) p
 - **Comparé** sur les 144 vecteurs et les 4 appels : C1 `Status == FlagToDestroy` ; C2 `EventTrigger == -1` ; C3
   `(uint)RandomSeed == rng_in` (0 tirage) ; C4 aucun autre membre du proxy ne change (`ContentsItemId`, `PlatformEntity` même
   référence, `Hp`, `Flags`, forces) ; C5 effet de bris : aucun emplacement si l'effet résolu vaut 0, sinon exactement un : le plus bas
-  libre (réserve vide → 0 ; 3 occupés → 3), `Active`, mode 1, `RecordIndex = -1`, `TargetEffect` = effet résolu (8, ou 12 quand
+  libre (réserve vide → 0 ; 3 occupés → 3), `Active`, `RecordIndex = -1`, `TargetEffect` = effet résolu (8, ou 12 quand
   `inputs.fx = 12`), table globale, animation 0, ancre = l'ancre figée, X = `PosX`, Y = `PosY`, Z = `PosZ + 1`, décalages 0,
-  `DepthOffset` 1 (arguments de pile du binaire) ; réserve pleine (128) → rien, statut et `EventTrigger` posés quand même ; C6 héros
+  `DepthOffset` 1 (arguments de pile du binaire) ; **mode 1 lu à l'application de la file sans mise à jour** (`RunFrame` à 0 tick),
+  **mode 2 après la première mise à jour** (ancre au statut 4), position et clé de l'ancre recopiées ; réserve pleine (128) → rien, statut et `EventTrigger` posés quand même ; C6 héros
   inchangé ; C7 épingles négatives (D-E14-3) : aucun son 84, aucune entité créée.
 - **Exclu** (motif ; vecteurs par espèce) : X1 `spawn_39F58` (bouchon du butin, D-E14-3 ; 80) ; X2 le son 84 et ce qu'écrit le butin
   (lié au butin ; 80) ; X3 l'effacement de `+0x1B8` et l'emplacement qu'il libère (passe des effets actifs vide jusqu'à E20.e ; 72,
@@ -502,7 +516,8 @@ entrées distinctes (2 405 distinctes sur 3 140 pour le Beannoïde).
 
 ##### Tâches
 
-- ⏳ **T0 — Oracle** (commit de docs). Copier le dossier de l'oracle vers `docs/plan-e14-annexe/e14a/oracle-a1/` (sans `__pycache__`) avec
+- ⏳ **T0 — Oracle** (commit de docs ; si une passe dépasse le plafond d'une commande au premier plan, l'exécuteur rend la commande
+  exacte, le dossier et l'environnement à la session principale, qui la lance en arrière-plan). Copier le dossier de l'oracle vers `docs/plan-e14-annexe/e14a/oracle-a1/` (sans `__pycache__`) avec
   un `notes.md` (réel, bouchons, harnais, scénarios, limites : reprendre `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/e14a1/disc_oh.md` et la projection
   d'E1 ci-dessus) ; lancer deux fois `python -B docs/plan-e14-annexe/e14a/oracle-a1/run_e14.py` (environ 500 s) : sortie 0,
   `out/summary.txt` tout PASS, `out/manifest.txt` égal à celui du scratchpad (74 fichiers).
@@ -546,8 +561,11 @@ Une image = un tick.
   projection ; D1 avec l'attaque `(0x81, 1)` au verrou 16).
 - Arc G116 : 10 appels de D1, 5 par Beannoïde, PV 9→7→5→3→1→0 ; pour chaque mort : D à H+1, statut 4 à H+23, `EntityByRecord` nul après
   H+24 ; `FrameOf(C, 323)` = E1 le plus tardif + 1 ; enregistrement 6 : `TargetAnimationId` 3 ; enregistrements 17 et 41 à 44 vivants ;
-  deux effets de bris, comptés par `Mode == 1 && TargetEffect == 8` avec l'ancre à la position de chaque Beannoïde tué ;
-  `AssertNoUnexpectedError`. Ne s'affirme pas : le butin, le son 84, les trajectoires qui dépendent du générateur après l'apparition
+  deux effets de bris : à l'image qui suit chaque E1 (E1 + 1), relevé des emplacements `Active` avec `TargetEffect == 8`,
+  `RecordIndex == -1`, `Mode ∈ {1, 2}` (2 attendu après la première mise à jour), `Anchor` non nul, et X/Y de l'emplacement égaux à
+  `PosX`/`PosY` du Beannoïde tué relevés au tick de son E1 : exactement un tel emplacement par mort (relevé fait avant la fin de
+  l'effet 8, qui se libère après sa durée) ; `AssertNoUnexpectedError`. Limite écrite : l'arc tourne hors de la collection du
+  générateur statique et n'affirme que des issues indépendantes du tirage. Ne s'affirme pas : le butin, le son 84, les trajectoires qui dépendent du générateur après l'apparition
   (la DLL ne tire rien à l'apparition, son flot diffère de celui de l'oracle).
 - Mutations réelles, par script, chacune rouge : C1 portée `slti` 3→4 ; D1 animation 5→6 ; ancre vivante au lieu de l'ancre figée (image
   de 2 ticks) ; `fx -1` non résolu ; `EventTrigger` non écrit par la surcharge à deux arguments.
