@@ -156,6 +156,9 @@ ADR-0058) :
   (lecture de « 9 a », à confirmer par l'auteur s'il voulait seulement les courants).
 - **D-E20-32** — Pour l'arrondi du stick (E20.d2), une sonde est construite d'abord ; l'auteur mesure sa manette avec, puis la règle
   est close. Q-D1.
+- **D-E20-33** (2026-10-10, après-midi) — L'export d'E20.e0x ajoute aussi l'ensemble des indices valides de la page des cartes,
+  carte par carte, pour que la DLL puisse reproduire les apparitions qui échouent en silence dans l'original (un indice absent de la
+  table de la carte courante : `0x80039B28` rend 0 ; exemple : Zorgia, C44, indice 213 sur les cartes 388, 432 et 451).
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
@@ -620,7 +623,7 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 
 | # | Tranche | Contenu | Prérequis |
 |---|---|---|---|
-| 1 | E20.e0x | Convertisseur : `BankKey` dans `Data/sprite-records.json` (le `BreakEffect` y est déjà, E14.a1a) ; export complet en place, preuve par manifeste et double export ; ADR de format | E14.a1a ✅ |
+| 1 | E20.e0x (§1.15) | Convertisseur : `BankKey` dans `Data/sprite-records.json` (le `BreakEffect` y est déjà, E14.a1a) et les indices valides par carte (D-E20-33) ; export complet en place, preuve par manifeste et double export ; ADR de format | E14.a1a ✅ |
 | 2 | E20.e0a | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
 | 3 | E20.e0b | Générateur avancé une fois par tick (`0x8002BD0C`-`0x8002BD34`) ; tirage du butin à la création (écrit le contenu, rien ne tombe) | E20.e0a |
 | 4 | E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a |
@@ -2951,6 +2954,111 @@ trio non sauté, groupe `0x80032758` réécrit en `0x1D`, une entrée de la tabl
 - **Q-I1** (non bloquante) : les courants (`+0x188`, 16 cartes, dont la cascade de la 416) : E20.i2 avec le mur, ou plus tard ?
 
 ---
+
+### 1.15 E20.e0x — `BankKey` et indices valides par carte dans l'export ⏳ (détaillée le 2026-10-10)
+
+Découverte en lecture seule du 2026-10-10 (conception, puis critique adversarial qui a tout recalculé de son côté ; rapports dans le
+scratchpad de la session : `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/e20/e0x_design.md` et `e0x_critic.md`, scripts sous
+`disc-e20e0x/`). Risque : format de données (comme E14.a1a).
+
+**But.** Le projet exporté dit, pour chaque préfab, de quelle table de sprites et de quel indice il vient (`BankKey`), et, pour chaque
+carte, quels indices de la page des cartes sont valides (D-E20-33) : E20.e0a pourra traduire l'indice de `SpawnWarpEntity` en préfab, et
+refuser un indice absent de la carte courante, comme le binaire.
+
+**Faits porteurs.**
+- [binaire] `SpawnWarpEntity` `0x80039F58` appelle `0x80039B28(a1, a2, &pal, &sheet)` : `a1 == 0` lit la table globale (bloc
+  `0x80126EC0`, palette `0xB`, feuille `0x60`), sinon la table de la carte (bloc `0x80126E70`, palette 0, feuille `0x20`) ; il faut
+  `0 <= a2 < [bloc+0x10]` et une entrée différente de −1, sinon rien n'apparaît (retour 0 avant toute case). L'identifiant de l'entité
+  vaut `a2` (page globale) ou `0x100 + a2` (page des cartes). Le chargeur `0x8002D808` garde les −1 ; l'indice 0 de la page globale est le
+  héros. 102 sites d'appel (21 page globale, 81 page des cartes, dont 5 à indice calculé) ; le second consommateur de la table,
+  `SpawnChildEntity` (`0x8003A048`), sert le mille-pattes (page des cartes, indices 233 à 236).
+- [données] 484 fichiers, 257 entrées de table chacun ; une entrée −1 est exactement une fiche nulle (0..255), l'entrée 256 vaut 0.
+  `Header.Sector5Id` égale l'indice de la table partout. Page globale : 151 indices valides (0..254). Page des cartes : 244 nombres
+  valides au moins sur une carte (manquent 64, 75, 78, 96, 97, 179, 180, 183, 186, 195, 201, 210), de 0 à 22 par carte, 65 cartes sans
+  aucun ; 2 507 paires (carte, indice) en tout. 146 nombres sont valides sur les deux pages : la page fait partie de la clé. L'en-tête et
+  les animations d'un indice de la page des cartes sont identiques sur toutes les cartes où il existe : une table indice → préfab par
+  page suffit, la validité est, elle, propre à chaque carte.
+- [convertisseur] Les clés existent déjà : `SpriteBankReader.cs` (vers `:329`) forme `alundra_{sector5Id}` (table globale) ou
+  `{sector5Id}` (banques des cartes), exposé par `SpriteBank.BankKey` ; le préfab vaut `Ids.For("entity:{BankKey}/{dossier}")`
+  (`SpriteWriter.cs`, vers `:397`) ; `prefabAssetIdsByBankKey` n'existe qu'en mémoire (`ConvertSprites`, vers `:163`), complet quand
+  `WriteSpriteRecords` est appelé (vers `:210`) ; `EntityPrefabLinkWriter.cs` (vers `:148`) résout déjà ces chaînes. `ReadMapSpriteRecords`
+  lit chaque carte mais ne garde aujourd'hui que la première fiche de chaque `Sector5Id`.
+- [arbre] Base : `alundra-project/` à 24 103 fichiers hors `Alundra.dll`, `Alundra.pdb` et `.casaeditor/`, manifeste SHA-1
+  `662056cebb0395f014099d1bd5ffc8f071a6fd58` (égal au `m3` d'E14.a1a hors `report.json`) ; `Data/sprite-records.json` à 2 561 505 o,
+  SHA-1 `007f2660eb83d5a3d21aa35d7c71dd34dba0afcf` ; pointeur du moteur `781d3527`, inchangé depuis le dernier export.
+
+**Décisions (format, ADR-0062).**
+- `BankKey` : chaîne JSON, **premier membre** de chaque entrée de `Data/sprite-records.json`, toujours écrite ; valeurs
+  `"alundra_N"` (151) et `"N"` (244, sans zéros), exactement `SpriteBank.BankKey`. Une entrée sans clé est une erreur dure du
+  rapport (comme l'invariant `SpriteRecords.Exported == Entities.Prefabs`). `SpriteRecordHeader` ne change pas.
+- Nouveau fichier `Data/map-sprite-indices.json` : un objet dont les clés sont les numéros des cartes `map_<N>` (chaînes, ordre
+  numérique croissant, **toutes** les cartes, `map_alundra` exclu) et les valeurs le tableau trié des indices de la page des cartes dont
+  l'entrée de table n'est pas −1 (tableau vide pour une carte sans indice) ; écrit avec les mêmes options de sérialisation que
+  `sprite-records.json` (même indentation, mêmes fins de ligne), hors du catalogue des assets.
+- Pas de nouveau compteur dans `report.json`.
+
+**Périmètre.** `alundra-casaengine-project-converter/` : `Writers/SpriteWriter.cs` (`SpriteRecordJson.BankKey` en premier,
+`WriteSpriteRecords` reçoit la table des clés, erreur dure, écriture du nouveau fichier, doc de classe) ; `Readers/SpriteBankReader.cs`
+(collecte des indices valides par carte, sans changer la déduplication) ; tests du convertisseur (`SpriteWriterSpriteRecordsTests.cs`
+et un test du nouveau fichier ; la fixture actuelle n'a qu'une banque de carte : il faut un paramètre pour une banque globale) ;
+`docs/formats/sprite-records.md` (en français : phrase d'introduction, ligne du schéma, exemple de Yustel avec `"BankKey": "3"` en premier)
+et une page de format pour le nouveau fichier (ou une section de la même page) ; `docs/formats/README.md` ; ADR-0062 ; annexe
+`docs/plan-e20-annexe/e20-e0x/` (prédiction et scripts, écrits **avant le code**).
+
+**Hors périmètre.** La DLL (E20.e0a lit ces données) ; la palette et la feuille par page (à trancher par E20.e0a) ; tout miroir de
+`data-extracted/` ; tout autre champ.
+
+##### Tâches
+
+- ⏳ **T0 — Prédiction et état de départ** (commit de docs, avant tout code). Annexe `docs/plan-e20-annexe/e20-e0x/README.md` avec :
+  un script de prédiction indépendant du code du convertisseur (copié du critique, `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20e0x/critic/my_predict.py`,
+  ou réécrit, versé dans `e20-e0x/`) qui produit `sprite-records.json` prédit et `map-sprite-indices.json` prédit ; leurs tailles et
+  SHA-1 ; les comptes ; les valeurs témoins. Attendu pour `sprite-records.json` : **2 571 585 o (+10 080), SHA-1
+  `88d723066fd2e6232a6f815dad8de9b0c05c64e4`**, insertion pure de 395 lignes `    "BankKey": "…",` juste après chaque ligne
+  `  "<guid>": {`. Pour `map-sprite-indices.json` : 483 clés (toutes les cartes), 2 507 indices en tout, 65 tableaux vides ; taille et
+  SHA-1 calculés par le script selon la sérialisation de `sprite-records.json` (indentation et fins de ligne lues dans le fichier
+  actuel). Outils de manifeste (`manifest.py`, `diff_manifests.py`) copiés dans l'annexe. Manifeste `m0` : 24 103 fichiers, SHA-1
+  `662056ce…` (un écart s'explique avant d'aller plus loin). Compte de tests du convertisseur (849) et d'`Alundra.Tests` relevés.
+- ⏳ **T1 — Export de référence au HEAD**, avant toute modification du convertisseur. Fenêtre calme : aucun build, aucune suite, aucun
+  Launcher ni éditeur sur `alundra-project/` ; `Alundra.dll` déverrouillé. Depuis la racine :
+  `dotnet run --project alundra-casaengine-project-converter -c Release -- data-extracted alundra-project` ; sortie 0 et
+  `Verification: PASSED` ; `m1` contre `m0` : seulement `report.json`. Valeurs de référence relevées dans le `report.json` de T1.
+- ⏳ **T2 — Tests rouges.** `BankKey` premier membre, valeur d'une banque de carte (`"N"`) et d'une banque globale (`"alundra_N"`) ;
+  erreur dure si une entrée n'a pas de clé ; `map-sprite-indices.json` : clés des cartes en ordre numérique, indices triés, carte sans
+  indice → `[]`, une entrée −1 exclue ; les deux fichiers restent hors catalogue.
+- ⏳ **T3 — Code et docs.** `dotnet test alundra-casaengine-project-converter.Tests --blame-hang-timeout 60s`, au premier plan : 849 plus
+  les nouveaux, tous verts.
+- ⏳ **T4 — Export 1, puis export 2 tout de suite.** `m2` contre `m1` : changé `Data/sprite-records.json`, ajouté
+  `Data/map-sprite-indices.json`, changé `report.json`, rien d'autre ; `cmp` de chaque fichier avec sa prédiction ; `m3` contre `m2` :
+  `report.json` seul.
+- ⏳ **T5 — Suites.** `Alundra.Tests` en Release puis en Debug : même compte, sans échec (la DLL ignore la clé et le fichier jusqu'à
+  E20.e0a) ; `cmp` de la DLL ; traces inchangées.
+- ⏳ **T6 — ADR-0062 (format), plan, verifier frais** (le verifier est lancé par la session principale).
+
+##### Acceptation
+
+- `Data/sprite-records.json` égal à la prédiction au bit près (2 571 585 o, SHA-1 `88d72306…`) : 395 entrées, `BankKey` premier membre,
+  151 `alundra_N` et 244 `N`, toutes distinctes ; chaque objet égal à l'ancien, moins `BankKey` ; valeurs témoins : `"91"` →
+  `e3a39ec4-45d5-55f2-85e9-894c7b6e4a08` (Muruta), `"79"` → `1ef8f16c-605f-58c3-af19-b6bb602fc40f` (Beannoïde), `"alundra_7"` →
+  `62670cc6-953d-5fb2-ad61-8f130b96bf1f` (flèche chargée), `"alundra_2"` → `4d0c2294-87b6-50da-99ca-d789281cc580` (bombe),
+  `"alundra_0"` → `192c2eeb-…` (premier global), `"255"` → `14fa90f8-4764-531c-b751-091b644580d7`.
+- `Data/map-sprite-indices.json` égal à sa prédiction au bit près : 483 cartes, 2 507 indices, 65 vides ; les cartes 388, 432 et 451 sans
+  l'indice 213 ; les cartes 95 et 322 avec 233 à 236.
+- Tout ce qui suit est relatif à l'export de référence de T1 : `AssetInfos.json` égal à celui de `m1` (`a09917c3…` attendu) ; `report.json`
+  de l'export 1 : `Errors` 0, mêmes `Warnings`, mêmes `Verify.*`, mêmes compteurs (aucun ajouté ni retiré), `OutputFileCount` de T1 + 1 ;
+  `OutputSizeBytes` = valeur de T1 + 10 080 + taille de `map-sprite-indices.json` + écarts de la DLL, du PDB et du `report.json` présent
+  (mesurés ; un reste inexpliqué est un arrêt). Export 2 : `report.json` seul.
+- Rien ne change sous `alundra-project/UI/Screens/` ; convertisseur vert ; `Alundra.Tests` sans échec en Release et en Debug ; verifier
+  frais.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : T1 change autre chose que `report.json` (attribuer, rebaser comme E14.a1a, sinon question) ; après le code, tout autre
+  chemin changé, ajouté ou retiré ; `AssetInfos.json` qui bouge ; un fichier différent de sa prédiction ; un second export différent hors
+  `report.json` ; une erreur ; un compteur ou un avertissement non prévu ; un process sur l'arbre pendant un export ; toute idée de
+  supprimer `alundra-project/`, d'un `robocopy /MIR`, d'un miroir de `data-extracted/` ou d'indexer `CasaEngineMonogame/`.
+- **Budget** : un `executor`, deux tentatives au plus ; `plan-verifier` avant ; deux verifiers frais après (rejeu et adversarial).
+- **Retour arrière** : `git revert` des commits d'E20.e0x, puis un export complet en place.
 
 ## 2. Points ouverts
 
