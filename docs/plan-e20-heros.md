@@ -147,6 +147,8 @@ ADR-0058) :
   Q-N2 tranchée.
 - **D-E20-27** — « Collisions » désigne E20.g (porter, lancer ; caisses et jarres solides). Q-N3 tranchée.
 - **D-E20-28** (modifie ADR-0046 pour le héros) — Le héros crée et libère ses effets tout de suite et lit `Destroying` au tick. Q-N4.
+  Précisé par ADR-0059 (proposée, à confirmer par l'auteur) : la poignée est effacée tout de suite mais l'emplacement est rendu en file
+  à son tick, et l'aura est recréée aussi quand son emplacement ne la porte plus.
 - **D-E20-29** (modifie ADR-0049) — Un effet attaché se trie sur la coordonnée du sprite de son ancre plus `DepthOffset`. Q-N5.
 - **D-E20-30** — La poignée d'aura périmée est corrigée (numéro de génération). O-E20-15 tranché.
 - **D-E14-8** (plan maître) — E14.a passe en premier (E14.a0, E14.a0b, E14.a1), son plan est approuvé. O-E14-0 tranché.
@@ -1821,19 +1823,114 @@ E20.f3) ; l'avance du générateur par image (E20.e0b) ; les autres effacements 
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
 - **Retour arrière** : `git revert` des commits d'E20.f1a.
 
-#### E20.f1b — L'aura (en attente de l'auteur)
+#### E20.f1b — L'aura ⏳ (débloquée le 2026-10-10 : D-E20-28 à D-E20-30, ADR-0057)
 
-Projet de section prêt (`docs/plan-e20-annexe/e20-f1/check.md`, « Draft revision ») ; il demande trois décisions de l'auteur :
-- **Q-N4 (une nouvelle ADR ; ADR-0056 est prise par E20.c2a, le projet de `e20-f1/check.md` qui la cite est à renuméroter)** : le héros crée et libère ses effets tout de suite (`CreateNow`, `CreateAttachedNow`, `FreeNow`), garde
-  l'emplacement comme poignée et lit `Destroying` au tick même ; tout le reste reste en file (ADR-0046). Exact à un tick par image ; écarts
-  pour N ≥ 2 (une image sans aura au renouvellement, ordre des tirages, indice d'emplacement). Recommandé : oui.
-- **Q-N5 (amendement d'ADR-0049)** : un effet attaché se trie sur la coordonnée du sprite de son ancre plus `DepthOffset`, pour que
-  l'aura se dessine au-dessus du héros comme dans le binaire (sinon elle passe dessous). Recommandé : oui.
-- **O-E20-15 (défaut de l'original)** : si l'aura expire pendant un verrouillage et que son emplacement est repris, le premier tick
-  normal libère l'effet qui l'occupe (`0x8002F730`-`0x8002F744`, aucun test). Reproduire, ou corriger par un numéro de génération
-  (recommandé : corriger, c'est un pointeur pendant avéré).
-- Faits déjà établis : clé du héros `((PosY + (IDSV << 16)) & 0xFFFF0000) + (short)(PosZ >> 16)`, égale au tri du binaire
-  (`0x800399B8`) sur les 150 ticks de C2-steel ; ancre par `IAlundraEffectAnchor` sur le proxy, sans changement du moteur.
+**Révision 1 (2026-10-10).** Relecture : **REVISE**, un point corrigé : une libération immédiate rendait l'emplacement de l'aura avant
+l'application des créations en file des ticks précédents de la même image (la gerbe du tick 91 prenait l'emplacement 0 dans une image
+de 2 ou 3 ticks). La libération garde maintenant l'ordre du binaire : la poignée et la génération sont effacées tout de suite, l'emplacement
+est rendu par une opération en file à la position du tick.
+**Révision 2 (2026-10-10).** Seconde relecture : **REVISE**, deux points corrigés (FIX) : à 3 ticks par image, au renouvellement, une
+étincelle pouvait prendre l'emplacement de l'aura et la poignée resterait liée à l'étincelle : la recréation teste aussi la génération
+de l'emplacement (écart corrigé pour N ≥ 3, identique au binaire à un tick par image), avec un cas d'acceptation ; le mécanisme de
+libération est consigné dans ADR-0059 (proposée) et au §0.1. Une seule relecture de clôture suit.
+Relecture de clôture : **READY** (2026-10-10). Exécution après E14.a0b et la sonde du stick (builds en série).
+
+**Prérequis.** E20.f1a (CONFIRMED : charge, sons, étincelle, gerbe, effacements ; le bouchon `AlundraAuraStub` est remplacé ici) ; E20.f0.
+Le projet de section de `e20-f1/check.md` (« Draft revision ») est la base ; ce qui suit l'adapte aux décisions de l'auteur et à
+l'existant d'E20.f1a.
+
+**But.** Le héros voit l'aura de sa charge (effet 3 attaché) comme dans le binaire : créée au compteur 11, recréée quand son
+emplacement se détruit (tous les 97 ticks d'une charge tenue), libérée sous 11, dessinée juste au-dessus du sprite du héros ; une
+aura expirée pendant un verrouillage ne libère plus l'effet qui reprend son emplacement (défaut corrigé, D-E20-30).
+
+**Faits porteurs** (`e20-f1/` : `depth-key.md`, `effect-model.md`, `oracle-ext.md`, `check.md`, contre-vérifiés) :
+- [binaire] Compteur ≥ 11, à chaque tick : l'effet 3 attaché est créé si la poignée `0x80126FF8` est nulle **ou si le `+0x7D`
+  (drapeau de destruction) de son emplacement est non nul** (`0x8002F570`-`0x8002F58C`), par `0x8003BE74(0, 3, 0, héros, 1, 0, 0,
+  0x100000)` ; la poignée reçoit le retour, même nul (`0x8002F5BC`). Compteur < 11 : si la poignée est non nulle, `+0x68` de son
+  emplacement à 0, poignée à 0, sans autre test (`0x8002F730`-`0x8002F744`).
+- [binaire] Renouvellement : l'animation 0 de l'effet 3 dure 96 ticks et finit par `Destroy` ; la mise à jour c + 96 pose `+0x7D`,
+  `MovePlayer` du tick c + 97 recrée l'aura, la passe des effets du même tick libère l'ancienne (créations aux ticks 33, 130, 227).
+- [binaire] Clé `+0x1BC` du héros sans porteur ni voisin collidable plus bas qui le chevauche :
+  `((PosY + (IDSV << 16)) & 0xFFFF0000) + (short)(PosZ >> 16)`, égale au tri `0x800399B8` sur les 150 ticks de C2-steel (`0x00690000`
+  pendant la charge) ; l'aura prend la clé + 1 (le binaire la dessine juste après le héros).
+- [DLL] Le réservoir (`AlundraEffectReservoir`) a `CreateAttached`, `Free`, `Destroying` (`+0x7D`), et `IAlundraEffectAnchor` sans
+  implémentation de production ; `RunFrame` applique la file puis met à jour les emplacements, tick par tick ; l'aura passerait sous le
+  sprite du héros avec la règle d'ADR-0049.
+- [convention Z] Les effets prennent le Z du binaire (`PosZ + 1`) ; l'ancre expose `PosZ + 1`.
+
+**Décisions (ADR-0057).**
+- **D-E20-28** : le héros crée ses effets tout de suite (`CreateNow`, `CreateAttachedNow` du stade), garde l'emplacement comme
+  poignée, lit `Destroying` au tick ; sa libération efface tout de suite sa poignée et note la génération, mais rend l'emplacement par
+  une opération en file au tick de la libération (`FreeAtTick`, gardée par la génération), appliquée par `RunFrame` à sa place dans
+  l'ordre des ticks : une création en file d'un tick antérieur de la même image ne peut donc pas prendre l'emplacement de l'aura ; un effet créé au tick k d'une image n'est mis à jour par `RunFrame` qu'à partir
+  du tick k (marque `FirstUpdateTick`, locale à l'image, effacée à la fin de `RunFrame`, même avec 0 tick) ; le reste reste en file.
+  Exact à un tick par image ; écarts pour N ≥ 2, écrits dans le code : (1) une image qui contient c + 96 et c + 97 montre une image
+  sans aura ; (2) les tirages de l'étincelle restent à l'application (E20.f1a) ; (3) l'indice d'emplacement du héros passe avant les
+  opérations en file de l'image.
+- **D-E20-29** : un emplacement ancré (modes 1 et 3) se trie sur la coordonnée du sprite de son ancre plus `DepthOffset` ; l'ancre
+  l'expose par un membre par défaut de l'interface ; le mode 0 garde la règle d'ADR-0049.
+- **D-E20-30** : la libération ne vise que l'emplacement qui porte encore l'aura (numéro de génération posé par la création du
+  réservoir) ; c'est l'écart corrigé, écrit dans le code.
+- Ancre et clé (choix de la session principale) : `AlundraEntityScriptProxy` implémente `IAlundraEffectAnchor` (`PosX`, `PosY`,
+  `PosZ + 1`, `Status`, `DepthKey` par `AlundraEntityDepthKey.Compute`), l'IDSV venant d'une seule aide partagée avec le sprite du héros
+  (`AlundraFrameSyncPasses`, règle `~Target` comprise) ; pas de levée par support, voisin ou porteur (écart écrit, hors des arcs de f1b).
+
+**Périmètre.** `Alundra/Scripts/` : `AlundraEffectStage` (création et libération immédiates, marque) ; `AlundraEffectReservoir`
+(numéro de génération) ; l'ancre et `AlundraEntityDepthKey` ; la règle des emplacements ancrés d'`AlundraEffectQuadBuilder` ;
+l'aura dans `UpdatePlayerWeaponEffect` à la place d'`AlundraAuraStub` ; tests ; `docs/plan-e20-annexe/e20-f1/oracle/keyprobe.py` copié de
+`C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-f1/f1-check/oe/keyprobe.py` (tri `0x800399B8` après chaque tick, clé du héros contre la formule).
+
+**Hors périmètre.** La levée de clé par voisin ou porteur ; l'IDSV par image (celle de l'image 0 du couple animation-direction est
+exacte pour l'animation 0 de la charge) ; l'avance du générateur par tick (E20.e0b).
+
+##### Tâches
+
+- ⏳ **B1 — Oracle de la clé.** Copier `keyprobe.py` dans `docs/plan-e20-annexe/e20-f1/oracle/` (chemins relatifs au dépôt), le relancer :
+  0 écart sur les 150 ticks de C2-steel.
+- ⏳ **B2 — Stade.** `CreateNow`, `CreateAttachedNow`, `FreeAtTick` (opération en file, gardée par la génération) ; marque
+  `FirstUpdateTick` respectée puis effacée par `RunFrame` ; numéro de génération du réservoir.
+- ⏳ **B3 — Ancre et clé.** `AlundraEntityDepthKey.Compute`, l'aide d'IDSV partagée, l'implémentation explicite de l'ancre.
+- ⏳ **B4 — Aura.** Dans `UpdatePlayerWeaponEffect` : création selon la condition (poignée nulle ou `Destroying`, ou, ajout de
+  l'ADR-0059, emplacement inactif ou qui ne porte plus la génération de l'aura), poignée gardée même nulle, libération < 11 avec le garde de génération ; `AlundraAuraStub` retiré (ses tests deviennent ceux de l'aura réelle).
+- ⏳ **B5 — Ordre de dessin.** Test d'abord : chaque quad de l'aura a une clé strictement plus grande que celle du sprite du héros (vrai
+  `DepthSortable2DComponent.BuildSortKey` sur la position de son `RenderProjectionComponent`), même seau ; puis la règle des
+  emplacements ancrés.
+- ⏳ **B6 — Tests.**
+
+##### Acceptation
+
+- Contre l'oracle (`e20-f1/oracle/out/`), pour C2-steel, C6, C10, C14, C16 : aura au tick 33 (C2-steel), emplacement, mode 1, ancre =
+  héros, `OffsetZ` `0x100000`, `DepthOffset` 1, position, lus après la logique du tick et avant `RunFrame` ; les indices d'emplacement de
+  l'étincelle et de la gerbe redeviennent comparables (l'aura occupe l'emplacement 0 comme dans l'oracle).
+- Charge tenue 300 ticks à un tick par image : auras créées aux ticks 33, 130 et 227, une seule vivante après chaque mise à jour ;
+  `Destroying` posé à la main avant le tick 50 : nouvelle aura à ce tick (scénario A1 de l'oracle) ; avant les ticks 60 et 70 : créations
+  aux ticks 33, 60 et 70, emplacement 0 réutilisé (A2) ; réservoir plein : l'aura est retentée à chaque tick (P1).
+- Une image de 2 puis de 3 ticks sur le passage du compteur de 10 à 12 donne le même état final que des images d'un tick (une seule
+  aura) ; mutations rouges : création par `Emit` → deux auras ; sans marque → une mise à jour de trop ; marque non effacée → une mise
+  à jour manquée à l'image suivante. L'écart (1) est épinglé : une seule image affichée sans aura.
+- Poignée périmée : aura expirée pendant un verrouillage, emplacement repris par un autre effet : le premier tick normal ne libère pas
+  cet autre effet (D-E20-30) ; sans le garde de génération, le test est rouge.
+- Renouvellement à 3 ticks par image (ADR-0059) : charge tenue en images de 3 ticks calées pour que c + 96 soit le premier tick d'une
+  image et qu'une étincelle naisse à c + 98 (C2-steel : aura créée au 227, renouvellement au 324, étincelle au 325) : après la logique
+  de l'image suivante, une aura (effet 3, mode 1, ancre = héros) est vivante et la poignée porte sa génération ; une mutation qui retire
+  le test de génération de la condition de création rend le test rouge.
+- Clé de l'ancre du héros = sortie de `keyprobe` sur les ticks de charge de C2-steel (`0x00690000`) ; `Compute` contre des valeurs faites
+  à la main (`PosZ` entier < 0, IDSV 43).
+- L'aura est dessinée au-dessus du sprite du héros (B5).
+- Les tests d'E20.f1a restent verts, sauf ceux du bouchon de l'aura, remplacés ; en particulier
+  `TheReservoirAfterTheChargeAndTheRelease_DoesNotDependOnTheNumberOfTicksPerFrame` reste vert sans changement à 2 et 3 ticks par image
+  (la gerbe du tick 91 garde ses emplacements, l'aura étant rendue à la position du tick 92) ; une mutation qui libère l'emplacement
+  tout de suite fait rougir ce test ; build Release puis Debug ; `Alundra.Tests` sans échec ;
+  traces inchangées ; verifier frais.
+- Recette de l'auteur : avec `steel-m14`, tenir Carré : l'aura au-dessus du héros, renouvelée sur une charge longue.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : un écart à l'oracle que le binaire n'explique pas ; un besoin de changer le moteur ; une clé du héros qui demanderait la
+  levée par voisin pour égaler l'oracle ; B5 seule : si la coordonnée du sprite du héros ne peut pas être égalée dans la DLL, B5 passe ⚠️
+  sans bloquer le reste.
+- **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
+- **Retour arrière** : `git revert` des commits d'E20.f1b.
 
 ### 1.10 E20.f2 — Rebond du fléau 🧪 (faite et CONFIRMED le 2026-10-10, `a0248ff`, `8748e0f`, `02725d5` ; reste la recette de l'auteur)
 
@@ -2484,6 +2581,7 @@ tests existants (inversé : Triangle seul donne `0x29`, compteur `0`, direction 
   dans le dossier de travail du jeu, réécrit à chaque lancement (le copier avant de relancer).
 - **Révision 1 (2026-10-10)** : relecture REVISE, un point corrigé : la dérivation de x et y depuis les actions du moteur, et la
   sémantique du faux `getButtonState` du test, sont écrites.
+- Relecture neuve : **READY** (2026-10-10). Exécution après E14.a0 et E14.a0b (même dépôt, builds en série).
 
 #### E20.d2 — Tâches
 
@@ -2739,7 +2837,7 @@ trio non sauté, groupe `0x80032758` réécrit en `0x1D`, une entrée de la tabl
 | O-E20-13 | La DLL ajoute les entités neuves en fin de liste, alors que le binaire réutilise la première case libre (`FindFreeEntitySlot`) : après un recyclage en cours de carte, l'ordre de la passe de coups (« premier attaquant ») peut différer | à mesurer avec E20.e0 (apparitions) ou E14 |
 | O-E20-11 | Une entité neuve tourne-t-elle dans le même tick dans le binaire (répétition de `0x800386D0`, contrôle de D7 : non vérifié) ? E20.a garde la règle d'aujourd'hui (premier tick à l'image suivante) | à mesurer, avec E20.e0 |
 | O-E20-14 | Atteignabilité en jeu des salles des leviers : la 115 nord-ouest après le hall (E14.a) ; la 116 derrière la grille (E14.a) ; la salle de la bascule de la 117, où la bascule n'apparaît que si l'on arrive par les portails internes 2, 4 ou 6 de la 117 (les arrivées depuis la 115 et la 116 sont hors de sa zone) ; la 44, dont on ne sait pas si le chemin vers les leviers passe par la case de la vague (43..44, 20) | recette de l'auteur, après E14.a |
-| O-E20-15 | Poignée d'aura périmée (`0x8002F730`-`0x8002F744`) : reproduire le défaut de l'original, ou le corriger par un numéro de génération (recommandé) | l'auteur, avec E20.f1b |
+| O-E20-15 | **Tranché le 2026-10-10 (D-E20-30)** : la poignée d'aura périmée est corrigée par un numéro de génération (E20.f1b) | — |
 | O-E20-16 | Les courants (`+0x188`, branche `0x80032768`, dérive ; 16 cartes, dont la cascade de la 416) n'ont pas de propriétaire : E20.i2 avec le mur d'eau profonde (O-E19-22), ou plus tard ? (Q-I1) **E20.i (2026-10-10) les laisse dehors : sur la cascade de la 416, le héros nage sans dérive.** | l'auteur |
 | O-E19-22 (rappel, ligne du plan d'E19 : `docs/plan-e19-opcodes.md`) | Le mur d'eau profonde sans bottes de niveau ≥ 2 (`(cellule & 0xE00) == 0x800`, `0x80037504`) : toujours sans propriétaire. **Après E20.i, un héros sans bottes nage là où l'original le bloque** (la mer de la 416 dès la nouvelle partie) ; les traces `*-L0`, `*-L1` et `R9-deepwater-noboots` sont mesurées (information). Recommandé : E20.i2, juste après (une égalité sur `0xE00`, pas un bit de masque : les échelles valent `0xC00`) | l'auteur (Q-N3) |
 | O-E20-10 | **Tranché le 2026-10-09 (D-E20-14).** `UpdateItemEffectState` (table de défense, bottes, régénération, PV) et `0x8003634C` : bouchons dans E20.a et portage dans E20.c2, ou portage dès E20.a | — |

@@ -1,6 +1,6 @@
 # ADR-0057: The hero creates its own effects at once, attached effects sort with their anchor, and the stale aura handle is fixed
 
-- **Status**: Accepted
+- **Status**: Accepted; D-E20-28's release mechanism refined by ADR-0059 (proposed)
 - **Date**: 2026-10-10
 - **Source**: this chantier: `docs/plan-e20-heros.md`, section 0.1 (D-E20-28 to D-E20-30, the author's answers of 2026-10-10 to Q-N4, Q-N5 and O-E20-15) and section 1.9 (E20.f1b); discovery `docs/plan-e20-annexe/e20-f1/` (`effect-model.md`, `depth-key.md`, `check.md`)
 

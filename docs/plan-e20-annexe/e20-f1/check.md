@@ -1,5 +1,8 @@
 > Report returned by one agent of the targeted read-only discovery for E20.f1 (night of 2026-10-10), kept verbatim as evidence. The plan holds the reconciled facts.
 
+> Note (2026-10-10) : le `FreeNow` immédiat du projet ci-dessous est remplacé par `FreeAtTick` (libération en file à son tick, gardée
+> par la génération) et la recréation teste aussi la génération : plan §1.9, E20.f1b révisions 1 et 2, ADR-0059.
+
 # f1-check: adversarial check of depth-key, effect-model and oracle-ext, plus a draft revision of E20.f1
 
 ## Things that change the plan
