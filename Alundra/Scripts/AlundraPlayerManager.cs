@@ -207,7 +207,8 @@ public static class AlundraPlayerManager
         // anyway for forward parity once something does set it.
         if (player.BlockedByEntity != null)
         {
-            // E20.b B2, binary 0x80031BB0-0x80031BC0: this branch also clears the charge timer (E20.f) and the pending-spawn pointer of the weapon before END.
+            // E20.b B2, binary 0x80031BB0-0x80031BC0: this branch also clears the charge timer (E20.f1a, 0x80031BB4) and the pending-spawn pointer of the weapon (0x80031BC0) before END.
+            player.WeaponChargeTimer = 0;
             player.WeaponRecordPointer = 0;
             return;
         }
@@ -220,6 +221,11 @@ public static class AlundraPlayerManager
         if (!DebugIgnoreControlLock && (state.PlayerControlFlags & AlundraGameState.PlayerControlBits.InputBlockedMask) != 0)
         {
             AlundraPlayerAnimationEffects.Create(player, AlundraPlayerAnimationEffects.LockedMode);
+
+            // E20.f1a, binary 0x80031BE8-0x80031BF8, right after CreatePlayerAnimationEffects(1) (0x80031BDC): the locked branch clears the charge timer (0x80031BEC) and the pending-spawn pointer (0x80031BF8), so a
+            // charge or a shot pending when a lock begins fires nothing at the unlock. The aura stub is left as it is: the binary does not touch the aura's handle here (a stale handle is E20.f1b's business).
+            player.WeaponChargeTimer = 0;
+            player.WeaponRecordPointer = 0;
             return;
         }
 

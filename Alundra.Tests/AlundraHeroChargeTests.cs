@@ -600,4 +600,112 @@ public sealed class AlundraHeroChargeTests : IDisposable
 
         return slots;
     }
+
+    // -----------------------------------------------------------------------------------------
+    // T4: the two branches that end the tick early clear the charge and the pending shot.
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>The frozen branch (<c>+0x20 != 0</c>, <c>0x80031BB4</c> and <c>0x80031BC0</c>): the counter and the pointer are cleared and the tick ends.</summary>
+    [Fact]
+    public void TheFrozenBranch_BlockedByEntity_ClearsTheChargeCounterAndThePendingShot()
+    {
+        var m = Start(6);
+        var hero = m.Hero;
+        hero.WeaponChargeTimer = 37;
+        hero.WeaponRecordPointer = 0x80028CF6;
+        hero.BlockedByEntity = new CasaEngine.Framework.Scene.Entities.Entity { Name = "blocker" };
+        var pad = new AlundraPadState { ButtonsHold = Square };
+
+        AlundraPlayerManager.MovePlayer(hero, in pad, m.Rig.Host.GameState, m.Rig.Host);
+
+        Assert.Equal(0, hero.WeaponChargeTimer);
+        Assert.Equal(0u, hero.WeaponRecordPointer);
+    }
+
+    /// <summary>The locked branch (<c>g_playerControlFlags &amp; 0x34</c>, <c>0x80031BEC</c> and <c>0x80031BF8</c>, after <c>CreatePlayerAnimationEffects(1)</c>): the same two clears; the aura stub is left alone.</summary>
+    [Fact]
+    public void TheLockedBranch_ClearsTheChargeCounterAndThePendingShot_AfterCreatePlayerAnimationEffects1()
+    {
+        var m = Start(6);
+        var hero = m.Hero;
+        hero.WeaponChargeTimer = 37;
+        hero.WeaponRecordPointer = 0x80028CF6;
+        hero.AuraStub.Check();
+        hero.TargetAnimationId = 0x2D; // a state the skeleton of CreatePlayerAnimationEffects(1) reacts to (the landing stub), so that the call is observable.
+        hero.IsOnGround = 1;
+        m.Rig.Host.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked;
+        var calls = new List<(int Mode, string Stub, uint State)>();
+        AlundraPlayerAnimationEffects.StubCallsForTests = calls;
+        var pad = new AlundraPadState { ButtonsHold = Square };
+        try
+        {
+            AlundraPlayerManager.MovePlayer(hero, in pad, m.Rig.Host.GameState, m.Rig.Host);
+        }
+        finally
+        {
+            AlundraPlayerAnimationEffects.StubCallsForTests = null;
+        }
+
+        Assert.Contains(AlundraPlayerAnimationEffects.LandingStubName, calls.Select(c => c.Stub)); // the function was called (mode 1) before the clears.
+        Assert.All(calls, c => Assert.Equal(1, c.Mode));
+        Assert.Equal(0, hero.WeaponChargeTimer);
+        Assert.Equal(0u, hero.WeaponRecordPointer);
+        Assert.True(hero.AuraStub.Alive);
+        Assert.Equal(0, hero.AuraStub.Releases);
+    }
+
+    /// <summary>The free branch clears nothing by itself: the counter of a held Square keeps counting through MovePlayer (control).</summary>
+    [Fact]
+    public void TheFreeBranch_DoesNotClearTheCharge()
+    {
+        var m = Start(6);
+        m.Hero.TargetAnimationId = 0;
+        m.Hero.WeaponChargeTimer = 20;
+        m.Tick(Square);
+        Assert.Equal(21, m.Hero.WeaponChargeTimer);
+    }
+
+    /// <summary>
+    /// A charge interrupted by a lock (William's bow, C6): released at tick 91, the charged shot (type 7, after its delay of 8 ticks) is pending; a lock (0x04, inside the mask 0x34) begins at tick 93 and lasts 10 ticks. At the
+    /// first locked tick the counter and the pointer are 0; after the unlock the shot is never asked (the oracle, undisturbed, asks it at tick 100), and no charge restarts without a new press.
+    /// </summary>
+    [Fact]
+    public void AChargedShotPendingWhenALockBegins_IsNeverFired_AfterTheUnlock()
+    {
+        var rows = ChargeOracle.Load("C6-william");
+        Assert.Equal(new[] { 4, 7 }, rows.SelectMany(r => r.Spawns).Select(s => s.Type).ToArray()); // the undisturbed probe fires the press at tick 10 and the charged shot at tick 100.
+        Assert.Equal(100, rows.Single(r => r.Spawns.Any(s => s.Type == 7)).Tick);
+        using var seed = new SeedScope();
+        var m = Start(6);
+        var hero = m.Hero;
+        var spawns = new List<AlundraPlayerManager.WeaponSpawnCall>();
+        AlundraPlayerManager.WeaponSpawnCallsForTests = spawns;
+        foreach (var row in rows.TakeWhile(r => r.Tick <= 92))
+        {
+            m.Tick(row.Hold, row.RngBefore);
+        }
+
+        Assert.Equal(0x80028CF6u, hero.WeaponRecordPointer); // the charged shot is pending at tick 92.
+        Assert.Single(spawns);                               // only the press shot of tick 10 so far.
+
+        var firedAfterTheLock = new List<int>();
+        var state = m.Rig.Host.GameState;
+        for (var tick = 93; tick <= 130; tick++)
+        {
+            state.PlayerControlFlags = tick <= 102 ? AlundraGameState.PlayerControlBits.ControlLocked : 0;
+            var before = spawns.Count;
+            m.Tick(0);
+            if (tick <= 102)
+            {
+                Assert.Equal(0, hero.WeaponChargeTimer);
+                Assert.Equal(0u, hero.WeaponRecordPointer);
+            }
+
+            firedAfterTheLock.AddRange(spawns.Skip(before).Select(s => s.Type));
+        }
+
+        Assert.Empty(firedAfterTheLock);
+        Assert.Equal(0u, hero.WeaponRecordPointer);
+        Assert.Equal(0, hero.WeaponChargeTimer);
+    }
 }
