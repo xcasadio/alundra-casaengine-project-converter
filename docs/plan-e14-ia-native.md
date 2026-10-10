@@ -210,6 +210,7 @@ l'avance du générateur par tick (E20.e0b).
 **Révision 1 (2026-10-10).** Relecture de l'enveloppe : **REVISE**, un point corrigé (FIX) : §1.3d nomme les quatre tests
 d'`AlundraNativeSpriteRegistryTests` que les enregistrements de production touchent, avec la tranche et la nouvelle valeur ; la
 classe entière a été relue contre les six clés de production.
+Relecture de clôture : **READY** (2026-10-10).
 
 Découverte en lecture seule du 2026-10-10 (quatre agents, dont une contre-vérification adversariale) : export de l'octet de bris,
 oracle avec les six gestionnaires réels, effet de bris et arcs de la 115 et de la 116. Scripts et sorties dans le scratchpad de la
@@ -233,6 +234,7 @@ l'export de référence de T1 (`m1` et son `report.json`), plus en valeurs absol
 contredirait ; la taille de sortie tient compte du `report.json` précédent, compté par `MeasureOutput` (`ConversionReport.cs`)
 dans un export en place, comme L-b2 (« à l'écart de `report.json` près »). Point P3 corrigé : la montée du moteur part du
 pointeur du dernier export.
+Relecture de clôture : **READY** (2026-10-10).
 
 **Faits porteurs.**
 - [binaire] `DestroyEntity` `0x8003A59C` : quand `fx == -1`, l'effet est l'octet `0x1E` de l'en-tête `+0x64` (`0x8003A5D8`-`0x8003A5E8`) ;
