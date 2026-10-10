@@ -1666,7 +1666,7 @@ de l'auteur, hors de l'app) ; tout comportement d'arme.
 - **Budget** : un `executor` ; un verifier frais.
 - **Retour arrière** : `git revert` des commits d'E20.f0.
 
-### 1.9 E20.f1 — Charge et relâchement : E20.f1a 🧪 (faite et CONFIRMED le 2026-10-10, `53ff27f` à `ce804b3`), E20.f1b l'aura (en attente de l'auteur)
+### 1.9 E20.f1 — Charge et relâchement : E20.f1a 🧪 (faite et CONFIRMED le 2026-10-10, `53ff27f` à `ce804b3`), E20.f1b l'aura 🧪 (faite le 2026-10-10, verifier frais et recette de l'auteur en attente)
 
 **Révision 1 (2026-10-10).** Relecture : **REVISE**, cinq points : la condition de l'aura était inversée ; l'oracle ne journalisait ni
 le réservoir ni le générateur ; le moment de création des effets n'était pas choisi ; l'aura n'avait ni ancre ni clé de profondeur ;
@@ -1823,7 +1823,7 @@ E20.f3) ; l'avance du générateur par image (E20.e0b) ; les autres effacements 
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
 - **Retour arrière** : `git revert` des commits d'E20.f1a.
 
-#### E20.f1b — L'aura ⏳ (débloquée le 2026-10-10 : D-E20-28 à D-E20-30, ADR-0057)
+#### E20.f1b — L'aura 🧪 (faite le 2026-10-10 : D-E20-28 à D-E20-30, ADR-0057 ; verifier frais et recette de l'auteur en attente)
 
 **Révision 1 (2026-10-10).** Relecture : **REVISE**, un point corrigé : une libération immédiate rendait l'emplacement de l'aura avant
 l'application des créations en file des ticks précédents de la même image (la gerbe du tick 91 prenait l'emplacement 0 dans une image
@@ -1885,17 +1885,17 @@ exacte pour l'animation 0 de la charge) ; l'avance du générateur par tick (E20
 
 ##### Tâches
 
-- ⏳ **B1 — Oracle de la clé.** Copier `keyprobe.py` dans `docs/plan-e20-annexe/e20-f1/oracle/` (chemins relatifs au dépôt), le relancer :
+- ✅ **B1 — Oracle de la clé.** Copier `keyprobe.py` dans `docs/plan-e20-annexe/e20-f1/oracle/` (chemins relatifs au dépôt), le relancer :
   0 écart sur les 150 ticks de C2-steel.
-- ⏳ **B2 — Stade.** `CreateNow`, `CreateAttachedNow`, `FreeAtTick` (opération en file, gardée par la génération) ; marque
+- ✅ **B2 — Stade.** `CreateNow`, `CreateAttachedNow`, `FreeAtTick` (opération en file, gardée par la génération) ; marque
   `FirstUpdateTick` respectée puis effacée par `RunFrame` ; numéro de génération du réservoir.
-- ⏳ **B3 — Ancre et clé.** `AlundraEntityDepthKey.Compute`, l'aide d'IDSV partagée, l'implémentation explicite de l'ancre.
-- ⏳ **B4 — Aura.** Dans `UpdatePlayerWeaponEffect` : création selon la condition (poignée nulle ou `Destroying`, ou, ajout de
+- ✅ **B3 — Ancre et clé.** `AlundraEntityDepthKey.Compute`, l'aide d'IDSV partagée, l'implémentation explicite de l'ancre.
+- ✅ **B4 — Aura.** Dans `UpdatePlayerWeaponEffect` : création selon la condition (poignée nulle ou `Destroying`, ou, ajout de
   l'ADR-0059, emplacement inactif ou qui ne porte plus la génération de l'aura), poignée gardée même nulle, libération < 11 avec le garde de génération ; `AlundraAuraStub` retiré (ses tests deviennent ceux de l'aura réelle).
-- ⏳ **B5 — Ordre de dessin.** Test d'abord : chaque quad de l'aura a une clé strictement plus grande que celle du sprite du héros (vrai
+- ✅ **B5 — Ordre de dessin.** Test d'abord : chaque quad de l'aura a une clé strictement plus grande que celle du sprite du héros (vrai
   `DepthSortable2DComponent.BuildSortKey` sur la position de son `RenderProjectionComponent`), même seau ; puis la règle des
   emplacements ancrés.
-- ⏳ **B6 — Tests.**
+- ✅ **B6 — Tests.**
 
 ##### Acceptation
 
@@ -1923,6 +1923,66 @@ exacte pour l'animation 0 de la charge) ; l'avance du générateur par tick (E20
   tout de suite fait rougir ce test ; build Release puis Debug ; `Alundra.Tests` sans échec ;
   traces inchangées ; verifier frais.
 - Recette de l'auteur : avec `steel-m14`, tenir Carré : l'aura au-dessus du héros, renouvelée sur une charge longue.
+
+##### Résultats (2026-10-10)
+
+Commits : B1 `3e01c11` ; B2 `a523304` ; B3 et B4 `65fd5cb` ; B5 `4fc8e28` ; B6 (les tests) répartis dans ces commits, ce texte dans le commit de clôture. Build Release puis Debug : `Alundra.Tests`
+**4694 sans échec** dans les deux configurations (4661 avant : +33 tests), `Alundra.dll` du projet identique à celle de Debug, traces `docs/hero-trace-389-*` et `docs/intro-*`
+inchangées (garde `git diff --ignore-cr-at-eol` passée).
+
+- **B1** : `oracle/keyprobe.py` copié (il tourne depuis le dépôt, `keyprobe.txt` écrit à côté) : 150 ticks de C2-steel, 0 écart entre le tri `0x800399B8` et la formule ;
+  clé `0x00680000` pendant la volée `0x3F` (IDSV 4), `0x00690000` pendant la charge (IDSV 5).
+- **B2** : `CreateNow`, `CreateAttachedNow`, `FreeAtTick(slot, génération)` du stade ; `FirstUpdateTick` posé par la source courante, respecté par `Tick(frozen, tick)` puis effacé par
+  `RunFrame` (même sans tick) ; `AlundraEffectSlot.Generation` posé par la création du réservoir (`FreeIfGeneration`). Le membre par défaut `SortCoordinate` de l'ancre y est aussi (pour B5).
+- **B3** : `AlundraEntityDepthKey.Compute(posY, idsv, posZ)` (et `Compute(proxy)`), `AlundraFrameSyncPasses.ResolveIdsv` partagée avec la passe du sprite (règle `~Target` comprise),
+  `IAlundraEffectAnchor` implémentée explicitement par `AlundraEntityScriptProxy` (n'importe quelle entité ; `PosZ + 1`, `Status`, `DepthKey`, `SortCoordinate` du sprite). Rien de propre au héros.
+  Le héros réel du monde (carte 14, pixel (100, 100)) expose, tick par tick de 1 à 90, la clé de `keyprobe` (`0x00680000` puis `0x00690000`).
+- **B4** : l'aura dans `UpdatePlayerWeaponEffect` (`CreateAuraIfNeeded`, `ReleaseAura`), poignée = l'emplacement (`AuraSlot`, `AuraGeneration`) ; `AlundraAuraStub` retiré (son fichier a été
+  supprimé par `6f9131e`, commit de la session principale qui avait ma suppression dans l'index partagé).
+- **B5** : le test est rouge sans la règle (mutation « règle retirée » ci-dessous) : chaque quad de l'aura a une clé strictement plus grande que celle du sprite (vrai `DepthSortable2DComponent.BuildSortKey`
+  sur la position du `RenderProjectionComponent` du héros), même passe, calque, ordre et élévation ; la règle des emplacements ancrés est dans `AlundraEffectQuadBuilder`
+  (coordonnée du sprite de l'ancre + `DepthOffset`). B5 n'a pas eu besoin de passer en ⚠️.
+
+**Acceptation, mesurée.**
+- Contre l'oracle, pour C2-steel, C6, C10, C14, C16 (`AlundraHeroChargeTests`, 5 + 5 cas) : l'aura est créée aux ticks 33, 35, 46, 43, 43, emplacement 0, mode 1, ancre = héros,
+  `OffsetZ` `0x100000`, `DepthOffset` 1, position de départ = celle du héros (Z du binaire), lus après la logique du tick et avant `RunFrame` ; les indices d'emplacement de l'étincelle et de la
+  gerbe sont maintenant comparés à l'oracle et égaux (l'aura occupe l'emplacement 0), ainsi que sa présence (poignée non nulle) à chaque tick, et sa libération au tick 92 ou 102.
+- Charge tenue 300 ticks à un tick par image (`AlundraHeroAuraTests`) : auras aux ticks **33, 130, 227**, emplacements **0, 5, 4** (A5 de l'oracle), une seule vivante après chaque mise à jour ;
+  `Destroying` posé avant le tick 50 : créations **(33, 0), (50, 1)** (A1) ; avant les ticks 60 et 70 : **(33, 0), (60, 1), (70, 0)**, l'emplacement 0 réutilisé (A2) ; réservoir plein de avant le
+  tick 30 à avant le 60 : l'aura est retentée à chaque tick (poignée nulle de 33 à 59) et créée au tick 60 dans l'emplacement 0 (P1) ; libéré avant le 45 : créée au tick 45.
+- Frames de plusieurs ticks, dans le monde réel de la carte 14 (`AlundraHeroAuraWorldTests`) : 2 puis 3 ticks sur le passage du compteur de 10 à 12 donne exactement l'état d'images d'un tick
+  (emplacements, positions, images, compteurs d'animation), une seule aura ; de même pour une image de 3 ticks qui commence aux ticks 31, 32 ou 33. L'écart (1) est épinglé : une image de
+  2 ticks (129, 130) montre zéro aura, la suivante la recrée, et une seule image sans aura dans toute la suite.
+- Poignée périmée (D-E20-30) : aura expirée pendant un verrouillage, emplacement repris par un autre effet : le premier tick normal ne libère pas cet autre effet ; rouge sans le garde.
+- Renouvellement à 3 ticks par image (ADR-0059) : charge tenue en images de 1 tick jusqu'au tick 128, puis une image de 3 ticks (129, 130, 131) : l'ancienne aura est libérée par l'image,
+  l'étincelle du tick 131 prend son emplacement (la poignée pointe un effet 16), et après l'image suivante (132 à 134) une aura vivante (effet 3, mode 1, ancre = héros) est la poignée,
+  avec sa génération. **Le cas écrit dans le plan (aura créée au 227, renouvellement au 324, étincelle au 325) n'a pas été reproduit tel quel** : mesuré dans l'arène (aura troisième dans
+  l'emplacement 5, étincelles dans les emplacements 1 à 4), l'étincelle née dans l'image prend l'emplacement qu'une étincelle plus ancienne libère à la même mise à jour, plus bas que celui de
+  l'aura. C'est la première aura (création au 33, emplacement le plus bas libre) qui réalise le cas (renouvellement 130, étincelle 131) ; la phase des étincelles de l'arène coïncide avec celle de
+  l'oracle (étincelles aux ticks congrus à 3 modulo 4).
+- Clé de l'ancre du héros = sortie de `keyprobe` (voir B3) ; `Compute` contre sept valeurs faites à la main (dont `PosZ` entier négatif, IDSV 43, plus petit et plus grand short) et contre les 150 lignes de `keyprobe.txt`.
+- L'aura est dessinée au-dessus du sprite du héros (B5).
+- Les tests d'E20.f1a restent verts : `AlundraHeroChargeTests` n'a changé que là où le bouchon est remplacé (l'aura réelle), où l'emplacement 0 est pris par l'aura
+  (`AFullReservoir_AtTheSparkTick…`, `Fill`) et par l'état `Normal` du héros du montage (une ancre `Destroyed` gèlerait l'effet) ;
+  `TheReservoirAfterTheChargeAndTheRelease_DoesNotDependOnTheNumberOfTicksPerFrame` est vert sans changement à 2 et 3 ticks par image.
+
+**Mutations réelles** (appliquées au fichier, construites, puis restaurées ; aucune n'est dans un commit) :
+- création par `Emit` au lieu de `CreateAttachedNow` : 29 tests rouges (dont A1, A2, P1, le renouvellement, les cinq sondes, les images de 2 et 3 ticks) ;
+- sans la marque `FirstUpdateTick` : 7 rouges (`ASlotCreatedAtOnce_AtTheTickK…` ×2, `…AtTheLastTick…`, `TheMarkOf…IsCleared…`, les trois comparaisons d'images groupées) ;
+- marque non effacée : 5 rouges (`…AtTheLastTick…DoesNotMissAnUpdate…`, `TheMarkOf…IsCleared…`, les trois comparaisons d'images groupées) ;
+- libération immédiate de l'emplacement : 3 rouges (`FreeAtTick_ReleasesTheSlotAtThePositionOfItsTick…`, `TheReservoirAfterTheChargeAndTheRelease_DoesNotDependOnTheNumberOfTicksPerFrame` à 2 et à 3 ticks) ;
+- libération sans le garde de génération : 2 rouges (`FreeAtTick_DoesNotFreeAnEffectThatTookTheSlot…`, `AStaleHandle_AfterALock…`) ;
+- création sans le test de génération/activité de l'emplacement : 2 rouges (`AHandleWhoseSlotWasTaken_IsRecreated…`, `TheRenewalInFramesOfThreeTicks_WhereASparkTakesTheFreedSlot…`) ;
+- règle des emplacements ancrés retirée : 1 rouge (`TheAuraQuads_AreSortedStrictlyAfterTheHeroSprite…`) ;
+- `DepthOffset` de l'aura à 0 : 11 rouges (les cinq sondes ×2 et B5) ; clé décalée de `0x10000` : 9 rouges (`Compute` à la main, `keyprobe`, ...).
+
+**Écarts et points signalés.**
+(1) Le cas « renouvellement à 3 ticks par image » du plan s'exécute sur la première aura (voir ci-dessus), pas sur la troisième.
+(2) Le montage de la charge (`AlundraHeroChargeTests.Start`) met le héros en `Normal` : sans cela l'aura se gèle (mode 2) à sa première mise à jour, ce que le héros du jeu ne fait pas.
+(3) Dans les montages à un tick par image, un Carré relâché compte encore le tick de relâchement : le test de la poignée périmée attend donc un tick sans appui avant de libérer.
+(4) Un hôte sans stade ne crée pas d'aura ; l'indice d'emplacement du héros passe avant les opérations en file de l'image (écart (3) de D-E20-28).
+(5) ADR-0059 reste **Proposée** (l'auteur la confirme) ; aucune ADR nouvelle. La levée de clé par voisin ou porteur reste hors périmètre (écart écrit dans `AlundraEntityDepthKey`).
+(6) Restent : le verifier frais, la recette de l'auteur (avec `steel-m14`, tenir Carré : l'aura au-dessus du héros, renouvelée sur une charge longue).
 
 ##### Arrêts, budget, retour arrière
 
