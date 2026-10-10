@@ -1,0 +1,26 @@
+banks 395 global 151 map 244
+current entries 395 bytes 2561505 sha1 007f2660eb83d5a3d21aa35d7c71dd34dba0afcf
+folders 395
+R1 resolved 395 ambiguous 0 unresolved 0 tried 202240
+R1 key collisions: []
+R1 banks unused: []
+R2 entity files 395 anim2d names unparsable 0 folders with no anim2d 0 with >1 key 0
+R2 vs R1 mismatches 0 []
+entity ids == current keys: True
+R3 header mismatches 0
+file order == converter bank order: True
+FIRST: inserted 395 size 2571585 (+10080) sha1 88d723066fd2e6232a6f815dad8de9b0c05c64e4
+global 151 map 244 distinct 395
+global bytes 4573 map bytes 5507
+AFTER-BREAK: inserted 395 size 2571585 sha1 f51d663d8cbac36da1ac4b9851e68d09c9c59ea2
+maps 483 records-vs-table mismatches 0
+MAP-INDICES: keys 483 indices 2507 empty arrays 65 size 30913 sha1 63a3e6189d1f1375232bb2c54e1d1dcb385e360d
+witness 0 [] | 388 [121, 122, 237, 253, 254, 255] | 451 [121, 122, 237, 253, 254, 255] | 432 [29, 253, 254, 255] | 213 in 388/432/451: [False, False, False]
+95 has 233..236: True | 322: True
+distinct indices over all maps 244 | max per map 22
+witness 91 -> e3a39ec4-45d5-55f2-85e9-894c7b6e4a08
+witness 79 -> 1ef8f16c-605f-58c3-af19-b6bb602fc40f
+witness alundra_7 -> 62670cc6-953d-5fb2-ad61-8f130b96bf1f
+witness alundra_2 -> 4d0c2294-87b6-50da-99ca-d789281cc580
+witness alundra_0 -> 192c2eeb-bdda-5bb4-92d6-39a4ae298307
+witness 255 -> 14fa90f8-4764-531c-b751-091b644580d7
