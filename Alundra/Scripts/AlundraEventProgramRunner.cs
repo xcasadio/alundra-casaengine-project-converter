@@ -86,6 +86,21 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// (<see cref="AlundraSaveBook.TryMatch"/>); every other one stays a counted no-op.</summary>
     public int SaveBookEventRunCount { get; private set; }
 
+    /// <summary>E14.a0 (D-E14-1): how many of the <see cref="SpriteEventRunCount"/> calls were dispatched to a native
+    /// handler of <see cref="NativeSprites"/>.</summary>
+    public int NativeHandlerRunCount { get; private set; }
+
+    /// <summary>E14.a0 (D-E14-1): the registry of the native sprite handlers by (slot, code) and sprite type - empty in
+    /// production until E14.a1. Consulted after the save book and E0/E1, which stay outside it.</summary>
+    internal AlundraNativeSpriteRegistry NativeSprites { get; } = new();
+
+    /// <summary>E14.a0 (D-E14-5): true by default; false turns the registry off, so every native handler of it is a counted
+    /// no-op again. Set by the arenas of the hit-pass oracles (E20.c1a, E20.c1b), whose runs expect the Beannoids to stay
+    /// still as the oracle's stubs.</summary>
+    internal bool NativeHandlersEnabled { get; set; } = true;
+
+    private readonly HashSet<(int Slot, int Code)> _loggedNoOpKeys = new();
+
     /// <summary>
     /// Trace seam for the headless intro trace harness (Alundra.Tests/IntroTraceHarnessTests.cs) - null
     /// by default (zero cost: a single null-check per dispatched opcode, no allocation) and never set by
@@ -318,6 +333,28 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         {
             entity.ScriptHost?.DestroyEntity(entity, -1);
             return;
+        }
+
+        // E14.a0 (D-E14-1, D-E14-5): the registry of the native handlers, by (slot, code) and sprite type; the book and E0/E1
+        // above stay outside it. A native slot only (the test RunPickedEvent already made), the switch on.
+        var nativeSlot = entity.EventTrigger;
+        if (nativeSlot >= 0 && nativeSlot < entity.ProgramIndexes.Length && (entity.ProgramIndexes[nativeSlot] & 0x7f) == 0)
+        {
+            var nativeCode = entity.SpriteProgramIndexes[nativeSlot];
+            if (NativeHandlersEnabled
+                && NativeSprites.TryGet(nativeSlot, nativeCode, entity.SpriteType, out var nativeHandler))
+            {
+                NativeHandlerRunCount++;
+                nativeHandler!(entity, _worldContext, _gameState);
+                return;
+            }
+
+            if (_loggedNoOpKeys.Add((nativeSlot, nativeCode)))
+            {
+                Logs.WriteDebug(
+                    $"AlundraEventProgramRunner: native sprite handler slot {nativeSlot} code {nativeCode} (sprite type {entity.SpriteType}) "
+                    + "has no registered handler - counted no-op.");
+            }
         }
 
         if (!_loggedSpriteEventOnce)

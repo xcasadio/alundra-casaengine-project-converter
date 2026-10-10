@@ -84,7 +84,7 @@ Choix de la session principale (à confirmer par l'approbation de ce plan) :
 Ordre : E14.a0 (prérequis des armes, avant E20.e0a, qui en dépend), puis, après les armes, les objets et les collisions (D-E20-24),
 E14.a0b puis E14.a1. **D-E14-8 (2026-10-10)** : l'auteur les avance tous avant les armes, les objets et les collisions.
 
-### 1.1a E14.a0 — Le registre et l'interrupteur ⏳
+### 1.1a E14.a0 — Le registre et l'interrupteur ✅
 
 Relecture : **READY** dès la première lecture (2026-10-10).
 
@@ -103,8 +103,8 @@ côté de `SaveBookEventRunCount` ; un interrupteur (propriété du lanceur ou d
 et c1b ; le livre et E0/E1 restent hors du registre.
 
 **Tâches.**
-- ⏳ **T1 — Registre et interrupteur**, avec un gestionnaire de test enregistré le temps d'un test.
-- ⏳ **T2 — Tests** : une entrée pour un type tourne pour ce type et pas pour un autre ; une clé absente reste un no-op compté ;
+- ✅ **T1 — Registre et interrupteur**, avec un gestionnaire de test enregistré le temps d'un test. `AlundraNativeSpriteRegistry` (clé (emplacement, code), liste de types), `AlundraEventProgramRunner.NativeSprites` / `NativeHandlersEnabled` / `NativeHandlerRunCount`, interrupteur coupé par `HitArena` (c1a, c1b) ; une trace de débogage par clé absente.
+- ✅ **T2 — Tests** (`AlundraNativeSpriteRegistryTests`, 12 tests ; suite 4617/4617 en Release et en Debug, aucune épingle ne bouge) : une entrée pour un type tourne pour ce type et pas pour un autre ; une clé absente reste un no-op compté ;
   l'interrupteur coupe tout ; le livre et E0/E1 ne passent pas par le registre ; les épingles de `SpriteEventRunCount`
   (`AlundraEventProgramRunnerProgramIndexTests`, `AlundraEventProgramRunnerTests`, `AlundraSaveBookDispatchTests`) ne bougent pas.
 
