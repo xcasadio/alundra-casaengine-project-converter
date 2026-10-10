@@ -570,6 +570,8 @@ test seul, bombe d'Olen ; `e20-armes/h-g-deps.md` §0.1, `order-critic.md` A362)
 réponses de l'auteur marqués tranchés dans les faits porteurs, titre du §1.9, appels de `DestroyEntity` des projectiles, ordre
 interne de g3/g4, repli d'E14.a1c. La règle de relecture ne permet pas une nouvelle relecture automatique : l'enveloppe est **en
 pause** jusqu'à l'accord de l'auteur pour une relecture de clôture de plus.
+L'auteur l'a accordée (2026-10-10) ; relecture de clôture de la révision 5 : **READY**. L'enveloppe fait foi ; la suite commence par
+E20.e0x.
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
