@@ -19,7 +19,7 @@ provient), et un extrait réel tiré d'une conversion complète.
 | [`events.md`](events.md) | `Maps/{Zone}/{Name}-{id}/events/{Name}-{id}.events.json` : le bytecode d'évènements de map, non interprété. |
 | [`backdrops.md`](backdrops.md) | `Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}.backdrop.json` : les couches de décor défilant PSX (parallaxe, auto-scroll, cellulaire différé), plus les textures pré-rendues. |
 | [`effects.md`](effects.md) | `Maps/{Zone}/{Name}-{id}/effects/{Name}-{id}.effects.json` et `Data/effects/effects-global.json` : les enregistrements et les tables d'effets (quads libres, animations, mode PS1 par quad), plus leurs planches. |
-| [`sprite-records.md`](sprite-records.md) | `Data/sprite-records.json` : une fiche par préfab d'entité (en-tête de sprite, animations, volume de corps) et, pour les 25 banques à portrait, le lien `DialoguePortrait` vers le `.sprite` du portrait de dialogue. |
+| [`sprite-records.md`](sprite-records.md) | `Data/sprite-records.json` : une fiche par préfab d'entité (en-tête de sprite, animations, volume de corps), l'octet de l'effet de bris et, pour les 25 banques à portrait, le lien `DialoguePortrait` vers le `.sprite` du portrait de dialogue. |
 | [`world-index.md`](world-index.md) | `Maps/world-index.json` : la table MapId → chemin du `.world`. |
 | [`misc-data.md`](misc-data.md) | `Data/balance.json`, `UI/wind-sprites.json`, `Sprites/hero/hero_effects.json`. |
 | [`save-game.md`](save-game.md) | La sauvegarde de partie (`AlundraSaveGame`) : écrite en jeu par la DLL à travers le service du moteur, pas par le convertisseur ; champs, domaines, métadonnées. |

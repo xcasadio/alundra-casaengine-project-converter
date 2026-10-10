@@ -148,7 +148,9 @@ public sealed class SpriteBodyBox
 /// covered by <see cref="SpriteBodyBox"/> (OffsetX/Y/Z, SizeX/Y/Z duplicated here so the whole
 /// header travels as one object). MoreFlags/CanPickup/FlagsPortraitShadowType are the three bytes
 /// EntityManager packs into Entity.Flags (bits 0-7/8-15/16-23); ProgramLoad/Tick/Touch/Deactivate/
-/// Interact are script slot indices; Contents is read by GameEngine.InitializeContents. Every field
+/// Interact are script slot indices; Contents is read by GameEngine.InitializeContents; BreakEffect
+/// (header +0x1E, the extractor's Ubuff[14]) is read by DestroyEntity 0x8003A59C: the effect id it
+/// creates when the caller passes fx == -1, 0 = no effect. Every field
 /// defaults to 0 when the source record omits it (only synthetic test fixtures do).
 /// </summary>
 public sealed class SpriteRecordHeader
@@ -167,6 +169,7 @@ public sealed class SpriteRecordHeader
     public int SizeX;
     public int SizeY;
     public int SizeZ;
+    public int BreakEffect;
     public int Contents;
 }
 
@@ -437,6 +440,7 @@ public static class SpriteBankReader
             SizeX = bodyBox?.SizeX ?? 0,
             SizeY = bodyBox?.SizeY ?? 0,
             SizeZ = bodyBox?.SizeZ ?? 0,
+            BreakEffect = GetOptionalInt32(headerElement, "BreakEffect"),
             Contents = GetOptionalInt32(headerElement, "Contents"),
         };
     }

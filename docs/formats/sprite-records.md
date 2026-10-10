@@ -5,7 +5,8 @@ Code : [`Writers/SpriteWriter.cs`](../../alundra-casaengine-project-converter/Wr
 [`SpriteRecordCatalog.cs`](../../Alundra/Scripts/SpriteRecordCatalog.cs). Décisions :
 [ADR-0005](../decisions/0005-inventory-portrait-data-path.md)
 (portrait de l'inventaire) et [ADR-0039](../decisions/0039-the-dialogue-portraits-are-exported-and-linked-from-sprite-records.md)
-(portraits de dialogue), plan [E19.f4a](../plan-e19-opcodes.md).
+(portraits de dialogue), plan [E19.f4a](../plan-e19-opcodes.md) ; [ADR-0061](../decisions/0061-the-break-effect-byte-is-exported-in-every-sprite-record.md)
+(octet de l'effet de bris), plan [E14.a1a](../plan-e14-ia-native.md).
 
 **Ce que c'est** : une fiche par préfab d'entité (395), qui garde les champs de l'en-tête d'un enregistrement de sprite
 (`SpriteRecord.Header`) que le convertisseur n'interprète pas, pour que la DLL termine l'apparition d'une entité comme le fait
@@ -24,6 +25,7 @@ enregistrements `PrefabAssetId` des cartes).
 | `MoreFlags`, `CanPickup`, `FlagsPortraitShadowType` | int | Les trois octets d'en-tête que le jeu empaquette dans les drapeaux de l'entité (bits 0-7, 8-15, 16-23). Le bit `0x80` de `FlagsPortraitShadowType` (bit `0x800000` des drapeaux) dit que l'entité a un portrait de dialogue |
 | `ProgramLoad`, `ProgramTick`, `ProgramTouch`, `ProgramDeactivate`, `ProgramInteract` | int | Indices d'emplacements de script |
 | `OffsetX`, `OffsetY`, `OffsetZ`, `SizeX`, `SizeY`, `SizeZ` | int | Volume de corps : coin minimal relatif aux pieds, puis étendues en X, Y, Z |
+| `BreakEffect` | int | Octet d'en-tête `+0x1E` : l'identifiant de l'effet que `DestroyEntity` (`0x8003A59C`) crée quand son appelant passe `fx == -1` (0 = aucun effet). **Toujours écrit**, 0 compris (395 fiches ; 111 non nulles). Entre `SizeZ` et `Contents`. Ajouté par E14.a1a ([ADR-0061](../decisions/0061-the-break-effect-byte-is-exported-in-every-sprite-record.md)) ; la DLL l'ignore jusqu'à E14.a1b |
 | `Contents` | int | Lu par `GameEngine.InitializeContents` |
 | `IdsvAnimDirs[]` | tableau | Une entrée par (animation, direction) convertie : `Anim`, `Direction`, `Frames[]` (valeur de tri en profondeur de chaque image affichée), `End` (`Loop`, `Hold` ou `Chain`), et `ChainTo` seulement quand `End` vaut `Chain` |
 | `AnimSets[]` | tableau | Un en-tête par jeu d'animations : `Anim`, `Speed`, `Acceleration`, `IsZForceApplied`, `Sfx`, `Flags`, `Unknown` |
@@ -59,6 +61,7 @@ tolérant son absence (`SpriteRecordHeader.DialoguePortrait`, `DialoguePortraitR
     "SizeX": 20,
     "SizeY": 14,
     "SizeZ": 32,
+    "BreakEffect": 0,
     "Contents": 0,
     "IdsvAnimDirs": [ { "Anim": 0, "Direction": 0, "Frames": [3, 3, 3, 3], "End": "Loop" } ],
     "AnimSets": [ { "Anim": 0, "Speed": 0, "Acceleration": 0, "IsZForceApplied": 0, "Sfx": 0, "Flags": 0, "Unknown": 0 } ],

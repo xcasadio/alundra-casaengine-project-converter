@@ -109,6 +109,9 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    "DialoguePortrait" {SpriteAssetId, Width, Height} (E19.f4a, parent ADR-0005 extended; docs/formats/sprite-records.md): the
 ///    .sprite of the speaker's dialogue portrait (UI/Portraits/, or the animation sprite already exported when the portrait cell is
 ///    also an animation quad: bank 15) and its true size. It is omitted when there is none, so the other 370 entries keep their bytes.
+///  - Data/sprite-records.json also carries "BreakEffect" (E14.a1a, ADR-0061), between "SizeZ" and "Contents", in every entry and
+///    0 included: the sprite header byte +0x1E that DestroyEntity 0x8003A59C reads when its caller passes fx == -1 (the effect id it
+///    creates, 0 = none). The extraction already carries it as SpriteRecords[].Header.BreakEffect.
 ///  - D-N-6 (docs/plan-nettoyage-convertisseur.md): every asset and fixture shape this writer
 ///    constructs now gets a deterministic id via the engine's additive Guid constructors
 ///    (ObjectBase(Guid) and its per-type overrides) plus Ids.For(&lt;stable key&gt;) - prefab entity
@@ -1182,6 +1185,7 @@ public static class SpriteWriter
                 SizeX = header.SizeX,
                 SizeY = header.SizeY,
                 SizeZ = header.SizeZ,
+                BreakEffect = header.BreakEffect,
                 Contents = header.Contents,
                 IdsvAnimDirs = idsvAnimDirs
                     .Select(entry => new AnimDirIdsvJson
@@ -1253,6 +1257,7 @@ public static class SpriteWriter
         public int SizeX { get; set; }
         public int SizeY { get; set; }
         public int SizeZ { get; set; }
+        public int BreakEffect { get; set; }
         public int Contents { get; set; }
         public List<AnimDirIdsvJson> IdsvAnimDirs { get; set; } = new();
         public List<AnimSetJson> AnimSets { get; set; } = new();
