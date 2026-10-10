@@ -2296,7 +2296,7 @@ le pilote d'objet (E20.h) ; la mort (E18).
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
 - **Retour arrière** : `git revert` des commits d'E20.c2a.
 
-### 1.13 E20.d — La course : E20.d1 🧪 (faite et CONFIRMED le 2026-10-10, `af42753` à `0b1d3f3` ; reste la recette de l'auteur), E20.d2 ⏳ (attend la mesure du stick, Q-D1)
+### 1.13 E20.d — La course : E20.d1 🧪 (faite et CONFIRMED le 2026-10-10, `af42753` à `0b1d3f3` ; reste la recette de l'auteur), E20.d2 ⏳ (E20.d2a faite, 🧪 recette de l'auteur ; E20.d2b attend la mesure du stick, Q-D1)
 
 **Révision 1 (2026-10-10).** Relecture d'E20.d1 : **REVISE**, deux points corrigés : le prérequis est E20.c2a CONFIRMED (arrêt
 sinon, base des épingles nommée) ; la tolérance d'O-E19-42 ne vaut que pour le mur est (± 1 tick), les autres murs sont exacts.
@@ -2585,7 +2585,7 @@ tests existants (inversé : Triangle seul donne `0x29`, compteur `0`, direction 
 
 #### E20.d2 — Tâches
 
-- ⏳ **S1 — L'échantillon du stick.**
+- ✅ **S1 — L'échantillon du stick** (E20.d2a, fait le 2026-10-10, `2c16358`).
   - `AlundraPadState` gagne : les bits de direction du clavier et de la croix (D), les bits du stick (S), et x, y signés
     (`ButtonState.Value` des actions `Move*Stick`). Valeurs par défaut nulles : les initialiseurs existants ne changent pas de sens.
   - `ComputePadState` garde le OU dans `ButtonsHold`.
@@ -2595,9 +2595,9 @@ tests existants (inversé : Triangle seul donne `0x29`, compteur `0`, direction 
   - Elle ne joue que si D est vide et S est une diagonale.
   - \|x\| − \|y\| > ε : bit horizontal ; \|y\| − \|x\| > ε : bit vertical ; sinon l'axe du regard du tick. ε = 1/16 (D8).
   - Tout le reste garde le OU : la marche, le cône, la fenêtre courte, les sorties.
-- ⏳ **S3 — La sonde.** Une variable d'environnement, comme `DebugIgnoreControlLock`, journalise x, y, D, S et le nibble choisi à
+- ✅ **S3 — La sonde** (E20.d2a, faite le 2026-10-10, `2c16358` ; marche de l'auteur dans `docs/stick-probe.md`). Une variable d'environnement, comme `DebugIgnoreControlLock`, journalise x, y, D, S et le nibble choisi à
   chaque lecture. Pas de `Program.cs`.
-- ⏳ **S4 — Tests.**
+- ⏳ **S4 — Tests** (E20.d2a : le test de `ComputePadState` analogique est fait, `2c16358` ; le reste est E20.d2b).
   - `ComputePadState` avec des valeurs analogiques.
   - Balayage de 0 à 359° aux rayons 1, 0,75 et 0,6, contre la règle écrite.
   - Les 48 départs et les 15 reprises de G10 : le nibble choisi par la règle égale celui de l'oracle.
@@ -2606,6 +2606,35 @@ tests existants (inversé : Triangle seul donne `0x29`, compteur `0`, direction 
 
 **Acceptation d'E20.d2.** S4 vert ; E20.d1 inchangée ; verifier frais. Recette au stick : une diagonale franche part sur son axe
 dominant, une diagonale à 45° sur l'axe du regard, et la marche ne change pas.
+
+#### E20.d2a — Résultats (2026-10-10, branche `chantier/e20-heros`)
+
+Commits : S1 et S3 avec leurs tests `2c16358` ; ce plan et `docs/stick-probe.md` (T finale). `Alundra.Tests` : 4646 avant, 4661 après (+15),
+sans échec en Release et en Debug ; `Alundra.dll` du projet égale celle de `Alundra/bin/Debug` (`cmp`). Traces du héros et de l'intro
+inchangées (aucune différence hors fins de ligne). Aucune modification de la marche : `ButtonsHold` garde le OU, G1 à G10 et E20.i
+(rejoués au clavier par la suite) sont verts sans toucher un test existant.
+
+- **Livré.** `AlundraPadState` : `DigitalDirectionBitsHold` (D), `StickBitsHold` (S), `StickX` (`Value` de `MoveRightStick`), `StickY`
+  (`Value` de `MoveUpStick`), nuls par défaut. `FromTickPad(tickPad, in frameSample)` recopie l'échantillon de l'image (`LastPadState`)
+  dans le pad de chaque tick, au bloc des entités (`AlundraWorldProxy`) et en mode autonome (`AlundraEntityScriptProxy`) ;
+  `AlundraTickPad` ne change pas. Sonde : `AlundraStickProbe` (variable `ALUNDRA_DEBUG_STICK_PROBE`, lue une fois, forçage et puits par
+  thread pour les tests) ; journal par `Logs.WriteInfo`, donc `log.txt` du dossier de travail du processus.
+- **Format.** `StickProbe x y D S` par image (4 décimales, culture invariante, D et S en hexadécimal) ; `StickProbe start 29 N` au départ
+  dans `0x29`, `StickProbe start 2A N` à la reprise dans `0x2A` à 11 et plus (N = quartet du OU, en hexadécimal). Le préfixe `StickProbe`
+  permet de filtrer `log.txt` (`rg StickProbe log.txt`).
+- **Acceptation, mesurée.** `ComputePadState` analogique avec le faux `getButtonState` de la sémantique du moteur : 45° (0,7071 ; 0,7071),
+  mi-course sous la zone morte (0,4 ; 0,3 : x et y gardés, S vide), quadrant négatif (−0,6 ; −0,8), plein droite (x = 1, pas 2), plein
+  bas-gauche, clavier seul (D, S vide), clavier et stick ensemble (OU gardé) ; le pad de tick porte l'échantillon (mode autonome, deux
+  ticks par image ; bloc des entités d'un monde piloté, `AlundraTickStructureTests`) ; sans la variable rien n'est écrit, même sur une
+  course de 30 images ; avec elle, le format écrit (culture fr-FR forcée), une ligne par image (30 pour 30), la première ligne `start 29`
+  à la 26e image (fin de la préparation), `start 2A` dans la reprise de `g4/R4-rel12-R`.
+- **Mutations réelles** (copie sauvegardée, restaurée, jamais commitée) : x pris comme `MoveRightStick − MoveLeftStick` : cinq tests
+  `ComputePadState` rouges (plein droite, plein bas-gauche, mi-course, 45°, quadrant négatif) ; pad de tick sans l'échantillon de l'image
+  (les deux sites) : `TheSelfDrivenMode_HandsTheFramesSampleToMovePlayer_AtEachTick` et
+  `TheEntityBlock_HandsTheFramesStickSampleToMovePlayer_AtEachTick` rouges.
+- **Marche de l'auteur** : `docs/stick-probe.md`. La recette de l'auteur (mesure du stick, Q-D1) reste à faire ; elle ouvre E20.d2b.
+- **Non fait, par le plan** : S2 (la règle), le reste de S4, S5 : E20.d2b. Le verifier frais d'E20.d2a reste à lancer par la session
+  principale.
 
 #### Arrêts, budget, retour arrière (E20.d1 et E20.d2)
 
