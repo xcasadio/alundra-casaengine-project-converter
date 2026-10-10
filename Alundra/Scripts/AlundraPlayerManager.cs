@@ -754,7 +754,12 @@ public static class AlundraPlayerManager
 
     /// <summary>E20.a A4 stub of <c>TryUseItem</c> (<c>0x8002ED64</c>): non-zero means "carry on this tick". The binary returns 1 whenever the Circle button has no rising edge
     /// (<c>0x8002EDA8</c>); a stub returning 0 would end the tick and kill every attack, jump and run (critique C10). The use of an item (the Circle) is E20.h.</summary>
-    private static int TryUseItem(AlundraEntityScriptProxy player, in AlundraPadState pad) => 1;
+    private static int TryUseItem(AlundraEntityScriptProxy player, in AlundraPadState pad) => TryUseItemResultForTests ?? 1;
+
+    /// <summary>E20.d1 T4 test seam, per thread: the answer of the stub of <see cref="TryUseItem"/> (null: 1, "carry on"). The branches of the run that the binary takes when the item driver answers 0 (<c>0x80031F5C</c>,
+    /// <c>0x80032120</c>, <c>0x80032560</c>) are unreachable while the stub answers 1; the tests of those branches pose 0 here.</summary>
+    [ThreadStatic]
+    internal static int? TryUseItemResultForTests;
 
     /// <summary>E20.a A4 stub of <c>PlayerTryAction</c> (<c>0x8002EEAC</c>): 0 means "no action, carry on" (<c>0x8002EFC8</c>: nothing carried and nothing to lift). Lifting, carrying and throwing are E20.g.</summary>
     private static int PlayerTryAction(AlundraEntityScriptProxy player, in AlundraPadState pad) => 0;

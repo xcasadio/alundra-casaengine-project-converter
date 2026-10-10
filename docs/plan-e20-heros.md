@@ -2298,8 +2298,11 @@ Le test « Triangle seul donne Idle » s'inverse.
 - ✅ **T3 — Moyens de test.**
   - `HeroAttackClock` gagne les cinq états (durées ci-dessus) et la fin Hold ; aucun test d'E20.b ne doit bouger.
   - Un lecteur du format de l'oracle d'E20.c2-0 : celui d'E20.c2a T5 s'il existe, sinon un neuf.
-- ⏳ **T4 — Tests** (acceptation ci-dessous) **et arcs** au vrai préfab (carte 10 ou 14 ; l'échelle de la 389 en courant vers le
-  haut).
+- ✅ **T4 — Tests** (acceptation ci-dessous) **et arcs** au vrai préfab (carte 10 ou 14 ; l'échelle de la 389 en courant vers le
+  haut). Fait le 2026-10-10 : `AlundraHeroRunTests` (montage d'E20.b, oracle tick par tick), `AlundraHeroRunArenaTests` (carte 14,
+  vrai préfab, vraie passe de coups), `AlundraHeroRunStatesTests` (branches hors oracle). Seul manque : l'échelle de la 389 au vrai
+  préfab (l'intro de la carte verrouille et déplace le héros, aucun arc de la 389 n'existe) ; elle est couverte par G8 (oracle) et
+  par la recette.
 - ⏳ **T5 — Plan.** Résultats, §0.2.3 corrigé, ligne d'O-E20-12 mise à jour.
 
 #### E20.d1 — Acceptation

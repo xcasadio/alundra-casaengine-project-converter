@@ -26,6 +26,7 @@ internal sealed class RunOracleTrace
 {
     private readonly Dictionary<string, long[]> _hero = new(StringComparer.Ordinal);
     private readonly Dictionary<int, List<RunJournalItem>> _journal = new();
+    private readonly List<Dictionary<string, long[]>> _targets = new();
 
     public string Name { get; private init; } = string.Empty;
 
@@ -45,6 +46,9 @@ internal sealed class RunOracleTrace
     public int TargetCount { get; private init; }
 
     public long Col(string column, int tick) => _hero[column][tick];
+
+    /// <summary>A column of the target <paramref name="target"/> (0 for the first one) at <paramref name="tick"/>; a null cell (no entity touched) reads as -1.</summary>
+    public long TargetCol(int target, string column, int tick) => _targets[target][column][tick];
 
     public IReadOnlyList<RunJournalItem> Journal(int tick) => _journal.TryGetValue(tick, out var items) ? items : Array.Empty<RunJournalItem>();
 
@@ -112,6 +116,17 @@ internal sealed class RunOracleTrace
         foreach (var column in root.GetProperty("hero").EnumerateObject())
         {
             trace._hero[column.Name] = column.Value.EnumerateArray().Select(e => e.GetInt64()).ToArray();
+        }
+
+        foreach (var target in root.GetProperty("targets").EnumerateArray())
+        {
+            var columns = new Dictionary<string, long[]>(StringComparer.Ordinal);
+            foreach (var column in target.EnumerateObject())
+            {
+                columns[column.Name] = column.Value.EnumerateArray().Select(e => e.ValueKind == JsonValueKind.Number ? e.GetInt64() : -1).ToArray();
+            }
+
+            trace._targets.Add(columns);
         }
 
         foreach (var entry in root.GetProperty("journal").EnumerateArray())
