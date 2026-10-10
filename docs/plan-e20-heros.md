@@ -1629,7 +1629,7 @@ de l'auteur, hors de l'app) ; tout comportement d'arme.
 - **Budget** : un `executor` ; un verifier frais.
 - **Retour arrière** : `git revert` des commits d'E20.f0.
 
-### 1.9 E20.f1 — Charge et relâchement : E20.f1a sans l'aura 🧪 (faite le 2026-10-10 : reste le verifier frais et la recette de l'auteur), E20.f1b l'aura (en attente de l'auteur)
+### 1.9 E20.f1 — Charge et relâchement : E20.f1a 🧪 (faite et CONFIRMED le 2026-10-10, `53ff27f` à `ce804b3`), E20.f1b l'aura (en attente de l'auteur)
 
 **Révision 1 (2026-10-10).** Relecture : **REVISE**, cinq points : la condition de l'aura était inversée ; l'oracle ne journalisait ni
 le réservoir ni le générateur ; le moment de création des effets n'était pas choisi ; l'aura n'avait ni ancre ni clé de profondeur ;
@@ -1750,6 +1750,34 @@ E20.f3) ; l'avance du générateur par image (E20.e0b) ; les autres effacements 
   verifier frais.
 - Recette de l'auteur : avec `steel-m14`, tenir Carré : les sons de charge et l'étincelle de maintien, puis la gerbe et le coup chargé au
   relâchement (l'aura viendra avec E20.f1b).
+
+##### Résultats (2026-10-10)
+
+- **Commits** : `53ff27f` (T1, oracle étendu copié : les 17 sorties identiques au bit près), `ca946e4` (T2), `52d52b8` (T3), `976995f`
+  (T4), `ce804b3` (T5).
+- **Code** : `UpdatePlayerWeaponEffect(player, in pad, host)` à sa place ; `AlundraAuraStub` (un booléen et des compteurs, aucune lecture
+  du réservoir) ; `AlundraNativeEffects.CreateChargeSpark` et `CreateChargeBurst` en file (son et tirages de l'étincelle à
+  l'application, seulement si elle est créée) ; `ReleaseChargedAttack` dans `PlayerTryAttack` ; bouchon de tir qui enregistre ses
+  arguments ; effacements dans la branche `BlockedByEntity` et dans la branche verrouillée (après `CreatePlayerAnimationEffects(1)`) ;
+  `IAlundraScriptHost.EffectStage` (membre par défaut nul) ; la boucle autonome du héros marque sa source d'effets comme le monde.
+- **Acceptation** : les cinq sondes égales à l'oracle tick par tick sur toute leur durée ; C2-steel : compteur 1/0/1/11/60 aux ticks
+  1/2/23/33/82, `AuraStub` 59 `Check` (33 à 91), une création au 33, `Release` au 92, étincelles aux ticks 85 et 89 (mots, positions,
+  forces, sons 428 et 429), relâchement au 91 (`0x18`, pointeur `0x80028C8E`, son 43, gerbe de 16, générateur inchangé), tir au 112
+  (type 27, Z oracle 1, direction `0x18`) ; C10 au tick 101 : 17 créations, sons DLL `43, 36, 428` ; relâchement à S + D + 59 refusé, à
+  S + D + 60 accepté ; relâchement en l'air perdu ; réservoir plein et cinq emplacements libres ; tir en attente perdu après un
+  verrouillage ; le coup `0x18` touche un Beannoïde de la 14 ; le réservoir du monde ne dépend pas du nombre de ticks par image (1, 2, 3).
+- **Erratum du plan** : au tick 101 de C10, l'oracle donne `428, 43, 36` (le `sound(43) x2` des sorties `.txt` est un artefact de
+  regroupement) ; la DLL donne `43, 36, 428` ; la règle d'ordre est inchangée.
+- **Tests** : 28 tests de la charge ; `Alundra.Tests` 3738 sur 3738 en Release et en Debug ; traces inchangées ; aucun test existant changé.
+- **Vérification** : verifier frais **CONFIRMED** (aucun P0 à P2) : `UpdatePlayerWeaponEffect`, la branche de relâchement et
+  `UpdateWeaponStepProgression` redécodés ; oracle relancé à l'identique ; six mutations attrapées ; rien ne lit le réservoir depuis
+  `MovePlayer`.
+- **Reporté (P3, à corriger obligatoirement par E20.f3)** : le bouchon de tir indexe la direction par `AnimationDirection` (fin d'image)
+  au lieu de `BoxDirection` (valeur du tick, D-E14-6, `+0x98` lu en `0x8002F7F8`) ; sans effet tant que le tir est un bouchon, faux dans
+  une image de plusieurs ticks où le regard change avant un tir à délai court (arc du chasseur en l'air) ; E20.f3 passe à `BoxDirection`
+  avec un test d'image à plusieurs ticks.
+- **Reste** : la recette de l'auteur (`steel-m14` : sons de charge, étincelle de maintien, gerbe et coup chargé ; l'aura viendra avec
+  E20.f1b).
 
 ##### Arrêts, budget, retour arrière
 
