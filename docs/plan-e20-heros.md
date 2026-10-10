@@ -2295,7 +2295,7 @@ Le test « Triangle seul donne Idle » s'inverse.
   - Effet 9 du rebond par l'étage d'effets, à Z = `PosZ + 1 + 0x100000`.
   - Garde de la pente 4.
   - SJ3 inversé : « Triangle seul » donne `0x29`, `AnimCompleteCounter` 0, direction gardée.
-- ⏳ **T3 — Moyens de test.**
+- ✅ **T3 — Moyens de test.**
   - `HeroAttackClock` gagne les cinq états (durées ci-dessus) et la fin Hold ; aucun test d'E20.b ne doit bouger.
   - Un lecteur du format de l'oracle d'E20.c2-0 : celui d'E20.c2a T5 s'il existe, sinon un neuf.
 - ⏳ **T4 — Tests** (acceptation ci-dessous) **et arcs** au vrai préfab (carte 10 ou 14 ; l'échelle de la 389 en courant vers le

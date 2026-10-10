@@ -352,8 +352,9 @@ internal sealed class JumpHeroRig
 internal static class HeroAttackClock
 {
     /// <summary>One animation of the montage: the animation set (<paramref name="Speed"/>, <paramref name="Acceleration"/>, <paramref name="Sfx"/>), the chain target (-1: none, the animation loops or
-    /// holds) and the length in logic ticks, <paramref name="Ticks"/> for the directions down, up and left and <paramref name="TicksRight"/> for the right one.</summary>
-    public readonly record struct Entry(int Id, int Speed, int Acceleration, int Sfx, int ChainTo, int Ticks, int TicksRight = 0);
+    /// holds) and the length in logic ticks, <paramref name="Ticks"/> for the directions down, up and left and <paramref name="TicksRight"/> for the right one. E20.d1 T3: <paramref name="Impulse"/> is the Z impulse of the
+    /// animation (0: the one of the base sets, if any) and <paramref name="Hold"/> an animation that ends by holding its last frame (a Once animation with a Hold end, which raises the hold flag <c>+0xAC</c>).</summary>
+    public readonly record struct Entry(int Id, int Speed, int Acceleration, int Sfx, int ChainTo, int Ticks, int TicksRight = 0, int Impulse = 0, bool Hold = false);
 
     /// <summary>The swings of the weapon table (ids and values of <c>faits-binaire-dll.md</c> section 3) and the states around them.</summary>
     public static readonly Entry[] Table =
@@ -367,6 +368,10 @@ internal static class HeroAttackClock
         // E20.f2: the four rebound states of the flails (sound 28, speed and acceleration 0; the ticks of the exported animations, the same in the four directions): 0x08 and 0x25 on the ground (16 ticks, then Idle),
         // 0x1F and 0x26 in the air (11 ticks, then 0x2D).
         new(0x08, 0, 0, 28, 0, 16), new(0x25, 0, 0, 28, 0, 16), new(0x1F, 0, 0, 28, 0x2D, 11), new(0x26, 0, 0, 28, 0x2D, 11),
+        // E20.d1 T3: the five states of the run (the hero record of the export, `sprite-records.json`, and the exported animations, the same length in the four directions): the preparation 0x29 (24 ticks, loops),
+        // the run 0x03 (speed 336, sound 13, 30 ticks, loops), the slide 0x2A (sound 14, 16 ticks, then Idle), the tackle 0x04 (sound 83, 32 ticks, then Idle) and the bounce 0x3E (speed 256, byte 64, sound 28, impulse 1024,
+        // 10 ticks, holds its last frame).
+        new(0x29, 0, 0, 0, -1, 24), new(0x03, 336, 2, 13, -1, 30), new(0x2A, 0, 5, 14, 0, 16), new(0x04, 0, 6, 83, 0, 32), new(0x3E, 256, 64, 28, -1, 10, Impulse: 1024, Hold: true),
     };
 
     private static Animation2d Make(int id, string direction, float seconds, AnimationType type)
@@ -389,13 +394,17 @@ internal static class HeroAttackClock
         var endTable = new Dictionary<int, AnimationEndInfo>();
         foreach (var entry in Table)
         {
-            sets[entry.Id] = new AnimSetEntry { Anim = entry.Id, Speed = entry.Speed, Acceleration = entry.Acceleration, Sfx = entry.Sfx, IsZForceApplied = sets.TryGetValue(entry.Id, out var existing) ? existing.IsZForceApplied : 0 };
+            sets[entry.Id] = new AnimSetEntry { Anim = entry.Id, Speed = entry.Speed, Acceleration = entry.Acceleration, Sfx = entry.Sfx, IsZForceApplied = entry.Impulse != 0 ? entry.Impulse : sets.TryGetValue(entry.Id, out var existing) ? existing.IsZForceApplied : 0 };
             for (var direction = 0; direction < AnimationTables.DirectionNames.Length; direction++)
             {
                 var ticks = direction == 3 && entry.TicksRight != 0 ? entry.TicksRight : entry.Ticks;
-                var once = entry.ChainTo >= 0;
+                var once = entry.ChainTo >= 0 || entry.Hold;
                 sprite.AddAnimation(Make(entry.Id, AnimationTables.DirectionNames[direction], ticks * 0.02f, once ? AnimationType.Once : AnimationType.Loop));
-                if (once)
+                if (entry.Hold)
+                {
+                    endTable[entry.Id * AlundraEntitySpawnFactory.IdsvDirectionStride + direction] = new AnimationEndInfo { Kind = AnimationEndKind.Hold };
+                }
+                else if (once)
                 {
                     endTable[entry.Id * AlundraEntitySpawnFactory.IdsvDirectionStride + direction] = new AnimationEndInfo { Kind = AnimationEndKind.Chain, ChainTargetAnimationId = entry.ChainTo };
                 }
