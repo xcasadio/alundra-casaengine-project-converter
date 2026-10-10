@@ -1,0 +1,8 @@
+== W10 extras: invalid direction nibbles in the water, the first tick after a land state, the hero on a one-cell-wide channel, shallow water next to deep water ==
+invalid nibbles: anim 0-4:1D 5-120:0F 121-140:1D | dir_target 0-140:18 | F(x) at 40/41/60/80 [110592, 110592, 110592, 110592] | F(y) at 81/100/120 [0, 0, 0]
+dive with an invalid nibble: anim 0-9:1D 10-51:28 52-80:1D | dir_target 0-80:18 | F(x) at 10/20 [135168, 135168]
+channel: anim 0-4:1D 5-80:0F | slope 0-80:04 | pos y end 177.06
+channel straddle: anim 0-4:00 5-40:01 | slope 0-40:00
+shallow -> deep: anim 0:00 1-20:01 21:1D 22-100:0F | slope 0-19:00 20-100:04 | F(x) [159744, 159744, 159744, 137952, 123360, 110592]
+shallow -> deep, level 0: anim 0:00 1-100:01 | x end 325.00 | ForceAdjusted first 22
+

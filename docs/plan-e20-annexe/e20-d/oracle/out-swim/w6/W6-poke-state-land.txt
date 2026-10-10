@@ -1,0 +1,15 @@
+# W6-poke-state-land: contrast: flat dry ground, holy sword, no pad; same pokes before tick 3
+# columns: t hold | anim target>current (b0 = AnimCompleteCounter) | dir target/cur facing | ForceX ForceY ForceZ | pos x y z (px; z = binary convention, rest = terrain + 1) | ground adj(+0x13C) collZ | slope vorOR | sprintCnt chargeCnt | journal (sounds snd<id>, effects fx<id>@(x,y,z px), spawns)
+   0 -     | 00>00     b0=0  |  18/E7  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz0  | sl0 v0000 | sp0  ch0  | 
+   1 -     | 00>00     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl0 v0000 | sp0  ch0  | 
+   2 -     | 00>00     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl0 v0000 | sp0  ch0  | 
+   3 -     | 00>00     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl0 v0000 | sp0  ch0  | 
+   4 -     | 00>00     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl0 v0000 | sp0  ch0  | 
+   5 -     | 00>00     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl0 v0000 | sp0  ch0  | 
+   6 -     | 00>00     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl0 v0000 | sp0  ch0  | 
+   7 -     | 00>00     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl0 v0000 | sp0  ch0  | 
+   8 -     | 00>00     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl0 v0000 | sp0  ch0  | 
+   9 -     | 00>00     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl0 v0000 | sp0  ch0  | 
+  10 -     | 00>00     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl0 v0000 | sp0  ch0  | 
+  11 -     | 00>00     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl0 v0000 | sp0  ch0  | 
+  12 -     | 00>00     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl0 v0000 | sp0  ch0  | 

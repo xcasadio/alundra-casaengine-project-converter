@@ -1,0 +1,23 @@
+== W4 leaving the water (lake from col 14 = x 336; the land is col < 14).  Boots level 2.  The hero box leaves slope 4 when the west edge (pos-10) passes x 336 ==
+swim out (Left): anim 0-4:1D 5-103:0F 104:00 105-140:01 | slope 0-102:04 103-140:00 | first non-4 slope tick 103
+   t101 0F>0F dir 08/08 f2 F(-110592,0,0) pos(348.97,100.00,0.00) g1 adj0 sl4 b0=2 ch0 snd[] fx[]
+   t102 0F>0F dir 08/08 f2 F(-110592,0,0) pos(347.28,100.00,0.00) g1 adj0 sl4 b0=2 ch0 snd[] fx[]
+   t103 0F>0F dir 08/08 f2 F(-110592,0,0) pos(345.59,100.00,0.00) g1 adj0 sl0 b0=2 ch0 snd[] fx[]
+   t104 00>00 dir 08/08 f2 F(-55296,0,0) pos(344.75,100.00,0.00) g1 adj0 sl0 b0=2 ch0 snd[0] fx[]
+   t105 01>01 dir 08/08 f2 F(-107520,0,0) pos(343.11,100.00,0.00) g1 adj0 sl0 b0=2 ch0 snd[0] fx[]
+   t106 01>01 dir 08/08 f2 F(-159744,0,0) pos(340.67,100.00,0.00) g1 adj0 sl0 b0=2 ch0 snd[] fx[]
+   t107 01>01 dir 08/08 f2 F(-159744,0,0) pos(338.23,100.00,0.00) g1 adj0 sl0 b0=2 ch0 snd[] fx[]
+   t108 01>01 dir 08/08 f2 F(-159744,0,0) pos(335.80,100.00,0.00) g1 adj0 sl0 b0=2 ch0 snd[] fx[]
+   t109 01>01 dir 08/08 f2 F(-159744,0,0) pos(333.36,100.00,0.00) g1 adj0 sl0 b0=2 ch0 snd[] fx[]
+   t110 01>01 dir 08/08 f2 F(-159744,0,0) pos(330.92,100.00,0.00) g1 adj0 sl0 b0=2 ch0 snd[] fx[]
+   t111 01>01 dir 08/08 f2 F(-159744,0,0) pos(328.48,100.00,0.00) g1 adj0 sl0 b0=2 ch0 snd[] fx[]
+release at the shore: anim 101-102:0F 103:1D 104-133:00 | F(x) [-110592, -96768, -48384, 0, 0, 0, 0, 0, 0]
+Triangle held when leaving: anim 0-4:1D 5-46:28 47:1D 48-121:0F 122:00 123-147:29 148-200:03 | slope 0-120:04 121-200:00
+Triangle pressed at 30, held: anim 0-4:1D 5-29:0F 30-71:28 72:1D 73-129:0F 130:00 131-155:29 156-200:03 | slope 0-128:04 129-200:00
+  dive at 5: anim 0-4:1D 5-31:28 32:00 33-120:01 | slope 0-30:04 31-120:00
+  dive at 15: anim 0-4:1D 5-14:0F 15-38:28 39:00 40-120:01 | slope 0-37:04 38-120:00
+  dive at 25: anim 0-4:1D 5-24:0F 25-40:28 41:00 42-120:01 | slope 0-39:04 40-120:00
+leave diagonal (Up+Left): anim 0-4:1D 5-57:0F 58:00 59-140:01 | slope 0-56:04 57-140:00
+bank 16 px: anim 0-4:1D 5-140:0F | x@140 346.00 | ForceAdjusted first 104 | slope 0-140:04
+bank 32 px: anim 0-4:1D 5-59:0F 60-101:28 102:1D 103-140:0F | x@140 346.00 | slope 0-140:04
+

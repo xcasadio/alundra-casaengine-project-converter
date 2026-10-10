@@ -1,0 +1,10 @@
+== W5 walls and edges in the water (all water, boots level 2, wall word 0x0040 at cols 30-31 (x 720..767) overlaid on the water) ==
+wall: anim 0-4:1D 5-140:0F | ForceAdjusted first 78 | x final 709.00 | F(x) at end 110592
+wall diagonal: anim 0-4:1D 5-200:0F | pos at 60/100/140 [(657.87, 441.42), (705.59, 409.61), (709.0, 377.9), (709.0, 330.18)] | ForceAdjusted first None
+wall dive: anim 0-4:1D 5-19:0F 20-61:28 62:1D 63-120:0F | ForceAdjusted first 91 | x@120 709.00
+east map edge: anim 0-4:1D 5-100:0F | x final 1237.00 | ForceAdjusted first 64
+north map edge: anim 0-4:1D 5-100:0F | y final 7.00 | ForceAdjusted first 59
+level 0 walk into the lake: anim 0:00 1-100:01 | x final 325.00 | ForceAdjusted first 12 | slope 0-100:00
+level 1 walk into the lake: anim 0:00 1-100:01 | x final 325.00 | ForceAdjusted first 12 | slope 0-100:00
+level 0 diagonal into the lake edge: anim 0:00 1-140:01 | pos at 60/100/140 [(325.0, 126.08), (325.0, 172.04), (325.0, 218.0)]
+

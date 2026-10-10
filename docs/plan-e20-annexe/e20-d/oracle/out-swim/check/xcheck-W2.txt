@@ -1,0 +1,1 @@
+group W2: cross-check ON; runs compared 14, ticks compared 1754, mismatches 0 [], uninitialised-read sites over both engines 0

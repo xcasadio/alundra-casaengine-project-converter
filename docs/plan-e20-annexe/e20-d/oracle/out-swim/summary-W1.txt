@@ -1,0 +1,24 @@
+== W1 entering deep water (word 0x0800 from col 14 = x 336, same height as the shore).  Hero box = pos +- 10 px, so slope 4 needs pos_x >= 346 ==
+walk / run into the lake, per boots level (timelines of anim_cur; slope timeline):
+  walk L0  anim 0:00 1-100:01 | slope 0-100:00 | ForceAdjusted first 12 | x@100 325.00
+  run  L0  anim 0:00 1-25:29 26-86:03 87-97:3E 98:01 99-103:2C 104-128:29 129-130:03 | slope 0-130:00 | ForceAdjusted first 86 | x@130 304.87
+  walk L1  anim 0:00 1-100:01 | slope 0-100:00 | ForceAdjusted first 12 | x@100 325.00
+  run  L1  anim 0:00 1-25:29 26-86:03 87-97:3E 98:01 99-103:2C 104-128:29 129-130:03 | slope 0-130:00 | ForceAdjusted first 86 | x@130 304.87
+  walk L2  anim 0:00 1-20:01 21:1D 22-100:0F | slope 0-19:00 20-100:04 | ForceAdjusted first None | x@100 486.32
+  run  L2  anim 0:00 1-25:29 26-89:03 90:1D 91-130:0F | slope 0-88:00 89-130:04 | ForceAdjusted first None | x@130 430.22
+  walk L3  anim 0:00 1-20:01 21:1D 22-100:0F | slope 0-19:00 20-100:04 | ForceAdjusted first None | x@100 486.32
+  run  L3  anim 0:00 1-25:29 26-89:03 90:1D 91-130:0F | slope 0-88:00 89-130:04 | ForceAdjusted first None | x@130 430.22
+jump over the shore (boots level 2): Right held from 1, Cross pressed for 1 tick at tick s, hero from (300,100), 90 ticks
+  s=3  anim 0:00 1-2:01 3:02 4-23:2C 24:1D 25-90:0F | slope 0-22:00 23-90:04 | ground 0-2:01 3-22:00 23-90:01 | z max 27.50 | x@90 467.90
+  s=6  anim 0:00 1-5:01 6:02 7-26:2C 27:1D 28-90:0F | slope 0-25:00 26-90:04 | ground 0-5:01 6-25:00 26-90:01 | z max 27.50 | x@90 470.15
+  s=9  anim 0:00 1-8:01 9:02 10-29:2C 30:1D 31-90:0F | slope 0-28:00 29-90:04 | ground 0-8:01 9-28:00 29-90:01 | z max 27.50 | x@90 472.40
+  s=12 anim 0:00 1-11:01 12:02 13-32:2C 33:1D 34-90:0F | slope 0-31:00 32-90:04 | ground 0-11:01 12-31:00 32-90:01 | z max 27.50 | x@90 474.65
+  s=15 anim 0:00 1-14:01 15:02 16-35:2C 36:1D 37-90:0F | slope 0-34:00 35-90:04 | ground 0-14:01 15-34:00 35-90:01 | z max 27.50 | x@90 476.90
+  fall-walk-L0 anim 0:00 1-120:01 | slope 0-120:00 | ground 0-120:01 | x@end 325.00 | ForceAdjusted first 12
+  jump-L0      anim 0:00 1-5:01 6:02 7-26:2C 27-90:01 | slope 0-90:00 | ground 0-5:01 6-25:00 26-90:01 | x@end 325.00 | ForceAdjusted first 13
+  fall-walk-L1 anim 0:00 1-120:01 | slope 0-120:00 | ground 0-120:01 | x@end 325.00 | ForceAdjusted first 12
+  jump-L1      anim 0:00 1-5:01 6:02 7-26:2C 27-90:01 | slope 0-90:00 | ground 0-5:01 6-25:00 26-90:01 | x@end 325.00 | ForceAdjusted first 13
+  fall-walk  anim 0:00 1-20:01 21-31:2C 32:1D 33-120:0F | slope 0-30:00 31-120:04 | ground 0-19:01 20-30:00 31-120:01 | z 32.00 -> 0.00
+  fall-run   anim 0:00 1-25:29 26-89:03 90:2D 91-100:2C 101:1D 102-160:0F | slope 0-99:00 100-160:04 | ground 0-88:01 89-99:00 100-160:01 | z 32.00 -> 0.00
+  fall1-walk anim 0:00 1-20:01 21-28:2C 29:1D 30-120:0F | slope 0-27:00 28-120:04 | ground 0-19:01 20-27:00 28-120:01 | z 16.00 -> 0.00
+

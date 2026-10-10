@@ -1,0 +1,15 @@
+# W6-poke-state: all water, holy sword, no pad; before tick 3 the harness writes charge counter 45, pending-shot pointer 0x80127000, aura pointer 0x80127D30 (a pointer to the hero itself)
+# columns: t hold | anim target>current (b0 = AnimCompleteCounter) | dir target/cur facing | ForceX ForceY ForceZ | pos x y z (px; z = binary convention, rest = terrain + 1) | ground adj(+0x13C) collZ | slope vorOR | sprintCnt chargeCnt | journal (sounds snd<id>, effects fx<id>@(x,y,z px), spawns)
+   0 -     | 1D>1D     b0=0  |  18/E7  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz0  | sl4 v0800 | sp0  ch0  | 
+   1 -     | 1D>1D     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl4 v0800 | sp0  ch0  | 
+   2 -     | 1D>1D     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl4 v0800 | sp0  ch0  | 
+   3 -     | 1D>1D     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl4 v0800 | sp0  ch0  | 
+   4 -     | 1D>1D     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl4 v0800 | sp0  ch0  | 
+   5 -     | 1D>1D     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl4 v0800 | sp0  ch0  | 
+   6 -     | 1D>1D     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl4 v0800 | sp0  ch0  | 
+   7 -     | 1D>1D     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl4 v0800 | sp0  ch0  | 
+   8 -     | 1D>1D     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl4 v0800 | sp0  ch0  | 
+   9 -     | 1D>1D     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl4 v0800 | sp0  ch0  | 
+  10 -     | 1D>1D     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl4 v0800 | sp0  ch0  | 
+  11 -     | 1D>1D     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl4 v0800 | sp0  ch0  | 
+  12 -     | 1D>1D     b0=0  |  18/18  f3  |        0        0        0 |   624.00   480.00   0.00 | g1 adj0  cz1  | sl4 v0800 | sp0  ch0  | 

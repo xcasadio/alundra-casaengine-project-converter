@@ -1,0 +1,1 @@
+group W3: cross-check ON; runs compared 35, ticks compared 3535, mismatches 0 [], uninitialised-read sites over both engines 0

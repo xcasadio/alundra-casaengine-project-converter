@@ -1,0 +1,26 @@
+== W2 swimming (the whole field is deep water, boots level 2 unless said; the hero starts in swim idle 0x1D after 4 idle ticks) ==
+swim idle from Idle: anim 0:00 1-120:1D | b0 at 40/80/120 [1, 2, 3] | sounds [(1, 0)] | effects []
+  dir U  anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 10 facing@10 1 | Force@6/10/30/60 [(0, -9216), (0, -27648), (0, -73728), (0, -73728)] | speed 1.1250 px/tick @60 | after release F@72/80/90/129 [(0, -55296), (0, 0), (0, 0), (0, 0)]
+  dir R  anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 18 facing@10 3 | Force@6/10/30/60 [(13824, 0), (41472, 0), (110592, 0), (110592, 0)] | speed 1.6875 px/tick @60 | after release F@72/80/90/129 [(82944, 0), (0, 0), (0, 0), (0, 0)]
+  dir D  anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 00 facing@10 0 | Force@6/10/30/60 [(0, 9216), (0, 27648), (0, 73728), (0, 73728)] | speed 1.1250 px/tick @60 | after release F@72/80/90/129 [(0, 55296), (0, 0), (0, 0), (0, 0)]
+  dir L  anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 08 facing@10 2 | Force@6/10/30/60 [(-13824, 0), (-41472, 0), (-110592, 0), (-110592, 0)] | speed 1.6875 px/tick @60 | after release F@72/80/90/129 [(-82944, 0), (0, 0), (0, 0), (0, 0)]
+  dir UR anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 14 facing@10 3 | Force@6/10/30/60 [(9774, -6516), (29322, -19548), (78192, -52128), (78192, -52128)] | speed 1.4339 px/tick @60 | after release F@72/80/90/129 [(58644, -39096), (0, 0), (0, 0), (0, 0)]
+  dir DR anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 1C facing@10 3 | Force@6/10/30/60 [(9774, 6516), (29322, 19548), (78192, 52128), (78192, 52128)] | speed 1.4339 px/tick @60 | after release F@72/80/90/129 [(58644, 39096), (0, 0), (0, 0), (0, 0)]
+  dir DL anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 04 facing@10 2 | Force@6/10/30/60 [(-9774, 6516), (-29322, 19548), (-78192, 52128), (-78192, 52128)] | speed 1.4339 px/tick @60 | after release F@72/80/90/129 [(-58644, 39096), (0, 0), (0, 0), (0, 0)]
+  dir UL anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 0C facing@10 2 | Force@6/10/30/60 [(-9774, -6516), (-29322, -19548), (-78192, -52128), (-78192, -52128)] | speed 1.4339 px/tick @60 | after release F@72/80/90/129 [(-58644, -39096), (0, 0), (0, 0), (0, 0)]
+turn: anim 0-4:1D 5-170:0F | facing 0-40:03 41-90:02 91-130:01 131-170:00 | dir_target 0-40:18 41-90:08 91-130:10 131-170:00
+   t39  0F>0F dir 18/18 f3 F(110592,0,0) pos(670.41,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t40  0F>0F dir 18/18 f3 F(110592,0,0) pos(672.09,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t41  0F>0F dir 08/08 f2 F(96768,0,0) pos(673.57,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[22] fx[]
+   t42  0F>0F dir 08/08 f2 F(82944,0,0) pos(674.84,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t43  0F>0F dir 08/08 f2 F(69120,0,0) pos(675.89,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t44  0F>0F dir 08/08 f2 F(55296,0,0) pos(676.73,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t45  0F>0F dir 08/08 f2 F(41472,0,0) pos(677.37,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t46  0F>0F dir 08/08 f2 F(27648,0,0) pos(677.79,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t47  0F>0F dir 08/08 f2 F(13824,0,0) pos(678.00,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t48  0F>0F dir 08/08 f2 F(0,0,0) pos(678.00,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+boots level 3 vs 2 (Right 5-70): hero columns identical over 90 ticks: True
+  level 0 inside the lake, Right: anim 0-4:1D 5-60:0F | x 5 -> 60: 624.00 -> 624.00 | ForceAdjusted first 5
+  level 1 inside the lake, Right: anim 0-4:1D 5-60:0F | x 5 -> 60: 624.00 -> 624.00 | ForceAdjusted first 5
+long swim: anim 0-4:1D 5-200:0F | b0 at 50/100/150/200 [1, 2, 3, 4] | sounds [(5, 22), (47, 22), (89, 22), (131, 22), (173, 22)] | effects []
+

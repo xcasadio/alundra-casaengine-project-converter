@@ -2527,7 +2527,7 @@ les effets d'eau (E20.e), les objets du Rond dans l'eau et le son 3 (E20.h), l'a
 
 #### Tâches
 
-- ⏳ **T0 — Oracle dans l'annexe (commit docs).**
+- ✅ **T0 — Oracle dans l'annexe (commit docs).**
   - Copier, depuis `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20i/swim-oracle/tree/docs/plan-e20-annexe/e20-d/oracle/`,
     `base/sscen.py`, `base/sverify.py`, `base/sindex.py` (fichiers neufs, à côté de `rworld.py`) et `out-swim/` (786 fichiers) dans
     `docs/plan-e20-annexe/e20-d/oracle/` ; aucun fichier existant modifié, sauf une section « Nage » du README.

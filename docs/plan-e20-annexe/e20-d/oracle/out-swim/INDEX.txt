@@ -1,0 +1,385 @@
+# INDEX of the swim-oracle traces (one .txt and one .json per scenario, ../out-swim/<group>/; the .json is column-major, same format as the run oracle)
+# pad pieces: tick:hold (the hold word holds from that tick until the next piece); U R D L = d-pad, T O X S = Triangle Circle Cross Square
+# file | ticks | hero start px | start animation | pad | layout | targets | inventory | description
+w1/W1-fall-run | 160 | (100, 100) | 0x00 | 1:RT | c0-13,r0-59 hb 2; c14-51,r0-59 word 0x800 | - | b1b | as above, Triangle + Right from (100,100): the run leaves the ledge, 160 ticks
+w1/W1-fall-walk-L0 | 120 | (300, 100) | 0x00 | 1:R | c0-13,r0-59 hb 2; c14-51,r0-59 word 0x800 | - | kit | boots level 0 (information); land 32 px high (cols 0-13), lake at height 0; walk east off the ledge from (300,100), 120 ticks
+w1/W1-fall-walk-L1 | 120 | (300, 100) | 0x00 | 1:R | c0-13,r0-59 hb 2; c14-51,r0-59 word 0x800 | - | b1a | boots level 1 (information); land 32 px high (cols 0-13), lake at height 0; walk east off the ledge from (300,100), 120 ticks
+w1/W1-fall-walk | 120 | (300, 100) | 0x00 | 1:R | c0-13,r0-59 hb 2; c14-51,r0-59 word 0x800 | - | b1b | boots level 2; land 32 px high (cols 0-13), lake at height 0 (cols 14-51); walk east off the ledge from (300,100), 120 ticks
+w1/W1-fall16-walk | 120 | (300, 100) | 0x00 | 1:R | c0-13,r0-59 hb 1; c14-51,r0-59 word 0x800 | - | b1b | as W1-fall-walk with a 16 px ledge
+w1/W1-jump-L0 | 90 | (300, 100) | 0x00 | 1:R 6:RX 7:R | c14-51,r0-59 word 0x800 | - | kit | boots level 0 (information); Right held, Cross at tick 6 from (300,100): a jump over the shore
+w1/W1-jump-L1 | 90 | (300, 100) | 0x00 | 1:R 6:RX 7:R | c14-51,r0-59 word 0x800 | - | b1a | boots level 1 (information); Right held, Cross at tick 6 from (300,100): a jump over the shore
+w1/W1-jump-s03 | 90 | (300, 100) | 0x00 | 1:R 3:RX 4:R | c14-51,r0-59 word 0x800 | - | b1b | boots level 2; Right held, Cross at tick 3, from (300,100)
+w1/W1-jump-s06 | 90 | (300, 100) | 0x00 | 1:R 6:RX 7:R | c14-51,r0-59 word 0x800 | - | b1b | boots level 2; Right held, Cross at tick 6, from (300,100)
+w1/W1-jump-s09 | 90 | (300, 100) | 0x00 | 1:R 9:RX 10:R | c14-51,r0-59 word 0x800 | - | b1b | boots level 2; Right held, Cross at tick 9, from (300,100)
+w1/W1-jump-s12 | 90 | (300, 100) | 0x00 | 1:R 12:RX 13:R | c14-51,r0-59 word 0x800 | - | b1b | boots level 2; Right held, Cross at tick 12, from (300,100)
+w1/W1-jump-s15 | 90 | (300, 100) | 0x00 | 1:R 15:RX 16:R | c14-51,r0-59 word 0x800 | - | b1b | boots level 2; Right held, Cross at tick 15, from (300,100)
+w1/W1-run-L0 | 130 | (100, 100) | 0x00 | 1:RT | c14-51,r0-59 word 0x800 | - | kit | boots level 0; Triangle + Right from (100,100) into the lake, 130 ticks
+w1/W1-run-L1 | 130 | (100, 100) | 0x00 | 1:RT | c14-51,r0-59 word 0x800 | - | b1a | boots level 1; Triangle + Right from (100,100) into the lake, 130 ticks
+w1/W1-run-L2 | 130 | (100, 100) | 0x00 | 1:RT | c14-51,r0-59 word 0x800 | - | b1b | boots level 2; Triangle + Right from (100,100) into the lake, 130 ticks
+w1/W1-run-L3 | 130 | (100, 100) | 0x00 | 1:RT | c14-51,r0-59 word 0x800 | - | b1c | boots level 3; Triangle + Right from (100,100) into the lake, 130 ticks
+w1/W1-walk-L0 | 100 | (300, 100) | 0x00 | 1:R | c14-51,r0-59 word 0x800 | - | kit | boots level 0; walk east (Right only) from (300,100) into the lake, 100 ticks
+w1/W1-walk-L1 | 100 | (300, 100) | 0x00 | 1:R | c14-51,r0-59 word 0x800 | - | b1a | boots level 1; walk east (Right only) from (300,100) into the lake, 100 ticks
+w1/W1-walk-L2 | 100 | (300, 100) | 0x00 | 1:R | c14-51,r0-59 word 0x800 | - | b1b | boots level 2; walk east (Right only) from (300,100) into the lake, 100 ticks
+w1/W1-walk-L3 | 100 | (300, 100) | 0x00 | 1:R | c14-51,r0-59 word 0x800 | - | b1c | boots level 3; walk east (Right only) from (300,100) into the lake, 100 ticks
+w10/W10-LR-UD | 140 | (624, 480) | 0x1D | 5:R 41:RL 81:UD 121:- | c0-51,r0-59 word 0x800 | - | b1b | Right 5-40, Left+Right 41-80 (nibble 0xA: no 8-way direction), Up+Down 81-120 (0x5), released 121-140
+w10/W10-channel-down | 80 | (492, 100) | 0x1D | 5:D | c20-20,r0-59 word 0x800 | - | b1b | a 24 px wide channel of deep water at col 20 (x 480..503), hero at (492,100) swimming Down: does slope stay 4 (box 482..502)?
+w10/W10-channel-edge | 40 | (480, 100) | 0x00 | 5:D | c20-20,r0-59 word 0x800 | - | b1b | the same channel, hero at (480,100): box 470..490 straddles two columns: slope 0 (land logic) at the start
+w10/W10-dive-LR | 80 | (624, 480) | 0x1D | 10:RLT 11:RL 12:- | c0-51,r0-59 word 0x800 | - | b1b | Left+Right held with T pressed at tick 10 from a hero that faces Right: the dive takes the kept direction
+w10/W10-shallow-to-deep-L0 | 100 | (300, 100) | 0x00 | 1:R | c0-51,r0-59 word 0x8; c14-51,r0-59 word 0x800 | - | kit | as above with boots level 0 (information): the deep water is a wall, the shallow water halves the speed
+w10/W10-shallow-to-deep | 100 | (300, 100) | 0x00 | 1:R | c0-51,r0-59 word 0x8; c14-51,r0-59 word 0x800 | - | b1b | shallow water (0x08) on cols 0-13, deep water from col 14; boots level 2; walk east from (300,100), 100 ticks
+w2/W2-L0-inside-R | 60 | (624, 480) | 0x1D | 5:R | c0-51,r0-59 word 0x800 | - | kit | all water, boots level 0 (information): the hero is already inside; Right from tick 5, 60 ticks
+w2/W2-L1-inside-R | 60 | (624, 480) | 0x1D | 5:R | c0-51,r0-59 word 0x800 | - | b1a | all water, boots level 1 (information): the hero is already inside; Right from tick 5, 60 ticks
+w2/W2-L3-R | 90 | (624, 480) | 0x1D | 5:R 71:- | c0-51,r0-59 word 0x800 | - | b1c | all water, boots level 3, Right 5-70
+w2/W2-dir-D | 130 | (624, 480) | 0x1D | 5:D 71:- | c0-51,r0-59 word 0x800 | - | b1b | all water, boots level 2; D held from tick 5 to 70, released from 71 to 130
+w2/W2-dir-DL | 130 | (624, 480) | 0x1D | 5:DL 71:- | c0-51,r0-59 word 0x800 | - | b1b | all water, boots level 2; DL held from tick 5 to 70, released from 71 to 130
+w2/W2-dir-DR | 130 | (624, 480) | 0x1D | 5:RD 71:- | c0-51,r0-59 word 0x800 | - | b1b | all water, boots level 2; DR held from tick 5 to 70, released from 71 to 130
+w2/W2-dir-L | 130 | (624, 480) | 0x1D | 5:L 71:- | c0-51,r0-59 word 0x800 | - | b1b | all water, boots level 2; L held from tick 5 to 70, released from 71 to 130
+w2/W2-dir-R | 130 | (624, 480) | 0x1D | 5:R 71:- | c0-51,r0-59 word 0x800 | - | b1b | all water, boots level 2; R held from tick 5 to 70, released from 71 to 130
+w2/W2-dir-U | 130 | (624, 480) | 0x1D | 5:U 71:- | c0-51,r0-59 word 0x800 | - | b1b | all water, boots level 2; U held from tick 5 to 70, released from 71 to 130
+w2/W2-dir-UL | 130 | (624, 480) | 0x1D | 5:UL 71:- | c0-51,r0-59 word 0x800 | - | b1b | all water, boots level 2; UL held from tick 5 to 70, released from 71 to 130
+w2/W2-dir-UR | 130 | (624, 480) | 0x1D | 5:UR 71:- | c0-51,r0-59 word 0x800 | - | b1b | all water, boots level 2; UR held from tick 5 to 70, released from 71 to 130
+w2/W2-idle | 120 | (624, 480) | 0x00 |  | c0-51,r0-59 word 0x800 | - | b1b | all water, no pad, 120 ticks, hero starts in Idle (0)
+w2/W2-long-R | 200 | (100, 480) | 0x1D | 5:R | c0-51,r0-59 word 0x800 | - | b1b | all water, Right from tick 5 for 200 ticks: the 0x0F animation (42 ticks, chain to itself) and its sounds / effects
+w2/W2-turn | 170 | (624, 480) | 0x1D | 5:R 41:L 91:U 131:D | c0-51,r0-59 word 0x800 | - | b1b | all water; Right 5-40, Left 41-90, Up 91-130, Down 131-170
+w3/W3-O-idle | 120 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | b1b | button O pressed 1 tick at tick 10, no direction, 120 ticks
+w3/W3-O-swim | 120 | (624, 480) | 0x1D | 5:R 20:RO 21:R | c0-51,r0-59 word 0x800 | - | b1b | Right held from tick 5; button O pressed 1 tick at tick 20, 120 ticks
+w3/W3-S-idle | 120 | (624, 480) | 0x1D | 10:S 11:- | c0-51,r0-59 word 0x800 | - | b1b | button S pressed 1 tick at tick 10, no direction, 120 ticks
+w3/W3-S-swim | 120 | (624, 480) | 0x1D | 5:R 20:RS 21:R | c0-51,r0-59 word 0x800 | - | b1b | Right held from tick 5; button S pressed 1 tick at tick 20, 120 ticks
+w3/W3-T-held | 150 | (624, 480) | 0x1D | 10:T | c0-51,r0-59 word 0x800 | - | b1b | Triangle held from tick 10 to 150, no direction
+w3/W3-T-idle | 120 | (624, 480) | 0x1D | 10:T 11:- | c0-51,r0-59 word 0x800 | - | b1b | button T pressed 1 tick at tick 10, no direction, 120 ticks
+w3/W3-T-near-end+0 | 120 | (624, 480) | 0x1D | 10:T 11:- 52:T 53:- | c0-51,r0-59 word 0x800 | - | b1b | T at 10; T pressed again at tick 52 (the dive ends at tick 52)
+w3/W3-T-near-end+1 | 120 | (624, 480) | 0x1D | 10:T 11:- 53:T 54:- | c0-51,r0-59 word 0x800 | - | b1b | T at 10; T pressed again at tick 53 (the dive ends at tick 52)
+w3/W3-T-near-end+2 | 120 | (624, 480) | 0x1D | 10:T 11:- 54:T 55:- | c0-51,r0-59 word 0x800 | - | b1b | T at 10; T pressed again at tick 54 (the dive ends at tick 52)
+w3/W3-T-near-end-1 | 120 | (624, 480) | 0x1D | 10:T 11:- 51:T 52:- | c0-51,r0-59 word 0x800 | - | b1b | T at 10; T pressed again at tick 51 (the dive ends at tick 52)
+w3/W3-T-swim | 120 | (624, 480) | 0x1D | 5:R 20:RT 21:R | c0-51,r0-59 word 0x800 | - | b1b | Right held from tick 5; button T pressed 1 tick at tick 20, 120 ticks
+w3/W3-T-taps5 | 140 | (624, 480) | 0x1D | 1:- 10:T 11:- 15:T 16:- 20:T 21:- 25:T 26:- 30:T 31:- 35:T 36:- 40:T 41:- 45:T 46:- 50:T 51:- 55:T 56:- 60:T 61:- 65:T 66:- 70:T 71:- 75:T 76:- 80:T 81:- 85:T 86:- 90:T 91:- 95:T 96:- 100:T 101:- 105:T 106:- 110:T 111:- 115:T 116:- 120:T 121:- 125:T 126:- | c0-51,r0-59 word 0x800 | - | b1b | Triangle tapped every 5 ticks from 10
+w3/W3-TX-same-tick | 80 | (624, 480) | 0x1D | 10:TX 11:- | c0-51,r0-59 word 0x800 | - | b1b | T + X pressed together at 10
+w3/W3-X-during-dive | 100 | (624, 480) | 0x1D | 10:T 11:- 25:X 26:- | c0-51,r0-59 word 0x800 | - | b1b | T at 10, X at 25 (during the dive)
+w3/W3-X-idle | 120 | (624, 480) | 0x1D | 10:X 11:- | c0-51,r0-59 word 0x800 | - | b1b | button X pressed 1 tick at tick 10, no direction, 120 ticks
+w3/W3-X-swim | 120 | (624, 480) | 0x1D | 5:R 20:RX 21:R | c0-51,r0-59 word 0x800 | - | b1b | Right held from tick 5; button X pressed 1 tick at tick 20, 120 ticks
+w3/W3-dive-dir-D | 100 | (624, 480) | 0x1D | 10:DT 11:D 12:- | c0-51,r0-59 word 0x800 | - | b1b | direction D with Triangle pressed at tick 10 (direction pressed at the same tick), then released at 12; 100 ticks
+w3/W3-dive-dir-DL | 100 | (624, 480) | 0x1D | 10:DLT 11:DL 12:- | c0-51,r0-59 word 0x800 | - | b1b | direction DL with Triangle pressed at tick 10 (direction pressed at the same tick), then released at 12; 100 ticks
+w3/W3-dive-dir-DR | 100 | (624, 480) | 0x1D | 10:RDT 11:RD 12:- | c0-51,r0-59 word 0x800 | - | b1b | direction DR with Triangle pressed at tick 10 (direction pressed at the same tick), then released at 12; 100 ticks
+w3/W3-dive-dir-L | 100 | (624, 480) | 0x1D | 10:LT 11:L 12:- | c0-51,r0-59 word 0x800 | - | b1b | direction L with Triangle pressed at tick 10 (direction pressed at the same tick), then released at 12; 100 ticks
+w3/W3-dive-dir-R | 100 | (624, 480) | 0x1D | 10:RT 11:R 12:- | c0-51,r0-59 word 0x800 | - | b1b | direction R with Triangle pressed at tick 10 (direction pressed at the same tick), then released at 12; 100 ticks
+w3/W3-dive-dir-U | 100 | (624, 480) | 0x1D | 10:UT 11:U 12:- | c0-51,r0-59 word 0x800 | - | b1b | direction U with Triangle pressed at tick 10 (direction pressed at the same tick), then released at 12; 100 ticks
+w3/W3-dive-dir-UL | 100 | (624, 480) | 0x1D | 10:ULT 11:UL 12:- | c0-51,r0-59 word 0x800 | - | b1b | direction UL with Triangle pressed at tick 10 (direction pressed at the same tick), then released at 12; 100 ticks
+w3/W3-dive-dir-UR | 100 | (624, 480) | 0x1D | 10:URT 11:UR 12:- | c0-51,r0-59 word 0x800 | - | b1b | direction UR with Triangle pressed at tick 10 (direction pressed at the same tick), then released at 12; 100 ticks
+w3/W3-dive-dir-none | 100 | (624, 480) | 0x1D | 10:T 11:- 12:- | c0-51,r0-59 word 0x800 | - | b1b | direction none with Triangle pressed at tick 10 (direction pressed at the same tick), then released at 12; 100 ticks
+w3/W3-dive-end-held | 90 | (624, 480) | 0x1D | 5:R 10:RT 11:R | c0-51,r0-59 word 0x800 | - | b1b | Right held from 5 to the end, T pressed at 10: surfacing at the end of the 42-tick dive
+w3/W3-dive-end-release | 100 | (624, 480) | 0x1D | 5:R 10:RT 11:R 31:- | c0-51,r0-59 word 0x800 | - | b1b | Right held 5-30 (released mid-dive), T pressed at 10: surfacing at the end of the dive with nothing held
+w3/W3-dive-steer | 100 | (624, 480) | 0x1D | 10:RT 11:R 20:L 30:U 61:- | c0-51,r0-59 word 0x800 | - | b1b | Right + T at 10, Right to 19, Left 20-29, Up 30-60; 100 ticks
+w3/W3-enter-T+0 | 60 | (320, 100) | 0x00 | 1:R 12:RT 13:R | c14-51,r0-59 word 0x800 | - | b1b | walk east from (320,100); T pressed 1 tick at tick 12 (slope-4 tick 12 +0)
+w3/W3-enter-T+1 | 60 | (320, 100) | 0x00 | 1:R 13:RT 14:R | c14-51,r0-59 word 0x800 | - | b1b | walk east from (320,100); T pressed 1 tick at tick 13 (slope-4 tick 12 +1)
+w3/W3-enter-T+2 | 60 | (320, 100) | 0x00 | 1:R 14:RT 15:R | c14-51,r0-59 word 0x800 | - | b1b | walk east from (320,100); T pressed 1 tick at tick 14 (slope-4 tick 12 +2)
+w3/W3-enter-T+3 | 60 | (320, 100) | 0x00 | 1:R 15:RT 16:R | c14-51,r0-59 word 0x800 | - | b1b | walk east from (320,100); T pressed 1 tick at tick 15 (slope-4 tick 12 +3)
+w3/W3-enter-T+4 | 60 | (320, 100) | 0x00 | 1:R 16:RT 17:R | c14-51,r0-59 word 0x800 | - | b1b | walk east from (320,100); T pressed 1 tick at tick 16 (slope-4 tick 12 +4)
+w3/W3-enter-T-1 | 60 | (320, 100) | 0x00 | 1:R 11:RT 12:R | c14-51,r0-59 word 0x800 | - | b1b | walk east from (320,100); T pressed 1 tick at tick 11 (slope-4 tick 12 -1)
+w3/W3-enter-ref | 40 | (320, 100) | 0x00 | 1:R | c14-51,r0-59 word 0x800 | - | b1b | reference: walk east from (320,100), no dive
+w4/W4-bank16 | 140 | (500, 100) | 0x1D | 5:L | c0-13,r0-59 hb 1; c14-51,r0-59 word 0x800 | - | b1b | land 16 px higher than the water (cols 0-13); swim Left from (500,100), 140 ticks
+w4/W4-bank32 | 140 | (500, 100) | 0x1D | 5:L 60:LX 61:L | c0-13,r0-59 hb 2; c14-51,r0-59 word 0x800 | - | b1b | land 32 px higher; swim Left, also Cross pressed (dive) at tick 60
+w4/W4-leave-L-T-late | 200 | (560, 100) | 0x1D | 5:L 30:LT | c14-51,r0-59 word 0x800 | - | b1b | Left from tick 5; Triangle pressed at tick 30 and held (a dive, then Triangle held until the shore)
+w4/W4-leave-L-T | 200 | (560, 100) | 0x1D | 5:LT | c14-51,r0-59 word 0x800 | - | b1b | Triangle + Left held from tick 5 (Triangle at tick 5 is a dive edge), the dive ends, the hero swims on with Triangle held, leaves the water
+w4/W4-leave-L-release | 140 | (500, 100) | 0x1D | 5:L 103:- | c14-51,r0-59 word 0x800 | - | b1b | as above, pad released the tick the slope drops (momentum on land)
+w4/W4-leave-L | 140 | (500, 100) | 0x1D | 5:L | c14-51,r0-59 word 0x800 | - | b1b | start (500,100) in the lake (0x1D), Left from tick 5, 140 ticks
+w4/W4-leave-UL | 140 | (400, 300) | 0x1D | 5:UL | c14-51,r0-59 word 0x800 | - | b1b | Up+Left from (400,300)
+w4/W4-leave-dive-s05 | 120 | (400, 100) | 0x1D | 5:L 5:LT 6:L | c14-51,r0-59 word 0x800 | - | b1b | Left held from 5, dive (T) pressed at tick 5, from (400,100)
+w4/W4-leave-dive-s15 | 120 | (400, 100) | 0x1D | 5:L 15:LT 16:L | c14-51,r0-59 word 0x800 | - | b1b | Left held from 5, dive (T) pressed at tick 15, from (400,100)
+w4/W4-leave-dive-s25 | 120 | (400, 100) | 0x1D | 5:L 25:LT 26:L | c14-51,r0-59 word 0x800 | - | b1b | Left held from 5, dive (T) pressed at tick 25, from (400,100)
+w5/W5-L0-wall-diag | 140 | (250, 60) | 0x00 | 1:RD | c14-51,r0-59 word 0x800 | - | kit | information: boots level 0, walk Down+Right toward the lake edge from (250,60)
+w5/W5-L0-wall-walk | 100 | (300, 100) | 0x00 | 1:R | c14-51,r0-59 word 0x800 | - | kit | information: boots level 0, walk east into the lake from (300,100): the water is a wall
+w5/W5-L1-wall-walk | 100 | (300, 100) | 0x00 | 1:R | c14-51,r0-59 word 0x800 | - | b1a | information: boots level 1, walk east into the lake from (300,100): the water is a wall
+w5/W5-edge-E | 100 | (1150, 480) | 0x1D | 5:R | c0-51,r0-59 word 0x800 | - | b1b | swim east to the map edge from (1150,480)
+w5/W5-edge-N | 100 | (624, 60) | 0x1D | 5:U | c0-51,r0-59 word 0x800 | - | b1b | swim north to the map edge from (624,60)
+w5/W5-wall-R | 140 | (600, 480) | 0x1D | 5:R | c0-51,r0-59 word 0x800; c30-31,r0-59 word 0x40 | - | b1b | swim east into a wall from (600,480), Right from 5, 140 ticks
+w5/W5-wall-UR | 200 | (600, 480) | 0x1D | 5:UR | c0-51,r0-59 word 0x800; c30-31,r0-59 word 0x40 | - | b1b | swim Up+Right into the wall (slide?) from (500,480)
+w5/W5-wall-dive | 120 | (560, 480) | 0x1D | 5:R 20:RT 21:R | c0-51,r0-59 word 0x800; c30-31,r0-59 word 0x40 | - | b1b | Right from 5, dive (T) at tick 20 into the wall (the dive is 42 ticks long)
+w6/W6-allwater-square-held | 130 | (624, 480) | 0x1D | 5:S 101:- | c0-51,r0-59 word 0x800 | - | holy_b1b | holy sword; all water; Square held from tick 5 to 100 (a dive edge at 5), 130 ticks
+w6/W6-charge-then-water | 170 | (300, 100) | 0x00 | 1:S 70:RS 120:R | c14-51,r0-59 word 0x800 | - | holy_b1b | holy sword; Square held from tick 1 standing at (300,100) (charge reaches 60 near tick 61), Right added at tick 70 (the lake is 36 px away); Square released at 120
+w6/W6-leave-water-square-held | 220 | (500, 100) | 0x1D | 5:LS | c14-51,r0-59 word 0x800 | - | holy_b1b | holy sword + boots; start (500,100) in the lake (0x1D), Left held from 5, Square pressed at 5 and held to the end (a dive edge, then Square held): swim out and onto land, 220 ticks
+w6/W6-poke-state-land | 12 | (624, 480) | 0x00 |  | flat | - | holy_b1b | contrast: flat dry ground, holy sword, no pad; same pokes before tick 3
+w6/W6-poke-state | 12 | (624, 480) | 0x1D |  | c0-51,r0-59 word 0x800 | - | holy_b1b | all water, holy sword, no pad; before tick 3 the harness writes charge counter 45, pending-shot pointer 0x80127000, aura pointer 0x80127D30 (a pointer to the hero itself)
+w6/W6-walk-square-held | 160 | (200, 100) | 0x00 | 1:RS | c14-51,r0-59 word 0x800 | - | holy_b1b | holy sword; Right + Square held from tick 1, from (200,100) toward the lake (reaches the water near tick 50), 160 ticks
+w7/W7-hurt-dive-s35 | 110 | (100, 96) | 0x1D | 3:R 35:RT 36:R | c0-51,r0-59 word 0x800 | [[20, 11, 0]] | b1b | Right from 3, dive (T) pressed at 35, Beannoid ahead
+w7/W7-hurt-dive-s45 | 110 | (100, 96) | 0x1D | 3:R 45:RT 46:R | c0-51,r0-59 word 0x800 | [[20, 11, 0]] | b1b | Right from 3, dive (T) pressed at 45, Beannoid ahead
+w7/W7-hurt-dive-s55 | 110 | (100, 96) | 0x1D | 3:R 55:RT 56:R | c0-51,r0-59 word 0x800 | [[20, 11, 0]] | b1b | Right from 3, dive (T) pressed at 55, Beannoid ahead
+w7/W7-hurt-dive-s60 | 110 | (100, 96) | 0x1D | 3:R 60:RT 61:R | c0-51,r0-59 word 0x800 | [[20, 11, 0]] | b1b | Right from 3, dive (T) pressed at 60, Beannoid ahead
+w7/W7-hurt-dive-s65 | 110 | (100, 96) | 0x1D | 3:R 65:RT 66:R | c0-51,r0-59 word 0x800 | [[20, 11, 0]] | b1b | Right from 3, dive (T) pressed at 65, Beannoid ahead
+w7/W7-hurt-dive-s70 | 110 | (100, 96) | 0x1D | 3:R 70:RT 71:R | c0-51,r0-59 word 0x800 | [[20, 11, 0]] | b1b | Right from 3, dive (T) pressed at 70, Beannoid ahead
+w7/W7-hurt-dive-s75 | 110 | (100, 96) | 0x1D | 3:R 75:RT 76:R | c0-51,r0-59 word 0x800 | [[20, 11, 0]] | b1b | Right from 3, dive (T) pressed at 75, Beannoid ahead
+w7/W7-hurt-idle-L2 | 80 | (232, 96) | 0x1D |  | c0-51,r0-59 word 0x800 | [[20, 11, 0]] | b1b | all water, boots level 2, hero (232,96) at rest 20 px west of the Beannoid, 80 ticks
+w7/W7-hurt-idle-L3 | 60 | (232, 96) | 0x1D |  | c0-51,r0-59 word 0x800 | [[20, 11, 0]] | b1c | as above, boots level 3
+w7/W7-hurt-keep | 300 | (232, 96) | 0x1D |  | c0-51,r0-59 word 0x800 | [[20, 11, 0]] | b1b | all water; the contact is kept (PosX := 232 px before every tick from 3), 300 ticks: the second and third hurt
+w7/W7-hurt-leaving-x346 | 60 | (346, 96) | 0x1D |  | c14-51,r0-59 word 0x800 | [[29, 11, 0]] | b1b | lake from x 336; hero at (346,96) in the water (box 336..356), Beannoid 20 px east at (366,96); the knockback (west, 3 px/tick) crosses the shore during 0x3A
+w7/W7-hurt-leaving-x352 | 60 | (352, 96) | 0x1D |  | c14-51,r0-59 word 0x800 | [[30, 11, 0]] | b1b | lake from x 336; hero at (352,96) in the water (box 342..362), Beannoid 20 px east at (372,96); the knockback (west, 3 px/tick) crosses the shore during 0x3A
+w7/W7-hurt-press-T | 60 | (232, 96) | 0x1D | 5:T 6:- 9:T 10:- 20:T 21:- | c0-51,r0-59 word 0x800 | [[20, 11, 0]] | b1b | all water, resting hero hurt at tick 2; button T pressed 1 tick at tick 5 (in 0x3A) and at tick 9 (in 0x3B) and 20 (0x1D)
+w7/W7-hurt-press-X | 60 | (232, 96) | 0x1D | 5:X 6:- 9:X 10:- 20:X 21:- | c0-51,r0-59 word 0x800 | [[20, 11, 0]] | b1b | all water, resting hero hurt at tick 2; button X pressed 1 tick at tick 5 (in 0x3A) and at tick 9 (in 0x3B) and 20 (0x1D)
+w7/W7-hurt-shore | 60 | (335, 96) | 0x00 |  | c14-51,r0-59 word 0x800 | [[28, 11, 0]] | b1b | lake from x 336; hero at (335,96) (box 325..345: half in the water), Beannoid 20 px east inside the water at (355,96)
+w7/W7-hurt-swim | 100 | (150, 96) | 0x1D | 3:R | c0-51,r0-59 word 0x800 | [[20, 11, 0]] | b1b | all water; swim Right from (150,96) toward the Beannoid, 100 ticks
+w8/W8-s00-R | 3 | (624, 480) | 0x00 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x00, pad R, all water, boots level 2, 3 ticks
+w8/W8-s00-T | 3 | (624, 480) | 0x00 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x00, pad T, all water, boots level 2, 3 ticks
+w8/W8-s00-idle | 3 | (624, 480) | 0x00 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x00, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s01-R | 3 | (624, 480) | 0x01 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x01, pad R, all water, boots level 2, 3 ticks
+w8/W8-s01-T | 3 | (624, 480) | 0x01 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x01, pad T, all water, boots level 2, 3 ticks
+w8/W8-s01-idle | 3 | (624, 480) | 0x01 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x01, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s02-R | 3 | (624, 480) | 0x02 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x02, pad R, all water, boots level 2, 3 ticks
+w8/W8-s02-T | 3 | (624, 480) | 0x02 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x02, pad T, all water, boots level 2, 3 ticks
+w8/W8-s02-idle | 3 | (624, 480) | 0x02 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x02, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s03-R | 3 | (624, 480) | 0x03 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x03, pad R, all water, boots level 2, 3 ticks
+w8/W8-s03-T | 3 | (624, 480) | 0x03 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x03, pad T, all water, boots level 2, 3 ticks
+w8/W8-s03-idle | 3 | (624, 480) | 0x03 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x03, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s04-R | 3 | (624, 480) | 0x04 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x04, pad R, all water, boots level 2, 3 ticks
+w8/W8-s04-T | 3 | (624, 480) | 0x04 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x04, pad T, all water, boots level 2, 3 ticks
+w8/W8-s04-idle | 3 | (624, 480) | 0x04 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x04, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s05-R | 3 | (624, 480) | 0x05 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x05, pad R, all water, boots level 2, 3 ticks
+w8/W8-s05-T | 3 | (624, 480) | 0x05 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x05, pad T, all water, boots level 2, 3 ticks
+w8/W8-s05-idle | 3 | (624, 480) | 0x05 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x05, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s06-R | 3 | (624, 480) | 0x06 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x06, pad R, all water, boots level 2, 3 ticks
+w8/W8-s06-T | 3 | (624, 480) | 0x06 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x06, pad T, all water, boots level 2, 3 ticks
+w8/W8-s06-idle | 3 | (624, 480) | 0x06 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x06, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s07-R | 3 | (624, 480) | 0x07 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x07, pad R, all water, boots level 2, 3 ticks
+w8/W8-s07-T | 3 | (624, 480) | 0x07 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x07, pad T, all water, boots level 2, 3 ticks
+w8/W8-s07-idle | 3 | (624, 480) | 0x07 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x07, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s08-R | 3 | (624, 480) | 0x08 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x08, pad R, all water, boots level 2, 3 ticks
+w8/W8-s08-T | 3 | (624, 480) | 0x08 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x08, pad T, all water, boots level 2, 3 ticks
+w8/W8-s08-idle | 3 | (624, 480) | 0x08 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x08, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s09-R | 3 | (624, 480) | 0x09 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x09, pad R, all water, boots level 2, 3 ticks
+w8/W8-s09-T | 3 | (624, 480) | 0x09 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x09, pad T, all water, boots level 2, 3 ticks
+w8/W8-s09-idle | 3 | (624, 480) | 0x09 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x09, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s0A-R | 3 | (624, 480) | 0x0A | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0A, pad R, all water, boots level 2, 3 ticks
+w8/W8-s0A-T | 3 | (624, 480) | 0x0A | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0A, pad T, all water, boots level 2, 3 ticks
+w8/W8-s0A-idle | 3 | (624, 480) | 0x0A |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0A, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s0B-R | 3 | (624, 480) | 0x0B | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0B, pad R, all water, boots level 2, 3 ticks
+w8/W8-s0B-T | 3 | (624, 480) | 0x0B | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0B, pad T, all water, boots level 2, 3 ticks
+w8/W8-s0B-idle | 3 | (624, 480) | 0x0B |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0B, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s0C-R | 3 | (624, 480) | 0x0C | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0C, pad R, all water, boots level 2, 3 ticks
+w8/W8-s0C-T | 3 | (624, 480) | 0x0C | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0C, pad T, all water, boots level 2, 3 ticks
+w8/W8-s0C-idle | 3 | (624, 480) | 0x0C |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0C, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s0D-R | 3 | (624, 480) | 0x0D | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0D, pad R, all water, boots level 2, 3 ticks
+w8/W8-s0D-T | 3 | (624, 480) | 0x0D | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0D, pad T, all water, boots level 2, 3 ticks
+w8/W8-s0D-idle | 3 | (624, 480) | 0x0D |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0D, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s0E-R | 3 | (624, 480) | 0x0E | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0E, pad R, all water, boots level 2, 3 ticks
+w8/W8-s0E-T | 3 | (624, 480) | 0x0E | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0E, pad T, all water, boots level 2, 3 ticks
+w8/W8-s0E-idle | 3 | (624, 480) | 0x0E |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0E, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s0F-R | 3 | (624, 480) | 0x0F | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0F, pad R, all water, boots level 2, 3 ticks
+w8/W8-s0F-T | 3 | (624, 480) | 0x0F | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0F, pad T, all water, boots level 2, 3 ticks
+w8/W8-s0F-idle | 3 | (624, 480) | 0x0F |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x0F, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s10-R | 3 | (624, 480) | 0x10 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x10, pad R, all water, boots level 2, 3 ticks
+w8/W8-s10-T | 3 | (624, 480) | 0x10 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x10, pad T, all water, boots level 2, 3 ticks
+w8/W8-s10-idle | 3 | (624, 480) | 0x10 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x10, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s11-R | 3 | (624, 480) | 0x11 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x11, pad R, all water, boots level 2, 3 ticks
+w8/W8-s11-T | 3 | (624, 480) | 0x11 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x11, pad T, all water, boots level 2, 3 ticks
+w8/W8-s11-idle | 3 | (624, 480) | 0x11 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x11, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s12-R | 3 | (624, 480) | 0x12 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x12, pad R, all water, boots level 2, 3 ticks
+w8/W8-s12-T | 3 | (624, 480) | 0x12 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x12, pad T, all water, boots level 2, 3 ticks
+w8/W8-s12-idle | 3 | (624, 480) | 0x12 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x12, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s13-R | 3 | (624, 480) | 0x13 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x13, pad R, all water, boots level 2, 3 ticks
+w8/W8-s13-T | 3 | (624, 480) | 0x13 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x13, pad T, all water, boots level 2, 3 ticks
+w8/W8-s13-idle | 3 | (624, 480) | 0x13 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x13, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s14-R | 3 | (624, 480) | 0x14 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x14, pad R, all water, boots level 2, 3 ticks
+w8/W8-s14-T | 3 | (624, 480) | 0x14 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x14, pad T, all water, boots level 2, 3 ticks
+w8/W8-s14-idle | 3 | (624, 480) | 0x14 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x14, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s15-R | 3 | (624, 480) | 0x15 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x15, pad R, all water, boots level 2, 3 ticks
+w8/W8-s15-T | 3 | (624, 480) | 0x15 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x15, pad T, all water, boots level 2, 3 ticks
+w8/W8-s15-idle | 3 | (624, 480) | 0x15 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x15, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s16-R | 3 | (624, 480) | 0x16 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x16, pad R, all water, boots level 2, 3 ticks
+w8/W8-s16-T | 3 | (624, 480) | 0x16 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x16, pad T, all water, boots level 2, 3 ticks
+w8/W8-s16-idle | 3 | (624, 480) | 0x16 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x16, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s17-R | 3 | (624, 480) | 0x17 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x17, pad R, all water, boots level 2, 3 ticks
+w8/W8-s17-T | 3 | (624, 480) | 0x17 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x17, pad T, all water, boots level 2, 3 ticks
+w8/W8-s17-idle | 3 | (624, 480) | 0x17 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x17, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s18-R | 3 | (624, 480) | 0x18 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x18, pad R, all water, boots level 2, 3 ticks
+w8/W8-s18-T | 3 | (624, 480) | 0x18 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x18, pad T, all water, boots level 2, 3 ticks
+w8/W8-s18-idle | 3 | (624, 480) | 0x18 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x18, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s19-R | 3 | (624, 480) | 0x19 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x19, pad R, all water, boots level 2, 3 ticks
+w8/W8-s19-T | 3 | (624, 480) | 0x19 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x19, pad T, all water, boots level 2, 3 ticks
+w8/W8-s19-idle | 3 | (624, 480) | 0x19 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x19, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s1A-R | 3 | (624, 480) | 0x1A | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1A, pad R, all water, boots level 2, 3 ticks
+w8/W8-s1A-T | 3 | (624, 480) | 0x1A | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1A, pad T, all water, boots level 2, 3 ticks
+w8/W8-s1A-idle | 3 | (624, 480) | 0x1A |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1A, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s1B-R | 3 | (624, 480) | 0x1B | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1B, pad R, all water, boots level 2, 3 ticks
+w8/W8-s1B-T | 3 | (624, 480) | 0x1B | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1B, pad T, all water, boots level 2, 3 ticks
+w8/W8-s1B-idle | 3 | (624, 480) | 0x1B |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1B, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s1C-R | 3 | (624, 480) | 0x1C | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1C, pad R, all water, boots level 2, 3 ticks
+w8/W8-s1C-T | 3 | (624, 480) | 0x1C | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1C, pad T, all water, boots level 2, 3 ticks
+w8/W8-s1C-idle | 3 | (624, 480) | 0x1C |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1C, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s1D-R | 3 | (624, 480) | 0x1D | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1D, pad R, all water, boots level 2, 3 ticks
+w8/W8-s1D-T | 3 | (624, 480) | 0x1D | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1D, pad T, all water, boots level 2, 3 ticks
+w8/W8-s1D-idle | 3 | (624, 480) | 0x1D |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1D, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s1E-R | 3 | (624, 480) | 0x1E | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1E, pad R, all water, boots level 2, 3 ticks
+w8/W8-s1E-T | 3 | (624, 480) | 0x1E | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1E, pad T, all water, boots level 2, 3 ticks
+w8/W8-s1E-idle | 3 | (624, 480) | 0x1E |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1E, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s1F-R | 3 | (624, 480) | 0x1F | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1F, pad R, all water, boots level 2, 3 ticks
+w8/W8-s1F-T | 3 | (624, 480) | 0x1F | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1F, pad T, all water, boots level 2, 3 ticks
+w8/W8-s1F-idle | 3 | (624, 480) | 0x1F |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x1F, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s20-R | 3 | (624, 480) | 0x20 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x20, pad R, all water, boots level 2, 3 ticks
+w8/W8-s20-T | 3 | (624, 480) | 0x20 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x20, pad T, all water, boots level 2, 3 ticks
+w8/W8-s20-idle | 3 | (624, 480) | 0x20 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x20, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s21-R | 3 | (624, 480) | 0x21 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x21, pad R, all water, boots level 2, 3 ticks
+w8/W8-s21-T | 3 | (624, 480) | 0x21 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x21, pad T, all water, boots level 2, 3 ticks
+w8/W8-s21-idle | 3 | (624, 480) | 0x21 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x21, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s22-R | 3 | (624, 480) | 0x22 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x22, pad R, all water, boots level 2, 3 ticks
+w8/W8-s22-T | 3 | (624, 480) | 0x22 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x22, pad T, all water, boots level 2, 3 ticks
+w8/W8-s22-idle | 3 | (624, 480) | 0x22 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x22, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s23-R | 3 | (624, 480) | 0x23 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x23, pad R, all water, boots level 2, 3 ticks
+w8/W8-s23-T | 3 | (624, 480) | 0x23 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x23, pad T, all water, boots level 2, 3 ticks
+w8/W8-s23-idle | 3 | (624, 480) | 0x23 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x23, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s24-R | 3 | (624, 480) | 0x24 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x24, pad R, all water, boots level 2, 3 ticks
+w8/W8-s24-T | 3 | (624, 480) | 0x24 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x24, pad T, all water, boots level 2, 3 ticks
+w8/W8-s24-idle | 3 | (624, 480) | 0x24 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x24, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s25-R | 3 | (624, 480) | 0x25 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x25, pad R, all water, boots level 2, 3 ticks
+w8/W8-s25-T | 3 | (624, 480) | 0x25 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x25, pad T, all water, boots level 2, 3 ticks
+w8/W8-s25-idle | 3 | (624, 480) | 0x25 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x25, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s26-R | 3 | (624, 480) | 0x26 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x26, pad R, all water, boots level 2, 3 ticks
+w8/W8-s26-T | 3 | (624, 480) | 0x26 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x26, pad T, all water, boots level 2, 3 ticks
+w8/W8-s26-idle | 3 | (624, 480) | 0x26 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x26, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s27-R | 3 | (624, 480) | 0x27 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x27, pad R, all water, boots level 2, 3 ticks
+w8/W8-s27-T | 3 | (624, 480) | 0x27 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x27, pad T, all water, boots level 2, 3 ticks
+w8/W8-s27-idle | 3 | (624, 480) | 0x27 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x27, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s28-R | 3 | (624, 480) | 0x28 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x28, pad R, all water, boots level 2, 3 ticks
+w8/W8-s28-T | 3 | (624, 480) | 0x28 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x28, pad T, all water, boots level 2, 3 ticks
+w8/W8-s28-idle | 3 | (624, 480) | 0x28 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x28, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s29-R | 3 | (624, 480) | 0x29 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x29, pad R, all water, boots level 2, 3 ticks
+w8/W8-s29-T | 3 | (624, 480) | 0x29 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x29, pad T, all water, boots level 2, 3 ticks
+w8/W8-s29-idle | 3 | (624, 480) | 0x29 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x29, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s2A-R | 3 | (624, 480) | 0x2A | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2A, pad R, all water, boots level 2, 3 ticks
+w8/W8-s2A-T | 3 | (624, 480) | 0x2A | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2A, pad T, all water, boots level 2, 3 ticks
+w8/W8-s2A-idle | 3 | (624, 480) | 0x2A |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2A, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s2B-R | 3 | (624, 480) | 0x2B | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2B, pad R, all water, boots level 2, 3 ticks
+w8/W8-s2B-T | 3 | (624, 480) | 0x2B | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2B, pad T, all water, boots level 2, 3 ticks
+w8/W8-s2B-idle | 3 | (624, 480) | 0x2B |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2B, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s2C-R | 3 | (624, 480) | 0x2C | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2C, pad R, all water, boots level 2, 3 ticks
+w8/W8-s2C-T | 3 | (624, 480) | 0x2C | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2C, pad T, all water, boots level 2, 3 ticks
+w8/W8-s2C-idle | 3 | (624, 480) | 0x2C |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2C, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s2D-R | 3 | (624, 480) | 0x2D | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2D, pad R, all water, boots level 2, 3 ticks
+w8/W8-s2D-T | 3 | (624, 480) | 0x2D | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2D, pad T, all water, boots level 2, 3 ticks
+w8/W8-s2D-idle | 3 | (624, 480) | 0x2D |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2D, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s2E-R | 3 | (624, 480) | 0x2E | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2E, pad R, all water, boots level 2, 3 ticks
+w8/W8-s2E-T | 3 | (624, 480) | 0x2E | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2E, pad T, all water, boots level 2, 3 ticks
+w8/W8-s2E-idle | 3 | (624, 480) | 0x2E |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2E, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s2F-R | 3 | (624, 480) | 0x2F | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2F, pad R, all water, boots level 2, 3 ticks
+w8/W8-s2F-T | 3 | (624, 480) | 0x2F | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2F, pad T, all water, boots level 2, 3 ticks
+w8/W8-s2F-idle | 3 | (624, 480) | 0x2F |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x2F, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s30-R | 3 | (624, 480) | 0x30 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x30, pad R, all water, boots level 2, 3 ticks
+w8/W8-s30-T | 3 | (624, 480) | 0x30 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x30, pad T, all water, boots level 2, 3 ticks
+w8/W8-s30-idle | 3 | (624, 480) | 0x30 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x30, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s31-R | 3 | (624, 480) | 0x31 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x31, pad R, all water, boots level 2, 3 ticks
+w8/W8-s31-T | 3 | (624, 480) | 0x31 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x31, pad T, all water, boots level 2, 3 ticks
+w8/W8-s31-idle | 3 | (624, 480) | 0x31 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x31, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s32-R | 3 | (624, 480) | 0x32 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x32, pad R, all water, boots level 2, 3 ticks
+w8/W8-s32-T | 3 | (624, 480) | 0x32 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x32, pad T, all water, boots level 2, 3 ticks
+w8/W8-s32-idle | 3 | (624, 480) | 0x32 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x32, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s33-R | 3 | (624, 480) | 0x33 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x33, pad R, all water, boots level 2, 3 ticks
+w8/W8-s33-T | 3 | (624, 480) | 0x33 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x33, pad T, all water, boots level 2, 3 ticks
+w8/W8-s33-idle | 3 | (624, 480) | 0x33 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x33, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s34-R | 3 | (624, 480) | 0x34 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x34, pad R, all water, boots level 2, 3 ticks
+w8/W8-s34-T | 3 | (624, 480) | 0x34 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x34, pad T, all water, boots level 2, 3 ticks
+w8/W8-s34-idle | 3 | (624, 480) | 0x34 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x34, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s35-R | 3 | (624, 480) | 0x35 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x35, pad R, all water, boots level 2, 3 ticks
+w8/W8-s35-T | 3 | (624, 480) | 0x35 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x35, pad T, all water, boots level 2, 3 ticks
+w8/W8-s35-idle | 3 | (624, 480) | 0x35 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x35, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s36-R | 3 | (624, 480) | 0x36 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x36, pad R, all water, boots level 2, 3 ticks
+w8/W8-s36-T | 3 | (624, 480) | 0x36 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x36, pad T, all water, boots level 2, 3 ticks
+w8/W8-s36-idle | 3 | (624, 480) | 0x36 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x36, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s37-R | 3 | (624, 480) | 0x37 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x37, pad R, all water, boots level 2, 3 ticks
+w8/W8-s37-T | 3 | (624, 480) | 0x37 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x37, pad T, all water, boots level 2, 3 ticks
+w8/W8-s37-idle | 3 | (624, 480) | 0x37 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x37, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s38-R | 3 | (624, 480) | 0x38 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x38, pad R, all water, boots level 2, 3 ticks
+w8/W8-s38-T | 3 | (624, 480) | 0x38 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x38, pad T, all water, boots level 2, 3 ticks
+w8/W8-s38-idle | 3 | (624, 480) | 0x38 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x38, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s39-R | 3 | (624, 480) | 0x39 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x39, pad R, all water, boots level 2, 3 ticks
+w8/W8-s39-T | 3 | (624, 480) | 0x39 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x39, pad T, all water, boots level 2, 3 ticks
+w8/W8-s39-idle | 3 | (624, 480) | 0x39 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x39, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s3A-R | 3 | (624, 480) | 0x3A | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3A, pad R, all water, boots level 2, 3 ticks
+w8/W8-s3A-T | 3 | (624, 480) | 0x3A | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3A, pad T, all water, boots level 2, 3 ticks
+w8/W8-s3A-idle | 3 | (624, 480) | 0x3A |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3A, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s3B-R | 3 | (624, 480) | 0x3B | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3B, pad R, all water, boots level 2, 3 ticks
+w8/W8-s3B-T | 3 | (624, 480) | 0x3B | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3B, pad T, all water, boots level 2, 3 ticks
+w8/W8-s3B-idle | 3 | (624, 480) | 0x3B |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3B, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s3C-R | 3 | (624, 480) | 0x3C | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3C, pad R, all water, boots level 2, 3 ticks
+w8/W8-s3C-T | 3 | (624, 480) | 0x3C | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3C, pad T, all water, boots level 2, 3 ticks
+w8/W8-s3C-idle | 3 | (624, 480) | 0x3C |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3C, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s3D-R | 3 | (624, 480) | 0x3D | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3D, pad R, all water, boots level 2, 3 ticks
+w8/W8-s3D-T | 3 | (624, 480) | 0x3D | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3D, pad T, all water, boots level 2, 3 ticks
+w8/W8-s3D-idle | 3 | (624, 480) | 0x3D |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3D, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s3E-R | 3 | (624, 480) | 0x3E | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3E, pad R, all water, boots level 2, 3 ticks
+w8/W8-s3E-T | 3 | (624, 480) | 0x3E | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3E, pad T, all water, boots level 2, 3 ticks
+w8/W8-s3E-idle | 3 | (624, 480) | 0x3E |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3E, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s3F-R | 3 | (624, 480) | 0x3F | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3F, pad R, all water, boots level 2, 3 ticks
+w8/W8-s3F-T | 3 | (624, 480) | 0x3F | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3F, pad T, all water, boots level 2, 3 ticks
+w8/W8-s3F-idle | 3 | (624, 480) | 0x3F |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x3F, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s40-R | 3 | (624, 480) | 0x40 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x40, pad R, all water, boots level 2, 3 ticks
+w8/W8-s40-T | 3 | (624, 480) | 0x40 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x40, pad T, all water, boots level 2, 3 ticks
+w8/W8-s40-idle | 3 | (624, 480) | 0x40 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x40, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s41-R | 3 | (624, 480) | 0x41 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x41, pad R, all water, boots level 2, 3 ticks
+w8/W8-s41-T | 3 | (624, 480) | 0x41 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x41, pad T, all water, boots level 2, 3 ticks
+w8/W8-s41-idle | 3 | (624, 480) | 0x41 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x41, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s42-R | 3 | (624, 480) | 0x42 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x42, pad R, all water, boots level 2, 3 ticks
+w8/W8-s42-T | 3 | (624, 480) | 0x42 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x42, pad T, all water, boots level 2, 3 ticks
+w8/W8-s42-idle | 3 | (624, 480) | 0x42 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x42, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s43-R | 3 | (624, 480) | 0x43 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x43, pad R, all water, boots level 2, 3 ticks
+w8/W8-s43-T | 3 | (624, 480) | 0x43 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x43, pad T, all water, boots level 2, 3 ticks
+w8/W8-s43-idle | 3 | (624, 480) | 0x43 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x43, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s44-R | 3 | (624, 480) | 0x44 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x44, pad R, all water, boots level 2, 3 ticks
+w8/W8-s44-T | 3 | (624, 480) | 0x44 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x44, pad T, all water, boots level 2, 3 ticks
+w8/W8-s44-idle | 3 | (624, 480) | 0x44 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x44, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s45-R | 3 | (624, 480) | 0x45 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x45, pad R, all water, boots level 2, 3 ticks
+w8/W8-s45-T | 3 | (624, 480) | 0x45 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x45, pad T, all water, boots level 2, 3 ticks
+w8/W8-s45-idle | 3 | (624, 480) | 0x45 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x45, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s46-R | 3 | (624, 480) | 0x46 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x46, pad R, all water, boots level 2, 3 ticks
+w8/W8-s46-T | 3 | (624, 480) | 0x46 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x46, pad T, all water, boots level 2, 3 ticks
+w8/W8-s46-idle | 3 | (624, 480) | 0x46 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x46, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s47-R | 3 | (624, 480) | 0x47 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x47, pad R, all water, boots level 2, 3 ticks
+w8/W8-s47-T | 3 | (624, 480) | 0x47 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x47, pad T, all water, boots level 2, 3 ticks
+w8/W8-s47-idle | 3 | (624, 480) | 0x47 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x47, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s48-R | 3 | (624, 480) | 0x48 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x48, pad R, all water, boots level 2, 3 ticks
+w8/W8-s48-T | 3 | (624, 480) | 0x48 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x48, pad T, all water, boots level 2, 3 ticks
+w8/W8-s48-idle | 3 | (624, 480) | 0x48 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x48, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s49-R | 3 | (624, 480) | 0x49 | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x49, pad R, all water, boots level 2, 3 ticks
+w8/W8-s49-T | 3 | (624, 480) | 0x49 | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x49, pad T, all water, boots level 2, 3 ticks
+w8/W8-s49-idle | 3 | (624, 480) | 0x49 |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x49, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s4A-R | 3 | (624, 480) | 0x4A | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4A, pad R, all water, boots level 2, 3 ticks
+w8/W8-s4A-T | 3 | (624, 480) | 0x4A | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4A, pad T, all water, boots level 2, 3 ticks
+w8/W8-s4A-idle | 3 | (624, 480) | 0x4A |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4A, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s4B-R | 3 | (624, 480) | 0x4B | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4B, pad R, all water, boots level 2, 3 ticks
+w8/W8-s4B-T | 3 | (624, 480) | 0x4B | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4B, pad T, all water, boots level 2, 3 ticks
+w8/W8-s4B-idle | 3 | (624, 480) | 0x4B |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4B, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s4C-R | 3 | (624, 480) | 0x4C | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4C, pad R, all water, boots level 2, 3 ticks
+w8/W8-s4C-T | 3 | (624, 480) | 0x4C | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4C, pad T, all water, boots level 2, 3 ticks
+w8/W8-s4C-idle | 3 | (624, 480) | 0x4C |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4C, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s4D-R | 3 | (624, 480) | 0x4D | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4D, pad R, all water, boots level 2, 3 ticks
+w8/W8-s4D-T | 3 | (624, 480) | 0x4D | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4D, pad T, all water, boots level 2, 3 ticks
+w8/W8-s4D-idle | 3 | (624, 480) | 0x4D |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4D, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s4E-R | 3 | (624, 480) | 0x4E | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4E, pad R, all water, boots level 2, 3 ticks
+w8/W8-s4E-T | 3 | (624, 480) | 0x4E | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4E, pad T, all water, boots level 2, 3 ticks
+w8/W8-s4E-idle | 3 | (624, 480) | 0x4E |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4E, pad idle, all water, boots level 2, 3 ticks
+w8/W8-s4F-R | 3 | (624, 480) | 0x4F | 1:R | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4F, pad R, all water, boots level 2, 3 ticks
+w8/W8-s4F-T | 3 | (624, 480) | 0x4F | 1:T | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4F, pad T, all water, boots level 2, 3 ticks
+w8/W8-s4F-idle | 3 | (624, 480) | 0x4F |  | c0-51,r0-59 word 0x800 | - | b1b | start target animation 0x4F, pad idle, all water, boots level 2, 3 ticks
+w9/W9-circle-idle | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | b1b | Circle pressed at tick 10 from swim idle (kit: no item)
+w9/W9-circle-swim | 60 | (624, 480) | 0x1D | 5:R 20:RO 21:R | c0-51,r0-59 word 0x800 | - | b1b | Circle pressed at tick 20 while swimming Right
+w9/W9-item1F | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item1F | item 0x1F equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item20 | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item20 | item 0x20 equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item21 | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item21 | item 0x21 equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item22 | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item22 | item 0x22 equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item23 | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item23 | item 0x23 equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item24 | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item24 | item 0x24 equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item25 | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item25 | item 0x25 equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item26 | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item26 | item 0x26 equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item27 | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item27 | item 0x27 equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item28 | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item28 | item 0x28 equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item29 | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item29 | item 0x29 equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item2A | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item2A | item 0x2A equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item2B | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item2B | item 0x2B equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item2C | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item2C | item 0x2C equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item2D | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item2D | item 0x2D equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item2E | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item2E | item 0x2E equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item2F | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item2F | item 0x2F equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item30 | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item30 | item 0x30 equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item31 | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item31 | item 0x31 equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-item32 | 60 | (624, 480) | 0x1D | 10:O 11:- | c0-51,r0-59 word 0x800 | - | item32 | item 0x32 equipped, Circle pressed at tick 10 in swim idle, 60 ticks
+w9/W9-land-s0F | 6 | (624, 480) | 0x0F |  | flat | - | b1b | dry ground, target animation 0x0F at the start, no pad, 6 ticks
+w9/W9-land-s1D | 6 | (624, 480) | 0x1D |  | flat | - | b1b | dry ground, target animation 0x1D at the start, no pad, 6 ticks
+w9/W9-land-s28 | 6 | (624, 480) | 0x28 |  | flat | - | b1b | dry ground, target animation 0x28 at the start, no pad, 6 ticks
+w9/W9-land-s3A | 6 | (624, 480) | 0x3A |  | flat | - | b1b | dry ground, target animation 0x3A at the start, no pad, 6 ticks
+w9/W9-land-s3B | 6 | (624, 480) | 0x3B |  | flat | - | b1b | dry ground, target animation 0x3B at the start, no pad, 6 ticks

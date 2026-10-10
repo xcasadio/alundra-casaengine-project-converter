@@ -1,0 +1,72 @@
+== W3 the dive (pressed & 0xD0 = Triangle 0x10, Cross 0x40, Square 0x80; Circle 0x20 is not in the mask).  All water, boots level 2, hero in 0x1D at tick 0 ==
+(a) one-tick press of each button, from swim idle (press at tick 10) and while swimming Right (held from 5, press at tick 20), 120 ticks
+  T from idle : anim 0-9:1D 10-51:28 52-120:1D | b0@50 0 | dir 0-120:18 | pos x 717.84 | snd [(10, 21), (52, 0)]
+  T from swim : anim 0-4:1D 5-19:0F 20-61:28 62:1D 63-120:0F | F(x) 18/20/21/22/30/60 [96768, 135168, 135168, 135168, 135168, 135168] | pos x 823.84
+  X from idle : anim 0-9:1D 10-51:28 52-120:1D | b0@50 0 | dir 0-120:18 | pos x 717.84 | snd [(10, 21), (52, 0)]
+  X from swim : anim 0-4:1D 5-19:0F 20-61:28 62:1D 63-120:0F | F(x) 18/20/21/22/30/60 [96768, 135168, 135168, 135168, 135168, 135168] | pos x 823.84
+  S from idle : anim 0-9:1D 10-51:28 52-120:1D | b0@50 0 | dir 0-120:18 | pos x 717.84 | snd [(10, 21), (52, 0)]
+  S from swim : anim 0-4:1D 5-19:0F 20-61:28 62:1D 63-120:0F | F(x) 18/20/21/22/30/60 [96768, 135168, 135168, 135168, 135168, 135168] | pos x 823.84
+  O from idle : anim 0-120:1D | b0@50 1 | dir 0-120:18 | pos x 624.00 | snd [(10, 3)]
+  O from swim : anim 0-4:1D 5-120:0F | F(x) 18/20/21/22/30/60 [96768, 110592, 110592, 110592, 110592, 110592] | pos x 807.09
+(b) Triangle HELD from tick 10 to the end (single edge), swim idle: does the dive re-trigger when it ends?
+  anim 0-9:1D 10-51:28 52-150:1D
+(c) taps every 5 ticks from tick 10 (T pressed 1 tick each) for 120 ticks: re-trigger when the dive ends? presses during the dive are ignored?
+  anim 0-9:1D 10-51:28 52-54:1D 55-96:28 97-99:1D 100-140:28
+(d) the direction at the dive tick: dive pressed with each direction held (pad = dir | T at tick 10, dir kept 10-14, then 0): dir_target and facing at 11, and the force built during the dive
+  dir U    anim 0-9:1D 10-51:28 52-100:1D | dir_target@10/11/12/40 [16, 16, 16, 16] facing@40 1 | F@11/12/20/40 [(0, -90112), (0, -90112), (0, -90112), (0, -90112)] | pos(40) (0.00,-42.62)
+  dir R    anim 0-9:1D 10-51:28 52-100:1D | dir_target@10/11/12/40 [24, 24, 24, 24] facing@40 3 | F@11/12/20/40 [(135168, 0), (135168, 0), (135168, 0), (135168, 0)] | pos(40) (63.94,0.00)
+  dir D    anim 0-9:1D 10-51:28 52-100:1D | dir_target@10/11/12/40 [0, 0, 0, 0] facing@40 0 | F@11/12/20/40 [(0, 90112), (0, 90112), (0, 90112), (0, 90112)] | pos(40) (0.00,42.62)
+  dir L    anim 0-9:1D 10-51:28 52-100:1D | dir_target@10/11/12/40 [8, 8, 8, 8] facing@40 2 | F@11/12/20/40 [(-135168, 0), (-135168, 0), (-135168, 0), (-135168, 0)] | pos(40) (-63.94,0.00)
+  dir UR   anim 0-9:1D 10-51:28 52-100:1D | dir_target@10/11/12/40 [20, 20, 20, 20] facing@40 3 | F@11/12/20/40 [(95568, -63712), (95568, -63712), (95568, -63712), (95568, -63712)] | pos(40) (45.21,-30.14)
+  dir DR   anim 0-9:1D 10-51:28 52-100:1D | dir_target@10/11/12/40 [28, 28, 28, 28] facing@40 3 | F@11/12/20/40 [(95568, 63712), (95568, 63712), (95568, 63712), (95568, 63712)] | pos(40) (45.21,30.14)
+  dir DL   anim 0-9:1D 10-51:28 52-100:1D | dir_target@10/11/12/40 [4, 4, 4, 4] facing@40 2 | F@11/12/20/40 [(-95568, 63712), (-95568, 63712), (-95568, 63712), (-95568, 63712)] | pos(40) (-45.21,30.14)
+  dir UL   anim 0-9:1D 10-51:28 52-100:1D | dir_target@10/11/12/40 [12, 12, 12, 12] facing@40 2 | F@11/12/20/40 [(-95568, -63712), (-95568, -63712), (-95568, -63712), (-95568, -63712)] | pos(40) (-45.21,-30.14)
+  dir none anim 0-9:1D 10-51:28 52-100:1D | dir_target@10/11/12/40 [24, 24, 24, 24] facing@40 3 | F@11/12/20/40 [(135168, 0), (135168, 0), (135168, 0), (135168, 0)] | pos(40) (63.94,0.00)
+(e) direction held through the dive, changed during it (Right at the press, Left from tick 20, Up from 30): TargetDirection is not written during 0x28
+  anim 0-9:1D 10-51:28 52:1D 53-60:0F 61-100:1D | dir_target 0-52:18 53-100:10 | facing 0-52:03 53-100:01
+   t9   1D>1D dir 18/18 f3 F(0,0,0) pos(624.00,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t10  28>28 dir 18/18 f3 F(135168,0,0) pos(626.06,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[21] fx[]
+   t11  28>28 dir 18/18 f3 F(135168,0,0) pos(628.12,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t12  28>28 dir 18/18 f3 F(135168,0,0) pos(630.19,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t13  28>28 dir 18/18 f3 F(135168,0,0) pos(632.25,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t14  28>28 dir 18/18 f3 F(135168,0,0) pos(634.31,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t49  28>28 dir 18/18 f3 F(135168,0,0) pos(706.50,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[6]
+   t50  28>28 dir 18/18 f3 F(135168,0,0) pos(708.56,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t51  28>28 dir 18/18 f3 F(135168,0,0) pos(710.62,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t52  1D>1D dir 18/18 f3 F(118272,0,0) pos(712.43,480.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[0] fx[]
+   t53  0F>0F dir 10/10 f1 F(110880,-4608,0) pos(714.12,479.93,0.00) g1 adj0 sl4 b0=1 ch0 snd[22] fx[]
+   t54  0F>0F dir 10/10 f1 F(103488,-9216,0) pos(715.70,479.79,0.00) g1 adj0 sl4 b0=1 ch0 snd[] fx[]
+   t55  0F>0F dir 10/10 f1 F(96096,-13824,0) pos(717.17,479.58,0.00) g1 adj0 sl4 b0=1 ch0 snd[] fx[]
+   t56  0F>0F dir 10/10 f1 F(88704,-18432,0) pos(718.52,479.30,0.00) g1 adj0 sl4 b0=1 ch0 snd[] fx[]
+(f) the end of the dive (surfacing): dive at 10 with Right held through; with the pad released after the dive; with the pad released at 30 (mid-dive)
+  held     : anim 0-4:1D 5-9:0F 10-51:28 52:1D 53-90:0F
+   t50  28>28 dir 18/18 f3 F(135168,0,0) pos(710.14,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t51  28>28 dir 18/18 f3 F(135168,0,0) pos(712.21,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t52  1D>1D dir 18/18 f3 F(118272,0,0) pos(714.01,480.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[0] fx[]
+   t53  0F>0F dir 18/18 f3 F(117792,0,0) pos(715.81,480.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[22] fx[]
+   t54  0F>0F dir 18/18 f3 F(117312,0,0) pos(717.60,480.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[] fx[]
+   t55  0F>0F dir 18/18 f3 F(116832,0,0) pos(719.38,480.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[] fx[]
+  released : anim 0-4:1D 5-9:0F 10-51:28 52-100:1D | F(x) at 30/31/40/51/52/53/60 [135168, 135168, 135168, 135168, 118272, 101376, 0]
+   t50  28>28 dir 18/18 f3 F(135168,0,0) pos(710.14,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t51  28>28 dir 18/18 f3 F(135168,0,0) pos(712.21,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t52  1D>1D dir 18/18 f3 F(118272,0,0) pos(714.01,480.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[0] fx[]
+   t53  1D>1D dir 18/18 f3 F(101376,0,0) pos(715.56,480.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[] fx[]
+   t54  1D>1D dir 18/18 f3 F(84480,0,0) pos(716.85,480.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[] fx[]
+   t55  1D>1D dir 18/18 f3 F(67584,0,0) pos(717.88,480.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[] fx[]
+(g) two buttons: T and X pressed the same tick (one edge word) / X pressed during the dive / S pressed on the last dive tick / T pressed on the tick after the dive ends
+  T+X same tick : 0-9:1D 10-51:28 52-80:1D
+  X during dive : 0-9:1D 10-51:28 52-100:1D
+  (dive from idle ends: first tick back to 0x1D = 52)
+  second T at end-1 (tick 51): 0-9:1D 10-51:28 52-120:1D
+  second T at end+0 (tick 52): 0-9:1D 10-51:28 52-120:1D
+  second T at end+1 (tick 53): 0-9:1D 10-51:28 52:1D 53-94:28 95-120:1D
+  second T at end+2 (tick 54): 0-9:1D 10-51:28 52-53:1D 54-95:28 96-120:1D
+(h) the first ticks after entering the water (walk east from (320,100), lake at x 336, boots level 2): a dive pressed around the first tick with slope 4
+  reference: slope first 4 at the end of tick 12; anim 0:00 1-12:01 13:1D 14-40:0F
+  T at ts-1 (tick 11): anim 0:00 1-10:01 11:29 12:00 13-14:01 15:1D 16-60:0F
+  T at ts+0 (tick 12): anim 0:00 1-11:01 12:29 13:00 14:01 15:1D 16-60:0F
+  T at ts+1 (tick 13): anim 0:00 1-12:01 13:1D 14-60:0F
+  T at ts+2 (tick 14): anim 0:00 1-12:01 13:1D 14-55:28 56:1D 57-60:0F
+  T at ts+3 (tick 15): anim 0:00 1-12:01 13:1D 14:0F 15-56:28 57:1D 58-60:0F
+  T at ts+4 (tick 16): anim 0:00 1-12:01 13:1D 14-15:0F 16-57:28 58:1D 59-60:0F
+
