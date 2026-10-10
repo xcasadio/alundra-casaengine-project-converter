@@ -131,7 +131,8 @@ Après la découverte d'E20.c2, l'auteur a répondu le 2026-10-09 « fait toutes
   comprises.
 - **D-E20-22** — E20.c2 porte `0xC3` (soin complet) et `0xBC` (PV max + n), en écrivant dans l'entité du héros.
 - **D-E20-23** — Touché en eau profonde, le héros garde la règle de l'original (`0x3A` sur la pente 4) jusqu'à E20.i ; la blessure
-  brève qui en résulte dans la DLL est un écart documenté.
+  brève qui en résulte dans la DLL est un écart documenté. **Caduque (2026-10-10)** : E20.i précède E20.c2b et porte les gestionnaires
+  de `0x3A` et `0x3B` ; E20.c2b n'aura qu'à ajouter l'entrée (`+0x88 = (pente 4) ? 0x3A : 0x31`), la « blessure brève » n'existera jamais.
 - **D-E20-24** — **Ordre de la suite** (« Je veux dans l'ordre : les armes, l'utilisation des objets et les collisions ») : E20.f
   (armes), puis E20.h (objets du Rond), puis les collisions, que la session principale lit comme E20.g (porter et lancer ; caisses et
   jarres redeviennent des obstacles, fin des écarts D-E19-28 et D-E19-46) — lecture à confirmer par l'auteur. Les prérequis de chaque
@@ -243,6 +244,19 @@ contre-vérification divergent, la contre-vérification est retenue (critique, �
   regard la relance (une préparation retournée au tick 10 démarre au 35, au 20 au 45) ; poussière de `0x29` : aucune pendant la
   première boucle, puis toutes les 8 images (`+0xB0` à 1 ou 2), puis toutes les 4 (E20.e) ; `0x3E` dure 11 ticks puis passe à `0x01`
   en l'air, c'est le chemin normal ; sans bottes de niveau ≥ 2, l'eau profonde est un mur (O-E19-22).
+- **La nage (E20.i, 2026-10-10, §1.14, mesurée sur l'oracle `out-swim/`)** :
+  - sur la pente 4, `MovePlayer` quitte tout au profit de la branche `0x8003260C` : charge et pointeur de tir à 0, `UpdatePlayerCarriedEntity(2)`,
+    puis la table `0x80022E7C` (80 états, six genres) ; ni les trois appels avant l'aiguillage, ni `PlayerTryAttack`, ni `PlayerTryAction` ;
+  - flotter `0x1D` (36 ticks, décélération `>> 3`), nager `0x0F` (110592 en X, 73728 en Y, diagonales 78192 et 52128, rampe de 6912 par
+    tick depuis le repos, son 22 à chaque enchaînement sur lui-même, 42 ticks), élan `0x28` (au front de Triangle, Croix ou Carré, `& 0xD0` ;
+    135168 en X, 90112 en Y, 42 ticks, son 21, direction figée, rien n'est lu pendant l'élan), blessure `0x3A` (4 ticks, son 23) puis `0x3B`
+    (8 ticks, tenu), sortie `0x1D` à `+0xAC == 1` avec la direction retournée ;
+  - toute entrée dans l'eau coûte un tick de `0x1D` (un front de plongée sur ce tick est perdu) ; l'élan de la marche ou de la course est conservé
+    (`R9-deepwater-boots2` : 258048 au 89, 225792 au 90, 218592 au 91, `-7200` par tick jusqu'à 110592) ;
+  - la sortie vers la terre est géométrique (une case hors de l'eau suffit : pente 0), par la table générale `0x80022D3C` : `0x0F`, `0x1D`,
+    `0x28` donnent Idle au sol ou `0x2D` en l'air, `0x3A` et `0x3B` retournent la direction d'abord (`0x80031DB4`) ;
+  - hors de la DLL aujourd'hui : le mur d'eau profonde sans bottes (O-E19-22), les courants (O-E20-16), l'éclaboussure, le sillage et la ride de
+    l'élan (E20.e).
 
 #### 0.2.4 L'attaque
 
@@ -485,7 +499,7 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | E20.c1b-2 (§1.7) | Les réactions scriptées : leviers de la 115 nord-ouest et de la 116, bascule et levier 22 de la 117, leviers de la 44, par des arcs qui partent d'une arrivée dans la zone du levier (sans oracle du binaire : attentes tirées des programmes) ; le P3 reporté de c1b-1 ; le couvercle de la 362 attend la bombe (E20.h) | arcs | Les leviers réagissent au coup d'épée, quand on peut les atteindre (après le hall de la 115) |
 | *E14.a* (autre étape) | Muruta et Beannoïde (D-E20-4), planifiée après E20.c1 | plan d'E14 | Le hall de la 115 |
 | E20.c2 | Le héros touché : entrée `0x80031A68` (toucheur et cases dangereuses), `0x31`/`0x3A`, invulnérabilité `0x78` et clignotement, PV vers `PlayerStats` et le HUD, `UpdateItemEffectState` (table de défense, bottes, régénération) et le pilote `0x8003634C` en vrai (D-E20-14), chemin `controlFlags == 0x20`, pas de mort (D-E20-5) | oracle de `0x80031A68` ; arcs | Les cœurs baissent au contact, le héros clignote, il ne meurt pas |
-| E20.d | Course : les cinq états, entrée et sorties, cône, reprise, rebond, charge `0x04` (ses coups viennent d'E20.c1), escalade prioritaire, arrondi du stick (D-E20-8) ; le test épinglé « Triangle seul donne Idle » s'inverse | oracle de `MovePlayer` ; arcs | Courir, s'arrêter, reprendre, foncer, buter contre un mur, sauter d'un rebord ; sur l'eau profonde, le héros marche encore (la nage est E20.i) |
+| E20.d | Course : les cinq états, entrée et sorties, cône, reprise, rebond, charge `0x04` (ses coups viennent d'E20.c1), escalade prioritaire, arrondi du stick (D-E20-8) ; le test épinglé « Triangle seul donne Idle » s'inverse | oracle de `MovePlayer` ; arcs | Courir, s'arrêter, reprendre, foncer, buter contre un mur, sauter d'un rebord ; sur l'eau profonde, le héros nage (E20.i, 2026-10-10 : le garde d'E20.d1 a disparu) |
 | E20.e0 | Apparition d'entités et butin (D-E20-17) : `SpawnWarpEntity` (`0x80039F58`, 102 appelants) par indice de sprite global, tirage du butin à l'apparition (`0x80032A40`), lâcher à la mort (`0x80032B90`) avec son veto, objet ramassable (gestionnaire C255), avance du générateur pseudo-aléatoire une fois par tick après la mise à jour du monde (`0x8002BD14`) | oracle ; arcs | Rien de visible seul ; recette avec E20.e |
 | E20.e | Effets du héros et herbe coupée : `CreatePlayerAnimationEffects` (pas, poussière de marche, de course et d'atterrissage), `CheckAndTriggerTileEffect`, butin tiré par E20.e0 | oracle ; arcs | Pas et poussière ; l'herbe se coupe à l'épée et à la charge ; argent et cœurs tombent et se ramassent |
 | E20.f | Autres armes (D-E20-7) : charge et aura, fléau et rebond, baguettes, arcs, projectiles par l'apparition d'E20.e0 et les gestionnaires propres au héros, vague de l'épée C61 et flèches chargées C94 (D-E20-18), `0xC0`/`0xC1` | oracle ; arcs | Sauvegarde de test avec les armes (à créer) |
@@ -508,7 +522,8 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
     donc avec E20.c1 et E14.
   - **E20.h** : E20.e0 (faire apparaître la bombe), E20.c1 (`0x87` et le couvercle de la 362), E20.e (la coupe de l'herbe par la
     bombe) et E20.g (poser ou lancer la bombe, si la découverte de la tranche le confirme).
-  - **E20.i** : E20.a ; E20.c2 pour l'état blessé dans l'eau (`0x3A`).
+  - **E20.i** : E20.a, E20.c2a, E20.d1, E20.f1a. L'arête « E20.c2 pour l'état blessé dans l'eau (`0x3A`) » s'est **inversée** (2026-10-10) :
+    E20.i porte les gestionnaires de `0x3A` et `0x3B`, c'est la branche de l'eau d'E20.c2b qui dépend d'E20.i.
 - **Mise à jour de ce plan** : chaque tranche remet au §0.2 ce qu'elle a mesuré, puis fait détailler,
   relire et approuver la suivante. Une tranche qui touche le convertisseur fait un export complet.
 
@@ -2257,8 +2272,8 @@ Le test « Triangle seul donne Idle » s'inverse.
   - sur la pente 4, la queue ne teste pas Triangle ;
   - un état de course (`0x29`, `0x03`, `0x2A`, `0x04`, `0x3E`, `0x1C`) passe à Idle, à la place de `0x1D`, avec l'écriture de
     direction du binaire : retournée pour `0x3E` et `0x1C` (`0x80032658`), inchangée sinon ;
-  - E20.i remplacera ce garde par la branche `0x8003260C` ;
-  - le mur d'eau profonde sans bottes (O-E19-22) reste hors d'E20.d (Q-N3).
+  - E20.i a remplacé ce garde par la branche `0x8003260C` (2026-10-10) ;
+  - le mur d'eau profonde sans bottes (O-E19-22) reste hors d'E20.d et d'E20.i (Q-N3).
 - **Regard du tick.** Le cône lit le regard que le binaire aurait posé au tick précédent (et en E20.d2, l'égalité du stick aussi) :
   - il se calcule une fois en tête de `MovePlayer`, avant toute écriture, par `TryResolveAnimationTarget` ;
   - il est exact à 1 et 2 ticks par image, et quel que soit le nombre de ticks dans `0x03` (direction cardinale, table idempotente) ;
@@ -2395,7 +2410,7 @@ tests existants (inversé : Triangle seul donne `0x29`, compteur `0`, direction 
 - **Mur est** : la DLL rebondit au tick 86, l'oracle au 87 (O-E19-42 / D-E19-58 : elle s'arrête au contact au 84, à 14745600, quand
   le binaire s'arrête une unité avant, à 14745599, et fait cette unité au 85). Les traces du mur est, de ses quatre variantes et des
   marches sont comparées avec le pad de l'oracle décalé d'un tick à partir du 85 : tout le reste est exact, à une unité près au 84.
-- **Garde de l'eau profonde** : au tick où les quatre coins sont sur la pente 4 (le 89 de `R9-deepwater-boots2`), le tick suivant
+- **Garde de l'eau profonde (remplacé par la nage d'E20.i, 2026-10-10)** : au tick où les quatre coins sont sur la pente 4 (le 89 de `R9-deepwater-boots2`), le tick suivant
   met Idle (le binaire met `0x1D`), le suivant Moving ; Triangle sur l'eau profonde ne lance pas la préparation (le héros marche) ;
   `0x3E` et `0x1C` retournent la direction d'abord. Le mur d'eau profonde sans bottes (`R9-deepwater-noboots`) et la nage (départs dans
   l'eau) ne sont pas portés : E20.i et O-E19-22.
@@ -2462,7 +2477,7 @@ dominant, une diagonale à 45° sur l'axe du regard, et la marche ne change pas.
 **Questions pour l'auteur.**
 - **Q-D1** (bloque seulement la clôture d'E20.d2) : la mesure du stick. Avec quelle manette ? Vous lancez le jeu avec la sonde de S3
   et renvoyez x, y aux huit directions. On garde ε = 1/16 si la mesure ne montre rien ?
-- **Q-D2** (non bloquante, le défaut s'applique) : sur l'eau profonde, le garde fait marcher le héros à la place de la course.
+- **Q-D2** (non bloquante, le défaut s'applique ; depuis E20.i le héros nage au lieu de marcher, le mur reste à décider, Q-N3) : sur l'eau profonde, le garde fait marcher le héros à la place de la course.
   Préférez-vous porter d'abord le mur d'eau profonde sans bottes (O-E19-22, Q-N3), qui rendrait la course fidèle avec l'équipement
   de départ ?
 
@@ -2476,7 +2491,7 @@ dominant, une diagonale à 45° sur l'axe du regard, et la marche ne change pas.
 lecture par tick demande la règle de recollement au sol de 3 px `0x80037848` et la re-dérivation de UH7, AT8, AT8n, AT8b et des
 traces highground ; tranche à part après E20.d ».
 
-### 1.14 E20.i — La nage ⏳
+### 1.14 E20.i — La nage 🧪 (faite le 2026-10-10, `7278069` à la clôture ; reste le verifier frais et la recette de l'auteur)
 
 Découverte en lecture seule du 2026-10-10 (`docs/plan-e20-annexe/e20-i/` : `swim-binary.md`, `swim-dll.md`, `swim-oracle.md`,
 contre-vérifiées par `check.md` : tables et gestionnaires redécodés, W1 à W10 de l'oracle rejoués à l'identique). Cette section
@@ -2549,7 +2564,7 @@ les effets d'eau (E20.e), les objets du Rond dans l'eau et le son 3 (E20.h), l'a
   `0x1D` puis `0x0F`, plonger, buter contre la berge ; le même sans bottes, épinglé comme écart (il nage).
 - ✅ **T5 — Sauvegarde de test** `swim-m14` : carte 14, bottes 0x1B, tuile proposée (40, 48, 1) sur la berge (à vérifier : marchable,
   hors zone d'événement).
-- ⏳ **T6 — Plan.** Résultats, §0.2, lignes O-E19-22 et O-E20-16, D-E20-23 caduque, arête de dépendance d'E20.c2b, recette d'E20.d
+- ✅ **T6 — Plan.** Résultats, §0.2, lignes O-E19-22 et O-E20-16, D-E20-23 caduque, arête de dépendance d'E20.c2b, recette d'E20.d
   (« sur l'eau profonde, le héros nage »).
 
 #### Acceptation
@@ -2589,6 +2604,47 @@ Rond ne sont pas comparés (E20.e, E20.h).
   Triangle, à la Croix et au Carré (pas au Rond), buter contre la berge ; sortir par une rive de même niveau sur la 416 si on y
   accède (pas par la cascade). Écarts attendus : ni éclaboussure ni sillage ; sans bottes, le héros nage.
 
+#### Résultats (2026-10-10)
+
+Commits : T0 `7278069`, T1 `5e863ea`, T3 `fd9f5e5`, T2 `bdc5a84`, T4 `8ac6925`, T5 `34523bd` (T2 vient après T3 : les deux tests de l'oracle de la course qu'il
+change comparent des traces entières). Suite complète : Release puis Debug, 4605 tests, 0 échec ; `Alundra.dll` de `alundra-project/` identique à celui de Debug ;
+traces du héros (389) et de l'intro, sonde du vrai jeu : inchangées. Mutations attrapées (chacune par au moins 2 tests) : masque `0xD0` privé du Carré,
+direction écrite après `TryUseItem`, sortie de terre à `0x2D` au sol, retournement oublié (`0x3B` côté terre, `0x3B` côté eau), charge non remise à 0,
+trio non sauté, groupe `0x80032758` réécrit en `0x1D`, une entrée de la table retirée.
+- **T0** : les dix groupes rejoués depuis une copie avec `--cross` redonnent `manifest-swim.txt` (785 lignes) octet pour octet ; `sverify.py` : porte D1 PASS
+  (S-A `1ae0cc02`, S-B `975c342a`, 216 valeurs chacune), 549 fichiers de `out/` régénérés identiques. La porte se rejoue dans la copie avec le document des valeurs
+  placé en `docs/plan-e20-annexe/` et les traces D1 de référence en `oracle/d1/out/` (aucun outil copié modifié ; README « Swim »).
+- **T1** : la table `0x80022E7C` du code égale celle de l'exécutable entrée par entrée (80 mots), six genres ; masque `0xD0`.
+- **T2** : la branche, les six gestionnaires, les sorties vers la terre ; le garde d'E20.d1, `IsRunState` et la clause de la queue sont retirés.
+- **T3** : montage : état de départ de la trace, inventaires `b1c` et `holy_b1b`, les cinq états dans l'horloge de sprites, filtres de sons et du compteur de fins.
+  Un héros qui commence dans l'eau profonde est ramené à l'état de départ de la trace après l'image de mise en place (le binaire n'exécute pas `MovePlayer` avant le tick 1).
+- **T4** : 109 tests de traces (R9, W1 à W7, W9, W10), 295 de branche (les 240 traces de W8 par état, les six gestionnaires, les sorties), 2 arcs au vrai préfab
+  (étang de la 14, tuile (40, 48, 1) : marcher, tomber de 16 px, `0x2C` aux ticks 11 à 18, pente 4 au 18, `0x1D` au 19 (87808), `0x0F` au 20 (86928), `-880` par tick
+  jusqu'à 73728 au 35 ; élan de 90112 pendant 42 ticks ; butée contre la berge sud ; sans bottes, identique).
+- **T5** : `swim-m14`, **tuile (40, 48, 1) retenue sans changement** : hauteur 1, marchable, `ground_property 0x10`, aucune case de portail sur la carte 14, l'arc y a marché
+  sans événement.
+- Valeurs de l'acceptation toutes retrouvées : R9 (pente 4 au 89, `0x1D` 225792 au 90, `0x0F` 218592 au 91, `-7200` jusqu'à 110592 au 106 ; départ dans l'eau `0x1D` au 1,
+  `0x0F` au 2 à 6912, +6912, 110592 au 17, son 22 et `b0 = 1` au 44 ; `start-T` `0x1D` de 1 à 40, `b0 = 1` au 37), W1 (marche : pente 4 au 20, 139776 au 21, 137952 au 22 ;
+  saut `s03` : `0x1D` au 24 (131712), `0x0F` au 25 (130392) ; chute de 32 px : `0x2C` 21-31, `0x1D` 32, `0x0F` 33), W2 (huit directions et rampes, demi-tour au 41 à 96768, son 22
+  aux 5, 47, 89, 131, 173), W3 (`0x28` 20-61 à 135168, son 21 au 20, `0x1D` au 62 à 118272 avec `b0 = 1`, `0x0F` au 63 à 117792 ; Croix et Carré identiques, Rond sans plongée, maintien
+  sans seconde plongée, appuis toutes les 5 ticks : plongées 10-51 et 55-96, entrées `+0`, `+1`, `+2`), W4 (pente 0 au 103, Idle 104 à -55296, -107520, -159744 ; Triangle tenu :
+  Idle 122, `0x29` 123-147, `0x03` au 148 ; élan coupé : Idle au 32 à -67584 ; berges de 16 et 32 px : x 346,00), W5 (mur est : **égal sans tolérance**, `ForceAdjusted` dès le 78, x 709,00),
+  W6 (charge 60 au 83, 0 dès le 84, 3 au 90 et 60 au 150 à terre), W7 (`0x3A` 2-5, `0x3B` 6-14, `0x1D` au 15 à -75264, x 229,00 / 217,19 / 200,29 ; sortie coupée : Idle au 5 à -98304 ;
+  `0x3A` au 81 pendant l'élan), W8 (240 traces, ticks 1 à 3), W9 (Idle au tick 1, direction retournée pour `0x3A` et `0x3B`), W10 ; 2 ticks par image : une plongée une seule fois.
+- **Écarts à l'oracle utilisés (chacun écrit dans le code des tests)** :
+  - positions X et Y à 16 unités près (la tolérance de la glace d'E20.d1) : le mouvement de la DLL calcule en flottants (4 unités de mantisse à x 600 px) ; sur les diagonales
+    l'écart reste de 9 unités au plus (W2 diagonales, W3 plongées en diagonale, W4 `leave-UL`) ;
+  - `on_ground` lu un tick plus tard au tick de la perte, pour les trois chutes de W1 (O-E20-12, déjà admis) ;
+  - mur en diagonale (`W5-wall-UR`) : au contact de x 709,17 → 709,00 le binaire réduit aussi le pas de Y, la DLL ne ramène que X : Y en avance de 7424 unités (0,113 px),
+    constant ensuite (la famille d'O-E19-42, à confirmer) ;
+  - bords de la carte (`W5-edge-E`, `W5-edge-N`) : égaux jusqu'au rognage (ticks 63 et 58), puis la DLL franchit le bord (x 1237,00 et y 7,00 du binaire) : O-E19-17, épinglé ;
+  - sons 21 et 6 d'un atterrissage dans l'eau (E20.e) et son 3 du Rond (E20.h) non comparés ; effets 6 et 0x15 non comparés ; effet 9 des traces W7 (le Beannoid que la DLL n'a pas) non comparé ;
+  - le compteur de fins `b0` n'est comparé que sur les traces entièrement dans l'eau (les boucles d'Idle et de Moving du montage sont des substituts de 50 ticks) ;
+  - le point d'accès de la blessure (W7) pose l'état `0x3A` et la direction que l'oracle tient au tick de l'entrée, avant `MovePlayer` : la sortie du bloc de blessure, sans l'entrée (E20.c2b) ;
+  - non couverts : `CheckEntityInteraction` rendant 1 ou 2 dans l'eau (décodé seulement, aucune entité touchable dans l'oracle), les objets du Rond dans l'eau (E20.h),
+    `W6-poke-state*` (injection d'un pointeur d'aura : E20.f1b), `W7-hurt-keep` (la trace réinitialise la position à chaque tick), `W7-hurt-shore` (entrée sur la pente 0 : E20.c2b).
+- **À confirmer par l'auteur** : la recette décrite ci-dessus avec `swim-m14` ; la tolérance de 16 unités et l'écart de 7424 unités du mur en diagonale ; Q-N3 et Q-I1 inchangées.
+
 #### Arrêts, budget, retour arrière
 
 - **Arrêts** : un écart à l'oracle que ni O-E19-42, ni O-E19-17, ni E20.e, E20.h ou E20.f1b n'expliquent ; un test qui change hors de
@@ -2624,7 +2680,8 @@ Rond ne sont pas comparés (E20.e, E20.h).
 | O-E20-11 | Une entité neuve tourne-t-elle dans le même tick dans le binaire (répétition de `0x800386D0`, contrôle de D7 : non vérifié) ? E20.a garde la règle d'aujourd'hui (premier tick à l'image suivante) | à mesurer, avec E20.e0 |
 | O-E20-14 | Atteignabilité en jeu des salles des leviers : la 115 nord-ouest après le hall (E14.a) ; la 116 derrière la grille (E14.a) ; la salle de la bascule de la 117, où la bascule n'apparaît que si l'on arrive par les portails internes 2, 4 ou 6 de la 117 (les arrivées depuis la 115 et la 116 sont hors de sa zone) ; la 44, dont on ne sait pas si le chemin vers les leviers passe par la case de la vague (43..44, 20) | recette de l'auteur, après E14.a |
 | O-E20-15 | Poignée d'aura périmée (`0x8002F730`-`0x8002F744`) : reproduire le défaut de l'original, ou le corriger par un numéro de génération (recommandé) | l'auteur, avec E20.f1b |
-| O-E20-16 | Les courants (`+0x188`, branche `0x80032768`, dérive ; 16 cartes, dont la cascade de la 416) n'ont pas de propriétaire : E20.i2 avec le mur d'eau profonde (O-E19-22), ou plus tard ? (Q-I1) | l'auteur |
+| O-E20-16 | Les courants (`+0x188`, branche `0x80032768`, dérive ; 16 cartes, dont la cascade de la 416) n'ont pas de propriétaire : E20.i2 avec le mur d'eau profonde (O-E19-22), ou plus tard ? (Q-I1) **E20.i (2026-10-10) les laisse dehors : sur la cascade de la 416, le héros nage sans dérive.** | l'auteur |
+| O-E19-22 (rappel, ligne du plan d'E19 : `docs/plan-e19-opcodes.md`) | Le mur d'eau profonde sans bottes de niveau ≥ 2 (`(cellule & 0xE00) == 0x800`, `0x80037504`) : toujours sans propriétaire. **Après E20.i, un héros sans bottes nage là où l'original le bloque** (la mer de la 416 dès la nouvelle partie) ; les traces `*-L0`, `*-L1` et `R9-deepwater-noboots` sont mesurées (information). Recommandé : E20.i2, juste après (une égalité sur `0xE00`, pas un bit de masque : les échelles valent `0xC00`) | l'auteur (Q-N3) |
 | O-E20-10 | **Tranché le 2026-10-09 (D-E20-14).** `UpdateItemEffectState` (table de défense, bottes, régénération, PV) et `0x8003634C` : bouchons dans E20.a et portage dans E20.c2, ou portage dès E20.a | — |
 
 ## 3. Hors périmètre
