@@ -656,7 +656,7 @@ principale :
 - **Retour arrière** : `git revert` des commits d'E14.a1b ; le dossier `oracle-a1/` (commit de docs de T0) peut rester, il ne change
   aucun comportement.
 
-### 1.3c E14.a1c — Muruta, hall de la 115 🧪 (faite le 2026-10-10, `258eb53` à T3 ; verifier frais et recette de l'auteur à venir)
+### 1.3c E14.a1c — Muruta, hall de la 115 🧪 (faite et CONFIRMED le 2026-10-10, `258eb53` à `d90b605` ; recette de l'auteur à venir)
 
 Relecture : **READY** dès la première lecture (2026-10-10).
 
@@ -791,6 +791,21 @@ gestionnaires natifs par (emplacement, code), pour compter D9 directement) ; les
 **Les tests du registre (§1.3d).** `ProductionRunner_RegistryHoldsTheBeannoidsThreeHandlers_AndTheSwitchIsOn` devient `ProductionRunner_RegistryHoldsTheSixHandlersOfTheBeannoidAndTheMuruta_AndTheSwitchIsOn` (`Count` 6, les trois clés
 de chaque type, chaque gestionnaire pour son seul type) ; `EmptyRegistry_EveryEntity_IsACountedNoOp` passe à la clé libre (D, 25) pour le type 347 ; un test ajouté : `TheJournalOfTheNativeHandlers_CountsEachKeyThatRan`.
 
+**Vérification (2026-10-10) : CONFIRMED** par deux verifiers frais (workflow, l'un après l'autre). Rejeu : `Alundra.Tests` 4752/4752 en
+Release et en Debug, `cmp`, traces ; chaque point de l'acceptation relu contre les tests (comptes de vecteurs et d'appels réellement
+comparés, nombres de l'arc H115, registre à 6). Adversarial : `BoxDirection` lue en deux largeurs et jamais `AnimationDirection`,
+`HasFrameBox` lu comme champ, A0 avec le +1, branche de la carte `0x99` absente et commentée, D9 par `HitReaction(e, 2, ctx)`, registre
+limité à 347 (335 inchangé), aucun arc existant ne bouge (dont `AlundraTarnMurggArcTests` R3-2 avec les Muruta de la 15 natifs).
+Remarques P4, dispositions de la session principale :
+- **Prédicat des effets de bris de l'arc** (écart 4 ci-dessous : « exactement un emplacement **nouveau**, absent à E1 − 1, à X/Y du Muruta
+  tué ») : **accepté** ; l'effet 8 vit environ 33 ticks et deux Muruta morts à 28 ticks d'écart au même endroit laissaient deux
+  emplacements ; le reste du prédicat d'E14.a1b est inchangé.
+- Pointeur `0x80144209` monté avec l'attaque `(0x55, 1)` et non avec une attaque dont la lecture ferait échouer le test : **limite notée**
+  (l'oracle ne le déréférence jamais : la boîte du héros est éteinte et la condition s'arrête avant l'attribut).
+- Ligne O-E14-2 du tableau des points ouverts : **corrigée** (relue en E14.a1c).
+- Commentaire au futur dans `AlundraEnemyHelpers.cs` (« the Muruta's come with E14.a1c ») : **reporté** à la prochaine tranche qui touche le
+  fichier.
+
 **Écarts et limites.**
 1. **Ordre « tests d'abord » de T1 non suivi à la lettre** : le code d'`AlundraMurutaAi` a été écrit avant le fichier de tests. La morsure est prouvée : avec le fichier de tests et sans l'inscription dans `CreateForProduction`, 7 des 14 tests
    d'oracle sont rouges (« le registre n'a pas lancé le gestionnaire »), puis verts avec l'inscription ; les cinq mutations ci-dessus le confirment.
@@ -849,7 +864,7 @@ fermé. La grille de la 116 : animée après les deux Beannoïde. La 14 : les se
 |---|---|---|
 | O-E14-0 | **Tranché le 2026-10-10 (D-E14-8)** : E14.a0, E14.a0b et E14.a1 passent avant les armes, les objets et les collisions | — |
 | O-E14-1 | **Tranché le 2026-10-10 (D-E20-26)** : l'export de l'effet de bris reste dans E14.a1 (D-E14-2) | — |
-| O-E14-2 | **Fermé le 2026-10-10 (E14.a1b)** : `AlundraTarnMurggArcTests` R3-2 (carte 15) ne bouge pas avec les gestionnaires natifs du Beannoïde ; les Muruta de la 15 n'ont pas encore les leurs (E14.a1c) : à relire alors | E14.a1c |
+| O-E14-2 | **Fermé le 2026-10-10** : `AlundraTarnMurggArcTests` R3-2 (carte 15) ne bouge ni avec les gestionnaires natifs du Beannoïde (E14.a1b) ni avec ceux des Muruta de la 15 (relu en E14.a1c) | — |
 | Q-A1-1 | **Tranché le 2026-10-10 (D-E14-9, ADR-0060)** : l'effet de bris pour tous les appelants de `DestroyEntity(e, fx)`, comme le binaire | — |
 | O-E14-4 | **Tranché par la session principale (2026-10-10)** : l'ancre et la clé viennent d'E20.f1b (B3), exécutée avant E14.a1b ; pas de copie de B3 | — |
 | O-E14-5 | **Tranché par la session principale (2026-10-10)** : E20.e0b perd « `DestroyEntity(e, fx)` avec l'effet de bris », qu'E14.a1b fait ; E20.g2 et E20.f4 le prennent d'E14.a1b ; E20.e0x ne garde que `BankKey` et part de l'état d'E14.a1a (`docs/plan-e20-heros.md` §1.1) | — |

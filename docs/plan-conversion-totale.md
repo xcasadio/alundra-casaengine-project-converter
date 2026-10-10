@@ -768,7 +768,8 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
 - **Plan d'E14.a (2026-10-10, approuvé par l'auteur, D-E14-8)** : [plan-e14-ia-native.md](plan-e14-ia-native.md) — E14.a0
   (registre et interrupteur) et E14.a0b (infrastructure des ennemis) **faites et CONFIRMED le 2026-10-10** ; E14.a1 (Beannoïde et
   Muruta) détaillée en E14.a1a (export de l'octet de bris), E14.a1b (effet de bris pour tous les appelants de `DestroyEntity`,
-  D-E14-9, ADR-0060 ; Beannoïde ; grille de la 116) et E14.a1c (Muruta ; hall de la 115) ; **E14.a1a faite et CONFIRMED le
+  D-E14-9, ADR-0060 ; Beannoïde ; grille de la 116) et E14.a1c (Muruta ; hall de la 115, **faite et CONFIRMED le 2026-10-10** : les
+  quatre Muruta du hall meurent à l'épée, la porte de B[2] passe, G569, trois portails rendus, prouvé par un arc ; recette de l'auteur) ; **E14.a1a faite et CONFIRMED le
   2026-10-10** (`BreakEffect` dans `Data/sprite-records.json`, ADR-0061) ; **E14.a1b faite et CONFIRMED le 2026-10-10** (effet de bris pour
   tous les appelants de `DestroyEntity`, Beannoïde A1/C1/D1, grille de la 116 animée après les deux Beannoïde, prouvée par un arc).
 
