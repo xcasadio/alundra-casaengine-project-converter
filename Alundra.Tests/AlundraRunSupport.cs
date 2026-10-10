@@ -52,13 +52,13 @@ internal sealed class RunOracleTrace
 
     public IReadOnlyList<RunJournalItem> Journal(int tick) => _journal.TryGetValue(tick, out var items) ? items : Array.Empty<RunJournalItem>();
 
-    /// <summary>The folder of the oracle outputs, found above the test binaries; the test fails naming it when it is absent.</summary>
-    public static string OutputFolder()
+    /// <summary>The folder of the oracle outputs (<c>out</c>, or <c>out-swim</c> for the swim groups W1 to W10, E20.i), found above the test binaries; the test fails naming it when it is absent.</summary>
+    public static string OutputFolder(string folder = "out")
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory is not null)
         {
-            var candidate = Path.Combine(directory.FullName, "docs", "plan-e20-annexe", "e20-d", "oracle", "out");
+            var candidate = Path.Combine(directory.FullName, "docs", "plan-e20-annexe", "e20-d", "oracle", folder);
             if (Directory.Exists(candidate))
             {
                 return candidate;
@@ -67,20 +67,23 @@ internal sealed class RunOracleTrace
             directory = directory.Parent;
         }
 
-        throw new InvalidOperationException($"no 'docs/plan-e20-annexe/e20-d/oracle/out' directory found above '{AppContext.BaseDirectory}': this test needs the run oracle traces");
+        throw new InvalidOperationException($"no 'docs/plan-e20-annexe/e20-d/oracle/{folder}' directory found above '{AppContext.BaseDirectory}': this test needs the run oracle traces");
     }
+
+    /// <summary>The output folder of a trace name: the swim groups (<c>w1/...</c> to <c>w10/...</c>) are in <c>out-swim</c>, the run groups (<c>g1/...</c>) in <c>out</c>.</summary>
+    private static string FolderOf(string name) => name.Length > 1 && name[0] == 'w' && char.IsDigit(name[1]) ? "out-swim" : "out";
 
     /// <summary>Every trace of a group folder (<c>g1</c>, ...), as names such as <c>g1/R1-T+D</c>, in order.</summary>
     public static IEnumerable<string> NamesOf(string group)
     {
-        var folder = Path.Combine(OutputFolder(), group);
+        var folder = Path.Combine(OutputFolder(FolderOf(group)), group);
         return Directory.GetFiles(folder, "*.json").Select(f => group + "/" + Path.GetFileNameWithoutExtension(f)).OrderBy(n => n, StringComparer.Ordinal);
     }
 
     /// <summary>Loads <c>&lt;name&gt;.json</c> (a name such as <c>g1/R1-T+D</c>).</summary>
     public static RunOracleTrace Load(string name)
     {
-        var path = Path.Combine(OutputFolder(), name + ".json");
+        var path = Path.Combine(OutputFolder(FolderOf(name)), name + ".json");
         if (!File.Exists(path))
         {
             throw new FileNotFoundException($"the run oracle trace '{name}' is missing", path);
@@ -252,6 +255,14 @@ internal sealed class RunMontage
             case "b1b":
                 rig.Host.GameState.NumberOfItems[0x1B * 2 + 1] = 1;
                 break;
+            case "b1c": // E20.i: the boots of level 3
+                rig.Host.GameState.NumberOfItems[0x1C * 2 + 1] = 1;
+                break;
+            case "holy_b1b": // E20.i: the sacred sword and the boots 0x1B together
+                rig.Host.GameState.NumberOfItems[4 * 2 + 1] = 1;
+                AlundraPlayerManager.SetPlayerWeaponId(rig.Host.GameState, tables, tables.ItemsProperties[4 * 5]);
+                rig.Host.GameState.NumberOfItems[0x1B * 2 + 1] = 1;
+                break;
             default:
                 throw new InvalidOperationException($"{trace.Name}: the inventory '{trace.Inventory}' is not built by the montage");
         }
@@ -266,9 +277,20 @@ internal sealed class RunMontage
 
         var hero = rig.Hero;
         hero.TargetDirection = (uint)trace.Col("dir_target", 0);
+        hero.TargetAnimationId = (uint)trace.Col("anim_target", 0); // E20.i: the swim groups start in any state (`hero_anim`); the run groups all start in Idle.
         hero.AnimationDirection = (int)trace.Col("facing", 0);
         hero.CurrentAnimationId = ~hero.TargetAnimationId;
         rig.Step(); // the first switch (the sprite takes the animation 0 in the facing) is resolved: nothing pending at tick 1.
+        // E20.i: a hero that starts in deep water (slope 4 already probed by the settling updates) has been sent to the float by that step; the oracle does not run MovePlayer before tick 1, so the start state of the trace is posed again
+        // (and its animation reloaded at tick 1, as the binary's first tick does). On land the step changes nothing and this is skipped.
+        var startAnimation = (uint)trace.Col("anim_target", 0);
+        if (hero.TargetAnimationId != startAnimation)
+        {
+            hero.TargetAnimationId = startAnimation;
+            hero.TargetDirection = (uint)trace.Col("dir_target", 0); // the exits of the land turn the direction of 0x3A and 0x3B: the settling step has done it once already
+            hero.CurrentAnimationId = ~startAnimation;
+        }
+
         sounds.Requests.Clear();
         montage.Created.Clear();
         hero.FrameCounter = 0;
@@ -335,7 +357,8 @@ internal sealed class RunMontage
     /// with the oracle's value of the tick before, the one-tick representation of AT8 and UH7), the mover's curtailment flag, the slope, the resume counter, the charge counter, the sounds (the step and the landing, E20.e,
     /// are not compared) and the effects 9 of the tick (the bounce: position). <paramref name="ignore"/> drops a (tick, field) pair; <paramref name="shiftFrom"/> and <paramref name="shift"/> are those of <see cref="Play"/>.
     /// </summary>
-    public List<string> CompareRows(int lastTick = int.MaxValue, int firstTick = 1, int[]? onGroundLag = null, Func<int, string, bool>? ignore = null, int positionTolerance = 0, int shiftFrom = 0, int shift = 0)
+    public List<string> CompareRows(int lastTick = int.MaxValue, int firstTick = 1, int[]? onGroundLag = null, Func<int, string, bool>? ignore = null, int positionTolerance = 0, int shiftFrom = 0, int shift = 0,
+        Func<int, int, bool>? ignoreSound = null, bool compareEndCounter = false)
     {
         var diffs = new List<string>();
         var lag = onGroundLag ?? Array.Empty<int>();
@@ -367,9 +390,15 @@ internal sealed class RunMontage
             Check("slope", row.Slope, Trace.Col("slope", o));
             Check("sprint_cnt", row.StopSprintCounter, Trace.Col("sprint_cnt", o));
             Check("charge_cnt", row.ChargeCounter, Trace.Col("charge_cnt", o));
+            if (compareEndCounter)
+            {
+                Check("b0", row.AnimCompleteCounter, Trace.Col("b0_complete", o)); // E20.i: the counter of animation ends (+0xB0), turned by the chains of the swim.
+            }
 
-            var dllSounds = string.Join(",", row.Sounds.Where(s => !IsStubbedSound(s)).OrderBy(s => s));
-            var oracleSounds = string.Join(",", Trace.Journal(o).Where(j => j.Kind == "sound" && j.Id > 0 && !IsStubbedSound(j.Id)).Select(j => j.Id).OrderBy(s => s));
+            // `ignoreSound(tick, id)` drops one sound of this tick on both sides (E20.i: the sound 3 of the Circle is E20.h, the sounds 21 and 6 of a landing in the water are E20.e).
+            bool Kept(int id) => !IsStubbedSound(id) && ignoreSound?.Invoke(tick, id) != true;
+            var dllSounds = string.Join(",", row.Sounds.Where(Kept).OrderBy(s => s));
+            var oracleSounds = string.Join(",", Trace.Journal(o).Where(j => j.Kind == "sound" && j.Id > 0 && Kept(j.Id)).Select(j => j.Id).OrderBy(s => s));
             if (dllSounds != oracleSounds && ignore?.Invoke(tick, "sounds") != true)
             {
                 diffs.Add($"{Trace.Name} tick {tick} sounds: dll [{dllSounds}], oracle [{oracleSounds}]");
@@ -388,10 +417,11 @@ internal sealed class RunMontage
     }
 
     /// <summary>Plays then compares, in one call.</summary>
-    public List<string> Compare(int lastTick = int.MaxValue, int firstTick = 1, int[]? onGroundLag = null, Func<int, string, bool>? ignore = null, int positionTolerance = 0, int shiftFrom = 0, int shift = 0)
+    public List<string> Compare(int lastTick = int.MaxValue, int firstTick = 1, int[]? onGroundLag = null, Func<int, string, bool>? ignore = null, int positionTolerance = 0, int shiftFrom = 0, int shift = 0,
+        Func<int, int, bool>? ignoreSound = null, bool compareEndCounter = false)
     {
         Play(lastTick, shiftFrom, shift);
-        return CompareRows(lastTick, firstTick, onGroundLag, ignore, positionTolerance, shiftFrom, shift);
+        return CompareRows(lastTick, firstTick, onGroundLag, ignore, positionTolerance, shiftFrom, shift, ignoreSound, compareEndCounter);
     }
 
     private static string Fx(long x, long y, long z) => string.Create(CultureInfo.InvariantCulture, $"({x},{y},{z})");

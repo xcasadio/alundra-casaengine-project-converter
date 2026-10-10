@@ -2542,7 +2542,7 @@ les effets d'eau (E20.e), les objets du Rond dans l'eau et le son 3 (E20.h), l'a
     `UpdatePlayerCarriedEntity(2)`, les six gestionnaires dans l'ordre du binaire, `EndOfMovePlayer`, retour.
   - Côté terre : `0x0F`, `0x1D`, `0x28` → Idle ou `0x2D` puis `TryUseItem` ; `0x3A`, `0x3B` → direction + 0x10 d'abord.
   - Retirer le garde d'E20.d1, `IsRunState` et la clause de la pente 4 de la queue ; documentation de la classe.
-- ⏳ **T3 — Moyens de test.** Le montage gagne l'état de départ (`hero_anim`), les inventaires `b1b` et `holy_b1b`, les cinq états
+- ✅ **T3 — Moyens de test.** Le montage gagne l'état de départ (`hero_anim`), les inventaires `b1b` et `holy_b1b`, les cinq états
   (durées, fins, fiches) avec l'Idle à l'accélération 1 ; le lecteur charge `out-swim/` ; un point d'accès qui pose `0x3A` et la
   direction avant le `MovePlayer` d'un tick donné (la sortie du bloc de blessure, sans l'entrée).
 - ⏳ **T4 — Tests et arcs.** Acceptation ci-dessous ; un arc au vrai préfab sur l'étang de la 14 (bottes 0x1B) : tomber de la berge,

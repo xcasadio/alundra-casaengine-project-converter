@@ -372,6 +372,9 @@ internal static class HeroAttackClock
         // the run 0x03 (speed 336, sound 13, 30 ticks, loops), the slide 0x2A (sound 14, 16 ticks, then Idle), the tackle 0x04 (sound 83, 32 ticks, then Idle) and the bounce 0x3E (speed 256, byte 64, sound 28, impulse 1024,
         // 10 ticks, holds its last frame).
         new(0x29, 0, 0, 0, -1, 24), new(0x03, 336, 2, 13, -1, 30), new(0x2A, 0, 5, 14, 0, 16), new(0x04, 0, 6, 83, 0, 32), new(0x3E, 256, 64, 28, -1, 10, Impulse: 1024, Hold: true),
+        // E20.i T3: the five states of the swim (the hero record of the export, `swim-dll.md` section 3; the same length in the four directions): floating 0x1D (36 ticks, loops), swimming 0x0F (speed 144, shift 4, sound 22,
+        // 42 ticks, chained to itself), the burst 0x28 (speed 176, sound 21, 42 ticks, then 0x1D), the hurt 0x3A (speed 256, byte 64, sound 23, 4 ticks, then 0x3B) and its end 0x3B (byte 68, 8 ticks, holds its last frame).
+        new(0x1D, 0, 3, 0, -1, 36), new(0x0F, 144, 4, 22, 0x0F, 42), new(0x28, 176, 0, 21, 0x1D, 42), new(0x3A, 256, 64, 23, 0x3B, 4), new(0x3B, 0, 68, 0, -1, 8, Hold: true),
     };
 
     private static Animation2d Make(int id, string direction, float seconds, AnimationType type)
