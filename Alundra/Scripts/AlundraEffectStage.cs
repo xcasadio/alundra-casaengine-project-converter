@@ -190,6 +190,36 @@ public sealed class AlundraEffectStage
     public void Emit(Action<AlundraEffectReservoir> operation) => Queue(_sourceTick, _sourceRank, operation);
 
     /// <summary>
+    /// E20.f1b (D-E20-28, amends ADR-0046 for the hero only): creates a mode 0 effect AT ONCE in the reservoir, like <see cref="AlundraEffectReservoir.Create"/>, and returns its slot (null when the reservoir is
+    /// full), so that the hero keeps the slot as its handle and reads it at its next tick. The slot is marked with the logic tick of the current source (<see cref="BeginSource"/>): <see cref="RunFrame"/> does not
+    /// update it before that tick. Deviation for frames of several ticks, written here: the hero's slot index is taken before the queued operations of earlier ticks of the frame are applied.
+    /// </summary>
+    public AlundraEffectSlot? CreateNow(bool mapTable, int effect, int animation, int x, int y, int z)
+        => Mark(_reservoir.Create(mapTable, effect, animation, x, y, z));
+
+    /// <summary>E20.f1b (D-E20-28): <see cref="CreateNow"/> for the creator of mode 1 (<see cref="AlundraEffectReservoir.CreateAttached"/>).</summary>
+    public AlundraEffectSlot? CreateAttachedNow(bool mapTable, int effect, int animation, IAlundraEffectAnchor anchor, int depthOffset, int offsetX, int offsetY, int offsetZ)
+        => Mark(_reservoir.CreateAttached(mapTable, effect, animation, anchor, depthOffset, offsetX, offsetY, offsetZ));
+
+    private AlundraEffectSlot? Mark(AlundraEffectSlot? slot)
+    {
+        if (slot != null)
+        {
+            slot.FirstUpdateTick = _sourceTick;
+        }
+
+        return slot;
+    }
+
+    /// <summary>
+    /// E20.f1b (ADR-0059): releases <paramref name="slot"/> at the position of the current source's tick, as the binary's effect pass does after <c>MovePlayer</c>: a queued operation applied by
+    /// <see cref="RunFrame"/> in the order of the ticks, so that a creation queued at an earlier tick of the same frame cannot take the slot first. Guarded by <paramref name="generation"/> (D-E20-30): the slot is
+    /// freed only if it still holds the effect the caller meant.
+    /// </summary>
+    public void FreeAtTick(AlundraEffectSlot slot, int generation)
+        => Emit(reservoir => reservoir.FreeIfGeneration(slot, generation));
+
+    /// <summary>
     /// One rendered frame of <paramref name="ticks"/> logic ticks: at each tick the operations marked with it are applied, then the reservoir is updated unless that tick is frozen
     /// (<paramref name="frozenOfTick"/>: <c>PlayerControlFlags &amp; 0x48</c> read after the map events of the tick); the operations left are applied at the end, and the queue is empty.
     /// </summary>
@@ -206,13 +236,16 @@ public sealed class AlundraEffectStage
                 pending[next++].Operation(_reservoir);
             }
 
-            _reservoir.Tick(tick < frozenOfTick.Count && frozenOfTick[tick]);
+            _reservoir.Tick(tick < frozenOfTick.Count && frozenOfTick[tick], tick);
         }
 
         while (next < pending.Count)
         {
             pending[next++].Operation(_reservoir);
         }
+
+        // E20.f1b: the first-update marks of the hero's immediate creations are local to this frame, also when it has no tick.
+        _reservoir.ClearFirstUpdateMarks();
     }
 
     private readonly record struct PendingOperation(int Tick, int Rank, long Sequence, Action<AlundraEffectReservoir> Operation);

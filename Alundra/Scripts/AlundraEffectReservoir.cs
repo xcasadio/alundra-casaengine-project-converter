@@ -22,6 +22,12 @@ public interface IAlundraEffectAnchor
 
     /// <summary>The status of the entity: 0 free (gone), 4 flagged to be destroyed; any other value is alive.</summary>
     int Status { get; }
+
+    /// <summary>
+    /// E20.f1b (D-E20-29, amends ADR-0049): the sort coordinate of the anchor's SPRITE as the engine computes it (<c>100 * (y - z)</c> of the sprite's render position, in whole pixels), which an anchored slot
+    /// (modes 1 and 3) sorts on, plus its <see cref="AlundraEffectSlot.DepthOffset"/>, instead of the coordinate of its own, higher, position. The default is the formula of the Alundra sprites (sort anchor 0).
+    /// </summary>
+    int SortCoordinate => 100 * ((PosY >> 16) - (PosZ >> 16));
 }
 
 /// <summary>One slot of the effect reservoir (the binary's 0x80-byte slot, <c>0x80138608 + 0x80 * i</c>); see <see cref="AlundraEffectReservoir"/>.</summary>
@@ -92,6 +98,18 @@ public sealed class AlundraEffectSlot
     /// <summary>The destruction flag: set on the tick the animation ends with <c>Destroy</c> (the slot is still drawn that tick), the slot is freed at the next one.</summary>
     public bool Destroying { get; internal set; }
 
+    /// <summary>
+    /// E20.f1b (D-E20-30): the number the reservoir gave this slot's current occupant when it was created (never 0 once created, unique in the reservoir). A holder of a slot (the hero's aura) keeps it with
+    /// the slot and acts on the slot only while it still carries it: a slot freed and taken by another effect has another number.
+    /// </summary>
+    public int Generation { get; internal set; }
+
+    /// <summary>
+    /// E20.f1b (D-E20-28): the logic tick of the frame at which an effect created at once by the hero (<see cref="AlundraEffectStage.CreateNow"/>) first exists; <see cref="AlundraEffectReservoir.Tick"/> does not
+    /// update the slot before it. 0 for every other slot. Local to a frame: <see cref="AlundraEffectStage.RunFrame"/> clears it.
+    /// </summary>
+    internal int FirstUpdateTick;
+
     internal bool CurrentMapTable;
     internal int CurrentEffect;
     internal AlundraEffectTable? Table;
@@ -130,6 +148,7 @@ public sealed class AlundraEffectReservoir
     private readonly AlundraEffectSlot[] _slots = new AlundraEffectSlot[SlotCount];
     private bool _warned;
     private bool _warnedOperation;
+    private int _generation;
 
     public AlundraEffectReservoir(AlundraEffectBank bank, Action<string>? warn = null)
     {
@@ -237,6 +256,27 @@ public sealed class AlundraEffectReservoir
     public void Free(AlundraEffectSlot slot)
     {
         slot.Active = false;
+    }
+
+    /// <summary>E20.f1b (D-E20-30): frees the slot only if it is active and still holds the occupant numbered <paramref name="generation"/> (the aura's release must not free the effect that took its slot).</summary>
+    public bool FreeIfGeneration(AlundraEffectSlot slot, int generation)
+    {
+        if (!slot.Active || slot.Generation != generation)
+        {
+            return false;
+        }
+
+        slot.Active = false;
+        return true;
+    }
+
+    /// <summary>E20.f1b: clears the first-update marks of the slots (the end of a frame of the stage).</summary>
+    internal void ClearFirstUpdateMarks()
+    {
+        foreach (var slot in _slots)
+        {
+            slot.FirstUpdateTick = 0;
+        }
     }
 
     /// <summary>Opcode <c>0x91</c>: frees at once (status 0, not drawn) every active slot created by record <paramref name="recordIndex"/>, the one in its destruction tick included.</summary>
@@ -384,7 +424,13 @@ public sealed class AlundraEffectReservoir
     /// One logic tick (<c>UpdateEffects 0x8003C410</c>). With <paramref name="frozen"/> (<c>PlayerControlFlags &amp; 0x48</c>) nothing is freed, animated or moved - the slots stay
     /// and are still drawn; otherwise, in the order of the slots, a slot whose destruction flag is set is freed, any other is animated then moved.
     /// </summary>
-    public void Tick(bool frozen)
+    public void Tick(bool frozen) => Tick(frozen, int.MaxValue);
+
+    /// <summary>
+    /// <see cref="Tick(bool)"/> of the logic tick <paramref name="tick"/> of a frame: a slot created at once by the hero at a later tick of the frame (<see cref="AlundraEffectSlot.FirstUpdateTick"/>) does not exist
+    /// yet at this tick and is left as it is (E20.f1b, D-E20-28).
+    /// </summary>
+    internal void Tick(bool frozen, int tick)
     {
         if (frozen)
         {
@@ -393,7 +439,7 @@ public sealed class AlundraEffectReservoir
 
         foreach (var slot in _slots)
         {
-            if (!slot.Active)
+            if (!slot.Active || slot.FirstUpdateTick > tick)
             {
                 continue;
             }
@@ -433,6 +479,8 @@ public sealed class AlundraEffectReservoir
         // InitEffect: the template (zero) over the slot, then the record, mode, status, target effect and animation; the current ones are the complements, so that the first update
         // always loads the table entry and image 0.
         slot.Active = true;
+        slot.Generation = ++_generation;
+        slot.FirstUpdateTick = 0;
         slot.RecordIndex = recordIndex;
         slot.Mode = 0;
         slot.Anchor = null;
