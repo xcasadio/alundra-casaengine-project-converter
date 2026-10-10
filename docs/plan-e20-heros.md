@@ -2288,7 +2288,7 @@ Le test « Triangle seul donne Idle » s'inverse.
   - Champ du compteur `0x80126FF4`.
   - Constantes `0x03`, `0x04`, `0x29`, `0x2A`, `0x3E`, `0x1C`.
   - Aide « regard du tick ».
-- ⏳ **T2 — Entrée et états.**
+- ✅ **T2 — Entrée et états.**
   - Triangle dans `ApplyGroundOrAirTail`, après le bloc de la Croix, avec `AnimCompleteCounter = 0`.
   - Branches `0x29`, `0x03`, `0x2A`, `0x3E`/`0x1C`, dans l'ordre du binaire, y compris le second appel de `PlayerTryAttack` et la
     branche `TryUseItem == 0`.

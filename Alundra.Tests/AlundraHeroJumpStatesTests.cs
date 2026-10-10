@@ -213,10 +213,14 @@ public sealed class AlundraHeroJumpStatesTests
         Assert.Equal(JumpWalking, walkingJump.TargetAnimationId);
         Assert.Equal(0x18u, walkingJump.TargetDirection);
 
-        // The run of the Triangle is a no-op of the port (S1): Triangle alone gives the Idle, like today.
-        var triangle = Hero(start);
+        // E20.d1 T2 (inverted from E19.d2c2, where the run of the Triangle was a no-op of the port): a HELD Triangle alone starts the preparation of the run (0x29, binary 0x80031F14-0x80031F30),
+        // zeroes the counter of animation ends (+0xB0), and keeps the direction (no direction on the pad: the current one).
+        var triangle = Hero(start, direction: 0x08);
+        triangle.AnimCompleteCounter = 3;
         Move(triangle, Pad(AlundraPadState.Triangle));
-        Assert.Equal(Idle, triangle.TargetAnimationId);
+        Assert.Equal(0x29u, triangle.TargetAnimationId);
+        Assert.Equal(0, triangle.AnimCompleteCounter);
+        Assert.Equal(0x08u, triangle.TargetDirection);
     }
 
     [Fact]

@@ -28,6 +28,8 @@ namespace Alundra.Scripts;
 /// and <c>CheckEntityInteraction</c> in the binary's order, then the common tail: <c>PlayerTryAttack</c> (E20.b), the jump of the Cross, <c>buttonsHold != 0 -&gt; Moving</c> else <c>Idle</c>.
 /// <c>TryUseItem</c> and <c>PlayerTryAction</c> are named stubs (E20.h and E20.g: the use of an item and lifting/carrying are not ported yet).</description></item>
 /// <item><description>The attack groups, binary <c>0x80031E18</c> and <c>0x80031DF8</c> (E20.b): a swing in progress only keeps its side of the ground (see <see cref="MovePlayer"/>).</description></item>
+/// <item><description>The run (E20.d1), binary <c>0x80031F54</c>, <c>0x80031FF4</c>, <c>0x80032118</c> and <c>0x80032558</c>: the preparation (0x29, entered from the common tail by a held Triangle), the run (0x03), the
+/// slide that ends it (0x2A) and the bounce (0x3E, and 0x1C which shares its handler); the tackle (0x04) is of the ground attack group. On deep water (slope 4) the states of the run go to Idle (a stand-in for the swim, E20.i).</description></item>
 /// <item><description>LoadingMap(0x36) case, binary 0x800325E8 (PlayerManager.cs:914-922): on the ground the
 /// case ends and the hero stays LoadingMap - its exit is then the animation Chain bridge
 /// (<c>AlundraWorldProxy.OnAnimationFinished</c>, 2026-08-23 "Correctif fins d'animation" - anim 54's trailing
@@ -60,7 +62,7 @@ namespace Alundra.Scripts;
 /// <item><description><c>UpdatePlayerCarriedEntity</c> - PlayerManager.cs:355-357 (named stub: carrying is E20.g; <c>UpdatePlayerWeaponEffect</c> is ported by E20.f1a without the aura, whose call is the named stub <see cref="AlundraAuraStub"/> until E20.f1b);
 /// <c>UpdateWeaponStepProgression</c> is ported without its projectile spawn (E20.b B4, the spawn is a named stub, E20.e0/E20.f).</description></item>
 /// <item><description>Every <c>TargetAnimationId</c> case other than Idle/Moving/LoadingMap/Climbing/
-/// ClimbStill, the jump states and the attack groups - sprint, the charged attacks, pickup/carry/throw, swimming, sand, spell cast,
+/// ClimbStill, the jump states, the attack groups and the run - the charged attacks, pickup/carry/throw, swimming, sand, spell cast,
 /// damage-taken, victory pose, etc. - PlayerManager.cs:385-943. An entity whose <c>TargetAnimationId</c>
 /// is none of the five ported values simply keeps it unchanged (no case matches, same shape as the
 /// original's own <c>default: AnimateWarpEffect(); break;</c>, itself not ported since it is a pure
@@ -211,6 +213,9 @@ public static class AlundraPlayerManager
         // the hero has no weapon, which the binary reads the same way: item -1 gives byte[0x80028C13] = 0, the record of the basic sword.
         player.CurrentWeaponRecord = AlundraWeaponTables.RecordIndexOfItem(
             host?.ItemTables is { } itemTables ? GetItemIdFromCurrentWeapon(state, itemTables) : NoItem);
+
+        // E20.d1 T1: the facing the binary has at the head of this tick (read by the cone of the run), computed before the tick writes anything.
+        var tickFacing = TickFacing(player);
 
         // E12.d: `host` is REQUIRED at every call site (no default) - null means "no world" and skips
         // CheckEntityInteraction below, a documented degraded mode the ~19 direct movement-only test
@@ -475,6 +480,37 @@ public static class AlundraPlayerManager
             }
         }
 
+        // E20.d1 T2, the guard of the deep water (a documented deviation until E20.i): on a deep-water cell (slope 4) the binary sends every state of the run to the swim (0x8003260C, the animation 0x1D) and ends the tick; the
+        // swim is not ported, so the hero is sent to Idle and the tick ends (the walk resumes at the next tick, the tail of Idle not testing the Triangle there). 0x3E and 0x1C flip the direction first, as the swim
+        // branch does (0x80032658).
+        else if (IsRunState(player.TargetAnimationId) && player.Slope_18c == DeepWaterSlope)
+        {
+            if (player.TargetAnimationId is SprintBounceAnimationId or HurtBounceAnimationId)
+            {
+                player.TargetDirection = (player.TargetDirection + 0x10) & 0x1F;
+            }
+
+            player.TargetAnimationId = IdleAnimationId;
+        }
+        // E20.d1 T2, the run (binary 0x80031F54, 0x80031FF4, 0x80032118 and 0x80032558, reached through the jump table 0x80022D3C): the preparation (0x29), the run (0x03), the slide that ends it (0x2A) and the bounce
+        // (0x3E, and 0x1C, which shares its handler). The tackle (0x04) is of the ground attack group below.
+        else if (player.TargetAnimationId == PrepareSprintAnimationId)
+        {
+            PrepareSprintTick(player, in pad, buttonsHold, dir);
+        }
+        else if (player.TargetAnimationId == SprintAnimationId)
+        {
+            SprintTick(player, in pad, buttonsHold, dir, tickFacing);
+        }
+        else if (player.TargetAnimationId == StopSprintAnimationId)
+        {
+            StopSprintTick(player, in pad, buttonsHold);
+        }
+        else if (player.TargetAnimationId is SprintBounceAnimationId or HurtBounceAnimationId)
+        {
+            BounceTick(player, in pad);
+        }
+
         // E20.b B3, binary 0x80031E18 (the ground attack group) and 0x80031DF8 (the air attack group), reached through the jump table 0x80022D3C: the states of an attack in progress do nothing but keep
         // the swing on the right side of the ground. Neither reads the pad, writes the direction or calls PlayerTryAttack (the swing ends by the animation Chain, E19.c2); both then call TryUseItem,
         // whose result is ignored, and end.
@@ -527,6 +563,194 @@ public static class AlundraPlayerManager
     }
 
     private static short ClampToShort(int value) => value > short.MaxValue ? short.MaxValue : value < short.MinValue ? short.MinValue : (short)value;
+
+    /// <summary>E20.d1 T2: the states of the run the guard of the deep water sends to Idle: the preparation, the run, the slide, the tackle and the two bounces.</summary>
+    private static bool IsRunState(uint animationId)
+        => animationId is PrepareSprintAnimationId or SprintAnimationId or StopSprintAnimationId or TackleAnimationId or SprintBounceAnimationId or HurtBounceAnimationId;
+
+    /// <summary>E20.d1 T2: <c>g_dashDirections[nibble]</c> (<c>0x80022CAC</c>), the direction a single cardinal bit gives, -1 for anything else.</summary>
+    private static int DashDirection(uint nibble)
+        => nibble < AnimationTables.DashDirectionByNibble.Length ? AnimationTables.DashDirectionByNibble[nibble] : -1;
+
+    /// <summary>
+    /// E20.d1 T2: the preparation of the run, state 0x29 (<c>0x80031F54</c>), in the binary's order. <c>TryUseItem</c> (0 ends the tick), <c>PlayerTryAction</c> (non-zero ends it), <c>PlayerTryAttack</c> (its second
+    /// call site, <c>0x80031F74</c>; non-zero ends it: the Square swings the sword in the preparation); then the direction of the pad is written (<c>0x80031F94</c>, in a delay slot: whatever follows, even in the air);
+    /// in the air, 0x2D; Triangle released, Idle; the counter of animation ends (<c>+0xB0</c>, zeroed by the Triangle entry and counted by the loop of the animation) still 0 (the first 25 ticks), the tick ends;
+    /// else the dash table: -1 ends the tick, otherwise the direction takes its value and the run (0x03) starts.
+    /// </summary>
+    private static void PrepareSprintTick(AlundraEntityScriptProxy player, in AlundraPadState pad, uint nibble, uint dir)
+    {
+        if (TryUseItem(player, in pad) == 0 || PlayerTryAction(player, in pad) != 0 || PlayerTryAttack(player, in pad) != 0)
+        {
+            return;
+        }
+
+        player.TargetDirection = dir;
+
+        if (IsHeroInTheAir(player))
+        {
+            player.TargetAnimationId = AirStillAnimationId;
+            return;
+        }
+
+        if ((pad.ButtonsHold & AlundraPadState.Triangle) == 0)
+        {
+            player.TargetAnimationId = IdleAnimationId;
+            return;
+        }
+
+        if (player.AnimCompleteCounter == 0)
+        {
+            return;
+        }
+
+        var start = DashDirection(nibble);
+        if (start < 0)
+        {
+            return;
+        }
+
+        player.TargetDirection = (uint)start;
+        player.TargetAnimationId = SprintAnimationId;
+    }
+
+    /// <summary>
+    /// E20.d1 T2: the run, state 0x03 (<c>0x80031FF4</c>), in the binary's order; <c>TryUseItem</c> is NOT called. <c>PlayerTryAction</c> (non-zero ends the tick); in the air, 0x2D; the mover curtailed the run
+    /// (<see cref="AlundraEntityScriptProxy.ForceAdjusted"/>): the bounce, the effect 9 at the hero (<see cref="AlundraNativeEffects.CreateSprintBounce"/>), state 0x3E, direction + 0x10; no direction on the pad: the
+    /// slide (0x2A) with the resume counter at 1; Triangle released, or the direction (the pad's, or the current one when the pad's combination is invalid) outside the cone of the facing of the tick
+    /// (<see cref="AnimationTables.SprintConeRows"/>): the slide with the counter at 0; a Square, a Cross or a Circle held (<c>hold &amp; 0xE0</c>): the tackle (0x04). The direction of the hero is never written here
+    /// except by the bounce.
+    /// </summary>
+    private static void SprintTick(AlundraEntityScriptProxy player, in AlundraPadState pad, uint nibble, uint dir, int tickFacing)
+    {
+        if (PlayerTryAction(player, in pad) != 0)
+        {
+            return;
+        }
+
+        if (IsHeroInTheAir(player))
+        {
+            player.TargetAnimationId = AirStillAnimationId;
+            return;
+        }
+
+        if (player.ForceAdjusted != 0)
+        {
+            if (player.ScriptHost?.EffectStage is { } stage)
+            {
+                var x = player.PosX;
+                var y = player.PosY;
+                var z = player.PosZ + 1; // the binary's frame of Z (ADR-0026).
+                stage.Emit(reservoir => AlundraNativeEffects.CreateSprintBounce(reservoir, x, y, z));
+            }
+
+            player.TargetAnimationId = SprintBounceAnimationId;
+            player.TargetDirection = (player.TargetDirection + 0x10) & 0x1F;
+            return;
+        }
+
+        if (nibble == 0)
+        {
+            player.TargetAnimationId = StopSprintAnimationId;
+            player.StopSprintCounter = 1;
+            return;
+        }
+
+        if ((pad.ButtonsHold & AlundraPadState.Triangle) == 0 || !IsInSprintCone(dir, tickFacing))
+        {
+            player.TargetAnimationId = StopSprintAnimationId;
+            player.StopSprintCounter = 0;
+            return;
+        }
+
+        if ((pad.ButtonsHold & (AlundraPadState.Circle | AlundraPadState.Cross | AlundraPadState.Square)) != 0)
+        {
+            player.TargetAnimationId = TackleAnimationId;
+        }
+    }
+
+    /// <summary>E20.d1 T2: the cone of the run (<c>0x800320A4</c>): <paramref name="dir"/> is one of the three words of the row of the facing of the tick.</summary>
+    private static bool IsInSprintCone(uint dir, int tickFacing)
+    {
+        var row = Math.Clamp(tickFacing, 0, 3) * 3;
+        var cone = AnimationTables.SprintConeRows;
+        return dir == cone[row] || dir == cone[row + 1] || dir == cone[row + 2];
+    }
+
+    /// <summary>
+    /// E20.d1 T2: the slide that ends the run, state 0x2A (<c>0x80032118</c>), in the binary's order. <c>TryUseItem</c> (0 ends the tick), <c>PlayerTryAction</c> (non-zero ends it); in the air, 0x2D; the resume counter
+    /// (<see cref="AlundraEntityScriptProxy.StopSprintCounter"/>) at 0: the tick ends; the mover curtailed the slide, or Triangle released: the counter goes to 0; else it counts up. Below 11 a direction bit on the pad clears
+    /// it (a press too early is lost); from 11 on the dash table decides: -1 ends the tick and keeps the counter, otherwise the direction takes its value and the run (0x03) resumes with the force of the slide.
+    /// </summary>
+    private static void StopSprintTick(AlundraEntityScriptProxy player, in AlundraPadState pad, uint nibble)
+    {
+        if (TryUseItem(player, in pad) == 0 || PlayerTryAction(player, in pad) != 0)
+        {
+            return;
+        }
+
+        if (IsHeroInTheAir(player))
+        {
+            player.TargetAnimationId = AirStillAnimationId;
+            return;
+        }
+
+        if (player.StopSprintCounter == 0)
+        {
+            return;
+        }
+
+        if (player.ForceAdjusted != 0 || (pad.ButtonsHold & AlundraPadState.Triangle) == 0)
+        {
+            player.StopSprintCounter = 0;
+            return;
+        }
+
+        player.StopSprintCounter++;
+        if (player.StopSprintCounter < ResumeWindowStart)
+        {
+            if (nibble != 0)
+            {
+                player.StopSprintCounter = 0;
+            }
+
+            return;
+        }
+
+        var resume = DashDirection(nibble);
+        if (resume < 0)
+        {
+            return;
+        }
+
+        player.TargetDirection = (uint)resume;
+        player.TargetAnimationId = SprintAnimationId;
+    }
+
+    /// <summary>E20.d1 T2: the value of the resume counter from which a direction resumes the run (<c>0x80032190</c>: below 11 a press is lost).</summary>
+    private const int ResumeWindowStart = 11;
+
+    /// <summary>
+    /// E20.d1 T2: the bounce, states 0x3E and 0x1C (<c>0x80032558</c>). <c>TryUseItem</c> at 0 flips the direction (+ 0x10) and ends the tick (<c>0x8003270C</c>); otherwise nothing happens until the animation holds on its
+    /// last frame (<see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/>, the binary's <c>+0xAC</c>, raised by the Hold end); then the direction flips (+ 0x10, the hero faces the way he came from) and the state
+    /// is Idle on the ground, Moving (1) in the air.
+    /// </summary>
+    private static void BounceTick(AlundraEntityScriptProxy player, in AlundraPadState pad)
+    {
+        if (TryUseItem(player, in pad) == 0)
+        {
+            player.TargetDirection = (player.TargetDirection + 0x10) & 0x1F;
+            return;
+        }
+
+        if (player.ForceResetAnimationFlag != 1)
+        {
+            return;
+        }
+
+        player.TargetDirection = (player.TargetDirection + 0x10) & 0x1F;
+        player.TargetAnimationId = IsHeroInTheAir(player) ? MovingAnimationId : IdleAnimationId;
+    }
 
     /// <summary>E20.a A4 stub of <c>TryUseItem</c> (<c>0x8002ED64</c>): non-zero means "carry on this tick". The binary returns 1 whenever the Circle button has no rising edge
     /// (<c>0x8002EDA8</c>); a stub returning 0 would end the tick and kill every attack, jump and run (critique C10). The use of an item (the Circle) is E20.h.</summary>
@@ -984,7 +1208,7 @@ public static class AlundraPlayerManager
     /// when the hero has a controller, <see cref="AlundraEntityScriptProxy.HeroAirborne"/> for a bare proxy of a test): 0x2C with a direction held, else 0x2D.
     /// On the ground: the edge of the Cross (<c>ButtonsJustPressed</c>) takes off - the walking jump (2) with a direction held, else the standing one (0x2B) -
     /// unless the cells forbid it (<c>VramOR &amp; 0x4000</c>: the case ends, nothing changes, not even the Moving); otherwise
-    /// Moving or Idle. <c>TryUseItem</c> and <c>PlayerTryAction</c> are the stubs of E20.a (the use of an item and lifting are not ported yet) and the run of the Triangle is E20.d. The
+    /// a held Triangle (E20.d1) starts the preparation of the run; otherwise Moving or Idle. <c>TryUseItem</c> and <c>PlayerTryAction</c> are the stubs of E20.a (the use of an item and lifting are not ported yet). The
     /// <c>LoadingMap</c> case reads the same predicate (E19.v, <see cref="IsHeroInTheAir"/>).
     /// </summary>
     private static void ApplyGroundOrAirTail(AlundraEntityScriptProxy player, in AlundraPadState pad, uint buttonsHold)
@@ -1010,6 +1234,15 @@ public static class AlundraPlayerManager
             }
 
             player.TargetAnimationId = buttonsHold != 0 ? JumpWalkingAnimationId : JumpStandingAnimationId;
+            return;
+        }
+
+        // E20.d1 T2, binary 0x80031F14-0x80031F30: a HELD Triangle (not an edge) starts the preparation of the run, with the counter of animation ends at 0 (the preparation lasts until the first loop of its animation
+        // turns that counter). Not on deep water (the guard of the swim: the binary's slope 4 never reaches this tail).
+        if ((pad.ButtonsHold & AlundraPadState.Triangle) != 0 && player.Slope_18c != DeepWaterSlope)
+        {
+            player.TargetAnimationId = PrepareSprintAnimationId;
+            player.AnimCompleteCounter = 0;
             return;
         }
 

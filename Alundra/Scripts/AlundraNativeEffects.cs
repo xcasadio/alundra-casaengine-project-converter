@@ -150,6 +150,20 @@ public static class AlundraNativeEffects
         }
     }
 
+    /// <summary>
+    /// E20.d1 T2: the effect of the bounce of the run (<c>0x80032018-0x80032068</c>, state 0x03 curtailed by the mover): one global effect 9 at the hero (<paramref name="heroX"/>, <paramref name="heroY"/>,
+    /// <paramref name="heroZ"/> in the binary's frame of Z, so the DLL's <c>PosZ + 1</c>, ADR-0026) with z + 0x100000 (16 pixels up): <c>0x8003BDD8(0, 9, 0, x, y, z + 0x100000)</c>. Nothing else: no force written by the caller and
+    /// no number drawn (the effect's own program runs on the stage).
+    /// </summary>
+    public static void CreateSprintBounce(AlundraEffectReservoir reservoir, int heroX, int heroY, int heroZ)
+    {
+        var slot = reservoir.Create(false, HitSparkEffect, 0, heroX, heroY, unchecked(heroZ + 0x100000));
+        if (slot != null)
+        {
+            CreatedForTests?.Invoke(slot);
+        }
+    }
+
     /// <summary>The global effect of a hit: the spark (<c>0x8003BDD8(0, 9, 0, x, y, z)</c>, bank 0, effect 9).</summary>
     private const int HitSparkEffect = 9;
 
