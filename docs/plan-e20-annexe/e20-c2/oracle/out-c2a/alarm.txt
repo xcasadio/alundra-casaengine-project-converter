@@ -1,0 +1,9 @@
+# E20.c2a T4: the low-life alarm, measured on the real code (sound(400) ticks); expected values were written in alarm.py before the run
+PASS  AL1   Hp 2 / 12, no target, 200 ticks                                        sound(400) at [1, 47, 93, 139, 185] (expected [1, 47, 93, 139, 185])
+PASS  AL2a  Hp 2 / 10                                                              sound(400) at [1, 47] (expected [1, 47])
+PASS  AL2b  Hp 3 / 10                                                              sound(400) at [] (expected [])
+PASS  AL2c  Hp 10 / 50                                                             sound(400) at [1, 47] (expected [1, 47])
+PASS  AL2d  Hp 11 / 50                                                             sound(400) at [] (expected [])
+PASS  AL2e  Hp 1 / 50                                                              sound(400) at [1, 47] (expected [1, 47])
+PASS  AL2f  Hp 0 / 10                                                              sound(400) at [] (expected [])
+PASS  AL3   Hp 2 / 12; entity Hp := 10 before tick 21, := 2 before tick 41         sound(400) at [1, 67] (expected [1, 67])

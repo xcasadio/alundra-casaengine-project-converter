@@ -2084,7 +2084,17 @@ le pilote d'objet (E20.h) ; la mort (E18).
   remplacé » dans sa ligne d'état et dans l'index, jamais réécrit). Tests : les lignes P de la fiole sont réépinglées « après la fin de
   `MovePlayer` » (entité `HpMax + 1` sans plafond, stats inchangées juste après l'opcode, puis les valeurs du binaire après un tick
   verrouillé) ; fiole de 50/50 : entité 51/51, stats 50/50 ; `0xBC` plafonné à 50, `0xC3` et le calage du HUD, avec leurs replis.
-- ⏳ **T4 — Alarme des PV bas.** Relire `0x800303DC`-`0x80030430` en entier ; remplacer le bouchon `PlayerLowHpAlarm` par le port exact.
+- ✅ **T4 — Alarme des PV bas.** Relire `0x800303DC`-`0x80030430` en entier ; remplacer le bouchon `PlayerLowHpAlarm` par le port exact. Fait.
+  Règle relue dans le binaire (mode 0 seulement, `bnez $s5` en `0x800303D8`) : `Hp` de l'entité du héros (`+0x14`) non nul et `HpMax` (`+0x18`)
+  non inférieur à `5 × Hp` (comparaison signée sur 32 bits, `0x800303EC`-`0x80030400`) ; alors le compteur `[0x80098F2C]` (l'adresse
+  `0x800A8F2C` du plan était une coquille : `lui 0x800A` avec `-0x70D4` donne `0x80098F2C`) est décrémenté et rangé, et à −1 le son
+  `0x190` joue et le compteur vaut `0x2D` (période 46). Sinon rien n'est lu ni écrit : le compteur garde sa valeur et reprend où il en
+  était. Le compteur est un global de session (`AlundraGameState.LowHpAlarmCounter`, 0 au départ, trois accès dans l'image, tous ici).
+  Mesuré sur le vrai code par `docs/plan-e20-annexe/e20-c2/oracle/alarm.py` (fichier neuf, sorties dans `out-c2a/`, valeurs attendues
+  écrites avant le run, 8 parcours PASS) : PV 2/12, 200 ticks, sons aux ticks 1, 47, 93, 139, 185 ; bornes `HpMax == 5 Hp` (2/10, 10/50, 1/50
+  sonnent, 3/10, 11/50, 0/10 non) ; compteur gelé pendant que la vie est haute (sons aux ticks 1 et 67). Les lignes A2-*-5-12 de
+  l'oracle c2-0 portent le premier son (tick 3, le tick après la blessure). Le bouchon enregistrait son appel pour les tests de
+  répartition de `AlundraFlailBounceTests` : l'appel est toujours enregistré (nom conservé), aucun de ces tests ne change.
 - ⏳ **T5 — Tests.**
 
 #### Acceptation

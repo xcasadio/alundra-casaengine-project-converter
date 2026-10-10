@@ -15,9 +15,9 @@ namespace Alundra.Scripts;
 /// <item><description>The third, on <c>state - 2</c> (table <c>0x80022A74</c>, <c>0x800301D8-0x800303D0</c>): the landing (<c>0x8003020C</c>), and the latch <c>0x800A8F30</c> that the other states clear (<c>0x800303D0</c>).</description></item>
 /// <item><description>The end (<c>0x800303D8</c>), mode 0 only (<c>bnez $s5</c>): the alarm of the low life (<c>0x800303DC-0x80030430</c>), then the flail bounce (<c>0x80030434-0x80030654</c>).</description></item>
 /// </list>
-/// <b>Ported for real</b>: the dispatch (which part runs for which state, with the guards of the landing) and the flail bounce. <b>Named stubs</b> (empty bodies, each records its call for the tests): the steps and
+/// <b>Ported for real</b>: the dispatch (which part runs for which state, with the guards of the landing) and the flail bounce. <b>Named stubs</b> (empty bodies, each records its call for the tests; the alarm records its call too but is no stub): the steps and
 /// the walk cycle (<see cref="PlayerRunStepEffects"/>, <see cref="PlayerWalkStepEffects"/>, whose own phase gates on <c>+0x1C</c> and the slope tables are inside the stub), the landing sound and dust
-/// (<see cref="PlayerLandingEffects"/>) and the grass cut (<see cref="PlayerGrassCut"/>), all four for E20.e; the alarm of the low life (<see cref="PlayerLowHpAlarm"/>) for E20.c2a, which carries the model of the life.
+/// (<see cref="PlayerLandingEffects"/>) and the grass cut (<see cref="PlayerGrassCut"/>), all four for E20.e; the alarm of the low life (<see cref="PlayerLowHpAlarm"/>) is ported for real by E20.c2a T4, with the life of the hero entity.
 /// </summary>
 internal static class AlundraPlayerAnimationEffects
 {
@@ -213,8 +213,47 @@ internal static class AlundraPlayerAnimationEffects
     /// <summary>Stub (E20.e) of the grass cut, <c>0x8002FDC0</c> (the call <c>0x8003A7B0</c> with the hero), called at every tick of an attack state. Not ported.</summary>
     private static void PlayerGrassCut(AlundraEntityScriptProxy player, int mode) => Record(mode, GrassCutStubName, player);
 
-    /// <summary>Stub (E20.c2a, which carries the model of the life) of the alarm of the low life, <c>0x800303DC-0x80030430</c> (mode 0 only): when the maximum life is at least five times the life, <c>[0x800A8F2C]</c> is decremented, and at -1 the sound <c>0x190</c> plays and the counter is set to <c>0x2D</c>. Not ported.</summary>
-    private static void PlayerLowHpAlarm(AlundraEntityScriptProxy player) => Record(FreeMode, LowHpAlarmStubName, player);
+    /// <summary>The sound of the alarm of the low life (<c>0x80030424</c>: <c>PlaySound(0x190)</c>).</summary>
+    internal const int LowHpAlarmSfx = 0x190;
+
+    /// <summary>The value the alarm counter is reloaded with when it reaches -1 (<c>0x80030428</c>).</summary>
+    internal const int LowHpAlarmReload = 0x2D;
+
+    /// <summary>
+    /// The alarm of the low life, <c>0x800303DC-0x80030430</c> (E20.c2a T4; mode 0 only, the call is made from <see cref="Create"/> after the dispatches). Read again in the binary: the life of the HERO ENTITY
+    /// (<c>0x80127D30 +0x14</c>, <see cref="AlundraEntityScriptProxy.Hp"/>) must not be 0 (<c>beqz</c>, <c>0x800303EC</c>) and the maximum (<c>+0x18</c>) must not be below five times the life
+    /// (<c>sll 2; addu</c>, <c>slt</c>, <c>0x800303F0-0x80030400</c>, signed 32-bit). When both hold, the counter <c>[0x80098F2C]</c> (<see cref="AlundraGameState.LowHpAlarmCounter"/>; the address
+    /// <c>0x800A8F2C</c> of the plan is a slip: <c>lui 0x800A</c> with <c>-0x70D4</c> is <c>0x80098F2C</c>) is decremented and stored (<c>0x80030414-0x8003041C</c>); when the new value is -1 the sound
+    /// <see cref="LowHpAlarmSfx"/> plays and the counter is reloaded with <see cref="LowHpAlarmReload"/> (<c>0x80030420-0x8003042C</c>), so the sound repeats every 46 ticks. Otherwise (life 0, or the life above a fifth of the
+    /// maximum) nothing is read or written: the counter keeps its value and resumes where it was. The counter is a global that starts at 0 and nothing else writes (a scan of the image finds three
+    /// accesses, all here), so the first alarm tick sounds at once. A hero without a script host (a bare proxy) has no session state: no alarm.
+    /// </summary>
+    private static void PlayerLowHpAlarm(AlundraEntityScriptProxy player)
+    {
+        Record(FreeMode, LowHpAlarmStubName, player); // the call is still recorded for the dispatch tests (the name keeps the word 'stub' of E20.f2).
+
+        var life = player.Hp;
+        if (life == 0 || player.HpMax < unchecked(life * 5))
+        {
+            return;
+        }
+
+        var host = player.ScriptHost;
+        if (host == null)
+        {
+            return;
+        }
+
+        var state = host.GameState;
+        var counter = state.LowHpAlarmCounter - 1;
+        if (counter == -1)
+        {
+            host.SoundPlayer?.PlaySfx(LowHpAlarmSfx);
+            counter = LowHpAlarmReload;
+        }
+
+        state.LowHpAlarmCounter = counter;
+    }
 
     private static void Record(int mode, string stub, AlundraEntityScriptProxy player) => StubCallsForTests?.Add((mode, stub, player.TargetAnimationId));
 }
