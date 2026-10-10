@@ -2168,7 +2168,7 @@ le pilote d'objet (E20.h) ; la mort (E18).
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
 - **Retour arrière** : `git revert` des commits d'E20.c2a.
 
-### 1.13 E20.d — La course 🧪 (proposée le 2026-10-10 ; découpée en E20.d1 et E20.d2 ; E20.d1 exécutée le 2026-10-10, verifier frais et recette de l'auteur en attente ; E20.d2 ⏳)
+### 1.13 E20.d — La course : E20.d1 🧪 (faite et CONFIRMED le 2026-10-10, `af42753` à `0b1d3f3` ; reste la recette de l'auteur), E20.d2 ⏳ (attend la mesure du stick, Q-D1)
 
 **Révision 1 (2026-10-10).** Relecture d'E20.d1 : **REVISE**, deux points corrigés : le prérequis est E20.c2a CONFIRMED (arrêt
 sinon, base des épingles nommée) ; la tolérance d'O-E19-42 ne vaut que pour le mur est (± 1 tick), les autres murs sont exacts.
@@ -2400,15 +2400,27 @@ tests existants (inversé : Triangle seul donne `0x29`, compteur `0`, direction 
   `0x3E` et `0x1C` retournent la direction d'abord. Le mur d'eau profonde sans bottes (`R9-deepwater-noboots`) et la nage (départs dans
   l'eau) ne sont pas portés : E20.i et O-E19-22.
 - **Écarts écrits, hors périmètre ou en bouchon** : le pas, la poussière et l'atterrissage (sons 12 et 11, effet 7 : E20.e) ne sont
-  pas comparés ; le son 3 du Rond dans la préparation est `TryUseItem` (E20.h) ; la fin de la glace diffère de 16 unités (le mover
-  travaille en flottants ; glissement exact hors périmètre) ; le bord de la carte (`R2-mapedge`, O-E19-17) ne rebondit pas dans la DLL ;
+  pas comparés ; le son 3 du Rond dans la préparation est `TryUseItem` (E20.h) ; la fin de la glace diffère de 16 unités (cause
+  établie par le verifier : le contrôleur de personnage du moteur ignore un pas plus petit que `MinMoveDistance`, 0,001 px, soit
+  environ 65 unités, `CharacterControllerComponent.cs` ; préexistant ; avec `MinMoveDistance = 0` la trace est exacte ; la mention
+  « le mover travaille en flottants » du test est à corriger) ; le bord de la carte (`R2-mapedge`, O-E19-17) ne rebondit pas dans la DLL ;
   la colonne `on_ground` d'un rebord est comparée au tick d'avant, au tick de la perte (O-E20-12, comme AT8) ; la blessure du héros
   après le coup du Tackle est E20.c2b.
 - **Moyens de test** : l'Idle de la fiche du héros porte l'octet d'accélération 1 (la glissade finit à 64512 au tick 57, pas à 0) ; la
   horloge des coups d'E20.b garde son 0 pour ne rien déplacer, et le montage de la course le corrige pour lui seul. `TryUseItem` a un
   point d'accès de test (branches « résultat 0 » du binaire, sinon inatteignables).
-- **Non fait** : l'échelle de la 389 au vrai préfab (l'intro de la carte verrouille et déplace le héros, aucun arc n'existe sur cette
-  carte) ; la sonde du vrai jeu (harnais hors dépôt) ; le verifier frais ; la recette de l'auteur.
+- **Non fait** : l'échelle de la 389 au vrai préfab (l'intro de la carte verrouille et déplace le héros) ; la recette de l'auteur.
+- **Vérification** : verifier frais **CONFIRMED** (aucun P0 à P2) : tables et gestionnaires `0x29`, `0x03`, `0x2A`, `0x3E`/`0x1C`, queue
+  et table de la nage redécodés ; manifeste de l'oracle reproduit (557 fichiers), G5 et G9 régénérés à l'identique ; huit mutations
+  attrapées (rangée du cône, borne 11 de la reprise, `AnimCompleteCounter`, porte b0, Z de l'effet 9, retournement de l'eau profonde,
+  masque du Tackle, compteur de glissade) ; **sonde du vrai jeu** relancée deux fois : la nouvelle partie est inchangée (seuls des écarts
+  de rythme d'images).
+- **Reportés** : P3 : l'écart de la glace a une cause moteur (`MinMoveDistance`) et non le flottant ; son allocation n'était pas dans les
+  écarts du plan ; à corriger dans le commentaire du test, et à juger côté moteur (règle : un défaut se corrige dans le moteur) ; P3 :
+  l'échelle de la 389 au vrai préfab reste à tester (la fixture `AlundraLadderClimbTests.cs` tourne la vraie carte sans l'intro) ; P4 :
+  le commentaire « le 0 de ses oracles » de l'horloge d'E20.b est inexact (l'Idle exporté a l'accélération 1 ; l'horloge d'E20.b garde 0
+  à cause de son montage, sans effet en production) ; P4 : le cas de deux ticks par image vérifie le comportement, pas l'oracle champ
+  par champ (ce que le plan demandait).
 
 #### E20.d2 — Tâches
 
