@@ -163,7 +163,7 @@ public static class EntityFlags
     public const uint DestroyOnSlidingSlope = 0x00100000;
 
     /// <summary>
-    /// Bit 21 - destroy the entity (no break effect) as soon as its combined tile VRAM flags match
+    /// Bit 21 - destroy the entity (<c>DestroyEntity(e, -1)</c>: the break effect of its sprite header, byte <c>+0x1E</c>, since E14.a1b) as soon as its combined tile VRAM flags match
     /// 0x8004. Checked by <c>EntityManager.UpdateEntitiesEvents</c> @ 0x800386D0.
     /// </summary>
     public const uint DestroyOnVramFlags = 0x00200000;

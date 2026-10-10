@@ -62,8 +62,8 @@ public interface IEntityWorldContext
     /// Marks <paramref name="entity"/> for destruction - backs the single-argument
     /// <c>GameEngine.DestroyEntity(Entity)</c> @ 0x8003A774 every search-driven destroy opcode (0x2E)
     /// calls per match, distinct from <see cref="AlundraWorldProxy.DestroyEntity(AlundraEntityScriptProxy,int)"/>
-    /// (the two-argument overload the pick-phase status machine uses, which also spawns break-effect
-    /// contents).
+    /// (the two-argument overload the pick phase's destroy branches (slope, VRAM flags) and E1 of the native sprites
+    /// call, which since E14.a1b also creates the break effect; the loot stays the named stub of E20.e0).
     /// </summary>
     void DestroyEntity(AlundraEntityScriptProxy entity);
 

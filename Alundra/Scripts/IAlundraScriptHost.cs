@@ -9,7 +9,7 @@ namespace Alundra.Scripts;
 /// own <see cref="AlundraEntityScriptProxy.Update"/> needs now that the entity, not the world, drives its
 /// own pick/run pass (decision D2, docs/plan-conversion-totale.md §2): the shared bytecode interpreter,
 /// the original's <c>g_activeCollisionEntity</c> (read by the pick phase to decide slot F), and the
-/// two-argument <c>DestroyEntity</c> the pick phase's own destroy branches call. Implemented by
+/// two-argument <c>DestroyEntity</c> the pick phase's own destroy branches and E1 of the native sprites call. Implemented by
 /// <see cref="AlundraWorldProxy"/> (which owns all three); every proxy this world spawns gets
 /// <c>proxy.ScriptHost = this</c> in the shared spawn path (<see cref="AlundraWorldProxy.InitializeWithWorld"/>
 /// / <see cref="AlundraWorldProxy.SpawnEntityByRecordId"/>). A proxy with a null <see cref="AlundraEntityScriptProxy.ScriptHost"/>
@@ -30,7 +30,7 @@ public interface IAlundraScriptHost
     AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
 
     /// <summary>Two-argument <c>GameEngine.DestroyEntity(Entity, int)</c> port the pick phase's own
-    /// destroy branches (DestroyOnSlidingSlope/DestroyOnVramFlags) call - see
+    /// destroy branches (DestroyOnSlidingSlope/DestroyOnVramFlags) and E1 of the native sprites (E14.a1b) call - see
     /// <see cref="AlundraWorldProxy.DestroyEntity(AlundraEntityScriptProxy,int)"/>'s own doc.</summary>
     void DestroyEntity(AlundraEntityScriptProxy entity, int effectId);
 

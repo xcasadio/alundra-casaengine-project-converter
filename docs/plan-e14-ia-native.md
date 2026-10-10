@@ -656,7 +656,7 @@ principale :
 - **Retour arrière** : `git revert` des commits d'E14.a1b ; le dossier `oracle-a1/` (commit de docs de T0) peut rester, il ne change
   aucun comportement.
 
-### 1.3c E14.a1c — Muruta, hall de la 115 ⏳ (détaillée le 2026-10-10 ; exécution après E14.a1b CONFIRMED)
+### 1.3c E14.a1c — Muruta, hall de la 115 🧪 (faite le 2026-10-10, `258eb53` à T3 ; verifier frais et recette de l'auteur à venir)
 
 Relecture : **READY** dès la première lecture (2026-10-10).
 
@@ -726,13 +726,13 @@ Clôture du Muruta : les 16 noms du Beannoïde plus `ai0_280` et `b0_274` (18).
 
 ##### Tâches
 
-- ⏳ **T1 — Muruta A0, C10, D9 contre l'oracle.** Tests d'abord : `AlundraMurutaOracleTests` dans
+- ✅ **T1 — Muruta A0, C10, D9 contre l'oracle** (`258eb53`). Tests d'abord : `AlundraMurutaOracleTests` dans
   `[Collection(AlundraRandomStaticStateCollection.Name)]` (graine rendue), même montage qu'`AlundraBeannoideOracleTests` (table des
   champs, héros, attaquant, kit, verrou), sur `vectors-muruta.json` et les `calls[]` des scénarios `MU-*` ; puis `AlundraMurutaAi`
   enregistré pour 347 ; les tests du §1.3d pour E14.a1c.
-- ⏳ **T2 — Arc H115.**
-- ⏳ **T3 — Suite complète, plan, notes** (le verifier frais est lancé par la session principale).
-- ⏳ **T4 — Recette de l'auteur** (D-E14-7).
+- ✅ **T2 — Arc H115** (`f15a892`).
+- ✅ **T3 — Suite complète, plan, notes** (faite, voir « Résultats » ci-dessous ; le verifier frais est lancé par la session principale).
+- ⏳ **T4 — Recette de l'auteur** (D-E14-7) : le hall de la 115 (quatre Muruta tués à l'épée, un nuage de bris par mort, trois portails rendus, (16,42) reste fermé), la grille de la 116 (animée après les deux Beannoïde) et la 14 (les sept Beannoïde dorment, se réveillent et meurent) ; non tentée par l'exécuteur.
 
 **Arc H115** (`ArcRun` direct, natifs actifs). `LeverArcs.Zone` / `World115`, drapeaux `{262}`, `Arrival` (252, 872) — la case (10,54),
 z 0, direction 16 ; jamais la case (10,56), qui lance le dialogue 81 de B[8] (`@1104`) —, limite d'environ 3 000 images. Image 1 : B[2]
@@ -760,6 +760,54 @@ Une image = un tick.
   C10 lisant `AnimationDirection` au lieu de `BoxDirection`.
 - Registre : 6 entrées en production ; aucune inscription ne liste −1 ; tests du §1.3d à jour.
 - Suite `Alundra.Tests` en Release puis en Debug sans échec ; `cmp` de la DLL ; traces inchangées ; verifier frais.
+
+##### Résultats (2026-10-10)
+
+Commits : T1 `258eb53`, T2 `f15a892`, T3 (ce texte). Build Release puis Debug : `Alundra.Tests` **4752 sans échec** dans les deux configurations (4736 avant : +16 tests : 14 de `AlundraMurutaOracleTests`, l'arc H115, le journal des
+gestionnaires natifs), `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` identique, garde des traces `docs/hero-trace-389-*` et `docs/intro-trace-389.txt` passée (`git diff --ignore-cr-at-eol --exit-code`).
+
+**Ce qui est fait.** `AlundraMurutaAi` (A0, C10, D9 inscrits pour le type 347 par `AlundraNativeSpriteRegistry.CreateForProduction`, six entrées en production) ; `AlundraEnemyHelpers.CardinalDirections` (table `0x80028B54`) ; le lecteur
+`AlundraEnemyHandlerOracle` étendu (`MurutaClosure`, 18 noms, et le pointeur d'attaque du héros par appel) ; `AlundraMurutaOracleTests` ; `AlundraMurutaHallArcTests` ; `AlundraEventProgramRunner.NativeHandlerRunCounts` (journal des
+gestionnaires natifs par (emplacement, code), pour compter D9 directement) ; les tests du registre (§1.3d) ; les commentaires reportés d'E14.a1b.
+
+**Acceptation, mesurée.**
+- Vecteurs : **4 913, 0 écart** : A0 6, C10 4 043, D9 720 (champs changés, mot du générateur, sons : le son `0xCD` de C10 est comparé dans l'ordre par un enregistreur) ; E1 144 selon la projection d'E14.a1b (144 comparés, 108 effets,
+  160 entrées de journal exclues).
+- Appels des scénarios : **3 675, 0 écart**, rejoués un par un d'`before` vers `after` : A0 16, C10 3 637, D9 15 (attaque `(0x81, 1)`, verrou de l'appel), E1 7. Aucun nom changé hors de la clôture de 18 noms.
+- Arc H115 (`AlundraMurutaHallArcTests`, un tick par image ; relevés de la graine par défaut, la structure est la même pour cinq autres graines essayées à part, non versées) : les quatre `0x2D` (`@401`, `@403`, `@405`, `@407`) à l'image
+  **0** de la trace ; les quatre `@1469` à l'image **44** (44 images après le `0x2D`, loin des 600 de l'arrêt : la chute des entités n'est pas un arrêt ici) ; coups écrits aux images 61, 89, 121, 149, 189, 221, 249 ; **8 appels de D9
+  comptés par le journal des gestionnaires natifs** (pas déduits des PV), chacun relié à une baisse de PV du même tick ; PV 3→1→0 par Muruta (2 par coup). Enregistrement 24 : D9 à 66 et 154, H = 153, statut 4 à **176** (H+23),
+  recyclé à **177** (H+24) ; 25 : D9 à 94 et 126, H = 125, statut 4 à **148**, recyclé **149** ; 26 : D9 à 194 et 226, H = 225, statut 4 à **248**, recyclé **249** ; 27 : D9 à 122 et 254, H = 253, statut 4 à **276**, recyclé
+  **277**. `FrameOf(B, 434)` = **278** = dernière E1 (276) + 2 = X ; `@442` = **319** (X+41), `@461` = **328** (X+50), `@477` = **337** (X+59), `@493` = **346** (X+68). G569 et G262 posés ; `GroundProperty` 128 en (10,44) et
+  (11,44), 144 en (5,42) (bit `0x80` posé), 16 en (16,42) (éteint) ; `EntityByRecord(24..27)` nul ; **quatre effets de bris** (effet 8, `RecordIndex` −1, mode 2, ancre non nulle, X/Y du Muruta tué) : enregistrement 24 emplacement 4
+  à E1 + 1 = 177, 25 emplacement 0 à 149, 26 emplacement 3 à 249, 27 emplacement 4 à 277 ; `AssertNoUnexpectedError` et `AssertNothingSkippedOrExceeded`.
+- Mutations réelles (appliquées au fichier par un script qui enregistre l'original et le restaure, construites, testées ; aucune n'est dans un commit) : C10 masque de fin `0x1C`→`0x1F` : 3 rouges (vecteurs C10, appels C10, arc H115) ;
+  D9 animation 2→3 : 4 rouges (vecteurs D9, appels D9, `D9_AppliesTheLatch…`, arc H115) ; A0 sans le +1 : 4 rouges (vecteurs A0 et trois cas de `A0_TakesTheHighHalf…`) ; état 5 `0x40`→`0x20` : 3 rouges (vecteurs C10, appels C10,
+  arc H115) ; C10 lisant `AnimationDirection` au lieu de `BoxDirection` (la fenêtre avant, dans l'aide) : 4 rouges (vecteurs C10, appels C10, deux tests d'`AlundraEnemyHelpersTests`).
+- Registre : **6 entrées en production** ; aucune inscription ne liste −1 (test des 6 emplacements × 400 codes, inchangé) ; les tests du §1.3d à jour.
+- Traces, arcs des leviers, arène de c1a et c1b, `AlundraDay3SceneArcTests`, `AlundraInoaDayOneArcTests`, `AlundraShipBlockArcTests`, `AlundraVisionArcTests`, `AlundraHeroLifeArcTests`, `AlundraEntityContactArcTests`,
+  `AlundraTarnMurggArcTests` : **aucun ne bouge** (suite complète sans échec). `AlundraTarnMurggArcTests` R3-2 (carte 15, dont les Muruta ont maintenant leurs gestionnaires) ne bouge pas : O-E14-2 reste fermé.
+
+**Les tests du registre (§1.3d).** `ProductionRunner_RegistryHoldsTheBeannoidsThreeHandlers_AndTheSwitchIsOn` devient `ProductionRunner_RegistryHoldsTheSixHandlersOfTheBeannoidAndTheMuruta_AndTheSwitchIsOn` (`Count` 6, les trois clés
+de chaque type, chaque gestionnaire pour son seul type) ; `EmptyRegistry_EveryEntity_IsACountedNoOp` passe à la clé libre (D, 25) pour le type 347 ; un test ajouté : `TheJournalOfTheNativeHandlers_CountsEachKeyThatRan`.
+
+**Écarts et limites.**
+1. **Ordre « tests d'abord » de T1 non suivi à la lettre** : le code d'`AlundraMurutaAi` a été écrit avant le fichier de tests. La morsure est prouvée : avec le fichier de tests et sans l'inscription dans `CreateForProduction`, 7 des 14 tests
+   d'oracle sont rouges (« le registre n'a pas lancé le gestionnaire »), puis verts avec l'inscription ; les cinq mutations ci-dessus le confirment.
+2. **Compte des pointeurs d'attaque du héros** : le plan disait 612 appels de `0x80144229` et 3 025 de `0x80144209` ; mesuré sur les 3 637 appels de C10, par la colonne par tick de la ligne qui précède l'appel : **615** et **3 022**, et
+   `0x80144229` ⇔ boîte d'image du héros non nulle (aucun appel ne les sépare). `0x80144209` reçoit l'attribut 0x55 (jamais lu : la boîte est éteinte et le court-circuit s'arrête avant l'attribut).
+3. **Mots de forces** (montage du test) : la saleté de l'oracle peut laisser un des six mots à 0, qu'aucun changement ne liste ; quand un mot de force listé passe à 0, les non listés valaient déjà 0 (l'aide les remet à zéro ensemble).
+   Le vecteur C10 n° 3267 (`forcey_C8`) l'a montré ; sinon le marqueur reste attendu inchangé.
+4. **Effet de bris : critère de l'arc** : un effet 8 dure environ 33 ticks et deux Muruta peuvent se tenir au même endroit (non collidables) ; l'enregistrement 24 et l'enregistrement 25 étaient au même X/Y, donc le prédicat « exactement
+   un emplacement à X/Y du Muruta tué » du plan en comptait deux à E1 + 1 pour le 24 (l'emplacement du 25, mort 28 ticks plus tôt, vivait encore). Le critère est devenu : exactement un emplacement **nouveau** (absent à E1 − 1) aux X/Y
+   du Muruta tué, avec le reste du prédicat (effet 8, `RecordIndex` −1, mode 1 ou 2, ancre non nulle). Aucune assertion ne dépend des positions des Muruta.
+5. **Numérotation** : les quatre `0x2D` sont tous à l'image 0 de la trace (la première image, comme les arcs précédents), pas à « l'image 1 » du plan ; les écarts du plan (E1 + 2, X+41, +50, +59, +68) sont exacts.
+6. `NativeHandlerRunCounts` est une addition de production (interne, un dictionnaire incrémenté avec `NativeHandlerRunCount`), faite pour compter D9 directement ; elle ne change aucun comportement.
+7. Sans héros (`PlayerEntity` nul), C10 ne fait rien et D9 applique les dégâts et l'animation sans la direction ; la branche de la carte `0x99` n'est pas portée (commentaire dans `AlundraMurutaAi`) ; l'arc tourne hors de la collection du
+   générateur statique et n'affirme que des issues indépendantes du tirage (butin, son 84 et positions non affirmés).
+8. Commentaires reportés d'E14.a1b corrigés : `EntityFlags.cs` (destruction VRAM), `AlundraEventProgramRunner.cs` (E1), `AlundraEntityDepthKey.cs`, `IEntityWorldContext.cs`, `IAlundraScriptHost.cs`.
+9. Aucun arrêt du plan n'a joué : tous les Muruta atteignent `@1469` 44 images après leur `0x2D`, chaque coup fait 2, les décalages H+1 / H+23 / H+24 et E1 + 2 sont ceux de l'oracle, aucun nom changé hors clôture, le moteur et
+   `CasaEngineMonogame/` n'ont pas été touchés.
 
 ##### Arrêts, budget, retour arrière
 
