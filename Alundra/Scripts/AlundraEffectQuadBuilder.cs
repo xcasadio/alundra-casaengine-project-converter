@@ -20,7 +20,7 @@ namespace Alundra.Scripts;
 /// a mirrored axis starts one texel before; 519 mirrored-X images have U = 0 and 137 mirrored-Y images V = 0, whose origin -1 the clamped sampler reads as column or row 0: the accepted overshoot
 /// of G2b), the mode is <c>Semi ? Abr + 1 : None</c>, the sheet 0 (the map companion) for an image set of the map table and 1 (the global companion) otherwise.</item>
 /// <item><b>G3C-R4 key</b>: pass <c>YSortedWorld</c>, layer 300, order 0 (the values the entity prefab carries, <c>alundra-project/Entities/Alundra/Alundra.entity</c> lines 544 to 553), elevation
-/// <c>16 * min(DepthKey &gt;&gt; 20, 59) + 6</c> (<see cref="WallPlacementOverlay.ComputeEntityElevation"/> on the stored key), coordinate <c>100 * ay</c> (the world row, like the entities), local offset
+/// <c>16 * min(DepthKey &gt;&gt; 20, 59) + 6</c> (<see cref="WallPlacementOverlay.ComputeEntityElevation"/> on the stored key), coordinate <c>100 * ay</c> (the world row, like the entities; an ANCHORED slot, modes 1 and 3, takes its anchor's sprite coordinate plus its depth offset instead, E20.f1b D-E20-29), local offset
 /// <c>N - 1 - k</c> (image 0 is drawn last, as in the binary), stable id the slot index.</item>
 /// </list>
 /// </summary>
@@ -70,7 +70,9 @@ internal static class AlundraEffectQuadBuilder
             }
 
             var elevation = WallPlacementOverlay.ComputeEntityElevation(unchecked((int)slot.DepthKey), 0);
-            var coordinate = 100 * ay;
+            // E20.f1b (D-E20-29, amends ADR-0049): an anchored slot (modes 1 and 3) sorts on the coordinate of its anchor's sprite plus its depth offset, not on its own (higher) position, so that the aura
+            // is drawn just after the hero (the binary: the anchor's key plus one). Mode 0 keeps the rule of ADR-0049; a slot frozen (mode 2) after its anchor is gone too.
+            var coordinate = slot.Mode is 1 or 3 && slot.Anchor != null ? slot.Anchor.SortCoordinate + slot.DepthOffset : 100 * ay;
             var sheet = slot.CurrentMapTable ? MapSheet : GlobalSheet;
             var images = set.Images;
             for (var k = 0; k < images.Count; k++)
