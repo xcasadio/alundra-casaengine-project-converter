@@ -41,6 +41,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
     public void Dispose()
     {
         AlundraNativeEffects.CreatedForTests = null;
+        AlundraPlayerManager.WeaponSpawnCallsForTests = null;
         AlundraRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         AlundraGameState.Instance.ResetForTests();
@@ -54,7 +55,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
     private static AlundraItemTables Tables() => AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
 
     /// <summary>One charge effect as the montage reads it: after its creation and the writes that follow, before its first update.</summary>
-    private readonly record struct Effect(int Id, bool MapTable, int X, int Y, int Z, int ForceX, int ForceY, int ForceZ, int Mode);
+    private readonly record struct Effect(int Id, bool MapTable, int X, int Y, int Z, int ForceX, int ForceY, int ForceZ, int Mode, int Index = -1);
 
     private sealed class Montage
     {
@@ -118,7 +119,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
         hero.WeaponChargeTimer = 0;
         var montage = new Montage { Rig = rig, Sounds = sounds, Stage = stage };
         AlundraNativeEffects.CreatedForTests = slot => montage.Created.Add(
-            new Effect(slot.TargetEffect, slot.TargetMapTable, slot.X, slot.Y, slot.Z, slot.ForceX, slot.ForceY, slot.ForceZ, slot.Mode));
+            new Effect(slot.TargetEffect, slot.TargetMapTable, slot.X, slot.Y, slot.Z, slot.ForceX, slot.ForceY, slot.ForceZ, slot.Mode, slot.Index));
         return montage;
     }
 
@@ -149,8 +150,11 @@ public sealed class AlundraHeroChargeTests : IDisposable
         var creations = 0;
         var releases = 0;
         long previousAura = 0;
+        var spawns = new List<AlundraPlayerManager.WeaponSpawnCall>();
+        AlundraPlayerManager.WeaponSpawnCallsForTests = spawns;
         foreach (var row in rows.TakeWhile(r => r.Tick <= lastTick))
         {
+            spawns.Clear();
             m.Tick(row.Hold, row.RngBefore);
 
             void Check(string field, long dll, long oracle)
@@ -209,6 +213,18 @@ public sealed class AlundraHeroChargeTests : IDisposable
             }
 
             Check("rng_after", (uint)AlundraRandom.RandomSeed, row.RngAfter);
+
+            // The shot stub (E20.e0a and E20.f3 make it real): the same calls at the same ticks, with the oracle's arguments; the oracle's Z is the DLL's plus one raw unit (ADR-0026).
+            Check("spawn_calls", spawns.Count, row.Spawns.Count);
+            for (var i = 0; i < Math.Min(spawns.Count, row.Spawns.Count); i++)
+            {
+                var dll = spawns[i];
+                var oracle = row.Spawns[i];
+                if ((dll.Type, dll.X, dll.Y, dll.Z + 1, dll.Direction) != (oracle.Type, oracle.X, oracle.Y, oracle.Z, oracle.Direction))
+                {
+                    diffs.Add($"tick {row.Tick} spawn {i}: dll {dll} (Z + 1 = {dll.Z + 1}), oracle {oracle}");
+                }
+            }
         }
 
         return diffs;
@@ -303,8 +319,8 @@ public sealed class AlundraHeroChargeTests : IDisposable
         Assert.Equal(new[] { 429 }, soundsAt[89]);
         Assert.Equal((0x12345678u, 0x24D2C78Au), wordsAt[85]);
         Assert.Equal((0x24D2C78Au, 0xAFBE9EACu), wordsAt[89]);
-        Assert.Equal(new Effect(16, false, 8274740, 4686300, 1048577, -86057, 93365, 0, 0), effectsAt[85].Single());
-        Assert.Equal(new Effect(16, false, 5488860, 7531420, 1048577, 53237, -48891, 0, 0), effectsAt[89].Single());
+        Assert.Equal(new Effect(16, false, 8274740, 4686300, 1048577, -86057, 93365, 0, 0), effectsAt[85].Single() with { Index = -1 });
+        Assert.Equal(new Effect(16, false, 5488860, 7531420, 1048577, 53237, -48891, 0, 0), effectsAt[89].Single() with { Index = -1 });
         Assert.All(wordsAt.Where(p => p.Key is not (85 or 89)), p => Assert.Equal(p.Value.Entry, p.Value.Exit)); // no number is drawn on the other ticks.
     }
 
@@ -324,5 +340,264 @@ public sealed class AlundraHeroChargeTests : IDisposable
         }
 
         Assert.Equal(58, hero.AuraStub.CheckCallsForTests);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // T3: the release.
+    // -----------------------------------------------------------------------------------------
+
+    [Theory]
+    [MemberData(nameof(Probes))]
+    public void TheChargeProbes_MatchTheOracleTickByTick_ThroughTheReleaseTheChargedSwingAndTheShot(string name, int item, int releaseTick, int auraTick)
+    {
+        var rows = ChargeOracle.Load(name);
+        Assert.Equal(auraTick, rows.First(r => r.AuraHandle != 0).Tick);
+        using var seed = new SeedScope();
+        var m = Start(item);
+
+        AssertEqualToOracle(Compare(m, rows, rows.Count));
+
+        // The release tick and the tick after it, from the oracle itself: the charged animation, the pointer and its counter, the aura freed one tick later.
+        Assert.Equal(60, rows[releaseTick - 1].Charge);
+        Assert.Equal(0, rows[releaseTick].Charge);
+        Assert.NotEqual(0L, rows[releaseTick - 1].AuraHandle);
+        Assert.Equal(0L, rows[releaseTick].AuraHandle);
+        Assert.Equal(1, m.Hero.AuraStub.Creations);
+        Assert.Equal(1, m.Hero.AuraStub.Releases);
+    }
+
+    // The 16 effects of the burst at the hero (100, 100) = (6553600, 6553600), Z = 1 + 0x100000: (X, Y, ForceX, ForceY), written by hand from the two tables (BurstTableX[2i] and BurstTableY[2i] times 3072 for the
+    // position, BurstTableX[(2i + 24) & 31] and BurstTableY[(2i + 24) & 31] times 448 for the forces; docs/plan-e20-annexe/e20-f1/oracle/summary.txt section 'C2-steel release tick').
+    private static readonly (int X, int Y, int ForceX, int ForceY)[] Burst =
+    {
+        (6553600, 8126464, 344064, 0), (5650432, 8006656, 318080, 87808), (4885504, 7665664, 243264, 162176), (4372480, 7155712, 131712, 211904),
+        (4194304, 6553600, 0, 229376), (4372480, 5951488, -131712, 211904), (4885504, 5441536, -243264, 162176), (5650432, 5100544, -318080, 87808),
+        (6553600, 4980736, -344064, 0), (7456768, 5100544, -318080, -87808), (8221696, 5441536, -243264, -162176), (8734720, 5951488, -131712, -211904),
+        (8912896, 6553600, 0, -229376), (8734720, 7155712, 131712, -211904), (8221696, 7665664, 243264, -162176), (7456768, 8006656, 318080, -87808),
+    };
+
+    private static void AssertTheBurst(IEnumerable<Effect> effects, int count = 16)
+    {
+        var list = effects.ToList();
+        Assert.Equal(count, list.Count);
+        for (var i = 0; i < count; i++)
+        {
+            Assert.Equal(new Effect(16, false, Burst[i].X, Burst[i].Y, 1048577, Burst[i].ForceX, Burst[i].ForceY, 0, 0), list[i] with { Index = -1 });
+        }
+    }
+
+    /// <summary>
+    /// C2-steel (the steel sword) from the plan, written before the run: the Square is released at tick 91 (the first tick of the pad at 0), the counter is 60 (S + D + 60 with S = 1 and D = 21, the swing 0x3F), so the
+    /// charged attack starts: animation 0x18 (target and current), the pointer 0x80028C8E (0x80028C79 + 13 + 8) with its counter at 0 (1 at tick 92), the sound 43 and the 16 effects of the burst, no number drawn
+    /// (the generator stays AFBE9EAC), no spark on this tick (+0x1C = 90, bit 1 set). The aura stub has been checked 59 times (ticks 33 to 91) and is released at tick 92. The shot of the type 27 is asked at tick 112,
+    /// in the binary's Z of 1 (0 in the DLL's), the direction 0x18.
+    /// </summary>
+    [Fact]
+    public void C2Steel_TheRelease_AtTick91_StartsTheChargedSwing_16Effects_Sound43_ThenTheShotAtTick112()
+    {
+        var rows = ChargeOracle.Load("C2-steel");
+        using var seed = new SeedScope();
+        var m = Start(2);
+        var hero = m.Hero;
+        var spawns = new List<AlundraPlayerManager.WeaponSpawnCall>();
+        AlundraPlayerManager.WeaponSpawnCallsForTests = spawns;
+        var spawnTicks = new List<(int Tick, AlundraPlayerManager.WeaponSpawnCall Call)>();
+        foreach (var row in rows)
+        {
+            spawns.Clear();
+            m.Tick(row.Hold, row.RngBefore);
+            spawnTicks.AddRange(spawns.Select(s => (row.Tick, s)));
+            if (row.Tick == 90)
+            {
+                Assert.Equal(0u, hero.TargetAnimationId);
+                Assert.Equal(0u, hero.WeaponRecordPointer);
+                Assert.Equal(58, hero.AuraStub.CheckCallsForTests);
+            }
+            else if (row.Tick == 91)
+            {
+                Assert.Equal(0x18u, hero.TargetAnimationId);
+                Assert.Equal(0x18u, hero.CurrentAnimationId);
+                Assert.Equal(0x80028C8Eu, hero.WeaponRecordPointer);
+                Assert.Equal(0, hero.WeaponStepCounter);
+                Assert.Equal(60, hero.WeaponChargeTimer);
+                Assert.Equal(new[] { 43 }, m.Sounds.Requests.ToArray());
+                AssertTheBurst(m.Created);
+                Assert.Equal(0xAFBE9EACu, (uint)AlundraRandom.RandomSeed);
+                Assert.Equal(59, hero.AuraStub.CheckCallsForTests);
+                Assert.True(hero.AuraStub.Alive);
+            }
+            else if (row.Tick == 92)
+            {
+                Assert.Equal(1, hero.WeaponStepCounter);
+                Assert.Equal(0, hero.WeaponChargeTimer);
+                Assert.Equal(1, hero.AuraStub.Releases);
+                Assert.False(hero.AuraStub.Alive);
+                Assert.Empty(m.Created);
+            }
+        }
+
+        // The shot: one call in the whole probe, at tick 112, with the arguments of the binary (the oracle's Z of 1 is the DLL's 0).
+        var shot = Assert.Single(spawnTicks);
+        Assert.Equal(112, shot.Tick);
+        Assert.Equal(new AlundraPlayerManager.WeaponSpawnCall(27, 6553600, 6553600, 0, 0x18), shot.Call);
+    }
+
+    /// <summary>C10-crusher at tick 101: the hold spark and then the burst on the release tick: 17 creations in the oracle's order; sounds 43, 36 (the animation set of 0x19), then the spark's 428 (the order rule).</summary>
+    [Fact]
+    public void C10Crusher_TheReleaseTick101_ASparkThenTheBurst_17Creations_SoundsFollowTheRule()
+    {
+        var rows = ChargeOracle.Load("C10-crusher");
+        using var seed = new SeedScope();
+        var m = Start(10);
+        foreach (var row in rows.TakeWhile(r => r.Tick <= 100))
+        {
+            m.Tick(row.Hold, row.RngBefore);
+        }
+
+        var entry = rows[100].RngBefore;
+        Assert.Equal(0x24D2C78Au, entry);
+        m.Tick(rows[100].Hold, entry);
+
+        Assert.Equal(17, m.Created.Count);
+        Assert.Equal(new Effect(16, false, 5488860, 7531420, 1048577, 53237, -48891, 0, 0), m.Created[0] with { Index = -1 }); // the spark.
+        AssertTheBurst(m.Created.Skip(1));
+        Assert.Equal(0x19u, m.Hero.TargetAnimationId);
+        Assert.Equal(0x80028CDCu, m.Hero.WeaponRecordPointer);
+        Assert.Equal(new[] { 43, 36, 428 }, m.Sounds.Requests.ToArray()); // the oracle's order is 428, 43, 36; the spark's sound comes last in the DLL.
+        Assert.Equal(0xAFBE9EACu, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(new[] { 428, 43, 36 }, rows[100].Sounds.ToArray());
+    }
+
+    /// <summary>The release at S + D + 59 is lost, at S + D + 60 it succeeds (S = 1, D = 21 for the swing 0x3F: the counter is 59 at tick 81 and 60 at tick 82).</summary>
+    [Theory]
+    [InlineData(81, false)]
+    [InlineData(82, true)]
+    public void TheRelease_FailsWithACounterOf59_AndSucceedsWithACounterOf60(int releaseTick, bool succeeds)
+    {
+        using var seed = new SeedScope();
+        AlundraRandom.RandomSeed = 0x12345678;
+        var m = Start(2);
+        var hero = m.Hero;
+        for (var tick = 1; tick < releaseTick; tick++)
+        {
+            m.Tick(Square);
+        }
+
+        m.Tick(0); // the first tick of the pad at 0: the release edge.
+
+        Assert.Equal(succeeds ? 60 : 59, hero.WeaponChargeTimer);
+        Assert.Equal(succeeds, hero.TargetAnimationId == 0x18);
+        Assert.Equal(succeeds ? 0x80028C8Eu : 0u, hero.WeaponRecordPointer);
+        Assert.Equal(succeeds, m.Sounds.Requests.Contains(43));
+        Assert.Equal(succeeds ? 16 : 0, m.Created.Count);
+        m.Tick(0);
+        Assert.Equal(0, hero.WeaponChargeTimer); // the next tick: no charge any more, in both cases.
+        Assert.False(hero.AuraStub.Alive);
+    }
+
+    /// <summary>A release in the air is lost (D-E20-9): the counter is 60 and the Square is released, but the hero is not on the ground: no burst, no 0x2B, no pointer, no charged animation; the control on the ground succeeds.</summary>
+    [Theory]
+    [InlineData(0, false)]
+    [InlineData(1, true)]
+    public void AReleaseInTheAir_IsLost_OnTheGroundItSucceeds(int onGround, bool succeeds)
+    {
+        var m = Start(2);
+        var hero = m.Hero;
+        hero.WeaponChargeTimer = 60;
+        hero.FrameCounter = 1; // no hold spark on this tick (+0x1C & 3 is not 0).
+        hero.TargetAnimationId = 0;
+        hero.CurrentAnimationId = 0;
+        hero.IsOnGround = onGround;
+        m.Sounds.Requests.Clear();
+        m.Created.Clear();
+        var pad = new AlundraPadState { ButtonsReleased = Square };
+
+        AlundraPlayerManager.MovePlayer(hero, in pad, m.Rig.Host.GameState, m.Rig.Host);
+        m.Stage.RunFrame(1, new[] { false });
+
+        Assert.Equal(succeeds ? 0x18u : AirStillAnimation, hero.TargetAnimationId);
+        Assert.Equal(succeeds ? 0x80028C8Eu : 0u, hero.WeaponRecordPointer);
+        Assert.Equal(succeeds, m.Sounds.Requests.Contains(43));
+        Assert.Equal(succeeds ? 16 : 0, m.Created.Count);
+    }
+
+    private const uint AirStillAnimation = 0x2D;
+
+    /// <summary>A full reservoir at the tick of the first spark (C2-steel, tick 85): the effect is not created, so there is no sound 428 and no number drawn; the next spark (tick 89), once room is made, starts from the unchanged word.</summary>
+    [Fact]
+    public void AFullReservoir_AtTheSparkTick_PlaysNoSoundAndDrawsNothing_TheNextSparkStartsFromTheUnchangedWord()
+    {
+        var rows = ChargeOracle.Load("C2-steel");
+        using var seed = new SeedScope();
+        var m = Start(2);
+        foreach (var row in rows.TakeWhile(r => r.Tick <= 84))
+        {
+            m.Tick(row.Hold, row.RngBefore);
+        }
+
+        var fillers = Fill(m, AlundraEffectReservoir.SlotCount);
+        Assert.Equal(AlundraEffectReservoir.SlotCount, m.Stage.Reservoir.ActiveCount);
+        AlundraRandom.RandomSeed = 0x12345678;
+        m.Tick(rows[84].Hold); // tick 85
+        Assert.Empty(m.Created);
+        Assert.Empty(m.Sounds.Requests);
+        Assert.Equal(0x12345678u, (uint)AlundraRandom.RandomSeed);
+
+        for (var tick = 86; tick <= 88; tick++)
+        {
+            m.Tick(rows[tick - 1].Hold);
+        }
+
+        foreach (var slot in fillers)
+        {
+            m.Stage.Reservoir.Free(slot);
+        }
+
+        m.Tick(rows[88].Hold); // tick 89: the spark finds room and starts from the word the full reservoir left.
+        var effect = Assert.Single(m.Created);
+        Assert.Equal(new Effect(16, false, 8274740, 4686300, 1048577, -86057, 93365, 0, 0, 0), effect); // the tuple of the tick 85 of the oracle (the same entry word), in the first slot.
+        Assert.Equal(new[] { 429 }, m.Sounds.Requests.ToArray()); // +0x1C is 88 here: the sound of the cadence of 8.
+        Assert.Equal(0x24D2C78Au, (uint)AlundraRandom.RandomSeed);
+    }
+
+    /// <summary>Five free slots at the release (C2-steel, tick 91): the first five effects of the burst are created, in the slots 123 to 127 like the oracle's P2, the 11 others are skipped without shifting those; the sound 43, the pointer and 0x18 are there.</summary>
+    [Fact]
+    public void FiveFreeSlots_AtTheRelease_CreateTheFirstFiveEffectsOfTheBurst_AndTheReleaseStillCompletes()
+    {
+        var rows = ChargeOracle.Load("C2-steel");
+        using var seed = new SeedScope();
+        var m = Start(2);
+        foreach (var row in rows.TakeWhile(r => r.Tick <= 90))
+        {
+            m.Tick(row.Hold, row.RngBefore);
+        }
+
+        Fill(m, AlundraEffectReservoir.SlotCount - 5 - m.Stage.Reservoir.ActiveCount);
+        Assert.Equal(AlundraEffectReservoir.SlotCount - 5, m.Stage.Reservoir.ActiveCount);
+        Assert.Equal(new[] { 123, 124, 125, 126, 127 }, m.Stage.Reservoir.Slots.Where(s => !s.Active).Select(s => s.Index).ToArray());
+        m.Tick(rows[90].Hold, rows[90].RngBefore);
+
+        Assert.Equal(5, m.Created.Count);
+        for (var i = 0; i < 5; i++)
+        {
+            Assert.Equal(new Effect(16, false, Burst[i].X, Burst[i].Y, 1048577, Burst[i].ForceX, Burst[i].ForceY, 0, 0, 123 + i), m.Created[i]);
+        }
+
+        Assert.Equal(new[] { 43 }, m.Sounds.Requests.ToArray());
+        Assert.Equal(0x80028C8Eu, m.Hero.WeaponRecordPointer);
+        Assert.Equal(0x18u, m.Hero.TargetAnimationId);
+        Assert.Equal(0xAFBE9EACu, (uint)AlundraRandom.RandomSeed);
+    }
+
+    /// <summary>Fills the first free slots of the reservoir with effects that never end (the aura's looping animation 1 of the global effect 3); returns them.</summary>
+    private static List<AlundraEffectSlot> Fill(Montage m, int count)
+    {
+        var slots = new List<AlundraEffectSlot>();
+        for (var i = 0; i < count; i++)
+        {
+            slots.Add(m.Stage.Reservoir.Create(false, 3, 1, 0, 0, 0)!);
+        }
+
+        return slots;
     }
 }

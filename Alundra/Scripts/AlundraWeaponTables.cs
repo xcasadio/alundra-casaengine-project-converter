@@ -114,6 +114,13 @@ internal static class AlundraWeaponTables
     public static uint AnimationAddress(int record, bool air)
         => RecordsAddress + GroundAnimationOffset + (uint)(RecordSize * record) + (air ? (uint)AirOffset : 0u);
 
+    /// <summary>Offset from the ground animation byte to the charged one (E20.f1a: the animation a released charge plays; <c>0x8002EC74-0x8002EC80</c>: <c>0x80028C79 + 13 w + 8</c>).</summary>
+    public const int ChargeOffset = 8;
+
+    /// <summary>The address of the charged animation byte of record <paramref name="record"/>, the value a released charge stores in <c>0x80127110</c> (<c>0x8002EC84</c>).</summary>
+    public static uint ChargeAnimationAddress(int record)
+        => RecordsAddress + GroundAnimationOffset + (uint)(RecordSize * record) + ChargeOffset;
+
     /// <summary>One byte of the records at <paramref name="address"/> (an address of the executable, such as the pointer of <c>0x80127110</c> plus 1, 2 or 3).</summary>
     public static byte RecordByte(uint address) => Records[address - RecordsAddress];
 

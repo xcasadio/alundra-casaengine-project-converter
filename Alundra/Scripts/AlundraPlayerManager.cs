@@ -483,7 +483,7 @@ public static class AlundraPlayerManager
     /// Rends 1 when a swing starts (the caller ends its tick), else 0.
     /// <list type="number">
     /// <item><description>A footprint corner on a ground property of 0x20 (<c>CombinedVramFlagsOR &amp; 0x2000</c>): nothing, not even a sound.</description></item>
-    /// <item><description>A release of the Square comes first (<c>0x8002EB38</c>): the charged attack needs the charge timer at 60 and the ground (E20.f); the timer stays 0 until then, so this path
+    /// <item><description>A release of the Square comes first (<c>0x8002EB38</c>): the charged attack needs the charge timer at 60 and the ground (<see cref="ReleaseChargedAttack"/>, E20.f1a); otherwise this path
     /// returns 0 and a release never reaches the press test (D-E20-9: a press followed by a release in the same tick does not strike, which the tick pad cannot even produce).</description></item>
     /// <item><description>The press of the Square (<c>ButtonsJustPressed</c>): the animation byte of the weapon record, the ground one or, in the air, the one 4 bytes after
     /// (<c>0x80028C79 + 13 w</c>, <see cref="AlundraWeaponTables.AnimationAddress"/>). Animation 0 (the staff, no weapon record animation): the sound 3, 0. Otherwise the pending-spawn pointer
@@ -500,8 +500,7 @@ public static class AlundraPlayerManager
 
         if ((pad.ButtonsReleased & AlundraPadState.Square) != 0)
         {
-            // The charged attack (0x8002EB4C-0x8002EC88): charge timer >= 60 on the ground, E20.f. The timer is not ported yet and is always below 60.
-            return 0;
+            return ReleaseChargedAttack(player);
         }
 
         if ((pad.ButtonsJustPressed & AlundraPadState.Square) == 0)
@@ -520,6 +519,39 @@ public static class AlundraPlayerManager
         player.WeaponRecordPointer = address;
         player.WeaponStepCounter = 0;
         player.TargetAnimationId = animation;
+        return 1;
+    }
+
+    /// <summary>The sound of the release of a full charge (<c>0x8002EC54</c>).</summary>
+    internal const int ReleaseSfx = 0x2B;
+
+    /// <summary>
+    /// E20.f1a: the release branch of <see cref="PlayerTryAttack"/> (<c>0x8002EB38-0x8002EC88</c>), reached when the Square is released this tick (it comes before the press test). A charge counter below 60, or a hero in the
+    /// air (<c>IsOnGround</c> zero, <c>0x8002EB60</c>), ends it with nothing (the release is lost; D-E20-9). Otherwise: the 16 effects of the burst (<see cref="AlundraNativeEffects.CreateChargeBurst"/>, queued on
+    /// the stage, at the hero's position with the binary's Z), the sound 0x2B, the pending-spawn pointer on the charged animation byte of the weapon record (<c>0x80028C79 + 13 w + 8</c>), its counter at 0, and the
+    /// target animation on that byte; it returns 1 (the caller ends its tick). The charge counter itself is not touched: it falls to 0 at the next tick, because the charged animation does not count the charge.
+    /// The counter is read AFTER <see cref="UpdatePlayerWeaponEffect"/> of the same tick, so a hold spark (counter 60, <c>+0x1C &amp; 3</c> zero) is created first, then the burst (oracle C10, C14, C16 at tick 101: 17 creations).
+    /// </summary>
+    private static int ReleaseChargedAttack(AlundraEntityScriptProxy player)
+    {
+        if (player.WeaponChargeTimer < FullChargeTimer || IsHeroInTheAir(player))
+        {
+            return 0;
+        }
+
+        if (player.ScriptHost?.EffectStage is { } stage)
+        {
+            var x = player.PosX;
+            var y = player.PosY;
+            var z = player.PosZ + 1; // the binary's frame of Z (ADR-0026).
+            stage.Emit(reservoir => AlundraNativeEffects.CreateChargeBurst(reservoir, x, y, z));
+        }
+
+        player.ScriptHost?.SoundPlayer?.PlaySfx(ReleaseSfx);
+        var address = AlundraWeaponTables.ChargeAnimationAddress(player.CurrentWeaponRecord);
+        player.WeaponRecordPointer = address;
+        player.WeaponStepCounter = 0;
+        player.TargetAnimationId = AlundraWeaponTables.RecordByte(address);
         return 1;
     }
 
@@ -641,7 +673,21 @@ public static class AlundraPlayerManager
     private static void SpawnWeaponProjectile(AlundraEntityScriptProxy player, uint recordPointer)
     {
         WeaponSpawnCallCountForTests++;
+        WeaponSpawnCallsForTests?.Add(new WeaponSpawnCall(
+            AlundraWeaponTables.RecordByte(recordPointer + 1), player.PosX, player.PosY, player.PosZ + (AlundraWeaponTables.RecordByte(recordPointer + 3) << 16),
+            SpawnDirections[Math.Clamp(player.AnimationDirection, 0, SpawnDirections.Length - 1)]));
     }
+
+    /// <summary>E20.f1a: the arguments of one call of the spawn stub, as the binary passes them to <c>0x80039F58</c> (<c>0x8002F7D4-0x8002F818</c>): the type is <c>ptr[1]</c> of the record, the position is the hero's X and Y and his Z
+    /// plus <c>ptr[3]</c> pixels (the DLL's frame of Z: the oracle's is one raw unit more, ADR-0026), the direction is <c>CardinalDirectionTable[+0x98]</c> (<c>0x80023644</c>: down 0, up 0x10, left 8, right 0x18).</summary>
+    internal readonly record struct WeaponSpawnCall(int Type, int X, int Y, int Z, int Direction);
+
+    /// <summary>E20.f1a test seam, per thread: when set, every call of <see cref="SpawnWeaponProjectile"/> is appended to it with its arguments.</summary>
+    [ThreadStatic]
+    internal static System.Collections.Generic.List<WeaponSpawnCall>? WeaponSpawnCallsForTests;
+
+    /// <summary>The table <c>0x80023644</c>, indexed by the hero's direction of the sprite (<see cref="AlundraEntityScriptProxy.AnimationDirection"/>, the order of <see cref="AnimationTables.DirectionNames"/>).</summary>
+    private static readonly int[] SpawnDirections = { 0, 0x10, 8, 0x18 };
 
     /// <summary>E20.a A4 stub of <c>UpdatePlayerCarriedEntity</c> (<c>0x8002F884</c>, called with 0 at <c>0x80031D78</c>): nothing is carried yet (E20.g).</summary>
     private static void UpdatePlayerCarriedEntity(AlundraEntityScriptProxy player, int mode)
