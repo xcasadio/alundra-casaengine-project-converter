@@ -477,7 +477,7 @@ public sealed class AlundraHeroRunStatesTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------
-    // The deep-water guard (a stand-in until the swim of E20.i).
+    // The deep water (E20.i: the swim branch replaced the stand-in guard of E20.d1; the swim itself is in AlundraHeroSwimTests).
     // -----------------------------------------------------------------------------------------
 
     [Theory]
@@ -487,7 +487,7 @@ public sealed class AlundraHeroRunStatesTests : IDisposable
     [InlineData(Tackle, 0x18u, 0x18u)]
     [InlineData(Bounce, 0x08u, 0x18u)]
     [InlineData(HurtBounce, 0x18u, 0x08u)]
-    public void DeepWater_EveryStateOfTheRun_GoesToIdle_ThenTheTickEnds_TheBouncesFlipTheDirectionFirst(uint state, uint direction, uint expected)
+    public void DeepWater_EveryStateOfTheRun_GoesToTheFloat_ThenTheTickEnds_OnlyTheBouncesFlipTheDirectionFirst(uint state, uint direction, uint expected)
     {
         var hero = Hero(state, direction: direction);
         hero.Slope_18c = 4;
@@ -495,17 +495,17 @@ public sealed class AlundraHeroRunStatesTests : IDisposable
 
         Move(hero, Triangle | Right);
 
-        Assert.Equal(Idle, hero.TargetAnimationId);
+        Assert.Equal(0x1Du, hero.TargetAnimationId);
         Assert.Equal(expected, hero.TargetDirection);
     }
 
     [Fact]
-    public void DeepWater_TheTailDoesNotStartTheRun_TheWalkGoesOn_ElsewhereTheStatesOfTheRunAreUntouched()
+    public void DeepWater_TheTailDoesNotStartTheRun_TheHeroFloats_ElsewhereTheStatesOfTheRunAreUntouched()
     {
         var idle = Hero(Idle);
         idle.Slope_18c = 4;
         Move(idle, Triangle | Right);
-        Assert.Equal(Moving, idle.TargetAnimationId);
+        Assert.Equal(0x1Du, idle.TargetAnimationId);
 
         var dry = Hero(Sprint);
         dry.Slope_18c = 0;

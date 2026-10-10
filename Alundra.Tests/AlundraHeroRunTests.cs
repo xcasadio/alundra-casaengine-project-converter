@@ -16,8 +16,8 @@ namespace Alundra.Tests;
 /// WHAT IS NOT COMPARED, and why (each is an allowance of the plan):
 /// the step (sound 12, dust) and the landing (sound 11, effect 7) are stubs of E20.e; the hurt of the Beannoid (columns after the blow) is E20.c2b; the sound 3 of a Circle pressed in the preparation is the item driver
 /// <c>TryUseItem</c> (E20.h); the east wall bounces one tick EARLY (O-E19-42 / D-E19-58: the DLL stops at the contact where the binary stops one unit short), the traces of that wall are compared with the DLL's pad shifted
-/// by one tick from the bounce on; the ground column of a ledge is compared one tick late at the tick of the loss (O-E20-12, as AT8); the swim, the deep-water wall without boots (O-E19-22, E20.i) and the clamp at the border
-/// of the map (O-E19-17) are not ported.
+/// by one tick from the bounce on; the ground column of a ledge is compared one tick late at the tick of the loss (O-E20-12, as AT8); the deep-water wall without boots (O-E19-22) and the clamp at the border
+/// of the map (O-E19-17) are not ported (the swim is E20.i's: see <see cref="AlundraHeroSwimTests"/>).
 /// </para>
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
@@ -656,7 +656,7 @@ public sealed class AlundraHeroRunTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------
-    // G9 - the water, the ice and the guard of the deep water.
+    // G9 - the water, the ice and the deep water (E20.i: the run goes to the swim there).
     // -----------------------------------------------------------------------------------------
 
     [Fact]
@@ -682,30 +682,31 @@ public sealed class AlundraHeroRunTests : IDisposable
     }
 
     [Fact]
-    public void G9_OnDeepWater_TheRunGoesToIdleAtTheTickAfterTheSlope4_ThenTheHeroWalks()
+    public void G9_OnDeepWater_TheRunGoesToTheFloatAtTheTickAfterTheSlope4_ThenTheHeroSwims_TheWholeTrace()
     {
-        // Deviation until E20.i (the swim), written in AlundraPlayerManager: the binary goes to 0x1D then 0x0F at tick 90; the DLL goes to Idle, then walks.
+        // E20.i: the binary goes to 0x1D (force 258048 - 258048 >> 3 = 225792) at tick 90, then to 0x0F at tick 91; the stand-in guard of E20.d1 (Idle, then the walk) is gone. The whole trace is compared; the positions
+        // within the float allowance of the mover (see AlundraHeroSwimTests).
         var trace = RunOracleTrace.Load("g9/R9-deepwater-boots2");
         var slope4 = trace.FirstTick("slope", 4);
         Assert.Equal(89, slope4);
 
-        Equal("g9/R9-deepwater-boots2", lastTick: slope4);
-        var m = Played("g9/R9-deepwater-boots2", slope4 + 6);
+        var m = Equal("g9/R9-deepwater-boots2", positionTolerance: 16);
 
         Assert.Equal(4, m.Rows[slope4].Slope);
         Assert.Equal(Sprint, m.Rows[slope4].AnimTarget);
-        Assert.Equal(Idle, m.Rows[slope4 + 1].AnimTarget);
-        Assert.Equal(Moving, m.Rows[slope4 + 2].AnimTarget);
+        Assert.Equal(0x1Du, m.Rows[slope4 + 1].AnimTarget);
+        Assert.Equal(225792, m.Rows[slope4 + 1].ForceX);
+        Assert.Equal(0x0Fu, m.Rows[slope4 + 2].AnimTarget);
         Assert.DoesNotContain(m.Rows.Skip(slope4 + 1), r => r.AnimTarget is Prepare or Sprint or Stop or Tackle or Bounce);
     }
 
     [Fact]
-    public void G9_ATriangleOnDeepWater_DoesNotPrepareTheRun_TheHeroWalks()
+    public void G9_ATriangleOnDeepWater_DoesNotPrepareTheRun_TheHeroSwims_TheWholeTrace()
     {
-        var m = Played("g9/R9-allwater-start-T-R", 40);
+        var m = Equal("g9/R9-allwater-start-T-R", positionTolerance: 16);
 
         Assert.DoesNotContain(m.Rows, r => r.AnimTarget is Prepare or Sprint or Stop or Tackle or Bounce);
-        Assert.Equal(Moving, m.Rows[40].AnimTarget);
+        Assert.Equal(0x0Fu, m.Rows[40].AnimTarget);
     }
 
     // -----------------------------------------------------------------------------------------

@@ -29,7 +29,8 @@ namespace Alundra.Scripts;
 /// <c>TryUseItem</c> and <c>PlayerTryAction</c> are named stubs (E20.h and E20.g: the use of an item and lifting/carrying are not ported yet).</description></item>
 /// <item><description>The attack groups, binary <c>0x80031E18</c> and <c>0x80031DF8</c> (E20.b): a swing in progress only keeps its side of the ground (see <see cref="MovePlayer"/>).</description></item>
 /// <item><description>The run (E20.d1), binary <c>0x80031F54</c>, <c>0x80031FF4</c>, <c>0x80032118</c> and <c>0x80032558</c>: the preparation (0x29, entered from the common tail by a held Triangle), the run (0x03), the
-/// slide that ends it (0x2A) and the bounce (0x3E, and 0x1C which shares its handler); the tackle (0x04) is of the ground attack group. On deep water (slope 4) the states of the run go to Idle (a stand-in for the swim, E20.i).</description></item>
+/// slide that ends it (0x2A) and the bounce (0x3E, and 0x1C which shares its handler); the tackle (0x04) is of the ground attack group.</description></item>
+/// <item><description>The swim (E20.i), binary <c>0x8003260C</c>: on deep water (slope 4) <see cref="SwimTick"/> replaces everything between the pad and the end of the tick: the 80-entry table <c>0x80022E7C</c> in six kinds of handler (<see cref="SwimTable"/>), the floating (0x1D), the swimming (0x0F), the burst on the edge of the Triangle, the Cross or the Square (0x28), the end of the hurt in water (0x3A, 0x3B, entered by E20.c2b); the exits to the land are cases of the state chain. NOT ported: the wall of the deep water without the swim boots (O-E19-22), the currents (O-E20-16), the splash, the wake and the ripple (E20.e).</description></item>
 /// <item><description>LoadingMap(0x36) case, binary 0x800325E8 (PlayerManager.cs:914-922): on the ground the
 /// case ends and the hero stays LoadingMap - its exit is then the animation Chain bridge
 /// (<c>AlundraWorldProxy.OnAnimationFinished</c>, 2026-08-23 "Correctif fins d'animation" - anim 54's trailing
@@ -51,9 +52,8 @@ namespace Alundra.Scripts;
 /// oversight).</description></item>
 /// <item><description><c>TileAttributes &amp; 0x80</c> warp-tile branch - PlayerManager.cs:172-196 (no
 /// tile-attribute sampling yet, <see cref="AlundraEntityScriptProxy.TileAttributes"/> stays 0).</description></item>
-/// <item><description>The slope switch's case 4 (water/swimming) and every case other than 6 (including
-/// default) - PlayerManager.cs:207-353 - still NOT ported (no swimming system; map 389 has no water cell,
-/// docs/plan-echelles-chiffrage.md, decision "cas 4 differe"). Case 6 (climbing wall) IS now ported (É4,
+/// <item><description>Every slope-switch case other than 4 (the swim, E20.i) and 6 (including
+/// default) - PlayerManager.cs:207-353 - still NOT ported. Case 6 (climbing wall) IS now ported (É4,
 /// see <see cref="MovePlayer"/>'s own body) - the ONLY slope case that sets <c>TargetAnimationId</c>,
 /// unconditionally to <see cref="ClimbingAnimationId"/> whenever its own 5-conjunct gate holds, regardless
 /// of the current animation. <see cref="AlundraEntityScriptProxy.Slope_18c"/> itself has been alimented
@@ -62,7 +62,7 @@ namespace Alundra.Scripts;
 /// <item><description><c>UpdatePlayerCarriedEntity</c> - PlayerManager.cs:355-357 (named stub: carrying is E20.g; <c>UpdatePlayerWeaponEffect</c> is ported by E20.f1a without the aura, whose call is the named stub <see cref="AlundraAuraStub"/> until E20.f1b);
 /// <c>UpdateWeaponStepProgression</c> is ported without its projectile spawn (E20.b B4, the spawn is a named stub, E20.e0/E20.f).</description></item>
 /// <item><description>Every <c>TargetAnimationId</c> case other than Idle/Moving/LoadingMap/Climbing/
-/// ClimbStill, the jump states, the attack groups and the run - the charged attacks, pickup/carry/throw, swimming, sand, spell cast,
+/// ClimbStill, the jump states, the attack groups and the run - the charged attacks, pickup/carry/throw, sand, spell cast,
 /// damage-taken, victory pose, etc. - PlayerManager.cs:385-943. An entity whose <c>TargetAnimationId</c>
 /// is none of the five ported values simply keeps it unchanged (no case matches, same shape as the
 /// original's own <c>default: AnimateWarpEffect(); break;</c>, itself not ported since it is a pure
@@ -354,10 +354,18 @@ public static class AlundraPlayerManager
             dir = player.TargetDirection;
         }
 
-        // Slope switch (PlayerManager.cs:207-353) - ONLY case 6 (climbing wall) ported, per
-        // docs/plan-echelles-chiffrage.md É4 (user decision, 2026-08-26). Case 4 (water/swimming) and
-        // every other case (including default) are deliberately NOT ported - no swimming system exists,
-        // and no other slope case has a documented consumer yet; every one of them falls through as a
+        // Slope switch (PlayerManager.cs:207-353). E20.i, case 4 (deep water), binary 0x8003260C: the swim. It comes right after the item pilot (0x80031CC4) and the pad (0x80031CD0), in the place of the
+        // gate of the ladder and of the three calls before the switch of states (0x80031D68-0x80031D78), which it never reaches, and it ends the tick (0x80032914).
+        if (player.Slope_18c == DeepWaterSlope)
+        {
+            SwimTick(player, in pad, state, host, buttonsHold, dir);
+            EndOfMovePlayer(player, in pad, state, host);
+            return;
+        }
+
+        // Case 6 (climbing wall) is ported per
+        // docs/plan-echelles-chiffrage.md É4 (user decision, 2026-08-26). Every other case (including default)
+        // is NOT ported - no other slope case has a documented consumer yet; every one of them falls through as a
         // silent no-op, same convention as every other unported TargetAnimationId case in this class.
         // PlayerManager.cs:341-350's own 5-conjunct gate, verbatim: buttonsHold != 0 (some direction key
         // held - note the RAW pad bitmask before AnimationTables resolution, not "dir != invalid"),
@@ -541,17 +549,17 @@ public static class AlundraPlayerManager
             }
         }
 
-        // E20.d1 T2, the guard of the deep water (a documented deviation until E20.i): on a deep-water cell (slope 4) the binary sends every state of the run to the swim (0x8003260C, the animation 0x1D) and ends the tick; the
-        // swim is not ported, so the hero is sent to Idle and the tick ends (the walk resumes at the next tick, the tail of Idle not testing the Triangle there). 0x3E and 0x1C flip the direction first, as the swim
-        // branch does (0x80032658).
-        else if (IsRunState(player.TargetAnimationId) && player.Slope_18c == DeepWaterSlope)
+        // E20.i, the exits of the swim to the land, through the jump table 0x80022D3C: 0x0F, 0x1D and 0x28 go to 0x80031DD0 (Idle on the ground, 0x2D in the air, then TryUseItem), 0x3A and 0x3B to 0x80031DB4 (the same,
+        // after the direction + 0x10). They are reached on every tick whose slope is not 4: the swimmer who steps out of the deep water, falls off a ledge or arrives from a warp in a swim pose.
+        else if (player.TargetAnimationId is SwimAnimationId or FloatAnimationId or DiveAnimationId or SwimHurtAnimationId or SwimHurtEndAnimationId)
         {
-            if (player.TargetAnimationId is SprintBounceAnimationId or HurtBounceAnimationId)
+            if (player.TargetAnimationId is SwimHurtAnimationId or SwimHurtEndAnimationId)
             {
                 player.TargetDirection = (player.TargetDirection + 0x10) & 0x1F;
             }
 
-            player.TargetAnimationId = IdleAnimationId;
+            player.TargetAnimationId = IsHeroInTheAir(player) ? AirStillAnimationId : IdleAnimationId;
+            TryUseItem(player, in pad);
         }
         // E20.d1 T2, the run (binary 0x80031F54, 0x80031FF4, 0x80032118 and 0x80032558, reached through the jump table 0x80022D3C): the preparation (0x29), the run (0x03), the slide that ends it (0x2A) and the bounce
         // (0x3E, and 0x1C, which shares its handler). The tackle (0x04) is of the ground attack group below.
@@ -625,9 +633,100 @@ public static class AlundraPlayerManager
 
     private static short ClampToShort(int value) => value > short.MaxValue ? short.MaxValue : value < short.MinValue ? short.MinValue : (short)value;
 
-    /// <summary>E20.d1 T2: the states of the run the guard of the deep water sends to Idle: the preparation, the run, the slide, the tackle and the two bounces.</summary>
-    private static bool IsRunState(uint animationId)
-        => animationId is PrepareSprintAnimationId or SprintAnimationId or StopSprintAnimationId or TackleAnimationId or SprintBounceAnimationId or HurtBounceAnimationId;
+    /// <summary>
+    /// E20.i T2: the swim, the branch of the slope 4 (<c>0x8003260C</c>) in the binary's order. The charge counter (<c>0x80126FFC</c>) and the pending-shot pointer (<c>0x80127110</c>) are zeroed, carrying is told
+    /// <c>UpdatePlayerCarriedEntity(2)</c> (a named stub, E20.g), then the state decides, through the table <c>0x80022E7C</c> (<see cref="SwimTable"/>), which of the six handlers runs. The branch never reaches the
+    /// weapon effects, the weapon steps, <c>PlayerTryAttack</c> or <c>PlayerTryAction</c>; the caller ends the tick. It reads no boots level: the wall of the deep water (O-E19-22) and the currents (O-E20-16) are not ported,
+    /// so a hero without the swim boots swims where the original stops him; the splash, the wake and the ripple of the dive (the shadow pass <c>0x80038E84</c> and <c>CreatePlayerAnimationEffects</c>) are E20.e's.
+    /// </summary>
+    private static void SwimTick(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host, uint nibble, uint dir)
+    {
+        player.WeaponChargeTimer = 0;
+        player.WeaponRecordPointer = 0;
+        UpdatePlayerCarriedEntity(player, 2);
+
+        switch (SwimHandlerOf(player.TargetAnimationId))
+        {
+            case SwimHandler.Skip:
+                CancelItemMode(player);
+                break;
+
+            case SwimHandler.Float: // 0x80032674: the state, then the item driver; the direction is not written.
+                player.TargetAnimationId = FloatAnimationId;
+                TryUseItem(player, in pad);
+                break;
+
+            case SwimHandler.FlipThenFloat: // 0x80032658
+                player.TargetDirection = (player.TargetDirection + 0x10) & 0x1F;
+                player.TargetAnimationId = FloatAnimationId;
+                TryUseItem(player, in pad);
+                break;
+
+            case SwimHandler.ItemOnly: // 0x80032680
+                TryUseItem(player, in pad);
+                break;
+
+            case SwimHandler.Steer: // 0x80032690
+                SwimSteerTick(player, in pad, state, host, nibble, dir);
+                break;
+
+            case SwimHandler.HurtEnd: // 0x800326FC
+                SwimHurtEndTick(player, in pad);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// E20.i T2: the steering of the swim, states 0x0F and 0x1D (<c>0x80032690</c>). The direction of the pad is written before the item driver, even when no direction is held (the pad falls back to the current one);
+    /// <c>TryUseItem</c> at 0 ends the tick; <c>CheckEntityInteraction</c> 2 gives 0x1D, another non-zero value ends the tick; then an edge of the Triangle, the Cross or the Square (<see cref="SwimDiveButtons"/>) starts the
+    /// burst (0x28), else any bit of the direction nibble (even a contradictory pair) swims (0x0F), else the hero floats (0x1D).
+    /// </summary>
+    private static void SwimSteerTick(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host, uint nibble, uint dir)
+    {
+        player.TargetDirection = dir;
+        if (TryUseItem(player, in pad) == 0)
+        {
+            return;
+        }
+
+        var interact = CheckEntityInteraction(player, in pad, state, host);
+        if (interact == 2)
+        {
+            player.TargetAnimationId = FloatAnimationId;
+            return;
+        }
+
+        if (interact != 0)
+        {
+            return;
+        }
+
+        player.TargetAnimationId = (pad.ButtonsJustPressed & SwimDiveButtons) != 0 ? DiveAnimationId : nibble != 0 ? SwimAnimationId : FloatAnimationId;
+    }
+
+    /// <summary>
+    /// E20.i T2: the end of the hurt in deep water, state 0x3B (<c>0x800326FC</c>). <c>TryUseItem</c> at 0 turns the direction (+ 0x10) and ends the tick; otherwise the hero stays in 0x3B until the animation sets
+    /// <c>+0xAC</c> (<see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/>, the hold of its last frame), then floats (0x1D) and turns back (+ 0x10). Nothing enters 0x3A or 0x3B yet: the hurt block of E20.c2b does.
+    /// </summary>
+    private static void SwimHurtEndTick(AlundraEntityScriptProxy player, in AlundraPadState pad)
+    {
+        if (TryUseItem(player, in pad) == 0)
+        {
+            player.TargetDirection = (player.TargetDirection + 0x10) & 0x1F;
+            return;
+        }
+
+        if (player.ForceResetAnimationFlag == 1)
+        {
+            player.TargetAnimationId = FloatAnimationId;
+            player.TargetDirection = (player.TargetDirection + 0x10) & 0x1F;
+        }
+    }
+
+    /// <summary>E20.i T1 stub of <c>0x800350C0</c>, the cancellation of the item mode the swim table's skip group performs (E20.h0): no item mode exists yet.</summary>
+    private static void CancelItemMode(AlundraEntityScriptProxy player)
+    {
+    }
 
     /// <summary>E20.d1 T2: <c>g_dashDirections[nibble]</c> (<c>0x80022CAC</c>), the direction a single cardinal bit gives, -1 for anything else.</summary>
     private static int DashDirection(uint nibble)
@@ -1042,7 +1141,7 @@ public static class AlundraPlayerManager
     /// <summary>The table <c>0x80023644</c>, indexed by the hero's direction of the sprite (<see cref="AlundraEntityScriptProxy.AnimationDirection"/>, the order of <see cref="AnimationTables.DirectionNames"/>).</summary>
     private static readonly int[] SpawnDirections = { 0, 0x10, 8, 0x18 };
 
-    /// <summary>E20.a A4 stub of <c>UpdatePlayerCarriedEntity</c> (<c>0x8002F884</c>, called with 0 at <c>0x80031D78</c>): nothing is carried yet (E20.g).</summary>
+    /// <summary>E20.a A4 stub of <c>UpdatePlayerCarriedEntity</c> (<c>0x8002F884</c>, called with 0 at <c>0x80031D78</c> and, E20.i, with 2 by the swim branch): nothing is carried yet (E20.g).</summary>
     private static void UpdatePlayerCarriedEntity(AlundraEntityScriptProxy player, int mode)
     {
     }
@@ -1304,8 +1403,8 @@ public static class AlundraPlayerManager
         }
 
         // E20.d1 T2, binary 0x80031F14-0x80031F30: a HELD Triangle (not an edge) starts the preparation of the run, with the counter of animation ends at 0 (the preparation lasts until the first loop of its animation
-        // turns that counter). Not on deep water (the guard of the swim: the binary's slope 4 never reaches this tail).
-        if ((pad.ButtonsHold & AlundraPadState.Triangle) != 0 && player.Slope_18c != DeepWaterSlope)
+        // turns that counter). Not on deep water, which never reaches this tail (the swim branch of MovePlayer ends the tick before).
+        if ((pad.ButtonsHold & AlundraPadState.Triangle) != 0)
         {
             player.TargetAnimationId = PrepareSprintAnimationId;
             player.AnimCompleteCounter = 0;
