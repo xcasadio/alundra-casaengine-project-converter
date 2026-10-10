@@ -3039,17 +3039,31 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
-    /// V1 minimal port of <c>GameEngine.DestroyEntity(Entity, int)</c> @ 0x8003A59C: marks the entity for
-    /// destruction (naturally skipped by the pick phase from now on) and logs once at debug level with
-    /// the original's numeric effect-id argument (-1 = "use the sprite record's break effect", 6 = the
-    /// sliding-slope break effect, see the pick-phase callers above). Does not remove the entity itself: the
-    /// recycling comes later in the tick (<see cref="RecycleDestroyedEntities"/>, E19.r R3); contents spawning and the
-    /// original's other side effects - ActiveEffect/PlatformEntity cleanup, SpawnEntityContents - are later work).
+    /// E14.a1b (D-E14-9, ADR-0060): port of <c>GameEngine.DestroyEntity(Entity, int)</c> @ 0x8003A59C for ALL its callers (E0/E1, the pick phase's slope destruction <paramref name="effectId"/> 6 and VRAM-flag destruction -1), in the
+    /// order of the binary: (1) the loot <c>0x80032B90</c> - NAMED STUB, E20.e0 (D-E14-3: a destroyed entity drops nothing until then); (2) the status 4 (<c>0x8003A5BC</c>), which the pick phase naturally skips from now on;
+    /// (3) the branch delay <c>+0x228 = -1</c> (<c>0x8003A5CC</c>, <see cref="AlundraEntityScriptProxy.EventTrigger"/>, so a same-frame re-scan does not run what the entity had queued); (4) the release of the active effect
+    /// attached to the entity (<c>+0x1B8</c>, <c>0x8003A5D0</c>) - NAMED STUB, E20.e (the passes of the active effects are empty in the DLL and it has no member for the pointer); (5) the break effect: <paramref name="effectId"/> -1 reads the
+    /// byte <c>+0x1E</c> of the sprite header (<see cref="AlundraEntityScriptProxy.BreakEffect"/>, <c>0x8003A5E0-0x8003A5E8</c>), and when the effect is not 0, <c>0x8003BE74(0, fx, 0, e ; 1, 0, 0, 0)</c> creates it
+    /// (<see cref="AlundraNativeEffects.CreateBreakEffect"/>) - queued on the effect stage with the tick and the rank of the source in progress, on a FROZEN snapshot of the entity
+    /// (<see cref="AlundraFrozenEffectAnchor"/>, taken after the status was written) because the stage applies its queue at the end of the frame; (6) the clearing of the carrier <c>[+0x28] + 0x2C = 0</c> (<c>0x8003A62C</c>) -
+    /// NAMED STUB, E20.g. Does not remove the entity itself: the recycling comes later in the tick (<see cref="RecycleDestroyedEntities"/>, E19.r R3). A full reservoir creates no effect and the destruction goes on all the same.
     /// </summary>
     internal void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
     {
+        // (1) loot: E20.e0.
         entity.Status = EntityStatus.FlagToDestroy;
-        Logs.WriteDebug($"AlundraWorldProxy: entity[{entity.EntityRefId}] -> FlagToDestroy (effectId={effectId}).");
+        entity.EventTrigger = ScriptHelper.ProgramUnknown;
+
+        // (4) release of the attached active effect (+0x1B8): E20.e.
+        var fx = effectId == -1 ? entity.BreakEffect : effectId;
+        if (fx != 0)
+        {
+            var anchor = AlundraFrozenEffectAnchor.Of(entity);
+            _effectStage.Emit(reservoir => AlundraNativeEffects.CreateBreakEffect(reservoir, fx, anchor));
+        }
+
+        // (6) clearing of the carrier (the entity this one rests on): E20.g.
+        Logs.WriteDebug($"AlundraWorldProxy: entity[{entity.EntityRefId}] -> FlagToDestroy (effectId={effectId}, break effect {fx}).");
     }
 
     /// <summary>

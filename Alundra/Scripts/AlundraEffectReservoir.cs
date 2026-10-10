@@ -5,8 +5,9 @@ using System.Collections.Generic;
 namespace Alundra.Scripts;
 
 /// <summary>
-/// What an attached or detached native effect (modes 1 and 3) follows: the position, the depth key and the status of an entity of the binary (the key is <c>+0x1BC</c> of the entity). No entity of the DLL
-/// implements it yet (the five attached creators and the detached one are native sites of E13 and E14).
+/// What an attached or detached native effect (modes 1 and 3) follows: the position, the depth key and the status of an entity of the binary (the key is <c>+0x1BC</c> of the entity). <see cref="AlundraEntityScriptProxy"/>
+/// implements it (E20.f1b: the hero's charge aura follows its entity), and the break effect of a destroyed entity takes a frozen snapshot of it (<see cref="AlundraFrozenEffectAnchor"/>, E14.a1b); the other attached creators
+/// and the detached one are native sites of E13 and E14.
 /// </summary>
 public interface IAlundraEffectAnchor
 {
