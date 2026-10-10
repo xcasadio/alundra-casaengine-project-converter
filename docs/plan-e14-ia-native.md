@@ -658,6 +658,8 @@ principale :
 
 ### 1.3c E14.a1c — Muruta, hall de la 115 ⏳ (détaillée le 2026-10-10 ; exécution après E14.a1b CONFIRMED)
 
+Relecture : **READY** dès la première lecture (2026-10-10).
+
 Détail écrit le 2026-10-10 sur le modèle d'E14.a1b (révision 2, READY), à partir des mêmes rapports de découverte
 (`C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/e14a1/a1b_critic.md`, `a1b_table.md`, `a1b_projection.md`, `disc_da.md` §3, `disc_oh.md`) et de l'oracle
 `docs/plan-e14-annexe/e14a/oracle-a1/` (versé par E14.a1b T0).
