@@ -2964,6 +2964,7 @@ scratchpad de la session : `C:/Users/casad/AppData/Local/Temp/claude/D--developm
 **Révision 1 (2026-10-10).** Relecture : **REVISE**, un point corrigé (FIX) : le texte exact de `Data/map-sprite-indices.json` est
 fixé (clés `"N"`, extrait octet pour octet d'une carte vide et d'une carte avec indices, `[]`, fins de ligne, ni BOM ni saut de ligne
 final, liste des cartes de `DiscoverNativeMapIndices`) ; la règle de validité qui fait foi est écrite, avec son contrôle croisé.
+Seconde relecture : **READY** (2026-10-10).
 
 **But.** Le projet exporté dit, pour chaque préfab, de quelle table de sprites et de quel indice il vient (`BankKey`), et, pour chaque
 carte, quels indices de la page des cartes sont valides (D-E20-33) : E20.e0a pourra traduire l'indice de `SpawnWarpEntity` en préfab, et
