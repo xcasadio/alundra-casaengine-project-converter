@@ -1259,6 +1259,11 @@ pseudo-aléatoire une fois par image (E20.e0) ; la réutilisation des cases libr
 
 ### 1.6 E20.c1b-1 — Dégâts, équipement et opcodes des coups 🧪 (faite et CONFIRMED le 2026-10-09, `745c27d`, `3051332`, `80c71b3` ; reste la recette en jeu de l'auteur, quand une carte à interrupteurs de feu sera atteignable)
 
+> Note (2026-10-10, E14.a1b) : `AlundraBalanceRecord.ByteAt` lit maintenant, au-delà de la taille d'une fiche, la fiche suivante de
+> `BALANCE.BIN` (chaînage par le `FileOffset` exporté), comme le binaire ; avant, il rendait 0. Exigé par 60 vecteurs D1 de l'oracle
+> d'E14.a1 (attribut 15) ; sans effet avec les données réelles (quartets 0 à 11, fiches de 15 octets au moins).
+> Voir `docs/plan-e14-ia-native.md` §1.3b, « Vérification ».
+
 **Révision 1 (2026-10-09).** Relecture : **REVISE** : la cible du test de régression (l'entité de la 14 au programme D `@544`) est
 immunisée contre l'épée, le test ne pouvait pas échouer. Corrigé : cible réelle touchable (l'interrupteur de feu de la 303, entité 4),
 `Result` partagé non nul posé avant le coup, échec constaté avant K4, recette réécrite.

@@ -769,7 +769,8 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   (registre et interrupteur) et E14.a0b (infrastructure des ennemis) **faites et CONFIRMED le 2026-10-10** ; E14.a1 (Beannoïde et
   Muruta) détaillée en E14.a1a (export de l'octet de bris), E14.a1b (effet de bris pour tous les appelants de `DestroyEntity`,
   D-E14-9, ADR-0060 ; Beannoïde ; grille de la 116) et E14.a1c (Muruta ; hall de la 115) ; **E14.a1a faite et CONFIRMED le
-  2026-10-10** (`BreakEffect` dans `Data/sprite-records.json`, ADR-0061).
+  2026-10-10** (`BreakEffect` dans `Data/sprite-records.json`, ADR-0061) ; **E14.a1b faite et CONFIRMED le 2026-10-10** (effet de bris pour
+  tous les appelants de `DestroyEntity`, Beannoïde A1/C1/D1, grille de la 116 animée après les deux Beannoïde, prouvée par un arc).
 
 ### E15 — Tout le texte d'Alundra en Yarn ✅ (close le 2026-09-28, recette en jeu validée : `docs/plan-e15-yarn.md`)
 

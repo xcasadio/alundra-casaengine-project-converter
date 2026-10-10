@@ -354,7 +354,7 @@ ajouté au commit T3 avant l'ADR (résolu au HEAD) ; le bruit de fin de ligne de
 **Budget** : un `executor`, deux tentatives au plus ; `plan-verifier` avant l'exécution ; `verifier` frais à la fin. **Retour arrière** :
 `git revert`, puis un export complet en place.
 
-### 1.3b E14.a1b — Effet de bris, Beannoïde, grille de la 116 🧪 (exécutée le 2026-10-10, `3cb5920` à `5236937` et le commit de ce texte ; verifier frais en attente)
+### 1.3b E14.a1b — Effet de bris, Beannoïde, grille de la 116 🧪 (faite et CONFIRMED le 2026-10-10, `3cb5920` à `bf519fa` ; recette de l'auteur avec E14.a1c)
 
 **Révision 1 (2026-10-10).** Relecture : **REVISE**, trois points corrigés (FIX) après une découverte ciblée en lecture seule
 (table des champs, projection d'E1, format JSON, puis un critique adversarial ; rapports dans le scratchpad de la session,
@@ -626,6 +626,25 @@ Contrôle venu d'E14.a0b : le test du verrou côté monde distingue maintenant `
 5. Le butin et son son 84 (E20.e0), `+0x1B8` (E20.e), le porteur (E20.g) restent des bouchons nommés dans `DestroyEntity` ; la levée de clé par voisin ou porteur reste l'écart écrit d'`AlundraEntityDepthKey`.
 6. Commentaires périmés d'E20.f1b corrigés dans les commits des tâches qui touchent les fichiers : `AlundraEffectReservoir.cs` (T3), `AlundraPlayerManager.cs` et `AlundraHeroAuraWorldTests.cs` (T5, ticks 129 à 131).
 7. L'arc G116 tourne hors de la collection du générateur statique : d'autres classes de tests qui tirent des nombres en parallèle peuvent entrelacer le flux ; les assertions n'en dépendent pas (deux suites complètes, Release et Debug, vertes).
+
+**Vérification (2026-10-10) : CONFIRMED** par deux verifiers frais (workflow, l'un après l'autre). Rejeu : `Alundra.Tests` 4736/4736 en Release
+et en Debug, `cmp`, traces ; chaque point de l'acceptation relu contre les tests ; mutations rejouées sur une copie (`EventTrigger` non écrit 2
+rouges, C1 `slti` 2, D1 animation 4, ancre vivante 3, `fx -1` non résolu 11 : l'arc compte aussi). Adversarial : suites complètes 4736/4736 ;
+les trois appelants de la surcharge à deux arguments (E1, pente `fx 6`, VRAM `fx -1`) et l'ordre du binaire dans `DestroyEntity` ; mots changés
+bruts des appels `BN-*`/`ARENA-*` tous dans la clôture, `hero_changed_words` vide ; collections de tests non parallèles
+(`parallelizeTestCollections: false`) ; registre limité au type 335 ; aucun arc existant ne bouge. Remarques P4, dispositions de la session
+principale :
+- **Écart 1 (`ByteAt` au-delà de la fiche) : accepté.** Fidèle au binaire, exigé par 60 vecteurs D1 ; mesuré par le verifier sur
+  `alundra-project/Data/balance.json` : quartets d'attribut 0 à 11 seulement et fiches de 15 octets au moins, donc aucune lecture au-delà
+  d'une fiche avec les données réelles : aucun effet en production. Code d'E20.c1b touché : consigné ici et au plan d'E20 (passe de coups).
+- Commentaires qui contredisent maintenant `DestroyEntity(e, fx)` (`EntityFlags.cs` « sans effet de bris » pour la destruction VRAM,
+  `AlundraEventProgramRunner.cs` « destruction seulement » pour E1, `AlundraEntityDepthKey.cs` « later », `IEntityWorldContext.cs` et
+  `IAlundraScriptHost.cs` qui ne citent que la phase de choix) : **reportés à E14.a1c**.
+- L'arc G116 déduit les 10 appels de D1 des baisses de PV au lieu de les compter : **reporté** ; E14.a1c compte ses appels de D9 directement.
+- Le test des images de 2 et 3 ticks de l'ancre simule le recyclage au lieu d'une vraie image de monde de plusieurs ticks : **limite notée**
+  (l'arc réel, à un tick par image, montre un seul effet par mort, en mode 2, à la bonne position).
+- L'ordre « tests d'abord » de T4 n'a pas été suivi (le code d'`AlundraBeannoideAi` avant le fichier des tests d'oracle) ; la morsure est
+  prouvée (sans les inscriptions de production, 7 tests rouges) : **noté**.
 
 ##### Arrêts, budget, retour arrière
 
