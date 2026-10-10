@@ -23,11 +23,14 @@ internal sealed record HandlerVector(
     IReadOnlyDictionary<string, long> Entity, IReadOnlyDictionary<string, long> Hero, long[]? HeroAttack, long[]? AttackerAttack,
     IReadOnlyList<HandlerChange> Changed, IReadOnlyList<HandlerJournalEntry> Journal, long? InputFx, long InputPlat, long InputAe);
 
-/// <summary>One call of a scenario (<c>calls[]</c>): the entity before and after (53 decoded fields each), the hero's seven fields, the generator, the latch, what changed and the journal of THIS call.</summary>
+/// <summary>
+/// One call of a scenario (<c>calls[]</c>): the entity before and after (53 decoded fields each), the hero's seven fields, the generator, the latch, what changed and the journal of THIS call. <see cref="HeroAttackPointer"/> is the
+/// hero's <c>curattack_1C8</c> of the per-tick column of the row BEFORE the call (the rows are valid call inputs, D-E14-6): <c>0x80144229</c> is the attack <c>(0x81, 1)</c>, <c>0x80144209</c> one the handler never reads.
+/// </summary>
 internal sealed record HandlerCall(
     int Tick, string Handler, int Slot, long Letter, long RngIn, long RngOut, long Latch,
     IReadOnlyDictionary<string, long> Before, IReadOnlyDictionary<string, long> After, IReadOnlyDictionary<string, long> Hero,
-    IReadOnlyList<HandlerChange> Changed, IReadOnlyList<HandlerJournalEntry> Journal);
+    IReadOnlyList<HandlerChange> Changed, IReadOnlyList<HandlerJournalEntry> Journal, long HeroAttackPointer = 0);
 
 /// <summary>One scenario file of the oracle: its name and its calls (the per-tick columns are not read).</summary>
 internal sealed record HandlerScenario(string Name, IReadOnlyList<HandlerCall> Calls);
@@ -43,6 +46,9 @@ internal static class AlundraEnemyHandlerOracle
     {
         "activeeffect_1B8", "ai1_282", "anim_target88", "b1_275", "b3_277", "dir_target8C", "flags6C", "forcex_C4", "forcey_C8", "fstepx_D4", "fstepy_D8", "hp", "letter_228", "status", "tforcex_BC", "tforcey_C0",
     };
+
+    /// <summary>The 18 names a Muruta handler may change (plan section 1.3c, "Clôture"): the Beannoid's 16 plus <c>ai0_280</c> (A0) and <c>b0_274</c> (C10).</summary>
+    internal static readonly IReadOnlySet<string> MurutaClosure = new HashSet<string>(BeannoideClosure) { "ai0_280", "b0_274" };
 
     private static readonly ConcurrentDictionary<string, object> Cache = new();
 
@@ -120,13 +126,16 @@ internal static class AlundraEnemyHandlerOracle
     {
         using var document = JsonDocument.Parse(File.ReadAllText(path));
         var calls = new List<HandlerCall>();
+        var ticks = document.RootElement.GetProperty("tick").EnumerateArray().Select(t => (int)Number(t)).ToList();
+        var pointers = document.RootElement.GetProperty("hero").GetProperty("curattack_1C8").EnumerateArray().Select(Number).ToList();
         foreach (var c in document.RootElement.GetProperty("calls").EnumerateArray())
         {
+            var row = ticks.IndexOf((int)Number(c.GetProperty("tick"))) - 1;
             calls.Add(new HandlerCall(
                 (int)Number(c.GetProperty("tick")), c.GetProperty("handler").GetString()!, (int)Number(c.GetProperty("slot")), Number(c.GetProperty("letter")),
                 Number(c.GetProperty("rng_in")), Number(c.GetProperty("rng_out")), Number(c.GetProperty("latch")),
                 Words(c.GetProperty("before")), Words(c.GetProperty("after")), Words(c.GetProperty("hero")),
-                Changes(c.GetProperty("changed")), Journal(c.GetProperty("journal"))));
+                Changes(c.GetProperty("changed")), Journal(c.GetProperty("journal")), row >= 0 && row < pointers.Count ? pointers[row] : 0));
         }
 
         return new HandlerScenario(Path.GetFileNameWithoutExtension(path), calls);

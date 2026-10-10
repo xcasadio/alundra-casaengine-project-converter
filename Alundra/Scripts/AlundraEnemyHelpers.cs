@@ -21,6 +21,9 @@ internal static class AlundraEnemyHelpers
         0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18,
     };
 
+    /// <summary>The cardinal directions at <c>0x80028B54</c> (FACT: <c>00 10 08 18</c>), indexed by a draw below 4 (the Muruta's random turn, C10 step 3).</summary>
+    internal static readonly byte[] CardinalDirections = { 0x00, 0x10, 0x08, 0x18 };
+
     /// <summary>The generator's draw below <paramref name="n"/>: <c>((ulong)(uint)Next() * n) &gt;&gt; 32</c> (the inline pattern <c>multu / mfhi</c> of the binary). <see cref="AlundraRandom.Next"/> keeps 64 bits of state, so the
     /// product is taken on its low 32 bits, as the binary's register holds them.</summary>
     internal static int Below(int n) => (int)(((ulong)(uint)AlundraRandom.Next() * (uint)n) >> 32);

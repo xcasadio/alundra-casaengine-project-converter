@@ -25,11 +25,12 @@ internal sealed class AlundraNativeSpriteRegistry
 {
     private readonly Dictionary<(int Slot, int Code), Entry> _entries = new();
 
-    /// <summary>The registry of a production runner: the Beannoid's A1, C1 and D1 (<see cref="AlundraBeannoideAi"/>, E14.a1b).</summary>
+    /// <summary>The registry of a production runner: the Beannoid's A1, C1 and D1 (<see cref="AlundraBeannoideAi"/>, E14.a1b) and the Muruta's A0, C10 and D9 (<see cref="AlundraMurutaAi"/>, E14.a1c).</summary>
     internal static AlundraNativeSpriteRegistry CreateForProduction()
     {
         var registry = new AlundraNativeSpriteRegistry();
         AlundraBeannoideAi.Register(registry);
+        AlundraMurutaAi.Register(registry);
         return registry;
     }
 
