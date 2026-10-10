@@ -1977,6 +1977,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // attack and animation byte. After the header (the animation sets and the sprite index are only known from there).
         proxy.InitializeBalance(BalanceTables, BalanceThreshold);
 
+        // E20.c2a T1 (docs/plan-e20-heros.md section 1.12): the life of the hero comes from the player's stats, right after InitializeEntity, as the binary's creation of the hero does
+        // (0x800319EC, then GetPlayerHpMax -> +0x18 at 0x800319F8 and GetPlayerHp -> +0x14 at 0x80031A00-0x80031A08). It must follow InitializeBalance, which sets 10/10 from the balance record: without
+        // the pull the mirror at the end of MovePlayer would put the stats back to 10/10 at the first tick of every map, every load and every Continue. A load (ApplyPendingLoad) ran before this adoption.
+        proxy.HpMax = GameState.PlayerStats.HpMax;
+        proxy.Hp = GameState.PlayerStats.Hp;
+        proxy.LifePulledFromStats = true;
+
         // E19.t T-R2 (D-E19-57, D-E19-61): the arrival is an appearance, so the sound of its animation is asked here, with the world's player (the group of
         // the new map). After the header above: the hero's animation sets are only known from there. The first switch of the animation is exempt (R2).
         RequestAppearanceSound(proxy);

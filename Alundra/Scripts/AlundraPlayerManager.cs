@@ -210,6 +210,7 @@ public static class AlundraPlayerManager
             // E20.b B2, binary 0x80031BB0-0x80031BC0: this branch also clears the charge timer (E20.f1a, 0x80031BB4) and the pending-spawn pointer of the weapon (0x80031BC0) before END.
             player.WeaponChargeTimer = 0;
             player.WeaponRecordPointer = 0;
+            EndOfMovePlayer(player, state, host); // E20.c2a T1: every exit of the binary reaches END (0x80032914), this one from 0x80031BB4.
             return;
         }
 
@@ -226,6 +227,7 @@ public static class AlundraPlayerManager
             // charge or a shot pending when a lock begins fires nothing at the unlock. The aura stub is left as it is: the binary does not touch the aura's handle here (a stale handle is E20.f1b's business).
             player.WeaponChargeTimer = 0;
             player.WeaponRecordPointer = 0;
+            EndOfMovePlayer(player, state, host); // E20.c2a T1: the locked branch also reaches END (0x80031C0C-0x80031C28 lead to 0x80032914): the life vessel of a locked script is mirrored at once.
             return;
         }
 
@@ -466,10 +468,31 @@ public static class AlundraPlayerManager
         // PlayerManager.cs:385-943 (every other TargetAnimationId case) - NOT PORTED; an entity whose
         // TargetAnimationId is none of the values ported above keeps it unchanged.
 
-        // PlayerManager.cs:947-950, binary 0x80032914 (END: UpdateItemEffectState, then SetPlayerHpMax/SetPlayerHp). E20.a A4 (D-E20-14): UpdateItemEffectState is a named stub
-        // until E20.c2 (E20.c1b K2 fills the three equipment records in it); the two HP setters are not called from this site.
-        UpdateItemEffectState(player, state, host);
+        // PlayerManager.cs:947-950, binary 0x80032914 (END: UpdateItemEffectState, then SetPlayerHpMax/SetPlayerHp), shared with the two early exits above.
+        EndOfMovePlayer(player, state, host);
     }
+
+    /// <summary>
+    /// E20.c2a T1: the END of <c>MovePlayer</c> (<c>0x80032914</c>), reached by every exit of the binary (the frozen branch <c>+0x20 != 0</c> = <see cref="AlundraEntityScriptProxy.BlockedByEntity"/>, the locked branch
+    /// <c>&amp; 0x34</c>, the hurt path, the normal path): <c>UpdateItemEffectState</c>, then <c>SetPlayerHpMax(hero.HpMax)</c> and <c>SetPlayerHp(hero.Hp)</c> (<c>0x80032924</c>, <c>0x80032930</c>), so the stats are a mirror
+    /// of the life the entity carries. The mirror runs only for a hero that pulled its life from the stats (<see cref="AlundraEntityScriptProxy.LifePulledFromStats"/>, set by
+    /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>): the bare heroes of the unit tests keep the default life of 0, which would otherwise be written over the stats the test set up. This guard is the one
+    /// documented deviation of the epilogue.
+    /// </summary>
+    private static void EndOfMovePlayer(AlundraEntityScriptProxy player, AlundraGameState state, IAlundraScriptHost? host)
+    {
+        UpdateItemEffectState(player, state, host);
+
+        if (!player.LifePulledFromStats)
+        {
+            return;
+        }
+
+        SetPlayerHpMax(state, player.HpMax);
+        SetPlayerHp(state, ClampToShort(player.Hp)); // the binary compares 32-bit values; only the clamps decide, so saturating the argument is exact.
+    }
+
+    private static short ClampToShort(int value) => value > short.MaxValue ? short.MaxValue : value < short.MinValue ? short.MinValue : (short)value;
 
     /// <summary>E20.a A4 stub of <c>TryUseItem</c> (<c>0x8002ED64</c>): non-zero means "carry on this tick". The binary returns 1 whenever the Circle button has no rising edge
     /// (<c>0x8002EDA8</c>); a stub returning 0 would end the tick and kill every attack, jump and run (critique C10). The use of an item (the Circle) is E20.h.</summary>

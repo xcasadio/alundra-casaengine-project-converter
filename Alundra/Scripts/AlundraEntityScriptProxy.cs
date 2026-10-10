@@ -69,6 +69,13 @@ public partial class AlundraEntityScriptProxy : GameplayProxy
     public EntityStatus Status;//10
     public int Hp;
     public int HpMax;
+
+    /// <summary>
+    /// E20.c2a (docs/plan-e20-heros.md section 1.12): true for a hero whose <see cref="Hp"/> and <see cref="HpMax"/> were pulled from the player's stats right after <see cref="InitializeBalance"/>
+    /// (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>, binary <c>0x800319F8-0x80031A08</c>). Only such a hero carries the life as the binary does (the entity is the truth, the stats a mirror written at the
+    /// end of every <see cref="AlundraPlayerManager.MovePlayer"/>); the bare proxies of the unit tests never pulled and keep a life of 0 that must not be mirrored over the stats they set up. Not cloned: a clone is not a hero.
+    /// </summary>
+    internal bool LifePulledFromStats;
     public int FrameCounter;//1c
     public Entity? BlockedByEntity;//20
     public int Flags2;//24

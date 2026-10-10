@@ -2014,7 +2014,7 @@ F6 et le groupe H de `c2-oracle.md` (retirés par `check.md` §c ; A3 et A5 pour
 - **Budget** : un `executor` ; un verifier frais (avec un redécodage du binaire).
 - **Retour arrière** : `git revert` des commits d'E20.c2-0.
 
-### 1.12 E20.c2a — Les PV portés par le héros, la fin de `MovePlayer` et `UpdateItemEffectState` ⏳
+### 1.12 E20.c2a — Les PV portés par le héros, la fin de `MovePlayer` et `UpdateItemEffectState` 🚧
 
 Relecture : **READY** dès la première lecture (2026-10-10). Exécution après E20.f1a et la vérification d'E20.c2-0.
 
@@ -2071,8 +2071,11 @@ le pilote d'objet (E20.h) ; la mort (E18).
 
 #### Tâches
 
-- ⏳ **T1 — Reprise et miroir.** Reprise des stats vers l'entité dans `AdoptPlayerPawn` après `InitializeBalance` ; épilogue sur toutes
-  les sorties de `MovePlayer` : `UpdateItemEffectState`, `SetPlayerHpMax(héros.HpMax)`, `SetPlayerHp(héros.Hp)`.
+- ✅ **T1 — Reprise et miroir.** Reprise des stats vers l'entité dans `AdoptPlayerPawn` après `InitializeBalance` ; épilogue sur toutes
+  les sorties de `MovePlayer` : `UpdateItemEffectState`, `SetPlayerHpMax(héros.HpMax)`, `SetPlayerHp(héros.Hp)`. Fait : la reprise pose
+  `LifePulledFromStats` sur le héros adopté, et `EndOfMovePlayer` (miroir gardé par ce drapeau : les montages nus des tests, de vie 0, ne
+  sont pas touchés) est appelé aux trois sorties, la branche `BlockedByEntity`, la branche du masque `0x34` et le chemin normal. Suite
+  complète Release 3738/3738 sans test modifié ; les épingles d'arcs et les traces sont inchangées (stats à 10/10).
 - ⏳ **T2 — `UpdateItemEffectState`.** Étapes 1, 6 et 7 ; fiche du héros ; compteurs en session ; bottes partagées ; `Clear()`.
 - ⏳ **T3 — Fiole, `0xBC`, `0xC3`.** Écritures dans l'entité (repli sur les stats sans héros, comme aujourd'hui) ; calage du HUD de
   `0xC3` ; amendement d'ADR-0048.
