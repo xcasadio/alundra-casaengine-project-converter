@@ -564,6 +564,12 @@ C60 et E9 passent à E20.f), Q-N2 (D-E20-26 : l'export de l'effet de bris reste 
 par type, l'octet de bris exporté, `DestroyEntity(e, fx)` avec l'effet de bris pour tous ses appelants) ; E14.a1c est en cours. Le
 tableau ci-dessous est remplacé par celui de la révision 4 : tranches restantes seulement, prérequis remis à jour, ordre « armes,
 objets, collisions » avec les prérequis d'abord (D-E20-24). Une seule relecture de clôture suit.
+**Révision 5 et pause (2026-10-10).** La relecture de clôture de la révision 4 rend **REVISE** : le couvercle de la 362, renvoyé à
+E20.h par E20.c1b-1 et E20.c1b-2 et sur la chaîne de l'histoire, n'avait plus de tranche. Corrigé (FIX) : tranche E20.A362 (arc de
+test seul, bombe d'Olen ; `e20-armes/h-g-deps.md` §0.1, `order-critic.md` A362). Points non bloquants corrigés : textes d'avant les
+réponses de l'auteur marqués tranchés dans les faits porteurs, titre du §1.9, appels de `DestroyEntity` des projectiles, ordre
+interne de g3/g4, repli d'E14.a1c. La règle de relecture ne permet pas une nouvelle relecture automatique : l'enveloppe est **en
+pause** jusqu'à l'accord de l'auteur pour une relecture de clôture de plus.
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -577,12 +583,13 @@ lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports e
   rapport avec la baguette de feu. Trois enregistrements de la carte 309 placent le sprite commun `0x0C` (C60/E9) : en portant C60
   et E9 pour ce type, ils prendraient vie (fidèle, mais point de vigilance). Le critère de D-E20-18 (« propres au héros » → E20.f ;
   « que des ennemis partagent » → E14) donnerait donc E17, C60 et E9 à E20.f ; mais D-E20-18 les nomme pour E14 : changer leur
-  propriétaire revient à l'auteur. **Question bloquante Q-N1** pour E20.f5 et E20.f6 ; C54 reste à E14.
+  propriétaire revient à l'auteur. ~~Question bloquante Q-N1 pour E20.f5 et E20.f6~~ **tranchée : D-E20-25** (E17, C60, E9 à E20.f) ;
+  C54 reste à E14.
 - [binaire, données] **Rien n'associe un indice de sprite global à un préfab dans le projet exporté** : le convertisseur garde la
   correspondance en mémoire (`SpriteWriter.cs:394`, `:494`). Les bancs de carte sont dédupliqués globalement
   (`SpriteBankReader.cs:174-217`) : une seule table de 256 entrées par page. Un export qui ajoute `BankKey` et `BreakEffect` (octet
   `+0x1E` de l'en-tête, lu par `DestroyEntity` `0x8003A5E8`) à chaque entrée de `Data/sprite-records.json` sert la page globale, la page
-  des cartes et D-E14-2 (avancé ici, prérequis de la flèche chargée, effet 8 ; à confirmer, Q-N2).
+  des cartes et D-E14-2 (**tranché : D-E20-26**, l'octet de bris reste dans E14.a, exporté par E14.a1a ; E20.e0x ne fait que `BankKey`).
 - [binaire] **Une entité née dans un tick y tourne aussitôt** : statut, programme A, compteurs, listes, animation, physique ; une
   flèche avance de 3 px dans son tick de naissance. La DLL la fait tourner une image plus tard (`TookPartInFrame`,
   `AlundraWorldProxy.cs:2617-2638`) ; la DLL peut l'inclure elle-même dans le reste du tick, sans changement du moteur (`e0-check.md`
@@ -620,15 +627,19 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 | 7 | E20.f5 | Flèches : E17 (D-E20-25) | E20.f3, E20.e0k |
 | 8 | E20.f6 | Boules de feu et de glace : C60, E9 (D-E20-25) ; vigilance sur les trois enregistrements `0x0C` de la carte 309, qui prendront vie | E20.f3, E20.e0b, E20.e0k |
 | 9 | E20.h0, E20.h1 | Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a ✅ |
+| 9b | E20.A362 | Le couvercle de la 362 (enregistrement 0, sprite 243, `D[1]` `0x87 [128,3]`) face à la bombe d'Olen (enregistrement 5, sprite 2, lancée par son script `0x8B [128,5,…]`, explosion animation 1, attaque attribut 4 puissance 5) : arc de test seul, comme E20.c1b-2 ; il tranche si le couvercle réagit déjà (probable depuis E20.c1a et E20.c1b-1) ou ce qui manque ; relancé après E20.h3 | E20.c1b-1 ✅ |
 | 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées | E20.e0a, E20.e0k ; E14.a1b ✅ pour g2 |
 | 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 |
-| 12 | E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 (D-E20-27) | E20.g1, E20.g2 |
+| 12 | E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 (D-E20-27) ; ordre interne fixé au détail (g3 dépend aussi de la géométrie de la barricade de g4 et d'un choix de l'auteur, `order-critic.md`) | E20.g1, E20.g2 |
+
+Les projectiles d'E20.f3, f5 et f6 (E10, E17, E9) appellent aussi `DestroyEntity(e, fx)` : fait par E14.a1b ✅.
 
 Ensuite, hors de l'ordre des armes, objets et collisions : la blessure du héros (E20.c2b, après E14.a, qui remesure ses arcs), le mur
 d'eau profonde avec les courants (E20.i2, D-E20-31 ; lecture de « 9 a » à confirmer par l'auteur), le butin et l'objet ramassable
 (E20.e0c), les effets du héros et l'herbe coupée (E20.e), la règle du stick (E20.d2b, après la mesure de l'auteur). Si E14.a1c s'arrête
-sur la chute des Muruta du hall (arrêt écrit de sa tranche : la chute des entités autres que le héros relève d'E20.e0k), E20.e0k passe
-en tête après E20.e0a, et E14.a1c reprend ensuite.
+sur la chute des Muruta du hall (arrêt écrit de sa tranche : la chute des entités autres que le héros relève d'E20.e0k), la question
+va à l'auteur comme le dit cet arrêt ; recommandation : avancer la part « chute » d'E20.e0k, qui ne dépend pas de l'apparition par
+indice (les Muruta sont placés sur la carte), puis reprendre E14.a1c.
 
 **Questions de la nuit, tranchées le 2026-10-10.** Q-N1 → D-E20-25 ; Q-N2 → D-E20-26 ; Q-N3 → D-E20-27 (avec D-E20-31 pour l'eau
 profonde). Par défaut fidèle, sans question : le plafond de 63 cases, la participation au tick de naissance (dans la DLL), la flèche
@@ -1673,7 +1684,7 @@ de l'auteur, hors de l'app) ; tout comportement d'arme.
 - **Budget** : un `executor` ; un verifier frais.
 - **Retour arrière** : `git revert` des commits d'E20.f0.
 
-### 1.9 E20.f1 — Charge et relâchement : E20.f1a 🧪 (faite et CONFIRMED le 2026-10-10, `53ff27f` à `ce804b3`), E20.f1b l'aura 🧪 (faite le 2026-10-10, verifier frais et recette de l'auteur en attente)
+### 1.9 E20.f1 — Charge et relâchement : E20.f1a 🧪 (faite et CONFIRMED le 2026-10-10, `53ff27f` à `ce804b3`), E20.f1b l'aura 🧪 (faite et CONFIRMED le 2026-10-10, `3e01c11` à `4cb98b8`)
 
 **Révision 1 (2026-10-10).** Relecture : **REVISE**, cinq points : la condition de l'aura était inversée ; l'oracle ne journalisait ni
 le réservoir ni le générateur ; le moment de création des effets n'était pas choisi ; l'aura n'avait ni ancre ni clé de profondeur ;
