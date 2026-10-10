@@ -285,7 +285,7 @@ Relecture de clôture : **READY** (2026-10-10).
 `007f2660eb83d5a3d21aa35d7c71dd34dba0afcf`). Chemins relatifs à `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e14a1/`.
 
 **Tâches.**
-- ⏳ **T0 — Prédiction et état de départ.** Annexe écrite ; manifeste `m0` (attendu : 24 103 fichiers, empreinte ci-dessus ; un écart
+- ✅ **T0 — Prédiction et état de départ.** Annexe écrite ; manifeste `m0` (attendu : 24 103 fichiers, empreinte ci-dessus ; un écart
   s'explique avant d'aller plus loin) ; `diff_manifests.py` de `m0` contre `m7-manifest-after.txt` : exactement les 47 chemins plus
   `UI/Textures/font3.png` ; compte de tests `Alundra.Tests` relevé.
 - ⏳ **T1 — Export de référence au HEAD**, avant toute modification du convertisseur. Fenêtre calme : aucun build, aucune suite, aucun

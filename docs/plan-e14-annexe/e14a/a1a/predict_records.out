@@ -1,0 +1,15 @@
+canonical banks: 395 ; current entries: 395
+unmatched entries: 0 ; ambiguous (candidate banks disagree on BreakEffect): 0 ; resolved: 395
+header+AnimSets keys shared by several banks: 29
+  shared by ['alundra_3', 'alundra_4', 'alundra_5', 'alundra_6']
+  shared by ['alundra_8', 'alundra_9']
+  shared by ['alundra_10', 'alundra_11']
+  shared by ['alundra_13', 'alundra_14']
+  shared by ['alundra_27', 'alundra_28', 'alundra_29']
+inserted lines: 395 ; old size 2552373 bytes ; predicted size 2561505 bytes (+9132)
+old sha1 772bb8b764568c448e546e1c38e912066431b07f
+pred sha1 007f2660eb83d5a3d21aa35d7c71dd34dba0afcf
+predicted parses; equals old minus BreakEffect for every entry: True
+key order of the first predicted entry: ['MoreFlags', 'CanPickup', 'FlagsPortraitShadowType', 'ProgramLoad', 'ProgramTick', 'ProgramTouch', 'ProgramDeactivate', 'ProgramInteract', 'OffsetX', 'OffsetY', 'OffsetZ', 'SizeX', 'SizeY', 'SizeZ', 'BreakEffect', 'Contents', 'IdsvAnimDirs', 'AnimSets', 'DialoguePortrait']
+Muruta entry BreakEffect 8 Contents 251
+histogram over entries: [(0, 284), (2, 1), (8, 63), (10, 30), (11, 15), (12, 1), (13, 1)]
