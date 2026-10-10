@@ -68,7 +68,7 @@ namespace Alundra.Scripts;
 /// to Jump (PlayerManager.cs:681-683) is likewise not ported (no jump animation/physics in V1) - this
 /// port's own documented deviation sends that exit to Idle instead (user decision, 2026-08-26).</description></item>
 /// <item><description><c>END</c>: <c>UpdateItemEffectState</c>, <c>SetPlayerHpMax</c>/<c>SetPlayerHp</c> -
-/// PlayerManager.cs:947-950 (no item/HP system).</description></item>
+/// PlayerManager.cs:947-950, ported by E20.c2a on every exit (<see cref="EndOfMovePlayer"/>).</description></item>
 /// </list>
 /// </summary>
 public static class AlundraPlayerManager
@@ -210,7 +210,7 @@ public static class AlundraPlayerManager
             // E20.b B2, binary 0x80031BB0-0x80031BC0: this branch also clears the charge timer (E20.f1a, 0x80031BB4) and the pending-spawn pointer of the weapon (0x80031BC0) before END.
             player.WeaponChargeTimer = 0;
             player.WeaponRecordPointer = 0;
-            EndOfMovePlayer(player, state, host); // E20.c2a T1: every exit of the binary reaches END (0x80032914), this one from 0x80031BB4.
+            EndOfMovePlayer(player, in pad, state, host); // E20.c2a T1: every exit of the binary reaches END (0x80032914), this one from 0x80031BB4.
             return;
         }
 
@@ -227,7 +227,7 @@ public static class AlundraPlayerManager
             // charge or a shot pending when a lock begins fires nothing at the unlock. The aura stub is left as it is: the binary does not touch the aura's handle here (a stale handle is E20.f1b's business).
             player.WeaponChargeTimer = 0;
             player.WeaponRecordPointer = 0;
-            EndOfMovePlayer(player, state, host); // E20.c2a T1: the locked branch also reaches END (0x80031C0C-0x80031C28 lead to 0x80032914): the life vessel of a locked script is mirrored at once.
+            EndOfMovePlayer(player, in pad, state, host); // E20.c2a T1: the locked branch also reaches END (0x80031C0C-0x80031C28 lead to 0x80032914): the life vessel of a locked script is mirrored at once.
             return;
         }
 
@@ -469,7 +469,7 @@ public static class AlundraPlayerManager
         // TargetAnimationId is none of the values ported above keeps it unchanged.
 
         // PlayerManager.cs:947-950, binary 0x80032914 (END: UpdateItemEffectState, then SetPlayerHpMax/SetPlayerHp), shared with the two early exits above.
-        EndOfMovePlayer(player, state, host);
+        EndOfMovePlayer(player, in pad, state, host);
     }
 
     /// <summary>
@@ -479,9 +479,9 @@ public static class AlundraPlayerManager
     /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>): the bare heroes of the unit tests keep the default life of 0, which would otherwise be written over the stats the test set up. This guard is the one
     /// documented deviation of the epilogue.
     /// </summary>
-    private static void EndOfMovePlayer(AlundraEntityScriptProxy player, AlundraGameState state, IAlundraScriptHost? host)
+    private static void EndOfMovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host)
     {
-        UpdateItemEffectState(player, state, host);
+        UpdateItemEffectState(player, in pad, state, host);
 
         if (!player.LifePulledFromStats)
         {
@@ -724,16 +724,171 @@ public static class AlundraPlayerManager
     }
 
     /// <summary>
-    /// <c>UpdateItemEffectState</c> (<c>0x800307E8</c>, called at the end of every normal tick, <c>0x80032914</c>, before the HP copies). E20.c1b K2 ports its steps 2 to 5 only (the three equipment records,
-    /// <see cref="FillEquipmentRecords"/>, into the world's <see cref="IAlundraScriptHost.EquipmentRecords"/>); the rest stays the named stub of E20.a A4 (D-E20-14) for E20.c2: the boots level (step 1), the
-    /// 255-byte copy to <c>0x80127008</c> and the combination of the responses (step 6), the regeneration and the HP copies (step 7). A host without the seam, tables or records does nothing.
+    /// <c>UpdateItemEffectState</c> (<c>0x800307E8</c>), the first thing of the END of <see cref="MovePlayer"/> (<c>0x80032914</c>) on every exit. E20.c1b K2 ported its steps 2 to 5, E20.c2a T2 the others:
+    /// <list type="number">
+    /// <item><description>step 1, the boots level (<see cref="BootsLevelOf"/>), stored in <see cref="AlundraEquipmentRecords.BootsLevel"/>;</description></item>
+    /// <item><description>steps 2 to 5, the three equipment records (<see cref="FillEquipmentRecords"/>);</description></item>
+    /// <item><description>step 6, the hero's defence sheet (<see cref="ComputeHeroSheet"/>);</description></item>
+    /// <item><description>step 7, the regeneration (<see cref="RegenerateLife"/>), which reads the hold word of the pad.</description></item>
+    /// </list>
+    /// A host without the seam, tables or records does steps 1, 6 and 2-5 nothing (a bare test montage); the regeneration then finds no record and only keeps its counters at 0.
     /// </summary>
-    private static void UpdateItemEffectState(AlundraEntityScriptProxy player, AlundraGameState state, IAlundraScriptHost? host)
+    internal static void UpdateItemEffectState(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host)
     {
-        if (host?.EquipmentRecords is { } records && host.ItemTables is { } itemTables && host.BalanceTables is { } balanceTables)
+        RefreshEquipmentAndSheet(player, state, host);
+        RegenerateLife(player, in pad, state, host?.EquipmentRecords);
+    }
+
+    /// <summary>
+    /// Steps 1 to 6 of <c>UpdateItemEffectState</c>, the part that does not touch the hero's life: the boots level, the three records, the sheet. Also run once when the hero is adopted by a world
+    /// (<see cref="AlundraWorldProxy"/>, E20.c2a T2): the binary's sheet is a global that outlives the map load (the load only empties the record pointers), so a hit on the first tick of a map reads the sheet of the
+    /// end of the previous map; this port, which rebuilds the world's records at every map, computes it again at the adoption from the same inventory instead of reading an empty sheet.
+    /// </summary>
+    internal static void RefreshEquipmentAndSheet(AlundraEntityScriptProxy player, AlundraGameState state, IAlundraScriptHost? host)
+    {
+        if (host?.EquipmentRecords is not { } records)
+        {
+            return;
+        }
+
+        records.BootsLevel = BootsLevelOf(state); // step 1, 0x800307EC-0x80030890.
+
+        if (host.ItemTables is { } itemTables && host.BalanceTables is { } balanceTables)
         {
             FillEquipmentRecords(state, itemTables, balanceTables, host.BalanceThreshold, records);
+            ComputeHeroSheet(player, records);
         }
+    }
+
+    /// <summary>
+    /// Step 1 of <c>UpdateItemEffectState</c> (<c>0x800307EC-0x80030890</c>): the boots level <c>[0x80127000]</c>, 3 when the object <c>0x1C</c> is owned, else 2 for <c>0x1B</c>, else 1 for <c>0x1A</c>, else 0
+    /// (<see cref="GetNumberOfItem"/>, <c>0x8004E428</c>); the object <c>0x19</c> does not count. Shared with the physics of the DLL (<see cref="AlundraScriptedMotion"/>).
+    /// </summary>
+    internal static int BootsLevelOf(AlundraGameState state)
+    {
+        if (GetNumberOfItem(state, 0x1C) != 0)
+        {
+            return 3;
+        }
+
+        if (GetNumberOfItem(state, 0x1B) != 0)
+        {
+            return 2;
+        }
+
+        return GetNumberOfItem(state, 0x1A) != 0 ? 1 : 0;
+    }
+
+    /// <summary>
+    /// Step 6 of <c>UpdateItemEffectState</c> (<c>0x800309A8-0x80030C18</c>): the hero's sheet is a copy of the record of the armour, or of the hero's own record (<c>+0x1C4</c>, <see cref="AlundraEntityScriptProxy.BalanceRecord"/>)
+    /// when no armour is owned, whose responses 1 to 11 (bytes 3 to 13) are then combined with those of the weapon record and of the accessory record by <see cref="CombineResponse"/>. A missing weapon or accessory record
+    /// counts as <c>0x10</c>. Written into <see cref="AlundraEquipmentRecords.HeroSheet"/>, one reusable record.
+    /// </summary>
+    internal static void ComputeHeroSheet(AlundraEntityScriptProxy hero, AlundraEquipmentRecords records)
+    {
+        var source = records[AlundraEquipmentRecords.Armour] ?? hero.BalanceRecord;
+        if (source == null)
+        {
+            return;
+        }
+
+        var weapon = records[AlundraEquipmentRecords.Weapon];
+        var accessory = records[AlundraEquipmentRecords.Accessory];
+        Span<byte> responses = stackalloc byte[11];
+        for (var i = 1; i <= 11; i++)
+        {
+            var offset = 2 + i;
+            responses[i - 1] = (byte)CombineResponse(source.ByteAt(offset), weapon?.ByteAt(offset) ?? 0x10, accessory?.ByteAt(offset) ?? 0x10);
+        }
+
+        records.StoreHeroSheet(source, responses);
+    }
+
+    /// <summary>
+    /// The combination of one response of the sheet (<c>0x80030B8C-0x80030C0C</c>): <paramref name="armour"/> is the byte of the copied sheet, <paramref name="weapon"/> and <paramref name="accessory"/> those of the two
+    /// other records (<c>0x10</c> when absent). The flags are the two top bits (<c>&amp; 0xC0</c>). Any flag <c>0x80</c> gives <c>0x80</c>. Otherwise the value starts at the armour byte, or at <c>0x10</c> when the
+    /// armour byte carries a flag (and then <c>0x40</c> as it is when the weapon and the accessory carry one too); each of the weapon and the accessory without flag adds its byte minus <c>0x10</c>; the result is
+    /// capped at <c>0x1F</c> and floored at 0. Fuzzed against the real code in the discovery of E20.c2 (44,000 cases, no difference).
+    /// </summary>
+    internal static int CombineResponse(int armour, int weapon, int accessory)
+    {
+        var flagArmour = armour & 0xC0;
+        var flagWeapon = weapon & 0xC0;
+        var flagAccessory = accessory & 0xC0;
+        if (flagArmour == 0x80 || flagWeapon == 0x80 || flagAccessory == 0x80)
+        {
+            return 0x80;
+        }
+
+        var value = armour;
+        if (flagArmour != 0)
+        {
+            if (flagWeapon != 0 && flagAccessory != 0)
+            {
+                return 0x40;
+            }
+
+            value = 0x10;
+        }
+
+        if (flagWeapon == 0)
+        {
+            value += weapon - 0x10;
+        }
+
+        if (flagAccessory == 0)
+        {
+            value += accessory - 0x10;
+        }
+
+        return value >= 0x20 ? 0x1F : value < 0 ? 0 : value;
+    }
+
+    /// <summary>The bits of the control flags (<c>[0x800DC4B8] &amp; 0x7C</c>) that close the regeneration (<c>0x80030C2C</c>).</summary>
+    private const uint RegenerationClosedFlags = 0x7C;
+
+    /// <summary>
+    /// Step 7 of <c>UpdateItemEffectState</c>, the regeneration (<c>0x80030C20-0x80030D3C</c>). Its gates, all of which must hold: no bit of <c>0x7C</c> in the control flags, the hero not frozen (<c>+0x20</c>,
+    /// <see cref="AlundraEntityScriptProxy.BlockedByEntity"/>), the hold word of the pad (<c>0x80126F28</c>, a halfword: every button and the D-pad) zero, the life not 0 and below the maximum. When a gate is closed
+    /// the three counters (<see cref="AlundraGameState.RegenerationCounters"/>) go back to 0 and the life is left alone. Otherwise, for each of the three records with a byte 2 (the period, <see cref="AlundraBalanceRecord.MaxHp"/>)
+    /// other than 0, the counter grows by one and, when it passes the byte 2, goes back to 0 and the life gains 1 (so a period of byte 2 + 1 ticks; a record without a byte 2 zeroes its counter); the life is then
+    /// capped at the maximum.
+    /// </summary>
+    internal static void RegenerateLife(AlundraEntityScriptProxy hero, in AlundraPadState pad, AlundraGameState state, AlundraEquipmentRecords? records)
+    {
+        var counters = state.RegenerationCounters;
+        if ((state.PlayerControlFlags & RegenerationClosedFlags) != 0
+            || hero.BlockedByEntity != null
+            || (pad.ButtonsHold & 0xFFFF) != 0
+            || hero.Hp == 0
+            || hero.Hp >= hero.HpMax)
+        {
+            counters[0] = 0;
+            counters[1] = 0;
+            counters[2] = 0;
+            return;
+        }
+
+        var life = hero.Hp;
+        for (var slot = 0; slot < AlundraEquipmentRecords.Count; slot++)
+        {
+            var record = records?[slot];
+            if (record != null && record.MaxHp != 0)
+            {
+                counters[slot]++;
+                if (record.MaxHp < counters[slot])
+                {
+                    counters[slot] = 0;
+                    life++;
+                }
+            }
+            else
+            {
+                counters[slot] = 0;
+            }
+        }
+
+        hero.Hp = hero.HpMax < life ? hero.HpMax : life;
     }
 
     /// <summary>The "armour" category of the equipment records: <c>byte[0x800C5F7C + 8 n + 6] &amp; 0x7F</c> (<see cref="AlundraItemTables.DropField3"/>, equal to the binary on the 98 rows).</summary>
@@ -760,7 +915,7 @@ public static class AlundraPlayerManager
     /// </summary>
     internal static void FillEquipmentRecords(AlundraGameState state, AlundraItemTables itemTables, AlundraBalanceTables balanceTables, int threshold, AlundraEquipmentRecords records)
     {
-        records.Clear();
+        records.ClearAll(); // 0x800308A4-0x800308BC: all six words, the item words too (the map load, 0x80044520, empties the pointers only: records.Clear()).
 
         for (var n = LastEquipmentItem; n >= 0; n--)
         {

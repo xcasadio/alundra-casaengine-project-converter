@@ -198,12 +198,16 @@ public sealed class AlundraDamageTests
         rig.Step(); // one tick of the hero's MovePlayer, which ends with UpdateItemEffectState.
         AssertRecordsEqual(inventory.GetProperty("records"), host.EquipmentRecords, "all through the hero's tick");
 
-        // A host without balance tables leaves the records alone (they were emptied by hand to see it).
+        // A host without balance tables leaves the records alone (they were emptied by hand to see it). E20.c2a T2: the hand-made Clear() is the map load's (0x80044520), which empties the three POINTERS
+        // only: the item words stay (here the armour's, 0x12 = 18 for the inventory 'all'); only the six-word clear of UpdateItemEffectState steps 2 to 5 (ClearAll) zeroes them, and it did not run.
+        var armourWord = host.EquipmentRecords.ItemIdOf(AlundraEquipmentRecords.Armour);
+        Assert.NotEqual(0, armourWord);
         host.EquipmentRecords.Clear();
         host.BalanceTables = null;
         rig.Step();
         Assert.Null(host.EquipmentRecords[AlundraEquipmentRecords.Weapon]);
-        Assert.Equal(0, host.EquipmentRecords.ItemIdOf(AlundraEquipmentRecords.Armour));
+        Assert.Null(host.EquipmentRecords[AlundraEquipmentRecords.Armour]);
+        Assert.Equal(armourWord, host.EquipmentRecords.ItemIdOf(AlundraEquipmentRecords.Armour));
     }
 
     // -----------------------------------------------------------------------------------------

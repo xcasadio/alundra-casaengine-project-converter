@@ -1984,6 +1984,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         proxy.Hp = GameState.PlayerStats.Hp;
         proxy.LifePulledFromStats = true;
 
+        // E20.c2a T2: the boots level and the hero's defence sheet (steps 1 to 6 of UpdateItemEffectState) are computed at the adoption too. The binary's sheet (0x80127008) is a global that the map load does
+        // not touch, so a hit before the first END reads the previous map's sheet, never an empty one. The side effects of the fill are undone: the rewrite of the equipped accessory (0x8004E0F8) belongs to the
+        // first tick (the equipment records of the first tick use the OLD id, K1 rings2), and the records themselves are emptied again as the map load (0x80044520) leaves them.
+        var equippedAccessory = GameState.PlayerStats.ItemId;
+        AlundraPlayerManager.RefreshEquipmentAndSheet(proxy, GameState, this);
+        GameState.PlayerStats.ItemId = equippedAccessory;
+        EquipmentRecords.Clear();
+
         // E19.t T-R2 (D-E19-57, D-E19-61): the arrival is an appearance, so the sound of its animation is asked here, with the world's player (the group of
         // the new map). After the header above: the hero's animation sets are only known from there. The first switch of the animation is exempt (R2).
         RequestAppearanceSound(proxy);

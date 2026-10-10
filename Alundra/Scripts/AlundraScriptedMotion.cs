@@ -723,22 +723,7 @@ internal static class AlundraScriptedMotion
     private static int BootsLevel(AlundraEntityScriptProxy hero)
     {
         var state = hero.ScriptHost?.GameState;
-        if (state == null)
-        {
-            return 0;
-        }
-
-        if (AlundraPlayerManager.GetNumberOfItem(state, 0x1C) != 0)
-        {
-            return 3;
-        }
-
-        if (AlundraPlayerManager.GetNumberOfItem(state, 0x1B) != 0)
-        {
-            return 2;
-        }
-
-        return AlundraPlayerManager.GetNumberOfItem(state, 0x1A) != 0 ? 1 : 0;
+        return state == null ? 0 : AlundraPlayerManager.BootsLevelOf(state); // E20.c2a T2: the step 1 of UpdateItemEffectState, shared.
     }
 
     /// <summary>Bit-for-bit port of <c>PhysicsEngine.IncrementForce</c> (PhysicsEngine.cs:1551-1576,

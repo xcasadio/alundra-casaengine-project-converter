@@ -109,6 +109,18 @@ public sealed class AlundraGameState
     public uint PlayerControlFlags;
 
     /// <summary>
+    /// E20.c2a (docs/plan-e20-heros.md section 1.12): the three regeneration counters of <c>UpdateItemEffectState</c> step 7 (<c>0x80126FE8</c>, <c>0x80126FEC</c>, <c>0x80126FF0</c>, one per equipment record). Globals of the
+    /// binary that nothing resets at a map load (the only accesses are in <c>0x800307E8</c>), hence session state and not world state. Zeroed by the step itself whenever one of its gates is closed.
+    /// </summary>
+    internal readonly int[] RegenerationCounters = new int[3];
+
+    /// <summary>
+    /// E20.c2a: the counter of the low-life alarm (<c>0x80098F2C</c>, read and written only by <c>CreatePlayerAnimationEffects</c> <c>0x8003040C-0x8003042C</c>): decremented at every free tick while the life is low, the sound
+    /// <c>0x190</c> and a reload of <c>0x2D</c> when it reaches -1. A session global like the regeneration counters (BSS, 0 at the start).
+    /// </summary>
+    internal int LowHpAlarmCounter;
+
+    /// <summary>
     /// D-E7-8 seam (docs/plan-e7-mutation-tuiles.md, slice E7.c): last pad snapshot published by
     /// <see cref="AlundraEntityScriptProxy.Update"/>'s own player branch, just before it calls
     /// <see cref="AlundraPlayerManager.MovePlayer"/> - the fidelity pendant of the original's global

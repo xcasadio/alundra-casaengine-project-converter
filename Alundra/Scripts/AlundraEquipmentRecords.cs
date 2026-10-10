@@ -1,4 +1,6 @@
 #nullable enable
+using System;
+
 namespace Alundra.Scripts;
 
 /// <summary>
@@ -30,14 +32,56 @@ public sealed class AlundraEquipmentRecords
     /// <summary>The item the record of a slot describes (the item word of the binary minus <c>0x1E</c>), 0 when the slot is empty.</summary>
     public int ItemIdOf(int slot) => _itemIds[slot];
 
-    /// <summary>Empties the three slots (the six words of the binary).</summary>
+    /// <summary>
+    /// The map load (<c>0x80044520</c>, <c>InitializeItems</c>): empties the three POINTERS only (<c>0x80146E00</c>, <c>0x80146E08</c>, <c>0x80146E10</c>); the item words that follow them are left as they are
+    /// (E20.c2a T2, the P4 of E20.c1b-1; the next <c>UpdateItemEffectState</c> rewrites all six words). <see cref="ClearAll"/> is the six-word clear of that step.
+    /// </summary>
     public void Clear()
+    {
+        for (var slot = 0; slot < Count; slot++)
+        {
+            _records[slot] = null;
+        }
+    }
+
+    /// <summary>Empties the six words (the three pointers and the three item words): the first thing steps 2 to 5 of <c>UpdateItemEffectState</c> do (<c>0x800308A4-0x800308BC</c>).</summary>
+    public void ClearAll()
     {
         for (var slot = 0; slot < Count; slot++)
         {
             _records[slot] = null;
             _itemIds[slot] = 0;
         }
+    }
+
+    /// <summary>
+    /// E20.c2a T2: the boots level of the hero (<c>[0x80127000]</c>), written by step 1 of <c>UpdateItemEffectState</c> (3, 2 or 1 for the objects <c>0x1C</c>, <c>0x1B</c>, <c>0x1A</c>, else 0). The binary caches it
+    /// at the end of every tick; the physics of the DLL (<see cref="AlundraScriptedMotion"/>) recompute it on demand through <see cref="AlundraPlayerManager.BootsLevelOf"/>, the same function, so the value read there
+    /// is the cached one of this tick at the latest (the one-tick lag of the binary is immaterial).
+    /// </summary>
+    public int BootsLevel { get; internal set; }
+
+    private byte[]? _sheetResponses;
+    private AlundraBalanceRecord? _sheetSource;
+
+    /// <summary>
+    /// E20.c2a T2: the hero's defence sheet (<c>0x80127008</c>, 255 bytes in the binary), the one <c>ComputeNewHp</c> reads when the hero is hit (E20.c2b). A sheet is the record of the armour (or the hero's own
+    /// <c>+0x1C4</c> record without armour) whose eleven responses are combined with the weapon's and the accessory's by step 6 of <c>UpdateItemEffectState</c>. One object for the whole life of the world: the same record
+    /// is rewritten in place (<see cref="StoreHeroSheet"/>) and only rebuilt when the record it copies changes. Null until a first step 6 ran (the binary's BSS zero before the first tick).
+    /// </summary>
+    public AlundraBalanceRecord? HeroSheet { get; private set; }
+
+    /// <summary>The bytes 3 to 13 of the sheet written by step 6 (the byte 2 and the attacks are those of <paramref name="source"/>, copied as they are).</summary>
+    internal void StoreHeroSheet(AlundraBalanceRecord source, ReadOnlySpan<byte> responses)
+    {
+        if (HeroSheet == null || !ReferenceEquals(_sheetSource, source))
+        {
+            _sheetResponses = new byte[responses.Length];
+            HeroSheet = new AlundraBalanceRecord(source.Level, source.RecordSize, source.MaxHp, _sheetResponses, System.Linq.Enumerable.ToArray(source.Attacks), null);
+            _sheetSource = source;
+        }
+
+        responses.CopyTo(_sheetResponses);
     }
 
     internal void Set(int slot, AlundraBalanceRecord? record, int itemId)
