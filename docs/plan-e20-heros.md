@@ -2476,6 +2476,134 @@ dominant, une diagonale à 45° sur l'axe du regard, et la marche ne change pas.
 lecture par tick demande la règle de recollement au sol de 3 px `0x80037848` et la re-dérivation de UH7, AT8, AT8n, AT8b et des
 traces highground ; tranche à part après E20.d ».
 
+### 1.14 E20.i — La nage ⏳
+
+Découverte en lecture seule du 2026-10-10 (`docs/plan-e20-annexe/e20-i/` : `swim-binary.md`, `swim-dll.md`, `swim-oracle.md`,
+contre-vérifiées par `check.md` : tables et gestionnaires redécodés, W1 à W10 de l'oracle rejoués à l'identique). Cette section
+reprend le projet de `check.md` ; le point des courants y devient O-E20-16 (O-E20-15 est la poignée de l'aura).
+Relecture : **READY** dès la première lecture (2026-10-10).
+
+**But.** Le héros nage comme dans le binaire sur la pente 4 : il flotte (`0x1D`), nage (`0x0F`), plonge au front de Triangle, Croix
+ou Carré (`0x28`, un élan de 42 ticks en surface, touchable), et sort de l'eau par la terre ; les gestionnaires de `0x3A` et `0x3B`
+sont prêts pour la blessure (E20.c2b). Le garde d'E20.d1 disparaît.
+
+**Découpage.** Une tranche. Le mur d'eau profonde sans bottes (O-E19-22) et les courants (O-E20-16) restent dehors (Q-N3, Q-I1) ; s'ils
+reviennent à E20, ils forment E20.i2, dont l'oracle est déjà mesuré (traces `*-L0`, `*-L1`, `R9-deepwater-noboots`).
+
+**Prérequis.** E20.a, E20.c2a (épilogue, bottes), E20.d1 (garde à remplacer, montage de la course), E20.f1a (charge). Pas E20.c2b :
+l'ordre s'inverse (E20.c2b, branche de l'eau, dépend d'E20.i) ; l'écart de D-E20-23 (« blessure brève ») n'existera jamais.
+
+**Faits porteurs.**
+- [binaire] `MovePlayer` lit la pente au tout début (`0x80031B98`) ; pente 4 → `0x8003260C` après le pilote `0x8003634C` et la
+  lecture du pad, à la place de la porte d'échelle et du trio `0x80031D68`-`0x80031D78`. La branche met la charge (`0x80126FFC`) et le
+  pointeur d'arme (`0x80127110`) à 0, appelle `UpdatePlayerCarriedEntity(2)`, puis aiguille par `0x80022E7C` (80 entrées) et finit par
+  `0x80032914`.
+- [binaire] Six groupes : `0x80032674` (tous les états non cités : `0x1D`, puis `TryUseItem`, sans écrire la direction) ;
+  `0x80032658` (`0x1C`, `0x31`, `0x3E` : direction + 0x10, puis `0x1D`, puis `TryUseItem`) ; `0x80032680` (`0x28`, `0x3A` :
+  `TryUseItem` seul) ; `0x80032690` (`0x0F`, `0x1D`) ; `0x800326FC` (`0x3B`) ; `0x80032758` (`0x0D 1A 1B 1E 27 37 38 3D 43 45 47 48
+  4A 4C 4D` et ≥ `0x50` : annulation `0x800350C0`, état inchangé).
+- [binaire] `0x80032690` : direction = celle du pad (écrite avant `TryUseItem`, même sans direction) ; `TryUseItem` à 0 finit le tick ;
+  `CheckEntityInteraction` 2 → `0x1D`, 1 → fin ; front `& 0xD0` (Triangle 0x10, Croix 0x40, Carré 0x80) → `0x28` ; sinon quartet de
+  direction non nul (même contradictoire) → `0x0F`, sinon `0x1D`.
+- [binaire] `0x800326FC` : `TryUseItem` à 0 → direction + 0x10 ; sinon, `+0xAC == 1` → `0x1D` et direction + 0x10.
+- [binaire] Côté terre (`0x80022D3C`) : `0x0F`, `0x1D`, `0x28` → `0x80031DD0` (Idle au sol, `0x2D` en l'air, puis `TryUseItem`) ;
+  `0x3A`, `0x3B` → `0x80031DB4` (direction + 0x10 d'abord).
+- [données, oracle] Fiches : `0x1D` 0/3, boucle 36 ; `0x0F` 144/4, son 22, 42 enchaîné sur lui-même ; `0x28` 176/0, son 21, 42 →
+  `0x1D` ; `0x3A` 256/0x40, son 23, 4 → `0x3B` ; `0x3B` 0/0x44, 8, tenu. La physique générique de la DLL suffit (déduit, à prouver).
+- [DLL] Le son d'une animation rejoue sur un enchaînement sur elle-même (`TakeZImpulse` → `GiveImpulse`) ; `ForceResetAnimationFlag`
+  est `+0xAC` ; les bits du pad égalent ceux du binaire (`AlundraPlayerController.cs:27-30`).
+
+**Défauts proposés (écarts écrits dans le code et ici).**
+- Sans bottes de niveau ≥ 2, le héros nage (l'original : mur, O-E19-22, Q-N3).
+- Pas d'éclaboussure (effet 6) à l'entrée et à la sortie, pas de sillage (effet 0x15), pas de ride de la plongée, pas d'atterrissage
+  dans l'eau (son 21, effet 6) : passe `0x80038E84` et `CreatePlayerAnimationEffects`, E20.e (aucun oracle ne les mesure ; `Slope_190`
+  non tenu par la DLL).
+- Courants (`+0x188`, branche `0x80032768`, dérive) non portés (O-E20-16).
+- `0x800350C0` et `UpdatePlayerCarriedEntity(2)` : bouchons nommés à leur place (E20.h0, E20.g).
+- `0x3A` et `0x3B` ne sont atteints que par les tests jusqu'à E20.c2b.
+
+**Hors périmètre.** L'entrée de la blessure et le clignotement (E20.c2b), la mort dans l'eau (`0x3C`, E18), le mur et les courants,
+les effets d'eau (E20.e), les objets du Rond dans l'eau et le son 3 (E20.h), l'aura (E20.f1b), le rognage au bord de carte (O-E19-17).
+
+#### Tâches
+
+- ⏳ **T0 — Oracle dans l'annexe (commit docs).**
+  - Copier, depuis `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20i/swim-oracle/tree/docs/plan-e20-annexe/e20-d/oracle/`,
+    `base/sscen.py`, `base/sverify.py`, `base/sindex.py` (fichiers neufs, à côté de `rworld.py`) et `out-swim/` (786 fichiers) dans
+    `docs/plan-e20-annexe/e20-d/oracle/` ; aucun fichier existant modifié, sauf une section « Nage » du README.
+  - Relancer `sverify.py` (il a tourné sur une version antérieure de `sscen.py`).
+  - Preuves : les dix groupes relancés depuis l'annexe redonnent `out-swim/manifest-swim.txt` (785 lignes) ; G1 à G10 relancés
+    après l'import de `sscen` redonnent `out/manifest.txt` (557). La porte D1 ne se rejoue pas en place (P4 hérité d'E20.d1 T0 :
+    `compare.py` vise un niveau trop haut, `d1/out` absent) : la rejouer depuis une copie, sans modifier d'outil copié.
+- ⏳ **T1 — Table et noms.** Constantes des cinq états ; la table `0x80022E7C` en six genres, avec un test entrée par entrée contre
+  l'exe ; masque de plongée = `0xD0` ; bouchon nommé `0x800350C0`.
+- ⏳ **T2 — La branche et les sorties.**
+  - Dans `MovePlayer`, après le pilote et la direction, avant la porte d'échelle : pente 4 → charge 0, pointeur 0,
+    `UpdatePlayerCarriedEntity(2)`, les six gestionnaires dans l'ordre du binaire, `EndOfMovePlayer`, retour.
+  - Côté terre : `0x0F`, `0x1D`, `0x28` → Idle ou `0x2D` puis `TryUseItem` ; `0x3A`, `0x3B` → direction + 0x10 d'abord.
+  - Retirer le garde d'E20.d1, `IsRunState` et la clause de la pente 4 de la queue ; documentation de la classe.
+- ⏳ **T3 — Moyens de test.** Le montage gagne l'état de départ (`hero_anim`), les inventaires `b1b` et `holy_b1b`, les cinq états
+  (durées, fins, fiches) avec l'Idle à l'accélération 1 ; le lecteur charge `out-swim/` ; un point d'accès qui pose `0x3A` et la
+  direction avant le `MovePlayer` d'un tick donné (la sortie du bloc de blessure, sans l'entrée).
+- ⏳ **T4 — Tests et arcs.** Acceptation ci-dessous ; un arc au vrai préfab sur l'étang de la 14 (bottes 0x1B) : tomber de la berge,
+  `0x1D` puis `0x0F`, plonger, buter contre la berge ; le même sans bottes, épinglé comme écart (il nage).
+- ⏳ **T5 — Sauvegarde de test** `swim-m14` : carte 14, bottes 0x1B, tuile proposée (40, 48, 1) sur la berge (à vérifier : marchable,
+  hors zone d'événement).
+- ⏳ **T6 — Plan.** Résultats, §0.2, lignes O-E19-22 et O-E20-16, D-E20-23 caduque, arête de dépendance d'E20.c2b, recette d'E20.d
+  (« sur l'eau profonde, le héros nage »).
+
+#### Acceptation
+
+Champ par champ contre l'oracle, à 1 tick par image (`anim_target`, `anim_cur`, `dir_target`, forces, positions relatives,
+`on_ground`, `b0`, `charge_cnt`, sons de changement d'animation). Les effets 6 et 0x15, les sons 21 et 6 d'atterrissage et le son 3 du
+Rond ne sont pas comparés (E20.e, E20.h).
+- `R9-deepwater-boots2` en entier : pente 4 au 89 (`0x03`, 258048) ; `0x1D` au 90 (225792, son 0) ; `0x0F` au 91 (218592, son 22),
+  −7200 par tick jusqu'à 110592 au 106.
+- `R9-allwater-start-R` et `-T-R` : `0x1D` au 1 ; `0x0F` au 2 (6912, son 22), + 6912 par tick, 110592 au 17 ; son 22 et `b0 = 1` au
+  44 ; aucune préparation de course. `R9-allwater-start-T` : `0x1D` de 1 à 40, forces nulles, `b0 = 1` au 37.
+- W1 (bottes 2 et 3) : marche, pente 4 au 20, `0x1D` au 21 (139776), `0x0F` au 22 (137952, son 22) ; saut `s03`, `0x2C` jusqu'au 23,
+  `0x1D` au 24 (131712), `0x0F` au 25 (130392) ; chute de 32 px, `0x2C` 21-31, `0x1D` au 32, `0x0F` au 33.
+- W2 : les huit directions (cardinales 110592 ou 73728, diagonales 78192 et 52128 ; rampe 6912, 4608, 4887, 3258) ; demi-tour au 41
+  (96768) ; son 22 aux 5, 47, 89, 131 et 173 (`W2-long-R`).
+- W3 : `W3-T-swim`, `0x0F` 5-19, `0x28` 20-61 (135168, son 21 au 20), `0x1D` au 62 (118272, `b0 = 1`), `0x0F` au 63 (117792) ;
+  Croix et Carré identiques au Triangle ; Rond sans plongée ; maintien sans seconde plongée (`W3-T-held`, `0x1D` au 52) ; appuis
+  toutes les 5 ticks, plongées 10-51 et 55-96 ; diagonale (95568, −63712) ; sans direction ou Gauche+Droite, direction gardée ;
+  entrée (`W3-enter-T+0`, `0x29` au 12, Idle 13, Moving 14, `0x1D` 15, `0x0F` 16 ; `+1`, appui perdu ; `+2`, `0x28` 14-55).
+- W4 : sortie à gauche, pente 0 au 103, Idle au 104 (−55296), Moving au 105 (−107520) et 106 (−159744) ; Triangle tenu, Idle 122,
+  `0x29` 123-147, `0x03` au 148 ; plongée coupée, `0x28` 5-31, Idle au 32 (−67584) ; berge de 16 px, x 346,00, `ForceAdjusted` dès
+  le 104, `0x0F` gardé.
+- W5 : mur, `ForceAdjusted` dès le 78, x 709,00, `0x0F` à 110592 (mur est : tolérance d'O-E19-42, ± 1 unité, ± 1 tick) ; glissement
+  en diagonale ; plongée contre le mur jusqu'à sa fin ; bords de carte : écart O-E19-17 écrit si la DLL diffère.
+- W6 : charge 60 au 83, 0 dès le 84, Carré tenu ; jamais comptée dans l'eau ; recomptée à terre (3 au 90, 60 au 150).
+- W7, la blessure posée par le point d'accès au tick de l'oracle : `W7-hurt-idle-L2`, `0x3A` 2-5 (−196608, son 23), `0x3B` 6-14
+  (−184320 puis −12288 par tick), `0x1D` au 15 (−75264, direction 08 → 18), x 229,00, 217,19, 200,29 aux 2, 6, 15 ;
+  `W7-hurt-leaving-x352`, Idle au 5 (−98304, direction 18) ; `W7-hurt-dive-s45`, `0x3A` au 81.
+- W8 : les 240 traces (80 états × repos, Droite, front de Triangle), ticks 1 à 3. W9 côté terre : Idle au tick 1, direction
+  retournée pour `0x3A` et `0x3B`. W10 : quartets contradictoires, canal, eau peu profonde vers profonde.
+- 2 ticks par image : un front de plongée ne plonge qu'une fois.
+- Tests qui changent, et eux seuls : `DeepWater_EveryStateOfTheRun_…` (six cas → `0x1D` ; direction retournée pour `0x3E` et `0x1C`
+  seulement) ; `DeepWater_TheTailDoesNotStartTheRun_…` (Idle + Triangle + Droite sur la pente 4 → `0x1D` ; sec et peu profond
+  inchangés) ; `G9_OnDeepWater_…` et `G9_ATriangleOnDeepWater_…` (traces entières) ; `AlundraTestSavesTests` (le préréglage).
+  Traces du héros et de l'intro inchangées ; sonde du vrai jeu inchangée ; Release puis Debug sans échec ; verifier frais.
+- Recette de l'auteur, avec `swim-m14` : tomber dans l'étang de la 14, nager dans les huit directions, flotter, plonger au
+  Triangle, à la Croix et au Carré (pas au Rond), buter contre la berge ; sortir par une rive de même niveau sur la 416 si on y
+  accède (pas par la cascade). Écarts attendus : ni éclaboussure ni sillage ; sans bottes, le héros nage.
+
+#### Arrêts, budget, retour arrière
+
+- **Arrêts** : un écart à l'oracle que ni O-E19-42, ni O-E19-17, ni E20.e, E20.h ou E20.f1b n'expliquent ; un test qui change hors de
+  la liste ; une trace du héros ou de l'intro, ou la sonde, qui bouge ; un besoin de toucher au moteur ou de porter le mur, les
+  courants, l'entrée de la blessure ou `0x80038E84` ; tout contact avec `CasaEngine.Launcher/Program.cs`.
+- **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus. Mutations à attraper :
+  masque `0xD0` → `0x50`, direction écrite après `TryUseItem`, sortie de terre `0x2D` au sol, retournement oublié pour `0x3B`, charge
+  non remise à 0, trio non sauté, groupe `0x80032758` réécrit en `0x1D`.
+- **Retour arrière** : `git revert` des commits d'E20.i.
+
+**Questions pour l'auteur.**
+- **Q-N3, complétée** (non bloquante pour E20.i) : la nage n'a besoin d'aucun mur ; sans lui, le héros sans bottes nage, dès la mer
+  de la 416. Recommandé : le mur en E20.i2, juste après (une égalité sur `0xE00`, pas un bit de masque : les échelles valent `0xC00`).
+- **Q-I1** (non bloquante) : les courants (`+0x188`, 16 cartes, dont la cascade de la 416) : E20.i2 avec le mur, ou plus tard ?
+
 ---
 
 ## 2. Points ouverts
@@ -2496,6 +2624,7 @@ traces highground ; tranche à part après E20.d ».
 | O-E20-11 | Une entité neuve tourne-t-elle dans le même tick dans le binaire (répétition de `0x800386D0`, contrôle de D7 : non vérifié) ? E20.a garde la règle d'aujourd'hui (premier tick à l'image suivante) | à mesurer, avec E20.e0 |
 | O-E20-14 | Atteignabilité en jeu des salles des leviers : la 115 nord-ouest après le hall (E14.a) ; la 116 derrière la grille (E14.a) ; la salle de la bascule de la 117, où la bascule n'apparaît que si l'on arrive par les portails internes 2, 4 ou 6 de la 117 (les arrivées depuis la 115 et la 116 sont hors de sa zone) ; la 44, dont on ne sait pas si le chemin vers les leviers passe par la case de la vague (43..44, 20) | recette de l'auteur, après E14.a |
 | O-E20-15 | Poignée d'aura périmée (`0x8002F730`-`0x8002F744`) : reproduire le défaut de l'original, ou le corriger par un numéro de génération (recommandé) | l'auteur, avec E20.f1b |
+| O-E20-16 | Les courants (`+0x188`, branche `0x80032768`, dérive ; 16 cartes, dont la cascade de la 416) n'ont pas de propriétaire : E20.i2 avec le mur d'eau profonde (O-E19-22), ou plus tard ? (Q-I1) | l'auteur |
 | O-E20-10 | **Tranché le 2026-10-09 (D-E20-14).** `UpdateItemEffectState` (table de défense, bottes, régénération, PV) et `0x8003634C` : bouchons dans E20.a et portage dans E20.c2, ou portage dès E20.a | — |
 
 ## 3. Hors périmètre
