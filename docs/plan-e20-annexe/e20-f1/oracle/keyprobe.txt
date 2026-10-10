@@ -1,0 +1,150 @@
+t  1 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t  2 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t  3 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t  4 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t  5 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t  6 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t  7 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t  8 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t  9 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t 10 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t 11 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t 12 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t 13 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t 14 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t 15 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t 16 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t 17 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t 18 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t 19 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t 20 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t 21 anim88=3F idsv=4 y=6553600 z=1 key=00680000 formula=00680000 OK
+t 22 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 23 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 24 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 25 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 26 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 27 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 28 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 29 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 30 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 31 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 32 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 33 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 34 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 35 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 36 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 37 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 38 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 39 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 40 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 41 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 42 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 43 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 44 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 45 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 46 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 47 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 48 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 49 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 50 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 51 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 52 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 53 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 54 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 55 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 56 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 57 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 58 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 59 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 60 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 61 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 62 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 63 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 64 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 65 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 66 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 67 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 68 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 69 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 70 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 71 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 72 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 73 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 74 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 75 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 76 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 77 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 78 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 79 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 80 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 81 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 82 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 83 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 84 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 85 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 86 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 87 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 88 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 89 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 90 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 91 anim88=18 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 92 anim88=18 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 93 anim88=18 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 94 anim88=18 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 95 anim88=18 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t 96 anim88=18 idsv=0 y=6553600 z=1 key=00640000 formula=00640000 OK
+t 97 anim88=18 idsv=0 y=6553600 z=1 key=00640000 formula=00640000 OK
+t 98 anim88=18 idsv=0 y=6553600 z=1 key=00640000 formula=00640000 OK
+t 99 anim88=18 idsv=0 y=6553600 z=1 key=00640000 formula=00640000 OK
+t100 anim88=18 idsv=0 y=6553600 z=1 key=00640000 formula=00640000 OK
+t101 anim88=18 idsv=0 y=6553600 z=1 key=00640000 formula=00640000 OK
+t102 anim88=18 idsv=0 y=6553600 z=1 key=00640000 formula=00640000 OK
+t103 anim88=18 idsv=0 y=6553600 z=1 key=00640000 formula=00640000 OK
+t104 anim88=18 idsv=0 y=6553600 z=1 key=00640000 formula=00640000 OK
+t105 anim88=18 idsv=0 y=6553600 z=1 key=00640000 formula=00640000 OK
+t106 anim88=18 idsv=0 y=6553600 z=1 key=00640000 formula=00640000 OK
+t107 anim88=18 idsv=0 y=6553600 z=1 key=00640000 formula=00640000 OK
+t108 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t109 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t110 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t111 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t112 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t113 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t114 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t115 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t116 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t117 anim88=18 idsv=12 y=6553600 z=1 key=00700000 formula=00700000 OK
+t118 anim88=18 idsv=12 y=6553600 z=1 key=00700000 formula=00700000 OK
+t119 anim88=18 idsv=12 y=6553600 z=1 key=00700000 formula=00700000 OK
+t120 anim88=18 idsv=12 y=6553600 z=1 key=00700000 formula=00700000 OK
+t121 anim88=18 idsv=15 y=6553600 z=1 key=00730000 formula=00730000 OK
+t122 anim88=18 idsv=15 y=6553600 z=1 key=00730000 formula=00730000 OK
+t123 anim88=18 idsv=15 y=6553600 z=1 key=00730000 formula=00730000 OK
+t124 anim88=18 idsv=15 y=6553600 z=1 key=00730000 formula=00730000 OK
+t125 anim88=18 idsv=15 y=6553600 z=1 key=00730000 formula=00730000 OK
+t126 anim88=18 idsv=15 y=6553600 z=1 key=00730000 formula=00730000 OK
+t127 anim88=18 idsv=15 y=6553600 z=1 key=00730000 formula=00730000 OK
+t128 anim88=18 idsv=15 y=6553600 z=1 key=00730000 formula=00730000 OK
+t129 anim88=18 idsv=15 y=6553600 z=1 key=00730000 formula=00730000 OK
+t130 anim88=18 idsv=15 y=6553600 z=1 key=00730000 formula=00730000 OK
+t131 anim88=18 idsv=15 y=6553600 z=1 key=00730000 formula=00730000 OK
+t132 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t133 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t134 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t135 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t136 anim88=18 idsv=8 y=6553600 z=1 key=006C0000 formula=006C0000 OK
+t137 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t138 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t139 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t140 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t141 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t142 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t143 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t144 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t145 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t146 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t147 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t148 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t149 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
+t150 anim88=0 idsv=5 y=6553600 z=1 key=00690000 formula=00690000 OK
