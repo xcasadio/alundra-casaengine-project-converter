@@ -10,7 +10,7 @@ namespace Alundra.Tests;
 /// E14.a0 T2 (docs/plan-e14-ia-native.md section 1.1a, D-E14-1, D-E14-5): the registry of the native sprite handlers
 /// consulted by <see cref="AlundraEventProgramRunner.RunSpriteEvent"/> after the save book and E0/E1 - an entry runs for
 /// the sprite types it lists and not for another, an absent key stays a counted no-op, the switch turns everything off,
-/// and the book and E0/E1 never go through it. The registry is empty in production.
+/// and the book and E0/E1 never go through it. In production it holds the Beannoid's three handlers (E14.a1b).
 /// </summary>
 public sealed class AlundraNativeSpriteRegistryTests : IDisposable
 {
@@ -44,12 +44,31 @@ public sealed class AlundraNativeSpriteRegistryTests : IDisposable
     }
 
     [Fact]
-    public void ProductionRunner_RegistryIsEmpty_AndTheSwitchIsOn()
+    public void ProductionRunner_RegistryHoldsTheBeannoidsThreeHandlers_AndTheSwitchIsOn()
     {
         var runner = NewRunner();
 
-        Assert.Equal(0, runner.NativeSprites.Count);
+        Assert.Equal(3, runner.NativeSprites.Count); // E14.a1b: A1, C1 and D1 of the Beannoid (E14.a1c adds the Muruta's three: 6).
         Assert.True(runner.NativeHandlersEnabled);
+        Assert.True(runner.NativeSprites.TryGet(ScriptHelper.ProgramALoad, 1, TypeA, out _));
+        Assert.True(runner.NativeSprites.TryGet(ScriptHelper.ProgramCTick, 1, TypeA, out _));
+        Assert.True(runner.NativeSprites.TryGet(ScriptHelper.ProgramDTouch, 1, TypeA, out _));
+        Assert.False(runner.NativeSprites.TryGet(ScriptHelper.ProgramCTick, 1, TypeB, out _)); // only the type 335.
+    }
+
+    [Fact]
+    public void ProductionRunner_NoRegistrationListsTheTypeMinus1()
+    {
+        // E14.a0b P4: Register accepts any type; the type -1 is the harnesses' bare pawn (no sprite record), which no native handler may reach.
+        var runner = NewRunner();
+
+        for (var slot = 0; slot < 6; slot++)
+        {
+            for (var code = 0; code < 400; code++)
+            {
+                Assert.False(runner.NativeSprites.TryGet(slot, code, -1, out _), $"slot {slot} code {code} lists the type -1");
+            }
+        }
     }
 
     [Fact]
@@ -82,10 +101,11 @@ public sealed class AlundraNativeSpriteRegistryTests : IDisposable
     {
         var runner = NewRunner();
         var calls = 0;
-        using var registration = runner.NativeSprites.Register(ScriptHelper.ProgramDTouch, 1, new[] { TypeA, TypeB }, (_, _, _) => calls++);
+        // (D, 25): a free key (the key (D, 1) is the Beannoid's D1 in production since E14.a1b).
+        using var registration = runner.NativeSprites.Register(ScriptHelper.ProgramDTouch, 25, new[] { TypeA, TypeB }, (_, _, _) => calls++);
 
-        Entity(TypeA, ScriptHelper.ProgramDTouch, 1).RunPickedEvent(runner);
-        Entity(TypeB, ScriptHelper.ProgramDTouch, 1).RunPickedEvent(runner);
+        Entity(TypeA, ScriptHelper.ProgramDTouch, 25).RunPickedEvent(runner);
+        Entity(TypeB, ScriptHelper.ProgramDTouch, 25).RunPickedEvent(runner);
 
         Assert.Equal(2, calls);
     }
@@ -193,13 +213,14 @@ public sealed class AlundraNativeSpriteRegistryTests : IDisposable
     public void Registering_TheSameKeyTwice_Throws_AndDisposingRemovesTheEntry()
     {
         var runner = NewRunner();
+        var countBefore = runner.NativeSprites.Count; // the production entries stay (relative count, never an absolute 0).
         var registration = runner.NativeSprites.Register(ScriptHelper.ProgramCTick, 25, new[] { TypeA }, (_, _, _) => { });
 
         Assert.Throws<InvalidOperationException>(
             () => runner.NativeSprites.Register(ScriptHelper.ProgramCTick, 25, new[] { TypeB }, (_, _, _) => { }));
 
         registration.Dispose();
-        Assert.Equal(0, runner.NativeSprites.Count);
+        Assert.Equal(countBefore, runner.NativeSprites.Count);
         Assert.False(runner.NativeSprites.TryGet(ScriptHelper.ProgramCTick, 25, TypeA, out _));
     }
 }

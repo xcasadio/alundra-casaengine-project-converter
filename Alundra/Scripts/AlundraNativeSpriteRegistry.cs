@@ -19,11 +19,19 @@ internal delegate void AlundraNativeSpriteHandler(AlundraEntityScriptProxy entit
 /// ported yet, so a handler runs only for the types listed (the save book's <see cref="AlundraSaveBook.TryMatch"/> is
 /// the one precedent). <see cref="AlundraEventProgramRunner.RunSpriteEvent"/> consults it after the save book and
 /// E0/E1 (both stay outside the registry); an absent key or a type not listed is a counted no-op with one debug trace
-/// per key. The registry is empty in production (E14.a1 registers the Beannoid and Muruta handlers).
+/// per key. In production it holds the handlers of the Beannoid (E14.a1b) and, with E14.a1c, of the Muruta (<see cref="CreateForProduction"/>).
 /// </summary>
 internal sealed class AlundraNativeSpriteRegistry
 {
     private readonly Dictionary<(int Slot, int Code), Entry> _entries = new();
+
+    /// <summary>The registry of a production runner: the Beannoid's A1, C1 and D1 (<see cref="AlundraBeannoideAi"/>, E14.a1b).</summary>
+    internal static AlundraNativeSpriteRegistry CreateForProduction()
+    {
+        var registry = new AlundraNativeSpriteRegistry();
+        AlundraBeannoideAi.Register(registry);
+        return registry;
+    }
 
     /// <summary>Number of registered (slot, code) keys.</summary>
     public int Count => _entries.Count;

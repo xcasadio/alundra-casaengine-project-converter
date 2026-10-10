@@ -6,8 +6,7 @@ namespace Alundra.Scripts;
 
 /// <summary>
 /// E14.a0b T3 (docs/plan-e14-ia-native.md section 1.2): the helpers the native handlers of the enemies share (Beannoid C1, Muruta C10, and later E14.a1's), ported from <c>ALUN_CD.EXE</c> (France) and compared, state by state, with the real code run
-/// in the emulator on 10,000 random states each (<c>docs/plan-e14-annexe/e14a/oracle</c>, tests <c>AlundraEnemyHelpersTests</c>). Nothing here is called by production code yet; E14.a1 registers the handlers that use them
-/// (<see cref="AlundraNativeSpriteRegistry"/>). Every field a helper reads is tied to its DLL field in the table of the plan (section 1.2, "Entrées des aides"): the fields that carry a direction or an animation take the value of the TICK
+/// in the emulator on 10,000 random states each (<c>docs/plan-e14-annexe/e14a/oracle</c>, tests <c>AlundraEnemyHelpersTests</c>). E14.a1b registers the Beannoid handlers that use them (<see cref="AlundraBeannoideAi"/>, <see cref="AlundraNativeSpriteRegistry"/>); the Muruta's come with E14.a1c. Every field a helper reads is tied to its DLL field in the table of the plan (section 1.2, "Entrées des aides"): the fields that carry a direction or an animation take the value of the TICK
 /// (<see cref="AlundraEntityScriptProxy.BoxDirection"/>, never the end-of-frame <see cref="AlundraEntityScriptProxy.AnimationDirection"/>, D-E14-6); all heights are in the DLL's convention (the binary's minus 1: only differences are read).
 /// </summary>
 internal static class AlundraEnemyHelpers
@@ -174,14 +173,20 @@ internal static class AlundraEnemyHelpers
     {
         Debug.Assert((uint)direction < (uint)QuarterTurnTable.Length, "a packed direction is 0..31");
         self.TargetAnimationId = animation & 0xFF;
+        ZeroForces(self);
+        self.TargetDirection = QuarterTurnTable[direction & 0x1F];
+        return true;
+    }
+
+    /// <summary>The six words every "stop" of the binary's enemies clears: <c>+0xBC +0xC0 +0xC4 +0xC8 +0xD4 +0xD8</c> (<c>TargetForceX/Y</c>, <c>ForceX/Y</c>, <c>ForceStepX/Y</c>), as <see cref="HandleAnimationDirection"/> and C1's walk stop write them.</summary>
+    internal static void ZeroForces(AlundraEntityScriptProxy self)
+    {
         self.TargetForceX = 0;
         self.TargetForceY = 0;
         self.ForceX = 0;
         self.ForceY = 0;
         self.ForceStepX = 0;
         self.ForceStepY = 0;
-        self.TargetDirection = QuarterTurnTable[direction & 0x1F];
-        return true;
     }
 
     /// <summary>

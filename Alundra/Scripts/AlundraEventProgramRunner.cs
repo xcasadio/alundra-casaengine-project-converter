@@ -90,9 +90,10 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// handler of <see cref="NativeSprites"/>.</summary>
     public int NativeHandlerRunCount { get; private set; }
 
-    /// <summary>E14.a0 (D-E14-1): the registry of the native sprite handlers by (slot, code) and sprite type - empty in
-    /// production until E14.a1. Consulted after the save book and E0/E1, which stay outside it.</summary>
-    internal AlundraNativeSpriteRegistry NativeSprites { get; } = new();
+    /// <summary>E14.a0 (D-E14-1): the registry of the native sprite handlers by (slot, code) and sprite type. In production it holds the
+    /// Beannoid's A1, C1 and D1 for the type 335 (E14.a1b, <see cref="AlundraBeannoideAi"/>); the Muruta's come with E14.a1c. Consulted after
+    /// the save book and E0/E1, which stay outside it.</summary>
+    internal AlundraNativeSpriteRegistry NativeSprites { get; } = AlundraNativeSpriteRegistry.CreateForProduction();
 
     /// <summary>E14.a0 (D-E14-5): true by default; false turns the registry off, so every native handler of it is a counted
     /// no-op again. Set by the arenas of the hit-pass oracles (E20.c1a, E20.c1b), whose runs expect the Beannoids to stay

@@ -120,5 +120,12 @@ public sealed class AlundraEnemyHitReactionTests
         using var arena = new HitArena("E14a0b-latch", 212, 96, null, 24, 0, naturalTargetCount: 1);
         IEntityWorldContext context = arena.Arc.Proxy;
         Assert.Equal(arena.Arc.Proxy.HeroAnimationLatch, context.HeroAnimationLatch);
+
+        // E14.a1b (P4 of the E14.a0b verification): a NON-ZERO latch, so that `=> HeroAnimationLatch` cannot be mistaken for `=> 0`. A sword swing puts the hero on a swing animation, which the hit pass latches.
+        var samples = arena.RunSwing(6);
+
+        Assert.Contains(samples, sample => sample.Latch != 0);
+        Assert.NotEqual(0u, context.HeroAnimationLatch);
+        Assert.Equal(samples[^1].Latch, context.HeroAnimationLatch);
     }
 }

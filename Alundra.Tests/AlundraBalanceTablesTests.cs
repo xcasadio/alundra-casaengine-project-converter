@@ -96,6 +96,25 @@ public sealed class AlundraBalanceTablesTests
         Assert.Equal(0x80, immune.ByteAt(3));
     }
 
+    /// <summary>
+    /// E14.a1b: the hit pass reads the byte <c>2 + (attribute &amp; 0xF)</c> of the sheet whatever its size, so the attribute nibbles 14 and 15 of a 17-byte record (the Beannoid's) read the first bytes of the record stored after it
+    /// in <c>BALANCE.BIN</c> (the D1 vectors of the E14.a1 oracle with the attribute 15). The records are contiguous: the follower of the Beannoid (entry 335) is the entry 336.
+    /// </summary>
+    [Fact]
+    public void AByteBeyondTheRecord_IsReadFromTheNextRecordOfTheFile()
+    {
+        var tables = AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find());
+        var beannoid = tables.Select(335, 0)!;
+        var next = tables.Select(336, 0)!;
+        Assert.Equal(17, beannoid.RecordSize);
+
+        Assert.Equal(next.Level, beannoid.ByteAt(17));
+        Assert.Equal(next.RecordSize, beannoid.ByteAt(18));
+        Assert.Equal(next.MaxHp, beannoid.ByteAt(19));
+        Assert.Equal(beannoid.Attacks[0].Power, beannoid.ByteAt(16)); // inside the record: unchanged.
+        Assert.Equal(0, new AlundraBalanceRecord(255, 15, 9, new byte[11], Array.Empty<AlundraBalanceAttack>(), null).ByteAt(40)); // no follower (a record written by hand): 0, as before.
+    }
+
     [Fact]
     public void TheBalanceIndexIn0x1FTo0x7F_IsReadAs0x1E_AndTheChainAdvancesWhileTheLevelIsBelowTheThreshold()
     {

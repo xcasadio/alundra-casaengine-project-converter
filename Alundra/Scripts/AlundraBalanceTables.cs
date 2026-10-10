@@ -42,6 +42,17 @@ public sealed class AlundraBalanceRecord
         Next = next;
     }
 
+    /// <summary>
+    /// E14.a1b: the offset of the record in <c>BALANCE.BIN</c> (the exported <c>FileOffset</c>), -1 for a record written by hand. The records are contiguous: the byte after a record's last is the first byte of the next one.
+    /// </summary>
+    internal int FileOffset { get; set; } = -1;
+
+    /// <summary>
+    /// E14.a1b: the record stored right after this one in <c>BALANCE.BIN</c> (<see cref="FileOffset"/> + <see cref="RecordSize"/>), null for the last record of the file and for a record written by hand. The hit pass reads the byte
+    /// <c>2 + (attribute &amp; 0xF)</c> of the sheet whatever the size of the record is, so an attribute nibble of 14 or 15 reads the bytes of the next record (<see cref="ByteAt"/>).
+    /// </summary>
+    internal AlundraBalanceRecord? Following { get; set; }
+
     /// <summary>Byte 0, the level of the record (the chain stops at the first record whose level reaches the threshold of the map; the last one is 255).</summary>
     public int Level { get; }
 
@@ -81,6 +92,12 @@ public sealed class AlundraBalanceRecord
     /// </summary>
     public int ByteAt(int offset)
     {
+        if (Following != null && offset >= RecordSize)
+        {
+            // E14.a1b (the D1 vectors of the E14.a1 oracle with the attribute nibble 15): the real memory goes on with the next record of the file.
+            return Following.ByteAt(offset - RecordSize);
+        }
+
         if (offset == 0)
         {
             return Level;
@@ -156,9 +173,19 @@ public sealed class AlundraBalanceTables
             using var document = JsonDocument.Parse(File.ReadAllText(filePath));
             var entries = document.RootElement.GetProperty("EntriesBySpriteIndex");
             var count = Math.Min(entries.GetArrayLength(), EntryCount);
+            var byFileOffset = new Dictionary<int, AlundraBalanceRecord>();
             for (var i = 0; i < count; i++)
             {
-                _entries[i] = ReadRecord(entries[i]);
+                _entries[i] = ReadRecord(entries[i], byFileOffset);
+            }
+
+            // E14.a1b: the records are contiguous in the file; link each one to the record stored right after it.
+            foreach (var record in byFileOffset.Values)
+            {
+                if (byFileOffset.TryGetValue(record.FileOffset + record.RecordSize, out var following))
+                {
+                    record.Following = following;
+                }
             }
         }
         catch (Exception ex)
@@ -177,7 +204,7 @@ public sealed class AlundraBalanceTables
         }
     }
 
-    private static AlundraBalanceRecord? ReadRecord(JsonElement element)
+    private static AlundraBalanceRecord? ReadRecord(JsonElement element, Dictionary<int, AlundraBalanceRecord> byFileOffset)
     {
         if (element.ValueKind != JsonValueKind.Object)
         {
@@ -204,11 +231,18 @@ public sealed class AlundraBalanceTables
         AlundraBalanceRecord? next = null;
         if (element.TryGetProperty("NextLevel", out var nextElement))
         {
-            next = ReadRecord(nextElement);
+            next = ReadRecord(nextElement, byFileOffset);
         }
 
-        return new AlundraBalanceRecord(
+        var record = new AlundraBalanceRecord(
             element.GetProperty("BalanceLevel").GetInt32(), element.GetProperty("RecordSize").GetInt32(), element.GetProperty("MaxHp").GetInt32(), responses, attacks, next);
+        if (element.TryGetProperty("FileOffset", out var offsetElement) && offsetElement.ValueKind == JsonValueKind.Number)
+        {
+            record.FileOffset = offsetElement.GetInt32();
+            byFileOffset[record.FileOffset] = record;
+        }
+
+        return record;
     }
 
     /// <summary>
