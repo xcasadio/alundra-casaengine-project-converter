@@ -1,0 +1,6 @@
+hero (slot 0) status 2 alone, [0x80134360] preset 7          -> 0 (expected 0: the hero is the last non-empty slot)
+every slot empty, [0x80134360] preset 7                       -> 0
+slots 0:2, 5:1, 9:3, 20:0                                     -> 9 (expected 9)
+slot 3 status 4 + staging entity (status 1, marker at +0x100)  -> [0x80134360] 0; slot 3: status 1, index +0 = 3, +0x100 = 0xABCD1234, +0x290 = 0x5A5A5A5A
+second run of the pass on the same array                      -> 3 (the copied slot is now counted)
+the hero slot is read by the pass (its +0x10), and the pass writes the one word [0x80134360] that 0x800384F4 and 0x800386D0 use as the entity count.

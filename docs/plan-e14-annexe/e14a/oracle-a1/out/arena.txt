@@ -1,0 +1,9 @@
+# E20.c1 H1 / H3 with the live Beannoide (E14.a1) against the inert one of E20.c1 (stored H1.json / H3.json): what changes if the natives are not switched off in the arena
+
+H1 (hero 40 px west, Square at tick 1)
+  inert (E20.c1): first tick with +0x1D0 = 0x19 on the target or on the hero: [5] ; hero HP below 10 first at tick never
+  live (this oracle): hit written on the target at ticks [5] ; hero HP below 10 first at tick never ; target animation timeline 1:2 2:4 6:5 10:7 19:0
+
+H3 (hero 60 px west, Right held)
+  inert (E20.c1): first tick with +0x1D0 = 0x19 on the target or on the hero: [17] ; hero HP below 10 first at tick [18]
+  live (this oracle): hit written on the target at ticks [] ; hero HP below 10 first at tick never ; target animation timeline 1:2 2:4

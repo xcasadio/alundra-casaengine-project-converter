@@ -1,0 +1,153 @@
+# ARENA-H1-live
+# E20.c1 H1 (hero 40 px west of the Beannoide, Square at tick 1, 40 ticks) with the LIVE handlers: the Beannoide is asleep (A1: anim 2), the sword reaches it
+
+setup: kind beannoide, map None, hero start px (212, 96), direction 24, seed 0x12345678, ticks 40, ghost hero True, per-frame RNG advance False, level D 0
+records spawned (record index, slot): [(0, 1)] ; bank: {'animsets': 20, 'anim_bytes': 1988, 'coll_bytes': 42, 'img_bytes': 1236, 'clash': 0}
+spawn of record 0 (slot 1): RNG 12345678 -> 24d2c78a (2 draws: the loot roll of InitializeEntity), ContentsItemId (+0x3C) 69, HP 9, anim 0, direction 0, Flags 0x103, pos (252, 96, 0.000) px
+inputs: pad holds {1: 128} ; harness events at ticks []
+
+== facts (computed from the rows) ==
+handler calls: 40
+  by (handler, letter): A1/A x1, C1/C x38, D1/D x1
+  RNG draws per call (draws: calls): A1 {0: 1}; C1 {0: 38}; D1 {0: 1}
+target record 0 (slot 1):
+  current animation (tick:anim) 0:0 1:2 2:4 6:5 10:7 19:0
+  status 0:1 1:2 | hp 0:9 6:7
+  Bytes[0] 0:0 | Bytes[3] 0:0
+  hit pass wrote +0x1D0 = 0x19 at ticks [5]
+  D calls at ticks [6] ; E1 at ticks []
+  status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+journalled effects on entities / spawns: none
+journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 4 calls): 29: [1]; 65: [6]; 211: [2]
+hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+uninitialised reads: none
+
+== one line per handler call (the call-by-call record: RNG word in and out, the entity fields that changed) ==
+t=   1 slot 1 A1  letter A | rng 24d2c78a -> 24d2c78a (0 draws) | anim_target88 0->2
+t=   2 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | anim_target88 2->4
+t=   3 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=   4 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=   5 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=   6 slot 1 D1  letter D | rng 5aad3c51 -> 5aad3c51 (0 draws) | hp 9->7, anim_target88 4->5, dir_target8C 0->24
+t=   7 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | (no change)
+t=   8 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | (no change)
+t=   9 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | (no change)
+t=  10 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | (no change)
+t=  11 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | (no change)
+t=  12 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | (no change)
+t=  13 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | (no change)
+t=  14 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | (no change)
+t=  15 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | (no change)
+t=  16 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | (no change)
+t=  17 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | (no change)
+t=  18 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | (no change)
+t=  19 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | anim_target88 7->0, ai1_282 0->40
+t=  20 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 40->39
+t=  21 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 39->38
+t=  22 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 38->37
+t=  23 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 37->36
+t=  24 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 36->35
+t=  25 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 35->34
+t=  26 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 34->33
+t=  27 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 33->32
+t=  28 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 32->31
+t=  29 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 31->30
+t=  30 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 30->29
+t=  31 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 29->28
+t=  32 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 28->27
+t=  33 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 27->26
+t=  34 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 26->25
+t=  35 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 25->24
+t=  36 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 24->23
+t=  37 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 23->22
+t=  38 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 22->21
+t=  39 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 21->20
+t=  40 slot 1 C1  letter C | rng 5aad3c51 -> 5aad3c51 (0 draws) | ai1_282 20->19
+
+== target record 0 slot 1: state AFTER the passes of each tick ==
+tick hold rng      calls          | st  hp  at  ac  dt ad   ai0   ai1 b0  b1 b3 fa og ae c1d0 hc | touch |    posx      posy      posz  | tile    | floor     mh0..3 (px)
+   0 0000 24d2c78a                |  1   9   0   0   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   1 0080 24d2c78a A1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   2 0000 24d2c78a C1             |  2   9   4   4   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   3 0000 24d2c78a C1             |  2   9   4   4   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   4 0000 24d2c78a C1             |  2   9   4   4   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   5 0000 5aad3c51 C1             |  2   9   4   4   0  0     0     0  0   0  0  0  1  0   25  0 |     0 |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   6 0000 5aad3c51 D1             |  2   7   5   5  24  3     0     0  0   0  0  0  1  0   24  0 |     - |       255        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   7 0000 5aad3c51 C1             |  2   7   5   5  24  3     0     0  0   0  0  0  1  0   23  0 |     - |       258        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   8 0000 5aad3c51 C1             |  2   7   5   5  24  3     0     0  0   0  0  0  1  0   22  0 |     - |       261        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   9 0000 5aad3c51 C1             |  2   7   5   5  24  3     0     0  0   0  0  0  1  0   21  0 |     - |       264        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  10 0000 5aad3c51 C1             |  2   7   7   7  24  3     0     0  0   0  0  0  1  0   20  0 |     - |   265.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  11 0000 5aad3c51 C1             |  2   7   7   7  24  3     0     0  0   0  0  0  1  0   19  0 |     - |   267.750        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  12 0000 5aad3c51 C1             |  2   7   7   7  24  3     0     0  0   0  0  0  1  0   18  0 |     - |   269.625        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  13 0000 5aad3c51 C1             |  2   7   7   7  24  3     0     0  0   0  0  0  1  0   17  0 |     - |   271.500        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  14 0000 5aad3c51 C1             |  2   7   7   7  24  3     0     0  0   0  0  0  1  0   16  0 |     - |   273.375        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  15 0000 5aad3c51 C1             |  2   7   7   7  24  3     0     0  0   0  0  0  1  0   15  0 |     - |   275.250        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  16 0000 5aad3c51 C1             |  2   7   7   7  24  3     0     0  0   0  0  0  1  0   14  0 |     - |   277.125        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  17 0000 5aad3c51 C1             |  2   7   7   7  24  3     0     0  0   0  0  0  1  0   13  0 |     - |       279        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  18 0000 5aad3c51 C1             |  2   7   7   7  24  3     0     0  0   0  0  0  1  1   12  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  19 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    40  0   0  0  0  1  0   11  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  20 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    39  0   0  0  0  1  0   10  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  21 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    38  0   0  0  0  1  0    9  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  22 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    37  0   0  0  0  1  0    8  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  23 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    36  0   0  0  0  1  0    7  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  24 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    35  0   0  0  0  1  0    6  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  25 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    34  0   0  0  0  1  0    5  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  26 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    33  0   0  0  0  1  0    4  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  27 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    32  0   0  0  0  1  0    3  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  28 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    31  0   0  0  0  1  0    2  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  29 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    30  0   0  0  0  1  0    1  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  30 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    29  0   0  0  0  1  0    0  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  31 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    28  0   0  0  0  1  0    0  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  32 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    27  0   0  0  0  1  0    0  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  33 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    26  0   0  0  0  1  0    0  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  34 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    25  0   0  0  0  1  0    0  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  35 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    24  0   0  0  0  1  0    0  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  36 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    23  0   0  0  0  1  0    0  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  37 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    22  0   0  0  0  1  0    0  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  38 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    21  0   0  0  0  1  0    0  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  39 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    20  0   0  0  0  1  0    0  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+  40 0000 5aad3c51 C1             |  2   7   0   0  24  3     0    19  0   0  0  0  1  0    0  0 |     - |   280.875        96     0.000 |  11,  6 |     0.000 0 0 0 0
+
+== hero ==
+tick | hero: hp  anim_c  dir_t    posx      posy   tile  floor_134  box atk  c1cc
+   0 |  10      0     24       212        96   8,  6     0.000  0  1     0
+   1 |  10     16     24       212        96   8,  6     0.000  1  1   119
+   2 |  10     16     24       212        96   8,  6     0.000  1  1   119
+   3 |  10     16     24       212        96   8,  6     0.000  1  1   119
+   4 |  10     16     24       212        96   8,  6     0.000  1  1   119
+   5 |  10     16     24       212        96   8,  6     0.000  1  1   119
+   6 |  10     16     24       212        96   8,  6     0.000  1  1   119
+   7 |  10     16     24       212        96   8,  6     0.000  1  1   119
+   8 |  10     16     24       212        96   8,  6     0.000  1  1   119
+   9 |  10     16     24       212        96   8,  6     0.000  1  1   119
+  10 |  10     16     24       212        96   8,  6     0.000  1  1   119
+  11 |  10     16     24       212        96   8,  6     0.000  1  1   119
+  12 |  10     16     24       212        96   8,  6     0.000  1  1   119
+  13 |  10     16     24       212        96   8,  6     0.000  1  1   119
+  14 |  10     16     24       212        96   8,  6     0.000  1  1   119
+  15 |  10     16     24       212        96   8,  6     0.000  1  1   119
+  16 |  10     16     24       212        96   8,  6     0.000  1  1   119
+  17 |  10     16     24       212        96   8,  6     0.000  1  1   119
+  18 |  10     16     24       212        96   8,  6     0.000  1  1   119
+  19 |  10     16     24       212        96   8,  6     0.000  1  1   119
+  20 |  10     16     24       212        96   8,  6     0.000  1  1   119
+  21 |  10     16     24       212        96   8,  6     0.000  1  1   119
+  22 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  23 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  24 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  25 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  26 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  27 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  28 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  29 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  30 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  31 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  32 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  33 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  34 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  35 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  36 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  37 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  38 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  39 |  10      0     24       212        96   8,  6     0.000  0  1   119
+  40 |  10      0     24       212        96   8,  6     0.000  0  1   119

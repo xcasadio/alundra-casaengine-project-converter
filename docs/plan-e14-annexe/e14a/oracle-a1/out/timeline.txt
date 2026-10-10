@@ -1,0 +1,15 @@
+# death timelines: per kill, H = the tick whose hit pass wrote the lethal hit (+0x1D0 = 0x19 on the target), then the ticks read from the rows (all computed)
+# columns: record, slot, H (lethal hit), D (handler D call), anim 6 (death animation starts), E1 (DestroyEntity call = status 4), wipe (slot copied from the template: status 0, +0x48 = -1),
+#          last tick with 0x2C [record] still counting (count read BEFORE the tick), first tick with count 0 / Result 1
+
+BN-death       record  0 slot 1: H=125 D=H+1 anim6=H+14 E1=H+23 wipe=H+24 | 0x2C [0]: last counted tick H+24, first zero (Result 1) tick H+25   = the annex rule (E1 at H+23, still counted at H+24, zero at H+25)
+MU-lunge       record  0 slot 1: H=160 D=H+1 anim6=H+14 E1=H+23 wipe=H+24   = the annex rule (E1 at H+23, still counted at H+24, zero at H+25)
+MU-death       record  0 slot 1: H=35 D=H+1 anim6=H+14 E1=H+23 wipe=H+24 | 0x2C [0]: last counted tick H+24, first zero (Result 1) tick H+25   = the annex rule (E1 at H+23, still counted at H+24, zero at H+25)
+MU-hall-kill   record 24 slot 1: H=36 D=H+1 anim6=H+14 E1=H+23 wipe=H+24 | 0x2C [24]: last counted tick H+24, first zero (Result 1) tick H+25   = the annex rule (E1 at H+23, still counted at H+24, zero at H+25)
+MU-hall-kill   record 25 slot 2: H=94 D=H+1 anim6=H+14 E1=H+23 wipe=H+24 | 0x2C [25]: last counted tick H+24, first zero (Result 1) tick H+25   = the annex rule (E1 at H+23, still counted at H+24, zero at H+25)
+MU-hall-kill   record 26 slot 3: H=152 D=H+1 anim6=H+14 E1=H+23 wipe=H+24 | 0x2C [26]: last counted tick H+24, first zero (Result 1) tick H+25   = the annex rule (E1 at H+23, still counted at H+24, zero at H+25)
+MU-hall-kill   record 27 slot 4: H=182 D=H+1 anim6=H+14 E1=H+23 wipe=H+24 | 0x2C [27]: last counted tick H+24, first zero (Result 1) tick H+25   = the annex rule (E1 at H+23, still counted at H+24, zero at H+25)
+BN-grate-kill  record  0 slot 1: H=240 D=H+1 anim6=H+14 E1=H+23 wipe=H+24 | 0x2C [0]: last counted tick H+24, first zero (Result 1) tick H+25   = the annex rule (E1 at H+23, still counted at H+24, zero at H+25)
+BN-grate-kill  record  1 slot 2: H=388 D=H+1 anim6=H+14 E1=H+23 wipe=H+24 | 0x2C [1]: last counted tick H+24, first zero (Result 1) tick H+25   = the annex rule (E1 at H+23, still counted at H+24, zero at H+25)
+MU-death-adv   record  0 slot 1: H=35 D=H+1 anim6=H+14 E1=H+23 wipe=H+24 | 0x2C [0]: last counted tick H+24, first zero (Result 1) tick H+25   = the annex rule (E1 at H+23, still counted at H+24, zero at H+25)
+BN-death-adv   record  0 slot 1: H=125 D=H+1 anim6=H+14 E1=H+23 wipe=H+24 | 0x2C [0]: last counted tick H+24, first zero (Result 1) tick H+25   = the annex rule (E1 at H+23, still counted at H+24, zero at H+25)

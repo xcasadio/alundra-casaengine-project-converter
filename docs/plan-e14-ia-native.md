@@ -517,7 +517,9 @@ entrées distinctes (2 405 distinctes sur 3 140 pour le Beannoïde).
 
 ##### Tâches
 
-- ⏳ **T0 — Oracle** (commit de docs ; si une passe dépasse le plafond d'une commande au premier plan, l'exécuteur rend la commande
+- ✅ **T0 — Oracle** (fait par la session principale le 2026-10-10 : dossier copié, `notes.md` écrit, deux passes depuis le dépôt,
+  sortie 0, `out/summary.txt` tout PASS, `out/manifest.txt` égal à l'original du scratchpad aux deux passes, aucun cache Python)
+  (commit de docs ; si une passe dépasse le plafond d'une commande au premier plan, l'exécuteur rend la commande
   exacte, le dossier et l'environnement à la session principale, qui la lance en arrière-plan). Copier le dossier de l'oracle vers `docs/plan-e14-annexe/e14a/oracle-a1/` (sans `__pycache__`) avec
   un `notes.md` (réel, bouchons, harnais, scénarios, limites : reprendre `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/e14a1/disc_oh.md` et la projection
   d'E1 ci-dessus) ; lancer deux fois `python -B docs/plan-e14-annexe/e14a/oracle-a1/run_e14.py` (environ 500 s) : sortie 0,

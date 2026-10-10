@@ -1,0 +1,82 @@
+# executed instructions of the live handlers and of the helpers they call (a function ends at the first `jr $ra` after its last forward branch target)
+
+== scenarios only ==
+A0 (Muruta load)                               0x8006174C-0x80061758     3 /    3 instructions executed (100.0%)
+A1 (Beannoide load)                            0x80061758-0x80061764     3 /    3 instructions executed (100.0%)
+C1 (Beannoide tick)                            0x80065ED4-0x80066250   210 /  223 instructions executed ( 94.2%)
+      not executed: 0x80066200-0x80066230
+D1 (Beannoide touch)                           0x8007D9A4-0x8007DA08    25 /   25 instructions executed (100.0%)
+C10 (Muruta tick)                              0x80068154-0x80068930   484 /  503 instructions executed ( 96.2%)
+      not executed: 0x80068178-0x8006819C, 0x800683E8-0x800683F0, 0x800685D4-0x800685E0, 0x80068894-0x80068898
+D9 (Muruta touch)                              0x8007DE04-0x8007DE68    25 /   25 instructions executed (100.0%)
+E1 (destroy)                                   0x8007ED10-0x8007ED30     8 /    8 instructions executed (100.0%)
+DestroyEntity                                  0x8003A59C-0x8003A648    40 /   43 instructions executed ( 93.0%)
+      not executed: 0x8003A5D0-0x8003A5D4, 0x8003A62C
+loot spawn-at-death 0x80032B90                 0x80032B90-0x80032C7C    56 /   59 instructions executed ( 94.9%)
+      not executed: 0x80032BC4-0x80032BC8, 0x80032C3C
+relative position 0x8007FE20                   0x8007FE20-0x8007FE8C    26 /   27 instructions executed ( 96.3%)
+      not executed: 0x8007FE78
+relative position (2nd entry) 0x8007FE8C       0x8007FE8C-0x8007FEF8     0 /   27 instructions executed (  0.0%)
+      not executed: 0x8007FE8C-0x8007FEF4
+StartWalk 0x8007FEF8                           0x8007FEF8-0x80080030    67 /   78 instructions executed ( 85.9%)
+      not executed: 0x8007FF64-0x8007FF8C
+HandleAnimationDirection 0x80080144            0x80080144-0x80080260    26 /   71 instructions executed ( 36.6%)
+      not executed: 0x8008017C-0x80080198, 0x800801A8-0x800801C4, 0x800801D4-0x800801F0, 0x80080200-0x80080250
+TryAttackPlayer2 0x8008048C                    0x8008048C-0x800805C8    49 /   79 instructions executed ( 62.0%)
+      not executed: 0x800804C4-0x800804C8, 0x800804D4-0x800804E0, 0x80080514-0x80080570
+TryAttackPlayerFront 0x800805C8                0x800805C8-0x80080704    74 /   79 instructions executed ( 93.7%)
+      not executed: 0x80080600-0x80080604, 0x80080618-0x8008061C, 0x800806F8
+GetDirectionToTarget 0x8002E814                0x8002E814-0x8002E910    59 /   63 instructions executed ( 93.7%)
+      not executed: 0x8002E8C0-0x8002E8C4, 0x8002E8D8-0x8002E8DC
+ComputeNewHp 0x8003A374                        0x8003A374-0x8003A59C    50 /  138 instructions executed ( 36.2%)
+      not executed: 0x8003A3A8-0x8003A3B0, 0x8003A3E0-0x8003A524, 0x8003A53C-0x8003A544
+
+== single-call vectors only ==
+A0 (Muruta load)                               0x8006174C-0x80061758     3 /    3 instructions executed (100.0%)
+A1 (Beannoide load)                            0x80061758-0x80061764     3 /    3 instructions executed (100.0%)
+C1 (Beannoide tick)                            0x80065ED4-0x80066250   223 /  223 instructions executed (100.0%)
+D1 (Beannoide touch)                           0x8007D9A4-0x8007DA08    25 /   25 instructions executed (100.0%)
+C10 (Muruta tick)                              0x80068154-0x80068930   493 /  503 instructions executed ( 98.0%)
+      not executed: 0x80068178-0x8006819C
+D9 (Muruta touch)                              0x8007DE04-0x8007DE68    25 /   25 instructions executed (100.0%)
+E1 (destroy)                                   0x8007ED10-0x8007ED30     8 /    8 instructions executed (100.0%)
+DestroyEntity                                  0x8003A59C-0x8003A648    43 /   43 instructions executed (100.0%)
+loot spawn-at-death 0x80032B90                 0x80032B90-0x80032C7C    58 /   59 instructions executed ( 98.3%)
+      not executed: 0x80032C3C
+relative position 0x8007FE20                   0x8007FE20-0x8007FE8C    27 /   27 instructions executed (100.0%)
+relative position (2nd entry) 0x8007FE8C       0x8007FE8C-0x8007FEF8     0 /   27 instructions executed (  0.0%)
+      not executed: 0x8007FE8C-0x8007FEF4
+StartWalk 0x8007FEF8                           0x8007FEF8-0x80080030    78 /   78 instructions executed (100.0%)
+HandleAnimationDirection 0x80080144            0x80080144-0x80080260    71 /   71 instructions executed (100.0%)
+TryAttackPlayer2 0x8008048C                    0x8008048C-0x800805C8    75 /   79 instructions executed ( 94.9%)
+      not executed: 0x800804C4-0x800804C8, 0x800804DC-0x800804E0
+TryAttackPlayerFront 0x800805C8                0x800805C8-0x80080704    79 /   79 instructions executed (100.0%)
+GetDirectionToTarget 0x8002E814                0x8002E814-0x8002E910    59 /   63 instructions executed ( 93.7%)
+      not executed: 0x8002E8C0-0x8002E8C4, 0x8002E8D8-0x8002E8DC
+ComputeNewHp 0x8003A374                        0x8003A374-0x8003A59C    50 /  138 instructions executed ( 36.2%)
+      not executed: 0x8003A3A8-0x8003A3B0, 0x8003A3E0-0x8003A524, 0x8003A53C-0x8003A544
+
+== scenarios + vectors ==
+A0 (Muruta load)                               0x8006174C-0x80061758     3 /    3 instructions executed (100.0%)
+A1 (Beannoide load)                            0x80061758-0x80061764     3 /    3 instructions executed (100.0%)
+C1 (Beannoide tick)                            0x80065ED4-0x80066250   223 /  223 instructions executed (100.0%)
+D1 (Beannoide touch)                           0x8007D9A4-0x8007DA08    25 /   25 instructions executed (100.0%)
+C10 (Muruta tick)                              0x80068154-0x80068930   493 /  503 instructions executed ( 98.0%)
+      not executed: 0x80068178-0x8006819C
+D9 (Muruta touch)                              0x8007DE04-0x8007DE68    25 /   25 instructions executed (100.0%)
+E1 (destroy)                                   0x8007ED10-0x8007ED30     8 /    8 instructions executed (100.0%)
+DestroyEntity                                  0x8003A59C-0x8003A648    43 /   43 instructions executed (100.0%)
+loot spawn-at-death 0x80032B90                 0x80032B90-0x80032C7C    58 /   59 instructions executed ( 98.3%)
+      not executed: 0x80032C3C
+relative position 0x8007FE20                   0x8007FE20-0x8007FE8C    27 /   27 instructions executed (100.0%)
+relative position (2nd entry) 0x8007FE8C       0x8007FE8C-0x8007FEF8     0 /   27 instructions executed (  0.0%)
+      not executed: 0x8007FE8C-0x8007FEF4
+StartWalk 0x8007FEF8                           0x8007FEF8-0x80080030    78 /   78 instructions executed (100.0%)
+HandleAnimationDirection 0x80080144            0x80080144-0x80080260    71 /   71 instructions executed (100.0%)
+TryAttackPlayer2 0x8008048C                    0x8008048C-0x800805C8    75 /   79 instructions executed ( 94.9%)
+      not executed: 0x800804C4-0x800804C8, 0x800804DC-0x800804E0
+TryAttackPlayerFront 0x800805C8                0x800805C8-0x80080704    79 /   79 instructions executed (100.0%)
+GetDirectionToTarget 0x8002E814                0x8002E814-0x8002E910    59 /   63 instructions executed ( 93.7%)
+      not executed: 0x8002E8C0-0x8002E8C4, 0x8002E8D8-0x8002E8DC
+ComputeNewHp 0x8003A374                        0x8003A374-0x8003A59C    50 /  138 instructions executed ( 36.2%)
+      not executed: 0x8003A3A8-0x8003A3B0, 0x8003A3E0-0x8003A524, 0x8003A53C-0x8003A544

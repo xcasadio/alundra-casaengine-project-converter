@@ -1,0 +1,3 @@
+# the state a handler sees at tick t, compared with the row of tick t-1 (= the state after the passes of the previous tick), over all scenario calls
+entity fields (all 53 decoded fields), 6765 calls: fields that differ at least once: letter_228 x6741, status x35
+hero fields read by the handlers (tilex_120, tiley_124, floor_134, posx, posy, box_1D4, curattack_1C8), 6765 calls (same calls; the 50 calls on a tick with a harness write between the two ticks are left out of both lines): differ: none

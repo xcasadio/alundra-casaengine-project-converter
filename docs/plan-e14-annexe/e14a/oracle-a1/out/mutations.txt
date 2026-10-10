@@ -1,0 +1,16 @@
+# one-word patches of the emulated binary (RAM only, applied after the setup).  Each is run against (a) the single-call vectors of the handler family it touches, checked by the model, and (b) one scenario
+# whose trace is compared with the unpatched trace.  CAUGHT = the model disagrees on some vector OR the scenario trace changes.  The CONTROL patches a branch no scenario or vector reaches: nothing may change.
+
+baseline beannoide: 1418 vectors, 0 model differences ; scenario BN-death trace recorded
+baseline muruta   : 4307 vectors, 0 model differences ; scenario MU-death trace recorded
+
+D9 hit animation 2 -> 3 (0x8007DE24 addiu v0,zero,2)                                    vector differences: beannoide 0, muruta 120 ; trace changed: BN-death False, MU-death True  -> CAUGHT
+C1 case 0 reach: rel0 < 3 -> < 4 (0x80065F44 slti)                                      vector differences: beannoide 15, muruta 0 ; trace changed: BN-death False, MU-death False  -> CAUGHT
+C1 case 0 floor limit 0x200000 -> 0x210000 (0x80065F60 lui)                             vector differences: beannoide 32, muruta 0 ; trace changed: BN-death False, MU-death False  -> CAUGHT
+C10 state 5 death flag 0x40 -> 0x20 (0x800688C4 ori)                                    vector differences: beannoide 0, muruta 1 ; trace changed: BN-death False, MU-death True  -> CAUGHT
+HandleAnimationDirection slt -> sltu (0x80080170)                                       vector differences: beannoide 0, muruta 18 ; trace changed: BN-death False, MU-death False  -> CAUGHT
+StartWalk chase draw rng(0x65) -> rng(0x64) (0x8007FF18 addiu)                          vector differences: beannoide 1, muruta 0 ; trace changed: BN-death False, MU-death False  -> CAUGHT
+DestroyEntity status 4 -> 5 (0x8003A5B8 addiu)                                          vector differences: beannoide 144, muruta 144 ; trace changed: BN-death True, MU-death True  -> CAUGHT
+QUANT table byte 9: 8 -> 0 (word 0x80028B3C)                                            vector differences: beannoide 1, muruta 12 ; trace changed: BN-death False, MU-death False  -> CAUGHT
+C10 tail mask 0x1C -> 0x1F (0x80068910 andi)                                            vector differences: beannoide 0, muruta 3740 ; trace changed: BN-death False, MU-death True  -> CAUGHT
+CONTROL: C10 map-0x99 branch (dead for sprite 347), load offset 0xC -> 0x10 (0x80068178)  vector differences: beannoide 0, muruta 0 ; trace changed: BN-death False, MU-death False  -> as expected (nothing changes)

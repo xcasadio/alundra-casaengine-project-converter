@@ -1,0 +1,4 @@
+# H3 of E20.c1 (hero 60 px west of the inert Beannoid, Right held, 45 ticks) re-run with THIS folder's setup (EMachine, template init, map id word, spawn with force 1, hero life from the stats,
+# warm-up, drop stub) with every handler hooked inert and the target at status 2, against the stored e20-c1/oracle/out/H3.json: hero and target slot columns, RNG word, latch, per tick
+tick 0: equal
+46 ticks (0..45) x 88 columns compared, ticks with a difference: 0

@@ -1,0 +1,17 @@
+# single-call vectors: the handler is called directly on a state the harness writes (RNG word = input and output); model = e14model.py; inputs are in the .json files
+
+== beannoide through the second interpreter (mips.py via interp2.py): 2052 vectors, differences in entity image / RNG word / journal: 0
+== beannoide (sprite kind beannoide): 2052 vectors
+  A1       3 vectors, 0 model differences
+  C1    1185 vectors, 0 model differences
+  D1     720 vectors, 0 model differences
+  E1     144 vectors, 0 invariant violations
+  RNG draws per call (draws: vectors): A1 {0: 3}; C1 {0: 591, 1: 464, 2: 29, 3: 101}; D1 {0: 720}; E1 {0: 144}
+
+== muruta through the second interpreter (mips.py via interp2.py): 4913 vectors, differences in entity image / RNG word / journal: 0
+== muruta (sprite kind muruta): 4913 vectors
+  A0       6 vectors, 0 model differences
+  C10   4043 vectors, 0 model differences
+  D9     720 vectors, 0 model differences
+  E1     144 vectors, 0 invariant violations
+  RNG draws per call (draws: vectors): A0 {0: 6}; C10 {0: 2743, 1: 988, 2: 312}; D9 {0: 720}; E1 {0: 144}

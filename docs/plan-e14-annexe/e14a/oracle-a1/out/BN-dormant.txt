@@ -1,0 +1,483 @@
+# BN-dormant
+# Beannoide asleep: hero 200 px east (8 tiles); program A at status 1 (A1: anim 2), then C1 every tick in animation 2 with nothing in reach
+
+setup: kind beannoide, map None, hero start px (452, 96), direction 24, seed 0x12345678, ticks 150, ghost hero True, per-frame RNG advance False, level D 0
+records spawned (record index, slot): [(0, 1)] ; bank: {'animsets': 20, 'anim_bytes': 1988, 'coll_bytes': 42, 'img_bytes': 1236, 'clash': 0}
+spawn of record 0 (slot 1): RNG 12345678 -> 24d2c78a (2 draws: the loot roll of InitializeEntity), ContentsItemId (+0x3C) 69, HP 9, anim 0, direction 0, Flags 0x103, pos (252, 96, 0.000) px
+inputs: pad holds {} ; harness events at ticks []
+
+== facts (computed from the rows) ==
+handler calls: 150
+  by (handler, letter): A1/A x1, C1/C x149
+  RNG draws per call (draws: calls): A1 {0: 1}; C1 {0: 149}
+target record 0 (slot 1):
+  current animation (tick:anim) 0:0 1:2
+  status 0:1 1:2 | hp 0:9
+  Bytes[0] 0:0 | Bytes[3] 0:0
+  hit pass wrote +0x1D0 = 0x19 at ticks []
+  D calls at ticks [] ; E1 at ticks []
+  status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+journalled effects on entities / spawns: none
+journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 1 calls): none
+hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+uninitialised reads: none
+
+== one line per handler call (the call-by-call record: RNG word in and out, the entity fields that changed) ==
+t=   1 slot 1 A1  letter A | rng 24d2c78a -> 24d2c78a (0 draws) | anim_target88 0->2
+t=   2 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=   3 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=   4 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=   5 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=   6 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=   7 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=   8 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=   9 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  10 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  11 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  12 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  13 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  14 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  15 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  16 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  17 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  18 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  19 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  20 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  21 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  22 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  23 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  24 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  25 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  26 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  27 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  28 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  29 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  30 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  31 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  32 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  33 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  34 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  35 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  36 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  37 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  38 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  39 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  40 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  41 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  42 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  43 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  44 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  45 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  46 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  47 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  48 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  49 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  50 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  51 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  52 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  53 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  54 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  55 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  56 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  57 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  58 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  59 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  60 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  61 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  62 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  63 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  64 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  65 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  66 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  67 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  68 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  69 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  70 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  71 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  72 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  73 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  74 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  75 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  76 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  77 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  78 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  79 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  80 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  81 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  82 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  83 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  84 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  85 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  86 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  87 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  88 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  89 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  90 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  91 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  92 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  93 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  94 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  95 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  96 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  97 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  98 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t=  99 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 100 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 101 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 102 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 103 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 104 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 105 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 106 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 107 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 108 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 109 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 110 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 111 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 112 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 113 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 114 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 115 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 116 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 117 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 118 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 119 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 120 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 121 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 122 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 123 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 124 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 125 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 126 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 127 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 128 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 129 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 130 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 131 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 132 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 133 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 134 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 135 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 136 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 137 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 138 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 139 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 140 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 141 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 142 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 143 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 144 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 145 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 146 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 147 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 148 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 149 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+t= 150 slot 1 C1  letter C | rng 24d2c78a -> 24d2c78a (0 draws) | (no change)
+
+== target record 0 slot 1: state AFTER the passes of each tick ==
+tick hold rng      calls          | st  hp  at  ac  dt ad   ai0   ai1 b0  b1 b3 fa og ae c1d0 hc | touch |    posx      posy      posz  | tile    | floor     mh0..3 (px)
+   0 0000 24d2c78a                |  1   9   0   0   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   1 0000 24d2c78a A1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   2 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   3 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   4 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   5 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   6 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   7 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   8 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+   9 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  10 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  11 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  12 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  13 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  14 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  15 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  16 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  17 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  18 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  19 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  20 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  21 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  22 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  23 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  24 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  25 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  26 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  27 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  28 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  29 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  30 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  31 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  32 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  33 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  34 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  35 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  36 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  37 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  38 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  39 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  40 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  41 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  42 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  43 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  44 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  45 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  46 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  47 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  48 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  49 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  50 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  51 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  52 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  53 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  54 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  55 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  56 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  57 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  58 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  59 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  60 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  61 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  62 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  63 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  64 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  65 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  66 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  67 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  68 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  69 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  70 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  71 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  72 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  73 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  74 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  75 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  76 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  77 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  78 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  79 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  80 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  81 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  82 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  83 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  84 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  85 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  86 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  87 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  88 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  89 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  90 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  91 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  92 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  93 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  94 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  95 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  96 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  97 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  98 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+  99 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 100 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 101 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 102 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 103 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 104 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 105 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 106 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 107 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 108 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 109 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 110 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 111 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 112 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 113 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 114 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 115 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 116 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 117 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 118 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 119 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 120 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 121 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 122 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 123 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 124 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 125 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 126 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 127 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 128 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 129 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 130 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 131 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 132 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 133 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 134 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 135 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 136 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 137 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 138 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 139 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 140 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 141 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 142 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 143 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 144 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 145 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 146 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 147 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 148 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 149 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+ 150 0000 24d2c78a C1             |  2   9   2   2   0  0     0     0  0   0  0  0  1  0    0  0 |     - |       252        96     0.000 |  10,  6 |     0.000 0 0 0 0
+
+== hero ==
+tick | hero: hp  anim_c  dir_t    posx      posy   tile  floor_134  box atk  c1cc
+   0 |  10      0     24       452        96  18,  6     0.000  0  1     0
+   1 |  10      0     24       452        96  18,  6     0.000  0  1   119
+   2 |  10      0     24       452        96  18,  6     0.000  0  1   119
+   3 |  10      0     24       452        96  18,  6     0.000  0  1   119
+   4 |  10      0     24       452        96  18,  6     0.000  0  1   119
+   5 |  10      0     24       452        96  18,  6     0.000  0  1   119
+   6 |  10      0     24       452        96  18,  6     0.000  0  1   119
+   7 |  10      0     24       452        96  18,  6     0.000  0  1   119
+   8 |  10      0     24       452        96  18,  6     0.000  0  1   119
+   9 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  10 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  11 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  12 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  13 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  14 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  15 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  16 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  17 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  18 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  19 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  20 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  21 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  22 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  23 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  24 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  25 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  26 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  27 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  28 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  29 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  30 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  31 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  32 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  33 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  34 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  35 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  36 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  37 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  38 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  39 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  40 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  41 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  42 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  43 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  44 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  45 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  46 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  47 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  48 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  49 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  50 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  51 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  52 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  53 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  54 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  55 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  56 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  57 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  58 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  59 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  60 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  61 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  62 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  63 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  64 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  65 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  66 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  67 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  68 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  69 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  70 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  71 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  72 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  73 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  74 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  75 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  76 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  77 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  78 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  79 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  80 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  81 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  82 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  83 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  84 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  85 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  86 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  87 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  88 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  89 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  90 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  91 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  92 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  93 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  94 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  95 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  96 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  97 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  98 |  10      0     24       452        96  18,  6     0.000  0  1   119
+  99 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 100 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 101 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 102 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 103 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 104 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 105 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 106 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 107 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 108 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 109 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 110 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 111 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 112 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 113 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 114 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 115 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 116 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 117 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 118 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 119 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 120 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 121 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 122 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 123 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 124 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 125 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 126 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 127 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 128 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 129 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 130 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 131 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 132 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 133 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 134 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 135 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 136 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 137 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 138 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 139 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 140 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 141 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 142 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 143 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 144 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 145 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 146 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 147 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 148 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 149 |  10      0     24       452        96  18,  6     0.000  0  1   119
+ 150 |  10      0     24       452        96  18,  6     0.000  0  1   119

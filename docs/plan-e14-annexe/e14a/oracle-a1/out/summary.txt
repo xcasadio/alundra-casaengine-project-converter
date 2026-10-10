@@ -1,0 +1,413 @@
+# E14.a1 oracle: verdicts
+
+PASS  D1 gate: S-A and S-B, 216 values each, 0 differences (tools/run_all.py of the copied base, exit code 0)
+PASS  D1 gate: the 19 files of out/d1 equal E20.c2's out/d1 byte for byte (differences: none)
+PASS  H3 equivalence: the inert setup of this folder equals E20.c1's H3.json on 46 rows x 88 columns (differences: 0)
+PASS  death timelines: 11 kills, every one E1 at H+23, wipe at H+24, 0x2C counts it through H+24 and sees zero from H+25 (where probed)
+PASS  second interpreter: all 21 scenarios give identical rows and final memory
+PASS  independent model vs 6815 recorded scenario calls (A0 A1 C1 C10 D1 D9 E1): 0 differences
+PASS  handler inputs: every entity field a handler sees at tick t equals the row of tick t-1, except ['letter_228', 'status'] (written by the events pass before the call)
+PASS  single-call vectors (6965 calls) vs the independent model / E1 invariants: 0 differences
+PASS  single-call vectors through the second interpreter: identical entity image, RNG word and journal on every vector (differences: 0)
+PASS  mutations: every one-word patch of a handler or helper is caught, the control changes nothing
+
+# scenarios: key facts (computed)
+
+## BN-dormant: Beannoide asleep: hero 200 px east (8 tiles); program A at status 1 (A1: anim 2), then C1 every tick in animation 2 with nothing in reach
+  handler calls: 150
+    by (handler, letter): A1/A x1, C1/C x149
+    RNG draws per call (draws: calls): A1 {0: 1}; C1 {0: 149}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 1:2
+    status 0:1 1:2 | hp 0:9
+    Bytes[0] 0:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 1 calls): none
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## BN-wake-walk: hero 3 tiles west (TileX diff 3, TileY diff 0): C1 case 2 wakes it (anim 4, 95 ticks), idle 30, then it is NOT within 2 tiles so it walks (case 0 walk path)
+  handler calls: 380
+    by (handler, letter): A1/A x1, C1/C x379
+    RNG draws per call (draws: calls): A1 {0: 1}; C1 {0: 377, 1: 2}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 1:2 2:4 98:0 128:1 210:0 329:3
+    status 0:1 1:2 | hp 0:9
+    Bytes[0] 0:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 4 calls): 211: [2, 329]
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## BN-lunge: hero 2 tiles west (204, 96): wake (anim 4), idle, then within reach (rel < 3, floor diff <= 0x200000): anim 3 (notice + lunge, 93 ticks), then StartWalk(1, 0x28, 0x14)
+  handler calls: 460
+    by (handler, letter): A1/A x1, C1/C x459
+    RNG draws per call (draws: calls): A1 {0: 1}; C1 {0: 456, 1: 2, 3: 1}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 1:2 2:4 98:0 128:3 222:1 265:0 389:1
+    status 0:1 1:2 | hp 0:9
+    Bytes[0] 0:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 5 calls): 211: [2, 128]
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## BN-walk-free: awake (harness writes anim 0, AIValues[1] 0 before tick 2), hero 250 px away: C1 case 0 walk path (anim 1, 60..120 ticks), free expiry (case 1, ForceAdjusted 0: random idle and random direction), repeated; flat field, no wall
+  handler calls: 700
+    by (handler, letter): A1/A x1, C1/C x699
+    RNG draws per call (draws: calls): A1 {0: 1}; C1 {0: 691, 1: 8}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 1:2 2:1 84:0 203:1 277:0 401:1 486:0 542:1 658:0
+    status 0:1 1:2 | hp 0:9
+    Bytes[0] 0:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 9 calls): none
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## BN-walk-blocked: map 116 (real cells), record 0 at (32, 36, 20) = px (396, 296), tile (16, 18), the room of the grate: harness writes anim 1 (walk), direction 8 (west), AIValues[1] 100 before tick 2; the wall of column 14/15 stops it (ForceAdjusted), the expiry at tick 101 takes the BLOCKED branch (quantizer table, forces zeroed, anim not written)
+  handler calls: 260
+    by (handler, letter): A1/A x1, C1/C x259
+    RNG draws per call (draws: calls): A1 {0: 1}; C1 {0: 257, 1: 2}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 1:2 2:1 142:0
+    status 0:1 1:2 | hp 0:9
+    Bytes[0] 0:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 4 calls): none
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## BN-hurt: one sword hit on the sleeping Beannoide (hero 40 px west, Square at tick 1, contact at tick 5): D1 at tick 6 (ComputeNewHp 9 -> 7, anim 5, direction away), then C1 case 7 at the end of the hurt animation
+  handler calls: 120
+    by (handler, letter): A1/A x1, C1/C x118, D1/D x1
+    RNG draws per call (draws: calls): A1 {0: 1}; C1 {0: 117, 1: 1}; D1 {0: 1}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 1:2 2:4 6:5 10:7 19:0 59:1
+    status 0:1 1:2 | hp 0:9 6:7
+    Bytes[0] 0:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [5]
+    D calls at ticks [6] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 5 calls): 29: [1]; 65: [6]; 211: [2]
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## BN-death: five sword hits (Square at 1, 31, 61, 91, 121; the hero is put 40 px west of the Beannoide before each swing): HP 9 -> 7 -> 5 -> 3 -> 1 -> 0; C1 case 7 sets anim 6 and Flags |= 0x40, then E1 (Deactivate trigger) destroys it; 0x2C [0] is read before every tick
+  handler calls: 148
+    by (handler, letter): A1/A x1, C1/C x141, D1/D x5, E1/E x1
+    RNG draws per call (draws: calls): A1 {0: 1}; C1 {0: 141}; D1 {0: 5}; E1 {0: 1}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 1:2 2:4 6:5 10:7 19:0 36:5 40:7 49:0 66:5 70:7 79:0 96:5 100:7 109:0 126:5 130:7 139:6 149:0
+    status 0:1 1:2 148:4 149:0 | hp 0:9 6:7 36:5 66:3 96:1 126:0
+    Bytes[0] 0:0 | Bytes[3] 0:0 126:1 149:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [5, 35, 65, 95, 125]
+    D calls at ticks [6, 36, 66, 96, 126] ; E1 at ticks [148]
+    status 4 at ticks [148] ; slot wiped (status 0, +0x48 -1) at ticks [149, 150, 151]
+  journalled effects on entities / spawns: 148:spawn(table=0, sprite=99) ; 148:effect_on_entity(id=8, slot 1)
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 15 calls): 29: [1, 31, 61, 91, 121]; 64: [139]; 65: [6, 36, 66, 96, 126]; 84: [148]; 211: [2]
+  0x2C [0] before each tick (tick:matches/Result): 1:1/0 150:0/1
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## MU-calm: Muruta calm: hero 400 px east (out of every cone); A0 at tick 1, then C10 state 0 calm: a new sequence starts with RNG(4) == 1; hops (anim 8), cardinal turn, quarter turn, walk (anim 12)
+  handler calls: 600
+    by (handler, letter): A0/A x1, C10/C x599
+    RNG draws per call (draws: calls): A0 {0: 1}; C10 {0: 585, 1: 11, 2: 3}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 2:8 13:9 15:0 36:8 47:9 49:0 70:8 81:9 83:0 146:12 255:0 289:8 300:9 302:0 323:8 334:9 336:0 357:8 368:9 370:0 433:12 553:0 586:8 597:9 599:0
+    status 0:1 1:2 | hp 0:3
+    Bytes[0] 0:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 29 calls): 205: [36, 357]
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## MU-alert-close: Muruta (facing down, AnimationDirection 0) with the hero 1 tile south (252, 112): front cone -> alerted (Bytes[0] 1); close branch RNG(8) -> hops, walk away, claw hop (anim 7), retreat hop (anim 4)
+  handler calls: 300
+    by (handler, letter): A0/A x1, C10/C x299
+    RNG draws per call (draws: calls): A0 {0: 1}; C10 {0: 291, 1: 7, 2: 1}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 3:12 63:0 98:8 109:9 111:0 132:8 143:9 145:0 166:8 177:9 179:0 242:12
+    status 0:1 1:2 | hp 0:3
+    Bytes[0] 0:0 2:1 64:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 14 calls): 205: [166]
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## MU-alert-mid: hero 4 tiles south (252, 160): front cone, rel1 = 4: the MID branch RNG(5)
+  handler calls: 300
+    by (handler, letter): A0/A x1, C10/C x299
+    RNG draws per call (draws: calls): A0 {0: 1}; C10 {0: 291, 1: 7, 2: 1}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 3:8 14:9 16:0 37:12 67:0 98:12 158:0 191:8 202:9 204:0 225:8 236:9 238:0 259:8 270:9 272:0
+    status 0:1 1:2 | hp 0:3
+    Bytes[0] 0:0 2:1 159:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 17 calls): 205: [259]
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## MU-alert-far: hero 6 tiles south (252, 192): front cone, rel1 = 6: the FAR branch RNG(8)
+  handler calls: 300
+    by (handler, letter): A0/A x1, C10/C x299
+    RNG draws per call (draws: calls): A0 {0: 1}; C10 {0: 293, 1: 4, 2: 2}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 3:12 63:0 94:7 119:9 120:0 141:7 166:9 167:0 188:4 211:10 217:0 238:4 261:10 267:0 288:12
+    status 0:1 1:2 | hp 0:3
+    Bytes[0] 0:0 2:1 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 15 calls): 205: [94]
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## MU-lunge: alerted Muruta, hero 3 tiles south swinging the sword (frame box + attack attribute while Square: swings at 10, 40, 70, ...): the lunge branch (rel < 5): anim 3 toward the hero
+  handler calls: 183
+    by (handler, letter): A0/A x1, C10/C x179, D9/D x2, E1/E x1
+    RNG draws per call (draws: calls): A0 {0: 1}; C10 {0: 175, 1: 4}; D9 {0: 2}; E1 {0: 1}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 3:8 14:9 16:0 37:12 53:2 57:5 66:0 97:8 108:9 110:0 131:3 161:2 165:5 174:6 184:0
+    status 0:1 1:2 183:4 184:0 | hp 0:3 53:1 161:0
+    Bytes[0] 0:0 2:1 184:0 | Bytes[3] 0:0 161:1 184:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [52, 160]
+    D calls at ticks [53, 161] ; E1 at ticks [183]
+    status 4 at ticks [183] ; slot wiped (status 0, +0x48 -1) at ticks [184, 185, 186]
+  journalled effects on entities / spawns: 183:spawn(table=0, sprite=99) ; 183:effect_on_entity(id=8, slot 1)
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 20 calls): 29: [10, 40, 70, 100, 130, 160, 190, 220, '...']; 64: [174]; 65: [53, 161]; 84: [183]
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## MU-hurt: one sword hit (hero 40 px west, Square at tick 1, contact at tick 5): D9 at tick 6 (ComputeNewHp 3 -> 1, anim 2, direction away), anim 5 hold, C10 state 5 recovery (Bytes[0] 1, anim 0, AIValues[1] 30)
+  handler calls: 120
+    by (handler, letter): A0/A x1, C10/C x118, D9/D x1
+    RNG draws per call (draws: calls): A0 {0: 1}; C10 {0: 115, 1: 3}; D9 {0: 1}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 3:3 4:2 8:5 17:0 48:12 78:0 109:12
+    status 0:1 1:2 | hp 0:3 4:1
+    Bytes[0] 0:0 2:1 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [3]
+    D calls at ticks [4] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 7 calls): 29: [1]; 65: [4]
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## MU-death: two sword hits (Square at 1 and 31, hero put 40 px west before each): 3 -> 1 -> 0; D9 sets Bytes[3] 1, C10 state 5 sets anim 6 and Flags |= 0x40, then E1; 0x2C [0] read before every tick
+  handler calls: 58
+    by (handler, letter): A0/A x1, C10/C x54, D9/D x2, E1/E x1
+    RNG draws per call (draws: calls): A0 {0: 1}; C10 {0: 53, 1: 1}; D9 {0: 2}; E1 {0: 1}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 3:3 4:2 8:5 17:0 36:2 40:5 49:6 59:0
+    status 0:1 1:2 58:4 59:0 | hp 0:3 4:1 36:0
+    Bytes[0] 0:0 2:1 59:0 | Bytes[3] 0:0 36:1 59:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [3, 35]
+    D calls at ticks [4, 36] ; E1 at ticks [58]
+    status 4 at ticks [58] ; slot wiped (status 0, +0x48 -1) at ticks [59, 60, 61]
+  journalled effects on entities / spawns: 58:spawn(table=0, sprite=99) ; 58:effect_on_entity(id=8, slot 1)
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 6 calls): 29: [1, 31]; 64: [49]; 65: [4, 36]; 84: [58]
+  0x2C [0] before each tick (tick:matches/Result): 1:1/0 60:0/1
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## MU-hall-calm: hall of map 115, real cells, the four Muruta of records 24-27 landed (Height 0) and native; hero at the portal side, tile (10, 55) = px (252, 888); 300 ticks; 0x2C [24..27] read before every tick
+  handler calls: 1200
+    by (handler, letter): A0/A x4, C10/C x1196
+    RNG draws per call (draws: calls): A0 {0: 4}; C10 {0: 1154, 1: 36, 2: 6}
+  target record 24 (slot 1):
+    current animation (tick:anim) 0:0 7:8 18:9 20:0 41:8 52:9 54:0 75:8 86:9 88:0 151:12 186:0 219:8 230:9 232:0 253:8 264:9 266:0 287:8 298:9 300:0
+    status 0:1 1:2 | hp 0:3
+    Bytes[0] 0:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  target record 25 (slot 2):
+    current animation (tick:anim) 0:0 3:8 14:9 16:0 37:8 48:9 50:0 71:8 82:9 84:0 147:12 175:0 206:12 236:0 267:8 278:9 280:0
+    status 0:1 1:2 | hp 0:3
+    Bytes[0] 0:0 175:1 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  target record 26 (slot 3):
+    current animation (tick:anim) 0:0 3:8 14:9 16:0 37:4 60:10 66:0 87:12 117:0 148:12 248:0 290:8
+    status 0:1 1:2 | hp 0:3
+    Bytes[0] 0:0 2:1 249:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  target record 27 (slot 4):
+    current animation (tick:anim) 0:0 3:12 63:0 94:7 119:9 120:0 141:12 201:0 234:8 245:9 247:0 268:8 279:9 281:0
+    status 0:1 1:2 | hp 0:3
+    Bytes[0] 0:0 2:1 202:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 64 calls): 205: [41, 75, 219, 253, 268, 290]
+  0x2C [24] before each tick (tick:matches/Result): 1:1/0
+  0x2C [25] before each tick (tick:matches/Result): 1:1/0
+  0x2C [26] before each tick (tick:matches/Result): 1:1/0
+  0x2C [27] before each tick (tick:matches/Result): 1:1/0
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## MU-hall-kill: hall of map 115: the four Muruta are killed in turn by a sword policy (R.Swordsman: the hero is put 40 px west of the current target and presses Square whenever the target is hittable, 25 ticks apart); 0x2C [24..27] read before every tick: the hall wait loop ends when all four counts are zero
+  handler calls: 556
+    by (handler, letter): A0/A x4, C10/C x540, D9/D x8, E1/E x4
+    RNG draws per call (draws: calls): A0 {0: 4}; C10 {0: 519, 1: 17, 2: 4}; D9 {0: 8}; E1 {0: 4}
+  target record 24 (slot 1):
+    current animation (tick:anim) 0:0 3:3 4:2 8:5 17:0 37:2 41:5 50:6 60:0
+    status 0:1 1:2 59:4 60:0 | hp 0:3 4:1 37:0
+    Bytes[0] 0:0 2:1 60:0 | Bytes[3] 0:0 37:1 60:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [3, 36]
+    D calls at ticks [4, 37] ; E1 at ticks [59]
+    status 4 at ticks [59] ; slot wiped (status 0, +0x48 -1) at ticks [60, 61, 62]
+  target record 25 (slot 2):
+    current animation (tick:anim) 0:0 5:8 16:9 18:0 20:4 43:10 49:0 65:2 69:5 78:0 95:2 99:5 108:6 118:0
+    status 0:1 1:2 117:4 118:0 | hp 0:3 65:1 95:0
+    Bytes[0] 0:0 19:1 118:0 | Bytes[3] 0:0 95:1 118:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [64, 94]
+    D calls at ticks [65, 95] ; E1 at ticks [117]
+    status 4 at ticks [117] ; slot wiped (status 0, +0x48 -1) at ticks [118, 119, 120]
+  target record 26 (slot 3):
+    current animation (tick:anim) 0:0 5:8 16:9 18:0 20:3 59:10 60:0 93:8 104:9 106:0 108:12 123:2 127:5 136:0 153:2 157:5 166:6 176:0
+    status 0:1 1:2 175:4 176:0 | hp 0:3 123:1 153:0
+    Bytes[0] 0:0 19:1 61:0 107:1 137:0 | Bytes[3] 0:0 153:1 176:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [122, 152]
+    D calls at ticks [123, 153] ; E1 at ticks [175]
+    status 4 at ticks [175] ; slot wiped (status 0, +0x48 -1) at ticks [176, 177, 178]
+  target record 27 (slot 4):
+    current animation (tick:anim) 0:0 5:8 16:9 18:0 39:8 50:9 52:0 61:3 100:10 101:0 149:3 150:2 154:5 163:0 183:2 187:5 196:6 206:0
+    status 0:1 1:2 205:4 206:0 | hp 0:3 150:1 183:0
+    Bytes[0] 0:0 60:1 118:0 148:1 206:0 | Bytes[3] 0:0 183:1 206:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [149, 182]
+    D calls at ticks [150, 183] ; E1 at ticks [205]
+    status 4 at ticks [205] ; slot wiped (status 0, +0x48 -1) at ticks [206, 207, 208]
+  journalled effects on entities / spawns: 59:spawn(table=0, sprite=99) ; 59:effect_on_entity(id=8, slot 1) ; 117:effect_on_entity(id=8, slot 2) ; 175:spawn(table=0, sprite=99) ; 175:effect_on_entity(id=8, slot 3) ; 205:spawn(table=0, sprite=100) ; 205:effect_on_entity(id=8, slot 4)
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 46 calls): 29: [2, 32, 60, 90, 118, 148, 178]; 64: [50, 108, 166, 196]; 65: [4, 37, 65, 95, 123, 150, 153, 183]; 84: [59, 175, 205]; 205: [5, 20]
+  0x2C [24] before each tick (tick:matches/Result): 1:1/0 61:0/1
+  0x2C [25] before each tick (tick:matches/Result): 1:1/0 119:0/1
+  0x2C [26] before each tick (tick:matches/Result): 1:1/0 177:0/1
+  0x2C [27] before each tick (tick:matches/Result): 1:1/0 207:0/1
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## BN-grate-kill: grate room of map 116 (real cells): the Beannoide records 0 and 1 at (32, 36, 20) and (40, 36, 20), hero in the room at tile (18, 20) = px (444, 328); both wake (anim 4); a sword policy (from tick 120) kills them: the hero is put 40 / 34 / 28 / 22 / 16 px west of the current target, the first spot whose cells are floor at the height of the target; 0x2C [0] and [1] read before every tick
+  handler calls: 674
+    by (handler, letter): A1/A x2, C1/C x660, D1/D x10, E1/E x2
+    RNG draws per call (draws: calls): A1 {0: 2}; C1 {0: 658, 1: 2}; D1 {0: 10}; E1 {0: 2}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 1:2 2:4 98:0 121:5 125:7 134:0 151:5 155:7 164:0 181:5 185:7 194:0 211:5 215:7 224:0 241:5 245:7 254:6 264:0
+    status 0:1 1:2 263:4 264:0 | hp 0:9 121:7 151:5 181:3 211:1 241:0
+    Bytes[0] 0:0 | Bytes[3] 0:0 241:1 264:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [120, 150, 180, 210, 240]
+    D calls at ticks [121, 151, 181, 211, 241] ; E1 at ticks [263]
+    status 4 at ticks [263] ; slot wiped (status 0, +0x48 -1) at ticks [264, 265, 266]
+  target record 1 (slot 2):
+    current animation (tick:anim) 0:0 1:2 2:4 98:0 128:1 244:0 269:5 273:7 282:0 299:5 303:7 312:0 329:5 333:7 342:0 359:5 363:7 372:0 389:5 393:7 402:6 412:0
+    status 0:1 1:2 411:4 412:0 | hp 0:9 269:7 299:5 329:3 359:1 389:0
+    Bytes[0] 0:0 | Bytes[3] 0:0 389:1 412:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [268, 298, 328, 358, 388]
+    D calls at ticks [269, 299, 329, 359, 389] ; E1 at ticks [411]
+    status 4 at ticks [411] ; slot wiped (status 0, +0x48 -1) at ticks [412, 413, 414]
+  journalled effects on entities / spawns: 263:spawn(table=0, sprite=99) ; 263:effect_on_entity(id=8, slot 1) ; 411:effect_on_entity(id=8, slot 2)
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 34 calls): 29: [120, 146, 176, 206, 236, 264, 294, 324, '...']; 64: [254, 402]; 65: [121, 151, 181, 211, 241, 269, 299, 329, '...']; 84: [263]; 211: [2, 2]
+  0x2C [0] before each tick (tick:matches/Result): 1:1/0 265:0/1
+  0x2C [1] before each tick (tick:matches/Result): 1:1/0 413:0/1
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## MU-death-adv: MU-death with the per-frame RNG advance applied after every tick (s = s * 0x7D2B89DD + 0xE06A02E7, the three instructions at 0x8002BD14-0x8002BD34)
+  handler calls: 58
+    by (handler, letter): A0/A x1, C10/C x54, D9/D x2, E1/E x1
+    RNG draws per call (draws: calls): A0 {0: 1}; C10 {0: 53, 1: 1}; D9 {0: 2}; E1 {0: 1}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 3:3 4:2 8:5 17:0 36:2 40:5 49:6 59:0
+    status 0:1 1:2 58:4 59:0 | hp 0:3 4:1 36:0
+    Bytes[0] 0:0 2:1 59:0 | Bytes[3] 0:0 36:1 59:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [3, 35]
+    D calls at ticks [4, 36] ; E1 at ticks [58]
+    status 4 at ticks [58] ; slot wiped (status 0, +0x48 -1) at ticks [59, 60, 61]
+  journalled effects on entities / spawns: 58:spawn(table=0, sprite=99) ; 58:effect_on_entity(id=8, slot 1)
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 6 calls): 29: [1, 31]; 64: [49]; 65: [4, 36]; 84: [58]; 205: [3]
+  0x2C [0] before each tick (tick:matches/Result): 1:1/0 60:0/1
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## BN-death-adv: BN-death with the per-frame RNG advance applied after every tick
+  handler calls: 148
+    by (handler, letter): A1/A x1, C1/C x141, D1/D x5, E1/E x1
+    RNG draws per call (draws: calls): A1 {0: 1}; C1 {0: 141}; D1 {0: 5}; E1 {0: 1}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 1:2 2:4 6:5 10:7 19:0 36:5 40:7 49:0 66:5 70:7 79:0 96:5 100:7 109:0 126:5 130:7 139:6 149:0
+    status 0:1 1:2 148:4 149:0 | hp 0:9 6:7 36:5 66:3 96:1 126:0
+    Bytes[0] 0:0 | Bytes[3] 0:0 126:1 149:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [5, 35, 65, 95, 125]
+    D calls at ticks [6, 36, 66, 96, 126] ; E1 at ticks [148]
+    status 4 at ticks [148] ; slot wiped (status 0, +0x48 -1) at ticks [149, 150, 151]
+  journalled effects on entities / spawns: 148:spawn(table=0, sprite=99) ; 148:effect_on_entity(id=8, slot 1)
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 15 calls): 29: [1, 31, 61, 91, 121]; 64: [139]; 65: [6, 36, 66, 96, 126]; 84: [148]; 211: [2]
+  0x2C [0] before each tick (tick:matches/Result): 1:1/0 150:0/1
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## ARENA-H1-live: E20.c1 H1 (hero 40 px west of the Beannoide, Square at tick 1, 40 ticks) with the LIVE handlers: the Beannoide is asleep (A1: anim 2), the sword reaches it
+  handler calls: 40
+    by (handler, letter): A1/A x1, C1/C x38, D1/D x1
+    RNG draws per call (draws: calls): A1 {0: 1}; C1 {0: 38}; D1 {0: 1}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 1:2 2:4 6:5 10:7 19:0
+    status 0:1 1:2 | hp 0:9 6:7
+    Bytes[0] 0:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks [5]
+    D calls at ticks [6] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 4 calls): 29: [1]; 65: [6]; 211: [2]
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: True
+  uninitialised reads: none
+
+## ARENA-H3-live: E20.c1 H3 (hero 60 px west, Right held from tick 1, 60 ticks) with the LIVE handlers and a NON-ghost hero: the Beannoide wakes (anim 4) as the hero comes within 3 tiles, its claws only exist on the last frame of the wake animation
+  handler calls: 60
+    by (handler, letter): A1/A x1, C1/C x59
+    RNG draws per call (draws: calls): A1 {0: 1}; C1 {0: 59}
+  target record 0 (slot 1):
+    current animation (tick:anim) 0:0 1:2 2:4
+    status 0:1 1:2 | hp 0:9
+    Bytes[0] 0:0 | Bytes[3] 0:0
+    hit pass wrote +0x1D0 = 0x19 at ticks []
+    D calls at ticks [] ; E1 at ticks []
+    status 4 at ticks [] ; slot wiped (status 0, +0x48 -1) at ticks []
+  journalled effects on entities / spawns: none
+  journalled sounds other than id 0 (id: ticks; id 0 = the animation pass asking for Sfx byte 0, 6 calls): 211: [2]
+  hero: hp values seen [10], c1cc poked to 0x78 each tick: False
+  uninitialised reads: none

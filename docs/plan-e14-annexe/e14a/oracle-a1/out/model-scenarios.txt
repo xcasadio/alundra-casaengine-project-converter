@@ -1,0 +1,9 @@
+# the model of e14model.py (written from docs/plan-e14-annexe/e14a/muruta.md, beannoide.md, check.md and the disc tables) predicts, for every recorded call, the whole 0x294-byte entity image AFTER the call,
+# the RNG word after the call and the sounds; D1 / D9 also the HP (kmodel.damage_model, the E20.c1b model of ComputeNewHp).  E1 is checked against the annex invariants (status, +0x228, ActiveEffect, effect id, loot).
+A0      16 calls, 0 differences
+A1      12 calls, 0 differences
+C1    3102 calls, 0 differences
+C10   3637 calls, 0 differences
+D1      22 calls, 0 differences
+D9      15 calls, 0 differences
+E1      11 calls, 0 differences
