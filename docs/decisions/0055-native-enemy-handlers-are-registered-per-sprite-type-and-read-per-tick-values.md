@@ -1,6 +1,6 @@
 # ADR-0055: Native enemy handlers are registered per sprite type, read per-tick values, and arrive with the Muruta and the Beannoide
 
-- **Status**: Accepted
+- **Status**: Accepted; D-E14-4's place amended by ADR-0058 (D-E14-8)
 - **Date**: 2026-10-09
 - **Source**: this chantier: `docs/plan-conversion-totale.md`, section E14 (D-E14-1 to D-E14-7, the author's answers of 2026-10-09, "fait toutes les recommandations", to the questions raised by the E14.a discovery), `docs/plan-e14-annexe/e14a/check.md` section (d)
 

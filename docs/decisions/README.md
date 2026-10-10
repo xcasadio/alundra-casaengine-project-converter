@@ -70,3 +70,5 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0054 | The hurt hero keeps the original's rules before E18, and the next E20 slices follow the author's order | Accepted | 2026-10-09 |
 | ADR-0055 | Native enemy handlers are registered per sprite type, read per-tick values, and arrive with the Muruta and the Beannoide | Accepted | 2026-10-09 |
 | ADR-0056 | The hero's life lives on the entity and the stats mirror it at the end of every MovePlayer, as the binary does | Accepted | 2026-10-10 |
+| ADR-0057 | The hero creates its own effects at once, attached effects sort with their anchor, and the stale aura handle is fixed | Accepted | 2026-10-10 |
+| ADR-0058 | The weapons own their projectile handlers, E14.a comes before the weapons, collisions mean carrying and solid crates, and the deep-water wall comes with the currents | Accepted | 2026-10-10 |

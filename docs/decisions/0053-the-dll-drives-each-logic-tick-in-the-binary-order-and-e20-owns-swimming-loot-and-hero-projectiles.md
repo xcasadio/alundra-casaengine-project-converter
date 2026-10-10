@@ -1,6 +1,6 @@
 # ADR-0053: The DLL drives each logic tick in the binary's order, and E20 owns swimming, loot and the hero's projectiles
 
-- **Status**: Accepted; D-E20-14 amended by ADR-0054 (D-E20-19)
+- **Status**: Accepted; D-E20-14 amended by ADR-0054 (D-E20-19); D-E20-18 amended by ADR-0058 (D-E20-25)
 - **Date**: 2026-10-09
 - **Source**: this chantier: `docs/plan-e20-heros.md`, section 0.1 (D-E20-11 to D-E20-18, the author's answers of 2026-10-09 to the questions raised by the E20.0 discovery), section 0.2.10 and `docs/plan-e20-annexe/e20-0-rapports/` (D7, D8, D9 and their checks)
 

@@ -1,6 +1,6 @@
 # ADR-0046: The effect opcodes queue their operation on the effect stage and apply it at the tick that emitted it
 
-- **Status**: Accepted
+- **Status**: Accepted; amended by ADR-0057 for the hero's own effects (D-E20-28)
 - **Date**: 2026-10-06
 - **Source**: `docs/plan-e19-opcodes.md` (E19.g G3b, section 1.2o.6, G3B-R1 to R3); annex `docs/plan-e19-g1g3-annexe/` (`dll-notes.md` section 4, `binary-data-verify.md`, `g3b-golden.py`)
 

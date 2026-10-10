@@ -1,6 +1,6 @@
 # ADR-0049: The world pushes the effect quads to the engine every rendered frame, ordered like the entities
 
-- **Status**: Accepted
+- **Status**: Accepted; the sort of anchored slots amended by ADR-0057 (D-E20-29)
 - **Date**: 2026-10-08
 - **Source**: `docs/plan-e19-opcodes.md` (E19.g G3c, rules G3C-R1 to G3C-R5); annex `docs/plan-e19-g3c-annexe/` (`discovery/notes.md`, `discovery/verify/verify.md` which wins, `g3c_model.py`, `g3c_expected.json`, `g3c_compare.py`); engine ADR-0071 (effect quad service and component)
 

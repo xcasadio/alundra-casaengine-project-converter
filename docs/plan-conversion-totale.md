@@ -764,6 +764,7 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
     Beannoïde de la 14 s'animent ;
   - **D-E14-6** : les nouveaux gestionnaires lisent les valeurs du tick (direction et animation de la boîte), comme le binaire ;
   - **D-E14-7** : recette d'E14.a : le hall de la 115 et la grille de la 116 ; la 362 et la vague de la 44 viennent avec.
+  - **D-E14-8** (2026-10-10, ADR-0058) : E14.a passe en premier, avant les armes ; son plan est approuvé.
 - **Plan d'E14.a proposé (2026-10-10, relu READY, à approuver par l'auteur)** : [plan-e14-ia-native.md](plan-e14-ia-native.md) — E14.a0
   (registre et interrupteur, prérequis des armes), E14.a0b (infrastructure des ennemis), E14.a1 (Beannoïde et Muruta).
 

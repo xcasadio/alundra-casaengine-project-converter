@@ -139,6 +139,22 @@ Après la découverte d'E20.c2, l'auteur a répondu le 2026-10-09 « fait toutes
   tranche passent avant elle (par exemple l'apparition d'E20.e0 avant les projectiles) ; E14.a et la blessure d'E20.c2 suivent.
   Mode AUTO accordé par l'auteur pour la nuit du 2026-10-09 (ni push ni merge).
 
+Le 2026-10-10 au matin, l'auteur a répondu aux questions de la nuit (« 1 a, 2 b, 3 a, 4 a, 5 a, 6 a, 7 a, sonde, 9 a » ; ADR-0057 et
+ADR-0058) :
+
+- **D-E20-25** (modifie D-E20-18) — E17, C60 et E9 passent à E20.f (E20.f5, E20.f6) ; C54 reste à E14. Q-N1 tranchée.
+- **D-E20-26** — L'export de l'effet de bris reste dans E14.a (D-E14-2) ; la flèche chargée (E20.f4) s'en sert une fois E14.a faite.
+  Q-N2 tranchée.
+- **D-E20-27** — « Collisions » désigne E20.g (porter, lancer ; caisses et jarres solides). Q-N3 tranchée.
+- **D-E20-28** (modifie ADR-0046 pour le héros) — Le héros crée et libère ses effets tout de suite et lit `Destroying` au tick. Q-N4.
+- **D-E20-29** (modifie ADR-0049) — Un effet attaché se trie sur la coordonnée du sprite de son ancre plus `DepthOffset`. Q-N5.
+- **D-E20-30** — La poignée d'aura périmée est corrigée (numéro de génération). O-E20-15 tranché.
+- **D-E14-8** (plan maître) — E14.a passe en premier (E14.a0, E14.a0b, E14.a1), son plan est approuvé. O-E14-0 tranché.
+- **D-E20-31** — Le mur d'eau profonde (O-E19-22) et les courants (O-E20-16) forment ensemble une tranche E20.i2. Q-I1 tranchée
+  (lecture de « 9 a », à confirmer par l'auteur s'il voulait seulement les courants).
+- **D-E20-32** — Pour l'arrondi du stick (E20.d2), une sonde est construite d'abord ; l'auteur mesure sa manette avec, puis la règle
+  est close. Q-D1.
+
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
 

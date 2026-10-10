@@ -1,6 +1,6 @@
 # ADR-0054: The hurt hero keeps the original's rules before E18, and the next E20 slices follow the author's order
 
-- **Status**: Accepted
+- **Status**: Accepted; D-E20-24's order amended by ADR-0058 (D-E14-8: E14.a first; D-E20-27: collisions = E20.g)
 - **Date**: 2026-10-09
 - **Source**: this chantier: `docs/plan-e20-heros.md`, section 0.1 (D-E20-19 to D-E20-24, the author's answers of 2026-10-09, "fait toutes les recommandations", to the questions raised by the E20.c2 discovery, and his order of the next work), `docs/plan-e20-annexe/e20-c2/check.md` section (d)
 

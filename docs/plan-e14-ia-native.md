@@ -1,6 +1,6 @@
 # E14 — IA native : plan d'E14.a (Muruta et Beannoïde)
 
-> Statut : **proposé, à approuver par l'auteur** (rédigé la nuit du 2026-10-10 en mode AUTO ; aucune exécution sans son accord).
+> Statut : **approuvé par l'auteur le 2026-10-10** (D-E14-8, ADR-0058 : E14.a passe en premier). Rédigé la nuit du 2026-10-10.
 > Étape maîtresse : `docs/plan-conversion-totale.md`, section « E14 — IA native ». Décisions de l'auteur : D-E20-4 (E14.a juste après
 > la passe de coups), D-E14-1 à D-E14-7 (ADR-0055). Découverte en lecture seule et contre-vérification : `docs/plan-e14-annexe/e14a/`
 > (`muruta.md`, `beannoide.md`, `dll-natives.md`, `check.md`).
@@ -157,8 +157,8 @@ l'avance du générateur par tick (E20.e0b).
 
 | Point | Question | Où |
 |---|---|---|
-| O-E14-0 | Avancer E14.a0b et E14.a1 (les ennemis vivants, le hall de la 115 jouable) avant les armes, les objets et les collisions, contre l'ordre de D-E20-24 ? Recommandé : oui si les armes restent bloquées par Q-N1 ; sinon garder l'ordre | l'auteur |
-| O-E14-1 | Q-N2 (révision d'E20 en pause) : l'export de l'effet de bris avance-t-il à E20.e0x ? Sinon il reste dans E14.a1 (D-E14-2) | l'auteur |
+| O-E14-0 | **Tranché le 2026-10-10 (D-E14-8)** : E14.a0, E14.a0b et E14.a1 passent avant les armes, les objets et les collisions | — |
+| O-E14-1 | **Tranché le 2026-10-10 (D-E20-26)** : l'export de l'effet de bris reste dans E14.a1 (D-E14-2) | — |
 | O-E14-2 | Les Muruta de la 15 (scène, `0x2E [128]` `@712`, `@777`, `@890`) : le héros peut-il les toucher pendant la scène ? (`check.md` ligne 45) | E14.a1, lecture de `0x63` et des drapeaux de la scène |
 | O-E14-3 | Le sprite C10/D18 (cartes 329, 153, 368) et le petit slime (C1/D23) partagent du code avec E14.a : ils restent inertes jusqu'à leurs propres gestionnaires (D-E14-1) | plus tard dans E14 |
 
