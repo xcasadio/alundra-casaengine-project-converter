@@ -611,6 +611,7 @@ n'exigeait pas e0k ; elle exige maintenant e0k1 à e0k3 (paragraphe « Ensuite �
 Seconde relecture : **REVISE**, un blocage ; disposition de la session principale (cap de deux relectures automatiques atteint) : **FIX**
 — E20.e (l'herbe coupée) fait naître son butin par le même `SpawnWarpEntity` d'un objet à gravité et n'avait aucun prérequis ; elle exige
 maintenant E20.c1 ✅ et E20.e0c (donc E20.e0b2 et e0k1 à e0k3). Nouvelle époque de relecture : une seule relecture de clôture suit.
+Relecture de clôture de la révision 8 : **READY** (2026-10-15).
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
