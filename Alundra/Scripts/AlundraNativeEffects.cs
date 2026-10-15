@@ -172,6 +172,13 @@ public static class AlundraNativeEffects
     public static AlundraEffectSlot? CreateBreakEffect(AlundraEffectReservoir reservoir, int fx, IAlundraEffectAnchor anchor)
         => reservoir.CreateAttached(false, fx, 0, anchor, BreakEffectDepthOffset, 0, 0, 0);
 
+    /// <summary>
+    /// E20.f3b (D-F3-9): the effect 4 or 5 a hit that is not immune attaches to its target (<c>0x800395E8-0x80039668</c>): <c>0x8003BE74(0, id, 0, target ; 1, 0, 0, 0)</c>, the creator of the break effect with the live target as the anchor,
+    /// its depth key one above the target's, no offset, no sound and no number drawn. The effect follows the target afterwards.
+    /// </summary>
+    public static AlundraEffectSlot? CreateHitAttachedEffect(AlundraEffectReservoir reservoir, int effect, IAlundraEffectAnchor target)
+        => reservoir.CreateAttached(false, effect, 0, target, BreakEffectDepthOffset, 0, 0, 0);
+
     /// <summary>The depth offset of the break effect, the first of the four stack arguments of <c>0x8003BE74</c> that <c>DestroyEntity</c> writes (<c>0x8003A5F8-0x8003A618</c>; the three offsets after it are 0): one above the key of the destroyed entity.</summary>
     public const int BreakEffectDepthOffset = 1;
 

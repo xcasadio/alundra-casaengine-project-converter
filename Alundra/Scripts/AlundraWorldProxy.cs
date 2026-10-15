@@ -3018,12 +3018,22 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         _effectStage.Emit(reservoir => AlundraNativeEffects.CreateHitSparks(reservoir, centreX, centreY, centreZ));
     }
 
+    private Action<AlundraEntityScriptProxy, int>? _attachHitEffect;
+
+    /// <summary>
+    /// E20.f3b (D-F3-9): the effect 4 or 5 of a hit that is not immune (<c>0x800395E8-0x80039668</c>), queued on the effect stage at rank 1 of the tick like the sparks, as an effect attached (mode 1) to the live target. No number is drawn.
+    /// Documented gap: in a frame of several ticks the creation happens at the end of the frame; the effect follows its target afterwards, which has no visible consequence.
+    /// </summary>
+    private void AttachHitEffect(AlundraEntityScriptProxy target, int effect)
+        => _effectStage.Emit(reservoir => AlundraNativeEffects.CreateHitAttachedEffect(reservoir, effect, target));
+
     /// <summary>E20.a A3 hook, E20.c1a C3: the hit pass of the binary (<c>0x80039300</c>, last of the entity block), over the list built at the lists step.</summary>
     private void RunHitPassHook()
     {
         HitPassHookForTests?.Invoke();
         _emitHitSparks ??= EmitHitSparks; // one delegate for the life of the world: the tick allocates nothing.
-        _hitPass.Run(_hitList, PlayerEntity, _emitHitSparks);
+        _attachHitEffect ??= AttachHitEffect;
+        _hitPass.Run(_hitList, PlayerEntity, _emitHitSparks, _attachHitEffect);
     }
 
     /// <summary>E20.a A8 test-only seam: runs at the hit-pass hook of each tick (where E20.c1 plugs the pass in), so a test can write what that pass writes (a <c>TouchingEntity</c>).</summary>
