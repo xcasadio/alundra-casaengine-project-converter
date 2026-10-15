@@ -80,3 +80,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0064 | The entity slot table hands out the lowest free slot up to 63, and the spawned list follows the slots | Accepted | 2026-10-15 |
 | ADR-0065 | An entity born by the sprite-index interface takes part in the tick of its birth, through a marker confined to that interface | Accepted | 2026-10-15 |
 | ADR-0066 | The shared random stream steps once per logic tick, through an optional per-tick callback of the effect stage | Accepted | 2026-10-15 |
+| ADR-0067 | The hero's shot reads the direction of the tick and wires types through a set that is empty until their handlers exist | Accepted | 2026-10-15 |

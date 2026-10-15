@@ -252,4 +252,26 @@ public sealed class AlundraWeaponSpawnSeamTests : IDisposable
         Assert.Contains((ScriptHelper.ProgramCTick, 94), seven);
         Assert.DoesNotContain((ScriptHelper.ProgramEDeactivate, 1), seven);
     }
+
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // (s6) the index of the table of directions is bounded: a direction of the tick outside 0..3 reads the nearest entry instead of throwing.
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void S6_ADirectionOutsideTheTable_IsClampedToTheNearestEntry_AndANormalDirectionIsUnchanged()
+    {
+        foreach (var (boxDirection, expected) in new[] { (9, 0x18), (-4, 0), (3, 0x18), (0, 0) })
+        {
+            using var arc = Arc("s6-" + boxDirection);
+            arc.OneFrame(); // settles.
+            var journal = new List<AlundraPlayerManager.WeaponSpawnCall>();
+            AlundraPlayerManager.WeaponSpawnCallsForTests = journal;
+            Arm(arc.Hero);
+            arc.Hero.BoxDirection = boxDirection;
+            AlundraPlayerManager.SpawnWeaponProjectile(arc.Hero, arc.Hero.WeaponRecordPointer, null);
+            AlundraPlayerManager.WeaponSpawnCallsForTests = null;
+
+            Assert.Equal(expected, Assert.Single(journal).Direction);
+        }
+    }
 }

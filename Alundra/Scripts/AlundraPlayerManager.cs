@@ -1183,7 +1183,7 @@ public static class AlundraPlayerManager
 
     /// <summary>E20.b B4 seam of the spawn call <c>0x80039F58</c> of <c>UpdateWeaponStepProgression</c> (<c>0x8002F818</c>): the projectile of a bow or a wand, at the hero's X and Y, at his Z plus the
     /// height <c>ptr[3]</c> of the record. Counted and journaled for the tests; since E20.f3a it calls the apparition of an entity by sprite index for the types of <see cref="WiredWeaponTypes"/> (empty until E20.f3c). The direction is the one of the tick (<see cref="AlundraEntityScriptProxy.BoxDirection"/>), read before the tick writes anything, as the binary reads <c>+0x98</c>.</summary>
-    private static void SpawnWeaponProjectile(AlundraEntityScriptProxy player, uint recordPointer, IAlundraScriptHost? host)
+    internal static void SpawnWeaponProjectile(AlundraEntityScriptProxy player, uint recordPointer, IAlundraScriptHost? host)
     {
         WeaponSpawnCallCountForTests++;
         var call = new WeaponSpawnCall(
