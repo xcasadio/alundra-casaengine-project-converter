@@ -1,0 +1,26 @@
+PASS V4 pairs: 2507 valid (map, index) pairs on 483 maps x 256 indices; maps whose set differs from the non-null SpriteRecords of the export: 0
+PASS V4 empty maps: 65 maps without any valid index
+PASS V4 max per map: at most 22 valid indices on one map
+PASS V4 distinct numbers: 244 distinct numbers valid on at least one map
+PASS V4 one image per number: numbers with a single creation image on every map where they are valid: 244 of 244
+PASS V4 equals Data/map-sprite-indices.json: the sets of the real call equal the exported file on 483 maps ; SHA-1 63a3e6189d1f1375232bb2c54e1d1dcb385e360d (30913 bytes)
+PASS source map of every number: 244 numbers, source = the lowest map where the number is valid (equal between the sweep and the export)
+PASS V1 global page: 151 of 151 indices of the global page spawn (parent hero, flat, direction 0x10, Z 0)
+PASS V2 map page: 244 of 244 numbers of the map page spawn (one vector per number, source map recorded)
+PASS V1/V2 palette and sheet: global page: palette 0xB, sheet 0x60; map page: palette 0, sheet 0x20
+PASS V1/V2 identifier: +0x68 = index on the global page, index + 0x100 on the map page
+PASS V1/V2 roll: creation roll (Contents & 0x80): 6 on the global page, 48 on the map page ; a vector draws exactly when it rolls
+PASS V1/V2 creation sound: creation sound: 7 prefabs of the global page, 9 numbers of the map page (3 with the 0x100 flag)
+PASS V3 geometry: 109 geometry vectors, all accepted
+PASS V7 AT9 sites: 8 of 8 spawn calls of the AT9 traces replayed with their own arguments (types [3, 4, 11, 14])
+PASS V5 slots: five spawns: slots [1, 2, 3, 4, 5], slot count word 5
+PASS V5 status 4 stays busy: a slot of status 4 is busy until the slot pass (spawn went to 6), then free with +0x48 = -1 and its index word restored (2); next spawn takes slot 2
+PASS V5 cap 63: from an empty table 63 apparitions are accepted (slots 1 to 63, the hero makes 64 live), the 64th and the 65th return 0 with one message each (['0x80039b10', '0x80039b10']), serial, slot count word and generator unchanged
+PASS V5 lowest first: after freeing 40, 9, 21: next three spawns went to [9, 21, 40]
+PASS V5 dirty slot: a dirty free slot (+0x44, +0x48, +0x3C, +0x40 leftovers): the creation writes +0x44 = 0 and +0x48 = -1 ; loot words [0, 0]
+PASS V4 probes: 13 invalid indices (null entry, 256, 300, -1, 0x80000000, not valid on this map): return 0, exactly one message at 0x80039BB8, serial, slot count word and generator unchanged
+PASS coverage: every instruction of SpawnWarpEntity, the page lookup and FindFreeEntitySlot is executed, and of InitializeEntity all but the 3 of the registered-record half (0x80039D74-0x80039D7C, unreachable with a3 = 0) (coverage.txt)
+PASS second interpreter: emu.py and the independent mips.py: 159 calls, identical return slot, image hash and generator word: True
+PASS uninitialised reads: 0 reads of bytes nobody wrote during the sweep
+ALL PASS
+vector signature 7893a0f221d3c24772140d166bd79bd4d787dfba

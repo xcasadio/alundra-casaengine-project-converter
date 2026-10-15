@@ -1,0 +1,3 @@
+# V6': the numbers of the map page that are valid on map 14 (the full interface path of the DLL runs on map 14); the global page is valid on every map (151 numbers)
+map 14 count 5
+map 14 indices 79,136,144,153,199

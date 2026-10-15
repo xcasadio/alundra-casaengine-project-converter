@@ -1,0 +1,5 @@
+# instruction coverage of the functions the vectors exercise (Machine.cov: every executed PC of the sweep world and of the full-table world)
+SpawnWarpEntity      80039F58-8003A044   60 of  60 instructions executed ; not executed: none
+page lookup          80039B28-80039BCC   42 of  42 instructions executed ; not executed: none
+FindFreeEntitySlot   80039AD0-80039B24   22 of  22 instructions executed ; not executed: none
+InitializeEntity     80039D04-80039F54  146 of 149 instructions executed ; not executed: 80039D74-80039D7C

@@ -1,0 +1,17 @@
+# sound requests journalled by the creation (page, index, sound ids): the sound of the animation 0 (0x800490FC, from the first switch 0x80038AB4)
+page 0 index 7 sounds 0x21
+page 0 index 8 sounds 0x21
+page 0 index 9 sounds 0x21
+page 0 index 17 sounds 0x37
+page 0 index 27 sounds 0x1E
+page 0 index 28 sounds 0x1E
+page 0 index 29 sounds 0x1E
+page 1 index 159 sounds 0xC2
+page 1 index 170 sounds 0xDB
+page 1 index 192 sounds 0x114
+page 1 index 194 sounds 0x10F
+page 1 index 213 sounds 0x37
+page 1 index 242 sounds 0x68
+page 1 index 249 sounds 0x10C
+page 1 index 254 sounds 0xBB
+page 1 index 255 sounds 0xB4

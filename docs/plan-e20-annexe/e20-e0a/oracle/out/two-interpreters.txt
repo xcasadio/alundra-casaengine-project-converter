@@ -1,0 +1,1 @@
+emu.py vs mips.py (interp2.call2): 159 calls (151 global + 5 map-14 page + 3 invalid) ; identical (return slot, image sha1, generator word): True

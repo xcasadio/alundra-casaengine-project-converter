@@ -1,0 +1,345 @@
+{
+ "dirty": {
+  "count_moved": 1,
+  "dir": 16,
+  "draws": 0,
+  "id": "dirty",
+  "index": 3,
+  "map": null,
+  "p": {
+   "anim_flags": 65,
+   "anim_t": 0,
+   "contents": 0,
+   "corners": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "d": 524287,
+   "dir_t": 16,
+   "flags": 73844,
+   "floor": 1,
+   "h": 983039,
+   "has_attack": 1,
+   "has_box": 1,
+   "hp": 0,
+   "hpmax": 0,
+   "id": 3,
+   "loot": [
+    0,
+    0
+   ],
+   "modx": 9175040,
+   "mody": 6094848,
+   "modz": 1,
+   "mx": -655360,
+   "my": -458752,
+   "mz": 0,
+   "pal": 11,
+   "parent": "hero",
+   "prog": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "px": 9830400,
+   "py": 6553600,
+   "pz": 1,
+   "rec44": 0,
+   "ref": -1,
+   "root": "hero",
+   "serial": 2,
+   "sheet": 96,
+   "slot": 1,
+   "sprog": [
+    0,
+    0,
+    0,
+    0,
+    17,
+    0
+   ],
+   "status": 1,
+   "terrain": 0,
+   "tilex": 6,
+   "tiley": 6,
+   "w": 1376255
+  },
+  "page": 0,
+  "parent": "hero",
+  "prints": [],
+  "ret": 1,
+  "rng_out": 305419896,
+  "rolls": 0,
+  "serial_moved": 1,
+  "sha1": "8237b87c8319",
+  "sounds": [
+   0
+  ],
+  "world": "flat",
+  "x": 150,
+  "y": 100,
+  "z": 0
+ },
+ "probes": [
+  {
+   "count_moved": 0,
+   "index": 18,
+   "page": 0,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0,
+   "why": "null entry (-1)"
+  },
+  {
+   "count_moved": 0,
+   "index": 72,
+   "page": 0,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0,
+   "why": "entry 0"
+  },
+  {
+   "count_moved": 0,
+   "index": 120,
+   "page": 0,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0,
+   "why": "entry 0x1000"
+  },
+  {
+   "count_moved": 0,
+   "index": 256,
+   "page": 0,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0,
+   "why": "256 (a record pointer stands there)"
+  },
+  {
+   "count_moved": 0,
+   "index": 300,
+   "page": 0,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0,
+   "why": "300 (idem)"
+  },
+  {
+   "count_moved": 0,
+   "index": 4294967295,
+   "page": 0,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0,
+   "why": "-1 (idem just before the table)"
+  },
+  {
+   "count_moved": 0,
+   "index": 2147483648,
+   "page": 0,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0,
+   "why": "0x80000000"
+  },
+  {
+   "count_moved": 0,
+   "index": 213,
+   "page": 1,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0,
+   "why": "not valid on map 14"
+  },
+  {
+   "count_moved": 0,
+   "index": 0,
+   "page": 1,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0,
+   "why": "null entry (-1)"
+  },
+  {
+   "count_moved": 0,
+   "index": 1,
+   "page": 1,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0,
+   "why": "entry 0"
+  },
+  {
+   "count_moved": 0,
+   "index": 2,
+   "page": 1,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0,
+   "why": "entry 0x1000"
+  },
+  {
+   "count_moved": 0,
+   "index": 256,
+   "page": 1,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0,
+   "why": "256 (idem)"
+  },
+  {
+   "count_moved": 0,
+   "index": 4294967295,
+   "page": 1,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0,
+   "why": "-1 (idem)"
+  }
+ ],
+ "table": {
+  "busy_status4": {
+   "count_word": 6,
+   "index_word_after_pass": 2,
+   "ref_after_pass": -1,
+   "slot_of_spawn_before_pass": 6,
+   "status_after_pass": 0
+  },
+  "five": {
+   "count_word": 5,
+   "serials": [
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "slots": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ]
+  },
+  "full": {
+   "accepted": 63,
+   "count_moved_by_refusals": 0,
+   "count_word": 63,
+   "live_slots_with_the_hero": 64,
+   "prints_of_the_two_refusals": [
+    [
+     2147719952,
+     2147629488
+    ],
+    [
+     2147719952,
+     2147629488
+    ]
+   ],
+   "refused_64th": 0,
+   "refused_65th": 0,
+   "rng_moved_by_refusals": 0,
+   "serial_moved_by_refusals": 0,
+   "slots_first_last": [
+    1,
+    63
+   ]
+  },
+  "lowest_first": [
+   9,
+   21,
+   40
+  ],
+  "reuse_after_pass": {
+   "previous_serial": 7,
+   "serial": 8,
+   "slot": 2
+  }
+ }
+}
