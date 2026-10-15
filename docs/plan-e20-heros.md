@@ -587,6 +587,12 @@ E20.g2 et E20.e0c exigent e0b2 (le lâcher, à la destruction, lit `+0x3C` écri
 l'arête « E20.g2 → E20.e0b » de la révision 3, perdue par le tableau de la révision 4, est rétablie). Lignes 3, 5, 8 et 10 du tableau
 et paragraphe « Ensuite » mis à jour. Une seule relecture de clôture suit.
 Relecture de clôture de la révision 6 : **READY** (2026-10-15).
+**Révision 7 (2026-10-15, mode AUTO, après la découverte d'E20.f3 ; nouvelle époque de relecture).** La découverte d'E20.f3 (§1.19) la
+découpe en f3a (direction du tir, couture de branchement sans type activé), f3b (effets de coup 4 et 5) et f3c (la vague de l'épée,
+C61 et E10). f3a et f3b n'ont besoin ni d'E20.e0k ni d'E20.e0b2 ; f3c a besoin d'une règle du domaine vertical d'E20.e0k (le Z logique
+et `IsOnGround` positionnel des entités nées par l'interface sans gravité : sans elle, la vague perd l'unité brute qui la tient
+au-dessus du sol et meurt en 2 ticks au lieu de 26). Ligne 5 du tableau mise à jour ; ordre : f3a et f3b avant E20.e0k (E20.e0b2 est
+en pause), f3c après E20.e0k. Choix de la session principale en mode AUTO, réversible, signalé à l'auteur.
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -639,7 +645,7 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 | 2 | E20.e0a (§1.16 : e0a1, e0a2, e0a3 ✅ ; e0a4 décidée le 2026-10-15, après E20.e0b2, ne bloque rien) | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
 | 3 | E20.e0b (§1.17 : e0b1, puis e0b2) | e0b1 : générateur avancé une fois par tick (`0x8002BD0C`-`0x8002BD34`) ; e0b2 : tirage du butin à la création (écrit le contenu, rien ne tombe) | E20.e0a1, E20.e0a2 (§1.16) ; e0b1 avant e0b2 (ordre) |
 | 4 | E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a1 (§1.16) |
-| 5 | E20.f3 | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.f1 ✅, E20.e0a1 à E20.e0a3 (§1.16), E20.e0b1 (§1.17) |
+| 5 | E20.f3 (§1.19 : f3a, f3b, f3c) | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | f3a : E20.f1 ✅, E20.e0a1 à E20.e0a3 ✅ ; f3b : E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅ ; f3c : f3a, E20.e0b1 ✅ et la règle du Z logique d'E20.e0k (D-F3-8) ; f3a et f3b peuvent passer avant E20.e0k |
 | 6 | E20.f4 | Flèche chargée : C94, E1 avec l'effet 8 (l'effet de bris vient d'E14.a1b, D-E20-26) | E20.f3, E20.e0k, E14.a1b ✅ |
 | 7 | E20.f5 | Flèches : E17 (D-E20-25) | E20.f3, E20.e0k |
 | 8 | E20.f6 | Boules de feu et de glace : C60, E9 (D-E20-25) ; vigilance sur les trois enregistrements `0x0C` de la carte 309, qui prendront vie | E20.f3, E20.e0b1 (§1.17), E20.e0k |
@@ -4293,6 +4299,242 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
 | O-E0B-2 | `0x8003A048` et `0x8003ABCC` retirent le butin à chaque réinitialisation (C22) ; non portés | E14 |
 | O-E0B-3 | Fréquence réelle des images de deux ticks ou plus, et première image après une longue pause (jusqu'à 4 ticks) | recette de l'auteur (compteur de l'ombre) |
 | O-E0B-4 | Treize fonctions qui tirent (`0x80032F84`, `0x800330FC`, `0x800333AC`, `0x800335AC`, `0x8003382C`, `0x80033A2C`, `0x80034EC4`, `0x800354D0`, `0x80039188`, `0x80042FDC`, `0x800432A4`, `0x8004392C`, `0x80065204`) ne figuraient pas dans la liste antérieure des sites ; la plupart ne sont pas portées : chacune consommera le flux avancé (`0x80039188` est déjà porté : étincelles de coup) | tranches E20.e, E20.h, E14 |
+
+### 1.19 E20.f3 — Le tir du héros : direction, effets de coup 4 et 5, vague de l'épée (f3a, f3b, f3c) ⏳ (détaillée le 2026-10-15)
+
+**Décisions de la session principale (2026-10-15, mode AUTO, l'auteur absent ; réversibles, signalées à l'auteur).** Q-F3-1 : option A —
+f3c attend la règle du Z logique (D-F3-8) d'E20.e0k, que l'enveloppe ordonne déjà avant f3 ; si la section d'e0k ne la contient pas, f3c
+prend le repli B (elle porte la règle elle-même, restreinte aux entités nées par l'interface sans gravité). Q-F3-2 n'est pas une question :
+l'enveloppe READY (§1.1, ligne 5) a déjà fixé la coupe d'herbe de la vague en bouchon nommé jusqu'à E20.e ; la dérive du flux qui en découle
+est O-F3-1. Ordre : f3a et f3b ne dépendent pas d'e0k et s'exécutent avant elle (E20.e0b2 est en pause) ; f3c après e0k (révision 7 de
+l'enveloppe).
+
+Découverte en lecture seule du 2026-10-15, au HEAD `0f5b484` : trois relevés (binaire, impact sur la DLL, inventaire des tests), puis un critique adversarial. Le critique a redésassemblé les sites qui portent les décisions (le tir `0x8002F768`, la porte des effets `0x800395D4`, le choix du programme `0x80038764`, l'écriture de `IsOnGround` `0x800380F4`, le Z de création `0x80039EA0`, C61, E10, E1, A0, le son `0x800490FC`). Il a rejoué dix-sept sorties de l'oracle sur une copie des outils (identiques aux relevés). Il a écrit deux sondes nouvelles (l'arène de la charge avec la vague ; les directions) et refait deux recensements (en-têtes de sprites ; attaquants des nibbles 6, 7, 9 et 10 sur les 483 cartes). Enfin il a relu les chemins de la DLL que la vague traverse. Scripts et sorties dans le scratchpad de la session : `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20f3/` (`bin/`, `dll/`, `tests/`, `critic/`). Aucune modification du moteur, du convertisseur ni des données. La DLL n'a pas été exécutée : ce qui la concerne est lu dans le code.
+
+**But.** Brancher le tir du héros dans le monde, un type à la fois et jamais avant son gestionnaire E. Dans l'ordre : la direction du tir lue comme le binaire (P3 d'E20.f1a) ; les effets de coup 4 et 5 de la passe de coups ; la vague de l'épée (types 27 à 29, gestionnaires C61 et E10). Rien d'autre ne naît : la flèche chargée (E20.f4), les flèches (E20.f5) et les boules (E20.f6) restent des bouchons comptés.
+
+**Découpage (Q-F3-1 ; l'enveloppe, §1.1 ligne 5, en faisait une seule tranche ; révision 7 de l'enveloppe).**
+
+| Sous-tranche | Contenu | Prérequis |
+|---|---|---|
+| E20.f3a | Direction du tir par `BoxDirection` ; couture de branchement (ensemble de types câblés, vide) ; invariant « jamais avant son gestionnaire E ». Aucun type n'est activé. | E20.f1 ✅, E20.e0a1 à E20.e0a3 ✅ |
+| E20.f3b | Effets de coup 4 et 5 (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅ |
+| E20.f3c | Vague : C61 (coupe d'herbe en bouchon nommé), E10, activation des types 27 à 29 | E20.f3a, E20.e0a1 à E20.e0a3 ✅, E20.e0b1 ✅, **la règle « Z logique » d'E20.e0k** (§1.18) ou son repli (Q-F3-1) |
+
+Ordre : f3a, f3b, f3c. f3a et f3b ne dépendent pas l'une de l'autre. f3b est indépendante de la vague parce qu'aucun projectile de f3 ne porte un nibble 6, 7, 9 ou 10 ; elle change pourtant des chemins du jeu existant (voir les faits).
+
+**Faits porteurs.** Étiquettes : [binaire] décodé sur `ALUN_CD.EXE` (France) ; [oracle] exécuté dans la machine MIPS de f-projectiles (`pworld.py`) ; [DLL] lu dans le code au HEAD `0f5b484` (numéros de ligne à relire à l'exécution : E20.e0b2, en pause, touche aussi `AlundraWorldProxy.cs`) ; [données] export et cartes extraites ; [critique] établi ou corrigé par la critique.
+- [binaire] **Le tir.** Un seul site d'apparition d'arme, `0x8002F818`, dans `UpdateWeaponStepProgression` (`0x8002F768`, appelée par `MovePlayer` en `0x80031D70`, avant l'aiguillage d'état). L'image compte 102 `jal 0x80039F58` ; les autres sites du voisinage du héros sont le butin (`0x80032BEC`, `0x80032CD8`) et l'usage des objets (E20.h). Arguments : propriétaire = le héros, table 0, type = `ptr[1]`, X et Y = ceux du héros (aucun décalage), Z = `+0x11C` du héros + `ptr[3] << 16`, direction = `[0x80023644 + 4 × (+0x98)]` (`{0, 0x10, 8, 0x18}` : bas, haut, gauche, droite). Le retour est ignoré : le pointeur d'arme est effacé même si la table de cases est pleine (tir perdu en silence). Le pointeur est armé par `PlayerTryAttack` ; `S = tick d'armement + délai + 1`. Rien ne compte les projectiles vivants : deux flèches vivent ensemble (oracle `multishot`).
+- [binaire, critique] **Fiches** (`0x80028C79 + 13 × w`, redumpées). Épées d'acier, de démon, sainte (w = 1, 2, 3) : relâchement animation `0x18`, types 27, 28, 29, délai 20, z 0 ; pas de tir à l'appui. Arc du chasseur (w = 8) : type 3, délai 8 au sol et 0 en l'air, z 16. Arc de William (w = 9) : type 4 ; chargé, type 7. Baguettes : w = 4 (11, 12), w = 5 (14, 15). Seules les animations `0x11`, `0x13`, `0x15`, `0x17`, `0x18` gardent le pointeur (drapeau b1 de `0x80028D14`).
+- [binaire, oracle, critique] **Direction.** `+0x98` est l'index de direction écrit par `UpdateAnimation` (`0x80038B40`) ; le tir au tick S lit la valeur de la fin du tick S−1. La direction du tick de l'appui compte ; un virage demandé au tick du tir ou pendant le coup est ignoré. Clés : `dirtest.txt`, `dir_extra.txt` (arc du chasseur en l'air : Carré + Gauche au tick 8, flèche au tick 9, `dir_t = 8` ; Gauche seul à partir du tick 9, `dir_t = 24`).
+- [binaire, oracle] **La vague : données.** Drapeaux `0x205C`, programmes A0, C61, D0, E10, F0, corps (−10, −7, 0) de 21×14×8, `BreakEffect` 0, `Contents` 0 ; fiche d'équilibre 27 à 29 : attribut `0x81`, puissance 10, 20, 38, toutes réponses 128. Animation 0 : vitesse 0, octet D `0xC1` (intouchable, hors collisions), 14 images par direction (13 de 2 ticks, puis une image de transition sans boîte), boîtes de 36×24×31.
+- [binaire, oracle] **La vague : vie.** Née à `S = R + 21` dans `MovePlayer`, à X et Y du héros, au Z brut du héros + 1 (`0x80039EA0-0x80039EA4`). Elle ne bouge jamais (forces 0, `ForceAdjusted` 0). A0 tourne à S, C61 de S+1 à S+25, le drapeau `+0xAC` vaut 1 à S+25, E10 détruit à S+26, la case est libre à S+27. La boîte change à S, S+1, S+3, S+5, S+7, S+9 puis tient. Le son 30 joue à S ; `snd(0)` à S+25 est **muet** (`0x80049134`, `blez`).
+- [binaire, oracle] **Pourquoi elle ne se pose jamais.** Le choix du programme (`0x80038764-0x80038834`) prend E si le drapeau `0x10` est levé et si `+0x13C` ou `+0x144` est non nul. `+0x144 = (+0x134 >= Z)`, et `+0x134` est le sol + 1. La vague naît à sol + 1 + 1 : jamais au sol. Mutant W1 (sans le « +1 ») : elle meurt à S+1. Mutant W3 (sans E10) : elle reste en état 3 sans fin.
+- [binaire, données] **C61 et E10.** C61 (`0x8007A958`) appelle `CheckAndTriggerTileEffect` (`0x8003A7B0`) et rien d'autre. E10 (`0x8007F23C`) a le corps d'E1 (`0x8007ED10`) : `DestroyEntity(e, −1)`. A0 (`0x8006174C`) n'écrit que `AIValues[0]`, jamais lu par C61 ni E10. Recensement des 395 en-têtes : E10 et C61 n'existent que sur les sprites 27 à 29.
+- [oracle] **La coupe d'herbe.** Avec toutes les cases en herbe, l'acier coupe 3 cellules (S+10 à l'est) ; la fonction tire au moins 1 mot par cellule coupée et peut lâcher un objet. Le héros coupe les autres cellules.
+- [oracle] **Les touches.** Masque d'attaque 1 : la vague ne touche que les cibles de classe A ; le héros n'est jamais touché. Premier tick de touche de la vague seule (est) : cibles à +32, +44, +56, +68, +80 → S+1, S+3, S+5, S+7, S+9 ; rien au-delà de +92 (nord −60, ouest −88, sud +60). Le héros (case 0, premier de la liste) gagne la fenêtre de 25 ticks quand son coup `0x18` touche la même cible.
+- [oracle, critique] **Géométrie de l'arène de la charge** (`arena_probe.txt`, ticks de l'oracle moins 5 = ticks de l'arène). Avec E10 : `[(5,héros),(118,héros)]`, soit 2 contacts. Sans E10 : `[(5,héros),(118,héros),(143,vague),(168,vague)]`, soit 3 contacts dans les 140 ticks de l'arène (le troisième au tick 138).
+- [binaire, oracle] **Effets 4 et 5.** `b = [fiche de la cible + (nibble) + 2]`. Si `(b & 0xC0) == 0x80`, ni effet ni magasin de `TouchingEntity` (`0x8003966C`), mais `+0x1D0 = 25`, `HitCounter` + 1 et trois étincelles. Sinon : nibbles 6 et 10 → effet 4, nibbles 7 et 9 → effet 5, par `0x8003BE74(0, id, 0, cible, 1, 0, 0, 0)`, avant le magasin de `TouchingEntity` et avant les étincelles. Table `hitfx_table` : 160 paires sur 160 conformes. Aucun tirage (599 accès au flux dans l'image, aucun dans le code des effets). L'effet 4 dure 40 ticks, l'effet 5 dure 95.
+- [binaire, critique] **La cible héros.** La porte lit la fiche `+0x1C4` du héros, dont le seul magasin est `0x80039E38` : l'entrée 0, réponses nulles. L'effet s'attache donc toujours au héros touché par le feu ou la glace, charme de Nava compris (le charme agit dans `ComputeNewHp`).
+- [DLL] **Le bouchon.** `SpawnWeaponProjectile` (`AlundraPlayerManager.cs:1186`) compte, journalise (`WeaponSpawnCallsForTests`), appelle le crochet de test, et indexe la direction par `AnimationDirection` (écrit en fin d'image par `SyncAnimation`). `BoxDirection` (valeur du tick, D-E14-6) et `TickFacing` valent la même chose (`TryResolveAnimationTarget(rangée, TargetDirection)`) ; `BoxDirection` vaut 3 après le `Start()` des montages.
+- [DLL] **L'interface.** `SpawnEntityBySpriteIndex` ajoute l'unité brute (D-E0A-1), prend la première case libre sur 63, joue le son de l'animation 0 et pose `JoinsBirthTick` ; `RunEntityBlock` re-collecte juste après `MovePlayer` (`AlundraWorldProxy.cs:~2860-2875`). Les hôtes de montage ne sont pas des `IEntityWorldContext` : aucun appel n'y aboutit. Aucune entité n'est née par l'interface en production aujourd'hui.
+- [DLL] **Le registre.** 6 clés (Beannoïde A1, C1, D1 ; Muruta A0, C10, D9), épinglées par `AlundraNativeSpriteRegistryTests.cs:51`. `RunSpriteEvent` traite E 0 et 1 en ligne, hors du registre et de l'interrupteur `NativeHandlersEnabled` ; E10 n'y est pas. `HitArena` éteint l'interrupteur (`AlundraHitArena.cs:65-69`) et enveloppe le lanceur réel dans `RecordingRunner`.
+- [DLL, critique] **Le va-et-vient de la racine.** `PushLogicalPositionToRoot` écrit la racine en pixels entiers (`ResolveLogicalPosition`, `>> 16`). `PullRootPose` remet `PosZ` depuis la racine à chaque image pour toute entité à contrôleur (`AlundraEntityScriptProxy.cs:~1416`) et `IsOnGround = Controller.IsGrounded` (`:~1423`). La branche d'atterrissage du terrain de `TickPhysics` (`:~940-1000`) met `IsOnGround = 1` dès que `PosZ ≤ sol`. La DLL dit elle-même que l'unité du binaire est « avalée » (`:~880-1010`, `:1875-1890`, `:2049-2060`). Une entité née par l'interface n'a ni gravité de contrôleur, ni `IsVerticalOwnedExternally` (réservés à `ApplySpawnInitialization`, « que E20.e0k règle »). Conséquence prédite, **non exécutée** : la vague meurt à S+1 – S+3.
+- [DLL] **La passe de coups.** `AlundraHitPass.Run(liste, héros, étincelles)` (`:78`) ; les effets 4 et 5 y sont notés « non portés » avec un commentaire périmé (l'ancre existe : `IAlundraEffectAnchor` est implémentée par le proxy, `AlundraEffectReservoir.CreateAttached` et `CreateBreakEffect` sont le modèle). Trois tests appellent `Run` avec trois arguments ; la production l'appelle en `AlundraWorldProxy.cs:~3026` par un délégué statique.
+- [données, critique] **Producteurs des nibbles 6, 7, 9, 10.** Balance globale 11, 12, 14, 15, 18, 19, 20, 21, 23, 38, 238, 239 ; cartes 304, 309, 316, 319, 320, 337, 343, 390, 393, 412 à 415, 420, 437, 441, 473 à 475, 480, 481. **85 cartes** placent au moins un tel attaquant (238 sur 21 cartes, 319 sur 27, 437 sur 16, 390 sur 10). La carte 14 en a un : enregistrement 17, sprite 238 (drapeaux `0xC3`, D34), case (14, 28).
+
+**Écarts tranchés par la critique** (les relevés sont corrigés ainsi ; les audits restent en lecture seule).
+1. *« La vague ne demande rien à E20.e0k »* (relevés binaire et tests) est **CORRIGÉ**. Vrai pour le mouvement. Faux pour la DLL : l'unité de Z et `IsOnGround` ne survivent pas à la racine (fait « va-et-vient »). L'enveloppe met d'ailleurs e0k (ligne 4) avant f3 (ligne 5).
+2. *« La vague peut mourir après environ un tick si `IsGrounded` est vrai »* (impact DLL) est **CORRIGÉ vers le haut**. L'unité est perdue quel que soit `IsGrounded`. La sonde de la phase A de f3c tranche (D-F3-8).
+3. *« L'épingle de l'arène change très probablement / peut changer »* (impact DLL / tests) est **PRÉCISÉ**. Elle passe de 2 à 3 contacts (tick 138) si et seulement si E10 ne tourne pas. Avec E10 en ligne (D-F3-5) elle reste à 2.
+4. *« `snd(0)` : audibilité inconnue »* est **CLOS** : muet.
+5. *« BoxDirection ou TickFacing ? »* : égaux. `BoxDirection` est retenu (enveloppe, P3) ; un test affirme l'égalité.
+6. *« f3a peut se fondre dans f3b »* (impact DLL) est **REFUSÉ** : le P3 est à corriger « obligatoirement par E20.f3 » et ne dépend ni de la vague ni d'e0k.
+7. *« Aucun producteur des effets 4 et 5 dans f3 »* (binaire) est **PRÉCISÉ** : vrai pour les projectiles de f3, faux pour le jeu existant (85 cartes). f3b est visible.
+8. *Crochet de test* (question 2 des tests) : option (a) retenue (D-F3-3).
+9. *« Un type à la fois »* (enveloppe) : les trois épées partagent C61 et E10 et ne diffèrent que par leur fiche. Elles sont câblées ensemble, chacune avec son test.
+
+**Décisions de conception (ADR : le prochain numéro libre au moment de l'écriture, revérifié dans `docs/decisions/README.md` ; E20.e0b2, en
+pause, prendra le suivant à sa reprise).**
+- **D-F3-1** — Découpage f3a, f3b, f3c et ordre ci-dessus (Q-F3-1).
+- **D-F3-2** — La direction du tir est `BoxDirection`, lue dans `MovePlayer` avant l'horloge du tick (jamais `AnimationDirection`), puis `SpawnDirections[BoxDirection]`. Un test affirme `BoxDirection == TickFacing` au tick du tir à 1, 2 et 3 ticks par image.
+- **D-F3-3** — `SpawnWeaponProjectile` garde dans l'ordre : le compteur, le journal, puis, si le crochet de test est posé, le crochet **à la place** de l'appel de production (pas de double apparition) ; sinon, pour un type de l'ensemble `WiredWeaponTypes` seulement et si l'hôte est un `IEntityWorldContext`, `SpawnEntityBySpriteIndex(héros, false, type, X, Y, Z, direction)`. Un retour nul est toléré : tir perdu en silence, pointeur effacé, comme le binaire. L'ensemble est vide en f3a et vaut {27, 28, 29} en f3c ; un ensemble de test le remplace pour les tests.
+- **D-F3-4** — Un test mécanique : pour chaque type de `WiredWeaponTypes`, chaque code C et E non nul de son en-tête est géré (clé du registre de production pour ce type, ou branche en ligne d'E). Un faux ensemble {3} fait échouer le vérificateur sur `(E, 17)` (cas négatif dans le même test).
+- **D-F3-5** — E10 est traité comme E0 et E1 : dans la branche en ligne de `RunSpriteEvent`, hors de l'interrupteur des gestionnaires natifs (même corps `DestroyEntity(e, −1)`, recensement : seulement 27 à 29). `HitArena` détruit donc la vague au bon tick et l'épingle d'arène reste à 2. Écart de forme : deux adresses du binaire (`0x8007ED10`, `0x8007F23C`), une branche.
+- **D-F3-6** — C61 est un gestionnaire natif du registre (clé (C, 61), types 27 à 29) qui appelle le bouchon nommé `CheckAndTriggerTileEffect(entité)` (`0x8003A7B0`) avec un journal par thread, comme `AlundraPlayerAnimationEffects.StubCallsForTests`. L'herbe n'est pas coupée avant E20.e (Q-F3-2). Écart documenté dans le code : le binaire tire au moins 1 mot par cellule coupée ; le flux dérive après toute vague sur l'herbe.
+- **D-F3-7** — A0 des types 27 à 29 n'est pas enregistré (il n'écrit que `AIValues[0]`, jamais lu). Les tranches f4 à f6 devront élargir l'enregistrement A0 du Muruta en un ensemble de types partagé (clé (0, 0) unique, doublon interdit).
+- **D-F3-8** — Le Z d'une entité née par l'interface (`EntityRefId == −1`) sans le bit de gravité `0x100` reste logique. `PullRootPose` ne rapatrie ni `PosZ` ni `IsOnGround` pour elle, `TickPhysics` ne ré-extrait pas `PosZ` de la racine, et `IsOnGround = (PosZ ≤ sol)` dans le repère de la DLL (la règle de `AlundraEntityScriptProxy.cs:~1109`, binaire − 1 unité). X et Y continuent d'être rapatriés (écart sous le pixel, O-F3-2). La règle est livrée par E20.e0k (§1.18) ou par le repli de f3c (Q-F3-1). Si la sonde de vie est verte sans elle, la décision tombe (le fait était faux).
+- **D-F3-9** — `AlundraHitPass.Run` gagne un paramètre facultatif `attachEffect` (cible, identifiant). La porte `(r & 0xC0) != 0x80` est celle du magasin de `TouchingEntity` ; nibbles {6, 10} → 4, {7, 9} → 5 ; l'appel précède le magasin de `TouchingEntity` et les étincelles. Le monde passe un délégué statique (aucune allocation par tick) qui met sur l'étage, au rang 1 du tick comme les étincelles, `CreateAttached(false, id, 0, cible, 1, 0, 0, 0)` (profondeur + 1 comme l'effet de bris). Aucun tirage. Écart documenté : dans une image de plusieurs ticks la création a lieu en fin d'image ; l'effet suit ensuite la cible, aucune conséquence visible.
+- **D-F3-10** — La cible héros n'est pas filtrée : la fiche 0 donne des réponses nulles, donc l'effet s'attache toujours (fait « cible héros »).
+- **D-F3-11** — `HitArena` garde ses gestionnaires natifs éteints. L'observation du nouveau-né passe par `Arc.Entities` ; le support de test gagne un échantillon d'entité née et un pas de groupement de 1, 2 ou 3 ticks par image.
+- **D-F3-12** — Les comparaisons lisent l'oracle par clé (voir f3c). Le Z du binaire est le Z de la DLL + 1 unité brute (ADR-0026). Pour le flux, seuls les écarts comptent (l'oracle de f-projectiles n'avance pas le flux par tick) : le mot attendu est calculé par un pas local (D-E0B-8).
+
+**Questions à l'auteur.** Aucune bloquante : Q-F3-1 et Q-F3-2 sont tranchées plus haut (décisions de la session principale).
+Pour mémoire : Q-F3-1 opposait f3c qui attend e0k (A) à f3c qui porte elle-même la règle du Z (B) ; Q-F3-2, la coupe d'herbe réelle
+sous la vague, demanderait d'avancer E20.e0c et E20.e en entier.
+
+**Prérequis et dépendants.** E20.e0k est-il nécessaire ? **Pas pour le mouvement** : la vague vole à Z constant, sans gravité ni impulsion (oracle : position et forces constantes). **Oui pour une règle** (D-F3-8) : f3a et f3b n'en ont pas besoin ; f3c l'exige de §1.18 ou la porte elle-même (Q-F3-1). f3 n'exige pas E20.e0b2, en pause : le `Contents` de la vague vaut 0, donc aucun tirage à la création. Elle touche pourtant les mêmes fichiers (`AlundraWorldProxy.cs`) : les tranches s'exécutent l'une après l'autre. Dépendants : E20.f4, E20.f5 et E20.f6 (la couture, l'invariant, le registre, le Z logique) ; E20.f6 (les effets 4 et 5 de f3b, producteurs réels) ; E20.e (ferme le bouchon d'herbe) ; E14 (les ennemis de feu et de glace touchent le héros).
+
+---
+
+#### 1.19.1 E20.f3a — Direction du tir et couture de branchement (aucun type activé) ⏳
+
+**Prérequis.** E20.f1 ✅ (§1.9), E20.e0a1 à E20.e0a3 ✅ (§1.16).
+
+**But.** Corriger le P3 d'E20.f1a (la direction du tir) et poser la couture qui appelle l'interface pour les types câblés, sans en câbler aucun.
+
+**Périmètre.** `Alundra/Scripts/AlundraPlayerManager.cs` (`SpawnWeaponProjectile`, ses commentaires), `Alundra.Tests/` (nouveaux tests ; commentaires périmés mis à jour), `docs/plan-e20-annexe/e20-f3/` (README, `oracle/`), un ADR commun à f3a, f3b et f3c.
+
+**Hors périmètre.** Tout type câblé ; le retrait du crochet de test ; `PlayerTryAttack`, la charge, les autres lignes de `MovePlayer` ; E20.e0k.
+
+**Partage des phases** (seul à faire foi) :
+- **Phase A** (T1, sans changement de comportement) : `WiredWeaponTypes` (vide), l'ensemble de test, la garde, l'appel de l'interface après le crochet (le crochet remplace l'appel), la tolérance du nul, le vérificateur de l'invariant. En production rien ne change : l'ensemble est vide. La direction reste `AnimationDirection`.
+- **Phase B** (T3) : la ligne de la direction (`BoxDirection`) et les commentaires de `SpawnDirections` et de `WeaponSpawnCall`. C'est le seul changement de comportement observable (champ `Direction` du journal).
+
+##### Tâches
+
+- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code), pour les trois sous-tranches. `docs/plan-e20-annexe/e20-f3/oracle/` : les outils de la machine copiés octet pour octet avec leurs sommes de contrôle ; les scripts `wave_run`, `summary`, `wave_hit`, `wave_only`, `wave_z`, `wave_mut`, `wave_grass`/`2`/`3`, `hitfx`, `hitfx_mut`, `multishot`, `dirtest`, `dir_extra`, `arena_probe`, `twoint` ; sorties en texte **et** en JSON, avec les clés des lignes de l'oracle (`slots[1].status`, `.cnt1c`, `.reset_AC`, `.px`, `.py`, `.pz`, `.fx`, `.fy`, `.fz`, `.adj_13C`, `.ground_144`, `.hbx`, `.hby`, `.hbz`, `.bw`, `.bd`, `.bh`, `.atk_attr`, `.atk_pow`, `.type68`, `.flags6C`, `.loot3c`, `.c1d0`, `.touch_slot`, `.box1d4` ; pour `hitfx_table` : `attr`, `nib`, `resp`, `fx`, `sparks`, `c1d0`, `touch`, `hitc`, `rng_before`, `rng_after`). Deux exécutions donnent un manifeste identique. Au moins 12 mutants d'un mot, tous tués ou équivalents prouvés par écrit : W1 à W3, les 4 de `hitfx_mut`, et 5 de plus (table des directions `0x80023644` permutée, comparaison du délai de `0x8002F7C8` inversée, octet z de `ptr[3]` changé, pointeur non effacé après l'apparition, drapeau b1 ignoré). L'oracle accepte une position fractionnaire du héros (O-F3-2). README : les valeurs attendues, la prédiction **qualitative** (aucun test existant ne bouge en f3a ni en f3b ; en f3c : l'épingle du registre passe de 6 à 7, l'épingle d'arène reste à 2) et le compte de départ de la suite (4 852 après e0b1, à relever).
+- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile, puis le code). `AlundraWeaponSpawnSeamTests`, chaque cas « sans effet » accolé dans la même assertion à un cas positif :
+  - (s1) monde (`ArcRun`), arc du chasseur au sol : ensemble vide → compteur 1, journal 1 appel, **zéro** entité nouvelle ; ensemble de test {3} → exactement une entité de type 3, parent le héros, case 1, `JoinsBirthTick` ;
+  - (s2) crochet posé et type dans l'ensemble → exactement **une** entité (celle du crochet) ; crochet nul → une entité (celle de la production) ;
+  - (s3) hôte de montage → aucun appel, aucune exception, compteur et journal inchangés ; le même tir dans le monde → une entité ;
+  - (s4) 63 cases occupées → rien n'est créé, `WeaponRecordPointer == 0`, pas d'exception ; une case libre → une entité ;
+  - (s5) invariant (D-F3-4) : l'ensemble de production (vide) passe, le faux ensemble {3} échoue sur `(E, 17)`.
+  Puis le code de la phase A. Verts à la fin de T1 ; la suite complète ne bouge pas.
+- ⏳ **T2 — Tests du P3**, écrits après T1, **rouges avant T3**. `AlundraShotDirectionTests` :
+  - (d1) arc du chasseur en l'air (fiche 8, air : type 3, délai 0, z 16), le héros regarde à l'est, Carré + Gauche pressés au tick P, tir au tick P+1 : `Direction == 8` (clé `dirtest`, section « air »), aux groupements de 1 tick **et** de 2 ticks par image (P et P+1 dans la même image) ; la phase A rend `0x18` au groupement de 2 ticks : rouge ;
+  - (d2) accolé dans le même test : Carré au tick P, Gauche seule à partir du tick du tir : `0x18` (clé `dir_extra`, « Left only from t9 »), aux groupements de 1 tick (le virage du tick du tir est ignoré) ;
+  - (d3) les quatre directions au sol, Carré + Haut, Bas, Gauche, Droite : `0x10`, `0`, `8`, `0x18` (clés `dir_extra`) ;
+  - (d4) `BoxDirection == TickFacing(héros)` au tick du tir, quatre directions × 1, 2, 3 ticks par image (vert dès T1 : il épingle l'hypothèse de D-F3-2).
+- ⏳ **T3 — Phase B** (commit de code B) : la ligne de la direction ; commentaires périmés corrigés (`AlundraPlayerManager.cs:1150, 1183-1185, 1198-1199`, sept commentaires de tests nommant le bouchon). Les tests de T2 passent au vert ; suite complète.
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre). Mutants du code de la DLL, au moins 8, tous tués : direction lue sur `AnimationDirection`, indice non borné, garde inversée, crochet qui ne remplace pas, appel avant le compteur, appel même hors ensemble, nul non toléré, pointeur non effacé.
+
+##### Acceptation
+
+- Oracle : manifeste identique sur deux exécutions ; au moins 12 mutants tués ou prouvés équivalents.
+- DLL : tous les tests de T1 et T2 verts ; (d1) rouge avant T3 (nommé) ; `Alundra.Tests` en Release **et** en Debug, compte de départ plus les nouveaux, zéro échec ; **aucun test existant ne bouge** (les huit cas du journal restent à `0x18`) ; `cmp` de `alundra-project/Alundra.dll` et de la DLL Debug ; les cinq traces inchangées ; moteur, convertisseur et données sans diff.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : une entité née en production ; la phase A fait bouger un test ; (d1) vert avant T3 ; un test existant à réécrire ; un double appel du crochet et de la production ; un besoin de changer le moteur.
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : la phase B se retire seule (la ligne de la direction) ; la phase A reste inerte (ensemble vide).
+
+---
+
+#### 1.19.2 E20.f3b — Effets de coup 4 et 5 ⏳
+
+**Prérequis.** E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅. Indépendante de f3a et de f3c. Touche `AlundraWorldProxy.cs` : à exécuter après E20.e0b2 ou à relire ses numéros de ligne.
+
+**But.** La passe de coups attache l'effet 4 ou 5 à la cible, comme `0x800395E8-0x80039668`.
+
+**Périmètre.** `AlundraHitPass.cs`, `AlundraNativeEffects.cs`, `AlundraWorldProxy.cs` (`RunHitPassHook`), les commentaires périmés (« NOT PORTED », « no effect anchor »), tests, ADR.
+
+**Hors périmètre.** Les producteurs nouveaux (E20.f6) ; la destruction anticipée de l'effet ; le pool de 128 effets pleins.
+
+**Partage des phases** (seul à faire foi) :
+- **Phase A** (T1, sans changement de comportement) : la logique pure de la passe : paramètre facultatif `attachEffect`, porte, table des nibbles, ordre. Le monde passe `null` : rien ne change en production.
+- **Phase B** (T3) : le câblage du monde : le délégué statique, l'opération sur l'étage, `CreateAttached` (D-F3-9). C'est la seule ligne de comportement de la phase.
+
+##### Tâches
+
+- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette, verts à la fin de T1). `AlundraHitPassEffectTests` (acteurs faits à la main, rappel enregistreur) :
+  - (e1) les **160 paires** (16 nibbles × 10 réponses) de `hitfx_table` : effets attendus = clé `fx`, `TouchingEntity` = clé `touch`, étincelles = clé `sparks`, `+0x1D0` = clé `c1d0`, `HitCounter` = clé `hitc`. Chaque ligne « immune » (`resp` 0x80, 0xBF : `fx = []`, `touch = none`, mais `c1d0 = 25`, `hitc = 1`, trois étincelles) est vérifiée dans la même boucle que les lignes non immunes des mêmes nibbles ;
+  - (e2) ordre : le journal du rappel est [effet, étincelles] et `TouchingEntity` est encore nul quand l'effet est demandé ;
+  - (e3) la cible héros (fiche 0) : l'effet est demandé pour les nibbles 6, 7, 9, 10.
+- ⏳ **T2 — Tests du monde, écrits après T1, rouges avant T3.** `AlundraHitEffectWorldTests` (`HitArena`, carte 14) :
+  - (w1) un attaquant dont `CurrentAttack` est posé à (attribut `0x06`, puissance 1) touche le héros : un emplacement du réservoir avec `TargetEffect == 4`, mode 1, ancre = le héros, `DepthOffset == 1`, créé au tick de la touche, libéré 40 ticks après ; attribut `0x07` → effet 5, libéré après 95 ticks ; la même arène avec un attribut 1 ne crée aucun emplacement (cas « sans effet » dans la même assertion) ;
+  - (w2) le mot du flux après la touche vaut celui d'une touche de nibble 1 (aucun tirage de l'effet), calculé par un pas local (D-F3-12) ;
+  - (w3) groupements de 1, 2 et 3 ticks par image : mêmes emplacements, même tick de création.
+- ⏳ **T3 — Phase B** (commit de code B) : le câblage ; commentaires périmés corrigés ; suite complète ; aucun test existant ne bouge.
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants du code de la DLL, au moins 12, tous tués : masque `0xC0` → `0x80`, porte inversée, nibble 10 omis, 9 mappé sur 4, identifiants échangés, effet après le magasin, effet après les étincelles, effet pour une réponse immune, un seul effet par passe au lieu d'un par touche, `DepthOffset` 0, ancre = l'attaquant, rappel appelé deux fois.
+
+##### Acceptation
+
+- Pass : les 160 paires conformes à l'oracle ; (e2) et (e3) verts.
+- Monde : (w1) à (w3) verts, rouges avant T3 (nommés) ; compte de la suite plus les nouveaux, zéro échec en Release et en Debug ; **aucun test existant ne bouge** (les trois appels à trois arguments restent inchangés) ; `cmp` de la DLL ; cinq traces ; moteur, convertisseur et données sans diff.
+- Recette de l'auteur (non bloquante, à confirmer par une sonde de T0) : carte 14, la « flamme » de l'enregistrement 17 (sprite 238, case (14, 28)) ; si elle blesse le héros, l'effet 4 s'attache au héros pendant 40 ticks.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : la phase A fait bouger un test ; (w1) vert avant T3 ; un test existant à réécrire ; un tirage de l'effet ; un test d'arc de la carte 14 qui bouge (la flamme touche un arc) : question à l'auteur ; une modification du moteur.
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : la phase B se retire seule (le monde repasse `null`) ; la phase A reste inerte.
+
+---
+
+#### 1.19.3 E20.f3c — La vague de l'épée (C61, E10) et l'activation des types 27 à 29 ⏳
+
+**Prérequis.** E20.f3a, E20.e0a1 à E20.e0a3 ✅, E20.e0b1 ✅, la règle « Z logique » (D-F3-8) d'E20.e0k (§1.18) ou son repli (Q-F3-1). Touche `AlundraWorldProxy.cs`, `AlundraEventProgramRunner.cs` et `AlundraEntityScriptProxy.cs` : après E20.e0b2 si celle-ci reprend.
+
+**But.** L'épée chargée tire la vague au tick `R + 21` ; elle vit 26 ticks, balaie sa boîte, touche les cibles de classe A, coupe l'herbe en bouchon nommé, et meurt à S+26 avec sa case libre à S+27.
+
+**Périmètre.** `AlundraEventProgramRunner.cs` (E10 en ligne), nouveau fichier `AlundraWaveSwordAi.cs` (C61, bouchon nommé, journal), `AlundraNativeSpriteRegistry.cs` (un appel de plus), `AlundraPlayerManager.cs` (l'ensemble {27, 28, 29}), `AlundraEntityScriptProxy.cs` (la règle du Z logique si repli), `Alundra.Tests/` (support : échantillon de nouveau-né), `docs/plan-e20-annexe/e20-f3/`, ADR.
+
+**Hors périmètre.** La coupe d'herbe réelle et son butin (E20.e, E20.e0c) ; tout autre type câblé ; A0 ; le déplacement de X et Y (O-F3-2).
+
+**Partage des phases** (seul à faire foi) :
+- **Phase A** (T1 à T3, sans changement de comportement en production) : E10 en ligne ; C61 et son bouchon ; la règle du Z logique (si repli) ; les tests de vie par le **crochet de test** (`WeaponSpawnBirthHookForTests` appelle l'interface au lieu exact du tir, tick de naissance compris). Aucune entité n'est née par l'interface en production (l'ensemble reste vide) : la règle du Z logique, restreinte aux entités nées par l'interface sans gravité, ne touche donc aucune entité de production.
+- **Phase B** (T4) : l'ensemble câblé devient {27, 28, 29}. C'est la seule ligne de comportement de la phase. Les tests de tir de production (crochet nul) sont rouges avant elle.
+
+**Valeurs attendues et leurs clés** (acier, est, relâchement à 96 ; fichiers `wave_<épée>_<direction>.json`, ligne du tick, `slots[1]`). Ticks de l'arène = ticks de l'oracle − 5 ; `pz` du binaire = Z de la DLL + 1 unité brute.
+
+| Valeur | Clé | Attendu |
+|---|---|---|
+| Tick d'apparition | première ligne avec `slots[1]` | `S = R + 21` (117) |
+| Statut | `status` | 2 de S à S+25 ; 4 à S+26 ; absent à S+27 |
+| Compteur d'images | `cnt1c` | 1 à S ; 26 à S+25 ; 27 à S+26 |
+| Drapeau de fin | `reset_AC` | 0 jusqu'à S+24 ; 1 à S+25 |
+| Position | `px`, `py`, `pz` | constantes (X, Y du héros ; Z du héros + 1 unité) |
+| Forces, `ForceAdjusted`, sol | `fx`, `fy`, `fz` ; `adj_13C` ; `ground_144` | 0 ; 0 ; 0 à chaque tick |
+| Boîte | `hbx`, `hby`, `hbz`, `bw`, `bd`, `bh` | change à S, S+1, S+3, S+5, S+7, S+9 (est : x 82, 94, 106, 118, 130, 142 ; y 88) ; 36×24×31 |
+| Attaque | `atk_attr`, `atk_pow` | 129 ; 10, 20, 38 (acier, démon, saint) |
+| Type, drapeaux | `type68`, `flags6C` | 27, 28, 29 ; `0x205C` |
+| Butin | `loot3c` | 0 (aucun tirage à la création) |
+| Touche (cibles) | `c1d0`, `touch_slot` (`wave_reach_sweep`) | est +56, +68, +80 → S+5, S+7, S+9 par la vague ; +32, +44 → le héros |
+
+##### Tâches
+
+- ⏳ **T1 — Phase A, E10 et C61** (tests d'abord, rouges sur un squelette, puis le code). `AlundraWaveSwordLifeTests` (monde, nouveau-né née par le crochet) :
+  - (v1) E10 : détruite à S+26, case libre à S+27 (une apparition suivante reprend la même case), aucun effet de bris créé (`BreakEffect` 0) ; **accolé** à `HitArena` (gestionnaires natifs éteints) qui détruit aussi la vague au même tick (D-F3-5) ;
+  - (v2) C61 : le bouchon est appelé une fois à chaque tick de S+1 à S+25 (25 appels, clé `wave_grass2` : spy), jamais à S (A tourne) ni après S+25 ; paire : la même vague dans `HitArena` (natifs éteints) n'appelle pas le bouchon (cas négatif de l'interrupteur) ;
+  - (v3) registre : 7 clés (6 + (C, 61)) ; le type 27 a (C, 61) et (E, 10 en ligne), aucun autre ; `AlundraNativeSpriteRegistryTests.cs:51` réécrit par dérivation (6 + 1).
+- ⏳ **T2 — Sonde de vie, rouge avant T3.** (v4) la vague par le crochet, pour les épées 27, 28, 29 × les quatre directions de l'oracle (acier ; démon est ; saint est), à **1, 2 et 3 ticks par image** : pour chaque tick de S à S+27, `Status`, `FrameCounter`, `ForceResetAnimationFlag`, `PosX/PosY`, `PosZ` (clé `pz` − 1), forces, `ForceAdjusted`, `IsOnGround` et la boîte égalent les clés du tableau. Zéro changement et changement dans la même assertion : la position et le sol constants avec le balayage de la boîte. Le tick de mort mesuré **avant** la règle est noté au README (prédit : S+1 à S+3). Si la sonde est verte sans la règle, D-F3-8 tombe : arrêt et rapport.
+- ⏳ **T3 — La règle du Z logique** (D-F3-8), si Q-F3-1 donne le repli B ; sinon T3 est « relire §1.18 » et la sonde de T2 sert d'acceptation d'e0k. Liste prédite des tests qui bougent : ceux qui lisent le Z d'une entité née par l'interface après sa première image (arbres de `AlundraBirthTickTests`) ; mesurée par la suite complète ; chacun réécrit par dérivation. T2 passe au vert aux trois groupements.
+- ⏳ **T4 — Phase B, câblage de production.** Tests écrits d'abord, **rouges avant T4**, crochet nul, dans `HitArena` et dans `ArcRun` (cartes 14, natifs allumés pour le second) :
+  - (p1) l'arène de la charge (relâchement à 91, S = 112) : une entité de type 27 fille du héros, aux clés du tableau, case 1 ; épées de démon et sainte : types 28 et 29, `atk_pow` 20 et 38 ;
+  - (p2) la cible à +56, +68, +80 est touchée par la vague aux ticks S+5, S+7, S+9 (clé `wave_reach_sweep`) ; la cible à +44 l'est par le héros (cas positif et « la vague ne passe pas devant le héros » dans la même assertion) ;
+  - (p3) la vague ne touche jamais le héros (`FrameCollisionTickCounter` du héros jamais posé par elle) dans la même exécution où la cible est touchée ;
+  - (p4) l'épingle d'arène : 2 contacts avec E10 en ligne ; le mutant « E10 dans le registre » en donne 3 au tick 138 (clé `arena_probe`) ;
+  - (p5) un tir d'arme non câblée (arc du chasseur) : compteur 1, journal 1 appel, **zéro** entité ; accolé au tir de l'épée : une entité ;
+  - (p6) table pleine : 62 entités posées, le tir de la vague ne crée rien et le pointeur est effacé ; une case libre : une entité ;
+  - (p7) dégâts : la fonction pure `AlundraDamage.ResolveBalanceTarget` pour (attribut 129, puissance 10, 20, 38) contre la fiche du Beannoïde ; `TouchingEntity` = la vague au tick de la touche (le dégât de bout en bout reste à la recette).
+  Puis la ligne de câblage.
+- ⏳ **T5 — ADR, plan, verifiers frais** (deux ; l'un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL, au moins 14, tous tués : E10 absent, E10 sous l'interrupteur natif, C61 absent, C61 aussi au tick S, unité de Z perdue, `IsOnGround` inversé, destruction avec effet, ensemble contenant 3, mapping des directions permuté, ordre de la garde, apparition deux fois, crochet qui ne remplace pas, tolérance du nul, boîte figée au repli.
+
+##### Acceptation
+
+- Oracle : les sorties de T0 (acier ×4 directions, démon, saint, balayages, `arena_probe`, mutants) ; manifeste identique.
+- DLL : (v1) à (v4), (p1) à (p7) verts ; (v4) rouge avant T3 et (p1) à (p6) rouges avant T4 (nommés) ; la vague vit 26 ticks aux trois groupements ; `Alundra.Tests` en Release **et** en Debug, compte de départ plus les nouveaux, zéro échec ; tests déplacés ⊂ liste prédite (registre : 6 → 7 ; les arbres du Z), chacun justifié par sa dérivation ; l'épingle d'arène reste à 2 ; `cmp` de la DLL ; cinq traces ; moteur, convertisseur et données sans diff.
+- Recette de l'auteur : sauvegardes `steel-m14`, `demon-m14`, `arsenal-b-m14` (F9). Charger, relâcher, la vague apparaît 20 ticks après et dure 26 ticks. Attendu : elle ne coupe pas l'herbe (Q-F3-2) et touche un Beannoïde à 56 px et plus.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : la vague vit un nombre de ticks différent selon le groupement ; la sonde est verte sans la règle (D-F3-8 tombe) ; un test hors de la liste prédite bouge ; plus de 10 tests existants bougent ; la vague touche le héros ; l'arène donne 3 contacts avec E10 en ligne ; la règle de §1.18 diffère de D-F3-8 ; un besoin de changer le moteur.
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : la phase B se retire seule (vider l'ensemble) ; la phase A reste inerte en production.
+
+---
+
+**Points ouverts ajoutés.**
+
+| # | Question | Tranchée par |
+|---|---|---|
+| O-F3-1 | Le flux de nombres aléatoires dérive après toute vague sur l'herbe (le bouchon ne tire pas les mots de la coupe) | E20.e |
+| O-F3-2 | X et Y du nouveau-né sont arrondis au pixel par la racine : écart sous le pixel, boîte de la vague à moins d'un pixel de celle du binaire ; à mesurer avec un héros à position fractionnaire (T2 de f3c) | sonde de T2 ; E20.e0k |
+| O-F3-3 | L'enregistrement A0 du Muruta devra devenir un ensemble de types partagé pour f4 à f6 | E20.f4 |
+| O-F3-4 | Les effets 4 et 5 sont créés en fin d'image : position de départ de fin d'image dans une image de plusieurs ticks | écart accepté ; E20.f6 si visible |
+| O-F3-5 | Recette de f3b : la flamme de la carte 14 (enregistrement 17) est un candidat, pas un fait | sonde de T0 de f3b |
 
 ## 2. Points ouverts
 
