@@ -178,6 +178,13 @@ public interface ISpriteRecordCatalog
     /// initialization.
     /// </summary>
     bool TryGet(Guid prefabAssetId, out SpriteRecordHeader header);
+
+    /// <summary>Stub of T3 (the catalogue of E20.e0a1 is written by T4).</summary>
+    bool TryGetPrefab(bool isMapPage, int index, out Guid prefabAssetId)
+    {
+        prefabAssetId = Guid.Empty;
+        return false;
+    }
 }
 
 /// <summary>
@@ -251,6 +258,13 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
 
     public bool TryGet(Guid prefabAssetId, out SpriteRecordHeader header)
         => _headersByPrefabId.TryGetValue(prefabAssetId, out header);
+
+    /// <summary>Stub of T3.</summary>
+    public bool TryGetPrefab(bool isMapPage, int index, out Guid prefabAssetId)
+    {
+        prefabAssetId = Guid.Empty;
+        return false;
+    }
 
     /// <summary>
     /// Session-scoped cache keyed by project path (D-T-14, docs/plan-transitions-carte.md, slice T1):
@@ -409,4 +423,11 @@ public sealed class FakeSpriteRecordCatalog : ISpriteRecordCatalog
 
     public bool TryGet(Guid prefabAssetId, out SpriteRecordHeader header)
         => _headersByPrefabId.TryGetValue(prefabAssetId, out header);
+
+    /// <summary>Stub of T3.</summary>
+    public bool TryGetPrefab(bool isMapPage, int index, out Guid prefabAssetId)
+    {
+        prefabAssetId = Guid.Empty;
+        return false;
+    }
 }

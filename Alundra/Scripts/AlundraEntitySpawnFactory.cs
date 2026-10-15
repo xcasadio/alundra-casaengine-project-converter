@@ -468,6 +468,11 @@ internal static class AlundraEntitySpawnFactory
         return entity;
     }
 
+    /// <summary>Stub of T3 (the record-less core of E20.e0a1 is written by T4).</summary>
+    internal static Entity CreateEntityFromSpriteIndex(
+        Entity? prefab, SpriteRecordHeader header, bool isMapPage, int index, Entity? parentEntity, int x, int y, int z, int direction, ICollisionField? collisionField)
+        => throw new NotImplementedException();
+
     internal static Vector3 ResolveLogicalPosition(int posX, int posY, int posZ)
     {
         var pixelX = posX >> 16;

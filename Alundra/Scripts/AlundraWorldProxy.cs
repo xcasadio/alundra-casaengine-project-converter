@@ -266,6 +266,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     internal ISpriteRecordCatalog SpriteRecordCatalog = Alundra.Scripts.SpriteRecordCatalog.GetOrCreate(EngineEnvironment.ProjectPath);
 
+    /// <summary>Stub of T3 (E20.e0a1): the valid indices of the map page, read at the first call of the interface by T4.</summary>
+    internal AlundraMapSpriteIndices? MapSpriteIndices;
+
     /// <summary>
     /// E13.c S3 (docs/plan-e13c-icones-hud.md): the three item tables the converter republishes under
     /// <c>Data/</c> - see <see cref="AlundraItemTables"/>'s own doc. Resolved through the same kind of

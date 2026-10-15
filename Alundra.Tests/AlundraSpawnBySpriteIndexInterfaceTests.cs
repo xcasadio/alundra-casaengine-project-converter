@@ -1,0 +1,250 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Alundra.Scripts;
+using CasaEngine.Framework.Scene.Entities;
+using Xunit;
+
+namespace Alundra.Tests;
+
+/// <summary>
+/// E20.e0a1 (docs/plan-e20-heros.md section 1.16.1, ADR-0063), the interface <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> on the REAL world of map 14 (<c>Overworld 3,1-14</c>, built by the production path of
+/// <see cref="ArcRun"/> with the export's prefabs), against the oracle of <c>docs/plan-e20-annexe/e20-e0a/oracle</c>. The full path (catalog, validity of the page, the prefab read fresh, the core, the balance sheet, the addition to the
+/// world, the sound, the root push) gives the projection of the oracle HOW THE CORE DOES - hence 151 numbers of the global page (valid on every map) and the numbers of the map page that are valid on map 14 - except the fields that depend on
+/// the terrain (<c>PosZ</c>, <c>ModdedPosZ</c>, the terrain, the floor and the corner heights): the oracle ran on a flat field and map 14 has its own, those are proved by the core tests on the field of the oracle.
+/// No production path calls the interface (the shot of the hero is E20.f3's).
+/// </summary>
+[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+public sealed class AlundraSpawnBySpriteIndexInterfaceTests
+{
+    private const int HeroX = 150;
+    private const int HeroY = 100;
+
+    private static ArcRun Arc(string name) => new(new ArcSpec("E20e0a1-" + name, "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true));
+
+    private static IEntityWorldContext Context(ArcRun arc) => arc.Proxy;
+
+    private static AlundraEntityScriptProxy Spawn(ArcRun arc, AlundraEntityScriptProxy? parent, bool isMapPage, int index, int xPixels = HeroX, int yPixels = HeroY, int dllZ = -1, int direction = 0x10)
+        => Context(arc).SpawnEntityBySpriteIndex(parent, isMapPage, index, xPixels << 16, yPixels << 16, dllZ, direction)!;
+
+    private static int Lines(ArcRun arc) => arc.Log!.Warnings.Count(w => w.Contains("SpawnEntityBySpriteIndex", StringComparison.Ordinal));
+
+    [Fact]
+    public void B2_V6_TheMapPageNumbersValidOnMap14_AreFiveOfTheOracle()
+    {
+        Assert.Equal(new[] { 79, 136, 144, 153, 199 }, AlundraSpawnIndexOracle.ValidIndicesByMap()[14].ToArray());
+    }
+
+    [Fact]
+    public void B2_TheFullPath_On151NumbersOfTheGlobalPage_AndTheNumbersOfTheMapPageValidOnMap14_GivesTheProjectionOfTheOracle_AndAppendsToTheWorld()
+    {
+        using var arc = Arc("full");
+        var onMap14 = AlundraSpawnIndexOracle.ValidIndicesByMap()[14].ToHashSet();
+        var vectors = AlundraSpawnIndexOracle.Vectors("v1").Concat(AlundraSpawnIndexOracle.Vectors("v2").Where(v => onMap14.Contains(v.Index))).ToList();
+        Assert.Equal(151 + 5, vectors.Count);
+
+        foreach (var v in vectors)
+        {
+            var before = arc.Entities.Count;
+            var spawned = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, v.IsMapPage, v.Index, v.X << 16, v.Y << 16, v.Z - 1, v.Direction);
+            Assert.NotNull(spawned);
+            Assert.Equal(before + 1, arc.Entities.Count);
+            Assert.Same(spawned, arc.Entities[^1]); // appended at the end of the list, as the record path does (no slot yet: e0a2).
+            SpawnProjectionAsserts.Check(v.Id, v.P!, spawned!, arc.Proxy.CollisionField, arc.HeroEntity, aux: null, withTerrain: false);
+        }
+    }
+
+    [Fact]
+    public void F_TheRawUnitOfZ_IsAddedByTheInterface_AHeroZMakesAnEntityOneRawUnitHigher()
+    {
+        using var arc = Arc("z");
+        var field = arc.Proxy.CollisionField;
+        // A Z well above the ground of map 14 at this point: no raise to the terrain hides the rule.
+        var high = 40 << 16;
+        var spawned = Spawn(arc, arc.Hero, false, 3, dllZ: high);
+        Assert.True(spawned.ComputeTerrainHeight(field) < high);
+        Assert.Equal(high + 1 - spawned.ModZ, spawned.PosZ); // D-E0A-1: PosZ = (z + 1) - ModZ, before the raise.
+        Assert.Equal(high + 1 - spawned.ModZ + spawned.ModZ, spawned.ModdedPosZ);
+
+        // The prefab with an OffsetZ of -18 px at 50 px: the subtraction is visible.
+        var offset = Spawn(arc, arc.Hero, false, 20, dllZ: 50 << 16);
+        Assert.Equal((50 << 16) + 1 + (18 << 16), offset.PosZ);
+    }
+
+    [Fact]
+    public void F_TheEightCallsOfTheAt9Traces_AppearAtTheZOfTheBinaryMinusOneRawUnit_UnlessTheTerrainRaisesThem()
+    {
+        using var arc = Arc("at9");
+        var field = arc.Proxy.CollisionField;
+        foreach (var v in AlundraSpawnIndexOracle.Vectors("v7"))
+        {
+            // The DLL's stub of the shot passes 1 048 576 where the binary's trace has 1 048 577.
+            var spawned = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, v.Index, v.X << 16, v.Y << 16, v.Z - 1, v.Direction)!;
+            Assert.NotNull(spawned);
+            var terrain = spawned.ComputeTerrainHeight(field);
+            var expected = v.P!.Pz - 1 <= terrain ? terrain : v.P.Pz - 1;
+            Assert.True(expected == spawned.PosZ, $"{v.Id}: PosZ {spawned.PosZ}, expected {expected} (oracle {v.P.Pz} - 1, terrain {terrain})");
+            Assert.Equal(v.P.Px, spawned.PosX);
+            Assert.Equal(v.P.Py, spawned.PosY);
+        }
+    }
+
+    [Fact]
+    public void C_TheNullContract_AnInvalidIndexAnAbsentPrefabOrAnUnknownMap_AddsNothing_AndLogsOneLine()
+    {
+        using var arc = Arc("null");
+        var global = AlundraSpawnIndexOracle.Vectors("v1").Select(v => v.Index).ToHashSet();
+        var absent = Enumerable.Range(0, 256).First(i => !global.Contains(i));
+        var invalid = new (bool IsMapPage, int Index, string Why)[]
+        {
+            (false, -1, "negative"), (false, 256, "256"), (false, absent, "no bank key on the global page"), (true, -1, "negative on the map page"), (true, 256, "256 on the map page"),
+            (true, 213, "a number of the map page that is not valid on map 14"),
+        };
+
+        foreach (var (isMapPage, index, why) in invalid)
+        {
+            var count = arc.Entities.Count;
+            var lines = Lines(arc);
+            Assert.True(Context(arc).SpawnEntityBySpriteIndex(arc.Hero, isMapPage, index, HeroX << 16, HeroY << 16, 0, 0x10) is null, why);
+            Assert.Equal(count, arc.Entities.Count);
+            Assert.Equal(lines + 1, Lines(arc));
+        }
+
+        // A map the file does not know.
+        var previousIndices = arc.Proxy.MapSpriteIndices;
+        arc.Proxy.MapSpriteIndices = new AlundraMapSpriteIndices(new Dictionary<int, IReadOnlyList<int>> { [15] = new[] { 79 } });
+        var countBefore = arc.Entities.Count;
+        var linesBefore = Lines(arc);
+        Assert.Null(Context(arc).SpawnEntityBySpriteIndex(arc.Hero, true, 79, HeroX << 16, HeroY << 16, 0, 0x10));
+        Assert.Equal(countBefore, arc.Entities.Count);
+        Assert.Equal(linesBefore + 1, Lines(arc));
+        arc.Proxy.MapSpriteIndices = previousIndices;
+
+        // A prefab the content manager cannot read.
+        var previousCatalog = arc.Proxy.SpriteRecordCatalog;
+        arc.Proxy.SpriteRecordCatalog = new UnreadablePrefabCatalog(previousCatalog);
+        linesBefore = Lines(arc);
+        Assert.Null(Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, 3, HeroX << 16, HeroY << 16, 0, 0x10));
+        Assert.Equal(countBefore, arc.Entities.Count);
+        Assert.Equal(linesBefore + 1, Lines(arc));
+        arc.Proxy.SpriteRecordCatalog = previousCatalog;
+
+        // A null parent is accepted (the binary accepts it too).
+        var orphan = Context(arc).SpawnEntityBySpriteIndex(null, false, 3, HeroX << 16, HeroY << 16, 0, 0x10);
+        Assert.NotNull(orphan);
+        Assert.Equal(countBefore + 1, arc.Entities.Count);
+        Assert.Null(orphan!.ParentEntity);
+        Assert.Null(orphan.ChildEntity);
+    }
+
+    /// <summary>A catalog that gives a prefab for every key but whose prefab no content manager can read (a prefab the export does not hold).</summary>
+    private sealed class UnreadablePrefabCatalog : ISpriteRecordCatalog
+    {
+        private readonly ISpriteRecordCatalog _real;
+
+        public UnreadablePrefabCatalog(ISpriteRecordCatalog real) => _real = real;
+
+        public bool TryGet(Guid prefabAssetId, out SpriteRecordHeader header)
+        {
+            header = default;
+            return true;
+        }
+
+        public bool TryGetPrefab(bool isMapPage, int index, out Guid prefabAssetId)
+        {
+            prefabAssetId = Guid.Parse("00000000-0000-0000-0000-00000000e0a1");
+            return true;
+        }
+    }
+
+    [Fact]
+    public void D_TheNewEntity_IsNotFoundBy0x2COr0x2EOf0_AndItsTriggerIsMinusOne()
+    {
+        using var arc = Arc("search");
+        var spawned = Spawn(arc, arc.Hero, false, 3);
+        Assert.Equal(-1, spawned.EntityRefId); // the binary writes -1 at 0x80039D70-0x80039D88; the field's default 0 would answer to 0x2C [0] and 0x2E [0].
+        Assert.Equal(ScriptHelper.ProgramUnknown, spawned.EventTrigger);
+        Assert.Equal(EntityStatus.Loaded, spawned.Status);
+
+        // 0x2C [0] and 0x2E [0] are this search with the record 0 as the key.
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(arc.Hero, 0, arc.Entities, arc.Hero);
+        Assert.DoesNotContain(spawned, matches);
+        Assert.All(matches, m => Assert.Equal(0, m.EntityRefId));
+    }
+
+    [Fact]
+    public void E_TheParentAndTheRoot_ThroughTheInterface_FourCases()
+    {
+        using var arc = Arc("parent");
+        var hero = arc.HeroEntity;
+
+        var first = Spawn(arc, arc.Hero, false, 3);
+        Assert.Same(hero, first.ParentEntity);
+        Assert.Same(hero, first.ChildEntity);
+
+        var second = Spawn(arc, first, false, 4);
+        Assert.Same(ArcRun.EntityOf(first), second.ParentEntity);
+        Assert.Same(hero, second.ChildEntity); // a child of a child: the root of its parent.
+
+        var third = Spawn(arc, second, false, 7);
+        Assert.Same(hero, third.ChildEntity);
+
+        var orphan = Context(arc).SpawnEntityBySpriteIndex(null, false, 3, HeroX << 16, HeroY << 16, 0, 0x10)!;
+        Assert.Null(orphan.ParentEntity);
+        Assert.Null(orphan.ChildEntity);
+    }
+
+    [Fact]
+    public void H_TheNumber79OfTheMapPage_ByTheInterface_AndTheRecord0OfMap14_ByTheProductionPath_DifferOnlyByTheClosedList()
+    {
+        using var arc = Arc("record");
+        var record = arc.EntityByRecord(0);
+        Assert.NotNull(record);
+        Assert.Equal(0x100 + 79, record!.SpriteType);
+        Assert.NotNull(record.RecordHeight);
+
+        // The same call as the record's: its own X and Y, its own Z (Height << 19 is the binary's argument; the interface wants the DLL's, one raw unit less), its direction.
+        var byIndex = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, true, 79, record.PosX, record.PosY, (record.RecordHeight!.Value << 19) - 1, (int)record.TargetDirection)!;
+        Assert.NotNull(byIndex);
+
+        Assert.Equal(record.SpriteType, byIndex.SpriteType);
+        Assert.Equal(record.SpriteTableIndex, byIndex.SpriteTableIndex);
+        Assert.Equal(record.Hp, byIndex.Hp);
+        Assert.Equal(record.HpMax, byIndex.HpMax);
+        Assert.Equal(record.Flags, byIndex.Flags);
+        Assert.Equal(record.SpriteProgramIndexes, byIndex.SpriteProgramIndexes);
+        Assert.Equal(record.ProgramIndexes, byIndex.ProgramIndexes);
+        Assert.Equal(record.TargetAnimationId, byIndex.TargetAnimationId);
+        Assert.Equal(record.TargetDirection, byIndex.TargetDirection);
+        Assert.Equal(record.CurrentAnimationId, byIndex.CurrentAnimationId);
+        Assert.Equal(record.CurrentDirection, byIndex.CurrentDirection);
+        Assert.Equal((record.PosX, record.PosY, record.PosZ), (byIndex.PosX, byIndex.PosY, byIndex.PosZ));
+        Assert.Equal((record.ModdedPosX, record.ModdedPosY, record.ModdedPosZ), (byIndex.ModdedPosX, byIndex.ModdedPosY, byIndex.ModdedPosZ));
+        Assert.Equal((record.ModX, record.ModY, record.ModZ), (byIndex.ModX, byIndex.ModY, byIndex.ModZ));
+        Assert.Equal((record.Width, record.Height, record.Depth), (byIndex.Width, byIndex.Height, byIndex.Depth));
+        Assert.Equal((record.TileX, record.TileY, record.TileZ), (byIndex.TileX, byIndex.TileY, byIndex.TileZ));
+        Assert.Equal(record.FloorHeight, byIndex.FloorHeight);
+        Assert.Equal(record.MapHeights, byIndex.MapHeights);
+        Assert.Equal(record.Status, byIndex.Status);
+        Assert.Equal(record.EventTrigger, byIndex.EventTrigger);
+        Assert.Equal(record.BreakEffect, byIndex.BreakEffect);
+        Assert.Equal(record.SpawnAnimationActive, byIndex.SpawnAnimationActive);
+        Assert.Equal(record.AnimationSoundOf(0), byIndex.AnimationSoundOf(0));
+
+        // The closed list: the case and the series (e0a2), the root and the parent, the record's own identity (EntityRefId, the record's height), and the self pointer.
+        Assert.Equal(-1, byIndex.EntityRefId);
+        Assert.Equal(0, record.EntityRefId);
+        Assert.Same(arc.HeroEntity, byIndex.ParentEntity);
+        Assert.Null(record.ParentEntity);
+        Assert.Null(byIndex.RecordHeight);
+        Assert.Same(ArcRun.EntityOf(byIndex), byIndex.LogicContextEntity);
+    }
+
+    [Fact]
+    public void NoOpContext_AndEveryExistingImplementer_KeepCompiling_TheDefaultOfTheInterfaceIsNull()
+    {
+        IEntityWorldContext context = NoOpEntityWorldContext.Instance;
+        Assert.Null(context.SpawnEntityBySpriteIndex(null, false, 3, 0, 0, 0, 0x10));
+    }
+}

@@ -58,6 +58,9 @@ public interface IEntityWorldContext
     /// </summary>
     AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId);
 
+    /// <summary>Stub of T3 (the interface of E20.e0a1 is written by T4).</summary>
+    AlundraEntityScriptProxy? SpawnEntityBySpriteIndex(AlundraEntityScriptProxy? parent, bool isMapPage, int index, int x, int y, int z, int direction) => null;
+
     /// <summary>
     /// Marks <paramref name="entity"/> for destruction - backs the single-argument
     /// <c>GameEngine.DestroyEntity(Entity)</c> @ 0x8003A774 every search-driven destroy opcode (0x2E)
