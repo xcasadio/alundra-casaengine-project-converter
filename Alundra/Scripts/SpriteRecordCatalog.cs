@@ -179,7 +179,12 @@ public interface ISpriteRecordCatalog
     /// </summary>
     bool TryGet(Guid prefabAssetId, out SpriteRecordHeader header);
 
-    /// <summary>Stub of T3 (the catalogue of E20.e0a1 is written by T4).</summary>
+    /// <summary>
+    /// E20.e0a1 (ADR-0063): the prefab of the sprite at <paramref name="index"/> of the table of the global page (<paramref name="isMapPage"/> false) or of the map page - the
+    /// pair <c>SpawnWarpEntity</c> (<c>0x80039F58</c>) receives. The key is the <c>BankKey</c> of the export (<c>alundra_N</c> on the global page, <c>N</c> on the map page; one prefab per number
+    /// whichever map holds it). False when the catalog has no such key, including an export that predates <c>BankKey</c> or a catalog that failed to load. A default interface member, so
+    /// every implementer written before keeps compiling and answers "no prefab".
+    /// </summary>
     bool TryGetPrefab(bool isMapPage, int index, out Guid prefabAssetId)
     {
         prefabAssetId = Guid.Empty;
@@ -206,6 +211,9 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
     private const string FileName = "sprite-records.json";
 
     private readonly Dictionary<Guid, SpriteRecordHeader> _headersByPrefabId = new();
+
+    /// <summary>E20.e0a1: the prefab of each <c>BankKey</c> (<c>alundra_N</c> or <c>N</c>), for <see cref="TryGetPrefab"/>.</summary>
+    private readonly Dictionary<string, Guid> _prefabIdsByBankKey = new(StringComparer.Ordinal);
 
     /// <summary>Loads from <c>Data/sprite-records.json</c> under <see cref="EngineEnvironment.ProjectPath"/>.</summary>
     public SpriteRecordCatalog() : this(EngineEnvironment.ProjectPath)
@@ -244,6 +252,10 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
                 if (Guid.TryParse(key, out var prefabAssetId))
                 {
                     _headersByPrefabId[prefabAssetId] = value.ToHeader();
+                    if (!string.IsNullOrEmpty(value.BankKey))
+                    {
+                        _prefabIdsByBankKey[value.BankKey] = prefabAssetId;
+                    }
                 }
             }
         }
@@ -253,18 +265,22 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
                 $"SpriteRecordCatalog: failed to load '{filePath}' ({ex.Message}); spawns proceed without "
                 + "header initialization (degraded mode).");
             _headersByPrefabId.Clear();
+            _prefabIdsByBankKey.Clear();
         }
     }
 
     public bool TryGet(Guid prefabAssetId, out SpriteRecordHeader header)
         => _headersByPrefabId.TryGetValue(prefabAssetId, out header);
 
-    /// <summary>Stub of T3.</summary>
+    /// <summary>The prefab of the sprite at <paramref name="index"/> of a page (see <see cref="ISpriteRecordCatalog.TryGetPrefab"/>): the entries without a <c>BankKey</c> (an older export) are simply absent.</summary>
     public bool TryGetPrefab(bool isMapPage, int index, out Guid prefabAssetId)
-    {
-        prefabAssetId = Guid.Empty;
-        return false;
-    }
+        => _prefabIdsByBankKey.TryGetValue(BankKeyOf(isMapPage, index), out prefabAssetId);
+
+    /// <summary>The <c>BankKey</c> of the export for a sprite of a page: <c>alundra_N</c> on the global page, <c>N</c> on the map page.</summary>
+    internal static string BankKeyOf(bool isMapPage, int index)
+        => isMapPage
+            ? index.ToString(System.Globalization.CultureInfo.InvariantCulture)
+            : "alundra_" + index.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Session-scoped cache keyed by project path (D-T-14, docs/plan-transitions-carte.md, slice T1):
@@ -298,6 +314,7 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
 
     private sealed class SpriteRecordJson
     {
+        [JsonInclude] public string? BankKey { get; set; }
         [JsonInclude] public int MoreFlags { get; set; }
         [JsonInclude] public int CanPickup { get; set; }
         [JsonInclude] public int FlagsPortraitShadowType { get; set; }
@@ -415,19 +432,24 @@ public sealed class FakeSpriteRecordCatalog : ISpriteRecordCatalog
 {
     private readonly Dictionary<Guid, SpriteRecordHeader> _headersByPrefabId = new();
 
+    private readonly Dictionary<string, Guid> _prefabIdsByBankKey = new(StringComparer.Ordinal);
+
     public FakeSpriteRecordCatalog Add(Guid prefabAssetId, SpriteRecordHeader header)
     {
         _headersByPrefabId[prefabAssetId] = header;
         return this;
     }
 
+    /// <summary>E20.e0a1: gives the sprite at <paramref name="index"/> of a page the prefab <paramref name="prefabAssetId"/> (the <c>BankKey</c> of the real export).</summary>
+    public FakeSpriteRecordCatalog AddBankKey(bool isMapPage, int index, Guid prefabAssetId)
+    {
+        _prefabIdsByBankKey[SpriteRecordCatalog.BankKeyOf(isMapPage, index)] = prefabAssetId;
+        return this;
+    }
+
     public bool TryGet(Guid prefabAssetId, out SpriteRecordHeader header)
         => _headersByPrefabId.TryGetValue(prefabAssetId, out header);
 
-    /// <summary>Stub of T3.</summary>
     public bool TryGetPrefab(bool isMapPage, int index, out Guid prefabAssetId)
-    {
-        prefabAssetId = Guid.Empty;
-        return false;
-    }
+        => _prefabIdsByBankKey.TryGetValue(SpriteRecordCatalog.BankKeyOf(isMapPage, index), out prefabAssetId);
 }

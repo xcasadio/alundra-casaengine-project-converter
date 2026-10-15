@@ -266,7 +266,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     internal ISpriteRecordCatalog SpriteRecordCatalog = Alundra.Scripts.SpriteRecordCatalog.GetOrCreate(EngineEnvironment.ProjectPath);
 
-    /// <summary>Stub of T3 (E20.e0a1): the valid indices of the map page, read at the first call of the interface by T4.</summary>
+    /// <summary>
+    /// E20.e0a1 (ADR-0063): the valid indices of the map page of each map (<c>Data/map-sprite-indices.json</c>), read at the FIRST call of <see cref="SpawnEntityBySpriteIndex"/> and never at the load of a world (no
+    /// existing world sees the warning of a missing file). Internal so a test swaps it.
+    /// </summary>
     internal AlundraMapSpriteIndices? MapSpriteIndices;
 
     /// <summary>
@@ -3178,6 +3181,83 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         }
     }
 
+    /// <summary>
+    /// E20.e0a1 (docs/plan-e20-heros.md section 1.16.1, ADR-0063): <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, the apparition of <c>SpawnWarpEntity</c> (<c>0x80039F58</c>) without a record. In the order of the
+    /// binary: the page lookup (<c>0x80039B28</c>: an index outside 0 to 255, or one the table of the page does not hold, is refused before anything is touched), then the creation of
+    /// <see cref="AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex"/> with the Z of the caller plus the raw unit of the binary (D-E0A-1, here and nowhere else), then what the record path does after its factory: the script
+    /// host, the balance sheet, the addition to the world and to the end of <see cref="_spawnedEntities"/> (no case yet: E20.e0a2), the sound of the animation 0, the push to the root. The prefab is read fresh for every call
+    /// (engine ADR-0037). The entity ticks from the frame after its creation, as every spawn does until E20.e0a3.
+    /// </summary>
+    internal AlundraEntityScriptProxy? SpawnEntityBySpriteIndex(AlundraEntityScriptProxy? parent, bool isMapPage, int index, int x, int y, int z, int direction)
+    {
+        var page = isMapPage ? "map" : "global";
+
+        AlundraEntityScriptProxy? Refuse(string reason)
+        {
+            Logs.WriteWarning($"AlundraWorldProxy: SpawnEntityBySpriteIndex({page} page, index {index}) refused: {reason}; nothing spawned.");
+            return null;
+        }
+
+        if (_world == null)
+        {
+            return Refuse("called before InitializeWithWorld");
+        }
+
+        if (index < 0 || index > 255)
+        {
+            return Refuse("the index is outside 0 to 255");
+        }
+
+        if (isMapPage)
+        {
+            if (_world.Name == null || !BackdropLoader.TryParseMapIndex(_world.Name, out var mapIndex))
+            {
+                return Refuse($"the world '{_world.Name}' has no map number");
+            }
+
+            MapSpriteIndices ??= AlundraMapSpriteIndices.GetOrCreate(EngineEnvironment.ProjectPath);
+            if (!MapSpriteIndices.IsValid(mapIndex, index))
+            {
+                return Refuse($"the table of map {mapIndex} does not hold this number");
+            }
+        }
+
+        if (!SpriteRecordCatalog.TryGetPrefab(isMapPage, index, out var prefabAssetId) || !SpriteRecordCatalog.TryGet(prefabAssetId, out var header))
+        {
+            return Refuse("the catalog has no sprite record for this bank key");
+        }
+
+        try
+        {
+            // Engine ADR-0037: an entity asset is a template, read fresh for every spawn.
+            var prefab = _world.Game.AssetContentManager.LoadCopy<Entity>(prefabAssetId);
+            if (prefab == null)
+            {
+                return Refuse($"the prefab {prefabAssetId} could not be read");
+            }
+
+            // D-E0A-1: the Z of a DLL entity is the binary's minus one raw unit (ADR-0026); the binary's argument has it, and the creation subtracts ModZ from the binary's argument.
+            var entity = AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex(
+                prefab, header, isMapPage, index, parent?.LogicContextEntity, x, y, unchecked(z + 1), direction, CollisionField);
+            var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
+            if (spawnedProxy != null)
+            {
+                spawnedProxy.ScriptHost = this;
+                spawnedProxy.InitializeBalance(BalanceTables, BalanceThreshold); // E20.c1a C1.
+            }
+
+            _world.AddEntity(entity);
+            _spawnedEntities.Add(entity);
+            RequestAppearanceSound(spawnedProxy); // E19.t T-R2: at the tick of the call.
+            spawnedProxy?.PushLogicalPositionToRoot();
+            return spawnedProxy;
+        }
+        catch (Exception ex)
+        {
+            return Refuse($"the creation failed ({ex.Message})");
+        }
+    }
+
     // IEntityWorldContext - see that interface's own doc. Explicit implementation keeps these reachable
     // through the interpreter seam without adding public surface to this proxy.
     IReadOnlyList<AlundraEntityScriptProxy> IEntityWorldContext.SpawnedEntities => GetSpawnedEntityProxies();
@@ -3186,6 +3266,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     AlundraEntityScriptProxy? IEntityWorldContext.SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId)
         => SpawnEntityByRecordId(logicEntity, entityRecordId);
+
+    AlundraEntityScriptProxy? IEntityWorldContext.SpawnEntityBySpriteIndex(AlundraEntityScriptProxy? parent, bool isMapPage, int index, int x, int y, int z, int direction)
+        => SpawnEntityBySpriteIndex(parent, isMapPage, index, x, y, z, direction);
 
     void IEntityWorldContext.DestroyEntity(AlundraEntityScriptProxy entity) => DestroyEntity(entity);
 

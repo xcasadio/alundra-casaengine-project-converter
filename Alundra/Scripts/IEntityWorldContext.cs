@@ -58,7 +58,15 @@ public interface IEntityWorldContext
     /// </summary>
     AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId);
 
-    /// <summary>Stub of T3 (the interface of E20.e0a1 is written by T4).</summary>
+    /// <summary>
+    /// E20.e0a1 (docs/plan-e20-heros.md section 1.16.1, D-E0A-1 to D-E0A-5, ADR-0063): the apparition of an entity by sprite index - <c>SpawnWarpEntity</c> (<c>0x80039F58</c>, 102 call sites in the binary: the shot of the hero,
+    /// the use of the items, the loot, the enemies' handlers). <paramref name="isMapPage"/> and <paramref name="index"/> name the sprite in the table of the global page or of the current map; <paramref name="x"/> and
+    /// <paramref name="y"/> are the 16.16 position; <paramref name="z"/> is in the frame of the DLL, the one a caller reads in <c>PosZ</c> (the interface adds the raw unit the binary's argument has, D-E0A-1: an arrow
+    /// spawned at the Z of the hero is one raw unit above him, as in the binary; a constant of the binary is passed minus one); <paramref name="direction"/> is the direction word (0, 8, 0x10, 0x18). <paramref name="parent"/> may be null.
+    /// Returns null - with one line of log and nothing added to the world - for an index outside 0 to 255, a number the table of the page does not hold (the map page is checked against the current map), a sprite whose prefab the
+    /// export does not hold, and (E20.e0a2) a full table of cases: the caller MUST test it (the binary writes through the null pointer, A11 <c>0x80061870</c>, A21 <c>0x80061A2C</c>). A default interface member, null, so every existing
+    /// implementer keeps compiling; <see cref="AlundraWorldProxy"/> implements it. Not called by any production path in E20.e0a1.
+    /// </summary>
     AlundraEntityScriptProxy? SpawnEntityBySpriteIndex(AlundraEntityScriptProxy? parent, bool isMapPage, int index, int x, int y, int z, int direction) => null;
 
     /// <summary>

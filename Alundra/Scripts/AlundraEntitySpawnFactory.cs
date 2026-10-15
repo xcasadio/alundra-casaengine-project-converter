@@ -468,10 +468,76 @@ internal static class AlundraEntitySpawnFactory
         return entity;
     }
 
-    /// <summary>Stub of T3 (the record-less core of E20.e0a1 is written by T4).</summary>
+    /// <summary>The width and the height of a tile in pixels (<c>StaticVariables.MapTileWidth/MapTileHeight</c>, <see cref="EntityRecordMapper"/>), for the tile of a creation.</summary>
+    private const int TileWidthPixels = 24;
+
+    private const int TileHeightPixels = 16;
+
+    /// <summary>
+    /// E20.e0a1 (docs/plan-e20-heros.md section 1.16.1, D-E0A-1 to D-E0A-5, ADR-0063): the creation of <c>SpawnWarpEntity</c> (<c>0x80039F58</c>) and of the half of <c>InitializeEntity</c> (<c>0x80039D04</c>) that has no
+    /// registered record: an entity built from the bank prefab <paramref name="prefab"/> (a bare entity when null, the tests without a world) and the sprite header <paramref name="header"/> of the sprite at
+    /// <paramref name="index"/> of the global page (<paramref name="isMapPage"/> false) or of the map page. Callable without a world: <paramref name="collisionField"/> is the field the entity is raised to (null: none, as the
+    /// record path). Does not add the entity to any world, nor give it a script host or its balance sheet; the caller does.
+    /// <list type="bullet">
+    /// <item><description><paramref name="x"/> and <paramref name="y"/> are the 16.16 position as the binary receives it; <paramref name="z"/> is the BINARY'S argument: the core subtracts <c>ModZ</c> and raises to the terrain,
+    /// exactly as the record path does (<c>PosZ = z - ModZ</c>, the DLL's frame, one raw unit under the binary's <c>z - ModZ + 1</c>, ADR-0026). The raw unit of a Z read from a DLL entity is added by the CALLER
+    /// (<see cref="AlundraWorldProxy.SpawnEntityBySpriteIndex"/>), never here: the record path shares this code without it (D-E0A-1).</description></item>
+    /// <item><description><paramref name="direction"/> is the direction word (0, 8, 0x10, 0x18) the binary stores in <c>+0x8C</c> and complements in <c>+0x94</c>; the first switch of the animation 0 stays pending, as for a record.</description></item>
+    /// <item><description>No record: <c>EntityRefId = -1</c> (<c>0x80039D84</c>; the field's default 0 would answer to <c>0x2C [0]</c> and <c>0x2E [0]</c>), <c>EventTrigger = -1</c> (the first tick is the next frame, until E20.e0a3), no
+    /// program codes, <see cref="AlundraEntityScriptProxy.RecordHeight"/> null. <see cref="AlundraEntityScriptProxy.SpriteTableIndex"/> is the raw index, <see cref="AlundraEntityScriptProxy.SpriteType"/> the identifier of the binary
+    /// (the index, plus <c>0x100</c> for the map page).</description></item>
+    /// <item><description>The parent (<c>+0x0C</c>) is <paramref name="parentEntity"/>, even null; the root (<c>+0x08</c>, written only when the parent is not null) is the parent's root, else the parent (<c>0x80039D48-0x80039D5C</c>).
+    /// It is kept in <see cref="AlundraEntityScriptProxy.ChildEntity"/>, the name the decompilation gives to that word (D-E0A-4); no reader of it is known.</description></item>
+    /// </list>
+    /// </summary>
     internal static Entity CreateEntityFromSpriteIndex(
         Entity? prefab, SpriteRecordHeader header, bool isMapPage, int index, Entity? parentEntity, int x, int y, int z, int direction, ICollisionField? collisionField)
-        => throw new NotImplementedException();
+    {
+        var entity = prefab?.Clone() ?? new Entity();
+        entity.Name = $"SpawnedSprite_{(isMapPage ? "map" : "global")}_{index}";
+
+        if (string.IsNullOrEmpty(entity.GameplayProxyClassName))
+        {
+            entity.GameplayProxyClassName = nameof(AlundraEntityScriptProxy);
+        }
+
+        //Creates/keeps the GameplayProxy (via ElementFactory, from GameplayProxyClassName) and calls its
+        //Initialize(entity); InitializeWithWorld() runs later, when the engine integrates the entity.
+        entity.Initialize();
+
+        if (entity.GameplayProxy is not AlundraEntityScriptProxy proxy)
+        {
+            return entity;
+        }
+
+        proxy.Status = EntityStatus.Loaded;
+        proxy.EventTrigger = ScriptHelper.ProgramUnknown; // see ApplyRecord: the first tick is the next frame.
+        proxy.EntityRefId = -1;                           // 0x80039D84: no record.
+        proxy.SpriteTableIndex = unchecked((uint)index);
+        proxy.PosX = x;
+        proxy.PosY = y;
+        proxy.PosZ = z;
+        proxy.TileX = (x >> 16) / TileWidthPixels;       // PhysicsEngine.cs:1698-1700, as the record mapper seeds them.
+        proxy.TileY = (y >> 16) / TileHeightPixels;
+        proxy.TileZ = z >> 20;
+        proxy.LogicContextEntity = entity;
+        proxy.ParentEntity = parentEntity;
+
+        // 0x80039D40-0x80039D5C: +0x0C is the parent whatever it is; +0x08 is written only for a non-null parent, to the parent's own root when it has one, else to the parent.
+        proxy.ChildEntity = parentEntity == null ? null : (parentEntity.GameplayProxy as AlundraEntityScriptProxy)?.ChildEntity ?? parentEntity;
+
+        ApplyHeaderInitialization(header, entity, proxy, isMapPage ? index | 0x100 : index, unchecked((uint)direction), collisionField);
+
+        // As CreateEntityFromPrefab: the prefab's root is the inert transform, placed in the logical frame from the position just filled.
+        if (entity.RootComponent != null)
+        {
+            entity.RootComponent.LocalTransform.Position = ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+            proxy.RenderProjection = entity.GetComponent<RenderProjectionComponent>();
+            proxy.RenderProjection?.UpdateProjection();
+        }
+
+        return entity;
+    }
 
     internal static Vector3 ResolveLogicalPosition(int posX, int posY, int posZ)
     {
@@ -573,41 +639,24 @@ internal static class AlundraEntitySpawnFactory
             return;
         }
 
-        // EntityManager.cs:92-93 (Entity.Flags packing documented by EntityFlags).
-        proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
+        // GameEngine.cs:752-753: SpawnEntity always passes animationId=0 and reads the facing off the
+        // record's own SpriteDirection (not the header) - a missing/malformed key defaults to 0, same as
+        // a record whose SpriteDirection happens to be 0.
+        TryGetRecordInt(record, "SpriteDirection", out var spriteDirection);
 
-        // E19.f4b (F4B-R3): the speaker's dialogue portrait travels with its header (null where the header has no portrait bit).
-        proxy.DialoguePortrait = header.DialoguePortrait;
+        // E20.e0a1 (ADR-0063): everything that needs the header and nothing else of the record is the core shared with the apparition by sprite index.
+        // E16.e L1/SE6: the sprite type EntityManager.cs:69 stores (entity.SpriteTableIndex, with SpawnEntity's 0x100 for a map sprite).
+        ApplyHeaderInitialization(
+            header, entity, proxy, EntityRecordMapper.ResolveSpriteType(record), AnimationTables.CardinalDirectionTable[spriteDirection & 0x3], collisionField);
 
-        // E14.a1b (D-E14-9): the break effect of the header, read by DestroyEntity(e, -1).
-        proxy.BreakEffect = header.BreakEffect;
-
-        // E4.b ("Spawn" item, docs/plan-e4-deplacement-scripte.md): cache Controller/RenderProjection the
-        // same way AdoptPlayerPawn does for the hero (E3.d) - every prefab with a positive body box now
-        // carries a CharacterControllerComponent (E4.a), so a record-spawned NPC needs the same caching
-        // this proxy's own per-frame passes (Update's root pull, MoveControllerAndPullPosition,
-        // PushLogicalPositionToRoot) already assume. ??= rather than an unconditional overwrite: harmless
-        // either way here (both start null on a freshly Initialize()'d proxy), but keeps this call site
-        // consistent with "cache once" even if a future caller pre-seeds either field.
-        proxy.Controller ??= entity.GetComponent<CharacterControllerComponent>();
-        proxy.RenderProjection ??= entity.GetComponent<RenderProjectionComponent>();
-
-        // E5.b (docs/plan-e5-camera.md): a controller-driven entity's logical pose keeps a float
-        // remainder every frame (CharacterControllerComponent.Move has no rounding), so without this
-        // the sprite's texel grid drifts off the screen's at non-unit zoom and blurs while moving. Set
-        // unconditionally (not guarded by the ??= above): harmless to repeat on the same instance, and
-        // keeps this true even if a future caller pre-seeds RenderProjection with the flag left off.
-        if (proxy.RenderProjection != null)
-        {
-            proxy.RenderProjection.SnapToPixel = true;
-        }
-
+        // What reads this map's tile data stays with the record path (E20.e0a1: the apparition by sprite index poses none of it, which E20.e0k settles).
+        //
         // Overrides the converter-exported Gravity/MaxFallSpeed/WalkabilityMask - the only three
         // CharacterControllerSettings the converter cannot bake in (E4.a leaves them 0, see that
         // tranche's own "Contrôleurs PNJ" note), since they depend on THIS map's own properties and THIS
         // entity's own Flags, not on the prefab alone - same reasoning as AdoptPlayerPawn's own override
         // block (E3.d), reusing its exact formula via ResolveMapGravitySettings rather than duplicating
-        // it. Deliberately AFTER the Flags assignment above: both WalkabilityMaskFor(proxy.Flags) and
+        // it. Deliberately AFTER the Flags assignment of the core: both WalkabilityMaskFor(proxy.Flags) and
         // ApplyGravitySettingsToController's own Gravity-bit gate need the real header flags. A no-op
         // without a controller (11 sprite-only prefabs, E4.a) or without this world's tilemap
         // (tileMapData null - a caller that never resolved one, e.g. an older test fixture).
@@ -637,11 +686,51 @@ internal static class AlundraEntitySpawnFactory
             // step of the descent at 0x22 is -1 raw unit. The engine drops any displacement of 0.001 px or less by default; this controller applies them all.
             proxy.Controller.Settings.MinMoveDistance = 0f;
         }
+    }
+
+    /// <summary>
+    /// The part of <c>EntityManager.InitializeEntity</c> @ 0x80039D04 that needs the bank's <c>SpriteRecord.Header</c> and nothing of an "Entities" record, shared by the two ways an entity is created: from a record
+    /// (<see cref="ApplySpawnInitialization"/>) and from a sprite index (<see cref="CreateEntityFromSpriteIndex"/>, E20.e0a1, ADR-0063). <paramref name="spriteType"/> is the identifier the binary stores in
+    /// <c>+0x68</c> (the index, plus <c>0x100</c> for a map sprite); <paramref name="direction"/> the direction word (0, 8, 0x10 or 0x18) the first switch of the animation 0 is given; the position fields
+    /// (<c>PosX/Y/Z</c>, the Z being the binary's argument) are already on <paramref name="proxy"/>. Behaviour-preserving extraction: the lines are the ones <see cref="ApplySpawnInitialization"/> had, in the same
+    /// order, except the ones that read the map's tile data (they follow in <see cref="ApplySpawnInitialization"/>).
+    /// </summary>
+    internal static void ApplyHeaderInitialization(
+        SpriteRecordHeader header, Entity entity, AlundraEntityScriptProxy proxy, int spriteType, uint direction, ICollisionField? collisionField)
+    {
+        // EntityManager.cs:92-93 (Entity.Flags packing documented by EntityFlags).
+        proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
+
+        // E19.f4b (F4B-R3): the speaker's dialogue portrait travels with its header (null where the header has no portrait bit).
+        proxy.DialoguePortrait = header.DialoguePortrait;
+
+        // E14.a1b (D-E14-9): the break effect of the header, read by DestroyEntity(e, -1).
+        proxy.BreakEffect = header.BreakEffect;
+
+        // E4.b ("Spawn" item, docs/plan-e4-deplacement-scripte.md): cache Controller/RenderProjection the
+        // same way AdoptPlayerPawn does for the hero (E3.d) - every prefab with a positive body box now
+        // carries a CharacterControllerComponent (E4.a), so a record-spawned NPC needs the same caching
+        // this proxy's own per-frame passes (Update's root pull, MoveControllerAndPullPosition,
+        // PushLogicalPositionToRoot) already assume. ??= rather than an unconditional overwrite: harmless
+        // either way here (both start null on a freshly Initialize()'d proxy), but keeps this call site
+        // consistent with "cache once" even if a future caller pre-seeds either field.
+        proxy.Controller ??= entity.GetComponent<CharacterControllerComponent>();
+        proxy.RenderProjection ??= entity.GetComponent<RenderProjectionComponent>();
+
+        // E5.b (docs/plan-e5-camera.md): a controller-driven entity's logical pose keeps a float
+        // remainder every frame (CharacterControllerComponent.Move has no rounding), so without this
+        // the sprite's texel grid drifts off the screen's at non-unit zoom and blurs while moving. Set
+        // unconditionally (not guarded by the ??= above): harmless to repeat on the same instance, and
+        // keeps this true even if a future caller pre-seeds RenderProjection with the flag left off.
+        if (proxy.RenderProjection != null)
+        {
+            proxy.RenderProjection.SnapToPixel = true;
+        }
 
         // E16.e L1/SE6 (docs/plan-e16-etat-partie.md): the sprite type EntityManager.cs:69 stores
         // (entity.SpriteTableIndex, with SpawnEntity's 0x100 for a map sprite), kept next to the program codes
         // below so RunSpriteEvent can recognise the save book by (type, slot, code).
-        proxy.SpriteType = EntityRecordMapper.ResolveSpriteType(record);
+        proxy.SpriteType = spriteType;
 
         // EntityManager.cs:95-100.
         proxy.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = header.ProgramLoad;
@@ -698,12 +787,8 @@ internal static class AlundraEntitySpawnFactory
         proxy.ModdedPosY = proxy.PosY + proxy.ModY;
         proxy.ModdedPosZ = proxy.PosZ + proxy.ModZ;
 
-        // GameEngine.cs:752-753: SpawnEntity always passes animationId=0 and reads the facing off the
-        // record's own SpriteDirection (not the header) - a missing/malformed key defaults to 0, same as
-        // a record whose SpriteDirection happens to be 0.
-        TryGetRecordInt(record, "SpriteDirection", out var spriteDirection);
+        // GameEngine.cs:752-753: SpawnEntity always passes animationId=0.
         const uint animationId = 0;
-        var direction = AnimationTables.CardinalDirectionTable[spriteDirection & 0x3];
 
         // EntityManager.cs:85-88.
         proxy.CurrentAnimationId = ~animationId;
