@@ -616,8 +616,14 @@ Relecture de clôture de la révision 8 : **READY** (2026-10-15).
 trois tranches de projectiles (§1.20 à §1.22) scinde E20.f6 en f6a (les attributs de tuile des entités marquées à gravité, `+0x18C` :
 la mort des boules dans l'eau) et f6b (C60, E9, le branchement des types 11, 12, 14, 15) ; elle corrige la ligne 8 : les trois
 enregistrements `0x0C` de la carte 309 (sprite 12) émettent des étincelles dès que C60 est enregistré, E9 ne tournant jamais pour eux.
-Prérequis de f4 et f5 inchangés. Ordre inchangé (f4, f5, f6a, f6b après e0k3). Choix de la session principale en mode AUTO, réversible,
+Prérequis de f4 inchangés. Ordre inchangé (f4, f5, f6a, f6b après e0k3). Choix de la session principale en mode AUTO, réversible,
 signalé à l'auteur.
+Relecture de la révision 9 : **REVISE**, deux points corrigés (FIX) : (1) f6a nourrit `+0x18C` des entités marquées à gravité ; les
+types qui portent `DestroyOnSlidingSlope` (`0x100000`) avec la gravité (recensement : 1, 2, 10 à 17, 23, 234) n'ont leur mort dans
+l'eau profonde qu'avec elle : E20.h3 (graines 1, bombe 2) exige f6a ; E20.e0c n'en a pas besoin (les objets 30 à 64 ne portent pas ce
+drapeau) ; O-E0K-2 nomme un propriétaire par attribut ; (2) l'ordre f4, f5, f6a, f6b devient une chaîne ferme (f5 exige f4, f6b exige
+f4 et f5), parce que f5 et f6b reprennent l'interrupteur d'arène, les témoins négatifs et l'annexe d'f4, et la règle de vitesse d'f5.
+Une seconde relecture suit.
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -673,12 +679,12 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 | 4 | E20.e0k (§1.18 : e0k1, e0k2, e0k3 ; e0k4 conditionnelle) | État de carte des entités nées par l'interface ; leur Z logique et le pas vertical du binaire (gravité `0x100`, impulsion, atterrissage strict, vol à Z constant, aimant, plafond) ; bord de la carte ; butée sur mur et hauteur par le mover existant | e0k1 : E20.e0a1 à E20.e0a3b ✅ ; e0k2 et e0k3 : e0k1 ; e0k4 : e0k2, e0k3 et l'option B de Q-K2 |
 | 5 | E20.f3 (§1.19 : f3a, f3b, f3c) | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | f3a : E20.f1 ✅, E20.e0a1 à E20.e0a3 ✅ ; f3b : le T0 d'E20.f3a (oracle commun), E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅ ; f3c : f3a, E20.e0b1 ✅, E20.e0k1 et E20.e0k2 (la règle du Z logique, D-F3-8) ; f3a et f3b peuvent passer avant E20.e0k |
 | 6 | E20.f4 (§1.20) | Flèche chargée : C94, E1 avec l'effet 8 (l'effet de bris vient d'E14.a1b, D-E20-26) | E20.f3, E20.e0k1 à E20.e0k3, E14.a1b ✅ |
-| 7 | E20.f5 (§1.21) | Flèches : E17 (D-E20-25) ; `ResyncControllerFromFlags` quand E17 change les drapeaux (§1.18, N9) | E20.f3, E20.e0k1 à E20.e0k3 |
-| 8 | E20.f6 (§1.22 : f6a, f6b) | Boules de feu et de glace : C60, E9 (D-E20-25) ; f6a : les attributs de tuile des entités marquées à gravité ; les trois enregistrements `0x0C` de la carte 309 (sprite 12) émettent des étincelles dès l'enregistrement de C60 (E9 ne tourne jamais pour eux) | f6a : E20.e0k1, E20.e0k2 ; f6b : f6a, E20.f3 (dont f3b), E20.e0b1 (§1.17), E20.e0k1 à E20.e0k3 |
+| 7 | E20.f5 (§1.21) | Flèches : E17 (D-E20-25) ; `ResyncControllerFromFlags` quand E17 change les drapeaux (§1.18, N9) | E20.f4 (interrupteur d'arène, témoins négatifs, annexe commune), E20.f3, E20.e0k1 à E20.e0k3 |
+| 8 | E20.f6 (§1.22 : f6a, f6b) | Boules de feu et de glace : C60, E9 (D-E20-25) ; f6a : les attributs de tuile des entités marquées à gravité ; les trois enregistrements `0x0C` de la carte 309 (sprite 12) émettent des étincelles dès l'enregistrement de C60 (E9 ne tourne jamais pour eux) | f6a : E20.e0k1, E20.e0k2 ; f6b : f6a, E20.f4, E20.f5 (règle de vitesse D-F5-5), E20.f3 (dont f3b), E20.e0b1 (§1.17), E20.e0k1 à E20.e0k3 |
 | 9 | E20.h0, E20.h1 | Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a ✅ |
 | 9b | E20.A362 | Le couvercle de la 362 (enregistrement 0, sprite 243, `D[1]` `0x87 [128,3]`) face à la bombe d'Olen (enregistrement 5, sprite 2, lancée par son script `0x8B [128,5,…]`, explosion animation 1, attaque attribut 4 puissance 5) : arc de test seul, comme E20.c1b-2 ; il tranche si le couvercle réagit déjà (probable depuis E20.c1a et E20.c1b-1) ou ce qui manque ; relancé après E20.h3 | E20.c1b-1 ✅ |
 | 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées ; g1 pose le marqueur du Z logique (§1.18, D-E0K-1) sur l'entité soulevée | E20.e0a1 (§1.16), E20.e0k2 ; E14.a1b ✅ et E20.e0b2 (§1.17) pour g2 |
-| 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 (§1.16) et E20.e0k2 pour h3 ; E20.e0k1 à E20.e0k3 pour h4 |
+| 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 (§1.16), E20.e0k2 et E20.f6a (mort des graines et de la bombe dans l'eau profonde) pour h3 ; E20.e0k1 à E20.e0k3 pour h4 |
 | 12 | E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 (D-E20-27) ; ordre interne fixé au détail (g3 dépend aussi de la géométrie de la barricade de g4 et d'un choix de l'auteur, `order-critic.md`) | E20.g1, E20.g2 |
 
 Les projectiles d'E20.f3, f5 et f6 (E10, E17, E9) appellent aussi `DestroyEntity(e, fx)` : fait par E14.a1b ✅.
@@ -4543,7 +4549,7 @@ Détaillée seulement si l'auteur répond à Q-K2 par l'option B. Contenu : un p
 | # | Question | Tranchée par |
 |---|---|---|
 | O-E0K-1 | Z avant XY, atterrissage strict et aimant de 3 px pour les entités par enregistrement (monstres, PNJ, caisses posées) | E19.h2 (Q-K1) |
-| O-E0K-2 | Attributs de tuile des entités à gravité (`+0x180`, `+0x184`, `+0x18C`, `+0x190`) : E9 lit `+0x18C` (1 et 4), `DestroyOnSlidingSlope`, `DestroyOnVramFlags` | E20.f6, E20.e0c |
+| O-E0K-2 | Attributs de tuile des entités à gravité (`+0x180`, `+0x184`, `+0x18C`, `+0x190`) : E9 lit `+0x18C` (1 et 4), `DestroyOnSlidingSlope`, `DestroyOnVramFlags` | Partagé le 2026-10-15 (révision 9) : `+0x18C` des entités marquées à gravité et `DestroyOnSlidingSlope` → E20.f6a ; `+0x180`, `+0x184`, `+0x190` et `DestroyOnVramFlags` → le T0 d'E20.f6a recense leurs lecteurs et les types qui portent `0x200000`, et nomme leur propriétaire dans le plan (aucun lecteur dans f4 à f6) |
 | O-E0K-3 | Cellules de dérive (tables `0x80028B94`, `0x80028BD4` ; 5 539 cellules sur environ 48 cartes, 876 avec le bit d'air) : aucun équivalent dans la DLL, héros compris | à placer |
 | O-E0K-4 | Rognage au bord pour les entités par enregistrement et pour le héros | O-E19-17, D-E19-25 |
 | O-E0K-5 | Porté `+0x28` et passagers : le marqueur doit être posé par g1 au soulèvement d'une entité par enregistrement | E20.g1, E20.g2 |
@@ -5090,7 +5096,7 @@ horizontale des entités nées par l'interface.
 
 #### 1.21.1 E20.f5 — Les flèches (E17) et la règle de vitesse ⏳
 
-**Prérequis.** Voir ci-dessus. **À relire à l'exécution** : la garde de D-E0A-8 dans `TickScriptedNpc`, l'épingle P3 d'e0k1, le marqueur d'e0k2, l'interrupteur d'arène de f4.
+**Prérequis.** Voir ci-dessus, et **E20.f4** (ordre ferme de la révision 9 : l'interrupteur d'arène D-F4-7, les témoins négatifs D-F4-8 et l'annexe commune viennent d'f4). **À relire à l'exécution** : la garde de D-E0A-8 dans `TickScriptedNpc`, l'épingle P3 d'e0k1, le marqueur d'e0k2, l'interrupteur d'arène de f4.
 
 **But.** Les types 3 et 4 vivent comme dans le binaire : ils volent, touchent, rebondissent et meurent. Les entités marquées avancent à la vitesse de l'animation du tick.
 
@@ -5244,11 +5250,20 @@ Ordre : f6a puis f6b. f6a peut passer avant f4 et f5 (il ne dépend que d'e0k2).
 
 **Questions à l'auteur.** Aucune.
 
-**Prérequis et dépendants.** Voir le tableau. Dépendants : E14 (ennemis de feu et de glace, la Torche E20 qui copie le type 12 sans gestionnaires), E20.e (effets du héros, herbe).
+**Prérequis et dépendants.** Voir le tableau. Dépendants : E14 (ennemis de feu et de glace, la Torche E20 qui copie le type 12 sans gestionnaires), E20.e (effets du héros, herbe), E20.h3 (f6a : graines et bombe portent `DestroyOnSlidingSlope` avec la gravité) et toute tranche future qui fait naître par l'interface un type portant `0x100000` avec la gravité (1, 2, 10 à 17, 23, 234).
+
+**Ordre ferme** (révision 9 de l'enveloppe, après sa relecture) : f4, puis f5, puis f6a, puis f6b. Les éléments communs « portés
+par la première exécutée » le sont donc par f4 (l'interrupteur d'arène D-F4-7 et son fichier, la réécriture des témoins négatifs D-F4-8,
+l'annexe et les outils communs) et par f5 (la règle de la clé de vitesse D-F5-5) ; les mentions conditionnelles (« si f4 ne l'a pas
+posé ») sont sans objet.
+
 
 ---
 
 #### 1.22.1 E20.f6a — Attributs de tuile des entités marquées ⏳
+
+**Ajout de la révision 9 (O-E0K-2).** Le T0 recense aussi les lecteurs de `+0x180`, `+0x184`, `+0x190` et les types qui portent
+`DestroyOnVramFlags` (`0x200000`), et nomme leur propriétaire dans le plan ; f6a ne nourrit que `+0x18C` (D-F6-2).
 
 **Prérequis.** E20.e0k1 et e0k2 (le Z logique et le marqueur). **À relire à l'exécution** : le point d'appel dans `TickMotion`, le nom du marqueur.
 
@@ -5276,7 +5291,7 @@ Ordre : f6a puis f6b. f6a peut passer avant f4 et f5 (il ne dépend que d'e0k2).
 
 #### 1.22.2 E20.f6b — C60, E9, les flammes de la 309 et le branchement ⏳
 
-**Prérequis.** f6a, E20.f3 (dont f3b), E20.e0b1 ✅, E20.e0k1 à e0k3. **À relire à l'exécution** : le point de création des effets, l'interrupteur d'arène (D-F4-7), la règle de vitesse (D-F5-5).
+**Prérequis.** f6a, **E20.f4 et E20.f5** (ordre ferme de la révision 9 : D-F4-7, D-F4-8, l'annexe, la règle de vitesse D-F5-5), E20.f3 (dont f3b), E20.e0b1 ✅, E20.e0k1 à e0k3. **À relire à l'exécution** : le point de création des effets, l'interrupteur d'arène (D-F4-7), la règle de vitesse (D-F5-5).
 
 **But.** Les boules tirent, tombent, explosent ou s'éteignent ; les trois flammes de la 309 émettent leurs étincelles.
 
