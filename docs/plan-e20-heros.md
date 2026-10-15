@@ -3326,7 +3326,7 @@ dispositions de la session principale :
   est épinglée par le test de l'interface et par la trace AT9) ;
 - bruit de fins de ligne des traces après chaque suite : **noté** (connu).
 
-#### 1.16.2 E20.e0a2 — Table de cases : première libre, plafond de 63, ordre des passes 🧪 (faite le 2026-10-15, `03c3863` à la clôture ; reste les verifiers frais)
+#### 1.16.2 E20.e0a2 — Table de cases : première libre, plafond de 63, ordre des passes ✅ (faite et CONFIRMED le 2026-10-15, `03c3863` à `c5eba5d`, ADR-0064)
 
 **Révision 1 (2026-10-15).** Relecture : **REVISE**, deux points corrigés (FIX) : la phase d'ombre a un prédicat exact, un canal de relevé
 par test, une commande et un fichier versé, et le plafond est placé dans la phase B (l'ombre ne refuse rien) ; les trois points reportés
@@ -3456,9 +3456,30 @@ Aucun arrêt n'a joué. Commits : phase A `03c3863` (table, ombre, 16 tests de l
 
 ---
 
+**Vérification (2026-10-15) : CONFIRMED** par deux verifiers frais (workflow, l'un après l'autre). Rejeu et épingles : `Alundra.Tests`
+4 807/4 807 en Release et en Debug, `cmp`, traces ; les deux tests existants modifiés (`AlundraInoaDayOneArcTests` A11, une désactivation
+une image plus tard parce que l'enregistrement 4 prend la case 1 avant Septimus, comme le binaire ; `AlundraSpawnBySpriteIndexInterfaceTests`
+B2, 156 apparitions refusées au-delà de 63) figurent dans `e0a2-shadow.txt`, versé avant le premier commit de la phase B ; phase A neutre
+(rien de réordonné ni refusé, puits inerte sans la variable) ; oracle stable sur deux exécutions. Adversarial : libération au recyclage
+seulement, porte fermée, entrées sans case, `ReleaseSlot(−1)`, monde sans héros, table neuve par monde, chemin d'erreur, refus au
+chargement, `ChildEntity` sur le chemin par enregistrement, toutes les passes dans l'ordre des cases : aucun contre-exemple. Remarques,
+dispositions de la session principale :
+- **P3** : la ligne V5 `invalid_full` (et les lignes `dirty` et `probes`) n'est lue par aucun test de l'allocateur, alors que l'ADR-0064 dit
+  que les tests de l'allocateur l'ont recopiée : **reporté à E20.e0a3**, qui ajoute un test qui lit ces lignes dans `out/v5.json` (l'ADR
+  devient exacte sans être réécrite).
+- P4 : deux commentaires de tests devenus faux (`AlundraSpawnBySpriteIndexInterfaceTests.cs` « appended at the end of the list… no slot
+  yet : e0a2 » ; `AlundraInoaDayOneArcTests.cs` « at the frame of the end… ») : **reportés à E20.e0a3**.
+- P4 : une entité dont la création a échoué reste dans la file d'ajout du moteur jusqu'à l'`Update` suivant, où elle est intégrée puis
+  retirée dans la même passe ; un son déjà demandé avant une faute de la poussée de position part quand même : **notés** (sans effet
+  observable dans la logique ; le son ne concerne qu'un chemin d'erreur).
+
 #### 1.16.3 E20.e0a3 — Participation au tick de naissance des entités de l'interface
 
-**Prérequis.** E20.e0a2 (la table de cases : une entité détruite à sa naissance rend sa case).
+**Prérequis.** E20.e0a2 ✅ (la table de cases : une entité détruite à sa naissance rend sa case).
+
+**Reporté d'E20.e0a2 (vérification du 2026-10-15)** : un test de l'allocateur qui lit les lignes `invalid_full`, `dirty` et `probes` de
+`docs/plan-e20-annexe/e20-e0a/oracle/out/v5.json` (ce que l'ADR-0064 affirme déjà) ; les commentaires devenus faux de
+`AlundraSpawnBySpriteIndexInterfaceTests.cs` et `AlundraInoaDayOneArcTests.cs`.
 
 **But.** Une entité née dans `MovePlayer` (tir, usage d'un objet) tourne dans le tick qui la voit naître : statut, programme A, compteurs, listes, horloge, physique, coups ; une entité née dans un programme natif d'une autre entité tourne au tick suivant (D-E0A-6). Les entités par enregistrement ne changent pas (D-E0A-5, Q-A1). Ferme O-E20-11 pour les entités de l'interface.
 
