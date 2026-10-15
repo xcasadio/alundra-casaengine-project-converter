@@ -1,0 +1,9 @@
+walkability 0x40                              -> no class: BLOCKED at tick 43 (X 349.0) ; ClassB: BLOCKED at tick 43 (X 349.0) ; ClassA: BLOCKED at tick 43 (X 349.0)
+walkability 0x01                              -> no class: flies through ; ClassB: BLOCKED at tick 43 (X 349.0) ; ClassA: flies through
+ground property 0x10 (cell word 0x1000)       -> no class: flies through ; ClassB: flies through ; ClassA: BLOCKED at tick 43 (X 349.0)
+walkability 0x80                              -> no class: flies through ; ClassB: flies through ; ClassA: flies through
+walkability 0x02                              -> no class: flies through ; ClassB: flies through ; ClassA: flies through
+walkability 0x04                              -> no class: flies through ; ClassB: flies through ; ClassA: flies through
+walkability 0x08                              -> no class: flies through ; ClassB: flies through ; ClassA: flies through
+walkability 0x20                              -> no class: flies through ; ClassB: flies through ; ClassA: flies through
+walkability 0x10                              -> no class: flies through ; ClassB: flies through ; ClassA: flies through

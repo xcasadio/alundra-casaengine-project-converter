@@ -1,0 +1,12 @@
+map 115: size 52x60 cells, Gravity 128, ZViscosity 4096
+record 24 (XPos 18 YPos 92 Height 16): spawn PosZ raw 8388609 (128.0000 px) terrain 0.00 px ; first IsOnGround tick 23 ; first CollidedWithEntityZ tick 23 ; final PosZ 0.0000 px, X 228.00 Y 744.00 ; interp diff None
+record 25 (XPos 24 YPos 92 Height 16): spawn PosZ raw 8388609 (128.0000 px) terrain 0.00 px ; first IsOnGround tick 23 ; first CollidedWithEntityZ tick 23 ; final PosZ 0.0000 px, X 300.00 Y 744.00 ; interp diff None
+record 26 (XPos 18 YPos 100 Height 16): spawn PosZ raw 8388609 (128.0000 px) terrain 0.00 px ; first IsOnGround tick 23 ; first CollidedWithEntityZ tick 23 ; final PosZ 0.0000 px, X 228.00 Y 808.00 ; interp diff None
+record 27 (XPos 24 YPos 100 Height 16): spawn PosZ raw 8388609 (128.0000 px) terrain 0.00 px ; first IsOnGround tick 23 ; first CollidedWithEntityZ tick 23 ; final PosZ 0.0000 px, X 300.00 Y 808.00 ; interp diff None
+record  6 (XPos 36 YPos 18 Height 20): spawn PosZ raw 10485761 (160.0000 px) terrain 0.00 px ; first IsOnGround tick 25 ; first CollidedWithEntityZ tick 25 ; final PosZ 0.0000 px, X 444.00 Y 152.00 ; interp diff None
+record  7 (XPos 46 YPos 18 Height 20): spawn PosZ raw 10485761 (160.0000 px) terrain 0.00 px ; first IsOnGround tick 25 ; first CollidedWithEntityZ tick 25 ; final PosZ 0.0000 px, X 564.00 Y 152.00 ; interp diff None
+record  8 (XPos 36 YPos 22 Height 20): spawn PosZ raw 10485761 (160.0000 px) terrain 0.00 px ; first IsOnGround tick 25 ; first CollidedWithEntityZ tick 25 ; final PosZ 0.0000 px, X 444.00 Y 184.00 ; interp diff None
+record  9 (XPos 46 YPos 22 Height 20): spawn PosZ raw 10485761 (160.0000 px) terrain 0.00 px ; first IsOnGround tick 25 ; first CollidedWithEntityZ tick 25 ; final PosZ 0.0000 px, X 564.00 Y 184.00 ; interp diff None
+record 12 (XPos 58 YPos 84 Height 2): spawn PosZ raw 1048577 (16.0000 px) terrain 16.00 px ; first IsOnGround tick 1 ; first CollidedWithEntityZ tick 1 ; final PosZ 16.0000 px, X 708.00 Y 680.00 ; interp diff None
+record 13 (XPos 58 YPos 92 Height 2): spawn PosZ raw 1048577 (16.0000 px) terrain 16.00 px ; first IsOnGround tick 1 ; first CollidedWithEntityZ tick 1 ; final PosZ 16.0000 px, X 708.00 Y 744.00 ; interp diff None
+record 14 (XPos 58 YPos 100 Height 2): spawn PosZ raw 1048577 (16.0000 px) terrain 16.00 px ; first IsOnGround tick 1 ; first CollidedWithEntityZ tick 1 ; final PosZ 16.0000 px, X 708.00 Y 808.00 ; interp diff None

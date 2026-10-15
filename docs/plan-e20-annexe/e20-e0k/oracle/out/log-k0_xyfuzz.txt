@@ -1,0 +1,1 @@
+k0_xyfuzz: 20000 cases, ForceAdjusted expected in 2358 ; mismatches: 0

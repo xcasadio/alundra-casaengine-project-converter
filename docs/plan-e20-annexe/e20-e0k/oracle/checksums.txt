@@ -1,0 +1,78 @@
+# SHA-1 of the oracle tools of E20.e0k (working-tree bytes; core.autocrlf stores LF in the index, most tools are CRLF here as in the other annexes).
+# Origin: the discovery of 2026-10-15, folders bin/ (all but out/) and critic/ (residual_stats.py, census_header.py, census_flags.py) of the session scratchpad; "discovery-identical" = cmp at the copy.
+# "= <path>" : the same bytes already exist in an earlier annex. "NEW" : no earlier copy of that name. "DIFFERENT" : an earlier copy of that name has other bytes.
+a654e21042eaf30e50a3d0d9e5470511337fdaad  census_flags.py  NEW  discovery-identical
+ec44e4a5899e9b52c6c27f0a3276b7862c0a8adc  census_header.py  NEW  discovery-identical
+10498852080869b5478f45c0d58e25543c5d1747  exe.py  NEW  discovery-identical
+44161b500f34575c767f1aa866d7d7542e839c80  k0_arrows.py  NEW  discovery-identical
+54607a55753b63786cb0e7219defccf72727d3bc  k0_arrows2.py  NEW  discovery-identical
+645bd66e0acb237340140f882cb499747cdf0f59  k0_carry.py  NEW  discovery-identical
+cfa95b73169992c542dafa4a3414a7102fd83584  k0_crate.py  NEW  discovery-identical
+785030485577bb8e3cf6bb196f5e5366cf77bbcd  k0_drift.py  NEW  discovery-identical
+d1965a0a63a41a01664b98ccb8137938c16e398f  k0_header.py  NEW  discovery-identical
+9634666c6fae7c439902495f3989e0dc26c74fb7  k0_masks.py  NEW  discovery-identical
+b5c9e9d94ed2ce2b76fa84163e876289c8f683ae  k0_muruta.py  NEW  discovery-identical
+1d14a972ccc3f72e038bb26cd29a1211c5f7063a  k0_noriders.py  NEW  discovery-identical
+2e21c995e2c38e57fcf51ee35cbff288346ee27a  k0_slide.py  NEW  discovery-identical
+e36eaf9b556401d5026095369d5d61427c9fd8da  k0_walker.py  NEW  discovery-identical
+90fa17183d751a37bc67ec5aa01e5e0292333782  k0_xyfuzz.py  NEW  discovery-identical
+0ab499b3435d3aabfbad4d021a9f43dbb2ef236d  k0lib.py  NEW  discovery-identical
+7aae51e449bfdd1111cd7baab62c89d563259eb6  mutants_e0k.py  NEW  NEW (written for this annex)
+a39ce3d8cdf34d57d6bac213f308586b6ba6db1e  oracle/bank.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/bank.py  discovery-identical
+bffe67ff2656e2cddd9cb4ebb0eff5b37d5c0549  oracle/c1world.py  = docs/plan-e20-annexe/e20-c1/oracle/tools/c1world.py  discovery-identical
+4a0f475f753310c977336e35c5a3b4a87afb8a3c  oracle/callgraph.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/callgraph.py  discovery-identical
+45be94b77ee2df3b57610934ba8678f791ba1d46  oracle/checks.py  = docs/plan-e20-annexe/e20-c1/oracle/tools/checks.py  discovery-identical
+8680c1a42617f99d8966341a2f51d5f3e204254e  oracle/compare.py  = docs/plan-e20-annexe/e20-b/oracle/tools/compare.py  discovery-identical
+32a796e7c59d05109f9625717e00d0392159b057  oracle/datareport.py  = docs/plan-e20-annexe/e20-c1/oracle/tools/datareport.py  discovery-identical
+be6f65640a3d900595bd725060c637798f1617c9  oracle/diff2.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/diff2.py  discovery-identical
+5fca64d1f9fa63c58dfd15911e45e159caccb7ab  oracle/dump_dis.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/dump_dis.py  discovery-identical
+7677cb6c2e0c05a1dab511d5391974cffa85d34e  oracle/emu.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/emu.py  discovery-identical
+0ceb40174fefe8a5acd6220a4ba55eeca9c691db  oracle/hazards.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/hazards.py  discovery-identical
+c3c1e61094befa81948c917f538b0569fcdb8993  oracle/interp2.py  = docs/plan-e20-annexe/e20-c1/oracle/tools/interp2.py  discovery-identical
+4effe6db2a237a74c3bc5627faee5684c1a6d773  oracle/lib.py  DIFFERENT from earlier copies of that name (13)  discovery-identical
+e686f1b1242ab5779199b911994f9858632309c5  oracle/machine.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/machine.py  discovery-identical
+b3ebbbeb9ed48940e51823026a76ebec8f91f1f2  oracle/mips.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/mips.py  discovery-identical
+16fb65f548d4fa4e7b12b9202de5eb3bba74da6f  oracle/mutations.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/mutations.py  discovery-identical
+cb2fda6c02624615abfb5108b4fe34dbf0f7865d  oracle/oracle.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/oracle.py  discovery-identical
+3434ff84c8f841843d153c178991e52cb9d79b26  oracle/p1.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/p1.py  discovery-identical
+6955f08d59cf181c62865f3771197297926ed799  oracle/p10.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/p10.py  discovery-identical
+75f95aaaf691e2f94d7111774bcf7adc85c8e8b0  oracle/p11.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/p11.py  discovery-identical
+bb241b1d5e85e5a834aaf4154d6048c33ce54b7e  oracle/p12.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/p12.py  discovery-identical
+ac24b225323e361dbbd823b9aac914f332867072  oracle/p13.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/p13.py  discovery-identical
+657318795a1ddfe889485ea6befb52075083807b  oracle/p2.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/p2.py  discovery-identical
+b9453280702f50c2fd470ee49bb43b7038f1b688  oracle/p3.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/p3.py  discovery-identical
+7b576ae45c325eabbe02a2cbafdae3f9453347e1  oracle/p4.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/p4.py  discovery-identical
+07f16f25e271b6adc1f4b49ee8acf1c077d02fc6  oracle/p5.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/p5.py  discovery-identical
+f635390b1cfeee63a66c97105b032fdff77a76b9  oracle/p6.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/p6.py  discovery-identical
+e22920bc3502d33892326d18920db88ed4404079  oracle/p7.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/p7.py  discovery-identical
+339f8428d3e354ef22a60677b1061eb19a0270f2  oracle/p8.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/p8.py  discovery-identical
+381279c40474287b5784c00a2ba6fb7a6d4241cb  oracle/p9.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/p9.py  discovery-identical
+94a465b2666524c77e618ba9d1700ef9c7e92fd4  oracle/padcheck.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/padcheck.py  discovery-identical
+d3f1579d4af2611e4d1e9fe9d4c8ef2fc674323c  oracle/pass38634.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/pass38634.py  discovery-identical
+e0dabe540643413ee57675cfd5d68f3cbdd5f319  oracle/pworld.py  = docs/plan-e20-annexe/e20-e0a/oracle/tools/pworld.py  discovery-identical
+9b111ad596980d6cc7f1ec837cc077b7550029c7  oracle/run_all.py  = docs/plan-e20-annexe/e20-b/oracle/tools/run_all.py  discovery-identical
+8a344a52675c484b91da135b4e2555b19b970d47  oracle/run_c1.py  = docs/plan-e20-annexe/e20-c1/oracle/tools/run_c1.py  discovery-identical
+0a318f49bbf13ea91973525795f835acc37922f6  oracle/run_update_animation.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/run_update_animation.py  discovery-identical
+213ee0d291a17da4178029b801ccb8ef3c7f7281  oracle/scen.py  = docs/plan-e20-annexe/e20-c1/oracle/tools/scen.py  discovery-identical
+f035e68d2a96928ceffaeb6de36b9a3dee8bb8c1  oracle/startstate.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/startstate.py  discovery-identical
+61bf49871779b830e68c642f4bbc21c53bf1b61c  oracle/summ.py  = docs/plan-e20-annexe/e20-f3/oracle/tools/summ.py  discovery-identical
+7e8fbd06d659e8beea04f4172388726f8d0f68f5  oracle/sweep.py  = docs/plan-e20-annexe/e20-c1/oracle/tools/sweep.py  discovery-identical
+6f8b900ff420532fc8d04f244c3c32cd26e27e3b  oracle/world.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/world.py  discovery-identical
+0768024d611f455b77e5c5a3661d4dcc0981dc48  residual_stats.py  NEW  discovery-identical
+7a9cd9e725910036458e1629bfbeb13548b8aea2  run_all.py  DIFFERENT from earlier copies of that name (12)  discovery-identical
+b2bbf1b20b67530987b70f96543367da35cb550c  scripts/bean.py  NEW  discovery-identical
+2fc9a3678b4c3c5b9567f5544d8bf66f7ac769cd  scripts/census_drift.py  NEW  discovery-identical
+f17460d9316d096c60181a3a4b13f1c42e752c83  scripts/census_info.py  NEW  discovery-identical
+be08f1463a972e11e42129f14c1eaf1fe3fe1609  scripts/crate.py  NEW  discovery-identical
+fd54d0fa248aab2368650cb090dea338e75fb628  scripts/disall.py  NEW  discovery-identical
+ad7941344ad86609fe70172b13b96a1a9ec71491  scripts/halv.py  NEW  discovery-identical
+35ec85fcf87d1b4bc7771f799d653e39e296df02  scripts/headers.py  NEW  discovery-identical
+73640180c8d63fddc2e42eccb8573a0ed4611e95  scripts/muruta_info.py  NEW  discovery-identical
+f5079ec230fa02a5d890cd2901666fbb8e4a72a2  scripts/smoke1.py  NEW  discovery-identical
+6e7a1d1e0cba6a61de21493ef12d63ad422afcf0  scripts/stores.py  NEW  discovery-identical
+e50c14775c402ccef278a95fc871388b5873955e  scripts/t_ball.py  NEW  discovery-identical
+3d145c2c1c1ad53c3724303e94479dbc4c8d4a30  scripts/t_crate.py  NEW  discovery-identical
+aa1e6634de60e2620d73b2fe2e062898a9801bd5  scripts/t_crate2.py  NEW  discovery-identical
+e276acc7288d41c4ae6767c22f1eb6ada55e4492  scripts/t_slope.py  NEW  discovery-identical
+28ed5e6e4d56439fd6effc2fc6163af5755c4f75  scripts/t_stale.py  NEW  discovery-identical
+30bdcd2cb6192ee2db75040a51dd213a39631b5d  scripts/tables.py  NEW  discovery-identical

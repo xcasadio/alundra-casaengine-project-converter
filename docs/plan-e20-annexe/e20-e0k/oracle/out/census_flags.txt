@@ -1,0 +1,5 @@
+distinct BankKey values 395 [('0', 1), ('1', 1), ('2', 1), ('3', 1), ('4', 1), ('5', 1)]
+BankKey 79   flags 0x000103 ClassA,Gravity | off(-10,-7,0) size(20,14,8) contents 252
+BankKey 91   flags 0x030103 ClassA,Gravity | off(-10,-7,0) size(20,14,21) contents 251
+BankKey 36   flags 0x3323E4 DeactHit,DeactAnimEnd,Collidable,Gravity,NoObstacleSlide,DestroySlidingSlope,DestroyVram | off(-10,-7,0) size(21,15,16) contents 130
+['alundra_0', 'alundra_1', 'alundra_2', 'alundra_3', 'alundra_4', 'alundra_5', 'alundra_6', 'alundra_7', 'alundra_8', 'alundra_9']

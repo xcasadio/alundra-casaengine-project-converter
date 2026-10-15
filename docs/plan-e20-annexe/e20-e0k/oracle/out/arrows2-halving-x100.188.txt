@@ -1,0 +1,9 @@
+arrow type 3 start x=100+12345/65536, wall col 15
+tick status anim_t dir_t fx_C4 fy_C8 fnx_E4 fny_E8 px py pz adj_13C xcoll_130 ground_144 collz_140 flags6C
+t040 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=337.1884 py=100.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=12074
+t041 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=343.1884 py=100.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=12074
+t042 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=349.0000 py=100.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=12074
+t043 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=349.0000 py=100.0000 pz=16.0000 adj_13C=1 xcoll_130=0 ground_144=0 collz_140=0 flags6C=12074
+t044 status=3 anim_t=1 dir_t=8 fx_C4=-122880 fy_C8=0 fnx_E4=-122880 fny_E8=0 px=347.1250 py=100.0000 pz=20.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=12144  | snd(34)
+t045 status=3 anim_t=1 dir_t=8 fx_C4=-122880 fy_C8=0 fnx_E4=-122880 fny_E8=0 px=345.2500 py=100.0000 pz=23.5000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=12144
+t046 status=3 anim_t=1 dir_t=8 fx_C4=-122880 fy_C8=0 fnx_E4=-122880 fny_E8=0 px=343.3750 py=100.0000 pz=26.5000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=12144

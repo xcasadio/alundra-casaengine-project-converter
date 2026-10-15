@@ -1,0 +1,4 @@
+6 px/tick, N 20000 flag delay after the tick the arrow reaches the limit exactly (None: the arrow never reached the limit exactly): [(1, 20000)]
+integer-pixel gaps 0..11 px: [(0, 1), (1, 11)]
+flag tick minus the first tick whose FULL step no longer fits (random raw gaps): [(1, 13359), (2, 6641)]
+same, integer px gaps 0..11 (the oracle C1 family): [(0, 2), (1, 6), (2, 4)]

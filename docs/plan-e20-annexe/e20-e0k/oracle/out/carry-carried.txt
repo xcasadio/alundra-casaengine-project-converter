@@ -1,0 +1,16 @@
+F1 carried crate; hero X = 100 + t (harness); crate offsets (0,0,32 px) from hero.+0x30..0x38; interp diff None
+tick status anim_t carrier28 fz_B8 fx_C4 fnx_E4 fnz_EC px pz terr_138 floor_134 collz_140 adj_13C ground_144 moved_168
+t001 status=2 anim_t=0 carrier28=80127D30 fz_B8=0 fx_C4=0 fnx_E4=0 fnz_EC=0 px=101.0000 pz=32.0000 terr_138=0.0000 floor_134=0.0000 collz_140=1 adj_13C=1 ground_144=0 moved_168=1  | snd(0)
+t002 status=2 anim_t=0 carrier28=80127D30 fz_B8=0 fx_C4=0 fnx_E4=0 fnz_EC=0 px=102.0000 pz=32.0000 terr_138=0.0000 floor_134=0.0000 collz_140=1 adj_13C=1 ground_144=0 moved_168=1
+t003 status=2 anim_t=0 carrier28=80127D30 fz_B8=0 fx_C4=0 fnx_E4=0 fnz_EC=0 px=103.0000 pz=32.0000 terr_138=0.0000 floor_134=0.0000 collz_140=1 adj_13C=1 ground_144=0 moved_168=1
+t004 status=2 anim_t=0 carrier28=80127D30 fz_B8=0 fx_C4=0 fnx_E4=0 fnz_EC=0 px=104.0000 pz=32.0000 terr_138=0.0000 floor_134=0.0000 collz_140=1 adj_13C=1 ground_144=0 moved_168=1
+t005 status=2 anim_t=0 carrier28=80127D30 fz_B8=0 fx_C4=0 fnx_E4=0 fnz_EC=0 px=105.0000 pz=32.0000 terr_138=0.0000 floor_134=0.0000 collz_140=1 adj_13C=1 ground_144=0 moved_168=1
+t006 status=2 anim_t=0 carrier28=80127D30 fz_B8=0 fx_C4=0 fnx_E4=0 fnz_EC=0 px=106.0000 pz=32.0000 terr_138=0.0000 floor_134=0.0000 collz_140=1 adj_13C=1 ground_144=0 moved_168=1
+t007 status=2 anim_t=0 carrier28=80127D30 fz_B8=0 fx_C4=0 fnx_E4=0 fnz_EC=0 px=107.0000 pz=32.0000 terr_138=0.0000 floor_134=0.0000 collz_140=1 adj_13C=1 ground_144=0 moved_168=1
+t008 status=2 anim_t=0 carrier28=80127D30 fz_B8=0 fx_C4=0 fnx_E4=0 fnz_EC=0 px=108.0000 pz=32.0000 terr_138=0.0000 floor_134=0.0000 collz_140=1 adj_13C=1 ground_144=0 moved_168=1
+t009 status=2 anim_t=0 carrier28=80127D30 fz_B8=0 fx_C4=0 fnx_E4=0 fnz_EC=0 px=109.0000 pz=32.0000 terr_138=0.0000 floor_134=0.0000 collz_140=1 adj_13C=1 ground_144=0 moved_168=1
+t010 status=2 anim_t=0 carrier28=80127D30 fz_B8=0 fx_C4=0 fnx_E4=0 fnz_EC=0 px=110.0000 pz=32.0000 terr_138=0.0000 floor_134=0.0000 collz_140=1 adj_13C=1 ground_144=0 moved_168=1
+t011 status=2 anim_t=0 carrier28=80127D30 fz_B8=0 fx_C4=0 fnx_E4=0 fnz_EC=0 px=111.0000 pz=32.0000 terr_138=0.0000 floor_134=0.0000 collz_140=1 adj_13C=1 ground_144=0 moved_168=1
+t012 status=2 anim_t=0 carrier28=80127D30 fz_B8=0 fx_C4=0 fnx_E4=0 fnz_EC=0 px=112.0000 pz=32.0000 terr_138=0.0000 floor_134=0.0000 collz_140=1 adj_13C=1 ground_144=0 moved_168=1
+list counts (active, collidable) per tick: [(1, 2, 1), (2, 2, 1), (3, 2, 1), (4, 2, 1), (5, 2, 1), (6, 2, 1), (7, 2, 1), (8, 2, 1), (9, 2, 1), (10, 2, 1), (11, 2, 1), (12, 2, 1)]
+hero PosX per tick: [101.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0, 108.0, 109.0, 110.0, 111.0, 112.0]

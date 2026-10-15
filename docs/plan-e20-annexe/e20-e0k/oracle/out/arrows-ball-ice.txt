@@ -1,0 +1,27 @@
+== ball-ice (type 14, hero Z+32 px, flat, east) two interpreters differ at: None
+spawn state (before tick 1): status=1 anim_t=0 anim_c=0 izf_F8=512 fz_B8=0 fnz_EC=0 pz=32.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=132154 px=100.0000
+tick status anim_t anim_c izf_F8 fz_B8 fnz_EC pz terr_138 floor_134 ground_144 collz_140 adj_13C flags6C px
+t001 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=-32768 fnz_EC=-32768 pz=31.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=132154 px=103.0000
+t002 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=-65536 fnz_EC=-65536 pz=30.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=132154 px=109.0000
+t003 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=-98304 fnz_EC=-98304 pz=29.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=132154 px=115.0000
+t004 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=-131072 fnz_EC=-131072 pz=27.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=132154 px=121.0000
+t005 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=-163840 fnz_EC=-163840 pz=24.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=132154 px=127.0000  | fx(id=18,a2=0,x=121.000,y=100.000,z=27.000)
+t006 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=-196608 fnz_EC=-196608 pz=21.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=132154 px=133.0000
+t007 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=-229376 fnz_EC=-229376 pz=18.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=132154 px=139.0000
+t008 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=-262144 fnz_EC=-262144 pz=14.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=132154 px=145.0000
+t009 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=-294912 fnz_EC=-294912 pz=9.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=132154 px=151.0000  | fx(id=18,a2=0,x=145.000,y=100.000,z=14.000)
+t010 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=-327680 fnz_EC=-327680 pz=4.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=132154 px=157.0000
+t011 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=-360448 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132154 px=163.0000
+t012 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=-32768 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132144 px=163.0000  | fx(id=18,a2=0,x=163.000,y=100.000,z=0.000) fx(id=18,a2=0,x=163.000,y=100.000,z=0.000) fx(id=18,a2=0,x=163.000,y=100.000,z=0.000) fx(id=18,a2=0,x=163.000,y=100.000,z=0.000) fx(id=18,a2=0,x=163.000,y=100.000,z=0.000) snd(38)
+t013 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=-32768 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132144 px=163.0000
+t014 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=-32768 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132144 px=163.0000
+t015 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=-32768 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132144 px=163.0000
+t016 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=-32768 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132144 px=163.0000
+t017 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=-32768 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132144 px=163.0000  | fx(id=18,a2=0,x=163.000,y=100.000,z=0.000)
+t018 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=-32768 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132144 px=163.0000
+t019 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=-32768 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132144 px=163.0000
+t020 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=-32768 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132144 px=163.0000
+t021 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=-32768 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132144 px=163.0000
+t022 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=-32768 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132144 px=163.0000
+t023 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=-32768 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132144 px=163.0000
+t024 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=-32768 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 flags6C=132144 px=163.0000

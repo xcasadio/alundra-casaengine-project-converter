@@ -1,0 +1,10 @@
+Beannoid walks east into a 16 px step at x=168
+tick status anim_t anim_c izf_F8 fz_B8 fnz_EC fx_C4 fnx_E4 px pz terr_138 floor_134 ground_144 collz_140 adj_13C p18C py
+t031 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=158.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 p18C=0 py=100.0000
+t032 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=158.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 p18C=0 py=100.0000
+t033 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=158.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 p18C=0 py=100.0000
+t034 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=158.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=1 p18C=0 py=100.0000
+t035 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=158.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=1 p18C=0 py=100.0000
+t036 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=158.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=1 p18C=0 py=100.0000
+t037 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=158.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=1 p18C=0 py=100.0000
+t038 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=158.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=1 p18C=0 py=100.0000

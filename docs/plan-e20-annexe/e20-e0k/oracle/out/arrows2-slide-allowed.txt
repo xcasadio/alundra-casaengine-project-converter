@@ -1,0 +1,27 @@
+arrow type 3 y=106 flags clear 2000, wall col 15 rows>=7
+tick status anim_t dir_t fx_C4 fy_C8 fnx_E4 fny_E8 px py pz adj_13C xcoll_130 ground_144 collz_140 flags6C
+t036 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=313.0000 py=106.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t037 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=319.0000 py=106.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t038 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=325.0000 py=106.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t039 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=331.0000 py=106.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t040 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=337.0000 py=106.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t041 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=343.0000 py=106.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t042 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=349.0000 py=106.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t043 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=0 fny_E8=-32768 px=349.0000 py=105.5000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t044 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=0 fny_E8=-32768 px=349.0000 py=105.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t045 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=0 fny_E8=-32768 px=349.0000 py=104.5000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t046 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=0 fny_E8=-32768 px=349.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t047 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=355.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t048 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=361.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t049 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=367.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t050 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=373.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t051 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=379.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t052 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=385.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t053 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=391.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t054 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=397.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t055 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=403.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t056 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=409.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t057 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=415.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t058 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=421.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t059 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=427.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074
+t060 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=433.0000 py=104.0000 pz=16.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=10074

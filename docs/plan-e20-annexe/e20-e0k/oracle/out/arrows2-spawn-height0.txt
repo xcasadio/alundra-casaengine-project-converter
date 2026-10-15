@@ -1,0 +1,8 @@
+arrow type 3 spawn height hero Z (PosZ = T + 2 raw: 1 raw above the rest height)
+tick status anim_t anim_c izf_F8 fz_B8 fnz_EC pz terr_138 floor_134 ground_144 collz_140 adj_13C flags6C px
+t001 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12074 px=103.0000
+t002 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12074 px=109.0000
+t003 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12074 px=115.0000
+t004 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12074 px=121.0000
+t005 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12074 px=127.0000
+t006 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12074 px=133.0000

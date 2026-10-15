@@ -1,0 +1,8 @@
+Beannoid walks east toward a pit cell (gp 0x10) at x=144
+tick status anim_t anim_c izf_F8 fz_B8 fnz_EC fx_C4 fnx_E4 px pz terr_138 floor_134 ground_144 collz_140 adj_13C p18C
+t018 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=133.7500 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 p18C=0
+t019 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=134.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0 p18C=0
+t020 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=134.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=1 p18C=0
+t021 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=134.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=1 p18C=0
+t022 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=134.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=1 p18C=0
+t023 status=2 anim_t=7 anim_c=7 izf_F8=0 fz_B8=0 fnz_EC=-32768 fx_C4=122880 fnx_E4=122880 px=134.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=1 p18C=0

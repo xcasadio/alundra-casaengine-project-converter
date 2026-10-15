@@ -1,0 +1,33 @@
+F2 rider crate on a walking platform; platform top (ModdedPosZ+Depth) = 524288 ; interp diff None
+-- platform (slot 1)
+tick anim_t fx_C4 dx_DC fnx_E4 px pz fz_B8 fnz_EC floor_134 ground_144 collz_140 support_12C moved_168
+t001 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=101.8750 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1  | snd(0)
+t002 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=103.7500 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1
+t003 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=105.6250 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1
+t004 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=107.5000 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1
+t005 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=109.3750 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1
+t006 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=111.2500 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1
+t007 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=113.1250 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1
+t008 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=115.0000 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1
+t009 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=116.8750 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1
+t010 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=118.7500 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1
+t011 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=120.6250 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1
+t012 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=122.5000 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1
+t013 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=124.3750 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1
+t014 anim_t=7 fx_C4=122880 dx_DC=122880 fnx_E4=122880 px=126.2500 pz=0.0000 fz_B8=0 fnz_EC=-32768 floor_134=0.0000 ground_144=1 collz_140=1 support_12C=0 moved_168=1
+-- rider crate (slot 2)
+tick anim_t fx_C4 dx_DC fnx_E4 px pz fz_B8 fnz_EC floor_134 ground_144 collz_140 support_12C moved_168
+t001 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=101.8750 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1  | snd(0)
+t002 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=103.7500 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1
+t003 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=105.6250 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1
+t004 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=107.5000 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1
+t005 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=109.3750 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1
+t006 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=111.2500 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1
+t007 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=113.1250 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1
+t008 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=115.0000 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1
+t009 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=116.8750 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1
+t010 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=118.7500 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1
+t011 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=120.6250 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1
+t012 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=122.5000 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1
+t013 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=124.3750 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1
+t014 anim_t=0 fx_C4=0 dx_DC=0 fnx_E4=122880 px=126.2500 pz=8.0000 fz_B8=0 fnz_EC=-32768 floor_134=8.0000 ground_144=1 collz_140=1 support_12C=80127FC4 moved_168=1

@@ -1,0 +1,31 @@
+arrow type 3 at ground+0.5 px into wall col 15
+tick status anim_t anim_c izf_F8 fz_B8 fnz_EC pz terr_138 floor_134 ground_144 collz_140 adj_13C flags6C px
+t042 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12074 px=349.0000
+t043 status=2 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=1 flags6C=12074 px=349.0000
+t044 status=3 anim_t=1 anim_c=1 izf_F8=1024 fz_B8=262144 fnz_EC=262144 pz=4.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=347.1250  | snd(34)
+t045 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=229376 fnz_EC=229376 pz=8.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=345.2500
+t046 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=196608 fnz_EC=196608 pz=11.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=343.3750
+t047 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=163840 fnz_EC=163840 pz=13.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=341.5000
+t048 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=131072 fnz_EC=131072 pz=15.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=339.6250
+t049 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=98304 fnz_EC=98304 pz=17.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=337.7500
+t050 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=65536 fnz_EC=65536 pz=18.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=335.8750
+t051 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=32768 fnz_EC=32768 pz=18.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=334.0000
+t052 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=0 fnz_EC=0 pz=18.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=332.1250
+t053 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=-32768 fnz_EC=-32768 pz=18.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=330.2500
+t054 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=-65536 fnz_EC=-65536 pz=17.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=328.3750
+t055 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=-98304 fnz_EC=-98304 pz=15.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=326.5000
+t056 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=-131072 fnz_EC=-131072 pz=13.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=324.6250
+t057 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=-163840 fnz_EC=-163840 pz=11.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=322.7500
+t058 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=-196608 fnz_EC=-196608 pz=8.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=320.8750
+t059 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=-229376 fnz_EC=-229376 pz=4.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=319.0000
+t060 status=3 anim_t=1 anim_c=1 izf_F8=0 fz_B8=-262144 fnz_EC=-262144 pz=0.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=317.1250
+t061 status=4 anim_t=1 anim_c=1 izf_F8=0 fz_B8=-262144 fnz_EC=-262144 pz=0.5000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=12144 px=317.1250
+t062 status=0 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=0 px=0.0000
+t063 status=0 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=0 px=0.0000
+t064 status=0 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=0 px=0.0000
+t065 status=0 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=0 px=0.0000
+t066 status=0 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=0 px=0.0000
+t067 status=0 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=0 px=0.0000
+t068 status=0 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=0 px=0.0000
+t069 status=0 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=0 px=0.0000
+t070 status=0 anim_t=0 anim_c=0 izf_F8=0 fz_B8=0 fnz_EC=0 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=0 collz_140=0 adj_13C=0 flags6C=0 px=0.0000

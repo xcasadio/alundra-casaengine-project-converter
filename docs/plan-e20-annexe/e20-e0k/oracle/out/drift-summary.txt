@@ -1,0 +1,10 @@
+walker at rest on cell slope byte 0x44 (ground-drift bit 2, dir 0): +0x188 = 1 ; displacement over 6 ticks (X, Y px) = (0.0000, -3.1250) ; interp diff None
+walker at rest on cell slope byte 0x48 (air-drift bit 3, dir 0): +0x188 = 0 ; displacement over 6 ticks (X, Y px) = (0.0000, 0.0000) ; interp diff None
+walker at rest on cell slope byte 0x54 (ground-drift bit 2, dir 1): +0x188 = 2 ; displacement over 6 ticks (X, Y px) = (0.0000, 3.1250) ; interp diff None
+walker at rest on cell slope byte 0x58 (air-drift bit 3, dir 1): +0x188 = 0 ; displacement over 6 ticks (X, Y px) = (0.0000, 0.0000) ; interp diff None
+walker at rest on cell slope byte 0x64 (ground-drift bit 2, dir 2): +0x188 = 0 ; displacement over 6 ticks (X, Y px) = (-4.6875, 0.0000) ; interp diff None
+walker at rest on cell slope byte 0x68 (air-drift bit 3, dir 2): +0x188 = 0 ; displacement over 6 ticks (X, Y px) = (0.0000, 0.0000) ; interp diff None
+walker at rest on cell slope byte 0x74 (ground-drift bit 2, dir 3): +0x188 = 8 ; displacement over 6 ticks (X, Y px) = (4.6875, 0.0000) ; interp diff None
+walker at rest on cell slope byte 0x78 (air-drift bit 3, dir 3): +0x188 = 0 ; displacement over 6 ticks (X, Y px) = (0.0000, 0.0000) ; interp diff None
+arrow (flying 16 px above) over cells col 5..6 slope byte 0x54 (ground-drift bit 2 dir 1): +0x188 values seen ['0'] ; Y per tick [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+arrow (flying 16 px above) over cells col 5..6 slope byte 0x58 (air-drift bit 3 dir 1): +0x188 values seen ['0', '2'] ; Y per tick [100.0, 100.0, 100.0, 100.0, 100.625, 101.25, 101.875, 102.5, 103.125, 103.75, 104.375, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0, 105.0]

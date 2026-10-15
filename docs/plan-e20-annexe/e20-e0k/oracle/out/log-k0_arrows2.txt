@@ -1,0 +1,25 @@
+C1 halving residual at a wall column 15: start x -> (tick of ForceAdjusted, X raw at that tick, 349<<16 - X, +0x130)
+  x0=100+0/65536: ForceAdjusted at tick 43, X raw 22872064 (prev tick 22872064), gap to 349<<16 = 0, xcoll=0, interp diff None
+  x0=101+0/65536: ForceAdjusted at tick 44, X raw 22872064 (prev tick 22872064), gap to 349<<16 = 0, xcoll=0, interp diff None
+  x0=102+0/65536: ForceAdjusted at tick 43, X raw 22872064 (prev tick 22872064), gap to 349<<16 = 0, xcoll=0, interp diff None
+  x0=103+0/65536: ForceAdjusted at tick 43, X raw 22872064 (prev tick 22872064), gap to 349<<16 = 0, xcoll=0, interp diff None
+  x0=104+0/65536: ForceAdjusted at tick 44, X raw 22872064 (prev tick 22872064), gap to 349<<16 = 0, xcoll=0, interp diff None
+  x0=105+0/65536: ForceAdjusted at tick 43, X raw 22872064 (prev tick 22872064), gap to 349<<16 = 0, xcoll=0, interp diff None
+  x0=100+12345/65536: ForceAdjusted at tick 43, X raw 22872064 (prev tick 22872064), gap to 349<<16 = 0, xcoll=0, interp diff None
+  x0=100+1/65536: ForceAdjusted at tick 44, X raw 22872064 (prev tick 22872064), gap to 349<<16 = 0, xcoll=0, interp diff None
+  x0=100+40000/65536: ForceAdjusted at tick 44, X raw 22872064 (prev tick 22872064), gap to 349<<16 = 0, xcoll=0, interp diff None
+  x0=101+65535/65536: ForceAdjusted at tick 44, X raw 22872064 (prev tick 22872064), gap to 349<<16 = 0, xcoll=0, interp diff None
+C2 NoObstacleSlide cleared (flags &= ~0x2000), wall column 15 only on rows >= 7:
+  slide-forbidden: first ForceAdjusted tick 43 ; last row status 0 X 0.000 Y 0.000 ; interp diff None
+  slide-allowed: first ForceAdjusted tick None ; last row status 2 X 493.000 Y 104.000 ; interp diff None
+C3 map edge: arrow from x=1200 east: first ForceAdjusted tick 7, X 1237.0 px (bounds +0xFC = 0x4E00000 - ((offX + sizeX) << 16) = 1237.0000 px) interp diff None
+C4 arrow leaves a 32 px plateau (x 240): Z rows (every 4 ticks): 1:48.00 5:48.00 9:48.00 13:48.00 17:48.00 21:48.00 25:48.00 29:48.00 ; ground_144 values [0] ; interp diff None
+C5 arrow 0.5 px above ground: wall impact tick 43 ; first landing (CollidedWithEntityZ) tick None ; interp diff None
+C6 spawn hero Z (PosZ = T + 2 raw: 1 raw above the rest height): initial PosZ raw 2 ; statuses [2, 2, 2, 2, 2, 2] ; IsOnGround [0, 0, 0, 0, 0, 0] ; Z per tick [2, 2, 2, 2, 2, 2] ; interp diff None
+C6 spawn hero Z - 1 raw (PosZ = T + 1: at rest height): initial PosZ raw 1 ; statuses [2, 3, 3, 3, 3, 3] ; IsOnGround [1, 0, 0, 0, 0, 0] ; Z per tick [1, 262145, 491521, 688129, 851969, 983041] ; interp diff None
+C6 spawn 20 px below the ground (raised to T + 1): initial PosZ raw 1 ; statuses [2, 3, 3, 3, 3, 3] ; IsOnGround [1, 0, 0, 0, 0, 0] ; Z per tick [1, 262145, 491521, 688129, 851969, 983041] ; interp diff None
+C6b arrow spawned 60 px under a 48 px plateau top: PosZ raw 3145729 (T+1 = 3145729) statuses [2, 3, 3, 3, 3, 3, 3, 3] ; interp diff None
+C7 charged arrow (type 7, Z+8 px) into wall col 15: ForceAdjusted tick 43 ; statuses after: [(43, 2), (44, 4), (45, 0), (46, 0)] ; interp diff None
+C8 direction 0 (south): X/Y per tick (100.00,102.00) (100.00,106.00) (100.00,110.00) (100.00,114.00) (100.00,118.00) (100.00,122.00) interp diff None
+C8 direction 16 (north): X/Y per tick (100.00,98.00) (100.00,94.00) (100.00,90.00) (100.00,86.00) (100.00,82.00) (100.00,78.00) interp diff None
+C8 direction 8 (west): X/Y per tick (97.00,100.00) (91.00,100.00) (85.00,100.00) (79.00,100.00) (73.00,100.00) (67.00,100.00) interp diff None

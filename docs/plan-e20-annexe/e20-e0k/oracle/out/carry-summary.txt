@@ -1,0 +1,5 @@
+F1 carried crate: crate X per tick [101.0, 102.0, 103.0, 104.0, 105.0, 106.0] (hero X + 0); Z [32.00001525878906] ; forces [(0, 0, 0, 0)] ; CollidedZ [1] ; ForceAdjusted [1] ; active/collidable counts [(2, 1)] ; interp diff None
+F2 rider on platform: rider X-platform X per tick [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] ; rider +0x12C = platform slot? [True, True, True, True] ; rider Z [524289] ; interp diff None
+F3 after the platform leaves: rider +0x12C still platform? [False] ; rider X-platform X (ticks 10..30) [-3.75, -11.25, -18.75, -26.25, -33.75] ; rider Z (ticks 10..30) [6.5, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] ; interp diff None
+F4 walker Collidable=True: first ForceAdjusted tick 13 ; walker X at end 120.000 ; +0x130 at that tick 80128258 (crate slot address 80128258) ; crate X at end 140.000 ; interp diff None
+F4 walker Collidable=False: first ForceAdjusted tick None ; walker X at end 175.000 ; +0x130 at that tick None (crate slot address 80128258) ; crate X at end 140.000 ; interp diff None

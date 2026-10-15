@@ -1,0 +1,33 @@
+F4 walker (Collidable=False) walks east into a stationary crate at x=140; interp diff None
+-- walker
+tick anim_t fnx_E4 px pz adj_13C xcoll_130 collz_140 support_12C
+t008 anim_t=7 fnx_E4=122880 px=115.0000 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t009 anim_t=7 fnx_E4=122880 px=116.8750 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t010 anim_t=7 fnx_E4=122880 px=118.7500 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t011 anim_t=7 fnx_E4=122880 px=120.6250 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t012 anim_t=7 fnx_E4=122880 px=122.5000 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t013 anim_t=7 fnx_E4=122880 px=124.3750 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t014 anim_t=7 fnx_E4=122880 px=126.2500 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t015 anim_t=7 fnx_E4=122880 px=128.1250 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t016 anim_t=7 fnx_E4=122880 px=130.0000 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t017 anim_t=7 fnx_E4=122880 px=131.8750 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t018 anim_t=7 fnx_E4=122880 px=133.7500 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t019 anim_t=7 fnx_E4=122880 px=135.6250 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t020 anim_t=7 fnx_E4=122880 px=137.5000 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t021 anim_t=7 fnx_E4=122880 px=139.3750 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t022 anim_t=7 fnx_E4=122880 px=141.2500 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t023 anim_t=7 fnx_E4=122880 px=143.1250 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t024 anim_t=7 fnx_E4=122880 px=145.0000 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t025 anim_t=7 fnx_E4=122880 px=146.8750 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t026 anim_t=7 fnx_E4=122880 px=148.7500 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t027 anim_t=7 fnx_E4=122880 px=150.6250 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t028 anim_t=7 fnx_E4=122880 px=152.5000 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t029 anim_t=7 fnx_E4=122880 px=154.3750 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+t030 anim_t=7 fnx_E4=122880 px=156.2500 pz=0.0000 adj_13C=0 xcoll_130=0 collz_140=1 support_12C=0
+-- crate
+tick px adj_13C xcoll_130
+t008 px=140.0000 adj_13C=0 xcoll_130=0
+t009 px=140.0000 adj_13C=0 xcoll_130=0
+t010 px=140.0000 adj_13C=0 xcoll_130=0
+t011 px=140.0000 adj_13C=0 xcoll_130=0
+t012 px=140.0000 adj_13C=0 xcoll_130=0

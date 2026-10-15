@@ -1,0 +1,9 @@
+arrow type 7 into wall col 15
+tick status anim_t dir_t fx_C4 fy_C8 fnx_E4 fny_E8 px py pz adj_13C xcoll_130 ground_144 collz_140 flags6C
+t041 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=346.0000 py=100.0000 pz=8.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=32054  | fx(id=25,a2=3,x=340.000,y=100.000,z=16.000)
+t042 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=349.0000 py=100.0000 pz=8.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=32054
+t043 status=2 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=349.0000 py=100.0000 pz=8.0000 adj_13C=1 xcoll_130=0 ground_144=0 collz_140=0 flags6C=32054
+t044 status=4 anim_t=0 dir_t=24 fx_C4=393216 fy_C8=0 fnx_E4=393216 fny_E8=0 px=349.0000 py=100.0000 pz=8.0000 adj_13C=1 xcoll_130=0 ground_144=0 collz_140=0 flags6C=32054  | fxattach(id=8,target=slot 1)
+t045 status=0 anim_t=0 dir_t=0 fx_C4=0 fy_C8=0 fnx_E4=0 fny_E8=0 px=0.0000 py=0.0000 pz=0.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=0
+t046 status=0 anim_t=0 dir_t=0 fx_C4=0 fy_C8=0 fnx_E4=0 fny_E8=0 px=0.0000 py=0.0000 pz=0.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=0
+t047 status=0 anim_t=0 dir_t=0 fx_C4=0 fy_C8=0 fnx_E4=0 fny_E8=0 px=0.0000 py=0.0000 pz=0.0000 adj_13C=0 xcoll_130=0 ground_144=0 collz_140=0 flags6C=0

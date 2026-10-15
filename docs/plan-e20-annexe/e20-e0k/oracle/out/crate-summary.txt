@@ -1,0 +1,11 @@
+D1 flat, throw state 1: first row X 101.50 (spawn 100.00) ; landing tick 23 ; E2 (anim 2) tick 24 ; status 4 tick 26 ; interp diff None
+    Z by tick: [36.0, 39.5, 42.5, 45.0, 47.0, 48.5, 49.5, 50.0, 50.0, 49.5, 48.5, 47.0, 45.0, 42.5, 39.5, 36.0, 32.0, 27.5, 22.5, 17.0, 11.0, 4.5]
+D1 flat, throw state 2: first row X 103.00 (spawn 100.00) ; landing tick 23 ; E2 (anim 2) tick 24 ; status 4 tick 26 ; interp diff None
+    Z by tick: [36.0, 39.5, 42.5, 45.0, 47.0, 48.5, 49.5, 50.0, 50.0, 49.5, 48.5, 47.0, 45.0, 42.5, 39.5, 36.0, 32.0, 27.5, 22.5, 17.0, 11.0, 4.5]
+D1 flat, throw state 3: first row X 104.50 (spawn 100.00) ; landing tick 23 ; E2 (anim 2) tick 24 ; status 4 tick 26 ; interp diff None
+    Z by tick: [36.0, 39.5, 42.5, 45.0, 47.0, 48.5, 49.5, 50.0, 50.0, 49.5, 48.5, 47.0, 45.0, 42.5, 39.5, 36.0, 32.0, 27.5, 22.5, 17.0, 11.0, 4.5]
+D2 step16 (height byte 1 on cols 5..8), state 2: first ForceAdjusted tick None ; first landing tick 21 ; last live X 163.00 Z 16.00 terr 16.00 ; interp diff None
+D2 step32 (height byte 2 on cols 5..8), state 2: first ForceAdjusted tick None ; first landing tick 18 ; last live X 151.00 Z 32.00 terr 32.00 ; interp diff None
+D2 step48 (height byte 3 on cols 5..8), state 2: first ForceAdjusted tick 4 ; first landing tick None ; last live X 109.00 Z 45.00 terr 0.00 ; interp diff None
+D3 wall column 5, state 2: first ForceAdjusted tick 4 ; interp diff None
+D4 thrown off a 48 px plateau (edge x=120): landing tick 29 ; interp diff None
