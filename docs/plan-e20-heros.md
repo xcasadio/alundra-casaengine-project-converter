@@ -4513,6 +4513,12 @@ agissent **après** le pas horizontal, comme chez le héros (`SnapHeroAtApex` et
 le pas logique a deux points d'appel ; un test de monde (z9) épingle l'aimant ; (3) un T0 recompte la liste prédite au HEAD de départ
 d'e0k2 (les tests d'e0k1 y entrent) ; (4) l'arrêt sur l'écart de racine porte sur une mesure faite dans e0k2, après la phase B ; l'arrêt sur
 P3 d'e0k1 est satisfait (P3 a confirmé l'unité perdue).
+**Révision 2 (2026-10-16).** Seconde relecture : **REVISE**, un blocage ; disposition de la session principale (cap de deux relectures
+automatiques atteint) : **FIX** — la sentinelle après un `Teleport` n'avait aucun test : le seul `Teleport` de la DLL est dans
+`PushLogicalPositionToRoot`, qui remet le verrou vertical à 0, et W2 fait rendre la main à une entité marquée avant la redéclaration de
+`EvaluateEntitySupport` ; les opcodes `0x64`, `0x65` et `0x8B` l'appellent en cours de vie. La redéclaration pour une entité marquée se fait
+dans `PushLogicalPositionToRoot` (même fichier, dans le périmètre ; les opcodes restent hors périmètre), et le test de monde (z10) l'épingle.
+Nouvelle époque de relecture : une seule relecture de clôture suit.
 
 **Prérequis.** E20.e0k1.
 
@@ -4524,7 +4530,7 @@ P3 d'e0k1 est satisfait (P3 a confirmé l'unité perdue).
 
 **Partage des phases** (seul à faire foi) :
 - **Phase A** (T1, sans changement de comportement) : le champ `HasLogicalZ` (non cloné), posé par l'interface dans le bloc du marqueur d'ADR-0065 (**aucun lecteur**) ; l'extraction de la loi de force (D-E0K-3), comportement conservé ; le pas logique en **deux fonctions**, **non appelées par le tick** : avant le XY (loi de force, écriture de `TickForceZ` avec la force du tick avant l'atterrissage, pas vertical, plafond, atterrissage strict, haut des entités pour un sujet, sentinelle) et après le XY (aimant de 3 px avec le pas XY de ce tick et le terrain à la position d'arrivée, puis `IsOnGround = (PosZ ≤ sol)`) ; tests directs de ces fonctions sur une entité marquée appelée à la main.
-- **Phase B** (T3) : les quatre branchements, ensemble, car ils n'ont de sens qu'ensemble : (W1) les deux appels du pas logique dans `RunOneMotionTick` pour une entité marquée : la première fonction avant `RunOneKinematicTick`, la seconde après (au même endroit que `SnapHeroAtApex` et la dérivation de `IsOnGround` du héros) ; (W2) pour une entité marquée, `EvaluateEntitySupport` **saute** le bloc de la loi de force (vers `:774-798`) et l'écriture de `TickForceZ` (vers `:802-805`), garde les écritures de `TerrainHeight` et des hauteurs du sol (`UpdateEnemyGroundHeights`, vers `:844-850`), puis rend la main ; (W3) `PullRootPose` et `MoveControllerAndPullPosition` ne rapatrient ni `PosZ` ni `IsOnGround` ; (W4) règle de `StepHeight`, sentinelle après chaque `Teleport`, et `OwnerExternalVerticalDisplacement` qui rend la sentinelle au dégel.
+- **Phase B** (T3) : les quatre branchements, ensemble, car ils n'ont de sens qu'ensemble : (W1) les deux appels du pas logique dans `RunOneMotionTick` pour une entité marquée : la première fonction avant `RunOneKinematicTick`, la seconde après (au même endroit que `SnapHeroAtApex` et la dérivation de `IsOnGround` du héros) ; (W2) pour une entité marquée, `EvaluateEntitySupport` **saute** le bloc de la loi de force (vers `:774-798`) et l'écriture de `TickForceZ` (vers `:802-805`), garde les écritures de `TerrainHeight` et des hauteurs du sol (`UpdateEnemyGroundHeights`, vers `:844-850`), puis rend la main ; (W3) `PullRootPose` et `MoveControllerAndPullPosition` ne rapatrient ni `PosZ` ni `IsOnGround` ; (W4) règle de `StepHeight`, sentinelle redéclarée **dans `PushLogicalPositionToRoot`** pour une entité marquée (après son `Teleport`), et `OwnerExternalVerticalDisplacement` qui rend la sentinelle au dégel.
 
 ##### Tâches
 
@@ -4539,21 +4545,24 @@ P3 d'e0k1 est satisfait (P3 a confirmé l'unité perdue).
 - ⏳ **T2 — Tests de monde**, écrits après T1, **rouges avant T3** (la phase A ne branche rien), à 1, 2 et 3 ticks par image : (z1) une entité née sans gravité à la hauteur du héros garde `PosZ = héros + 1 unité` et `IsOnGround` 0 pendant 30 ticks (c'est la sonde de f3c : elle passe de 2 ticks de vie à 26 par la règle), accolée à la même entité par enregistrement, inchangée ; (z2) flèche à Z + 16 px au-dessus d'une marche de 16 px : `IsOnGround` 0 pendant 20 ticks, et contre une marche de 32 px : `ForceAdjusted` au tick 43 (oracle `arrow-h1`, `arrow-h2`) ; (z3) boule : série de Z de l'oracle **dès le tick 1** (31,5 px moins une unité brute ; une double décroissance
   la fausse), atterrissage au tick 11, `ForceAdjusted` au tick 7 contre la marche de 32 px (`ball-step32`), pose au tick 8 sur la marche de 16 px (`ball-step16`) ; (z4) entité à gravité lancée par une impulsion de 1 024 : atterrissage au tick 23 à plat, 21 sur 16 px, 18 sur 32 px ; (z5) gel puis dégel en l'air : le Z continue, sans ancrage, accolé à un PNJ par enregistrement inchangé ; (z6) la racine suit le Z logique sans que le moteur la déplace entre deux ticks ; (z7) la règle de `StepHeight` : 0 en l'air, la valeur du préfab au repos avec gravité ; (z8) invariance au groupement : mêmes séries à 1, 2 et 3 ticks par image ; (z9) aimant : une entité marquée à gravité, `ForceZ == 0`,
   avec une force XY, posée sur un terrain 3 px plus haut (clé `magnet-3px`), accolée dans la même assertion à la même entité devant un
-  terrain 4 px plus haut, non posée (clé `magnet-4px`).
+  terrain 4 px plus haut, non posée (clé `magnet-4px`) ; (z10) téléportation en cours de vie : une entité marquée en l'air, déplacée par
+  une écriture de position scriptée (`PushLogicalPositionToRoot` appelé directement, ou l'opcode `0x64`), puis une mise à jour du moteur
+  sans tick logique : elle n'est pas reposée au sol par le moteur ; accolée dans la même assertion à une entité par enregistrement,
+  inchangée.
 - ⏳ **T3 — Phase B** (commit de code B) : les quatre branchements. Les tests de T2 passent au vert ; suite complète.
 - ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). Mutants, au moins 12, tous tués : marqueur posé sur le héros ou sur les créations par enregistrement, marqueur sur `EntityRefId == −1` (tué par le héros et l'entité recyclée de (a)), marqueur cloné, loi de force appliquée deux fois, retour anticipé de W2 avant l'écriture de `TerrainHeight`, `PosZ` rapatrié, `IsOnGround` lu sur le contrôleur, atterrissage `<=`, plafond changé, aimant de 4 px, aimant placé avant le XY (tué par (z9)), `IsOnGround` dérivé avant le XY, `StepHeight` inversé, sentinelle perdue après
-  un `Teleport`, dégel qui rend `FinalForceZ`, Z après XY ; la loi appliquée deux fois doit être tuée par un test de **monde** ((z3)),
+  un `Teleport` (tué par (z10)), dégel qui rend `FinalForceZ`, Z après XY ; la loi appliquée deux fois doit être tuée par un test de **monde** ((z3)),
   pas seulement par T1.
 
 ##### Acceptation
 
-- DLL : tests de T1 et T2 verts ; (z1) à (z9) rouges avant T3 (nommés) ; `Alundra.Tests` en Release **et** en Debug, zéro échec ; tests déplacés ⊂ la liste prédite recomptée au T0 d'e0k2, chacun réécrit par dérivation ; **preuve de retrait** : les branchements
-  retirés, exactement (z1) à (z9) et les épingles réécrites rouges ; l'écart racine / Z logique mesuré par (z6) et par une reprise de P6
+- DLL : tests de T1 et T2 verts ; (z1) à (z10) rouges avant T3 (nommés) ; `Alundra.Tests` en Release **et** en Debug, zéro échec ; tests déplacés ⊂ la liste prédite recomptée au T0 d'e0k2, chacun réécrit par dérivation ; **preuve de retrait** : les branchements
+  retirés, exactement (z1) à (z10) et les épingles réécrites rouges ; l'écart racine / Z logique mesuré par (z6) et par une reprise de P6
   après la phase B, versé aux résultats ; aucun diff du héros (`RunHeroVerticalTick`, `SnapHeroAtApex`, `AlundraPlayerManager`) ; traces inchangées ; `cmp` de la DLL ; moteur, convertisseur et données sans diff.
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : un test hors de la liste prédite bouge ; plus de 10 tests existants bougent ; la phase A fait bouger un test ; un test de (z1) à (z9) vert avant T3 ; après la phase B, (z6) ou la reprise de P6 montre un écart de plus de 1 px entre la racine et
+- **Arrêts** : un test hors de la liste prédite bouge ; plus de 10 tests existants bougent ; la phase A fait bouger un test ; un test de (z1) à (z10) vert avant T3 ; après la phase B, (z6) ou la reprise de P6 montre un écart de plus de 1 px entre la racine et
   le Z logique, ou un déplacement de la racine par le moteur entre deux ticks (arrêt ; question : `GroundSnapDistance` à 0 pour les
   marquées) ; (l'arrêt sur P3 d'e0k1 est satisfait : P3 a confirmé l'unité perdue) ; un diff du chemin du héros ou des entités par enregistrement ; un besoin de changer le moteur.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
