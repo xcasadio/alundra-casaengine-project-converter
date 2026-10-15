@@ -3633,8 +3633,13 @@ l'interface **ne pose plus** `Current = Target` (la bascule reste en attente dan
 (`0x80038AB4`) ; la cinématique générique prend la clé de son jeu d'animations sur `TargetAnimationId` pour une entité marquée dont
 l'animation n'est pas encore validée. La piste « fausser `AnimationDirection` » de l'exécuteur est écartée (état artificiel). Le test H
 d'e0a1 ne change plus ; seule la sonde PA3 change. Nouvelle époque de relecture : une seule relecture de clôture suit.
+**Relecture de clôture de la révision 3 (2026-10-15) : REVISE**, un point (P2) : la ligne « Arrêts » interdisait ce que D-E0A-8 impose
+(la ligne de `TickScriptedNpc`) ; **corrigé mot pour mot** comme le demandait la relecture (exception nommée dans les arrêts), avec le texte
+périmé du prérequis. Le reste a été confirmé contre le code (bascule en attente dans les quatre directions, `AnimFlags` rechargé à
+l'identique, ligne sans effet après validation, PA3 seul test touché). La règle de relecture ne permet pas une relecture de plus sans
+l'auteur : la tranche est **en pause** jusqu'à son accord.
 
-**Prérequis.** E20.e0a3a ✅ (voie de P-A : (i) restreinte à `Current = Target` ; `Alundra.Tests` 4 815).
+**Prérequis.** E20.e0a3a ✅ (sonde P-A ; sa voie (i) est remplacée par D-E0A-8, révision 3 ; `Alundra.Tests` 4 815).
 
 **But.** Les entités nées par l'interface dans `MovePlayer` participent au tick de leur naissance (`BT-M1` à `BT-M3`) ; nées dans un
 programme natif, elles tournent au tick suivant (écart D-E20-34, épinglé) ; les entités par enregistrement ne changent pas. Puis mesurer
@@ -3787,7 +3792,8 @@ directions (états identiques à l'image 1 avec et sans `Current = Target` hors 
 ##### Arrêts, budget, retour arrière
 
 - **Arrêts** : une épingle d'apparition par enregistrement qui bouge (le marqueur fuit) ; T0 qui montre un effet de `Current = Target` sur
-  une entité par enregistrement ; un besoin de modifier le noyau partagé, la cinématique générique ailleurs que la lecture du champ, ou le
+  une entité par enregistrement ; un besoin de modifier le noyau partagé, la cinématique générique ailleurs que la lecture du champ et la seule ligne de D-E0A-8 dans `TickScriptedNpc` (clé gardée par
+  `JoinsBirthTick` et `CurrentAnimationId == ~0u`), ou le
   moteur ; la précondition de P-B non tenue ; une issue de T0 qui demande du code hors des décisions ou montre un écart sur une entité
   de l'interface ; une épingle d'e0a1 sur `PosZ` qui bouge.
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
