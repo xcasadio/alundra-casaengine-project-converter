@@ -596,6 +596,14 @@ en pause), f3c après E20.e0k. Choix de la session principale en mode AUTO, rév
 Relecture de la révision 7 : **REVISE**, un point corrigé (FIX) : f3b lit l'oracle que seul le T0 d'E20.f3a (commit de l'oracle commun `docs/plan-e20-annexe/e20-f3/oracle/` : `hitfx_table` en JSON avec ses clés, `hitfx_mut`, sonde de la flamme) produit ;
 f3b exige donc ce T0 (pas les phases de code d'f3a). Une seconde relecture suit.
 Seconde relecture de la révision 7 : **READY** (2026-10-15).
+**Révision 8 (2026-10-15, mode AUTO, après la découverte d'E20.e0k ; nouvelle époque de relecture).** La découverte d'E20.e0k (§1.18)
+corrige la prémisse de la ligne 4 : les entités autres que le héros ont déjà un pas vertical par tick ; ce qui manque est l'état de
+carte des entités nées par l'interface (e0k1), leur Z logique et le pas vertical du binaire (e0k2), le bord de la carte (e0k3) ; e0k4
+est conditionnelle (Q-K2, option B). Q-K1 et Q-K2 : défaut A appliqué par la session principale jusqu'à la réponse de l'auteur.
+Prérequis : f3c exige e0k1 et e0k2 (la règle du Z logique ; D-F3-8 corrigé : marqueur d'e0k2, plus `EntityRefId == −1`) ; f4, f5 et
+f6 exigent e0k1 à e0k3 ; g1 et g2 exigent e0k2 (g1 pose le marqueur sur une entité par enregistrement qu'il soulève) ; h3 exige e0k2 ;
+h4 exige e0k1 à e0k3. Ordre : f3a, f3b, e0k1, e0k2, f3c, e0k3, puis la suite du tableau. Choix de la session principale en mode AUTO,
+réversible, signalé à l'auteur.
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -623,7 +631,8 @@ lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports e
 - [binaire] Le binaire réutilise la première case libre (1 à 63, plafond 63) ; la DLL ajoute en fin de liste (O-E20-13).
 - [binaire] L'avance du générateur (`0x8002BD0C`-`0x8002BD34`) a lieu une fois par appel de la fonction d'image, même quand les
   entités sont gelées ; la DLL n'en a pas. E9 et l'étincelle de charge tirent dans le générateur seulement quand l'effet est créé.
-- [DLL] Seul le héros a un pas vertical par tick (`AlundraScriptedMotion.cs:194`, `:198`) ; les flèches volent à Z constant avec
+- [DLL] ~~Seul le héros a un pas vertical par tick~~ (**corrigé par la découverte d'E20.e0k, §1.18** : seul le héros a un état en l'air
+  tenu par le tick ; toute entité active a déjà un pas vertical) (`AlundraScriptedMotion.cs:194`, `:198`) ; les flèches volent à Z constant avec
   `NoObstacleSlide`, les boules tombent, une flèche qui rebondit prend la gravité : il faut un pas vertical et de vol pour les autres
   entités (K0).
 - [DLL] `RunSpriteEvent` ne tourne que le livre et E0/E1 ; le registre par type de sprite (D-E14-1) est un prérequis d'E20.f, d'E20.g et
@@ -647,15 +656,15 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 | 1 | E20.e0x (§1.15) | Convertisseur : `BankKey` dans `Data/sprite-records.json` (le `BreakEffect` y est déjà, E14.a1a) et les indices valides par carte (D-E20-33) ; export complet en place, preuve par manifeste et double export ; ADR de format | E14.a1a ✅ |
 | 2 | E20.e0a (§1.16 : e0a1, e0a2, e0a3 ✅ ; e0a4 décidée le 2026-10-15, après E20.e0b2, ne bloque rien) | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
 | 3 | E20.e0b (§1.17 : e0b1, puis e0b2) | e0b1 : générateur avancé une fois par tick (`0x8002BD0C`-`0x8002BD34`) ; e0b2 : tirage du butin à la création (écrit le contenu, rien ne tombe) | E20.e0a1, E20.e0a2 (§1.16) ; e0b1 avant e0b2 (ordre) |
-| 4 | E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a1 (§1.16) |
-| 5 | E20.f3 (§1.19 : f3a, f3b, f3c) | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | f3a : E20.f1 ✅, E20.e0a1 à E20.e0a3 ✅ ; f3b : le T0 d'E20.f3a (oracle commun), E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅ ; f3c : f3a, E20.e0b1 ✅ et la règle du Z logique d'E20.e0k (D-F3-8) ; f3a et f3b peuvent passer avant E20.e0k |
-| 6 | E20.f4 | Flèche chargée : C94, E1 avec l'effet 8 (l'effet de bris vient d'E14.a1b, D-E20-26) | E20.f3, E20.e0k, E14.a1b ✅ |
-| 7 | E20.f5 | Flèches : E17 (D-E20-25) | E20.f3, E20.e0k |
-| 8 | E20.f6 | Boules de feu et de glace : C60, E9 (D-E20-25) ; vigilance sur les trois enregistrements `0x0C` de la carte 309, qui prendront vie | E20.f3, E20.e0b1 (§1.17), E20.e0k |
+| 4 | E20.e0k (§1.18 : e0k1, e0k2, e0k3 ; e0k4 conditionnelle) | État de carte des entités nées par l'interface ; leur Z logique et le pas vertical du binaire (gravité `0x100`, impulsion, atterrissage strict, vol à Z constant, aimant, plafond) ; bord de la carte ; butée sur mur et hauteur par le mover existant | e0k1 : E20.e0a1 à E20.e0a3b ✅ ; e0k2 et e0k3 : e0k1 ; e0k4 : e0k2, e0k3 et l'option B de Q-K2 |
+| 5 | E20.f3 (§1.19 : f3a, f3b, f3c) | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | f3a : E20.f1 ✅, E20.e0a1 à E20.e0a3 ✅ ; f3b : le T0 d'E20.f3a (oracle commun), E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅ ; f3c : f3a, E20.e0b1 ✅, E20.e0k1 et E20.e0k2 (la règle du Z logique, D-F3-8) ; f3a et f3b peuvent passer avant E20.e0k |
+| 6 | E20.f4 | Flèche chargée : C94, E1 avec l'effet 8 (l'effet de bris vient d'E14.a1b, D-E20-26) | E20.f3, E20.e0k1 à E20.e0k3, E14.a1b ✅ |
+| 7 | E20.f5 | Flèches : E17 (D-E20-25) ; `ResyncControllerFromFlags` quand E17 change les drapeaux (§1.18, N9) | E20.f3, E20.e0k1 à E20.e0k3 |
+| 8 | E20.f6 | Boules de feu et de glace : C60, E9 (D-E20-25) ; vigilance sur les trois enregistrements `0x0C` de la carte 309, qui prendront vie | E20.f3, E20.e0b1 (§1.17), E20.e0k1 à E20.e0k3 |
 | 9 | E20.h0, E20.h1 | Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a ✅ |
 | 9b | E20.A362 | Le couvercle de la 362 (enregistrement 0, sprite 243, `D[1]` `0x87 [128,3]`) face à la bombe d'Olen (enregistrement 5, sprite 2, lancée par son script `0x8B [128,5,…]`, explosion animation 1, attaque attribut 4 puissance 5) : arc de test seul, comme E20.c1b-2 ; il tranche si le couvercle réagit déjà (probable depuis E20.c1a et E20.c1b-1) ou ce qui manque ; relancé après E20.h3 | E20.c1b-1 ✅ |
-| 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées | E20.e0a1 (§1.16), E20.e0k ; E14.a1b ✅ et E20.e0b2 (§1.17) pour g2 |
-| 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 pour h3 (§1.16) |
+| 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées ; g1 pose le marqueur du Z logique (§1.18, D-E0K-1) sur l'entité soulevée | E20.e0a1 (§1.16), E20.e0k2 ; E14.a1b ✅ et E20.e0b2 (§1.17) pour g2 |
+| 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 (§1.16) et E20.e0k2 pour h3 ; E20.e0k1 à E20.e0k3 pour h4 |
 | 12 | E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 (D-E20-27) ; ordre interne fixé au détail (g3 dépend aussi de la géométrie de la barricade de g4 et d'un choix de l'auteur, `order-critic.md`) | E20.g1, E20.g2 |
 
 Les projectiles d'E20.f3, f5 et f6 (E10, E17, E9) appellent aussi `DestroyEntity(e, fx)` : fait par E14.a1b ✅.
@@ -4303,6 +4312,216 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
 | O-E0B-3 | Fréquence réelle des images de deux ticks ou plus, et première image après une longue pause (jusqu'à 4 ticks) | recette de l'auteur (compteur de l'ombre) |
 | O-E0B-4 | Treize fonctions qui tirent (`0x80032F84`, `0x800330FC`, `0x800333AC`, `0x800335AC`, `0x8003382C`, `0x80033A2C`, `0x80034EC4`, `0x800354D0`, `0x80039188`, `0x80042FDC`, `0x800432A4`, `0x8004392C`, `0x80065204`) ne figuraient pas dans la liste antérieure des sites ; la plupart ne sont pas portées : chacune consommera le flux avancé (`0x80039188` est déjà porté : étincelles de coup) | tranches E20.e, E20.h, E14 |
 
+### 1.18 E20.e0k — Pas vertical et vol des entités autres que le héros : e0k1 (état de la carte), e0k2 (Z logique et pas vertical), e0k3 (bord de la carte), e0k4 (conditionnelle) ⏳ (détaillée le 2026-10-15)
+
+**Réponses de l'auteur.** Aucune à ce jour (2026-10-15, mode AUTO, l'auteur absent). Q-K1 et Q-K2 ont chacune un défaut réversible,
+**appliqué par la session principale jusqu'à la réponse de l'auteur** (option A dans les deux cas : périmètre étroit, aucun élargissement).
+Aucune ne bloque e0k1. Ordre retenu par la session principale (révision 8 de l'enveloppe) : e0k1, e0k2, puis E20.f3c, puis e0k3.
+
+Découverte en lecture seule du 2026-10-15, au HEAD `4a2b5a7` : trois relevés (binaire, impact sur la DLL, inventaire des tests), puis un critique adversarial. Le critique a redésassemblé les sites qui portent les décisions : la passe `0x80038364`, la force des non-héros `0x80036A84`, le rognage `0x800366FC`, `ComputeZ` `0x800375E0`, le test d'atterrissage `0x80036BFC`, le plafond `0x80036D94`, `ComputeXY` `0x80037730` avec son aimant, la fonction de blocage `0x800373E4`, le sol `0x80037F28`, les porteurs `0x800364C8`, `SetEntityDimensions` `0x80039C40` et les listes `0x800384F4`. Il a rejoué les 88 sorties de l'oracle du relevé binaire (manifeste identique, 20 000 cas du fuzz sans écart) et refait le recensement des mots d'en-tête des 483 cartes et des drapeaux des sprites. Il a écrit un modèle à part de la boucle d'affinage (20 000 tirages), relu le code de la DLL (pas vertical, racine, mur, bord, gel, marqueurs) et recompté la suite (309 fichiers, 2 525 faits et 354 théories). Scripts et sorties dans le scratchpad de la session : `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20e0k/` (`bin/`, `dll/`, `tests/`, `critic/`). Aucune modification du moteur, du convertisseur ni des données. La DLL n'a pas été exécutée : ce qui la concerne est lu dans le code ou inféré. Les sondes de T2 d'e0k1 le mesurent.
+
+**But.** Donner aux entités nées par l'interface (flèches, boules, vague, bombe, objets lâchés) l'état de carte, le Z logique, le pas vertical et les butées du binaire. Dans l'ordre : l'état dépendant de la carte (e0k1) ; le Z logique et le pas vertical (e0k2) ; le bord de la carte (e0k3). Les entités posées par la carte ne changent pas (Q-K1, défaut A).
+
+**La prémisse de l'enveloppe est fausse, et la tranche rétrécit.** « Seul le héros a un pas vertical par tick » (§1.1, fait [DLL] et ligne 4) est faux. Seul le héros a un **état en l'air tenu par le tick** (`RunHeroVerticalTick`). Toute entité active a déjà un pas vertical : le chemin du contrôleur (`EvaluateEntitySupport`, 383 préfabs sur 395) ou le chemin sans contrôleur (`StepVerticalWithoutController`, 12 préfabs). Ce qui manque est plus étroit :
+1. Une entité née par l'interface n'a pas les quatre lignes de l'état de carte. Une boule reste en l'air, une flèche traverse les murs, un rebond est annulé par le moteur.
+2. Le Z d'une entité à contrôleur passe par la racine, qui tronque au pixel : l'unité brute est perdue (D-F3-8).
+3. Les écarts de règle au binaire (ordre Z puis XY, atterrissage strict, aimant) existent aussi pour les entités par enregistrement. C'est E19.h2, hors de cette section.
+4. Le rognage au bord n'est porté pour personne (O-E19-17).
+
+**Découpage.**
+
+| Sous-tranche | Contenu | Prérequis |
+|---|---|---|
+| E20.e0k1 | État de carte des entités nées par l'interface ; sondes de la DLL ; épingle P3 d'e0a3b | E20.e0a1 ✅, e0a2 ✅, e0a3b ✅ |
+| E20.e0k2 | Marqueur « Z logique », pas vertical du binaire (Z avant XY, atterrissage strict, impulsion, plafond, aimant), règle de la hauteur de marche, gel et dégel | e0k1 |
+| E20.e0k3 | Bord de la carte pour les entités marquées | e0k1 |
+| E20.e0k4 | Conditionnelle (Q-K2 option B) : boucle d'affinage entière de `ComputeXY` pour les entités marquées | e0k2, e0k3 |
+
+Ordre : e0k1, e0k2, e0k3 (e0k4 seulement si l'auteur la demande). Les dépendants n'exigent pas la même moitié : f3c exige e0k1 et e0k2 ; f4 et f5 exigent e0k1 à e0k3 ; f6 aussi, plus les attributs de tuile (O-E0K-2) ; g2 et h3 exigent e0k2 ; g1 exige e0k2 (il pose le marqueur à l'instant où il soulève une entité par enregistrement) ; h4 exige e0k1 à e0k3. Retenu par la session principale : f3c passe juste après e0k2, avant e0k3 (révision 8 de l'enveloppe).
+
+**Faits porteurs.** Étiquettes : [binaire] décodé sur `ALUN_CD.EXE` (France) ; [oracle] exécuté dans la machine MIPS ; [DLL] lu dans le code au HEAD `4a2b5a7` (numéros de ligne à relire à l'exécution : E20.e0b2 et E20.f3 touchent aussi `AlundraWorldProxy.cs`) ; [données] cartes extraites et export ; [inférence] déduit, non exécuté ; [critique] établi ou corrigé par la critique.
+- [binaire, critique] **Une seule passe pour tous.** `0x80038364` : pré-passe (`+0x168`, `+0x140`, `+0x13C` mis à 0), porteurs `0x800364C8`, forces `0x80036828`, recopie des porteurs `0x80037364`, `MoveEntity` `0x80037E34` (Z `0x800375E0` puis XY `0x80037730`), passe de fin `0x80038064`. Liste A : statut 2 ou 3 et `+0x20` nul. Liste B (collidables) : `+0x6C & 0x80`, `+0xB4 & 0x80` nul, `+0x28` nul, **aucun test de statut**. Le héros ne diffère que par la branche de la passe des forces (adresse `0x80127D30`, `0x8003687C`) et par la fonction de blocage (`0x80037488`).
+- [binaire, critique] **Loi de force des non-héros** (`0x80036A84-0x80036BBC`). Porté (`+0x28` non nul) : toutes les forces à 0. Impulsion `+0xF8` non nulle : `ForceZ = IZF << 8`, ou 0 si `IZF & 0xFFFF == 0x8000` sans gravité, sans décroissance. Sinon avec gravité (`+0x6C & 0x100`) : `F ← F − (G << 8)` puis borné des deux côtés à `±(V << 8)`, `G` et `V` lus **à chaque tick** dans l'en-tête de la carte (`*(0x800E4334)` `+4`, `+6`). Sinon `ForceZ` reste tel quel : c'est le vol à Z constant. Le décalage de l'octet `+8` de l'en-tête s'applique à tout le XY de toute entité (cartes 159 et 160, O-E19-31 : déjà connu).
+- [binaire, critique] **Pas vertical** (`0x800375E0`). Montée (`F > 0`) : plafond à 1 920 px (`0x7800000` ramené à `0x77FFFFF`, contact), puis balayage des entités si sujet. Chute ou repos (`F ≤ 0`, zéro compris) : atterrissage **strict** `T ≥ ModZ + F` (`0x80036C20-0x80036C34`), puis `PosZ = T + 1 − ModZ`, `+0x140 = 1`, `ForceZ = 0` avec gravité ; un sujet se pose aussi sur le haut d'une entité. Sujet = `0x80`, `AnimFlags & 0x80` nul, `+0x28` nul : une flèche, une boule, la vague et une caisse lancée (C23 efface `0x80`) ne sont pas sujets.
+- [binaire, critique] **Pas horizontal** (`0x80037730`). Boucle d'affinage par moitiés. `ForceAdjusted` n'est levé que si **aucun** sous-pas n'a été accepté et que `NoObstacleSlide` (`0x2000`), une entité touchée ou une glissade déjà faite le permet. Il est aussi levé par le rognage (passe des forces) et par `MoveEntity` pour un porté. L'aimant (`0x80037848-0x80037904`, gravité, `ForceZ == 0`, force XY non nulle) pose `PosZ = T + 1` si le sol est à moins de 3 px au-dessus (`d ≥ 0`, fenêtre `< 0x30000`) ou à moins de 3 px et 3 unités au-dessous. Il précède le test de blocage : c'est le **pas de marche** d'une entité à gravité. Une entité sans gravité, ou avec `ForceZ ≠ 0`, n'a aucune tolérance.
+- [binaire] **Fonction de blocage non-héros** (`0x800373E4`) : un coin bloque si le mot de la cellule `& (0x40 | 0x01 si ClassB | 0x1000 si ClassA)` est non nul, ou si la hauteur du coin est `≥ ModZ`. Sol de fin de passe : `T + 1`, relevé pour un sujet ; `IsOnGround = !(sol < PosZ)`, sur `PosZ`.
+- [binaire, critique] **Rognage** (`0x800366FC`) : le pas est borné à `[−(offX<<16) ; 0x4E00000 − ((offX+sizeX)<<16)]` en X et `[… ; 0x3C00000 − …]` en Y, et `ForceAdjusted` est levé **au même tick**, même si l'entité avance encore. La DLL stocke déjà `NegMod*` et `ScreenClip*` (`AlundraEntitySpawnFactory.cs:826-841`) sans les lire.
+- [binaire, oracle] **Création.** `PosZ = Z_arg − offZ + 1`, relevé à `T + 1` (`0x80039E80-0x80039F2C`).
+- [données, critique] **Drapeaux.** Flèches 3 à 6 : `0x012074` (ni collidable ni gravité, `NoObstacleSlide`). Flèche chargée 7 : `0x032054`. Boules 10 à 15 : `0x132154` (gravité, `NoObstacleSlide`, pas collidables). Vague 27 à 29 : `0x00205C` (ClassB, `NoObstacleSlide`, sans gravité). Bombe 2 : `0x13234E` (ClassB, gravité). Objets 30 à 64 : collidables à gravité, sans `NoObstacleSlide`. Caisse (carte 392, numéro 36) : `0x3323E4`. Beannoïde et Muruta : ClassA et gravité, sans `NoObstacleSlide`. En-têtes de cartes : 481 cartes à (128, 4096, 0), cartes 159 et 160 à (3, 256, 1).
+- [oracle] **Vecteurs** (`k0_*.py` de la découverte binaire, rejoués par le critique). Boule du feu depuis Z + 32 px : Z = 31,5 ; 30,5 ; 29 ; 27 ; 24,5 ; 21,5 ; 18 ; 14 ; 9,5 ; 4,5 puis 0 au tick 11 (atterrissage, `+0x140` et `+0x144` à 1). Flèche : Z constant, y compris au-dessus d'un bord de plateau (48 px, 29 ticks). Mur : la flèche atteint X = 349 exactement ; `ForceAdjusted` au tick 43 ou 44 selon le départ. Flèche à Z + 16 px : traverse une marche de 16 px, s'arrête contre une marche de 32 px (tick 43). Boule contre une marche de 32 px : `ForceAdjusted` au tick 7, puis tombe au tick 11 ; sur une marche de 16 px : pose sur la marche au tick 8. Bord : tick 7, X = 1 237,0, drapeau le même tick. Caisse lancée (impulsion 1 024 depuis 32 px) : atterrit au tick 23 à plat, 21 sur une marche de 16 px, 18 sur 32 px ; mur ou marche de 48 px au tick 4. Muruta du hall : 128 px en 23 ticks, 160 px en 25.
+- [critique] **Le drapeau de mur arrive 1 ou 2 ticks après le premier tick dont le pas entier ne passe plus.** Modèle écrit à part de la boucle d'affinage (20 000 écarts bruts tirés, 6 px par tick) : +1 tick dans 13 359 cas (66,8 %), +2 ticks dans 6 641 (33,2 %), jamais 0. Les familles de l'oracle donnent 6 fois +1 et 4 fois +2 sur 10 départs entiers. [DLL, inférence] La règle de la DLL (E19.a3, D-E19-12 : un pas raccourci qui avance ne lève rien) donne toujours +1.
+- [DLL, critique] **Le pas vertical des non-héros existe.** `TickMotion` (`AlundraEntityScriptProxy.cs:1550-1571`) : XY (`TickScriptedNpc`) puis `EvaluateEntitySupport` (`:720-1039`). Chemin du contrôleur : atterrissage `<=` (`:940`), `IsOnGround` lu sur le contrôleur, `PosZ` rapatrié de la racine. Chemin sans contrôleur : atterrissage strict, plafond, `IsOnGround` par la règle `PosZ <= sol` (`:1053-1110`).
+- [DLL, critique] **L'état de carte manque à l'interface.** `CreateEntityFromSpriteIndex` (`AlundraEntitySpawnFactory.cs:500-552`) n'a pas les lignes de `ApplySpawnInitialization` (`:679-703`) : mots de gravité de la carte, masque de marche, propriété du vertical, `MinMoveDistance`. L'appel du monde (`AlundraWorldProxy.cs:~3417`) ne passe que le champ. Le convertisseur exporte `Gravity`, `MaxFallSpeed` et `WalkabilityMask` à 0 (`SpriteWriter.cs:437, 480`). [inférence] Gravité nulle : `ForceZ` est borné à 0 à chaque tick (`:783-798`, plafond 0), la boule reste en l'air. Masque nul : toute cellule est marchable (`AlundraCellsCollisionField.cs:293-296`), la flèche traverse les murs de hauteur nulle. Sans propriété du vertical, le contrôleur du moteur ré-ancre un rebond qui monte.
+- [DLL, critique] **Le va-et-vient de la racine.** `PushLogicalPositionToRoot` écrit la racine en pixels entiers (`>> 16`). `PullRootPose` (`:1409-1419`) et `MoveControllerAndPullPosition` (`:2384-2387`) remettent `PosZ` depuis la racine tant que l'entité n'est ni portée ni tenue. L'unité brute est perdue au premier pas horizontal. [inférence] Une flèche née à Z + 16 px au-dessus d'une marche de 16 px « atterrit » (`IsOnGround` à 1) ; le binaire a `PosZ = sol + 2 unités`, donc 0.
+- [DLL] **Le modèle du héros existe.** `RunHeroVerticalTick` (`AlundraScriptedMotion.cs:239-388`) : Z avant XY, atterrissage strict, plafond, `FollowPosZOnRoot` (`:2396`), sentinelle de déclaration externe (`:75`), `StepHeight` à 0 quand `ForceZ ≠ 0` (`:382-384`). `SnapHeroAtApex` (`:401-434`) est l'aimant de 3 px (seuils `0x30000` et `0x30001`, la fenêtre du binaire dans le repère de la DLL).
+- [DLL, critique] **`SlideAlongWall` réécrit `ForceAdjusted`** (0 quand l'axe a progressé : `:620`, `:640-644`) : un drapeau de rognage posé plus tôt dans le tick serait effacé.
+- [DLL, critique] **Gel et dégel.** `AlundraGameplayFreeze.OwnerExternalVerticalDisplacement` (`:117-135`) rend `FinalForceZ / 65536` pour un non-héros : une entité marquée au repos (`F = 0`) serait ré-ancrée par le moteur au dégel. Il lui faut la sentinelle.
+- [DLL, critique] **Marqueurs.** `JoinsBirthTick` (`:1335`) n'est jamais effacé ni cloné : c'est déjà « née par l'interface ». `EntityRefId == −1` est aussi celui du héros adopté (`AlundraWorldProxy.cs:2046`) et des entités recyclées (`:3207`).
+- [DLL] **Aucun appelant de production** de `SpawnEntityBySpriteIndex`. Six fichiers de tests créent des entités nées par l'interface : `AlundraBirthTickProbePaTests` (5 méthodes), `AlundraBirthTickTests` (11), `AlundraEntitySlotV5RowsTests` (3), `AlundraEntitySlotWorldTests` (14), `AlundraSpawnBySpriteIndexInterfaceTests` (11), `AlundraSpawnBySpriteIndexTests` (12), soit 56 méthodes.
+- [DLL] Les Muruta du hall (enregistrements 24 à 27 de la carte 115) tombent par le **chemin du contrôleur**, non par `StepVerticalWithoutController`. La chute n'est pas un arrêt d'E14.a1c (les 44 images de son arc comptent les attentes du script jusqu'à `@1469`).
+
+**Écarts tranchés par la critique** (les relevés et le plan sont corrigés ainsi ; les audits restent en lecture seule).
+1. *« Seul le héros a un pas vertical par tick »* (§1.1, ligne 4 et fait [DLL]) est **REFUTÉ**. Vrai du seul état en l'air tenu par le tick.
+2. *Critère `EntityRefId == −1` de D-F3-8* est **CORRIGÉ** : il choisit aussi le héros et les entités recyclées. Marqueur dédié (D-E0K-1).
+3. *Une caisse lancée naît de l'interface* (hypothèse implicite des trois relevés) est **REFUTÉ** : elle vient de la carte. Le marqueur doit pouvoir être posé par g1 au soulèvement.
+4. *« Certains tests bougent à coup sûr »* (UJ1b, UJ1c, A10J, A10, A6, A3 : inventaire des tests) est **CORRIGÉ** : ils utilisent des entités par enregistrement ou un PNJ de banc d'essai. Ils ne bougent que si e0k absorbe E19.h2 (Q-K1, option B). L'ensemble fermé des tests qui peuvent bouger est les 56 méthodes ci-dessus.
+5. *« La DLL accroche à 4 px, le binaire à 3 px »* est **PRÉCISÉ** : la fenêtre de 3 px est l'aimant, seulement pour une entité à gravité avec `ForceZ == 0` et une force XY, avant le test de blocage. Elle est déjà portée pour le héros.
+6. *« `ForceAdjusted` arrive 1 ou 2 ticks après l'arrivée au mur »* (binaire) est **QUANTIFIÉ** : +1 dans 2 cas sur 3, +2 dans 1 sur 3 ; la DLL donne +1 (inférence).
+7. *« Cartes 159 et 160 : découverte »* et *« rognage au bord : découverte »* sont **CORRIGÉS** : O-E19-31 et O-E19-17, déjà ouverts.
+8. *Chute des Muruta* : **sans objet** pour e0k (hors marqueur, hors arrêt). La recommandation d'avancer une « part chute » d'e0k tombe. `plan-e14-ia-native.md:698` dit « `StepVerticalWithoutController` » : à corriger en « chemin du contrôleur ».
+9. *Commentaire de `EntityFlags.NoRiders`* (« ne porte jamais de passagers ») : **inversé**. `0x4000` interdit le rôle de passager. Le code (`EntitySupport.cs:281, 304`) est juste. Le commentaire « 6 préfabs sans contrôleur » est périmé : 12 sur 395.
+10. *Le Z logique se limite aux entités sans gravité* (repli B de f3c) est **ÉLARGI** : la même règle sert les entités à gravité. Une seule règle (D-E0K-4).
+
+**Décisions de conception (ADR : le prochain numéro libre au moment de l'écriture, revérifié dans `docs/decisions/README.md`).**
+- **D-E0K-1** — Le marqueur `HasLogicalZ` est posé par `SpawnEntityBySpriteIndex` seulement, dans le bloc du marqueur d'ADR-0065 (qui reste la dernière écriture de la création, après l'assistant de tirage d'e0b2). Jamais cloné, jamais posé par les créations par enregistrement ni pour le héros. Ce n'est ni `EntityRefId == −1` ni `JoinsBirthTick` (e0a4 peut l'étendre aux enregistrements). E20.g1 le pose sur une entité par enregistrement qu'il soulève. L'état de carte (e0k1) n'a pas besoin du marqueur : il est écrit à la création.
+- **D-E0K-2** — L'état de carte est écrit par un assistant commun (`ApplyMapDependentState`), appelé par `ApplySpawnInitialization` (mêmes lignes, même ordre) et par le noyau sans enregistrement quand une carte est donnée. Le chemin par enregistrement ne change pas d'un octet.
+- **D-E0K-3** — Une seule loi de force. Les lignes `:776-798` sont extraites en une fonction commune, appelée par le chemin du contrôleur et par le pas du Z logique. Pas de copie (le commentaire « un seul site de décroissance » reste vrai).
+- **D-E0K-4** — Z logique d'une entité marquée (remplace D-F3-8, même effet, critère corrigé) : `PosZ` appartient au tick ; la racine le suit par un déplacement vertical (`FollowPosZOnRoot`) ; ni `PullRootPose` ni `MoveControllerAndPullPosition` ne rapatrient `PosZ` ni `IsOnGround` ; `IsOnGround = (PosZ ≤ sol)` dans le repère de la DLL (binaire − 1 unité). Le pas se fait avant le XY (`RunOneMotionTick`), avec la loi de D-E0K-3, l'atterrissage strict (`PosZ + ModZ + F < T`), le plafond absolu, le haut des entités pour un sujet, l'aimant de 3 px (corps de `SnapHeroAtApex`, sans modifier la fonction du héros), `TerrainHeight` recalculé au moment de l'appel. X et Y restent rapatriés (écart sous le pixel, O-F3-2).
+- **D-E0K-5** — Hauteur de marche : `StepHeight` du contrôleur = la valeur du préfab seulement si l'entité a la gravité et `ForceZ == 0`, sinon 0 (S6 du héros généralisée ; le binaire n'a aucune tolérance hors de l'aimant). Une entité marquée déclare la sentinelle en l'air à chaque tick, y compris après chaque `Teleport` et chaque dégel ; le moteur ne l'ancre pas.
+- **D-E0K-6** — Mur : le mover du moteur et `SlideAlongWall` (E19.a2, a3, h4) restent. L'écart de tick du drapeau (fait « 1 ou 2 ticks ») est documenté dans le code et ici (Q-K2 : défaut A). La sonde de T2 d'e0k1 le mesure sur les 12 départs de l'oracle.
+- **D-E0K-7** — Bord : les entités marquées seulement ; le pas est borné avant le mover, le drapeau est levé le même tick et **conservé** à travers `SlideAlongWall` ; les entités par enregistrement et le héros restent sous D-E19-25 (O-E19-17).
+- **D-E0K-8** — Hors périmètre, avec propriétaire proposé (liste en fin de section, O-E0K-1 à O-E0K-9).
+- **D-E0K-9** — Pas de phase d'ombre. Le rayon d'action est borné par le marqueur : aucun appelant de production, six fichiers de tests créent des entités nées par l'interface. La liste prédite est statique et fermée sur les 56 méthodes de ces six fichiers ; une ombre ne mesurerait que celles-ci. La seule extraction qui touche le chemin large (e0k1, phase A, assistant de l'état de carte ; e0k2, phase A, loi de force) est gardée par la suite entière inchangée et par des mutants. Si l'auteur choisit l'option B de Q-K1, l'ombre d'e0b est le modèle de la tranche E19.h2.
+- **D-E0K-10** — Chaque épingle déplacée est réécrite par une **dérivation** (valeur calculée dans le test, ou clé de l'oracle moins une unité brute), jamais par une constante collée (D-E0B-8).
+
+**Questions à l'auteur** (aucune ne bloque e0k1 ; Q-K1 pèse sur e0k2).
+- **Q-K1 — Qui suit exactement les règles de chute de l'original dès maintenant ?** *L'original :* tout suit la même règle (mouvement vertical avant l'horizontal, pose seulement quand le pas franchit le sol, « aimant » de 3 px en haut d'un saut). *Le port :* ce que la carte place (monstres, villageois, caisses, bombe de la carte 362) a une règle plus ancienne ; il peut se poser 1/50 s trop tôt dans un cas d'effleurement, et l'aimant est de 4 px. Ce qui naît pendant le jeu (flèche, boule, bombe lancée, objet lâché) n'existe pas encore. *Visible en jeu :* presque rien (1/50 s). *Option A (défaut, recommandée) :* seules les choses créées pendant le jeu suivent les règles exactes ; ce que la carte place garde l'ancienne règle jusqu'à E19.h2 (en pause). Une bombe lancée par le héros se posera comme l'original, la bombe posée par la carte non. Coût faible, réversible. *Option B :* tout d'un coup (E19.h2 absorbée). Environ 6 épingles sûres et jusqu'à 126 possibles à réenregistrer, les quatre questions de h2 à trancher, conflit de fichiers avec D5b en pause. Coût élevé.
+- **Q-K2 — Le tick du « bloqué » d'une flèche contre un mur.** *L'original :* le signal « bloqué » arrive 1 tick (20 ms) après le dernier pas complet dans 2 tirs sur 3, et 2 ticks après dans le troisième (selon la fraction de pixel du départ). *Le port :* toujours 1 tick. *Visible en jeu :* rien ; la flèche rebondit ou meurt 1/50 s plus tôt dans un tir sur trois. *Option A (défaut, précédent D-E19-12) :* accepter l'écart, documenté. *Option B :* porter la boucle entière pour les entités marquées (e0k4, une tranche de plus, qui remplace le mover du moteur pour elles ; preuve par les 20 000 cas du fuzz).
+- Sans question (défaut fidèle) : le rognage au bord pour les entités par enregistrement et le héros reste sous D-E19-25 ; les attributs de tuile et la dérive vont à leurs consommateurs (O-E0K-2, O-E0K-3).
+
+**Prérequis et dépendants.** Voir le tableau de découpage. e0k1 : E20.e0a1 ✅ à e0a3b ✅ ; elle ne dépend ni d'E20.e0b2 (en pause) ni d'E20.f3, mais touche aussi `AlundraWorldProxy.cs` : elle s'exécute l'une après l'autre avec elles, dans le même checkout, et relit ses numéros de ligne au HEAD d'exécution. Dépendants : E20.f3c (règle du Z logique, remplace le repli B de Q-F3-1 ; D-F3-8 est à corriger dans §1.19), E20.f4, E20.f5, E20.f6, E20.g1 (pose le marqueur), E20.g2, E20.h3, E20.h4. E20.f5 doit appeler `ResyncControllerFromFlags` quand E17 change les drapeaux (masque de marche). Révision 8 de l'enveloppe écrite (§1.1 : ligne 4 scindée en e0k1 à e0k3 ; prérequis ci-dessus).
+
+---
+
+#### 1.18.1 E20.e0k1 — L'état de carte des entités nées par l'interface, les sondes de la DLL ⏳
+
+**Prérequis.** Voir ci-dessus.
+
+**But.** Les quatre lignes de `ApplySpawnInitialization` qui lisent la carte (mots de gravité et de viscosité, masque de marche, propriété du vertical, `MinMoveDistance` à 0) s'appliquent aussi à une entité née par l'interface. Le chemin par enregistrement ne change pas. Les sondes mesurent ce que la DLL fait, avant e0k2. L'épingle P3 d'e0a3b est posée.
+
+**Périmètre.** `AlundraEntitySpawnFactory.cs` (assistant `ApplyMapDependentState` ; paramètre facultatif `TileMapData?` de `CreateEntityFromSpriteIndex`, nul par défaut), `AlundraWorldProxy.cs` (`SpawnEntityBySpriteIndex` : un argument), `Alundra.Tests/` (nouveaux tests ; commentaires périmés), `docs/plan-e20-annexe/e20-e0k/` (README, `oracle/`), un ADR.
+
+**Hors périmètre.** Tout comportement du Z (e0k2), le bord (e0k3), les chemins par enregistrement, le héros, `Clone`.
+
+**Partage des phases** (seul à faire foi) :
+- **Phase A** (T1, sans changement de comportement) : l'assistant extrait ; `ApplySpawnInitialization` l'appelle (mêmes lignes, même ordre) ; le noyau sans enregistrement accepte la carte facultative (nulle : rien) ; l'interface **ne la passe pas encore**.
+- **Phase B** (T3) : `SpawnEntityBySpriteIndex` passe `_tileMapData`. C'est le seul changement de comportement, et le seul branchement.
+
+##### Tâches
+
+- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code), pour les trois sous-tranches. `docs/plan-e20-annexe/e20-e0k/README.md` : les vecteurs de « Faits porteurs » avec leurs clés, les comptes de départ de la suite (à relever ; 4 852 après e0b1), les chiffres de la critique (68 / 33 % du modèle de mur). `oracle/` : les outils de la découverte binaire (`exe.py`, `k0lib.py`, `run_all.py`, `k0_*.py`, le dossier `oracle/`) et `residual_stats.py`, copiés octet pour octet avec leurs sommes de contrôle ; sorties en texte **et** en JSON ; deux exécutions donnent un manifeste identique (88 fichiers). Au moins 12 mutants d'un mot sur les scénarios (blocage `≥` changé en `>`, fenêtres de l'aimant, test `0x2000`, test de gravité `0x100`, marqueur `0x8000`, `slt` de l'atterrissage inversé, plafond, `+1` de la création, bornes du rognage), tous tués ou prouvés équivalents un à un.
+- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile, puis le code). `AlundraMapStateTests` : (a) sur une carte à (128, 4096) : `MapGravityRaw`, `MapZViscosityRaw`, masque (flèche `0x40`, vague ClassB `0x41`, entité ClassA `0x1040`), `IsVerticalOwnedExternally`, `MinMoveDistance` ; chaque cas « sans carte, rien ne change » est accolé dans la **même assertion** à un cas avec carte ; (b) garde : une entité créée par enregistrement a les mêmes valeurs qu'avant (vert dès T1, par construction : extraction). La suite entière ne bouge pas.
+- ⏳ **T2 — Sondes de la DLL** (écrites, lancées au HEAD de départ, puis après la phase B, versées au README, puis retirées ; prédiction écrite avant). Chaque sonde est accolée à son témoin :
+  - P1 : boule (11) née à Z + 32 px sur un champ plat. Prédiction : sans l'état, elle reste à 32 px (`ForceZ` borné à 0). Avec l'état, Z égal à l'oracle moins une unité brute jusqu'à l'atterrissage.
+  - P2 : flèche (3) contre la colonne de mur 15. Prédiction : sans le masque, elle traverse ; avec lui, elle s'arrête en X = 349.
+  - P3 : flèche à Z + 16 px au-dessus d'une marche de 16 px. Prédiction : `IsOnGround` = 1 dès le premier pas (unité perdue). C'est le test rouge d'e0k2.
+  - P4 : tick du drapeau de mur sur les 12 départs de l'oracle (C1). Prédiction : toujours « +1 » ; le nombre d'écarts d'un tick alimente Q-K2.
+  - P5 : entité montante (impulsion 1 024) avec et sans la propriété du vertical : annulée ou non par le moteur ?
+  - P6 : écart entre la racine et le Z logique d'une boule qui finit sa chute (ancrage du moteur à moins de 4 px).
+- ⏳ **T3 — Phase B** (commit de code) et tests de monde, écrits **avant** B et rouges jusqu'à B (chacun attend un effet que la phase A ne produit pas) : (k1) la flèche née contre un mur s'arrête, `ForceAdjusted` levé, jamais de l'autre côté, accolée dans la même assertion à la même flèche dans un couloir libre qui vole toute la distance ; (k2) la boule née à Z + 32 px tombe et se pose, accolée à un témoin « sans carte » qui reste en l'air ; (k3) sur la carte 159 (3, 256), la boule tombe à peine, accolée à la carte 14 ; (k4) les champs posés sur l'entité née et inchangés sur une entité de même sprite par enregistrement. **Vert par construction dès T1** : P3 d'e0a3b (une entité marquée qui change d'animation après la validation garde la clé de son animation courante).
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre). Mutants du code de la DLL, au moins 8, tous tués : assistant non appelé par l'interface, `_tileMapData` nul, masque calculé sur de mauvais drapeaux, propriété du vertical oubliée, `MinMoveDistance` oublié, mots gravité et viscosité permutés, assistant appelé deux fois, une ligne perdue du chemin par enregistrement (tuée par la garde de T1).
+
+##### Acceptation
+
+- Oracle : manifeste identique sur deux exécutions ; au moins 12 mutants tués ou prouvés équivalents.
+- DLL : tous les tests de T1 et T3 verts ; (k1) à (k4) **rouges avant B** (nommés) ; `Alundra.Tests` en Release **et** en Debug, compte de départ plus les nouveaux, zéro échec ; **tests existants déplacés ⊂ les 56 méthodes des six fichiers** (liste prédite statique), chacun réécrit par dérivation ; le chemin par enregistrement, le héros et les cinq traces inchangés (`git diff --ignore-cr-at-eol --exit-code`) ; `cmp` de la DLL ; moteur, convertisseur et données sans diff.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : la phase A fait bouger un test ; (k1) ou (k2) vert avant B ; un test hors des 56 méthodes bouge ; plus de 10 tests existants bougent ; une sonde contredit une prédiction (écrire, puis décider avant e0k2) ; un besoin de changer le moteur.
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : la phase B se retire seule (l'interface cesse de passer la carte). La phase A ne change aucun comportement.
+
+---
+
+#### 1.18.2 E20.e0k2 — Le Z logique et le pas vertical des entités marquées ⏳
+
+**Prérequis.** E20.e0k1.
+
+**But.** D-E0K-1, D-E0K-3 à D-E0K-5. Une entité née par l'interface garde son unité brute, ne revient pas de la racine, se pose comme le binaire (Z avant XY, atterrissage strict, plafond, aimant), et le moteur ne l'ancre pas.
+
+**Périmètre.** `AlundraEntityScriptProxy.cs` (marqueur ; extraction de la loi de force ; garde de `EvaluateEntitySupport`, de `PullRootPose` et de `MoveControllerAndPullPosition`), `AlundraScriptedMotion.cs` (appel avant le XY dans `RunOneMotionTick` ; fonction du pas logique ; règle de `StepHeight`), `AlundraGameplayFreeze.cs` (sentinelle), `AlundraWorldProxy.cs` (le marqueur), `Alundra.Tests/`, `docs/plan-e20-annexe/e20-e0k/`, un ADR.
+
+**Hors périmètre.** Le chemin du héros (aucun diff de `RunHeroVerticalTick` ni de `SnapHeroAtApex`) ; les entités par enregistrement (E19.h2) ; le porté `+0x28` et les passagers (g1) ; les plafonds formés par des entités (O-E0K-6) ; les attributs de tuile (O-E0K-2) ; la boucle d'affinage (e0k4).
+
+**Partage des phases** (seul à faire foi) :
+- **Phase A** (T1, sans changement de comportement) : le champ `HasLogicalZ` (non cloné), posé par l'interface dans le bloc du marqueur d'ADR-0065 (**aucun lecteur**) ; l'extraction de la loi de force (D-E0K-3), comportement conservé ; la fonction du pas logique (loi, pas, aimant, `IsOnGround`, sentinelle), **non appelée par le tick** ; tests directs de cette fonction sur une entité marquée appelée à la main.
+- **Phase B** (T3) : les quatre branchements, ensemble, car ils n'ont de sens qu'ensemble : (W1) appel du pas logique dans `RunOneMotionTick`, avant `RunOneKinematicTick`, pour une entité marquée ; (W2) retour anticipé de `EvaluateEntitySupport` pour une entité marquée, **après** les écritures de `TerrainHeight` et de la hauteur du sol (`:844-850`) ; (W3) `PullRootPose` et `MoveControllerAndPullPosition` ne rapatrient ni `PosZ` ni `IsOnGround` ; (W4) règle de `StepHeight`, sentinelle après chaque `Teleport`, et `OwnerExternalVerticalDisplacement` qui rend la sentinelle au dégel.
+
+##### Tâches
+
+- ⏳ **T1 — Phase A** (tests d'abord, puis le code). `AlundraLogicalZStepTests`, chaque cas « sans effet » accolé dans la même assertion à un cas positif : (a) le marqueur est posé par l'interface et par elle seule : héros adopté, entité recyclée et créations par enregistrement sans marqueur, créée par l'interface avec marqueur, clone sans marqueur ; (b) la fonction, appelée à la main : boule (vecteur `arrows-ball-fire`, Z de l'oracle moins une unité brute, atterrissage au tick 11, `+0x140`), flèche (Z constant, `IsOnGround` 0 avec l'unité, 1 à `sol + 0`), impulsion 1 024 depuis 32 px (série de `crate-flat`, atterrissage au tick 23), cas d'effleurement exact (la somme vaut le sol : atterrit au tick suivant ; accolé à un cas non exact), plafond de 1 920 px, aimant de 3 px (seuils `0x30000` et `0x30001`, accolé à un cas à 4 px), plus 0x8000 sans gravité. Vert à la fin de T1.
+- ⏳ **T2 — Tests de monde**, écrits après T1, **rouges avant T3** (la phase A ne branche rien), à 1, 2 et 3 ticks par image : (z1) une entité née sans gravité à la hauteur du héros garde `PosZ = héros + 1 unité` et `IsOnGround` 0 pendant 30 ticks (c'est la sonde de f3c : elle passe de 2 ticks de vie à 26 par la règle), accolée à la même entité par enregistrement, inchangée ; (z2) flèche à Z + 16 px au-dessus d'une marche de 16 px : `IsOnGround` 0 pendant 20 ticks, et contre une marche de 32 px : `ForceAdjusted` au tick 43 (oracle `arrow-h1`, `arrow-h2`) ; (z3) boule : série de Z de l'oracle, atterrissage au tick 11, `ForceAdjusted` au tick 7 contre la marche de 32 px (`ball-step32`), pose au tick 8 sur la marche de 16 px (`ball-step16`) ; (z4) entité à gravité lancée par une impulsion de 1 024 : atterrissage au tick 23 à plat, 21 sur 16 px, 18 sur 32 px ; (z5) gel puis dégel en l'air : le Z continue, sans ancrage, accolé à un PNJ par enregistrement inchangé ; (z6) la racine suit le Z logique sans que le moteur la déplace entre deux ticks ; (z7) la règle de `StepHeight` : 0 en l'air, la valeur du préfab au repos avec gravité ; (z8) invariance au groupement : mêmes séries à 1, 2 et 3 ticks par image.
+- ⏳ **T3 — Phase B** (commit de code B) : les quatre branchements. Les tests de T2 passent au vert ; suite complète.
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). Mutants, au moins 12, tous tués : marqueur posé sur le héros ou sur les créations par enregistrement, marqueur sur `EntityRefId == −1` (tué par le héros et l'entité recyclée de (a)), marqueur cloné, loi de force appliquée deux fois, retour anticipé de W2 avant l'écriture de `TerrainHeight`, `PosZ` rapatrié, `IsOnGround` lu sur le contrôleur, atterrissage `<=`, plafond changé, aimant de 4 px, `StepHeight` inversé, sentinelle perdue après un `Teleport`, dégel qui rend `FinalForceZ`, Z après XY.
+
+##### Acceptation
+
+- DLL : tests de T1 et T2 verts ; (z1) à (z8) rouges avant T3 (nommés) ; `Alundra.Tests` en Release **et** en Debug, zéro échec ; tests déplacés ⊂ les 56 méthodes des six fichiers, chacun réécrit par dérivation ; aucun diff du héros (`RunHeroVerticalTick`, `SnapHeroAtApex`, `AlundraPlayerManager`) ; traces inchangées ; `cmp` de la DLL ; moteur, convertisseur et données sans diff.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : un test hors de la liste prédite bouge ; plus de 10 tests existants bougent ; la phase A fait bouger un test ; un test de (z1) à (z8) vert avant T3 ; la sonde P3 d'e0k1 contredit le fait « unité perdue » (la règle tombe, f3c se replie sur sa sonde) ; la sonde P6 montre un écart de racine de plus de 1 px (question : `GroundSnapDistance` à 0 pour les marquées) ; un diff du chemin du héros ou des entités par enregistrement ; un besoin de changer le moteur.
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : la phase B se retire seule (les quatre branchements). La phase A ne change aucun comportement : le marqueur n'a aucun lecteur, l'extraction conserve le comportement.
+
+---
+
+#### 1.18.3 E20.e0k3 — Le bord de la carte pour les entités marquées ⏳
+
+**Prérequis.** E20.e0k1.
+
+**But.** D-E0K-7. Le pas d'une entité marquée est borné à la grille de 52 × 60 cases avec `NegMod*` et `ScreenClip*`, déjà stockés, et le drapeau est levé le même tick.
+
+**Périmètre.** `AlundraScriptedMotion.cs` (`RunOneKinematicTick`, `SlideAlongWall`), `Alundra.Tests/`, annexe, ADR. **Hors périmètre.** Les entités par enregistrement et le héros (O-E19-17, D-E19-25) ; la dérive de tuile ; la fraction de pixel.
+
+**Partage des phases** :
+- **Phase A** (T1, sans changement de comportement) : la fonction pure de bornage et ses tests directs.
+- **Phase B** (T3) : l'appel avant le mover et la conservation du drapeau dans `SlideAlongWall`.
+
+##### Tâches
+
+- ⏳ **T1 — Phase A** : tests directs de la fonction, accolés deux à deux : (a) pas qui tient (inchangé) accolé à un pas qui dépasse (borné, drapeau) ; (b) les quatre bords avec les décalages du préfab (`PosX + ModX ≥ 0`, `PosY + ModY ≥ 0`, bornes `0x4E00000` et `0x3C00000` moins la boîte).
+- ⏳ **T2 — Tests de monde**, **rouges avant T3** : (b1) flèche née en X = 1 200 vers l'est sur un champ ouvert : X = 1 233 au tick 6, X = 1 237,0 au tick 7 avec `ForceAdjusted` **le même tick** (oracle `map-edge`), accolée à une flèche née en X = 1 100 qui n'est pas bornée pendant 20 ticks ; (b2) drapeau conservé à travers `SlideAlongWall` (cas cardinal et oblique), y compris au tick qui progresse encore, et au tick suivant ; (b3) une entité par enregistrement au bord est inchangée (O-E19-17), accolée à la même flèche bornée ; (b4) le héros inchangé.
+- ⏳ **T3 — Phase B** : le branchement. Verts.
+- ⏳ **T4 — ADR, verifiers frais.** Mutants, au moins 8 : bornes permutées, drapeau non levé, levé au tick suivant, effacé par `SlideAlongWall`, appliqué au héros, appliqué aux entités par enregistrement, bornes calculées sans les décalages, entité non marquée bornée.
+
+##### Acceptation
+
+- DLL : tests verts ; (b1) à (b3) rouges avant T3 ; `Alundra.Tests` en Release et en Debug, zéro échec ; aucun test existant ne bouge hors des 56 méthodes ; traces inchangées ; moteur, convertisseur et données sans diff.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : un test hors des 56 méthodes bouge ; la carte du test n'a pas de bord franchissable (relever une autre carte ou un champ synthétique, `ContactWorld`) ; un besoin de changer le moteur ; un drapeau de rognage effacé par `SlideAlongWall`.
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : la phase B se retire seule. La phase A ne change aucun comportement.
+
+---
+
+#### 1.18.4 E20.e0k4 — Boucle d'affinage entière de `ComputeXY` pour les entités marquées (conditionnelle) ⏳
+
+Détaillée seulement si l'auteur répond à Q-K2 par l'option B. Contenu : un port entier de la boucle d'affinage de `0x80037730` (pas entier en unités brutes, halvings, `moved_ok`, `NoObstacleSlide`), sans entité (les projectiles ne sont pas sujets), pour les entités marquées, en remplacement du mover du moteur. T0 : le modèle du fuzz (20 000 cas, 0 écart) comme oracle de la fonction ; acceptation : les 12 départs de l'oracle (drapeau aux ticks 43 et 44 exacts), aucun écart sur le fuzz. Phases A (fonction pure) et B (branchement). Prérequis : e0k2, e0k3.
+
+---
+
+**Points ouverts ajoutés.**
+
+| # | Question | Tranchée par |
+|---|---|---|
+| O-E0K-1 | Z avant XY, atterrissage strict et aimant de 3 px pour les entités par enregistrement (monstres, PNJ, caisses posées) | E19.h2 (Q-K1) |
+| O-E0K-2 | Attributs de tuile des entités à gravité (`+0x180`, `+0x184`, `+0x18C`, `+0x190`) : E9 lit `+0x18C` (1 et 4), `DestroyOnSlidingSlope`, `DestroyOnVramFlags` | E20.f6, E20.e0c |
+| O-E0K-3 | Cellules de dérive (tables `0x80028B94`, `0x80028BD4` ; 5 539 cellules sur environ 48 cartes, 876 avec le bit d'air) : aucun équivalent dans la DLL, héros compris | à placer |
+| O-E0K-4 | Rognage au bord pour les entités par enregistrement et pour le héros | O-E19-17, D-E19-25 |
+| O-E0K-5 | Porté `+0x28` et passagers : le marqueur doit être posé par g1 au soulèvement d'une entité par enregistrement | E20.g1, E20.g2 |
+| O-E0K-6 | Plafonds formés par des entités pendant une montée (`0x80036D94`, sujets) : caisse lancée sous un objet | à placer (aucun cas du corpus) |
+| O-E0K-7 | Fraction de pixel de X et Y à la naissance (racine tronquée) | E20.f3c (O-F3-2) |
+| O-E0K-8 | La liste des collidables de la DLL est refaite par image, celle du binaire par tick : une entité née dans l'image n'est pas vue des sujets avant la fin de l'image | à mesurer par e0c ou g2 |
+| O-E0K-9 | Commentaires périmés : `EntityFlags.NoRiders` (inversé), « 6 préfabs sans contrôleur » (12), `plan-e14-ia-native.md:698` | corrigés par la tranche qui touche le fichier, sinon reportés |
+
+**Corrections induites (faites par la session principale à l'insertion, 2026-10-15).** (1) §1.19 D-F3-8 : le critère `EntityRefId == −1`
+est remplacé par le marqueur d'e0k2 et le repli B de Q-F3-1 tombe. (2) §1.1 : le fait [DLL] « seul le héros a un pas vertical » est
+corrigé, la ligne 4 est scindée (révision 8 de l'enveloppe). (3) `docs/plan-e14-ia-native.md` : la chute des Muruta passe par le chemin
+du contrôleur. (4) E20.g1 : poser le marqueur au soulèvement (ligne 10 de l'enveloppe).
 ### 1.19 E20.f3 — Le tir du héros : direction, effets de coup 4 et 5, vague de l'épée (f3a, f3b, f3c) ⏳ (détaillée le 2026-10-15)
 
 **Décisions de la session principale (2026-10-15, mode AUTO, l'auteur absent ; réversibles, signalées à l'auteur).** Q-F3-1 : option A —
@@ -4366,7 +4585,9 @@ pause, prendra le suivant à sa reprise).**
 - **D-F3-5** — E10 est traité comme E0 et E1 : dans la branche en ligne de `RunSpriteEvent`, hors de l'interrupteur des gestionnaires natifs (même corps `DestroyEntity(e, −1)`, recensement : seulement 27 à 29). `HitArena` détruit donc la vague au bon tick et l'épingle d'arène reste à 2. Écart de forme : deux adresses du binaire (`0x8007ED10`, `0x8007F23C`), une branche.
 - **D-F3-6** — C61 est un gestionnaire natif du registre (clé (C, 61), types 27 à 29) qui appelle le bouchon nommé `CheckAndTriggerTileEffect(entité)` (`0x8003A7B0`) avec un journal par thread, comme `AlundraPlayerAnimationEffects.StubCallsForTests`. L'herbe n'est pas coupée avant E20.e (Q-F3-2). Écart documenté dans le code : le binaire tire au moins 1 mot par cellule coupée ; le flux dérive après toute vague sur l'herbe.
 - **D-F3-7** — A0 des types 27 à 29 n'est pas enregistré (il n'écrit que `AIValues[0]`, jamais lu). Les tranches f4 à f6 devront élargir l'enregistrement A0 du Muruta en un ensemble de types partagé (clé (0, 0) unique, doublon interdit).
-- **D-F3-8** — Le Z d'une entité née par l'interface (`EntityRefId == −1`) sans le bit de gravité `0x100` reste logique. `PullRootPose` ne rapatrie ni `PosZ` ni `IsOnGround` pour elle, `TickPhysics` ne ré-extrait pas `PosZ` de la racine, et `IsOnGround = (PosZ ≤ sol)` dans le repère de la DLL (la règle de `AlundraEntityScriptProxy.cs:~1109`, binaire − 1 unité). X et Y continuent d'être rapatriés (écart sous le pixel, O-F3-2). La règle est livrée par E20.e0k (§1.18) ou par le repli de f3c (Q-F3-1). Si la sonde de vie est verte sans elle, la décision tombe (le fait était faux).
+- **D-F3-8** — (**corrigé le 2026-10-15 par la découverte d'E20.e0k** : le critère est le marqueur `HasLogicalZ` d'e0k2, D-E0K-1, et la
+  règle vaut aussi pour les entités à gravité, D-E0K-4 ; le repli B de Q-F3-1 tombe, f3c exige e0k1 et e0k2) Le Z d'une entité née par
+  l'interface (`EntityRefId == −1`) sans le bit de gravité `0x100` reste logique. `PullRootPose` ne rapatrie ni `PosZ` ni `IsOnGround` pour elle, `TickPhysics` ne ré-extrait pas `PosZ` de la racine, et `IsOnGround = (PosZ ≤ sol)` dans le repère de la DLL (la règle de `AlundraEntityScriptProxy.cs:~1109`, binaire − 1 unité). X et Y continuent d'être rapatriés (écart sous le pixel, O-F3-2). La règle est livrée par E20.e0k (§1.18) ou par le repli de f3c (Q-F3-1). Si la sonde de vie est verte sans elle, la décision tombe (le fait était faux).
 - **D-F3-9** — `AlundraHitPass.Run` gagne un paramètre facultatif `attachEffect` (cible, identifiant). La porte `(r & 0xC0) != 0x80` est celle du magasin de `TouchingEntity` ; nibbles {6, 10} → 4, {7, 9} → 5 ; l'appel précède le magasin de `TouchingEntity` et les étincelles. Le monde passe un délégué statique (aucune allocation par tick) qui met sur l'étage, au rang 1 du tick comme les étincelles, `CreateAttached(false, id, 0, cible, 1, 0, 0, 0)` (profondeur + 1 comme l'effet de bris). Aucun tirage. Écart documenté : dans une image de plusieurs ticks la création a lieu en fin d'image ; l'effet suit ensuite la cible, aucune conséquence visible.
 - **D-F3-10** — La cible héros n'est pas filtrée : la fiche 0 donne des réponses nulles, donc l'effet s'attache toujours (fait « cible héros »).
 - **D-F3-11** — `HitArena` garde ses gestionnaires natifs éteints. L'observation du nouveau-né passe par `Arc.Entities` ; le support de test gagne un échantillon d'entité née et un pas de groupement de 1, 2 ou 3 ticks par image.

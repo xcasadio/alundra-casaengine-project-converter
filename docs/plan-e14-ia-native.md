@@ -695,7 +695,9 @@ Muruta tués à l'épée, la porte de B[2] passe, G569 est posé et trois portai
   rouvre). Enregistrements 24 à 27 : sprite 91, type 347, cases (9,46), (12,46), (9,50), (12,50), `Height 16` (128 px au-dessus du sol
   du hall), C = 153 : `C[25]` (`@1464 2B`, `@1465 25`, `@1466 37[20]`, `@1468 2A`, `@1469 40 [2,0]`) passe au natif C10 après la chute ;
   D et E natifs dès le départ.
-- [DLL, INCONNU] La chute de 128 px d'une entité autre que le héros passe par `StepVerticalWithoutController` ; sa durée dans la DLL
+- [DLL, INCONNU] La chute de 128 px d'une entité autre que le héros passe par `StepVerticalWithoutController` (**corrigé le 2026-10-15
+  par la découverte d'E20.e0k, `plan-e20-heros.md` §1.18** : les Muruta du hall tombent par le chemin du contrôleur ; la chute n'est pas
+  un arrêt d'E14.a1c) ; sa durée dans la DLL
   n'est pas mesurée ; le pas vertical et le vol des entités sont E20.e0k (non fait) : d'où l'arrêt ci-dessous.
 
 **Périmètre.** `AlundraMurutaAi` : A0, C10, D9, enregistrés pour 347 (D9 par `AlundraEnemyHelpers.HitReaction(e, 2, ctx)`) ; tests
