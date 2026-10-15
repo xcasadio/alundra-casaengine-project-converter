@@ -1,0 +1,8 @@
+ADDED 1
+  Data/map-sprite-indices.json
+REMOVED 0
+CHANGED 2
+  Data/sprite-records.json
+  report.json
+files before 24103, after 24104
+VERDICT: within the allowed set ['Data/map-sprite-indices.json', 'Data/sprite-records.json', 'report.json']

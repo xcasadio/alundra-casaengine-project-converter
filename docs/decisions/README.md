@@ -75,3 +75,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0059 | The hero's aura releases its slot at its tick and is recreated when its slot no longer holds it | Proposed | 2026-10-10 |
 | ADR-0060 | The break effect is created for every DestroyEntity caller, as the binary does | Accepted | 2026-10-10 |
 | ADR-0061 | The break-effect byte is exported in every sprite record | Accepted | 2026-10-10 |
+| ADR-0062 | The sprite-table key of each prefab and the valid indices of each map are exported | Accepted | 2026-10-15 |

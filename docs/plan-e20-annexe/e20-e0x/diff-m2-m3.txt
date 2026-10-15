@@ -1,0 +1,6 @@
+ADDED 0
+REMOVED 0
+CHANGED 1
+  report.json
+files before 24104, after 24104
+VERDICT: within the allowed set ['report.json']

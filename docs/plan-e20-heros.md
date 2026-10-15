@@ -2955,7 +2955,7 @@ trio non sauté, groupe `0x80032758` réécrit en `0x1D`, une entrée de la tabl
 
 ---
 
-### 1.15 E20.e0x — `BankKey` et indices valides par carte dans l'export ⏳ (détaillée le 2026-10-10)
+### 1.15 E20.e0x — `BankKey` et indices valides par carte dans l'export ✅ (détaillée le 2026-10-10)
 
 Découverte en lecture seule du 2026-10-10 (conception, puis critique adversarial qui a tout recalculé de son côté ; rapports dans le
 scratchpad de la session : `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/e20/e0x_design.md` et `e0x_critic.md`, scripts sous
@@ -3054,12 +3054,12 @@ et une page de format pour le nouveau fichier (ou une section de la même page) 
   indice → `[]`, une entrée −1 exclue ; les deux fichiers restent hors catalogue.
 - ✅ **T3 — Code et docs.** `dotnet test alundra-casaengine-project-converter.Tests --blame-hang-timeout 60s`, au premier plan : 849 plus
   les nouveaux, tous verts.
-- ⏳ **T4 — Export 1, puis export 2 tout de suite.** `m2` contre `m1` : changé `Data/sprite-records.json`, ajouté
+- ✅ **T4 — Export 1, puis export 2 tout de suite.** `m2` contre `m1` : changé `Data/sprite-records.json`, ajouté
   `Data/map-sprite-indices.json`, changé `report.json`, rien d'autre ; `cmp` de chaque fichier avec sa prédiction ; `m3` contre `m2` :
   `report.json` seul.
-- ⏳ **T5 — Suites.** `Alundra.Tests` en Release puis en Debug : même compte, sans échec (la DLL ignore la clé et le fichier jusqu'à
+- ✅ **T5 — Suites.** `Alundra.Tests` en Release puis en Debug : même compte, sans échec (la DLL ignore la clé et le fichier jusqu'à
   E20.e0a) ; `cmp` de la DLL ; traces inchangées.
-- ⏳ **T6 — ADR-0062 (format), plan, verifier frais** (le verifier est lancé par la session principale).
+- ✅ **T6 — ADR-0062 (format), plan, verifier frais** (le verifier est lancé par la session principale).
 
 ##### Acceptation
 
@@ -3086,6 +3086,24 @@ et une page de format pour le nouveau fichier (ou une section de la même page) 
   supprimer `alundra-project/`, d'un `robocopy /MIR`, d'un miroir de `data-extracted/` ou d'indexer `CasaEngineMonogame/`.
 - **Budget** : un `executor`, deux tentatives au plus ; `plan-verifier` avant ; deux verifiers frais après (rejeu et adversarial).
 - **Retour arrière** : `git revert` des commits d'E20.e0x, puis un export complet en place.
+
+##### Résultats (2026-10-15)
+
+Commits : T0 `3e136c1` (faite le 2026-10-10), T1 à T3 `f2e67bb` (tests, code, docs de format ; T1 n'a rien de versionné), T4 à T6 (ce texte, l'annexe `docs/plan-e20-annexe/e20-e0x/` et ADR-0062). Le verifier frais est lancé par la session principale. Premier passage coupé par une limite d'usage le 2026-10-10 après T0 ; `m0` revérifié au départ de celui-ci : **24 103 fichiers, `662056ce…`** (identique).
+
+**Empreintes** (manifeste `manifest.py`, hors `Alundra.dll`, `Alundra.pdb`, `.casaeditor/`) : `m0` `662056cebb0395f014099d1bd5ffc8f071a6fd58` (24 103) ; `m1` (export de référence T1) `d33b3fbaf97c5a592770988b4c5dec3963f6163c` (24 103, `report.json` seul change : `diff-m0-m1.txt`) ; `m2` (export 1) `b78cdf725918db8cd7c3491b4721d7c0623e1efc` (24 104 : `Data/map-sprite-indices.json` ajouté, `Data/sprite-records.json` et `report.json` changés, rien d'autre : `diff-m1-m2.txt`) ; `m3` (export 2, tout de suite) `9cc962671d586674cf7f1bd60b78dd1b59c2cd92` (24 104, `report.json` seul : `diff-m2-m3.txt`) ; un manifeste pris après les builds et suites de T5 est identique à `m3`. Les trois exports : code de sortie 0, `Verification: PASSED (20139 loaded, 2477 existence-checked)`.
+
+**Acceptation, mesurée.**
+- `Data/sprite-records.json` : **2 571 585 o, SHA-1 `88d723066fd2e6232a6f815dad8de9b0c05c64e4`, `cmp` identique à la prédiction** ; 395 entrées, `BankKey` premier membre de chacune, 151 `alundra_N` et 244 `N`, 395 clés distinctes, ordre des entrées inchangé, chaque objet égal à l'ancien moins `BankKey` ; les cinq valeurs témoins et `"alundra_0"` (`192c2eeb-bdda-5bb4-92d6-39a4ae298307`) sont celles attendues.
+- `Data/map-sprite-indices.json` : **30 913 o, SHA-1 `63a3e6189d1f1375232bb2c54e1d1dcb385e360d`, `cmp` identique à la prédiction** ; 483 clés (`"0"` à `"482"` dans l'ordre), 2 507 indices, 65 tableaux vides (dont `"0"`) ; `"388"` = `"451"` = [121, 122, 237, 253, 254, 255], `"432"` = [29, 253, 254, 255], aucun ne contient 213 ; `"95"` et `"322"` contiennent 233 à 236.
+- `AssetInfos.json` : `a09917c31694925076d1fc1aba5fca773f6cada2`, égal à `m1`. `report.json` de l'export 1 contre T1 : `Errors` 0, mêmes `Warnings` (6), mêmes catégories, mêmes `Messages`, mêmes compteurs (aucun ajouté ni retiré), `OutputFileCount` 24 106 puis **24 107** (+1).
+- `OutputSizeBytes` : T1 1 955 182 584 ; export 1 1 955 223 576 ; export 2 1 955 223 575. Écart T1 → export 1 : **+40 992 = 10 080 + 30 913 + (9 283 - 9 284)**, le dernier terme étant l'écart du `report.json` présent sur le disque au moment de la mesure (le rapport de T1 pèse 9 283 o, celui d'avant 9 284 o) ; `Alundra.dll` (574 464 o) et `Alundra.pdb` (204 800 o) n'ont pas bougé : aucun reste inexpliqué. Export 1 → export 2 : -1 (9 283 → 9 282 o). Valeur de `OutputSizeBytes` de départ (avant T1) : 1 955 259 509.
+- Rien ne change sous `alundra-project/UI/Screens/` (manifestes ; `git status` propre sur ce dossier).
+- Tests du convertisseur : **854 sans échec** (849 + 5 : `SpriteWriterBankKeyTests` : `BankKey` premier membre pour une banque de carte et la banque globale, erreur dure sans clé, clé connue, indices par carte dans l'ordre numérique avec nulls et fichier sans `SpriteRecords` et texte exact, erreur dure d'un écart avec `SpriteTable`). `Alundra.Tests` : **4 752 sans échec en Release et en Debug** (même compte qu'avant) ; `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` identique ; garde des traces (`git diff --ignore-cr-at-eol --exit-code`) passée, le bruit de fins de ligne des quatre `hero-trace-389-*` restauré par `git checkout --`.
+
+**Décisions d'exécution.** `ReadAllBanks` reçoit un paramètre facultatif (dictionnaire de sortie) : la déduplication des banques ne change pas, la collecte des indices valides se fait avant elle (une fiche déjà vue sur une autre carte compte pour cette carte). `ResolveBankKey` et `WriteMapSpriteIndices` sont `internal` (accessibles aux tests par `InternalsVisibleTo` existant). Le contrôle croisé avec `SpriteTable` ne s'applique que si la carte porte une `SpriteTable`.
+
+**Écarts, arrêts.** Aucun arrêt du plan n'a joué. Test rouge de T2 : compilation en échec (`SpriteWriter.ResolveBankKey` inexistant), les autres tests du fichier étaient rouges par construction ; T2 et T3 sont dans un seul commit pour rester constructible.
 
 ## 2. Points ouverts
 
