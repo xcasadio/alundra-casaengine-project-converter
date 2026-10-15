@@ -4100,7 +4100,7 @@ L'auteur a accordé une relecture de clôture de plus (2026-10-15) ; relecture d
   (`RunActiveEffectsPass`, en-tête d'`AlundraHitPassTests`) ; suite complète ; **chaque test qui bouge appartient à la liste prédite**
   et est réécrit par une dérivation (D-E0B-8) ; un test de la liste qui ne bouge pas est noté avec la raison (la divergence n'atteint
   aucune assertion) ; rien d'autre ne change.
-- 🚧 **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée ; mutants du code de la DLL : au moins 8, tous tués — rappel non passé, passé avant le tick du réservoir, sauté sur un tick gelé, appelé une fois par image, appelé aussi pour une image sans
+- 🧪 **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée ; mutants du code de la DLL : au moins 8, tous tués — rappel non passé, passé avant le tick du réservoir, sauté sur un tick gelé, appelé une fois par image, appelé aussi pour une image sans
   tick (tué par le cas « image sans tick puis un tick » de T2 (c) et par (b)), `IsTransitionInProgress` inversé ou ignoré (tué par le cas
   « départ de warp entre deux images » de T2 (c)), plancher retiré, constantes).
 
@@ -4118,6 +4118,17 @@ L'auteur a accordé une relecture de clôture de plus (2026-10-15) ; relecture d
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B se retire seule (`AdvanceFrame()` cesse d'écrire `R`) ; la phase A reste sans effet (le rappel n'écrit
   que le registre virtuel, le puits est inerte sans sa variable).
+
+##### Résultats (2026-10-15)
+
+- **Commits** : phase A `fcec5c6`, `fa1c15c`, `ce4be4b` ; phase B `3f00274` (T3) ; ADR-0066, README et ce plan (T4).
+- **Comptes** : départ 4 833 ; phase A 4 837 (inertie + tests (b) et (e)) ; phase B **4 852** en Release et en Debug, zéro échec. `cmp` de `alundra-project/Alundra.dll` avec la DLL Debug : identique. Les cinq traces : inchangées (`git diff --ignore-cr-at-eol`).
+- **T2 avant la phase B** : 15 tests rouges (a x6, c x6, d x3), 3 verts ((b) x2, (e)) ; après la ligne de la phase B : les 18 verts.
+- **Liste prédite contre liste mesurée** : prédite 66 tests (`e0b1-shadow.txt`, README d'`e20-e0b`) ; **mesurée : 0 test existant ne bouge**, aucun hors liste, aucun test de groupement, de structure ni d'appel direct de `RunFrame`. Aucune épingle n'a donc été réécrite, donc aucune dérivation à consigner pour un test existant (D-E0B-8 s'applique aux nouveaux tests, qui calculent leurs mots par un pas local). La prédiction qualitative (« au plus une douzaine », dont `A5`, `A5r`) n'est pas confirmée : `A5r` ne bouge pas (l'épingle `DirectionAfter120 = 0x02` survit, note 6 de 1.17 : coïncidence connue). Les raisons par famille sont dans le README d'`e20-e0b` (les tirages divergents n'atteignent aucune assertion ; vérifié par la lecture des tests, pas assertion par assertion).
+- **Écart de chiffres de T2 (d)** : les étincelles de maintien de l'arène de charge sont aux ticks 83, 87 et 91 (3 étincelles, 6 tirages), non 85 et 89 (montage de `AlundraHeroChargeTests`) ; le principe est inchangé.
+- **Mutants de la DLL** : 12, tous tués (rappel non passé, avant le tick du réservoir, sauté sur un tick gelé, une fois par image, aussi pour une image sans tick, `IsTransitionInProgress` inversé et ignoré, plancher retiré, deux constantes, état réel non écrit, appel double) ; détail dans le README d'`e20-e0b`.
+- **Commentaires corrigés** : `RunActiveEffectsPass` (`AlundraWorldProxy.cs`), en-tête d'`AlundraHitPassTests`.
+- **Reste** : les deux verifiers frais (l'un sur les épingles : liste prédite contre liste mesurée) sont lancés par la session principale.
 
 ---
 

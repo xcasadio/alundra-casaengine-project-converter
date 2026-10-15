@@ -79,3 +79,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0063 | The apparition by sprite index takes Z in the DLL's frame through a record-less core and checks each page against its own table | Accepted | 2026-10-15 |
 | ADR-0064 | The entity slot table hands out the lowest free slot up to 63, and the spawned list follows the slots | Accepted | 2026-10-15 |
 | ADR-0065 | An entity born by the sprite-index interface takes part in the tick of its birth, through a marker confined to that interface | Accepted | 2026-10-15 |
+| ADR-0066 | The shared random stream steps once per logic tick, through an optional per-tick callback of the effect stage | Accepted | 2026-10-15 |

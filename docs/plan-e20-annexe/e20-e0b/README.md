@@ -193,3 +193,46 @@ sparks are created at ticks **83, 87 and 91** (91 is the release tick, which als
 The test pins the measured ticks (readable at one tick per frame) and derives the words from them; the principle (the spark draws before the advance of its tick, whatever the grouping) is the plan's.
 
 (T3 and T4 add their measures below.)
+
+### Phase B (T3, code commit `3f00274`) and T4
+
+Phase B is the one line `_seed = _seed * 0x7d2b89dd + 0xe06a02e7;` in `AlundraRandom.AdvanceFrame()` (the sink still receives `OnVirtualAdvance()`, so `V = R` from now on), the comment of `RunActiveEffectsPass` and the header of `AlundraHitPassTests`.
+
+| Measure | Value |
+|---|---|
+| `Alundra.Tests` Release | 4 852 passed, 0 failed (4 837 + the 15 red tests of T2, now green), 3 m 47 s |
+| `Alundra.Tests` Debug | 4 852 passed, 0 failed, 3 m 48 s |
+| `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` | identical (the DLL was not locked) |
+| The five traces | unchanged (`git diff --ignore-cr-at-eol --exit-code`; the CR/LF-only noise of four files restored with `git checkout`) |
+| T2 (a), (c), (d) | 15 red before phase B (table above), 15 green after |
+| Existing tests that moved | **0** of the 66 predicted; 0 outside the list; no grouping, structure or direct `RunFrame` test moved |
+
+**The 66 predicted tests did not move** (the divergence reaches no assertion). Reasons by family, read from the tests (not re-measured assertion by assertion):
+
+- `AlundraRandomTests`, `AlundraRandomOpcodeTests`, `AlundraRandomBranchOpcodeTests`, `AlundraNativeEffectTests` (ambient only): no world `Update`, hence no advance; they reset the stream in their constructor.
+- The hero montages without a world `Update`, `AlundraWeaponLockOpcodesTests`, `AlundraPrefabArcSupportTests.ArcRun_ResetsTheSharedRandomStream...`: see the justifications above; no advance or an epoch (the arc re-seeds) before any read.
+- The hit-pass suites (`AlundraHitPassTests`, `AlundraHitPassCatchUpTests`, `AlundraHeroRunArenaTests`, `AlundraHeroAuraWorldTests`, `AlundraFlailBounceArcTests`, `AlundraFireSwitchRegressionTests`, `AlundraHeightTargetSitesTests`, `AlundraStoredHitBoxTests`, the lever arcs): the speeds of the sparks come from the stream and are not compared (header of `AlundraHitPassTests`).
+- `AlundraHeroChargeArenaTests` (3 tests): the assertions compare the reservoir between groupings and the effect counts; `RunCharge` sets the seed after the construction of the arena and the two groupings advance identically, so the compared words agree (the one that reads the seed, `TheReservoirAfterTheChargeAndTheRelease_...`, compares runs of the same code).
+- `AlundraShipCorridorArcTests.A5r_...`: the discovery predicted a move (note 6); the pin `DirectionAfter120 = 0x02` is read before the roll of the 220th frame and the later asserted outputs (hero positions at the end of frames 220 to 225, the portal) did not change. The plan's remark (the pin survives by coincidence for 219 to 221 advances) holds; no pin was rewritten.
+- `AlundraMurutaHallArcTests.H115`, `AlundraBeannoideGrateArcTests.G116`: the AI draws differ, the asserted outcomes (deaths, the door opening, the break effects) do not depend on them.
+
+Since nothing moved, no pin needed a derivation (D-E0B-8 applies to the new tests, which compute their words by a local step).
+
+**DLL mutants of T4** (`mutants_dll.py`, applied to the working-tree file, build with the neutralised copy, run on the T2 class, `AlundraTickStructure`, `AlundraHeroAuraWorld`, `AlundraHeroChargeArena`, `AlundraHeroChargeTests`, `AlundraDestroyEntityBreakEffect` and `AlundraNativeEffectTests` (190 tests), restored by `git checkout`, `git status` clean after):
+
+| Mutant | Result |
+|---|---|
+| M1 callback not passed by the world | CAUGHT, 9 red (the world tests of (c) and (d)) |
+| M2 callback before the reservoir tick | CAUGHT, 2 red (both (b) tests) |
+| M3 callback skipped on a frozen tick | CAUGHT, 2 red ((b) frozen tick and the gate `0x48` world test) |
+| M4 callback once per frame instead of once per tick | CAUGHT, 8 red (grouping test of the charge arena at 2 and 3 ticks, (b), (c), (d)) |
+| M5 callback also for a frame without tick | CAUGHT, 4 red (frame without tick then one tick; warp departure; (b); first frame) |
+| M6 `IsTransitionInProgress` inverted | CAUGHT, 12 red |
+| M7 `IsTransitionInProgress` ignored | CAUGHT, 1 red (the warp-departure case between two frames) |
+| M8 first-frame floor removed | CAUGHT, 1 red (`TheFirstFrameOfAWorld_...`) |
+| M9 multiplier constant changed | CAUGHT, 14 red |
+| M10 addend constant changed | CAUGHT, 15 red |
+| M11 `AdvanceFrame()` does not write the real state (phase A) | CAUGHT, 15 red |
+| M12 callback called twice per tick | CAUGHT, 11 red |
+
+Twelve mutants, no survivor. The two fresh verifiers of T4 (one on the pins: predicted list against measured list) are run by the main session.
