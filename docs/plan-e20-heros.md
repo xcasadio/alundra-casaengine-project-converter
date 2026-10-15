@@ -3709,7 +3709,7 @@ P-A et par l'annexe `e20-armes/e0-spawn.md`, point 4) :
 
 ##### Tâches
 
-- ⏳ **T0′ — Vérifications de la révision 3, avant le code** (sonde jetable, résultats versés dans le plan) : pour le n° 3 né par
+- ✅ **T0′ — Vérifications de la révision 3, avant le code** (sonde jetable, résultats versés dans le plan) : pour le n° 3 né par
   l'interface dans `MovePlayer`, dans les **quatre** directions (`0x00`, `0x08`, `0x10`, `0x18`), avec `AnimFlags` posé à la création et
   la clé de la cinématique gardée par le marqueur (posés à la main dans la sonde) : `AnimFlags` égal à la valeur du jeu d'animations dès
   le tick de naissance ; à la fin de la première image, la validation de `SyncAnimation` a lieu (bascule en attente), recharge la même
@@ -3786,6 +3786,22 @@ fait retomber `SpawnAnimationActive`, comme pour les directions 8, `0x10`, `0x18
 (`AnimFlags`, `SpawnAnimationActive`, `AnimationDirection`) et choisir le sprite par un autre moyen, ce que l'absence d'animations avant l'intégration rend impossible dans l'interface (P-A, mesure 1) ;
 (c) voie (ii) de P-A (lire la cible au pas de mouvement pour les entités marquées, `AlundraScriptedMotion.cs`), écartée par la tranche. Recommandation : (a), puis ajouter à T1 un test des quatre
 directions (états identiques à l'image 1 avec et sans `Current = Target` hors la cinématique).
+
+##### Résultat de T0′ (2026-10-15, base `0d9d8cb`) : issue conforme, pas d'arrêt
+
+Sonde jetable (`ZzProbeT0PrimeTests`, jamais commitée ; `ArcRun` de la carte 14, entité par l'interface sur le monde réel, trois images d'un tick), pour les n° 3 (flèche, octet `0x41`) et 20 (octet `0xC0`) de la page
+globale, dans les quatre directions `0x00`, `0x08`, `0x10`, `0x18`. Chaque cas est joué deux fois : « ancien » (`AnimFlags` remis à 0 et marqueur retiré à la main : l'état d'avant e0a3b) et « nouveau » (`AnimFlags` posé à la
+création, marqueur posé : l'état de la révision 3). La clé de la cinématique (ligne de `TickScriptedNpc`) et le marqueur sont ceux du code de T2.
+
+| Mesure | Résultat |
+|---|---|
+| `AnimFlags` à la naissance (nouveau) | `0x41` (n° 3) ou `0xC0` (n° 20) dans les quatre directions, égal à l'octet du jeu d'animations (ancien : 0) |
+| Validation de `SyncAnimation` à la fin de la première image | a lieu dans les quatre directions, y compris `0x00` : `SpawnAnimationActive` tombe, `Current` passe à 0, `AnimationDirection` à 0/2/1/3 (bas/gauche/haut/droite), `AnimFlags` rechargé à l'identique (`0x41`, `0xC0`), `HitAnimByte` identique |
+| Différence ancien/nouveau après la naissance (images 1 à 3) | **aucune** : `AnimFlags`, `SpawnAnimationActive`, `Current`, `AnimationDirection`, `IsZForceApplied`, verrou et dette d'impulsion, ticks réservés, tick dû, `HitAnimByte` et liste des sons demandés (un seul son, 162, le même dans les deux) sont égaux ; aucune impulsion ni son ajouté ou perdu |
+| Cinématique du n° 3 en direction `0x18` depuis 150 px, trois ticks, marqueur posé et `Current` à `~0` | X = **153, 159, 165** |
+| Recensement de T0 (3) | inchangé : les seuls tests qui comparent `CurrentAnimationId` ou `CurrentDirection` d'une entité née par l'interface sont `PA3` et `H` ; `H` ne change pas (la décision ne touche plus `Current`) |
+
+Issue : celle qui est écrite (aucun écart sur une entité de l'interface, aucun code hors des décisions). T1 commence.
 
 ##### Acceptation
 
