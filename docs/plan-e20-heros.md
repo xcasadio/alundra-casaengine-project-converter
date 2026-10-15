@@ -628,17 +628,17 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 | # | Tranche | Contenu | Prérequis |
 |---|---|---|---|
 | 1 | E20.e0x (§1.15) | Convertisseur : `BankKey` dans `Data/sprite-records.json` (le `BreakEffect` y est déjà, E14.a1a) et les indices valides par carte (D-E20-33) ; export complet en place, preuve par manifeste et double export ; ADR de format | E14.a1a ✅ |
-| 2 | E20.e0a (§1.16 : e0a1, e0a2, e0a3, e0a4 conditionnelle) | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
-| 3 | E20.e0b | Générateur avancé une fois par tick (`0x8002BD0C`-`0x8002BD34`) ; tirage du butin à la création (écrit le contenu, rien ne tombe) | E20.e0a |
-| 4 | E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a |
-| 5 | E20.f3 | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.f1 ✅, E20.e0a, E20.e0b |
+| 2 | E20.e0a (§1.16 : e0a1, e0a2, e0a3 ; e0a4 conditionnelle, ne bloque rien) | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
+| 3 | E20.e0b | Générateur avancé une fois par tick (`0x8002BD0C`-`0x8002BD34`) ; tirage du butin à la création (écrit le contenu, rien ne tombe) | E20.e0a1, E20.e0a2 (§1.16) |
+| 4 | E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a1 (§1.16) |
+| 5 | E20.f3 | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.f1 ✅, E20.e0a1 à E20.e0a3 (§1.16), E20.e0b |
 | 6 | E20.f4 | Flèche chargée : C94, E1 avec l'effet 8 (l'effet de bris vient d'E14.a1b, D-E20-26) | E20.f3, E20.e0k, E14.a1b ✅ |
 | 7 | E20.f5 | Flèches : E17 (D-E20-25) | E20.f3, E20.e0k |
 | 8 | E20.f6 | Boules de feu et de glace : C60, E9 (D-E20-25) ; vigilance sur les trois enregistrements `0x0C` de la carte 309, qui prendront vie | E20.f3, E20.e0b, E20.e0k |
 | 9 | E20.h0, E20.h1 | Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a ✅ |
 | 9b | E20.A362 | Le couvercle de la 362 (enregistrement 0, sprite 243, `D[1]` `0x87 [128,3]`) face à la bombe d'Olen (enregistrement 5, sprite 2, lancée par son script `0x8B [128,5,…]`, explosion animation 1, attaque attribut 4 puissance 5) : arc de test seul, comme E20.c1b-2 ; il tranche si le couvercle réagit déjà (probable depuis E20.c1a et E20.c1b-1) ou ce qui manque ; relancé après E20.h3 | E20.c1b-1 ✅ |
-| 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées | E20.e0a, E20.e0k ; E14.a1b ✅ pour g2 |
-| 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 |
+| 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées | E20.e0a1 (§1.16), E20.e0k ; E14.a1b ✅ pour g2 |
+| 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 pour h3 (§1.16) |
 | 12 | E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 (D-E20-27) ; ordre interne fixé au détail (g3 dépend aussi de la géométrie de la barricade de g4 et d'un choix de l'auteur, `order-critic.md`) | E20.g1, E20.g2 |
 
 Les projectiles d'E20.f3, f5 et f6 (E10, E17, E9) appellent aussi `DestroyEntity(e, fx)` : fait par E14.a1b ✅.
@@ -3202,42 +3202,78 @@ que l'interface, la table de cases et la participation au tick de naissance, pro
 - **Q-A3** — **Tranchée le 2026-10-15 (D-E20-35)** : une entité née dans un tick est dessinée à l'image suivante (intégration du moteur),
   sa logique ayant déjà tourné ; aucun changement de moteur.
 
+**Prérequis et dépendants (révision 1 de l'enveloppe, 2026-10-15).** Ordre des sous-tranches : e0a1 (prérequis : E20.e0x ✅, E14.a0 ✅)
+→ e0a2 (prérequis : e0a1) → e0a3 (prérequis : e0a2) ; e0a4 (prérequis : e0a3 et la réponse de l'auteur à Q-A1) **ne bloque aucun
+dépendant**. Ce que chaque tranche dépendante exige d'E20.e0a :
+- **E20.e0b** (générateur par tick, tirage du butin à la création) : e0a1 et e0a2 (la création, et l'ordre des cases qui fixe l'ordre des
+  tirages dans les passes) ;
+- **E20.e0k** (pas vertical et vol des entités autres que le héros) : e0a1 (une entité créée par l'interface pour ses tests) ;
+- **E20.f3** (tir) : e0a1 à e0a3 (les projectiles naissent dans `MovePlayer` et tournent dans leur tick de naissance ; le plafond de 63
+  cases compte) ;
+- **E20.g1, E20.g2** (porter, lancer) : e0a1 ;
+- **E20.h3** (graines et bombe, nées portées dans `MovePlayer`) : e0a1 à e0a3.
+
 **Hors périmètre de toute la section.** Le branchement de `SpawnWeaponProjectile` et les gestionnaires A0, A254, E17 (E20.f3) ; le tirage du butin, l'avance du générateur, `DestroyEntity` avec lâcher, C255 (e0b, e0c) ; le pas vertical et le vol (e0k) ; `SpawnChildEntity` (`0x8003A048`) et la réinitialisation en place (`0x8003AC78`), cinquième appelant d'`InitializeEntity` (E14) ; la lecture de `+0x08` ; la série `+0x04`.
 
 ---
 
 #### 1.16.1 E20.e0a1 — Oracle d'apparition, catalogue et interface, sans changement de comportement
 
+**Révision 1 (2026-10-15).** Relecture : **REVISE**, un point corrigé (FIX) : les 244 vecteurs de la page des cartes n'avaient pas
+d'hôte (un numéro n'est valide que sur ses propres cartes ; `ArcRun` ne construit que quelques cartes). La projection de création des
+395 vecteurs se compare maintenant au niveau du **noyau sans enregistrement** de la fabrique (sans monde) ; la validité par carte est
+prouvée à part ; le chemin complet de l'interface est éprouvé sur la carte 14 seulement, avec un compte mesuré en T1. Points non
+bloquants corrigés : chemins sources exacts du harnais, chemin de données relatif, chargeur paresseux, n° 79 de la page des cartes,
+vecteur « table pleine » de l'oracle, formulation de l'arrêt sur la fabrique.
+
+**Prérequis.** E20.e0x ✅ (`BankKey`, `Data/map-sprite-indices.json`), E14.a0 ✅ (registre natif, pour les tests d'A).
+
 **But.** Donner à la DLL l'interface `SpawnEntityBySpriteIndex` et ses données, avec l'oracle qui la prouve, sans qu'aucun chemin de production ne l'appelle : la suite existante ne doit pas bouger.
 
-**Périmètre.** `docs/plan-e20-annexe/e20-e0a/oracle/` (nouveau ; outils copiés octet pour octet de `docs/plan-e14-annexe/e14a/oracle-a1/tools`, plus `espawn.py`, `exp_spawn.py`, `exp_spawn2.py` et `pworld.py` versés du scratchpad, qui n'existent aujourd'hui nulle part dans le dépôt) ; `Alundra/Scripts/SpriteRecordCatalog.cs` (`BankKey`, table (page, indice) → préfab) ; un chargeur de `Data/map-sprite-indices.json` ; `AlundraEntitySpawnFactory.cs` (extraction du noyau à partir de l'en-tête, sans enregistrement ; `ApplySpawnInitialization` devient une enveloppe mince) ; `IEntityWorldContext.cs` ; `AlundraWorldProxy.cs` (l'implémentation, **ajoutée en fin de `_spawnedEntities`**, sans case) ; `Alundra.Tests/` ; ADR.
+**Périmètre.** `docs/plan-e20-annexe/e20-e0a/oracle/` (nouveau ; outils copiés octet pour octet de `docs/plan-e14-annexe/e14a/oracle-a1/tools`, plus le harnais du scratchpad, qui n'existe aujourd'hui nulle part dans le dépôt : `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20e0a/tests/espawn.py` et
+`C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20e0a/tests/tools/` (`exp_spawn.py`, `exp_spawn2.py`, `pworld.py` ; les copies ailleurs sont identiques), leurs
+dépendances (`machine`, `world`, `bank`, `c1world`, `emu`) venant de `docs/plan-e14-annexe/e14a/oracle-a1/tools` ; le chemin `DATA` codé
+en dur à `espawn.py:20` devient relatif à la racine du dépôt) ; `Alundra/Scripts/SpriteRecordCatalog.cs` (`BankKey`, table (page, indice) → préfab) ; un chargeur de `Data/map-sprite-indices.json`, **paresseux** (lu au premier appel de l'interface, jamais au chargement d'un monde : aucun
+monde de test existant ne voit d'avertissement) ; la carte courante est celle que donne le nom du monde
+(`BackdropLoader.TryParseMapIndex`, comme `AlundraWorldProxy` le fait déjà) ; `AlundraEntitySpawnFactory.cs` (extraction d'un **noyau sans enregistrement**, appelable sans monde : préfab, page, indice, parent, X,
+Y, Z, direction, champ de collision facultatif → l'entité et sa projection ; `ApplySpawnInitialization` l'appelle et garde son
+comportement) ; `IEntityWorldContext.cs` ; `AlundraWorldProxy.cs` (l'implémentation, **ajoutée en fin de `_spawnedEntities`**, sans case) ; `Alundra.Tests/` ; ADR.
 
 **Hors périmètre.** Case, plafond, ordre (e0a2) ; participation au tick (e0a3) ; branchement du tir ; E17 ; butin ; la série ; la sonde de la première animation (P-A, e0a3). L'interface laisse les champs de l'animation en attente (`CurrentAnimationId = ~0`, comme une entité par enregistrement) : la projection de l'oracle ne compare donc pas encore `Current*` ni `AnimationDirection`.
 
 ##### Tâches
 
 - ⏳ **T0 — Prédiction et état de départ** (commit de docs, avant tout code). Annexe `docs/plan-e20-annexe/e20-e0a/README.md` : liste des champs comparés (nom DLL ← décalage du binaire, ≈ 28), comptes attendus (151, 244, 395 vecteurs ; 123 648 appels de validité, 2 507 vrais, 65 cartes vides, au plus 22 par carte, 244 numéros distincts ; 54 numéros avec tirage ; 7 + 9 sons de création dont 3 à `+0x100`), SHA-1 de `Data/sprite-records.json` (`88d72306…`, 2 571 585 o) et de `Data/map-sprite-indices.json` (`63a3e618…`, 30 913 o) relevés une fois, en fenêtre calme (aucun export ni suite en cours sur l'arbre), comptes de tests (`Alundra.Tests` 4 752, convertisseur 854). Les outils de l'oracle y sont versés avec une somme de contrôle.
-- ⏳ **T1 — Oracle.** `run_e0a.py` : V1 (151 indices de la page 0, parent héros, plat, direction `0x10`, Z 0), V2 (244 numéros de la page des cartes, carte source notée), V3 géométrie (au moins 40 vecteurs : les 10 types de projectiles du héros et les objets 1 et 2 ; Z ∈ {0, Z du héros (1 brut), 16 px, **−5 px sous le sol**, **au-dessus du sol pour un `OffsetZ ≠ 0` : page 0 n° 20 à 50 px, n° 64 à 30 px, n° 242, page des cartes n° 153 à 40 px**, terrain relevé de 32 px autour du point} ; directions 0, 8, `0x10`, `0x18` ; parents {aucun, héros, une entité apparue}), V4 (483 cartes × 256 indices et les sondes −1, 256, 300, `0xFFFFFFFF`, `0x80000000`), V7 (les 8 appels d'apparition journalisés par les traces AT9 : types 3, 4, 11 et 14, au sol et en l'air, `docs/plan-e20-annexe/e20-b/oracle/out/at9/`, lus par `AlundraHeroAttackTests.cs:346-361`). Sorties déterministes : `summary.txt`, `manifest.txt` (md5 de chaque fichier ; deux exécutions identiques), `v1.json`, `v2.json`, `v3.json`, `v4-pairs.txt`, `v7.json`, journal des sons. Seconde interpréteuse (`mips.py`) identique sur au moins 159 appels. Durée visée : moins de 2 minutes.
+- ⏳ **T1 — Oracle.** `run_e0a.py` : V1 (151 indices de la page 0, parent héros, plat, direction `0x10`, Z 0), V2 (244 numéros de la page des cartes : une seule image de création par numéro sur toutes les cartes où il existe, carte source notée
+pour la trace), V3 géométrie (au moins 40 vecteurs : les 10 types de projectiles du héros et les objets 1 et 2 ; Z ∈ {0, Z du héros (1 brut), 16 px, **−5 px sous le sol**, **au-dessus du sol pour un `OffsetZ ≠ 0` : page 0 n° 20 à 50 px, n° 64 à 30 px, n° 242, page des cartes n° 153 à 40 px**, terrain relevé de 32 px autour du point} ; directions 0, 8, `0x10`, `0x18` ; parents {aucun, héros, une entité apparue}), V4 (483 cartes × 256 indices et les sondes −1, 256, 300, `0xFFFFFFFF`, `0x80000000`), V5′ (table pleine : 63 apparitions puis une 64e,
+pour que les mutants du plafond et du test d'occupation mordent ; la DLL n'en a l'équivalent qu'en e0a2), V6′ (la liste des numéros de
+la page des cartes valides sur la **carte 14**, pour le chemin complet de l'interface), V7 (les 8 appels d'apparition journalisés par les traces AT9 : types 3, 4, 11 et 14, au sol et en l'air, `docs/plan-e20-annexe/e20-b/oracle/out/at9/`, lus par `AlundraHeroAttackTests.cs` vers `:356-363`, `WeaponTraces`). Sorties déterministes : `summary.txt`, `manifest.txt` (md5 de chaque fichier ; deux exécutions identiques), `v1.json`, `v2.json`, `v3.json`, `v4-pairs.txt`, `v7.json`, journal des sons. Seconde interpréteuse (`mips.py`) identique sur au moins 159 appels. Durée visée : moins de 2 minutes.
 - ⏳ **T2 — Mutants de l'oracle** (`mutations.txt`). Au moins 23 mutants d'un mot, tous CAUGHT : plafond 64 et 62, test d'occupation inversé, racine, série, `+0x48` (vecteur de **case sale** requis), `Z − ModZ`, `+1`, relèvement du terrain (magasin supprimé et comparaison inversée), `+0x100` de la page, sélection de page inversée, direction (cible et complément), parent, compteur de cases, palette, feuille, `+0x230`, tirage du butin, premier changement d'animation, son, PV, drapeaux. Un mutant qui survit est un vecteur manquant, pas un arrêt.
-- ⏳ **T3 — Tests rouges** (`Alundra.Tests`, projet inchangé hors ajouts) : (a) donnée : les 395 `BankKey` donnent un préfab du catalogue, uniques ; la validité de la page des cartes des 483 cartes égale `v4-pairs.txt` (123 648 comparaisons) ; (b) projection de création des 395 vecteurs égale à l'oracle (hors `+0x3C`, `+0x40`, générateur pour les 54, D-E0A-3 ; hors `Current*` et `AnimationDirection`) ; (c) contrat `null` : indice négatif, 256, entrée nulle, carte inconnue du fichier, `parent` nul accepté, préfab absent : aucune entité ajoutée, une ligne de journal ; (d) `EntityRefId == −1` et `0x2C [0]`, `0x2E [0]` ne la trouvent pas ; `EventTrigger == −1` ; (e) parent et racine (parent héros, enfant d'un enfant, parent nul : 4 cas) ; (f) règle de Z (au moins 8 vecteurs, dont ceux du T1) ; (g) son de création : n° 7 → `0x21`, n° 27 → `0x1E`, n° 3 rien, n° 192 de la carte voulue → son + `0x100` ; (b bis) la case et la série ne sont pas encore écrites (e0a2), elles sont exclues de la projection ; (h) équivalence avec l'enregistrement : le n° 79 par l'interface et l'enregistrement 0 de la carte 14 par le chemin de production ne diffèrent que par la liste fermée (case, série, racine, parent, état, `+0x3C`, pointeur d'enregistrement, `EntityRefId`, soi).
+- ⏳ **T3 — Tests rouges** (`Alundra.Tests`, projet inchangé hors ajouts) : (a) donnée : les 395 `BankKey` donnent un préfab du catalogue, uniques ; la validité de la page des cartes des 483 cartes égale `v4-pairs.txt` (123 648 comparaisons) ; (b) projection de création des **395 vecteurs au niveau du noyau sans enregistrement** (sans monde : champ de collision plat ou relevé
+comme dans V3), égale à l'oracle (hors `+0x3C`, `+0x40`, générateur pour les 54, D-E0A-3 ; hors `Current*` et `AnimationDirection`) ;
+(b′) **chemin complet de l'interface** dans un `ArcRun` de la carte 14 : les 151 numéros de la page globale (valides sur toute carte) et
+les numéros de la page des cartes valides sur la 14 (liste V6′, compte écrit dans l'annexe en T1) : même projection que (b), plus
+l'ajout à `_spawnedEntities` ; (c) contrat `null` : indice négatif, 256, entrée nulle, carte inconnue du fichier, `parent` nul accepté, préfab absent : aucune entité ajoutée, une ligne de journal ; (d) `EntityRefId == −1` et `0x2C [0]`, `0x2E [0]` ne la trouvent pas ; `EventTrigger == −1` ; (e) parent et racine (parent héros, enfant d'un enfant, parent nul : 4 cas) ; (f) règle de Z (au moins 8 vecteurs, dont ceux du T1) ; (g) son de création, au niveau du noyau : n° 7 → `0x21`, n° 27 → `0x1E`, n° 3 rien, n° 192 de la page des cartes → son + `0x100` ; (b bis) la case et la série ne sont pas encore écrites (e0a2), elles sont exclues de la projection ; (h) équivalence avec l'enregistrement : le n° 79 **de la page des cartes** par l'interface et l'enregistrement 0 de la carte 14 par le chemin de production ne diffèrent que par la liste fermée (case, série, racine, parent, état, `+0x3C`, pointeur d'enregistrement, `EntityRefId`, soi).
 - ⏳ **T4 — Code.** Catalogue (`BankKey` lu ; absent = tolérant), chargeur des indices (fichier absent : permissif, un avertissement), extraction de la fabrique, interface et implémentation (`LoadCopy`, noyau sans enregistrement, `InitializeBalance`, `AddEntity`, ajout en fin de liste, `RequestAppearanceSound`, `PushLogicalPositionToRoot`, racine dans `ChildEntity`). `dotnet test Alundra.Tests --blame-hang-timeout 60s`, au premier plan, en Release puis en Debug.
 - ⏳ **T5 — ADR** (cadre de Z, interface, racine, validité par carte), plan, verifier frais.
 
 ##### Acceptation
 
-- Oracle : V1 151/151, V2 244/244, V4 2 507 paires, 65 cartes vides, mêmes jeux que `Data/map-sprite-indices.json` (SHA-1 `63a3e618…`), V7 8/8 ; sondes invalides : un seul message en `0x80039BB8`, série, compteur et générateur inchangés ; ≥ 23 mutants CAUGHT ; deux exécutions identiques au manifeste ; seconde interpréteuse identique.
-- DLL : tous les tests de T3 verts ; `Alundra.Tests` en Release et en Debug : 4 752 + les nouveaux, **zéro échec, aucun test existant modifié** (`git diff --stat Alundra.Tests/` : ajouts seulement) ; convertisseur et moteur intacts ; `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` identique ; traces inchangées (`git diff --ignore-cr-at-eol --exit-code`).
+- Oracle : V1 151/151, V2 244/244, V5′ (63 acceptées, la 64e refusée), V4 2 507 paires, 65 cartes vides, mêmes jeux que `Data/map-sprite-indices.json` (SHA-1 `63a3e618…`), V7 8/8 ; sondes invalides : un seul message en `0x80039BB8`, série, compteur et générateur inchangés ; ≥ 23 mutants CAUGHT ; deux exécutions identiques au manifeste ; seconde interpréteuse identique.
+- DLL : tous les tests de T3 verts (395 projections au niveau du noyau ; chemin complet sur la carte 14 : 151 + le compte V6′) ; `Alundra.Tests` en Release et en Debug : 4 752 + les nouveaux, **zéro échec, aucun test existant modifié** (`git diff --stat Alundra.Tests/` : ajouts seulement) ; convertisseur et moteur intacts ; `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` identique ; traces inchangées (`git diff --ignore-cr-at-eol --exit-code`).
 - Verifier frais (rejeu de l'oracle et lecture adversariale du diff).
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : une image de l'oracle qui contredit un fait de cette section (attribuer, puis question) ; un test existant qui doit changer ; un SHA-1 de `sprite-records.json` ou de `map-sprite-indices.json` différent de celui d'E20.e0x (ne pas ré-exporter : question) ; la fabrique extraite qui déplace une épingle d'apparition par enregistrement (revenir à l'enveloppe mince) ; tout contact avec `CasaEngineMonogame/` ou `CasaEngine.Launcher/Program.cs`.
+- **Arrêts** : une image de l'oracle qui contredit un fait de cette section (attribuer, puis question) ; un test existant qui doit changer ; un SHA-1 de `sprite-records.json` ou de `map-sprite-indices.json` différent de celui d'E20.e0x (ne pas ré-exporter : question) ; la fabrique extraite qui déplace une épingle d'apparition par enregistrement (revenir à `ApplySpawnInitialization` d'origine, intacte) ; tout contact avec `CasaEngineMonogame/` ou `CasaEngine.Launcher/Program.cs`.
 - **Budget** : un `executor` par ensemble de tâches, deux tentatives au plus ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : abandon de la branche pour la DLL, `git revert` pour les docs et l'oracle.
 
 ---
 
 #### 1.16.2 E20.e0a2 — Table de cases : première libre, plafond de 63, ordre des passes
+
+**Prérequis.** E20.e0a1 (l'interface, l'oracle et son annexe, le compte de tests).
 
 **But.** Donner à chaque entité une case (héros 0, autres 1 à 63), la rendre au recyclage, refuser la 64e, et faire suivre l'ordre de `_spawnedEntities` à celui des cases, comme les passes du binaire (événements, compteurs, listes, physique, « premier attaquant » des coups, recherches `0x2C`). Ferme O-E20-13.
 
@@ -3269,6 +3305,8 @@ que l'interface, la table de cases et la participation au tick de naissance, pro
 
 #### 1.16.3 E20.e0a3 — Participation au tick de naissance des entités de l'interface
 
+**Prérequis.** E20.e0a2 (la table de cases : une entité détruite à sa naissance rend sa case).
+
 **But.** Une entité née dans `MovePlayer` (tir, usage d'un objet) tourne dans le tick qui la voit naître : statut, programme A, compteurs, listes, horloge, physique, coups ; une entité née dans un programme natif d'une autre entité tourne au tick suivant (D-E0A-6). Les entités par enregistrement ne changent pas (D-E0A-5, Q-A1). Ferme O-E20-11 pour les entités de l'interface.
 
 **Périmètre.** `AlundraEntityScriptProxy` (`JoinsBirthTick`, `EventTrigger = −1` posé à l'apparition, `CollisionFieldNow` limité au marqueur pour les neuf lectures) ; `AlundraWorldProxy.CollectTickEntities` (`TookPartInFrame || (JoinsBirthTick && Owner.World == null)`, sans effacement) ; un nouveau rassemblement juste après `MovePlayerOnTickPad` (`AlundraWorldProxy.cs:2701`) quand une apparition a eu lieu ; un membre par défaut `ICollisionField? CollisionField => null` sur `IAlundraScriptHost` ; **un point d'accroche de test** dans `SpawnWeaponProjectile` (séparé du comptage, désactivé en production) pour faire naître une entité à l'endroit exact de `MovePlayer` sans brancher le tir.
@@ -3298,6 +3336,8 @@ que l'interface, la table de cases et la participation au tick de naissance, pro
 ---
 
 #### 1.16.4 E20.e0a4 — (conditionnelle, selon Q-A1) Participation au tick de naissance des apparitions par enregistrement
+
+**Prérequis.** E20.e0a3 et la réponse de l'auteur à Q-A1 (après la liste de P-B). Ne bloque aucune autre tranche.
 
 Non détaillée. Elle ne démarre qu'avec l'accord de l'auteur après la liste de P-B. Chaque épingle qui bouge est re-dérivée de l'oracle (une apparition par événement de carte tourne dans le tick, D-E20-11) ; les arcs listés au §1.16 (A, B) sont remesurés un à un.
 
