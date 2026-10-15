@@ -636,7 +636,7 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 | # | Tranche | Contenu | Prérequis |
 |---|---|---|---|
 | 1 | E20.e0x (§1.15) | Convertisseur : `BankKey` dans `Data/sprite-records.json` (le `BreakEffect` y est déjà, E14.a1a) et les indices valides par carte (D-E20-33) ; export complet en place, preuve par manifeste et double export ; ADR de format | E14.a1a ✅ |
-| 2 | E20.e0a (§1.16 : e0a1, e0a2, e0a3 ; e0a4 conditionnelle, ne bloque rien) | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
+| 2 | E20.e0a (§1.16 : e0a1, e0a2, e0a3 ✅ ; e0a4 décidée le 2026-10-15, après E20.e0b2, ne bloque rien) | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
 | 3 | E20.e0b (§1.17 : e0b1, puis e0b2) | e0b1 : générateur avancé une fois par tick (`0x8002BD0C`-`0x8002BD34`) ; e0b2 : tirage du butin à la création (écrit le contenu, rien ne tombe) | E20.e0a1, E20.e0a2 (§1.16) ; e0b1 avant e0b2 (ordre) |
 | 4 | E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a1 (§1.16) |
 | 5 | E20.f3 | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.f1 ✅, E20.e0a1 à E20.e0a3 (§1.16), E20.e0b1 (§1.17) |
@@ -3205,6 +3205,8 @@ que l'interface, la table de cases et la participation au tick de naissance, pro
 
 **Questions à l'auteur** (aucune ne bloque e0a1 et e0a2 ; Q-A1 attend la mesure P-B d'e0a3) :
 - **Q-A1** — Étendre la participation au tick de naissance aux apparitions par enregistrement (opcodes `0x2D`, `0x8A`, `0x8B`, événements de carte), ce qui ferme O-E20-11 mais déplace des épingles d'arcs (liste mesurée par la sonde P-B d'e0a3) ? Recommandation : décider après la mesure ; en faire alors la tranche e0a4, jamais dans e0a1 à e0a3.
+  **Tranchée par l'auteur le 2026-10-15, après la mesure P-B** : oui, fidèle au binaire ; la tranche e0a4 se fait **après E20.e0b2**
+  (même fichier `AlundraWorldProxy.cs`), les huit tests de P-B recalculés un à un.
 - **Q-A2** — **Tranchée le 2026-10-15 (D-E20-34)** : « A deux fois » reste un écart documenté (D-E0A-6), épinglé par un test nommé ainsi ;
   rouvert par e0b, e0c ou E14 si un gestionnaire A en dépend (O-E0A-1).
 - **Q-A3** — **Tranchée le 2026-10-15 (D-E20-35)** : une entité née dans un tick est dessinée à l'image suivante (intégration du moteur),
@@ -3867,9 +3869,10 @@ séparé ; leur mordant est prouvé par les mutations des deux verifiers.
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : `git revert` des commits d'E20.e0a3b (la mesure P-B ne laisse aucun code).
 
-#### 1.16.4 E20.e0a4 — (conditionnelle, selon Q-A1) Participation au tick de naissance des apparitions par enregistrement
+#### 1.16.4 E20.e0a4 — Participation au tick de naissance des apparitions par enregistrement ⏳ (décidée le 2026-10-15, Q-A1)
 
-**Prérequis.** E20.e0a3b et la réponse de l'auteur à Q-A1 (après la liste de P-B). Ne bloque aucune autre tranche.
+**Prérequis.** E20.e0a3b ✅ ; Q-A1 tranchée le 2026-10-15 (oui, après la mesure P-B) ; ordre : après E20.e0b2 (même fichier). Ne bloque
+aucune autre tranche.
 
 **Mesure P-B** (versée par E20.e0a3b, 2026-10-15, base `7b9b096`). Changement jetable, jamais commité : `proxy.JoinsBirthTick = true` à la fin de `AlundraEntitySpawnFactory.ApplyRecord` (donc pour la charge d'une carte
 et pour `SpawnEntityByRecordId`, c'est-à-dire les opcodes `0x2D`, `0x8A`, `0x8B`), précondition `git status --porcelain` vide sur les fichiers touchés ; construction Release avec la copie de la DLL neutralisée, suite complète
@@ -4034,6 +4037,7 @@ sauté quand l'ombre est active (lancement de la suite avec la variable) ; il ne
 repris : les constructeurs et `Dispose` des classes de test ont leur propre clé dans l'attribution ; une classe qui pose la graine
 dans son constructeur garde `ambient_draws > 0` sur ses méthodes, et la justification écrite suffit. La règle de relecture ne permet
 pas une relecture de plus sans l'auteur : la tranche est **en pause** jusqu'à son accord.
+L'auteur a accordé une relecture de clôture de plus (2026-10-15).
 
 **Prérequis.** Voir ci-dessus. Compte de tests de départ : à relever en T0 (4 815 à la clôture d'e0a3a).
 
