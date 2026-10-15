@@ -16,7 +16,7 @@ namespace Alundra.Scripts;
 /// <item><description>The overlap is an integer test on the three axes, in raw 16.16, WIDENED by one unit (<c>0x80039464-0x8003951C</c>): with <c>d = box - body</c>, a hit when <c>d &gt;= 0</c> and <c>d &lt; bodySize + 1</c>, or <c>d &lt; 0</c> and
 /// <c>-d &lt; boxSize + 1</c>. The box is <c>HitBox = Pos + CollisionOffset</c>, the body <c>ModdedPos = Pos + Mod</c> of the target, both read now (the stored copies are stale in the DLL).</description></item>
 /// <item><description>A hit: when the response of the target for the attack nibble, <c>record[(attribute &amp; 0xF) + 2]</c> of its balance record, is NOT <c>(r &amp; 0xC0) == 0x80</c> (immune), the target's <c>TouchingEntity</c> becomes the attacker
-/// (and the effects 4 and 5 of the nibbles 6, 10 and 7, 9 would be attached to it: NOT PORTED here, E20.f); then always the target's <c>+0x1D0</c> becomes <c>0x19</c>, the attacker's <c>HitCounter</c> grows by one, and three sparks
+/// (and, just before, the effect 4 or 5 of the nibbles 6, 10 and 7, 9 is attached to it through <c>attachEffect</c>, E20.f3b); then always the target's <c>+0x1D0</c> becomes <c>0x19</c>, the attacker's <c>HitCounter</c> grows by one, and three sparks
 /// (effect 9) appear at the centre of the overlap. The attacker goes on with the next targets (it can hit several); a target whose <c>+0x1D0</c> a first attacker has just set is skipped by the next ones (the first attacker of the list wins).</description></item>
 /// </list>
 /// No <c>Hp</c> changes here: the damage is E20.c1b (the program D of the target reads <c>TouchingEntity</c> at the next tick).
@@ -50,6 +50,14 @@ internal sealed class AlundraHitPass
         return mask;
     }
 
+    /// <summary>The effect a hit of the attack nibble attaches to a target that is not immune (<c>0x800395E8-0x80039668</c>): 4 for the nibbles 6 and 10, 5 for 7 and 9, 0 (none) for the others.</summary>
+    internal static int EffectOfNibble(int nibble) => nibble switch
+    {
+        6 or 10 => 4,
+        7 or 9 => 5,
+        _ => 0,
+    };
+
     /// <summary>One axis of the widened overlap test (see the class doc); all in raw 16.16.</summary>
     internal static bool AxisOverlaps(int boxPosition, int boxSize, int bodyPosition, int bodySize)
     {
@@ -73,9 +81,10 @@ internal sealed class AlundraHitPass
 
     /// <summary>
     /// Runs the pass over <paramref name="list"/> (the list of <c>0x800384F4</c> as the lists step built it: status 2 or 3, <c>BlockedByEntity</c> null, the hero first). <paramref name="hero"/> is slot 0 (its animation is latched even
-    /// when <paramref name="list"/> is empty). <paramref name="emitSparks"/> is told the centre of the overlap of each hit (the world queues the three sparks on its effect stage).
+    /// when <paramref name="list"/> is empty). <paramref name="emitSparks"/> is told the centre of the overlap of each hit (the world queues the three sparks on its effect stage). <paramref name="attachEffect"/> (E20.f3b, D-F3-9) is told
+    /// the target and the effect (4 or 5) of a hit that is not immune, before the store of <c>TouchingEntity</c> and before the sparks.
     /// </summary>
-    public void Run(IReadOnlyList<AlundraEntityScriptProxy> list, AlundraEntityScriptProxy? hero, Action<int, int, int>? emitSparks)
+    public void Run(IReadOnlyList<AlundraEntityScriptProxy> list, AlundraEntityScriptProxy? hero, Action<int, int, int>? emitSparks, Action<AlundraEntityScriptProxy, int>? attachEffect = null)
     {
         if (hero != null)
         {
@@ -139,8 +148,17 @@ internal sealed class AlundraHitPass
                 var response = target.BalanceRecord?.ByteAt((attack.Attribute & 0xF) + 2) ?? 0;
                 if ((response & 0xC0) != 0x80)
                 {
-                    // Not immune. The binary also attaches the effect 4 (attack nibbles 6 and 10) or 5 (7 and 9) to the target here, before the store: NOT PORTED (E20.f: the DLL has no effect anchor
-                    // and no depth key for an entity; the basic sword, the only weapon of E20.c1a, never triggers them).
+                    // Not immune. The binary attaches the effect 4 (attack nibbles 6 and 10) or 5 (7 and 9) to the target here (0x800395E8-0x80039668), BEFORE the store of TouchingEntity and before the sparks;
+                    // no random word is drawn. The world gives the callback that puts the effect on its stage (E20.f3b phase B); without one the pass behaves as before.
+                    if (attachEffect != null)
+                    {
+                        var effect = EffectOfNibble(attack.Attribute & 0xF);
+                        if (effect != 0)
+                        {
+                            attachEffect(target, effect);
+                        }
+                    }
+
                     target.TouchingEntity = attacker.SelfEntity;
                 }
 
