@@ -4519,6 +4519,7 @@ automatiques atteint) : **FIX** — la sentinelle après un `Teleport` n'avait a
 `EvaluateEntitySupport` ; les opcodes `0x64`, `0x65` et `0x8B` l'appellent en cours de vie. La redéclaration pour une entité marquée se fait
 dans `PushLogicalPositionToRoot` (même fichier, dans le périmètre ; les opcodes restent hors périmètre), et le test de monde (z10) l'épingle.
 Nouvelle époque de relecture : une seule relecture de clôture suit.
+Relecture de clôture : **READY** (2026-10-16).
 
 **Prérequis.** E20.e0k1.
 
