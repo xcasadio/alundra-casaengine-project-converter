@@ -4085,7 +4085,7 @@ L'auteur a accordé une relecture de clôture de plus (2026-10-15) ; relecture d
   reçoit une affectation explicite de la graine dans sa fixture, ou une justification écrite, avant B (si une affectation est ajoutée,
   l'ombre est relancée et le fichier versé de nouveau) ; une classe qui pose déjà la graine dans son constructeur garde
   `ambient_draws > 0` sur ses méthodes (le constructeur a sa propre clé) : la justification écrite suffit.
-- ⏳ **T2 — Tests** (`AlundraRandomPerTickTests`, dans `AlundraRandomStaticStateCollection`, `Reset()` au constructeur), écrits après T1 :
+- 🚧 **T2 — Tests** (`AlundraRandomPerTickTests`, dans `AlundraRandomStaticStateCollection`, `Reset()` au constructeur), écrits après T1 :
   **rouges avant T3** : (a) les six mots de l'avance (par `AdvanceFrame()` puis lecture de `RandomSeed`) ; (c) au niveau du monde : 1 tick →
   1 pas, 2 ticks → 2, `MenuOpen` (`0x48`) → 1 par tick, première image d'un monde → 1, deux mondes successifs sans double compte ; les
   deux cas « 0 pas » ne s'écrivent **jamais seuls** : une image sans tick suivie d'une image d'un tick → **exactement 1 pas au total** ;

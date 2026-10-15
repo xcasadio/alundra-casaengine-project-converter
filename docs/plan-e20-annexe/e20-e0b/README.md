@@ -166,4 +166,30 @@ A test of the list that does not move in phase B is noted in T3 with the reason 
 
 No test moved in phase A: the callback only feeds the virtual word of the sink.
 
-(T2 to T4 add their measures below.)
+### T2 - `AlundraRandomPerTickTests` on the phase A code (`fa1c15c`), run before any phase B code
+
+The class is split in two files (`partial`): `Alundra.Tests/AlundraRandomPerTickTests.cs` (b, e: green by construction, committed with phase A) and `Alundra.Tests/AlundraRandomPerTickTests.Advance.cs` (a, c, d: red, kept out of the
+commit until phase B). Phase A suite with the committed part: Release 4 837 passed, Debug 4 837 passed (4 833 + the inertness test + the 3 tests of (b) and (e)); `cmp` of the DLL identical; the five traces unchanged.
+
+| Group | Test | Phase A result | Reason |
+|---|---|---|---|
+| (a) | `AdvanceFrame_StepsTheStreamOncePerCall_ToTheWordsOfTheBinary` x6 (the six words) | 6 RED | the real state does not move |
+| (c) | `AWorld_StepsTheStreamOncePerTick_OneTickThenTwo` | RED | 1 tick = 1 step, then 2 ticks = 2 steps |
+| (c) | `AWorld_UnderTheMenuGate0x48_StillStepsOncePerTick_...` | RED | gate `MenuOpen`: 1 step per tick |
+| (c) | `TheFirstFrameOfAWorld_CountsAtLeastOneTick_EvenWithNoElapsedTime` | RED | the floor of the first frame: 1 step, then none |
+| (c) | `TwoWorldsInARow_StepTheStreamOncePerTickEach_...` | RED | 2 steps then 1 step of the second world, 3 in all |
+| (c) | `AFrameWithoutTick_ThenAFrameOfOneTick_MakeExactlyOneStepInAll` | RED | exactly 1 step in all (a positive case in the same assertion) |
+| (c) | `AFrameThatDepartsToAWarp_BetweenTwoFramesOfOneTick_MakeExactlyTwoStepsInAll` | RED | exactly 2 steps in all; the departure frames are checked at 1 step |
+| (d) | `TheChargeSparks_DrawBeforeTheAdvanceOfTheirTick_WhateverTheGrouping` x3 (1, 2, 3 ticks per frame) | 3 RED | the word after each spark and at the end |
+| (b) | `RunFrame_CallsTheCallbackOncePerTick_AfterTheReservoirTick_AlsoOnAFrozenTick_AndNeverForZeroTicks` | GREEN | pins the phase A wiring |
+| (b) | `RunFrame_CallsTheCallbackAfterTheQueuedOperationsAndTheUpdateOfTheirTick` | GREEN | pins the phase A wiring |
+| (e) | `RunFrame_WithoutACallback_AdvancesNothing` | GREEN | the direct calls stay inert |
+
+15 red, 3 green, as the slice predicts. As a check that the red tests can be satisfied (not a task of phase B, nothing committed, the file restored with `git checkout`): with the one phase B line added locally (`AdvanceFrame()` also writing
+the real state) all 18 tests were green.
+
+**Deviation from the plan text (numbers only).** The plan (T2 (d)) says "the charge spark of ticks 85 and 89" and "4 draws". On the arena of `AlundraHeroChargeArenaTests` (the real world of map 14, steel sword, press at tick 1) the hold
+sparks are created at ticks **83, 87 and 91** (91 is the release tick, which also creates the burst of 16 effects, no number drawn): 3 sparks, 6 draws, 19 creations in all (the numbers 85 and 89 belong to the montage of `AlundraHeroChargeTests`).
+The test pins the measured ticks (readable at one tick per frame) and derives the words from them; the principle (the spark draws before the advance of its tick, whatever the grouping) is the plan's.
+
+(T3 and T4 add their measures below.)
