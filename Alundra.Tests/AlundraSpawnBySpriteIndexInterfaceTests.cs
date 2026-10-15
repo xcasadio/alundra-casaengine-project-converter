@@ -241,6 +241,53 @@ public sealed class AlundraSpawnBySpriteIndexInterfaceTests
         Assert.Same(ArcRun.EntityOf(byIndex), byIndex.LogicContextEntity);
     }
 
+    /// <summary>A recorder of the sounds asked (the world proxy's sound player seam).</summary>
+    private sealed class RecordingSoundPlayer : IAlundraSoundPlayer
+    {
+        public List<int> Ids { get; } = new();
+
+        public void PlaySfx(int sfxId) => Ids.Add(sfxId);
+
+        public void RemixVoice(int sfxId, int left, int right)
+        {
+        }
+
+        public void FlushFrameSounds()
+        {
+        }
+
+        public void StopAllSfx()
+        {
+        }
+    }
+
+    [Fact]
+    public void G_TheSoundOfTheAnimation0_IsRequestedOnceAtTheTickOfTheCall_AndOnlyWhereTheBinaryPlaysOne()
+    {
+        using var arc = Arc("sound");
+        var player = new RecordingSoundPlayer();
+        typeof(AlundraWorldProxy).GetField("<SoundPlayer>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.SetValue(arc.Proxy, player);
+
+        Spawn(arc, arc.Hero, false, 3);
+        Assert.Empty(player.Ids); // the arrows have no sound at their creation.
+        Spawn(arc, arc.Hero, false, 7);
+        Assert.Equal(new[] { 0x21 }, player.Ids);
+        Spawn(arc, arc.Hero, false, 27);
+        Assert.Equal(new[] { 0x21, 0x1E }, player.Ids);
+    }
+
+    [Fact]
+    public void L_TheIndicesOfTheMapPage_AreReadAtTheFirstCallOfTheMapPage_NeverAtTheLoadOfAWorld()
+    {
+        using var arc = Arc("lazy");
+        Assert.Null(arc.Proxy.MapSpriteIndices); // a world loaded: the file has not been read (no existing world sees a warning).
+        Spawn(arc, arc.Hero, false, 3);
+        Assert.Null(arc.Proxy.MapSpriteIndices); // the global page needs no file.
+        Spawn(arc, arc.Hero, true, 79);
+        Assert.NotNull(arc.Proxy.MapSpriteIndices);
+        Assert.True(arc.Proxy.MapSpriteIndices!.IsLoaded);
+    }
+
     [Fact]
     public void NoOpContext_AndEveryExistingImplementer_KeepCompiling_TheDefaultOfTheInterfaceIsNull()
     {
