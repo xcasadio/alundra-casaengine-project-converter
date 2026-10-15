@@ -3625,6 +3625,14 @@ automatiques atteint) : **FIX** — la décision `Current = Target` change de fa
 leur nouvelle attente (tout autre test qui bougerait reste un arrêt) ; **FIX** du point non bloquant : contenu de `skipcopy.targets`
 écrit. Nouvelle époque de relecture : une seule relecture de clôture suit.
 Relecture de clôture : **READY** (2026-10-15).
+**Révision 3 (2026-10-15, après l'arrêt de T0).** La porte T0 a arrêté l'exécution avant tout code (« Résultat de T0 » ci-dessous) :
+`Current = Target` à la création laisse une entité tirée vers le bas sans bascule en attente (`AnimFlags` 0 pour toujours,
+`SpawnAnimationActive` jamais validé). Décision de la session principale (D-E0A-8, remplace la voie (i) de P-A pour cette tranche) :
+l'interface **ne pose plus** `Current = Target` (la bascule reste en attente dans les quatre directions et la première validation de
+`SyncAnimation` se fait comme aujourd'hui) ; elle charge `AnimFlags` à la création comme la première bascule du binaire
+(`0x80038AB4`) ; la cinématique générique prend la clé de son jeu d'animations sur `TargetAnimationId` pour une entité marquée dont
+l'animation n'est pas encore validée. La piste « fausser `AnimationDirection` » de l'exécuteur est écartée (état artificiel). Le test H
+d'e0a1 ne change plus ; seule la sonde PA3 change. Nouvelle époque de relecture : une seule relecture de clôture suit.
 
 **Prérequis.** E20.e0a3a ✅ (voie de P-A : (i) restreinte à `Current = Target` ; `Alundra.Tests` 4 815).
 
@@ -3651,8 +3659,14 @@ pour l'auteur (Q-A1) ce que ferait la même règle sur les apparitions par enreg
 - marqueur `JoinsBirthTick` du proxy (interne, non cloné), posé **seulement** par `SpawnEntityBySpriteIndex`, **juste avant son
   `return`, après `PushLogicalPositionToRoot`** : la création ne lit donc jamais le champ par le repli (le seul relèvement de la création
   reste celui du noyau, comme `0x80039EF0` ; pas de second relèvement par les coins de la boîte du `CollisionComponent`) ;
-- `CurrentAnimationId = TargetAnimationId` et `CurrentDirection = TargetDirection` posés dans `CreateEntityFromSpriteIndex` seulement,
-  après `ApplyHeaderInitialization` (jamais dans le noyau partagé), sans toucher `AnimationDirection` ni le sprite ;
+- **D-E0A-8 (révision 3)** — dans `CreateEntityFromSpriteIndex` seulement, après `ApplyHeaderInitialization` (jamais dans le noyau
+  partagé) : `AnimFlags = AnimSetsByAnim[TargetAnimationId].Acceleration` (0 si l'animation n'est pas dans le jeu), la valeur que la
+  première bascule du binaire charge à la création et que `SyncAnimation` rechargera à l'identique à sa validation ;
+  `CurrentAnimationId`, `CurrentDirection`, `AnimationDirection` et `SpawnAnimationActive` restent ceux que laisse le noyau (bascule
+  en attente dans les quatre directions) ;
+- **D-E0A-8, suite** — `AlundraScriptedMotion.TickScriptedNpc` prend la clé du jeu d'animations sur `TargetAnimationId` quand
+  l'entité porte `JoinsBirthTick` et que `CurrentAnimationId` vaut encore la valeur d'une animation non validée (celle que laisse le
+  noyau, ~0), sur `CurrentAnimationId` sinon (une seule ligne, gardée par le marqueur ; aucune entité par enregistrement ne la voit) ;
 - `CollectTickEntities` retient `TookPartInFrame || (JoinsBirthTick && Owner.World == null)` ; le monde compte les apparitions par
   l'interface du tick (compteur remis à zéro en tête de tick) ; si ce compteur est non nul juste après l'appel de `MovePlayerOnTickPad`,
   `CollectTickEntities` est relancé, ce qui ajoute le nouveau-né aux entités du tick dans l'ordre des cases ;
@@ -3665,26 +3679,30 @@ pour l'auteur (Q-A1) ce que ferait la même règle sur les apparitions par enreg
 
 **Périmètre.** `AlundraEntityScriptProxy.cs` (marqueur, repli des lectures), `AlundraEntitySpawnFactory.cs` (`CreateEntityFromSpriteIndex`
 seulement), `AlundraWorldProxy.cs` (collecte, rassemblement, `CollisionField`, marqueur dans `SpawnEntityBySpriteIndex`),
-`IAlundraScriptHost.cs`, `AlundraPlayerManager.cs` (point d'accroche), `AlundraPlayerAnimationEffects.cs` et `AlundraScriptedMotion.cs`
-**seulement** pour la lecture du champ de collision (aucune autre ligne) ; tests ; ADR-0065 ; plan.
+`IAlundraScriptHost.cs`, `AlundraPlayerManager.cs` (point d'accroche), `AlundraPlayerAnimationEffects.cs` **seulement** pour la lecture du champ de collision,
+`AlundraScriptedMotion.cs` **seulement** pour la lecture du champ de collision et la ligne de D-E0A-8 dans `TickScriptedNpc` ; tests ; ADR-0065 ; plan.
 
-**Tests existants que la décision change** (les seuls autorisés à changer ; leur nouvelle attente est justifiée par la décision
-`Current = Target`, par P-A et par l'annexe `e20-armes/e0-spawn.md`, point 4) :
-- `AlundraBirthTickProbePaTests.PA3_TheGenericKinematicsOfTheBirthTick_WithCurrentAsTheInterfaceLeavesIt` (e0a3a) : l'interface laisse
-  maintenant `Current = Target` ; la mesure devient X = **153, 159, 165** (celle de PA3b) et son nom ou son commentaire dit qu'il
-  mesure l'état laissé par l'interface **après** e0a3b ; la mesure historique (~0, X = 150 ×3) reste écrite dans « Résultat de P-A » ;
-- `AlundraSpawnBySpriteIndexInterfaceTests.H_…DifferOnlyByTheClosedList` (e0a1) : `CurrentAnimationId` et `CurrentDirection` sont
-  ajoutés à la liste fermée des champs qui diffèrent entre l'apparition par enregistrement (inchangée) et celle par l'interface ; les
-  deux égalités qui les comparaient sont retirées au profit d'une assertion que l'entité de l'interface a `Current = Target`.
-T0 (3) recense par recherche tout autre test qui compare `CurrentAnimationId` ou `CurrentDirection` d'une entité née par l'interface ; un
-test trouvé qui n'est pas dans cette liste est un arrêt (révision de la tranche).
+**Test existant que la décision change** (le seul autorisé à changer, révision 3 ; sa nouvelle attente est justifiée par D-E0A-8, par
+P-A et par l'annexe `e20-armes/e0-spawn.md`, point 4) :
+- `AlundraBirthTickProbePaTests.PA3_TheGenericKinematicsOfTheBirthTick_WithCurrentAsTheInterfaceLeavesIt` (e0a3a) : l'entité de
+  l'interface porte maintenant le marqueur, la cinématique lit la cible ; la mesure devient X = **153, 159, 165** et son nom ou son
+  commentaire dit qu'il mesure l'état **après** e0a3b ; la mesure historique (~0, X = 150 ×3) reste écrite dans « Résultat de P-A ».
+`AlundraSpawnBySpriteIndexInterfaceTests` (dont H) ne change pas. T0 (3) recense par recherche tout test qui compare `CurrentAnimationId`,
+`CurrentDirection` ou `AnimFlags` d'une entité née par l'interface ; un test trouvé autre que PA3 est un arrêt (révision de la tranche).
 
 **Hors périmètre.** Le branchement du tir ; l'extension aux apparitions par enregistrement (e0a4) ; l'intégration immédiate (D-E20-35) ;
 `PublishEntityFrame` (la première publication reste celle de l'image suivante) ; les lignes `BT-L1`, `BT-L3` (butin à la mort, e0b et e0c).
 
 ##### Tâches
 
-- ⚠️ **T0 — Vérifications avant le code** (ARRÊT du 2026-10-15 : écart sur une entité de l'interface, voir « Résultat de T0 ») (versées dans le plan, sans commit de code) : (1) `AnimFlags` à la création : ce que le binaire
+- ⏳ **T0′ — Vérifications de la révision 3, avant le code** (sonde jetable, résultats versés dans le plan) : pour le n° 3 né par
+  l'interface dans `MovePlayer`, dans les **quatre** directions (`0x00`, `0x08`, `0x10`, `0x18`), avec `AnimFlags` posé à la création et
+  la clé de la cinématique gardée par le marqueur (posés à la main dans la sonde) : `AnimFlags` égal à la valeur du jeu d'animations dès
+  le tick de naissance ; à la fin de la première image, la validation de `SyncAnimation` a lieu (bascule en attente), recharge la même
+  valeur et fait tomber `SpawnAnimationActive` ; aucune impulsion ni son ajouté ou perdu par rapport à aujourd'hui ; X = 153 puis 159
+  en direction `0x18` ; et le recensement de T0 (3). Toute autre issue est un arrêt, comme pour T0.
+- ⚠️ **T0 — Vérifications avant le code** (ARRÊT du 2026-10-15 : écart sur une entité de l'interface, voir « Résultat de T0 » ;
+  décision de la révision 3 ; T0′ ci-dessus la remplace) (versées dans le plan, sans commit de code) : (1) `AnimFlags` à la création : ce que le binaire
   pose à la première bascule de la création (`0x80038AB4`, annexe d'e0a1) et ce que lit la passe d'animation du tick de naissance ;
   (2) l'effet de `Current = Target` sur `SpawnAnimationActive`, sur l'horloge `AnimationSwitchTicksReserved` et sur le son et l'impulsion
   de la première animation, pour une entité née dans `MovePlayer` (mesure par un test de sonde) ; (3) les tests d'e0a1 qui ne comparent pas
@@ -3702,7 +3720,8 @@ test trouvé qui n'est pas dans cette liste est un arrêt (révision de la tranc
   dans une image à deux ticks : recyclée en tête du tick suivant, case rendue, aucune exception à l'intégration par le moteur ; (e) son de
   création demandé une seule fois ; (f) repli du champ de collision : employé par une entité marquée avant intégration, jamais par une
   entité par enregistrement, et **jamais pendant la création** (un champ espion compte zéro lecture entre l'appel et le retour de
-  `SpawnEntityBySpriteIndex`) ; `AlundraSpawnBySpriteIndexInterfaceTests` passe, modifié seulement dans le test H nommé ci-dessus.
+  `SpawnEntityBySpriteIndex`) ; `AlundraSpawnBySpriteIndexInterfaceTests` passe sans modification ; (g) les quatre directions de T0′
+  épinglées (`AnimFlags` dès la naissance, validation de la première image, `SpawnAnimationActive` qui tombe).
 - ⏳ **T2 — Code** (les décisions ci-dessus). Suites complètes : aucune épingle des apparitions par enregistrement ne bouge
   (`AlundraTickStructureTests`, `AlundraVisionArcTests`, `AlundraShipBlockArcTests`, `AlundraAbsoluteZWritesTests`,
   `AlundraControllerlessVerticalStepTests`, `AlundraAnimationImpulseSpawnTests`, et toute la suite).
@@ -3756,8 +3775,8 @@ directions (états identiques à l'image 1 avec et sans `Current = Target` hors 
 
 ##### Acceptation
 
-- T1 vert ; `Alundra.Tests` en Release et en Debug : 4 815 plus les nouveaux, aucun échec, **aucun test existant modifié hors des deux
-  nommés** (PA3 de `AlundraBirthTickProbePaTests`, H de `AlundraSpawnBySpriteIndexInterfaceTests`, avec leur nouvelle attente) ; les six
+- T1 vert ; `Alundra.Tests` en Release et en Debug : 4 815 plus les nouveaux, aucun échec, **aucun test existant modifié hors de PA3**
+  de `AlundraBirthTickProbePaTests` (nouvelle attente 153, 159, 165) ; les six
   épingles nommées intactes ; aucun appelant de production de `SpawnEntityBySpriteIndex` (le tick de naissance n'a donc aucun effet en
   jeu tant qu'E20.f3 ou E20.h3 ne branchent rien) ; **après la remise en état de P-B**, `cmp` de `alundra-project/Alundra.dll` avec le
   build Debug du HEAD commité (si la DLL du projet est verrouillée par le Launcher de l'auteur, les builds se font avec la copie
@@ -3790,7 +3809,7 @@ par e0a3b). Chaque épingle qui bouge est re-dérivée de l'oracle (une appariti
 | O-E0A-1 | « A deux fois » : une apparition en boucle 2 sur une case dont le déclencheur vaut 0 fait tourner A dans la passe puis au tick suivant ; la DLL n'a que le tick suivant | e0b, e0c ou E14, si un gestionnaire A en dépend |
 | O-E0A-2 | Lecteur de `+0x08` : aucun trouvé dans la décompilation ; recherche dans le binaire à faire si E20.g ou E14 en montre un | E20.g, E14 |
 | O-E0A-3 | Coût de `LoadCopy` à chaque apparition (une lecture de disque) | mesure avant E20.f3 |
-| O-E0A-4 | `Current = Target` à la création (voie (i) de P-A) laisse une entité tirée vers le bas (direction 0) sans bascule en attente : `AnimFlags` reste 0 et `SpawnAnimationActive` reste vrai (T0 d'e0a3b, « Résultat de T0 ») | session principale, révision d'e0a3b |
+| O-E0A-4 | **Tranché le 2026-10-15 (révision 3 d'e0a3b, D-E0A-8)** : plus de `Current = Target` à la création ; `AnimFlags` chargé à la création ; la cinématique lit la cible pour une entité marquée non validée | — |
 
 ## 2. Points ouverts
 
