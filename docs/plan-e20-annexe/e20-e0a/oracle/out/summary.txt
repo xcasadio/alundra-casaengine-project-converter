@@ -17,10 +17,12 @@ PASS V5 slots: five spawns: slots [1, 2, 3, 4, 5], slot count word 5
 PASS V5 status 4 stays busy: a slot of status 4 is busy until the slot pass (spawn went to 6), then free with +0x48 = -1 and its index word restored (2); next spawn takes slot 2
 PASS V5 cap 63: from an empty table 63 apparitions are accepted (slots 1 to 63, the hero makes 64 live), the 64th and the 65th return 0 with one message each (['0x80039b10', '0x80039b10']), serial, slot count word and generator unchanged
 PASS V5 lowest first: after freeing 40, 9, 21: next three spawns went to [9, 21, 40]
+PASS V5 invalid index with a full table: table full (the hero + 63), a null entry of the global page (18): return 0, only the message of the page lookup (['0x80039bb8'], "Race" 0x800239CC), never the message of the full table (0x800239B0); serial, slot count word and generator unchanged
+PASS V5 loop 2 in a recycled slot: slots 2 and 4 dead since the tick before, freed by the slot pass of the tick; an apparition in loop 2 takes slot 2 (state 1 after the events pass), the next ones go to 4 then 6
 PASS V5 dirty slot: a dirty free slot (+0x44, +0x48, +0x3C, +0x40 leftovers): the creation writes +0x44 = 0 and +0x48 = -1 ; loot words [0, 0]
 PASS V4 probes: 13 invalid indices (null entry, 256, 300, -1, 0x80000000, not valid on this map): return 0, exactly one message at 0x80039BB8, serial, slot count word and generator unchanged
 PASS coverage: every instruction of SpawnWarpEntity, the page lookup and FindFreeEntitySlot is executed, and of InitializeEntity all but the 3 of the registered-record half (0x80039D74-0x80039D7C, unreachable with a3 = 0) (coverage.txt)
 PASS second interpreter: emu.py and the independent mips.py: 159 calls, identical return slot, image hash and generator word: True
 PASS uninitialised reads: 0 reads of bytes nobody wrote during the sweep
 ALL PASS
-vector signature 7893a0f221d3c24772140d166bd79bd4d787dfba
+vector signature c88a3e9041fed6dbccb88f5e168e7fd989c5db4c

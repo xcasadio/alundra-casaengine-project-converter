@@ -201,11 +201,67 @@ def slot_table(make):
     r['full'] = {'accepted': len(accepted), 'slots_first_last': [accepted[0], accepted[-1]], 'live_slots_with_the_hero': live, 'refused_64th': q64, 'refused_65th': q65,
                  'prints_of_the_two_refusals': [[a, b] for a, b in w.printed[n_p:]], 'serial_moved_by_refusals': int(m.peek(E.SERIAL) != serial0), 'count_word': m.peeks(E.SLOTCOUNT),
                  'count_moved_by_refusals': int(m.peeks(E.SLOTCOUNT) != count0), 'rng_moved_by_refusals': int(m.peek(E.RNG) != rng0)}
+    # E20.e0a2 T1 (line 1): an invalid index with the table full: the page lookup refuses first, only its own message ("Race", 0x800239CC at 0x80039BB8), never the message of the full table (0x800239B0)
+    null_index = [i for i in range(256) if i not in w.rec_g][0]
+    n_p, serial0, count0, rng0 = len(w.printed), m.peek(E.SERIAL), m.peeks(E.SLOTCOUNT), m.peek(E.RNG)
+    qi = w.spawn(HERO, 0, null_index, 150, 100, 0, 0x10)
+    r['invalid_full'] = {'ret': E.slot_of(qi) if qi else 0, 'index': null_index, 'prints': [[a, b] for a, b in w.printed[n_p:]], 'serial_moved': int(m.peek(E.SERIAL) != serial0),
+                         'count_moved': int(m.peeks(E.SLOTCOUNT) != count0), 'rng_moved': int(m.peek(E.RNG) != rng0)}
     for s in (40, 9, 21):
         m.poke(E.ent(s) + 0x10, 4)
     m.call(0x80038634)
     r['lowest_first'] = [E.slot_of(w.spawn(HERO, 0, 3, 150, 100, 0, 0x10)) for _ in range(3)]
+    r['recycled_loop2'] = recycled_loop2(make(0))
     return r
+
+
+CTAB = 0x800C4F34
+FAKE_C = 0x8008FF00
+A0_HANDLER = 0x8006174C
+
+
+def recycled_loop2(w):
+    """E20.e0a2 T1 (line 2): an apparition made in loop 2 of the events pass (the C handler of a status-2 entity, as in the E20.e0a probe P3) takes a slot that the slot pass of the SAME tick has just recycled: five entities in the slots 1 to 5,
+    the slots 2 and 4 dead (status 4) since the tick before, the slot pass frees both, the spawner (slot 5) spawns in loop 2 -> slot 2; a second apparition after the pass takes slot 4, a third slot 6"""
+    m = w.m
+    m.hooks[0x80031B50] = lambda mm: None            # MovePlayer: nothing
+    m.hooks[A0_HANDLER] = lambda mm: mm.r.__setitem__(2, 0)
+    ps = [w.spawn(HERO, 0, 3, 150, 100, 0, 0x10) for _ in range(5)]
+    spawner = ps[4]
+    m.poke(spawner + 0x10, 2)                        # status 2, C code 200
+    m.poke(spawner + 0x78, 200)
+    m.poke(spawner + 0x80, 0)
+    m.poke(spawner + 0x6C, 0)
+    m.poke(CTAB + 4 * 200, FAKE_C)
+    box = {}
+
+    def handler(mm):
+        if (mm.r[4] & M32) == spawner and 'p' not in box:
+            sp = (mm.r[29] - 0x800) & ~7
+            mm.poke(sp + 0x10, 100 << 16)
+            mm.poke(sp + 0x14, 40 << 16)
+            mm.poke(sp + 0x18, 0x10)
+            box['p'] = lib_side_call(mm, sp)
+        mm.r[2] = 0
+    m.hooks[FAKE_C] = handler
+    for dead in (ps[1], ps[3]):
+        m.poke(dead + 0x10, 4)
+    out = {'slots_before': [E.slot_of(p) for p in ps], 'dead_before': [2, 4]}
+    m.call(0x80038634, limit=5_000_000)
+    out['status_after_slot_pass'] = [m.peek(p + 0x10) for p in ps]
+    out['serial_before'] = m.peek(E.SERIAL)
+    m.call(0x800386D0, limit=5_000_000)
+    p = box.get('p')
+    out['spawned_in_loop2_slot'] = E.slot_of(p) if p else 0
+    out['status_of_spawned_after_events'] = m.peek(p + 0x10) if p else None
+    out['second_after_pass'] = E.slot_of(w.spawn(HERO, 0, 3, 150, 100, 0, 0x10))
+    out['third_after_pass'] = E.slot_of(w.spawn(HERO, 0, 3, 150, 100, 0, 0x10))
+    return out
+
+
+def lib_side_call(mm, sp):
+    import c1world as C
+    return C.side_call(mm, 0x80039F58, (HERO, 0, 3, 190 << 16), sp)
 
 
 def dirty_slot(w):
@@ -471,6 +527,13 @@ def main():
           and not f5['serial_moved_by_refusals'] and not f5['count_moved_by_refusals'] and not f5['rng_moved_by_refusals'],
           'from an empty table %d apparitions are accepted (slots %d to %d, the hero makes 64 live), the 64th and the 65th return 0 with one message each (%s), serial, slot count word and generator unchanged' % (f5['accepted'], f5['slots_first_last'][0], f5['slots_first_last'][1], [hex(x[0]) for x in f5['prints_of_the_two_refusals']]))
     check('V5 lowest first', t5['lowest_first'] == [9, 21, 40], 'after freeing 40, 9, 21: next three spawns went to %s' % t5['lowest_first'])
+    inv = t5['invalid_full']
+    check('V5 invalid index with a full table', inv['ret'] == 0 and inv['prints'] == [[0x80039BB8, 0x800239CC]] and not inv['serial_moved'] and not inv['count_moved'] and not inv['rng_moved'],
+          'table full (the hero + 63), a null entry of the global page (%d): return 0, only the message of the page lookup (%s, "Race" 0x800239CC), never the message of the full table (0x800239B0); serial, slot count word and generator unchanged' % (inv['index'], [hex(x[0]) for x in inv['prints']]))
+    l2 = t5['recycled_loop2']
+    check('V5 loop 2 in a recycled slot', l2['slots_before'] == [1, 2, 3, 4, 5] and l2['status_after_slot_pass'][1] == 0 and l2['status_after_slot_pass'][3] == 0 and l2['spawned_in_loop2_slot'] == 2
+          and l2['status_of_spawned_after_events'] == 1 and l2['second_after_pass'] == 4 and l2['third_after_pass'] == 6,
+          'slots 2 and 4 dead since the tick before, freed by the slot pass of the tick; an apparition in loop 2 takes slot %d (state %s after the events pass), the next ones go to %d then %d' % (l2['spawned_in_loop2_slot'], l2['status_of_spawned_after_events'], l2['second_after_pass'], l2['third_after_pass']))
     dv = r['v5dirty']
     check('V5 dirty slot', dv['p']['ref'] == -1 and dv['p']['rec44'] == 0 and dv['ret'] == 1, 'a dirty free slot (+0x44, +0x48, +0x3C, +0x40 leftovers): the creation writes +0x44 = %d and +0x48 = %d ; loot words %s' % (dv['p']['rec44'], dv['p']['ref'], dv['p']['loot']))
     pr = r['probes']

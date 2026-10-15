@@ -331,11 +331,49 @@
     63
    ]
   },
+  "invalid_full": {
+   "count_moved": 0,
+   "index": 18,
+   "prints": [
+    [
+     2147720120,
+     2147629516
+    ]
+   ],
+   "ret": 0,
+   "rng_moved": 0,
+   "serial_moved": 0
+  },
   "lowest_first": [
    9,
    21,
    40
   ],
+  "recycled_loop2": {
+   "dead_before": [
+    2,
+    4
+   ],
+   "second_after_pass": 4,
+   "serial_before": 6,
+   "slots_before": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "spawned_in_loop2_slot": 2,
+   "status_after_slot_pass": [
+    1,
+    0,
+    1,
+    0,
+    2
+   ],
+   "status_of_spawned_after_events": 1,
+   "third_after_pass": 6
+  },
   "reuse_after_pass": {
    "previous_serial": 7,
    "serial": 8,
