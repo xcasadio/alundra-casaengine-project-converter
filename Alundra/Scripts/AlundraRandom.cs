@@ -20,16 +20,48 @@ namespace Alundra.Scripts;
 /// </summary>
 public static class AlundraRandom
 {
-    public static ulong RandomSeed = 0xB017C93D;
+    /// <summary>The value of the word in the image of the executable (<c>0x80098708</c>, octet <c>0x78F08</c> of the file), the one <see cref="Reset"/> restores.</summary>
+    internal const ulong InitialSeed = 0xB017C93D;
+
+    private static ulong _seed = InitialSeed;
+
+    /// <summary>
+    /// The state of the stream (64 bits, only the low 32 count). A property since E20.e0b1 (D-E0B-7, source-compatible: nothing passes it by <c>ref</c> or reflects on it) so that the
+    /// measuring sink (<see cref="AlundraRandomShadow"/>) sees the assignments and the reads; <see cref="Next"/> works on the private field alone.
+    /// </summary>
+    public static ulong RandomSeed
+    {
+        get
+        {
+            AlundraRandomShadow.OnSeedRead(_seed);
+            return _seed;
+        }
+        set
+        {
+            _seed = value;
+            AlundraRandomShadow.OnEpoch(value);
+        }
+    }
 
     public static void Reset()
     {
-        RandomSeed = 0xB017C93D;
+        _seed = InitialSeed;
+        AlundraRandomShadow.OnEpoch(InitialSeed);
     }
 
     public static ulong Next()
     {
-        RandomSeed = RandomSeed * 0x7d2b89dd + 0xe06a02e7;
-        return (uint)RandomSeed;
+        _seed = _seed * 0x7d2b89dd + 0xe06a02e7;
+        AlundraRandomShadow.OnDraw(_seed);
+        return (uint)_seed;
+    }
+
+    /// <summary>
+    /// E20.e0b1: the advance of the binary's frame function (<c>0x8002BD0C-0x8002BD34</c>), one step of the stream per logic tick, result never read. Phase A of the slice: it only feeds the virtual
+    /// word of the measuring sink and leaves the real state alone (a no-op while the sink is inactive).
+    /// </summary>
+    public static void AdvanceFrame()
+    {
+        AlundraRandomShadow.OnVirtualAdvance();
     }
 }

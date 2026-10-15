@@ -222,8 +222,10 @@ public sealed class AlundraEffectStage
     /// <summary>
     /// One rendered frame of <paramref name="ticks"/> logic ticks: at each tick the operations marked with it are applied, then the reservoir is updated unless that tick is frozen
     /// (<paramref name="frozenOfTick"/>: <c>PlayerControlFlags &amp; 0x48</c> read after the map events of the tick); the operations left are applied at the end, and the queue is empty.
+    /// E20.e0b1 (D-E0B-1): <paramref name="afterTick"/>, when given, is called once per tick AFTER the update of the reservoir, whether the tick is frozen or not (the binary's advance of the generator ends
+    /// its frame function); never called for 0 ticks. Null by default: a direct call of the stage advances nothing.
     /// </summary>
-    public void RunFrame(int ticks, IReadOnlyList<bool> frozenOfTick)
+    public void RunFrame(int ticks, IReadOnlyList<bool> frozenOfTick, Action? afterTick = null)
     {
         var pending = _queue.OrderBy(o => o.Tick).ThenBy(o => o.Rank).ThenBy(o => o.Sequence).ToList();
         _queue.Clear();
@@ -237,6 +239,7 @@ public sealed class AlundraEffectStage
             }
 
             _reservoir.Tick(tick < frozenOfTick.Count && frozenOfTick[tick], tick);
+            afterTick?.Invoke();
         }
 
         while (next < pending.Count)

@@ -2622,7 +2622,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // (the binary: map events, entities, effects, then the draw, 0x8002E058). Its own loop: the map-events loop above stops early without a hero or on a blocked tick. No tick during a
         // warp departure (the transition loop never calls the tick), like the backdrops (E19.m4, ADR-0034); a tick frozen by PlayerControlFlags & 0x48 updates nothing but keeps its slots.
         // The operations queued by the scripts are applied in it, tick by tick (and at the end of the frame, whatever the ticks).
-        _effectStage.RunFrame(AlundraWarpDirector.Instance.IsTransitionInProgress ? 0 : ticksThisFrame, _effectFrozenOfTick);
+        // E20.e0b1 (D-E0B-1, D-E0B-2): the binary's frame function ends with one step of the shared random stream (0x8002BD0C-0x8002BD34): the callback is called once per tick, after the update of the
+        // reservoir, frozen tick or not, and not at all during a warp departure (0 tick).
+        _effectStage.RunFrame(AlundraWarpDirector.Instance.IsTransitionInProgress ? 0 : ticksThisFrame, _effectFrozenOfTick, AdvanceRandomPerTick);
 
         // E5.a: resolve the camera once, then run the scripted follow BEFORE the debug pan - see
         // UpdateCameraFollow's own doc on why this order lets the pan's base-adoption mechanism pick up
@@ -2962,6 +2964,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     private void RunActiveEffectsPass()
     {
     }
+
+    /// <summary>E20.e0b1: the per-tick advance of the shared random stream, a static delegate (no allocation per tick) handed to <see cref="AlundraEffectStage.RunFrame"/>.</summary>
+    private static readonly Action AdvanceRandomPerTick = AlundraRandom.AdvanceFrame;
 
     /// <summary>The list of the hit pass (<c>0x800384F4</c>, <c>0x80127B28</c>), rebuilt at the lists step of each tick.</summary>
     private readonly List<AlundraEntityScriptProxy> _hitList = new();
