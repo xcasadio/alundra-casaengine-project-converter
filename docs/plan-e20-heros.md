@@ -593,6 +593,8 @@ C61 et E10). f3a et f3b n'ont besoin ni d'E20.e0k ni d'E20.e0b2 ; f3c a besoin d
 et `IsOnGround` positionnel des entités nées par l'interface sans gravité : sans elle, la vague perd l'unité brute qui la tient
 au-dessus du sol et meurt en 2 ticks au lieu de 26). Ligne 5 du tableau mise à jour ; ordre : f3a et f3b avant E20.e0k (E20.e0b2 est
 en pause), f3c après E20.e0k. Choix de la session principale en mode AUTO, réversible, signalé à l'auteur.
+Relecture de la révision 7 : **REVISE**, un point corrigé (FIX) : f3b lit l'oracle que seul le T0 d'E20.f3a (commit de l'oracle commun `docs/plan-e20-annexe/e20-f3/oracle/` : `hitfx_table` en JSON avec ses clés, `hitfx_mut`, sonde de la flamme) produit ;
+f3b exige donc ce T0 (pas les phases de code d'f3a). Une seconde relecture suit.
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -645,7 +647,7 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 | 2 | E20.e0a (§1.16 : e0a1, e0a2, e0a3 ✅ ; e0a4 décidée le 2026-10-15, après E20.e0b2, ne bloque rien) | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
 | 3 | E20.e0b (§1.17 : e0b1, puis e0b2) | e0b1 : générateur avancé une fois par tick (`0x8002BD0C`-`0x8002BD34`) ; e0b2 : tirage du butin à la création (écrit le contenu, rien ne tombe) | E20.e0a1, E20.e0a2 (§1.16) ; e0b1 avant e0b2 (ordre) |
 | 4 | E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a1 (§1.16) |
-| 5 | E20.f3 (§1.19 : f3a, f3b, f3c) | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | f3a : E20.f1 ✅, E20.e0a1 à E20.e0a3 ✅ ; f3b : E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅ ; f3c : f3a, E20.e0b1 ✅ et la règle du Z logique d'E20.e0k (D-F3-8) ; f3a et f3b peuvent passer avant E20.e0k |
+| 5 | E20.f3 (§1.19 : f3a, f3b, f3c) | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | f3a : E20.f1 ✅, E20.e0a1 à E20.e0a3 ✅ ; f3b : le T0 d'E20.f3a (oracle commun), E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅ ; f3c : f3a, E20.e0b1 ✅ et la règle du Z logique d'E20.e0k (D-F3-8) ; f3a et f3b peuvent passer avant E20.e0k |
 | 6 | E20.f4 | Flèche chargée : C94, E1 avec l'effet 8 (l'effet de bris vient d'E14.a1b, D-E20-26) | E20.f3, E20.e0k, E14.a1b ✅ |
 | 7 | E20.f5 | Flèches : E17 (D-E20-25) | E20.f3, E20.e0k |
 | 8 | E20.f6 | Boules de feu et de glace : C60, E9 (D-E20-25) ; vigilance sur les trois enregistrements `0x0C` de la carte 309, qui prendront vie | E20.f3, E20.e0b1 (§1.17), E20.e0k |
@@ -4318,10 +4320,10 @@ Découverte en lecture seule du 2026-10-15, au HEAD `0f5b484` : trois relevés (
 | Sous-tranche | Contenu | Prérequis |
 |---|---|---|
 | E20.f3a | Direction du tir par `BoxDirection` ; couture de branchement (ensemble de types câblés, vide) ; invariant « jamais avant son gestionnaire E ». Aucun type n'est activé. | E20.f1 ✅, E20.e0a1 à E20.e0a3 ✅ |
-| E20.f3b | Effets de coup 4 et 5 (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅ |
+| E20.f3b | Effets de coup 4 et 5 (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | le T0 d'E20.f3a (oracle commun), E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅ |
 | E20.f3c | Vague : C61 (coupe d'herbe en bouchon nommé), E10, activation des types 27 à 29 | E20.f3a, E20.e0a1 à E20.e0a3 ✅, E20.e0b1 ✅, **la règle « Z logique » d'E20.e0k** (§1.18) ou son repli (Q-F3-1) |
 
-Ordre : f3a, f3b, f3c. f3a et f3b ne dépendent pas l'une de l'autre. f3b est indépendante de la vague parce qu'aucun projectile de f3 ne porte un nibble 6, 7, 9 ou 10 ; elle change pourtant des chemins du jeu existant (voir les faits).
+Ordre : f3a, f3b, f3c. f3b dépend seulement du T0 d'f3a (l'oracle commun), pas de ses phases de code. f3b est indépendante de la vague parce qu'aucun projectile de f3 ne porte un nibble 6, 7, 9 ou 10 ; elle change pourtant des chemins du jeu existant (voir les faits).
 
 **Faits porteurs.** Étiquettes : [binaire] décodé sur `ALUN_CD.EXE` (France) ; [oracle] exécuté dans la machine MIPS de f-projectiles (`pworld.py`) ; [DLL] lu dans le code au HEAD `0f5b484` (numéros de ligne à relire à l'exécution : E20.e0b2, en pause, touche aussi `AlundraWorldProxy.cs`) ; [données] export et cartes extraites ; [critique] établi ou corrigé par la critique.
 - [binaire] **Le tir.** Un seul site d'apparition d'arme, `0x8002F818`, dans `UpdateWeaponStepProgression` (`0x8002F768`, appelée par `MovePlayer` en `0x80031D70`, avant l'aiguillage d'état). L'image compte 102 `jal 0x80039F58` ; les autres sites du voisinage du héros sont le butin (`0x80032BEC`, `0x80032CD8`) et l'usage des objets (E20.h). Arguments : propriétaire = le héros, table 0, type = `ptr[1]`, X et Y = ceux du héros (aucun décalage), Z = `+0x11C` du héros + `ptr[3] << 16`, direction = `[0x80023644 + 4 × (+0x98)]` (`{0, 0x10, 8, 0x18}` : bas, haut, gauche, droite). Le retour est ignoré : le pointeur d'arme est effacé même si la table de cases est pleine (tir perdu en silence). Le pointeur est armé par `PlayerTryAttack` ; `S = tick d'armement + délai + 1`. Rien ne compte les projectiles vivants : deux flèches vivent ensemble (oracle `multishot`).
@@ -4379,6 +4381,10 @@ sous la vague, demanderait d'avancer E20.e0c et E20.e en entier.
 
 #### 1.19.1 E20.f3a — Direction du tir et couture de branchement (aucun type activé) ⏳
 
+**Révision 1 (2026-10-15).** Relecture : **REVISE**, un point corrigé (FIX) : (s1) attendait la case 1, que les entités chargées de la
+carte 14 occupent ; il attend la plus basse case libre mesurée avant le tir. Repris en même temps : la sonde de la flamme (recette de
+f3b) est une sortie nommée du T0, et f3b exige ce T0 (relecture de l'enveloppe et de f3b).
+
 **Prérequis.** E20.f1 ✅ (§1.9), E20.e0a1 à E20.e0a3 ✅ (§1.16).
 
 **But.** Corriger le P3 d'E20.f1a (la direction du tir) et poser la couture qui appelle l'interface pour les types câblés, sans en câbler aucun.
@@ -4393,9 +4399,13 @@ sous la vague, demanderait d'avancer E20.e0c et E20.e en entier.
 
 ##### Tâches
 
-- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code), pour les trois sous-tranches. `docs/plan-e20-annexe/e20-f3/oracle/` : les outils de la machine copiés octet pour octet avec leurs sommes de contrôle ; les scripts `wave_run`, `summary`, `wave_hit`, `wave_only`, `wave_z`, `wave_mut`, `wave_grass`/`2`/`3`, `hitfx`, `hitfx_mut`, `multishot`, `dirtest`, `dir_extra`, `arena_probe`, `twoint` ; sorties en texte **et** en JSON, avec les clés des lignes de l'oracle (`slots[1].status`, `.cnt1c`, `.reset_AC`, `.px`, `.py`, `.pz`, `.fx`, `.fy`, `.fz`, `.adj_13C`, `.ground_144`, `.hbx`, `.hby`, `.hbz`, `.bw`, `.bd`, `.bh`, `.atk_attr`, `.atk_pow`, `.type68`, `.flags6C`, `.loot3c`, `.c1d0`, `.touch_slot`, `.box1d4` ; pour `hitfx_table` : `attr`, `nib`, `resp`, `fx`, `sparks`, `c1d0`, `touch`, `hitc`, `rng_before`, `rng_after`). Deux exécutions donnent un manifeste identique. Au moins 12 mutants d'un mot, tous tués ou équivalents prouvés par écrit : W1 à W3, les 4 de `hitfx_mut`, et 5 de plus (table des directions `0x80023644` permutée, comparaison du délai de `0x8002F7C8` inversée, octet z de `ptr[3]` changé, pointeur non effacé après l'apparition, drapeau b1 ignoré). L'oracle accepte une position fractionnaire du héros (O-F3-2). README : les valeurs attendues, la prédiction **qualitative** (aucun test existant ne bouge en f3a ni en f3b ; en f3c : l'épingle du registre passe de 6 à 7, l'épingle d'arène reste à 2) et le compte de départ de la suite (4 852 après e0b1, à relever).
+- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code), pour les trois sous-tranches. `docs/plan-e20-annexe/e20-f3/oracle/` : les outils de la machine copiés octet pour octet avec leurs sommes de contrôle ; les scripts `wave_run`, `summary`, `wave_hit`, `wave_only`, `wave_z`, `wave_mut`, `wave_grass`/`2`/`3`, `hitfx`, `hitfx_mut`, `multishot`, `dirtest`, `dir_extra`, `arena_probe`, `twoint` ; sorties en texte **et** en JSON, avec les clés des lignes de l'oracle (`slots[1].status`, `.cnt1c`, `.reset_AC`, `.px`, `.py`, `.pz`, `.fx`, `.fy`, `.fz`, `.adj_13C`, `.ground_144`, `.hbx`, `.hby`, `.hbz`, `.bw`, `.bd`, `.bh`, `.atk_attr`, `.atk_pow`, `.type68`, `.flags6C`, `.loot3c`, `.c1d0`, `.touch_slot`, `.box1d4` ; pour `hitfx_table` : `attr`, `nib`, `resp`, `fx`, `sparks`, `c1d0`, `touch`, `hitc`, `rng_before`, `rng_after`). Deux exécutions donnent un manifeste identique. Au moins 12 mutants d'un mot, tous tués ou équivalents prouvés par écrit : W1 à W3, les 4 de `hitfx_mut`, et 5 de plus (table des directions `0x80023644` permutée, comparaison du délai de `0x8002F7C8` inversée, octet z de `ptr[3]` changé, pointeur non effacé après l'apparition, drapeau b1 ignoré). L'oracle accepte une position fractionnaire du héros (O-F3-2). **Sonde de la flamme** (pour la recette de f3b, O-F3-5) : la carte 14,
+  enregistrement 17 (sprite 238, case (14, 28)) attaque-t-il dans son animation 0, avec quel nibble, et le héros peut-il être à portée ;
+  sortie `flame_probe.json` ; un « non » ne bloque rien (la recette passe alors à une autre carte des 85). README : les valeurs attendues, la prédiction **qualitative** (aucun test existant ne bouge en f3a ni en f3b ; en f3c : l'épingle du registre passe de 6 à 7, l'épingle d'arène reste à 2) et le compte de départ de la suite (4 852 après e0b1, à relever).
 - ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile, puis le code). `AlundraWeaponSpawnSeamTests`, chaque cas « sans effet » accolé dans la même assertion à un cas positif :
-  - (s1) monde (`ArcRun`), arc du chasseur au sol : ensemble vide → compteur 1, journal 1 appel, **zéro** entité nouvelle ; ensemble de test {3} → exactement une entité de type 3, parent le héros, case 1, `JoinsBirthTick` ;
+  - (s1) monde (`ArcRun`), arc du chasseur au sol : ensemble vide → compteur 1, journal 1 appel, **zéro** entité nouvelle ; ensemble de test {3} → exactement une entité de type 3, parent le héros, à la **plus basse case libre mesurée avant le
+    tir** (sur la carte 14 les entités chargées tiennent les cases 1 à n ; même règle qu'`AlundraSpawnBySpriteIndexInterfaceTests`),
+    `JoinsBirthTick` ;
   - (s2) crochet posé et type dans l'ensemble → exactement **une** entité (celle du crochet) ; crochet nul → une entité (celle de la production) ;
   - (s3) hôte de montage → aucun appel, aucune exception, compteur et journal inchangés ; le même tir dans le monde → une entité ;
   - (s4) 63 cases occupées → rien n'est créé, `WeaponRecordPointer == 0`, pas d'exception ; une case libre → une entité ;
@@ -4424,7 +4434,11 @@ sous la vague, demanderait d'avancer E20.e0c et E20.e en entier.
 
 #### 1.19.2 E20.f3b — Effets de coup 4 et 5 ⏳
 
-**Prérequis.** E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅. Indépendante de f3a et de f3c. Touche `AlundraWorldProxy.cs` : à exécuter après E20.e0b2 ou à relire ses numéros de ligne.
+**Révision 1 (2026-10-15).** Relecture : **REVISE**, deux points corrigés (FIX) : (1) l'oracle que lisent (e1) et l'acceptation vient du T0
+d'f3a, devenu prérequis ; (2) (w2) et (w3) passaient déjà en phase A : chacun affirme maintenant l'emplacement d'effet de (w1) dans la
+même assertion, et l'arrêt « vert avant T3 » vise les trois.
+
+**Prérequis.** Le T0 d'E20.f3a (commit de l'oracle commun `docs/plan-e20-annexe/e20-f3/oracle/` : `hitfx_table` en JSON avec ses clés, `hitfx_mut`, sonde de la flamme), E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅. Indépendante des phases de code d'f3a et de f3c. Touche `AlundraWorldProxy.cs` : à exécuter après E20.e0b2 ou à relire ses numéros de ligne.
 
 **But.** La passe de coups attache l'effet 4 ou 5 à la cible, comme `0x800395E8-0x80039668`.
 
@@ -4444,8 +4458,11 @@ sous la vague, demanderait d'avancer E20.e0c et E20.e en entier.
   - (e3) la cible héros (fiche 0) : l'effet est demandé pour les nibbles 6, 7, 9, 10.
 - ⏳ **T2 — Tests du monde, écrits après T1, rouges avant T3.** `AlundraHitEffectWorldTests` (`HitArena`, carte 14) :
   - (w1) un attaquant dont `CurrentAttack` est posé à (attribut `0x06`, puissance 1) touche le héros : un emplacement du réservoir avec `TargetEffect == 4`, mode 1, ancre = le héros, `DepthOffset == 1`, créé au tick de la touche, libéré 40 ticks après ; attribut `0x07` → effet 5, libéré après 95 ticks ; la même arène avec un attribut 1 ne crée aucun emplacement (cas « sans effet » dans la même assertion) ;
-  - (w2) le mot du flux après la touche vaut celui d'une touche de nibble 1 (aucun tirage de l'effet), calculé par un pas local (D-F3-12) ;
-  - (w3) groupements de 1, 2 et 3 ticks par image : mêmes emplacements, même tick de création.
+  - (w2) **dans la même assertion que l'emplacement de (w1)** (effet 4 présent, mode 1, ancre = le héros, `DepthOffset == 1`) : le mot
+    du flux après la touche vaut celui d'une touche de nibble 1 (aucun tirage de l'effet), calculé par un pas local (D-F3-12) ;
+  - (w3) groupements de 1, 2 et 3 ticks par image : dans **chaque** groupement, l'emplacement de (w1) existe (effet 4, mode 1, ancre =
+    le héros, `DepthOffset == 1`), au même tick de création. (w1) à (w3) attendent chacun au moins un emplacement d'effet : la phase A
+    (le monde passe `null`) ne peut en passer aucun.
 - ⏳ **T3 — Phase B** (commit de code B) : le câblage ; commentaires périmés corrigés ; suite complète ; aucun test existant ne bouge.
 - ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants du code de la DLL, au moins 12, tous tués : masque `0xC0` → `0x80`, porte inversée, nibble 10 omis, 9 mappé sur 4, identifiants échangés, effet après le magasin, effet après les étincelles, effet pour une réponse immune, un seul effet par passe au lieu d'un par touche, `DepthOffset` 0, ancre = l'attaquant, rappel appelé deux fois.
 
@@ -4453,11 +4470,11 @@ sous la vague, demanderait d'avancer E20.e0c et E20.e en entier.
 
 - Pass : les 160 paires conformes à l'oracle ; (e2) et (e3) verts.
 - Monde : (w1) à (w3) verts, rouges avant T3 (nommés) ; compte de la suite plus les nouveaux, zéro échec en Release et en Debug ; **aucun test existant ne bouge** (les trois appels à trois arguments restent inchangés) ; `cmp` de la DLL ; cinq traces ; moteur, convertisseur et données sans diff.
-- Recette de l'auteur (non bloquante, à confirmer par une sonde de T0) : carte 14, la « flamme » de l'enregistrement 17 (sprite 238, case (14, 28)) ; si elle blesse le héros, l'effet 4 s'attache au héros pendant 40 ticks.
+- Recette de l'auteur (non bloquante, à confirmer par la sonde de la flamme du T0 d'f3a, `flame_probe.json`) : carte 14, la « flamme » de l'enregistrement 17 (sprite 238, case (14, 28)) ; si elle blesse le héros, l'effet 4 s'attache au héros pendant 40 ticks.
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : la phase A fait bouger un test ; (w1) vert avant T3 ; un test existant à réécrire ; un tirage de l'effet ; un test d'arc de la carte 14 qui bouge (la flamme touche un arc) : question à l'auteur ; une modification du moteur.
+- **Arrêts** : la phase A fait bouger un test ; (w1), (w2) ou (w3) vert avant T3 ; un test existant à réécrire ; un tirage de l'effet ; un test d'arc de la carte 14 qui bouge (la flamme touche un arc) : question à l'auteur ; une modification du moteur.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B se retire seule (le monde repasse `null`) ; la phase A reste inerte.
 
@@ -4502,7 +4519,7 @@ sous la vague, demanderait d'avancer E20.e0c et E20.e en entier.
 - ⏳ **T2 — Sonde de vie, rouge avant T3.** (v4) la vague par le crochet, pour les épées 27, 28, 29 × les quatre directions de l'oracle (acier ; démon est ; saint est), à **1, 2 et 3 ticks par image** : pour chaque tick de S à S+27, `Status`, `FrameCounter`, `ForceResetAnimationFlag`, `PosX/PosY`, `PosZ` (clé `pz` − 1), forces, `ForceAdjusted`, `IsOnGround` et la boîte égalent les clés du tableau. Zéro changement et changement dans la même assertion : la position et le sol constants avec le balayage de la boîte. Le tick de mort mesuré **avant** la règle est noté au README (prédit : S+1 à S+3). Si la sonde est verte sans la règle, D-F3-8 tombe : arrêt et rapport.
 - ⏳ **T3 — La règle du Z logique** (D-F3-8), si Q-F3-1 donne le repli B ; sinon T3 est « relire §1.18 » et la sonde de T2 sert d'acceptation d'e0k. Liste prédite des tests qui bougent : ceux qui lisent le Z d'une entité née par l'interface après sa première image (arbres de `AlundraBirthTickTests`) ; mesurée par la suite complète ; chacun réécrit par dérivation. T2 passe au vert aux trois groupements.
 - ⏳ **T4 — Phase B, câblage de production.** Tests écrits d'abord, **rouges avant T4**, crochet nul, dans `HitArena` et dans `ArcRun` (cartes 14, natifs allumés pour le second) :
-  - (p1) l'arène de la charge (relâchement à 91, S = 112) : une entité de type 27 fille du héros, aux clés du tableau, case 1 ; épées de démon et sainte : types 28 et 29, `atk_pow` 20 et 38 ;
+  - (p1) l'arène de la charge (relâchement à 91, S = 112) : une entité de type 27 fille du héros, aux clés du tableau, à la plus basse case libre mesurée avant le tir ; épées de démon et sainte : types 28 et 29, `atk_pow` 20 et 38 ;
   - (p2) la cible à +56, +68, +80 est touchée par la vague aux ticks S+5, S+7, S+9 (clé `wave_reach_sweep`) ; la cible à +44 l'est par le héros (cas positif et « la vague ne passe pas devant le héros » dans la même assertion) ;
   - (p3) la vague ne touche jamais le héros (`FrameCollisionTickCounter` du héros jamais posé par elle) dans la même exécution où la cible est touchée ;
   - (p4) l'épingle d'arène : 2 contacts avec E10 en ligne ; le mutant « E10 dans le registre » en donne 3 au tick 138 (clé `arena_probe`) ;
@@ -4534,7 +4551,7 @@ sous la vague, demanderait d'avancer E20.e0c et E20.e en entier.
 | O-F3-2 | X et Y du nouveau-né sont arrondis au pixel par la racine : écart sous le pixel, boîte de la vague à moins d'un pixel de celle du binaire ; à mesurer avec un héros à position fractionnaire (T2 de f3c) | sonde de T2 ; E20.e0k |
 | O-F3-3 | L'enregistrement A0 du Muruta devra devenir un ensemble de types partagé pour f4 à f6 | E20.f4 |
 | O-F3-4 | Les effets 4 et 5 sont créés en fin d'image : position de départ de fin d'image dans une image de plusieurs ticks | écart accepté ; E20.f6 si visible |
-| O-F3-5 | Recette de f3b : la flamme de la carte 14 (enregistrement 17) est un candidat, pas un fait | sonde de T0 de f3b |
+| O-F3-5 | Recette de f3b : la flamme de la carte 14 (enregistrement 17) est un candidat, pas un fait | sonde de la flamme du T0 d'f3a |
 
 ## 2. Points ouverts
 
