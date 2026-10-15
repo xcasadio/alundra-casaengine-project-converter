@@ -50,7 +50,7 @@ public sealed class AlundraSpawnBySpriteIndexInterfaceTests
             var spawned = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, v.IsMapPage, v.Index, v.X << 16, v.Y << 16, v.Z - 1, v.Direction);
             Assert.NotNull(spawned);
             Assert.Equal(before + 1, arc.Entities.Count);
-            Assert.Same(spawned, arc.Entities[^1]); // appended at the end of the list, as the record path does (no slot yet: e0a2).
+            Assert.Same(spawned, arc.Entities[^1]); // last of the list: the list follows the order of the slots (E20.e0a2) and this vector holds the highest slot, the previous ones having been recycled.
             SpawnProjectionAsserts.Check(v.Id, v.P!, spawned!, arc.Proxy.CollisionField, arc.HeroEntity, aux: null, withTerrain: false);
 
             // E20.e0a2 (ADR-0064): 156 apparitions in ONE world exceed the table of 63 slots (the shadow run of phase A counted 112 overflows here), so each vector is destroyed and recycled once checked, as the binary frees

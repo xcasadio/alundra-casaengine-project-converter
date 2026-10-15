@@ -419,7 +419,7 @@ public sealed class AlundraInoaDayOneArcTests
         Assert.True(arc.Has(C, 451, 0x19), "C[3] never deactivated record 4 (0x19 @451)");
         AssertFrame(arc, C, 451, 2071);
         var record4 = arc.EntityByRecord(4)!;
-        Assert.Equal(EntityStatus.Deactivated, record4.Status); // at the frame of the end ...
+        Assert.Equal(EntityStatus.Deactivated, record4.Status); // one frame after the end (E20.e0a2: record 4 walks before Septimus, see above) ...
         arc.OneFrame();
         // ... and destroyed by the native E handler the frame after (D-E19-29), in its update. E20.a (D-E20-11): the recycling (0x80038634) opens the NEXT tick, so the
         // record is flagged at the end of that image (it was recycled in the same image when the entities ran before the map events) and Destroyed one image later.
