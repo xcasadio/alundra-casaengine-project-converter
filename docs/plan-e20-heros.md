@@ -3326,7 +3326,7 @@ dispositions de la session principale :
   est épinglée par le test de l'interface et par la trace AT9) ;
 - bruit de fins de ligne des traces après chaque suite : **noté** (connu).
 
-#### 1.16.2 E20.e0a2 — Table de cases : première libre, plafond de 63, ordre des passes
+#### 1.16.2 E20.e0a2 — Table de cases : première libre, plafond de 63, ordre des passes 🧪 (faite le 2026-10-15, `03c3863` à la clôture ; reste les verifiers frais)
 
 **Révision 1 (2026-10-15).** Relecture : **REVISE**, deux points corrigés (FIX) : la phase d'ombre a un prédicat exact, un canal de relevé
 par test, une commande et un fichier versé, et le plafond est placé dans la phase B (l'ombre ne refuse rien) ; les trois points reportés
@@ -3371,7 +3371,7 @@ réflexion par les six classes de tests), qui restent où elles sont ; à défau
 
 ##### Tâches
 
-- ⏳ **T0 — Prédiction par l'ombre** (commit de code A, puis commit de docs du relevé).
+- ✅ **T0 — Prédiction par l'ombre** (commit de code A, puis commit de docs du relevé).
   - Phase A (ombre) : cases attribuées, masque tenu, **sans réordonner et sans rien refuser** (une 64e entité reçoit −1 et est ajoutée
     comme aujourd'hui). Deux événements sont relevés :
     - **insertion hors fin** : la case attribuée est inférieure à la plus haute case des entrées vivantes de `_spawnedEntities` (la phase B
@@ -3388,11 +3388,11 @@ réflexion par les six classes de tests), qui restent où elles sont ; à défau
   - Prédiction de la découverte, à confronter au relevé : les arcs qui détruisent (`0x2E`, E0/E1) puis font apparaître (`0x2D`, `0x8A`,
     `0x8B`) : `AlundraDay3SceneArcTests` (A14 : enregistrements 8 à 10 par `0x2D` à 219-223, `0x2E` à 272), `AlundraEntityContactArcTests`,
     `AlundraInoaDayOneArcTests`, `AlundraTarnMurggArcTests`, `AlundraMurutaHallArcTests`.
-- ⏳ **T1 — Oracle V5 complété** (annexe d'e0a1, `out/v5.json` et son manifeste) : les lignes déjà versées (5 apparitions → cases 1 à 5 ;
+- ✅ **T1 — Oracle V5 complété** (annexe d'e0a1, `out/v5.json` et son manifeste) : les lignes déjà versées (5 apparitions → cases 1 à 5 ;
   case 2 en état 4, apparition avant la passe → case 6, après → case 2 ; 63 acceptées, 64e et 65e à 0 avec un message en `0x80039B10` ;
   libérations 40, 9, 21 → 9, 21, 40 ; case sale) **plus** deux lignes qui manquent : indice invalide avec table pleine (seul le message
   « Race », `0x800239CC`) et apparition en boucle 2 dans une case recyclée.
-- ⏳ **T2 — Tests rouges.**
+- ✅ **T2 — Tests rouges.**
   - Allocateur pur, sans moteur (au moins 12 cas, chacun recopié d'une ligne de V5) ; `ReleaseSlot(−1)` sans effet ; case 0 tenue dans un
     monde sans héros.
   - Le masque libère à `RecycleDestroyedEntities` et pas avant ; porte fermée : rien n'est libéré.
@@ -3404,11 +3404,11 @@ réflexion par les six classes de tests), qui restent où elles sont ; à défau
     (retirée), la case rendue au masque, `null` pour les deux méthodes, l'enregistrement sauté et journalisé pour le chargement.
   - **`ChildEntity` (reporté d'e0a1)** : une apparition par `0x2D` avec un parent écrit la racine comme le binaire (`parent.ChildEntity ??
     parent`) ; un test parent → enfant → petit-enfant par le chemin par enregistrement, et un mélange enregistrement → interface.
-- ⏳ **T3 — Code en deux temps.** (A) l'ombre (T0) ; (B) l'insertion triée, le refus de la 64e, le contrat d'erreur, `ChildEntity` sur le
+- ✅ **T3 — Code en deux temps.** (A) l'ombre (T0) ; (B) l'insertion triée, le refus de la 64e, le contrat d'erreur, `ChildEntity` sur le
   chemin par enregistrement, le commentaire d'`ApplyHeaderInitialization` et ceux des passes ; suite complète : chaque test dont le
   résultat bouge est dans `e0a2-shadow.txt` et justifié par l'ordre des cases ou par un refus (preuve écrite dans le plan), puis corrigé ;
   rien d'autre ne change.
-- ⏳ **T4 — ADR-0064** (table de cases, plafond, ordre, contrat d'erreur), plan ; verifiers frais lancés par la session principale, dont
+- 🧪 **T4 — ADR-0064** (table de cases, plafond, ordre, contrat d'erreur), plan : ADR-0064 et le plan sont faits ; reste les verifiers frais ; verifiers frais lancés par la session principale, dont
   un sur les épingles (liste prédite contre liste mesurée).
 
 ##### Acceptation
@@ -3421,6 +3421,28 @@ réflexion par les six classes de tests), qui restent où elles sont ; à défau
   suite (recensement de la découverte : 39 au plus avec la zone d'apparition ; les cartes 75 et 92, qui dépasseraient 62 sans la zone, ne
   sont chargées par aucun test : recherche des noms de monde `-75` et `-92`) ; aucun dépassement dans le relevé, sinon il est expliqué.
 - `cmp` de la DLL ; traces inchangées ; verifiers frais.
+
+##### Résultats (2026-10-15, branche `chantier/e20-heros`, base `d9831b2`)
+
+Aucun arrêt n'a joué. Commits : phase A `03c3863` (table, ombre, 16 tests de l'allocateur) ; relevé `b67447c` + `801f572` (`docs/plan-e20-annexe/e20-e0a/e0a2-shadow.txt`, écrit avant tout code de la phase B) ; oracle V5 `8bc0504` ; phase B `5e36903` (insertion triée, plafond, contrat d'erreur, `ChildEntity`, deux tests corrigés, 16 tests) ; ADR-0064 et ce plan.
+- **Ombre (phase A).** Suite verte en Release et en Debug sans test modifié (4 775 → 4 791, les 16 ajoutés sont l'allocateur seul), `cmp` de la DLL identique, traces inchangées. Relevé, Release, une fois : 179 tests créent des entités (5 502 attributions), **11 insertions hors fin dans 8 tests**,
+  **112 dépassements dans un seul test** (le test B2 de l'interface d'e0a1 : 156 apparitions dans un monde), plus haute case d'un test qui ne fait que charger des cartes et lancer des scripts : **36** (borne de la découverte : 39 ; aucun test ne charge les cartes 75 et 92 : recherche de `-75"` et `-92"` sans résultat dans `Alundra.Tests/`).
+  Les 8 tests à insertion hors fin : `AlundraInoaDayOneArcTests.A11` (case 1 sous 12), `AlundraEntityContactArcTests.TA19` (7 sous 10), `.TB9_CounterProof` (21 sous 27), `.TB9_SeptimusAndTheBlock` (21 et 22 sous 27), `AlundraHeightTargetSitesTests.TheWaitOfTheBinary` (7, 8, 9 sous 12),
+  et trois adoptions d'un second pion (case 0 sous les cases vivantes) : `AlundraHeroFallAndPadJumpTests.S6c`, `AlundraAnimationSoundTests.T1`, `AlundraAnimationImpulseSpawnTests.UJ7`.
+- **Prédit contre mesuré.** La découverte prédisait cinq arcs (Day3 A14, EntityContact, InoaDayOne, TarnMurgg, MurutaHall). Le relevé en confirme deux (EntityContact, InoaDayOne), n'en voit aucun événement pour Day3, TarnMurgg et MurutaHall (la case libérée n'est pas reprise par une apparition avant la fin
+  du test), et en ajoute deux familles que la découverte n'avait pas vues : les adoptions d'un second pion (case 0) et `HeightTargetSites`. **Mesuré en phase B : deux tests bougent, tous deux dans le relevé.** Les sept autres tests à insertion hors fin passent sans changement.
+  1. `AlundraInoaDayOneArcTests.A11` (relevé : une insertion hors fin, case 1 sous 12). Preuve par l'ordre des cases : la carte 164 détruit l'enregistrement 0 (case 1) ; l'enregistrement 4, né de `0x8B @95`, prend la PLUS BASSE case libre, 1, et passe donc AVANT Septimus (case 2) dans les passes, comme dans le tableau plat du binaire.
+     Son programme `C[3]` (`@448`, attente du drapeau T3) tourne avant que `C[2]` de Septimus pose T3 à `@437` dans le même tick ; il sort de l'attente un tick plus tard et désactive l'enregistrement 4 à la trame 2072 au lieu de 2071 (comparaison des traces des trames 2060 et suivantes avec et sans tri : le programme `start448` passe avant `start240` dans chaque trame). Correction : une trame de plus avant `Assert.True(arc.Has(C, 451, 0x19))`
+     (la tolérance de `AssertFrame` est de ±3 : la ligne `AssertFrame(arc, C, 451, 2071)` reste vraie), le reste du test, dont les contacts de Septimus, est inchangé.
+  2. `AlundraSpawnBySpriteIndexInterfaceTests.B2` (relevé : 112 dépassements). Preuve par un refus : 156 apparitions dans un monde dépassent la table de 63 ; la 64e est maintenant refusée, comme dans le binaire. Correction : chaque vecteur est détruit et recyclé une fois contrôlé (le binaire rend la case d'une entité détruite à la passe suivante), le suivant reprend la même case la plus basse et reste le dernier de la liste ;
+     l'assertion « ajoutée en fin de liste » est gardée, et la case est assertée.
+- **Oracle V5.** Deux lignes ajoutées à `run_e0a.py` : indice invalide avec table pleine (retour 0, seul le message de la recherche de page `0x80039BB8` / « Race » `0x800239CC`, jamais celui de la table pleine `0x800239B0`, série, compteur et générateur inchangés) et apparition en boucle 2 de la passe des événements dans une case recyclée par la passe des cases du même tick
+  (cases 2 et 4 mortes depuis le tick d'avant, libérées par la passe, l'apparition de la boucle 2 prend la case 2, les suivantes 4 puis 6). Tout PASS, deux exécutions au manifeste identique. Les mutants de l'oracle (`mutants.py`, 6 min) n'ont pas été relancés : ils portent sur les mots du binaire et leur signature (`mutants.py`) inclut les nouvelles lignes de V5 sans qu'un mot du binaire change.
+- **Tests de la phase B.** 17 tests de l'allocateur au total (une ligne de V5 chacun pour les 6 premiers, puis case 0, `Release(-1)`, hors table, double libération…), 15 tests du monde sur la carte 14 : cases des entités chargées, ordre après recyclage, entrées sans case laissées en place, libération au recyclage (porte fermée : rien n'est libéré), plafond sur les trois chemins, indice invalide avec table pleine,
+  chargement avec table presque pleine (deux cases libres : le héros et deux enregistrements, les autres sautés avec une ligne chacun), contrat d'erreur sur les trois chemins (chargement, `SpawnEntityByRecordId`, interface : aucune entité dans la liste, `ToBeRemoved`, case rendue, `null` ou enregistrement sauté et journalisé, la case est reprise par l'apparition suivante), `ChildEntity` sur les deux chemins.
+- **Comptes.** `Alundra.Tests` : 4 775 → 4 791 (phase A) → **4 807** (phase B), zéro échec, en Release et en Debug ; `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` identique ; les cinq traces inchangées (bruit de fins de ligne restauré).
+- **Écarts.** (1) Le puits d'ombre écrit aussi une ligne `seen` par attribution (pour la plus haute case) et compte l'adoption du héros comme une attribution de case 0 : d'où les trois adoptions d'un second pion dans la liste hors fin (en phase B elles s'insèrent avant la première entrée de case supérieure à 0, après l'ancien pion). (2) Les deux points d'accroche de test sont des champs statiques `internal` (`CreationFaultHookForTests`, `SlotTableFactoryForTests`), nuls en production, remis à nul par les tests ;
+  l'entité mise en file puis retirée par `World.RemoveEntity` reste dans la file d'ajout du moteur jusqu'à l'intégration suivante (`ToBeRemoved` vrai), le test vérifie ce drapeau et l'absence de la liste, pas l'absence de la file du moteur. (3) Le commentaire inexact d'`ApplyHeaderInitialization` est corrigé, `ChildEntity` du chemin par enregistrement passe par `ResolveRootEntity`, partagé avec l'interface. (4) Aucun mutant du code de la DLL n'a été lancé par cette exécution : à la charge des verifiers frais.
 
 ##### Arrêts, budget, retour arrière
 

@@ -77,3 +77,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0061 | The break-effect byte is exported in every sprite record | Accepted | 2026-10-10 |
 | ADR-0062 | The sprite-table key of each prefab and the valid indices of each map are exported | Accepted | 2026-10-15 |
 | ADR-0063 | The apparition by sprite index takes Z in the DLL's frame through a record-less core and checks each page against its own table | Accepted | 2026-10-15 |
+| ADR-0064 | The entity slot table hands out the lowest free slot up to 63, and the spawned list follows the slots | Accepted | 2026-10-15 |
