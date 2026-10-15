@@ -3203,7 +3203,7 @@ que l'interface, la table de cases et la participation au tick de naissance, pro
   sa logique ayant déjà tourné ; aucun changement de moteur.
 
 **Prérequis et dépendants (révision 1 de l'enveloppe, 2026-10-15).** Ordre des sous-tranches : e0a1 (prérequis : E20.e0x ✅, E14.a0 ✅)
-→ e0a2 (prérequis : e0a1) → e0a3 (prérequis : e0a2) ; e0a4 (prérequis : e0a3 et la réponse de l'auteur à Q-A1) **ne bloque aucun
+→ e0a2 (prérequis : e0a1) → e0a3 (en deux : e0a3a, sonde et oracle, prérequis e0a2 ; e0a3b, le code, prérequis e0a3a) ; e0a4 (prérequis : e0a3 et la réponse de l'auteur à Q-A1) **ne bloque aucun
 dépendant**. Ce que chaque tranche dépendante exige d'E20.e0a :
 - **E20.e0b** (générateur par tick, tirage du butin à la création) : e0a1 et e0a2 (la création, et l'ordre des cases qui fixe l'ordre des
   tirages dans les passes) ;
@@ -3473,47 +3473,113 @@ dispositions de la session principale :
   retirée dans la même passe ; un son déjà demandé avant une faute de la poussée de position part quand même : **notés** (sans effet
   observable dans la logique ; le son ne concerne qu'un chemin d'erreur).
 
-#### 1.16.3 E20.e0a3 — Participation au tick de naissance des entités de l'interface
+#### 1.16.3 E20.e0a3 — Participation au tick de naissance : e0a3a (sonde P-A, oracle V6, reports), e0a3b (le code, puis P-B)
 
-**Prérequis.** E20.e0a2 ✅ (la table de cases : une entité détruite à sa naissance rend sa case).
+**Révision 1 (2026-10-15).** Relecture : **REVISE**, quatre points corrigés (FIX) par un découpage : la conception du code dépend de la
+sonde P-A, donc **e0a3a** fait P-A, l'oracle V6 et les points reportés d'e0a2, sans changement de comportement en production, et s'arrête
+une fois le résultat de P-A versé ; **e0a3b** (le code) est détaillée après P-A et relue avant tout code ; la mesure P-B se fait dans
+e0a3b, **après** le code, avec le vrai marqueur, sur un arbre propre, et sa liste a un endroit et un format ; la source de V6 est
+désignée (`p3_tick.py`, préfixe `BT-` pour éviter la collision avec les scénarios H d'E20.c de `oracle/tools/scen.py`) et chaque ligne a
+son écart attendu ; les reports d'e0a2 ont leurs tâches et l'acceptation permet seulement ces deux commentaires dans les tests
+existants. Points non bloquants repris : ADR-0065, numéros de ligne relevés au HEAD, compte de départ, `cmp` et traces, motif du point
+d'accroche (`[ThreadStatic]`, comme `WeaponSpawnCallsForTests`), `EventTrigger = −1` déjà posé par e0a1 (retiré du périmètre).
 
-**Reporté d'E20.e0a2 (vérification du 2026-10-15)** : un test de l'allocateur qui lit les lignes `invalid_full`, `dirty` et `probes` de
-`docs/plan-e20-annexe/e20-e0a/oracle/out/v5.json` (ce que l'ADR-0064 affirme déjà) ; les commentaires devenus faux de
-`AlundraSpawnBySpriteIndexInterfaceTests.cs` et `AlundraInoaDayOneArcTests.cs`.
+**But commun.** Une entité née dans `MovePlayer` (tir, usage d'un objet) tourne dans le tick qui la voit naître : statut, programme A,
+compteurs, listes, horloge, physique, coups ; une entité née dans un programme natif d'une autre entité tourne au tick suivant (D-E0A-6,
+D-E20-34). Elle est dessinée à l'image suivante (D-E20-35). Les entités par enregistrement ne changent pas (D-E0A-5, Q-A1). Ferme O-E20-11
+pour les entités de l'interface.
 
-**But.** Une entité née dans `MovePlayer` (tir, usage d'un objet) tourne dans le tick qui la voit naître : statut, programme A, compteurs, listes, horloge, physique, coups ; une entité née dans un programme natif d'une autre entité tourne au tick suivant (D-E0A-6). Les entités par enregistrement ne changent pas (D-E0A-5, Q-A1). Ferme O-E20-11 pour les entités de l'interface.
+##### 1.16.3a E20.e0a3a — Sonde P-A, oracle V6, reports d'e0a2 (sans changement de comportement en production)
 
-**Périmètre.** `AlundraEntityScriptProxy` (`JoinsBirthTick`, `EventTrigger = −1` posé à l'apparition, `CollisionFieldNow` limité au marqueur pour les neuf lectures) ; `AlundraWorldProxy.CollectTickEntities` (`TookPartInFrame || (JoinsBirthTick && Owner.World == null)`, sans effacement) ; un nouveau rassemblement juste après `MovePlayerOnTickPad` (`AlundraWorldProxy.cs:2701`) quand une apparition a eu lieu ; un membre par défaut `ICollisionField? CollisionField => null` sur `IAlundraScriptHost` ; **un point d'accroche de test** dans `SpawnWeaponProjectile` (séparé du comptage, désactivé en production) pour faire naître une entité à l'endroit exact de `MovePlayer` sans brancher le tir.
+**Prérequis.** E20.e0a2 ✅ (la table de cases ; `Alundra.Tests` 4 807).
 
-**Hors périmètre.** Le branchement du tir ; la cinématique (3 px puis 6 px) ; l'extension aux entités par enregistrement (e0a4) ; l'intégration immédiate du moteur ; `PublishEntityFrame` (la première publication reste celle de l'image suivante).
+**Reporté d'E20.e0a2 (vérification du 2026-10-15)**, porté par T3 ci-dessous : un test de l'allocateur qui lit les lignes `invalid_full`,
+`dirty` et `probes` de `docs/plan-e20-annexe/e20-e0a/oracle/out/v5.json` (ce que l'ADR-0064 affirme déjà) ; les commentaires devenus faux
+de `AlundraSpawnBySpriteIndexInterfaceTests.cs` (« appended at the end of the list… no slot yet: e0a2 ») et `AlundraInoaDayOneArcTests.cs`
+(« at the frame of the end… »).
+
+**Périmètre.** L'annexe `docs/plan-e20-annexe/e20-e0a/` (oracle V6) ; un fichier de tests nouveau pour la sonde P-A ; le test de lecture
+de `v5.json` ; les deux commentaires ; ce plan. **Aucun fichier de `Alundra/Scripts/` ne change.**
 
 ##### Tâches
 
-- ⏳ **T0 — Sondes (note dans le plan, pas de commit de code).** *P-A, première animation :* (1) `AnimatedSpriteComponent.SetCurrentAnimation(forceReset: true)` avant intégration, sur un préfab de `LoadCopy` : sans exception ni état faussé ? (2) `Controller.Move` avant intégration : ajout simple (lu dans le moteur) — mesuré sur un arc ; (3) la cinématique générique donne-t-elle X + 3 puis + 6 px pour la n° 3 en direction `0x18` ? Décide entre (i) poser `Current = Target` et l'animation du sprite à la création et (ii) laisser `~0` et faire lire la cible au pas de mouvement pour les entités marquées ; décide aussi si une épingle de position entre dans e0a3 ou va à e0k et E20.f3. *P-B, mesure pour Q-A1 :* dans une copie jetable (non commitée), forcer le marqueur sur les chemins par enregistrement, lancer toute la suite, relever les tests qui bougent ; remettre l'arbre à l'état (`git checkout -- <fichiers>`), écrire la liste dans le plan.
-- ⏳ **T1 — Oracle V6** (ajouts à l'annexe d'e0a1) : les lignes M1 à M3, H1 à H6, L1 à L3 rejouées avec la trace de passe par passe (statut, déclencheur, A, `+0x1C`, listes, délai d'image, X), et le cas « détruite au tick de sa naissance ».
-- ⏳ **T2 — Tests rouges.** Trace de passes d'une naissance dans `MovePlayer` (hook de test) : après `programs` l'état est `Normal`, le gestionnaire A (inscrit par le test dans `AlundraNativeSpriteRegistry`) a tourné **une** fois au tick 1 et 0 au tick 2, `FrameCounter == 1` après les compteurs, présente dans `_updateProxies` et la liste des coups après les listes, horloge et physique appelées une fois (deux dans une image à deux ticks) ; naissance dans un programme natif : état `Loaded` à la fin du tick 1, A au tick 2 seulement (l'écart D-E0A-6 est épinglé) ; monde à ticks propres : aucune participation ; détruite au tick de sa naissance dans une image à deux ticks : recyclée en tête du tick suivant, case rendue, pas d'exception à l'intégration du moteur ; le son de création demandé une seule fois ; les épingles de record intactes (`AlundraTickStructureTests` 367-392, `AlundraVisionArcTests` 348-353, `AlundraShipBlockArcTests` 235-240, `AlundraAbsoluteZWritesTests`, `AlundraControllerlessVerticalStepTests`, `AlundraAnimationImpulseSpawnTests`).
-- ⏳ **T3 — Code.** Selon P-A.
-- ⏳ **T4 — ADR** (tick de naissance, marqueur, limites), plan, verifier frais.
+- ⏳ **T1 — Oracle V6.** Verser `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20e0a/bin/p3_tick.py` (les quatre copies du scratchpad sont identiques,
+  md5 `927741c62e0d0b90efc9c9c3bce6ab89`) dans `docs/plan-e20-annexe/e20-e0a/oracle/`, avec sa somme de contrôle dans `checksums.txt` et ses
+  dépendances déjà versées ; le relancer par le lanceur de l'oracle ; sortie `out/v6.json` (lignes `BT-M1` à `BT-M3`, `BT-H1` à `BT-H6`,
+  `BT-L1` à `BT-L3` ; pour chacune, par passe : statut, déclencheur `+0x228`, exécutions de A, `+0x1C`, présence dans les listes, X, et le
+  tick où chaque chose arrive) ; entrée au manifeste ; deux exécutions, même manifeste.
+- ⏳ **T2 — Sonde P-A** (un fichier de tests nouveau, qui ne fait que mesurer : il n'affirme que ce qui est vrai aujourd'hui, et ses
+  mesures sont versées dans le plan) :
+  - (1) `AnimatedSpriteComponent.SetCurrentAnimation(forceReset: true)` appelé sur une entité apparue par l'interface, **avant** son
+    intégration par le moteur : sans exception, et état du sprite relevé (animation, image, compteurs) ;
+  - (2) `Controller.Move` avant l'intégration (`Entity.World` nul) : déplacement ajouté sans test (lu dans le moteur), mesuré ;
+  - (3) la cinématique générique de la DLL, pour le numéro 3 de la page globale en direction `0x18` : X après le tick de naissance et
+    après le tick suivant, avec `CurrentAnimationId` tel qu'il est (~0) et avec `Current = Target` posé à la main ;
+  - résultat versé dans une sous-section « Résultat de P-A » ci-dessous, qui dit quelle voie retenir : (i) poser `Current = Target` et
+    l'animation du sprite à la création, **dans l'interface seule** ; (ii) laisser ~0 et faire lire la cible au pas de mouvement pour les
+    entités marquées seulement (`AlundraScriptedMotion.cs`) ; ou aucune des deux (arrêt).
+- ⏳ **T3 — Reports d'e0a2.** Test qui lit `invalid_full`, `dirty` et `probes` dans `out/v5.json` et les rejoue sur l'allocateur (ou sur
+  le monde pour `invalid_full`) ; les deux commentaires corrigés.
+- ⏳ **T4 — Plan** (résultat de P-A, résultats, icônes). Puis **arrêt** : la session principale détaille e0a3b selon P-A et la fait
+  relire avant tout code.
 
 ##### Acceptation
 
-- Oracle V6 : lignes M1 à M3 égales au niveau des passes ; H et L : les écarts exacts de D-E0A-6 listés, pas d'autre.
-- DLL : tous les tests de T2 verts ; `Alundra.Tests` : aucun échec, **aucun test existant modifié**, en particulier les trois épingles ci-dessus (preuve que le marqueur ne fuit pas) ; position de la flèche : épinglée seulement si P-A l'a établie, sinon notée pour E20.e0k et E20.f3 ; sonde du vrai jeu (E19.v2) inchangée.
-- Verifiers frais.
+- V6 : les douze lignes `BT-*` dans `out/v6.json`, manifeste stable sur deux exécutions ; la colonne « écart attendu » écrite à l'avance
+  dans l'annexe : `BT-M1` à `BT-M3` (naissance dans `MovePlayer`) : participation complète au tick de naissance, la DLL doit l'égaler ;
+  `BT-H1`, `BT-H4`, `BT-H6` (boucle 2, case au-dessus du compteur, déclencheur 0) : A tourne deux fois dans le binaire, une fois au tick
+  suivant dans la DLL (écart D-E20-34) ; `BT-H2`, `BT-H3`, `BT-H5` (déclencheur −1) et `BT-L2` (boucle 1, case plus basse) : tout reporté
+  d'un tick dans le binaire comme dans la DLL ; `BT-L1`, `BT-L3` (boucle 1, case plus haute, butin à la mort) : participation dans le
+  binaire, relève d'e0b et e0c (hors e0a3).
+- P-A : les trois mesures versées, la voie retenue et sa raison.
+- Reports : le test de `v5.json` vert, les trois lignes lues et vérifiées.
+- `Alundra.Tests` en Release et en Debug : 4 807 plus les nouveaux, aucun échec ; **aucune assertion existante modifiée**, seuls les deux
+  commentaires nommés changent dans les tests existants ; aucun fichier de `Alundra/Scripts/` modifié ; `cmp` de la DLL ; traces
+  inchangées.
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : une épingle d'apparition par enregistrement qui bouge (le marqueur fuit) ; P-A qui montre `SetCurrentAnimation` instable avant intégration et aucune voie (ii) ; tout changement de moteur nécessaire ; la lecture du champ de collision par repli qui change `ClampToGround` d'une entité par enregistrement.
-- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
-- **Retour arrière** : abandon de la branche.
+- **Arrêts** : P-A qui montre `SetCurrentAnimation` instable avant l'intégration et aucune des deux voies praticable ; une ligne V6 qui
+  contredit l'écart attendu ; un besoin de changer le moteur ; un fichier de `Alundra/Scripts/` à toucher.
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après.
+- **Retour arrière** : `git revert` (docs et tests seulement).
 
----
+##### 1.16.3b E20.e0a3b — Le code du tick de naissance, puis la mesure P-B (à détailler après P-A)
+
+**Prérequis.** E20.e0a3a ✅ et son résultat de P-A versé ; détail écrit par la session principale et relu avant tout code.
+
+**Ce qui est déjà fixé** (le détail s'y tient) :
+- marqueur `JoinsBirthTick` posé **seulement** par `SpawnEntityBySpriteIndex` ; `CollectTickEntities` (`AlundraWorldProxy.cs`, vers
+  `:2785` au HEAD `d5ffe46`) retient `TookPartInFrame || (JoinsBirthTick && Owner.World == null)`, sans effacement ; un rassemblement juste
+  après l'appel de `MovePlayerOnTickPad` (vers `:2839`) quand une apparition a eu lieu ;
+- repli sur le champ de collision de l'hôte (`ICollisionField? CollisionField => null`, membre par défaut d'`IAlundraScriptHost`) limité
+  aux entités marquées, pour les lectures de `Owner.World.CollisionField` (`AlundraEntityScriptProxy.cs` vers `:752`, `:1730`, `:1801`,
+  `:1892`, `:1966`, `:2082`, `:2246` ; `AlundraPlayerAnimationEffects.cs:142` ; `AlundraScriptedMotion.cs:695`) ;
+- point d'accroche de test dans `SpawnWeaponProjectile`, `[ThreadStatic]` et nul en production, sur le motif de
+  `WeaponSpawnCallsForTests` (`AlundraPlayerManager.cs` vers `:1198-1200`), pour faire naître une entité à l'endroit exact de `MovePlayer`
+  sans brancher le tir ;
+- la voie (i) ou (ii) retenue par P-A, dans les fichiers qu'elle nomme, gardée par le marqueur ou par l'interface, jamais dans le noyau
+  partagé avec le chemin par enregistrement ;
+- tests de passe calqués sur `BT-M1` à `BT-M3` (égalité au niveau des passes : statut, A, `+0x1C`, listes, horloge, physique ; X seulement
+  si P-A l'établit) et sur l'écart de `BT-H1`, `BT-H4`, `BT-H6` (épinglé, D-E20-34) ; détruite au tick de sa naissance dans une image à
+  deux ticks (test de la DLL seulement : recyclée en tête du tick suivant, case rendue, pas d'exception à l'intégration) ; son de création
+  demandé une fois ; épingles des apparitions par enregistrement intactes (`AlundraTickStructureTests` vers `:367-392`,
+  `AlundraVisionArcTests` vers `:348-353`, `AlundraShipBlockArcTests` vers `:235-240`, `AlundraAbsoluteZWritesTests`,
+  `AlundraControllerlessVerticalStepTests`, `AlundraAnimationImpulseSpawnTests`) ; `cmp`, traces, sonde du vrai jeu (E19.v2) inchangée ;
+  ADR-0065.
+- **Mesure P-B, après le code** : précondition `git status --porcelain` vide sur les fichiers que la sonde touche (sinon arrêt) ; forcer
+  le seul drapeau `JoinsBirthTick` dans les chemins par enregistrement (changement jetable, jamais commité) ; une suite complète en
+  Release ; remise en état par `git checkout -- <fichiers touchés par la sonde>` et les cinq traces ; liste versée dans la sous-section
+  « Mesure P-B » du §1.16.4, au format `Classe.Méthode — raison observée` ; elle sert à la réponse de l'auteur à Q-A1.
 
 #### 1.16.4 E20.e0a4 — (conditionnelle, selon Q-A1) Participation au tick de naissance des apparitions par enregistrement
 
-**Prérequis.** E20.e0a3 et la réponse de l'auteur à Q-A1 (après la liste de P-B). Ne bloque aucune autre tranche.
+**Prérequis.** E20.e0a3b et la réponse de l'auteur à Q-A1 (après la liste de P-B). Ne bloque aucune autre tranche.
 
-Non détaillée. Elle ne démarre qu'avec l'accord de l'auteur après la liste de P-B. Chaque épingle qui bouge est re-dérivée de l'oracle (une apparition par événement de carte tourne dans le tick, D-E20-11) ; les arcs listés au §1.16 (A, B) sont remesurés un à un.
+**Mesure P-B** (versée par E20.e0a3b) : _à venir_.
+
+Non détaillée. Elle ne démarre qu'avec l'accord de l'auteur après la liste de P-B (sous-section « Mesure P-B » ci-dessous, versée
+par e0a3b). Chaque épingle qui bouge est re-dérivée de l'oracle (une apparition par événement de carte tourne dans le tick, D-E20-11) ; les arcs listés au §1.16 (A, B) sont remesurés un à un.
 
 ##### Points ouverts ajoutés
 
