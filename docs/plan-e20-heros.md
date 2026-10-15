@@ -4389,6 +4389,7 @@ f3b) est une sortie nommée du T0, et f3b exige ce T0 (relecture de l'enveloppe 
 automatiques atteint) : **FIX** — (s3) attendait « compteur et journal inchangés » sur un hôte de montage, ce que l'ordre de D-F3-3
 (compteur, journal, puis appel) et les tests existants du journal contredisent ; il attend maintenant compteur + 1, journal + 1, aucun
 appel de l'interface, sous l'ensemble de test {3}. Nouvelle époque de relecture : une seule relecture de clôture suit.
+Relecture de clôture : **READY** (2026-10-15).
 
 **Prérequis.** E20.f1 ✅ (§1.9), E20.e0a1 à E20.e0a3 ✅ (§1.16).
 
