@@ -4150,40 +4150,117 @@ supprimés dans `D:/development/repo/` (absents, vérifié par la session princi
 
 #### 1.17.2 E20.e0b2 — Le tirage du butin à la création ⏳
 
-**Prérequis.** E20.e0a1 ✅, E20.e0a2 ✅, e0b1 (ordre). Q-B1 tranchée : `ArcRun` re-sème avant et après le chargement.
+**Révision 1 (2026-10-15).** Relecture : **REVISE**, quatre points corrigés (FIX) : (1) les couples de V8 se mesurent sur la case que le
+héros de la DLL occupe **pendant la boucle de chargement** (celle d'`AdoptPlayerPawn`, avant que l'arc ne pose la case de son `ArcSpec`),
+et un test la vérifie ; (2) la seconde re-semence d'`ArcRun` et `SeedAfterTheLoad` passent en phase A, avant le relevé de l'ombre, et le
+tirage virtuel avance le registre de l'ombre, jamais une copie de l'état réel ; (3) une seule ligne du noyau partagé de la fabrique est
+permise (`HeaderContents`), le reste du noyau et tout appel du tirage depuis la fabrique ou le mapper restent interdits ; (4) l'appel de
+l'assistant aux trois sites appartient à la phase A seulement, la phase B ne fait qu'écrire ; les tests rouges avant la phase B sont nommés,
+chaque cas « sans tirage » est accolé à un cas qui tire, et les arrêts « la phase A fait bouger un test » et « un test nommé rouge vert
+avant T2 » sont ajoutés.
+
+**Prérequis.** E20.e0a1 ✅, E20.e0a2 ✅, E20.e0b1 ✅ (ADR-0066 ; l'ombre `AlundraRandomShadow` et son registre virtuel `V` existent).
+Q-B1 tranchée : `ArcRun` re-sème avant et après le chargement.
 
 **But.** À chaque création (chargement de carte, `SpawnEntityByRecordId` : `0x2D`, `0x8A`, `0x8B` ; `SpawnEntityBySpriteIndex`), tirer `ContentsItemId` et poser `ContentsGameFlag` comme `0x80032A40`, dans l'ordre du binaire, sans rien lâcher. Les 54 numéros exclus de la comparaison par D-E0A-3 y rentrent.
 
-**Périmètre.** `Alundra/Scripts/AlundraLootRoll.cs` (nouveau, pur), `AlundraEntityScriptProxy.cs` (`HeaderContents`, `Clone`), `AlundraEntitySpawnFactory.cs` (`ApplyHeaderInitialization` pose `HeaderContents`), `AlundraWorldProxy.cs` (les trois sites et un assistant privé), le puits d'ombre (registre virtuel du tirage),
-`Alundra.Tests/AlundraArcSupport.cs` (Q-B1 : seconde re-semence après `InitializeWithWorld`, propriété `SeedAfterTheLoad`), tests, `docs/plan-e20-annexe/e20-e0b/oracle/` (compléments), un ADR.
+**Fait propre à la tranche** (relevé par la relecture au HEAD `4c91e8f`, à relire à l'exécution) : la porte de zone de la boucle de
+chargement (`ShouldSpawnRecord(…, PlayerEntity.TileX, PlayerEntity.TileY, …)`, `AlundraWorldProxy.cs` vers `:1002`) lit la case posée
+par `AdoptPlayerPawn` (vers `:964`, `:2074-2088`) : la case de Nouvelle Partie (`AlundraGameState.CameraTileX/Y` = (33, 59), position
+au centre de la case, `ClampToGround` ne touche que `PosZ`) ou la case de l'enregistrement d'arrivée. `ArcRun` ne pose la case de son
+`ArcSpec` (`HeroTileX/Y`) qu'**après** `InitializeWithWorld` (`AlundraArcSupport.cs` vers `:238` puis `:279-285`), et seulement pour un arc
+sans arrivée. Les couples mesurés par la critique (14 à (8, 6) ; 390 et 392 à (0, 0) et (25, 29)) ne sont donc pas ceux que la DLL charge.
 
-**Hors périmètre.** Le lâcher à la mort, son veto (`MpMax`, objets `0x26`, `0x51`, `0x52`) et `0x80032C7C` (e0c, avec C255 : un lâcher sans C255 crée des objets inertes permanents) ; les réinitialisations qui retirent ; le héros ; le noyau sans enregistrement de la fabrique (inchangé) ; `EntityRecordMapper` (inchangé).
+**Périmètre.** `Alundra/Scripts/AlundraLootRoll.cs` (nouveau, pur), `AlundraEntityScriptProxy.cs` (`HeaderContents`, `Clone`),
+`AlundraEntitySpawnFactory.cs` (**une seule ligne** dans le noyau partagé : `HeaderContents = header.Contents` à côté de `BreakEffect` dans
+`ApplyHeaderInitialization`), `AlundraWorldProxy.cs` (les trois sites et un assistant privé), `AlundraRandomShadow.cs` (le tirage virtuel),
+`Alundra.Tests/AlundraArcSupport.cs` (Q-B1 : seconde re-semence après `InitializeWithWorld` ; propriétés `SeedAfterTheLoad`, le mot lu juste
+avant la seconde re-semence, et `HeroTileAtLoad`, la case du héros lue juste après `InitializeWithWorld`, avant que l'arc ne pose la sienne),
+tests, `docs/plan-e20-annexe/e20-e0b/` (oracle, README, `e0b2-shadow.txt`), un ADR.
+
+**Hors périmètre.** Le lâcher à la mort, son veto (`MpMax`, objets `0x26`, `0x51`, `0x52`) et `0x80032C7C` (e0c, avec C255 : un lâcher sans
+C255 crée des objets inertes permanents) ; les réinitialisations qui retirent ; le héros ; **toute modification du noyau de la fabrique autre
+que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou depuis le mapper** ; `EntityRecordMapper` (inchangé).
+
+**Partage des phases** (seul à faire foi) :
+- **Phase A** (T1, sans changement de comportement) : `AlundraLootRoll` et ses tests ; `HeaderContents` (champ, `Clone`, la ligne du noyau) ;
+  un assistant privé du monde, appelé **une fois par création** comme **dernière instruction du `try`** de chacun des trois sites, après
+  `PushLogicalPositionToRoot` (site de chargement : à la fin du `try` ; `SpawnEntityByRecordId` : juste avant `return spawnedProxy` ;
+  `SpawnEntityBySpriteIndex` : juste **avant** le bloc du marqueur `JoinsBirthTick`, qui reste la dernière écriture de la création comme le
+  veut ADR-0065, et ne peut pas échouer) — une création avortée n'atteint donc jamais l'assistant ; en phase A l'assistant ne fait que le
+  **tirage virtuel** : `AlundraLootRoll` rejoué sur le registre `V` de l'ombre (et non sur une copie de l'état réel), `V` avance de 0, 1 ou 2
+  pas selon le tirage, et rien d'autre n'est écrit (ni `ContentsItemId`, ni `ContentsGameFlag`, ni l'état réel) ; sans la variable de
+  l'ombre, l'assistant ne fait rien ; la seconde re-semence d'`ArcRun` après `InitializeWithWorld`, `SeedAfterTheLoad` et `HeroTileAtLoad`.
+  La seconde re-semence est sans effet en phase A **si** rien ne tire pendant le chargement aujourd'hui (le mot après le chargement vaut la
+  graine) : un test qui bouge à cause d'elle est un arrêt (ce fait serait faux).
+- **Phase B** (T2) : l'assistant écrit `ContentsItemId` et `ContentsGameFlag` et avance l'état réel par le même tirage (l'ombre voit alors
+  `V = R`). Rien d'autre ne change : ni la place des appels, ni `ArcRun`.
 
 ##### Tâches
 
-- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code). README : les valeurs de V8 (carte 14 à la tuile (8, 6) : 11 tirages, `D5F4D64A` ; 390 et 392 : 12, `BBE29AC9`), la liste prédite des tests qui bougent (Q-B1 « avant et après » : les tirages des chargements ne déplacent plus les arcs,
-  `A5r` et `ArcRun_ResetsTheSharedRandomStream…` ne bougent pas du fait du tirage ; restent les tirages des apparitions en cours d'arc, `0x2D`, `0x8A`,
-  `0x8B` et l'interface : au plus 3 tests selon la critique, estimation statique ; la liste fait foi une fois mesurée par l'ombre d'e0b2).
-  `oracle/` : `s1_table`, `s2_choose`, `s3_roll`, `s5_spawn`, `s6_record`, `s8_veto` de la découverte, plus `critique/p1_roll.py` (6 000 vecteurs au hasard, graine `20261015`, `roll_fuzz_vectors.json` md5 `087b48f326be28c6eb90763d933d4054`, identique sur deux exécutions) et `critique/p8_loadmap.py` (V8 : boucle de chargement réelle) pour **au moins 12 couples (carte, tuile)
-  tirés des `ArcSpec` de la suite**, dont 14 à (8, 6), 390, 392, 115, 116, 167 ; sorties : `choose_vectors.json` (2 626), `roll_vectors.json` (52), `spawn_vectors.json` (183), `record_vectors.json` (12), `roll_fuzz_vectors.json` (6 000), `v8.json` ; harnais corrigé (bruit préécrit `0xA5A5A5A5`, codes `0x100..0x1FF`) ; mutants : au moins 12 plus
-  la batterie de 168 de la critique, survivants équivalents écrits un à un.
-- ⏳ **T1 — Phase A : classe pure, tests rouges, ombre** (commit de code A, puis commit de docs du relevé). `AlundraLootRoll` (table, `Choose`, `Roll`, banque lue par un délégué), aucun appelant ; `AlundraLootRollTests` rejoue **tous** les vecteurs (rouges avec un squelette qui compile) ; `HeaderContents` posé ; l'ombre calcule le tirage **virtuel** aux trois sites (copie du flux, rien écrit)
-  et tient un registre `Vr` : événements `load-roll` (tirages et items par test et par monde) et tirages divergents dus au tirage ; fichier versé `e0b2-shadow.txt` avant la phase B.
-- ⏳ **T2 — Phase B** (commit de code B) : l'assistant écrit `ContentsItemId` et avance le flux, appelé en **dernière** instruction du `try` des trois sites ; `ArcRun` re-sème après le chargement (Q-B1) et expose `SeedAfterTheLoad`, lu par un test dédié ; tests dont le résultat bouge ⊂ `e0b2-shadow.txt`, réécrits par dérivation ; les comparaisons de `+0x3C`, `+0x40` et du mot (exclues par D-E0A-3) s'ajoutent aux tests du chemin complet de la carte 14.
-- ⏳ **T3 — ADR, plan, verifiers frais** (deux ; mutants du code de la DLL : au moins 12, tous tués — banque inversée, masque `0x7FFF` oublié, `& 0xFF` oublié, priorité du code d'enregistrement, repli sur l'en-tête, test du bit `0x80`, limite `0x62`, décalage de la rangée, `>> 28` changé, maillon non suivi, drapeau levé qui tire quand même, `+0x40` non écrit sans enregistrement, tirage placé avant l'abandon).
+- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code). `oracle/` : `s1_table`, `s2_choose`, `s3_roll`, `s5_spawn`,
+  `s6_record`, `s8_veto` de la découverte, plus `critique/p1_roll.py` (6 000 vecteurs au hasard, graine `20261015`,
+  `roll_fuzz_vectors.json` md5 `087b48f326be28c6eb90763d933d4054`, identique sur deux exécutions) et `critique/p8_loadmap.py` (V8 : boucle
+  de chargement réelle), outils copiés octet pour octet avec leurs sommes de contrôle ; sorties : `choose_vectors.json` (2 626),
+  `roll_vectors.json` (52), `spawn_vectors.json` (183), `record_vectors.json` (12), `roll_fuzz_vectors.json` (6 000), `v8.json` ; harnais
+  corrigé (bruit préécrit `0xA5A5A5A5`, codes `0x100..0x1FF`) ; mutants : au moins 12 plus la batterie de 168 de la critique, survivants
+  équivalents écrits un à un.
+  **V8 par la case de chargement** : au moins 12 couples (carte, case) **tirés des `ArcSpec` de la suite**, dont les cartes 14, 390, 392,
+  115, 116 et 167 ; pour chacun, `v8.json` donne la case du héros **au chargement** et la façon dont le test de la DLL l'atteint : (33, 59)
+  pour un arc sans arrivée (la case de Nouvelle Partie d'`AdoptPlayerPawn`), la case de l'enregistrement d'arrivée pour un arc avec arrivée ;
+  puis les entités créées dans l'ordre, leurs objets et `+0x40`, le nombre de tirages et le mot final. Les couples de la critique (14 à
+  (8, 6), 390 et 392 à (0, 0)) sont relancés pour prouver que le harnais reproduit ses valeurs (`D5F4D64A`, `BBE29AC9`), sans valeur
+  d'acceptation pour la DLL. README : ces valeurs, la prédiction qualitative (Q-B1 « avant et après » : les tirages des chargements ne
+  déplacent plus les arcs ; restent les tirages des apparitions en cours d'arc, `0x2D`, `0x8A`, `0x8B` et l'interface ; au plus 3 tests
+  selon la critique, estimation statique) et les comptes de départ (4 852 après e0b1).
+- ⏳ **T1 — Phase A** (commit de code A, puis commit de docs du relevé), tel que « Partage des phases ». `AlundraLootRollTests` écrits
+  d'abord et rouges sur un squelette qui compile, puis **verts à la fin de T1** (la classe est pure et sans appelant d'écriture) : ils
+  rejouent **tous** les vecteurs. La suite complète en Release et en Debug ne bouge pas (hors des tests nouveaux). Puis l'ombre, sur ce
+  commit (qui contient la seconde re-semence) : en tête de `e0b2-shadow.txt`, le prédicat — un tirage virtuel avance `V` de 0, 1 ou 2 pas
+  calculés sur `V` ; une époque (affectation, `Reset()`, donc aussi la seconde re-semence) remet `V` ; tirages réels et lectures comme en
+  e0b1 — ; par test, les compteurs d'e0b1 plus `virtual_rolls` (créations et pas virtuels) ; **liste prédite** = règle d'e0b1
+  (`divergent_draws + divergent_seed_reads + ambient_draws > 0`), recopiée dans le README avant la phase B.
+  **Tests de monde**, écrits en T1 après le code de la phase A, **rouges jusqu'à T2** (chacun attend au moins un objet écrit ou un pas réel
+  du tirage) : (m1) carte 14, numéros 254 et 230 de la page globale et 79 de la page des cartes × {`12345678`, `4F1427FB`, `985CF02A`} :
+  objet, `+0x40` et mot égaux aux neuf lignes de `spawn_vectors.json` ; (m2) chargement, pour chaque couple de V8 : `HeroTileAtLoad`
+  égale la case du couple, les entités créées égalent la liste de V8, leurs objets et `+0x40` et `SeedAfterTheLoad` égaux à `v8.json` (un
+  couple sans tirage s'accole, dans la même assertion, à un couple qui tire) ; (m3) drapeaux : cinq cas (banque persistante levée / non
+  levée, temporaire levée, mauvaise banque, `0x0800` ramené à 0), chaque cas « levé, aucun tirage » accolé dans la même assertion à une
+  création qui tire ; (m4) création avortée (faute après `AddEntity`, point d'accroche `CreationFaultHookForTests`) suivie d'une création
+  qui tire : exactement les pas de la seconde ; (m5) le héros ne tire pas, accolé à une création qui tire. **Verts dès T1** :
+  `AlundraLootRollTests`, `SeedAfterTheLoad` égal à la graine en phase A sur un arc (épingle de la seconde re-semence, qui devient en
+  phase B une valeur de V8 seulement par (m2)), le test d'inertie de l'assistant sans la variable de l'ombre.
+- ⏳ **T2 — Phase B** (commit de code B) : l'assistant écrit et avance l'état réel (seul changement) ; (m1) à (m5) passent au vert ; suite
+  complète ; chaque test existant qui bouge appartient à la liste prédite et est réécrit par une dérivation (D-E0B-8) ; les comparaisons
+  de `+0x3C`, `+0x40` et du mot (exclues par D-E0A-3) s'ajoutent aux tests du chemin complet de la carte 14.
+- ⏳ **T3 — ADR, plan, verifiers frais** (deux ; mutants du code de la DLL : au moins 12, tous tués — banque inversée, masque `0x7FFF`
+  oublié, `& 0xFF` oublié, priorité du code d'enregistrement, repli sur l'en-tête, test du bit `0x80`, limite `0x62`, décalage de la rangée,
+  `>> 28` changé, maillon non suivi, drapeau levé qui tire quand même, `+0x40` non écrit sans enregistrement, tirage placé avant l'abandon
+  (tué par (m4)), le héros qui tire (tué par (m5)), assistant appelé deux fois par création).
 
 ##### Acceptation
 
-- Classe pure : 2 626 + 52 + 183 + 12 + 6 000 vecteurs, **0 écart** ; la table de la DLL égale (md5) aux 2 048 octets de l'exécutable à l'octet `0x960C`.
-- Monde : sur la carte 14, numéros 254 et 230 de la page globale et 79 de la page des cartes × {`12345678`, `4F1427FB`, `985CF02A`} : objet, `+0x40` et mot égaux aux neuf lignes de `spawn_vectors.json` ; chargement : pour chaque couple (carte, tuile) de V8, les objets, `+0x40`, le nombre de tirages et le mot final égaux à `v8.json` (mesurés par la critique : 14 à (8, 6) : 11 tirages, `D5F4D64A` ; 390 et 392 à (0, 0) : 12 tirages, `BBE29AC9` ; les autres couples se mesurent, la fenêtre du héros les change).
-  Drapeaux : cinq tests (banque persistante levée / non levée, temporaire levée, mauvaise banque, `0x0800` ramené à 0). Création avortée (faute après `AddEntity`) : le mot est inchangé. Le héros : aucun tirage.
-- Suite : `Alundra.Tests` en Release et en Debug, compte de départ plus les nouveaux, zéro échec ; **`EntityRecordMapperTests.Map_UnmappedKeys_DoNotAffectAnyProxyField` et `AlundraSpawnBySpriteIndexInterfaceTests` (test H) passent sans changement** ; tests déplacés ⊂ ombre ; `git diff --stat` des tests existants : ajouts et lignes justifiées seulement ; `cmp` de la DLL ; cinq traces inchangées ; moteur, convertisseur et données sans diff.
+- Classe pure : 2 626 + 52 + 183 + 12 + 6 000 vecteurs, **0 écart** ; la table de la DLL égale (md5) aux 2 048 octets de l'exécutable à
+  l'octet `0x960C`.
+- Monde : (m1) à (m5) verts ; pour chaque couple de V8, la case de chargement vérifiée et les valeurs égales à `v8.json` ; la ligne
+  d'écriture de la phase B retirée, la suite rend **exactement** (m1) à (m5) rouges et rien d'autre (même preuve qu'e0b1).
+- Suite : `Alundra.Tests` en Release et en Debug, compte de départ plus les nouveaux, zéro échec ;
+  **`EntityRecordMapperTests.Map_UnmappedKeys_DoNotAffectAnyProxyField`, `AlundraSpawnBySpriteIndexInterfaceTests` (test H) et les tests
+  du noyau d'e0a1 passent sans changement** ; `git diff` d'`AlundraEntitySpawnFactory.cs` : la seule ligne `HeaderContents` ; tests
+  existants déplacés ⊂ liste prédite de `e0b2-shadow.txt`, chacun justifié par sa dérivation ; ombre relancée sur le code de la phase B :
+  `divergent_draws` et `divergent_seed_reads` nuls (`V = R`) ; `cmp` de la DLL ; cinq traces inchangées ; moteur, convertisseur et
+  données sans diff.
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : une image de V8 qui contredit le modèle (attribuer au harnais ou au binaire, puis question) ; la boucle de chargement de la DLL qui ne crée pas les mêmes entités que V8 pour un couple (carte, tuile) ; plus de 10 tests qui bougent ; `EntityRecordMapper` ou le noyau de la fabrique à modifier ; un test existant à réécrire sans dérivation.
+- **Arrêts** : une image de V8 qui contredit le modèle (attribuer au harnais ou au binaire, puis question) ; la boucle de chargement de la
+  DLL qui ne crée pas, **à la case de chargement vérifiée**, les mêmes entités que V8 ; la phase A fait bouger un test (dont la seconde
+  re-semence) ; un test de (m1) à (m5) vert avant T2 ; un test existant qui bouge hors de la liste prédite ; plus de 10 tests existants qui
+  bougent ; une modification du noyau de la fabrique autre que la ligne `HeaderContents`, ou un appel du tirage depuis la fabrique ou le
+  mapper ; `EntityRecordMapper` à modifier ; un test existant à réécrire sans dérivation.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
-- **Retour arrière** : la phase B se retire seule ; la phase A (classe pure, champ, ombre) ne change aucun comportement.
+- **Retour arrière** : la phase B se retire seule (l'assistant cesse d'écrire) ; la phase A (classe pure, champ, ligne du noyau, appel de
+  l'assistant qui n'écrit que le registre de l'ombre, seconde re-semence d'`ArcRun`) ne change aucun comportement.
 
 ---
 
