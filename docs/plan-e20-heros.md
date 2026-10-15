@@ -3219,7 +3219,7 @@ Relecture de l'enveloppe : REVISE (prérequis), révisée ; seconde relecture : 
 
 ---
 
-#### 1.16.1 E20.e0a1 — Oracle d'apparition, catalogue et interface, sans changement de comportement
+#### 1.16.1 E20.e0a1 — Oracle d'apparition, catalogue et interface, sans changement de comportement ✅ (faite et CONFIRMED le 2026-10-15, `4e15fb9` à `026932a`, ADR-0063)
 
 **Révision 1 (2026-10-15).** Relecture : **REVISE**, un point corrigé (FIX) : les 244 vecteurs de la page des cartes n'avaient pas
 d'hôte (un numéro n'est valide que sur ses propres cartes ; `ArcRun` ne construit que quelques cartes). La projection de création des
@@ -3309,9 +3309,30 @@ Annexe : `docs/plan-e20-annexe/e20-e0a/` (README, `oracle/`, `oracle/out/`). Auc
 
 ---
 
+**Vérification (2026-10-15) : CONFIRMED** par deux verifiers frais (workflow, l'un après l'autre). Rejeu : oracle relancé (tout PASS,
+manifeste identique, aucun fichier versé changé), `Alundra.Tests` 4 775/4 775 en Release et en Debug, `cmp` de la DLL, traces ; aucun test
+existant modifié (`git diff --stat 1ccc3c3..026932a -- Alundra.Tests/` : ajouts seulement) ; aucun appelant de production de
+`SpawnEntityBySpriteIndex`. Adversarial : extraction de la fabrique relue ligne à ligne (chemin par enregistrement inchangé), chargeur
+paresseux, carte courante par le nom du monde, cas limites de page et d'indice, unité brute dans l'interface seule. Remarques P4,
+dispositions de la session principale :
+- si une exception survient après `_world.AddEntity` (son de création, poussée de position), l'interface rend `null` alors que l'entité est
+  déjà ajoutée : **reporté à E20.e0a2**, qui retouche les chemins de création (le contrat « `null`, rien d'ajouté » doit tenir aussi sur
+  ce chemin d'erreur) ;
+- la racine `ChildEntity` d'une entité dont le parent vient du chemin par enregistrement (`0x2D` avec parent) diffère du binaire, ce
+  chemin n'écrivant pas `+0x08` : **reporté à E20.e0a2** (écrire `ChildEntity` aussi sur ce chemin, sans lecteur connu : aucun effet
+  visible attendu) ;
+- commentaire devenu inexact dans `ApplyHeaderInitialization` (« from the catalog entry already fetched above ») : **reporté à E20.e0a2** ;
+- assertion tautologique dans le test F du noyau (`dllZ = v.Z - 1` puis `Assert.Equal(v.Z, dllZ + 1)`) : **notée** (l'unité de D-E0A-1
+  est épinglée par le test de l'interface et par la trace AT9) ;
+- bruit de fins de ligne des traces après chaque suite : **noté** (connu).
+
 #### 1.16.2 E20.e0a2 — Table de cases : première libre, plafond de 63, ordre des passes
 
 **Prérequis.** E20.e0a1 (l'interface, l'oracle et son annexe, le compte de tests).
+
+**Reporté d'E20.e0a1 (vérification du 2026-10-15)** : le contrat « `null`, rien d'ajouté » de `SpawnEntityBySpriteIndex` sur le chemin
+d'une exception après `_world.AddEntity` ; `ChildEntity` écrit aussi par le chemin par enregistrement (racine du binaire `+0x08`) ; le
+commentaire inexact d'`ApplyHeaderInitialization`.
 
 **But.** Donner à chaque entité une case (héros 0, autres 1 à 63), la rendre au recyclage, refuser la 64e, et faire suivre l'ordre de `_spawnedEntities` à celui des cases, comme les passes du binaire (événements, compteurs, listes, physique, « premier attaquant » des coups, recherches `0x2C`). Ferme O-E20-13.
 
