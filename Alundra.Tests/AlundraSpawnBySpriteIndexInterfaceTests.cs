@@ -86,7 +86,7 @@ public sealed class AlundraSpawnBySpriteIndexInterfaceTests
         var field = arc.Proxy.CollisionField;
         foreach (var v in AlundraSpawnIndexOracle.Vectors("v7"))
         {
-            // The DLL's stub of the shot passes 1 048 576 where the binary's trace has 1 048 577.
+            // The DLL's call of the shot (the seam of E20.f3a) passes 1 048 576 where the binary's trace has 1 048 577.
             var spawned = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, v.Index, v.X << 16, v.Y << 16, v.Z - 1, v.Direction)!;
             Assert.NotNull(spawned);
             var terrain = spawned.ComputeTerrainHeight(field);

@@ -90,9 +90,29 @@ public sealed class AlundraShotDirectionTests : IDisposable
         _ => t >= 9 ? after : 0u,
     };
 
+    /// <summary>Seven frames of one tick, then the frame of ticks 8 and 9 (the press tick and the shot tick in the same frame).</summary>
+    private static readonly IReadOnlyList<int> PressAndShotInOneFrame = new[] { 1, 1, 1, 1, 1, 1, 1, 2 };
+
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // (d1) and (d2): in the air.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void D1_InTheAir_SquarePlusLeftAtTickP_ShotsAtPPlus1_ToTheWest_At1TickAnd2TicksPerFrame()
+    {
+        // 1 tick per frame: P = 8, the shot at tick 9, west (8): the turn of the press tick counts.
+        var one = Run("d1-1", Air(Square | Left, Left), Grouping(1, 0), 14);
+        var shotOne = Assert.Single(one);
+        Assert.Equal(9, shotOne.Tick);
+        Assert.Equal(8, shotOne.Call.Direction);
+
+        // 2 ticks per frame, P and P+1 in the same frame: the end-of-frame direction is still the east one (0x18) in the phase A code; the tick's own facing (BoxDirection) is the west one.
+        var two = Run("d1-2", Air(Square | Left, Left), PressAndShotInOneFrame, 14);
+        var shotTwo = Assert.Single(two);
+        Assert.Equal(9, shotTwo.Tick);
+        Assert.Equal(2, shotTwo.BoxDirection); // the index D-F3-2 reads (2 = left): already west at the head of the shot tick, whatever the grouping (green from the phase A).
+        Assert.Equal(8, shotTwo.Call.Direction);
+    }
 
     [Fact]
     public void D2_InTheAir_SquareAtTickP_LeftOnlyFromTheShotTick_ShotsToTheEast_TheTurnOfTheShotTickIsIgnored()

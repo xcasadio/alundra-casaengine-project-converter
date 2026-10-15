@@ -1181,14 +1181,14 @@ public static class AlundraPlayerManager
         player.WeaponRecordPointer = 0;
     }
 
-    /// <summary>E20.b B4 stub of the spawn call <c>0x80039F58</c> of <c>UpdateWeaponStepProgression</c> (<c>0x8002F818</c>): the projectile of a bow or a wand, at the hero's X and Y, at his Z plus the
-    /// height <c>ptr[3]</c> of the record. Ported in E20.e0 (the apparition of an entity by sprite index) and E20.f (the weapons); counted only for the tests.</summary>
+    /// <summary>E20.b B4 seam of the spawn call <c>0x80039F58</c> of <c>UpdateWeaponStepProgression</c> (<c>0x8002F818</c>): the projectile of a bow or a wand, at the hero's X and Y, at his Z plus the
+    /// height <c>ptr[3]</c> of the record. Counted and journaled for the tests; since E20.f3a it calls the apparition of an entity by sprite index for the types of <see cref="WiredWeaponTypes"/> (empty until E20.f3c). The direction is the one of the tick (<see cref="AlundraEntityScriptProxy.BoxDirection"/>), read before the tick writes anything, as the binary reads <c>+0x98</c>.</summary>
     private static void SpawnWeaponProjectile(AlundraEntityScriptProxy player, uint recordPointer, IAlundraScriptHost? host)
     {
         WeaponSpawnCallCountForTests++;
         var call = new WeaponSpawnCall(
             AlundraWeaponTables.RecordByte(recordPointer + 1), player.PosX, player.PosY, player.PosZ + (AlundraWeaponTables.RecordByte(recordPointer + 3) << 16),
-            SpawnDirections[Math.Clamp(player.AnimationDirection, 0, SpawnDirections.Length - 1)]);
+            SpawnDirections[Math.Clamp(player.BoxDirection, 0, SpawnDirections.Length - 1)]);
         WeaponSpawnCallsForTests?.Add(call);
 
         // E20.e0a3b: the place of the call of the binary (0x8002F818, inside MovePlayer) where the real shot calls the interface of the sprite index. E20.f3a (D-F3-3): the test hook, when posed, REPLACES the production call (never
@@ -1258,14 +1258,14 @@ public static class AlundraPlayerManager
     internal static Action<AlundraEntityScriptProxy, WeaponSpawnCall>? WeaponSpawnBirthHookForTests;
 
     /// <summary>E20.f1a: the arguments of one call of the spawn stub, as the binary passes them to <c>0x80039F58</c> (<c>0x8002F7D4-0x8002F818</c>): the type is <c>ptr[1]</c> of the record, the position is the hero's X and Y and his Z
-    /// plus <c>ptr[3]</c> pixels (the DLL's frame of Z: the oracle's is one raw unit more, ADR-0026), the direction is <c>CardinalDirectionTable[+0x98]</c> (<c>0x80023644</c>: down 0, up 0x10, left 8, right 0x18).</summary>
+    /// plus <c>ptr[3]</c> pixels (the DLL's frame of Z: the oracle's is one raw unit more, ADR-0026), the direction is <c>CardinalDirectionTable[+0x98]</c> (<c>0x80023644</c>: down 0, up 0x10, left 8, right 0x18), indexed by <c>BoxDirection</c> (E20.f3a).</summary>
     internal readonly record struct WeaponSpawnCall(int Type, int X, int Y, int Z, int Direction);
 
     /// <summary>E20.f1a test seam, per thread: when set, every call of <see cref="SpawnWeaponProjectile"/> is appended to it with its arguments.</summary>
     [ThreadStatic]
     internal static System.Collections.Generic.List<WeaponSpawnCall>? WeaponSpawnCallsForTests;
 
-    /// <summary>The table <c>0x80023644</c>, indexed by the hero's direction of the sprite (<see cref="AlundraEntityScriptProxy.AnimationDirection"/>, the order of <see cref="AnimationTables.DirectionNames"/>).</summary>
+    /// <summary>The table <c>0x80023644</c>, indexed by the hero's direction of the sprite at the tick of the shot (<see cref="AlundraEntityScriptProxy.BoxDirection"/>, never the end-of-frame <see cref="AlundraEntityScriptProxy.AnimationDirection"/>, D-F3-2; the order of <see cref="AnimationTables.DirectionNames"/>).</summary>
     private static readonly int[] SpawnDirections = { 0, 0x10, 8, 0x18 };
 
     /// <summary>E20.a A4 stub of <c>UpdatePlayerCarriedEntity</c> (<c>0x8002F884</c>, called with 0 at <c>0x80031D78</c> and, E20.i, with 2 by the swim branch): nothing is carried yet (E20.g).</summary>

@@ -325,12 +325,12 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
         {
             var c = Create(v, field);
             SpawnProjectionAsserts.Check(v.Id, v.P!, c.Proxy, field, c.Hero, c.Aux, withTerrain: true);
-            // The DLL's stub of the shot passes Z = PosZ + (ptr[3] << 16) in the DLL's frame: the binary's argument minus one raw unit (AlundraHeroAttackTests, the AT9 traces).
+            // The DLL's call of the shot (the seam of E20.f3a) passes Z = PosZ + (ptr[3] << 16) in the DLL's frame: the binary's argument minus one raw unit (AlundraHeroAttackTests, the AT9 traces).
             var dllZ = v.Z - 1;
             Assert.Equal(v.Z, dllZ + 1);
         }
 
-        // 1 048 577 in the trace of the binary, 1 048 576 in the call of the stub of the DLL.
+        // 1 048 577 in the trace of the binary, 1 048 576 in the call of the shot of the DLL.
         Assert.Contains(vectors, v => v.Z == 1048577);
     }
 }

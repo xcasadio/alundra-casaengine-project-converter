@@ -237,7 +237,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
 
             Check("rng_after", (uint)AlundraRandom.RandomSeed, row.RngAfter);
 
-            // The shot stub (E20.e0a and E20.f3 make it real): the same calls at the same ticks, with the oracle's arguments; the oracle's Z is the DLL's plus one raw unit (ADR-0026).
+            // The shot call (the journal; E20.f3 wires the types one by one): the same calls at the same ticks, with the oracle's arguments; the oracle's Z is the DLL's plus one raw unit (ADR-0026).
             Check("spawn_calls", spawns.Count, row.Spawns.Count);
             for (var i = 0; i < Math.Min(spawns.Count, row.Spawns.Count); i++)
             {
