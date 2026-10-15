@@ -127,3 +127,42 @@ The names of the 70 cases are in the plan results of E20.e0k1 and can be recompu
 | P6 - gap between the root and the logical Z of a ball finishing its fall | the engine anchors the root to the logical Z within 4 px |
 
 The results of the probes are appended below by T2 (before the phase B wiring).
+
+## Results of the probes at the phase A commit `b4f3938` (the starting behaviour of an entity born by the interface; T2, first half)
+
+Throwaway tests (never committed), world of map 14 (`ArcRun`, real prefabs and controllers) over a synthetic field of cells. Each probe ran twice: **A0** as the interface creates the entity (the starting behaviour) and **A1** with
+the map state applied by hand right after the birth (`ApplyMapDependentState`, a rehearsal of the one wiring line of phase B). Raw outputs: the session scratch folder (`probes_out_phaseA.txt`). Positions in px, raw 16.16 in brackets.
+
+| Probe | Prediction | Measured | Verdict |
+|---|---|---|---|
+| P1 - ball (11), Z + 32 px, flat | A0: stays at 32 px | A0: `PosZ` 2 097 153 at birth, 2 097 152 from tick 1 to tick 16 (X flies on at 6 px per tick, `IsOnGround` 0, `ForceZ` 0) | confirmed |
+| P1 with the state | Z = oracle minus one raw unit until the landing | A1: 31.5, 30.5, 29, 27, 24.5, 21.5, 18, 14, 9.5, 4.5 px at ticks 1 to 10, 0 at tick 11 with `IsOnGround` 1, then status 3: the shape of the oracle. In raw units the DLL is the oracle **minus two** during the fall (2 064 384 against 2 064 386 at tick 1, ..., 294 912 against 294 914 at tick 10: difference 2 at ticks 1 to 10) and minus one at rest (0 against 1 at tick 11) | **CONTRADICTED** (two units, not one, while falling) |
+| P2 - arrow (3), wall column 15 (mask `0x40`, height 0) | A0 crosses; A1 stops at X = 349 | A0: X = 517 at tick 70 (a start at 100), status 2, `ForceAdjusted` never raised. A1: X = 349.0 exactly (22 872 064) for the six distinct starts, status 3 | confirmed |
+| P3 - arrow (3) born at 16 px above a field flat at 16 px | `IsOnGround` 1 from the first step | A0 and A1 the same: `PosZ` 1 048 577 at birth, 1 048 576 from tick 1, `IsOnGround` 1 from tick 1 (the binary has the floor plus 2 raw units and never lands) | confirmed; the red test of e0k2 |
+| P4 - tick of the wall flag over the ten starts of C1 | always "+1" | A1: the flag is raised at tick **43** for the ten starts, the arrow having reached 349.0 at tick 42 by a shortened step (flag = arrival + 1, always). The fractions of the starts (12 345, 1, 40 000, 65 535) are lost by the root (X is pulled back in whole pixels): the ten starts are six integer starts. The oracle flags at 43 for the starts 100, 102, 103, 105 and 100 + 12 345/65 536, and at 44 for 101, 104, 100 + 1, 100 + 40 000 and 101 + 65 535 | confirmed ("+1" always); gap of one tick against the oracle in **5 of the 10** starts as given (2 of the 6 integer starts: 101 and 104) |
+| P5 - rising entity (the bomb, global 2, flags `0x13234E`, animation 2, impulse 1 024; no entity born by the interface carries it as animation 0, the Beannoid hop of the plan's wording is reset to animation 2 at once) | cancelled without the vertical ownership, not with it | A0 (`IsVerticalOwnedExternally` false): `PosZ` 4 px at tick 1 (`ForceZ` 262 144) then **0 and `IsOnGround` 1 at tick 2**: the rise is cancelled. A1 (owned): 4, 7.5, 10.5, 13, 15, 16.5, 17.5, 18, 18 px, then the descent, landing at tick 17 | confirmed |
+| P6 - gap between the root and the logical Z of a ball finishing its fall | the engine anchors the root within 4 px | `PosZ` px minus the root Z is **0.0000 at each of the 30 ticks**, in A0 and in A1: the logical Z is pulled from the root every tick, so there is nothing to anchor (the first push to the root truncates to whole pixels, which is the lost raw unit of P1) | not decidable here (no gap exists before e0k2); not contradicted |
+
+The contradiction of P1 is explained by the root, not by the state: the creation pushes the position to the root in whole pixels (`PushLogicalPositionToRoot`, `>> 16`), the first tick pulls `PosZ` back from the root, and the
+raw unit of the creation is lost at once (2 097 153 becomes 2 097 152 before the first fall step). This is exactly the defect of D-F3-8 and D-E0K-4 (the logical Z), which E20.e0k2 fixes; E20.e0k1 does not claim the raw
+unit. The slice's tests (k2) and (k4) do not pin it (they compare the landing tick and the rest height). The decision the stop asks for, before E20.e0k2: keep the prediction of the plan for e0k2's own tests (the series
+must then equal the oracle **minus one** raw unit, which only the logical Z gives), and record that after e0k1 alone the series is the oracle **minus two**.
+
+## Phase A results
+
+`ApplyMapDependentState` extracted from `ApplySpawnInitialization` (same lines, same order), optional `TileMapData? tileMapData = null` on `CreateEntityFromSpriteIndex`, not passed by `SpawnEntityBySpriteIndex`
+(commit `b4f3938`). Suite 4 894 of 4 894 in Release and in Debug (4 886 + 8 new of `AlundraMapStateTests`), no existing test moved, `cmp` of `Alundra.dll` identical, the five traces unchanged. The tests of (a) were red on
+the skeleton (the call commented out: 4 red for the missing state; (b) and the P3 pin green, as by construction), M3 killed by the P3 pin.
+
+## The world tests (k1) to (k4), written before the wiring (not committed; they are committed with phase B)
+
+`Alundra.Tests/AlundraMapStateWorldTests.cs`, run on the phase A code (the interface does not pass the map): **4 red, each for the stated reason**.
+
+| Test | Red before B because | Value seen |
+|---|---|---|
+| K1 | the arrow crosses the wall that only the mask blocks | max X 29 949 952 (457 px), no `ForceAdjusted`; expected 22 872 064 (349 px) and the flag |
+| K2 | the ball never lands | first landing tick 0 (expected the oracle's 11), `PosZ` stays 2 097 152; the "no map" witness is the same |
+| K3 | the ball does not fall on map 14 either | `PosZ` stays at 32 px on both maps (expected 0 on map 14 and a drop of less than a pixel on map 159) |
+| K4 | the entity born by the interface has the defaults | (0, 0, 0, false, 0.001) against (128, 4096, 0x40, true, 0) for the record |
+
+Rehearsal (not kept): with the one wiring line `..., CollisionField, _tileMapData);` in `SpawnEntityBySpriteIndex` the four tests are green; the line was reverted (`git checkout`).
