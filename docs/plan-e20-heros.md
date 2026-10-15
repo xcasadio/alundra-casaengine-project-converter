@@ -2955,7 +2955,7 @@ trio non sauté, groupe `0x80032758` réécrit en `0x1D`, une entrée de la tabl
 
 ---
 
-### 1.15 E20.e0x — `BankKey` et indices valides par carte dans l'export ✅ (détaillée le 2026-10-10)
+### 1.15 E20.e0x — `BankKey` et indices valides par carte dans l'export ✅ (détaillée le 2026-10-10 ; faite et CONFIRMED le 2026-10-15, `3e136c1` à `aad4fe8`, ADR-0062)
 
 Découverte en lecture seule du 2026-10-10 (conception, puis critique adversarial qui a tout recalculé de son côté ; rapports dans le
 scratchpad de la session : `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/e20/e0x_design.md` et `e0x_critic.md`, scripts sous
@@ -3104,6 +3104,21 @@ Commits : T0 `3e136c1` (faite le 2026-10-10), T1 à T3 `f2e67bb` (tests, code, d
 **Décisions d'exécution.** `ReadAllBanks` reçoit un paramètre facultatif (dictionnaire de sortie) : la déduplication des banques ne change pas, la collecte des indices valides se fait avant elle (une fiche déjà vue sur une autre carte compte pour cette carte). `ResolveBankKey` et `WriteMapSpriteIndices` sont `internal` (accessibles aux tests par `InternalsVisibleTo` existant). Le contrôle croisé avec `SpriteTable` ne s'applique que si la carte porte une `SpriteTable`.
 
 **Écarts, arrêts.** Aucun arrêt du plan n'a joué. Test rouge de T2 : compilation en échec (`SpriteWriter.ResolveBankKey` inexistant), les autres tests du fichier étaient rouges par construction ; T2 et T3 sont dans un seul commit pour rester constructible.
+
+**Vérification (2026-10-15) : CONFIRMED** par deux verifiers frais (workflow, l'un après l'autre ; la première exécution, le 2026-10-10, a
+été coupée par la limite d'usage après T0, sans export). Lecture seule : diff du convertisseur conforme (seuls `SpriteBankReader.cs`,
+`SpriteWriter.cs` et les tests changent ; `BankKey` déclaré en premier ; erreur dure sans clé ; clés des cartes en ordre numérique et indices
+triés ; contrôle croisé avec `SpriteTable` en erreur dure ; aucun compteur nouveau) ; annexe versée avant le code (`3e136c1`) ; ADR-0062 et
+docs de format ; recalcul indépendant des 395 clés et de `map-sprite-indices.json` octet pour octet, 0 écart. Rejeu : un export de plus ne
+change que `report.json`, les deux fichiers égaux à leurs prédictions, compteurs égaux à ceux de T1, convertisseur 854/854, `Alundra.Tests`
+4 752/4 752 en Release et en Debug, `cmp` de la DLL, traces. Remarques P4, dispositions :
+- T2 et T3 dans un même commit : l'ordre « tests rouges d'abord » n'est attesté que par le rapport de l'exécuteur (compilation en échec) :
+  **noté**.
+- En cas d'écart avec `SpriteTable`, le message d'erreur dit que `map-sprite-indices.json` ne peut pas être écrit alors que le fichier est
+  écrit quand même ; l'erreur reste dure, l'export échoue : **reporté** à la prochaine tranche qui touche le convertisseur (message à
+  corriger, ou écriture à conditionner).
+- `Alundra.dll` et `Alundra.pdb` ont changé de taille après les builds de T5 (redéposés par la suite de tests), sans effet sur la preuve
+  (le manifeste les exclut) : **noté**.
 
 ## 2. Points ouverts
 
