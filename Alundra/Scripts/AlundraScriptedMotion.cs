@@ -164,7 +164,9 @@ internal static class AlundraScriptedMotion
     /// of whether it carries a controller.</summary>
     internal static void TickScriptedNpc(AlundraEntityScriptProxy entity)
     {
-        RunOneMotionTick(entity, entity.CurrentAnimationId);
+        // E20.e0a3b (D-E0A-8, ADR-0065): an entity born by the interface of the sprite index whose first animation is not validated yet (CurrentAnimationId still ~0, as the creation leaves it) takes its
+        // animation set from the target: the binary's creation has switched to it already (0x80038AB4). Guarded by the marker, so no entity from a record ever sees this line.
+        RunOneMotionTick(entity, entity.JoinsBirthTick && entity.CurrentAnimationId == ~0u ? entity.TargetAnimationId : entity.CurrentAnimationId);
     }
 
     /// <summary>One logic tick's worth of motion for either caller - PhysicsEngine.cs:17 (top of
@@ -692,7 +694,7 @@ internal static class AlundraScriptedMotion
     /// </summary>
     private static int BlockedCorners(AlundraEntityScriptProxy entity, int advanceX, int advanceY)
     {
-        if (entity.OwnerEntity?.World?.CollisionField is not AlundraCellsCollisionField field || entity.Controller == null)
+        if (entity.ReadCollisionField() is not AlundraCellsCollisionField field || entity.Controller == null)
         {
             return 0;
         }

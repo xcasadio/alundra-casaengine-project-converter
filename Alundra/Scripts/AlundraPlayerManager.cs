@@ -1186,10 +1186,19 @@ public static class AlundraPlayerManager
     private static void SpawnWeaponProjectile(AlundraEntityScriptProxy player, uint recordPointer)
     {
         WeaponSpawnCallCountForTests++;
-        WeaponSpawnCallsForTests?.Add(new WeaponSpawnCall(
+        var call = new WeaponSpawnCall(
             AlundraWeaponTables.RecordByte(recordPointer + 1), player.PosX, player.PosY, player.PosZ + (AlundraWeaponTables.RecordByte(recordPointer + 3) << 16),
-            SpawnDirections[Math.Clamp(player.AnimationDirection, 0, SpawnDirections.Length - 1)]));
+            SpawnDirections[Math.Clamp(player.AnimationDirection, 0, SpawnDirections.Length - 1)]);
+        WeaponSpawnCallsForTests?.Add(call);
+
+        // E20.e0a3b: the place of the call of the binary (0x8002F818, inside MovePlayer) where the real shot will call the interface of the sprite index (E20.f3); null in production, so nothing is spawned yet.
+        WeaponSpawnBirthHookForTests?.Invoke(player, call);
     }
+
+    /// <summary>E20.e0a3b test seam, per thread (the motif of <see cref="WeaponSpawnCallsForTests"/>): called at the exact place of <c>MovePlayer</c> where the shot of the hero calls <c>0x80039F58</c>, with the hero and the arguments of the call.
+    /// Null in production: the shot is not wired (E20.f3), a test uses it to call <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> from there.</summary>
+    [ThreadStatic]
+    internal static Action<AlundraEntityScriptProxy, WeaponSpawnCall>? WeaponSpawnBirthHookForTests;
 
     /// <summary>E20.f1a: the arguments of one call of the spawn stub, as the binary passes them to <c>0x80039F58</c> (<c>0x8002F7D4-0x8002F818</c>): the type is <c>ptr[1]</c> of the record, the position is the hero's X and Y and his Z
     /// plus <c>ptr[3]</c> pixels (the DLL's frame of Z: the oracle's is one raw unit more, ADR-0026), the direction is <c>CardinalDirectionTable[+0x98]</c> (<c>0x80023644</c>: down 0, up 0x10, left 8, right 0x18).</summary>

@@ -139,7 +139,7 @@ internal static class AlundraPlayerAnimationEffects
     /// </summary>
     private static bool HasWallUnderACorner(AlundraEntityScriptProxy player)
     {
-        if (player.SelfEntity?.World?.CollisionField is not AlundraCellsCollisionField cells)
+        if (player.ReadCollisionField() is not AlundraCellsCollisionField cells)
         {
             return false;
         }

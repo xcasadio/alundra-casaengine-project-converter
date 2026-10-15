@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using CasaEngine.Engine.Physics;
 
 namespace Alundra.Scripts;
 
@@ -81,6 +82,13 @@ public interface IAlundraScriptHost
     /// driver: the entity then runs its own loop of ticks (<c>AlundraEntityScriptProxy.RunSelfDrivenTicks</c>), over the same tick passes.
     /// </summary>
     bool DrivesEntityTicks => false;
+
+    /// <summary>
+    /// E20.e0a3b (D-E0A-5, ADR-0065): the collision field of the host, which an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> reads (<see cref="AlundraEntityScriptProxy.ReadCollisionField"/>)
+    /// in the tick of its birth, while the engine has not integrated it and <c>Owner.World</c> is still null. Null (the default) for every host that has none; <see cref="AlundraWorldProxy"/> implements it EXPLICITLY (its own
+    /// <see cref="AlundraWorldProxy.CollisionField"/> has another type, so the default would answer null).
+    /// </summary>
+    ICollisionField? CollisionField => null;
 
     /// <summary>
     /// T3 (docs/plan-transitions-carte.md §1.1/§3): this world's own parsed "Portals" object-layer

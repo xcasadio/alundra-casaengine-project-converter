@@ -792,6 +792,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </remarks>
     public bool DrivesEntityTicks => _world?.Game != null;
 
+    /// <summary>E20.e0a3b test seam: told every time an entity reads the collision field of this host by the fallback of <see cref="IAlundraScriptHost.CollisionField"/> (an entity that joins the tick of its birth, before the engine integrated it).</summary>
+    internal Action? CollisionFieldFallbackReadForTests;
+
+    /// <summary>E20.e0a3b (D-E0A-5): the collision field an entity born by the interface of the sprite index reads before the engine integrated it (see <see cref="IAlundraScriptHost.CollisionField"/>). Explicit: <see cref="CollisionField"/> has another type.</summary>
+    ICollisionField? IAlundraScriptHost.CollisionField
+    {
+        get
+        {
+            CollisionFieldFallbackReadForTests?.Invoke();
+            return CollisionField;
+        }
+    }
+
     /// <summary>See <see cref="IAlundraScriptHost.LogicTicksThisFrame"/>'s own doc; the sticky first-frame
     /// floor is documented on <see cref="_firstFrameStillOpen"/> itself.</summary>
     public int LogicTicksThisFrame(float elapsedTime)
@@ -2793,12 +2806,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         foreach (var entity in _spawnedEntities)
         {
-            if (entity.GameplayProxy is AlundraEntityScriptProxy { TookPartInFrame: true } proxy && !ReferenceEquals(proxy, hero))
+            // E20.e0a3b (D-E0A-5): an entity born by the interface of the sprite index, not yet integrated by the engine, is in the block of the tick that sees it (in the order of its slot): the one
+            // of MovePlayer, which re-collects, or the next one of the same frame. An entity from a record never carries the marker; one integrated by the engine is a TookPartInFrame entity as before.
+            if (entity.GameplayProxy is AlundraEntityScriptProxy proxy
+                && !ReferenceEquals(proxy, hero)
+                && (proxy.TookPartInFrame || (proxy.JoinsBirthTick && entity.World == null)))
             {
                 _tickEntities.Add(proxy);
             }
         }
     }
+
+    /// <summary>E20.e0a3b: the number of entities <see cref="SpawnEntityBySpriteIndex"/> made since the head of the entity block of the current tick (reset there); non-zero right after <c>MovePlayer</c> means that a newborn must join the tick.</summary>
+    private int _birthSpawnsThisTick;
 
     /// <summary>
     /// E20.a A3 (docs/plan-e20-heros.md section 1.3, D-E20-11, D-E20-12): the entity block of ONE logic tick, in the order of the binary's <c>UpdateEntities</c> (<c>0x8003B388</c>):
@@ -2829,6 +2849,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         }
 
         CollectTickEntities();
+        _birthSpawnsThisTick = 0;
         _effectStage.BeginSource(tick, 1); // E19.g G3b (G3B-R3): the effect operations of the entities of this tick carry its tick (rank 1), the pending triggers rank 2.
 
         // E20.a A4 (D-E20-2): MovePlayer once per tick, first of the block (0x800386EC), on the pad of the tick (AlundraTickPad, with the release edge).
@@ -2837,6 +2858,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         if (hero is { TookPartInFrame: true })
         {
             hero.MovePlayerOnTickPad(AlundraPadState.FromTickPad(GameState.TickPad, in GameState.LastPadState));
+        }
+
+        // E20.e0a3b (D-E0A-5, D-E20-34): an entity MovePlayer made (a shot, an item) is born in the pass of the hero, which comes first, and runs in this very tick: its program, the lists, the clock and the physics.
+        // One born later in the tick (the programs of the other entities) is in the next tick's block (or, in a frame of several ticks, in the next tick of this frame), as the oracle's BT-H rows.
+        if (_birthSpawnsThisTick != 0)
+        {
+            CollectTickEntities();
+            _birthSpawnsThisTick = 0;
         }
 
         TickTraceForTests?.Invoke("programs");
@@ -3414,6 +3443,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             CreationFaultHookForTests?.Invoke("sprite-index", entity);
             RequestAppearanceSound(spawnedProxy); // E19.t T-R2: at the tick of the call.
             spawnedProxy?.PushLogicalPositionToRoot();
+
+            // E20.e0a3b (D-E0A-5, ADR-0065): the marker is posed LAST, after the push to the root, so that nothing of the creation reads the collision field of the host by the fallback (the one relief of the creation is the
+            // core's, as 0x80039EF0). From here the entity takes part in the tick that sees it born, when this is the tick of MovePlayer (RunEntityBlock re-collects).
+            if (spawnedProxy != null)
+            {
+                spawnedProxy.JoinsBirthTick = true;
+                _birthSpawnsThisTick++;
+            }
+
             return spawnedProxy;
         }
         catch (Exception ex)

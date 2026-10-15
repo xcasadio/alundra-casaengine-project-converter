@@ -212,10 +212,11 @@ public sealed class AlundraBirthTickProbePaTests
     }
 
     [Fact]
-    public void PA3_TheGenericKinematicsOfTheBirthTick_WithCurrentAsTheInterfaceLeavesIt()
+    public void PA3_TheGenericKinematicsOfTheBirthTick_WithCurrentAsTheInterfaceLeavesIt_MeasuredAfterE0a3b()
     {
-        // The animation set of the interface-born arrow is keyed by Current, which is ~0 until the first publication: no speed, no movement, in the birth tick and the two after.
-        Assert.Equal(new[] { StartX, StartX, StartX }, Kinematics("PA3a(current=~0)", currentEqualsTarget: false));
+        // MEASURED AFTER E20.e0a3b (D-E0A-8, ADR-0065): the entity of the interface carries the marker, so the generic kinematics keys its animation set on the TARGET while Current is still ~0: 3 px at the birth tick, then 6 px
+        // per tick (153, 159, 165), as the binary's arrow. The historical measurement of this probe (the state before e0a3b: Current ~0 keys no animation, X = 150, 150, 150) stays written in "Resultat de P-A" of the plan.
+        Assert.Equal(new[] { StartX + 3, StartX + 9, StartX + 15 }, Kinematics("PA3a(current=~0, marked)", currentEqualsTarget: false));
     }
 
     [Fact]

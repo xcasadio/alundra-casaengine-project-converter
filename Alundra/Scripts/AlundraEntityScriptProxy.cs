@@ -749,7 +749,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         // the data dependency of the step itself (a field to read the terrain from) and it is what keeps out the entities of the intro harness, which are bare, never in
         // a world, and run their own vertical pass: it guards EVERY write below (decay, contact, IsOnGround, TileZ, PosZ). A destroyed entity is skipped, as in the
         // motion tick (D-E19-29).
-        var stepsWithoutController = Controller == null && !immediateAtSpawn && Status.IsActive() && Owner?.World?.CollisionField != null;
+        var stepsWithoutController = Controller == null && !immediateAtSpawn && Status.IsActive() && ReadCollisionField() != null;
 
         // Single decay site (verifier A1/A6 follow-up, reconciled with the timing bug fix above): a
         // controller-driven entity's own ForceZ is never decayed by AlundraScriptedMotion.RunOneKinematicTick
@@ -1327,6 +1327,29 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     internal bool TookPartInFrame;
 
     /// <summary>
+    /// E20.e0a3b (docs/plan-e20-heros.md section 1.16.3b, D-E0A-5, D-E0A-8, ADR-0065): the entity was born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> and so takes part in the tick that sees it born, before the
+    /// engine integrates it (<see cref="AlundraWorldProxy"/> collects it, the host's collision field stands in for the world's one that does not exist yet, the generic kinematics keys its animation set on the target
+    /// while the animation is not validated). Posed ONLY at the very end of that interface, after the push of the position to the root (so the creation never reads the field by the fallback); never by the
+    /// creation from a record, never cloned.
+    /// </summary>
+    internal bool JoinsBirthTick;
+
+    /// <summary>
+    /// E20.e0a3b (D-E0A-5): the collision field the reads of <c>Owner.World.CollisionField</c> of this proxy use: the world's, once the engine integrated the entity; before that, and only for an entity that
+    /// <see cref="JoinsBirthTick"/>, the host's (<see cref="IAlundraScriptHost.CollisionField"/>). An entity from a record keeps the exact read it had (null before its integration).
+    /// </summary>
+    internal ICollisionField? ReadCollisionField()
+    {
+        var world = Owner?.World;
+        if (world != null)
+        {
+            return world.CollisionField;
+        }
+
+        return JoinsBirthTick ? ScriptHost?.CollisionField : null;
+    }
+
+    /// <summary>
     /// E20.a A2: set by <see cref="Update"/> when the host drives the ticks and the gate (<see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/>) was open at the
     /// head of the frame, the condition under which this entity's <see cref="AlundraFrameSyncPasses.SyncAnimation"/> ran (T2, "dedans"). Consumed by the host's end-of-frame publication.
     /// </summary>
@@ -1727,7 +1750,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// </summary>
     internal void ClampToGround()
     {
-        var field = Owner?.World?.CollisionField;
+        var field = ReadCollisionField();
         if (field == null)
         {
             return;
@@ -1798,7 +1821,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// "sea level" fallback <c>ComputeEntityGroundHeight</c>/the harness's own port already use) - a no-op
     /// return without an installed <c>World.CollisionField</c>.
     /// </summary>
-    internal int ComputeTerrainHeight() => ComputeTerrainHeight(Owner?.World?.CollisionField);
+    internal int ComputeTerrainHeight() => ComputeTerrainHeight(ReadCollisionField());
 
     /// <summary>The same height against an explicit <paramref name="field"/>: E19.h1b1 uses it at spawn, when the entity has no world yet
     /// (<see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/> runs before <c>World.AddEntity</c>). 0 without a field.</summary>
@@ -1889,7 +1912,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
             return;
         }
 
-        if (Owner?.World?.CollisionField is not AlundraCellsCollisionField cellsField)
+        if (ReadCollisionField() is not AlundraCellsCollisionField cellsField)
         {
             Slope_18c = 0;
             return;
@@ -1963,7 +1986,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
             return;
         }
 
-        if (Owner?.World?.CollisionField is not AlundraCellsCollisionField cellsField)
+        if (ReadCollisionField() is not AlundraCellsCollisionField cellsField)
         {
             CombinedVramFlagsOR = 0;
             CombinedVramFlagsAND = 0;
@@ -2079,7 +2102,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// (the same fallback as <see cref="ComputeTerrainHeight(ICollisionField?)"/>). Does nothing without a collision field, nor for a bare proxy that was never created from a sprite record
     /// (<see cref="SpriteType"/> is -1: the harnesses' pawns; the E2 pin <c>AlundraFloorHeightTests.ProductionCallSite_BarePawnWithoutSpriteRecord_NeverGetsFloorHeight_StaysZero</c> is such a pawn; no native handler runs for such a pawn, since the registry is keyed by sprite type). Nothing but the native handlers of E14.a reads these fields.
     /// </summary>
-    internal void UpdateEnemyGroundHeights() => UpdateEnemyGroundHeights(Owner?.World?.CollisionField);
+    internal void UpdateEnemyGroundHeights() => UpdateEnemyGroundHeights(ReadCollisionField());
 
     /// <summary>The same against an explicit <paramref name="field"/> (the spawn, when the entity has no world yet).</summary>
     internal void UpdateEnemyGroundHeights(ICollisionField? field)
@@ -2243,7 +2266,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// installed.</returns>
     internal int GetTileHeightAtOffset(int offsetX, int offsetY)
     {
-        if (Owner?.World?.CollisionField is not AlundraCellsCollisionField cellsField)
+        if (ReadCollisionField() is not AlundraCellsCollisionField cellsField)
         {
             return 0;
         }

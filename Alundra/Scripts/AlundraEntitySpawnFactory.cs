@@ -535,6 +535,11 @@ internal static class AlundraEntitySpawnFactory
 
         ApplyHeaderInitialization(header, entity, proxy, isMapPage ? index | 0x100 : index, unchecked((uint)direction), collisionField);
 
+        // E20.e0a3b (D-E0A-8, ADR-0065), HERE and not in the core the record path shares: the first switch of the creation (0x80038AB4, the block 0x80038B18-0x80038BAC) loads the byte 0xD of the animation set of the
+        // animation 0 into +0xB4/AnimFlags. SyncAnimation reloads the same byte when it validates the pending switch at the end of the first frame; until then (the tick of the birth) the field would read 0, and the bit 0x80 of
+        // the sprites 20, 21, 27, 28 and 29 (out of the lists of the collisions and of the support) would be missing. Current and Direction stay as the core leaves them: the switch stays pending in the four directions.
+        proxy.AnimFlags = proxy.AnimSetsByAnim != null && proxy.AnimSetsByAnim.TryGetValue((int)proxy.TargetAnimationId, out var firstAnimationSet) ? firstAnimationSet.Acceleration : 0;
+
         // As CreateEntityFromPrefab: the prefab's root is the inert transform, placed in the logical frame from the position just filled.
         if (entity.RootComponent != null)
         {
