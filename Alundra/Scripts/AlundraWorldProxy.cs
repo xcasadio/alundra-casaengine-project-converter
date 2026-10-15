@@ -137,6 +137,65 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     private readonly List<Entity> _spawnedEntities = new();
 
     /// <summary>
+    /// E20.e0a2 (ADR-0064): the slots of this world's entities, one table per instance (a map has its own proxy, so a new map starts empty, slot 0 held for the hero).
+    /// </summary>
+    private readonly AlundraEntitySlotTable _slots = new();
+
+    /// <summary>The highest slot of the entries of <see cref="_spawnedEntities"/> that have one (-1 when none does).</summary>
+    private int HighestLiveSlot()
+    {
+        var highest = -1;
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is AlundraEntityScriptProxy { Slot: var slot } && slot > highest)
+            {
+                highest = slot;
+            }
+        }
+
+        return highest;
+    }
+
+    /// <summary>
+    /// E20.e0a2 phase A (shadow, T0): gives <paramref name="proxy"/> the lowest free slot and reports what phase B would do with it, without reordering or refusing anything
+    /// (a full table leaves the slot at -1 and the entity is added as before). Called before the entity joins <see cref="_spawnedEntities"/>.
+    /// </summary>
+    private void AssignSlot(AlundraEntityScriptProxy? proxy)
+    {
+        if (proxy == null)
+        {
+            return;
+        }
+
+        var slot = _slots.Allocate();
+        proxy.Slot = slot;
+        ReportSlot(slot);
+    }
+
+    private void ReportSlot(int slot)
+    {
+        if (!AlundraSlotShadow.Active)
+        {
+            return;
+        }
+
+        var maxLive = HighestLiveSlot();
+        var world = _world?.Name;
+        if (slot < 0)
+        {
+            AlundraSlotShadow.Report(AlundraSlotShadow.Overflow, world, slot, maxLive);
+            return;
+        }
+
+        if (slot < maxLive)
+        {
+            AlundraSlotShadow.Report(AlundraSlotShadow.OutOfOrder, world, slot, maxLive);
+        }
+
+        AlundraSlotShadow.Report(AlundraSlotShadow.Seen, world, slot, maxLive);
+    }
+
+    /// <summary>
     /// Every "Entities" record of this world's own tilemap layer, keyed by its <c>Index</c> custom
     /// property - i.e. the same id <see cref="AlundraEntityScriptProxy.EntityRefId"/> is filled from
     /// (<see cref="EntityRecordMapper"/>) and the id the dynamic-spawn opcode 0x2D
@@ -901,6 +960,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 }
 
                 world.AddEntity(entity);
+                AssignSlot(spawnedProxy); // E20.e0a2 phase A: the shadow of the slot table.
                 _spawnedEntities.Add(entity);
                 RequestAppearanceSound(spawnedProxy); // E19.t T-R2: the sound of the animation of the appearance, in the group of this (new) map.
 
@@ -2091,6 +2151,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // The pawn is already in world.Entities (the engine added it) but not yet in this proxy's own
         // _spawnedEntities - add it so the per-entity animation/transform sync passes (SyncAnimation/
         // SyncTransform) see it every frame, exactly like the old SpawnPlayerEntity used to.
+        proxy.Slot = 0; // E20.e0a2: the hero holds slot 0 (held by the table from its construction).
+        _slots.HoldHeroSlot();
+        ReportSlot(0);
         _spawnedEntities.Add(entity);
         PlayerEntity = proxy;
 
@@ -3039,6 +3102,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             proxy.Status = EntityStatus.Destroyed;
             proxy.EntityRefId = -1;
             _spawnedEntities.RemoveAt(i);
+            _slots.Release(proxy.Slot); // E20.e0a2: the slot is free again from the pass that recycles it.
+            proxy.Slot = -1;
             _world?.RemoveEntity(entity);
             Logs.WriteDebug("AlundraWorldProxy: destroyed entity recycled.");
         }
@@ -3164,6 +3229,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             }
 
             _world.AddEntity(entity);
+            AssignSlot(spawnedProxy); // E20.e0a2 phase A: the shadow of the slot table.
             _spawnedEntities.Add(entity);
             RequestAppearanceSound(spawnedProxy); // E19.t T-R2: at the tick of the opcode (0x2D, 0x8A, 0x8B).
             // E4.b: same ground-clamp + root push as the map-load spawn loop above - see that call site's
@@ -3247,6 +3313,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             }
 
             _world.AddEntity(entity);
+            AssignSlot(spawnedProxy); // E20.e0a2 phase A: the shadow of the slot table.
             _spawnedEntities.Add(entity);
             RequestAppearanceSound(spawnedProxy); // E19.t T-R2: at the tick of the call.
             spawnedProxy?.PushLogicalPositionToRoot();

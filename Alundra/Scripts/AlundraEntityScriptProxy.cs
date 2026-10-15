@@ -62,6 +62,12 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// </summary>
     internal IAlundraScriptHost? ScriptHost;
 
+    /// <summary>
+    /// E20.e0a2 (docs/plan-e20-heros.md section 1.16.2, ADR-0064): the slot of the entity in the world's table of 64 (<see cref="AlundraEntitySlotTable"/>): 0 for the hero, 1 to 63 for the others, -1 for an entity that has none
+    /// (a test montage, a refused apparition, a recycled entity). Set by the world that creates the entity; not copied by <see cref="Clone"/> (a clone has not been spawned into any world).
+    /// </summary>
+    internal int Slot = -1;
+
     public int Index;
     public int Index2;
     public Entity? ChildEntity;
