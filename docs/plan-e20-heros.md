@@ -3614,6 +3614,13 @@ n'est attesté que par le rapport) ; bruit de fins de ligne des traces.
 
 ##### 1.16.3b E20.e0a3b — Le code du tick de naissance, puis la mesure P-B (détaillée le 2026-10-15 après P-A)
 
+**Révision 1 (2026-10-15).** Relecture : **REVISE**, trois points corrigés (FIX) : la construction de P-B neutralise toujours la copie de
+la DLL vers `alundra-project/` et le `cmp` se fait après la remise en état, contre le code commité ; le marqueur est posé à la fin de
+`SpawnEntityBySpriteIndex`, après la poussée de position (aucun relèvement de repli pendant la création) ; chaque issue de T0 a sa suite
+(arrêt et nouvelle relecture pour tout code hors des décisions ou tout écart sur une entité de l'interface). Points non bloquants
+repris : implémentation explicite du champ de collision par le monde, nom aligné (`CollisionField`, au lieu du `CollisionFieldNow` de
+D-E0A-5), déclencheur `+0x228` dans T1, mécanisme du rassemblement nommé, numéros de ligne relevés au HEAD `c4247cf`.
+
 **Prérequis.** E20.e0a3a ✅ (voie de P-A : (i) restreinte à `Current = Target` ; `Alundra.Tests` 4 815).
 
 **But.** Les entités nées par l'interface dans `MovePlayer` participent au tick de leur naissance (`BT-M1` à `BT-M3`) ; nées dans un
@@ -3627,19 +3634,26 @@ pour l'auteur (Q-A1) ce que ferait la même règle sur les apparitions par enreg
   une flèche née à X = 120 avance de 3 px dans son tick de naissance, puis de 6 px par tick).
 - [DLL, P-A] Avant l'intégration par le moteur, le sprite n'a aucune animation ; le premier `SyncAnimation` de l'image suivante le pose
   (D-E20-35) ; `Controller.Move` ajoute le déplacement sans test.
-- [DLL] `CollectTickEntities` (`AlundraWorldProxy.cs`, vers `:2785`) ne retient que les entités `TookPartInFrame` ; l'appel de
-  `MovePlayerOnTickPad` est vers `:2839` ; les lectures de `Owner.World.CollisionField` sont listées en tête de 1.16 (numéros relevés au
-  HEAD `d5ffe46`).
+- [DLL] `CollectTickEntities` (`AlundraWorldProxy.cs`, vers `:2785-2801`) ne retient que les entités `TookPartInFrame` ; l'appel de
+  `MovePlayerOnTickPad` est vers `:2839` ; `SpawnEntityBySpriteIndex` enchaîne `AddEntity`, `HoldSlot`/`InsertBySlot`, le son, puis
+  `PushLogicalPositionToRoot` (vers `:3410-3417`), qui appelle `ClampToGround` (lecture du champ de collision) ; les lectures de
+  `Owner.World.CollisionField` d'`AlundraEntityScriptProxy.cs` sont vers `:752`, `:1730`, `:1801`, `:1892`, `:1966`, `:2082`, `:2246`
+  (plus `AlundraPlayerAnimationEffects.cs:142` et `AlundraScriptedMotion.cs:695`) ; la propriété existante `AlundraWorldProxy.CollisionField`
+  est de type `AlundraCellsCollisionField?` (vers `:610`) ; `PublishEntityFrame` ignore une entité qui n'a pas `TookPartInFrame` et
+  `SyncAnimation` remet à zéro `AnimationSwitchTicksReserved` une fois par image.
 
 **Décisions de la tranche** (ADR-0065) :
-- marqueur `JoinsBirthTick` du proxy (interne, non cloné), posé **seulement** par `SpawnEntityBySpriteIndex` ;
+- marqueur `JoinsBirthTick` du proxy (interne, non cloné), posé **seulement** par `SpawnEntityBySpriteIndex`, **juste avant son
+  `return`, après `PushLogicalPositionToRoot`** : la création ne lit donc jamais le champ par le repli (le seul relèvement de la création
+  reste celui du noyau, comme `0x80039EF0` ; pas de second relèvement par les coins de la boîte du `CollisionComponent`) ;
 - `CurrentAnimationId = TargetAnimationId` et `CurrentDirection = TargetDirection` posés dans `CreateEntityFromSpriteIndex` seulement,
   après `ApplyHeaderInitialization` (jamais dans le noyau partagé), sans toucher `AnimationDirection` ni le sprite ;
-- `CollectTickEntities` retient `TookPartInFrame || (JoinsBirthTick && Owner.World == null)` ; un rassemblement juste après l'appel de
-  `MovePlayerOnTickPad`, quand une apparition par l'interface a eu lieu dans ce tick, ajoute la nouvelle entité aux entités du tick (dans
-  l'ordre des cases) ;
+- `CollectTickEntities` retient `TookPartInFrame || (JoinsBirthTick && Owner.World == null)` ; le monde compte les apparitions par
+  l'interface du tick (compteur remis à zéro en tête de tick) ; si ce compteur est non nul juste après l'appel de `MovePlayerOnTickPad`,
+  `CollectTickEntities` est relancé, ce qui ajoute le nouveau-né aux entités du tick dans l'ordre des cases ;
 - repli sur le champ de collision de l'hôte : membre par défaut `ICollisionField? CollisionField => null` d'`IAlundraScriptHost`,
-  implémenté par `AlundraWorldProxy` ; les lectures de `Owner.World.CollisionField` l'emploient **seulement** quand `JoinsBirthTick` est vrai
+  implémenté **explicitement** par `AlundraWorldProxy` (la propriété existante est d'un autre type : sans implémentation explicite, le
+  membre par défaut rendrait `null`) ; ce nom remplace le `CollisionFieldNow` de D-E0A-5 ; les lectures de `Owner.World.CollisionField` l'emploient **seulement** quand `JoinsBirthTick` est vrai
   et `Owner.World` est nul ;
 - point d'accroche de test dans `SpawnWeaponProjectile`, `[ThreadStatic]`, nul en production (motif de `WeaponSpawnCallsForTests`), qui
   appelle l'interface à l'endroit exact de `MovePlayer` ; le tir n'est pas branché (E20.f3).
@@ -3655,35 +3669,43 @@ seulement), `AlundraWorldProxy.cs` (collecte, rassemblement, `CollisionField`, m
 ##### Tâches
 
 - ⏳ **T0 — Vérifications avant le code** (versées dans le plan, sans commit de code) : (1) `AnimFlags` à la création : ce que le binaire
-  pose à la première bascule de la création (`0x80038AB4`, annexe d'e0a1) et ce que lit la passe d'animation du tick de naissance ; si la
-  DLL doit le poser dans l'interface pour égaler `BT-M1` à `BT-M3`, le dire ici ; (2) l'effet de `Current = Target` sur
-  `SpawnAnimationActive` et sur l'horloge `AnimationSwitchTicksReserved` (mesure par un test de sonde) ; (3) les tests d'e0a1 qui ne
-  comparent pas `CurrentAnimationId` (`AlundraSpawnBySpriteIndexInterfaceTests`) restent vrais. Un effet qui toucherait une entité par
-  enregistrement est un arrêt.
+  pose à la première bascule de la création (`0x80038AB4`, annexe d'e0a1) et ce que lit la passe d'animation du tick de naissance ;
+  (2) l'effet de `Current = Target` sur `SpawnAnimationActive`, sur l'horloge `AnimationSwitchTicksReserved` et sur le son et l'impulsion
+  de la première animation, pour une entité née dans `MovePlayer` (mesure par un test de sonde) ; (3) les tests d'e0a1 qui ne comparent pas
+  `CurrentAnimationId` (`AlundraSpawnBySpriteIndexInterfaceTests`) restent vrais. **Suites** : si (1) et (2) ne demandent aucun code hors
+  des décisions ci-dessus et ne montrent aucun écart sur une entité de l'interface, T1 commence ; sinon — un code à ajouter (par exemple
+  poser `AnimFlags` dans l'interface), une réservation de bascule reportée à l'image suivante, une impulsion ou un son perdu ou doublé, ou
+  tout effet sur une entité par enregistrement — **arrêt** : le résultat est versé dans le plan et la session principale révise la tranche,
+  qui est relue avant T2.
 - ⏳ **T1 — Tests rouges.** (a) Trace des passes d'une naissance dans `MovePlayer` (point d'accroche) calquée sur `BT-M1` à `BT-M3` : après
-  la passe des programmes l'état est `Normal`, le gestionnaire A (inscrit par le test dans `AlundraNativeSpriteRegistry`) a tourné une fois
+  la passe des programmes l'état est `Normal` et le déclencheur (`EventTrigger`, `+0x228`) celui de la ligne, le gestionnaire A (inscrit par le test dans `AlundraNativeSpriteRegistry`) a tourné une fois
   au tick 1 et zéro au tick 2, `FrameCounter == 1` après les compteurs, présente dans `_updateProxies` et dans la liste des coups après les
   listes, horloge et physique appelées une fois (deux dans une image à deux ticks), X = 153 puis 159 pour le n° 3 en direction `0x18`
   depuis 150 px ; (b) naissance dans un programme natif : état `Loaded` à la fin du tick 1, A au tick 2 seulement (test nommé d'après
   D-E20-34, écart de `BT-H1`, `BT-H4`, `BT-H6`) ; (c) monde à ticks propres : aucune participation ; (d) détruite au tick de sa naissance
   dans une image à deux ticks : recyclée en tête du tick suivant, case rendue, aucune exception à l'intégration par le moteur ; (e) son de
   création demandé une seule fois ; (f) repli du champ de collision : employé par une entité marquée avant intégration, jamais par une
-  entité par enregistrement.
+  entité par enregistrement, et **jamais pendant la création** (un champ espion compte zéro lecture entre l'appel et le retour de
+  `SpawnEntityBySpriteIndex`) ; `AlundraSpawnBySpriteIndexInterfaceTests` passe sans modification.
 - ⏳ **T2 — Code** (les décisions ci-dessus). Suites complètes : aucune épingle des apparitions par enregistrement ne bouge
   (`AlundraTickStructureTests`, `AlundraVisionArcTests`, `AlundraShipBlockArcTests`, `AlundraAbsoluteZWritesTests`,
   `AlundraControllerlessVerticalStepTests`, `AlundraAnimationImpulseSpawnTests`, et toute la suite).
 - ⏳ **T3 — Mesure P-B (après le code).** Précondition : `git status --porcelain` vide sur les fichiers que la sonde touche (sinon arrêt) ;
-  forcer le seul drapeau `JoinsBirthTick` dans les chemins par enregistrement (changement jetable, jamais commité) ; une suite complète en
-  Release ; remise en état par `git checkout -- <fichiers touchés par la sonde>` et des cinq traces ; liste versée dans la sous-section
-  « Mesure P-B » du §1.16.4, au format `Classe.Méthode — raison observée`.
+  forcer le seul drapeau `JoinsBirthTick` dans les chemins par enregistrement (changement jetable, jamais commité) ; construction
+  **toujours avec la copie de la DLL neutralisée** (`-p:CustomAfterMicrosoftCommonTargets=<scratch>/skipcopy.targets`, la cible
+  `CopyGameplayDllToProject` d'`Alundra.csproj` copiant sinon `Alundra.dll` et `Alundra.pdb` dans `alundra-project/` à toute construction),
+  puis une suite complète en Release ; remise en état par `git checkout -- <fichiers touchés par la sonde>` et des cinq traces ; puis
+  reconstruction Release et Debug du code commité ; liste versée dans la sous-section « Mesure P-B » du §1.16.4, au format
+  `Classe.Méthode — raison observée`. Aucune construction ne dépose une DLL qui porte le marqueur forcé.
 - ⏳ **T4 — ADR-0065, plan** (résultats, icônes) ; verifiers frais lancés par la session principale.
 
 ##### Acceptation
 
 - T1 vert ; `Alundra.Tests` en Release et en Debug : 4 815 plus les nouveaux, aucun échec, **aucun test existant modifié** ; les six
   épingles nommées intactes ; aucun appelant de production de `SpawnEntityBySpriteIndex` (le tick de naissance n'a donc aucun effet en
-  jeu tant qu'E20.f3 ou E20.h3 ne branchent rien) ; `cmp` de la DLL (si la DLL du projet est verrouillée par le Launcher de l'auteur, le
-  build Debug se fait avec la copie neutralisée et le `cmp` est noté comme non fait, avec la raison) ; traces inchangées.
+  jeu tant qu'E20.f3 ou E20.h3 ne branchent rien) ; **après la remise en état de P-B**, `cmp` de `alundra-project/Alundra.dll` avec le
+  build Debug du HEAD commité (si la DLL du projet est verrouillée par le Launcher de l'auteur, les builds se font avec la copie
+  neutralisée et le `cmp` est noté comme non fait, avec la raison) ; traces inchangées.
 - Mesure P-B versée au format écrit, l'arbre remis en état (`git status` sans changement hors des sous-modules de l'auteur).
 - Verifiers frais.
 
@@ -3691,7 +3713,8 @@ seulement), `AlundraWorldProxy.cs` (collecte, rassemblement, `CollisionField`, m
 
 - **Arrêts** : une épingle d'apparition par enregistrement qui bouge (le marqueur fuit) ; T0 qui montre un effet de `Current = Target` sur
   une entité par enregistrement ; un besoin de modifier le noyau partagé, la cinématique générique ailleurs que la lecture du champ, ou le
-  moteur ; la précondition de P-B non tenue.
+  moteur ; la précondition de P-B non tenue ; une issue de T0 qui demande du code hors des décisions ou montre un écart sur une entité
+  de l'interface ; une épingle d'e0a1 sur `PosZ` qui bouge.
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : `git revert` des commits d'E20.e0a3b (la mesure P-B ne laisse aucun code).
 
