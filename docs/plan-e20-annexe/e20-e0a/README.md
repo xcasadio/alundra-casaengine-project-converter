@@ -65,6 +65,16 @@ prefab), decision of this slice; `TileZ` (the DLL leaves what the record path le
 - Tests: `Alundra.Tests` 4 752 (`--list-tests`, Release), converter 854 (`--list-tests`, Release).
 - Python 3.14.2.
 
-## Results
+## Results (2026-10-15, base `1ccc3c3`)
 
-(Added by the last task of the slice.)
+- Oracle (`run_e0a.py`, 41 s, three runs with the same `manifest.txt`; `out/summary.txt` is ALL PASS): V1 151/151, V2 244/244, V3 109 geometry vectors, V4 123 648 calls giving 2 507 valid pairs on 483 maps (65 empty, at most 22 per map, 244
+  numbers, one creation image per number, sets equal to `Data/map-sprite-indices.json`, SHA-1 `63a3e6189d1f1375232bb2c54e1d1dcb385e360d`), V5' 63 accepted then the 64th and 65th refused with one message each, V6' = 5 numbers on map 14
+  (`79, 136, 144, 153, 199`), V7 8/8, 13 invalid probes with exactly one message at `0x80039BB8`, creation roll on 6 + 48 numbers, creation sound on 7 + 9 numbers (3 with the `0x100` flag), second interpreter identical on 159 calls, coverage
+  60/60, 42/42, 22/22 and 146/149 (`0x80039D74-0x80039D7C`, the registered-record half, unreachable with `a3 = 0`).
+- Manifest (md5): `coverage.txt 947e3619f8c81c115f4d77de69906bef`, `sounds.txt 6b172b1223c5457e3b2c2d63f14f9504`, `summary.txt b62366f3c6c7db4d6b1305f2ba32b8dd`, `two-interpreters.txt 2ea373b77412940da833c5252de3d327`,
+  `v1.json 87b7d1f6a0ae2e46a46f62248005dd8f`, `v2.json 13c4ff109d308606378cb9ec4f63d328`, `v3.json 1c221ceb40bb47048fcddfaf96715fa7`, `v4-pairs.txt 3ccf1552e1086f71fab7afbb033b4826`,
+  `v5.json c15d50f1a683f8b02aef392f5dc05116`, `v6-map14.txt 78e42efcc70a0312694188425f6f7d6a`, `v7.json 4c138895936c2fd9f33ce0874eec496a` (`mutations.txt` is outside the manifest: another script).
+- Mutants (`mutants.py`, 6 min): 38 one-word mutants, 38 CAUGHT (see `out/mutations.txt`). The first pass let one survive (the non-negative entry test at `0x80039B8C`); the probes gained entries 0 and `0x1000` and a valid-looking record pointer at the indices 256, 300
+  and -1, then 38/38.
+- Tests: `Alundra.Tests` 4 752 -> 4 775 in Release and in Debug, no failure, no existing test changed; red before the code (18 of the first 21); 12 mutants of the DLL code, all CAUGHT.
+- Decisions of the execution: the palette and the sheet are not stored; `TileZ` is not compared; the current attack and the animation byte are compared too; `mutations.txt` is not in the manifest. See ADR-0063.

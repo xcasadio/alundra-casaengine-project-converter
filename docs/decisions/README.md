@@ -76,3 +76,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0060 | The break effect is created for every DestroyEntity caller, as the binary does | Accepted | 2026-10-10 |
 | ADR-0061 | The break-effect byte is exported in every sprite record | Accepted | 2026-10-10 |
 | ADR-0062 | The sprite-table key of each prefab and the valid indices of each map are exported | Accepted | 2026-10-15 |
+| ADR-0063 | The apparition by sprite index takes Z in the DLL's frame through a record-less core and checks each page against its own table | Accepted | 2026-10-15 |
