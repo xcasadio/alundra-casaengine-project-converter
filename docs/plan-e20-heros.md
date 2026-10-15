@@ -3483,6 +3483,7 @@ désignée (`p3_tick.py`, préfixe `BT-` pour éviter la collision avec les scé
 son écart attendu ; les reports d'e0a2 ont leurs tâches et l'acceptation permet seulement ces deux commentaires dans les tests
 existants. Points non bloquants repris : ADR-0065, numéros de ligne relevés au HEAD, compte de départ, `cmp` et traces, motif du point
 d'accroche (`[ThreadStatic]`, comme `WeaponSpawnCallsForTests`), `EventTrigger = −1` déjà posé par e0a1 (retiré du périmètre).
+Seconde relecture (e0a3a) : **READY** (2026-10-15).
 
 **But commun.** Une entité née dans `MovePlayer` (tir, usage d'un objet) tourne dans le tick qui la voit naître : statut, programme A,
 compteurs, listes, horloge, physique, coups ; une entité née dans un programme natif d'une autre entité tourne au tick suivant (D-E0A-6,
