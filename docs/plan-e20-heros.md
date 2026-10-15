@@ -624,6 +624,11 @@ l'eau profonde qu'avec elle : E20.h3 (graines 1, bombe 2) exige f6a ; E20.e0c n'
 drapeau) ; O-E0K-2 nomme un propriétaire par attribut ; (2) l'ordre f4, f5, f6a, f6b devient une chaîne ferme (f5 exige f4, f6b exige
 f4 et f5), parce que f5 et f6b reprennent l'interrupteur d'arène, les témoins négatifs et l'annexe d'f4, et la règle de vitesse d'f5.
 Une seconde relecture suit.
+Seconde relecture : **REVISE**, deux blocages ; disposition de la session principale (cap de deux relectures automatiques atteint) :
+**FIX** — (1) E20.h4 fait naître les types 16, 17 (terre) et 23 (feu), qui portent `DestroyOnSlidingSlope` avec la gravité : h4 exige
+aussi f6a ; (2) les phrases de §1.20 à §1.22 qui parlaient de tranches indépendantes ou d'une « première exécutée » sont réécrites
+selon l'ordre ferme (f4 propriétaire des éléments communs, f5 de la règle de vitesse ; f6b exige f4 et f5). Nouvelle époque de relecture :
+une seule relecture de clôture suit.
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -684,7 +689,7 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 | 9 | E20.h0, E20.h1 | Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a ✅ |
 | 9b | E20.A362 | Le couvercle de la 362 (enregistrement 0, sprite 243, `D[1]` `0x87 [128,3]`) face à la bombe d'Olen (enregistrement 5, sprite 2, lancée par son script `0x8B [128,5,…]`, explosion animation 1, attaque attribut 4 puissance 5) : arc de test seul, comme E20.c1b-2 ; il tranche si le couvercle réagit déjà (probable depuis E20.c1a et E20.c1b-1) ou ce qui manque ; relancé après E20.h3 | E20.c1b-1 ✅ |
 | 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées ; g1 pose le marqueur du Z logique (§1.18, D-E0K-1) sur l'entité soulevée | E20.e0a1 (§1.16), E20.e0k2 ; E14.a1b ✅ et E20.e0b2 (§1.17) pour g2 |
-| 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 (§1.16), E20.e0k2 et E20.f6a (mort des graines et de la bombe dans l'eau profonde) pour h3 ; E20.e0k1 à E20.e0k3 pour h4 |
+| 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 (§1.16), E20.e0k2 et E20.f6a (mort des graines et de la bombe dans l'eau profonde) pour h3 ; E20.e0k1 à E20.e0k3 et E20.f6a (types 16, 17, 23) pour h4 |
 | 12 | E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 (D-E20-27) ; ordre interne fixé au détail (g3 dépend aussi de la géométrie de la barricade de g4 et d'un choix de l'auteur, `order-critic.md`) | E20.g1, E20.g2 |
 
 Les projectiles d'E20.f3, f5 et f6 (E10, E17, E9) appellent aussi `DestroyEntity(e, fx)` : fait par E14.a1b ✅.
@@ -4851,9 +4856,9 @@ est lu dans le code ou inféré.
 **But.** Brancher la flèche chargée de William (type 7) : la traînée d'effets de C94, le bouchon nommé de la coupe d'herbe, la mort au mur ou au bord par E1
 avec l'effet de bris 8. Rien d'autre ne naît (flèches : f5 ; boules : f6).
 
-**Découpage.** Une seule sous-tranche, deux phases (§1.20.1). Ordre par défaut f4, f5, f6 ; les trois tranches sont indépendantes entre elles. Ce que les
-trois partagent (interrupteur d'arène par type, réécriture des témoins négatifs, annexe d'oracle commune, règle de vitesse) appartient à **la première
-des trois tranches exécutée** : f4 par défaut, et les deux autres le relisent.
+**Découpage.** Une seule sous-tranche, deux phases (§1.20.1). Ordre ferme (révision 9 de l'enveloppe) : f4, puis f5, puis f6a, puis f6b. Ce que les
+trois partagent appartient à f4 (interrupteur d'arène par type, réécriture des témoins négatifs, annexe d'oracle commune et ses outils) et à f5
+(règle de vitesse D-F5-5) ; les tranches suivantes le relisent et l'étendent sans toucher aux outils.
 
 **Faits porteurs.** Étiquettes : [binaire] décodé sur `ALUN_CD.EXE` (France) ; [oracle] exécuté dans la machine MIPS ; [DLL] lu dans le code au HEAD
 `be9a067` (numéros de ligne à relire à l'exécution : e0k1 à e0k3, f3b et f3c touchent les mêmes fichiers) ; [données] export et cartes ; [inférence]
@@ -4917,7 +4922,7 @@ déduit, non exécuté ; [critique] établi ou corrigé par la critique.
 **Questions à l'auteur.** Aucune.
 
 **Prérequis et dépendants.** E20.f3 (f3a phases A et B, f3b, f3c pour le bouchon), E20.e0k1 à E20.e0k3, E14.a1b ✅. Dépendants : E20.e (ferme le bouchon d'herbe).
-Pas d'autre dépendance entre f4, f5 et f6 que les éléments partagés ci-dessus.
+f5 exige f4 ; f6b exige f4 et f5 (éléments partagés ci-dessus) ; f6a ne dépend que d'e0k1 et e0k2 mais passe, dans l'ordre ferme, après f5.
 
 ---
 
@@ -4960,8 +4965,8 @@ Autres clés : `charged7_free_{west,north,south}`, `charged7_map_edge`, `charged
 
 ##### Tâches
 
-- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code). Annexe commune `docs/plan-e20-annexe/e20-f4f6/` (créée par la première des trois tranches ; les
-  deux autres l'étendent sans toucher aux outils) :
+- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code). Annexe commune `docs/plan-e20-annexe/e20-f4f6/` (créée par f4 ; f5, f6a et f6b l'étendent sans
+  toucher aux outils) :
   - les outils de la machine copiés octet pour octet depuis `docs/plan-e20-annexe/e20-f3/oracle/tools` avec leurs sommes de contrôle ;
   - un script par tranche ; sorties en texte **et** en JSON avec les clés ci-dessus, plus `.draws`, `.rng0`, `.rng1`, `.effects[]` (objets `{id, dir, x, y, z, vx, vy, vz}`
     ou `{attach, id, cible, mode}`) et `.snd[]` ;
@@ -5074,7 +5079,7 @@ horizontale des entités nées par l'interface.
 - **D-F5-3** — Trouvé : `DestroyEntity(e, −1)` puis retour ; l'équivalence avec la chute dans le rebond (écritures sur une entité morte) est écrite dans le code.
 - **D-F5-4** — Rebond : cible d'animation 1, direction `(TargetDirection + 0x10) & 0x1F`, `Flags = (Flags | 0x140) & ~0x30`, puis `ResyncControllerFromFlags()` en assurance.
   Les tests lisent `Flags` (0x12144) ; le retrait de l'appel est un mutant équivalent prouvé.
-- **D-F5-5** — (**partagée avec f6 ; portée par la première des deux exécutée**) Une entité née par l'interface prend la clé de vitesse de `TargetAnimationId` (celle que l'horloge du tick
+- **D-F5-5** — (**partagée avec f6 ; portée par f5**, qui passe avant f6b dans l'ordre ferme) Une entité née par l'interface prend la clé de vitesse de `TargetAnimationId` (celle que l'horloge du tick
   charge, comme `TickPlayer`), non de `CurrentAnimationId`. Le mouvement du tick redevient exact. L'épingle P3 d'e0k1 est réécrite par dérivation (clé de l'animation cible).
 - **D-F5-6** — Registre : (E, 17) pour {3, 4, 5, 6} (l'ensemble complet de l'en-tête) ; ensemble câblé {3, 4}. Pas de clé A0.
 - **D-F5-7** — Fenêtre du mur : D-F4-9. La flèche rebondit un tick après le drapeau ; l'attendu est dérivé comme en f4.
@@ -5090,7 +5095,8 @@ horizontale des entités nées par l'interface.
   toutes les cartes ; un écart de plus à porter. Réversible. Rien dans le binaire ne montre que c'est involontaire ; c'est pourquoi la question est posée (règle du 2026-09-25 :
   un bug avéré de l'original se corrige).
 
-**Prérequis et dépendants.** E20.f3, E20.e0k1 à E20.e0k3. Dépendants : aucun avant E14 (flèches des ennemis) et la recette.
+**Prérequis et dépendants.** E20.f4 (ordre ferme : interrupteur d'arène, témoins négatifs, annexe), E20.f3, E20.e0k1 à E20.e0k3. Dépendants :
+E20.f6b (règle de vitesse D-F5-5) ; aucun autre avant E14 (flèches des ennemis) et la recette.
 
 ---
 
@@ -5107,8 +5113,8 @@ horizontale des entités nées par l'interface.
 gestionnaires (E14) ; le tir en l'air hors de la sonde.
 
 **Partage des phases** (seul à faire foi) :
-- **Phase A** (T1, aucun changement de comportement en production) : E17, la clé, la règle de vitesse (aucune entité marquée n'existe en production), l'interrupteur
-  d'arène si f4 ne l'a pas posé, les réécritures. Les tests de vie utilisent le crochet.
+- **Phase A** (T1, aucun changement de comportement en production) : E17, la clé, la règle de vitesse (aucune entité marquée n'existe en production), les réécritures (l'interrupteur
+  d'arène vient d'f4, prérequis). Les tests de vie utilisent le crochet.
 - **Phase B** (T3) : l'ensemble {3, 4}. Seul changement de comportement.
 
 **Valeurs attendues** (`arrow3_east_wall.json`, `slots[k]` du type 3 ; S = 10 ; x0 = 100 ; Z DLL = Z oracle − 1 unité brute).
@@ -5190,9 +5196,9 @@ trois enregistrements de la 309.
 | Sous-tranche | Contenu | Prérequis |
 |---|---|---|
 | E20.f6a | Attributs de tuile des entités marquées à gravité (`Slope_18c`) ; la mort dans l'eau du choix du programme ; aucun gestionnaire | E20.e0k1 et e0k2 |
-| E20.f6b | C60, E9, trois créateurs, clés, flammes de la 309, ensemble {11, 12, 14, 15} | f6a, E20.f3 (dont f3b), E20.e0b1 ✅, E20.e0k1 à e0k3 |
+| E20.f6b | C60, E9, trois créateurs, clés, flammes de la 309, ensemble {11, 12, 14, 15} | f6a, E20.f4, E20.f5, E20.f3 (dont f3b), E20.e0b1 ✅, E20.e0k1 à e0k3 |
 
-Ordre : f6a puis f6b. f6a peut passer avant f4 et f5 (il ne dépend que d'e0k2).
+Ordre : f6a puis f6b, après f4 et f5 (ordre ferme de la révision 9) ; f6a ne dépend techniquement que d'e0k1 et e0k2.
 
 **Faits porteurs.** (Étiquettes comme au §1.20.)
 - [binaire, données] **Les types 10 à 15.** Drapeaux `0x132154` : attaque la classe A, `DeactivateOnImpact`, `DeactivateOnAnimEnd`, `NoObstacleSlide`, gravité, `DestroyOnSlidingSlope`
@@ -5250,7 +5256,7 @@ Ordre : f6a puis f6b. f6a peut passer avant f4 et f5 (il ne dépend que d'e0k2).
 
 **Questions à l'auteur.** Aucune.
 
-**Prérequis et dépendants.** Voir le tableau. Dépendants : E14 (ennemis de feu et de glace, la Torche E20 qui copie le type 12 sans gestionnaires), E20.e (effets du héros, herbe), E20.h3 (f6a : graines et bombe portent `DestroyOnSlidingSlope` avec la gravité) et toute tranche future qui fait naître par l'interface un type portant `0x100000` avec la gravité (1, 2, 10 à 17, 23, 234).
+**Prérequis et dépendants.** Voir le tableau. Dépendants : E14 (ennemis de feu et de glace, la Torche E20 qui copie le type 12 sans gestionnaires), E20.e (effets du héros, herbe), E20.h3 et E20.h4 (f6a : graines, bombe et types 16, 17, 23 des magies portent `DestroyOnSlidingSlope` avec la gravité) et toute tranche future qui fait naître par l'interface un type portant `0x100000` avec la gravité (1, 2, 10 à 17, 23, 234).
 
 **Ordre ferme** (révision 9 de l'enveloppe, après sa relecture) : f4, puis f5, puis f6a, puis f6b. Les éléments communs « portés
 par la première exécutée » le sont donc par f4 (l'interrupteur d'arène D-F4-7 et son fichier, la réécriture des témoins négatifs D-F4-8,
