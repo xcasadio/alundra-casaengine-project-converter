@@ -156,6 +156,10 @@ ADR-0058) :
   (lecture de « 9 a », à confirmer par l'auteur s'il voulait seulement les courants).
 - **D-E20-32** — Pour l'arrondi du stick (E20.d2), une sonde est construite d'abord ; l'auteur mesure sa manette avec, puis la règle
   est close. Q-D1.
+- **D-E20-34** (2026-10-15, réponse à Q-A2) — « A deux fois » (une apparition dans le programme d'une autre entité, sur une case
+  au-dessus du compteur, fait tourner A deux fois dans le binaire) reste un écart documenté de la DLL (E20.e0a3, D-E0A-6, O-E0A-1).
+- **D-E20-35** (2026-10-15, réponse à Q-A3) — Une entité née pendant un tick tourne dès ce tick mais n'est dessinée qu'à l'image
+  suivante (intégration du moteur) ; pas d'intégration immédiate, pas de changement du moteur.
 - **D-E20-33** (2026-10-10, après-midi) — L'export d'E20.e0x ajoute aussi l'ensemble des indices valides de la page des cartes,
   carte par carte, pour que la DLL puisse reproduire les apparitions qui échouent en silence dans l'original (un indice absent de la
   table de la carte courante : `0x80039B28` rend 0 ; exemple : Zorgia, C44, indice 213 sur les cartes 388, 432 et 451).
@@ -624,7 +628,7 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 | # | Tranche | Contenu | Prérequis |
 |---|---|---|---|
 | 1 | E20.e0x (§1.15) | Convertisseur : `BankKey` dans `Data/sprite-records.json` (le `BreakEffect` y est déjà, E14.a1a) et les indices valides par carte (D-E20-33) ; export complet en place, preuve par manifeste et double export ; ADR de format | E14.a1a ✅ |
-| 2 | E20.e0a | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
+| 2 | E20.e0a (§1.16 : e0a1, e0a2, e0a3, e0a4 conditionnelle) | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
 | 3 | E20.e0b | Générateur avancé une fois par tick (`0x8002BD0C`-`0x8002BD34`) ; tirage du butin à la création (écrit le contenu, rien ne tombe) | E20.e0a |
 | 4 | E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a |
 | 5 | E20.f3 | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.f1 ✅, E20.e0a, E20.e0b |
@@ -3119,6 +3123,191 @@ change que `report.json`, les deux fichiers égaux à leurs prédictions, compte
   corriger, ou écriture à conditionner).
 - `Alundra.dll` et `Alundra.pdb` ont changé de taille après les builds de T5 (redéposés par la suite de tests), sans effet sur la preuve
   (le manifeste les exclut) : **noté**.
+
+### 1.16 E20.e0a — Apparition par indice de sprite : e0a1 (oracle, catalogue, interface), e0a2 (table de cases), e0a3 (tick de naissance) ⏳ (détaillée le 2026-10-15)
+
+Découverte en lecture seule du 2026-10-15 : trois relevés (binaire, impact sur la DLL, moyens de test), puis un critique adversarial qui a revérifié plus de trente affirmations
+(désassemblage de `ALUN_CD.EXE`, rejeu des sondes de l'oracle, lecture de la DLL et du moteur) et mené sa propre batterie de mutants. Scripts et sorties dans le
+scratchpad de la session : `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20e0a/`
+(`bin/`, `tools/`, `tests/`, `dll/`, `critic/`). Aucune modification du moteur (`CasaEngineMonogame/`) ni du convertisseur ; E20.e0x est close (✅ CONFIRMED le 2026-10-15,
+`0107cfc` : `BankKey` dans `Data/sprite-records.json`, `Data/map-sprite-indices.json`, ADR-0062). La tranche est découpée en trois, plus une quatrième conditionnelle,
+parce que ses trois effets n'ont pas le même rayon d'action : e0a1 ne change aucun comportement existant, e0a2 peut déplacer l'ordre des passes, e0a3 touche la structure du tick.
+
+**But.** Faire apparaître une entité par `SpawnWarpEntity` (`0x80039F58`) et la moitié sans enregistrement d'`InitializeEntity` (`0x80039D04`), comme le binaire, pour les armes du
+héros (E20.f3 à f6), l'usage des objets (E20.h3), le butin (E20.e0b, E20.e0c) et les gestionnaires d'ennemis (E14). Rien de ceux-là n'est branché ici : cette tranche ne livre
+que l'interface, la table de cases et la participation au tick de naissance, prouvées contre le binaire.
+
+**Faits porteurs.** Étiquettes : [binaire] décodé ou rejoué sur `ALUN_CD.EXE` (France) ; [oracle] exécuté dans la machine MIPS des oracles d'E14.a1 et d'E20.c ;
+[DLL] lu dans le code du port, au HEAD `0107cfc` ; [données] lu dans les cartes extraites ou l'export d'E20.e0x.
+- [binaire] `0x80039F58` appelle d'abord `0x80039B28(page, indice, &palette, &feuille)` ; un échec rend 0 avant toute case, sans toucher à la série `[0x80134600]`, au compteur
+  `[0x80134360]` ni au générateur (`0x80039FA0`). Page 0 : bloc `0x80126EC0`, palette `0xB`, feuille `0x60` ; page des cartes : bloc `0x80126E70`, palette 0, feuille `0x20`. Un indice est
+  valide si `0 <= i < compte (256)` et si l'entrée est dans `0x80000000..0x801FFFFF` (−1 et 0 sont invalides). Palette et feuille sont écrites avant la validation. Puis
+  `FindFreeEntitySlot` `0x80039AD0` : cases 1 à 63 (départ `0x80127FC4`, pas `0x294`, test `+0x10 == 0`, borne `slti 0x40` en `0x80039AFC`) ; table pleine : message `0x800239B0`, retour 0.
+  La case 0 (le héros) n'est jamais rendue. L'identifiant `+0x68` vaut l'indice, plus `0x100` pour la page des cartes.
+- [binaire] Sans enregistrement, `0x80039D04` écrit : compteur `[0x80134360] = max(., case)` ; `+0x0C` = parent (toujours, même nul) ; `+0x08` = `parent.+8` s'il est non nul, sinon le parent,
+  et seulement si le parent est non nul ; `+0x44 = 0` ; `+0x48 = −1` ; état 1 ; série `++[0x80134600]` ; drapeaux, six codes, palette, feuille, fiche d'équilibre, PV ; `+0x230` = la case elle-même
+  (`0x8004201C`, dans le délai du saut en `0x80042028`, donc même sans enregistrement) ; boîte du corps ; `+0x114/+0x118` = X, Y tels que donnés ; `+0x11C = Z − ModZ + 1` (`0x80039EA0-0x80039EA4`),
+  relevé à `terrain + 1` si `terrain + 1 >= PosZ` (`0x80039EF0`) ; premier changement d'animation `0x80038AB4`, qui joue le son de l'animation 0 (`0x800490FC`) ; enfin le tirage du butin `0x80032A40`.
+  L'argument Z est donc la base de la boîte du corps, pas `PosZ`.
+- [binaire, données] Le son de création : 7 préfabs de la page globale (7, 8, 9 → `0x21` ; 17 → `0x37` ; 27, 28, 29 → `0x1E`) et 9 numéros de la page des cartes (159, 170, 192, 194, 213, 242, 249, 254, 255 ; 192, 194 et 249 portent le
+  bit `0x20` : identifiant + `0x100`). Le tirage du butin à la création concerne 54 numéros (`Contents & 0x80` : 6 de la page globale, 48 de la page des cartes) ; il n'est pas porté ici (e0b).
+- [binaire] Passe des cases `0x80038634` (cases 0 à 63) : une case d'état 4 reçoit le patron `0x80134368` (zéros, sauf `+0x48 = −1`) et son indice en `+0`, puis le compteur devient l'indice de la plus haute case non libre. Une case d'état 4 reste donc
+  **occupée** jusqu'à la passe suivante (oracle E2 : la case 1 en état 4, l'apparition va en case 2). La passe, les événements, les compteurs, les listes, l'animation, la physique, les effets et les coups s'enchaînent dans cet ordre derrière la
+  porte `[0x800DC4B8] & 0x48` (`0x8003B388-0x8003B3F4`).
+- [binaire] 102 sites `jal 0x80039F58`, tous entre `0x8002F818` et `0x8007FD30` ; l'interpréteur `0x8004205C` n'a que deux appelants (`0x8003890C`, `0x8003C790`) : les opcodes `0x2D`, `0x8A` et `0x8B` n'atteignent que l'apparition par enregistrement
+  `0x8003A1B8` (10 appelants, dont le chargement de carte `0x8003B308`), qui fait la recherche de table **avant** la case. Le tir du héros ignore le retour (`0x8002F818-0x8002F828` : le pointeur d'arme est effacé même si l'apparition échoue).
+- [oracle, rejoué] Participation au tick de naissance. Apparition dans `MovePlayer` (M1 à M3), dans la boucle 1 sur une case plus haute (L1, L3) : l'entité passe en état 2, son programme A tourne une fois, `+0x1C = 1`, elle est dans les listes, l'horloge et la physique la voient. Boucle 2 sur une case
+  au-dessus du compteur dont le déclencheur vaut 0 (H1, H4, H6) : état 1 pendant tout le tick, hors des listes, mais A tourne **dans la même passe**, puis encore au tick suivant. Boucle 2 sur une case dont le déclencheur vaut −1 (H2, H3, H5) ou boucle 1 sur une case plus basse (L2) : tout est reporté
+  d'un tick. Rejoué par le critique : les 12 lignes de la sonde (M1 à M3, H1 à H6, L1 à L3) sont identiques.
+- [oracle, rejoué] Validité : sur les 483 cartes × 256 indices, 2 507 paires valides, 65 cartes vides, au plus 22 par carte, 244 numéros ; le jeu valide de chaque carte est égal aux fiches non nulles, donc à `Data/map-sprite-indices.json` ; un numéro a **une seule** image de création sur toutes les cartes où il existe :
+  395 vecteurs (151 + 244) suffisent, pas 2 507. Table pleine : 63 apparitions acceptées, la 64e et la 65e rendent 0 avec un message chacune ; les libérations 40, 9, 21 sont reprises dans l'ordre 9, 21, 40.
+- [DLL] `_spawnedEntities` est une `List<Entity>` privée, ajoutée en trois endroits seulement : le chargement (`AlundraWorldProxy.cs:898`), l'adoption du héros (`:2088`) et `SpawnEntityByRecordId` (`:3161`). Six classes de tests la lisent par réflexion (`AlundraDestroyedEntityRecyclingTests:87`,
+  `AlundraGameplayFreezeTests:210`, `AlundraTickStructureTests:91`, `AlundraWarpDepartureTests:146`, `AlundraWorldProxyAudioInstallationTests:354`, `AlundraWorldProxyUpdateCharacterizationTests:530`) : nom et type sont figés. `RecycleDestroyedEntities` (`:3017`) retire les entités d'état `FlagToDestroy` juste après les événements
+  de carte (`:2356`), sous la même porte (`GameplayBlockedMask`, 0x48) que la passe des cases du binaire : l'instant est déjà le bon. Chaque monde a son propre proxy (`Clone` rend une instance neuve), donc un masque de cases par instance repart à zéro à chaque carte.
+- [DLL] `CollectTickEntities` (`:2647`) ne retient que les entités `TookPartInFrame`, que le moteur positionne à l'image qui suit l'intégration (`World.AddEntity` met en file, `InternalAddEntities` tourne en tête de `World.Update`, le tick de la DLL est le dernier acte de `World.Update` : `World.cs:168-173`, `:528`, `:581-584`). Les compteurs
+  (`:2766`), les listes et `BuildHitList` (état `Normal` ou `Deactivated`, `EntityStatus.cs:55`) parcourent toutes les entités. Avant l'intégration `Entity.World` est nul : `CharacterControllerComponent.Move` ajoute alors le déplacement sans test (`CharacterControllerComponent.cs:1050-1056`, `:1601-1625`) et
+  neuf lectures de `Owner.World.CollisionField` ne trouvent rien (`AlundraEntityScriptProxy.cs:746`, `:1724`, `:1795`, `:1886`, `:1960`, `:2076`, `:2240`, `AlundraPlayerAnimationEffects.cs:142`, `AlundraScriptedMotion.cs:695`).
+- [DLL] Trois épingles tiennent la règle « première image à l'image suivante » pour les apparitions par enregistrement : `AlundraTickStructureTests.cs:367-392`, `AlundraVisionArcTests.cs:348-353` (`0x8A` à 63 : le bloc n'est pas dans le monde au moment de l'apparition), `AlundraShipBlockArcTests.cs:235-240` (`0x2D` à 265 : `C[100]` à l'image 2).
+- [DLL] `Index` et `Index2` existent (`AlundraEntityScriptProxy.cs:65-66`) mais personne ne les écrit ; `Index2` n'a qu'un lecteur (le verrou d'interaction, `AlundraPlayerManager.cs:1697`, `:1715`). Le champ `ChildEntity` (`:67`, le nom de la décompilation pour `+0x08`) existe aussi et n'est ni écrit ni lu.
+  `EntityRefId` vaut 0 par défaut (`:99`) et `EntitySearchService.cs:110` compare sans filtre d'état : une entité sans `−1` répondrait à `0x2C [0]` et `0x2E [0]`. `ApplyRecord` met `EventTrigger = −1` (`AlundraEntitySpawnFactory.cs:529`).
+- [DLL] La fabrique donne déjà `Z − ModZ` sans le « +1 » du binaire (`AlundraEntitySpawnFactory.cs:674`, D-E19-59, ADR-0026) et relève à `T` avec un champ de collision passé en paramètre (`:679-689`) : l'apparition par enregistrement n'a pas besoin de `Owner.World`. Le tir du héros passe `Z = PosZ + (ptr[3] << 16)` dans le repère de la DLL
+  (`AlundraPlayerManager.cs:1186-1196`) ; le binaire passe `+0x11C` du héros, soit une unité brute de plus.
+- [DLL] `SpawnWeaponProjectile` (`AlundraPlayerManager.cs:1186`) ne fait que compter. L'enveloppe (§1.1, ligne E20.f3) en réserve le branchement à E20.f3, un type à la fois, jamais avant son gestionnaire E : une flèche née sans E17 ne serait jamais détruite et remplirait les 63 cases.
+
+**Écarts entre les trois relevés, tranchés par la critique.**
+1. *Z.* Le relevé de la DLL dit « Z de la DLL, `z − ModZ`, sans +1 (D-E19-59) » ; celui des moyens de test dit que l'interface doit ajouter l'unité. Le second a raison pour un Z dérivé du héros : binaire `PosZ_brut = Z_arg − ModZ + 1` avec `Z_arg = hero_brut + p`, et `hero_brut = hero_DLL + 1`, donc
+   `PosZ_DLL = (Z_DLL + 1) − ModZ`, puis `max(., T)`. Sans l'unité, l'entité est une unité brute (1/65536 px) trop basse devant tous les autres ; elle ne l'est pas quand le Z est une constante du binaire. Décision D-E0A-1.
+2. *Racine `+0x08`.* Le relevé de la DLL dit « aucun champ » : `ChildEntity` existe (voir ci-dessus). L'écrire coûte une ligne et rend la projection de l'oracle exacte, sans lecteur connu (la décompilation ne la lit nulle part : `GameEngine.cs:1694` l'efface, `EntityManager.cs:57-64` l'écrit).
+3. *Branchement du tir du héros.* Les relevés de conception (tâche 7 de `e0-check.md`, étape 6 de l'impact DLL) le mettent dans e0a ; l'enveloppe le met dans E20.f3 : l'enveloppe fait foi (une flèche sans E17 est immortelle).
+4. *Interface.* L'impact DLL met la méthode sur `IAlundraScriptHost`, les moyens de test sur `IEntityWorldContext`. Les gestionnaires natifs reçoivent un `IEntityWorldContext` (`AlundraNativeSpriteRegistry.cs:13`) et le héros l'atteint par le motif déjà employé (`ScriptHost as IEntityWorldContext`, `AlundraEntityScriptProxy.cs:1428`) : la méthode va sur `IEntityWorldContext`, membre d'interface par défaut (29 implémentations de `IAlundraScriptHost`, le monde compris, et une quarantaine
+   de `IEntityWorldContext`, 49 fichiers de tests concernés).
+5. *Position de la flèche (3 px, puis 6 px).* Les relevés la donnent comme critère. La DLL règle la vitesse sur `CurrentAnimationId` (`AlundraScriptedMotion.cs:167`) ; une entité neuve le porte à `~0` jusqu'à sa première publication : sa vitesse est nulle. Ce critère relève de la cinématique (E20.e0k, E20.f3) ; ici, seule la sonde P-A le tranche.
+6. *Passe de réparation du critique sur l'oracle.* L'ensemble « 10 projectiles + objets 1 et 2 » du plan de test ne mord pas sur `Z − ModZ` : tous ont `OffsetZ = 0`, et à Z = 0 le relèvement au terrain masque `OffsetZ` pour les autres. Le mutant `0x80039EA0` (la soustraction remplacée par rien) survit. Il est tué par un préfab à `OffsetZ ≠ 0` apparu **au-dessus** du sol : page 0 n° 20 (−18) à 50 px, n° 64 (−8), n° 242 (+14) ; page des cartes n° 153 (+12) à 40 px.
+
+**Décisions de conception (proposées, à relire avec ce plan ; ADR à numéroter à l'écriture, prochain libre 0063).**
+- **D-E0A-1** — L'interface prend le Z dans le repère de la DLL (celui que l'appelant lit dans `PosZ`) et ajoute l'unité brute en interne : `PosZ = (z + 1) − ModZ`, puis relevé à `T` (`max`). Une constante du binaire est passée moins 1. Épinglé par le vecteur « flèche au Z du héros = Z du héros + 1 unité brute » (oracle : brut 2, DLL 1) et par le tir de la trace AT9 (binaire `z = 1 048 577`, appel du stub de la DLL `1 048 576`).
+- **D-E0A-2** — `SpawnEntityBySpriteIndex(parent, estCarte, indice, x, y, z, direction)` est un membre par défaut de `IEntityWorldContext` (rend `null`) ; `AlundraWorldProxy` l'implémente. `null` rend aussi pour un indice invalide, une table de cases pleine (e0a2) ou un préfab absent, avec une ligne de journal et aucune case prise ; l'appelant doit tester `null` (le binaire écrit à travers le pointeur 0 : A11 `0x80061870`, A21 `0x80061A2C`).
+- **D-E0A-3** — Pas de tirage du butin à la création (e0b) ni de bruit de générateur : les 54 numéros concernés sont exclus de la comparaison de `+0x3C`, `+0x40` et du mot du générateur, écart écrit dans le code et ici, fermé par e0b.
+- **D-E0A-4** — La racine `+0x08` est écrite dans `ChildEntity` (`parent.ChildEntity ?? parent`, seulement si le parent est non nul), avec un commentaire qui dit que la décompilation la nomme ainsi et qu'aucun lecteur n'est connu.
+- **D-E0A-5** — La participation au tick de naissance est portée par un marqueur de l'entité (`JoinsBirthTick`), posé seulement par la nouvelle interface. Elle ne change rien aux apparitions par enregistrement (opcodes `0x2D`, `0x8A`, `0x8B`, chargement) tant que Q-A1 n'est pas tranchée. Le repli sur le champ de collision de l'hôte (`CollisionFieldNow`) est **limité au marqueur** : sinon `ClampToGround`, appelé par
+  `PushLogicalPositionToRoot` à l'apparition, cesserait d'être inerte pour les entités par enregistrement (O-E19-6) et pourrait déplacer des épingles (E19.h1b1 a retiré l'appui à l'apparition ; non mesuré).
+- **D-E0A-6** — Le défaut « A deux fois » (apparition en boucle 2 sur une case au-dessus du compteur : A tourne dans la passe, puis encore au tick suivant) n'est pas porté : l'entité née dans un programme natif d'une autre entité tourne à partir du tick suivant (écart épinglé par un test nommé ainsi, point ouvert O-E0A-1). Les apparitions en boucle 1 (butin à la mort) relèvent d'e0b et e0c.
+- **D-E0A-7** — Les pointeurs périmés ne sont pas portés : une entité recyclée garde l'identité de son objet (`Destroyed`), alors que le binaire laisse un pointeur périmé voir le nouvel occupant de la case. La série `+0x04` n'est pas écrite (son seul lecteur, le verrou d'interaction, compare une valeur à elle-même).
+- Par défaut fidèle, sans question (liste d'enveloppe) : plafond de 63 cases, case réutilisée = la première libre, case d'état détruit occupée jusqu'au recyclage, participation au tick de naissance dans la DLL.
+
+**Questions à l'auteur** (aucune ne bloque e0a1 et e0a2 ; Q-A1 attend la mesure P-B d'e0a3) :
+- **Q-A1** — Étendre la participation au tick de naissance aux apparitions par enregistrement (opcodes `0x2D`, `0x8A`, `0x8B`, événements de carte), ce qui ferme O-E20-11 mais déplace des épingles d'arcs (liste mesurée par la sonde P-B d'e0a3) ? Recommandation : décider après la mesure ; en faire alors la tranche e0a4, jamais dans e0a1 à e0a3.
+- **Q-A2** — **Tranchée le 2026-10-15 (D-E20-34)** : « A deux fois » reste un écart documenté (D-E0A-6), épinglé par un test nommé ainsi ;
+  rouvert par e0b, e0c ou E14 si un gestionnaire A en dépend (O-E0A-1).
+- **Q-A3** — **Tranchée le 2026-10-15 (D-E20-35)** : une entité née dans un tick est dessinée à l'image suivante (intégration du moteur),
+  sa logique ayant déjà tourné ; aucun changement de moteur.
+
+**Hors périmètre de toute la section.** Le branchement de `SpawnWeaponProjectile` et les gestionnaires A0, A254, E17 (E20.f3) ; le tirage du butin, l'avance du générateur, `DestroyEntity` avec lâcher, C255 (e0b, e0c) ; le pas vertical et le vol (e0k) ; `SpawnChildEntity` (`0x8003A048`) et la réinitialisation en place (`0x8003AC78`), cinquième appelant d'`InitializeEntity` (E14) ; la lecture de `+0x08` ; la série `+0x04`.
+
+---
+
+#### 1.16.1 E20.e0a1 — Oracle d'apparition, catalogue et interface, sans changement de comportement
+
+**But.** Donner à la DLL l'interface `SpawnEntityBySpriteIndex` et ses données, avec l'oracle qui la prouve, sans qu'aucun chemin de production ne l'appelle : la suite existante ne doit pas bouger.
+
+**Périmètre.** `docs/plan-e20-annexe/e20-e0a/oracle/` (nouveau ; outils copiés octet pour octet de `docs/plan-e14-annexe/e14a/oracle-a1/tools`, plus `espawn.py`, `exp_spawn.py`, `exp_spawn2.py` et `pworld.py` versés du scratchpad, qui n'existent aujourd'hui nulle part dans le dépôt) ; `Alundra/Scripts/SpriteRecordCatalog.cs` (`BankKey`, table (page, indice) → préfab) ; un chargeur de `Data/map-sprite-indices.json` ; `AlundraEntitySpawnFactory.cs` (extraction du noyau à partir de l'en-tête, sans enregistrement ; `ApplySpawnInitialization` devient une enveloppe mince) ; `IEntityWorldContext.cs` ; `AlundraWorldProxy.cs` (l'implémentation, **ajoutée en fin de `_spawnedEntities`**, sans case) ; `Alundra.Tests/` ; ADR.
+
+**Hors périmètre.** Case, plafond, ordre (e0a2) ; participation au tick (e0a3) ; branchement du tir ; E17 ; butin ; la série ; la sonde de la première animation (P-A, e0a3). L'interface laisse les champs de l'animation en attente (`CurrentAnimationId = ~0`, comme une entité par enregistrement) : la projection de l'oracle ne compare donc pas encore `Current*` ni `AnimationDirection`.
+
+##### Tâches
+
+- ⏳ **T0 — Prédiction et état de départ** (commit de docs, avant tout code). Annexe `docs/plan-e20-annexe/e20-e0a/README.md` : liste des champs comparés (nom DLL ← décalage du binaire, ≈ 28), comptes attendus (151, 244, 395 vecteurs ; 123 648 appels de validité, 2 507 vrais, 65 cartes vides, au plus 22 par carte, 244 numéros distincts ; 54 numéros avec tirage ; 7 + 9 sons de création dont 3 à `+0x100`), SHA-1 de `Data/sprite-records.json` (`88d72306…`, 2 571 585 o) et de `Data/map-sprite-indices.json` (`63a3e618…`, 30 913 o) relevés une fois, en fenêtre calme (aucun export ni suite en cours sur l'arbre), comptes de tests (`Alundra.Tests` 4 752, convertisseur 854). Les outils de l'oracle y sont versés avec une somme de contrôle.
+- ⏳ **T1 — Oracle.** `run_e0a.py` : V1 (151 indices de la page 0, parent héros, plat, direction `0x10`, Z 0), V2 (244 numéros de la page des cartes, carte source notée), V3 géométrie (au moins 40 vecteurs : les 10 types de projectiles du héros et les objets 1 et 2 ; Z ∈ {0, Z du héros (1 brut), 16 px, **−5 px sous le sol**, **au-dessus du sol pour un `OffsetZ ≠ 0` : page 0 n° 20 à 50 px, n° 64 à 30 px, n° 242, page des cartes n° 153 à 40 px**, terrain relevé de 32 px autour du point} ; directions 0, 8, `0x10`, `0x18` ; parents {aucun, héros, une entité apparue}), V4 (483 cartes × 256 indices et les sondes −1, 256, 300, `0xFFFFFFFF`, `0x80000000`), V7 (les 8 appels d'apparition journalisés par les traces AT9 : types 3, 4, 11 et 14, au sol et en l'air, `docs/plan-e20-annexe/e20-b/oracle/out/at9/`, lus par `AlundraHeroAttackTests.cs:346-361`). Sorties déterministes : `summary.txt`, `manifest.txt` (md5 de chaque fichier ; deux exécutions identiques), `v1.json`, `v2.json`, `v3.json`, `v4-pairs.txt`, `v7.json`, journal des sons. Seconde interpréteuse (`mips.py`) identique sur au moins 159 appels. Durée visée : moins de 2 minutes.
+- ⏳ **T2 — Mutants de l'oracle** (`mutations.txt`). Au moins 23 mutants d'un mot, tous CAUGHT : plafond 64 et 62, test d'occupation inversé, racine, série, `+0x48` (vecteur de **case sale** requis), `Z − ModZ`, `+1`, relèvement du terrain (magasin supprimé et comparaison inversée), `+0x100` de la page, sélection de page inversée, direction (cible et complément), parent, compteur de cases, palette, feuille, `+0x230`, tirage du butin, premier changement d'animation, son, PV, drapeaux. Un mutant qui survit est un vecteur manquant, pas un arrêt.
+- ⏳ **T3 — Tests rouges** (`Alundra.Tests`, projet inchangé hors ajouts) : (a) donnée : les 395 `BankKey` donnent un préfab du catalogue, uniques ; la validité de la page des cartes des 483 cartes égale `v4-pairs.txt` (123 648 comparaisons) ; (b) projection de création des 395 vecteurs égale à l'oracle (hors `+0x3C`, `+0x40`, générateur pour les 54, D-E0A-3 ; hors `Current*` et `AnimationDirection`) ; (c) contrat `null` : indice négatif, 256, entrée nulle, carte inconnue du fichier, `parent` nul accepté, préfab absent : aucune entité ajoutée, une ligne de journal ; (d) `EntityRefId == −1` et `0x2C [0]`, `0x2E [0]` ne la trouvent pas ; `EventTrigger == −1` ; (e) parent et racine (parent héros, enfant d'un enfant, parent nul : 4 cas) ; (f) règle de Z (au moins 8 vecteurs, dont ceux du T1) ; (g) son de création : n° 7 → `0x21`, n° 27 → `0x1E`, n° 3 rien, n° 192 de la carte voulue → son + `0x100` ; (b bis) la case et la série ne sont pas encore écrites (e0a2), elles sont exclues de la projection ; (h) équivalence avec l'enregistrement : le n° 79 par l'interface et l'enregistrement 0 de la carte 14 par le chemin de production ne diffèrent que par la liste fermée (case, série, racine, parent, état, `+0x3C`, pointeur d'enregistrement, `EntityRefId`, soi).
+- ⏳ **T4 — Code.** Catalogue (`BankKey` lu ; absent = tolérant), chargeur des indices (fichier absent : permissif, un avertissement), extraction de la fabrique, interface et implémentation (`LoadCopy`, noyau sans enregistrement, `InitializeBalance`, `AddEntity`, ajout en fin de liste, `RequestAppearanceSound`, `PushLogicalPositionToRoot`, racine dans `ChildEntity`). `dotnet test Alundra.Tests --blame-hang-timeout 60s`, au premier plan, en Release puis en Debug.
+- ⏳ **T5 — ADR** (cadre de Z, interface, racine, validité par carte), plan, verifier frais.
+
+##### Acceptation
+
+- Oracle : V1 151/151, V2 244/244, V4 2 507 paires, 65 cartes vides, mêmes jeux que `Data/map-sprite-indices.json` (SHA-1 `63a3e618…`), V7 8/8 ; sondes invalides : un seul message en `0x80039BB8`, série, compteur et générateur inchangés ; ≥ 23 mutants CAUGHT ; deux exécutions identiques au manifeste ; seconde interpréteuse identique.
+- DLL : tous les tests de T3 verts ; `Alundra.Tests` en Release et en Debug : 4 752 + les nouveaux, **zéro échec, aucun test existant modifié** (`git diff --stat Alundra.Tests/` : ajouts seulement) ; convertisseur et moteur intacts ; `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` identique ; traces inchangées (`git diff --ignore-cr-at-eol --exit-code`).
+- Verifier frais (rejeu de l'oracle et lecture adversariale du diff).
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : une image de l'oracle qui contredit un fait de cette section (attribuer, puis question) ; un test existant qui doit changer ; un SHA-1 de `sprite-records.json` ou de `map-sprite-indices.json` différent de celui d'E20.e0x (ne pas ré-exporter : question) ; la fabrique extraite qui déplace une épingle d'apparition par enregistrement (revenir à l'enveloppe mince) ; tout contact avec `CasaEngineMonogame/` ou `CasaEngine.Launcher/Program.cs`.
+- **Budget** : un `executor` par ensemble de tâches, deux tentatives au plus ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : abandon de la branche pour la DLL, `git revert` pour les docs et l'oracle.
+
+---
+
+#### 1.16.2 E20.e0a2 — Table de cases : première libre, plafond de 63, ordre des passes
+
+**But.** Donner à chaque entité une case (héros 0, autres 1 à 63), la rendre au recyclage, refuser la 64e, et faire suivre l'ordre de `_spawnedEntities` à celui des cases, comme les passes du binaire (événements, compteurs, listes, physique, « premier attaquant » des coups, recherches `0x2C`). Ferme O-E20-13.
+
+**Périmètre.** `AlundraEntityScriptProxy` (`Slot = −1`, non cloné) ; `AlundraWorldProxy` (masque de 64 bits par instance, `AllocateSlot`, `ReleaseSlot`, insertion triée, libération dans `RecycleDestroyedEntities`) ; les **quatre** chemins de création (adoption du héros = case 0, chargement de carte, `SpawnEntityByRecordId`, `SpawnEntityBySpriteIndex`) ; `IEntityWorldContext.SpawnedEntities` (doc : « dans l'ordre des cases ») ; tests.
+
+**Hors périmètre.** Aucune passe n'est modifiée. L'alias des pointeurs périmés (D-E0A-7). Le tick de naissance.
+
+##### Tâches
+
+- ⏳ **T0 — Prédiction.** Phase d'ombre : les cases sont attribuées et le masque tenu, **sans réordonner**, avec deux compteurs réservés aux tests (`SpawnsWhileALowerSlotWasFreeForTests`, `MaxLiveSlotForTests`). La suite complète tourne une fois ; la liste des tests où le premier compteur est non nul est écrite dans l'annexe **avant** d'activer l'insertion triée (zéro événement dans un test = ce test ne peut pas bouger). Prédiction : les arcs qui détruisent (`0x2E`, E0/E1) puis font apparaître (`0x2D`, `0x8A`, `0x8B`) : `AlundraDay3SceneArcTests` (A14 : enregistrements 8 à 10 par `0x2D` à 219-223, `0x2E` à 272), `AlundraEntityContactArcTests`, `AlundraInoaDayOneArcTests`, `AlundraTarnMurggArcTests`, `AlundraMurutaHallArcTests`.
+- ⏳ **T1 — Oracle V5** (dans l'annexe d'e0a1) : 5 apparitions → cases 1 à 5, compteur 5 ; case 2 en état 4, apparition avant la passe → case 6, après la passe → case 2 ; 63 acceptées, 64e et 65e à 0 avec un message (`0x80039B10`, chaîne `0x800239B0`) ; indice invalide avec table pleine : seul le message « Race » (`0x800239CC`) ; libérations 40, 9, 21 → 9, 21, 40 ; vecteur de case sale ; l'apparition en boucle 2 dans une case recyclée.
+- ⏳ **T2 — Tests rouges.** Allocateur pur, sans moteur (au moins 12 cas calqués sur V5) ; le masque libère à `RecycleDestroyedEntities` et pas avant (une entité `FlagToDestroy` garde sa case ; porte fermée : rien n'est libéré) ; la 64e apparition rend `null` avec une ligne de journal et sans entité ajoutée, pour les trois chemins qui peuvent échouer ; ordre de `_spawnedEntities` = ordre des cases ; les entrées sans case (`−1`, ajoutées par réflexion par les six classes de tests) restent où elles sont ; la case 0 est au héros et reste réservée dans un monde sans héros (le masque la tient dès la construction).
+- ⏳ **T3 — Code en deux temps.** (A) l'ombre, suite complète, compteurs relevés ; (B) l'insertion triée, la suite complète, chaque test déplacé est justifié par l'oracle (ordre de case) et corrigé avec la preuve ; rien d'autre ne change.
+- ⏳ **T4 — ADR** (table de cases, plafond, ordre), plan, verifier frais ; en plus, un verifier sur les épingles (liste prédite contre liste mesurée).
+
+##### Acceptation
+
+- Oracle V5 : toutes les lignes égales ; mutants de T2 d'e0a1 touchant la recherche de case CAUGHT.
+- DLL : au moins 12 tests de l'allocateur ; `Alundra.Tests` : le compte d'e0a1 plus les nouveaux, aucun échec, et **chaque test dont le résultat bouge est dans la liste prédite de T0 et justifié par l'ordre des cases** ; carte de chargement : jamais plus de 39 entités (maximum mesuré aux cartes avec la zone : 39 ; 76 et 64 sans la zone aux cartes 75 et 92, qu'aucun test connu ne charge : recherche des noms de monde `-75` et `-92`).
+- Verifiers frais.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : un déplacement non prédit ; la porte de `RecycleDestroyedEntities` à changer ; le plafond atteint au chargement dans un test (erreur à lire, pas à contourner) ; un test existant à réécrire sans justification du binaire ; l'ordre d'une passe à toucher.
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : l'insertion triée se retire seule (l'ombre reste) ; sinon abandon de la branche.
+
+---
+
+#### 1.16.3 E20.e0a3 — Participation au tick de naissance des entités de l'interface
+
+**But.** Une entité née dans `MovePlayer` (tir, usage d'un objet) tourne dans le tick qui la voit naître : statut, programme A, compteurs, listes, horloge, physique, coups ; une entité née dans un programme natif d'une autre entité tourne au tick suivant (D-E0A-6). Les entités par enregistrement ne changent pas (D-E0A-5, Q-A1). Ferme O-E20-11 pour les entités de l'interface.
+
+**Périmètre.** `AlundraEntityScriptProxy` (`JoinsBirthTick`, `EventTrigger = −1` posé à l'apparition, `CollisionFieldNow` limité au marqueur pour les neuf lectures) ; `AlundraWorldProxy.CollectTickEntities` (`TookPartInFrame || (JoinsBirthTick && Owner.World == null)`, sans effacement) ; un nouveau rassemblement juste après `MovePlayerOnTickPad` (`AlundraWorldProxy.cs:2701`) quand une apparition a eu lieu ; un membre par défaut `ICollisionField? CollisionField => null` sur `IAlundraScriptHost` ; **un point d'accroche de test** dans `SpawnWeaponProjectile` (séparé du comptage, désactivé en production) pour faire naître une entité à l'endroit exact de `MovePlayer` sans brancher le tir.
+
+**Hors périmètre.** Le branchement du tir ; la cinématique (3 px puis 6 px) ; l'extension aux entités par enregistrement (e0a4) ; l'intégration immédiate du moteur ; `PublishEntityFrame` (la première publication reste celle de l'image suivante).
+
+##### Tâches
+
+- ⏳ **T0 — Sondes (note dans le plan, pas de commit de code).** *P-A, première animation :* (1) `AnimatedSpriteComponent.SetCurrentAnimation(forceReset: true)` avant intégration, sur un préfab de `LoadCopy` : sans exception ni état faussé ? (2) `Controller.Move` avant intégration : ajout simple (lu dans le moteur) — mesuré sur un arc ; (3) la cinématique générique donne-t-elle X + 3 puis + 6 px pour la n° 3 en direction `0x18` ? Décide entre (i) poser `Current = Target` et l'animation du sprite à la création et (ii) laisser `~0` et faire lire la cible au pas de mouvement pour les entités marquées ; décide aussi si une épingle de position entre dans e0a3 ou va à e0k et E20.f3. *P-B, mesure pour Q-A1 :* dans une copie jetable (non commitée), forcer le marqueur sur les chemins par enregistrement, lancer toute la suite, relever les tests qui bougent ; remettre l'arbre à l'état (`git checkout -- <fichiers>`), écrire la liste dans le plan.
+- ⏳ **T1 — Oracle V6** (ajouts à l'annexe d'e0a1) : les lignes M1 à M3, H1 à H6, L1 à L3 rejouées avec la trace de passe par passe (statut, déclencheur, A, `+0x1C`, listes, délai d'image, X), et le cas « détruite au tick de sa naissance ».
+- ⏳ **T2 — Tests rouges.** Trace de passes d'une naissance dans `MovePlayer` (hook de test) : après `programs` l'état est `Normal`, le gestionnaire A (inscrit par le test dans `AlundraNativeSpriteRegistry`) a tourné **une** fois au tick 1 et 0 au tick 2, `FrameCounter == 1` après les compteurs, présente dans `_updateProxies` et la liste des coups après les listes, horloge et physique appelées une fois (deux dans une image à deux ticks) ; naissance dans un programme natif : état `Loaded` à la fin du tick 1, A au tick 2 seulement (l'écart D-E0A-6 est épinglé) ; monde à ticks propres : aucune participation ; détruite au tick de sa naissance dans une image à deux ticks : recyclée en tête du tick suivant, case rendue, pas d'exception à l'intégration du moteur ; le son de création demandé une seule fois ; les épingles de record intactes (`AlundraTickStructureTests` 367-392, `AlundraVisionArcTests` 348-353, `AlundraShipBlockArcTests` 235-240, `AlundraAbsoluteZWritesTests`, `AlundraControllerlessVerticalStepTests`, `AlundraAnimationImpulseSpawnTests`).
+- ⏳ **T3 — Code.** Selon P-A.
+- ⏳ **T4 — ADR** (tick de naissance, marqueur, limites), plan, verifier frais.
+
+##### Acceptation
+
+- Oracle V6 : lignes M1 à M3 égales au niveau des passes ; H et L : les écarts exacts de D-E0A-6 listés, pas d'autre.
+- DLL : tous les tests de T2 verts ; `Alundra.Tests` : aucun échec, **aucun test existant modifié**, en particulier les trois épingles ci-dessus (preuve que le marqueur ne fuit pas) ; position de la flèche : épinglée seulement si P-A l'a établie, sinon notée pour E20.e0k et E20.f3 ; sonde du vrai jeu (E19.v2) inchangée.
+- Verifiers frais.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : une épingle d'apparition par enregistrement qui bouge (le marqueur fuit) ; P-A qui montre `SetCurrentAnimation` instable avant intégration et aucune voie (ii) ; tout changement de moteur nécessaire ; la lecture du champ de collision par repli qui change `ClampToGround` d'une entité par enregistrement.
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : abandon de la branche.
+
+---
+
+#### 1.16.4 E20.e0a4 — (conditionnelle, selon Q-A1) Participation au tick de naissance des apparitions par enregistrement
+
+Non détaillée. Elle ne démarre qu'avec l'accord de l'auteur après la liste de P-B. Chaque épingle qui bouge est re-dérivée de l'oracle (une apparition par événement de carte tourne dans le tick, D-E20-11) ; les arcs listés au §1.16 (A, B) sont remesurés un à un.
+
+##### Points ouverts ajoutés
+
+| Point | Question | Où elle se tranche |
+|---|---|---|
+| O-E0A-1 | « A deux fois » : une apparition en boucle 2 sur une case dont le déclencheur vaut 0 fait tourner A dans la passe puis au tick suivant ; la DLL n'a que le tick suivant | e0b, e0c ou E14, si un gestionnaire A en dépend |
+| O-E0A-2 | Lecteur de `+0x08` : aucun trouvé dans la décompilation ; recherche dans le binaire à faire si E20.g ou E14 en montre un | E20.g, E14 |
+| O-E0A-3 | Coût de `LoadCopy` à chaque apparition (une lecture de disque) | mesure avant E20.f3 |
 
 ## 2. Points ouverts
 
