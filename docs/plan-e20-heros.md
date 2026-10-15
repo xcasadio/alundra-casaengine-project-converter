@@ -602,8 +602,11 @@ carte des entités nées par l'interface (e0k1), leur Z logique et le pas vertic
 est conditionnelle (Q-K2, option B). Q-K1 et Q-K2 : défaut A appliqué par la session principale jusqu'à la réponse de l'auteur.
 Prérequis : f3c exige e0k1 et e0k2 (la règle du Z logique ; D-F3-8 corrigé : marqueur d'e0k2, plus `EntityRefId == −1`) ; f4, f5 et
 f6 exigent e0k1 à e0k3 ; g1 et g2 exigent e0k2 (g1 pose le marqueur sur une entité par enregistrement qu'il soulève) ; h3 exige e0k2 ;
-h4 exige e0k1 à e0k3. Ordre : f3a, f3b, e0k1, e0k2, f3c, e0k3, puis la suite du tableau. Choix de la session principale en mode AUTO,
+h4 exige e0k1 à e0k3 ; E20.e0c (le butin lâché et l'objet ramassable, nés par l'interface avec la gravité) exige e0k1 à e0k3. Ordre :
+f3a, f3b, e0k1, e0k2, f3c, e0k3, puis la suite du tableau. Choix de la session principale en mode AUTO,
 réversible, signalé à l'auteur.
+Relecture de la révision 8 : **REVISE**, un point corrigé (FIX) : E20.e0c fait naître par l'interface des objets à gravité (30 à 64) et
+n'exigeait pas e0k ; elle exige maintenant e0k1 à e0k3 (paragraphe « Ensuite » et dépendants de §1.18). Une seconde relecture suit.
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -671,7 +674,7 @@ Les projectiles d'E20.f3, f5 et f6 (E10, E17, E9) appellent aussi `DestroyEntity
 
 Ensuite, hors de l'ordre des armes, objets et collisions : la blessure du héros (E20.c2b, après E14.a, qui remesure ses arcs), le mur
 d'eau profonde avec les courants (E20.i2, D-E20-31 ; lecture de « 9 a » à confirmer par l'auteur), le butin et l'objet ramassable
-(E20.e0c, qui exige E20.e0b2), les effets du héros et l'herbe coupée (E20.e), la règle du stick (E20.d2b, après la mesure de l'auteur). Si E14.a1c s'arrête
+(E20.e0c, qui exige E20.e0b2 et E20.e0k1 à E20.e0k3 : les objets lâchés tombent), les effets du héros et l'herbe coupée (E20.e), la règle du stick (E20.d2b, après la mesure de l'auteur). Si E14.a1c s'arrête
 sur la chute des Muruta du hall (arrêt écrit de sa tranche : la chute des entités autres que le héros relève d'E20.e0k), la question
 va à l'auteur comme le dit cet arrêt ; recommandation : avancer la part « chute » d'E20.e0k, qui ne dépend pas de l'apparition par
 indice (les Muruta sont placés sur la carte), puis reprendre E14.a1c.
@@ -4389,11 +4392,17 @@ Ordre : e0k1, e0k2, e0k3 (e0k4 seulement si l'auteur la demande). Les dépendant
 - **Q-K2 — Le tick du « bloqué » d'une flèche contre un mur.** *L'original :* le signal « bloqué » arrive 1 tick (20 ms) après le dernier pas complet dans 2 tirs sur 3, et 2 ticks après dans le troisième (selon la fraction de pixel du départ). *Le port :* toujours 1 tick. *Visible en jeu :* rien ; la flèche rebondit ou meurt 1/50 s plus tôt dans un tir sur trois. *Option A (défaut, précédent D-E19-12) :* accepter l'écart, documenté. *Option B :* porter la boucle entière pour les entités marquées (e0k4, une tranche de plus, qui remplace le mover du moteur pour elles ; preuve par les 20 000 cas du fuzz).
 - Sans question (défaut fidèle) : le rognage au bord pour les entités par enregistrement et le héros reste sous D-E19-25 ; les attributs de tuile et la dérive vont à leurs consommateurs (O-E0K-2, O-E0K-3).
 
-**Prérequis et dépendants.** Voir le tableau de découpage. e0k1 : E20.e0a1 ✅ à e0a3b ✅ ; elle ne dépend ni d'E20.e0b2 (en pause) ni d'E20.f3, mais touche aussi `AlundraWorldProxy.cs` : elle s'exécute l'une après l'autre avec elles, dans le même checkout, et relit ses numéros de ligne au HEAD d'exécution. Dépendants : E20.f3c (règle du Z logique, remplace le repli B de Q-F3-1 ; D-F3-8 est à corriger dans §1.19), E20.f4, E20.f5, E20.f6, E20.g1 (pose le marqueur), E20.g2, E20.h3, E20.h4. E20.f5 doit appeler `ResyncControllerFromFlags` quand E17 change les drapeaux (masque de marche). Révision 8 de l'enveloppe écrite (§1.1 : ligne 4 scindée en e0k1 à e0k3 ; prérequis ci-dessus).
+**Prérequis et dépendants.** Voir le tableau de découpage. e0k1 : E20.e0a1 ✅ à e0a3b ✅ ; elle ne dépend ni d'E20.e0b2 (en pause) ni d'E20.f3, mais touche aussi `AlundraWorldProxy.cs` : elle s'exécute l'une après l'autre avec elles, dans le même checkout, et relit ses numéros de ligne au HEAD d'exécution. Dépendants : E20.f3c (règle du Z logique, remplace le repli B de Q-F3-1 ; D-F3-8 corrigé dans §1.19), E20.f4, E20.f5, E20.f6, E20.g1 (pose le marqueur), E20.g2, E20.h3, E20.h4, E20.e0c (objets lâchés à gravité ; e0k1 à e0k3). E20.f5 doit appeler `ResyncControllerFromFlags` quand E17 change les drapeaux (masque de marche). Révision 8 de l'enveloppe écrite (§1.1 : ligne 4 scindée en e0k1 à e0k3 ; prérequis ci-dessus).
 
 ---
 
 #### 1.18.1 E20.e0k1 — L'état de carte des entités nées par l'interface, les sondes de la DLL ⏳
+
+**Révision 1 (2026-10-15).** Relecture : **REVISE**, quatre points : (1) la liste prédite des tests qui peuvent bouger était figée à six
+fichiers au HEAD de la découverte ; e0k1 passe après f3a et f3b, qui ajoutent des tests nés par l'interface : la liste est recomptée en
+T0 au HEAD de départ, et l'acceptation comme les arrêts d'e0k1 à e0k3 la citent (FIX) ; (2) (k1) nomme un mur que **seul le masque**
+bloque (FIX) ; (3) l'épingle P3 d'e0a3b doit tuer le mutant M3 (FIX) ; (4) l'enveloppe révision 8 doit être READY avant toute exécution
+(en cours ; l'exécution attend son verdict).
 
 **Prérequis.** Voir ci-dessus.
 
@@ -4409,7 +4418,11 @@ Ordre : e0k1, e0k2, e0k3 (e0k4 seulement si l'auteur la demande). Les dépendant
 
 ##### Tâches
 
-- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code), pour les trois sous-tranches. `docs/plan-e20-annexe/e20-e0k/README.md` : les vecteurs de « Faits porteurs » avec leurs clés, les comptes de départ de la suite (à relever ; 4 852 après e0b1), les chiffres de la critique (68 / 33 % du modèle de mur). `oracle/` : les outils de la découverte binaire (`exe.py`, `k0lib.py`, `run_all.py`, `k0_*.py`, le dossier `oracle/`) et `residual_stats.py`, copiés octet pour octet avec leurs sommes de contrôle ; sorties en texte **et** en JSON ; deux exécutions donnent un manifeste identique (88 fichiers). Au moins 12 mutants d'un mot sur les scénarios (blocage `≥` changé en `>`, fenêtres de l'aimant, test `0x2000`, test de gravité `0x100`, marqueur `0x8000`, `slt` de l'atterrissage inversé, plafond, `+1` de la création, bornes du rognage), tous tués ou prouvés équivalents un à un.
+- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code), pour les trois sous-tranches. `docs/plan-e20-annexe/e20-e0k/README.md` : les vecteurs de « Faits porteurs » avec leurs clés, les comptes de départ de la suite (à relever ; 4 852 après e0b1), les chiffres de la critique (68 / 33 % du modèle de mur). `oracle/` : les outils de la découverte binaire (`exe.py`, `k0lib.py`, `run_all.py`, `k0_*.py`, le dossier `oracle/`) et `residual_stats.py`, copiés octet pour octet avec leurs sommes de contrôle ; sorties en texte **et** en JSON ; deux exécutions donnent un manifeste identique (88 fichiers). **Liste prédite recomptée** au HEAD de départ (après f3a et f3b), écrite au README avant tout code : toutes les méthodes de
+  `Alundra.Tests/` qui atteignent `SpawnEntityBySpriteIndex` ou `CreateEntityFromSpriteIndex` (directement ou par un support, dont
+  `AlundraWeaponSpawnSeamTests` et les tests nouveaux d'f3a et d'f3b), avec leur compte ; elle remplace les « 56 méthodes des six fichiers »
+  de la découverte pour e0k1, e0k2 et e0k3 (e0k2 et e0k3 la recomptent à leur tour si des tests nés par l'interface ont été ajoutés
+  entre-temps). Au moins 12 mutants d'un mot sur les scénarios (blocage `≥` changé en `>`, fenêtres de l'aimant, test `0x2000`, test de gravité `0x100`, marqueur `0x8000`, `slt` de l'atterrissage inversé, plafond, `+1` de la création, bornes du rognage), tous tués ou prouvés équivalents un à un.
 - ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile, puis le code). `AlundraMapStateTests` : (a) sur une carte à (128, 4096) : `MapGravityRaw`, `MapZViscosityRaw`, masque (flèche `0x40`, vague ClassB `0x41`, entité ClassA `0x1040`), `IsVerticalOwnedExternally`, `MinMoveDistance` ; chaque cas « sans carte, rien ne change » est accolé dans la **même assertion** à un cas avec carte ; (b) garde : une entité créée par enregistrement a les mêmes valeurs qu'avant (vert dès T1, par construction : extraction). La suite entière ne bouge pas.
 - ⏳ **T2 — Sondes de la DLL** (écrites, lancées au HEAD de départ, puis après la phase B, versées au README, puis retirées ; prédiction écrite avant). Chaque sonde est accolée à son témoin :
   - P1 : boule (11) née à Z + 32 px sur un champ plat. Prédiction : sans l'état, elle reste à 32 px (`ForceZ` borné à 0). Avec l'état, Z égal à l'oracle moins une unité brute jusqu'à l'atterrissage.
@@ -4418,17 +4431,23 @@ Ordre : e0k1, e0k2, e0k3 (e0k4 seulement si l'auteur la demande). Les dépendant
   - P4 : tick du drapeau de mur sur les 12 départs de l'oracle (C1). Prédiction : toujours « +1 » ; le nombre d'écarts d'un tick alimente Q-K2.
   - P5 : entité montante (impulsion 1 024) avec et sans la propriété du vertical : annulée ou non par le moteur ?
   - P6 : écart entre la racine et le Z logique d'une boule qui finit sa chute (ancrage du moteur à moins de 4 px).
-- ⏳ **T3 — Phase B** (commit de code) et tests de monde, écrits **avant** B et rouges jusqu'à B (chacun attend un effet que la phase A ne produit pas) : (k1) la flèche née contre un mur s'arrête, `ForceAdjusted` levé, jamais de l'autre côté, accolée dans la même assertion à la même flèche dans un couloir libre qui vole toute la distance ; (k2) la boule née à Z + 32 px tombe et se pose, accolée à un témoin « sans carte » qui reste en l'air ; (k3) sur la carte 159 (3, 256), la boule tombe à peine, accolée à la carte 14 ; (k4) les champs posés sur l'entité née et inchangés sur une entité de même sprite par enregistrement. **Vert par construction dès T1** : P3 d'e0a3b (une entité marquée qui change d'animation après la validation garde la clé de son animation courante).
-- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre). Mutants du code de la DLL, au moins 8, tous tués : assistant non appelé par l'interface, `_tileMapData` nul, masque calculé sur de mauvais drapeaux, propriété du vertical oubliée, `MinMoveDistance` oublié, mots gravité et viscosité permutés, assistant appelé deux fois, une ligne perdue du chemin par enregistrement (tuée par la garde de T1).
+- ⏳ **T3 — Phase B** (commit de code) et tests de monde, écrits **avant** B et rouges jusqu'à B (chacun attend un effet que la phase A ne produit pas) : (k1) la flèche née contre un mur **que seul le masque bloque** — un champ synthétique (support `ContactWorld` ou équivalent) qui reproduit la
+  colonne 15 de l'oracle (`arrows2`, cas C1) : cellules au mot `& 0x40` non nul et de hauteur nulle, donc sous le pied de la flèche plus
+  `StepHeight` ; un mur que la hauteur suffit à bloquer est **exclu** — s'arrête en X = 349, `ForceAdjusted` levé, jamais de l'autre côté ;
+  le rouge avant B est la traversée (position au-delà du mur), consignée comme telle ; accolée dans la même assertion à la même flèche dans
+  un couloir libre qui vole toute la distance ; (k2) la boule née à Z + 32 px tombe et se pose, accolée à un témoin « sans carte » qui reste en l'air ; (k3) sur la carte 159 (3, 256), la boule tombe à peine, accolée à la carte 14 ; (k4) les champs posés sur l'entité née et inchangés sur une entité de même sprite par enregistrement. **Vert par construction dès T1** : P3 d'e0a3b (une entité marquée qui change d'animation après la validation garde la clé de son animation courante).
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre). Mutants du code de la DLL, au moins 8, tous tués : assistant non appelé par l'interface, `_tileMapData` nul, masque calculé sur de mauvais drapeaux, propriété du vertical oubliée, `MinMoveDistance` oublié, mots gravité et viscosité permutés, assistant appelé deux fois, une ligne perdue du chemin par enregistrement (tuée par la garde de T1), et **M3** (la garde de D-E0A-8 dans
+  `AlundraScriptedMotion.TickScriptedNpc` réduite à la seule condition du marqueur, sans `CurrentAnimationId == ~0u`) : tué par l'épingle P3
+  d'e0a3b, rouge sous M3 et verte sans lui.
 
 ##### Acceptation
 
 - Oracle : manifeste identique sur deux exécutions ; au moins 12 mutants tués ou prouvés équivalents.
-- DLL : tous les tests de T1 et T3 verts ; (k1) à (k4) **rouges avant B** (nommés) ; `Alundra.Tests` en Release **et** en Debug, compte de départ plus les nouveaux, zéro échec ; **tests existants déplacés ⊂ les 56 méthodes des six fichiers** (liste prédite statique), chacun réécrit par dérivation ; le chemin par enregistrement, le héros et les cinq traces inchangés (`git diff --ignore-cr-at-eol --exit-code`) ; `cmp` de la DLL ; moteur, convertisseur et données sans diff.
+- DLL : tous les tests de T1 et T3 verts ; (k1) à (k4) **rouges avant B** (nommés) ; `Alundra.Tests` en Release **et** en Debug, compte de départ plus les nouveaux, zéro échec ; **tests existants déplacés ⊂ la liste prédite recomptée au HEAD de départ de la tranche (T0 d'e0k1)**, chacun réécrit par dérivation ; M3 tué par l'épingle P3 d'e0a3b ; le chemin par enregistrement, le héros et les cinq traces inchangés (`git diff --ignore-cr-at-eol --exit-code`) ; `cmp` de la DLL ; moteur, convertisseur et données sans diff.
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : la phase A fait bouger un test ; (k1) ou (k2) vert avant B ; un test hors des 56 méthodes bouge ; plus de 10 tests existants bougent ; une sonde contredit une prédiction (écrire, puis décider avant e0k2) ; un besoin de changer le moteur.
+- **Arrêts** : la phase A fait bouger un test ; (k1) à (k4) vert avant B ; un test hors de la liste prédite recomptée au HEAD de départ de la tranche (T0 d'e0k1) bouge ; plus de 10 tests existants bougent ; une sonde contredit une prédiction (écrire, puis décider avant e0k2) ; un besoin de changer le moteur.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B se retire seule (l'interface cesse de passer la carte). La phase A ne change aucun comportement.
 
@@ -4457,7 +4476,7 @@ Ordre : e0k1, e0k2, e0k3 (e0k4 seulement si l'auteur la demande). Les dépendant
 
 ##### Acceptation
 
-- DLL : tests de T1 et T2 verts ; (z1) à (z8) rouges avant T3 (nommés) ; `Alundra.Tests` en Release **et** en Debug, zéro échec ; tests déplacés ⊂ les 56 méthodes des six fichiers, chacun réécrit par dérivation ; aucun diff du héros (`RunHeroVerticalTick`, `SnapHeroAtApex`, `AlundraPlayerManager`) ; traces inchangées ; `cmp` de la DLL ; moteur, convertisseur et données sans diff.
+- DLL : tests de T1 et T2 verts ; (z1) à (z8) rouges avant T3 (nommés) ; `Alundra.Tests` en Release **et** en Debug, zéro échec ; tests déplacés ⊂ la liste prédite recomptée au HEAD de départ de la tranche (T0 d'e0k1) (recomptée si besoin), chacun réécrit par dérivation ; aucun diff du héros (`RunHeroVerticalTick`, `SnapHeroAtApex`, `AlundraPlayerManager`) ; traces inchangées ; `cmp` de la DLL ; moteur, convertisseur et données sans diff.
 
 ##### Arrêts, budget, retour arrière
 
@@ -4488,11 +4507,11 @@ Ordre : e0k1, e0k2, e0k3 (e0k4 seulement si l'auteur la demande). Les dépendant
 
 ##### Acceptation
 
-- DLL : tests verts ; (b1) à (b3) rouges avant T3 ; `Alundra.Tests` en Release et en Debug, zéro échec ; aucun test existant ne bouge hors des 56 méthodes ; traces inchangées ; moteur, convertisseur et données sans diff.
+- DLL : tests verts ; (b1) à (b3) rouges avant T3 ; `Alundra.Tests` en Release et en Debug, zéro échec ; aucun test existant ne bouge hors de la liste prédite recomptée au HEAD de départ de la tranche (T0 d'e0k1) ; traces inchangées ; moteur, convertisseur et données sans diff.
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : un test hors des 56 méthodes bouge ; la carte du test n'a pas de bord franchissable (relever une autre carte ou un champ synthétique, `ContactWorld`) ; un besoin de changer le moteur ; un drapeau de rognage effacé par `SlideAlongWall`.
+- **Arrêts** : un test hors de la liste prédite recomptée au HEAD de départ de la tranche (T0 d'e0k1) bouge ; la carte du test n'a pas de bord franchissable (relever une autre carte ou un champ synthétique, `ContactWorld`) ; un besoin de changer le moteur ; un drapeau de rognage effacé par `SlideAlongWall`.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B se retire seule. La phase A ne change aucun comportement.
 
