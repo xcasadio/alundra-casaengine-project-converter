@@ -3232,6 +3232,7 @@ automatiques atteint) : **FIX** — le chemin complet (b′) tourne sur le vrai 
 exclut nommément les champs qui dépendent du terrain, prouvés par (b) ; **FIX** des points non bloquants : `InitializeBalance(tables, 0)`
 nommé, place de l'unité de D-E0A-1 (dans l'interface, jamais dans le noyau partagé), repère DLL = binaire − 1 écrit à T0, mots de la
 carte (`tileMapData`) laissés à `ApplySpawnInitialization`. Nouvelle époque de relecture : une seule relecture de clôture suit.
+Relecture de clôture : **READY** (2026-10-15).
 
 **Prérequis.** E20.e0x ✅ (`BankKey`, `Data/map-sprite-indices.json`), E14.a0 ✅ (registre natif, pour les tests d'A).
 
