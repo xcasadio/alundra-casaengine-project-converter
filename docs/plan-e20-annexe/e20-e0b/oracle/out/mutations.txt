@@ -1,0 +1,23 @@
+# E20.e0b1 T0: 20 one-word mutants of the emulated binary against the 24 calls of s7_frame.py ; baseline signature e3349892f5c13143f8e64608d64cee77d3a5326c
+# CAUGHT = the signature differs (or the machine faults) ; SURVIVED = a vector is missing or the mutant is equivalent (proof in the README)
+CAUGHT    multiplier high half: lui 0x7d2b -> 0x7d2a (0x8002BD0C)  [0x8002BD0C: 3C037D2B -> 3C037D2A]
+CAUGHT    multiplier low half: ori 0x89dd -> 0x89dc (0x8002BD18)  [0x8002BD18: 346389DD -> 346389DC]
+CAUGHT    increment high half: lui 0xe06a -> 0xe06b (0x8002BD20)  [0x8002BD20: 3C02E06A -> 3C02E06B]
+CAUGHT    increment low half: ori 0x2e7 -> 0x2e6 (0x8002BD24)  [0x8002BD24: 344202E7 -> 344202E6]
+CAUGHT    multiplication removed: mult -> nop (0x8002BD1C)  [0x8002BD1C: 00430018 -> 00000000]
+CAUGHT    squared instead of multiplied: mult v0,v1 -> mult v0,v0 (0x8002BD1C)  [0x8002BD1C: 00430018 -> 00420018]
+CAUGHT    increment turned into a subtraction: addu -> subu (0x8002BD2C)  [0x8002BD2C: 00C21021 -> 00C21023]
+CAUGHT    increment removed: addu -> or with zero of the product only (0x8002BD2C)  [0x8002BD2C: 00C21021 -> 00C01025]
+CAUGHT    polarity of the beqz s3 inverted: beqz -> bnez (0x8002BD30)  [0x8002BD30: 12600003 -> 16600003]
+CAUGHT    store of the advance removed (delay slot of the beqz, 0x8002BD34)  [0x8002BD34: AC828708 -> 00000000]
+CAUGHT    store of the advance to a neighbour word: -0x78f8 -> -0x78f4 (0x8002BD34)  [0x8002BD34: AC828708 -> AC82870C]
+CAUGHT    read of the state from a neighbour word: -0x78f8 -> -0x78f4 (0x8002BD14)  [0x8002BD14: 8C828708 -> 8C82870C]
+CAUGHT    base register of the state: lui a0,0x800a -> 0x8009 (0x8002BD10)  [0x8002BD10: 3C04800A -> 3C048009]
+CAUGHT    clearing of [0x800DC4C4] removed (0x8002BD3C)  [0x8002BD3C: AC40C4C4 -> 00000000]
+CAUGHT    request raised by a refused inventory removed (0x8002BD00)  [0x8002BD00: AC62C4C4 -> 00000000]
+CAUGHT    result of DisplayInventory inverted: bnez -> beqz (0x8002BCF4)  [0x8002BCF4: 14400003 -> 10400003]
+CAUGHT    gate test 0x48 -> 0x40 (0x8003B394)  [0x8003B394: 30420048 -> 30420040]
+CAUGHT    gate test 0x48 -> 0x08 (0x8003B394)  [0x8003B394: 30420048 -> 30420008]
+CAUGHT    gate test removed: andi 0x48 -> andi 0 (0x8003B394)  [0x8003B394: 30420048 -> 30420000]
+CAUGHT    gate test polarity inverted: bnez -> beqz (0x8003B398)  [0x8003B398: 1440001B -> 1040001B]
+# 20 mutants, 0 survived ; the unmutated run in this process equals out/frame_trace.json: True

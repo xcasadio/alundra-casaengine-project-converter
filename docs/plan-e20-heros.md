@@ -4059,10 +4059,10 @@ L'auteur a accordé une relecture de clôture de plus (2026-10-15) ; relecture d
 
 ##### Tâches
 
-- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code). `docs/plan-e20-annexe/e20-e0b/README.md` : les valeurs attendues ci-dessus (les six mots de l'avance, une avance par appel sur les dix lignes de la sonde, a0 sans effet sur le nombre de pas), la prédiction **qualitative** de la découverte
+- ✅ **T0 — Prédiction et oracle** (commit de docs, avant tout code). `docs/plan-e20-annexe/e20-e0b/README.md` : les valeurs attendues ci-dessus (les six mots de l'avance, une avance par appel sur les dix lignes de la sonde, a0 sans effet sur le nombre de pas), la prédiction **qualitative** de la découverte
   (familles de tests à risque, voir « Acceptation ») et les comptes de départ ; la liste prédite **mesurée** s'y ajoute en T1, avant la phase B. `oracle/` : `s7_frame.py` et les outils copiés octet pour octet avec leurs sommes de contrôle ; sortie `frame_vectors.json` (10 lignes) ; deux exécutions au manifeste identique ; au moins 12 mutants d'un mot (constantes, polarité du `beqz s3`,
   test de la porte, résultat de `DisplayInventory`, magasin supprimé, effacement de `[0x800DC4C4]`), tous tués ou équivalents prouvés par écrit.
-- ⏳ **T1 — Phase A, le branchement et l'ombre, sans changement de comportement** (commit de code A, puis commit de docs du relevé). Le
+- 🚧 **T1 — Phase A, le branchement et l'ombre, sans changement de comportement** (commit de code A, puis commit de docs du relevé). Le
   code de la phase A tel que décrit dans « Partage des phases » ; `AlundraRandomShadow` (inactif sans `ALUNDRA_RNG_SHADOW_LOG`). **Test
   d'inertie** (propre à la tranche) : sans la variable, `AdvanceFrame()` et les tirages n'écrivent aucun fichier, n'allouent rien et ne
   touchent ni `V` ni les compteurs de l'ombre ; il n'affirme **rien** sur `RandomSeed` (l'état réel, que la phase B fait avancer) et il

@@ -1,0 +1,2228 @@
+[
+{
+"label": "gate sweep",
+"a0": 0,
+"gate": 0,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "AFBE9EAC",
+"steps": 4,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_slots",
+"12345678",
+null
+],
+[
+"call",
+"pass_events",
+"12345678",
+null
+],
+[
+"call",
+"MovePlayer(stub+draw)",
+"12345678",
+null
+],
+[
+"call",
+"pass_counters",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_lists",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_anim",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_physics",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_effects(stub+draw)",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_hits(stub+draw)",
+"24D2C78A",
+null
+],
+[
+"call",
+"effects_list",
+"5D571F09",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"5D571F09",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"5D571F09",
+"AFBE9EAC"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": true,
+"slot_pass_0x80038634": true,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": true,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 0,
+"gate": 8,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "B806E07F",
+"steps": 1,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_lists",
+"12345678",
+null
+],
+[
+"call",
+"effects_list",
+"12345678",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"12345678",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"12345678",
+"B806E07F"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": false,
+"slot_pass_0x80038634": false,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": false,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 0,
+"gate": 64,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "B806E07F",
+"steps": 1,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_lists",
+"12345678",
+null
+],
+[
+"call",
+"effects_list",
+"12345678",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"12345678",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"12345678",
+"B806E07F"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": false,
+"slot_pass_0x80038634": false,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": false,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 0,
+"gate": 72,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "B806E07F",
+"steps": 1,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_lists",
+"12345678",
+null
+],
+[
+"call",
+"effects_list",
+"12345678",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"12345678",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"12345678",
+"B806E07F"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": false,
+"slot_pass_0x80038634": false,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": false,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 0,
+"gate": 52,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "AFBE9EAC",
+"steps": 4,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_slots",
+"12345678",
+null
+],
+[
+"call",
+"pass_events",
+"12345678",
+null
+],
+[
+"call",
+"MovePlayer(stub+draw)",
+"12345678",
+null
+],
+[
+"call",
+"pass_counters",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_lists",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_anim",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_physics",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_effects(stub+draw)",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_hits(stub+draw)",
+"24D2C78A",
+null
+],
+[
+"call",
+"effects_list",
+"5D571F09",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"5D571F09",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"5D571F09",
+"AFBE9EAC"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": true,
+"slot_pass_0x80038634": true,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": true,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 0,
+"gate": 16,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "AFBE9EAC",
+"steps": 4,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_slots",
+"12345678",
+null
+],
+[
+"call",
+"pass_events",
+"12345678",
+null
+],
+[
+"call",
+"MovePlayer(stub+draw)",
+"12345678",
+null
+],
+[
+"call",
+"pass_counters",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_lists",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_anim",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_physics",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_effects(stub+draw)",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_hits(stub+draw)",
+"24D2C78A",
+null
+],
+[
+"call",
+"effects_list",
+"5D571F09",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"5D571F09",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"5D571F09",
+"AFBE9EAC"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": true,
+"slot_pass_0x80038634": true,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": true,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 0,
+"gate": 128,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "AFBE9EAC",
+"steps": 4,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_slots",
+"12345678",
+null
+],
+[
+"call",
+"pass_events",
+"12345678",
+null
+],
+[
+"call",
+"MovePlayer(stub+draw)",
+"12345678",
+null
+],
+[
+"call",
+"pass_counters",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_lists",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_anim",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_physics",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_effects(stub+draw)",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_hits(stub+draw)",
+"24D2C78A",
+null
+],
+[
+"call",
+"effects_list",
+"5D571F09",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"5D571F09",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"5D571F09",
+"AFBE9EAC"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": true,
+"slot_pass_0x80038634": true,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": true,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 0,
+"gate": 255,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "B806E07F",
+"steps": 1,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_lists",
+"12345678",
+null
+],
+[
+"call",
+"effects_list",
+"12345678",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"12345678",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"12345678",
+"B806E07F"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": false,
+"slot_pass_0x80038634": false,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": false,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 1,
+"gate": 0,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "AFBE9EAC",
+"steps": 4,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_slots",
+"12345678",
+null
+],
+[
+"call",
+"pass_events",
+"12345678",
+null
+],
+[
+"call",
+"MovePlayer(stub+draw)",
+"12345678",
+null
+],
+[
+"call",
+"pass_counters",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_lists",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_anim",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_physics",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_effects(stub+draw)",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_hits(stub+draw)",
+"24D2C78A",
+null
+],
+[
+"call",
+"effects_list",
+"5D571F09",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"5D571F09",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"5D571F09",
+"AFBE9EAC"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": true,
+"slot_pass_0x80038634": true,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": true,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 1,
+"gate": 8,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "B806E07F",
+"steps": 1,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_lists",
+"12345678",
+null
+],
+[
+"call",
+"effects_list",
+"12345678",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"12345678",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"12345678",
+"B806E07F"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": false,
+"slot_pass_0x80038634": false,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": false,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 1,
+"gate": 64,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "B806E07F",
+"steps": 1,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_lists",
+"12345678",
+null
+],
+[
+"call",
+"effects_list",
+"12345678",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"12345678",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"12345678",
+"B806E07F"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": false,
+"slot_pass_0x80038634": false,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": false,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 1,
+"gate": 72,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "B806E07F",
+"steps": 1,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_lists",
+"12345678",
+null
+],
+[
+"call",
+"effects_list",
+"12345678",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"12345678",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"12345678",
+"B806E07F"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": false,
+"slot_pass_0x80038634": false,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": false,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 1,
+"gate": 52,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "AFBE9EAC",
+"steps": 4,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_slots",
+"12345678",
+null
+],
+[
+"call",
+"pass_events",
+"12345678",
+null
+],
+[
+"call",
+"MovePlayer(stub+draw)",
+"12345678",
+null
+],
+[
+"call",
+"pass_counters",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_lists",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_anim",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_physics",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_effects(stub+draw)",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_hits(stub+draw)",
+"24D2C78A",
+null
+],
+[
+"call",
+"effects_list",
+"5D571F09",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"5D571F09",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"5D571F09",
+"AFBE9EAC"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": true,
+"slot_pass_0x80038634": true,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": true,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 1,
+"gate": 16,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "AFBE9EAC",
+"steps": 4,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_slots",
+"12345678",
+null
+],
+[
+"call",
+"pass_events",
+"12345678",
+null
+],
+[
+"call",
+"MovePlayer(stub+draw)",
+"12345678",
+null
+],
+[
+"call",
+"pass_counters",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_lists",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_anim",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_physics",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_effects(stub+draw)",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_hits(stub+draw)",
+"24D2C78A",
+null
+],
+[
+"call",
+"effects_list",
+"5D571F09",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"5D571F09",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"5D571F09",
+"AFBE9EAC"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": true,
+"slot_pass_0x80038634": true,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": true,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 1,
+"gate": 128,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "AFBE9EAC",
+"steps": 4,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_slots",
+"12345678",
+null
+],
+[
+"call",
+"pass_events",
+"12345678",
+null
+],
+[
+"call",
+"MovePlayer(stub+draw)",
+"12345678",
+null
+],
+[
+"call",
+"pass_counters",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_lists",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_anim",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_physics",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_effects(stub+draw)",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_hits(stub+draw)",
+"24D2C78A",
+null
+],
+[
+"call",
+"effects_list",
+"5D571F09",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"5D571F09",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"5D571F09",
+"AFBE9EAC"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": true,
+"slot_pass_0x80038634": true,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": true,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate sweep",
+"a0": 1,
+"gate": 255,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "B806E07F",
+"steps": 1,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_lists",
+"12345678",
+null
+],
+[
+"call",
+"effects_list",
+"12345678",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"12345678",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"12345678",
+"B806E07F"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": false,
+"slot_pass_0x80038634": false,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": false,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "trigger, DisplayInventory returns 1 (opened)",
+"a0": 0,
+"gate": 0,
+"trigger": true,
+"inventory_returns": 1,
+"rng_in": "12345678",
+"rng_out": "AFBE9EAC",
+"steps": 4,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_slots",
+"12345678",
+null
+],
+[
+"call",
+"pass_events",
+"12345678",
+null
+],
+[
+"call",
+"MovePlayer(stub+draw)",
+"12345678",
+null
+],
+[
+"call",
+"pass_counters",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_lists",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_anim",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_physics",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_effects(stub+draw)",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_hits(stub+draw)",
+"24D2C78A",
+null
+],
+[
+"call",
+"effects_list",
+"5D571F09",
+null
+],
+[
+"call",
+"DisplayInventory(stub)",
+"5D571F09",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"5D571F09",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"5D571F09",
+"AFBE9EAC"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": true,
+"slot_pass_0x80038634": true,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": true,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "trigger, DisplayInventory returns 0 (refused: the loop exits)",
+"a0": 0,
+"gate": 0,
+"trigger": true,
+"inventory_returns": 0,
+"rng_in": "12345678",
+"rng_out": "AFBE9EAC",
+"steps": 4,
+"steps_ok": true,
+"request_word": 1,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_slots",
+"12345678",
+null
+],
+[
+"call",
+"pass_events",
+"12345678",
+null
+],
+[
+"call",
+"MovePlayer(stub+draw)",
+"12345678",
+null
+],
+[
+"call",
+"pass_counters",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_lists",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_anim",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_physics",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_effects(stub+draw)",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_hits(stub+draw)",
+"24D2C78A",
+null
+],
+[
+"call",
+"effects_list",
+"5D571F09",
+null
+],
+[
+"call",
+"DisplayInventory(stub)",
+"5D571F09",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"5D571F09",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"5D571F09",
+"AFBE9EAC"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": true,
+"slot_pass_0x80038634": true,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": true,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "post-load call a0=1, trigger, returns 0: request cleared at 0x8002BD3C",
+"a0": 1,
+"gate": 0,
+"trigger": true,
+"inventory_returns": 0,
+"rng_in": "12345678",
+"rng_out": "AFBE9EAC",
+"steps": 4,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_slots",
+"12345678",
+null
+],
+[
+"call",
+"pass_events",
+"12345678",
+null
+],
+[
+"call",
+"MovePlayer(stub+draw)",
+"12345678",
+null
+],
+[
+"call",
+"pass_counters",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_lists",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_anim",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_physics",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_effects(stub+draw)",
+"B806E07F",
+null
+],
+[
+"call",
+"pass_hits(stub+draw)",
+"24D2C78A",
+null
+],
+[
+"call",
+"effects_list",
+"5D571F09",
+null
+],
+[
+"call",
+"DisplayInventory(stub)",
+"5D571F09",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"5D571F09",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"5D571F09",
+"AFBE9EAC"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": true,
+"slot_pass_0x80038634": true,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": true,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "gate 0x08: trigger refused (gate word must be 0)",
+"a0": 0,
+"gate": 8,
+"trigger": true,
+"inventory_returns": 0,
+"rng_in": "12345678",
+"rng_out": "B806E07F",
+"steps": 1,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"12345678",
+null
+],
+[
+"call",
+"UpdateWorld",
+"12345678",
+null
+],
+[
+"call",
+"map_events",
+"12345678",
+null
+],
+[
+"call",
+"entity_block",
+"12345678",
+null
+],
+[
+"call",
+"pass_lists",
+"12345678",
+null
+],
+[
+"call",
+"effects_list",
+"12345678",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"12345678",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"12345678",
+"B806E07F"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": false,
+"slot_pass_0x80038634": false,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": false,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "advance only, seed sweep",
+"a0": 0,
+"gate": 72,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "00000000",
+"rng_out": "E06A02E7",
+"steps": 1,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"00000000",
+null
+],
+[
+"call",
+"UpdateWorld",
+"00000000",
+null
+],
+[
+"call",
+"map_events",
+"00000000",
+null
+],
+[
+"call",
+"entity_block",
+"00000000",
+null
+],
+[
+"call",
+"pass_lists",
+"00000000",
+null
+],
+[
+"call",
+"effects_list",
+"00000000",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"00000000",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"00000000",
+"E06A02E7"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": false,
+"slot_pass_0x80038634": false,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": false,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "advance only, seed sweep",
+"a0": 0,
+"gate": 72,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "FFFFFFFF",
+"rng_out": "633E790A",
+"steps": 1,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"FFFFFFFF",
+null
+],
+[
+"call",
+"UpdateWorld",
+"FFFFFFFF",
+null
+],
+[
+"call",
+"map_events",
+"FFFFFFFF",
+null
+],
+[
+"call",
+"entity_block",
+"FFFFFFFF",
+null
+],
+[
+"call",
+"pass_lists",
+"FFFFFFFF",
+null
+],
+[
+"call",
+"effects_list",
+"FFFFFFFF",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"FFFFFFFF",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"FFFFFFFF",
+"633E790A"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": false,
+"slot_pass_0x80038634": false,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": false,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "advance only, seed sweep",
+"a0": 0,
+"gate": 72,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "B017C93D",
+"rng_out": "35E36190",
+"steps": 1,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"B017C93D",
+null
+],
+[
+"call",
+"UpdateWorld",
+"B017C93D",
+null
+],
+[
+"call",
+"map_events",
+"B017C93D",
+null
+],
+[
+"call",
+"entity_block",
+"B017C93D",
+null
+],
+[
+"call",
+"pass_lists",
+"B017C93D",
+null
+],
+[
+"call",
+"effects_list",
+"B017C93D",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"B017C93D",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"B017C93D",
+"35E36190"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": false,
+"slot_pass_0x80038634": false,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": false,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+},
+{
+"label": "advance only, seed sweep",
+"a0": 0,
+"gate": 72,
+"trigger": false,
+"inventory_returns": 1,
+"rng_in": "80000000",
+"rng_out": "606A02E7",
+"steps": 1,
+"steps_ok": true,
+"request_word": 0,
+"trace": [
+[
+"call",
+"pad_sampler(stub)",
+"80000000",
+null
+],
+[
+"call",
+"UpdateWorld",
+"80000000",
+null
+],
+[
+"call",
+"map_events",
+"80000000",
+null
+],
+[
+"call",
+"entity_block",
+"80000000",
+null
+],
+[
+"call",
+"pass_lists",
+"80000000",
+null
+],
+[
+"call",
+"effects_list",
+"80000000",
+null
+],
+[
+"call",
+"sound_frame(stub)",
+"80000000",
+null
+],
+[
+"ADVANCE",
+"RNG store at 0x8002BD34",
+"80000000",
+"606A02E7"
+]
+],
+"coverage": {
+"events_walk_0x8003C6C4": false,
+"slot_pass_0x80038634": false,
+"lists_0x800384F4": true,
+"events_pass_0x800386D0": false,
+"effects_list_body_0x8003C444": true,
+"advance_0x8002BD34": true
+}
+}
+]

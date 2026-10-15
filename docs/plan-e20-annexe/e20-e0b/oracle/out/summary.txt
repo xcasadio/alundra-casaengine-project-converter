@@ -1,0 +1,22 @@
+PASS frame_trace.json md5 equals the discovery - 4943e0d29796bdee75e0a876f82b6b48
+PASS the probe made 24 calls - 24
+PASS advance word 00000000 x1 = E06A02E7 - E06A02E7
+PASS advance word FFFFFFFF x1 = 633E790A - 633E790A
+PASS advance word 80000000 x1 = 606A02E7 - 606A02E7
+PASS advance word B017C93D x1 = 35E36190 - 35E36190
+PASS advance word 12345678 x1 = B806E07F - B806E07F
+PASS advance word 12345678 x4 = AFBE9EAC - AFBE9EAC
+PASS row 1: gate sweep a0=0 gate=00 in 12345678 - steps 4 (predicted 4), advance events 1, out AFBE9EAC
+PASS row 2: gate sweep a0=0 gate=48 in 12345678 - steps 1 (predicted 1), advance events 1, out B806E07F
+PASS row 3: gate sweep a0=1 gate=00 in 12345678 - steps 4 (predicted 4), advance events 1, out AFBE9EAC
+PASS row 4: gate sweep a0=1 gate=48 in 12345678 - steps 1 (predicted 1), advance events 1, out B806E07F
+PASS row 5: trigger, DisplayInventory returns 1 (opened) a0=0 gate=00 in 12345678 - steps 4 (predicted 4), advance events 1, out AFBE9EAC
+PASS row 6: trigger, DisplayInventory returns 0 (refused: the loop exits) a0=0 gate=00 in 12345678 - steps 4 (predicted 4), advance events 1, out AFBE9EAC
+PASS row 7: post-load call a0=1, trigger, returns 0: request cleared at 0x8002BD3C a0=1 gate=00 in 12345678 - steps 4 (predicted 4), advance events 1, out AFBE9EAC
+PASS row 8: gate 0x08: trigger refused (gate word must be 0) a0=0 gate=08 in 12345678 - steps 1 (predicted 1), advance events 1, out B806E07F
+PASS row 9: advance only, seed sweep a0=0 gate=48 in 00000000 - steps 1 (predicted 1), advance events 1, out E06A02E7
+PASS row 10: advance only, seed sweep a0=0 gate=48 in B017C93D - steps 1 (predicted 1), advance events 1, out 35E36190
+PASS ten rows - 10
+PASS a0 without effect on rows 1 and 3
+PASS a0 without effect on rows 2 and 4
+PASS every call of the probe has exactly one advance event, the last operation

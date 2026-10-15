@@ -1,0 +1,48 @@
+gate sweep                                                     a0=0 gate=00 in 12345678 out AFBE9EAC steps 4 ok req=0
+      pad_sampler(stub) > UpdateWorld > map_events > entity_block > pass_slots > pass_events > MovePlayer(stub+draw) > pass_counters > pass_lists > pass_anim > pass_physics > pass_effects(stub+draw) > pass_hits(stub+draw) > effects_list > sound_frame(stub) > ADV
+      cov {'events_walk_0x8003C6C4': 1, 'slot_pass_0x80038634': 1, 'lists_0x800384F4': 1, 'events_pass_0x800386D0': 1, 'effects_list_body_0x8003C444': 1, 'advance_0x8002BD34': 1}
+gate sweep                                                     a0=0 gate=08 in 12345678 out B806E07F steps 1 ok req=0
+gate sweep                                                     a0=0 gate=40 in 12345678 out B806E07F steps 1 ok req=0
+gate sweep                                                     a0=0 gate=48 in 12345678 out B806E07F steps 1 ok req=0
+      pad_sampler(stub) > UpdateWorld > map_events > entity_block > pass_lists > effects_list > sound_frame(stub) > ADV
+      cov {'events_walk_0x8003C6C4': 0, 'slot_pass_0x80038634': 0, 'lists_0x800384F4': 1, 'events_pass_0x800386D0': 0, 'effects_list_body_0x8003C444': 1, 'advance_0x8002BD34': 1}
+gate sweep                                                     a0=0 gate=34 in 12345678 out AFBE9EAC steps 4 ok req=0
+gate sweep                                                     a0=0 gate=10 in 12345678 out AFBE9EAC steps 4 ok req=0
+gate sweep                                                     a0=0 gate=80 in 12345678 out AFBE9EAC steps 4 ok req=0
+gate sweep                                                     a0=0 gate=FF in 12345678 out B806E07F steps 1 ok req=0
+gate sweep                                                     a0=1 gate=00 in 12345678 out AFBE9EAC steps 4 ok req=0
+      pad_sampler(stub) > UpdateWorld > map_events > entity_block > pass_slots > pass_events > MovePlayer(stub+draw) > pass_counters > pass_lists > pass_anim > pass_physics > pass_effects(stub+draw) > pass_hits(stub+draw) > effects_list > sound_frame(stub) > ADV
+      cov {'events_walk_0x8003C6C4': 1, 'slot_pass_0x80038634': 1, 'lists_0x800384F4': 1, 'events_pass_0x800386D0': 1, 'effects_list_body_0x8003C444': 1, 'advance_0x8002BD34': 1}
+gate sweep                                                     a0=1 gate=08 in 12345678 out B806E07F steps 1 ok req=0
+gate sweep                                                     a0=1 gate=40 in 12345678 out B806E07F steps 1 ok req=0
+gate sweep                                                     a0=1 gate=48 in 12345678 out B806E07F steps 1 ok req=0
+      pad_sampler(stub) > UpdateWorld > map_events > entity_block > pass_lists > effects_list > sound_frame(stub) > ADV
+      cov {'events_walk_0x8003C6C4': 0, 'slot_pass_0x80038634': 0, 'lists_0x800384F4': 1, 'events_pass_0x800386D0': 0, 'effects_list_body_0x8003C444': 1, 'advance_0x8002BD34': 1}
+gate sweep                                                     a0=1 gate=34 in 12345678 out AFBE9EAC steps 4 ok req=0
+gate sweep                                                     a0=1 gate=10 in 12345678 out AFBE9EAC steps 4 ok req=0
+gate sweep                                                     a0=1 gate=80 in 12345678 out AFBE9EAC steps 4 ok req=0
+gate sweep                                                     a0=1 gate=FF in 12345678 out B806E07F steps 1 ok req=0
+trigger, DisplayInventory returns 1 (opened)                   a0=0 gate=00 in 12345678 out AFBE9EAC steps 4 ok req=0
+      pad_sampler(stub) > UpdateWorld > map_events > entity_block > pass_slots > pass_events > MovePlayer(stub+draw) > pass_counters > pass_lists > pass_anim > pass_physics > pass_effects(stub+draw) > pass_hits(stub+draw) > effects_list > DisplayInventory(stub) > sound_frame(stub) > ADV
+      cov {'events_walk_0x8003C6C4': 1, 'slot_pass_0x80038634': 1, 'lists_0x800384F4': 1, 'events_pass_0x800386D0': 1, 'effects_list_body_0x8003C444': 1, 'advance_0x8002BD34': 1}
+trigger, DisplayInventory returns 0 (refused: the loop exits)  a0=0 gate=00 in 12345678 out AFBE9EAC steps 4 ok req=1
+      pad_sampler(stub) > UpdateWorld > map_events > entity_block > pass_slots > pass_events > MovePlayer(stub+draw) > pass_counters > pass_lists > pass_anim > pass_physics > pass_effects(stub+draw) > pass_hits(stub+draw) > effects_list > DisplayInventory(stub) > sound_frame(stub) > ADV
+      cov {'events_walk_0x8003C6C4': 1, 'slot_pass_0x80038634': 1, 'lists_0x800384F4': 1, 'events_pass_0x800386D0': 1, 'effects_list_body_0x8003C444': 1, 'advance_0x8002BD34': 1}
+post-load call a0=1, trigger, returns 0: request cleared at 0x8002BD3C a0=1 gate=00 in 12345678 out AFBE9EAC steps 4 ok req=0
+      pad_sampler(stub) > UpdateWorld > map_events > entity_block > pass_slots > pass_events > MovePlayer(stub+draw) > pass_counters > pass_lists > pass_anim > pass_physics > pass_effects(stub+draw) > pass_hits(stub+draw) > effects_list > DisplayInventory(stub) > sound_frame(stub) > ADV
+      cov {'events_walk_0x8003C6C4': 1, 'slot_pass_0x80038634': 1, 'lists_0x800384F4': 1, 'events_pass_0x800386D0': 1, 'effects_list_body_0x8003C444': 1, 'advance_0x8002BD34': 1}
+gate 0x08: trigger refused (gate word must be 0)               a0=0 gate=08 in 12345678 out B806E07F steps 1 ok req=0
+      pad_sampler(stub) > UpdateWorld > map_events > entity_block > pass_lists > effects_list > sound_frame(stub) > ADV
+      cov {'events_walk_0x8003C6C4': 0, 'slot_pass_0x80038634': 0, 'lists_0x800384F4': 1, 'events_pass_0x800386D0': 0, 'effects_list_body_0x8003C444': 1, 'advance_0x8002BD34': 1}
+advance only, seed sweep                                       a0=0 gate=48 in 00000000 out E06A02E7 steps 1 ok req=0
+      pad_sampler(stub) > UpdateWorld > map_events > entity_block > pass_lists > effects_list > sound_frame(stub) > ADV
+      cov {'events_walk_0x8003C6C4': 0, 'slot_pass_0x80038634': 0, 'lists_0x800384F4': 1, 'events_pass_0x800386D0': 0, 'effects_list_body_0x8003C444': 1, 'advance_0x8002BD34': 1}
+advance only, seed sweep                                       a0=0 gate=48 in FFFFFFFF out 633E790A steps 1 ok req=0
+      pad_sampler(stub) > UpdateWorld > map_events > entity_block > pass_lists > effects_list > sound_frame(stub) > ADV
+      cov {'events_walk_0x8003C6C4': 0, 'slot_pass_0x80038634': 0, 'lists_0x800384F4': 1, 'events_pass_0x800386D0': 0, 'effects_list_body_0x8003C444': 1, 'advance_0x8002BD34': 1}
+advance only, seed sweep                                       a0=0 gate=48 in B017C93D out 35E36190 steps 1 ok req=0
+      pad_sampler(stub) > UpdateWorld > map_events > entity_block > pass_lists > effects_list > sound_frame(stub) > ADV
+      cov {'events_walk_0x8003C6C4': 0, 'slot_pass_0x80038634': 0, 'lists_0x800384F4': 1, 'events_pass_0x800386D0': 0, 'effects_list_body_0x8003C444': 1, 'advance_0x8002BD34': 1}
+advance only, seed sweep                                       a0=0 gate=48 in 80000000 out 606A02E7 steps 1 ok req=0
+      pad_sampler(stub) > UpdateWorld > map_events > entity_block > pass_lists > effects_list > sound_frame(stub) > ADV
+      cov {'events_walk_0x8003C6C4': 0, 'slot_pass_0x80038634': 0, 'lists_0x800384F4': 1, 'events_pass_0x800386D0': 0, 'effects_list_body_0x8003C444': 1, 'advance_0x8002BD34': 1}

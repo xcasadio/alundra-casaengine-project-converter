@@ -1,0 +1,38 @@
+[
+{
+"in": "00000000",
+"steps": 1,
+"plan": "E06A02E7",
+"model": "E06A02E7"
+},
+{
+"in": "FFFFFFFF",
+"steps": 1,
+"plan": "633E790A",
+"model": "633E790A"
+},
+{
+"in": "80000000",
+"steps": 1,
+"plan": "606A02E7",
+"model": "606A02E7"
+},
+{
+"in": "B017C93D",
+"steps": 1,
+"plan": "35E36190",
+"model": "35E36190"
+},
+{
+"in": "12345678",
+"steps": 1,
+"plan": "B806E07F",
+"model": "B806E07F"
+},
+{
+"in": "12345678",
+"steps": 4,
+"plan": "AFBE9EAC",
+"model": "AFBE9EAC"
+}
+]

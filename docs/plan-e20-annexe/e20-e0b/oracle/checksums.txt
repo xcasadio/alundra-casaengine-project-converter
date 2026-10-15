@@ -1,0 +1,13 @@
+# SHA-1 of the working-tree bytes (core.autocrlf stores LF in the index; the copies keep the line endings of their sources, the two scripts of this slice are LF). tools/*.py are byte-identical to docs/plan-e20-annexe/e20-e0a/oracle/tools (cmp at the copy; the four harness tools lib, emu, machine, mips are also those of the E20.e0b discovery); espawn.py is byte-identical to the e0a one; s7_frame.py is the byte copy of the discovery probe (md5 9e0b83bf4b32ecb1cd7602dbd4a28b70).
+# run_e0b1.py and mutants_e0b1.py are written for this slice.
+89278ed77c3fabf452c0e6ee3dbfb930566dc3e4  espawn.py
+9b9f185b2d8799ea539eabd811a0e3763d5f5323  s7_frame.py
+3f89820ae8f4506336a976ad599796695faceadd  run_e0b1.py
+20d7bb2f54f10f6d544351b18be1f860f6003485  mutants_e0b1.py
+a39ce3d8cdf34d57d6bac213f308586b6ba6db1e  tools/bank.py
+bffe67ff2656e2cddd9cb4ebb0eff5b37d5c0549  tools/c1world.py
+7677cb6c2e0c05a1dab511d5391974cffa85d34e  tools/emu.py
+a9a4a0fa945bbaaa2d22b4990ed7a9a5f172fd0c  tools/lib.py
+e686f1b1242ab5779199b911994f9858632309c5  tools/machine.py
+b3ebbbeb9ed48940e51823026a76ebec8f91f1f2  tools/mips.py
+6f8b900ff420532fc8d04f244c3c32cd26e27e3b  tools/world.py
