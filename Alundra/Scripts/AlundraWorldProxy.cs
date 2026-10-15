@@ -3444,7 +3444,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
             // D-E0A-1: the Z of a DLL entity is the binary's minus one raw unit (ADR-0026); the binary's argument has it, and the creation subtracts ModZ from the binary's argument.
             entity = AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex(
-                prefab, header, isMapPage, index, parent?.LogicContextEntity, x, y, unchecked(z + 1), direction, CollisionField);
+                prefab, header, isMapPage, index, parent?.LogicContextEntity, x, y, unchecked(z + 1), direction, CollisionField, _tileMapData);
             var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
             if (spawnedProxy != null)
             {

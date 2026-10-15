@@ -4458,7 +4458,7 @@ Seconde relecture : **READY** (2026-10-15).
   - P4 : tick du drapeau de mur sur les 12 départs de l'oracle (C1). Prédiction : toujours « +1 » ; le nombre d'écarts d'un tick alimente Q-K2.
   - P5 : entité montante (impulsion 1 024) avec et sans la propriété du vertical : annulée ou non par le moteur ?
   - P6 : écart entre la racine et le Z logique d'une boule qui finit sa chute (ancrage du moteur à moins de 4 px).
-- ⏳ **T3 — Phase B** (commit de code) et tests de monde, écrits **avant** B et rouges jusqu'à B (chacun attend un effet que la phase A ne produit pas) : (k1) la flèche née contre un mur **que seul le masque bloque** — un champ synthétique (support `ContactWorld` ou équivalent) qui reproduit la
+- ✅ **T3 — Phase B** (commit de code) et tests de monde, écrits **avant** B et rouges jusqu'à B (chacun attend un effet que la phase A ne produit pas) : (k1) la flèche née contre un mur **que seul le masque bloque** — un champ synthétique (support `ContactWorld` ou équivalent) qui reproduit la
   colonne 15 de l'oracle (`arrows2`, cas C1) : cellules au mot `& 0x40` non nul et de hauteur nulle, donc sous le pied de la flèche plus
   `StepHeight` ; un mur que la hauteur suffit à bloquer est **exclu** — s'arrête en X = 349, `ForceAdjusted` levé, jamais de l'autre côté ;
   le rouge avant B est la traversée (position au-delà du mur), consignée comme telle ; accolée dans la même assertion à la même flèche dans
