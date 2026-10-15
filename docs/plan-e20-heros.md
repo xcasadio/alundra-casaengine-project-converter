@@ -4037,7 +4037,7 @@ sauté quand l'ombre est active (lancement de la suite avec la variable) ; il ne
 repris : les constructeurs et `Dispose` des classes de test ont leur propre clé dans l'attribution ; une classe qui pose la graine
 dans son constructeur garde `ambient_draws > 0` sur ses méthodes, et la justification écrite suffit. La règle de relecture ne permet
 pas une relecture de plus sans l'auteur : la tranche est **en pause** jusqu'à son accord.
-L'auteur a accordé une relecture de clôture de plus (2026-10-15).
+L'auteur a accordé une relecture de clôture de plus (2026-10-15) ; relecture de clôture : **READY** (2026-10-15).
 
 **Prérequis.** Voir ci-dessus. Compte de tests de départ : à relever en T0 (4 815 à la clôture d'e0a3a).
 
