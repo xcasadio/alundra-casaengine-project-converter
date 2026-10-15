@@ -595,6 +595,7 @@ au-dessus du sol et meurt en 2 ticks au lieu de 26). Ligne 5 du tableau mise à 
 en pause), f3c après E20.e0k. Choix de la session principale en mode AUTO, réversible, signalé à l'auteur.
 Relecture de la révision 7 : **REVISE**, un point corrigé (FIX) : f3b lit l'oracle que seul le T0 d'E20.f3a (commit de l'oracle commun `docs/plan-e20-annexe/e20-f3/oracle/` : `hitfx_table` en JSON avec ses clés, `hitfx_mut`, sonde de la flamme) produit ;
 f3b exige donc ce T0 (pas les phases de code d'f3a). Une seconde relecture suit.
+Seconde relecture de la révision 7 : **READY** (2026-10-15).
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -4384,6 +4385,10 @@ sous la vague, demanderait d'avancer E20.e0c et E20.e en entier.
 **Révision 1 (2026-10-15).** Relecture : **REVISE**, un point corrigé (FIX) : (s1) attendait la case 1, que les entités chargées de la
 carte 14 occupent ; il attend la plus basse case libre mesurée avant le tir. Repris en même temps : la sonde de la flamme (recette de
 f3b) est une sortie nommée du T0, et f3b exige ce T0 (relecture de l'enveloppe et de f3b).
+**Révision 2 (2026-10-15).** Seconde relecture : **REVISE**, un blocage ; disposition de la session principale (cap de deux relectures
+automatiques atteint) : **FIX** — (s3) attendait « compteur et journal inchangés » sur un hôte de montage, ce que l'ordre de D-F3-3
+(compteur, journal, puis appel) et les tests existants du journal contredisent ; il attend maintenant compteur + 1, journal + 1, aucun
+appel de l'interface, sous l'ensemble de test {3}. Nouvelle époque de relecture : une seule relecture de clôture suit.
 
 **Prérequis.** E20.f1 ✅ (§1.9), E20.e0a1 à E20.e0a3 ✅ (§1.16).
 
@@ -4407,7 +4412,10 @@ f3b) est une sortie nommée du T0, et f3b exige ce T0 (relecture de l'enveloppe 
     tir** (sur la carte 14 les entités chargées tiennent les cases 1 à n ; même règle qu'`AlundraSpawnBySpriteIndexInterfaceTests`),
     `JoinsBirthTick` ;
   - (s2) crochet posé et type dans l'ensemble → exactement **une** entité (celle du crochet) ; crochet nul → une entité (celle de la production) ;
-  - (s3) hôte de montage → aucun appel, aucune exception, compteur et journal inchangés ; le même tir dans le monde → une entité ;
+  - (s3) avec l'ensemble de test {3}, sur un hôte de montage (qui n'est pas un `IEntityWorldContext`) : compteur + 1 et journal + 1 entrée,
+    comme aujourd'hui (l'ordre de D-F3-3 : compteur, journal, puis crochet ou appel de production), **aucun** appel de l'interface, zéro
+    entité, aucune exception, `WeaponRecordPointer == 0` ; dans la même assertion, le même tir dans `ArcRun` avec le même ensemble → une
+    entité ;
   - (s4) 63 cases occupées → rien n'est créé, `WeaponRecordPointer == 0`, pas d'exception ; une case libre → une entité ;
   - (s5) invariant (D-F3-4) : l'ensemble de production (vide) passe, le faux ensemble {3} échoue sur `(E, 17)`.
   Puis le code de la phase A. Verts à la fin de T1 ; la suite complète ne bouge pas.
@@ -4437,6 +4445,7 @@ f3b) est une sortie nommée du T0, et f3b exige ce T0 (relecture de l'enveloppe 
 **Révision 1 (2026-10-15).** Relecture : **REVISE**, deux points corrigés (FIX) : (1) l'oracle que lisent (e1) et l'acceptation vient du T0
 d'f3a, devenu prérequis ; (2) (w2) et (w3) passaient déjà en phase A : chacun affirme maintenant l'emplacement d'effet de (w1) dans la
 même assertion, et l'arrêt « vert avant T3 » vise les trois.
+Seconde relecture : **READY** (2026-10-15).
 
 **Prérequis.** Le T0 d'E20.f3a (commit de l'oracle commun `docs/plan-e20-annexe/e20-f3/oracle/` : `hitfx_table` en JSON avec ses clés, `hitfx_mut`, sonde de la flamme), E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅. Indépendante des phases de code d'f3a et de f3c. Touche `AlundraWorldProxy.cs` : à exécuter après E20.e0b2 ou à relire ses numéros de ligne.
 
