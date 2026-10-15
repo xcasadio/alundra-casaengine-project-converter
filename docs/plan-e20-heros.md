@@ -3902,7 +3902,7 @@ par e0a3b). Chaque épingle qui bouge est re-dérivée de l'oracle (une appariti
 | O-E0A-3 | Coût de `LoadCopy` à chaque apparition (une lecture de disque) | mesure avant E20.f3 |
 | O-E0A-4 | **Tranché le 2026-10-15 (révision 3 d'e0a3b, D-E0A-8)** : plus de `Current = Target` à la création ; `AnimFlags` chargé à la création ; la cinématique lit la cible pour une entité marquée non validée | — |
 
-### 1.17 E20.e0b — Le générateur pseudo-aléatoire : e0b1 (avance par tick), e0b2 (tirage du butin à la création) ⏳ (détaillée le 2026-10-15)
+### 1.17 E20.e0b — Le générateur pseudo-aléatoire : e0b1 (avance par tick), e0b2 (tirage du butin à la création) ⏳ (détaillée le 2026-10-15 ; e0b1 faite et CONFIRMED le 2026-10-15)
 
 **Réponses de l'auteur (2026-10-15).** Q-B1 : `ArcRun` re-sème le flux avant **et** après le chargement. Q-B2 : les écarts de D-E0B-3
 sont acceptés, documentés. Q-B3 : le découpage e0b1 / e0b2 et le changement de prérequis de l'enveloppe sont accordés (révision 6 de
@@ -4017,7 +4017,7 @@ Dépendants : E20.f3, E20.f6 (e0b1) ; E20.e0c, E20.g2 (e0b2) ; l'avance ferme le
 
 ---
 
-#### 1.17.1 E20.e0b1 — L'avance du générateur, une fois par tick ⏳
+#### 1.17.1 E20.e0b1 — L'avance du générateur, une fois par tick ✅ (faite et CONFIRMED le 2026-10-15, `c2952ef` à `f384135`, ADR-0066)
 
 **Révision 1 (2026-10-15).** Relecture : **REVISE**, deux points corrigés (FIX) : (1) le branchement du rappel appartient à une seule
 phase, la phase A (paramètre de `RunFrame`, délégué du monde, `AdvanceFrame()` qui n'écrit que le registre virtuel) ; la phase B ne
@@ -4100,9 +4100,25 @@ L'auteur a accordé une relecture de clôture de plus (2026-10-15) ; relecture d
   (`RunActiveEffectsPass`, en-tête d'`AlundraHitPassTests`) ; suite complète ; **chaque test qui bouge appartient à la liste prédite**
   et est réécrit par une dérivation (D-E0B-8) ; un test de la liste qui ne bouge pas est noté avec la raison (la divergence n'atteint
   aucune assertion) ; rien d'autre ne change.
-- 🧪 **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée ; mutants du code de la DLL : au moins 8, tous tués — rappel non passé, passé avant le tick du réservoir, sauté sur un tick gelé, appelé une fois par image, appelé aussi pour une image sans
+- ✅ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée ; mutants du code de la DLL : au moins 8, tous tués — rappel non passé, passé avant le tick du réservoir, sauté sur un tick gelé, appelé une fois par image, appelé aussi pour une image sans
   tick (tué par le cas « image sans tick puis un tick » de T2 (c) et par (b)), `IsTransitionInProgress` inversé ou ignoré (tué par le cas
   « départ de warp entre deux images » de T2 (c)), plancher retiré, constantes).
+
+**Vérification (2026-10-15) : CONFIRMED** par deux verifiers frais, l'un après l'autre. Rejeu : oracle relancé deux fois sur une
+copie (22 lignes PASS, `frame_trace.json` au md5 de la découverte, manifeste identique, 20 mutants tous tués) ; `Alundra.Tests` 4 852 en
+Release et en Debug, zéro échec ; la ligne de la phase B retirée, la suite complète rend exactement les 15 tests (a), (c), (d) rouges et
+rien d'autre (la phase A ne déplace rien, la phase B non plus) ; liste prédite recalculée depuis `e0b1-shadow.txt` (66 tests, identique au
+README) ; aucun test existant modifié hors d'un commentaire (`AlundraHitPassTests`) ; ADR-0066 indexé ; `cmp` de la DLL identique.
+Adversarial : 13 mutants du code de la DLL (dont un ajouté : rappel avant les opérations du tick), tous tués ; aucun nouvel appel de
+`Next()`, `AlundraLibcRandom` intact, `RunActiveEffectsPass` vide ; ombre relancée sur le code de la phase B : `divergent_draws` et
+`divergent_seed_reads` nuls partout (V = R).
+**Constat de la mesure** : la prédiction qualitative de la découverte (« une douzaine de tests bougent », dont `A5r`) est démentie, aucun
+test existant ne bouge ; les justifications par famille (H115, G116, `A5r`) sont des inférences de lecture, non mesurées assertion par
+assertion. **Écart de chiffres** documenté : T2 (d) épingle les étincelles de maintien de l'arène aux ticks 83, 87 et 91 (les ticks 85 et
+89 du plan sont ceux du montage d'`AlundraHeroChargeTests`), principe inchangé.
+**Reportés** (P4) : les 12 mutants de T4 de l'exécuteur vivent dans un script du scratchpad (non livré ; l'adversarial les a refaits) ;
+incident de procédure d'un verifier, sans effet : une sortie de l'oracle régénérée au bit près dans le dépôt et trois fichiers écrits puis
+supprimés dans `D:/development/repo/` (absents, vérifié par la session principale).
 
 ##### Acceptation
 
