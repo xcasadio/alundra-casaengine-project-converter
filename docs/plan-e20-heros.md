@@ -4568,7 +4568,7 @@ Détaillée seulement si l'auteur répond à Q-K2 par l'option B. Contenu : un p
 est remplacé par le marqueur d'e0k2 et le repli B de Q-F3-1 tombe. (2) §1.1 : le fait [DLL] « seul le héros a un pas vertical » est
 corrigé, la ligne 4 est scindée (révision 8 de l'enveloppe). (3) `docs/plan-e14-ia-native.md` : la chute des Muruta passe par le chemin
 du contrôleur. (4) E20.g1 : poser le marqueur au soulèvement (ligne 10 de l'enveloppe).
-### 1.19 E20.f3 — Le tir du héros : direction, effets de coup 4 et 5, vague de l'épée (f3a, f3b, f3c) ⏳ (détaillée le 2026-10-15)
+### 1.19 E20.f3 — Le tir du héros : direction, effets de coup 4 et 5, vague de l'épée (f3a, f3b, f3c) ⏳ (détaillée le 2026-10-15 ; f3a et f3b faites et CONFIRMED le 2026-10-15, ADR-0067 ; f3c après e0k2)
 
 **Décisions de la session principale (2026-10-15, mode AUTO, l'auteur absent ; réversibles, signalées à l'auteur).** Q-F3-1 : option A —
 f3c attend la règle du Z logique (D-F3-8) d'E20.e0k, que l'enveloppe ordonne déjà avant f3 ; si la section d'e0k ne la contient pas, f3c
@@ -4648,7 +4648,7 @@ sous la vague, demanderait d'avancer E20.e0c et E20.e en entier.
 
 ---
 
-#### 1.19.1 E20.f3a — Direction du tir et couture de branchement (aucun type activé) ⏳
+#### 1.19.1 E20.f3a — Direction du tir et couture de branchement (aucun type activé) ✅ (faite et CONFIRMED le 2026-10-15, `33c4590` à `242e7b8`, ADR-0067)
 
 **Révision 1 (2026-10-15).** Relecture : **REVISE**, un point corrigé (FIX) : (s1) attendait la case 1, que les entités chargées de la
 carte 14 occupent ; il attend la plus basse case libre mesurée avant le tir. Repris en même temps : la sonde de la flamme (recette de
@@ -4702,6 +4702,18 @@ Relecture de clôture : **READY** (2026-10-15).
 - 🧪 **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre). Mutants du code de la DLL, au moins 8, tous tués : direction lue sur `AnimationDirection`, indice non borné, garde inversée, crochet qui ne remplace pas, appel avant le compteur, appel même hors ensemble, nul non toléré, pointeur non effacé.
   **Résultat (2026-10-15).** ADR-0067 (`docs/decisions/0067-...`, index mis à jour) : D-F3-1 à D-F3-4 implémentées, D-F3-5 à D-F3-12 notées PRÉVUES pour f3b et f3c. **Neuf mutants réels** (appliqués par script au fichier de travail, construction avec la copie neutralisée, puis restauration), **tous tués** : M1 direction lue sur `AnimationDirection` → (d1) et (s6) ; M2 indice non borné → (s6) seul (**survivait** aux tests de T1 et T2 : aucun tick du jeu ne produit un `BoxDirection` hors de 0 à 3 ; correction : `SpawnWeaponProjectile` passe de `private` à `internal` et le test (s6) l'appelle avec `BoxDirection` 9 et −4, plus 3 et 0 inchangés) ; M3 garde inversée → (s1), (s2), (s3), (s4) ; M4 crochet qui ne remplace pas → (s2) ; M5 appel de l'interface avant le compteur → (s2) ; M6 appel même hors ensemble → (s1) ; M7 nul non toléré → (s4) ; M8 pointeur non effacé → AT9 (8 cas), 9 tests de charge, (d1) à (d4) ; M9 table des directions permutée → (d1), (d2), (d3), (s6) et 8 tests de charge. Exécution des mutants sur les classes `AlundraShotDirectionTests`, `AlundraWeaponSpawnSeamTests`, `AlundraHeroAttackTests`, `AlundraHeroChargeTests` et `AlundraSpawnBySpriteIndex*` (M1 : la suite complète l'avait aussi montré). Suite finale : **4 876 = 4 875 + 1 ((s6)) en Release et en Debug, zéro échec** ; `cmp` de `alundra-project/Alundra.dll` et de la DLL Debug identiques ; cinq traces inchangées. **Reste : les deux verifiers frais, lancés par la session principale** (d'où 🧪).
 
+**Vérification (2026-10-15) : CONFIRMED** par deux verifiers frais, l'un après l'autre (rejeu : oracle relancé sur une copie, manifeste
+identique ; suites complètes en Release et en Debug, zéro échec ; état rouge avant la phase B reproduit ; `cmp` de la DLL ; adversarial :
+mutants de la direction et de la couture, tous tués sauf un). **Reportés** (sans changer le candidat confirmé) :
+- **P3** — l'ordre « compteur, journal, puis appel » de D-F3-3 n'est épinglé par aucun test : le mutant qui déplace compteur et journal
+  après l'appel, dans les deux branches, laisse 141 tests ciblés verts (le M5 de l'exécuteur ne déplaçait que le compteur). Sans effet en
+  production (compteur et journal ne servent qu'aux tests). Épingle à ajouter par f3c (un crochet qui lit le compteur et le journal au
+  moment de son appel).
+- **P4** — deux commentaires périmés dans `AlundraPlayerManager.cs` (« spawn stub », « named stub ») ; `AlundraEventProgramRunner.cs`
+  modifié hors de la liste du périmètre (extraction d'`IsInlineDeactivateCode`, comportement identique, déclarée dans les résultats) ;
+  l'ADR-0067 garde l'ancienne formulation de D-F3-7 (corrigée dans le plan par `f8f9f09`) : à reprendre par f3c ou f4 ; à 3 ticks par
+  image aucun test n'affirme `Call.Direction` (le code lit `BoxDirection` partout).
+
 ##### Acceptation
 
 - Oracle : manifeste identique sur deux exécutions ; au moins 12 mutants tués ou prouvés équivalents.
@@ -4715,7 +4727,7 @@ Relecture de clôture : **READY** (2026-10-15).
 
 ---
 
-#### 1.19.2 E20.f3b — Effets de coup 4 et 5 ⏳
+#### 1.19.2 E20.f3b — Effets de coup 4 et 5 ✅ (faite et CONFIRMED le 2026-10-15, `5cfac5b` à `dfd72a3`, ADR-0067)
 
 **Révision 1 (2026-10-15).** Relecture : **REVISE**, deux points corrigés (FIX) : (1) l'oracle que lisent (e1) et l'acceptation vient du T0
 d'f3a, devenu prérequis ; (2) (w2) et (w3) passaient déjà en phase A : chacun affirme maintenant l'emplacement d'effet de (w1) dans la
@@ -4754,6 +4766,13 @@ Seconde relecture : **READY** (2026-10-15).
   **Preuve de retrait.** Le monde repassé à `null` dans l'arbre de travail (`_hitPass.Run(..., null)`), construction avec la copie neutralisée, suite complète en Release : **4 885 tests, exactement 5 rouges** : `AlundraHitEffectWorldTests.W1_...`, `W2_TheEffectDrawsNoRandomWord` et `W3_TheSlotExists_InEveryGrouping_AtTheSameHitTick` aux groupements 1, 2 et 3 ; les 4 880 autres sont verts. Restauré par `git checkout --`, `git status` revenu à l'état d'avant.
 - 🧪 **T4 — ADR, plan, verifiers frais** (deux). Mutants du code de la DLL, au moins 12, tous tués : masque `0xC0` → `0x80`, porte inversée, nibble 10 omis, 9 mappé sur 4, identifiants échangés, effet après le magasin, effet après les étincelles, effet pour une réponse immune, un seul effet par passe au lieu d'un par touche, `DepthOffset` 0, ancre = l'attaquant, rappel appelé deux fois.
   **Résultat (2026-10-15).** ADR : **rien à amender ni à écrire** ; l'ADR-0067 (f3a) enregistre déjà D-F3-9 et D-F3-10 comme PRÉVUES pour f3b et elles sont implémentées telles quelles (seul le détail « délégué statique » devient un délégué d'instance mis en cache une fois, `_attachHitEffect`, comme `_emitHitSparks` : même absence d'allocation par tick ; `docs/decisions/README.md` revérifié, dernier numéro de ces décisions 0067). **Quatorze mutants réels** (appliqués par script au fichier de travail, construction avec la copie neutralisée, tests `FullyQualifiedName~Hit`, restauration par `git checkout --`), **tous tués** : M1 masque `0xC0` → `0x80` → E1 (160 paires) et `AlundraHitPassRulesTests.Case3` ; M2 porte inversée → 44 tests (E1 à E3, W1 à W3, la famille `AlundraHitPassCatchUpTests`...) ; M3 nibble 10 omis → E1 (deux), E2, E3 ; M4 nibble 9 mappé sur 4 → E1 (deux), E2, E3 ; M5 identifiants échangés → E1 (deux), E2, E3, W1 à W3 ; M6 effet après le magasin de `TouchingEntity` → E2 ; M7 effet après les étincelles → E2, E3 ; M8 effet pour une réponse immune → E1 ; M9 un seul effet par passe → **survivait** aux tests de T1 et T2 (aucun ne frappait deux cibles dans une passe) ; correction : (e4) `E4_OneEffectPerHit_NotPerPass` (un attaquant de nibble 6 frappe deux cibles dans la même passe : [A:fx4, étincelle, B:fx4, étincelle], un second attaquant de nibble 7 ne demande rien), qui tue M9 ; M10 `DepthOffset` 0 → W1 à W3 ; M11 ancre = l'attaquant → E1 à E4, W1 à W3 ; M12 rappel appelé deux fois → E1 à E4 ; M13 (monde) identifiant toujours 4 → W1 ; M14 (monde) effet libre de mode 0 au lieu d'attaché → W1 à W3. Suite finale : **4 886 = 4 885 + 1 ((e4)) en Release et en Debug, zéro échec** ; `cmp` de `alundra-project/Alundra.dll` et de la DLL Debug identiques ; cinq traces inchangées (garde verte). **Reste : les deux verifiers frais, lancés par la session principale** (d'où 🧪).
+
+**Vérification (2026-10-15) : CONFIRMED** par deux verifiers frais (rejeu : les 160 paires, suites complètes en Release et en Debug,
+zéro échec ; preuve de retrait reproduite ; aucun test existant déplacé). **Reportés** :
+- **P3** — la libération de l'effet tombe à touche + 41 (effet 4) et touche + 96 (effet 5) ; le binaire donnerait probablement touche + 42
+  et + 97 (la passe de coups y suit celle des effets ; inférence de l'exécuteur, binaire non rejoué sur ce point). L'écart d'un tick vient
+  du rang 1 de D-F3-9, commun aux étincelles, sans effet visible ; il est écrit dans le test. Point ouvert O-F3-6.
+- **P4** — le message du commit `48cf43b` annonce des résultats du plan qui sont dans `dfd72a3`.
 
 ##### Acceptation
 
@@ -4841,6 +4860,7 @@ Seconde relecture : **READY** (2026-10-15).
 | O-F3-3 | ~~L'enregistrement A0 du Muruta devra devenir un ensemble de types partagé pour f4 à f6~~ **Fermé le 2026-10-15** (découverte d'f4 à f6 : A0 est une donnée morte) | — |
 | O-F3-4 | Les effets 4 et 5 sont créés en fin d'image : position de départ de fin d'image dans une image de plusieurs ticks | écart accepté ; E20.f6 si visible |
 | O-F3-5 | Recette de f3b : la flamme de la carte 14 (enregistrement 17) est un candidat, pas un fait | sonde de la flamme du T0 d'f3a |
+| O-F3-6 | La libération des effets 4 et 5 (et des étincelles, même rang) tombe un tick avant ce que le binaire donnerait probablement (touche + 41 au lieu de + 42) ; à rejouer sur le binaire, puis exactitude ou écart documenté | auteur, ou E20.f6 si visible |
 
 ### 1.20 E20.f4 — La flèche chargée de William : C94 et E1 avec l'effet de bris 8 ⏳ (détaillée le 2026-10-15)
 
