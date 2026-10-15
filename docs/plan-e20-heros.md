@@ -4085,7 +4085,7 @@ L'auteur a accordé une relecture de clôture de plus (2026-10-15) ; relecture d
   reçoit une affectation explicite de la graine dans sa fixture, ou une justification écrite, avant B (si une affectation est ajoutée,
   l'ombre est relancée et le fichier versé de nouveau) ; une classe qui pose déjà la graine dans son constructeur garde
   `ambient_draws > 0` sur ses méthodes (le constructeur a sa propre clé) : la justification écrite suffit.
-- 🚧 **T2 — Tests** (`AlundraRandomPerTickTests`, dans `AlundraRandomStaticStateCollection`, `Reset()` au constructeur), écrits après T1 :
+- ✅ **T2 — Tests** (`AlundraRandomPerTickTests`, dans `AlundraRandomStaticStateCollection`, `Reset()` au constructeur), écrits après T1 :
   **rouges avant T3** : (a) les six mots de l'avance (par `AdvanceFrame()` puis lecture de `RandomSeed`) ; (c) au niveau du monde : 1 tick →
   1 pas, 2 ticks → 2, `MenuOpen` (`0x48`) → 1 par tick, première image d'un monde → 1, deux mondes successifs sans double compte ; les
   deux cas « 0 pas » ne s'écrivent **jamais seuls** : une image sans tick suivie d'une image d'un tick → **exactement 1 pas au total** ;
@@ -4096,11 +4096,11 @@ L'auteur a accordé une relecture de clôture de plus (2026-10-15) ; relecture d
   qu'ils mordent) : (b) `RunFrame` appelle le rappel exactement `ticks` fois (0, 1, 2, 4), après le tick du réservoir, aussi sur un tick
   gelé, jamais pour 0 tick ; (e) `RunFrame` sans rappel n'appelle rien et n'avance rien (garde des 70 appels directs). Chaque test de (a), (c)
   et (d) attend au moins un pas réel ; un tel test vert avant T3 est un arrêt (il ne prouve rien).
-- ⏳ **T3 — Phase B** (commit de code B) : `AdvanceFrame()` écrit `R` (la seule ligne de comportement de la phase) ; commentaires corrigés
+- ✅ **T3 — Phase B** (commit de code B) : `AdvanceFrame()` écrit `R` (la seule ligne de comportement de la phase) ; commentaires corrigés
   (`RunActiveEffectsPass`, en-tête d'`AlundraHitPassTests`) ; suite complète ; **chaque test qui bouge appartient à la liste prédite**
   et est réécrit par une dérivation (D-E0B-8) ; un test de la liste qui ne bouge pas est noté avec la raison (la divergence n'atteint
   aucune assertion) ; rien d'autre ne change.
-- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée ; mutants du code de la DLL : au moins 8, tous tués — rappel non passé, passé avant le tick du réservoir, sauté sur un tick gelé, appelé une fois par image, appelé aussi pour une image sans
+- 🚧 **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée ; mutants du code de la DLL : au moins 8, tous tués — rappel non passé, passé avant le tick du réservoir, sauté sur un tick gelé, appelé une fois par image, appelé aussi pour une image sans
   tick (tué par le cas « image sans tick puis un tick » de T2 (c) et par (b)), `IsTransitionInProgress` inversé ou ignoré (tué par le cas
   « départ de warp entre deux images » de T2 (c)), plancher retiré, constantes).
 

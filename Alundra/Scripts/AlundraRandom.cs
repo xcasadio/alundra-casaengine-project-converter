@@ -57,11 +57,12 @@ public static class AlundraRandom
     }
 
     /// <summary>
-    /// E20.e0b1: the advance of the binary's frame function (<c>0x8002BD0C-0x8002BD34</c>), one step of the stream per logic tick, result never read. Phase A of the slice: it only feeds the virtual
-    /// word of the measuring sink and leaves the real state alone (a no-op while the sink is inactive).
+    /// E20.e0b1: the advance of the binary's frame function (<c>0x8002BD0C-0x8002BD34</c>), one step of the stream per logic tick (the same expression as <see cref="Next"/>), result never read.
+    /// It also feeds the virtual word of the measuring sink (a no-op while the sink is inactive).
     /// </summary>
     public static void AdvanceFrame()
     {
+        _seed = _seed * 0x7d2b89dd + 0xe06a02e7;
         AlundraRandomShadow.OnVirtualAdvance();
     }
 }

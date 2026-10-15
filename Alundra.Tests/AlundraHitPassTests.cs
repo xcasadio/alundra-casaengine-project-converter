@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 /// the DLL is compared to the row of the trace, entity by entity and column by column: the animation the programs asked (<c>+0x88</c>), the animation byte (<c>+0xB4</c>), the frame box (presence, offsets, sizes in raw 16.16, the
 /// stored <c>(n &lt;&lt; 16) - 1</c>), the current attack (attribute and power), what the entity touches (<c>+0x224</c>), its hit counter, the two timers (<c>+0x1CC</c>, <c>+0x1D0</c>), its life, the latch of the hero's animation
 /// (<c>0x80146DF8</c>), the sparks of the tick (their centres, three per hit; the DLL's Z is the binary's minus 1, ADR-0026) and the programs the events pass ran (2 = C, 3 = D). The speeds of the sparks come from the random
-/// stream and are not compared (E20.e0 advances it per frame). Exclusions are named in the tests that have them.
+/// stream and are not compared (E20.e0b1 advances it once per tick). Exclusions are named in the tests that have them.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraHitPassTests

@@ -2959,7 +2959,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     /// <summary>
     /// E20.c1a C3: the slot of the binary's <c>0x80038E84</c>, which runs between the physics and the hit pass (the effects attached to the entities). Empty on purpose: it belongs to E20.e. The DLL keeps its reserve of effects
-    /// per frame (<see cref="AlundraEffectStage.RunFrame"/>), and nothing in the hit pass reads what that pass writes (the random generator is the one thing it could advance, per frame in the binary too, <c>0x8002BD14</c>).
+    /// per frame (<see cref="AlundraEffectStage.RunFrame"/>), and nothing in the hit pass reads what that pass writes. The random generator's advance (<c>0x8002BD14</c>) is not in this pass either: it is the per-tick
+    /// callback of <see cref="AlundraEffectStage.RunFrame"/> (E20.e0b1, <see cref="AdvanceRandomPerTick"/>).
     /// </summary>
     private void RunActiveEffectsPass()
     {
