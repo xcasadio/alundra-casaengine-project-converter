@@ -629,6 +629,7 @@ Seconde relecture : **REVISE**, deux blocages ; disposition de la session princi
 aussi f6a ; (2) les phrases de §1.20 à §1.22 qui parlaient de tranches indépendantes ou d'une « première exécutée » sont réécrites
 selon l'ordre ferme (f4 propriétaire des éléments communs, f5 de la règle de vitesse ; f6b exige f4 et f5). Nouvelle époque de relecture :
 une seule relecture de clôture suit.
+Relecture de clôture de la révision 9 : **READY** (2026-10-15).
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
