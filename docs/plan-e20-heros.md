@@ -3132,7 +3132,7 @@ change que `report.json`, les deux fichiers égaux à leurs prédictions, compte
 - `Alundra.dll` et `Alundra.pdb` ont changé de taille après les builds de T5 (redéposés par la suite de tests), sans effet sur la preuve
   (le manifeste les exclut) : **noté**.
 
-### 1.16 E20.e0a — Apparition par indice de sprite : e0a1 (oracle, catalogue, interface), e0a2 (table de cases), e0a3 (tick de naissance) ⏳ (détaillée le 2026-10-15)
+### 1.16 E20.e0a — Apparition par indice de sprite : e0a1 (oracle, catalogue, interface), e0a2 (table de cases), e0a3 (tick de naissance) ✅ (détaillée le 2026-10-15 ; e0a1 à e0a3 faites et CONFIRMED le 2026-10-15 ; e0a4 conditionnelle, selon Q-A1)
 
 Découverte en lecture seule du 2026-10-15 : trois relevés (binaire, impact sur la DLL, moyens de test), puis un critique adversarial qui a revérifié plus de trente affirmations
 (désassemblage de `ALUN_CD.EXE`, rejeu des sondes de l'oracle, lecture de la DLL et du moteur) et mené sa propre batterie de mutants. Scripts et sorties dans le
@@ -3481,7 +3481,7 @@ dispositions de la session principale :
   retirée dans la même passe ; un son déjà demandé avant une faute de la poussée de position part quand même : **notés** (sans effet
   observable dans la logique ; le son ne concerne qu'un chemin d'erreur).
 
-#### 1.16.3 E20.e0a3 — Participation au tick de naissance : e0a3a (sonde P-A, oracle V6, reports), e0a3b (le code, puis P-B)
+#### 1.16.3 E20.e0a3 — Participation au tick de naissance : e0a3a (sonde P-A, oracle V6, reports), e0a3b (le code, puis P-B) ✅ (les deux CONFIRMED le 2026-10-15)
 
 **Révision 1 (2026-10-15).** Relecture : **REVISE**, quatre points corrigés (FIX) par un découpage : la conception du code dépend de la
 sonde P-A, donc **e0a3a** fait P-A, l'oracle V6 et les points reportés d'e0a2, sans changement de comportement en production, et s'arrête
@@ -3620,7 +3620,7 @@ l'auteur et par Visual Studio (le build Debug a été fait avec la copie neutral
 fichier de `Alundra/` n'ayant changé. P4 notés : la colonne « écart attendu » est arrivée dans le même commit que `v6.json` (l'ordre
 n'est attesté que par le rapport) ; bruit de fins de ligne des traces.
 
-##### 1.16.3b E20.e0a3b — Le code du tick de naissance, puis la mesure P-B (détaillée le 2026-10-15 après P-A) ✅ (faite le 2026-10-15, `7b9b096` et le commit de clôture ; verifiers frais à lancer)
+##### 1.16.3b E20.e0a3b — Le code du tick de naissance, puis la mesure P-B (détaillée le 2026-10-15 après P-A) ✅ (faite et CONFIRMED le 2026-10-15, `681c87b` à `5d438ff`, ADR-0065)
 
 **Révision 1 (2026-10-15).** Relecture : **REVISE**, trois points corrigés (FIX) : la construction de P-B neutralise toujours la copie de
 la DLL vers `alundra-project/` et le `cmp` se fait après la remise en état, contre le code commité ; le marqueur est posé à la fin de
@@ -3827,6 +3827,24 @@ Issue : celle qui est écrite (aucun écart sur une entité de l'interface, aucu
   `AlundraSpawnBySpriteIndexInterfaceTests` (H compris) inchangé. Cinq traces inchangées (bruit de fins de ligne restauré, jamais indexé). `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` : identiques,
   après la remise en état de P-B (la DLL du projet n'était pas verrouillée ; les constructions de P-B ont toutes neutralisé la copie).
 - **Mesure P-B** (T3) : voir la sous-section du §1.16.4. Aucune construction n'a déposé une DLL qui porte le marqueur forcé.
+
+**Vérification (2026-10-15) : CONFIRMED** par deux verifiers frais, l'un après l'autre. Rejeu : `Alundra.Tests` 4 833 en Release et en
+Debug, zéro échec ; `git diff 0d9d8cb..5d438ff -- Alundra.Tests/` ne change que PA3 et ajoute `AlundraBirthTickTests.cs` ; les six
+épingles vertes ; traces inchangées ; mesure P-B versée, aucun reste de la sonde ; ADR-0065 indexé ; `cmp` de la DLL identique ;
+mutation 2 rejouée (elle mord). Adversarial : neuf mutations réelles (marqueur sur le chemin par enregistrement, marqueur cloné, marqueur
+posé avant la poussée de position, chargement d'`AnimFlags` retiré, condition du marqueur retirée de `TickScriptedNpc`, repli sans
+condition de marqueur, nouvelle collecte neutralisée, collecte réduite à `TookPartInFrame`), toutes tuées sauf une (ci-dessous) ;
+aucun appelant de production ; aucune DLL au marqueur forcé dans `alundra-project/`.
+Écart de procédure noté par l'exécuteur : les tests de T1 ont été écrits avec le code dans l'arbre de travail, sans passage rouge
+séparé ; leur mordant est prouvé par les mutations des deux verifiers.
+**Reportés** (P3 et P4, sans changer le candidat confirmé) :
+- **P3** — la moitié `CurrentAnimationId == ~0u` de la garde de D-E0A-8 (`AlundraScriptedMotion.TickScriptedNpc`) n'est épinglée par
+  aucun test : la remplacer par la seule condition du marqueur laisse la suite verte (mutation M3 de l'adversarial). Le code est juste à
+  la lecture (après validation, `Current` n'est plus ~0). Épingle à ajouter par la prochaine tranche qui touche cette cinématique
+  (E20.e0k) ou par e0a4 : une entité marquée qui change d'animation après la validation garde la clé de son animation courante.
+- **P4** — le test « hôte à ticks propres » ne joue pas un monde à ticks propres (l'absence de participation découle de la structure :
+  `RunEntityBlock` ne tourne que si le monde pilote les ticks) ; après une reconstruction Debug d'un verifier, la DLL du projet et celle
+  de `bin/Debug` ne diffèrent que par leurs champs d'identité (horodatage PE, MVID, identifiant du PDB), code et métadonnées identiques.
 
 ##### Acceptation
 
@@ -4162,7 +4180,7 @@ pas une relecture de plus sans l'auteur : la tranche est **en pause** jusqu'à s
 | O-E20-9 | **Tranché le 2026-10-09 (D-E20-13).** La passe des compteurs efface `RidingEntity` (`+0x12C`) ; la DLL ne recalcule le porteur qu'une fois par image : ne pas l'effacer, écart documenté, jusqu'à un recalcul par tick | — |
 | O-E20-12 | Le contact au sol du héros est lu une fois par image, en tête d'image (E19.d2c1 R6) : la perte du sol au bord d'un rebord et un sol qui s'abaisse en cours d'image arrivent un tick après le binaire (`AT8`, `AT8n`, `AT8b` d'E20.b). L'aligner demanderait de relire le contact à chaque tick | Tranché le 2026-10-10 (E20.d) : à 1 tick par image, les décisions sont exactes (le rebord de la course est épinglé comme AT8) ; l'écart ne se voit qu'à 2 ticks et plus par image ; la lecture par tick demande la règle de recollement au sol de 3 px `0x80037848` et la re-dérivation de UH7, AT8, AT8n, AT8b et des traces highground : tranche à part après E20.d |
 | O-E20-13 | La DLL ajoute les entités neuves en fin de liste, alors que le binaire réutilise la première case libre (`FindFreeEntitySlot`) : après un recyclage en cours de carte, l'ordre de la passe de coups (« premier attaquant ») peut différer | à mesurer avec E20.e0 (apparitions) ou E14 |
-| O-E20-11 | Une entité neuve tourne-t-elle dans le même tick dans le binaire (répétition de `0x800386D0`, contrôle de D7 : non vérifié) ? E20.a garde la règle d'aujourd'hui (premier tick à l'image suivante) | à mesurer, avec E20.e0 |
+| O-E20-11 | Une entité neuve tourne-t-elle dans le même tick dans le binaire (répétition de `0x800386D0`, contrôle de D7 : non vérifié) ? E20.a garde la règle d'aujourd'hui (premier tick à l'image suivante) | **Tranché en partie le 2026-10-15** (E20.e0a3b, ADR-0065) : oui ; la DLL le fait pour les entités nées par l'interface (`SpawnEntityBySpriteIndex`) ; les apparitions par enregistrement attendent Q-A1 (E20.e0a4, mesure P-B au §1.16.4) |
 | O-E20-14 | Atteignabilité en jeu des salles des leviers : la 115 nord-ouest après le hall (E14.a) ; la 116 derrière la grille (E14.a) ; la salle de la bascule de la 117, où la bascule n'apparaît que si l'on arrive par les portails internes 2, 4 ou 6 de la 117 (les arrivées depuis la 115 et la 116 sont hors de sa zone) ; la 44, dont on ne sait pas si le chemin vers les leviers passe par la case de la vague (43..44, 20) | recette de l'auteur, après E14.a |
 | O-E20-15 | **Tranché le 2026-10-10 (D-E20-30)** : la poignée d'aura périmée est corrigée par un numéro de génération (E20.f1b) | — |
 | O-E20-16 | Les courants (`+0x188`, branche `0x80032768`, dérive ; 16 cartes, dont la cascade de la 416) n'ont pas de propriétaire : E20.i2 avec le mur d'eau profonde (O-E19-22), ou plus tard ? (Q-I1) **E20.i (2026-10-10) les laisse dehors : sur la cascade de la 416, le héros nage sans dérive.** | l'auteur |
