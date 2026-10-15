@@ -4340,7 +4340,7 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
 | O-E0B-3 | Fréquence réelle des images de deux ticks ou plus, et première image après une longue pause (jusqu'à 4 ticks) | recette de l'auteur (compteur de l'ombre) |
 | O-E0B-4 | Treize fonctions qui tirent (`0x80032F84`, `0x800330FC`, `0x800333AC`, `0x800335AC`, `0x8003382C`, `0x80033A2C`, `0x80034EC4`, `0x800354D0`, `0x80039188`, `0x80042FDC`, `0x800432A4`, `0x8004392C`, `0x80065204`) ne figuraient pas dans la liste antérieure des sites ; la plupart ne sont pas portées : chacune consommera le flux avancé (`0x80039188` est déjà porté : étincelles de coup) | tranches E20.e, E20.h, E14 |
 
-### 1.18 E20.e0k — Pas vertical et vol des entités autres que le héros : e0k1 (état de la carte), e0k2 (Z logique et pas vertical), e0k3 (bord de la carte), e0k4 (conditionnelle) ⏳ (détaillée le 2026-10-15)
+### 1.18 E20.e0k — Pas vertical et vol des entités autres que le héros : e0k1 (état de la carte), e0k2 (Z logique et pas vertical), e0k3 (bord de la carte), e0k4 (conditionnelle) ⏳ (e0k1 faite et CONFIRMED le 2026-10-16, ADR-0068 ; détaillée le 2026-10-15)
 
 **Réponses de l'auteur.** Aucune à ce jour (2026-10-15, mode AUTO, l'auteur absent). Q-K1 et Q-K2 ont chacune un défaut réversible,
 **appliqué par la session principale jusqu'à la réponse de l'auteur** (option A dans les deux cas : périmètre étroit, aucun élargissement).
@@ -4422,7 +4422,7 @@ f6 montre l'appel sans effet pour les drapeaux que change E17, §1.21). Révisio
 
 ---
 
-#### 1.18.1 E20.e0k1 — L'état de carte des entités nées par l'interface, les sondes de la DLL ⏳
+#### 1.18.1 E20.e0k1 — L'état de carte des entités nées par l'interface, les sondes de la DLL ✅ (faite et CONFIRMED le 2026-10-16, `5430014` à `94b3cd2`, ADR-0068)
 
 **Révision 1 (2026-10-15).** Relecture : **REVISE**, quatre points : (1) la liste prédite des tests qui peuvent bouger était figée à six
 fichiers au HEAD de la découverte ; e0k1 passe après f3a et f3b, qui ajoutent des tests nés par l'interface : la liste est recomptée en
@@ -4463,9 +4463,23 @@ Seconde relecture : **READY** (2026-10-15).
   `StepHeight` ; un mur que la hauteur suffit à bloquer est **exclu** — s'arrête en X = 349, `ForceAdjusted` levé, jamais de l'autre côté ;
   le rouge avant B est la traversée (position au-delà du mur), consignée comme telle ; accolée dans la même assertion à la même flèche dans
   un couloir libre qui vole toute la distance ; (k2) la boule née à Z + 32 px tombe et se pose, accolée à un témoin « sans carte » qui reste en l'air ; (k3) sur la carte 159 (3, 256), la boule tombe à peine, accolée à la carte 14 ; (k4) les champs posés sur l'entité née et inchangés sur une entité de même sprite par enregistrement. **Vert par construction dès T1** : P3 d'e0a3b (une entité marquée qui change d'animation après la validation garde la clé de son animation courante).
-- 🧪 **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre). Mutants du code de la DLL, au moins 8, tous tués : assistant non appelé par l'interface, `_tileMapData` nul, masque calculé sur de mauvais drapeaux, propriété du vertical oubliée, `MinMoveDistance` oublié, mots gravité et viscosité permutés, assistant appelé deux fois, une ligne perdue du chemin par enregistrement (tuée par la garde de T1), et **M3** (la garde de D-E0A-8 dans
+- ✅ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre). Mutants du code de la DLL, au moins 8, tués ou prouvés équivalents : assistant non appelé par l'interface, `_tileMapData` nul, masque calculé sur de mauvais drapeaux, propriété du vertical oubliée, `MinMoveDistance` oublié, mots gravité et viscosité permutés, assistant appelé deux fois, une ligne perdue du chemin par enregistrement (tuée par la garde de T1), et **M3** (la garde de D-E0A-8 dans
   `AlundraScriptedMotion.TickScriptedNpc` réduite à la seule condition du marqueur, sans `CurrentAnimationId == ~0u`) : tué par l'épingle P3
   d'e0a3b, rouge sous M3 et verte sans lui.
+
+**Vérification (2026-10-15/16) : CONFIRMED** par deux verifiers frais, l'un après l'autre (rejeu : oracle relancé sur une copie, manifeste
+de 88 fichiers identique, 18 mutants de l'oracle tués ; liste prédite recomptée ; suites complètes en Release et en Debug, 4 898, zéro échec ;
+preuve de retrait : exactement K1 à K4 rouges ; aucun test existant déplacé ; M3 tué par la seule épingle P3 ; adversarial : mutants de
+l'assistant tous tués sauf MG, équivalent prouvé ; aucun reste des sondes ; aucun diff hors périmètre).
+**Décision de la session principale sur P1 (2026-10-16, avant e0k2).** La sonde P1 donne, pendant la chute, l'oracle moins **deux** unités
+brutes (au repos : moins une). La cause est établie : la racine tronque la position au pixel à la naissance et `PosZ` en est tiré dès le tick 1,
+ce qui perd l'unité brute de la création — le défaut même que corrige e0k2 (D-E0K-4). Le critère d'e0k2 reste donc « oracle moins **une**
+unité brute » (ADR-0026) ; aucun test d'e0k1 n'épingle la série « moins deux ». P4 : dix départs (la famille C1 de l'oracle), non douze ;
+drapeau toujours à l'arrivée + 1 dans la DLL, écart d'un tick avec l'oracle pour 5 départs sur 10 (2 sur les 6 départs entiers) : donnée pour
+Q-K2 (défaut A en vigueur).
+**Reportés** (P4) : MG (assistant appelé deux fois) est équivalent, d'où « tués ou prouvés équivalents » ; aucun test de monde n'épingle l'effet
+de la propriété du vertical (seule la sonde P5 le montre ; e0k2 le couvre par (z4)) ; le résumé XML de `SpawnEntityBySpriteIndex` ne cite pas
+la carte transmise ; une ligne « T2 ⚠️ (première moitié) » reste dans les résultats (T2 est close).
 
 ##### Acceptation
 
