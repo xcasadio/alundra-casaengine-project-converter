@@ -35,3 +35,6 @@ e0dabe540643413ee57675cfd5d68f3cbdd5f319  tools/pworld.py
 213ee0d291a17da4178029b801ccb8ef3c7f7281  tools/scen.py
 f035e68d2a96928ceffaeb6de36b9a3dee8bb8c1  tools/startstate.py
 6f8b900ff420532fc8d04f244c3c32cd26e27e3b  tools/world.py
+# E20.e0a3a: p3_tick.py is a byte copy of the discovery probe (md5 927741c62e0d0b90efc9c9c3bce6ab89), v6.py its recording driver, both run by run_e0a.py (out/v6.json).
+945cac621b15e1d4031204602566bd37d07b3bc9  p3_tick.py
+fccf168a4bd92dfcc2602eee6f3a43ef09114559  v6.py

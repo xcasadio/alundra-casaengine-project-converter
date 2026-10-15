@@ -2,7 +2,7 @@
 0x80032A40 creation roll) of ALUN_CD.EXE (France) in the emulated machine of the E14/E20 oracles, with BOTH sprite pages installed (espawn.py).
 
 Run from the repository root:   python -B docs/plan-e20-annexe/e20-e0a/oracle/run_e0a.py      (about 1 minute; exit code 0 = every check of out/summary.txt is PASS)
-Writes only into out/ next to this file: summary.txt, manifest.txt (md5 of every other file; two runs are identical), v1.json, v2.json, v3.json, v4-pairs.txt, v5.json, v6-map14.txt, v7.json, sounds.txt,
+Writes only into out/ next to this file: summary.txt, manifest.txt (md5 of every other file; two runs are identical), v1.json, v2.json, v3.json, v4-pairs.txt, v5.json, v6-map14.txt, v6.json (E20.e0a3a, birth tick), v7.json, sounds.txt,
 two-interpreters.txt, coverage.txt.  mutants.py (same folder) writes mutations.txt.
 
 Vector files: one JSON object per line.  Positions x, y are in pixels (the binary receives them shifted by 16), z is the RAW 16.16 argument of the binary (the frame of the binary: the DLL frame is this minus 1, ADR-0026),
@@ -546,6 +546,17 @@ def main():
     with open(os.path.join(OUT, 'v5.json'), 'w', encoding='utf-8', newline='\n') as f:
         json.dump({'table': t5, 'dirty': dv, 'probes': pr}, f, sort_keys=True, indent=1)
         f.write('\n')
+
+    # --- V6: what a fresh entity runs in its birth tick (E20.e0a3a; probe p3_tick.py, driver v6.py) ---------------------------------------------------------------------------------------------
+    import v6
+    rows6 = v6.run()
+    kinds = dict((r['id'], (r['kind'], v6.classify(r))) for r in rows6)
+    same_kind = all(k == (c if c != 'loot_full' else 'birth_full') for k, c in ((v6.classify(r), r['kind']) for r in rows6))
+    check('V6 birth tick', len(rows6) == 12 and all(r['spawned'] for r in rows6) and same_kind,
+          '12 lines BT-M1..BT-L3 of the real passes: birth in MovePlayer = full participation (A once in tick 1, status 2, in the lists), loop 2 with trigger 0 = A twice (status 1, out of the lists in tick 1), loop 2 with trigger -1 and loop 1 on a lower slot = postponed by one tick, loop 1 on a higher slot = full participation; measured %s' % sorted(kinds.items()))
+    with open(os.path.join(OUT, 'v6.json'), 'w', encoding='utf-8', newline=chr(10)) as f:
+        for r in rows6:
+            f.write(json.dumps(r, sort_keys=True) + chr(10))
 
     # --- coverage of the four functions (every machine of the run) ---------------------------------------------------------------------------------------------------------------------
     for wk in WORLDS:

@@ -78,3 +78,40 @@ prefab), decision of this slice; `TileZ` (the DLL leaves what the record path le
   and -1, then 38/38.
 - Tests: `Alundra.Tests` 4 752 -> 4 775 in Release and in Debug, no failure, no existing test changed; red before the code (18 of the first 21); 12 mutants of the DLL code, all CAUGHT.
 - Decisions of the execution: the palette and the sheet are not stored; `TileZ` is not compared; the current attack and the animation byte are compared too; `mutations.txt` is not in the manifest. See ADR-0063.
+
+## E20.e0a3a - oracle V6 (birth tick), prediction written BEFORE the run (2026-10-15)
+
+Probe `oracle/p3_tick.py` (byte copy of the discovery probe of the E20.e0a session, md5 `927741c62e0d0b90efc9c9c3bce6ab89`), run by `run_e0a.py` through `oracle/v6.py`; output `oracle/out/v6.json`, twelve lines `BT-M1`..`BT-M3`,
+`BT-H1`..`BT-H6`, `BT-L1`..`BT-L3` (prefix `BT-` so as not to collide with the H scenarios of `tools/scen.py`). Real code: `SpawnWarpEntity` and everything it calls, the slot pass `0x80038634`, the events pass `0x800386D0`
+(loops 1 and 2), the counters `0x80038998`, the lists `0x800384F4`, the animation `0x80038E18`, the physics `0x80038364`, and for the L rows the real `DestroyEntity` and the real drop. Each line gives, per tick and per pass:
+status, trigger word (`+0x228`), cumulative runs of the A handler, `+0x1C`, `+0xA8`, X, presence in the update, collision and draw lists, slot count word; plus the tick and pass where each thing first happens.
+
+| Line | Birth | Expected deviation of the binary from the DLL (as of the plan, written before the run) |
+|---|---|---|
+| `BT-M1`, `BT-M2`, `BT-M3` | in `MovePlayer` | full participation in the birth tick (status 2, A once in tick 1, `+0x1C` = 1, in the lists, X moved by the physics pass): the DLL must equal it (no deviation to keep) |
+| `BT-H1`, `BT-H4`, `BT-H6` | loop 2, slot above the count, trigger 0 | A runs TWICE in the binary (once in the birth pass, once in the next tick; status 1 and out of the lists during the whole birth tick); the DLL runs it once, in the next tick: deviation D-E20-34 (point O-E0A-1) |
+| `BT-H2`, `BT-H3`, `BT-H5` | loop 2, trigger -1 | everything postponed by one tick, in the binary as in the DLL: no deviation |
+| `BT-L2` | loop 1, slot lower than the dying one | everything postponed by one tick, in the binary as in the DLL: no deviation |
+| `BT-L1`, `BT-L3` | loop 1 (drop at death), slot higher | participation in the birth tick in the binary; belongs to E20.e0b and E20.e0c, out of E20.e0a3 |
+
+### Results of V6 (2026-10-15, base `58c9ef1`)
+
+`run_e0a.py` (42 s) is ALL PASS with the new check `V6 birth tick`; two runs give the same `manifest.txt`; the md5 of every file other than `summary.txt` and `v6.json` is unchanged (`v1`..`v5`, `v6-map14.txt`, `v7`, `coverage`, `sounds`, `two-interpreters`).
+`out/v6.json` md5 `ecdbd7c059d621b808fff8674d85975e`. All twelve lines match the predicted deviation; X is in pixels, "t.pass" = tick and pass of the first occurrence.
+
+| Line | slot | trigger at spawn | A runs (tick 1 / tick 2) | status 2 | in update list | `+0x1C` != 0 | first A | X after tick 1 / 2 | Measured vs expected |
+|---|---|---|---|---|---|---|---|---|---|
+| `BT-M1` | 1 | 0 | 1 / 0 | 1.events | 1.lists | 1.counters | 1.events | 191 / 191 | as expected (full participation) |
+| `BT-M2` | 1 | 0 | 1 / 0 | 1.events | 1.lists | 1.counters | 1.events | 191 / 191 | as expected |
+| `BT-M3` | 2 | 0 | 1 / 0 | 1.events | 1.lists | 1.counters | 1.events | 191 / 191 | as expected |
+| `BT-H1` | 2 | 0 | 1 / 1 | 2.events | 2.lists | 1.counters | 1.events | 190 / 191 | as expected (A twice, status 1 and out of the lists during tick 1) |
+| `BT-H2` | 2 | -1 | 0 / 1 | 2.events | 2.lists | 1.counters | 2.events | 190 / 191 | as expected (postponed one tick) |
+| `BT-H3` | 1 | -1 | 0 / 1 | 2.events | 2.lists | 1.counters | 2.events | 190 / 191 | as expected |
+| `BT-H4` | 2 | 0 | 1 / 1 | 2.events | 2.lists | 1.counters | 1.events | 190 / 191 | as expected |
+| `BT-H5` | 2 | -1 | 0 / 1 | 2.events | 2.lists | 1.counters | 2.events | 190 / 191 | as expected |
+| `BT-H6` | 2 | 0 | 1 / 1 | 2.events | 2.lists | 1.counters | 1.events | 190 / 191 | as expected |
+| `BT-L1` | 2 | n/a | 1 / 0 | 1.events | 1.lists | 1.counters | 1.events | 120 / 120 | as expected (full participation, e0b/e0c) |
+| `BT-L2` | 1 | n/a | 0 / 1 | 2.events | 2.lists | 1.counters | 2.events | 120 / 120 | as expected (postponed) |
+| `BT-L3` | 2 | n/a | 1 / 0 | 1.events | 1.lists | 1.counters | 1.events | 120 / 120 | as expected |
+
+(`+0x1C` = 1 from the counters pass of tick 1 on every line, including the postponed ones, which are in state 1 and out of the lists.) The draw list follows the update list on every line.

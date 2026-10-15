@@ -21,8 +21,9 @@ PASS V5 invalid index with a full table: table full (the hero + 63), a null entr
 PASS V5 loop 2 in a recycled slot: slots 2 and 4 dead since the tick before, freed by the slot pass of the tick; an apparition in loop 2 takes slot 2 (state 1 after the events pass), the next ones go to 4 then 6
 PASS V5 dirty slot: a dirty free slot (+0x44, +0x48, +0x3C, +0x40 leftovers): the creation writes +0x44 = 0 and +0x48 = -1 ; loot words [0, 0]
 PASS V4 probes: 13 invalid indices (null entry, 256, 300, -1, 0x80000000, not valid on this map): return 0, exactly one message at 0x80039BB8, serial, slot count word and generator unchanged
+PASS V6 birth tick: 12 lines BT-M1..BT-L3 of the real passes: birth in MovePlayer = full participation (A once in tick 1, status 2, in the lists), loop 2 with trigger 0 = A twice (status 1, out of the lists in tick 1), loop 2 with trigger -1 and loop 1 on a lower slot = postponed by one tick, loop 1 on a higher slot = full participation; measured [('BT-H1', ('a_twice', 'a_twice')), ('BT-H2', ('postponed', 'postponed')), ('BT-H3', ('postponed', 'postponed')), ('BT-H4', ('a_twice', 'a_twice')), ('BT-H5', ('postponed', 'postponed')), ('BT-H6', ('a_twice', 'a_twice')), ('BT-L1', ('loot_full', 'birth_full')), ('BT-L2', ('postponed', 'postponed')), ('BT-L3', ('loot_full', 'birth_full')), ('BT-M1', ('birth_full', 'birth_full')), ('BT-M2', ('birth_full', 'birth_full')), ('BT-M3', ('birth_full', 'birth_full'))]
 PASS coverage: every instruction of SpawnWarpEntity, the page lookup and FindFreeEntitySlot is executed, and of InitializeEntity all but the 3 of the registered-record half (0x80039D74-0x80039D7C, unreachable with a3 = 0) (coverage.txt)
 PASS second interpreter: emu.py and the independent mips.py: 159 calls, identical return slot, image hash and generator word: True
 PASS uninitialised reads: 0 reads of bytes nobody wrote during the sweep
 ALL PASS
-vector signature c88a3e9041fed6dbccb88f5e168e7fd989c5db4c
+vector signature 64cf265db341d94d4f8f6a31a8968536ebde1f11
