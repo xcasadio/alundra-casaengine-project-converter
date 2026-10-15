@@ -3328,37 +3328,108 @@ dispositions de la session principale :
 
 #### 1.16.2 E20.e0a2 — Table de cases : première libre, plafond de 63, ordre des passes
 
-**Prérequis.** E20.e0a1 (l'interface, l'oracle et son annexe, le compte de tests).
+**Révision 1 (2026-10-15).** Relecture : **REVISE**, deux points corrigés (FIX) : la phase d'ombre a un prédicat exact, un canal de relevé
+par test, une commande et un fichier versé, et le plafond est placé dans la phase B (l'ombre ne refuse rien) ; les trois points reportés
+d'E20.e0a1 ont leurs tâches, leurs tests et leurs lignes d'acceptation, et la fabrique entre dans le périmètre. Points non bloquants repris :
+règle d'insertion autour des entrées sans case, commentaires « creation order » à mettre à jour, ADR-0064, lignes de V5 à ajouter.
 
-**Reporté d'E20.e0a1 (vérification du 2026-10-15)** : le contrat « `null`, rien d'ajouté » de `SpawnEntityBySpriteIndex` sur le chemin
+**Prérequis.** E20.e0a1 ✅ (l'interface, l'oracle et son annexe, le compte de tests : 4 775).
+
+**Reporté d'E20.e0a1 (vérification du 2026-10-15)**, porté par T2 et T3 ci-dessous : le contrat « `null`, rien d'ajouté » sur le chemin
 d'une exception après `_world.AddEntity` ; `ChildEntity` écrit aussi par le chemin par enregistrement (racine du binaire `+0x08`) ; le
 commentaire inexact d'`ApplyHeaderInitialization`.
 
-**But.** Donner à chaque entité une case (héros 0, autres 1 à 63), la rendre au recyclage, refuser la 64e, et faire suivre l'ordre de `_spawnedEntities` à celui des cases, comme les passes du binaire (événements, compteurs, listes, physique, « premier attaquant » des coups, recherches `0x2C`). Ferme O-E20-13.
+**But.** Donner à chaque entité une case (héros 0, autres 1 à 63), la rendre au recyclage, refuser la 64e, et faire suivre l'ordre de
+`_spawnedEntities` à celui des cases, comme les passes du binaire (événements, compteurs, listes, physique, « premier attaquant » des coups,
+recherches `0x2C`). Ferme O-E20-13.
 
-**Périmètre.** `AlundraEntityScriptProxy` (`Slot = −1`, non cloné) ; `AlundraWorldProxy` (masque de 64 bits par instance, `AllocateSlot`, `ReleaseSlot`, insertion triée, libération dans `RecycleDestroyedEntities`) ; les **quatre** chemins de création (adoption du héros = case 0, chargement de carte, `SpawnEntityByRecordId`, `SpawnEntityBySpriteIndex`) ; `IEntityWorldContext.SpawnedEntities` (doc : « dans l'ordre des cases ») ; tests.
+**Faits propres à la tranche.**
+- [DLL] Toutes les passes de la DLL parcourent `_spawnedEntities` ou une liste qui en dérive (`CollectTickEntities`, `_pendingScan`,
+  `RunCountersPass`, `BuildHitList`, `RefreshUpdateProxiesAndCollidables`/`_updateProxies`, `PublishEntityFrame`, `GetSpawnedEntityProxies`) :
+  réordonner `_spawnedEntities` suffit, **aucune passe n'est modifiée** ; la liste du moteur (`world.Entities`) garde l'ordre d'insertion,
+  ce qui ne compte que pour les égalités de dessin. Les commentaires « creation order » de ces passes sont mis à jour.
+- [DLL] Les trois chemins qui ajoutent puis appellent le son et la poussée de position (`SpawnEntityBySpriteIndex`,
+  `SpawnEntityByRecordId`, la boucle de chargement) le font dans un `try` après `_world.AddEntity` : une exception laisse l'entité dans le
+  monde et dans la liste.
+- [DLL] Les suites de tests tournent sans parallélisme (`parallelizeTestCollections: false`) ; une apparition se fait toujours dans la
+  pile d'appels du test (ArcRun → `World.Update` → la passe), ce qui permet d'attribuer un événement à son test par la pile.
 
-**Hors périmètre.** Aucune passe n'est modifiée. L'alias des pointeurs périmés (D-E0A-7). Le tick de naissance.
+**Périmètre.** `AlundraEntityScriptProxy` (`Slot = −1`, non cloné) ; `AlundraWorldProxy` (masque de 64 bits par instance, la case 0
+tenue dès la construction, `AllocateSlot`, `ReleaseSlot` — sans effet pour −1 —, insertion triée, libération dans
+`RecycleDestroyedEntities`, contrat d'erreur des trois chemins, relevé d'ombre) ; les **quatre** chemins de création (adoption du héros =
+case 0, chargement de carte, `SpawnEntityByRecordId`, `SpawnEntityBySpriteIndex`) ; `AlundraEntitySpawnFactory.cs` (`ChildEntity` sur le
+chemin par enregistrement, commentaire d'`ApplyHeaderInitialization`) ; `IEntityWorldContext.SpawnedEntities` (doc : « dans l'ordre des
+cases ») ; l'oracle (V5 complété) ; tests ; ADR-0064.
+
+**Hors périmètre.** Aucune passe n'est modifiée. L'alias des pointeurs périmés (D-E0A-7). Le tick de naissance (e0a3).
+
+**Règles de la table.** Case attribuée = la plus basse libre de 1 à 63 ; la case 0 est réservée au héros (même dans un monde sans héros) ;
+une entité `FlagToDestroy` garde sa case jusqu'à `RecycleDestroyedEntities` (porte 0x48 fermée : rien n'est libéré). Insertion triée : une
+entité de case s est placée juste avant la première entrée de case supérieure à s, en sautant les entrées sans case (−1, ajoutées par
+réflexion par les six classes de tests), qui restent où elles sont ; à défaut, en fin de liste.
 
 ##### Tâches
 
-- ⏳ **T0 — Prédiction.** Phase d'ombre : les cases sont attribuées et le masque tenu, **sans réordonner**, avec deux compteurs réservés aux tests (`SpawnsWhileALowerSlotWasFreeForTests`, `MaxLiveSlotForTests`). La suite complète tourne une fois ; la liste des tests où le premier compteur est non nul est écrite dans l'annexe **avant** d'activer l'insertion triée (zéro événement dans un test = ce test ne peut pas bouger). Prédiction : les arcs qui détruisent (`0x2E`, E0/E1) puis font apparaître (`0x2D`, `0x8A`, `0x8B`) : `AlundraDay3SceneArcTests` (A14 : enregistrements 8 à 10 par `0x2D` à 219-223, `0x2E` à 272), `AlundraEntityContactArcTests`, `AlundraInoaDayOneArcTests`, `AlundraTarnMurggArcTests`, `AlundraMurutaHallArcTests`.
-- ⏳ **T1 — Oracle V5** (dans l'annexe d'e0a1) : 5 apparitions → cases 1 à 5, compteur 5 ; case 2 en état 4, apparition avant la passe → case 6, après la passe → case 2 ; 63 acceptées, 64e et 65e à 0 avec un message (`0x80039B10`, chaîne `0x800239B0`) ; indice invalide avec table pleine : seul le message « Race » (`0x800239CC`) ; libérations 40, 9, 21 → 9, 21, 40 ; vecteur de case sale ; l'apparition en boucle 2 dans une case recyclée.
-- ⏳ **T2 — Tests rouges.** Allocateur pur, sans moteur (au moins 12 cas calqués sur V5) ; le masque libère à `RecycleDestroyedEntities` et pas avant (une entité `FlagToDestroy` garde sa case ; porte fermée : rien n'est libéré) ; la 64e apparition rend `null` avec une ligne de journal et sans entité ajoutée, pour les trois chemins qui peuvent échouer ; ordre de `_spawnedEntities` = ordre des cases ; les entrées sans case (`−1`, ajoutées par réflexion par les six classes de tests) restent où elles sont ; la case 0 est au héros et reste réservée dans un monde sans héros (le masque la tient dès la construction).
-- ⏳ **T3 — Code en deux temps.** (A) l'ombre, suite complète, compteurs relevés ; (B) l'insertion triée, la suite complète, chaque test déplacé est justifié par l'oracle (ordre de case) et corrigé avec la preuve ; rien d'autre ne change.
-- ⏳ **T4 — ADR** (table de cases, plafond, ordre), plan, verifier frais ; en plus, un verifier sur les épingles (liste prédite contre liste mesurée).
+- ⏳ **T0 — Prédiction par l'ombre** (commit de code A, puis commit de docs du relevé).
+  - Phase A (ombre) : cases attribuées, masque tenu, **sans réordonner et sans rien refuser** (une 64e entité reçoit −1 et est ajoutée
+    comme aujourd'hui). Deux événements sont relevés :
+    - **insertion hors fin** : la case attribuée est inférieure à la plus haute case des entrées vivantes de `_spawnedEntities` (la phase B
+      l'aurait placée ailleurs qu'en fin de liste) ;
+    - **dépassement** : aucune case libre de 1 à 63 (la phase B refuserait cette apparition).
+  - Canal : un puits statique, actif seulement si la variable d'environnement `ALUNDRA_SLOT_SHADOW_LOG` donne un chemin de fichier
+    (absent : rien n'est écrit, rien n'est alloué en plus) ; une ligne par événement :
+    `<événement> test=<méthode> world=<nom du monde> slot=<s> maxLive=<m>`, la méthode étant le cadre le plus extérieur de la pile dont le
+    type est dans l'espace de noms `Alundra.Tests`.
+  - Commande : `ALUNDRA_SLOT_SHADOW_LOG=<scratch>/shadow.txt dotnet test Alundra.Tests/Alundra.Tests.csproj -c Release --no-build
+    --blame-hang-timeout 300s` (une fois, après le build de la phase A ; la suite doit rester verte en A).
+  - Fichier versé : `docs/plan-e20-annexe/e20-e0a/e0a2-shadow.txt` (par test : nombre d'insertions hors fin, de dépassements, plus haute
+    case vue), écrit **avant** la phase B ; un test absent du fichier ne peut pas bouger en B.
+  - Prédiction de la découverte, à confronter au relevé : les arcs qui détruisent (`0x2E`, E0/E1) puis font apparaître (`0x2D`, `0x8A`,
+    `0x8B`) : `AlundraDay3SceneArcTests` (A14 : enregistrements 8 à 10 par `0x2D` à 219-223, `0x2E` à 272), `AlundraEntityContactArcTests`,
+    `AlundraInoaDayOneArcTests`, `AlundraTarnMurggArcTests`, `AlundraMurutaHallArcTests`.
+- ⏳ **T1 — Oracle V5 complété** (annexe d'e0a1, `out/v5.json` et son manifeste) : les lignes déjà versées (5 apparitions → cases 1 à 5 ;
+  case 2 en état 4, apparition avant la passe → case 6, après → case 2 ; 63 acceptées, 64e et 65e à 0 avec un message en `0x80039B10` ;
+  libérations 40, 9, 21 → 9, 21, 40 ; case sale) **plus** deux lignes qui manquent : indice invalide avec table pleine (seul le message
+  « Race », `0x800239CC`) et apparition en boucle 2 dans une case recyclée.
+- ⏳ **T2 — Tests rouges.**
+  - Allocateur pur, sans moteur (au moins 12 cas, chacun recopié d'une ligne de V5) ; `ReleaseSlot(−1)` sans effet ; case 0 tenue dans un
+    monde sans héros.
+  - Le masque libère à `RecycleDestroyedEntities` et pas avant ; porte fermée : rien n'est libéré.
+  - Phase B : la 64e apparition rend `null` avec une ligne de journal et sans entité ajoutée, pour les trois chemins qui peuvent échouer
+    (chargement : l'enregistrement est sauté et journalisé ; `SpawnEntityByRecordId` et `SpawnEntityBySpriteIndex` : `null`).
+  - Ordre de `_spawnedEntities` = ordre des cases ; entrées sans case laissées en place.
+  - **Contrat d'erreur (reporté d'e0a1)**, pour chacun des trois chemins : une exception levée après `_world.AddEntity` (son de création
+    ou poussée de position, déclenchée par un point d'accroche de test) donne : aucune entité dans `_spawnedEntities` ni dans le monde
+    (retirée), la case rendue au masque, `null` pour les deux méthodes, l'enregistrement sauté et journalisé pour le chargement.
+  - **`ChildEntity` (reporté d'e0a1)** : une apparition par `0x2D` avec un parent écrit la racine comme le binaire (`parent.ChildEntity ??
+    parent`) ; un test parent → enfant → petit-enfant par le chemin par enregistrement, et un mélange enregistrement → interface.
+- ⏳ **T3 — Code en deux temps.** (A) l'ombre (T0) ; (B) l'insertion triée, le refus de la 64e, le contrat d'erreur, `ChildEntity` sur le
+  chemin par enregistrement, le commentaire d'`ApplyHeaderInitialization` et ceux des passes ; suite complète : chaque test dont le
+  résultat bouge est dans `e0a2-shadow.txt` et justifié par l'ordre des cases ou par un refus (preuve écrite dans le plan), puis corrigé ;
+  rien d'autre ne change.
+- ⏳ **T4 — ADR-0064** (table de cases, plafond, ordre, contrat d'erreur), plan ; verifiers frais lancés par la session principale, dont
+  un sur les épingles (liste prédite contre liste mesurée).
 
 ##### Acceptation
 
-- Oracle V5 : toutes les lignes égales ; mutants de T2 d'e0a1 touchant la recherche de case CAUGHT.
-- DLL : au moins 12 tests de l'allocateur ; `Alundra.Tests` : le compte d'e0a1 plus les nouveaux, aucun échec, et **chaque test dont le résultat bouge est dans la liste prédite de T0 et justifié par l'ordre des cases** ; carte de chargement : jamais plus de 39 entités (maximum mesuré aux cartes avec la zone : 39 ; 76 et 64 sans la zone aux cartes 75 et 92, qu'aucun test connu ne charge : recherche des noms de monde `-75` et `-92`).
-- Verifiers frais.
+- Oracle V5 : toutes les lignes de `out/v5.json` (y compris les deux ajoutées) reproduites par les tests de l'allocateur ; le manifeste
+  de l'oracle mis à jour et identique sur deux exécutions.
+- DLL : au moins 12 tests de l'allocateur ; les tests du contrat d'erreur (trois chemins) et de `ChildEntity` verts ; `Alundra.Tests` en
+  Release et en Debug : 4 775 plus les nouveaux, aucun échec, et **chaque test dont le résultat bouge est dans `e0a2-shadow.txt` et
+  justifié** ; au chargement de carte, la plus haute case vue dans le relevé d'ombre ne dépasse pas 39 pour les cartes chargées par la
+  suite (recensement de la découverte : 39 au plus avec la zone d'apparition ; les cartes 75 et 92, qui dépasseraient 62 sans la zone, ne
+  sont chargées par aucun test : recherche des noms de monde `-75` et `-92`) ; aucun dépassement dans le relevé, sinon il est expliqué.
+- `cmp` de la DLL ; traces inchangées ; verifiers frais.
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : un déplacement non prédit ; la porte de `RecycleDestroyedEntities` à changer ; le plafond atteint au chargement dans un test (erreur à lire, pas à contourner) ; un test existant à réécrire sans justification du binaire ; l'ordre d'une passe à toucher.
+- **Arrêts** : un déplacement absent du relevé d'ombre ; la porte de `RecycleDestroyedEntities` à changer ; le plafond atteint au
+  chargement dans un test (erreur à lire, pas à contourner) ; un test existant à réécrire sans justification du binaire ; l'ordre d'une
+  passe à toucher ; la phase A qui fait bouger un test (l'ombre doit être neutre).
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
-- **Retour arrière** : l'insertion triée se retire seule (l'ombre reste) ; sinon abandon de la branche.
+- **Retour arrière** : les commits de la phase B (insertion triée, refus, contrat d'erreur, `ChildEntity`, avec leurs corrections de tests
+  justifiées) se retirent seuls ; ceux de la phase A restent sans changer aucun comportement (cases et masque tenus, rien de réordonné ni
+  refusé, puits inactif sans la variable) ; sinon abandon de la branche.
 
 ---
 
