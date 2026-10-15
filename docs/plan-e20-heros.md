@@ -579,6 +579,13 @@ interne de g3/g4, repli d'E14.a1c. La règle de relecture ne permet pas une nouv
 pause** jusqu'à l'accord de l'auteur pour une relecture de clôture de plus.
 L'auteur l'a accordée (2026-10-10) ; relecture de clôture de la révision 5 : **READY**. L'enveloppe fait foi ; la suite commence par
 E20.e0x.
+**Révision 6 (2026-10-15, après la découverte d'E20.e0b ; nouvelle époque de relecture).** L'auteur a accordé (Q-B3, §1.17) le
+découpage d'E20.e0b en e0b1 (l'avance du générateur par tick) puis e0b2 (le tirage du butin à la création), et les prérequis qui en
+découlent : E20.f3 et E20.f6 exigent e0b1 (E9 tire à l'impact et toutes les 8 images dans le flux avancé ; f3 ne tire rien à la
+création, ses sprites communs ont `Contents` 0, `f-projectiles.md` point 7 : il lui faut le flux que verront les étincelles de coup) ;
+E20.g2 et E20.e0c exigent e0b2 (le lâcher, à la destruction, lit `+0x3C` écrit par le tirage, `order-critic.md` ligne 22 du tableau ;
+l'arête « E20.g2 → E20.e0b » de la révision 3, perdue par le tableau de la révision 4, est rétablie). Lignes 3, 5, 8 et 10 du tableau
+et paragraphe « Ensuite » mis à jour. Une seule relecture de clôture suit.
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -629,15 +636,15 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 |---|---|---|---|
 | 1 | E20.e0x (§1.15) | Convertisseur : `BankKey` dans `Data/sprite-records.json` (le `BreakEffect` y est déjà, E14.a1a) et les indices valides par carte (D-E20-33) ; export complet en place, preuve par manifeste et double export ; ADR de format | E14.a1a ✅ |
 | 2 | E20.e0a (§1.16 : e0a1, e0a2, e0a3 ; e0a4 conditionnelle, ne bloque rien) | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
-| 3 | E20.e0b | Générateur avancé une fois par tick (`0x8002BD0C`-`0x8002BD34`) ; tirage du butin à la création (écrit le contenu, rien ne tombe) | E20.e0a1, E20.e0a2 (§1.16) |
+| 3 | E20.e0b (§1.17 : e0b1, puis e0b2) | e0b1 : générateur avancé une fois par tick (`0x8002BD0C`-`0x8002BD34`) ; e0b2 : tirage du butin à la création (écrit le contenu, rien ne tombe) | E20.e0a1, E20.e0a2 (§1.16) ; e0b1 avant e0b2 (ordre) |
 | 4 | E20.e0k | Pas vertical et vol des entités autres que le héros (gravité `0x100`, impulsion, atterrissage, vol à Z constant, `NoObstacleSlide`, butée sur mur, bord et hauteur) | E20.e0a1 (§1.16) |
-| 5 | E20.f3 | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.f1 ✅, E20.e0a1 à E20.e0a3 (§1.16), E20.e0b |
+| 5 | E20.f3 | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | E20.f1 ✅, E20.e0a1 à E20.e0a3 (§1.16), E20.e0b1 (§1.17) |
 | 6 | E20.f4 | Flèche chargée : C94, E1 avec l'effet 8 (l'effet de bris vient d'E14.a1b, D-E20-26) | E20.f3, E20.e0k, E14.a1b ✅ |
 | 7 | E20.f5 | Flèches : E17 (D-E20-25) | E20.f3, E20.e0k |
-| 8 | E20.f6 | Boules de feu et de glace : C60, E9 (D-E20-25) ; vigilance sur les trois enregistrements `0x0C` de la carte 309, qui prendront vie | E20.f3, E20.e0b, E20.e0k |
+| 8 | E20.f6 | Boules de feu et de glace : C60, E9 (D-E20-25) ; vigilance sur les trois enregistrements `0x0C` de la carte 309, qui prendront vie | E20.f3, E20.e0b1 (§1.17), E20.e0k |
 | 9 | E20.h0, E20.h1 | Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a ✅ |
 | 9b | E20.A362 | Le couvercle de la 362 (enregistrement 0, sprite 243, `D[1]` `0x87 [128,3]`) face à la bombe d'Olen (enregistrement 5, sprite 2, lancée par son script `0x8B [128,5,…]`, explosion animation 1, attaque attribut 4 puissance 5) : arc de test seul, comme E20.c1b-2 ; il tranche si le couvercle réagit déjà (probable depuis E20.c1a et E20.c1b-1) ou ce qui manque ; relancé après E20.h3 | E20.c1b-1 ✅ |
-| 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées | E20.e0a1 (§1.16), E20.e0k ; E14.a1b ✅ pour g2 |
+| 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées | E20.e0a1 (§1.16), E20.e0k ; E14.a1b ✅ et E20.e0b2 (§1.17) pour g2 |
 | 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 pour h3 (§1.16) |
 | 12 | E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 (D-E20-27) ; ordre interne fixé au détail (g3 dépend aussi de la géométrie de la barricade de g4 et d'un choix de l'auteur, `order-critic.md`) | E20.g1, E20.g2 |
 
@@ -645,7 +652,7 @@ Les projectiles d'E20.f3, f5 et f6 (E10, E17, E9) appellent aussi `DestroyEntity
 
 Ensuite, hors de l'ordre des armes, objets et collisions : la blessure du héros (E20.c2b, après E14.a, qui remesure ses arcs), le mur
 d'eau profonde avec les courants (E20.i2, D-E20-31 ; lecture de « 9 a » à confirmer par l'auteur), le butin et l'objet ramassable
-(E20.e0c), les effets du héros et l'herbe coupée (E20.e), la règle du stick (E20.d2b, après la mesure de l'auteur). Si E14.a1c s'arrête
+(E20.e0c, qui exige E20.e0b2), les effets du héros et l'herbe coupée (E20.e), la règle du stick (E20.d2b, après la mesure de l'auteur). Si E14.a1c s'arrête
 sur la chute des Muruta du hall (arrêt écrit de sa tranche : la chute des entités autres que le héros relève d'E20.e0k), la question
 va à l'auteur comme le dit cet arrêt ; recommandation : avancer la part « chute » d'E20.e0k, qui ne dépend pas de l'apparition par
 indice (les Muruta sont placés sur la carte), puis reprendre E14.a1c.
@@ -3638,6 +3645,7 @@ d'e0a1 ne change plus ; seule la sonde PA3 change. Nouvelle époque de relecture
 périmé du prérequis. Le reste a été confirmé contre le code (bascule en attente dans les quatre directions, `AnimFlags` rechargé à
 l'identique, ligne sans effet après validation, PA3 seul test touché). La règle de relecture ne permet pas une relecture de plus sans
 l'auteur : la tranche est **en pause** jusqu'à son accord.
+L'auteur a accordé une relecture de clôture de plus (2026-10-15) ; relecture de clôture de la révision 3 : **READY** (2026-10-15).
 
 **Prérequis.** E20.e0a3a ✅ (sonde P-A ; sa voie (i) est remplacée par D-E0A-8, révision 3 ; `Alundra.Tests` 4 815).
 
@@ -3816,6 +3824,211 @@ par e0a3b). Chaque épingle qui bouge est re-dérivée de l'oracle (une appariti
 | O-E0A-2 | Lecteur de `+0x08` : aucun trouvé dans la décompilation ; recherche dans le binaire à faire si E20.g ou E14 en montre un | E20.g, E14 |
 | O-E0A-3 | Coût de `LoadCopy` à chaque apparition (une lecture de disque) | mesure avant E20.f3 |
 | O-E0A-4 | **Tranché le 2026-10-15 (révision 3 d'e0a3b, D-E0A-8)** : plus de `Current = Target` à la création ; `AnimFlags` chargé à la création ; la cinématique lit la cible pour une entité marquée non validée | — |
+
+### 1.17 E20.e0b — Le générateur pseudo-aléatoire : e0b1 (avance par tick), e0b2 (tirage du butin à la création) ⏳ (détaillée le 2026-10-15)
+
+**Réponses de l'auteur (2026-10-15).** Q-B1 : `ArcRun` re-sème le flux avant **et** après le chargement. Q-B2 : les écarts de D-E0B-3
+sont acceptés, documentés. Q-B3 : le découpage e0b1 / e0b2 et le changement de prérequis de l'enveloppe sont accordés (révision 6 de
+l'enveloppe, §1.1, avec sa relecture de clôture). Q-B4 : défaut fidèle, sans question (l'avance tourne dans les menus, le livre et
+l'inventaire, comme le binaire). Q-B5 n'a pas été posée : les puits d'ombre restent dans le code de production, inertes sans leur
+variable d'environnement, comme le canal d'ombre d'e0a2 (ADR-0064, défaut du précédent ; l'auteur peut le changer).
+
+Découverte en lecture seule du 2026-10-15, au HEAD `4d17824` : trois relevés (binaire, impact sur la DLL, inventaire des tests), puis un critique adversarial qui a revérifié plus de trente
+affirmations (désassemblage de `ALUN_CD.EXE` avec son propre capstone ; 6 011 vecteurs du tirage rejoués sur la machine MIPS contre un modèle écrit à part ; 168 mutants de sa façon ;
+boucle de chargement réelle rejouée sur 42 cartes ; recensement des données refait ; lecture du code de la DLL et des tests). Scripts et sorties dans le scratchpad de la session :
+`C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20e0b/`
+(`bin/`, `dll/`, `tests/`, `critic/`). Aucune modification du moteur, du convertisseur ni des données. La tranche est découpée en deux, parce que ses deux moitiés n'ont ni les mêmes
+dépendants, ni le même rayon d'action : e0b1 (l'avance) touche chaque test qui fait tourner un monde, e0b2 (le butin) ne touche que les chargements de cartes et les apparitions.
+
+**But.** e0b1 : reproduire `0x8002BD0C-0x8002BD34`, un pas du générateur à la fin de chaque tick logique, porte fermée ou non, jamais pendant le départ d'un warp, sans changer aucune
+autre consommation. e0b2 : reproduire le tirage de `0x80032A40` à chaque création (`ContentsItemId` tiré, `ContentsGameFlag` posé, le mot du générateur avancé de 0, 1 ou 2 pas) ;
+rien ne tombe (le lâcher, son veto et l'objet ramassable sont E20.e0c). Ferme D-E0A-3.
+
+**Découpage et changement d'enveloppe (accordés par l'auteur le 2026-10-15, Q-B3 ; enveloppe révisée au §1.1, révision 6).** L'enveloppe (§1.1, ligne 3) fait d'E20.e0b une seule tranche. La critique la scinde parce que les dépendants n'exigent pas
+la même moitié : E20.f6 (E9 tire à l'impact et toutes les 8 images) exige l'avance ; E20.g2 et E20.e0c (le butin tiré à la création, lu à la mort) exigent le tirage ; E20.f3 (flèches,
+vague, effets de coup) ne tire rien à la création (`Contents` 0 des sprites communs 3 à 15 et 27 à 29, `f-projectiles.md` point 7) : la raison pour laquelle sa ligne 5 exige « e0b » n'est écrite nulle part, et elle est ramenée à e0b1 (le flux que verront
+les étincelles de coup ; proposition de la critique, accordée avec Q-B3). L'ordre est e0b1 puis e0b2 : l'avance est sur le chemin d'E20.f6, le tirage ne l'est pas ; le tirage reste après, pour que l'ombre
+d'e0b2 se mesure sur un code qui avance déjà (mêmes mots que dans le jeu). L'`order-critic.md` avait déjà ce découpage (nœuds E0r1 et E0r2).
+
+**Faits porteurs.** Étiquettes : [binaire] décodé ou rejoué sur `ALUN_CD.EXE` (France) ; [oracle] exécuté dans la machine MIPS ; [DLL] lu dans le code au HEAD `4d17824` (numéros de ligne à relire à l'exécution : E20.e0a3b touche aussi `AlundraWorldProxy.cs`) ; [données] lu dans les
+cartes extraites ou l'export ; [critique] établi ou corrigé par la critique.
+- [binaire] **L'avance** (`0x8002BD0C-0x8002BD34`) : lecture du mot (`lw v0,-0x78f8(a0)`, `a0 = 0x800a0000`), `mult` par `0x7D2B89DD` (`lui 0x7d2b` / `ori 0x89dd`), `mflo`, `addu` de `0xE06A02E7` (`lui 0xe06a` / `ori 0x02e7`), `sw` dans le délai du `beqz s3` :
+  `s ← s·0x7D2B89DD + 0xE06A02E7 (mod 2³²)`, un pas, résultat jamais lu (aucun `mfhi`), magasin toujours exécuté ; `s3` (= a0) ne commande que l'effacement de `[0x800DC4C4]`.
+  Le mot est `[0x80098708]`, valeur d'image `0xB017C93D` (octet `0x78F08` du fichier), celle d'`AlundraRandom.Reset()`. Vecteurs : 0 → `E06A02E7`, `FFFFFFFF` → `633E790A`, `80000000` → `606A02E7`,
+  `B017C93D` → `35E36190`, `12345678` → `B806E07F`, quatre pas → `AFBE9EAC`.
+- [binaire, critique] **Une avance par appel de la fonction d'image `0x8002BAEC`**, sur tous les chemins : 134 instructions relues, aucun retour avant `0x8002BD04` ; la porte `[0x800DC4B8] & 0x48`, un menu,
+  un menu refusé, a0 = 0 ou 1 n'y changent rien (seule la passe des listes tourne sous la porte). Appels : deux `jal` (`0x8002C3E4` avec a0 = 1, une fois après chaque chargement de carte ;
+  `0x8002C404` avec a0 = 0, à chaque tour), ni `j`, ni mot de pointeur, ni formation d'adresse par `lui`+`addiu` dans toute l'image ; `UpdateWorld` (`0x8002E058`) n'a que `0x8002BC4C`.
+  [oracle] la sonde de la fonction d'image rejouée (10 lignes, md5 `4943e0d29796bdee75e0a876f82b6b48`, identique à la découverte) : porte `0x48` → 1 pas ; porte ouverte → 4 pas (trois tirages-marqueurs des passes bouchonnées, plus l'avance, qui est la dernière opération de l'image).
+- [binaire] **La boucle de transition `0x8002C490-0x8002C4C0` n'appelle ni la fonction d'image ni l'avance** ; l'image qui a levé la demande a, elle, avancé (`0x8002C454` lit la demande après
+  l'appel de `0x8002C404`). Les effets de transition 4, 5 et 6 tirent dans le même générateur (1 200 tirages à l'initialisation, 240 par pas, 600) : 393 portails sur les données (374 pour l'effet 5),
+  que la DLL traite comme l'effet 0 (`AlundraWarpDirector.cs:331-334`, D-T-7) : point ouvert O-E0B-1.
+- [binaire, critique] **Rien ne réinitialise ni ne copie le générateur** : 599 accès (`lw`/`sw` d'immédiat −0x78F8, 89 fonctions) ; les 267 lectures alimentent toutes un `mult` et les 332 écritures sont des pas ; aucune formation d'adresse de `0x80098708`
+  (ni `addiu`, ni `ori`) ; la seule adresse voisine formée (`0x8009870C`, en `0x80039558` et `0x8003959C`) est une table lue par la passe de coups. Le mot est hors du remplissage à zéro `0x800CA0E8..0x801F7F20` ; il n'est donc ni sauvegardé ni affiché
+  (ferme l'inconnue « copies par bloc » du relevé, au risque résiduel d'un pointeur calculé). Le son, le changement d'animation, `DisplayInventory`, la liste des effets et le lecteur de pad n'atteignent aucune fonction qui tire (accessibilité par `jal` seulement).
+- [binaire, oracle] **Le tirage** : `0x80032A40` (un seul appelant, `0x80039F38`, dernière action d'`InitializeEntity` ; cinq appelants d'`InitializeEntity` : héros, `SpawnWarpEntity`, réinitialisation en place
+  `0x8003A048`, apparition par enregistrement `0x8003A1B8`, réinitialisation au foyer `0x8003ABCC`). Avec enregistrement : drapeau `f = hu[rec+0x10]`, mis à 0 si `(f & 0x7FFF) >= 0x800`, écrit en `+0x40` même nul ;
+  s'il est non nul et que son bit est levé (banque `0x801EBA40` si `f & 0x8000`, sinon `0x801EB344`, mot `(f>>5)&0x3FF`, bit `f & 31`) : code 0, aucun tirage ; sinon code = `rec[0x12]` s'il est non nul, sinon `header[0x1F]`.
+  Sans enregistrement : `+0x40 = 0`, code = `header[0x1F]`. `0x80032968` : `tant que code ≥ 0x100 → 0 ; si code & 0x80 : s ← pas(s) ; code ← table[(code & 0x7F)·16 + (s >> 28)] ; sinon code < 0x62 ? code : 0`.
+  Table `0x80028E0C` (octet `0x960C` du fichier, 128 × 16 = 2 048 octets) : 13 rangées non nulles (`0x81..0x83`, `0xF6..0xFF`) ; `0x82`, `0xF7`, `0xF8` tirent exactement une fois ; `0xFA`, `0xFB`, `0xFC`, `0xFF` une ou deux fois
+  selon l'état. [critique] 6 011 vecteurs rejoués sur la vraie fonction (11 de la découverte + 6 000 tirés au hasard avec drapeaux, deux banques, codes d'enregistrement et d'en-tête) : 0 écart avec un modèle écrit à part.
+- [données, critique] **Population** : 54 numéros de sprites tirent (`Contents & 0x80` : 6 de la page globale, 48 de la page des cartes), leur `Contents` d'en-tête est le même sur toutes les cartes ; aucun en-tête n'a de code direct ;
+  aucun enregistrement n'a `Contents` ≥ 0x100 (le binaire lit l'octet `+0x12`) ; 396 enregistrements portent un drapeau, tous en banque persistante, tous < 0x800, tous avec un code d'enregistrement. Au chargement :
+  7 240 enregistrements actifs (`IsEnabled` ≠ 0 et bit `0x40`), dont 3 355 tirent, 374 ont un code direct, 3 511 un code nul ; 288 cartes sur 483 ont au moins un tirage (zone du héros ignorée).
+- [binaire, critique] **Chargement** : `0x8003B2EC-0x8003B354` appelle `0x8003A1B8(0, i, 0)` pour i = 0..127 dans l'ordre et **s'arrête au premier enregistrement dont le premier mot (XMin, YMin, XMax, YMax) est nul** ; `0x80039BD0` rend 0
+  quand `IsEnabled` est nul (corrige `e0-check.md` point 7). Aucun enregistrement réel ne suit un enregistrement vide dans les 483 cartes, et l'ordre des objets de la couche « Entities » exportée est l'ordre des `Index` dans les 483 cartes :
+  l'ordre des tirages de la DLL est celui du binaire.
+- [oracle, critique] **V8, chargement réel** (`critique/p8_loadmap.py`, boucle de chargement et vrai `0x8003A1B8` sur 128 enregistrements, graine `0xB017C93D`) : carte 14 à la tuile (8, 6) : 25 enregistrements appelés, 19 entités, 11 tirages, mot final
+  `D5F4D64A` (entités à tirage : enregistrements 0 à 6 → objets 0, 71, 0, 0, 0, 0, 71 en 1, 2, 1, 1, 1, 1, 2 tirages ; 16 → 84 ; 17 → 0) ; cartes 390 et 392 (tuiles (0, 0) et (25, 29), même résultat) : 16 et 12 entités, 12 tirages, `BBE29AC9`. Sur 42 cartes de la suite (tuile arbitraire au centre de la fenêtre
+  du premier enregistrement), 25 sont identiques au modèle qui ignore la fenêtre du héros ; les 17 autres diffèrent **par la fenêtre du héros** (carte 115 à la tuile (25, 29) : 0 entité), et **avec la fenêtre appliquée le modèle égale la boucle réelle sur les 42 cartes** (mot final et tirages, `critique/p12_window.py`) :
+  le nombre de tirages au chargement dépend de la tuile du héros, donc les mots attendus se mesurent par couple (carte, tuile).
+- [DLL] `AlundraEffectStage.RunFrame(int, IReadOnlyList<bool>)` n'a qu'un appelant de production, `AlundraWorldProxy.cs:2612` (`IsTransitionInProgress ? 0 : ticksThisFrame`), et 70 appels de test dans 15 fichiers ;
+  `Update` n'a aucun `return` avant `:2612`. `RunActiveEffectsPass` (`:2931`) est vide et son commentaire (« le générateur … avancé par image ») est trompeur. `_effectStage` est un champ jamais nul.
+- [DLL] `AlundraRandom` n'a que `Next()` et `Reset()` ; `RandomSeed` est un champ statique public `ulong` (état sur 64 bits, seuls les 32 bits bas comptent) ; aucune lecture de production, aucune réflexion, aucun autre projet ; `Reset()` n'est appelé que par les tests, `ArcRun` compris.
+  Tirages de la DLL aujourd'hui : étincelle de charge (2), de coup (3 par étincelle créée, 9 au plus), de vaisseau (2) — **différés dans `RunFrame`** (ADR-0046, ADR-0048) ; opcodes `0x0C`, `0x8C`, `0x5A`/`0x5B` modes 4 et 5 et IA Beannoïde et Muruta — **immédiats**.
+- [DLL] `ContentsItemId` (`AlundraEntityScriptProxy.cs:93`) n'a aucun lecteur de production ; `ContentsGameFlag` en a un (`0x9F`, `AlundraEventProgramRunner.cs:1602`), et le mapper le pose déjà avec le même masque que le binaire (`EntityRecordMapper.cs:174`).
+  `AlundraGameState.GetFlag` choisit la banque par `0x8000` et le mot par `(f>>5)&0x3FF`, comme le binaire. Les trois créations sont des blocs `try` jumeaux : boucle de chargement (appel d'`InitializeBalance` en `:1026`), `SpawnEntityByRecordId` (`:3309`),
+  `SpawnEntityBySpriteIndex` (`:3407`) ; le héros est adopté avant la boucle (la zone lit sa tuile).
+- [DLL, critique] `IsFixedTimeStep` est faux et `AlundraLogicClock` rend `⌊accumulateur / 0,02 s⌋` ticks (4 au plus) par image rendue : sous 50 images par seconde des images de deux ticks reviennent régulièrement (à 30 images par seconde, l'accumulateur alterne 1 et 2),
+  au-dessus de 50 seulement après une saccade (INFERENCE ; la fréquence réelle en jeu est INCONNUE). `ArcRun.OneFrame(0.02f)` donne exactement un tick ; le plancher d'un tick de la première image (`:795`) joue le rôle de l'appel `a0 = 1` du binaire quand cette image n'a qu'un tick.
+- [tests, critique] La suite tourne sans parallélisme (`xunit.runner.json`). Dix-huit fichiers de `Alundra.Tests` touchent le flux. `RunCharge` (`AlundraHeroChargeArenaTests`) affecte la graine **après** la construction de l'arène : indifférent aux tirages du chargement et aux avances de construction (les autres tests d'arène sont à lire de la même façon par l'ombre).
+  Les tests d'étage directs (`RunFrame` sans monde : `AlundraNativeEffectTests`, `AlundraHeroChargeTests`, `AlundraDestroyEntityBreakEffectTests`, `AlundraEffectOpcodeTests`…) ne passent pas le rappel : inchangés. Les tests d'oracle des Beannoïdes et des Muruta fixent la graine à chaque appel : inchangés.
+  À risque (statique, à confronter à l'ombre) : `AlundraShipCorridorArcTests` (A5r : le `0x0C` de la 220ᵉ image), `AlundraPrefabArcSupportTests.ArcRun_ResetsTheSharedRandomStream…` (sa graine est lue juste après la construction), les arcs à IA réelle (14 hors arène, 44, 115, 116, 117) et l'arc de la 167 (`0x5A` mode 4).
+- [DLL] Les 483 mondes exportés portent tous `AlundraWorldProxy` et sont tous des cartes (rien hors de `Maps/`) : l'avance ne tourne jamais dans un écran de titre ou de carte mémoire, comme le binaire.
+
+**Écarts tranchés par la critique** (la découverte et les annexes antérieures sont corrigées ainsi ; les audits restent en lecture seule).
+1. *Place de l'avance.* « N pas après `RunFrame` » (`e0-spawn.md` §7, `e0-check.md` point 6) est **REFUTÉ** : il casse l'invariance au groupement en ticks (`AlundraHeroChargeArenaTests`, cas à 3 ticks par image : l'étincelle du tick 89 tombe au deuxième tick de l'image
+   88-90 et ne voit pas l'avance du tick 88). Un pas **sans condition** dans `RunFrame` casse `AlundraHeroChargeTests` (mot inchangé hors des ticks 85 et 89), `AlundraDestroyEntityBreakEffectTests` (`RunFrame(world, 2)` puis graine intacte) et `AlundraNativeEffectTests`.
+   Un nom de passe de plus dans la boucle des ticks casse `AlundraTickStructureTests` (`OpenTick`). Retenu : un rappel facultatif par tick dans `RunFrame` (D-E0B-1).
+2. *« `0x8B` tire une fois avant d'apparaître »* (relevé du binaire) est **REFUTÉ** : `0x8004033C-0x80040434` ne tire pas ; le « site » `0x80040440` est la fonction suivante (`0x80040438`, le branchement aléatoire) ; les seuls tirages de `0x8B` sont ceux du tirage de l'enregistrement créé.
+3. *Le mapper* : la proposition « `RecordContents` et `HasRecord` posés par `EntityRecordMapper.Map` » (relevé de la DLL) est **REFUTÉE** : `Contents` est une clé volontairement non mappée (documentation de la classe, `:34-38` et `:87`) et
+   `Map_UnmappedKeys_DoNotAffectAnyProxyField` en tire sa prémisse. Le code d'enregistrement se lit au site de création (`TryGetRecordInt(record, "Contents")`), le code d'en-tête se pose dans `ApplyHeaderInitialization` à côté de `BreakEffect` (D-E0B-5).
+4. *Test H* (`AlundraSpawnBySpriteIndexInterfaceTests`, « liste fermée ») : l'inventaire dit qu'il faudra y ajouter `ContentsItemId` : **REFUTÉ**, il compare une liste de champs qui ne l'inclut pas et ne bouge pas ; y ajouter `ContentsItemId` serait faux (les deux créations ne tirent pas aux mêmes endroits du flux).
+5. *« Réactiver les comparaisons des vitesses d'étincelles de c1 »* (`e0-check.md`, tâche 4 d'e0b) : **REFUTÉ** comme but d'e0b. L'oracle de c1 n'avance pas le générateur (`e20-c1/oracle/notes.md` lignes 48 et 110) : le mot de départ est `0x24D2C78A` (graine + deux tirages du butin du Beannoïde) ;
+   avec l'avance, la DLL ne l'atteint jamais. Les vitesses restent non comparées ; leur formule est épinglée par `AlundraNativeEffectTests`.
+6. *Modèle de `A5r`* : le nombre de tirages au chargement de la 392 est **exactement 12** (douze `0x82`, une rangée sans maillon), pas « 12 à 24 ». De la graine : tirage seul → direction 16 (l'épingle `0x02` casse) ; 12 tirages + 219 avances → 8, + 220 → 24 ; avance seule → 0 pour 219, 220 et 221 avances (l'épingle survit par coïncidence).
+7. *« 0xFB tire une fois »* (`e0-spawn.md` §9) est **REFUTÉ** : 0xFA, 0xFB, 0xFC et 0xFF tirent une ou deux fois.
+8. *« Rare en jeu »* (recommandation du relevé de la DLL pour les images de plusieurs ticks) n'est pas établi (voir le fait [DLL, critique] sur l'horloge) ; la recommandation d'accepter reste valable, sans l'adjectif.
+9. *Moyens de l'oracle* : 168 mutants d'un mot du tirage (`0x80032968-0x800329FC`, `0x80032A40-0x80032B24`) : 119 tués, **les mêmes 119 par les vecteurs de la découverte et par ceux de la critique** ; les 49 survivants sont équivalents ou morts
+   (stockage de pile, `nop`, arrondi à 32 dont seuls les 5 bits bas comptent à cause de `sllv`, `slti 0x100` pour un octet) sauf deux faiblesses de harnais, à corriger en T0 d'e0b2 : le « bruit » préécrit en `+0x40` (`0xDEAD`) a des octets hauts nuls (le mutant `sw zero,0x3f` survit), et aucun code ≥ `0x100` n'est essayé.
+10. *Commentaires périmés* à corriger avec e0b1 : `AlundraWorldProxy.cs:2931` (l'avance n'est pas dans cette passe) et l'en-tête d'`AlundraHitPassTests` (« E20.e0 advances it per frame »).
+
+**Décisions de conception (ADR à numéroter à l'écriture : l'ADR-0065 est réservé à E20.e0a3b, les suivants libres sont 0066 et 0067,
+à revérifier).**
+- **D-E0B-1** — L'avance est un rappel facultatif par tick de `AlundraEffectStage.RunFrame(ticks, frozenOfTick, Action? afterTick = null)`, appelé une fois par tick **après** `_reservoir.Tick`, que le tick soit gelé ou non ; `null` par défaut, donc les 70 appels de test
+  directs ne bougent pas ; le monde passe un délégué statique (aucune allocation par tick) qui appelle `AlundraRandom.AdvanceFrame()` (même expression `ulong` que `Next()`, état 64 bits conservé). Ni après `RunFrame`, ni sans condition dans `RunFrame`, ni dans la boucle des ticks.
+- **D-E0B-2** — Pas d'avance sans tick (image à 0 tick) ni pendant le départ d'un warp (`RunFrame` reçoit 0 tick) ; avance sous la porte `0x48`, dans les menus, le livre et l'inventaire (fait du binaire, défaut fidèle, Q-B4) ; la première image d'un monde compte au moins un tick (plancher existant, `:795`), donc au moins une avance, comme l'appel `a0 = 1` du binaire.
+- **D-E0B-3** — Écarts documentés (acceptés par l'auteur le 2026-10-15, Q-B2) : (a) dans une image de plusieurs ticks, les tirages immédiats des ticks suivants (IA, `0x0C`, `0x8C`, butin) ne voient pas les avances intermédiaires, les tirages des effets, eux, les voient (intercalage exact) ; (b) le tick qui lève un warp n'avance pas
+  (le binaire avance : une avance de moins par warp) ; (c) la première image d'un monde peut compter jusqu'à 4 ticks après une longue pause de chargement (INFERENCE ; le binaire : un seul, `a0 = 1`). Aucun placement n'est exact dans les trois cas sans déplacer la passe des effets dans la boucle des ticks (hors tranche).
+- **D-E0B-4** — Le tirage est une classe pure `AlundraLootRoll` (table de 2 048 octets en données, comme `AlundraWeaponTables`) appelée par le monde, **pas** par le noyau statique de la fabrique (qui n'a ni l'état de la partie ni le chemin dégradé) ni par le mapper. Entrées : code d'enregistrement `& 0xFF`
+  (lu au site de création), code d'en-tête (`HeaderContents`), `ContentsGameFlag` déjà posé, banques de `AlundraGameState`. Sorties : `ContentsItemId`, `ContentsGameFlag`, pas du générateur. Rien ne tombe.
+- **D-E0B-5** — Un seul champ de proxy est ajouté : `HeaderContents`, posé par `ApplyHeaderInitialization` à côté de `BreakEffect` et copié par `Clone`. Pas de `RecordContents`, pas de `HasRecord`.
+- **D-E0B-6** — Le tirage est la **dernière** instruction du bloc `try` de chacun des trois sites (après le son et la poussée de position), pour qu'une création avortée (contrat d'erreur d'e0a2) ne consomme aucun tirage. Le héros ne tire pas (`Contents` 0, pas d'appel). Les réinitialisations `0x8003A048` et `0x8003ABCC` (qui retirent) ne sont pas portées (E14, O-E0B-2).
+- **D-E0B-7** — `AlundraRandom.RandomSeed` devient une propriété (source-compatible : aucun `ref`, aucune réflexion) pour que l'ombre voie les affectations et les lectures ; `Next()` n'emploie que le champ privé. Les puits d'ombre d'e0b1 et d'e0b2 sont des classes de production inertes sans variable d'environnement, comme le canal d'ombre de la
+  table de cases, et le restent après la clôture (précédent ADR-0064).
+- **D-E0B-8** — Chaque épingle déplacée est réécrite par une **dérivation** (le test calcule la valeur attendue avec un pas local `s·0x7D2B89DD + 0xE06A02E7` à partir de la graine et du nombre de ticks et de tirages), jamais par une constante collée.
+
+**Questions à l'auteur** : tranchées le 2026-10-15 (voir « Réponses de l'auteur » en tête de section). Pour mémoire, Q-B1 tranche
+entre une re-semence d'`ArcRun` avant le chargement seulement (les tirages des chargements décalent les épingles des arcs : 12 pas sur la
+392, `A5r` casse ; `ArcRun_ResetsTheSharedRandomStream` échouerait sur la 390) et une re-semence avant et après (retenue : seule l'avance
+et les tirages des apparitions en cours d'arc déplacent les arcs, et un test dédié lit le mot d'avant la re-semence,
+`ArcRun.SeedAfterTheLoad`).
+
+**Prérequis et dépendants.** e0b1 : aucun prérequis technique (le plan indique E20.e0a1 et E20.e0a2, faites) ; elle ne dépend pas d'E20.e0a3b mais touche aussi `AlundraWorldProxy.cs` :
+elle s'exécute après e0a3b (l'une après l'autre, dans le même checkout) et relit ses numéros de ligne au HEAD d'exécution. e0b2 : E20.e0a1, E20.e0a2 ✅ et e0b1 (ordre, non technique).
+Dépendants : E20.f3, E20.f6 (e0b1) ; E20.e0c, E20.g2 (e0b2) ; l'avance ferme les points laissés par E20.f1a et E20.f1b (« l'avance du générateur par tick »).
+
+---
+
+#### 1.17.1 E20.e0b1 — L'avance du générateur, une fois par tick ⏳
+
+**Prérequis.** Voir ci-dessus. Compte de tests de départ : à relever en T0 (4 815 à la clôture d'e0a3a).
+
+**But.** Un pas du générateur par tick logique, en fin de tick, après les effets du tick ; aucun autre changement de consommation.
+
+**Périmètre.** `Alundra/Scripts/AlundraRandom.cs` (`RandomSeed` en propriété, `AdvanceFrame()`), `AlundraEffectStage.cs` (paramètre facultatif), `AlundraWorldProxy.cs` (`:2612` et le commentaire de `:2931`), le puits `AlundraRandomShadow` (nouveau fichier),
+`Alundra.Tests/` (nouveaux tests ; épingles déplacées et justifiées), `docs/plan-e20-annexe/e20-e0b/` (README, `oracle/`, `e0b1-shadow.txt`), un ADR.
+
+**Hors périmètre.** Le tirage du butin (e0b2) ; déplacer la passe des effets dans la boucle des ticks ; le tick d'armement d'un warp ; les effets de transition 4, 5, 6 ; le flux de `rand()` de la bibliothèque (`AlundraLibcRandom`, inchangé) ; `RunActiveEffectsPass` reste vide.
+
+##### Tâches
+
+- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code). `docs/plan-e20-annexe/e20-e0b/README.md` : les valeurs attendues ci-dessus (les six mots de l'avance, une avance par appel sur les dix lignes de la sonde, a0 sans effet sur le nombre de pas), la liste **prédite** des tests qui bougent
+  (voir l'ombre), les comptes de départ. `oracle/` : `s7_frame.py` et les outils copiés octet pour octet avec leurs sommes de contrôle ; sortie `frame_vectors.json` (10 lignes) ; deux exécutions au manifeste identique ; au moins 12 mutants d'un mot (constantes, polarité du `beqz s3`,
+  test de la porte, résultat de `DisplayInventory`, magasin supprimé, effacement de `[0x800DC4C4]`), tous tués ou équivalents prouvés par écrit.
+- ⏳ **T1 — Phase A, l'ombre, sans changement de comportement** (commit de code A, puis commit de docs du relevé). `RandomSeed` en propriété ; `AdvanceFrame()` appelé par le rappel, qui en phase A **ne touche que le registre virtuel** ; `AlundraRandomShadow` (inactif sans `ALUNDRA_RNG_SHADOW_LOG`,
+  un test le prouve : aucun fichier, aucune allocation). **Prédicat exact** : `R` = l'état réel, `V` = ce que serait `R` avec l'avance. Une affectation de `RandomSeed` ou `Reset()` ouvre une époque (`V := (uint)valeur`) ; chaque `AdvanceFrame()` fait `V := pas(V)` ; chaque tirage réel fait `R := pas(R)` et `V := pas(V)`
+  et est **divergent** ssi `V ≠ (uint)R` ensuite ; une lecture de `RandomSeed` par un test (hors `Next()` et hors puits) est **divergente** ssi `V ≠ (uint)R`. Par test (cadre le plus extérieur de `Alundra.Tests`, comme `AlundraSlotShadow`, attribué à chaque changement d'époque et au premier événement divergent d'un type) :
+  `virtual_advances`, `divergent_draws` (premier type : IA, opcode, effet, autre, par le type déclarant), `divergent_seed_reads`, `epochs`, `ambient_draws` (tirages avant toute époque du test : état hérité). Commande : `ALUNDRA_RNG_SHADOW_LOG=<scratch>/shadow.txt dotnet test Alundra.Tests/Alundra.Tests.csproj -c Release --no-build --blame-hang-timeout 300s`.
+  Fichier versé `e0b1-shadow.txt` **avant** la phase B ; un test absent du fichier ne peut pas bouger en B. Chaque test marqué `ambient_draws` reçoit une affectation explicite de la graine dans sa fixture, ou une justification, avant B.
+- ⏳ **T2 — Tests rouges** (`AlundraRandomPerTickTests`, dans `AlundraRandomStaticStateCollection`, `Reset()` au constructeur) : (a) les six mots de l'avance ; (b) `RunFrame` appelle le rappel exactement `ticks` fois (0, 1, 2, 4), après le tick du réservoir, aussi sur un tick gelé, jamais pour 0 tick ;
+  (c) au niveau du monde : 1 tick → 1 pas, 2 ticks → 2, image sans tick → 0, `MenuOpen` (`0x48`) → 1 par tick, départ de warp → 0, première image d'un monde → 1, deux mondes successifs sans double compte ; (d) l'ordre dans le tick : l'étincelle de charge des ticks 85 et 89 (C2-steel) tire avant l'avance de son tick, mot attendu calculé par un pas local, identique
+  en images de 1, 2 et 3 ticks, mot final = graine avancée de (ticks comptés par la passe `inventory` + 4 tirages) ; (e) `RunFrame` sans rappel n'avance rien (garde des 70 appels directs). Rouges avant T3.
+- ⏳ **T3 — Phase B** (commit de code B) : `AdvanceFrame()` écrit `R` ; le monde passe le rappel ; commentaires corrigés (`:2931`, en-tête d'`AlundraHitPassTests`) ; suite complète ; chaque test dont le résultat bouge est dans `e0b1-shadow.txt` et réécrit par une dérivation (D-E0B-8) ; rien d'autre ne change.
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée ; mutants du code de la DLL : au moins 8, tous tués — rappel non passé, passé avant le tick du réservoir, sauté sur un tick gelé, appelé une fois par image, `IsTransitionInProgress` inversé, plancher retiré, constantes).
+
+##### Acceptation
+
+- Oracle : dix lignes PASS ; manifeste identique sur deux exécutions ; au moins 12 mutants tués ou prouvés équivalents.
+- DLL : tous les tests de T2 verts ; **les deux cas du test de groupement (2 et 3 ticks par image), les tests de groupement de `AlundraHeroAuraWorldTests`, `AlundraTickStructureTests` et les 70 appels directs de `RunFrame` ne bougent pas** ; `Alundra.Tests` en Release **et** en Debug : compte de départ plus les nouveaux, zéro échec ;
+  chaque test déplacé est dans `e0b1-shadow.txt` et justifié ; `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` ; les cinq traces inchangées (`git diff --ignore-cr-at-eol --exit-code`) ; moteur, convertisseur et données sans diff.
+- Prédiction à confronter (qualitative, de la découverte ; le chiffre « une douzaine » est une estimation de la critique, non mesurée) : au plus une douzaine de tests bougent, parmi `AlundraShipCorridorArcTests` (A5, A5r), les arcs des Beannoïdes et des Muruta réels (cartes 14 hors arène, 44, 115, 116, 117), l'arc de la 167 (`0x5A` mode 4) et les arcs des cartes à `0x0C`/`0x8C`.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : la phase A fait bouger un test ; plus de 25 tests bougent (question à l'auteur : interrupteur d'`ArcRun` ou accord) ; un test de groupement, de structure ou un appel direct de `RunFrame` bouge ; un test absent de l'ombre bouge ; une avance observée là où le binaire n'en a pas ; un test existant à réécrire sans dérivation ; tout contact avec `CasaEngineMonogame/` ou `CasaEngine.Launcher/Program.cs`.
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : la phase B se retire seule (le rappel et `AdvanceFrame()` réel) ; la phase A reste sans effet (registre virtuel, puits inerte).
+
+---
+
+#### 1.17.2 E20.e0b2 — Le tirage du butin à la création ⏳
+
+**Prérequis.** E20.e0a1 ✅, E20.e0a2 ✅, e0b1 (ordre). Q-B1 tranchée : `ArcRun` re-sème avant et après le chargement.
+
+**But.** À chaque création (chargement de carte, `SpawnEntityByRecordId` : `0x2D`, `0x8A`, `0x8B` ; `SpawnEntityBySpriteIndex`), tirer `ContentsItemId` et poser `ContentsGameFlag` comme `0x80032A40`, dans l'ordre du binaire, sans rien lâcher. Les 54 numéros exclus de la comparaison par D-E0A-3 y rentrent.
+
+**Périmètre.** `Alundra/Scripts/AlundraLootRoll.cs` (nouveau, pur), `AlundraEntityScriptProxy.cs` (`HeaderContents`, `Clone`), `AlundraEntitySpawnFactory.cs` (`ApplyHeaderInitialization` pose `HeaderContents`), `AlundraWorldProxy.cs` (les trois sites et un assistant privé), le puits d'ombre (registre virtuel du tirage),
+`Alundra.Tests/AlundraArcSupport.cs` (Q-B1 : seconde re-semence après `InitializeWithWorld`, propriété `SeedAfterTheLoad`), tests, `docs/plan-e20-annexe/e20-e0b/oracle/` (compléments), un ADR.
+
+**Hors périmètre.** Le lâcher à la mort, son veto (`MpMax`, objets `0x26`, `0x51`, `0x52`) et `0x80032C7C` (e0c, avec C255 : un lâcher sans C255 crée des objets inertes permanents) ; les réinitialisations qui retirent ; le héros ; le noyau sans enregistrement de la fabrique (inchangé) ; `EntityRecordMapper` (inchangé).
+
+##### Tâches
+
+- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code). README : les valeurs de V8 (carte 14 à la tuile (8, 6) : 11 tirages, `D5F4D64A` ; 390 et 392 : 12, `BBE29AC9`), la liste prédite des tests qui bougent (Q-B1 « avant et après » : les tirages des chargements ne déplacent plus les arcs,
+  `A5r` et `ArcRun_ResetsTheSharedRandomStream…` ne bougent pas du fait du tirage ; restent les tirages des apparitions en cours d'arc, `0x2D`, `0x8A`,
+  `0x8B` et l'interface : au plus 3 tests selon la critique, estimation statique ; la liste fait foi une fois mesurée par l'ombre d'e0b2).
+  `oracle/` : `s1_table`, `s2_choose`, `s3_roll`, `s5_spawn`, `s6_record`, `s8_veto` de la découverte, plus `critique/p1_roll.py` (6 000 vecteurs au hasard, graine `20261015`, `roll_fuzz_vectors.json` md5 `087b48f326be28c6eb90763d933d4054`, identique sur deux exécutions) et `critique/p8_loadmap.py` (V8 : boucle de chargement réelle) pour **au moins 12 couples (carte, tuile)
+  tirés des `ArcSpec` de la suite**, dont 14 à (8, 6), 390, 392, 115, 116, 167 ; sorties : `choose_vectors.json` (2 626), `roll_vectors.json` (52), `spawn_vectors.json` (183), `record_vectors.json` (12), `roll_fuzz_vectors.json` (6 000), `v8.json` ; harnais corrigé (bruit préécrit `0xA5A5A5A5`, codes `0x100..0x1FF`) ; mutants : au moins 12 plus
+  la batterie de 168 de la critique, survivants équivalents écrits un à un.
+- ⏳ **T1 — Phase A : classe pure, tests rouges, ombre** (commit de code A, puis commit de docs du relevé). `AlundraLootRoll` (table, `Choose`, `Roll`, banque lue par un délégué), aucun appelant ; `AlundraLootRollTests` rejoue **tous** les vecteurs (rouges avec un squelette qui compile) ; `HeaderContents` posé ; l'ombre calcule le tirage **virtuel** aux trois sites (copie du flux, rien écrit)
+  et tient un registre `Vr` : événements `load-roll` (tirages et items par test et par monde) et tirages divergents dus au tirage ; fichier versé `e0b2-shadow.txt` avant la phase B.
+- ⏳ **T2 — Phase B** (commit de code B) : l'assistant écrit `ContentsItemId` et avance le flux, appelé en **dernière** instruction du `try` des trois sites ; `ArcRun` re-sème après le chargement (Q-B1) et expose `SeedAfterTheLoad`, lu par un test dédié ; tests dont le résultat bouge ⊂ `e0b2-shadow.txt`, réécrits par dérivation ; les comparaisons de `+0x3C`, `+0x40` et du mot (exclues par D-E0A-3) s'ajoutent aux tests du chemin complet de la carte 14.
+- ⏳ **T3 — ADR, plan, verifiers frais** (deux ; mutants du code de la DLL : au moins 12, tous tués — banque inversée, masque `0x7FFF` oublié, `& 0xFF` oublié, priorité du code d'enregistrement, repli sur l'en-tête, test du bit `0x80`, limite `0x62`, décalage de la rangée, `>> 28` changé, maillon non suivi, drapeau levé qui tire quand même, `+0x40` non écrit sans enregistrement, tirage placé avant l'abandon).
+
+##### Acceptation
+
+- Classe pure : 2 626 + 52 + 183 + 12 + 6 000 vecteurs, **0 écart** ; la table de la DLL égale (md5) aux 2 048 octets de l'exécutable à l'octet `0x960C`.
+- Monde : sur la carte 14, numéros 254 et 230 de la page globale et 79 de la page des cartes × {`12345678`, `4F1427FB`, `985CF02A`} : objet, `+0x40` et mot égaux aux neuf lignes de `spawn_vectors.json` ; chargement : pour chaque couple (carte, tuile) de V8, les objets, `+0x40`, le nombre de tirages et le mot final égaux à `v8.json` (mesurés par la critique : 14 à (8, 6) : 11 tirages, `D5F4D64A` ; 390 et 392 à (0, 0) : 12 tirages, `BBE29AC9` ; les autres couples se mesurent, la fenêtre du héros les change).
+  Drapeaux : cinq tests (banque persistante levée / non levée, temporaire levée, mauvaise banque, `0x0800` ramené à 0). Création avortée (faute après `AddEntity`) : le mot est inchangé. Le héros : aucun tirage.
+- Suite : `Alundra.Tests` en Release et en Debug, compte de départ plus les nouveaux, zéro échec ; **`EntityRecordMapperTests.Map_UnmappedKeys_DoNotAffectAnyProxyField` et `AlundraSpawnBySpriteIndexInterfaceTests` (test H) passent sans changement** ; tests déplacés ⊂ ombre ; `git diff --stat` des tests existants : ajouts et lignes justifiées seulement ; `cmp` de la DLL ; cinq traces inchangées ; moteur, convertisseur et données sans diff.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : une image de V8 qui contredit le modèle (attribuer au harnais ou au binaire, puis question) ; la boucle de chargement de la DLL qui ne crée pas les mêmes entités que V8 pour un couple (carte, tuile) ; plus de 10 tests qui bougent ; `EntityRecordMapper` ou le noyau de la fabrique à modifier ; un test existant à réécrire sans dérivation.
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : la phase B se retire seule ; la phase A (classe pure, champ, ombre) ne change aucun comportement.
+
+---
+
+**Points ouverts ajoutés.**
+
+| # | Question | Tranchée par |
+|---|---|---|
+| O-E0B-1 | Les effets de transition 4, 5, 6 (393 portails) tirent dans le même flux (1 200, 240 par pas, 600 tirages) ; la DLL les traite comme 0 (D-T-7) ; s'ils sont portés, ils tirent hors de toute avance | E19.m (transitions) |
+| O-E0B-2 | `0x8003A048` et `0x8003ABCC` retirent le butin à chaque réinitialisation (C22) ; non portés | E14 |
+| O-E0B-3 | Fréquence réelle des images de deux ticks ou plus, et première image après une longue pause (jusqu'à 4 ticks) | recette de l'auteur (compteur de l'ombre) |
+| O-E0B-4 | Treize fonctions qui tirent (`0x80032F84`, `0x800330FC`, `0x800333AC`, `0x800335AC`, `0x8003382C`, `0x80033A2C`, `0x80034EC4`, `0x800354D0`, `0x80039188`, `0x80042FDC`, `0x800432A4`, `0x8004392C`, `0x80065204`) ne figuraient pas dans la liste antérieure des sites ; la plupart ne sont pas portées : chacune consommera le flux avancé (`0x80039188` est déjà porté : étincelles de coup) | tranches E20.e, E20.h, E14 |
 
 ## 2. Points ouverts
 
