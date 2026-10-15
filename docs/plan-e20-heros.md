@@ -3490,7 +3490,7 @@ compteurs, listes, horloge, physique, coups ; une entité née dans un programme
 D-E20-34). Elle est dessinée à l'image suivante (D-E20-35). Les entités par enregistrement ne changent pas (D-E0A-5, Q-A1). Ferme O-E20-11
 pour les entités de l'interface.
 
-##### 1.16.3a E20.e0a3a — Sonde P-A, oracle V6, reports d'e0a2 (sans changement de comportement en production)
+##### 1.16.3a E20.e0a3a — Sonde P-A, oracle V6, reports d'e0a2 (sans changement de comportement en production) ✅ (faite le 2026-10-15, `3afbba7` à `9d54f0e` et le commit du plan ; voie de P-A : (i) restreinte à `Current = Target`)
 
 **Prérequis.** E20.e0a2 ✅ (la table de cases ; `Alundra.Tests` 4 807).
 
@@ -3504,12 +3504,12 @@ de `v5.json` ; les deux commentaires ; ce plan. **Aucun fichier de `Alundra/Scri
 
 ##### Tâches
 
-- ⏳ **T1 — Oracle V6.** Verser `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20e0a/bin/p3_tick.py` (les quatre copies du scratchpad sont identiques,
+- ✅ **T1 — Oracle V6.** Verser `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20e0a/bin/p3_tick.py` (les quatre copies du scratchpad sont identiques,
   md5 `927741c62e0d0b90efc9c9c3bce6ab89`) dans `docs/plan-e20-annexe/e20-e0a/oracle/`, avec sa somme de contrôle dans `checksums.txt` et ses
   dépendances déjà versées ; le relancer par le lanceur de l'oracle ; sortie `out/v6.json` (lignes `BT-M1` à `BT-M3`, `BT-H1` à `BT-H6`,
   `BT-L1` à `BT-L3` ; pour chacune, par passe : statut, déclencheur `+0x228`, exécutions de A, `+0x1C`, présence dans les listes, X, et le
   tick où chaque chose arrive) ; entrée au manifeste ; deux exécutions, même manifeste.
-- ⏳ **T2 — Sonde P-A** (un fichier de tests nouveau, qui ne fait que mesurer : il n'affirme que ce qui est vrai aujourd'hui, et ses
+- ✅ **T2 — Sonde P-A** (un fichier de tests nouveau, qui ne fait que mesurer : il n'affirme que ce qui est vrai aujourd'hui, et ses
   mesures sont versées dans le plan) :
   - (1) `AnimatedSpriteComponent.SetCurrentAnimation(forceReset: true)` appelé sur une entité apparue par l'interface, **avant** son
     intégration par le moteur : sans exception, et état du sprite relevé (animation, image, compteurs) ;
@@ -3519,10 +3519,69 @@ de `v5.json` ; les deux commentaires ; ce plan. **Aucun fichier de `Alundra/Scri
   - résultat versé dans une sous-section « Résultat de P-A » ci-dessous, qui dit quelle voie retenir : (i) poser `Current = Target` et
     l'animation du sprite à la création, **dans l'interface seule** ; (ii) laisser ~0 et faire lire la cible au pas de mouvement pour les
     entités marquées seulement (`AlundraScriptedMotion.cs`) ; ou aucune des deux (arrêt).
-- ⏳ **T3 — Reports d'e0a2.** Test qui lit `invalid_full`, `dirty` et `probes` dans `out/v5.json` et les rejoue sur l'allocateur (ou sur
+- ✅ **T3 — Reports d'e0a2.** Test qui lit `invalid_full`, `dirty` et `probes` dans `out/v5.json` et les rejoue sur l'allocateur (ou sur
   le monde pour `invalid_full`) ; les deux commentaires corrigés.
-- ⏳ **T4 — Plan** (résultat de P-A, résultats, icônes). Puis **arrêt** : la session principale détaille e0a3b selon P-A et la fait
+- ✅ **T4 — Plan** (résultat de P-A, résultats, icônes). Puis **arrêt** : la session principale détaille e0a3b selon P-A et la fait
   relire avant tout code.
+
+##### Résultats (2026-10-15, base `58c9ef1`)
+
+- **T1 — Oracle V6** (`3afbba7`). `p3_tick.py` versé tel quel (md5 `927741c62e0d0b90efc9c9c3bce6ab89`, SHA-1 dans `checksums.txt`) dans `oracle/` ; le lanceur
+  `run_e0a.py` l'appelle par `oracle/v6.py` (qui enregistre, par tick et par passe, ce que le code réel écrit : statut, déclencheur `+0x228`, exécutions de A, `+0x1C`,
+  `+0xA8`, X, présence dans les listes de mise à jour, de collisions et de dessin, mot de compte des cases) et écrit `oracle/out/v6.json` (douze lignes, md5
+  `ecdbd7c059d621b808fff8674d85975e`). `run_e0a.py` : TOUT PASS (42 s), deux exécutions au manifeste identique, le md5 de chaque autre fichier de `out/` inchangé. La colonne
+  « écart attendu » a été écrite dans `docs/plan-e20-annexe/e20-e0a/README.md` **avant** la première exécution. Les douze lignes la confirment, sans exception :
+
+  | Ligne | case | A au tick 1 / au tick 2 | statut 2 | dans la liste de mise à jour | X après les ticks 1 / 2 | Mesuré contre attendu |
+  |---|---|---|---|---|---|---|
+  | `BT-M1`, `BT-M2`, `BT-M3` | 1, 1, 2 | 1 / 0 | tick 1, passe des événements | tick 1, passe des listes | 191 / 191 | participation complète, comme attendu |
+  | `BT-H1`, `BT-H4`, `BT-H6` | 2 | 1 / 1 | tick 2 | tick 2 | 190 / 191 | A deux fois (statut 1 et hors des listes pendant le tick 1), comme attendu : écart D-E20-34 |
+  | `BT-H2`, `BT-H3`, `BT-H5` | 2, 1, 2 | 0 / 1 | tick 2 | tick 2 | 190 / 191 | tout reporté d'un tick, comme attendu |
+  | `BT-L2` | 1 | 0 / 1 | tick 2 | tick 2 | 120 / 120 | tout reporté d'un tick, comme attendu |
+  | `BT-L1`, `BT-L3` | 2, 2 | 1 / 0 | tick 1 | tick 1 | 120 / 120 | participation, relève d'e0b et e0c, comme attendu |
+
+  Dans toutes les lignes `+0x1C` passe à 1 à la passe des compteurs du tick 1 (y compris les lignes reportées, dont l'entité est en état 1) et la liste de dessin suit la liste de mise à jour.
+- **T2 — Sonde P-A** (`bc2e17e`, `Alundra.Tests/AlundraBirthTickProbePaTests.cs`, 5 tests, tous verts, qui n'affirment que ce qui est vrai aujourd'hui et écrivent leurs mesures
+  dans la sortie avec le préfixe `PA:`) : voir « Résultat de P-A » ci-dessous.
+- **T3 — Reports d'e0a2** (`9d54f0e`, `Alundra.Tests/AlundraEntitySlotV5RowsTests.cs`, 3 tests) : `invalid_full` (indice 18 de la page globale, table pleine : `null`, une seule ligne de
+  journal qui n'est pas celle de la table pleine, rien d'ajouté ni de pris), `dirty` (l'allocateur donne la case 1 puis la reprend après libération ; sur le monde, une case recyclée
+  d'une entité salie — `EntityRefId` 7, PV 9 — donne une entité dont `EntityRefId` vaut −1 et les PV ceux de la création) et `probes` (les 13 indices invalides de l'oracle,
+  vérifiés invalides pour le catalogue de la DLL et la carte 14, chacun rend `null` avec une ligne de journal et ne prend rien). Les deux commentaires devenus faux sont corrigés
+  (`AlundraSpawnBySpriteIndexInterfaceTests.cs` : « last of the list: the list follows the order of the slots… » ; `AlundraInoaDayOneArcTests.cs` : « one frame after the end… ») : ce sont
+  les deux seules lignes modifiées des tests existants (`git diff --numstat` : 1/1 et 1/1).
+- **Comptes.** `Alundra.Tests` : 4 807 → **4 815** (5 + 3 nouveaux), zéro échec, en Release **et** en Debug. `git diff 58c9ef1..HEAD -- Alundra/Scripts/` vide ; les cinq traces inchangées
+  (bruit de fins de ligne restauré, jamais indexé).
+- **Écart de procédure : `cmp` de la DLL.** La construction Debug ne peut pas déployer `alundra-project/Alundra.dll` : le fichier est verrouillé par `CasaEngine.Launcher.exe` (PID 28772, lancé
+  par l'auteur) et Visual Studio (`MSB3027`, dix essais). Le Debug a donc été construit avec la cible de copie neutralisée par un fichier de scratch
+  (`dotnet build Alundra.Tests/Alundra.Tests.csproj -c Debug -p:CustomAfterMicrosoftCommonTargets=<scratch>/skipcopy.targets`), puis testé (4 815). Le `cmp` demandé (Debug contre projet)
+  n'est pas possible tant que le Launcher tourne : le DLL du projet est celui de la dernière construction Release (identique au `cmp` à `Alundra/bin/Release`), et aucun fichier de
+  `Alundra/` n'a changé depuis la base, donc le code compilé est le même. À refaire par le vérificateur si le Launcher est fermé.
+
+##### Résultat de P-A (2026-10-15)
+
+Flèche (numéro 3 de la page globale), direction `0x18`, créée par l'interface sur la carte 14 avant que le moteur l'intègre (`Entity.World` nul).
+
+1. **Sprite avant l'intégration.** `AnimatedSpriteComponent.Animations` est **vide** (0) et `CurrentAnimation` nul : le composant cloné du préfab n'a pas encore ses animations (le moteur les construit à
+   `InitializeWithWorld`, `AnimatedSpriteComponent.cs:171-209`, qui vide la liste, remet `CurrentAnimation` à nul puis appelle `SetCurrentAnimation(0, true)`). `SetCurrentAnimation(forceReset: true)` n'a donc rien
+   à choisir : la recherche par suffixe ne trouve rien, `SetCurrentAnimation(0, true)` lève `ArgumentOutOfRangeException`, `SetCurrentAnimation(nom, true)` rend `false` sans exception ; aucun état du sprite ne
+   change. Même appelé, il serait effacé par l'intégration. Après **une** image du moteur : monde posé, 8 animations, animation courante `bankalundra_3_anim0_right`, `CurrentAnimationId` 0,
+   `AnimationDirection` 3 : le premier `SyncAnimation` de l'image qui suit la naissance pose le sprite (Q-A3, D-E20-35). Avec `Current = Target` posé à la main, l'état après une image est **identique** : un
+   changement reste en attente parce que `AnimationDirection` (0) n'est pas celui que la table dérive (3).
+2. **`Controller.Move` avant l'intégration.** Sans exception ; `Move((5, 0, 0))` rend `(5, 0, 0)` et la racine bouge de `(5, 0, 0)` : le déplacement est ajouté sans test (lu dans le moteur,
+   `CharacterControllerComponent.cs:1050-1056`, confirmé). Après l'intégration le même appel rend et déplace aussi `(5, 0, 0)` à ce point de la carte 14 (rien dans le passage).
+3. **Cinématique générique** (`AlundraScriptedMotion.TickScriptedNpc`, trois ticks de suite, avant toute intégration, X de départ 150 px, jeu d'animations : animation 0, vitesse 512) :
+   - `CurrentAnimationId` tel que l'interface le laisse (~0, pas d'entrée dans le jeu d'animations) : vitesse 0, X = **150, 150, 150**.
+   - `Current = Target` posé à la main (0) : la force monte à 3 px puis 6 px, X = **153, 159, 165** (naissance : 3 px, puis 6 px par tick), sans exception.
+
+**Voie retenue : (i), restreinte à `Current = Target`.** Dans `CreateEntityFromSpriteIndex` seulement (après `ApplyHeaderInitialization`, donc jamais dans le noyau partagé avec le chemin par enregistrement),
+poser `CurrentAnimationId = TargetAnimationId` et `CurrentDirection = TargetDirection`, **sans** toucher `AnimationDirection` ni le sprite. Raison : la moitié « animation du sprite » de (i) est
+impossible (rien à choisir avant l'intégration) et inutile (le premier `SyncAnimation` pose le sprite à l'image suivante, état identique à celui d'aujourd'hui, mesure 1) ; la partie qui reste donne
+exactement les 3 px puis 6 px du binaire pour une flèche (mesure 3) ; elle n'a pas besoin de modifier `AlundraScriptedMotion.cs`, partagé avec le chemin par enregistrement, ce que (ii) exigerait. Pas
+d'arrêt : ni la sonde du sprite ni celle du contrôleur ne montrent d'instabilité (aucun appel à faire, aucune exception dans le flux réel), et (i) est praticable.
+À vérifier par e0a3b avant d'écrire le code (rien de cela n'est mesuré ici) : le jeu d'animations et `AnimFlags` sont lus au `SyncAnimation` (donc `AnimFlags` reste 0 jusqu'à l'image qui suit, alors que le
+binaire pose le sien à la première bascule de la création) ; ce que fait `Current = Target` à `SpawnAnimationActive`, à l'horloge de bascule d'animation (`AnimationSwitchTicksReserved`) et aux épingles d'e0a1 qui
+ne comparent pas `CurrentAnimationId` (`AlundraSpawnBySpriteIndexInterfaceTests`) ; l'oracle du binaire pour X de la flèche au tick de naissance (la sonde V6 règle X de la ligne par un
+`ForceX` posé à la main, elle ne le donne pas).
 
 ##### Acceptation
 
