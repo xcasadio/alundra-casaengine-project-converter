@@ -1,0 +1,94 @@
+# E20.f3 - annex of the oracle (T0 of E20.f3a, common to E20.f3a, E20.f3b and E20.f3c)
+
+Plan: `docs/plan-e20-heros.md`, section 1.19 (E20.f3) and 1.19.1 (E20.f3a, task T0). This folder is the oracle of the three sub-slices: the sword wave (types 27 to 29, handlers C61 and E10), the hit
+effects 4 and 5 of the hit pass, and the direction of the hero's shot. It is real code of `ALUN_CD.EXE` (France) executed by the emulated machine of the E14/E20 oracles
+(`oracle/tools/pworld.py`, the f-projectiles machine: real `MovePlayer`, real `SpawnWarpEntity` `0x80039F58`, real hit pass `0x80039300`, real projectile handlers; effects, sounds and every other
+handler are journalling stubs). Nothing here knows an expected value of the DLL: every number is read from the machine's RAM.
+
+## Run
+
+From the repository root, foreground, about 9 minutes in all:
+
+```
+python -B docs/plan-e20-annexe/e20-f3/oracle/run_f3.py text      # 19 discovery scripts -> out/*.txt          (3 min 40)
+python -B docs/plan-e20-annexe/e20-f3/oracle/run_f3.py mutants   # 12 one-word mutants  -> out/mutations.*   (30 s)
+python -B docs/plan-e20-annexe/e20-f3/oracle/run_f3.py flame     # flame probe          -> out/flame_probe.* (45 s)
+python -B docs/plan-e20-annexe/e20-f3/oracle/run_f3.py json      # JSON twins           -> out/*.json        (1 min 45)
+python -B docs/plan-e20-annexe/e20-f3/oracle/run_f3.py checks    # out/checks.txt (21 facts, PASS/FAIL) and out/manifest.txt
+```
+
+Two complete runs (the whole `out/` folder deleted between them) gave an identical `out/manifest.txt` (45 files, md5) and `diff -rq` on the two folders was empty. The text outputs are byte-identical
+to the outputs of the discovery (`critic/out` and `bin/out` of the session scratchpad of 2026-10-15) for every file they have in common. The tools are in `oracle/tools/` (56 files, byte copies of the
+discovery, SHA-1 in `oracle/checksums.txt`; 25 are byte-identical to files of earlier annexes, `pworld.py` among them with `e20-e0a/oracle/tools/pworld.py`; `diff2.py` has the same name as
+`d1-oracle-moveplayer/tools/diff2.py` with other bytes; 30 are new, the scripts of this discovery). The scripts of `tools/` write into `../out`, which is `oracle/out/`.
+
+## Outputs
+
+Every row of a `wave_*.json`, `wave_hit_*.json`, `wave_z.json`, `wave_grass.json`, `arena_probe.json` and `hero_fractional.json` is a row of the oracle: `{tick, hold, rng, rec_ptr, rec_cnt, charge, journal, slots}`
+and `slots["1"].status`, `.cnt1c`, `.reset_AC`, `.px`, `.py`, `.pz`, `.fx`, `.fy`, `.fz`, `.adj_13C`, `.ground_144`, `.hbx`, `.hby`, `.hbz`, `.bw`, `.bd`, `.bh`, `.atk_attr`, `.atk_pow`, `.type68`, `.flags6C`,
+`.loot3c`, `.c1d0`, `.touch_slot`, `.box1d4` (and the other keys of `pworld.FIELDS`). Positions and forces are raw 16.16 integers; `pz` is the binary's frame (the DLL's frame is this minus one raw unit, ADR-0026).
+The release tick of the oracle is `R = 96`; the arena of `AlundraHeroChargeArenaTests` releases at 91, so an oracle tick minus 5 is an arena tick.
+
+| Script (tools/) | Text output | JSON output |
+|---|---|---|
+| `wave_run.py dirs`, `summary.py` | `wave_{steel_east,steel_north,steel_west,steel_south,demon_east,holy_east}.txt`, `summary.txt` | `wave_<sword>_<direction>.json` (ticks 100 to 150) |
+| `wave_hit.py east/north/sweep/balls` | `wave_hit_east.txt`, `wave_hit_north.txt`, `wave_reach_sweep.txt`, `balls_vs_target.txt` | `wave_hit_east.json`, `wave_hit_north.json` |
+| `wave_only.py` | `wave_only_sweep.txt` | `wave_only_sweep.json` |
+| `wave_z.py` | `wave_z.txt` | `wave_z.json` |
+| `wave_mut.py` | `wave_mutations.txt` | `mutations.json` (W1 to W3) |
+| `wave_grass.py`, `wave_grass2.py`, `wave_grass3.py` | `wave_grass.txt`, `wave_grass2.txt`, `wave_grass_zwindow.txt` | `wave_grass.json` |
+| `hitfx.py`, `hitfx_mut.py` | `hitfx_table.txt`, `hitfx_mutations.txt` | `hitfx_table.json` (`attr`, `nib`, `resp`, `fx`, `sparks`, `c1d0`, `touch`, `hitc`, `rng_before`, `rng_after`), `mutations.json` (H1 to H4) |
+| `multishot.py` | `multishot.txt` | `multishot.json` |
+| `dirtest.py`, `dir_extra.py` | `dirtest.txt`, `dir_extra.txt` | `directions.json` (11 cases) |
+| `arena_probe.py` | `arena_probe.txt` | `arena_probe.json` |
+| `twoint.py` | `two_interpreters.txt` | - |
+| `mutants_f3.py` | `mutations.txt` | `mutations.json` (12 rows) |
+| `flame_probe.py` | `flame_probe.txt` | `flame_probe.json` |
+| `export_json.py` (`hero_fractional`) | - | `hero_fractional.json` |
+| `run_f3.py checks` | `checks.txt`, `manifest.txt` | - |
+
+## Expected values (read from `out/`; the tests read the JSON by key)
+
+- **Wave, steel east, hero (100, 100), release `R = 96`:** born at `S = R + 21 = 117`, at the hero's X and Y, raw Z 2 (the hero's 1 plus 1), forces 0, `ForceAdjusted` (`adj_13C`) 0, `ground_144` 0 for its whole life;
+  flags `0x205C`; attack attribute `0x81`, power 10 (demon 20, holy 38); size 36x24x31 (raw 2359295, 1572863, 2031615); `+0x1C` is 1 at S and 26 at S+25; `+0xAC` is 1 from S+25; status 4 at S+26 (E10);
+  the slot is free at S+27. The box moves 12 px east at S+1, S+3, S+5, S+7, S+9 (north: -8 in Y, west -12, south +8) and then stays. Sound 30 at S; `snd(0)` at S+25 is muted (`0x80049134`).
+  Only the target classes of class A are touched; the hero is never touched. Reach, wave alone: targets at +32, +44, +56, +68, +80 px east (hero (100, 100), record row 11) are first touched at S+1, S+3, S+5, S+7, S+9; none beyond +92
+  (north -60, west -88, south +60 are out of reach).
+- **Wave on level ground and on ledges (`wave_z`, four variants: flat height 2, three ledge positions):** at S the wave's raw Z is the hero's raw Z plus 1 (2097154, 1048578, 2, 2), it stays constant to S+26, with `adj_13C` 0 and `ground_144` 0 (the wave never lands).
+- **Grass (`wave_grass`):** with every cell grass, the steel wave cuts 3 cells (the first at S+10, east); each cut draws at least one stream word and may drop an item.
+- **Hit effects 4 and 5 (`hitfx_table`):** 160 pairs (attribute nibble 0..15 times ten response bytes), 160 match: gate `(resp & 0xC0) == 0x80` -> no effect and no `TouchingEntity` store (still `c1d0 = 25`, `hitc` 1, three sparks); otherwise
+  nibbles 6 and 10 -> effect 4, nibbles 7 and 9 -> effect 5, through `0x8003BE74(0, id, 0, target, 1, 0, 0, 0)`; no stream word is drawn by the effect call (the stream step is the sparks').
+  Fire rod ball on a Beannoid: `fxattach(id=4, target=slot 1)` at the hit tick 20 and again at 45; ice rod: id 5 at 21 and 46.
+- **Charge arena pin:** with E10 running the target is touched twice (`(5, hero)`, `(118, hero)`); without E10 two more contacts by the wave appear at oracle ticks 143 and 168 (arena ticks 138 and 163; the third contact
+  falls inside the 140 ticks of the arena).
+- **Two arrows live together** (`multishot`): the hunter's bow fires at ticks 10 and 34 (Square at t1 and t25), nothing counts the live projectiles.
+- **Direction keys of E20.f3a (`directions.json`, hunter's bow, item 5; `arrow.dir_t` is the direction word of the real shot):**
+  (d1) `dirtest_air_cross_t1_square_left_t8`: Cross at t1, Square + Left at t8, shot at t9, `dir_t = 8`;
+  (d2) `dir_extra_air_square_t8_left_only_from_t9`: Square alone at t8, Left only from t9, shot at t9, `dir_t = 24` (`0x18`; the turn of the shot tick is ignored);
+  (d3) `dirtest_ground_square_up_t1` 16 (`0x10`), `dir_extra_ground_square_down_t1` 0, `dir_extra_ground_square_left_t1` 8, `dir_extra_ground_square_right_t1` 24 (`0x18`), ground, shot at t10;
+  the ground facing cases (`dir_extra_ground_facing_*`) give 16, 8, 0 for north, west, south.
+- **Fractional hero position (O-F3-2):** `hero_fractional.json`: the hero poked at X = 100.5 and Y = 100.25 px (raw `0x648000`, `0x644000`), the wave is born at the same raw X and Y (no rounding in the binary).
+
+## Mutants (`mutations.txt`, `mutations.json`): 12 of 12 killed
+
+Real one-word patches of the emulated RAM after the world is built (never simulated in a test, never committed): W1 (`0x80039EA4`, spawn Z without the +1: the wave dies at S+1), W2 (`0x8007A960`, C61 call removed: 1 grass cut instead of 3),
+W3 (`0x8007F244`, E10 call removed: the wave stays in status 3), H1 to H4 (`hitfx_mut.py`: gate mask, nibble of effect 4, effect id, gate branch: 32, 10, 10 and 128 of 128 pairs differ), D1 (direction table swapped: facing north gives 8
+instead of 16), D2 (`0x8002F7C8`, delay comparison inverted: the shot leaves at tick 2 instead of 10), D3 (`0x8002F7E8`, z byte shift 16 to 17: raw Z doubles), D4 (`0x8002F828`, weapon pointer not cleared: 15 arrows instead of 1),
+D5 (`0x8002F7B4`, animation flag b1 ignored). D5 needs a harness stimulus, said here: the hero's target animation (`+0x88`) is overwritten with 0 at tick 3, as a hurt or fall animation would do; control then loses the shot (the pointer is
+cleared), the mutant still shoots at tick 10. Five pad histories (a second Cross, a second Square, a held direction, Triangle) do not change the animation during the delay and do not kill D5 (all listed in `mutations.txt`).
+No mutant is equivalent.
+
+## Flame probe (`flame_probe.json`, `flame_probe.txt`, recette of E20.f3b, O-F3-5)
+
+Map 14, entity record 17: global sprite 238, cell (14, 28), Height 18 (raw Z 9437185), spawned by the real map-record spawner on a flat field at that height. Header: programs A 0, C 0, D 34 (touch), body 40x24x30, break effect 8;
+balance record: attacks `[attribute 6 power 1, attribute 1 power 1]`, MaxHp 1. **Animation 0 attacks, with the nibble 1** (attack index 1), box 42x26x31 at the flame; the hero, standing at the flame's Z with an offset between -30 and +30 px in X and between -20 and +10 px in Y (grid of 10 px, `flame_probe.txt`), is hit at the first tick and every 120 ticks (`c1d0 = 25`, HP - 1) and **no effect is attached** (sparks only). The nibble 6 (effect 4, `fxattach(id=4, target=slot 0)`) belongs to the animation set 1 (attack index 0);
+the oracle forces that set (its touch program D34 is not run and not decoded here): the hero is hit at tick 1 with effect 4 attached and the flame ends at tick 48. Answer for the recette: **no for effect 4 in animation 0**; whether D34
+selects the set 1 when the hero touches the flame is NOT established, so the recette of f3b may have to take another of the 85 maps (a "no" blocks nothing, as the plan says).
+
+## Prediction (qualitative) and starting count
+
+- E20.f3a: no existing test moves. Phase A changes nothing observable (the set of wired types is empty, the direction stays `AnimationDirection`); phase B changes only the `Direction` field of the weapon journal for a turn
+  during the swing in the air (the eight existing journal cases stay at `0x18`). Both suites (Release and Debug) keep their count plus the new tests.
+- E20.f3b: no existing test moves (the effect call is added behind a nullable delegate); the visible change is real-game only (85 maps place an attacker of nibble 6, 7, 9 or 10).
+- E20.f3c: the production registry pin goes from 6 to 7 keys (C61 added); the arena pin stays at 2 contacts (E10 handled inline).
+- **Starting count: 4852 tests, Release and Debug, 0 failures** (re-measured at the HEAD `d0e91db` on 2026-10-15, after E20.e0b1).

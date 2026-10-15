@@ -1,0 +1,4 @@
+steel east: two interpreters identical over 150 ticks (slots, journal, RNG): True
+steel north: two interpreters identical over 150 ticks (slots, journal, RNG): True
+demon west: two interpreters identical over 150 ticks (slots, journal, RNG): True
+holy south: two interpreters identical over 150 ticks (slots, journal, RNG): True

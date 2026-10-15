@@ -1,0 +1,42 @@
+steel east: release tick R=96; wave first seen S=117 (R+21); status-4 tick 143 (S+26); first absent tick 144 (S+27)
+  positions seen (x,y,rawZ px/65536): [(100.0, 100.0, 2)] ; forces seen: [(0, 0, 0)] ; ground_144 values [0] ; ForceAdjusted values [0]
+  flags6C ['205C'] ; attack (attr,power) [(129, 10)] ; type68 [27] ; dir_t [24]
+  HitBox changes: S+0: box (82,88) z0.00003 size (36.00000,24.00000,31.00000) | S+1: box (94,88) z0.00003 size (36.00000,24.00000,31.00000) | S+3: box (106,88) z0.00003 size (36.00000,24.00000,31.00000) | S+5: box (118,88) z0.00003 size (36.00000,24.00000,31.00000) | S+7: box (130,88) z0.00003 size (36.00000,24.00000,31.00000) | S+9: box (142,88) z0.00003 size (36.00000,24.00000,31.00000)
+  ForceResetAnimationFlag (+0xAC) first 1 at S+25 ; frame counter +0x1C at S: 1, at S+25: 26
+  sounds journalled from S: [(0, 'snd(30)'), (25, 'snd(0)')]
+  inert-handler stubs for slot 1 (letter@addr): [(0, 'stubA@8006174C(slot1)')]
+steel north: release tick R=96; wave first seen S=117 (R+21); status-4 tick 143 (S+26); first absent tick 144 (S+27)
+  positions seen (x,y,rawZ px/65536): [(100.0, 100.0, 2)] ; forces seen: [(0, 0, 0)] ; ground_144 values [0] ; ForceAdjusted values [0]
+  flags6C ['205C'] ; attack (attr,power) [(129, 10)] ; type68 [27] ; dir_t [16]
+  HitBox changes: S+0: box (82,88) z0.00003 size (36.00000,24.00000,31.00000) | S+1: box (82,80) z0.00003 size (36.00000,24.00000,31.00000) | S+3: box (82,72) z0.00003 size (36.00000,24.00000,31.00000) | S+5: box (82,64) z0.00003 size (36.00000,24.00000,31.00000) | S+7: box (82,56) z0.00003 size (36.00000,24.00000,31.00000) | S+9: box (82,48) z0.00003 size (36.00000,24.00000,31.00000)
+  ForceResetAnimationFlag (+0xAC) first 1 at S+25 ; frame counter +0x1C at S: 1, at S+25: 26
+  sounds journalled from S: [(0, 'snd(30)'), (25, 'snd(0)')]
+  inert-handler stubs for slot 1 (letter@addr): [(0, 'stubA@8006174C(slot1)')]
+steel west: release tick R=96; wave first seen S=117 (R+21); status-4 tick 143 (S+26); first absent tick 144 (S+27)
+  positions seen (x,y,rawZ px/65536): [(100.0, 100.0, 2)] ; forces seen: [(0, 0, 0)] ; ground_144 values [0] ; ForceAdjusted values [0]
+  flags6C ['205C'] ; attack (attr,power) [(129, 10)] ; type68 [27] ; dir_t [8]
+  HitBox changes: S+0: box (82,88) z0.00003 size (36.00000,24.00000,31.00000) | S+1: box (70,88) z0.00003 size (36.00000,24.00000,31.00000) | S+3: box (58,88) z0.00003 size (36.00000,24.00000,31.00000) | S+5: box (46,88) z0.00003 size (36.00000,24.00000,31.00000) | S+7: box (34,88) z0.00003 size (36.00000,24.00000,31.00000) | S+9: box (22,88) z0.00003 size (36.00000,24.00000,31.00000)
+  ForceResetAnimationFlag (+0xAC) first 1 at S+25 ; frame counter +0x1C at S: 1, at S+25: 26
+  sounds journalled from S: [(0, 'snd(30)'), (25, 'snd(0)')]
+  inert-handler stubs for slot 1 (letter@addr): [(0, 'stubA@8006174C(slot1)')]
+steel south: release tick R=96; wave first seen S=117 (R+21); status-4 tick 143 (S+26); first absent tick 144 (S+27)
+  positions seen (x,y,rawZ px/65536): [(100.0, 100.0, 2)] ; forces seen: [(0, 0, 0)] ; ground_144 values [0] ; ForceAdjusted values [0]
+  flags6C ['205C'] ; attack (attr,power) [(129, 10)] ; type68 [27] ; dir_t [0]
+  HitBox changes: S+0: box (82,88) z0.00003 size (36.00000,24.00000,31.00000) | S+1: box (82,96) z0.00003 size (36.00000,24.00000,31.00000) | S+3: box (82,104) z0.00003 size (36.00000,24.00000,31.00000) | S+5: box (82,112) z0.00003 size (36.00000,24.00000,31.00000) | S+7: box (82,120) z0.00003 size (36.00000,24.00000,31.00000) | S+9: box (82,128) z0.00003 size (36.00000,24.00000,31.00000)
+  ForceResetAnimationFlag (+0xAC) first 1 at S+25 ; frame counter +0x1C at S: 1, at S+25: 26
+  sounds journalled from S: [(0, 'snd(30)'), (25, 'snd(0)')]
+  inert-handler stubs for slot 1 (letter@addr): [(0, 'stubA@8006174C(slot1)')]
+demon east: release tick R=96; wave first seen S=117 (R+21); status-4 tick 143 (S+26); first absent tick 144 (S+27)
+  positions seen (x,y,rawZ px/65536): [(100.0, 100.0, 2)] ; forces seen: [(0, 0, 0)] ; ground_144 values [0] ; ForceAdjusted values [0]
+  flags6C ['205C'] ; attack (attr,power) [(129, 20)] ; type68 [28] ; dir_t [24]
+  HitBox changes: S+0: box (82,88) z0.00003 size (36.00000,24.00000,31.00000) | S+1: box (94,88) z0.00003 size (36.00000,24.00000,31.00000) | S+3: box (106,88) z0.00003 size (36.00000,24.00000,31.00000) | S+5: box (118,88) z0.00003 size (36.00000,24.00000,31.00000) | S+7: box (130,88) z0.00003 size (36.00000,24.00000,31.00000) | S+9: box (142,88) z0.00003 size (36.00000,24.00000,31.00000)
+  ForceResetAnimationFlag (+0xAC) first 1 at S+25 ; frame counter +0x1C at S: 1, at S+25: 26
+  sounds journalled from S: [(0, 'snd(30)'), (25, 'snd(0)')]
+  inert-handler stubs for slot 1 (letter@addr): [(0, 'stubA@8006174C(slot1)')]
+holy east: release tick R=96; wave first seen S=117 (R+21); status-4 tick 143 (S+26); first absent tick 144 (S+27)
+  positions seen (x,y,rawZ px/65536): [(100.0, 100.0, 2)] ; forces seen: [(0, 0, 0)] ; ground_144 values [0] ; ForceAdjusted values [0]
+  flags6C ['205C'] ; attack (attr,power) [(129, 38)] ; type68 [29] ; dir_t [24]
+  HitBox changes: S+0: box (82,88) z0.00003 size (36.00000,24.00000,31.00000) | S+1: box (94,88) z0.00003 size (36.00000,24.00000,31.00000) | S+3: box (106,88) z0.00003 size (36.00000,24.00000,31.00000) | S+5: box (118,88) z0.00003 size (36.00000,24.00000,31.00000) | S+7: box (130,88) z0.00003 size (36.00000,24.00000,31.00000) | S+9: box (142,88) z0.00003 size (36.00000,24.00000,31.00000)
+  ForceResetAnimationFlag (+0xAC) first 1 at S+25 ; frame counter +0x1C at S: 1, at S+25: 26
+  sounds journalled from S: [(0, 'snd(30)'), (25, 'snd(0)')]
+  inert-handler stubs for slot 1 (letter@addr): [(0, 'stubA@8006174C(slot1)')]

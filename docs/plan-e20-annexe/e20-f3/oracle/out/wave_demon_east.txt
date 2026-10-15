@@ -1,0 +1,74 @@
+t001 hero anim_t=68 anim_c=68 adir(+0x98)=3 dir_t(+0x8C)=24 rec=80028C93 cnt=0 charge=1
+t022 hero anim_t=0 anim_c=0 adir(+0x98)=3 dir_t(+0x8C)=24 rec=0 cnt=0 charge=0
+t096 hero anim_t=24 anim_c=24 adir(+0x98)=3 dir_t(+0x8C)=24 rec=80028C9B cnt=0 charge=60
+t142 hero anim_t=0 anim_c=0 adir(+0x98)=3 dir_t(+0x8C)=24 rec=0 cnt=20 charge=0
+# wave demon east level ground, hero (100,100)
+# spec: {"item": 3, "n": 150, "after": 0, "hero_px": [100, 100], "direction": 24, "targets": []}
+t114 slot1 absent
+      rng=A3E4185E
+t115 slot1 absent
+      rng=A3E4185E
+t116 slot1 absent
+      rng=A3E4185E
+t117 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(82.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=1 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      journal: snd(30) stubA@8006174C(slot1)
+      rng=A3E4185E
+t118 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(94.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=2 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t119 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(94.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=3 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t120 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(106.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=4 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t121 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(106.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=5 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t122 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(118.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=6 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t123 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(118.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=7 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t124 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(130.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=8 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t125 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(130.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=9 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t126 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=10 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t127 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=11 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t128 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=12 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t129 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=13 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t130 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=14 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t131 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=15 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t132 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=16 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t133 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=17 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t134 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=18 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t135 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=19 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t136 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=20 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t137 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=21 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t138 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=22 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t139 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=23 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t140 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=24 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t141 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=25 rstAC=0 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t142 st=2 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=26 rstAC=1 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      journal: snd(0)
+      rng=A3E4185E
+t143 st=4 anim_t=0 dir_t=24 dir_c=24 adir=3 pos=(100.00000,100.00000,rawZ=2) force=(0,0,0) hitbox=(142.000,88.000,0.000) size=(2359295,1572863,2031615) c1c=27 rstAC=1 fl=205C atk=129/20 adj=0 gnd=0 terr=0 hitc=0 c1d0=0 box=1
+      rng=A3E4185E
+t144 slot1 absent
+      rng=A3E4185E
+t145 slot1 absent
+      rng=A3E4185E
+t146 slot1 absent
+      rng=A3E4185E

@@ -1,0 +1,5 @@
+control (no patch)                        : 128 pairs, 0 differ from the decoded rule
+M1 mask 0xC0 -> 0x80 at 0x800395E8        : 128 pairs, 32 differ from the decoded rule  e.g. [(0, 192, [], []), (0, 255, [], []), (1, 192, [], [])]
+M2 nibble 0xA -> 0xB at 0x800395F8        : 128 pairs, 10 differ from the decoded rule  e.g. [(10, 0, [], [4]), (10, 16, [], [4]), (10, 64, [], [4])]
+M3 effect id 5 -> 4 at 0x80039644         : 128 pairs, 10 differ from the decoded rule  e.g. [(7, 0, [4], [5]), (7, 16, [4], [5]), (7, 64, [4], [5])]
+M4 gate beq -> bne at 0x800395EC          : 128 pairs, 128 differ from the decoded rule  e.g. [(0, 0, [], []), (0, 16, [], []), (0, 64, [], [])]

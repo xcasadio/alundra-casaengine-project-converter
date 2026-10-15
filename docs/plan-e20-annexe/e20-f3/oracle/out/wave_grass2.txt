@@ -1,0 +1,12 @@
+# east: CheckAndTriggerTileEffect calls (tick, slot, caller ra, HitBox x,y,z px, size w,d,h, box ptr, cells cut)
+  slot 0 caller ra=8002FDC8: 67 calls, first t2 last t142; ticks with cuts: [(2, 4), (6, 2), (8, 2), (13, 2), (127, 1)]
+  slot 1 caller ra=8007A968: 25 calls, first t118 last t142; ticks with cuts: [(127, 2)]
+  wave (slot 1) calls from ticks: [118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142]
+  first wave call t118 hitbox x=82.000 y=88.000 z=0.00003 size=(35.99998,23.99998,30.99998) ptr=8017C1B0
+  wave calls with cuts: [(127, 2)]
+# north: CheckAndTriggerTileEffect calls (tick, slot, caller ra, HitBox x,y,z px, size w,d,h, box ptr, cells cut)
+  slot 0 caller ra=8002FDC8: 67 calls, first t2 last t142; ticks with cuts: [(2, 4), (8, 2), (116, 2)]
+  slot 1 caller ra=8007A968: 25 calls, first t118 last t142; ticks with cuts: [(125, 2)]
+  wave (slot 1) calls from ticks: [118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142]
+  first wave call t118 hitbox x=82.000 y=88.000 z=0.00003 size=(35.99998,23.99998,30.99998) ptr=8017C1B0
+  wave calls with cuts: [(125, 2)]

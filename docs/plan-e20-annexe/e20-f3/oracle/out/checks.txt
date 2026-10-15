@@ -1,0 +1,23 @@
+# E20.f3 T0 checks: one line per fact; exit code 0 when every line is PASS
+PASS  12 mutants, all killed   [12 rows]
+PASS  hitfx_table: 160 pairs, 160 match the decoded rule
+PASS  hitfx_table: rows carry the keys attr nib resp fx sparks c1d0 touch hitc rng_before rng_after
+PASS  hitfx_table: effect attachments draw nothing (sparks only): rng step identical for nibble 6 and nibble 1 at the same response
+PASS  two independent interpreters agree on the wave scenarios
+PASS  wave steel east: born S=117 (R+21) at the hero position, rawZ 2, forces 0, ForceAdjusted 0, ground 0, flags 0x205C, attack (0x81, 10), +0x1C 1 -> 26, +0xAC at S+25, status 4 at S+26, gone at S+27, box moves
+PASS  wave steel north: born S=117 (R+21) at the hero position, rawZ 2, forces 0, ForceAdjusted 0, ground 0, flags 0x205C, attack (0x81, 10), +0x1C 1 -> 26, +0xAC at S+25, status 4 at S+26, gone at S+27, box moves
+PASS  wave steel west: born S=117 (R+21) at the hero position, rawZ 2, forces 0, ForceAdjusted 0, ground 0, flags 0x205C, attack (0x81, 10), +0x1C 1 -> 26, +0xAC at S+25, status 4 at S+26, gone at S+27, box moves
+PASS  wave steel south: born S=117 (R+21) at the hero position, rawZ 2, forces 0, ForceAdjusted 0, ground 0, flags 0x205C, attack (0x81, 10), +0x1C 1 -> 26, +0xAC at S+25, status 4 at S+26, gone at S+27, box moves
+PASS  wave demon east: born S=117 (R+21) at the hero position, rawZ 2, forces 0, ForceAdjusted 0, ground 0, flags 0x205C, attack (0x81, 20), +0x1C 1 -> 26, +0xAC at S+25, status 4 at S+26, gone at S+27, box moves
+PASS  wave holy east: born S=117 (R+21) at the hero position, rawZ 2, forces 0, ForceAdjusted 0, ground 0, flags 0x205C, attack (0x81, 38), +0x1C 1 -> 26, +0xAC at S+25, status 4 at S+26, gone at S+27, box moves
+PASS  wave: size 36x24x31 (bw 35.99998.. as raw 2359295/1572863/2031615)   [(2359295, 1572863, 2031615)]
+PASS  wave: snd(30) at S and snd(0) at S+25 (muted by the sound routine, see the plan)
+PASS  wave vs Beannoid east: first wave hit tick journalled (touch slot 2 = the wave, 0 = the hero)   [[[122, 2]]]
+PASS  arena pin: with E10, 2 contacts (hero, hero); without E10 the wave contacts appear (oracle ticks 143 and 168 = arena ticks 138 and 163; the third contact is inside the 140 ticks of the arena)   [[{'attacker': 'hero', 'tick': 5}, {'attacker': 'hero', 'tick': 118}] | [{'attacker': 'hero', 'tick': 5}, {'attacker': 'hero', 'tick': 118}, {'attacker': 'wave', 'tick': 143}, {'attacker': 'wave', 'tick': 168}]]
+PASS  O-F3-2: the oracle accepts a fractional hero position and the wave keeps it unchanged
+PASS  (d1) key: air, Square+Left at t8 -> shot at t9 with direction 8
+PASS  (d2) key: Square at the press, Left only from the shot tick -> 0x18
+PASS  (d3) keys: ground Up / Down / Left / Right -> 0x10 / 0 / 8 / 0x18
+PASS  multishot: two arrows live together (births at t10 and t34)
+PASS  flame probe answered (animation 0 attribute list, effects, verdict present)
+21 of 21 PASS

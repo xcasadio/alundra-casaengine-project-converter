@@ -1,0 +1,173 @@
+# hit pass 0x80039300 driven pair by pair (hero = attacker, real Beannoid of map 14 = target).
+# target balance sheet pointer 80145B85 (sprite 335), target flags +0x6C = 103, +0xB4 = 0
+# columns: attr nib resp -> effects attached | sparks | target +0x1D0 | target +0x224 (TouchingEntity) | attacker HitCounter | RNG words before->after | PASS/FAIL against the decoded rule
+attr=80 nib= 0 resp=00 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=80 nib= 0 resp=10 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=80 nib= 0 resp=3F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=80 nib= 0 resp=40 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=80 nib= 0 resp=7F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=80 nib= 0 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=80 nib= 0 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=80 nib= 0 resp=C0 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=80 nib= 0 resp=FF -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=80 nib= 0 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=01 nib= 1 resp=00 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=01 nib= 1 resp=10 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=01 nib= 1 resp=3F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=01 nib= 1 resp=40 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=01 nib= 1 resp=7F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=01 nib= 1 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=01 nib= 1 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=01 nib= 1 resp=C0 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=01 nib= 1 resp=FF -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=01 nib= 1 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=02 nib= 2 resp=00 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=02 nib= 2 resp=10 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=02 nib= 2 resp=3F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=02 nib= 2 resp=40 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=02 nib= 2 resp=7F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=02 nib= 2 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=02 nib= 2 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=02 nib= 2 resp=C0 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=02 nib= 2 resp=FF -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=02 nib= 2 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=03 nib= 3 resp=00 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=03 nib= 3 resp=10 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=03 nib= 3 resp=3F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=03 nib= 3 resp=40 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=03 nib= 3 resp=7F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=03 nib= 3 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=03 nib= 3 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=03 nib= 3 resp=C0 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=03 nib= 3 resp=FF -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=03 nib= 3 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=04 nib= 4 resp=00 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=04 nib= 4 resp=10 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=04 nib= 4 resp=3F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=04 nib= 4 resp=40 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=04 nib= 4 resp=7F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=04 nib= 4 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=04 nib= 4 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=04 nib= 4 resp=C0 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=04 nib= 4 resp=FF -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=04 nib= 4 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=05 nib= 5 resp=00 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=05 nib= 5 resp=10 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=05 nib= 5 resp=3F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=05 nib= 5 resp=40 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=05 nib= 5 resp=7F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=05 nib= 5 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=05 nib= 5 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=05 nib= 5 resp=C0 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=05 nib= 5 resp=FF -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=05 nib= 5 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=06 nib= 6 resp=00 -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=06 nib= 6 resp=10 -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=06 nib= 6 resp=3F -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=06 nib= 6 resp=40 -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=06 nib= 6 resp=7F -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=06 nib= 6 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=06 nib= 6 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=06 nib= 6 resp=C0 -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=06 nib= 6 resp=FF -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=06 nib= 6 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=07 nib= 7 resp=00 -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=07 nib= 7 resp=10 -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=07 nib= 7 resp=3F -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=07 nib= 7 resp=40 -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=07 nib= 7 resp=7F -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=07 nib= 7 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=07 nib= 7 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=07 nib= 7 resp=C0 -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=07 nib= 7 resp=FF -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=07 nib= 7 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=08 nib= 8 resp=00 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=08 nib= 8 resp=10 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=08 nib= 8 resp=3F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=08 nib= 8 resp=40 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=08 nib= 8 resp=7F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=08 nib= 8 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=08 nib= 8 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=08 nib= 8 resp=C0 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=08 nib= 8 resp=FF -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=08 nib= 8 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=09 nib= 9 resp=00 -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=09 nib= 9 resp=10 -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=09 nib= 9 resp=3F -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=09 nib= 9 resp=40 -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=09 nib= 9 resp=7F -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=09 nib= 9 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=09 nib= 9 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=09 nib= 9 resp=C0 -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=09 nib= 9 resp=FF -> fx=[5] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=09 nib= 9 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0A nib=10 resp=00 -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0A nib=10 resp=10 -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0A nib=10 resp=3F -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0A nib=10 resp=40 -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0A nib=10 resp=7F -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0A nib=10 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0A nib=10 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0A nib=10 resp=C0 -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0A nib=10 resp=FF -> fx=[4] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0A nib=10 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0B nib=11 resp=00 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0B nib=11 resp=10 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0B nib=11 resp=3F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0B nib=11 resp=40 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0B nib=11 resp=7F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0B nib=11 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0B nib=11 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0B nib=11 resp=C0 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0B nib=11 resp=FF -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0B nib=11 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0C nib=12 resp=00 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0C nib=12 resp=10 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0C nib=12 resp=3F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0C nib=12 resp=40 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0C nib=12 resp=7F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0C nib=12 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0C nib=12 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0C nib=12 resp=C0 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0C nib=12 resp=FF -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0C nib=12 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0D nib=13 resp=00 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0D nib=13 resp=10 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0D nib=13 resp=3F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0D nib=13 resp=40 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0D nib=13 resp=7F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0D nib=13 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0D nib=13 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0D nib=13 resp=C0 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0D nib=13 resp=FF -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0D nib=13 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0E nib=14 resp=00 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0E nib=14 resp=10 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0E nib=14 resp=3F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0E nib=14 resp=40 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0E nib=14 resp=7F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0E nib=14 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0E nib=14 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0E nib=14 resp=C0 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0E nib=14 resp=FF -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0E nib=14 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0F nib=15 resp=00 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0F nib=15 resp=10 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0F nib=15 resp=3F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0F nib=15 resp=40 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0F nib=15 resp=7F -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0F nib=15 resp=80 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0F nib=15 resp=BF -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0F nib=15 resp=C0 -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0F nib=15 resp=FF -> fx=[] sparks=3 c1d0=25 touch=slot0 hitc=1 rng 24D2C78A->5AAD3C51 PASS
+attr=0F nib=15 resp=81 -> fx=[] sparks=3 c1d0=25 touch=none hitc=1 rng 24D2C78A->5AAD3C51 PASS
+variant attr=86 (bit7 set) resp=10 -> fx=['fxattach(id=4,target=slot 1)']
+variant attr=87 (bit7 set) resp=10 -> fx=['fxattach(id=5,target=slot 1)']
+variant attr=89 (bit7 set) resp=10 -> fx=['fxattach(id=5,target=slot 1)']
+variant attr=8A (bit7 set) resp=10 -> fx=['fxattach(id=4,target=slot 1)']
+variant attr=06 (bit7 clear) resp=10 -> fx=['fxattach(id=4,target=slot 1)']
+variant attr=07 (bit7 clear) resp=10 -> fx=['fxattach(id=5,target=slot 1)']
+variant attr=09 (bit7 clear) resp=10 -> fx=['fxattach(id=5,target=slot 1)']
+variant attr=0A (bit7 clear) resp=10 -> fx=['fxattach(id=4,target=slot 1)']
+RNG words consumed: nibble 6 (effect 4 + sparks) = 0 steps? words 24D2C78A->5AAD3C51 ; nibble 1 (sparks only) 24D2C78A->5AAD3C51
+summary: 160/160 pairs match the decoded rule

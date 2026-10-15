@@ -1,0 +1,64 @@
+# flat height byte 2 (32 px) everywhere hero_px=(100, 100)
+t095 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave absent
+t096 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave absent
+t114 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave absent
+t115 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave absent
+t116 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave absent
+t117 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave st=2 rawZ=2097154 adj13C=0 gnd144=0 terr138=2097152 reset=0 box=1 fl=205C
+t118 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave st=2 rawZ=2097154 adj13C=0 gnd144=0 terr138=2097152 reset=0 box=1 fl=205C
+t119 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave st=2 rawZ=2097154 adj13C=0 gnd144=0 terr138=2097152 reset=0 box=1 fl=205C
+t120 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave st=2 rawZ=2097154 adj13C=0 gnd144=0 terr138=2097152 reset=0 box=1 fl=205C
+t121 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave st=2 rawZ=2097154 adj13C=0 gnd144=0 terr138=2097152 reset=0 box=1 fl=205C
+t130 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave st=2 rawZ=2097154 adj13C=0 gnd144=0 terr138=2097152 reset=0 box=1 fl=205C
+t142 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave st=2 rawZ=2097154 adj13C=0 gnd144=0 terr138=2097152 reset=1 box=1 fl=205C
+t143 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave st=4 rawZ=2097154 adj13C=0 gnd144=0 terr138=2097152 reset=1 box=1 fl=205C
+t144 hero rawZ=2097153 gnd144=1 terr138=2097152 pos=(100.0,100.0) | wave absent
+
+# ledge: columns >= 5 (x >= 120) have height byte 1, hero x=112 hero_px=(112, 100)
+t095 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave absent
+t096 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave absent
+t114 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave absent
+t115 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave absent
+t116 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave absent
+t117 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave st=2 rawZ=1048578 adj13C=0 gnd144=0 terr138=1048576 reset=0 box=1 fl=205C
+t118 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave st=2 rawZ=1048578 adj13C=0 gnd144=0 terr138=1048576 reset=0 box=1 fl=205C
+t119 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave st=2 rawZ=1048578 adj13C=0 gnd144=0 terr138=1048576 reset=0 box=1 fl=205C
+t120 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave st=2 rawZ=1048578 adj13C=0 gnd144=0 terr138=1048576 reset=0 box=1 fl=205C
+t121 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave st=2 rawZ=1048578 adj13C=0 gnd144=0 terr138=1048576 reset=0 box=1 fl=205C
+t130 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave st=2 rawZ=1048578 adj13C=0 gnd144=0 terr138=1048576 reset=0 box=1 fl=205C
+t142 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave st=2 rawZ=1048578 adj13C=0 gnd144=0 terr138=1048576 reset=1 box=1 fl=205C
+t143 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave st=4 rawZ=1048578 adj13C=0 gnd144=0 terr138=1048576 reset=1 box=1 fl=205C
+t144 hero rawZ=1048577 gnd144=1 terr138=1048576 pos=(112.0,100.0) | wave absent
+
+# ledge: columns >= 5 have height byte 1, hero x=104 hero_px=(104, 100)
+t095 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave absent
+t096 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave absent
+t114 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave absent
+t115 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave absent
+t116 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave absent
+t117 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=0 box=1 fl=205C
+t118 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=0 box=1 fl=205C
+t119 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=0 box=1 fl=205C
+t120 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=0 box=1 fl=205C
+t121 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=0 box=1 fl=205C
+t130 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=0 box=1 fl=205C
+t142 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=1 box=1 fl=205C
+t143 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave st=4 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=1 box=1 fl=205C
+t144 hero rawZ=1 gnd144=1 terr138=0 pos=(104.0,100.0) | wave absent
+
+# ledge: columns >= 6 (x >= 144) have height byte 1, hero x=130 hero_px=(130, 100)
+t095 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave absent
+t096 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave absent
+t114 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave absent
+t115 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave absent
+t116 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave absent
+t117 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=0 box=1 fl=205C
+t118 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=0 box=1 fl=205C
+t119 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=0 box=1 fl=205C
+t120 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=0 box=1 fl=205C
+t121 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=0 box=1 fl=205C
+t130 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=0 box=1 fl=205C
+t142 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave st=2 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=1 box=1 fl=205C
+t143 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave st=4 rawZ=2 adj13C=0 gnd144=0 terr138=0 reset=1 box=1 fl=205C
+t144 hero rawZ=1 gnd144=1 terr138=0 pos=(130.0,100.0) | wave absent
+

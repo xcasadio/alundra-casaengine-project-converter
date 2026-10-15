@@ -1,0 +1,6 @@
+# wave north vs Beannoid at map-record (7,6) = px (96,56), steel
+t117 target pos=(96.0,56.0) c1d0=0 touch=None hitc(target)=0 | wave box=(82,88) c1c=1 hitc=0 |  snd(30)
+t118 target pos=(96.0,56.0) c1d0=0 touch=None hitc(target)=0 | wave box=(82,80) c1c=2 hitc=0 |  
+t124 target pos=(96.0,56.0) c1d0=25 touch=2 hitc(target)=0 | wave box=(82,56) c1c=8 hitc=1 | HIT fx(id=9,a2=0,x=96.000,y=59.500,z=4.000) fx(id=9,a2=0,x=96.000,y=59.500,z=4.000) fx(id=9,a2=0,x=96.000,y=59.500,z=4.000)
+t142 target pos=(96.0,56.0) c1d0=7 touch=None hitc(target)=0 | wave box=(82,48) c1c=26 hitc=0 |  snd(0)
+# hit ticks: [(124, 2)] (spawn tick S=117)

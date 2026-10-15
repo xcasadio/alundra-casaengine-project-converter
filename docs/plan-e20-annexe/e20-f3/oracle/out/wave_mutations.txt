@@ -1,0 +1,4 @@
+control                       : wave visible t117..t143 (27 ticks), last status 4
+W1 no +1 in the spawn Z       : wave visible t117..t118 (2 ticks), last status 4 ; first rows (status, rawZ, ground_144, adj): [(2, 1, 1, 0), (4, 1, 1, 0)]
+W2 C61 call removed           : wave visible t117..t143 (27 ticks), last status 4 ; cuts at t>=117: 1 (control has 3)
+W3 E10 DestroyEntity removed  : wave visible t117..t170 (54 ticks), last status 3

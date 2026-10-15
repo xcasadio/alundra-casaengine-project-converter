@@ -1,0 +1,390 @@
+{
+ "d5_tried": [
+  {
+   "control": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ],
+   "history": "Square t1, Cross t3",
+   "mutant": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ]
+  },
+  {
+   "control": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ],
+   "history": "Square t1, Cross t2",
+   "mutant": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ]
+  },
+  {
+   "control": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ],
+   "history": "Square t1, Left held t2..t9",
+   "mutant": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ]
+  },
+  {
+   "control": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ],
+   "history": "Square t1, Square t3",
+   "mutant": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ]
+  },
+  {
+   "control": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ],
+   "history": "Square t1, Triangle t3",
+   "mutant": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ]
+  },
+  {
+   "control": [],
+   "history": "Square t1, target animation forced to 0 at t3",
+   "mutant": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ]
+  }
+ ],
+ "rows": [
+  {
+   "control": "wave visible t117..t143 (27 ticks), last status 4",
+   "key": "wave life (first tick, last tick, last status)",
+   "mutant": "wave visible t117..t118 (2 ticks), last status 4",
+   "name": "W1",
+   "patch": "0x80039EA4 addiu v0,v0,1 -> addiu v0,v0,0",
+   "verdict": "KILLED"
+  },
+  {
+   "control": 3,
+   "key": "grass cells cut at t>=117",
+   "mutant": 1,
+   "name": "W2",
+   "patch": "0x8007A960 jal CheckAndTriggerTileEffect -> nop",
+   "verdict": "KILLED"
+  },
+  {
+   "control": "wave visible t117..t143 (27 ticks), last status 4",
+   "key": "wave life (first tick, last tick, last status)",
+   "mutant": "wave visible t117..t170 (54 ticks), last status 3",
+   "name": "W3",
+   "patch": "0x8007F244 jal DestroyEntity -> nop",
+   "verdict": "KILLED"
+  },
+  {
+   "control": 0,
+   "key": "pairs differing from the decoded rule (of 128)",
+   "mutant": 32,
+   "name": "H1",
+   "patch": "0x800395E8 andi v0,v0,0xC0 -> andi v0,v0,0x80",
+   "verdict": "KILLED"
+  },
+  {
+   "control": 0,
+   "key": "pairs differing from the decoded rule (of 128)",
+   "mutant": 10,
+   "name": "H2",
+   "patch": "0x800395F8 li v0,0xA -> li v0,0xB (effect 4 condition)",
+   "verdict": "KILLED"
+  },
+  {
+   "control": 0,
+   "key": "pairs differing from the decoded rule (of 128)",
+   "mutant": 10,
+   "name": "H3",
+   "patch": "0x80039644 li a1,5 -> li a1,4 (effect id)",
+   "verdict": "KILLED"
+  },
+  {
+   "control": 0,
+   "key": "pairs differing from the decoded rule (of 128)",
+   "mutant": 128,
+   "name": "H4",
+   "patch": "0x800395EC beq -> bne (gate)",
+   "verdict": "KILLED"
+  },
+  {
+   "control": [
+    [
+     10,
+     1,
+     16,
+     1048578,
+     100
+    ]
+   ],
+   "key": "arrow births (tick, slot, dir_t, rawZ, x), hero facing north",
+   "mutant": [
+    [
+     10,
+     1,
+     8,
+     1048578,
+     97
+    ]
+   ],
+   "name": "D1",
+   "patch": "0x80023648 := 8, 0x8002364C := 0x10 (indices 1 and 2 swapped)",
+   "verdict": "KILLED"
+  },
+  {
+   "control": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ],
+   "key": "arrow births, ground, Square at t1",
+   "mutant": [
+    [
+     2,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ],
+   "name": "D2",
+   "patch": "0x8002F7C8 slt v0,v1,v0 -> slt v0,v0,v1",
+   "verdict": "KILLED"
+  },
+  {
+   "control": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ],
+   "key": "arrow births (rawZ)",
+   "mutant": [
+    [
+     10,
+     1,
+     24,
+     2097154,
+     103
+    ]
+   ],
+   "name": "D3",
+   "patch": "0x8002F7E8 sll v0,v0,16 -> sll v0,v0,17",
+   "verdict": "KILLED"
+  },
+  {
+   "control": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ],
+   "key": "arrow births (count)",
+   "mutant": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ],
+    [
+     11,
+     2,
+     24,
+     1048578,
+     103
+    ],
+    [
+     12,
+     3,
+     24,
+     1048578,
+     103
+    ],
+    [
+     13,
+     4,
+     24,
+     1048578,
+     103
+    ],
+    [
+     14,
+     5,
+     24,
+     1048578,
+     103
+    ],
+    [
+     15,
+     6,
+     24,
+     1048578,
+     103
+    ],
+    [
+     16,
+     7,
+     24,
+     1048578,
+     103
+    ],
+    [
+     17,
+     8,
+     24,
+     1048578,
+     103
+    ],
+    [
+     18,
+     9,
+     24,
+     1048578,
+     103
+    ],
+    [
+     19,
+     10,
+     24,
+     1048578,
+     103
+    ],
+    [
+     20,
+     11,
+     24,
+     1048578,
+     103
+    ],
+    [
+     21,
+     12,
+     24,
+     1048578,
+     103
+    ],
+    [
+     22,
+     13,
+     24,
+     1048578,
+     103
+    ],
+    [
+     23,
+     14,
+     24,
+     1048578,
+     103
+    ],
+    [
+     24,
+     15,
+     24,
+     1048578,
+     103
+    ]
+   ],
+   "name": "D4",
+   "patch": "0x8002F828 sw zero,0x7110(s0) -> nop",
+   "verdict": "KILLED"
+  },
+  {
+   "control": [],
+   "key": "arrow births, pad history \"Square t1, target animation forced to 0 at t3\"",
+   "mutant": [
+    [
+     10,
+     1,
+     24,
+     1048578,
+     103
+    ]
+   ],
+   "name": "D5",
+   "patch": "0x8002F7B4 beqz v0 -> nop (animation flag b1 ignored)",
+   "verdict": "KILLED"
+  }
+ ]
+}

@@ -1,0 +1,8 @@
+===== fire rod, Square at t1, target Beannoid at px (156,104)
+t020 target c1d0=25 touch=2 | ball anim_t=0 hitc=1 px=154.0 pz=9.50 | rng=5AAD3C51 | fxattach(id=4,target=slot 1) fx(id=9,a2=0,x=156.000,y=103.500,z=5.750) fx(id=9,a2=0,x=156.000,y=103.500,z=5.750) fx(id=9,a2=0,x=156.000,y=103.500,z=5.750)
+t045 target c1d0=25 touch=2 | ball anim_t=1 hitc=1 px=166.0 pz=0.00 | rng=0EAEF14C | fxattach(id=4,target=slot 1) fx(id=9,a2=0,x=158.500,y=103.500,z=4.000) fx(id=9,a2=0,x=158.500,y=103.500,z=4.000) fx(id=9,a2=0,x=158.500,y=103.500,z=4.000)
+hit ticks (target +0x1D0 = 25): [20, 45]
+===== ice rod, Square at t1, target Beannoid at px (156,104)
+t021 target c1d0=25 touch=2 | ball anim_t=0 hitc=1 px=157.0 pz=4.50 | rng=5AAD3C51 | fxattach(id=5,target=slot 1) fx(id=9,a2=0,x=156.000,y=103.500,z=6.250) fx(id=9,a2=0,x=156.000,y=103.500,z=6.250) fx(id=9,a2=0,x=156.000,y=103.500,z=6.250)
+t046 target c1d0=25 touch=2 | ball anim_t=1 hitc=1 px=163.0 pz=0.00 | rng=0EAEF14C | fxattach(id=5,target=slot 1) fx(id=9,a2=0,x=157.000,y=103.500,z=4.000) fx(id=9,a2=0,x=157.000,y=103.500,z=4.000) fx(id=9,a2=0,x=157.000,y=103.500,z=4.000)
+hit ticks (target +0x1D0 = 25): [21, 46]

@@ -1,0 +1,27 @@
+# east: all 13 cut events; at or after the wave spawn (t >= 117): 3
+   t002 cell(col=4,row=6) effect pos=(108.0,104.0) z=0.0 rng_after=AFBE9EAC
+   t002 cell(col=5,row=6) effect pos=(132.0,104.0) z=0.0 rng_after=AFBE9EAC
+   t002 cell(col=4,row=7) effect pos=(108.0,120.0) z=0.0 rng_after=AFBE9EAC
+   t002 cell(col=5,row=7) effect pos=(132.0,120.0) z=0.0 rng_after=AFBE9EAC
+   t006 cell(col=4,row=5) effect pos=(108.0,88.0) z=0.0 rng_after=A3E4185E
+   t006 cell(col=5,row=5) effect pos=(132.0,88.0) z=0.0 rng_after=A3E4185E
+   t008 cell(col=6,row=5) effect pos=(156.0,88.0) z=0.0 rng_after=ECCE7F87
+   t008 cell(col=6,row=6) effect pos=(156.0,104.0) z=0.0 rng_after=ECCE7F87
+   t013 cell(col=3,row=5) effect pos=(84.0,88.0) z=0.0 rng_after=5AAD3C51
+   t013 cell(col=3,row=6) effect pos=(84.0,104.0) z=0.0 rng_after=5AAD3C51
+   t127 cell(col=6,row=7) effect pos=(156.0,120.0) z=0.0 rng_after=A24755FC   <-- wave
+   t127 cell(col=7,row=5) effect pos=(180.0,88.0) z=0.0 rng_after=A24755FC   <-- wave
+   t127 cell(col=7,row=6) effect pos=(180.0,104.0) z=0.0 rng_after=A24755FC   <-- wave
+   sound 0x1F (31) journalled 13 times
+# north: all 10 cut events; at or after the wave spawn (t >= 117): 2
+   t002 cell(col=3,row=4) effect pos=(84.0,72.0) z=0.0 rng_after=AFBE9EAC
+   t002 cell(col=4,row=4) effect pos=(108.0,72.0) z=0.0 rng_after=AFBE9EAC
+   t002 cell(col=3,row=5) effect pos=(84.0,88.0) z=0.0 rng_after=AFBE9EAC
+   t002 cell(col=4,row=5) effect pos=(108.0,88.0) z=0.0 rng_after=AFBE9EAC
+   t008 cell(col=5,row=4) effect pos=(132.0,72.0) z=0.0 rng_after=A3E4185E
+   t008 cell(col=5,row=5) effect pos=(132.0,88.0) z=0.0 rng_after=A3E4185E
+   t116 cell(col=3,row=6) effect pos=(84.0,104.0) z=0.0 rng_after=AAC6E9D5
+   t116 cell(col=4,row=6) effect pos=(108.0,104.0) z=0.0 rng_after=AAC6E9D5
+   t125 cell(col=3,row=3) effect pos=(84.0,56.0) z=0.0 rng_after=C666A38F   <-- wave
+   t125 cell(col=4,row=3) effect pos=(108.0,56.0) z=0.0 rng_after=C666A38F   <-- wave
+   sound 0x1F (31) journalled 10 times

@@ -1,0 +1,38 @@
+# ground: facing east, Square+Up pressed together at t1
+  t001 hold=1080 hero anim_t=19 dir_t(+0x8C)=16 adir(+0x98)=1 gnd=1 z=0.0 rec=80028CE1 cnt=0 | arrow: -
+  t002 hold=0000 hero anim_t=19 dir_t(+0x8C)=16 adir(+0x98)=1 gnd=1 z=0.0 rec=80028CE1 cnt=1 | arrow: -
+  t003 hold=0000 hero anim_t=19 dir_t(+0x8C)=16 adir(+0x98)=1 gnd=1 z=0.0 rec=80028CE1 cnt=2 | arrow: -
+  t004 hold=0000 hero anim_t=19 dir_t(+0x8C)=16 adir(+0x98)=1 gnd=1 z=0.0 rec=80028CE1 cnt=3 | arrow: -
+  t005 hold=0000 hero anim_t=19 dir_t(+0x8C)=16 adir(+0x98)=1 gnd=1 z=0.0 rec=80028CE1 cnt=4 | arrow: -
+  t006 hold=0000 hero anim_t=19 dir_t(+0x8C)=16 adir(+0x98)=1 gnd=1 z=0.0 rec=80028CE1 cnt=5 | arrow: -
+  t007 hold=0000 hero anim_t=19 dir_t(+0x8C)=16 adir(+0x98)=1 gnd=1 z=0.0 rec=80028CE1 cnt=6 | arrow: -
+  t008 hold=0000 hero anim_t=19 dir_t(+0x8C)=16 adir(+0x98)=1 gnd=1 z=0.0 rec=80028CE1 cnt=7 | arrow: -
+  t009 hold=0000 hero anim_t=19 dir_t(+0x8C)=16 adir(+0x98)=1 gnd=1 z=0.0 rec=80028CE1 cnt=8 | arrow: -
+  t010 hold=0000 hero anim_t=19 dir_t(+0x8C)=16 adir(+0x98)=1 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=16 adir=1
+  t011 hold=0000 hero anim_t=19 dir_t(+0x8C)=16 adir(+0x98)=1 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=16 adir=1
+  arrow spawned at t10
+# ground: facing east, Square at t1, Up held from t3 (turn request during the swing)
+  t001 hold=0080 hero anim_t=19 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=1 z=0.0 rec=80028CE1 cnt=0 | arrow: -
+  t002 hold=0000 hero anim_t=19 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=1 z=0.0 rec=80028CE1 cnt=1 | arrow: -
+  t003 hold=1000 hero anim_t=19 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=1 z=0.0 rec=80028CE1 cnt=2 | arrow: -
+  t004 hold=1000 hero anim_t=19 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=1 z=0.0 rec=80028CE1 cnt=3 | arrow: -
+  t005 hold=1000 hero anim_t=19 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=1 z=0.0 rec=80028CE1 cnt=4 | arrow: -
+  t006 hold=1000 hero anim_t=19 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=1 z=0.0 rec=80028CE1 cnt=5 | arrow: -
+  t007 hold=1000 hero anim_t=19 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=1 z=0.0 rec=80028CE1 cnt=6 | arrow: -
+  t008 hold=1000 hero anim_t=19 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=1 z=0.0 rec=80028CE1 cnt=7 | arrow: -
+  t009 hold=1000 hero anim_t=19 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=1 z=0.0 rec=80028CE1 cnt=8 | arrow: -
+  t010 hold=1000 hero anim_t=19 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=24 adir=3
+  t011 hold=1000 hero anim_t=19 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=24 adir=3
+  arrow spawned at t10
+# air: Cross t1 (jump), Square+Left at t8 (turn + shot in the air)
+  t001 hold=0040 hero anim_t=43 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=0 z=5.0 rec=0 cnt=0 | arrow: -
+  t002 hold=0000 hero anim_t=45 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=0 z=9.5 rec=0 cnt=0 | arrow: -
+  t003 hold=0000 hero anim_t=45 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=0 z=13.5 rec=0 cnt=0 | arrow: -
+  t004 hold=0000 hero anim_t=45 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=0 z=17.0 rec=0 cnt=0 | arrow: -
+  t005 hold=0000 hero anim_t=45 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=0 z=20.0 rec=0 cnt=0 | arrow: -
+  t006 hold=0000 hero anim_t=45 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=0 z=22.5 rec=0 cnt=0 | arrow: -
+  t007 hold=0000 hero anim_t=45 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=0 z=24.5 rec=0 cnt=0 | arrow: -
+  t008 hold=8080 hero anim_t=23 dir_t(+0x8C)=8 adir(+0x98)=2 gnd=0 z=26.0 rec=80028CE5 cnt=0 | arrow: -
+  t009 hold=8000 hero anim_t=23 dir_t(+0x8C)=8 adir(+0x98)=2 gnd=0 z=27.0 rec=0 cnt=0 | arrow: dir_t=8 adir=2
+  t010 hold=8000 hero anim_t=23 dir_t(+0x8C)=8 adir(+0x98)=2 gnd=0 z=27.5 rec=0 cnt=0 | arrow: dir_t=8 adir=2
+  arrow spawned at t9

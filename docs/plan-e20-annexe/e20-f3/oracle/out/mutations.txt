@@ -1,0 +1,57 @@
+# E20.f3 T0 mutants: 12 one-word patches of the emulated binary; control vs mutant on the stated key
+W1  KILLED    0x80039EA4 addiu v0,v0,1 -> addiu v0,v0,0
+      key     : wave life (first tick, last tick, last status)
+      control : wave visible t117..t143 (27 ticks), last status 4
+      mutant  : wave visible t117..t118 (2 ticks), last status 4
+W2  KILLED    0x8007A960 jal CheckAndTriggerTileEffect -> nop
+      key     : grass cells cut at t>=117
+      control : 3
+      mutant  : 1
+W3  KILLED    0x8007F244 jal DestroyEntity -> nop
+      key     : wave life (first tick, last tick, last status)
+      control : wave visible t117..t143 (27 ticks), last status 4
+      mutant  : wave visible t117..t170 (54 ticks), last status 3
+H1  KILLED    0x800395E8 andi v0,v0,0xC0 -> andi v0,v0,0x80
+      key     : pairs differing from the decoded rule (of 128)
+      control : 0
+      mutant  : 32
+H2  KILLED    0x800395F8 li v0,0xA -> li v0,0xB (effect 4 condition)
+      key     : pairs differing from the decoded rule (of 128)
+      control : 0
+      mutant  : 10
+H3  KILLED    0x80039644 li a1,5 -> li a1,4 (effect id)
+      key     : pairs differing from the decoded rule (of 128)
+      control : 0
+      mutant  : 10
+H4  KILLED    0x800395EC beq -> bne (gate)
+      key     : pairs differing from the decoded rule (of 128)
+      control : 0
+      mutant  : 128
+D1  KILLED    0x80023648 := 8, 0x8002364C := 0x10 (indices 1 and 2 swapped)
+      key     : arrow births (tick, slot, dir_t, rawZ, x), hero facing north
+      control : [(10, 1, 16, 1048578, 100)]
+      mutant  : [(10, 1, 8, 1048578, 97)]
+D2  KILLED    0x8002F7C8 slt v0,v1,v0 -> slt v0,v0,v1
+      key     : arrow births, ground, Square at t1
+      control : [(10, 1, 24, 1048578, 103)]
+      mutant  : [(2, 1, 24, 1048578, 103)]
+D3  KILLED    0x8002F7E8 sll v0,v0,16 -> sll v0,v0,17
+      key     : arrow births (rawZ)
+      control : [(10, 1, 24, 1048578, 103)]
+      mutant  : [(10, 1, 24, 2097154, 103)]
+D4  KILLED    0x8002F828 sw zero,0x7110(s0) -> nop
+      key     : arrow births (count)
+      control : [(10, 1, 24, 1048578, 103)]
+      mutant  : [(10, 1, 24, 1048578, 103), (11, 2, 24, 1048578, 103), (12, 3, 24, 1048578, 103), (13, 4, 24, 1048578, 103), (14, 5, 24, 1048578, 103), (15, 6, 24, 1048578, 103), (16, 7, 24, 1048578, 103), (17, 8, 24, 1048578, 103), (18, 9, 24, 1048578, 103), (19, 10, 24, 1048578, 103), (20, 11, 24, 1048578, 103), (21, 12, 24, 1048578, 103), (22, 13, 24, 1048578, 103), (23, 14, 24, 1048578, 103), (24, 15, 24, 1048578, 103)]
+D5  KILLED    0x8002F7B4 beqz v0 -> nop (animation flag b1 ignored)
+      key     : arrow births, pad history "Square t1, target animation forced to 0 at t3"
+      control : []
+      mutant  : [(10, 1, 24, 1048578, 103)]
+D5 pad histories tried (control births | mutant births):
+   Square t1, Cross t3              [(10, 1, 24, 1048578, 103)] | [(10, 1, 24, 1048578, 103)]
+   Square t1, Cross t2              [(10, 1, 24, 1048578, 103)] | [(10, 1, 24, 1048578, 103)]
+   Square t1, Left held t2..t9      [(10, 1, 24, 1048578, 103)] | [(10, 1, 24, 1048578, 103)]
+   Square t1, Square t3             [(10, 1, 24, 1048578, 103)] | [(10, 1, 24, 1048578, 103)]
+   Square t1, Triangle t3           [(10, 1, 24, 1048578, 103)] | [(10, 1, 24, 1048578, 103)]
+   Square t1, target animation forced to 0 at t3 [] | [(10, 1, 24, 1048578, 103)]
+killed 12 of 12

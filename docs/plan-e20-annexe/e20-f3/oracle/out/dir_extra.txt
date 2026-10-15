@@ -1,0 +1,32 @@
+# air: Cross t1, Square alone at t8, Left only from t9 (turn request ON the spawn tick)
+  t009 hold=8000 hero anim_t=23 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=0 z=27.0 rec=0 cnt=0 | arrow: dir_t=24 adir=3
+  t010 hold=8000 hero anim_t=23 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=0 z=27.5 rec=0 cnt=0 | arrow: dir_t=24 adir=3
+  arrow spawned at t9
+# air: Cross t1, Left held t5..t7, Square at t8 (turn BEFORE the press, facing already west)
+  t009 hold=8000 hero anim_t=23 dir_t(+0x8C)=8 adir(+0x98)=2 gnd=0 z=27.0 rec=0 cnt=0 | arrow: dir_t=8 adir=2
+  t010 hold=8000 hero anim_t=23 dir_t(+0x8C)=8 adir(+0x98)=2 gnd=0 z=27.5 rec=0 cnt=0 | arrow: dir_t=8 adir=2
+  arrow spawned at t9
+# ground: facing east, Square+Down at t1
+  t010 hold=0000 hero anim_t=19 dir_t(+0x8C)=0 adir(+0x98)=0 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=0 adir=0
+  t011 hold=0000 hero anim_t=19 dir_t(+0x8C)=0 adir(+0x98)=0 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=0 adir=0
+  arrow spawned at t10
+# ground: facing east, Square+Left at t1
+  t010 hold=0000 hero anim_t=19 dir_t(+0x8C)=8 adir(+0x98)=2 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=8 adir=2
+  t011 hold=0000 hero anim_t=19 dir_t(+0x8C)=8 adir(+0x98)=2 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=8 adir=2
+  arrow spawned at t10
+# ground: facing east, Square+Right at t1
+  t010 hold=0000 hero anim_t=19 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=24 adir=3
+  t011 hold=0000 hero anim_t=19 dir_t(+0x8C)=24 adir(+0x98)=3 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=24 adir=3
+  arrow spawned at t10
+# ground: facing north (dir word 16), Square alone at t1
+  t010 hold=0000 hero anim_t=19 dir_t(+0x8C)=16 adir(+0x98)=1 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=16 adir=1
+  t011 hold=0000 hero anim_t=19 dir_t(+0x8C)=16 adir(+0x98)=1 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=16 adir=1
+  arrow spawned at t10
+# ground: facing west (dir word 8), Square alone at t1
+  t010 hold=0000 hero anim_t=19 dir_t(+0x8C)=8 adir(+0x98)=2 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=8 adir=2
+  t011 hold=0000 hero anim_t=19 dir_t(+0x8C)=8 adir(+0x98)=2 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=8 adir=2
+  arrow spawned at t10
+# ground: facing south (dir word 0), Square alone at t1
+  t010 hold=0000 hero anim_t=19 dir_t(+0x8C)=0 adir(+0x98)=0 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=0 adir=0
+  t011 hold=0000 hero anim_t=19 dir_t(+0x8C)=0 adir(+0x98)=0 gnd=1 z=0.0 rec=0 cnt=8 | arrow: dir_t=0 adir=0
+  arrow spawned at t10

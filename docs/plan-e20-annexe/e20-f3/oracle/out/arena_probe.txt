@@ -1,0 +1,4 @@
+control: target hits (tick, attacker) [(5, 'hero'), (118, 'hero')]
+   wave rows: first t117 last t143, last status 4 ; box flag at the last 4 rows: [(140, 2149040680, 24), (141, 2149040680, 25), (142, 2149040680, 26), (143, 2149040680, 27)]
+E10_removed (natives off): target hits (tick, attacker) [(5, 'hero'), (118, 'hero'), (143, 'wave'), (168, 'wave')]
+   wave rows: first t117 last t190, last status 3 ; box flag at the last 4 rows: [(187, 2149040680, 71), (188, 2149040680, 72), (189, 2149040680, 73), (190, 2149040680, 74)]

@@ -1,0 +1,29 @@
+# (a) Hunter: Square at t1 and t25
+  t010 spawn slot 1 type 3 at x=103 z=16.0 (hero anim_t=19, rec_ptr=0)
+  t010 alive projectiles: {1: 103}
+  t020 alive projectiles: {1: 163}
+  t030 alive projectiles: {1: 223}
+  t034 spawn slot 2 type 3 at x=103 z=16.0 (hero anim_t=19, rec_ptr=0)
+  t035 alive projectiles: {1: 253, 2: 109}
+  t040 alive projectiles: {1: 283, 2: 139}
+  t050 alive projectiles: {1: 343, 2: 199}
+  t060 alive projectiles: {1: 403, 2: 259}
+# (b) Hunter: Square pressed every second tick t1..t41
+  t010 spawn slot 1 type 3 at x=103 z=16.0 (hero anim_t=19, rec_ptr=0)
+  t010 alive projectiles: {1: 103}
+  t020 alive projectiles: {1: 163}
+  t030 alive projectiles: {1: 223}
+  t034 spawn slot 2 type 3 at x=103 z=16.0 (hero anim_t=19, rec_ptr=0)
+  t035 alive projectiles: {1: 253, 2: 109}
+  t040 alive projectiles: {1: 283, 2: 139}
+  t050 alive projectiles: {1: 343, 2: 199}
+  t060 alive projectiles: {1: 403, 2: 259}
+# (c) William: Square held t1..t60 (auto-repeat is not a press)
+  t010 spawn slot 1 type 4 at x=103 z=16.0 (hero anim_t=19, rec_ptr=0)
+  t010 alive projectiles: {1: 103}
+  t020 alive projectiles: {1: 163}
+  t030 alive projectiles: {1: 223}
+  t035 alive projectiles: {1: 253}
+  t040 alive projectiles: {1: 283}
+  t050 alive projectiles: {1: 343}
+  t060 alive projectiles: {1: 403}
