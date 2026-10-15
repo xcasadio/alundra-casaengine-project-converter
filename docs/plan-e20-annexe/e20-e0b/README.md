@@ -65,10 +65,105 @@ before phase B.
 | result of `DisplayInventory` | request store removed (`0x8002BD00`), `bnez` -> `beqz` (`0x8002BCF4`) | row 6 and rows 5/7 |
 | gate test | mask `0x48` -> `0x40`, `0x08`, `0` (`0x8003B394`), polarity (`0x8003B398`) | the step counts of the gate rows (gate `08` and `40` among the 24 calls, rows 2 and 8) |
 
-## Predicted list (rule of T1)
+## Predicted list: the shadow run of T1 (phase A code `fcec5c6`, Release, 2026-10-15)
 
-To be filled in T1, before phase B: the tests where `divergent_draws + divergent_seed_reads + ambient_draws > 0` in `e0b1-shadow.txt`.
+`ALUNDRA_RNG_SHADOW_LOG=<file> dotnet test Alundra.Tests/Alundra.Tests.csproj -c Release --no-build --blame-hang-timeout 300s`: 4 834 passed, 0 failed (the 4 833 of the start plus the inertness test, which is a no-op with the sink on). The whole file is versioned as `e0b1-shadow.txt` (888 lines, one per block of consecutive events of the same attributed test; 394 distinct attributed keys, constructors and `Dispose` included; 267 keys with virtual advances, 147145 virtual advances in all).
+
+**Predicted list** (rule of T1: `divergent_draws + divergent_seed_reads + ambient_draws > 0`, counters summed over the lines of a key): **66 tests**. A test outside this list reads from the stream, in phase B, only values identical to those of phase A, so it cannot move because of the advance.
+
+| Test | virtual advances | draws | divergent draws | divergent seed reads | epochs | ambient draws | first divergent draw |
+|---|---|---|---|---|---|---|---|
+| `AlundraRandomTests.Next_ReturnsOnlyTheLow32BitsOfTheWrappedSeed` | 0 | 1 | 0 | 0 | 0 | 1 | - |
+| `AlundraRandomTests.Next_ReproducesTheOriginalsFirstThreeValues_HandComputedFromTheLcg` | 0 | 3 | 0 | 0 | 0 | 3 | - |
+| `AlundraRandomTests.Reset_SetsTheSeedBackToTheOriginalConstant` | 0 | 1 | 0 | 0 | 1 | 1 | - |
+| `AlundraRandomOpcodeTests.SetRandomCardinalDirection_0x0C_FiveDrawsGiveTheBinarysDirections_AndTheSeedAdvancesOnce` | 0 | 5 | 0 | 0 | 0 | 5 | - |
+| `AlundraRandomBranchOpcodeTests.IfRandomAtLeast_0x8C_TheComparisonIsGreaterOrEqual` | 0 | 2 | 0 | 0 | 1 | 1 | - |
+| `AlundraRandomBranchOpcodeTests.IfRandomAtLeast_0x8C_TwoCallsDrawTwiceFromTheSameStream` | 0 | 2 | 0 | 0 | 0 | 2 | - |
+| `AlundraRandomBranchOpcodeTests.IfRandomAtLeast_0x8C_TheFirstDrawIs53_SoThreshold128GivesZero_AndTheSeedAdvancesOnce` | 0 | 1 | 0 | 0 | 0 | 1 | - |
+| `AlundraNativeEffectTests.WithoutASoundPlayer_TheLifeAndTheEffectsAreDone` | 0 | 8 | 0 | 0 | 0 | 8 | - |
+| `AlundraNativeEffectTests.TheVessel_ReadsTheHeroWhereItIsWhenTheScriptRuns_NotWhenTheStageApplies` | 0 | 8 | 0 | 0 | 0 | 8 | - |
+| `AlundraNativeEffectTests.TheVessel_OnTheNewGameStats_Answers1_DoesNotSuspend_RaisesTheLife_PlaysTheSoundBeforeTheEffects_AndCreatesTwelveSlots` | 0 | 8 | 0 | 0 | 0 | 8 | - |
+| `AlundraHeroSwimTests.W6_TheOtherWeaponTraces_AreTheOracle` | 0 | 4 | 0 | 0 | 0 | 4 | - |
+| `AlundraHeroSwimTests.W6_TheSquareHeld_ChargesOnTheLand_ZeroInTheWater_AndOnTheLandAgain` | 0 | 36 | 0 | 0 | 0 | 36 | - |
+| `AlundraHeroRunTests.G7_TheSacredSword_CountsTheChargeInEveryStateOfTheRun` | 0 | 42 | 0 | 0 | 0 | 42 | - |
+| `AlundraHeroAuraTests.AHeldCharge_RenewsTheAuraEvery97Ticks_AtTheTicks33_130_227_InTheSlotsOfTheOracle_OneAliveAfterEachUpdate` | 0 | 108 | 0 | 0 | 1 | 108 | - |
+| `AlundraWeaponLockOpcodesTests.TheWholeProgramB_OfTheTwoMaps_HasNoSkippedOpcode` | 0 | 2 | 2 | 0 | 0 | 2 | opcode:AlundraEventProgramRunner.Dispatch |
+| `AlundraStoredHitBoxTests.TheWorldsTick_StoresTheBoxOfAnEntityWithNoAttack_AfterThePhysics` | 11 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraShipCorridorArcTests.A5r_HoldingDownInPlace_TheShipRollsTheHeroOnce_ThenTheDownPushedPortalLeadsToMap391` | 238 | 1 | 1 | 0 | 2 | 0 | opcode:AlundraEventProgramRunner.Dispatch |
+| `AlundraPrefabArcSupportTests.ArcRun_ResetsTheSharedRandomStream_AtConstructionAndAtDispose` | 0 | 4 | 0 | 0 | 2 | 3 | - |
+| `AlundraMurutaHallArcTests.H115_TheFourMuruta_DieByTheSword_TheDoorOfTheHallOpens_WithAFrameBreakEffectEach` | 428 | 106 | 106 | 0 | 2 | 0 | ai:AlundraEnemyHelpers.Below |
+| `AlundraLeverPillarArcTests.D_Map117_TheLever22_StartsThePillar_AtTheTicksOfItsPrograms` | 107 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraLeverDoorsArcTests.E_Map44_TheLever7_TurnsTheSixLevers_WalksTheSevenDoors_AndGivesTheHandBack` | 110 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraLeverDoorsArcTests.E_Map44_WithoutG1633_TheHitOnlyRunsTheTestAndTheEnd_NoLockNoT80` | 48 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraLeverBridgeArcTests.B_Map116_TheTwoLeversExtendTheBridge_AndTheSecondHitOnTheLever40RetractsIt` | 143 | 27 | 27 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraLeverBasculeArcTests.C_Map117_TheBascule_RewritesThePlatformsAtTheTicksOfItsProgram_InFourHits` | 136 | 36 | 36 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraLeverArcTests.A_Map115_TheNorthWestLever_TurnsAndOpensTheDoorAtTheTicksOfItsPrograms` | 105 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.H1_TheBasicSword_HitsABeannoid40PixelsAwayAtTick5_ThreeSparks_ThenTheCooldown_ThenD` | 50 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.TheReachInY_AtTheEdgesOfTheOracleWindows_IsTheOracleOne` | 480 | 81 | 81 | 0 | 30 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.TheReachInX_AtDyZero_IsTheOracleOne_FromMinus9To59Pixels` | 384 | 144 | 144 | 0 | 24 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.H1_TheThreeSparksOfTheHitExistOnTheReservoir_AtTheCentreOfTheOverlap_Effect9` | 15 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.TheReachBehindTheHero_Beyond9Pixels_IsOnlyContactedByTheLateFrames_BecauseTheHeroIsNotHurtYet` | 32 | 27 | 27 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.H5_TwoTargetsInTheReach_AreBothHitAtTheSameTick_TheHeroCountsTwoHits` | 50 | 18 | 18 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.H1near_TheBoxOfTheFirstFrame_OfTheSwingThatStartsAtThisTick_HitsOnThePressTick_TheLatchIsThe0x10OfTheTick` | 50 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.H1both_TheSwingAndTheBodyOfABeannoid20PixelsAway_HitEachOtherAtTick1_SixSparks` | 50 | 36 | 36 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.H7_TwoAttackersOnOneTarget_OnlyTheFirstOfTheListTouchesIt_TheSecondHitsItWhenTheCooldownIsOver` | 50 | 27 | 27 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.WhileTheContactLasts_ABeannoidTouchesTheHero_EveryTwentyFiveTicks_AndHisDamagedCounterStaysAtZero` | 90 | 45 | 45 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.H8_TheSwingToTheWest_HitsABeannoid40PixelsAwayAtTick5` | 50 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.H4a_ASecondSwing_HitsAgain25TicksAfterTheFirstHit_NotBefore` | 70 | 18 | 18 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.H6_AnImmuneTarget_GetsTheCooldownAndSparks_ButNoTouchingEntityAndNoProgramD` | 50 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.H3_TheHeroWalkingIntoABeannoid_IsTouchedAtTick17_TheCountersClearItAtTick18_TheHeroDoesNotLoseLifeYet` | 55 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.ARealArcOnMap14_TheHeroStrikesTheBeannoidOfRecord0_WhereTheMapPutItOnItsHill_SparksATouchAndTheProgramDAtTheNextTick_NoWound` | 22 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassTests.H1edge_ABeannoid59PixelsAway_IsHitAtTick5_ByTheLastPixelOfTheReach` | 50 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassCatchUpTests.ATargetThatLeavesAnAnimationWithTheByte0x40_AtTheTickOfTheFirstOverlap_IsHit` | 50 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassCatchUpTests.TheBoxCursor_FollowsTheSpritesLogicalClock_AfterEveryFrame_WhateverTheNumberOfTicks` | 43 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassCatchUpTests.ATargetThatEntersAnAnimationWithTheByte0x40_AtTheTickOfTheFirstOverlap_IsNotHit` | 100 | 9 | 9 | 0 | 4 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassCatchUpTests.H1near_WithTwoTicksPerFrame_AfterAFrameOfOneTick_IsTheOracleTickByTick` | 50 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassCatchUpTests.H1_WithThreeAndFourTicksPerFrame_IsTheOracleTickByTick` | 150 | 27 | 27 | 0 | 6 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassCatchUpTests.H1_WithTwoTicksPerFrame_AfterAFrameOfOneTick_IsTheOracleTickByTick` | 50 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassCatchUpTests.H1_WithTwoTicksPerFrame_ThePressOnTheFirstTickOfAFrame_IsTheOracleTickByTick` | 50 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassCatchUpTests.H1near_WithTwoTicksPerFrame_ThePressOnTheFirstTickOfAFrame_IsTheOracleTickByTick` | 50 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassCatchUpTests.TheHitWrittenAtTickN_IsReadByTheProgramsOfTickNPlus1_AndClearedByTheCounters_InTheSameFrameOfTwoTicks` | 50 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassCatchUpTests.TheSameByte0x40Test_InAFrameOfTwoTicks_StillSeesTheSwitchOfTheTickItself` | 100 | 9 | 9 | 0 | 4 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHitPassCatchUpTests.ASwitchAskedAfterTheClockOfATick_IsTheSwitchTickOfTheNextOne_TheByteIsLoadedThereBeforeTheHitPass` | 100 | 9 | 9 | 0 | 4 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHeroRunArenaTests.G7_RunningIntoABeannoid_OnTheRealWorld_IsTheOracle_TheBodyTouchesAtTick60` | 70 | 9 | 9 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHeroRunArenaTests.G7_TheSweepOfThePressTick_OnTheRealWorld_IsTheOracleUntilTheHurt` | 1366 | 270 | 270 | 0 | 34 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHeroRunArenaTests.G7_TheTackle_OnTheRealWorld_HitsTheBeannoidAtTick61_ThreeSparks_ComparedUntilTheHurt` | 74 | 18 | 18 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHeroChargeArenaTests.TheChargedSwing0x18_OfTheSteelSword_TouchesABeannoidOfMap14` | 150 | 24 | 24 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraHeroChargeArenaTests.TheReservoirAfterTheChargeAndTheRelease_DoesNotDependOnTheNumberOfTicksPerFrame` | 424 | 24 | 24 | 4 | 12 | 0 | effect:AlundraNativeEffects.CreateChargeSpark |
+| `AlundraHeroChargeArenaTests.TheEffectsOfTheCharge_AreCreatedInTheWorldsReservoir_TheBurstAtTheRelease` | 105 | 6 | 6 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateChargeSpark |
+| `AlundraHeroAuraWorldTests.AFrameHoldingTheTicks96And97AfterACreation_ShowsOneFrameWithoutAura_TheNextOneHasIt` | 182 | 46 | 46 | 0 | 3 | 0 | effect:AlundraNativeEffects.CreateChargeSpark |
+| `AlundraHeroAuraWorldTests.TheHeroAnchor_ExposesTheKeyOfTheSortDriver_OnTheTicksOfTheSwingAndOfTheCharge` | 100 | 4 | 4 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateChargeSpark |
+| `AlundraHeroAuraWorldTests.TheRenewalInFramesOfThreeTicks_WhereASparkTakesTheFreedSlot_StillGivesALiveAura` | 144 | 26 | 26 | 0 | 3 | 0 | effect:AlundraNativeEffects.CreateChargeSpark |
+| `AlundraHeightTargetSitesTests.TheWaitOfTheBinaryEndsAtTheCallOfTheBinaryAtEveryRealSite` | 15547 | 27 | 27 | 0 | 66 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraFlailBounceArcTests.AFlailAtTheHammerPost_BouncesFor16Ticks_AndTheRelationsOfTheBinaryHold` | 244 | 36 | 36 | 0 | 8 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraFlailBounceArcTests.AFlailThatTouchesABeannoid40PixelsAway_BouncesAtTheNextTick_For16Ticks_ThenIdle_WithNoForce` | 100 | 18 | 18 | 0 | 4 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraFireSwitchRegressionTests.ASwordHitOnAFireSwitchOfMap303_DoesNotLightIt_WhateverTheSharedResultHolds` | 82 | 18 | 18 | 0 | 4 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+| `AlundraBeannoideGrateArcTests.G116_TheTwoBeannoids_DieByTheSword_AndTheGrateOpens_WithAFrameBreakEffectEach` | 312 | 90 | 90 | 0 | 2 | 0 | effect:AlundraNativeEffects.CreateHitSparks |
+
+### The tests marked `ambient_draws` (T1 handling: written justification, no seed assignment added, so the shadow was not rerun)
+
+Sixteen tests of the list have `ambient_draws > 0` (draws attributed to the test before any epoch of THAT test). None needs an explicit seed assignment:
+
+- **The classes that reset the stream in their constructor** (the constructor has its own key in the attribution, so its `Reset()` is an epoch of `Class..ctor`, not of the method, hence the counter): `AlundraRandomTests`
+  (3 tests), `AlundraRandomOpcodeTests` (1), `AlundraRandomBranchOpcodeTests` (3), `AlundraNativeEffectTests` (3). Their start state is the initial seed whatever the order of the tests: nothing is inherited, the counter is the artefact of the rule.
+- **Montages of the hero without a world `Update`** (`AlundraHeroSwimTests.W6_...` x2, `AlundraHeroRunTests.G7_TheSacredSword...`, `AlundraHeroAuraTests.AHeldCharge...`): no virtual advance, the charge sparks draw their jitter from the inherited state. No assertion reads a spark
+  (the assertions read the states, the counters, the forces of the hero and, for the aura, the aura slots), so the inherited state cannot reach one. `AlundraHeroAuraTests` reads the seed in a field initialiser and writes it back at `Dispose`: an epoch, no assertion.
+- `AlundraWeaponLockOpcodesTests.TheWholeProgramB_...`: the random opcodes of two whole programs draw from the inherited state; the only assertion is "no skipped opcode".
+- `AlundraPrefabArcSupportTests.ArcRun_ResetsTheSharedRandomStream...`: its three `Next()` before the arc are the ambient draws; the arc then resets the stream (an epoch) and the two seed reads follow it (zero divergent seed read in the shadow).
+
+A test of the list that does not move in phase B is noted in T3 with the reason (the divergence reaches no assertion).
 
 ## Results
 
-(T1 to T4 add their measures below.)
+### Phase A (T1, code commit `fcec5c6`)
+
+| Measure | Value |
+|---|---|
+| `Alundra.Tests` Release | 4 834 passed, 0 failed (4 833 + the inertness test), 3 m 37 s |
+| `Alundra.Tests` Debug | 4 834 passed, 0 failed, 3 m 51 s |
+| `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` | identical (the DLL was not locked) |
+| The five traces | unchanged (`git diff --ignore-cr-at-eol --exit-code`) |
+
+No test moved in phase A: the callback only feeds the virtual word of the sink.
+
+(T2 to T4 add their measures below.)
