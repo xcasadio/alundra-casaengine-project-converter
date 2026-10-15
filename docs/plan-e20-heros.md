@@ -4000,7 +4000,8 @@ cartes extraites ou l'export ; [critique] établi ou corrigé par la critique.
 - **D-E0B-4** — Le tirage est une classe pure `AlundraLootRoll` (table de 2 048 octets en données, comme `AlundraWeaponTables`) appelée par le monde, **pas** par le noyau statique de la fabrique (qui n'a ni l'état de la partie ni le chemin dégradé) ni par le mapper. Entrées : code d'enregistrement `& 0xFF`
   (lu au site de création), code d'en-tête (`HeaderContents`), `ContentsGameFlag` déjà posé, banques de `AlundraGameState`. Sorties : `ContentsItemId`, `ContentsGameFlag`, pas du générateur. Rien ne tombe.
 - **D-E0B-5** — Un seul champ de proxy est ajouté : `HeaderContents`, posé par `ApplyHeaderInitialization` à côté de `BreakEffect` et copié par `Clone`. Pas de `RecordContents`, pas de `HasRecord`.
-- **D-E0B-6** — Le tirage est la **dernière** instruction du bloc `try` de chacun des trois sites (après le son et la poussée de position), pour qu'une création avortée (contrat d'erreur d'e0a2) ne consomme aucun tirage. Le héros ne tire pas (`Contents` 0, pas d'appel). Les réinitialisations `0x8003A048` et `0x8003ABCC` (qui retirent) ne sont pas portées (E14, O-E0B-2).
+- **D-E0B-6** — Le tirage est la **dernière** instruction du bloc `try` de chacun des trois sites (après le son et la poussée de position ;
+  à `SpawnEntityBySpriteIndex`, juste avant le bloc du marqueur `JoinsBirthTick` d'ADR-0065, qui ne peut pas échouer — révision 1 d'e0b2), pour qu'une création avortée (contrat d'erreur d'e0a2) ne consomme aucun tirage. Le héros ne tire pas (`Contents` 0, pas d'appel). Les réinitialisations `0x8003A048` et `0x8003ABCC` (qui retirent) ne sont pas portées (E14, O-E0B-2).
 - **D-E0B-7** — `AlundraRandom.RandomSeed` devient une propriété (source-compatible : aucun `ref`, aucune réflexion) pour que l'ombre voie les affectations et les lectures ; `Next()` n'emploie que le champ privé. Les puits d'ombre d'e0b1 et d'e0b2 sont des classes de production inertes sans variable d'environnement, comme le canal d'ombre de la
   table de cases, et le restent après la clôture (précédent ADR-0064).
 - **D-E0B-8** — Chaque épingle déplacée est réécrite par une **dérivation** (le test calcule la valeur attendue avec un pas local `s·0x7D2B89DD + 0xE06A02E7` à partir de la graine et du nombre de ticks et de tirages), jamais par une constante collée.
@@ -4228,8 +4229,9 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
   levée, temporaire levée, mauvaise banque, `0x0800` ramené à 0), chaque cas « levé, aucun tirage » accolé dans la même assertion à une
   création qui tire ; (m4) création avortée (faute après `AddEntity`, point d'accroche `CreationFaultHookForTests`) suivie d'une création
   qui tire : exactement les pas de la seconde ; (m5) le héros ne tire pas, accolé à une création qui tire. **Verts dès T1** :
-  `AlundraLootRollTests`, `SeedAfterTheLoad` égal à la graine en phase A sur un arc (épingle de la seconde re-semence, qui devient en
-  phase B une valeur de V8 seulement par (m2)), le test d'inertie de l'assistant sans la variable de l'ombre.
+  `AlundraLootRollTests` ; `SeedAfterTheLoad` égal à la graine sur un arc d'une carte **sans tirage au chargement** (la critique en compte
+  sept, dont la 389), donc vert dans les deux phases ; le test d'inertie de l'assistant sans la variable de l'ombre (il ne vérifie que le
+  puits, jamais l'état réel ni les champs du proxy, comme celui d'e0b1).
 - ⏳ **T2 — Phase B** (commit de code B) : l'assistant écrit et avance l'état réel (seul changement) ; (m1) à (m5) passent au vert ; suite
   complète ; chaque test existant qui bouge appartient à la liste prédite et est réécrit par une dérivation (D-E0B-8) ; les comparaisons
   de `+0x3C`, `+0x40` et du mot (exclues par D-E0A-3) s'ajoutent aux tests du chemin complet de la carte 14.
