@@ -3213,6 +3213,8 @@ dépendant**. Ce que chaque tranche dépendante exige d'E20.e0a :
 - **E20.g1, E20.g2** (porter, lancer) : e0a1 ;
 - **E20.h3** (graines et bombe, nées portées dans `MovePlayer`) : e0a1 à e0a3.
 
+Relecture de l'enveloppe : REVISE (prérequis), révisée ; seconde relecture : **READY** (2026-10-15).
+
 **Hors périmètre de toute la section.** Le branchement de `SpawnWeaponProjectile` et les gestionnaires A0, A254, E17 (E20.f3) ; le tirage du butin, l'avance du générateur, `DestroyEntity` avec lâcher, C255 (e0b, e0c) ; le pas vertical et le vol (e0k) ; `SpawnChildEntity` (`0x8003A048`) et la réinitialisation en place (`0x8003AC78`), cinquième appelant d'`InitializeEntity` (E14) ; la lecture de `+0x08` ; la série `+0x04`.
 
 ---
