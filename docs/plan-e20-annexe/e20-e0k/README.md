@@ -166,3 +166,24 @@ the skeleton (the call commented out: 4 red for the missing state; (b) and the P
 | K4 | the entity born by the interface has the defaults | (0, 0, 0, false, 0.001) against (128, 4096, 0x40, true, 0) for the record |
 
 Rehearsal (not kept): with the one wiring line `..., CollisionField, _tileMapData);` in `SpawnEntityBySpriteIndex` the four tests are green; the line was reverted (`git checkout`).
+
+## Results of the probes after the phase B wiring (commit `81b68b5`; T2, second half)
+
+The same throwaway probes (never committed, removed) rerun on the phase B code. A0 is now the entity as the interface creates it, WITH the map state; A1 is the manual rehearsal on top of it (a second call of the idempotent helper). Compared line by line with the
+phase A rehearsal (A1 of the first half): **P1, P2/P4, P3, P5 and P6 are identical** (A0 of phase B = A1 of phase A, and A1 of phase B = A1 of phase A). No new contradiction.
+
+| Probe | Before B (A0 of phase A) | After B | Against the prediction |
+|---|---|---|---|
+| P1 - ball (11), Z + 32 px, flat | stays at 32 px | 31.5, 30.5, 29, 27, 24.5, 21.5, 18, 14, 9.5, 4.5 px at ticks 1 to 10, 0 with `IsOnGround` 1 at tick 11; raw: the oracle minus TWO units while falling (2 064 384 against 2 064 386 at tick 1), minus one at rest | prediction "oracle minus one" contradicted (already recorded in the first half): the root truncates the position to the pixel at birth; e0k2 (logical Z) |
+| P2 - arrow (3), wall column 15 | crosses (X = 517 at tick 70) | stops at X = 349.0 (22 872 064) for the six distinct whole-pixel starts, status 3 | confirmed |
+| P3 - arrow, Z + 16 px above a 16 px field | `IsOnGround` 1 from tick 1 (`PosZ` 1 048 577 then 1 048 576) | unchanged | confirmed; the red test of e0k2 |
+| P4 - wall flag over the ten starts of C1 | no flag (crosses) | flag at tick 43 for the ten starts, the arrow at 349.0 at tick 42 (flag = arrival + 1); oracle 43 for 100, 102, 103, 105 and 100+12 345, 44 for 101, 104, 100+1, 100+40 000, 101+65 535: one-tick gap on 5 of the 10 starts as given (2 of the 6 whole-pixel starts, 101 and 104) | confirmed ("+1" always); feeds Q-K2 |
+| P5 - bomb (global 2, impulse 1 024) | rise cancelled: 4 px at tick 1, then 0 and `IsOnGround` 1 at tick 2 | 4, 7.5, 10.5, 13, 15, 16.5, 17.5, 18, 18 px, then the descent, landing at tick 17; `IsVerticalOwnedExternally` true | confirmed |
+| P6 - gap root / logical Z of a ball finishing its fall | 0.0000 at each of 30 ticks | 0.0000 at each of 30 ticks | not decidable before e0k2 (the logical Z is pulled from the root) |
+
+## Removal proof, mutants and counts (T3 and T4)
+
+- Suite after the wiring: 4 898 of 4 898 in Release and in Debug (4 894 + 4 world tests); no existing test moved; `cmp` of `Alundra.dll` identical after the Debug build; the five traces unchanged.
+- Removal proof: with the wiring line removed (neutralised DLL copy), the full suite in Release fails EXACTLY `AlundraMapStateWorldTests` K1, K2, K3, K4 (4 failures, 4 894 passed) and nothing else. File restored with `git checkout --`.
+- DLL mutants (real patches by script, `AlundraMapState*` tests, each restored): MA helper not called by the interface (8 red), MB `_tileMapData` null (K1 to K4), MC mask on the wrong flags, MD vertical ownership forgotten, ME `MinMoveDistance` forgotten, MF gravity and viscosity words swapped (10 red), MH call lost from the record path,
+  MI walk-mask line lost from the helper, M3 (the D-E0A-8 guard of `TickScriptedNpc` reduced to the marker alone: exactly one red, the P3 pin of e0a3b). MG (helper called twice) survives and is equivalent: the helper only assigns values that depend on the map and the flags (no read-modify-write).

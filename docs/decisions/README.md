@@ -81,3 +81,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0065 | An entity born by the sprite-index interface takes part in the tick of its birth, through a marker confined to that interface | Accepted | 2026-10-15 |
 | ADR-0066 | The shared random stream steps once per logic tick, through an optional per-tick callback of the effect stage | Accepted | 2026-10-15 |
 | ADR-0067 | The hero's shot reads the direction of the tick and wires types through a set that is empty until their handlers exist | Accepted | 2026-10-15 |
+| ADR-0068 | An entity born by the sprite-index interface takes the map state first; the logical Z, the vertical step and the map edge follow in the next slices | Accepted | 2026-10-16 |
