@@ -335,7 +335,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         // of the sprite header; the loot stays the named stub of E20.e0, O-E19-23). Index 2 and the other slots stay counted no-ops.
         if (entity.EventTrigger == ScriptHelper.ProgramEDeactivate
             && (entity.ProgramIndexes[ScriptHelper.ProgramEDeactivate] & 0x7f) == 0
-            && (uint)entity.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] <= 1u)
+            && IsInlineDeactivateCode(entity.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate]))
         {
             entity.ScriptHost?.DestroyEntity(entity, -1);
             return;
@@ -372,6 +372,10 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 + "g_entityEventFunctionsByType) not interpreted in V1 - counted no-op.");
         }
     }
+
+    /// <summary>E19.d2b / E20.f3a (D-F3-4): the codes of the program E (deactivation) that <see cref="RunSpriteEvent"/> treats in line, outside the registry of the native handlers: 0 and 1 (<c>0x8007ED10</c>, <c>DestroyEntity(e, -1)</c>). The one
+    /// definition shared by the runner and by the checker of the wired weapon types (<see cref="AlundraPlayerManager.UnhandledWeaponSpriteCodes"/>).</summary>
+    internal static bool IsInlineDeactivateCode(int code) => (uint)code <= 1u;
 
     /// <summary>Port of EntityEventHandlers.InitializeEventData @ 0x80041ee4 for slot A - see class doc
     /// on the 0x80 bit fallback. Internal for direct unit testing of the A-table &amp; 0x7f resolution.

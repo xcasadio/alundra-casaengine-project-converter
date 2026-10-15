@@ -391,7 +391,7 @@ public static class AlundraPlayerManager
         // PlayerManager.cs:355-357, binary 0x80031D68-0x80031D78: before the switch of states, every tick on a terrain. E20.a A4: the three calls are named stubs, in the order of the
         // binary (the weapon effects, the run and carrying come with E20.f, E20.d and E20.g; E20.b ported UpdateWeaponStepProgression without its spawn).
         UpdatePlayerWeaponEffect(player, in pad, host);
-        UpdateWeaponStepProgression(player);
+        UpdateWeaponStepProgression(player, host);
         UpdatePlayerCarriedEntity(player, 0);
 
         // LoadingMap(0x36) case, binary 0x800325E8 (PlayerManager.cs:914-922; E19.v, O-E19-32): on the ground the case ends and the
@@ -1157,7 +1157,7 @@ public static class AlundraPlayerManager
     /// <see cref="AlundraWeaponTables.AnimationFlagsAddress"/>, clears the pointer (the melee swings: at the tick after the press); otherwise the counter counts up to the delay of the record
     /// (<c>ptr[2]</c>), then the projectile is spawned (<see cref="SpawnWeaponProjectile"/>) and the pointer cleared.
     /// </summary>
-    private static void UpdateWeaponStepProgression(AlundraEntityScriptProxy player)
+    private static void UpdateWeaponStepProgression(AlundraEntityScriptProxy player, IAlundraScriptHost? host)
     {
         var pointer = player.WeaponRecordPointer;
         if (pointer == 0)
@@ -1177,13 +1177,13 @@ public static class AlundraPlayerManager
             return;
         }
 
-        SpawnWeaponProjectile(player, pointer);
+        SpawnWeaponProjectile(player, pointer, host);
         player.WeaponRecordPointer = 0;
     }
 
     /// <summary>E20.b B4 stub of the spawn call <c>0x80039F58</c> of <c>UpdateWeaponStepProgression</c> (<c>0x8002F818</c>): the projectile of a bow or a wand, at the hero's X and Y, at his Z plus the
     /// height <c>ptr[3]</c> of the record. Ported in E20.e0 (the apparition of an entity by sprite index) and E20.f (the weapons); counted only for the tests.</summary>
-    private static void SpawnWeaponProjectile(AlundraEntityScriptProxy player, uint recordPointer)
+    private static void SpawnWeaponProjectile(AlundraEntityScriptProxy player, uint recordPointer, IAlundraScriptHost? host)
     {
         WeaponSpawnCallCountForTests++;
         var call = new WeaponSpawnCall(
@@ -1191,12 +1191,69 @@ public static class AlundraPlayerManager
             SpawnDirections[Math.Clamp(player.AnimationDirection, 0, SpawnDirections.Length - 1)]);
         WeaponSpawnCallsForTests?.Add(call);
 
-        // E20.e0a3b: the place of the call of the binary (0x8002F818, inside MovePlayer) where the real shot will call the interface of the sprite index (E20.f3); null in production, so nothing is spawned yet.
-        WeaponSpawnBirthHookForTests?.Invoke(player, call);
+        // E20.e0a3b: the place of the call of the binary (0x8002F818, inside MovePlayer) where the real shot calls the interface of the sprite index. E20.f3a (D-F3-3): the test hook, when posed, REPLACES the production call (never
+        // two apparitions); otherwise a type of the wired set is born through the interface when the host is a world. The set is empty in this slice, so nothing is born in production. The return is ignored, as the
+        // binary does (0x8002F818 drops it): a full table of slots loses the shot silently and the caller clears the pointer all the same.
+        if (WeaponSpawnBirthHookForTests is { } hook)
+        {
+            hook(player, call);
+            return;
+        }
+
+        if (WiredWeaponTypes.Contains(call.Type) && host is IEntityWorldContext world)
+        {
+            world.SpawnEntityBySpriteIndex(player, false, call.Type, call.X, call.Y, call.Z, call.Direction);
+        }
+    }
+
+    /// <summary>
+    /// E20.f3a (docs/plan-e20-heros.md section 1.19.1, D-F3-3): the sprite types of the global page whose shot is wired to <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, one type after the other and never before its
+    /// handlers exist (the invariant of <see cref="UnhandledWeaponSpriteCodes"/>, D-F3-4). EMPTY in this slice: no entity is born in production; E20.f3c wires 27 to 29, E20.f4 to E20.f6 the others.
+    /// </summary>
+    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredWeaponTypes = new System.Collections.Generic.HashSet<int>();
+
+    /// <summary>E20.f3a test seam, per thread: when set, replaces <see cref="ProductionWiredWeaponTypes"/> (the production set stays empty and a test wires a type to prove the seam).</summary>
+    [ThreadStatic]
+    internal static System.Collections.Generic.IReadOnlySet<int>? WiredWeaponTypesForTests;
+
+    /// <summary>The set the shot reads: the one of the test when a test posed it, otherwise <see cref="ProductionWiredWeaponTypes"/>.</summary>
+    internal static System.Collections.Generic.IReadOnlySet<int> WiredWeaponTypes => WiredWeaponTypesForTests ?? ProductionWiredWeaponTypes;
+
+    /// <summary>
+    /// E20.f3a (D-F3-4): the invariant "a type is wired only when its handlers exist". For every type of the global page in <paramref name="types"/>, every non-zero code of its program C (tick) and of its program E
+    /// (deactivation) must be handled: a key of <paramref name="registry"/> for this type, or, for the program E, a code the runner treats in line (<see cref="AlundraEventProgramRunner.IsInlineDeactivateCode"/>). Returns the
+    /// (slot, code) pairs that are not, in the order of the types and then C before E; a type the catalog does not hold gives (-1, type). Empty means the types may be wired.
+    /// </summary>
+    internal static System.Collections.Generic.IReadOnlyList<(int Slot, int Code)> UnhandledWeaponSpriteCodes(
+        System.Collections.Generic.IEnumerable<int> types, ISpriteRecordCatalog catalog, AlundraNativeSpriteRegistry registry)
+    {
+        var unhandled = new System.Collections.Generic.List<(int Slot, int Code)>();
+        foreach (var type in types)
+        {
+            if (!catalog.TryGetPrefab(false, type, out var prefabAssetId) || !catalog.TryGet(prefabAssetId, out var header))
+            {
+                unhandled.Add((-1, type));
+                continue;
+            }
+
+            if (header.ProgramTick != 0 && !registry.TryGet(ScriptHelper.ProgramCTick, header.ProgramTick, type, out _))
+            {
+                unhandled.Add((ScriptHelper.ProgramCTick, header.ProgramTick));
+            }
+
+            if (header.ProgramDeactivate != 0
+                && !AlundraEventProgramRunner.IsInlineDeactivateCode(header.ProgramDeactivate)
+                && !registry.TryGet(ScriptHelper.ProgramEDeactivate, header.ProgramDeactivate, type, out _))
+            {
+                unhandled.Add((ScriptHelper.ProgramEDeactivate, header.ProgramDeactivate));
+            }
+        }
+
+        return unhandled;
     }
 
     /// <summary>E20.e0a3b test seam, per thread (the motif of <see cref="WeaponSpawnCallsForTests"/>): called at the exact place of <c>MovePlayer</c> where the shot of the hero calls <c>0x80039F58</c>, with the hero and the arguments of the call.
-    /// Null in production: the shot is not wired (E20.f3), a test uses it to call <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> from there.</summary>
+    /// Null in production. E20.f3a: when posed, it REPLACES the call of the production seam (<see cref="WiredWeaponTypes"/>), so a test that spawns from here gets exactly one entity.</summary>
     [ThreadStatic]
     internal static Action<AlundraEntityScriptProxy, WeaponSpawnCall>? WeaponSpawnBirthHookForTests;
 
