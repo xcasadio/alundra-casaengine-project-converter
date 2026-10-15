@@ -3954,6 +3954,13 @@ automatiques atteint) : **FIX** — les cas « 0 pas » de T2 (c) (image sans ti
 n'écrit pas l'état réel ; chacun est maintenant écrit dans la même assertion qu'un cas positif (au moins un pas réel attendu), donc
 rouge avant T3, et les mutants de T4 qui les tuent sont nommés ; l'arrêt « vert avant T3 » ne vise que des tests qui attendent au
 moins un pas. Nouvelle époque de relecture : une seule relecture de clôture suit.
+**Relecture de clôture de la révision 2 (2026-10-15) : REVISE**, un point : le test d'inertie de T1 (« `AdvanceFrame()` sans effet »),
+lu à la lettre, affirmait que `RandomSeed` ne bouge pas, ce que la phase B change ; **corrigé** (FIX, texte seulement) : le test
+d'inertie ne vérifie que le puits (aucun fichier, aucune allocation, ni `V` ni compteurs touchés), **jamais** l'état réel, et il est
+sauté quand l'ombre est active (lancement de la suite avec la variable) ; il ne bouge donc ni en A ni en B. Point non bloquant
+repris : les constructeurs et `Dispose` des classes de test ont leur propre clé dans l'attribution ; une classe qui pose la graine
+dans son constructeur garde `ambient_draws > 0` sur ses méthodes, et la justification écrite suffit. La règle de relecture ne permet
+pas une relecture de plus sans l'auteur : la tranche est **en pause** jusqu'à son accord.
 
 **Prérequis.** Voir ci-dessus. Compte de tests de départ : à relever en T0 (4 815 à la clôture d'e0a3a).
 
@@ -3979,8 +3986,11 @@ moins un pas. Nouvelle époque de relecture : une seule relecture de clôture su
   (familles de tests à risque, voir « Acceptation ») et les comptes de départ ; la liste prédite **mesurée** s'y ajoute en T1, avant la phase B. `oracle/` : `s7_frame.py` et les outils copiés octet pour octet avec leurs sommes de contrôle ; sortie `frame_vectors.json` (10 lignes) ; deux exécutions au manifeste identique ; au moins 12 mutants d'un mot (constantes, polarité du `beqz s3`,
   test de la porte, résultat de `DisplayInventory`, magasin supprimé, effacement de `[0x800DC4C4]`), tous tués ou équivalents prouvés par écrit.
 - ⏳ **T1 — Phase A, le branchement et l'ombre, sans changement de comportement** (commit de code A, puis commit de docs du relevé). Le
-  code de la phase A tel que décrit dans « Partage des phases » ; `AlundraRandomShadow` (inactif sans `ALUNDRA_RNG_SHADOW_LOG`, un test le
-  prouve : aucun fichier, aucune allocation, `AdvanceFrame()` sans effet). **Prédicat exact** : `R` = l'état réel, `V` = ce que serait `R`
+  code de la phase A tel que décrit dans « Partage des phases » ; `AlundraRandomShadow` (inactif sans `ALUNDRA_RNG_SHADOW_LOG`). **Test
+  d'inertie** (propre à la tranche) : sans la variable, `AdvanceFrame()` et les tirages n'écrivent aucun fichier, n'allouent rien et ne
+  touchent ni `V` ni les compteurs de l'ombre ; il n'affirme **rien** sur `RandomSeed` (l'état réel, que la phase B fait avancer) et il
+  est sauté quand l'ombre est active (le chemin du puits est lu une fois de la variable, comme pour `AlundraSlotShadow`) ; il ne bouge
+  donc ni en A ni en B. **Prédicat exact** : `R` = l'état réel, `V` = ce que serait `R`
   avec l'avance. Une affectation de `RandomSeed` ou `Reset()` ouvre une époque (`V := (uint)valeur`) ; chaque `AdvanceFrame()` fait
   `V := pas(V)` ; chaque tirage réel fait `R := pas(R)` et `V := pas(V)` et est **divergent** ssi `V ≠ (uint)R` ensuite (le pas est une
   bijection modulo 2³², le multiplicateur étant impair : c'est exactement « le tirage rendrait un autre nombre en phase B ») ; une lecture
@@ -3996,7 +4006,8 @@ moins un pas. Nouvelle époque de relecture : une seule relecture de clôture su
   flux, en phase B, que des valeurs identiques à celles de la phase A, donc ne peut pas bouger du fait de l'avance. Fichier versé
   `e0b1-shadow.txt` (toutes les lignes) et liste prédite recopiée dans le README **avant** la phase B. Chaque test marqué `ambient_draws`
   reçoit une affectation explicite de la graine dans sa fixture, ou une justification écrite, avant B (si une affectation est ajoutée,
-  l'ombre est relancée et le fichier versé de nouveau).
+  l'ombre est relancée et le fichier versé de nouveau) ; une classe qui pose déjà la graine dans son constructeur garde
+  `ambient_draws > 0` sur ses méthodes (le constructeur a sa propre clé) : la justification écrite suffit.
 - ⏳ **T2 — Tests** (`AlundraRandomPerTickTests`, dans `AlundraRandomStaticStateCollection`, `Reset()` au constructeur), écrits après T1 :
   **rouges avant T3** : (a) les six mots de l'avance (par `AdvanceFrame()` puis lecture de `RandomSeed`) ; (c) au niveau du monde : 1 tick →
   1 pas, 2 ticks → 2, `MenuOpen` (`0x48`) → 1 par tick, première image d'un monde → 1, deux mondes successifs sans double compte ; les
