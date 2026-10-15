@@ -3332,6 +3332,7 @@ dispositions de la session principale :
 par test, une commande et un fichier versé, et le plafond est placé dans la phase B (l'ombre ne refuse rien) ; les trois points reportés
 d'E20.e0a1 ont leurs tâches, leurs tests et leurs lignes d'acceptation, et la fabrique entre dans le périmètre. Points non bloquants repris :
 règle d'insertion autour des entrées sans case, commentaires « creation order » à mettre à jour, ADR-0064, lignes de V5 à ajouter.
+Seconde relecture : **READY** (2026-10-15).
 
 **Prérequis.** E20.e0a1 ✅ (l'interface, l'oracle et son annexe, le compte de tests : 4 775).
 
