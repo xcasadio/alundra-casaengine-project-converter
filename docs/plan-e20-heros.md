@@ -4164,6 +4164,13 @@ automatiques atteint) : **FIX** — le contrôle « ligne d'écriture retirée �
 comparaisons de D-E0A-3 au test du chemin complet et réécrit les tests déplacés, qui dépendent aussi de l'écriture : l'ensemble rouge
 attendu est maintenant fermé et nommé ; les comparaisons vont dans ce seul test, jamais dans l'assertion partagée avec les tests du
 noyau d'e0a1. Nouvelle époque de relecture : une seule relecture de clôture suit.
+**Relecture de clôture de la révision 2 (2026-10-15) : REVISE**, un point : T2 lisait les attendus de `+0x3C` et `+0x40` dans `contents`
+de l'oracle d'e0a, qui est l'octet de code de l'en-tête (`header[0x1F]`), et parlait d'un « mot d'entrée du vecteur » qui n'existe pas ;
+**corrigé** (FIX, texte seulement, vérifié dans `run_e0a.py` : `'loot': [loot_item, loot_flag]`, `SEED = 0x12345678` écrit avant chaque
+apparition, `rng_out` relu après) : `p.loot[0]` → `ContentsItemId`, `p.loot[1]` → `ContentsGameFlag`, `rng_out` → le mot, graine
+d'entrée `0x12345678` ; le lecteur `AlundraSpawnIndexOracle.cs` est étendu à `loot` et `rng_out` sans toucher aux comparaisons de
+`SpawnProjectionAsserts.Check`. La règle de relecture ne permet pas une relecture de plus sans l'auteur, absent cette nuit (mode AUTO) :
+la tranche est **en pause** jusqu'à son accord ; E20.e0a4 (ordonnée après e0b2), E20.g2 et E20.e0c attendent avec elle.
 
 **Prérequis.** E20.e0a1 ✅, E20.e0a2 ✅, E20.e0b1 ✅ (ADR-0066 ; l'ombre `AlundraRandomShadow` et son registre virtuel `V` existent).
 Q-B1 tranchée : `ArcRun` re-sème avant et après le chargement.
@@ -4240,8 +4247,9 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
 - ⏳ **T2 — Phase B** (commit de code B) : l'assistant écrit et avance l'état réel (seul changement) ; (m1) à (m5) passent au vert ; suite
   complète ; chaque test existant qui bouge appartient à la liste prédite et est réécrit par une dérivation (D-E0B-8) ; les comparaisons
   de `+0x3C`, `+0x40` et du mot (exclues par D-E0A-3) s'ajoutent au **seul** test du chemin complet de la carte 14,
-  `AlundraSpawnBySpriteIndexInterfaceTests.B2_TheFullPath_On151NumbersOfTheGlobalPage_…` (graine posée avant chaque apparition au mot
-  d'entrée du vecteur, attendus lus dans `contents` et `rng_out` de l'oracle d'e0a), dans une assertion propre à ce test, **jamais** dans
+  `AlundraSpawnBySpriteIndexInterfaceTests.B2_TheFullPath_On151NumbersOfTheGlobalPage_…` (graine `0x12345678` posée avant chaque apparition,
+  comme l'oracle d'e0a, `run_e0a.py` ; attendus : `p.loot[0]` → `ContentsItemId`, `p.loot[1]` → `ContentsGameFlag`, `rng_out` → le mot ;
+  le lecteur `AlundraSpawnIndexOracle.cs` est étendu à `loot` et `rng_out`, sans changer les comparaisons de `SpawnProjectionAsserts.Check`), dans une assertion propre à ce test, **jamais** dans
   `SpawnProjectionAsserts.Check`, partagée avec les tests du noyau d'e0a1 qui ne passent pas par l'assistant du monde ; les tests
   existants réécrits sont nommés dans les résultats de T2.
 - ⏳ **T3 — ADR, plan, verifiers frais** (deux ; mutants du code de la DLL : au moins 12, tous tués — banque inversée, masque `0x7FFF`
