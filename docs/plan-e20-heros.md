@@ -3620,7 +3620,7 @@ l'auteur et par Visual Studio (le build Debug a été fait avec la copie neutral
 fichier de `Alundra/` n'ayant changé. P4 notés : la colonne « écart attendu » est arrivée dans le même commit que `v6.json` (l'ordre
 n'est attesté que par le rapport) ; bruit de fins de ligne des traces.
 
-##### 1.16.3b E20.e0a3b — Le code du tick de naissance, puis la mesure P-B (détaillée le 2026-10-15 après P-A)
+##### 1.16.3b E20.e0a3b — Le code du tick de naissance, puis la mesure P-B (détaillée le 2026-10-15 après P-A) ✅ (faite le 2026-10-15, `7b9b096` et le commit de clôture ; verifiers frais à lancer)
 
 **Révision 1 (2026-10-15).** Relecture : **REVISE**, trois points corrigés (FIX) : la construction de P-B neutralise toujours la copie de
 la DLL vers `alundra-project/` et le `cmp` se fait après la remise en état, contre le code commité ; le marqueur est posé à la fin de
@@ -3725,7 +3725,7 @@ P-A et par l'annexe `e20-armes/e0-spawn.md`, point 4) :
   poser `AnimFlags` dans l'interface), une réservation de bascule reportée à l'image suivante, une impulsion ou un son perdu ou doublé, ou
   tout effet sur une entité par enregistrement — **arrêt** : le résultat est versé dans le plan et la session principale révise la tranche,
   qui est relue avant T2.
-- ⏳ **T1 — Tests rouges.** (a) Trace des passes d'une naissance dans `MovePlayer` (point d'accroche) calquée sur `BT-M1` à `BT-M3` : après
+- ✅ **T1 — Tests rouges.** (a) Trace des passes d'une naissance dans `MovePlayer` (point d'accroche) calquée sur `BT-M1` à `BT-M3` : après
   la passe des programmes l'état est `Normal` et le déclencheur (`EventTrigger`, `+0x228`) celui de la ligne, le gestionnaire A (inscrit par le test dans `AlundraNativeSpriteRegistry`) a tourné une fois
   au tick 1 et zéro au tick 2, `FrameCounter == 1` après les compteurs, présente dans `_updateProxies` et dans la liste des coups après les
   listes, horloge et physique appelées une fois (deux dans une image à deux ticks), X = 153 puis 159 pour le n° 3 en direction `0x18`
@@ -3736,10 +3736,10 @@ P-A et par l'annexe `e20-armes/e0-spawn.md`, point 4) :
   entité par enregistrement, et **jamais pendant la création** (un champ espion compte zéro lecture entre l'appel et le retour de
   `SpawnEntityBySpriteIndex`) ; `AlundraSpawnBySpriteIndexInterfaceTests` passe sans modification ; (g) les quatre directions de T0′
   épinglées (`AnimFlags` dès la naissance, validation de la première image, `SpawnAnimationActive` qui tombe).
-- ⏳ **T2 — Code** (les décisions ci-dessus). Suites complètes : aucune épingle des apparitions par enregistrement ne bouge
+- ✅ **T2 — Code** (les décisions ci-dessus). Suites complètes : aucune épingle des apparitions par enregistrement ne bouge
   (`AlundraTickStructureTests`, `AlundraVisionArcTests`, `AlundraShipBlockArcTests`, `AlundraAbsoluteZWritesTests`,
   `AlundraControllerlessVerticalStepTests`, `AlundraAnimationImpulseSpawnTests`, et toute la suite).
-- ⏳ **T3 — Mesure P-B (après le code).** Précondition : `git status --porcelain` vide sur les fichiers que la sonde touche (sinon arrêt) ;
+- ✅ **T3 — Mesure P-B (après le code).** Précondition : `git status --porcelain` vide sur les fichiers que la sonde touche (sinon arrêt) ;
   forcer le seul drapeau `JoinsBirthTick` dans les chemins par enregistrement (changement jetable, jamais commité) ; construction
   **toujours avec la copie de la DLL neutralisée** (`-p:CustomAfterMicrosoftCommonTargets=<scratch>/skipcopy.targets`, fichier du
   scratchpad qui redéfinit une cible vide de même nom : `<Project><Target Name="CopyGameplayDllToProject" /></Project>`, importé après
@@ -3748,7 +3748,7 @@ P-A et par l'annexe `e20-armes/e0-spawn.md`, point 4) :
   puis une suite complète en Release ; remise en état par `git checkout -- <fichiers touchés par la sonde>` et des cinq traces ; puis
   reconstruction Release et Debug du code commité ; liste versée dans la sous-section « Mesure P-B » du §1.16.4, au format
   `Classe.Méthode — raison observée`. Aucune construction ne dépose une DLL qui porte le marqueur forcé.
-- ⏳ **T4 — ADR-0065, plan** (résultats, icônes) ; verifiers frais lancés par la session principale.
+- ✅ **T4 — ADR-0065, plan** (résultats, icônes) ; les verifiers frais sont lancés par la session principale (non faits ici).
 
 ##### Résultat de T0 (2026-10-15, base `e6207ae`) : ARRÊT, aucune ligne de code de production écrite
 
@@ -3803,6 +3803,31 @@ création, marqueur posé : l'état de la révision 3). La clé de la cinématiq
 
 Issue : celle qui est écrite (aucun écart sur une entité de l'interface, aucun code hors des décisions). T1 commence.
 
+##### Résultats (2026-10-15, base `0d9d8cb`)
+
+- **T0′** (`681c87b`) : issue conforme, voir « Résultat de T0′ ».
+- **T1 et T2** (`7b9b096`). Tests : `Alundra.Tests/AlundraBirthTickTests.cs` (18 tests nouveaux, théorie comprise). Code : marqueur `JoinsBirthTick` (posé en dernier par `SpawnEntityBySpriteIndex`, jamais par le chemin
+  par enregistrement, non cloné), compteur des naissances par l'interface remis à zéro en tête du bloc d'entités et nouvelle collecte après `MovePlayer`, collecte `TookPartInFrame || (JoinsBirthTick && Owner.World == null)`,
+  repli `IAlundraScriptHost.CollisionField` (implémentation explicite du monde) lu par `ReadCollisionField()` aux neuf lectures, `AnimFlags` chargé dans `CreateEntityFromSpriteIndex` seulement, une ligne gardée par le marqueur dans
+  `TickScriptedNpc`, point d'accroche `AlundraPlayerManager.WeaponSpawnBirthHookForTests`. Les tests ont été écrits avec le code dans l'arbre de travail (pas de passage rouge séparé) ; le mordant est prouvé par les deux
+  mutations réelles ci-dessous.
+- **Preuves de l'acceptation.** `BT-M1` à `BT-M3` (naissance dans `MovePlayer`) : état `Loaded` à l'entrée de la passe des programmes puis `Normal`, déclencheur −1, A une fois au tick 1 et zéro au tick 2, `FrameCounter` 0 puis 1 aux
+  compteurs, présente dans la liste de mise à jour et dans la liste des coups après les listes, horloge d'animation passée (une fois, deux ticks comptés dans une image à deux ticks), non intégrée par le moteur pendant son tick
+  de naissance, X +3 px puis +9 px au tick 2 (153, 159) ; image à deux ticks : A une fois, FrameCounter 2, X +9 px. Écart de `BT-H1`, `BT-H4`, `BT-H6` : naissance dans le programme natif d'une autre entité, `Loaded` à la fin du
+  tick 1, A au tick suivant seulement (images d'un tick et image de deux ticks), `FrameCounter` 1 au tick 1 comme l'oracle (la passe des compteurs n'a pas de filtre d'état). Détruite au tick de sa naissance (image à deux ticks) :
+  A a tourné, recyclée en tête du tick suivant, case rendue (reprise par l'apparition suivante), deux images du moteur sans exception. Son de création : demandé une seule fois (le n° 7, `0x21`) sur quatre images.
+  Espion : zéro lecture de repli entre l'appel et le retour de `SpawnEntityBySpriteIndex` ; des lectures de repli pendant le tick de naissance ; zéro une fois l'entité intégrée ; jamais pour une entité par enregistrement
+  (`SpawnEntityByRecordId` : pas de marqueur, `ReadCollisionField()` nul avant l'intégration). Quatre directions de T0′ épinglées (théorie de huit cas : n° 3 et 20) : `AnimFlags` dès la naissance, bascule en attente (`Current` ~0), validation
+  à la première image, `SpawnAnimationActive` qui tombe, `AnimFlags` et `HitAnimByte` identiques, aucune impulsion. Garde de la cinématique : une entité sans marqueur reste immobile (150, 150, 150). Hôte à ticks propres : `ReadCollisionField()` nul.
+  Les six épingles (`AlundraTickStructureTests`, `AlundraVisionArcTests`, `AlundraShipBlockArcTests`, `AlundraAbsoluteZWritesTests`, `AlundraControllerlessVerticalStepTests`, `AlundraAnimationImpulseSpawnTests`) et toute la suite : vertes.
+- **Deux mutations réelles**, appliquées par script sur le changement non commité puis restaurées, jamais commitées. (1) Marqueur posé sur le chemin par enregistrement (`ApplyRecord`) : rouges
+  `TheMarker_IsPosedByTheInterfaceOnly_AndNotCloned` et `TheCreation_NeverReadsTheCollisionFieldOfTheHostByTheFallback_…_AndAnEntityFromARecordNever`. (2) Condition `JoinsBirthTick` retirée de la ligne de `TickScriptedNpc` : rouge
+  `AnEntityFromARecord_KeysItsKinematicsOnItsCurrentAnimation_NeverOnTheTarget_…` (X = 153 au lieu de 150).
+- **Comptes.** `Alundra.Tests` : 4 815 → **4 833**, zéro échec, en Release **et** en Debug (`--blame-hang-timeout 300s`). Tests existants : seul `AlundraBirthTickProbePaTests.PA3_…` change (renommé `…_MeasuredAfterE0a3b`, attente 153, 159, 165) ;
+  `AlundraSpawnBySpriteIndexInterfaceTests` (H compris) inchangé. Cinq traces inchangées (bruit de fins de ligne restauré, jamais indexé). `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` : identiques,
+  après la remise en état de P-B (la DLL du projet n'était pas verrouillée ; les constructions de P-B ont toutes neutralisé la copie).
+- **Mesure P-B** (T3) : voir la sous-section du §1.16.4. Aucune construction n'a déposé une DLL qui porte le marqueur forcé.
+
 ##### Acceptation
 
 - T1 vert ; `Alundra.Tests` en Release et en Debug : 4 815 plus les nouveaux, aucun échec, **aucun test existant modifié hors de PA3**
@@ -3828,7 +3853,21 @@ Issue : celle qui est écrite (aucun écart sur une entité de l'interface, aucu
 
 **Prérequis.** E20.e0a3b et la réponse de l'auteur à Q-A1 (après la liste de P-B). Ne bloque aucune autre tranche.
 
-**Mesure P-B** (versée par E20.e0a3b) : _à venir_.
+**Mesure P-B** (versée par E20.e0a3b, 2026-10-15, base `7b9b096`). Changement jetable, jamais commité : `proxy.JoinsBirthTick = true` à la fin de `AlundraEntitySpawnFactory.ApplyRecord` (donc pour la charge d'une carte
+et pour `SpawnEntityByRecordId`, c'est-à-dire les opcodes `0x2D`, `0x8A`, `0x8B`), précondition `git status --porcelain` vide sur les fichiers touchés ; construction Release avec la copie de la DLL neutralisée, suite complète
+(4 833 tests) : **8 tests existants rouges** (les 2 autres rouges sont les épingles du marqueur d'e0a3b, attendues). Remise en état par `git checkout --` du seul fichier touché, puis reconstruction Release et Debug du code commité (4 833 verts
+dans les deux). Format `Classe.Méthode — raison observée` :
+
+- `AlundraInoaDayOneArcTests.A10_TheFirstVisitOnMap165_TheActorsPassTheSceneOnByFlags_ThePlayerGetsTheHandBack` — la liste de numéros d'image attendue se décale d'une image (596, 597, … au lieu de 597, 598, …) : une apparition par événement de carte tourne dans son tick au lieu de l'image suivante.
+- `AlundraShipBlockArcTests.A6_TheCameraBlockLandsAndWalksSouth_ThenTheWarpToMap416Departs` — les images relevées (`C[100]` du bloc d'après la `0x2D` à 265) arrivent une image plus tôt : [180, 643, 1332] au lieu de [181, 644, 1333].
+- `AlundraHeightTargetSitesTests.TheWaitOfTheBinaryEndsAtTheCallOfTheBinaryAtEveryRealSite(id: "s36c4_rec3")` — la fin de l'attente est vue une image plus tôt : (165, 325, 160, 11534335) au lieu de (166, 326, 160, 11534335).
+- `AlundraHeightTargetSitesTests.TheWaitOfTheBinaryEndsAtTheCallOfTheBinaryAtEveryRealSite(id: "s115_rec19")` — même décalage d'une image : (756, 1077, 321, 3145727) au lieu de (757, 1078, 321, 3145727).
+- `AlundraNpcCharacterControllerMoverTests.GullEntitySix_RealFlightAtRenderRateAndAtFiftyHertz_ClimbsAndDriftsWithFaithfulTickQuantizedPhysics(dt: 0,00416666688)` — l'apogée du goéland vaut 210,73 au lieu de l'intervalle 208,25 à 210,25 : un tick de plus de vol dès la naissance de l'entité.
+- `AlundraNpcCharacterControllerMoverTests.GullEntitySix_RealFlightAtRenderRateAndAtFiftyHertz_ClimbsAndDriftsWithFaithfulTickQuantizedPhysics(dt: 0,008130081)` — même apogée 210,73, hors de l'intervalle.
+- `AlundraNpcCharacterControllerMoverTests.GullEntitySix_RealFlightAtRenderRateAndAtFiftyHertz_ClimbsAndDriftsWithFaithfulTickQuantizedPhysics(dt: 0,0199999996)` — même apogée 210,73, hors de l'intervalle.
+- `AlundraNpcCharacterControllerMoverTests.GullEntitySix_RealFlightWithFrameTimeHitchesInjectedMidClimb_StillReachesTheFaithfulApexAndDrift` — même apogée 210,73, hors de l'intervalle.
+
+Lecture : les quatre échecs d'arcs et de sites sont un décalage d'exactement une image (la règle « première image à l'image suivante » que les épingles tiennent aujourd'hui) ; les quatre du goéland montrent un tick de plus à la naissance de l'entité par enregistrement.
 
 Non détaillée. Elle ne démarre qu'avec l'accord de l'auteur après la liste de P-B (sous-section « Mesure P-B » ci-dessous, versée
 par e0a3b). Chaque épingle qui bouge est re-dérivée de l'oracle (une apparition par événement de carte tourne dans le tick, D-E20-11) ; les arcs listés au §1.16 (A, B) sont remesurés un à un.
