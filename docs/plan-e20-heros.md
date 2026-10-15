@@ -156,13 +156,13 @@ ADR-0058) :
   (lecture de « 9 a », à confirmer par l'auteur s'il voulait seulement les courants).
 - **D-E20-32** — Pour l'arrondi du stick (E20.d2), une sonde est construite d'abord ; l'auteur mesure sa manette avec, puis la règle
   est close. Q-D1.
+- **D-E20-33** (2026-10-10, après-midi) — L'export d'E20.e0x ajoute aussi l'ensemble des indices valides de la page des cartes,
+  carte par carte, pour que la DLL puisse reproduire les apparitions qui échouent en silence dans l'original (un indice absent de la
+  table de la carte courante : `0x80039B28` rend 0 ; exemple : Zorgia, C44, indice 213 sur les cartes 388, 432 et 451).
 - **D-E20-34** (2026-10-15, réponse à Q-A2) — « A deux fois » (une apparition dans le programme d'une autre entité, sur une case
   au-dessus du compteur, fait tourner A deux fois dans le binaire) reste un écart documenté de la DLL (E20.e0a3, D-E0A-6, O-E0A-1).
 - **D-E20-35** (2026-10-15, réponse à Q-A3) — Une entité née pendant un tick tourne dès ce tick mais n'est dessinée qu'à l'image
   suivante (intégration du moteur) ; pas d'intégration immédiate, pas de changement du moteur.
-- **D-E20-33** (2026-10-10, après-midi) — L'export d'E20.e0x ajoute aussi l'ensemble des indices valides de la page des cartes,
-  carte par carte, pour que la DLL puisse reproduire les apparitions qui échouent en silence dans l'original (un indice absent de la
-  table de la carte courante : `0x80039B28` rend 0 ; exemple : Zorgia, C44, indice 213 sur les cartes 388, 432 et 451).
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
