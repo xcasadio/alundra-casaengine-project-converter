@@ -586,6 +586,7 @@ création, ses sprites communs ont `Contents` 0, `f-projectiles.md` point 7 : il
 E20.g2 et E20.e0c exigent e0b2 (le lâcher, à la destruction, lit `+0x3C` écrit par le tirage, `order-critic.md` ligne 22 du tableau ;
 l'arête « E20.g2 → E20.e0b » de la révision 3, perdue par le tableau de la révision 4, est rétablie). Lignes 3, 5, 8 et 10 du tableau
 et paragraphe « Ensuite » mis à jour. Une seule relecture de clôture suit.
+Relecture de clôture de la révision 6 : **READY** (2026-10-15).
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -3942,6 +3943,13 @@ Dépendants : E20.f3, E20.f6 (e0b1) ; E20.e0c, E20.g2 (e0b2) ; l'avance ferme le
 
 #### 1.17.1 E20.e0b1 — L'avance du générateur, une fois par tick ⏳
 
+**Révision 1 (2026-10-15).** Relecture : **REVISE**, deux points corrigés (FIX) : (1) le branchement du rappel appartient à une seule
+phase, la phase A (paramètre de `RunFrame`, délégué du monde, `AdvanceFrame()` qui n'écrit que le registre virtuel) ; la phase B ne
+fait qu'écrire l'état réel ; les tests de T2 rouges avant T3 et ceux verts par construction dès T1 sont nommés ; T3 et le retour
+arrière suivent ce partage ; (2) l'ombre attribue **chaque** événement au cadre le plus extérieur d'`Alundra.Tests` par une remontée
+de pile, comme le canal de la table de cases ; la liste prédite est celle des tests dont `divergent_draws + divergent_seed_reads +
+ambient_draws > 0`, et l'acceptation comme les arrêts portent sur l'appartenance à cette liste, non sur la présence dans le fichier.
+
 **Prérequis.** Voir ci-dessus. Compte de tests de départ : à relever en T0 (4 815 à la clôture d'e0a3a).
 
 **But.** Un pas du générateur par tick logique, en fin de tick, après les effets du tick ; aucun autre changement de consommation.
@@ -3949,36 +3957,70 @@ Dépendants : E20.f3, E20.f6 (e0b1) ; E20.e0c, E20.g2 (e0b2) ; l'avance ferme le
 **Périmètre.** `Alundra/Scripts/AlundraRandom.cs` (`RandomSeed` en propriété, `AdvanceFrame()`), `AlundraEffectStage.cs` (paramètre facultatif), `AlundraWorldProxy.cs` (`:2612` et le commentaire de `:2931`), le puits `AlundraRandomShadow` (nouveau fichier),
 `Alundra.Tests/` (nouveaux tests ; épingles déplacées et justifiées), `docs/plan-e20-annexe/e20-e0b/` (README, `oracle/`, `e0b1-shadow.txt`), un ADR.
 
+**Partage des phases** (seul à faire foi) :
+- **Phase A** (T1, sans changement de comportement) : `RandomSeed` en propriété (D-E0B-7) ; le paramètre facultatif
+  `RunFrame(int ticks, IReadOnlyList<bool> frozenOfTick, Action? afterTick = null)`, appelé une fois par tick après `_reservoir.Tick`
+  (D-E0B-1) ; le monde passe son délégué statique à l'appel de production de `RunFrame` ; `AlundraRandom.AdvanceFrame()`, qui en
+  phase A **n'écrit que le registre virtuel `V` de l'ombre** et ne fait rien quand l'ombre est inactive (variable absente) ; l'état
+  réel `R` n'est jamais touché par l'avance.
+- **Phase B** (T3) : `AdvanceFrame()` écrit aussi l'état réel (`R := pas(R)`, même expression `ulong` que `Next()`) ; commentaires
+  corrigés. Rien d'autre ne change en B : ni le branchement, ni la place de l'appel, ni l'ordre des opérations de `RunFrame`.
+
 **Hors périmètre.** Le tirage du butin (e0b2) ; déplacer la passe des effets dans la boucle des ticks ; le tick d'armement d'un warp ; les effets de transition 4, 5, 6 ; le flux de `rand()` de la bibliothèque (`AlundraLibcRandom`, inchangé) ; `RunActiveEffectsPass` reste vide.
 
 ##### Tâches
 
-- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code). `docs/plan-e20-annexe/e20-e0b/README.md` : les valeurs attendues ci-dessus (les six mots de l'avance, une avance par appel sur les dix lignes de la sonde, a0 sans effet sur le nombre de pas), la liste **prédite** des tests qui bougent
-  (voir l'ombre), les comptes de départ. `oracle/` : `s7_frame.py` et les outils copiés octet pour octet avec leurs sommes de contrôle ; sortie `frame_vectors.json` (10 lignes) ; deux exécutions au manifeste identique ; au moins 12 mutants d'un mot (constantes, polarité du `beqz s3`,
+- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code). `docs/plan-e20-annexe/e20-e0b/README.md` : les valeurs attendues ci-dessus (les six mots de l'avance, une avance par appel sur les dix lignes de la sonde, a0 sans effet sur le nombre de pas), la prédiction **qualitative** de la découverte
+  (familles de tests à risque, voir « Acceptation ») et les comptes de départ ; la liste prédite **mesurée** s'y ajoute en T1, avant la phase B. `oracle/` : `s7_frame.py` et les outils copiés octet pour octet avec leurs sommes de contrôle ; sortie `frame_vectors.json` (10 lignes) ; deux exécutions au manifeste identique ; au moins 12 mutants d'un mot (constantes, polarité du `beqz s3`,
   test de la porte, résultat de `DisplayInventory`, magasin supprimé, effacement de `[0x800DC4C4]`), tous tués ou équivalents prouvés par écrit.
-- ⏳ **T1 — Phase A, l'ombre, sans changement de comportement** (commit de code A, puis commit de docs du relevé). `RandomSeed` en propriété ; `AdvanceFrame()` appelé par le rappel, qui en phase A **ne touche que le registre virtuel** ; `AlundraRandomShadow` (inactif sans `ALUNDRA_RNG_SHADOW_LOG`,
-  un test le prouve : aucun fichier, aucune allocation). **Prédicat exact** : `R` = l'état réel, `V` = ce que serait `R` avec l'avance. Une affectation de `RandomSeed` ou `Reset()` ouvre une époque (`V := (uint)valeur`) ; chaque `AdvanceFrame()` fait `V := pas(V)` ; chaque tirage réel fait `R := pas(R)` et `V := pas(V)`
-  et est **divergent** ssi `V ≠ (uint)R` ensuite ; une lecture de `RandomSeed` par un test (hors `Next()` et hors puits) est **divergente** ssi `V ≠ (uint)R`. Par test (cadre le plus extérieur de `Alundra.Tests`, comme `AlundraSlotShadow`, attribué à chaque changement d'époque et au premier événement divergent d'un type) :
-  `virtual_advances`, `divergent_draws` (premier type : IA, opcode, effet, autre, par le type déclarant), `divergent_seed_reads`, `epochs`, `ambient_draws` (tirages avant toute époque du test : état hérité). Commande : `ALUNDRA_RNG_SHADOW_LOG=<scratch>/shadow.txt dotnet test Alundra.Tests/Alundra.Tests.csproj -c Release --no-build --blame-hang-timeout 300s`.
-  Fichier versé `e0b1-shadow.txt` **avant** la phase B ; un test absent du fichier ne peut pas bouger en B. Chaque test marqué `ambient_draws` reçoit une affectation explicite de la graine dans sa fixture, ou une justification, avant B.
-- ⏳ **T2 — Tests rouges** (`AlundraRandomPerTickTests`, dans `AlundraRandomStaticStateCollection`, `Reset()` au constructeur) : (a) les six mots de l'avance ; (b) `RunFrame` appelle le rappel exactement `ticks` fois (0, 1, 2, 4), après le tick du réservoir, aussi sur un tick gelé, jamais pour 0 tick ;
-  (c) au niveau du monde : 1 tick → 1 pas, 2 ticks → 2, image sans tick → 0, `MenuOpen` (`0x48`) → 1 par tick, départ de warp → 0, première image d'un monde → 1, deux mondes successifs sans double compte ; (d) l'ordre dans le tick : l'étincelle de charge des ticks 85 et 89 (C2-steel) tire avant l'avance de son tick, mot attendu calculé par un pas local, identique
-  en images de 1, 2 et 3 ticks, mot final = graine avancée de (ticks comptés par la passe `inventory` + 4 tirages) ; (e) `RunFrame` sans rappel n'avance rien (garde des 70 appels directs). Rouges avant T3.
-- ⏳ **T3 — Phase B** (commit de code B) : `AdvanceFrame()` écrit `R` ; le monde passe le rappel ; commentaires corrigés (`:2931`, en-tête d'`AlundraHitPassTests`) ; suite complète ; chaque test dont le résultat bouge est dans `e0b1-shadow.txt` et réécrit par une dérivation (D-E0B-8) ; rien d'autre ne change.
+- ⏳ **T1 — Phase A, le branchement et l'ombre, sans changement de comportement** (commit de code A, puis commit de docs du relevé). Le
+  code de la phase A tel que décrit dans « Partage des phases » ; `AlundraRandomShadow` (inactif sans `ALUNDRA_RNG_SHADOW_LOG`, un test le
+  prouve : aucun fichier, aucune allocation, `AdvanceFrame()` sans effet). **Prédicat exact** : `R` = l'état réel, `V` = ce que serait `R`
+  avec l'avance. Une affectation de `RandomSeed` ou `Reset()` ouvre une époque (`V := (uint)valeur`) ; chaque `AdvanceFrame()` fait
+  `V := pas(V)` ; chaque tirage réel fait `R := pas(R)` et `V := pas(V)` et est **divergent** ssi `V ≠ (uint)R` ensuite (le pas est une
+  bijection modulo 2³², le multiplicateur étant impair : c'est exactement « le tirage rendrait un autre nombre en phase B ») ; une lecture
+  de `RandomSeed` par un test (hors `Next()` et hors puits) est **divergente** ssi `V ≠ (uint)R`.
+  **Attribution** : **chaque** événement (avance virtuelle, tirage réel, affectation ou `Reset()`, lecture par un test) est attribué au
+  cadre le plus extérieur de `Alundra.Tests` par une remontée de pile **à l'événement**, comme `AlundraSlotShadow.Report`
+  (`AlundraEntitySlotTable.cs`, vers `:82-108`) ; les compteurs sont tenus en mémoire par test et écrits (une ligne par test) quand le
+  test attribué change et à la sortie du processus (la suite tourne sans parallélisme). Par test : `virtual_advances`,
+  `divergent_draws` (et le type déclarant du premier tirage divergent : IA, opcode, effet, autre), `divergent_seed_reads`, `epochs`,
+  `ambient_draws` (tirages attribués au test avant toute époque **de ce test** : état hérité de l'ordre des tests). Commande :
+  `ALUNDRA_RNG_SHADOW_LOG=<scratch>/shadow.txt dotnet test Alundra.Tests/Alundra.Tests.csproj -c Release --no-build --blame-hang-timeout 300s`.
+  **Liste prédite** : les tests où `divergent_draws + divergent_seed_reads + ambient_draws > 0` ; un test hors de cette liste ne lit du
+  flux, en phase B, que des valeurs identiques à celles de la phase A, donc ne peut pas bouger du fait de l'avance. Fichier versé
+  `e0b1-shadow.txt` (toutes les lignes) et liste prédite recopiée dans le README **avant** la phase B. Chaque test marqué `ambient_draws`
+  reçoit une affectation explicite de la graine dans sa fixture, ou une justification écrite, avant B (si une affectation est ajoutée,
+  l'ombre est relancée et le fichier versé de nouveau).
+- ⏳ **T2 — Tests** (`AlundraRandomPerTickTests`, dans `AlundraRandomStaticStateCollection`, `Reset()` au constructeur), écrits après T1 :
+  **rouges avant T3** : (a) les six mots de l'avance (par `AdvanceFrame()` puis lecture de `RandomSeed`) ; (c) au niveau du monde : 1 tick →
+  1 pas, 2 ticks → 2, image sans tick → 0, `MenuOpen` (`0x48`) → 1 par tick, départ de warp → 0, première image d'un monde → 1, deux mondes
+  successifs sans double compte ; (d) l'ordre dans le tick : l'étincelle de charge des ticks 85 et 89 (C2-steel) tire avant l'avance de son
+  tick, mot attendu calculé par un pas local, identique en images de 1, 2 et 3 ticks, mot final = graine avancée de (ticks comptés par la
+  passe `inventory` + 4 tirages). **Verts par construction dès T1** (ils épinglent le branchement de la phase A ; les mutants de T4 prouvent
+  qu'ils mordent) : (b) `RunFrame` appelle le rappel exactement `ticks` fois (0, 1, 2, 4), après le tick du réservoir, aussi sur un tick
+  gelé, jamais pour 0 tick ; (e) `RunFrame` sans rappel n'appelle rien et n'avance rien (garde des 70 appels directs). Un test de (a), (c)
+  ou (d) vert avant T3 est un arrêt (il ne prouve rien).
+- ⏳ **T3 — Phase B** (commit de code B) : `AdvanceFrame()` écrit `R` (la seule ligne de comportement de la phase) ; commentaires corrigés
+  (`RunActiveEffectsPass`, en-tête d'`AlundraHitPassTests`) ; suite complète ; **chaque test qui bouge appartient à la liste prédite**
+  et est réécrit par une dérivation (D-E0B-8) ; un test de la liste qui ne bouge pas est noté avec la raison (la divergence n'atteint
+  aucune assertion) ; rien d'autre ne change.
 - ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée ; mutants du code de la DLL : au moins 8, tous tués — rappel non passé, passé avant le tick du réservoir, sauté sur un tick gelé, appelé une fois par image, `IsTransitionInProgress` inversé, plancher retiré, constantes).
 
 ##### Acceptation
 
 - Oracle : dix lignes PASS ; manifeste identique sur deux exécutions ; au moins 12 mutants tués ou prouvés équivalents.
 - DLL : tous les tests de T2 verts ; **les deux cas du test de groupement (2 et 3 ticks par image), les tests de groupement de `AlundraHeroAuraWorldTests`, `AlundraTickStructureTests` et les 70 appels directs de `RunFrame` ne bougent pas** ; `Alundra.Tests` en Release **et** en Debug : compte de départ plus les nouveaux, zéro échec ;
-  chaque test déplacé est dans `e0b1-shadow.txt` et justifié ; `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` ; les cinq traces inchangées (`git diff --ignore-cr-at-eol --exit-code`) ; moteur, convertisseur et données sans diff.
+  **tests déplacés ⊂ liste prédite** (`e0b1-shadow.txt`, règle de T1), chacun justifié par sa dérivation ; `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` ; les cinq traces inchangées (`git diff --ignore-cr-at-eol --exit-code`) ; moteur, convertisseur et données sans diff.
 - Prédiction à confronter (qualitative, de la découverte ; le chiffre « une douzaine » est une estimation de la critique, non mesurée) : au plus une douzaine de tests bougent, parmi `AlundraShipCorridorArcTests` (A5, A5r), les arcs des Beannoïdes et des Muruta réels (cartes 14 hors arène, 44, 115, 116, 117), l'arc de la 167 (`0x5A` mode 4) et les arcs des cartes à `0x0C`/`0x8C`.
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : la phase A fait bouger un test ; plus de 25 tests bougent (question à l'auteur : interrupteur d'`ArcRun` ou accord) ; un test de groupement, de structure ou un appel direct de `RunFrame` bouge ; un test absent de l'ombre bouge ; une avance observée là où le binaire n'en a pas ; un test existant à réécrire sans dérivation ; tout contact avec `CasaEngineMonogame/` ou `CasaEngine.Launcher/Program.cs`.
+- **Arrêts** : la phase A fait bouger un test ; plus de 25 tests bougent (question à l'auteur : interrupteur d'`ArcRun` ou accord) ; un test de groupement, de structure ou un appel direct de `RunFrame` bouge ; un test **hors de la liste prédite** bouge ; un test de
+  T2 (a), (c) ou (d) vert avant T3 ; une avance observée là où le binaire n'en a pas ; un test existant à réécrire sans dérivation ; tout contact avec `CasaEngineMonogame/` ou `CasaEngine.Launcher/Program.cs`.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
-- **Retour arrière** : la phase B se retire seule (le rappel et `AdvanceFrame()` réel) ; la phase A reste sans effet (registre virtuel, puits inerte).
+- **Retour arrière** : la phase B se retire seule (`AdvanceFrame()` cesse d'écrire `R`) ; la phase A reste sans effet (le rappel n'écrit
+  que le registre virtuel, le puits est inerte sans sa variable).
 
 ---
 
