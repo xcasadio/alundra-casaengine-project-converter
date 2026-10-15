@@ -66,6 +66,11 @@ bdc5548680ca044dfc4130173719a45e  crate-wall.json
 f04e66b375faee18c2c5ab6e3604dde8  crate-wall.txt
 455ad27ad8e1041b72b58b53b4d38d38  drift-summary.txt
 2cd8628233066c1af6204ff622e3d8e4  header-summary.txt
+31235453f201ffb4e857fb8ba4384a21  magnet-3px.json
+7871bdc94dd80d672bcbd01ff4dd3985  magnet-3px.txt
+65b3f203ebdd5b5b189e92f5164a720f  magnet-4px.json
+a907810101c57988085dfff503aacfa9  magnet-4px.txt
+13c4b8c7b2f01071f1193476bab3a0ef  magnet-summary.txt
 bea4f208e8ab0570ffd4a55c81a5d530  masks-summary.txt
 9139df41c2f799b4e5f5da5b8ccddd5a  muruta-record24.txt
 1fd76e9393d36d5b7e667688ea46a6fe  muruta-record6.txt

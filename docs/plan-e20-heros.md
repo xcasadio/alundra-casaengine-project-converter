@@ -4504,7 +4504,7 @@ la carte transmise ; une ligne « T2 ⚠️ (première moitié) » reste dans le
 
 ---
 
-#### 1.18.2 E20.e0k2 — Le Z logique et le pas vertical des entités marquées ⏳
+#### 1.18.2 E20.e0k2 — Le Z logique et le pas vertical des entités marquées ⏳ (en cours : T0 faite)
 
 **Révision 1 (2026-10-16).** Relecture : **REVISE**, quatre points corrigés (FIX), vérifiés dans le code : (1) W2 doit aussi sauter, pour
 une entité marquée, le bloc de la loi de force de `EvaluateEntitySupport` (`AlundraEntityScriptProxy.cs`, vers `:774-798`) et l'écriture de
@@ -4535,7 +4535,7 @@ Relecture de clôture : **READY** (2026-10-16).
 
 ##### Tâches
 
-- ⏳ **T0 — Liste prédite et oracle de l'aimant** (commit de docs, avant tout code). Au README de l'annexe : la liste recomptée au HEAD de
+- ✅ **T0 — Liste prédite et oracle de l'aimant** (commit de docs, avant tout code). Au README de l'annexe : la liste recomptée au HEAD de
   départ d'e0k2 de toutes les méthodes de `Alundra.Tests/` qui atteignent `SpawnEntityBySpriteIndex` ou `CreateEntityFromSpriteIndex` (les
   tests d'e0k1, `AlundraMapStateWorldTests` (k1) à (k4) et ceux d'`AlundraMapStateTests` qui y passent, compris), avec son compte ; elle
   remplace la liste d'e0k1 pour l'acceptation et les arrêts d'e0k2. À l'oracle (copie du scratchpad, deux exécutions au manifeste
@@ -4568,6 +4568,10 @@ Relecture de clôture : **READY** (2026-10-16).
   marquées) ; (l'arrêt sur P3 d'e0k1 est satisfait : P3 a confirmé l'unité perdue) ; un diff du chemin du héros ou des entités par enregistrement ; un besoin de changer le moteur.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B se retire seule (les quatre branchements, dont les deux appels de W1). La phase A ne change aucun comportement : le marqueur n'a aucun lecteur, l'extraction conserve le comportement.
+
+##### Résultats (exécution du 2026-10-16, phase A)
+
+- **T0 ✅** : départ au HEAD `5c5f70a`, suite **4 898** en Release et en Debug, `cmp` de la DLL identique, cinq traces inchangées. Liste prédite recomptée (README de l'annexe) : 9 classes, **70 méthodes, 82 cas** (la liste d'e0k1 plus `AlundraMapStateTests` et `AlundraMapStateWorldTests`). Oracle de l'aimant (`k0_magnet.py`, clés `magnet-3px` et `magnet-4px`) : deux exécutions, manifeste identique (93 fichiers, les 88 d'e0k1 inchangés plus 5), M12 le tue. **Écart avec la lettre de (z9)** : à 4 px le premier essai est refusé puis le pas est raffiné (4 unités brutes de moins) et l'entité finit le tick sur le terrain ; la différence 3 px / 4 px est le déplacement du tick 1 (pas entier contre pas raccourci), non la hauteur en fin de tick. Détail au README de l'annexe.
 
 ---
 

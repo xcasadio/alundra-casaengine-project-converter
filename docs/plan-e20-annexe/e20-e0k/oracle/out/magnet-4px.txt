@@ -1,0 +1,9 @@
+== magnet-4px: Beannoid (anim 7, speed 400) from x = 62 on flat ground, ascending ramp from column 3; interp diff None
+start state: status=2 anim_t=0 anim_c=0 fz_B8=0 fnz_EC=0 fx_C4=0 fnx_E4=0 px=62.0000 pz=0.0000 terr_138=0.0000 floor_134=47.0000 ground_144=1 collz_140=0 adj_13C=0
+tick status anim_t anim_c fz_B8 fnz_EC fx_C4 fnx_E4 px pz terr_138 floor_134 ground_144 collz_140 adj_13C
+t001 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=307200 fnx_E4=307200 px=66.6874 pz=4.0000 terr_138=4.0000 floor_134=4.0000 ground_144=1 collz_140=1 adj_13C=0  | snd(0)
+t002 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=307200 fnx_E4=307200 px=71.3749 pz=7.0000 terr_138=7.0000 floor_134=7.0000 ground_144=1 collz_140=1 adj_13C=0
+t003 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=307200 fnx_E4=307200 px=76.0624 pz=10.0000 terr_138=10.0000 floor_134=10.0000 ground_144=1 collz_140=1 adj_13C=0
+t004 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=307200 fnx_E4=307200 px=80.7499 pz=13.0000 terr_138=13.0000 floor_134=13.0000 ground_144=1 collz_140=1 adj_13C=0
+t005 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=307200 fnx_E4=307200 px=85.4374 pz=16.0000 terr_138=16.0000 floor_134=16.0000 ground_144=1 collz_140=1 adj_13C=0
+t006 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=307200 fnx_E4=307200 px=90.1249 pz=20.0000 terr_138=20.0000 floor_134=20.0000 ground_144=1 collz_140=1 adj_13C=0

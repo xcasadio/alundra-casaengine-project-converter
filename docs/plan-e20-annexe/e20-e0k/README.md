@@ -187,3 +187,57 @@ phase A rehearsal (A1 of the first half): **P1, P2/P4, P3, P5 and P6 are identic
 - Removal proof: with the wiring line removed (neutralised DLL copy), the full suite in Release fails EXACTLY `AlundraMapStateWorldTests` K1, K2, K3, K4 (4 failures, 4 894 passed) and nothing else. File restored with `git checkout --`.
 - DLL mutants (real patches by script, `AlundraMapState*` tests, each restored): MA helper not called by the interface (8 red), MB `_tileMapData` null (K1 to K4), MC mask on the wrong flags, MD vertical ownership forgotten, ME `MinMoveDistance` forgotten, MF gravity and viscosity words swapped (10 red), MH call lost from the record path,
   MI walk-mask line lost from the helper, M3 (the D-E0A-8 guard of `TickScriptedNpc` reduced to the marker alone: exactly one red, the P3 pin of e0a3b). MG (helper called twice) survives and is equivalent: the helper only assigns values that depend on the map and the flags (no read-modify-write).
+
+## E20.e0k2 - T0: the predicted list recounted at the starting HEAD `5c5f70a`, and the oracle of the magnet
+
+Written before any code of E20.e0k2 (task T0 of subsection 1.18.2 of `docs/plan-e20-heros.md`).
+
+### Counts at the starting HEAD `5c5f70a` (after E20.e0k1, ADR-0068)
+
+`dotnet test Alundra.Tests/Alundra.Tests.csproj -c <config> --no-build --blame-hang-timeout 300s`, no filter: **4 898 passed, 0 failed, 0 skipped, in Release and in Debug**, as the plan states. `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll`
+after the Debug build: identical. The five traces unchanged (`git diff --ignore-cr-at-eol --exit-code`; the four `hero-trace-389-*` files are rewritten with line-ending noise by the suite and restored).
+
+### The recounted predicted list of tests that can move (replaces the list of E20.e0k1 for the acceptance and the stops of E20.e0k2)
+
+Same method as for E20.e0k1 (`rg` over `Alundra.Tests/` for `SpawnEntityBySpriteIndex`, `CreateEntityFromSpriteIndex`, `BySpriteIndex`, `SpawnWarp`, `WiredWeaponTypesForTests`, `WeaponSpawnBirthHookForTests`, `SpawnWeaponProjectile`,
+`WeaponSpawnCall`, then read; the cases are those of `dotnet test --list-tests`, a theory counting one case per data row). The files found: the seven of the list of E20.e0k1 and the two that E20.e0k1 added (`AlundraMapStateTests`, `AlundraMapStateWorldTests`);
+`AlundraHeroAttackTests`, `AlundraHeroChargeTests` and `AlundraShotDirectionTests` mention the shot seam but never wire a type (they do not reach the interface), and `AlundraSpawnIndexOracle.cs` is a data helper, not a test class.
+
+| File (`Alundra.Tests/`) | Class | Methods | Cases |
+|---|---|---|---|
+| `AlundraBirthTickProbePaTests.cs` | `AlundraBirthTickProbePaTests` | 5 | 5 |
+| `AlundraBirthTickTests.cs` | `AlundraBirthTickTests` | 11 (one theory of 8 rows) | 18 |
+| `AlundraEntitySlotV5RowsTests.cs` | `AlundraEntitySlotV5RowsTests` | 3 | 3 |
+| `AlundraEntitySlotWorldTests.cs` | `AlundraEntitySlotWorldTests` | 14 (one theory of 2 rows) | 15 |
+| `AlundraSpawnBySpriteIndexInterfaceTests.cs` | `AlundraSpawnBySpriteIndexInterfaceTests` | 11 | 11 |
+| `AlundraSpawnBySpriteIndexTests.cs` | `AlundraSpawnBySpriteIndexCoreTests` | 12 | 12 |
+| `AlundraWeaponSpawnSeamTests.cs` | `AlundraWeaponSpawnSeamTests` | 6 | 6 |
+| `AlundraMapStateTests.cs` | `AlundraMapStateTests` (E20.e0k1) | 4 (two theories, 3 and 2 rows) | 8 |
+| `AlundraMapStateWorldTests.cs` | `AlundraMapStateWorldTests` (E20.e0k1, K1 to K4) | 4 | 4 |
+| **Total** | 9 classes | **70** | **82** |
+
+The list of E20.e0k1 had 7 classes, 62 methods and 70 cases; the difference is the two classes of E20.e0k1 (8 methods, 12 cases). As for E20.e0k1, the tests that run entities **from a record** are the whole rest of the suite: they are guarded by
+"the suite does not move" and by the mutants, not by this list. The names are recomputed with `dotnet test Alundra.Tests/Alundra.Tests.csproj -c Release --no-build --list-tests`.
+
+### The oracle of the magnet (`k0_magnet.py`, keys `magnet-3px` and `magnet-4px`)
+
+Run from a scratch copy of the oracle, twice (`python -B -I run_all.py` after deleting nothing but the prefixed outputs, as the driver does): the two manifests are **identical** (93 files: the 88 of E20.e0k1, unchanged byte for byte, and the 5 new ones:
+`magnet-3px.txt/.json`, `magnet-4px.txt/.json`, `magnet-summary.txt`); the log of the new module is `out/log-k0_magnet.txt`. The driver `run_all.py` has the new module and the prefix `magnet` (`checksums.txt` updated). The existing scenarios
+`walker-ramp-up` (E3) and `walker-ramp-down` (E2) of `k0_walker.py` are the witnesses; the mutants M12 (magnet window 3 px to 2 px) and M14 (magnet also with `ForceZ != 0`) of `mutants_e0k.py` are the teeth.
+
+The scenario: the Beannoid of map 14 (sprite 79, ClassA, Gravity, the walker of E2 to E8), animation 7 (walk) with the speed of the animation set overridden to 400 by the harness (4.6875 px per tick, full step 307 200 raw), on the ascending ramp of E3
+(cells 3 to 6: height byte 1 to 4, slope 3), at rest on the flat ground (T = 0) at tick 0, starting at x = 61 (`magnet-3px`) and x = 62 (`magnet-4px`). Raw 16.16 integers, `pz` in the binary's frame (the DLL's frame is this minus one raw unit, ADR-0026).
+
+| Key | Tick 1 | Tick 2 |
+|---|---|---|
+| `magnet-3px` (`out/magnet-3px.json`, `rows[0].slots[<slot>]`) | displacement 307 200 (the full step, accepted whole), `pz` 196 609 = `terr_138` 196 608 + 1 (3 px higher), `ground_144` 1, `adj_13C` 0 | displacement 307 200, `pz` 393 217, `terr_138` 393 216 |
+| `magnet-4px` (`out/magnet-4px.json`) | displacement **307 196** (4 raw short of the full step), `pz` 262 145 = `terr_138` 262 144 + 1 (4 px higher), `ground_144` 1, `adj_13C` 0 | displacement 307 200, `pz` 458 753, `terr_138` 458 752 |
+
+What the machine does at tick 1 of `magnet-4px` (a write trace of `+0x114`, `+0x11C`, `+0x138` by address of the writing instruction, throwaway): the first attempt (the full step, terrain 4 px under the new box) is **refused** (`0x80037938`
+gives back X and `0x80037948` gives back Z: no magnet, the window is 3 px, then the blocking function), then the refinement by halves accepts sub-steps one after the other, and **each accepted sub-step poses the entity on its terrain** (`0x80037898`, Z = T + 1): the terrain of
+the successive sub-steps is 2 px, 3 px, then 4 px, and the magnet compares the terrain of the attempt to the Z **left by the previous accepted attempt**, never to the Z of the start of the tick, so the staircase 2, 3, 4 px is climbed by steps of at most 3 px. The step ends 4 raw short and the entity is
+on the terrain at the end of the same tick; `ForceAdjusted` is not raised (a sub-step was accepted). With a rise of 3 px (`magnet-3px`) the first attempt passes (the magnet poses the entity, the full step is accepted). The mutant M12 (window 2 px) makes `magnet-3px` take the 4-raw-short step of the other
+(checked, throwaway): the keys have teeth.
+
+**Discrepancy with the plan, to be read by whoever reads the results of E20.e0k2:** the plan's wording of (z9) says the entity facing a terrain 4 px higher is "not posed". The oracle says the full step is refused and the **step is shortened by 4 raw units**, the entity then being on the terrain at the end of the
+tick anyway (by the sub-steps). The observable difference between 3 px and 4 px is the **displacement of tick 1** (full against 4 raw short), not the height at the end of the tick. The test (z9) as written in `Alundra.Tests/AlundraLogicalZWorldTests.cs` pins the keys as they are (see the results of phase A in the plan).

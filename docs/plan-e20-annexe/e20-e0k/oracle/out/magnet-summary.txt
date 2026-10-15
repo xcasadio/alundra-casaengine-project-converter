@@ -1,0 +1,6 @@
+magnet-3px tick 1: displacement 307200 raw (full step 307200), rise of PosZ 196608 raw (3.0000 px), TerrainHeight 196608 raw, PosZ - TerrainHeight 1 raw, IsOnGround 1, ForceAdjusted 0
+magnet-3px tick 2: displacement 307200 raw (full step 307200), rise of PosZ 196608 raw (3.0000 px), TerrainHeight 393216 raw, PosZ - TerrainHeight 1 raw, IsOnGround 1, ForceAdjusted 0
+magnet-3px: two interpreters differ at: None
+magnet-4px tick 1: displacement 307196 raw (full step 307200), rise of PosZ 262144 raw (4.0000 px), TerrainHeight 262144 raw, PosZ - TerrainHeight 1 raw, IsOnGround 1, ForceAdjusted 0
+magnet-4px tick 2: displacement 307200 raw (full step 307200), rise of PosZ 196608 raw (3.0000 px), TerrainHeight 458752 raw, PosZ - TerrainHeight 1 raw, IsOnGround 1, ForceAdjusted 0
+magnet-4px: two interpreters differ at: None
