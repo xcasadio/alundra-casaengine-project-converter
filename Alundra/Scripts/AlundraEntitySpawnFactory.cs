@@ -493,12 +493,13 @@ internal static class AlundraEntitySpawnFactory
     /// <item><description>No record: <c>EntityRefId = -1</c> (<c>0x80039D84</c>; the field's default 0 would answer to <c>0x2C [0]</c> and <c>0x2E [0]</c>), <c>EventTrigger = -1</c> (the first tick is the next frame, until E20.e0a3), no
     /// program codes, <see cref="AlundraEntityScriptProxy.RecordHeight"/> null. <see cref="AlundraEntityScriptProxy.SpriteTableIndex"/> is the raw index, <see cref="AlundraEntityScriptProxy.SpriteType"/> the identifier of the binary
     /// (the index, plus <c>0x100</c> for the map page).</description></item>
+    /// <item><description><paramref name="tileMapData"/> (E20.e0k1, null by default: nothing is read) is the tile data of the world's map: the entity then gets the map words, the walkability mask, the vertical ownership and the minimum move distance as a record does (<see cref="ApplyMapDependentState"/>).</description></item>
     /// <item><description>The parent (<c>+0x0C</c>) is <paramref name="parentEntity"/>, even null; the root (<c>+0x08</c>, written only when the parent is not null) is the parent's root, else the parent (<c>0x80039D48-0x80039D5C</c>).
     /// It is kept in <see cref="AlundraEntityScriptProxy.ChildEntity"/>, the name the decompilation gives to that word (D-E0A-4); no reader of it is known.</description></item>
     /// </list>
     /// </summary>
     internal static Entity CreateEntityFromSpriteIndex(
-        Entity? prefab, SpriteRecordHeader header, bool isMapPage, int index, Entity? parentEntity, int x, int y, int z, int direction, ICollisionField? collisionField)
+        Entity? prefab, SpriteRecordHeader header, bool isMapPage, int index, Entity? parentEntity, int x, int y, int z, int direction, ICollisionField? collisionField, TileMapData? tileMapData = null)
     {
         var entity = prefab?.Clone() ?? new Entity();
         entity.Name = $"SpawnedSprite_{(isMapPage ? "map" : "global")}_{index}";
@@ -534,6 +535,9 @@ internal static class AlundraEntitySpawnFactory
         proxy.ChildEntity = ResolveRootEntity(parentEntity);
 
         ApplyHeaderInitialization(header, entity, proxy, isMapPage ? index | 0x100 : index, unchecked((uint)direction), collisionField);
+
+        // E20.e0k1 (D-E0K-2): what reads the tile data of the map, as the record path does right after its header initialization. Nothing when no map is given (the default).
+        ApplyMapDependentState(proxy, tileMapData);
 
         // E20.e0a3b (D-E0A-8, ADR-0065), HERE and not in the core the record path shares: the first switch of the creation (0x80038AB4, the block 0x80038B18-0x80038BAC) loads the byte 0xD of the animation set of the
         // animation 0 into +0xB4/AnimFlags. SyncAnimation reloads the same byte when it validates the pending switch at the end of the first frame; until then (the tick of the birth) the field would read 0, and the bit 0x80 of
@@ -664,8 +668,17 @@ internal static class AlundraEntitySpawnFactory
         ApplyHeaderInitialization(
             header, entity, proxy, EntityRecordMapper.ResolveSpriteType(record), AnimationTables.CardinalDirectionTable[spriteDirection & 0x3], collisionField);
 
-        // What reads this map's tile data stays with the record path (E20.e0a1: the apparition by sprite index poses none of it, which E20.e0k settles).
-        //
+        // What reads this map's tile data: the four map words, the walkability mask, the vertical ownership and the minimum move distance (E20.e0k1, D-E0K-2: one helper, shared with the creation by sprite index).
+        ApplyMapDependentState(proxy, tileMapData);
+    }
+
+    /// <summary>
+    /// E20.e0k1 (docs/plan-e20-heros.md section 1.18.1, D-E0K-2): the lines of <see cref="ApplySpawnInitialization"/> that read the tile data of THIS map, extracted unchanged (same lines, same order) so that the creation by
+    /// sprite index can run them too. Nothing happens when <paramref name="tileMapData"/> is null (a caller that never resolved one). Must run after <see cref="ApplyHeaderInitialization"/>: the walkability mask and the gravity
+    /// bit of the controller need the header flags of <paramref name="proxy"/>.
+    /// </summary>
+    internal static void ApplyMapDependentState(AlundraEntityScriptProxy proxy, TileMapData? tileMapData)
+    {
         // Overrides the converter-exported Gravity/MaxFallSpeed/WalkabilityMask - the only three
         // CharacterControllerSettings the converter cannot bake in (E4.a leaves them 0, see that
         // tranche's own "Contrôleurs PNJ" note), since they depend on THIS map's own properties and THIS
