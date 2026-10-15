@@ -112,6 +112,9 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///  - Data/sprite-records.json also carries "BreakEffect" (E14.a1a, ADR-0061), between "SizeZ" and "Contents", in every entry and
 ///    0 included: the sprite header byte +0x1E that DestroyEntity 0x8003A59C reads when its caller passes fx == -1 (the effect id it
 ///    creates, 0 = none). The extraction already carries it as SpriteRecords[].Header.BreakEffect.
+///  - Data/sprite-records.json starts every entry with "BankKey" (E20.e0x, ADR-0062): "alundra_N" (151 entries, the global table) or
+///    "N" (244, a map's table), the key the prefab id was derived from. Data/map-sprite-indices.json (same ADR, D-E20-33) lists, per
+///    native map (key = the number), the ascending sprite-table indices 0..255 whose record is not null; not catalogued either.
 ///  - D-N-6 (docs/plan-nettoyage-convertisseur.md): every asset and fixture shape this writer
 ///    constructs now gets a deterministic id via the engine's additive Guid constructors
 ///    (ObjectBase(Guid) and its per-type overrides) plus Ids.For(&lt;stable key&gt;) - prefab entity
@@ -159,7 +162,8 @@ public static class SpriteWriter
     public static IReadOnlyDictionary<string, Guid> ConvertSprites(
         string inputDirectory, string outputDirectory, ConversionReport report)
     {
-        var banks = SpriteBankReader.ReadAllBanks(inputDirectory, report);
+        var validSpriteIndicesByMap = new SortedDictionary<int, IReadOnlyList<int>>();
+        var banks = SpriteBankReader.ReadAllBanks(inputDirectory, report, validSpriteIndicesByMap);
         var prefabAssetIdsByBankKey = new Dictionary<string, Guid>(StringComparer.Ordinal);
 
         var entityNamesPath = Path.Combine(AppContext.BaseDirectory, "EntityNames.csv");
@@ -209,7 +213,8 @@ public static class SpriteWriter
         PreserveHeroEffects(inputDirectory, outputDirectory, report);
         WriteSpriteRecords(
             outputDirectory, headerFieldsByPrefabId, idsvAnimDirsByPrefabId, animSetHeadersByPrefabId,
-            dialoguePortraitsByPrefabId, report);
+            dialoguePortraitsByPrefabId, prefabAssetIdsByBankKey, report);
+        WriteMapSpriteIndices(outputDirectory, validSpriteIndicesByMap);
 
         return prefabAssetIdsByBankKey;
     }
@@ -1155,8 +1160,10 @@ public static class SpriteWriter
         Dictionary<Guid, List<AnimDirIdsv>> idsvAnimDirsByPrefabId,
         Dictionary<Guid, IReadOnlyList<AnimSetHeader>> animSetHeadersByPrefabId,
         Dictionary<Guid, DialoguePortraitJson> dialoguePortraitsByPrefabId,
+        IReadOnlyDictionary<string, Guid> prefabAssetIdsByBankKey,
         ConversionReport report)
     {
+        var bankKeysByPrefabId = prefabAssetIdsByBankKey.ToDictionary(pair => pair.Value, pair => pair.Key);
         var recordsByPrefabId = new Dictionary<string, SpriteRecordJson>(StringComparer.Ordinal);
         var idsvAnimDirCount = 0;
         var animSetCount = 0;
@@ -1171,6 +1178,7 @@ public static class SpriteWriter
 
             recordsByPrefabId[prefabAssetId.ToString()] = new SpriteRecordJson
             {
+                BankKey = ResolveBankKey(prefabAssetId, bankKeysByPrefabId, report),
                 MoreFlags = header.MoreFlags,
                 CanPickup = header.CanPickup,
                 FlagsPortraitShadowType = header.FlagsPortraitShadowType,
@@ -1225,6 +1233,44 @@ public static class SpriteWriter
         CheckSpriteRecordsInvariant(report);
     }
 
+    /// <summary>
+    /// The <see cref="SpriteBank.BankKey"/> of a prefab, or a hard error of the report (and an empty key) when the prefab has none:
+    /// an entry without its key would leave the DLL unable to tell which sprite table it comes from (E20.e0x, ADR-0062).
+    /// </summary>
+    internal static string ResolveBankKey(
+        Guid prefabAssetId, IReadOnlyDictionary<Guid, string> bankKeysByPrefabId, ConversionReport report)
+    {
+        if (bankKeysByPrefabId.TryGetValue(prefabAssetId, out var bankKey))
+        {
+            return bankKey;
+        }
+
+        report.Errors.Add($"SpriteRecords: prefab {prefabAssetId} has no BankKey; its Data/sprite-records.json entry cannot be keyed.");
+        return string.Empty;
+    }
+
+    /// <summary>
+    /// Writes Data/map-sprite-indices.json (E20.e0x, ADR-0062, D-E20-33): one key per native map (the number alone, as a string, in
+    /// numeric order), whose value is the ascending list of sprite-table indices (0..255) the map's SpriteRecords fill. Plain
+    /// <see cref="JsonSerializer"/> text with <see cref="SpriteRecordsSerializerOptions"/>, like sprite-records.json; not catalogued.
+    /// </summary>
+    internal static void WriteMapSpriteIndices(
+        string outputDirectory, IReadOnlyDictionary<int, IReadOnlyList<int>> validSpriteIndicesByMap)
+    {
+        var indicesByMapKey = new Dictionary<string, IReadOnlyList<int>>(StringComparer.Ordinal);
+        foreach (var mapIndex in validSpriteIndicesByMap.Keys.OrderBy(index => index))
+        {
+            indicesByMapKey[mapIndex.ToString(System.Globalization.CultureInfo.InvariantCulture)] =
+                validSpriteIndicesByMap[mapIndex].OrderBy(index => index).ToList();
+        }
+
+        var dataDirectory = Path.Combine(outputDirectory, "Data");
+        Directory.CreateDirectory(dataDirectory);
+        File.WriteAllText(
+            Path.Combine(dataDirectory, "map-sprite-indices.json"),
+            JsonSerializer.Serialize(indicesByMapKey, SpriteRecordsSerializerOptions));
+    }
+
     private static void CheckSpriteRecordsInvariant(ConversionReport report)
     {
         var exported = report.Counters.GetValueOrDefault("SpriteRecords.Exported");
@@ -1243,6 +1289,12 @@ public static class SpriteWriter
     /// </summary>
     private sealed class SpriteRecordJson
     {
+        /// <summary>
+        /// The sprite table this prefab comes from (E20.e0x, ADR-0062), always written, FIRST: "alundra_N" for the global table,
+        /// "N" for a map's - exactly <see cref="SpriteBank.BankKey"/>.
+        /// </summary>
+        public string BankKey { get; set; } = string.Empty;
+
         public int MoreFlags { get; set; }
         public int CanPickup { get; set; }
         public int FlagsPortraitShadowType { get; set; }

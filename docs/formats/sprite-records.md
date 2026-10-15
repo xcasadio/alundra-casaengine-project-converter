@@ -6,12 +6,15 @@ Code : [`Writers/SpriteWriter.cs`](../../alundra-casaengine-project-converter/Wr
 [ADR-0005](../decisions/0005-inventory-portrait-data-path.md)
 (portrait de l'inventaire) et [ADR-0039](../decisions/0039-the-dialogue-portraits-are-exported-and-linked-from-sprite-records.md)
 (portraits de dialogue), plan [E19.f4a](../plan-e19-opcodes.md) ; [ADR-0061](../decisions/0061-the-break-effect-byte-is-exported-in-every-sprite-record.md)
-(octet de l'effet de bris), plan [E14.a1a](../plan-e14-ia-native.md).
+(octet de l'effet de bris), plan [E14.a1a](../plan-e14-ia-native.md) ; [ADR-0062](../decisions/0062-the-sprite-table-key-of-each-prefab-and-the-valid-indices-of-each-map-are-exported.md)
+(clé de table `BankKey` et indices valides par carte), plan [E20.e0x](../plan-e20-heros.md), D-E20-33.
 
 **Ce que c'est** : une fiche par préfab d'entité (395), qui garde les champs de l'en-tête d'un enregistrement de sprite
 (`SpriteRecord.Header`) que le convertisseur n'interprète pas, pour que la DLL termine l'apparition d'une entité comme le fait
 `EntityManager.InitializeEntity` : composer les drapeaux de l'entité, résoudre les emplacements de programme, dimensionner le volume
 de corps.
+
+**Les indices valides de chaque carte** sont dans un second fichier, [`map-sprite-indices.md`](map-sprite-indices.md).
 
 **Où c'est écrit** : `Data/sprite-records.json`, un objet dont les clés sont les identifiants de préfab (ceux que portent les
 enregistrements `PrefabAssetId` des cartes).
@@ -22,6 +25,7 @@ enregistrements `PrefabAssetId` des cartes).
 
 | Champ | Type | Signification |
 |---|---|---|
+| `BankKey` | string | **Premier membre de chaque fiche, toujours écrit.** La table de sprites d'où vient le préfab : `"alundra_N"` pour la table globale (151 fiches), `"N"` pour celle d'une carte (244 fiches), sans zéros, `N` valant `Header.Sector5Id`. C'est exactement la clé dont le préfab est dérivé (`entity:{BankKey}/{dossier}`) ; les 395 clés sont distinctes. Page globale et page des cartes sont deux espaces : 146 nombres existent sur les deux. Ajouté par E20.e0x ([ADR-0062](../decisions/0062-the-sprite-table-key-of-each-prefab-and-the-valid-indices-of-each-map-are-exported.md)) ; la DLL l'ignore jusqu'à E20.e0a. Une fiche sans clé est une erreur du rapport |
 | `MoreFlags`, `CanPickup`, `FlagsPortraitShadowType` | int | Les trois octets d'en-tête que le jeu empaquette dans les drapeaux de l'entité (bits 0-7, 8-15, 16-23). Le bit `0x80` de `FlagsPortraitShadowType` (bit `0x800000` des drapeaux) dit que l'entité a un portrait de dialogue |
 | `ProgramLoad`, `ProgramTick`, `ProgramTouch`, `ProgramDeactivate`, `ProgramInteract` | int | Indices d'emplacements de script |
 | `OffsetX`, `OffsetY`, `OffsetZ`, `SizeX`, `SizeY`, `SizeZ` | int | Volume de corps : coin minimal relatif aux pieds, puis étendues en X, Y, Z |
@@ -47,6 +51,7 @@ tolérant son absence (`SpriteRecordHeader.DialoguePortrait`, `DialoguePortraitR
 ```json
 {
   "24147828-80a5-59d9-b3b1-af4dfe9c3361": {
+    "BankKey": "3",
     "MoreFlags": 128,
     "CanPickup": 161,
     "FlagsPortraitShadowType": 131,

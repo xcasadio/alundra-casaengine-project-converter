@@ -273,14 +273,22 @@ public static class SpriteBankReader
             : null;
     }
 
-    public static IReadOnlyList<SpriteBank> ReadAllBanks(string inputDirectory, ConversionReport report)
+    /// <summary>
+    /// Reads every bank. When <paramref name="validSpriteIndicesByMap"/> is given, it also receives, for every native map file
+    /// (key = the map number), the ascending indices 0..255 of that map's <c>SpriteInfo.SpriteRecords</c> whose record is not null:
+    /// the sprite-table indices a map can spawn (E20.e0x, D-E20-33). It is a side output; the bank deduplication is unchanged.
+    /// </summary>
+    public static IReadOnlyList<SpriteBank> ReadAllBanks(
+        string inputDirectory, ConversionReport report,
+        IDictionary<int, IReadOnlyList<int>>? validSpriteIndicesByMap = null)
     {
         var banksByKey = new Dictionary<string, SpriteBank>();
 
         var alundraPath = Path.Combine(inputDirectory, "data", "map_alundra.json");
         if (File.Exists(alundraPath))
         {
-            ReadMapSpriteRecords(alundraPath, mapIndex: -1, AlundraSpritesheetFileName, isAlundraBank: true, banksByKey, report);
+            ReadMapSpriteRecords(
+                alundraPath, mapIndex: -1, AlundraSpritesheetFileName, isAlundraBank: true, banksByKey, report, validIndices: null);
         }
         else
         {
@@ -296,7 +304,13 @@ public static class SpriteBankReader
                 continue;
             }
 
-            ReadMapSpriteRecords(mapPath, mapIndex, $"map_{mapIndex}_spritesheet.png", isAlundraBank: false, banksByKey, report);
+            var validIndices = validSpriteIndicesByMap == null ? null : new List<int>();
+            ReadMapSpriteRecords(
+                mapPath, mapIndex, $"map_{mapIndex}_spritesheet.png", isAlundraBank: false, banksByKey, report, validIndices);
+            if (validSpriteIndicesByMap != null)
+            {
+                validSpriteIndicesByMap[mapIndex] = validIndices!;
+            }
         }
 
         return banksByKey.Values.OrderBy(bank => bank.IsAlundraBank).ThenBy(bank => bank.Sector5Id).ToList();
@@ -305,14 +319,24 @@ public static class SpriteBankReader
     private static void ReadMapSpriteRecords(
         string mapPath, int mapIndex, string spritesheetFileName, bool isAlundraBank,
         Dictionary<string, SpriteBank> banksByKey,
-        ConversionReport report)
+        ConversionReport report,
+        List<int>? validIndices)
     {
         using var stream = File.OpenRead(mapPath);
         using var document = JsonDocument.Parse(stream);
 
-        if (!document.RootElement.TryGetProperty("SpriteInfo", out var spriteInfoElement)
-            || !spriteInfoElement.TryGetProperty("SpriteRecords", out var recordsElement)
-            || recordsElement.ValueKind != JsonValueKind.Array)
+        var hasSpriteInfo = document.RootElement.TryGetProperty("SpriteInfo", out var spriteInfoElement);
+        var recordsElement = default(JsonElement);
+        var hasRecords = hasSpriteInfo
+                         && spriteInfoElement.TryGetProperty("SpriteRecords", out recordsElement)
+                         && recordsElement.ValueKind == JsonValueKind.Array;
+        if (validIndices != null)
+        {
+            CollectValidSpriteIndices(
+                hasSpriteInfo ? spriteInfoElement : default, hasRecords ? recordsElement : default, mapIndex, validIndices, report);
+        }
+
+        if (!hasRecords)
         {
             return;
         }
@@ -377,6 +401,71 @@ public static class SpriteBankReader
                 Header = header,
                 DialoguePortrait = dialoguePortrait,
             };
+        }
+    }
+
+    /// <summary>
+    /// The highest sprite-table index (the table has 257 entries; the game looks 0..255 up, the last entry is never an index).
+    /// </summary>
+    private const int MaxSpriteTableIndex = 255;
+
+    /// <summary>
+    /// Fills <paramref name="validIndices"/> with the indices 0..255 of <paramref name="recordsElement"/> (default when the map has no
+    /// SpriteRecords) whose record is an object, i.e. not a null record. The sprite table says the same thing (an entry other than -1
+    /// is a record): when the map has a <c>SpriteTable</c> and it disagrees, that is a hard error of the report, not a silent choice.
+    /// </summary>
+    private static void CollectValidSpriteIndices(
+        JsonElement spriteInfoElement, JsonElement recordsElement, int mapIndex, List<int> validIndices, ConversionReport report)
+    {
+        if (recordsElement.ValueKind == JsonValueKind.Array)
+        {
+            var index = 0;
+            foreach (var recordElement in recordsElement.EnumerateArray())
+            {
+                if (index > MaxSpriteTableIndex)
+                {
+                    break;
+                }
+
+                if (recordElement.ValueKind == JsonValueKind.Object)
+                {
+                    validIndices.Add(index);
+                }
+
+                index++;
+            }
+        }
+
+        if (spriteInfoElement.ValueKind != JsonValueKind.Object
+            || !spriteInfoElement.TryGetProperty("SpriteTable", out var tableElement)
+            || tableElement.ValueKind != JsonValueKind.Array)
+        {
+            return;
+        }
+
+        var tableIndices = new List<int>();
+        var tableIndex = 0;
+        foreach (var entry in tableElement.EnumerateArray())
+        {
+            if (tableIndex > MaxSpriteTableIndex)
+            {
+                break;
+            }
+
+            var isMinusOne = entry.ValueKind == JsonValueKind.Number && entry.TryGetInt32(out var value) && value == -1;
+            if (!isMinusOne)
+            {
+                tableIndices.Add(tableIndex);
+            }
+
+            tableIndex++;
+        }
+
+        if (!tableIndices.SequenceEqual(validIndices))
+        {
+            report.Errors.Add(
+                $"map_{mapIndex}: the non-null SpriteRecords indices [{string.Join(",", validIndices)}] differ from the "
+                + $"SpriteTable entries other than -1 [{string.Join(",", tableIndices)}]; map-sprite-indices.json cannot be written.");
         }
     }
 

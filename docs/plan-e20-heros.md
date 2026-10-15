@@ -3036,7 +3036,7 @@ et une page de format pour le nouveau fichier (ou une section de la même page) 
 
 ##### Tâches
 
-- ⏳ **T0 — Prédiction et état de départ** (commit de docs, avant tout code). Annexe `docs/plan-e20-annexe/e20-e0x/README.md` avec :
+- ✅ **T0 — Prédiction et état de départ** (commit de docs, avant tout code). Annexe `docs/plan-e20-annexe/e20-e0x/README.md` avec :
   un script de prédiction indépendant du code du convertisseur (copié du critique, `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20e0x/critic/my_predict.py`,
   ou réécrit, versé dans `e20-e0x/`) qui produit `sprite-records.json` prédit et `map-sprite-indices.json` prédit ; leurs tailles et
   SHA-1 ; les comptes ; les valeurs témoins. Attendu pour `sprite-records.json` : **2 571 585 o (+10 080), SHA-1
@@ -3045,14 +3045,14 @@ et une page de format pour le nouveau fichier (ou une section de la même page) 
   SHA-1 calculés par le script selon le texte exact fixé ci-dessus (Décisions) ; le script vérifie aussi, carte par carte, que les
   fiches non nulles et les entrées de table différentes de −1 coïncident. Outils de manifeste (`manifest.py`, `diff_manifests.py`) copiés dans l'annexe. Manifeste `m0` : 24 103 fichiers, SHA-1
   `662056ce…` (un écart s'explique avant d'aller plus loin). Compte de tests du convertisseur (849) et d'`Alundra.Tests` relevés.
-- ⏳ **T1 — Export de référence au HEAD**, avant toute modification du convertisseur. Fenêtre calme : aucun build, aucune suite, aucun
+- ✅ **T1 — Export de référence au HEAD**, avant toute modification du convertisseur. Fenêtre calme : aucun build, aucune suite, aucun
   Launcher ni éditeur sur `alundra-project/` ; `Alundra.dll` déverrouillé. Depuis la racine :
   `dotnet run --project alundra-casaengine-project-converter -c Release -- data-extracted alundra-project` ; sortie 0 et
   `Verification: PASSED` ; `m1` contre `m0` : seulement `report.json`. Valeurs de référence relevées dans le `report.json` de T1.
-- ⏳ **T2 — Tests rouges.** `BankKey` premier membre, valeur d'une banque de carte (`"N"`) et d'une banque globale (`"alundra_N"`) ;
+- ✅ **T2 — Tests rouges.** `BankKey` premier membre, valeur d'une banque de carte (`"N"`) et d'une banque globale (`"alundra_N"`) ;
   erreur dure si une entrée n'a pas de clé ; `map-sprite-indices.json` : clés des cartes en ordre numérique, indices triés, carte sans
   indice → `[]`, une entrée −1 exclue ; les deux fichiers restent hors catalogue.
-- ⏳ **T3 — Code et docs.** `dotnet test alundra-casaengine-project-converter.Tests --blame-hang-timeout 60s`, au premier plan : 849 plus
+- ✅ **T3 — Code et docs.** `dotnet test alundra-casaengine-project-converter.Tests --blame-hang-timeout 60s`, au premier plan : 849 plus
   les nouveaux, tous verts.
 - ⏳ **T4 — Export 1, puis export 2 tout de suite.** `m2` contre `m1` : changé `Data/sprite-records.json`, ajouté
   `Data/map-sprite-indices.json`, changé `report.json`, rien d'autre ; `cmp` de chaque fichier avec sa prédiction ; `m3` contre `m2` :
