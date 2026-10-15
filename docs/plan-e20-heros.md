@@ -612,6 +612,12 @@ Seconde relecture : **REVISE**, un blocage ; disposition de la session principal
 — E20.e (l'herbe coupée) fait naître son butin par le même `SpawnWarpEntity` d'un objet à gravité et n'avait aucun prérequis ; elle exige
 maintenant E20.c1 ✅ et E20.e0c (donc E20.e0b2 et e0k1 à e0k3). Nouvelle époque de relecture : une seule relecture de clôture suit.
 Relecture de clôture de la révision 8 : **READY** (2026-10-15).
+**Révision 9 (2026-10-15, mode AUTO, après la découverte d'E20.f4 à E20.f6 ; nouvelle époque de relecture).** La découverte commune des
+trois tranches de projectiles (§1.20 à §1.22) scinde E20.f6 en f6a (les attributs de tuile des entités marquées à gravité, `+0x18C` :
+la mort des boules dans l'eau) et f6b (C60, E9, le branchement des types 11, 12, 14, 15) ; elle corrige la ligne 8 : les trois
+enregistrements `0x0C` de la carte 309 (sprite 12) émettent des étincelles dès que C60 est enregistré, E9 ne tournant jamais pour eux.
+Prérequis de f4 et f5 inchangés. Ordre inchangé (f4, f5, f6a, f6b après e0k3). Choix de la session principale en mode AUTO, réversible,
+signalé à l'auteur.
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -666,9 +672,9 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 | 3 | E20.e0b (§1.17 : e0b1, puis e0b2) | e0b1 : générateur avancé une fois par tick (`0x8002BD0C`-`0x8002BD34`) ; e0b2 : tirage du butin à la création (écrit le contenu, rien ne tombe) | E20.e0a1, E20.e0a2 (§1.16) ; e0b1 avant e0b2 (ordre) |
 | 4 | E20.e0k (§1.18 : e0k1, e0k2, e0k3 ; e0k4 conditionnelle) | État de carte des entités nées par l'interface ; leur Z logique et le pas vertical du binaire (gravité `0x100`, impulsion, atterrissage strict, vol à Z constant, aimant, plafond) ; bord de la carte ; butée sur mur et hauteur par le mover existant | e0k1 : E20.e0a1 à E20.e0a3b ✅ ; e0k2 et e0k3 : e0k1 ; e0k4 : e0k2, e0k3 et l'option B de Q-K2 |
 | 5 | E20.f3 (§1.19 : f3a, f3b, f3c) | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | f3a : E20.f1 ✅, E20.e0a1 à E20.e0a3 ✅ ; f3b : le T0 d'E20.f3a (oracle commun), E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅ ; f3c : f3a, E20.e0b1 ✅, E20.e0k1 et E20.e0k2 (la règle du Z logique, D-F3-8) ; f3a et f3b peuvent passer avant E20.e0k |
-| 6 | E20.f4 | Flèche chargée : C94, E1 avec l'effet 8 (l'effet de bris vient d'E14.a1b, D-E20-26) | E20.f3, E20.e0k1 à E20.e0k3, E14.a1b ✅ |
-| 7 | E20.f5 | Flèches : E17 (D-E20-25) ; `ResyncControllerFromFlags` quand E17 change les drapeaux (§1.18, N9) | E20.f3, E20.e0k1 à E20.e0k3 |
-| 8 | E20.f6 | Boules de feu et de glace : C60, E9 (D-E20-25) ; vigilance sur les trois enregistrements `0x0C` de la carte 309, qui prendront vie | E20.f3, E20.e0b1 (§1.17), E20.e0k1 à E20.e0k3 |
+| 6 | E20.f4 (§1.20) | Flèche chargée : C94, E1 avec l'effet 8 (l'effet de bris vient d'E14.a1b, D-E20-26) | E20.f3, E20.e0k1 à E20.e0k3, E14.a1b ✅ |
+| 7 | E20.f5 (§1.21) | Flèches : E17 (D-E20-25) ; `ResyncControllerFromFlags` quand E17 change les drapeaux (§1.18, N9) | E20.f3, E20.e0k1 à E20.e0k3 |
+| 8 | E20.f6 (§1.22 : f6a, f6b) | Boules de feu et de glace : C60, E9 (D-E20-25) ; f6a : les attributs de tuile des entités marquées à gravité ; les trois enregistrements `0x0C` de la carte 309 (sprite 12) émettent des étincelles dès l'enregistrement de C60 (E9 ne tourne jamais pour eux) | f6a : E20.e0k1, E20.e0k2 ; f6b : f6a, E20.f3 (dont f3b), E20.e0b1 (§1.17), E20.e0k1 à E20.e0k3 |
 | 9 | E20.h0, E20.h1 | Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a ✅ |
 | 9b | E20.A362 | Le couvercle de la 362 (enregistrement 0, sprite 243, `D[1]` `0x87 [128,3]`) face à la bombe d'Olen (enregistrement 5, sprite 2, lancée par son script `0x8B [128,5,…]`, explosion animation 1, attaque attribut 4 puissance 5) : arc de test seul, comme E20.c1b-2 ; il tranche si le couvercle réagit déjà (probable depuis E20.c1a et E20.c1b-1) ou ce qui manque ; relancé après E20.h3 | E20.c1b-1 ✅ |
 | 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées ; g1 pose le marqueur du Z logique (§1.18, D-E0K-1) sur l'entité soulevée | E20.e0a1 (§1.16), E20.e0k2 ; E14.a1b ✅ et E20.e0b2 (§1.17) pour g2 |
@@ -4399,7 +4405,8 @@ Ordre : e0k1, e0k2, e0k3 (e0k4 seulement si l'auteur la demande). Les dépendant
 - **Q-K2 — Le tick du « bloqué » d'une flèche contre un mur.** *L'original :* le signal « bloqué » arrive 1 tick (20 ms) après le dernier pas complet dans 2 tirs sur 3, et 2 ticks après dans le troisième (selon la fraction de pixel du départ). *Le port :* toujours 1 tick. *Visible en jeu :* rien ; la flèche rebondit ou meurt 1/50 s plus tôt dans un tir sur trois. *Option A (défaut, précédent D-E19-12) :* accepter l'écart, documenté. *Option B :* porter la boucle entière pour les entités marquées (e0k4, une tranche de plus, qui remplace le mover du moteur pour elles ; preuve par les 20 000 cas du fuzz).
 - Sans question (défaut fidèle) : le rognage au bord pour les entités par enregistrement et le héros reste sous D-E19-25 ; les attributs de tuile et la dérive vont à leurs consommateurs (O-E0K-2, O-E0K-3).
 
-**Prérequis et dépendants.** Voir le tableau de découpage. e0k1 : E20.e0a1 ✅ à e0a3b ✅ ; elle ne dépend ni d'E20.e0b2 (en pause) ni d'E20.f3, mais touche aussi `AlundraWorldProxy.cs` : elle s'exécute l'une après l'autre avec elles, dans le même checkout, et relit ses numéros de ligne au HEAD d'exécution. Dépendants : E20.f3c (règle du Z logique, remplace le repli B de Q-F3-1 ; D-F3-8 corrigé dans §1.19), E20.f4, E20.f5, E20.f6, E20.g1 (pose le marqueur), E20.g2, E20.h3, E20.h4, E20.e0c (objets lâchés à gravité ; e0k1 à e0k3), E20.e (par E20.e0c : le butin de l'herbe coupée). E20.f5 doit appeler `ResyncControllerFromFlags` quand E17 change les drapeaux (masque de marche). Révision 8 de l'enveloppe écrite (§1.1 : ligne 4 scindée en e0k1 à e0k3 ; prérequis ci-dessus).
+**Prérequis et dépendants.** Voir le tableau de découpage. e0k1 : E20.e0a1 ✅ à e0a3b ✅ ; elle ne dépend ni d'E20.e0b2 (en pause) ni d'E20.f3, mais touche aussi `AlundraWorldProxy.cs` : elle s'exécute l'une après l'autre avec elles, dans le même checkout, et relit ses numéros de ligne au HEAD d'exécution. Dépendants : E20.f3c (règle du Z logique, remplace le repli B de Q-F3-1 ; D-F3-8 corrigé dans §1.19), E20.f4, E20.f5, E20.f6, E20.g1 (pose le marqueur), E20.g2, E20.h3, E20.h4, E20.e0c (objets lâchés à gravité ; e0k1 à e0k3), E20.e (par E20.e0c : le butin de l'herbe coupée). E20.f5 doit appeler `ResyncControllerFromFlags` quand E17 change les drapeaux (masque de marche ; **une assurance** : la découverte d'f4 à
+f6 montre l'appel sans effet pour les drapeaux que change E17, §1.21). Révision 8 de l'enveloppe écrite (§1.1 : ligne 4 scindée en e0k1 à e0k3 ; prérequis ci-dessus).
 
 ---
 
@@ -4611,7 +4618,8 @@ pause, prendra le suivant à sa reprise).**
 - **D-F3-4** — Un test mécanique : pour chaque type de `WiredWeaponTypes`, chaque code C et E non nul de son en-tête est géré (clé du registre de production pour ce type, ou branche en ligne d'E). Un faux ensemble {3} fait échouer le vérificateur sur `(E, 17)` (cas négatif dans le même test).
 - **D-F3-5** — E10 est traité comme E0 et E1 : dans la branche en ligne de `RunSpriteEvent`, hors de l'interrupteur des gestionnaires natifs (même corps `DestroyEntity(e, −1)`, recensement : seulement 27 à 29). `HitArena` détruit donc la vague au bon tick et l'épingle d'arène reste à 2. Écart de forme : deux adresses du binaire (`0x8007ED10`, `0x8007F23C`), une branche.
 - **D-F3-6** — C61 est un gestionnaire natif du registre (clé (C, 61), types 27 à 29) qui appelle le bouchon nommé `CheckAndTriggerTileEffect(entité)` (`0x8003A7B0`) avec un journal par thread, comme `AlundraPlayerAnimationEffects.StubCallsForTests`. L'herbe n'est pas coupée avant E20.e (Q-F3-2). Écart documenté dans le code : le binaire tire au moins 1 mot par cellule coupée ; le flux dérive après toute vague sur l'herbe.
-- **D-F3-7** — A0 des types 27 à 29 n'est pas enregistré (il n'écrit que `AIValues[0]`, jamais lu). Les tranches f4 à f6 devront élargir l'enregistrement A0 du Muruta en un ensemble de types partagé (clé (0, 0) unique, doublon interdit).
+- **D-F3-7** — A0 des types 27 à 29 n'est pas enregistré (il n'écrit que `AIValues[0]`, jamais lu). ~~Les tranches f4 à f6 devront élargir l'enregistrement A0 du Muruta~~ (**réfuté par la découverte d'f4 à f6, §1.20** : A0 est une
+  donnée morte pour ces types ; aucun enregistrement).
 - **D-F3-8** — (**corrigé le 2026-10-15 par la découverte d'E20.e0k** : le critère est le marqueur `HasLogicalZ` d'e0k2, D-E0K-1, et la
   règle vaut aussi pour les entités à gravité, D-E0K-4 ; le repli B de Q-F3-1 tombe, f3c exige e0k1 et e0k2) Le Z d'une entité née par
   l'interface (`EntityRefId == −1`) sans le bit de gravité `0x100` reste logique. `PullRootPose` ne rapatrie ni `PosZ` ni `IsOnGround` pour elle, `TickPhysics` ne ré-extrait pas `PosZ` de la racine, et `IsOnGround = (PosZ ≤ sol)` dans le repère de la DLL (la règle de `AlundraEntityScriptProxy.cs:~1109`, binaire − 1 unité). X et Y continuent d'être rapatriés (écart sous le pixel, O-F3-2). La règle est livrée par E20.e0k (§1.18) ou par le repli de f3c (Q-F3-1). Si la sonde de vie est verte sans elle, la décision tombe (le fait était faux).
@@ -4813,9 +4821,552 @@ Seconde relecture : **READY** (2026-10-15).
 |---|---|---|
 | O-F3-1 | Le flux de nombres aléatoires dérive après toute vague sur l'herbe (le bouchon ne tire pas les mots de la coupe) | E20.e |
 | O-F3-2 | X et Y du nouveau-né sont arrondis au pixel par la racine : écart sous le pixel, boîte de la vague à moins d'un pixel de celle du binaire ; à mesurer avec un héros à position fractionnaire (T2 de f3c) | sonde de T2 ; E20.e0k |
-| O-F3-3 | L'enregistrement A0 du Muruta devra devenir un ensemble de types partagé pour f4 à f6 | E20.f4 |
+| O-F3-3 | ~~L'enregistrement A0 du Muruta devra devenir un ensemble de types partagé pour f4 à f6~~ **Fermé le 2026-10-15** (découverte d'f4 à f6 : A0 est une donnée morte) | — |
 | O-F3-4 | Les effets 4 et 5 sont créés en fin d'image : position de départ de fin d'image dans une image de plusieurs ticks | écart accepté ; E20.f6 si visible |
 | O-F3-5 | Recette de f3b : la flamme de la carte 14 (enregistrement 17) est un candidat, pas un fait | sonde de la flamme du T0 d'f3a |
+
+### 1.20 E20.f4 — La flèche chargée de William : C94 et E1 avec l'effet de bris 8 ⏳ (détaillée le 2026-10-15)
+
+**Réponses de l'auteur.** Aucune à ce jour (2026-10-15, mode AUTO, l'auteur absent). f4 ne pose aucune question. La seule question de f4 à f6,
+Q-F5-1 est **déjà tranchée par l'auteur** (§1.1, « Questions de la nuit, tranchées le 2026-10-10 » : la flèche normale vole 16 px
+au-dessus du sol du héros et passe au-dessus des ennemis bas, défaut fidèle sans question). Q-K1 et Q-K2 (§1.18) gardent leur défaut A.
+
+Découverte en lecture seule du 2026-10-15, au HEAD `be9a067` (f3a phase A faite ; f3a phase B, f3b, f3c, e0k1 à e0k3 non faites) : trois relevés
+(binaire, impact sur la DLL, inventaire des tests) communs à f4, f5 et f6, puis un critique adversarial commun. Le critique a redésassemblé E17, C94,
+E1, A0, C60, E9, la passe de fin `0x80038064`, le nettoyage des cases `0x80038634`, `DestroyEntity`, le chargeur d'enregistrements et les opcodes `0x63`
+et `0x1A`. Il a rejoué les scénarios des relevés (identiques) et les deux interpréteurs (huit scénarios identiques). Il a écrit un modèle à part des
+tirages d'E9 (cinq sorties, accord), quatre recensements (enregistrements globaux, codes de gestionnaires, cibles de la carte 14, sites d'apparition),
+neuf scénarios nouveaux et 36 mutants d'un mot sur E17, C94, E1, C60 et E9 (34 d'abord, tous tués sauf trois équivalents prouvés ; deux tués par
+injection ; un de plus pour la borne de la boucle). Scripts et sorties dans le scratchpad de la session :
+`C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20f4f6/`
+(`bin/`, `dll/`, `tests/`, `critic/`). Aucune modification du moteur, du convertisseur ni des données. La DLL n'a pas été exécutée : ce qui la concerne
+est lu dans le code ou inféré.
+
+**But.** Brancher la flèche chargée de William (type 7) : la traînée d'effets de C94, le bouchon nommé de la coupe d'herbe, la mort au mur ou au bord par E1
+avec l'effet de bris 8. Rien d'autre ne naît (flèches : f5 ; boules : f6).
+
+**Découpage.** Une seule sous-tranche, deux phases (§1.20.1). Ordre par défaut f4, f5, f6 ; les trois tranches sont indépendantes entre elles. Ce que les
+trois partagent (interrupteur d'arène par type, réécriture des témoins négatifs, annexe d'oracle commune, règle de vitesse) appartient à **la première
+des trois tranches exécutée** : f4 par défaut, et les deux autres le relisent.
+
+**Faits porteurs.** Étiquettes : [binaire] décodé sur `ALUN_CD.EXE` (France) ; [oracle] exécuté dans la machine MIPS ; [DLL] lu dans le code au HEAD
+`be9a067` (numéros de ligne à relire à l'exécution : e0k1 à e0k3, f3b et f3c touchent les mêmes fichiers) ; [données] export et cartes ; [inférence]
+déduit, non exécuté ; [critique] établi ou corrigé par la critique.
+- [binaire, données] **Le type 7.** Drapeaux `0x32054` : attaque la classe A (`0x4`), `DeactivateOnImpact` (`0x10`), `DeactivateOnAnimEnd` (`0x40`),
+  `NoObstacleSlide` (`0x2000`), pas de gravité, pas de `DeactivateOnHit`. Codes A0, C94, E1. Corps (−10, −7, 0) de 21×15×8. `BreakEffect` 8, `Contents` 0.
+  Fiche d'équilibre 7 : attribut 131, puissance 5, avec la puissance de l'équipement. Le seul site d'apparition est le tir du héros : fiche w9 de William
+  chargé, animation `0x13`, délai 8, z 8.
+- [binaire, oracle] **La naissance.** `S = R + 9` (105 pour R = 96 ; 100 pour la charge de l'arène, R = 91). Z brut 524 290 (8 px plus le repos du héros, plus 1).
+  Le son 33 joue à S. A0 tourne à S, C94 de S+1 à la mort. La flèche avance de 6 px dès S (octet D `0x40`, accélération nulle).
+- [binaire] **C94** (`0x8007C0D8`). Appelle `CheckAndTriggerTileEffect(e)` (`0x8003A7B0`) à chaque appel. Si `(+0x1C & 3) == 0`, crée l'effet global `0x19`
+  d'animation `+0x98`, à (X, Y, Z + `0x80000`) de la fin du tick précédent, puis, s'il est créé, pose `ForceX = (−F_C4) >> 1`, `ForceY = (−F_C8) >> 1`
+  (décalage arithmétique de l'opposé). Aucun tirage.
+- [binaire] **E1** (`0x8007ED10`) : `DestroyEntity(e, −1)` ; `BreakEffect` 8 : `Attach(0, 8, 0, e, 1, 0, 0, 0)`, statut 4 avant la création.
+- [oracle] **Vie, mur colonne 15, héros en x = 100.** Statut 2 de S à S+42. Positions : 106 à S, +6 par tick, 346 à S+40, 349 à S+41. `adj_13C` = 1 à S+42.
+  À S+43 : statut 4 et `attach(8)`. La case est libre à S+44. Z constant 8,0. Traînée à S+4, S+8, …, S+40 (dix) : id 25, direction 3, x = 124 + 24(k−1),
+  y = 100, z = 16, v = (−3, 0, 0). Ensemble des 12 départs 96 à 107 : drapeau de mur de S+41 à S+43.
+- [oracle] **Elle traverse.** Contre le vrai Beannoïde : touche à S+29, 3 étincelles, 9 tirages, la flèche continue et meurt au mur à S+43. Sa boîte (Z 0 à 15)
+  atteint les corps de 8 px. Un pas de 16 px comme un pas de 32 px (colonne 8) l'arrêtent (`adj_13C` à S+14, x = 181, détruite à S+15). Bord de carte en x = 1 150 :
+  drapeau à S+14, x = 1 237, détruite à S+15.
+- [oracle] **L'herbe.** Sur une bande de cases coupables, deux cases par colonne, toutes les 4 ticks : effet 2, son 31, de 2 à 3 tirages par colonne.
+  Le bouchon n'en fait rien (E20.e).
+- [oracle, critique] **Mutants.** C94-1 à C94-5 (période, identifiant, décalage de la vitesse, décalage de Z, direction), C94-5b (direction, héros au nord), E1-1
+  (sans effet de bris) : tous tués. Pas de mutant équivalent pour f4.
+- [DLL] **Le runner.** E0 et E1 sont en ligne, hors du registre (`AlundraEventProgramRunner.cs:336-342`). `ResolveSpriteType` donne 7 pour un enregistrement global.
+  Le registre a 6 clés ; une clé en double lève une exception ; il est épinglé à `AlundraNativeSpriteRegistryTests.cs:51`.
+- [DLL] **f3a (commité).** `ProductionWiredWeaponTypes` est vide. `UnhandledWeaponSpriteCodes(types, catalogue, registre)` vérifie les codes C et E. Le test
+  `S5_...` contient quatre clauses qui basculent : `Contains((C,94))` pour le type 7 (à f4), `Contains((E,17))` et `Register(E,17,...)` pour la flèche (à f5).
+- [DLL] **Les effets.** `AlundraEffectStage.Emit` met l'opération en file ; les tirages ont lieu à l'application, avant la mise à jour du réservoir du tick.
+  Modèle : `CreateHitSparks`. Le Z des créateurs est celui du binaire (`PosZ + 1`, ADR-0026).
+- [critique] **A0.** Il n'écrit que `AIValues[0]` (`0x280`) ; les huit lectures de l'image sont des lectures de soi dans d'autres sprites.
+
+**Écarts tranchés par la critique** (les relevés sont corrigés ainsi ; les audits restent en lecture seule).
+1. *« f4 à f6 devront élargir l'enregistrement A0 du Muruta »* (D-F3-7, O-F3-3) est **REFUTÉ**. A0 est une donnée morte pour ces types. Pas d'enregistrement,
+   pas de modification du fichier du Muruta. O-F3-3 est fermé.
+2. *« Les témoins négatifs de f3a (S5, S1) tiennent »* est **CORRIGÉ** : ils basculent à f4 et f5. Remplacés une fois, par dérivation, par un registre vide
+   et un ensemble vide de test (D-F4-8).
+3. *« HitArena suffit aux tests natifs »* est **CORRIGÉ** : elle éteint tous les gestionnaires natifs. Interrupteur par type (D-F4-7).
+4. *« La dérive du flux après l'herbe n'est que f3c »* est **ÉLARGI** : la flèche chargée coupe deux cases par colonne ; O-F3-1 vaut aussi pour f4.
+
+**Décisions de conception (ADR : le prochain numéro libre au moment de l'écriture, revérifié ; un ADR commun à f4, f5 et f6).**
+- **D-F4-1** — Une sous-tranche, deux phases : A (gestionnaire, créateur, bouchon, clé du registre, tests ; rien de visible en production) ; B (la ligne `7`).
+- **D-F4-2** — Créateur de la traînée : effet global `0x19`, animation = l'indice de direction de l'entité (celui de `+0x98`), position (X, Y, Z du binaire + `0x80000`),
+  forces `(−ForceX) >> 1` et `(−ForceY) >> 1` (décalage arithmétique de l'opposé, pas une division), aucune force en Z, aucun tirage. Posé par `Emit` ; les valeurs
+  sont capturées à l'émission. Créé seulement en statut Normal, quand `FrameCounter & 3 == 0`. L'indice vient de la direction cible de l'entité (table inverse de
+  `{0, 0x10, 8, 0x18}`), pas de `AnimationDirection` ; le T0 épingle l'égalité avec `BoxDirection` aux quatre directions.
+- **D-F4-3** — C94 appelle le bouchon nommé `CheckAndTriggerTileEffect(entité)` (D-F3-6) à chaque appel, avant la traînée. Le bouchon est celui de f3c, dans un fichier
+  neutre : s'il est dans le fichier de la vague, f4 l'en extrait par un déplacement pur (les tests de f3c ne changent pas).
+- **D-F4-4** — E1 reste en ligne. Le type 7 s'appuie sur `BreakEffect` 8 de l'en-tête (E14.a1b ✅) ; aucun changement de runner.
+- **D-F4-5** — Clé du registre (C, 94) pour {7} ; pas de clé A0. Une classe `AlundraChargedArrowAi` expose ses clés ; le test du registre somme les clés des classes d'IA
+  (dérivation), plus un cas nommé par clé, et rien ne dépend de l'ordre f3c / f4 / f5 / f6.
+- **D-F4-6** — Phase B : 7 entre dans `ProductionWiredWeaponTypes`. Le vérificateur de D-F3-4 doit être vide pour {7} avec le registre de production.
+- **D-F4-7** — Interrupteur d'arène, additif : `AlundraEventProgramRunner.NativeSpriteTypeFilterForTests` (nul en production), lu avec `NativeHandlersEnabled`. Une arène
+  allume les types de projectiles et laisse les Beannoïdes inertes. Choix de l'exécuteur au T1 : option de `HitArena`, ou `ArcRun` plus l'interrupteur (README).
+- **D-F4-8** — Témoins négatifs durables, réécrits une fois (par la première des tranches) : les clauses négatives de S5 prennent un **registre vide** ; la clause
+  positive garde le registre de production ; le premier bloc de S1 et (p5) de f3c prennent un ensemble de test **vide** à la place de l'arc du chasseur.
+- **D-F4-9** — Tick du mur : Q-K2, défaut A. Les tests d'une flèche contre un mur lisent la clé de l'oracle et prennent pour attendu le tick d'arrivée au mur plus 1 ; il égale
+  la clé de l'oracle pour 8 départs sur 12 et la précède d'un tick pour les 4 autres (x0 = 98, 101, 104, 107). Cette fenêtre est écrite dans le code et ici.
+- **D-F4-10** — Coupe d'herbe : le bouchon ne coupe rien (E20.e) ; le flux ne reçoit pas les mots de la coupe (O-F3-1, O-F4-1).
+
+**Questions à l'auteur.** Aucune.
+
+**Prérequis et dépendants.** E20.f3 (f3a phases A et B, f3b, f3c pour le bouchon), E20.e0k1 à E20.e0k3, E14.a1b ✅. Dépendants : E20.e (ferme le bouchon d'herbe).
+Pas d'autre dépendance entre f4, f5 et f6 que les éléments partagés ci-dessus.
+
+---
+
+#### 1.20.1 E20.f4 — La flèche chargée (C94, E1, effet 8) ⏳
+
+**Prérequis.** Voir ci-dessus. **À relire à l'exécution** : le nom du bouchon de f3c et son fichier, le marqueur `HasLogicalZ` et l'état de carte d'e0k1 à e0k3, la liste des
+tests nés par l'interface recomptée au HEAD de départ.
+
+**But.** La flèche chargée naît à R+9, vole à 6 px par tick à Z constant, laisse une traînée, traverse les cibles, et meurt au mur ou au bord avec l'effet de bris 8.
+
+**Périmètre.** Nouveau fichier `Alundra/Scripts/AlundraChargedArrowAi.cs` (C94, créateur de la traînée, clés) ; `AlundraNativeSpriteRegistry.cs` (un appel de plus) ;
+`AlundraEventProgramRunner.cs` (l'interrupteur par type) ; `AlundraPlayerManager.cs` (la ligne `7` en phase B) ; le fichier du bouchon (déplacement pur si besoin) ;
+`Alundra.Tests/` ; annexe `docs/plan-e20-annexe/e20-f4f6/` ; ADR.
+
+**Hors périmètre.** La coupe d'herbe réelle et son butin ; les flèches (f5) ; les boules (f6) ; A0 ; le tir en l'air de la flèche chargée.
+
+**Partage des phases** (seul à faire foi) :
+- **Phase A** (T1, aucun changement de comportement en production) : C94, le créateur, la clé du registre (aucun enregistrement placé par une carte n'a le type 7), l'interrupteur
+  d'arène, la réécriture des témoins négatifs, l'épingle du registre par dérivation. Les tests de vie utilisent le **crochet de test**.
+- **Phase B** (T3) : la ligne `7` de `ProductionWiredWeaponTypes`. Seul changement de comportement. Les tests de tir de production (crochet nul) sont rouges avant elle.
+
+**Valeurs attendues et leurs clés** (fichiers `charged7_east_wall.json`, `slots[k]` du type 7 ; ticks relatifs à S ; Z de la DLL = Z de l'oracle − 1 unité brute).
+
+| Valeur | Clé | Attendu |
+|---|---|---|
+| Naissance | première ligne du type 7 | S = R + 9 (105) |
+| Statut | `status` | 2 de S à S+42 ; 4 à S+43 ; absent à S+44 |
+| X | `px` | 106 à S, +6 par tick, 346 à S+40, 349 à S+41 et S+42 |
+| Z, forces | `pz`, `fx`, `fz` | 8,0 ; 393216 ; 0 |
+| Drapeau de mur | `adj_13C` | 1 à S+42 (départ x0 = 100) ; fenêtre S+41 à S+43 sur 96..107 |
+| Boîte, attaque | `bw,bd,bh,hbz`, `atk_attr`, `atk_pow` | 24×16×15 à hbz 0 ; 131 ; 5 |
+| Drapeaux | `flags6C` | `0x32054` |
+| Traînée | `effects` | id 25, dir 3, y 100, z 16, v (−3, 0, 0) à S+4, +8, …, +40 ; x = 124, 148, …, 340 |
+| Mort | `effects` | `attach(id 8, cible = la flèche, mode 1)` à S+43 |
+| Sons | journal | 33 à S ; 0 muet ailleurs |
+| Tirages | `draws` | 0 (traînée et bris) |
+
+Autres clés : `charged7_free_{west,north,south}`, `charged7_map_edge`, `charged7_step16`, `charged7_step32`, `charged7_vs_target` (touche à S+29, 9 tirages),
+`charged7_grass`. Pour la cible : la flèche touche une fois par fenêtre de 25 ticks (`c1d0` = 25).
+
+##### Tâches
+
+- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code). Annexe commune `docs/plan-e20-annexe/e20-f4f6/` (créée par la première des trois tranches ; les
+  deux autres l'étendent sans toucher aux outils) :
+  - les outils de la machine copiés octet pour octet depuis `docs/plan-e20-annexe/e20-f3/oracle/tools` avec leurs sommes de contrôle ;
+  - un script par tranche ; sorties en texte **et** en JSON avec les clés ci-dessus, plus `.draws`, `.rng0`, `.rng1`, `.effects[]` (objets `{id, dir, x, y, z, vx, vy, vz}`
+    ou `{attach, id, cible, mode}`) et `.snd[]` ;
+  - deux exécutions complètes donnent un manifeste identique ;
+  - les scénarios de f4 (liste ci-dessus), avec la flèche suivie par ses drapeaux (jamais « la case 1 », piège du bouton tenu) ;
+  - le suivi de la direction aux quatre directions (indice de `+0x98` contre `BoxDirection`) ;
+  - au moins 12 mutants d'un mot, tous tués ou prouvés équivalents par écrit : C94-1 à C94-5, C94-5b, E1-1, appel du bouchon retiré (clé : cases coupées), drapeau
+    `0x20` posé dans l'en-tête (la flèche ne traverse plus), `BreakEffect` 8 à 0, octet z de la fiche de 8 à 16, `+1` du Z de création retiré ;
+  - README : valeurs attendues et clés, prédiction qualitative (phase A : bougent l'épingle du registre, S5 et les témoins de D-F4-8 ; phase B : aucun test existant),
+    compte de départ de la suite (4 857 + les nouveaux tests de f3a et f3c, à relever), liste prédite des tests nés par l'interface qui font tourner des images,
+    recomptée au HEAD de départ.
+  - **Sondes de la DLL** (écrites, lancées au HEAD de départ, versées au README, puis retirées ; prédiction écrite avant) : P-F4-1, indice de direction de l'effet aux quatre
+    directions ; P-F4-2, la boîte de la flèche au tick S (résultat de la sonde v4 de f3c).
+- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile, puis le code). Chaque cas « sans effet » est accolé à un cas positif dans la même assertion :
+  - (c1) C94 direct, entité faite à la main : à `FrameCounter` 4 une traînée (id, direction aux quatre indices, position, Z + `0x80000`, forces `−F >> 1` pour 393216 et pour
+    1, qui donne −1), à 3 et 5 aucune ; le bouchon est appelé aux trois ticks ; réservoir plein : aucun effet, bouchon appelé, aucune exception ; le mot du flux est inchangé ;
+  - (c2) registre : (C, 94) pour 7 seulement (pas pour 3, 4, 11) ; épingle par dérivation ; (c3) S5 réécrit (D-F4-8) ;
+  - (c4) vie par le crochet, tableau ci-dessus, aux groupements de 1, 2 et 3 ticks par image ; pas de traînée à S ni en statut 4 ;
+  - (c5) la flèche traverse : touche la cible à S+29 (`hitc` 1, `c1d0` 25, 3 étincelles, 9 tirages) et meurt au mur à S+43, accolée à la même flèche sans cible ;
+  - (c6) pas de 16 px et de 32 px : bloquée dans les deux cas, accolée au couloir libre ; bord : drapeau à S+14, x = 1 237, accolé à un départ non borné ;
+  - (c7) fenêtre du mur (D-F4-9) sur les 12 départs ; (c8) herbe : le bouchon est appelé à chaque tick de S+1 à S+42, aucune case coupée, le flux égale l'avance pure
+    (O-F4-1 épinglé) ;
+  - (c9) l'interrupteur d'arène : un type de projectile s'exécute, un Beannoïde reste inerte, dans la même arène.
+  Puis le code de la phase A. Verts à la fin de T1.
+- ⏳ **T2 — Tests de production**, crochet nul, **rouges avant T3** :
+  - (p1) la charge de William (arène de la charge) : une entité de type 7, fille du héros, à la plus basse case libre mesurée avant le tir, au tick R+9 ; sa vie suit le tableau.
+    Dans la même assertion, le tir normal du début de la prise crée une entité de type 4 **si et seulement si** `ProductionWiredWeaponTypes` contient 4 (dérivation) ;
+  - (p2) table pleine : aucune entité, pointeur effacé ; une case libre : une entité ;
+  - (p3) dégâts : `AlundraDamage.ResolveBalanceTarget` pour (attribut 131, puissance 5) contre la fiche du Beannoïde ; `TouchingEntity` = la flèche au tick de la touche.
+- ⏳ **T3 — Phase B** : la ligne `7`. Verts ; la suite complète.
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL, au moins 12, tous tués : C94 absent ;
+  période 8 ; traînée aussi à S ; traînée en statut 3 ; mauvaise animation ; forces non décalées ; décalage de Z de 4 px ; bouchon appelé seulement toutes les 4 ticks ;
+  bouchon jamais ; 7 oublié dans le registre ; 7 absent de l'ensemble ; 4 présent dans l'ensemble ; E1 sans effet de bris.
+
+##### Acceptation
+
+- **Oracle** : manifeste identique sur deux exécutions ; au moins 12 mutants tués ou prouvés équivalents ; traces des 12 départs du mur.
+- **DLL** : tous les tests de T1 et T2 verts. (p1) à (p3) rouges avant T3 (nommés). `Alundra.Tests` en Release **et** en Debug, compte de départ plus les nouveaux, zéro échec.
+  Tests déplacés ⊂ liste prédite (épingle du registre, S5, premier bloc de S1 si f5 est déjà faite). `cmp` de la DLL. Cinq traces inchangées. Moteur, convertisseur et
+  données sans diff.
+- **Preuve de retrait** : retirer la ligne `7` rend rouges exactement (p1) à (p3) ; retirer l'appel du bouchon rend rouge (c1) et (c8) seulement ; retirer la clé (C, 94)
+  rend rouges (c2) et (c4) ; aucun autre test ne change.
+- **Recette de l'auteur** (non bloquante) : `arsenal-b-m14` (F9), l'arc de William en emplacement 2. Charger environ 90 ticks, relâcher : la flèche part 9 ticks plus tard avec une
+  traînée, blesse un Beannoïde sans s'arrêter, meurt au mur avec l'effet de bris. Elle ne coupe pas l'herbe (E20.e).
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : la phase A fait bouger un test hors de la liste prédite ; une entité née en production avant T3 ; (p1) vert avant T3 ; un tirage par C94 ou par le bris ; la flèche
+  prend E1 à S+1 (l'unité de Z est perdue : e0k2 ne tient pas) ; le drapeau de mur hors de la fenêtre ; plus de 10 tests existants bougent ; un besoin de changer le moteur.
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : la phase B se retire seule (retirer `7`). La phase A reste inerte en production.
+
+---
+
+### 1.21 E20.f5 — Les flèches du chasseur et de William : E17 ⏳ (détaillée le 2026-10-15)
+
+**Réponses de l'auteur.** Q-F5-1 est **déjà tranchée par l'auteur** (§1.1, « Questions de la nuit, tranchées le 2026-10-10 » : la flèche normale vole 16 px
+au-dessus du sol du héros et passe au-dessus des ennemis bas, défaut fidèle sans question) ; la question est gardée plus bas pour mémoire.
+
+Découverte : celle de §1.20 (relevés communs et critique commun). Les faits propres à f5 ont été revérifiés par le critique : le désassemblage complet d'E17, 12 mutants
+(dont 2 par injection après la touche et 1 pour la borne de la boucle), la portée verticale (16 rate, 17 touche), la cible détruite dans le même tour, la cible dans la
+dernière case.
+
+**But.** Brancher les flèches normales (types 3 et 4) : le gestionnaire E17 (touche, rebond contre le mur ou le bord, mort après 16 ticks de saut) et la règle de vitesse
+horizontale des entités nées par l'interface.
+
+**Faits porteurs.** (Étiquettes comme au §1.20.)
+- [binaire, données] **Les types 3 et 4.** Drapeaux `0x12074` : attaque la classe A, `DeactivateOnImpact`, `DeactivateOnHit`, `DeactivateOnAnimEnd`, `NoObstacleSlide`. Codes
+  A0, E17. Fiche d'équilibre : 131 / puissance 1 (type 3) ou 2 (type 4), avec la puissance de l'équipement. Les types 5 et 6 ont les mêmes codes mais aucune attaque.
+  Tir : fiche w8 (chasseur : type 3, délai 8 au sol, 0 en l'air, z 16) et w9 (William : type 4, délai 8, z 16).
+- [oracle] **La naissance.** `S = P + 9` au sol (10), `P + 1` en l'air pour le chasseur. Z brut 1 048 578. X = x0 + 3 à S (octet D `0x41`, accélération 1), puis +6 par tick.
+  Boîte (−12, −8, 0) de 24×16×11 au Z de la flèche, donc 16 à 27 : portée verticale.
+- [binaire] **E17** (`0x8007F420`).
+  - Si `+0x88 == 1` (phase de rebond) : `+0xAC == 1` donne `DestroyEntity(e, −1)` ; sinon rien.
+  - Sinon, si `+0x220 == 0` (pas de touche) : rebond.
+  - Sinon le masque `m = ((F<<2)&8) | (F&4 ? 1:0) | (F&0x1000 ? 0x800:0)` ; pour les flèches `m = 1`.
+  - Balayage des cases 0 à `[0x80134360]` inclus, **sans filtre de statut** ; ignore soi, `+0xB4 & 0x40`, `+0x1CC ≠ 0`, `(+0x6C & m) == 0`, et le type `0x1AD`.
+  - Recouvrement inclusif de la boîte stockée de la flèche contre le corps de la cible.
+  - Trouvé : `DestroyEntity(e, −1)` (aucun bris), puis les écritures du rebond sur l'entité morte (sans effet). Non trouvé : statut 2, la flèche continue.
+  - Rebond : `+0x88 = 1`, `+0x8C = (+0x8C + 0x10) & 0x1F`, `+0x6C = (+0x6C | 0x140) & ~0x30`. Seul le bit de gravité est vivant (statut 3 prend E à chaque tick ; `0x40` est
+    déjà posé ; `~0x30` ne sert plus).
+- [oracle] **Mur colonne 15, x0 = 100.** Voir le tableau de valeurs. Saut de 16 ticks : l'animation 1 pose l'impulsion 1 024 (ForceZ 262 144 à S+43), la gravité de la carte
+  128, la vitesse −1,875 px par tick vers l'ouest, la boîte disparaît, le son 34. Fin à S+60, case libre à S+61. Mur ouest, nord, sud : drapeau à S+4, S+12, S+22 ;
+  détruite à S+22, S+30, S+40. Bord : drapeau à S+15, x = 1 237, rebond S+16, détruite S+33. Pied du mur (12 px) : 1 px à S, drapeau S+1, rebond S+2.
+- [oracle, critique] **Touche.** Une cible haute (corps ≥ 17) en x = 300 : touche à S+30, 3 étincelles (9 tirages), E17 détruit à S+31, case libre S+32. Cible de 16 : aucune
+  touche. Cible rendue invulnérable après la touche (`+0x1CC := 0x78`) : la flèche repart au statut 2 et vole. Cible de type `0x1AD` : touchée une fois, la flèche vole.
+  Deux cibles : touchées le même tick (18 tirages), une seule mort. **Cible détruite dans le même tour** (statut 4, case plus basse) : toujours trouvée. **Cible dans la
+  dernière case** (flèche dans une case plus basse) : trouvée ; un balayage arrêté une case trop tôt la manque.
+- [DLL] **Vitesse.** `TickScriptedNpc` règle la vitesse sur `CurrentAnimationId`, assigné seulement en fin d'image (`SyncAnimation`) ; la direction vient de `TargetDirection`.
+  [inférence] Au tick du rebond (1 tick par image) la force passe de +393 216 à 0 au lieu de −122 880 : décalage de 1,875 px, persistant. e0k1 pose l'épingle P3 « une entité
+  marquée garde la clé de son animation courante » : la règle de D-F5-5 la réécrit.
+- [DLL] **Le balayage.** Les entités sont `SpawnedEntities` plus le héros (`PlayerEntity`). `AlundraHitPass.AxisOverlaps` donne la forme inclusive ; la boîte stockée est
+  `HitBoxX/Y/Z` plus `CollisionWidth/Depth/Height` (`StoreHitBox`, après chaque tick) ; le corps de la cible est `Pos + Mod` avec la correspondance Width/Height/Depth du coup
+  (`AlundraHitPass.cs:109-131`) ; `DamagedTickCounter` est écrit seulement par l'opcode `0x86`.
+- [DLL] **Le rebond.** `ResyncControllerFromFlags` ne change rien ici : `WalkabilityMaskFor` ne lit que ClassA et ClassB, et la gravité du contrôleur est toujours nulle.
+- [critique] **Mutants d'E17.** E17-1 à E17-12 : 10 tués, E17-4 équivalent (`0x40` déjà posé), E17-5 tué seulement par `flags6C` (écriture morte). E17-8 et E17-9 tués par une
+  injection après la touche. Borne de la boucle tuée par `arrow3_target_higher_slot`.
+
+**Écarts tranchés par la critique.**
+1. *« La flèche vole à travers une cible touchée »* (relevé du binaire) est **PRÉCISÉ** : vrai seulement pour une cible dont `+0x1CC` est posé avant E17. En production : 0x86 ou E14.
+2. *« Le décalage de vitesse est d'environ 4,1 px »* (relevé de la DLL) est **CORRIGÉ** : 1,9 px (flèche, inférence) ; pour une boule, 6 px par tick restant de l'image.
+3. *« N9 : E17 appelle `ResyncControllerFromFlags` »* est **PRÉCISÉ** : sans effet visible ; gardé en assurance (D-F5-4).
+4. *« Types 5, 6, 8, 9, 10, 13 sans site d'apparition »* est **CORRIGÉ** : sans site à type constant ; des sites dynamiques restent (inférence).
+5. *« Q2 (tirages différés d'E9) est une question »* est **REFUSÉ** : D-E0B-3(a) est accepté.
+
+**Décisions de conception.**
+- **D-F5-1** — Une sous-tranche, deux phases : A (E17, clé, règle de vitesse, tests) ; B (l'ensemble {3, 4}).
+- **D-F5-2** — E17 en classe `AlundraArrowAi`. Balayage : toutes les entités de `SpawnedEntities` **sans filtre de statut** (y compris FlagToDestroy) plus le héros ; saute soi,
+  `HitAnimByte & 0x40`, `DamagedTickCounter ≠ 0`, un `Flags` sans bit du masque, et `SpriteType == 429` ; recouvrement par `AxisOverlaps` sur la boîte stockée de la flèche.
+- **D-F5-3** — Trouvé : `DestroyEntity(e, −1)` puis retour ; l'équivalence avec la chute dans le rebond (écritures sur une entité morte) est écrite dans le code.
+- **D-F5-4** — Rebond : cible d'animation 1, direction `(TargetDirection + 0x10) & 0x1F`, `Flags = (Flags | 0x140) & ~0x30`, puis `ResyncControllerFromFlags()` en assurance.
+  Les tests lisent `Flags` (0x12144) ; le retrait de l'appel est un mutant équivalent prouvé.
+- **D-F5-5** — (**partagée avec f6 ; portée par la première des deux exécutée**) Une entité née par l'interface prend la clé de vitesse de `TargetAnimationId` (celle que l'horloge du tick
+  charge, comme `TickPlayer`), non de `CurrentAnimationId`. Le mouvement du tick redevient exact. L'épingle P3 d'e0k1 est réécrite par dérivation (clé de l'animation cible).
+- **D-F5-6** — Registre : (E, 17) pour {3, 4, 5, 6} (l'ensemble complet de l'en-tête) ; ensemble câblé {3, 4}. Pas de clé A0.
+- **D-F5-7** — Fenêtre du mur : D-F4-9. La flèche rebondit un tick après le drapeau ; l'attendu est dérivé comme en f4.
+- **D-F5-8** — Portée verticale : fidèle (Q-F5-1, défaut A). Le test de portée est accolé : cible de 16 ratée, cible de 17 touchée.
+- **D-F5-9** — La mort sur touche et le rebond ne créent aucun effet (`BreakEffect` 0). Le saut ne touche personne (la boîte disparaît au tick du rebond).
+
+**Questions à l'auteur.**
+- **Q-F5-1 — La flèche normale passe-t-elle au-dessus des petits ennemis ?** *L'original :* la flèche du chasseur et la flèche normale de William volent à 16 pixels du sol. Un
+  ennemi de 16 pixels de haut ou moins n'est pas touché ; un ennemi de 17 pixels ou plus l'est. Les Beannoïdes de la carte 14 font 8 pixels. La flèche chargée de William et les
+  boules les touchent. *Le port :* il reproduit cela, comme le binaire. *Visible en jeu :* à l'arc normal, les Beannoïdes de la carte 14 ne sont pas blessés (l'épée, la
+  flèche chargée et les baguettes les blessent) ; les ennemis de 17 pixels et plus le sont (par exemple le sprite 136 de cette carte). *Option A (défaut, recommandée, fidèle) :*
+  garder. *Option B :* faire voler la flèche plus bas pour toucher aussi les petits ennemis. Ce n'est pas l'original ; cela change aussi quels ennemis une flèche atteint sur
+  toutes les cartes ; un écart de plus à porter. Réversible. Rien dans le binaire ne montre que c'est involontaire ; c'est pourquoi la question est posée (règle du 2026-09-25 :
+  un bug avéré de l'original se corrige).
+
+**Prérequis et dépendants.** E20.f3, E20.e0k1 à E20.e0k3. Dépendants : aucun avant E14 (flèches des ennemis) et la recette.
+
+---
+
+#### 1.21.1 E20.f5 — Les flèches (E17) et la règle de vitesse ⏳
+
+**Prérequis.** Voir ci-dessus. **À relire à l'exécution** : la garde de D-E0A-8 dans `TickScriptedNpc`, l'épingle P3 d'e0k1, le marqueur d'e0k2, l'interrupteur d'arène de f4.
+
+**But.** Les types 3 et 4 vivent comme dans le binaire : ils volent, touchent, rebondissent et meurent. Les entités marquées avancent à la vitesse de l'animation du tick.
+
+**Périmètre.** Nouveau fichier `Alundra/Scripts/AlundraArrowAi.cs` ; `AlundraNativeSpriteRegistry.cs` (un appel) ; `AlundraScriptedMotion.cs` (la clé, une ligne) ;
+`AlundraPlayerManager.cs` (l'ensemble) ; `Alundra.Tests/` (nouveaux tests ; réécriture par dérivation de S5, du premier bloc de S1, de (p5) de f3c et de P3) ; annexe ; ADR.
+
+**Hors périmètre.** Les flèches des ennemis (E14) ; les enregistrements globaux de flèches (aucun) ; la portée verticale (Q-F5-1) ; `DamagedTickCounter` écrit par des
+gestionnaires (E14) ; le tir en l'air hors de la sonde.
+
+**Partage des phases** (seul à faire foi) :
+- **Phase A** (T1, aucun changement de comportement en production) : E17, la clé, la règle de vitesse (aucune entité marquée n'existe en production), l'interrupteur
+  d'arène si f4 ne l'a pas posé, les réécritures. Les tests de vie utilisent le crochet.
+- **Phase B** (T3) : l'ensemble {3, 4}. Seul changement de comportement.
+
+**Valeurs attendues** (`arrow3_east_wall.json`, `slots[k]` du type 3 ; S = 10 ; x0 = 100 ; Z DLL = Z oracle − 1 unité brute).
+
+| Valeur | Clé | Attendu |
+|---|---|---|
+| Naissance | première ligne | S = P + 9 |
+| Statut | `status` | 2 de S à S+42 ; 3 de S+43 à S+59 ; 4 à S+60 ; absent à S+61 |
+| X | `px` | 103 à S, 109 à S+1, +6, 349 à S+41 et S+42 ; 347,125 à S+43 puis −1,875 par tick jusqu'à 317,125 à S+59 |
+| Z | `pz` | 16,0 jusqu'à S+42 ; puis 20 ; 23,5 ; 26,5 ; 29 ; 31 ; 32,5 ; 33,5 ; 34 ; 34 ; 33,5 ; 32,5 ; 31 ; 29 ; 26,5 ; 23,5 ; 20 ; 16 (S+43 à S+59) |
+| Forces | `fx`, `fz` | fx 196608 à S, 393216 de S+1 à S+42, −122880 de S+43 ; fz 0 puis 262144 à S+43 et −32768 par tick |
+| Mur | `adj_13C` | 1 à S+42 (fenêtre D-F4-9) |
+| Direction, animation, drapeaux | `dir_t`, `anim_t`, `flags6C` | 24 puis 8 ; 0 puis 1 ; `0x12074` puis `0x12144` à S+43 |
+| Boîte | `box1d4` | 1 puis 0 à S+43 |
+| Fin d'animation | `reset_AC` | 1 à S+59 |
+| Son | journal | 34 à S+43 |
+| Touche (cible haute en x = 300) | `hitc`, `c1d0`, `touch_slot`, `draws` | 1 ; 25 ; la flèche ; 9 à S+30 ; mort à S+31 ; case libre S+32 |
+
+##### Tâches
+
+- ⏳ **T0 — Prédiction et oracle** (commit de docs). Annexe commune (§1.20, T0). Scénarios de f5 : les quatorze des relevés (`arrow3_east_wall`, `arrow4_east_wall`,
+  `arrow3_free_*`, `arrow3_wall_*`, `arrow3_map_edge`, `arrow3_point_blank`, `arrow3_target`, `arrow3_target_low`, `arrow4_target`, `arrow3_target_invulnerable_after_hit` avec la
+  colonne 15, `arrow3_target_1AD`, `arrow3_two_targets`) plus les nouveaux : `arrow3_target_filter_b4` et `arrow3_target_filter_class` (injection après la touche),
+  `arrow3_target_dead_same_dispatch`, `arrow3_target_higher_slot`, `arrow3_zreach_16` et `arrow3_zreach_17`, `arrow3_target_sprite136` (corps réel 14×16×17), le tir en l'air
+  du chasseur (S = P+1). Au moins 12 mutants : E17-1 à E17-12 (tués ou équivalents), la borne de la boucle, le délai de l'arc, l'octet z de la fiche. Sondes de la DLL : tick du
+  rebond et position à 1, 2 et 3 ticks par image **avant** la règle (prédiction écrite : 1,875 px d'écart à 1 tick) ; le tick du drapeau sur les 12 départs. README : valeurs,
+  liste prédite des tests qui bougent (registre, S5, S1, (p5), P3, les tests nés par l'interface qui font tourner des images, recomptée au HEAD de départ).
+- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette, puis le code). Chaque « sans effet » est accolé à un positif :
+  - (e1) E17 direct : touche avec une cible valide → `FlagToDestroy`, aucun effet ; sans touche → rebond aux quatre directions (24→8, 8→24, 16→0, 0→16), cible d'animation 1,
+    `Flags` 0x12144, bit de gravité posé, masque de marche et gravité du contrôleur inchangés ;
+  - (e2) un filtre par cas, chacun accolé à la cible valide : `DamagedTickCounter ≠ 0` (statut 2, la flèche vit), `HitAnimByte & 0x40`, sans bit de classe, `SpriteType 429`, soi-même,
+    le héros (drapeaux `0x3118C`) ; limites du recouvrement des trois axes, au contact et à 1 unité ;
+  - (e3) aucun filtre de statut : une cible `FlagToDestroy` est trouvée ; une cible dans la plus haute case est trouvée ; une cible libérée ne l'est pas ;
+  - (e4) phase de rebond : sans drapeau de fin, rien ; avec `ForceResetAnimationFlag`, mort ; aucun balayage même avec `HitCounter ≠ 0` ;
+  - (e5) registre : (E, 17) pour 3, 4, 5, 6 ; pas pour 7, 11 ; S5 réécrit ; (e6) la règle de vitesse : à 1, 2 et 3 ticks par image, le rebond et la série de X égalent l'oracle ;
+    P3 réécrit ;
+  - (e7) vie par le crochet : tableau ci-dessus, mur, bord, tir en l'air ; groupements 1, 2, 3 ; la case libre à S+61 ; cible haute (touche S+30, mort S+31) ; cible de 16 ratée,
+    de 17 touchée ; invulnérable après la touche ; `0x1AD` ; deux cibles ; la flèche dans une case plus basse que sa cible : le D de la cible lit encore la flèche (attaque 131, puissance 1).
+  Puis le code de la phase A. Verts à la fin de T1.
+- ⏳ **T2 — Tests de production**, crochet nul, **rouges avant T3** : (p1) le tir du chasseur au sol : une entité de type 3 à P+9 (case la plus basse), puis sa vie ; William normal :
+  type 4 ; (p2) table pleine ; (p3) les témoins négatifs utilisent l'ensemble vide de test ; (p4) la fermeture : l'ensemble de production égale les octets de type non nuls des fiches
+  d'arme **si** f3c, f4 et f6 sont faites (sinon ce test est ajouté par la dernière des quatre).
+- ⏳ **T3 — Phase B** : l'ensemble {3, 4}. Verts.
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants du code de la DLL, au moins 16, tous tués : filtres retirés (un par un), type 429 changé, héros inclus ou exclu, balayage
+  arrêté une case trop tôt, filtre de statut ajouté, recouvrement exclusif, direction +8, gravité oubliée, phase de rebond non reconnue, fin sans drapeau, statut 3 au repli, destruction
+  avec effet, clé de vitesse sur l'animation courante, E17 enregistré pour 7, ensemble contenant 5, `Resync` appelé deux fois.
+
+##### Acceptation
+
+- **Oracle** : manifeste identique ; 12 mutants tués ou prouvés équivalents ; les 12 départs du mur.
+- **DLL** : T1 et T2 verts ; (p1) à (p3) rouges avant T3 ; suite en Release **et** en Debug, zéro échec ; tests déplacés ⊂ liste prédite, chacun réécrit par dérivation ; `cmp` ;
+  cinq traces ; moteur, convertisseur et données sans diff.
+- **Preuve de retrait** : retirer {3, 4} rend rouges exactement (p1) à (p3) ; retirer la ligne de la clé de vitesse rend rouge (e6) et (e7) au rebond ; retirer la clé (E, 17) rend
+  rouges (e5) et (e7) ; retirer l'appel de `Resync` ne rend rien rouge (mutant équivalent, écrit).
+- **Recette de l'auteur** (non bloquante) : `arrow-m16` (F9) : le ballon d'interrupteur (sprite 173, carte 16) est traversé par la flèche ; sur la carte 14 (`arsenal-b-m14`), un ennemi
+  de 17 pixels (sprite 136) est touché, un Beannoïde non (Q-F5-1) ; la flèche rebondit au mur par un saut de 16 ticks et disparaît.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : la phase A fait bouger un test hors de la liste prédite ; (p1) vert avant T3 ; la flèche touche le héros ; une cible détruite dans le tour est manquée ; le décalage de la
+  sonde de vitesse excède la prédiction ; plus de 10 tests existants bougent ; un besoin de changer le moteur.
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : la phase B se retire seule (retirer {3, 4}). La phase A reste inerte, sauf la ligne de la clé de vitesse, qui ne touche que les entités marquées.
+
+---
+
+### 1.22 E20.f6 — Les boules de feu et de glace : C60 et E9 (f6a, f6b) ⏳ (détaillée le 2026-10-15)
+
+**Réponses de l'auteur.** Aucune à ce jour. Pas de question propre (les défauts fidèles s'appliquent : voir les décisions).
+
+Découverte : celle de §1.20. Revérifiés par le critique : C60 et E9 (désassemblage complet), la passe de fin des attributs de tuile, un modèle à part des tirages d'E9, les quatre
+boules (11, 12, 14, 15) sur terrain plat, au mur, sur marche, sur l'eau (pentes 1 à 4), contre une cible, 22 mutants d'un mot, la branche A sur l'eau au tick d'une bouffée, les
+trois enregistrements de la 309.
+
+**But.** f6a : alimenter les attributs de tuile des entités marquées (la mort dans l'eau). f6b : les boules (C60, E9), les trois flammes de la 309, le branchement des types 11, 12, 14, 15.
+
+**Découpage.**
+
+| Sous-tranche | Contenu | Prérequis |
+|---|---|---|
+| E20.f6a | Attributs de tuile des entités marquées à gravité (`Slope_18c`) ; la mort dans l'eau du choix du programme ; aucun gestionnaire | E20.e0k1 et e0k2 |
+| E20.f6b | C60, E9, trois créateurs, clés, flammes de la 309, ensemble {11, 12, 14, 15} | f6a, E20.f3 (dont f3b), E20.e0b1 ✅, E20.e0k1 à e0k3 |
+
+Ordre : f6a puis f6b. f6a peut passer avant f4 et f5 (il ne dépend que d'e0k2).
+
+**Faits porteurs.** (Étiquettes comme au §1.20.)
+- [binaire, données] **Les types 10 à 15.** Drapeaux `0x132154` : attaque la classe A, `DeactivateOnImpact`, `DeactivateOnAnimEnd`, `NoObstacleSlide`, gravité, `DestroyOnSlidingSlope`
+  (`0x100000`), pas de `DeactivateOnHit`. Codes A0, C60, E9. Fiches : 11 (feu, 134 / 4), 12 (feu chargé, 134 / 12, corps 21×15×15), 14 (glace, 135 / 4), 15 (glace chargée, 135 / 12, 21×15×16).
+  Les types 10 et 13 n'ont pas de fiche d'arme. Tir : fiches w4 (baguette de feu : types 11 et 12, délai 10, z 32) et w5 (baguette de glace : types 14 et 15).
+- [binaire, oracle] **La naissance.** `S = P + 11` (12), charge `R + 11` (107 pour R = 96 ; 112 pour R = 101 de l'arène). Z brut 2 097 154. Pas d'impulsion (l'octet est effacé à chaque
+  appel). Feu : 6 px par tick dès S. Glace : 3 px à S (accélération 1) puis 6.
+- [binaire] **C60** (`0x8007A8A0`) : si `(+0x1C & 3) == 0`, effet global `0x11` (feu : type − 11 < 2) ou `0x12` (glace), à (X, Y, Z + `0x80000` pour le feu, + 0 pour la glace),
+  vitesse (−ForceX, −ForceY, −ForceZ). Aucun tirage.
+- [binaire, oracle] **E9** (`0x8007EF50`). Première fois (`+0x88 ≠ 1`) : si `+0x18C ∈ {1, 4}` → `DestroyEntity(e, 6)` et retour ; sinon cinq effets au Z de la boule, chacun avec 2
+  tirages (vx dans [−3, 3), vy dans [−2, 2)), puis `+0x88 = 1` et `+0x6C = (+0x6C | 0x40) & ~0x30`. Ensuite (`+0x88 == 1`) : même test de pente, puis si `+0xAC == 1` → `DestroyEntity(e, −1)` et retour, sinon
+  toutes les 8 ticks une bouffée à Z + (feu : `0x80000`) avec 2 tirages (vx dans [−1,5 ; 1,5), vy dans [−1 ; 1), vz = 2). Un réservoir plein saute les écritures et les tirages.
+- [oracle] **Vie, feu (S = 12, plat).** Atterrissage à S+10 (x = 166, Z 0, `coll_140` 1) ; Z : 31,5 ; 30,5 ; 29 ; 27 ; 24,5 ; 21,5 ; 18 ; 14 ; 9,5 ; 4,5. Traînée à S+4 et S+8. Explosion à S+11
+  (statut 3, 10 tirages, son 39, boîte 30×20×31) ; bouffées à S+16, +24, +32, +40 (2 tirages) ; fin d'animation à S+47, mort à S+48, case libre S+49. Glace : atterrissage x = 163,
+  son 38, fin S+43, mort S+44, libre S+45. Chargées : 12 → son 41, mort S+48 ; 15 → son 40, bouffées jusqu'à S+64, fin S+67, mort S+68, libre S+69 ; boîte 36×24×31.
+- [oracle] **Mur colonne 6.** Drapeau à S+6 (fenêtre S+5 à S+8), explosion à S+7 (Z 18), la boule continue de tomber et se pose à S+10. **Marche de 32 px** : comme le mur. **Marche de 16 px** :
+  pose sur la marche à S+7, explosion à S+8, mort S+45 (glace : S+41), libre S+46.
+- [oracle, critique] **Eau.** Pente 4 (case `0x08` sous tout le pied) : mort à S+11 par le choix du programme (`DestroyEntity(e, 6)`), libre à S+12, aucun tirage. Pente 1 (`0x02`) : même issue, mais
+  par E9 (branche B). Pentes 2 et 3 : explosion normale. Pied moitié sur l'eau : explosion. Boule qui explose contre un mur puis tombe dans l'eau : la branche A détruit à S+11 ;
+  **à un tick multiple de 8, la destruction est suivie de la bouffée du même tick** (ordre littéral).
+- [oracle] **Touches.** Le vrai Beannoïde en x = 156 : la boule le touche en vol à S+8 (feu) ou S+9 (glace), `attach(4)` ou `attach(5)` avant les étincelles, 9 tirages, la boule continue ;
+  la boîte d'explosion le touche à nouveau 25 ticks plus tard (S+33 ou S+34).
+- [binaire, critique] **Attributs de tuile** (`0x80038064`). Pour une entité à gravité : sur les quatre coins, un coin « posé » est tel que `hauteur + 1 == +0x1E0` ; `t1` démarre à `0xE00`, un coin
+  non posé le met à 0 pour de bon, un coin posé le baisse au minimum de `cellule & 0xE00` ; `+0x18C = t1 >> 9`. Sans gravité, `+0x180 = +0x184 = +0x18C = 0`. Pente 1 : 8 146 cases sur
+  49+ cartes ; pente 4 : 10 644 cases sur 54+. Le héros n'a pas de cas pour la pente 1 (`case 1: break` de la décompilation).
+- [DLL] `UpdateGroundSlope` (même règle, égalité avec `PosZ + ModZ`) ne tourne que par `RunHeroProbes`. L'égalité vaut pour un Z logique au repos (binaire − 1 unité). 14 sprites locaux (444 instances
+  de carte) et 12 globaux portent `DestroyOnSlidingSlope` : alimenter toutes les entités à gravité changerait ces 444 instances (E19.h2 / Q-K1).
+- [données, oracle] **La 309.** Trois enregistrements (6, 7, 8) du sprite global 12 (`SpriteDirection` 65, hauteur 2, pixels (948, 672), (960, 664), (936, 664), Z 32). Leur programme A (`1A 02`,
+  `63 80 F0 00`) pose l'animation 2 et efface `0x00F0` : plus aucun bit de désactivation, donc E9 ne tourne jamais. Enregistré, C60 émet l'effet 17 toutes les 4 ticks à (x, y, Z 40), vitesse nulle,
+  sans fin, sans tirage ; la boîte 36×24×31 (134 / 12) existe déjà. Sans le programme A (témoin) les boules s'envoleraient et exploseraient. Le programme A est un bouchon de l'oracle, pas le vrai
+  interpréteur.
+- [DLL] **Registre et épingles.** Voir §1.20. `CreateForProduction` appelle les classes d'IA une à une ; enregistrer C60 pour 12 rend les flammes de la 309 vivantes en production.
+- [critique] **Mutants.** C60-1 à C60-4, E9-1 à E9-10 : tous tués sauf E9-5b (équivalent : le choix du programme prend la pente 4 avant) et E9-9 (`0x40` déjà posé).
+
+**Écarts tranchés par la critique.**
+1. *« f6 en f6a et f6b »* (relevé de la DLL) est **CORRIGÉ** : f6b a trois phases, parce que l'enregistrement de C60 est visible (les flammes de la 309) avant même le câblage.
+2. *« Les trois flammes de la 309 explosent »* (enveloppe) est **CORRIGÉ** : elles émettent des étincelles ; E9 ne tourne jamais pour elles.
+3. *« E9 branche A sur l'eau : non exécuté »* est **CLOS** (ci-dessus).
+4. *« La pente 1 est de l'eau »* reste une **INFÉRENCE** sur son sens ; le fait est que la boule meurt (ORACLE).
+5. *« Le décalage de vitesse »* : D-F5-5 s'applique ; sans elle une boule qui explose avance de 6 à 18 px de trop.
+
+**Décisions de conception.**
+- **D-F6-1** — f6a puis f6b.
+- **D-F6-2** — Alimentation (f6a) : pour toute entité marquée dotée de la gravité, `UpdateGroundSlope()` après le pas de chaque tick (le même code que le héros). Aucune autre entité : Q-K1 option A.
+  Pas de `UpdateVramFlags` (aucun projectile de f4 à f6 n'a `0x200000`).
+- **D-F6-3** — E9 en classe `AlundraBallAi` : branches A et B littérales, y compris l'ordre « destruction puis bouffée du même tick » ; le test de pente lit `Slope_18c ∈ {1, 4}` ; les cinq effets
+  et les bouffées passent par `Emit`, les tirages sont faits à l'application (D-E0B-3(a)), dans l'ordre des deux tirages par effet ; vitesses capturées ; un effet non créé ne tire pas.
+- **D-F6-4** — C60 : effet 17 pour les types 11 et 12, 18 sinon ; décalage de Z de `0x80000` pour le feu seulement ; vitesse (−ForceX, −ForceY, −ForceZ) ; Z du binaire = `PosZ + 1`.
+- **D-F6-5** — Clés (C, 60) et (E, 9) pour {10, 11, 12, 13, 14, 15} ; pas de clé A0.
+- **D-F6-6** — L'enregistrement des clés est une phase à part (B) : visible sur la 309, avec son test et sa ligne de recette. L'ensemble câblé {11, 12, 14, 15} est la phase C.
+- **D-F6-7** — Les effets d'attache 4 et 5 viennent de f3b (prérequis) ; aucun tirage de leur part. Les 9 tirages de la touche sont ceux des trois étincelles.
+- **D-F6-8** — Vitesse et accélération : D-F5-5. La position de l'explosion à l'atterrissage égale celle de l'oracle (x = 166 en feu, 163 en glace).
+- **D-F6-9** — La force verticale d'une flamme posée par enregistrement, au moment de C60, est lue telle que la DLL la tient (sonde P-F6-1) ; un écart avec 0 est documenté, pas corrigé (Q-K1 A).
+- **D-F6-10** — Le tick du drapeau de mur : D-F4-9 (fenêtre S+5 à S+8 sur les 12 départs).
+
+**Questions à l'auteur.** Aucune.
+
+**Prérequis et dépendants.** Voir le tableau. Dépendants : E14 (ennemis de feu et de glace, la Torche E20 qui copie le type 12 sans gestionnaires), E20.e (effets du héros, herbe).
+
+---
+
+#### 1.22.1 E20.f6a — Attributs de tuile des entités marquées ⏳
+
+**Prérequis.** E20.e0k1 et e0k2 (le Z logique et le marqueur). **À relire à l'exécution** : le point d'appel dans `TickMotion`, le nom du marqueur.
+
+**But.** Une entité marquée à gravité a `Slope_18c` calculé comme le binaire ; le choix du programme détruit une boule posée sur de l'eau profonde, sans gestionnaire.
+
+**Périmètre.** `AlundraEntityScriptProxy.cs` (un appel pour les entités marquées à gravité), `Alundra.Tests/`, annexe, ADR. **Hors périmètre.** E9 et C60 ; les entités par enregistrement ; `UpdateVramFlags`.
+
+**Partage des phases** : une seule phase (T1 à T2). La ligne d'appel est le seul changement de comportement ; elle est inerte en production (aucune entité marquée à gravité et à `DestroyOnSlidingSlope` n'existe).
+
+##### Tâches
+
+- ⏳ **T0 — Oracle** : dans l'annexe commune, scénarios `fire11_gp8_deepwater`, `fire11_gp2_slope1`, `fire11_gp4_slope2`, `fire11_gp6_slope3`, `fire11_mixed_footprint_water`, `ice14_gp8_deepwater`,
+  avec les clés `slope_18C`, `status`, `effects` ; mutants du test des quatre coins ; sonde de la DLL : `Slope_18c` d'une boule marquée posée sur chaque pente.
+- ⏳ **T1 — Tests puis code.** (s1) boule marquée au repos sur une case `0x08` sous tout le pied : `Slope_18c` 4, accolée à la même boule sur `0x02` (1), `0x04` (2), `0x06` (3), pied moitié sur l'eau (0), boule
+  en l'air (0), sans gravité (0) ; (s2) la même boule née par enregistrement garde 0 ; (s3) par le crochet, la boule née sur l'eau profonde est détruite à S+11 avec l'effet 6, libre à S+12, aucun tirage, accolée
+  à la même boule sur la terre ferme qui vit ; groupements 1, 2 et 3.
+- ⏳ **T2 — ADR, plan, verifiers frais.** Mutants : appel pour tous les gravitaires, appel sans marqueur, minimum remplacé par maximum, égalité de Z décalée d'une unité, coin ignoré.
+
+##### Acceptation
+
+- **DLL** : (s1) à (s3) verts, rouges avant le code ; suite complète ; tests déplacés ⊂ liste prédite (aucun attendu). **Preuve de retrait** : retirer l'appel rend rouges exactement (s1) et (s3).
+- **Arrêts** : une entité par enregistrement change de pente ; un test existant bouge ; un besoin de changer le moteur. **Budget** : un `executor`, deux tentatives. **Retour arrière** : retirer l'appel.
+
+---
+
+#### 1.22.2 E20.f6b — C60, E9, les flammes de la 309 et le branchement ⏳
+
+**Prérequis.** f6a, E20.f3 (dont f3b), E20.e0b1 ✅, E20.e0k1 à e0k3. **À relire à l'exécution** : le point de création des effets, l'interrupteur d'arène (D-F4-7), la règle de vitesse (D-F5-5).
+
+**But.** Les boules tirent, tombent, explosent ou s'éteignent ; les trois flammes de la 309 émettent leurs étincelles.
+
+**Périmètre.** Nouveau fichier `Alundra/Scripts/AlundraBallAi.cs` ; `AlundraNativeSpriteRegistry.cs` (un appel, phase B) ; `AlundraPlayerManager.cs` (l'ensemble, phase C) ; `Alundra.Tests/` ; annexe ; ADR.
+
+**Hors périmètre.** La Torche E20, les ennemis de feu et de glace (E14) ; le sens de la pente 1 ; le réservoir plein hors des tests directs.
+
+**Partage des phases** (seul à faire foi) :
+- **Phase A** (T1, aucun changement de comportement) : E9, C60, les créateurs, la méthode `Register(registry)`. Les tests enregistrent les clés eux-mêmes dans le registre du runner de test ; les boules naissent par le crochet.
+- **Phase B** (T3) : `CreateForProduction` appelle `Register`. Seul changement de comportement : les trois flammes de la 309 émettent. L'épingle du registre bouge (dérivation).
+- **Phase C** (T4) : l'ensemble {11, 12, 14, 15}. Seul changement de comportement : les tirs.
+
+**Valeurs attendues** (`fire11_flat.json` ; S = 12 ; Z DLL = Z oracle − 1 unité brute).
+
+| Valeur | Clé | Attendu |
+|---|---|---|
+| Naissance | première ligne | S = P + 11 |
+| Statut | `status` | 2 de S à S+10 ; 3 de S+11 à S+47 ; 4 à S+48 ; absent à S+49 |
+| X | `px` | 106 à S, +6, 166 à S+10 et ensuite |
+| Z | `pz` | 31,5 ; 30,5 ; 29 ; 27 ; 24,5 ; 21,5 ; 18 ; 14 ; 9,5 ; 4,5 ; 0 (S à S+10) |
+| Forces | `fx`, `fz` | 393216 puis 0 dès S+11 ; −32768 × (k+1) pour k = 0 à 9, puis 0 |
+| Sol | `coll_140`, `ground_144` | 1 à S+10 |
+| Boîte | `bw,bd,bh,hbz` | 30×20×15 en vol ; 30×20×31 à hbz 0 dès S+11 |
+| Attaque, drapeaux | `atk_attr`, `atk_pow`, `flags6C` | 134 ; 4 ; `0x132154` puis `0x132144` |
+| Traînée | `effects` | id 17, (124, 100, 35) à S+4 et (148, 100, 22) à S+8, v (−6, 0, 2) puis (−6, 0, 4) |
+| Explosion | `draws`, `effects`, `snd` | S+11 : 10 tirages, cinq effets 17 en (166, 100, 0), vitesses de la clé ; son 39 |
+| Bouffées | idem | S+16, +24, +32, +40 : 2 tirages, effet 17 à Z 8, vz 2 |
+| Fin | `reset_AC` | 1 à S+47 ; mort à S+48, sans bouffée |
+
+Glace (`ice14_flat.json`) : x = 103 à S, 109 à S+1, 163 à S+10 ; effet 18 de Z + 0 : traînée (121, 100, 27) à S+4, (145, 100, 14) à S+8 ; son 38 ; fin S+43, mort S+44, libre S+45.
+Chargées (`fire12_flat`, `ice15_flat`) : S = R + 11 ; boîte d'explosion 36×24×31 à hbx = x − 18 ; puissance 12 ; son 41 / 40 ; fin S+47 / S+67 ; mort S+48 / S+68.
+Autres clés : `*_wall_col6`, `*_step16_col6`, `*_step32_col6`, `fire11_gp{8,2,4,6}_*`, `fire11_wall_then_water`, `fire11_vs_target`, `ice14_vs_target`, `flames309`.
+
+##### Tâches
+
+- ⏳ **T0 — Prédiction et oracle** (commit de docs). Annexe commune. Scénarios de f6 : les trente des relevés plus `fire11_branchA_water_on_puff_tick` (injection de `+0x18C` à S+15), les flammes de la 309 avec le vrai
+  interpréteur d'octets si possible. Au moins 14 mutants : C60-1 à C60-4, E9-1 à E9-10 (E9-5b et E9-9 prouvés équivalents), `+1` du Z de création. Sondes de la DLL : (P-F6-1) force verticale d'une flamme posée
+  au moment de C60 ; (P-F6-2) la 309 se construit-elle dans `ArcRun` (arrivée en tuile (38, 47), depuis les cartes 306 et 441) ; (P-F6-3) position de l'explosion à 1, 2, 3 ticks par image avant la règle de vitesse.
+- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette). Chaque « sans effet » est accolé à un positif :
+  - (b1) E9 direct, branche B : 10 tirages dans l'ordre, les cinq effets au Z de la boule ; pente 1 ou 4 : `DestroyEntity(e, 6)`, aucun tirage, accolée à la pente 2 ; réservoir plein : aucun tirage ni écriture ;
+  - (b2) E9 branche A : bouffée tous les 8 ticks (2 tirages, décalage de Z du feu seulement), pente 1 ou 4 à un tick multiple de 8 : destruction puis bouffée ; `+0xAC == 1` : destruction sans bouffée ;
+  - (b3) C60 direct : traînée tous les 4 ticks, feu 17 et glace 18, vitesse −F, Z + `0x80000` pour le feu seulement ; (b4) les tirages égalent un pas local (D-E0B-8) ;
+  - (b5) vie par le crochet, les quatre types, plat, mur, marches de 16 et 32, eau (pentes 1 à 4), à 1, 2 et 3 ticks par image, tableau ci-dessus ; la fenêtre du mur ; l'explosion à x = 166 / 163 ;
+  - (b6) touches : feu `attach(4)`, glace `attach(5)`, avant les étincelles, 9 tirages, la boule ne s'arrête pas ; seconde touche à S+33 / S+34 ;
+  - (b7) la table du registre : `Register` ajoute les clés (C, 60) et (E, 9) pour 10 à 15.
+  Puis le code de la phase A. Verts à la fin de T1.
+- ⏳ **T2 — Tests des flammes de la 309, rouges avant T3.** (m1) trois entités du type 12, `Flags` 0x132104, qui émettent l'effet 17 à (x, y, Z du binaire + 8 px) tous les 4 ticks de `FrameCounter`, vitesse lue
+  (P-F6-1), sans tirage ; accolées au témoin « sans C60 » (aucune émission) ; (m2) elles ne touchent aucune entité ; (m3) l'épingle du registre par dérivation (+2 clés).
+- ⏳ **T3 — Phase B** : l'appel d'enregistrement. Verts.
+- ⏳ **T4 — Phase C et tests de production**, crochet nul, **rouges avant l'ensemble** : (p1) la baguette de feu et celle de glace, non chargées et chargées (R = 101 de l'arène) : une entité du bon type à la plus basse case libre,
+  au tick R+11 ; (p2) le commutateur de feu de la carte 303 (`fire-m303`) : la boule touche, le programme D s'exécute, le drapeau est posé et la classe A effacée (opcode `0x87 [128, 6]` répond oui) ;
+  (p3) table pleine ; (p4) la fermeture : l'ensemble de production égale les octets de type non nuls des fiches d'arme. Puis la ligne de l'ensemble.
+- ⏳ **T5 — ADR, plan, verifiers frais** (deux). Mutants du code de la DLL, au moins 16, tous tués : 5 effets → 4 ; période 8 ; test de pente 1 oublié ; pente 4 oubliée dans la branche A ; destruction avec un autre effet ; bouffée
+  avant la destruction ; décalage de Z du feu appliqué à la glace ; vitesse non opposée ; effet 17 pour la glace ; tirage hors de l'application ; clé C60 oubliée ; clé E9 oubliée ; type 10 ou 13 câblé ; ensemble avec 3 ; boule
+  qui avance à la vitesse de l'animation courante (D-F5-5) ; alimentation de la pente à toutes les entités.
+
+##### Acceptation
+
+- **Oracle** : manifeste identique ; 14 mutants tués ou prouvés équivalents.
+- **DLL** : verts ; (m1) à (m3) rouges avant T3 ; (p1) à (p4) rouges avant T4 ; suite en Release **et** en Debug, zéro échec ; tests déplacés ⊂ liste prédite (registre, S5 et témoins si f5 n'est pas faite) ; `cmp` ;
+  cinq traces ; moteur, convertisseur et données sans diff.
+- **Preuve de retrait** : retirer l'appel d'enregistrement rend rouges exactement (m1) à (m3) et (b7) de production ; retirer l'ensemble rend rouges exactement (p1) à (p4) ; retirer l'appel de f6a rend rouge (s3).
+- **Recette de l'auteur** (non bloquante) : `arsenal-a-m14` : le feu (emplacement 5) et la glace (emplacement 4) partent en arc, explosent à l'atterrissage avec cinq étincelles ; sur l'étang de la carte 14 (tuile (40, 48)), la
+  boule s'éteint avec l'effet de l'eau ; `fire-m303` : un commutateur de feu s'allume ; carte 309 (par un `Change map` depuis les cartes 306 ou 441) : les trois flammes émettent des étincelles.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : 10 et 2 tirages non respectés ; une flamme de la 309 fait autre chose qu'émettre ; l'explosion à plus d'un pixel de l'oracle ; la 309 ne se construit pas (sonde : un montage sans carte) ; un test hors de la liste prédite
+  bouge ; plus de 10 tests existants bougent ; un besoin de changer le moteur.
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : la phase C se retire seule (vider {11, 12, 14, 15}) ; la phase B se retire seule (retirer l'appel) ; la phase A reste inerte.
+
+---
+
+**Points ouverts ajoutés.**
+
+| # | Question | Tranchée par |
+|---|---|---|
+| O-F4-1 | Le flux dérive après chaque passage de la flèche chargée sur l'herbe (le bouchon ne tire pas les mots de la coupe : deux à trois mots par colonne) | E20.e (étend O-F3-1) |
+| O-F5-1 | Quels ennemis posent `+0x1CC` avant E17 (la flèche les traverse) | E14 |
+| O-F6-1 | Sens de la pente 1 (la boule s'éteint ; le héros n'a pas de cas) | à placer ; aucun effet de comportement connu |
+| O-F6-2 | Le réservoir de 128 effets plein : branche décodée, seulement testée en direct | écart accepté |
+| O-F6-3 | La Torche E20 (cartes 86 à 94, 441, 442) copie le type 12 et efface ses six codes natifs | E14 |
+| O-F6-4 | Les flammes posées par enregistrement gardent l'ancienne règle de chute (Q-K1 A) : la force verticale au moment de C60 peut différer de 0 | E19.h2 |
+
+**Corrections induites** (faites par la session principale à l'insertion, 2026-10-15, sauf (2) : les tests d'f3a déjà commités (S5, premier
+bloc de S1) et (p5) de f3c sont réécrits par f4 et f5, qui les nomment dans leurs listes prédites). (1) §1.19 D-F3-7 : retirer « les tranches f4 à f6 devront élargir l'enregistrement A0 » ; fermer O-F3-3. (2) §1.19.1 T1 (s5), premier bloc de (s1)
+et §1.19.3 (p5) : témoin négatif durable (registre vide, ensemble de test vide). (3) §1.18 : N9 (« E17 doit appeler `ResyncControllerFromFlags` ») devient une assurance ; l'épingle P3 d'e0k1 est réécrite par la règle de D-F5-5.
+(4) §1.1 ligne 8 : « les trois enregistrements `0x0C` de la 309 prendront vie » → ils émettent des étincelles (E9 ne tourne jamais pour eux). (5) §1.1 : f6 a deux sous-tranches (f6a, f6b) ; les trois tranches
+partagent l'annexe `e20-f4f6` et les décisions D-F4-7, D-F4-8 et D-F5-5, portées par la première exécutée.
 
 ## 2. Points ouverts
 
