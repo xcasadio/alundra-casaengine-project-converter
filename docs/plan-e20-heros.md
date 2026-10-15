@@ -3620,6 +3620,10 @@ la DLL vers `alundra-project/` et le `cmp` se fait après la remise en état, co
 (arrêt et nouvelle relecture pour tout code hors des décisions ou tout écart sur une entité de l'interface). Points non bloquants
 repris : implémentation explicite du champ de collision par le monde, nom aligné (`CollisionField`, au lieu du `CollisionFieldNow` de
 D-E0A-5), déclencheur `+0x228` dans T1, mécanisme du rassemblement nommé, numéros de ligne relevés au HEAD `c4247cf`.
+**Révision 2 (2026-10-15).** Seconde relecture : **REVISE**, un blocage ; dispositions de la session principale (cap de deux relectures
+automatiques atteint) : **FIX** — la décision `Current = Target` change de façon prévisible deux tests existants, nommés ci-dessous avec
+leur nouvelle attente (tout autre test qui bougerait reste un arrêt) ; **FIX** du point non bloquant : contenu de `skipcopy.targets`
+écrit. Nouvelle époque de relecture : une seule relecture de clôture suit.
 
 **Prérequis.** E20.e0a3a ✅ (voie de P-A : (i) restreinte à `Current = Target` ; `Alundra.Tests` 4 815).
 
@@ -3663,6 +3667,17 @@ seulement), `AlundraWorldProxy.cs` (collecte, rassemblement, `CollisionField`, m
 `IAlundraScriptHost.cs`, `AlundraPlayerManager.cs` (point d'accroche), `AlundraPlayerAnimationEffects.cs` et `AlundraScriptedMotion.cs`
 **seulement** pour la lecture du champ de collision (aucune autre ligne) ; tests ; ADR-0065 ; plan.
 
+**Tests existants que la décision change** (les seuls autorisés à changer ; leur nouvelle attente est justifiée par la décision
+`Current = Target`, par P-A et par l'annexe `e20-armes/e0-spawn.md`, point 4) :
+- `AlundraBirthTickProbePaTests.PA3_TheGenericKinematicsOfTheBirthTick_WithCurrentAsTheInterfaceLeavesIt` (e0a3a) : l'interface laisse
+  maintenant `Current = Target` ; la mesure devient X = **153, 159, 165** (celle de PA3b) et son nom ou son commentaire dit qu'il
+  mesure l'état laissé par l'interface **après** e0a3b ; la mesure historique (~0, X = 150 ×3) reste écrite dans « Résultat de P-A » ;
+- `AlundraSpawnBySpriteIndexInterfaceTests.H_…DifferOnlyByTheClosedList` (e0a1) : `CurrentAnimationId` et `CurrentDirection` sont
+  ajoutés à la liste fermée des champs qui diffèrent entre l'apparition par enregistrement (inchangée) et celle par l'interface ; les
+  deux égalités qui les comparaient sont retirées au profit d'une assertion que l'entité de l'interface a `Current = Target`.
+T0 (3) recense par recherche tout autre test qui compare `CurrentAnimationId` ou `CurrentDirection` d'une entité née par l'interface ; un
+test trouvé qui n'est pas dans cette liste est un arrêt (révision de la tranche).
+
 **Hors périmètre.** Le branchement du tir ; l'extension aux apparitions par enregistrement (e0a4) ; l'intégration immédiate (D-E20-35) ;
 `PublishEntityFrame` (la première publication reste celle de l'image suivante) ; les lignes `BT-L1`, `BT-L3` (butin à la mort, e0b et e0c).
 
@@ -3686,13 +3701,15 @@ seulement), `AlundraWorldProxy.cs` (collecte, rassemblement, `CollisionField`, m
   dans une image à deux ticks : recyclée en tête du tick suivant, case rendue, aucune exception à l'intégration par le moteur ; (e) son de
   création demandé une seule fois ; (f) repli du champ de collision : employé par une entité marquée avant intégration, jamais par une
   entité par enregistrement, et **jamais pendant la création** (un champ espion compte zéro lecture entre l'appel et le retour de
-  `SpawnEntityBySpriteIndex`) ; `AlundraSpawnBySpriteIndexInterfaceTests` passe sans modification.
+  `SpawnEntityBySpriteIndex`) ; `AlundraSpawnBySpriteIndexInterfaceTests` passe, modifié seulement dans le test H nommé ci-dessus.
 - ⏳ **T2 — Code** (les décisions ci-dessus). Suites complètes : aucune épingle des apparitions par enregistrement ne bouge
   (`AlundraTickStructureTests`, `AlundraVisionArcTests`, `AlundraShipBlockArcTests`, `AlundraAbsoluteZWritesTests`,
   `AlundraControllerlessVerticalStepTests`, `AlundraAnimationImpulseSpawnTests`, et toute la suite).
 - ⏳ **T3 — Mesure P-B (après le code).** Précondition : `git status --porcelain` vide sur les fichiers que la sonde touche (sinon arrêt) ;
   forcer le seul drapeau `JoinsBirthTick` dans les chemins par enregistrement (changement jetable, jamais commité) ; construction
-  **toujours avec la copie de la DLL neutralisée** (`-p:CustomAfterMicrosoftCommonTargets=<scratch>/skipcopy.targets`, la cible
+  **toujours avec la copie de la DLL neutralisée** (`-p:CustomAfterMicrosoftCommonTargets=<scratch>/skipcopy.targets`, fichier du
+  scratchpad qui redéfinit une cible vide de même nom : `<Project><Target Name="CopyGameplayDllToProject" /></Project>`, importé après
+  le corps du projet, donc prioritaire ; la cible
   `CopyGameplayDllToProject` d'`Alundra.csproj` copiant sinon `Alundra.dll` et `Alundra.pdb` dans `alundra-project/` à toute construction),
   puis une suite complète en Release ; remise en état par `git checkout -- <fichiers touchés par la sonde>` et des cinq traces ; puis
   reconstruction Release et Debug du code commité ; liste versée dans la sous-section « Mesure P-B » du §1.16.4, au format
@@ -3701,7 +3718,8 @@ seulement), `AlundraWorldProxy.cs` (collecte, rassemblement, `CollisionField`, m
 
 ##### Acceptation
 
-- T1 vert ; `Alundra.Tests` en Release et en Debug : 4 815 plus les nouveaux, aucun échec, **aucun test existant modifié** ; les six
+- T1 vert ; `Alundra.Tests` en Release et en Debug : 4 815 plus les nouveaux, aucun échec, **aucun test existant modifié hors des deux
+  nommés** (PA3 de `AlundraBirthTickProbePaTests`, H de `AlundraSpawnBySpriteIndexInterfaceTests`, avec leur nouvelle attente) ; les six
   épingles nommées intactes ; aucun appelant de production de `SpawnEntityBySpriteIndex` (le tick de naissance n'a donc aucun effet en
   jeu tant qu'E20.f3 ou E20.h3 ne branchent rien) ; **après la remise en état de P-B**, `cmp` de `alundra-project/Alundra.dll` avec le
   build Debug du HEAD commité (si la DLL du projet est verrouillée par le Launcher de l'auteur, les builds se font avec la copie
