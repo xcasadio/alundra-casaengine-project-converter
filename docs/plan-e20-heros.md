@@ -3684,7 +3684,7 @@ test trouvé qui n'est pas dans cette liste est un arrêt (révision de la tranc
 
 ##### Tâches
 
-- ⏳ **T0 — Vérifications avant le code** (versées dans le plan, sans commit de code) : (1) `AnimFlags` à la création : ce que le binaire
+- ⚠️ **T0 — Vérifications avant le code** (ARRÊT du 2026-10-15 : écart sur une entité de l'interface, voir « Résultat de T0 ») (versées dans le plan, sans commit de code) : (1) `AnimFlags` à la création : ce que le binaire
   pose à la première bascule de la création (`0x80038AB4`, annexe d'e0a1) et ce que lit la passe d'animation du tick de naissance ;
   (2) l'effet de `Current = Target` sur `SpawnAnimationActive`, sur l'horloge `AnimationSwitchTicksReserved` et sur le son et l'impulsion
   de la première animation, pour une entité née dans `MovePlayer` (mesure par un test de sonde) ; (3) les tests d'e0a1 qui ne comparent pas
@@ -3716,6 +3716,43 @@ test trouvé qui n'est pas dans cette liste est un arrêt (révision de la tranc
   reconstruction Release et Debug du code commité ; liste versée dans la sous-section « Mesure P-B » du §1.16.4, au format
   `Classe.Méthode — raison observée`. Aucune construction ne dépose une DLL qui porte le marqueur forcé.
 - ⏳ **T4 — ADR-0065, plan** (résultats, icônes) ; verifiers frais lancés par la session principale.
+
+##### Résultat de T0 (2026-10-15, base `e6207ae`) : ARRÊT, aucune ligne de code de production écrite
+
+Mesure par un test de sonde jetable (jamais commité ; `ArcRun` de la carte 14, flèche n° 3 de la page globale par l'interface, `Current = Target` posé à la main juste après l'apparition, comme
+`PA1b`, puis trois images du moteur d'un tick), pour les quatre directions, avec et sans `Current = Target` :
+
+| Direction | `Current = Target` | `AnimFlags` aux images 1, 2, 3 | `SpawnAnimationActive` | animation du sprite | `HitAnimByte` |
+|---|---|---|---|---|---|
+| `0x10` (haut), `0x08` (gauche), `0x18` (droite) | non | `0x41` | faux dès l'image 1 | `anim0_up`, `_left`, `_right` | `0x41` |
+| `0x10`, `0x08`, `0x18` | oui | `0x41` (identique) | faux dès l'image 1 | identique | `0x41` |
+| `0x00` (bas) | non | `0x41` | faux dès l'image 1 | `anim0_down` | `0x41` |
+| **`0x00` (bas)** | **oui** | **`0` aux trois images, pour toujours** | **vrai aux trois images (jamais validé)** | `anim0_down` (celle par défaut du moteur) | `0x41` |
+
+Cause (lue puis mesurée) : `AlundraFrameSyncPasses.TryResolveAnimationTarget` ne voit une bascule en attente que si `Current != Target` ou si `AnimationDirection` n'est pas la direction que la table
+dérive de la cible. Pour la direction `0x00`, la table (`AnimationDirectionTable[0 * 8 + 0]`) rend 0 et `AnimationDirection` vaut 0 à la création : avec `Current = Target` plus aucune bascule n'est en attente,
+`SyncAnimation` rend sans rien faire (`AnimFlags` jamais chargé, `SpawnAnimationActive` jamais retombé, sprite jamais choisi explicitement). Pour les trois autres directions la dérivée n'est pas 0, la
+bascule reste en attente et l'état après une image est celui d'aujourd'hui (c'est ce que P-A avait mesuré pour la droite). Un tir vers le bas (`SpawnDirections[0] = 0`) est un cas réel, et les
+sprites de l'interface ont tous une animation 0 dont l'octet `AnimFlags` n'est pas nul (`0x40`/`0x41` pour les armes du héros ; `0xC0`/`0xC1` pour les n° 20, 21, 27, 28, 29, dont le bit `0x80` sort l'entité de la
+liste des collisions et du soutien entre entités).
+
+Autres éléments de T0 :
+- (1) Le binaire recharge `+0xB4` (le nom de `HitAnimByte` dans la passe des coups) et l'octet de la fiche d'animation (`AnimFlags` de la DLL, bit `0x80`) au bloc de bascule de `UpdateAnimation`
+  (`0x80038B18-0x80038BAC`), donc dès la première bascule de la création (`0x80038AB4`). Le noyau de la DLL charge déjà `HitAnimByte` et l'attaque courante à la création (vérifié par
+  `SpawnProjectionAsserts`) ; `AnimFlags`, lui, n'est chargé que par `SyncAnimation`, à la fin de la première image : pendant le tick de naissance il vaut 0 (écart de fond, pour tout sprite de l'interface,
+  déjà présent avant e0a3b, visible seulement pour les n° dont l'octet porte `0x80` : 20, 21, 27, 28, 29).
+- (2) Pour les directions 8, `0x10` et `0x18`, `Current = Target` ne change aucun des champs relevés (`SpawnAnimationActive`, `AnimationSwitchTicksReserved`, `AnimationSwitchTickOwed`, impulsion, son,
+  sprite) : la bascule reste en attente comme avant. Le seul changement est pour la direction 0 (tableau ci-dessus).
+- (3) Aucun autre test existant ne compare `CurrentAnimationId` ou `CurrentDirection` d'une entité née par l'interface que les deux déjà nommés (`PA3` de `AlundraBirthTickProbePaTests`, `H` de
+  `AlundraSpawnBySpriteIndexInterfaceTests`) : recherche dans `Alundra.Tests/` des cinq fichiers qui appellent l'interface ou la fabrique.
+
+**Issue : arrêt prévu par T0** (« un code à ajouter [...] ou tout effet [...] écart sur une entité de l'interface »). La décision `Current = Target` seule laisse une entité tirée vers le bas sans
+`AnimFlags` ni validation de la bascule d'apparition. Aucun code n'a été écrit, aucun test existant modifié. Pistes pour la révision de la tranche (à trancher par la session principale, relecture avant T2) :
+(a) garder `Current = Target` et poser aussi `AnimationDirection` sur une rangée dont la dérivée diffère (la bascule reste alors en attente pour les quatre directions, `SyncAnimation` charge `AnimFlags` et
+fait retomber `SpawnAnimationActive`, comme pour les directions 8, `0x10`, `0x18` ; à vérifier que la dérivée de la cible ne change pas avec la rangée choisie) ; (b) faire la bascule entière à la création
+(`AnimFlags`, `SpawnAnimationActive`, `AnimationDirection`) et choisir le sprite par un autre moyen, ce que l'absence d'animations avant l'intégration rend impossible dans l'interface (P-A, mesure 1) ;
+(c) voie (ii) de P-A (lire la cible au pas de mouvement pour les entités marquées, `AlundraScriptedMotion.cs`), écartée par la tranche. Recommandation : (a), puis ajouter à T1 un test des quatre
+directions (états identiques à l'image 1 avec et sans `Current = Target` hors la cinématique).
 
 ##### Acceptation
 
@@ -3753,6 +3790,7 @@ par e0a3b). Chaque épingle qui bouge est re-dérivée de l'oracle (une appariti
 | O-E0A-1 | « A deux fois » : une apparition en boucle 2 sur une case dont le déclencheur vaut 0 fait tourner A dans la passe puis au tick suivant ; la DLL n'a que le tick suivant | e0b, e0c ou E14, si un gestionnaire A en dépend |
 | O-E0A-2 | Lecteur de `+0x08` : aucun trouvé dans la décompilation ; recherche dans le binaire à faire si E20.g ou E14 en montre un | E20.g, E14 |
 | O-E0A-3 | Coût de `LoadCopy` à chaque apparition (une lecture de disque) | mesure avant E20.f3 |
+| O-E0A-4 | `Current = Target` à la création (voie (i) de P-A) laisse une entité tirée vers le bas (direction 0) sans bascule en attente : `AnimFlags` reste 0 et `SpawnAnimationActive` reste vrai (T0 d'e0a3b, « Résultat de T0 ») | session principale, révision d'e0a3b |
 
 ## 2. Points ouverts
 
