@@ -77,6 +77,23 @@ public sealed class AlundraEntitySlotTableTests
     }
 
     [Fact]
+    public void V5_recycled_loop2_AnApparitionAfterTheSlotPassOfTheSameTick_TakesTheRecycledSlot_ThenTheNextOnes()
+    {
+        var line = V5("recycled_loop2");
+        var table = new AlundraEntitySlotTable();
+        var before = Take(table, 5);
+        Assert.Equal(line.GetProperty("slots_before").EnumerateArray().Select(e => e.GetInt32()).ToArray(), before);
+        foreach (var dead in line.GetProperty("dead_before").EnumerateArray())
+        {
+            table.Release(dead.GetInt32()); // the slot pass of the tick frees the entities of the state 4.
+        }
+
+        Assert.Equal(line.GetProperty("spawned_in_loop2_slot").GetInt32(), table.Allocate()); // the apparition of loop 2.
+        Assert.Equal(line.GetProperty("second_after_pass").GetInt32(), table.Allocate());
+        Assert.Equal(line.GetProperty("third_after_pass").GetInt32(), table.Allocate());
+    }
+
+    [Fact]
     public void TheHeroSlot0_IsHeldFromTheConstruction_EvenInAWorldWithoutHero_AndNothingAllocatesIt()
     {
         var table = new AlundraEntitySlotTable();

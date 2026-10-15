@@ -468,6 +468,13 @@ internal static class AlundraEntitySpawnFactory
         return entity;
     }
 
+    /// <summary>
+    /// E20.e0a2: the word <c>+0x08</c> of <c>InitializeEntity</c> (<c>0x80039D40-0x80039D5C</c>): null for a null parent, else the parent's own <c>+0x08</c> when it has one, else the parent. Shared by the creation without a record
+    /// and by the record path (D-E0A-4: the decompilation names it <c>ChildEntity</c>; no reader is known).
+    /// </summary>
+    internal static Entity? ResolveRootEntity(Entity? parentEntity)
+        => parentEntity == null ? null : (parentEntity.GameplayProxy as AlundraEntityScriptProxy)?.ChildEntity ?? parentEntity;
+
     /// <summary>The width and the height of a tile in pixels (<c>StaticVariables.MapTileWidth/MapTileHeight</c>, <see cref="EntityRecordMapper"/>), for the tile of a creation.</summary>
     private const int TileWidthPixels = 24;
 
@@ -524,7 +531,7 @@ internal static class AlundraEntitySpawnFactory
         proxy.ParentEntity = parentEntity;
 
         // 0x80039D40-0x80039D5C: +0x0C is the parent whatever it is; +0x08 is written only for a non-null parent, to the parent's own root when it has one, else to the parent.
-        proxy.ChildEntity = parentEntity == null ? null : (parentEntity.GameplayProxy as AlundraEntityScriptProxy)?.ChildEntity ?? parentEntity;
+        proxy.ChildEntity = ResolveRootEntity(parentEntity);
 
         ApplyHeaderInitialization(header, entity, proxy, isMapPage ? index | 0x100 : index, unchecked((uint)direction), collisionField);
 
@@ -631,6 +638,9 @@ internal static class AlundraEntitySpawnFactory
         // always passes null there too, GameEngine.cs:629-645 InitializeEntitySlots), non-null only for
         // the dynamic-spawn opcode 0x2D (AlundraWorldProxy.SpawnEntityByRecordId).
         proxy.ParentEntity = parentEntity;
+
+        // E20.e0a2 (carried from E20.e0a1, ADR-0064): +0x08, the root of the chain of parents (0x80039D40-0x80039D5C), is written by the record path too, as the binary's InitializeEntity does for both halves. No reader is known.
+        proxy.ChildEntity = ResolveRootEntity(parentEntity);
 
         if (spriteRecordCatalog == null
             || !TryGetPrefabAssetId(record, out var prefabAssetId)
@@ -742,7 +752,7 @@ internal static class AlundraEntitySpawnFactory
 
         SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
 
-        // Resolve this entity's IDSV table once, from the catalog entry already fetched above, and
+        // Resolve this entity's IDSV table once, from the sprite header handed to this method (the caller has resolved it from the catalog), and
         // stash it on the proxy - see AlundraEntityScriptProxy.IdsvByAnimDirection's doc comment and
         // WallPlacementOverlay.ApplyEntitySortKey's frame-0-only deviation note. Only frame 0 of each
         // (anim, direction) pair is kept; the per-frame lists Data/sprite-records.json carries are not

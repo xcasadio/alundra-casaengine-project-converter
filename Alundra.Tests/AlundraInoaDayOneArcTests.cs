@@ -413,6 +413,9 @@ public sealed class AlundraInoaDayOneArcTests
         Assert.Equal(0u, ArcRun.State.PlayerControlFlags);
         Assert.False(AlundraDialogueDirector.Instance.IsOpen);
         Assert.True(IsTemporarySet(3), "T3");
+        // E20.e0a2 (ADR-0064): record 4, spawned by the 0x8B @95 after record 0 (slot 1) was destroyed, takes the LOWEST free slot, 1, and so walks BEFORE Septimus (slot 2) in the passes, as in
+        // the binary's flat array: its C[3] (@448, which waits for T3) runs before C[2] sets T3 in the tick, so it leaves the wait one tick later and deactivates at the next tick (frame 2072).
+        arc.OneFrame();
         Assert.True(arc.Has(C, 451, 0x19), "C[3] never deactivated record 4 (0x19 @451)");
         AssertFrame(arc, C, 451, 2071);
         var record4 = arc.EntityByRecord(4)!;

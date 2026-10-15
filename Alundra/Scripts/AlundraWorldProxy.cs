@@ -131,15 +131,24 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     /// <summary>
     /// Entities spawned by this proxy in <see cref="InitializeWithWorld"/> (both the prefab-clone and
-    /// bare-fallback paths), in creation order - <see cref="Update"/> drives their status machine in
-    /// this same order, mirroring the original manager's single flat entity-slot array.
+    /// bare-fallback paths) and by the apparitions, in the ORDER OF THEIR SLOTS (E20.e0a2, ADR-0064: the hero's slot 0, then 1 to 63; an entry without a slot stays where it is) - <see cref="Update"/> drives their status
+    /// machine in this same order, mirroring the original manager's single flat entity-slot array.
     /// </summary>
     private readonly List<Entity> _spawnedEntities = new();
 
     /// <summary>
     /// E20.e0a2 (ADR-0064): the slots of this world's entities, one table per instance (a map has its own proxy, so a new map starts empty, slot 0 held for the hero).
     /// </summary>
-    private readonly AlundraEntitySlotTable _slots = new();
+    private readonly AlundraEntitySlotTable _slots = SlotTableFactoryForTests?.Invoke() ?? new();
+
+    /// <summary>Test seam, inert in production (null): called with the path ("load", "record", "sprite-index") and the entity right after its addition to the world and to the list, to make the error path of the creation reachable.</summary>
+    internal static Action<string, Entity>? CreationFaultHookForTests;
+
+    /// <summary>Test seam, inert in production (null): builds the slot table of a NEW proxy, so a test can start a world with slots already held (the full-table refusal at the map load).</summary>
+    internal static Func<AlundraEntitySlotTable>? SlotTableFactoryForTests;
+
+    /// <summary>The table of the slots, for the tests.</summary>
+    internal AlundraEntitySlotTable SlotTable => _slots;
 
     /// <summary>The highest slot of the entries of <see cref="_spawnedEntities"/> that have one (-1 when none does).</summary>
     private int HighestLiveSlot()
@@ -157,19 +166,64 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
-    /// E20.e0a2 phase A (shadow, T0): gives <paramref name="proxy"/> the lowest free slot and reports what phase B would do with it, without reordering or refusing anything
-    /// (a full table leaves the slot at -1 and the entity is added as before). Called before the entity joins <see cref="_spawnedEntities"/>.
+    /// E20.e0a2 (ADR-0064): the slot just taken for <paramref name="proxy"/> becomes the entity's own, or is given back at once when the entity has no <see cref="AlundraEntityScriptProxy"/> (a bare entity cannot be recycled, so it
+    /// would hold the slot for ever). Returns the slot the entity holds (-1 for none).
     /// </summary>
-    private void AssignSlot(AlundraEntityScriptProxy? proxy)
+    private int HoldSlot(AlundraEntityScriptProxy? proxy, int slot)
     {
         if (proxy == null)
         {
-            return;
+            _slots.Release(slot);
+            return -1;
         }
 
-        var slot = _slots.Allocate();
         proxy.Slot = slot;
+        return slot;
+    }
+
+    /// <summary>
+    /// E20.e0a2 (ADR-0064): puts <paramref name="entity"/> in <see cref="_spawnedEntities"/> in the order of the slots, as the passes of the binary walk its flat array: right before the first entry whose slot is HIGHER
+    /// than <paramref name="slot"/>; the entries without a slot (-1: the test montages that fill the list by reflection) are skipped by the comparison and stay where they are; with none higher (or no slot), at the end.
+    /// </summary>
+    private void InsertBySlot(Entity entity, int slot)
+    {
         ReportSlot(slot);
+        if (slot >= 0)
+        {
+            for (var i = 0; i < _spawnedEntities.Count; i++)
+            {
+                if (_spawnedEntities[i].GameplayProxy is AlundraEntityScriptProxy { Slot: var other } && other > slot)
+                {
+                    _spawnedEntities.Insert(i, entity);
+                    return;
+                }
+            }
+        }
+
+        _spawnedEntities.Add(entity);
+    }
+
+    /// <summary>
+    /// E20.e0a2 (ADR-0064, carried from E20.e0a1): the contract "null, nothing added" holds on the error path too. An exception after the addition (the sound of the creation, the push to the root) takes the entity out of
+    /// <see cref="_spawnedEntities"/>, hands it back to the engine (<see cref="World.RemoveEntity"/>, which flags it for removal at the next update) when it had been queued, and gives its slot back.
+    /// </summary>
+    private void AbortCreation(Entity? entity, bool added, int slot)
+    {
+        if (entity != null)
+        {
+            _spawnedEntities.Remove(entity);
+            if (added)
+            {
+                _world?.RemoveEntity(entity);
+            }
+
+            if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
+            {
+                proxy.Slot = -1;
+            }
+        }
+
+        _slots.Release(slot);
     }
 
     private void ReportSlot(int slot)
@@ -946,10 +1000,23 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 continue;
             }
 
+            // E20.e0a2 (ADR-0064): the lowest free slot, taken first (the binary's FindFreeEntitySlot 0x80039AD0 comes before the creation); a full table skips this record, as a refused apparition.
+            var slot = _slots.Allocate();
+            if (slot < 0)
+            {
+                skippedCount++;
+                ReportSlot(-1);
+                Logs.WriteWarning(
+                    $"AlundraWorldProxy: record '{record.Name}' not spawned in world '{world.Name}': the table of the {AlundraEntitySlotTable.SlotCount} entity slots is full; skipping.");
+                continue;
+            }
+
+            Entity? entity = null;
+            var added = false;
             try
             {
                 // Engine ADR-0037: an entity asset is a template, read fresh for every spawn.
-                var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(
+                entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(
                     record, guid => world.Game.AssetContentManager.LoadCopy<Entity>(guid), SpriteRecordCatalog,
                     tileMapData: _tileMapData, collisionField: CollisionField);
                 var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
@@ -960,8 +1027,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 }
 
                 world.AddEntity(entity);
-                AssignSlot(spawnedProxy); // E20.e0a2 phase A: the shadow of the slot table.
-                _spawnedEntities.Add(entity);
+                added = true;
+                slot = HoldSlot(spawnedProxy, slot);
+                InsertBySlot(entity, slot);
+                CreationFaultHookForTests?.Invoke("load", entity);
                 RequestAppearanceSound(spawnedProxy); // E19.t T-R2: the sound of the animation of the appearance, in the group of this (new) map.
 
                 // E4.b ("Spawn" item, docs/plan-e4-deplacement-scripte.md): ground-clamp + root push for a
@@ -979,6 +1048,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             }
             catch (Exception ex)
             {
+                AbortCreation(entity, added, slot);
                 Logs.WriteWarning(
                     $"AlundraWorldProxy: failed to spawn entity for record '{record.Name}' in world '{world.Name}'; "
                     + $"skipping. {ex.Message}");
@@ -2153,8 +2223,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // SyncTransform) see it every frame, exactly like the old SpawnPlayerEntity used to.
         proxy.Slot = 0; // E20.e0a2: the hero holds slot 0 (held by the table from its construction).
         _slots.HoldHeroSlot();
-        ReportSlot(0);
-        _spawnedEntities.Add(entity);
+        InsertBySlot(entity, 0);
         PlayerEntity = proxy;
 
         // E5.a: port of GameEngine.cs:644 (InitializeEntitySlots' trailing
@@ -2711,7 +2780,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// E20.a A3 (docs/plan-e20-heros.md section 1.3): the membership of the entity block. The engine integrates a spawned entity at the head of the NEXT frame
     /// (<c>World.AddEntity</c> only queues, <see cref="AlundraEntityScriptProxy.Update"/> then records <see cref="AlundraEntityScriptProxy.TookPartInFrame"/>), so an entity that appears during a
     /// frame has its first tick in the next one; an entity recycled (<see cref="RecycleDestroyedEntities"/>) leaves <see cref="_spawnedEntities"/> and no longer ticks. The order is the one of the slots:
-    /// the hero first (slot 0, <c>MovePlayer</c> first in <c>0x800386D0</c>), then <see cref="_spawnedEntities"/> in creation order (the "first attacker" of the hit pass of E20.c1 depends on it).
+    /// the hero first (slot 0, <c>MovePlayer</c> first in <c>0x800386D0</c>), then <see cref="_spawnedEntities"/> in the order of the slots (E20.e0a2; the "first attacker" of the hit pass of E20.c1 depends on it).
     /// </summary>
     private void CollectTickEntities()
     {
@@ -2882,7 +2951,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     private Action<int, int, int>? _emitHitSparks;
 
     /// <summary>
-    /// E20.c1a C3: the list of <c>0x800384F4</c>, as the lists step of a tick builds it: the entities of the slots (the hero first, then <c>_spawnedEntities</c> in creation order, the order of the slots) whose status is Normal
+    /// E20.c1a C3: the list of <c>0x800384F4</c>, as the lists step of a tick builds it: the entities of the slots (the hero first, then <c>_spawnedEntities</c>, in the order of the slots) whose status is Normal
     /// or Deactivated and whose <c>BlockedByEntity</c> (<c>+0x20</c>) is null. It is NOT <see cref="_tickEntities"/> (built before the programs, so with the statuses of before them) and not the engine's update list.
     /// The pass sees the statuses as they were when the list was built, as the binary's does.
     /// </summary>
@@ -3189,7 +3258,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// by <see cref="Update"/>'s per-frame passes starting next frame (it enters as
     /// <see cref="EntityStatus.Loaded"/>, so its own Load program runs then, same as every map-load spawn).
     /// Unlike the original (a single global, size-limited entity-slot table with recycling), this always
-    /// allocates a brand new CasaEngine <see cref="Entity"/> - no slot reuse in V1.
+    /// allocates a brand new CasaEngine <see cref="Entity"/>, which takes the lowest free slot of the table of 64 (E20.e0a2: a full table refuses, the opcode finds no entity); a recycled entity gives its slot back.
     /// </summary>
     internal AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId)
     {
@@ -3215,10 +3284,22 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             return null;
         }
 
+        // E20.e0a2 (ADR-0064): the lowest free slot, after the record lookup and before the creation, as the binary's record path (0x8003A1B8); a full table refuses this apparition.
+        var slot = _slots.Allocate();
+        if (slot < 0)
+        {
+            ReportSlot(-1);
+            Logs.WriteWarning(
+                $"AlundraWorldProxy: SpawnEntityByRecordId({entityRecordId}) refused: the table of the {AlundraEntitySlotTable.SlotCount} entity slots is full; nothing spawned.");
+            return null;
+        }
+
+        Entity? entity = null;
+        var added = false;
         try
         {
             // Engine ADR-0037: an entity asset is a template, read fresh for every spawn.
-            var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(
+            entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(
                 record, guid => _world.Game.AssetContentManager.LoadCopy<Entity>(guid), SpriteRecordCatalog,
                 parentEntity: logicEntity.LogicContextEntity, tileMapData: _tileMapData, collisionField: CollisionField);
             var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
@@ -3229,8 +3310,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             }
 
             _world.AddEntity(entity);
-            AssignSlot(spawnedProxy); // E20.e0a2 phase A: the shadow of the slot table.
-            _spawnedEntities.Add(entity);
+            added = true;
+            slot = HoldSlot(spawnedProxy, slot);
+            InsertBySlot(entity, slot);
+            CreationFaultHookForTests?.Invoke("record", entity);
             RequestAppearanceSound(spawnedProxy); // E19.t T-R2: at the tick of the opcode (0x2D, 0x8A, 0x8B).
             // E4.b: same ground-clamp + root push as the map-load spawn loop above - see that call site's
             // own doc for why this must happen AFTER AddEntity.
@@ -3240,6 +3323,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         }
         catch (Exception ex)
         {
+            AbortCreation(entity, added, slot);
             Logs.WriteWarning(
                 $"AlundraWorldProxy: SpawnEntityByRecordId({entityRecordId}) failed to spawn; skipping. "
                 + $"{ex.Message}");
@@ -3251,7 +3335,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// E20.e0a1 (docs/plan-e20-heros.md section 1.16.1, ADR-0063): <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, the apparition of <c>SpawnWarpEntity</c> (<c>0x80039F58</c>) without a record. In the order of the
     /// binary: the page lookup (<c>0x80039B28</c>: an index outside 0 to 255, or one the table of the page does not hold, is refused before anything is touched), then the creation of
     /// <see cref="AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex"/> with the Z of the caller plus the raw unit of the binary (D-E0A-1, here and nowhere else), then what the record path does after its factory: the script
-    /// host, the balance sheet, the addition to the world and to the end of <see cref="_spawnedEntities"/> (no case yet: E20.e0a2), the sound of the animation 0, the push to the root. The prefab is read fresh for every call
+    /// host, the balance sheet, the addition to the world and to <see cref="_spawnedEntities"/> at the place of its slot (E20.e0a2), the sound of the animation 0, the push to the root. The prefab is read fresh for every call
     /// (engine ADR-0037). The entity ticks from the frame after its creation, as every spawn does until E20.e0a3.
     /// </summary>
     internal AlundraEntityScriptProxy? SpawnEntityBySpriteIndex(AlundraEntityScriptProxy? parent, bool isMapPage, int index, int x, int y, int z, int direction)
@@ -3293,17 +3377,28 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             return Refuse("the catalog has no sprite record for this bank key");
         }
 
+        // E20.e0a2 (ADR-0064): the lowest free slot, after the page lookup and before the creation (0x80039AD0 follows 0x80039B28 in the binary); a full table refuses with the null of D-E0A-2.
+        var slot = _slots.Allocate();
+        if (slot < 0)
+        {
+            ReportSlot(-1);
+            return Refuse($"the table of the {AlundraEntitySlotTable.SlotCount} entity slots is full");
+        }
+
+        Entity? entity = null;
+        var added = false;
         try
         {
             // Engine ADR-0037: an entity asset is a template, read fresh for every spawn.
             var prefab = _world.Game.AssetContentManager.LoadCopy<Entity>(prefabAssetId);
             if (prefab == null)
             {
+                _slots.Release(slot);
                 return Refuse($"the prefab {prefabAssetId} could not be read");
             }
 
             // D-E0A-1: the Z of a DLL entity is the binary's minus one raw unit (ADR-0026); the binary's argument has it, and the creation subtracts ModZ from the binary's argument.
-            var entity = AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex(
+            entity = AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex(
                 prefab, header, isMapPage, index, parent?.LogicContextEntity, x, y, unchecked(z + 1), direction, CollisionField);
             var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
             if (spawnedProxy != null)
@@ -3313,14 +3408,17 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             }
 
             _world.AddEntity(entity);
-            AssignSlot(spawnedProxy); // E20.e0a2 phase A: the shadow of the slot table.
-            _spawnedEntities.Add(entity);
+            added = true;
+            slot = HoldSlot(spawnedProxy, slot);
+            InsertBySlot(entity, slot);
+            CreationFaultHookForTests?.Invoke("sprite-index", entity);
             RequestAppearanceSound(spawnedProxy); // E19.t T-R2: at the tick of the call.
             spawnedProxy?.PushLogicalPositionToRoot();
             return spawnedProxy;
         }
         catch (Exception ex)
         {
+            AbortCreation(entity, added, slot);
             return Refuse($"the creation failed ({ex.Message})");
         }
     }
@@ -3384,7 +3482,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     /// <summary>
     /// Snapshot of <see cref="_spawnedEntities"/>'s own <see cref="AlundraEntityScriptProxy"/> proxies, in
-    /// the same creation order - built fresh on every call (not cached) so an entity dynamically spawned
+    /// the same order (the order of the slots) - built fresh on every call (not cached) so an entity dynamically spawned
     /// by 0x2D earlier in the same script call is visible to a search issued later in that call, exactly
     /// like the original's live <c>g_entitySlots</c> array (see <see cref="EntitySearchService"/>'s class
     /// doc). Not a per-frame hot path (only entity-manipulation opcodes call it), so the allocation here

@@ -15,7 +15,7 @@ namespace Alundra.Scripts;
 public interface IEntityWorldContext
 {
     /// <summary>
-    /// Every entity this world has spawned so far this session, in creation order - mirrors the
+    /// Every entity this world has spawned so far this session, in the order of their slots (E20.e0a2; the hero's slot 0 first) - mirrors the
     /// original's flat <c>g_entitySlots</c> array (see <see cref="EntitySearchService"/>'s class doc).
     /// A snapshot taken fresh on each read: an entity dynamically spawned by 0x2D earlier in the same
     /// script call is visible to a following search within that same call, exactly like the original's
