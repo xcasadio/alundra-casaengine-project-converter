@@ -3,7 +3,7 @@
 # One row per test that created an entity with a slot (hero adoption, map load, 0x2D/0x8A/0x8B, SpawnEntityBySpriteIndex); a test absent from this file cannot move in phase B.
 # assignments = slots handed out (every path); out_of_order = assignments whose slot is lower than the highest slot of the live entries (phase B inserts them elsewhere than at the end);
 # overflows = apparitions with no free slot from 1 to 63 (phase B refuses them); highest_slot = the highest slot the test saw.
-# Totals: 179 tests; 5502 assignments; 11 out-of-order events in 10 tests; 112 overflows, all in one test (B2 of the e0a1 interface, 156 apparitions in one world); highest slot of a test that only loads maps and runs scripts: 36.
+# Totals: 179 tests; 5502 assignments; 11 out-of-order events in 8 tests; 112 overflows, all in one test (B2 of the e0a1 interface, 156 apparitions in one world); highest slot of a test that only loads maps and runs scripts: 36.
 # test<TAB>assignments<TAB>out_of_order<TAB>overflows<TAB>highest_slot
 AlundraAbsoluteZWritesTests.Map163_TheCrateOfRecord15_StaysOnTheCrateOfRecord14	assignments=19	out_of_order=0	overflows=0	highest_slot=18
 AlundraAbsoluteZWritesTests.Map179_TheCrateOfRecord12_StaysOnTheCrateOfRecord11	assignments=11	out_of_order=0	overflows=0	highest_slot=10
