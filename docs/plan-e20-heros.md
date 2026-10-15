@@ -4159,6 +4159,11 @@ permise (`HeaderContents`), le reste du noyau et tout appel du tirage depuis la 
 l'assistant aux trois sites appartient à la phase A seulement, la phase B ne fait qu'écrire ; les tests rouges avant la phase B sont nommés,
 chaque cas « sans tirage » est accolé à un cas qui tire, et les arrêts « la phase A fait bouger un test » et « un test nommé rouge vert
 avant T2 » sont ajoutés.
+**Révision 2 (2026-10-15).** Seconde relecture : **REVISE**, un blocage ; disposition de la session principale (cap de deux relectures
+automatiques atteint) : **FIX** — le contrôle « ligne d'écriture retirée » attendait (m1) à (m5) seuls, alors que T2 ajoute les
+comparaisons de D-E0A-3 au test du chemin complet et réécrit les tests déplacés, qui dépendent aussi de l'écriture : l'ensemble rouge
+attendu est maintenant fermé et nommé ; les comparaisons vont dans ce seul test, jamais dans l'assertion partagée avec les tests du
+noyau d'e0a1. Nouvelle époque de relecture : une seule relecture de clôture suit.
 
 **Prérequis.** E20.e0a1 ✅, E20.e0a2 ✅, E20.e0b1 ✅ (ADR-0066 ; l'ombre `AlundraRandomShadow` et son registre virtuel `V` existent).
 Q-B1 tranchée : `ArcRun` re-sème avant et après le chargement.
@@ -4234,7 +4239,11 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
   puits, jamais l'état réel ni les champs du proxy, comme celui d'e0b1).
 - ⏳ **T2 — Phase B** (commit de code B) : l'assistant écrit et avance l'état réel (seul changement) ; (m1) à (m5) passent au vert ; suite
   complète ; chaque test existant qui bouge appartient à la liste prédite et est réécrit par une dérivation (D-E0B-8) ; les comparaisons
-  de `+0x3C`, `+0x40` et du mot (exclues par D-E0A-3) s'ajoutent aux tests du chemin complet de la carte 14.
+  de `+0x3C`, `+0x40` et du mot (exclues par D-E0A-3) s'ajoutent au **seul** test du chemin complet de la carte 14,
+  `AlundraSpawnBySpriteIndexInterfaceTests.B2_TheFullPath_On151NumbersOfTheGlobalPage_…` (graine posée avant chaque apparition au mot
+  d'entrée du vecteur, attendus lus dans `contents` et `rng_out` de l'oracle d'e0a), dans une assertion propre à ce test, **jamais** dans
+  `SpawnProjectionAsserts.Check`, partagée avec les tests du noyau d'e0a1 qui ne passent pas par l'assistant du monde ; les tests
+  existants réécrits sont nommés dans les résultats de T2.
 - ⏳ **T3 — ADR, plan, verifiers frais** (deux ; mutants du code de la DLL : au moins 12, tous tués — banque inversée, masque `0x7FFF`
   oublié, `& 0xFF` oublié, priorité du code d'enregistrement, repli sur l'en-tête, test du bit `0x80`, limite `0x62`, décalage de la rangée,
   `>> 28` changé, maillon non suivi, drapeau levé qui tire quand même, `+0x40` non écrit sans enregistrement, tirage placé avant l'abandon
@@ -4245,7 +4254,9 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
 - Classe pure : 2 626 + 52 + 183 + 12 + 6 000 vecteurs, **0 écart** ; la table de la DLL égale (md5) aux 2 048 octets de l'exécutable à
   l'octet `0x960C`.
 - Monde : (m1) à (m5) verts ; pour chaque couple de V8, la case de chargement vérifiée et les valeurs égales à `v8.json` ; la ligne
-  d'écriture de la phase B retirée, la suite rend **exactement** (m1) à (m5) rouges et rien d'autre (même preuve qu'e0b1).
+  d'écriture de la phase B retirée, la suite rend **exactement** l'ensemble fermé : (m1) à (m5), `B2_TheFullPath_…` (ses comparaisons
+  de D-E0A-3) et chaque test existant réécrit en T2 (nommés dans ses résultats, tous dans la liste prédite) ; rien d'autre (même preuve
+  qu'e0b1) ; les tests du noyau d'e0a1 (`AlundraSpawnBySpriteIndexTests`, sans monde) sans diff.
 - Suite : `Alundra.Tests` en Release et en Debug, compte de départ plus les nouveaux, zéro échec ;
   **`EntityRecordMapperTests.Map_UnmappedKeys_DoNotAffectAnyProxyField`, `AlundraSpawnBySpriteIndexInterfaceTests` (test H) et les tests
   du noyau d'e0a1 passent sans changement** ; `git diff` d'`AlundraEntitySpawnFactory.cs` : la seule ligne `HeaderContents` ; tests
