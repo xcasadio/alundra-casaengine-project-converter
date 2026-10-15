@@ -602,11 +602,15 @@ carte des entités nées par l'interface (e0k1), leur Z logique et le pas vertic
 est conditionnelle (Q-K2, option B). Q-K1 et Q-K2 : défaut A appliqué par la session principale jusqu'à la réponse de l'auteur.
 Prérequis : f3c exige e0k1 et e0k2 (la règle du Z logique ; D-F3-8 corrigé : marqueur d'e0k2, plus `EntityRefId == −1`) ; f4, f5 et
 f6 exigent e0k1 à e0k3 ; g1 et g2 exigent e0k2 (g1 pose le marqueur sur une entité par enregistrement qu'il soulève) ; h3 exige e0k2 ;
-h4 exige e0k1 à e0k3 ; E20.e0c (le butin lâché et l'objet ramassable, nés par l'interface avec la gravité) exige e0k1 à e0k3. Ordre :
+h4 exige e0k1 à e0k3 ; E20.e0c (le butin lâché et l'objet ramassable, nés par l'interface avec la gravité) exige e0k1 à e0k3, et E20.e
+(l'herbe coupée, dont le butin naît de même) exige E20.e0c. Ordre :
 f3a, f3b, e0k1, e0k2, f3c, e0k3, puis la suite du tableau. Choix de la session principale en mode AUTO,
 réversible, signalé à l'auteur.
 Relecture de la révision 8 : **REVISE**, un point corrigé (FIX) : E20.e0c fait naître par l'interface des objets à gravité (30 à 64) et
 n'exigeait pas e0k ; elle exige maintenant e0k1 à e0k3 (paragraphe « Ensuite » et dépendants de §1.18). Une seconde relecture suit.
+Seconde relecture : **REVISE**, un blocage ; disposition de la session principale (cap de deux relectures automatiques atteint) : **FIX**
+— E20.e (l'herbe coupée) fait naître son butin par le même `SpawnWarpEntity` d'un objet à gravité et n'avait aucun prérequis ; elle exige
+maintenant E20.c1 ✅ et E20.e0c (donc E20.e0b2 et e0k1 à e0k3). Nouvelle époque de relecture : une seule relecture de clôture suit.
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -674,7 +678,9 @@ Les projectiles d'E20.f3, f5 et f6 (E10, E17, E9) appellent aussi `DestroyEntity
 
 Ensuite, hors de l'ordre des armes, objets et collisions : la blessure du héros (E20.c2b, après E14.a, qui remesure ses arcs), le mur
 d'eau profonde avec les courants (E20.i2, D-E20-31 ; lecture de « 9 a » à confirmer par l'auteur), le butin et l'objet ramassable
-(E20.e0c, qui exige E20.e0b2 et E20.e0k1 à E20.e0k3 : les objets lâchés tombent), les effets du héros et l'herbe coupée (E20.e), la règle du stick (E20.d2b, après la mesure de l'auteur). Si E14.a1c s'arrête
+(E20.e0c, qui exige E20.e0b2 et E20.e0k1 à E20.e0k3 : les objets lâchés tombent), les effets du héros et l'herbe coupée (E20.e, qui exige
+les boîtes d'E20.c1 ✅ et E20.e0c, donc E20.e0b2 et E20.e0k1 à E20.e0k3 : la coupe fait naître son butin par `0x80032C7C`, le même
+`SpawnWarpEntity` d'un objet à gravité, ramassé par C255), la règle du stick (E20.d2b, après la mesure de l'auteur). Si E14.a1c s'arrête
 sur la chute des Muruta du hall (arrêt écrit de sa tranche : la chute des entités autres que le héros relève d'E20.e0k), la question
 va à l'auteur comme le dit cet arrêt ; recommandation : avancer la part « chute » d'E20.e0k, qui ne dépend pas de l'apparition par
 indice (les Muruta sont placés sur la carte), puis reprendre E14.a1c.
@@ -4392,7 +4398,7 @@ Ordre : e0k1, e0k2, e0k3 (e0k4 seulement si l'auteur la demande). Les dépendant
 - **Q-K2 — Le tick du « bloqué » d'une flèche contre un mur.** *L'original :* le signal « bloqué » arrive 1 tick (20 ms) après le dernier pas complet dans 2 tirs sur 3, et 2 ticks après dans le troisième (selon la fraction de pixel du départ). *Le port :* toujours 1 tick. *Visible en jeu :* rien ; la flèche rebondit ou meurt 1/50 s plus tôt dans un tir sur trois. *Option A (défaut, précédent D-E19-12) :* accepter l'écart, documenté. *Option B :* porter la boucle entière pour les entités marquées (e0k4, une tranche de plus, qui remplace le mover du moteur pour elles ; preuve par les 20 000 cas du fuzz).
 - Sans question (défaut fidèle) : le rognage au bord pour les entités par enregistrement et le héros reste sous D-E19-25 ; les attributs de tuile et la dérive vont à leurs consommateurs (O-E0K-2, O-E0K-3).
 
-**Prérequis et dépendants.** Voir le tableau de découpage. e0k1 : E20.e0a1 ✅ à e0a3b ✅ ; elle ne dépend ni d'E20.e0b2 (en pause) ni d'E20.f3, mais touche aussi `AlundraWorldProxy.cs` : elle s'exécute l'une après l'autre avec elles, dans le même checkout, et relit ses numéros de ligne au HEAD d'exécution. Dépendants : E20.f3c (règle du Z logique, remplace le repli B de Q-F3-1 ; D-F3-8 corrigé dans §1.19), E20.f4, E20.f5, E20.f6, E20.g1 (pose le marqueur), E20.g2, E20.h3, E20.h4, E20.e0c (objets lâchés à gravité ; e0k1 à e0k3). E20.f5 doit appeler `ResyncControllerFromFlags` quand E17 change les drapeaux (masque de marche). Révision 8 de l'enveloppe écrite (§1.1 : ligne 4 scindée en e0k1 à e0k3 ; prérequis ci-dessus).
+**Prérequis et dépendants.** Voir le tableau de découpage. e0k1 : E20.e0a1 ✅ à e0a3b ✅ ; elle ne dépend ni d'E20.e0b2 (en pause) ni d'E20.f3, mais touche aussi `AlundraWorldProxy.cs` : elle s'exécute l'une après l'autre avec elles, dans le même checkout, et relit ses numéros de ligne au HEAD d'exécution. Dépendants : E20.f3c (règle du Z logique, remplace le repli B de Q-F3-1 ; D-F3-8 corrigé dans §1.19), E20.f4, E20.f5, E20.f6, E20.g1 (pose le marqueur), E20.g2, E20.h3, E20.h4, E20.e0c (objets lâchés à gravité ; e0k1 à e0k3), E20.e (par E20.e0c : le butin de l'herbe coupée). E20.f5 doit appeler `ResyncControllerFromFlags` quand E17 change les drapeaux (masque de marche). Révision 8 de l'enveloppe écrite (§1.1 : ligne 4 scindée en e0k1 à e0k3 ; prérequis ci-dessus).
 
 ---
 
@@ -4403,6 +4409,7 @@ fichiers au HEAD de la découverte ; e0k1 passe après f3a et f3b, qui ajoutent 
 T0 au HEAD de départ, et l'acceptation comme les arrêts d'e0k1 à e0k3 la citent (FIX) ; (2) (k1) nomme un mur que **seul le masque**
 bloque (FIX) ; (3) l'épingle P3 d'e0a3b doit tuer le mutant M3 (FIX) ; (4) l'enveloppe révision 8 doit être READY avant toute exécution
 (en cours ; l'exécution attend son verdict).
+Seconde relecture : **READY** (2026-10-15).
 
 **Prérequis.** Voir ci-dessus.
 
