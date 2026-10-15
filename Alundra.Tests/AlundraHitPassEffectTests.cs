@@ -229,4 +229,28 @@ public sealed class AlundraHitPassEffectTests
             Assert.Equal(new[] { "spark" }, Hit(attribute, heroSheet).Journal);
         }
     }
+
+    // (e4) One effect per hit, not per pass: one attacker of the nibble 6 hits two targets in the same pass and the effect 4 is asked for each of them, in the order of the list, each before its own spark; a second attacker of the nibble 7,
+    // whose targets are already in the cooldown of the first hit, asks for nothing.
+    [Fact]
+    public void E4_OneEffectPerHit_NotPerPass()
+    {
+        var sheet = new AlundraBalanceRecord(255, 17, 9, Enumerable.Repeat((byte)16, 11).ToArray(), new[] { new AlundraBalanceAttack(6, 1) }, null);
+        var sheet7 = new AlundraBalanceRecord(255, 17, 9, Enumerable.Repeat((byte)16, 11).ToArray(), new[] { new AlundraBalanceAttack(7, 1) }, null);
+        var first = new Actor(EntityFlags.HitsClassA, sheet, withBox: true);
+        var second = new Actor(EntityFlags.HitsClassA, sheet7, withBox: true);
+        var targetA = new Actor(EntityFlags.ClassA, SheetWithByte(6, 16), withBox: false);
+        var targetB = new Actor(EntityFlags.ClassA, SheetWithByte(6, 16), withBox: false);
+        var journal = new List<string>();
+        var pass = new AlundraHitPass();
+        var list = new List<AlundraEntityScriptProxy> { first.Proxy, second.Proxy, targetA.Proxy, targetB.Proxy };
+        pass.Run(
+            list,
+            first.Proxy,
+            (_, _, _) => journal.Add("spark"),
+            (who, id) => journal.Add((ReferenceEquals(who, targetA.Proxy) ? "A" : ReferenceEquals(who, targetB.Proxy) ? "B" : "?") + ":fx" + id));
+
+        Assert.Equal(new[] { "A:fx4", "spark", "B:fx4", "spark" }, journal);
+        Assert.Equal(2, pass.HitsWritten);
+    }
 }
