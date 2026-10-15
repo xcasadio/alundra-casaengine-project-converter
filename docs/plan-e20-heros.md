@@ -3949,6 +3949,11 @@ fait qu'écrire l'état réel ; les tests de T2 rouges avant T3 et ceux verts pa
 arrière suivent ce partage ; (2) l'ombre attribue **chaque** événement au cadre le plus extérieur d'`Alundra.Tests` par une remontée
 de pile, comme le canal de la table de cases ; la liste prédite est celle des tests dont `divergent_draws + divergent_seed_reads +
 ambient_draws > 0`, et l'acceptation comme les arrêts portent sur l'appartenance à cette liste, non sur la présence dans le fichier.
+**Révision 2 (2026-10-15).** Seconde relecture : **REVISE**, un blocage ; disposition de la session principale (cap de deux relectures
+automatiques atteint) : **FIX** — les cas « 0 pas » de T2 (c) (image sans tick, départ de warp) passaient déjà en phase A, où l'avance
+n'écrit pas l'état réel ; chacun est maintenant écrit dans la même assertion qu'un cas positif (au moins un pas réel attendu), donc
+rouge avant T3, et les mutants de T4 qui les tuent sont nommés ; l'arrêt « vert avant T3 » ne vise que des tests qui attendent au
+moins un pas. Nouvelle époque de relecture : une seule relecture de clôture suit.
 
 **Prérequis.** Voir ci-dessus. Compte de tests de départ : à relever en T0 (4 815 à la clôture d'e0a3a).
 
@@ -3994,18 +3999,22 @@ ambient_draws > 0`, et l'acceptation comme les arrêts portent sur l'appartenanc
   l'ombre est relancée et le fichier versé de nouveau).
 - ⏳ **T2 — Tests** (`AlundraRandomPerTickTests`, dans `AlundraRandomStaticStateCollection`, `Reset()` au constructeur), écrits après T1 :
   **rouges avant T3** : (a) les six mots de l'avance (par `AdvanceFrame()` puis lecture de `RandomSeed`) ; (c) au niveau du monde : 1 tick →
-  1 pas, 2 ticks → 2, image sans tick → 0, `MenuOpen` (`0x48`) → 1 par tick, départ de warp → 0, première image d'un monde → 1, deux mondes
-  successifs sans double compte ; (d) l'ordre dans le tick : l'étincelle de charge des ticks 85 et 89 (C2-steel) tire avant l'avance de son
+  1 pas, 2 ticks → 2, `MenuOpen` (`0x48`) → 1 par tick, première image d'un monde → 1, deux mondes successifs sans double compte ; les
+  deux cas « 0 pas » ne s'écrivent **jamais seuls** : une image sans tick suivie d'une image d'un tick → **exactement 1 pas au total** ;
+  une image qui part en warp (`RunFrame` reçoit 0 tick) entre deux images normales d'un tick → **exactement 2 pas au total** (le mot
+  attendu est calculé par un pas local) ; (d) l'ordre dans le tick : l'étincelle de charge des ticks 85 et 89 (C2-steel) tire avant l'avance de son
   tick, mot attendu calculé par un pas local, identique en images de 1, 2 et 3 ticks, mot final = graine avancée de (ticks comptés par la
   passe `inventory` + 4 tirages). **Verts par construction dès T1** (ils épinglent le branchement de la phase A ; les mutants de T4 prouvent
   qu'ils mordent) : (b) `RunFrame` appelle le rappel exactement `ticks` fois (0, 1, 2, 4), après le tick du réservoir, aussi sur un tick
-  gelé, jamais pour 0 tick ; (e) `RunFrame` sans rappel n'appelle rien et n'avance rien (garde des 70 appels directs). Un test de (a), (c)
-  ou (d) vert avant T3 est un arrêt (il ne prouve rien).
+  gelé, jamais pour 0 tick ; (e) `RunFrame` sans rappel n'appelle rien et n'avance rien (garde des 70 appels directs). Chaque test de (a), (c)
+  et (d) attend au moins un pas réel ; un tel test vert avant T3 est un arrêt (il ne prouve rien).
 - ⏳ **T3 — Phase B** (commit de code B) : `AdvanceFrame()` écrit `R` (la seule ligne de comportement de la phase) ; commentaires corrigés
   (`RunActiveEffectsPass`, en-tête d'`AlundraHitPassTests`) ; suite complète ; **chaque test qui bouge appartient à la liste prédite**
   et est réécrit par une dérivation (D-E0B-8) ; un test de la liste qui ne bouge pas est noté avec la raison (la divergence n'atteint
   aucune assertion) ; rien d'autre ne change.
-- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée ; mutants du code de la DLL : au moins 8, tous tués — rappel non passé, passé avant le tick du réservoir, sauté sur un tick gelé, appelé une fois par image, `IsTransitionInProgress` inversé, plancher retiré, constantes).
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée ; mutants du code de la DLL : au moins 8, tous tués — rappel non passé, passé avant le tick du réservoir, sauté sur un tick gelé, appelé une fois par image, appelé aussi pour une image sans
+  tick (tué par le cas « image sans tick puis un tick » de T2 (c) et par (b)), `IsTransitionInProgress` inversé ou ignoré (tué par le cas
+  « départ de warp entre deux images » de T2 (c)), plancher retiré, constantes).
 
 ##### Acceptation
 
@@ -4017,7 +4026,7 @@ ambient_draws > 0`, et l'acceptation comme les arrêts portent sur l'appartenanc
 ##### Arrêts, budget, retour arrière
 
 - **Arrêts** : la phase A fait bouger un test ; plus de 25 tests bougent (question à l'auteur : interrupteur d'`ArcRun` ou accord) ; un test de groupement, de structure ou un appel direct de `RunFrame` bouge ; un test **hors de la liste prédite** bouge ; un test de
-  T2 (a), (c) ou (d) vert avant T3 ; une avance observée là où le binaire n'en a pas ; un test existant à réécrire sans dérivation ; tout contact avec `CasaEngineMonogame/` ou `CasaEngine.Launcher/Program.cs`.
+  T2 (a), (c) ou (d) (tous attendent au moins un pas réel) vert avant T3 ; une avance observée là où le binaire n'en a pas ; un test existant à réécrire sans dérivation ; tout contact avec `CasaEngineMonogame/` ou `CasaEngine.Launcher/Program.cs`.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B se retire seule (`AdvanceFrame()` cesse d'écrire `R`) ; la phase A reste sans effet (le rappel n'écrit
   que le registre virtuel, le puits est inerte sans sa variable).
