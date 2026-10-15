@@ -3624,6 +3624,7 @@ D-E0A-5), déclencheur `+0x228` dans T1, mécanisme du rassemblement nommé, num
 automatiques atteint) : **FIX** — la décision `Current = Target` change de façon prévisible deux tests existants, nommés ci-dessous avec
 leur nouvelle attente (tout autre test qui bougerait reste un arrêt) ; **FIX** du point non bloquant : contenu de `skipcopy.targets`
 écrit. Nouvelle époque de relecture : une seule relecture de clôture suit.
+Relecture de clôture : **READY** (2026-10-15).
 
 **Prérequis.** E20.e0a3a ✅ (voie de P-A : (i) restreinte à `Current = Target` ; `Alundra.Tests` 4 815).
 
