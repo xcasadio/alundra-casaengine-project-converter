@@ -1,0 +1,4296 @@
+{
+ "00": {
+  "total": 23,
+  "slices": {
+   "1.2g E19.d": 6,
+   "1.2m E19.l": 3,
+   "1.2e E19.c1": 2,
+   "1.2h.1 E19.d2a": 2,
+   "0.2.1 Diagnostic de prog": 1,
+   "0.2.2 Interpr\u00e9teur de la": 1,
+   "1.2h.2 E19.d2b": 1,
+   "1.2h.3 E19.d2c": 1
+  },
+  "first_lines": [
+   384,
+   406,
+   1643,
+   1646
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 18,
+   "plan-e20-heros.md": 11,
+   "plan-bgm-demarrage-binaire.md": 2,
+   "plan-conversion-totale.md": 1,
+   "plan-transitions-carte.md": 1
+  }
+ },
+ "01": {
+  "total": 12,
+  "slices": {
+   "1.2e E19.c1": 2,
+   "1.2o E19.g": 2,
+   "1.2s.10 E19.m9": 2,
+   "1.1 Enveloppe": 1,
+   "1.2g E19.d": 1,
+   "1.2h.3 E19.d2c": 1,
+   "1.2m E19.l": 1,
+   "1.2n E19.h": 1
+  },
+  "first_lines": [
+   615,
+   1626,
+   1662,
+   2419
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 7,
+   "plan-e19-d2c-valeurs.md": 3,
+   "plan-e3-collisions.md": 3,
+   "census-0x24-waits.md": 1,
+   "plan-conversion-totale.md": 1,
+   "plan-e4-deplacement-scripte.md": 1
+  }
+ },
+ "02": {
+  "total": 3,
+  "slices": {
+   "1.2g E19.d": 1,
+   "1.2h.3 E19.d2c": 1,
+   "1.2i E19.e": 1
+  },
+  "first_lines": [
+   2380,
+   3492,
+   4170
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 5,
+   "intro-roadmap.md": 4,
+   "plan-bgm-demarrage-binaire.md": 4,
+   "plan-e19-f2a-valeurs.md": 2,
+   "plan-e4-deplacement-scripte.md": 1
+  }
+ },
+ "03": {
+  "total": 4,
+  "slices": {
+   "1.2j E19.f": 2,
+   "T\u00e2ches": 1,
+   "1.2i E19.e": 1
+  },
+  "first_lines": [
+   741,
+   4170,
+   5438,
+   5472
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 18,
+   "plan-bgm-demarrage-binaire.md": 4,
+   "intro-roadmap.md": 3,
+   "plan-e12-dialogues.md": 1,
+   "plan-e13d-inventaire.md": 1,
+   "plan-e4-deplacement-scripte.md": 1
+  }
+ },
+ "04": {
+  "total": 9,
+  "slices": {
+   "1.2e E19.c1": 3,
+   "1.2g E19.d": 2,
+   "1.2p E19.r": 2,
+   "1.2d E19.b": 1,
+   "1.2i E19.e": 1
+  },
+  "first_lines": [
+   1287,
+   1456,
+   1581,
+   1602
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 28,
+   "intro-roadmap.md": 8,
+   "plan-bgm-demarrage-binaire.md": 4,
+   "plan-e4-deplacement-scripte.md": 4,
+   "plan-e13d-inventaire.md": 2,
+   "plan-e19-f2a-valeurs.md": 1
+  }
+ },
+ "05": {
+  "total": 20,
+  "slices": {
+   "1.2e E19.c1": 5,
+   "1.2h.3 E19.d2c": 3,
+   "0.2.1 Diagnostic de prog": 2,
+   "1.2j E19.f": 2,
+   "1.2f E19.c2": 1,
+   "1.2g E19.d": 1,
+   "1.2i E19.e": 1,
+   "1.2p E19.r": 1
+  },
+  "first_lines": [
+   378,
+   381,
+   1560,
+   1562
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 13,
+   "plan-e20-heros.md": 11,
+   "plan-e16-etat-partie.md": 8,
+   "plan-e19-f2a-valeurs.md": 2,
+   "plan-conversion-totale.md": 1,
+   "plan-e12-dialogues.md": 1
+  }
+ },
+ "06": {
+  "total": 7,
+  "slices": {
+   "1.2h.3 E19.d2c": 2,
+   "0.2.1 Diagnostic de prog": 1,
+   "1.2f E19.c2": 1,
+   "1.2g E19.d": 1,
+   "1.2i E19.e": 1,
+   "E19.c2": 1
+  },
+  "first_lines": [
+   378,
+   2025,
+   2388,
+   3470
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 8,
+   "plan-e16-etat-partie.md": 6,
+   "plan-e19-f2a-valeurs.md": 6,
+   "intro-roadmap.md": 2,
+   "plan-e13-hud.md": 2,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "07": {
+  "total": 5,
+  "slices": {
+   "1.2e E19.c1": 2,
+   "1.2o E19.g": 2,
+   "1.2g E19.d": 1
+  },
+  "first_lines": [
+   1447,
+   1521,
+   2169,
+   8733
+  ],
+  "other_docs": {
+   "plan-e4-deplacement-scripte.md": 16,
+   "intro-roadmap.md": 13,
+   "plan-e16-etat-partie.md": 4,
+   "plan-e20-heros.md": 4,
+   "plan-conversion-totale.md": 3,
+   "plan-e13d-inventaire.md": 1
+  }
+ },
+ "08": {
+  "total": 26,
+  "slices": {
+   "1.2e E19.c1": 9,
+   "1.2h.3 E19.d2c": 4,
+   "1.2g E19.d": 3,
+   "0.2.4 Sites de la cha\u00eene": 2,
+   "0.2.6 Banc de test": 2,
+   "1.2h E19.d2": 2,
+   "1.1 Enveloppe": 1,
+   "1.2m E19.l": 1
+  },
+  "first_lines": [
+   482,
+   484,
+   578,
+   579
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 33,
+   "plan-e19-d2c-valeurs.md": 7,
+   "plan-e13d-inventaire.md": 2,
+   "plan-transitions-carte.md": 2,
+   "census-0x24-waits.md": 1,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "09": {
+  "total": 2,
+  "slices": {
+   "T\u00e2ches": 1,
+   "1.2g E19.d": 1
+  },
+  "first_lines": [
+   721,
+   2273
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 9,
+   "intro-roadmap.md": 6,
+   "plan-portrait-inventaire.md": 3,
+   "census-0x24-waits.md": 1,
+   "plan-bgm-demarrage-binaire.md": 1,
+   "plan-e13d-inventaire.md": 1
+  }
+ },
+ "0A": {
+  "total": 1,
+  "slices": {
+   "1.2j E19.f": 1
+  },
+  "first_lines": [
+   4637
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 9,
+   "intro-roadmap.md": 4,
+   "plan-e4-deplacement-scripte.md": 4,
+   "census-0x24-waits.md": 1,
+   "plan-conversion-totale.md": 1,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "0B": {
+  "total": 73,
+  "slices": {
+   "1.2e E19.c1": 23,
+   "1.2h.2 E19.d2b": 10,
+   "1.2g E19.d": 8,
+   "3. Points ouverts": 6,
+   "0.1 D\u00e9cisions de l'auteu": 4,
+   "0.2.4 Sites de la cha\u00eene": 3,
+   "1.2s.10 E19.m9": 3,
+   "1.2h E19.d2": 2
+  },
+  "first_lines": [
+   62,
+   111,
+   112,
+   128
+  ],
+  "other_docs": {
+   "census-0x24-waits.md": 150,
+   "plan-e20-heros.md": 10,
+   "plan-conversion-totale.md": 2,
+   "plan-e16-etat-partie.md": 2,
+   "plan-e19-d2c-valeurs.md": 1,
+   "plan-e19-f2a-valeurs.md": 1
+  }
+ },
+ "0C": {
+  "total": 15,
+  "slices": {
+   "1.2e E19.c1": 7,
+   "1.2g E19.d": 3,
+   "1.2s.1 E19.m0": 2,
+   "0.2.4 Sites de la cha\u00eene": 1,
+   "1.1 Enveloppe": 1,
+   "1.2o E19.g": 1
+  },
+  "first_lines": [
+   484,
+   599,
+   1477,
+   1522
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 25,
+   "plan-e16-etat-partie.md": 5,
+   "plan-e13d-sous-inventaire.md": 2,
+   "census-0x24-waits.md": 1,
+   "plan-audio-mix-exact-muet.md": 1,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "0D": {
+  "total": 18,
+  "slices": {
+   "1.2j E19.f": 7,
+   "0.2.5 Autres faits utile": 2,
+   "1.2d E19.b": 2,
+   "1.2g E19.d": 2,
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "1.1 Enveloppe": 1,
+   "1.2f E19.c2": 1,
+   "1.2h.1 E19.d2a": 1
+  },
+  "first_lines": [
+   58,
+   499,
+   504,
+   606
+  ],
+  "other_docs": {
+   "plan-e12-dialogues.md": 13,
+   "intro-roadmap.md": 5,
+   "plan-e19-f2a-valeurs.md": 4,
+   "plan-conversion-totale.md": 3,
+   "plan-e15-yarn.md": 3,
+   "plan-e12d-interaction-joueur.md": 2
+  }
+ },
+ "0E": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e20-heros.md": 4,
+   "plan-e16-etat-partie.md": 3,
+   "plan-e15-yarn.md": 1,
+   "plan-echelles-chiffrage.md": 1
+  }
+ },
+ "0F": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e20-heros.md": 27,
+   "plan-portrait-inventaire.md": 3,
+   "plan-bgm-demarrage-binaire.md": 1,
+   "plan-e16-etat-partie.md": 1,
+   "test-saves.md": 1
+  }
+ },
+ "10": {
+  "total": 21,
+  "slices": {
+   "1.2g E19.d": 5,
+   "1.2e E19.c1": 3,
+   "1.2f E19.c2": 3,
+   "1.2h.3 E19.d2c": 2,
+   "1.2o E19.g": 2,
+   "1.2d E19.b": 1,
+   "1.2l E19.j": 1,
+   "1.2y E19.u": 1
+  },
+  "first_lines": [
+   1288,
+   1476,
+   1644,
+   1779
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 61,
+   "intro-roadmap.md": 13,
+   "plan-e4-deplacement-scripte.md": 9,
+   "plan-transitions-carte.md": 7,
+   "plan-e13d-sous-inventaire.md": 5,
+   "plan-e19-d2c-valeurs.md": 5
+  }
+ },
+ "11": {
+  "total": 49,
+  "slices": {
+   "1.2g E19.d": 10,
+   "1.2h.2 E19.d2b": 4,
+   "1.2i E19.e": 4,
+   "1.3 E19.a": 4,
+   "1.2f E19.c2": 3,
+   "1.2h.1 E19.d2a": 3,
+   "1.2j E19.f": 3,
+   "1.2p E19.r": 3
+  },
+  "first_lines": [
+   25,
+   391,
+   402,
+   765
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 15,
+   "plan-e4-deplacement-scripte.md": 14,
+   "plan-conversion-totale.md": 9,
+   "plan-e16-etat-partie.md": 4,
+   "plan-portrait-inventaire.md": 3,
+   "census-0x24-waits.md": 2
+  }
+ },
+ "12": {
+  "total": 1,
+  "slices": {
+   "1.2j E19.f": 1
+  },
+  "first_lines": [
+   4329
+  ],
+  "other_docs": {
+   "plan-e11-audio.md": 6,
+   "plan-e20-heros.md": 4,
+   "plan-e13d-inventaire.md": 2,
+   "plan-e13d-sous-inventaire.md": 2,
+   "plan-portrait-inventaire.md": 2,
+   "plan-bgm-demarrage-binaire.md": 1
+  }
+ },
+ "13": {
+  "total": 1,
+  "slices": {
+   "1.2j E19.f": 1
+  },
+  "first_lines": [
+   5696
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 4,
+   "plan-portrait-inventaire.md": 2,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "14": {
+  "total": 7,
+  "slices": {
+   "3. Points ouverts": 2,
+   "1.2f E19.c2": 1,
+   "1.2n E19.h": 1,
+   "1.2o E19.g": 1,
+   "1.2u E19.s2": 1,
+   "E19.c2": 1
+  },
+  "first_lines": [
+   2022,
+   6868,
+   9436,
+   11351
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 20,
+   "plan-portrait-inventaire.md": 5,
+   "plan-audio-mix-exact-muet.md": 2,
+   "plan-e13d-sous-inventaire.md": 2,
+   "plan-e14-ia-native.md": 2,
+   "plan-e16-etat-partie.md": 2
+  }
+ },
+ "15": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 4,
+   "plan-e20-heros.md": 4,
+   "plan-e13d-inventaire.md": 2
+  }
+ },
+ "16": {
+  "total": 2,
+  "slices": {
+   "1.2h.3 E19.d2c": 1,
+   "1.2m E19.l": 1
+  },
+  "first_lines": [
+   3274,
+   6649
+  ],
+  "other_docs": {
+   "plan-e4-deplacement-scripte.md": 5,
+   "intro-roadmap.md": 4,
+   "plan-conversion-totale.md": 2,
+   "plan-e16-etat-partie.md": 2,
+   "plan-bgm-demarrage-binaire.md": 1,
+   "plan-e13d-sous-inventaire.md": 1
+  }
+ },
+ "17": {
+  "total": 5,
+  "slices": {
+   "1.2h.3 E19.d2c": 4,
+   "1.2m E19.l": 1
+  },
+  "first_lines": [
+   3274,
+   3365,
+   3524,
+   3527
+  ],
+  "other_docs": {
+   "plan-e4-deplacement-scripte.md": 9,
+   "intro-roadmap.md": 7,
+   "plan-e19-d2c-valeurs.md": 3,
+   "plan-conversion-totale.md": 2,
+   "plan-e20-heros.md": 2,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "18": {
+  "total": 16,
+  "slices": {
+   "1.2e E19.c1": 3,
+   "1.2o E19.g": 3,
+   "1.2h E19.d2": 2,
+   "1.2h.3 E19.d2c": 2,
+   "3. Points ouverts": 2,
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "0.2.6 Banc de test": 1,
+   "1.2s.11 E19.m10": 1
+  },
+  "first_lines": [
+   133,
+   582,
+   1476,
+   1644
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 61,
+   "plan-e19-d2c-valeurs.md": 11,
+   "plan-e13d-sous-inventaire.md": 3,
+   "plan-bgm-demarrage-binaire.md": 2,
+   "plan-portrait-inventaire.md": 2,
+   "plan-transitions-carte.md": 2
+  }
+ },
+ "19": {
+  "total": 10,
+  "slices": {
+   "1.2h.3 E19.d2c": 3,
+   "1.2p E19.r": 3,
+   "1.2h.2 E19.d2b": 2,
+   "1.2h E19.d2": 1,
+   "E19.d2c1": 1
+  },
+  "first_lines": [
+   2591,
+   2944,
+   2949,
+   3564
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 10,
+   "intro-roadmap.md": 6,
+   "plan-e4-deplacement-scripte.md": 5,
+   "plan-e19-d2c-valeurs.md": 2,
+   "plan-conversion-totale.md": 1,
+   "plan-e11-audio.md": 1
+  }
+ },
+ "1A": {
+  "total": 43,
+  "slices": {
+   "1.2s.9 E19.m8": 9,
+   "1.2f E19.c2": 8,
+   "1.2g E19.d": 6,
+   "1.2e E19.c1": 4,
+   "E19.c2": 3,
+   "1.2h.3 E19.d2c": 2,
+   "1.2m E19.l": 2,
+   "1.2r E19.t": 2
+  },
+  "first_lines": [
+   721,
+   1588,
+   1598,
+   1779
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 15,
+   "plan-e15-yarn.md": 6,
+   "plan-e19-d2c-valeurs.md": 5,
+   "plan-e20-heros.md": 5,
+   "plan-e13d-sous-inventaire.md": 2,
+   "census-0x24-waits.md": 1
+  }
+ },
+ "1B": {
+  "total": 15,
+  "slices": {
+   "1.2h.3 E19.d2c": 10,
+   "1.2g E19.d": 2,
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "1.2h E19.d2": 1,
+   "1.2n E19.h": 1
+  },
+  "first_lines": [
+   162,
+   2167,
+   2492,
+   2620
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 14,
+   "plan-e4-deplacement-scripte.md": 12,
+   "plan-e20-heros.md": 3,
+   "plan-conversion-totale.md": 2,
+   "plan-e19-d2c-valeurs.md": 2,
+   "test-saves.md": 1
+  }
+ },
+ "1C": {
+  "total": 75,
+  "slices": {
+   "1.2e E19.c1": 18,
+   "1.2f E19.c2": 14,
+   "1.2h.3 E19.d2c": 8,
+   "1.2g E19.d": 7,
+   "E19.c2": 5,
+   "3. Points ouverts": 5,
+   "1.1 Enveloppe": 4,
+   "1.2s.9 E19.m8": 3
+  },
+  "first_lines": [
+   93,
+   483,
+   488,
+   513
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 46,
+   "plan-e15-yarn.md": 6,
+   "plan-e13d-sous-inventaire.md": 5,
+   "plan-e19-d2c-valeurs.md": 5,
+   "plan-conversion-totale.md": 3,
+   "plan-e14-ia-native.md": 2
+  }
+ },
+ "1D": {
+  "total": 20,
+  "slices": {
+   "1.2e E19.c1": 9,
+   "1.2f E19.c2": 4,
+   "1.1 Enveloppe": 2,
+   "1.2s.9 E19.m8": 2,
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "1.2s.10 E19.m9": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   93,
+   599,
+   609,
+   1492
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 43,
+   "plan-conversion-totale.md": 1,
+   "plan-e19-d2c-valeurs.md": 1,
+   "test-saves.md": 1
+  }
+ },
+ "1E": {
+  "total": 40,
+  "slices": {
+   "1.2h.2 E19.d2b": 7,
+   "1.2b E19.a2": 5,
+   "1.2d E19.b": 5,
+   "T\u00e2ches": 3,
+   "1.2e E19.c1": 3,
+   "0.1 D\u00e9cisions de l'auteu": 2,
+   "Recette en jeu T7 (auteu": 2,
+   "1.2s.10 E19.m9": 2
+  },
+  "first_lines": [
+   63,
+   144,
+   390,
+   697
+  ],
+  "other_docs": {
+   "plan-e4-deplacement-scripte.md": 19,
+   "intro-roadmap.md": 11,
+   "plan-e20-heros.md": 10,
+   "plan-e14-ia-native.md": 7,
+   "plan-conversion-totale.md": 4,
+   "plan-e16-etat-partie.md": 3
+  }
+ },
+ "1F": {
+  "total": 14,
+  "slices": {
+   "1.2c E19.a3": 5,
+   "1.2e E19.c1": 3,
+   "Acceptation E19.a": 1,
+   "1.2g E19.d": 1,
+   "1.2j E19.f": 1,
+   "1.2s.1 E19.m0": 1,
+   "1.2s.10 E19.m9": 1,
+   "1.3 E19.a": 1
+  },
+  "first_lines": [
+   768,
+   1095,
+   1100,
+   1117
+  ],
+  "other_docs": {
+   "plan-e4-deplacement-scripte.md": 22,
+   "plan-e20-heros.md": 14,
+   "intro-roadmap.md": 12,
+   "plan-e9c-defauts-321.md": 4,
+   "plan-conversion-totale.md": 3,
+   "plan-e16-etat-partie.md": 3
+  }
+ },
+ "20": {
+  "total": 46,
+  "slices": {
+   "1.2n E19.h": 26,
+   "1.2h.3 E19.d2c": 3,
+   "1.2i E19.e": 3,
+   "1.2r E19.t": 3,
+   "1.2h E19.d2": 2,
+   "3. Points ouverts": 2,
+   "0.2.5 Autres faits utile": 1,
+   "0.2.6 Banc de test": 1
+  },
+  "first_lines": [
+   533,
+   582,
+   608,
+   2120
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 30,
+   "plan-portrait-inventaire.md": 6,
+   "plan-e16-etat-partie.md": 3,
+   "plan-e19-d2c-valeurs.md": 3,
+   "plan-audio-mix-exact-muet.md": 2,
+   "plan-bgm-demarrage-binaire.md": 2
+  }
+ },
+ "21": {
+  "total": 21,
+  "slices": {
+   "1.2n E19.h": 18,
+   "0.2.5 Autres faits utile": 1,
+   "1.2s.6 E19.m5": 1,
+   "1.2s.10 E19.m9": 1
+  },
+  "first_lines": [
+   533,
+   6838,
+   6843,
+   6872
+  ],
+  "other_docs": {
+   "plan-portrait-inventaire.md": 4,
+   "plan-audio-mix-exact-muet.md": 3,
+   "plan-e20-heros.md": 3,
+   "plan-bgm-demarrage-binaire.md": 1
+  }
+ },
+ "22": {
+  "total": 38,
+  "slices": {
+   "1.2n E19.h": 32,
+   "0.1 D\u00e9cisions de l'auteu": 4,
+   "1.2s.10 E19.m9": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   293,
+   294,
+   316,
+   327
+  ],
+  "other_docs": {
+   "plan-e19-d2c-valeurs.md": 3,
+   "plan-e16-etat-partie.md": 1,
+   "plan-portrait-inventaire.md": 1
+  }
+ },
+ "23": {
+  "total": 25,
+  "slices": {
+   "1.2n E19.h": 21,
+   "1.1 Enveloppe": 1,
+   "1.2i E19.e": 1,
+   "1.2o E19.g": 1,
+   "1.2s.10 E19.m9": 1
+  },
+  "first_lines": [
+   608,
+   4179,
+   6840,
+   6843
+  ],
+  "other_docs": {
+   "plan-portrait-inventaire.md": 4,
+   "plan-bgm-demarrage-binaire.md": 1
+  }
+ },
+ "24": {
+  "total": 60,
+  "slices": {
+   "1.2g E19.d": 24,
+   "1.2h.3 E19.d2c": 8,
+   "0.1 D\u00e9cisions de l'auteu": 4,
+   "1.2i E19.e": 4,
+   "3. Points ouverts": 4,
+   "1.2c E19.a3": 2,
+   "1.2h E19.d2": 2,
+   "1.2n E19.h": 2
+  },
+  "first_lines": [
+   63,
+   99,
+   108,
+   114
+  ],
+  "other_docs": {
+   "census-0x24-waits.md": 11,
+   "plan-e20-heros.md": 11,
+   "plan-e19-d2c-valeurs.md": 6,
+   "plan-portrait-inventaire.md": 4,
+   "plan-conversion-totale.md": 2,
+   "plan-e13d-inventaire.md": 2
+  }
+ },
+ "25": {
+  "total": 61,
+  "slices": {
+   "1.2h.3 E19.d2c": 42,
+   "0.1 D\u00e9cisions de l'auteu": 3,
+   "1.2n E19.h": 3,
+   "1.1 Enveloppe": 2,
+   "1.2h E19.d2": 2,
+   "1.2h.2 E19.d2b": 2,
+   "1.2i E19.e": 2,
+   "1.2g E19.d": 1
+  },
+  "first_lines": [
+   117,
+   132,
+   158,
+   604
+  ],
+  "other_docs": {
+   "plan-e19-d2c-valeurs.md": 40,
+   "plan-e20-heros.md": 13,
+   "plan-portrait-inventaire.md": 4,
+   "plan-e19-f2a-valeurs.md": 3,
+   "census-0x24-waits.md": 2,
+   "plan-bgm-demarrage-binaire.md": 1
+  }
+ },
+ "26": {
+  "total": 11,
+  "slices": {
+   "1.2n E19.h": 8,
+   "1.1 Enveloppe": 1,
+   "1.2g E19.d": 1,
+   "1.2i E19.e": 1
+  },
+  "first_lines": [
+   608,
+   2548,
+   4179,
+   6840
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 6,
+   "plan-e13d-inventaire.md": 1,
+   "plan-e19-d2c-valeurs.md": 1,
+   "plan-portrait-inventaire.md": 1
+  }
+ },
+ "27": {
+  "total": 3,
+  "slices": {
+   "1.2m E19.l": 2,
+   "E19.l1": 1
+  },
+  "first_lines": [
+   6719,
+   6724,
+   12205
+  ],
+  "other_docs": {
+   "plan-e4-deplacement-scripte.md": 4,
+   "intro-roadmap.md": 3,
+   "plan-e13d-inventaire.md": 3,
+   "plan-e15-yarn.md": 3,
+   "plan-e12-dialogues.md": 2,
+   "plan-e12d-interaction-joueur.md": 2
+  }
+ },
+ "28": {
+  "total": 14,
+  "slices": {
+   "1.2m E19.l": 7,
+   "3. Points ouverts": 2,
+   "1.2h E19.d2": 1,
+   "1.2h.2 E19.d2b": 1,
+   "1.2l E19.j": 1,
+   "1.2o E19.g": 1,
+   "1.2s.10 E19.m9": 1
+  },
+  "first_lines": [
+   2573,
+   2921,
+   6497,
+   6579
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 31,
+   "plan-e13d-inventaire.md": 3,
+   "plan-e13d-sous-inventaire.md": 3,
+   "plan-e14-ia-native.md": 3,
+   "plan-bgm-demarrage-binaire.md": 2,
+   "plan-portrait-inventaire.md": 2
+  }
+ },
+ "29": {
+  "total": 9,
+  "slices": {
+   "1.2m E19.l": 7,
+   "1.2h.2 E19.d2b": 1,
+   "E19.d2b": 1
+  },
+  "first_lines": [
+   3104,
+   6579,
+   6627,
+   6648
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 41,
+   "plan-bgm-demarrage-binaire.md": 2,
+   "plan-portrait-inventaire.md": 2,
+   "plan-e13d-inventaire.md": 1,
+   "stick-probe.md": 1
+  }
+ },
+ "2A": {
+  "total": 7,
+  "slices": {
+   "1.2m E19.l": 6,
+   "1.1 Enveloppe": 1
+  },
+  "first_lines": [
+   612,
+   6579,
+   6627,
+   6648
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 27,
+   "plan-e19-d2c-valeurs.md": 1,
+   "plan-portrait-inventaire.md": 1,
+   "stick-probe.md": 1
+  }
+ },
+ "2B": {
+  "total": 22,
+  "slices": {
+   "1.2h.3 E19.d2c": 9,
+   "1.2m E19.l": 8,
+   "1.2h.2 E19.d2b": 2,
+   "1.1 Enveloppe": 1,
+   "E19.d2b": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   612,
+   2921,
+   3104,
+   3290
+  ],
+  "other_docs": {
+   "plan-e19-d2c-valeurs.md": 12,
+   "plan-e20-heros.md": 10,
+   "plan-bgm-demarrage-binaire.md": 4,
+   "plan-portrait-inventaire.md": 2
+  }
+ },
+ "2C": {
+  "total": 16,
+  "slices": {
+   "1.2h.3 E19.d2c": 3,
+   "1.2p E19.r": 3,
+   "1.2z E19.v": 3,
+   "3. Points ouverts": 3,
+   "1.2s.10 E19.m9": 2,
+   "1.2j E19.f": 1,
+   "1.2l E19.j": 1
+  },
+  "first_lines": [
+   3754,
+   3755,
+   3765,
+   6016
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 27,
+   "plan-e14-ia-native.md": 10,
+   "plan-e16-etat-partie.md": 9,
+   "plan-e19-d2c-valeurs.md": 7,
+   "plan-e15-yarn.md": 5,
+   "plan-portrait-inventaire.md": 5
+  }
+ },
+ "2D": {
+  "total": 47,
+  "slices": {
+   "1.2z E19.v": 18,
+   "1.2h.3 E19.d2c": 8,
+   "1.2g E19.d": 4,
+   "1.2n E19.h": 3,
+   "1.2r E19.t": 3,
+   "3. Points ouverts": 3,
+   "1.2e E19.c1": 2,
+   "0.1 D\u00e9cisions de l'auteu": 1
+  },
+  "first_lines": [
+   109,
+   1334,
+   1461,
+   1590
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 66,
+   "intro-roadmap.md": 14,
+   "plan-e19-d2c-valeurs.md": 11,
+   "plan-e14-ia-native.md": 7,
+   "census-0x24-waits.md": 3,
+   "plan-e15-yarn.md": 3
+  }
+ },
+ "2E": {
+  "total": 16,
+  "slices": {
+   "1.2p E19.r": 11,
+   "1.2h.3 E19.d2c": 3,
+   "1.2g E19.d": 2
+  },
+  "first_lines": [
+   2177,
+   2355,
+   3290,
+   3378
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 12,
+   "intro-roadmap.md": 6,
+   "plan-e16-etat-partie.md": 1,
+   "plan-e4-deplacement-scripte.md": 1,
+   "plan-e7-mutation-tuiles.md": 1
+  }
+ },
+ "2F": {
+  "total": 4,
+  "slices": {
+   "1.2g E19.d": 3,
+   "1.2h.3 E19.d2c": 1
+  },
+  "first_lines": [
+   2147,
+   2374,
+   2379,
+   4099
+  ],
+  "other_docs": {
+   "plan-e7-mutation-tuiles.md": 18,
+   "plan-e20-heros.md": 8,
+   "intro-roadmap.md": 3,
+   "plan-e13d-inventaire.md": 3,
+   "plan-e19-d2c-valeurs.md": 3,
+   "plan-e4-deplacement-scripte.md": 3
+  }
+ },
+ "30": {
+  "total": 10,
+  "slices": {
+   "1.2h.3 E19.d2c": 4,
+   "0.2.1 Diagnostic de prog": 1,
+   "1.2e E19.c1": 1,
+   "1.2i E19.e": 1,
+   "1.2l E19.j": 1,
+   "1.2o E19.g": 1,
+   "1.2s.10 E19.m9": 1
+  },
+  "first_lines": [
+   378,
+   1481,
+   3614,
+   3735
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 30,
+   "intro-roadmap.md": 7,
+   "plan-e13d-sous-inventaire.md": 4,
+   "plan-e16-etat-partie.md": 3,
+   "plan-e12-dialogues.md": 2,
+   "plan-portrait-inventaire.md": 2
+  }
+ },
+ "31": {
+  "total": 8,
+  "slices": {
+   "1.2o E19.g": 4,
+   "3. Points ouverts": 2,
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "1.2i E19.e": 1
+  },
+  "first_lines": [
+   323,
+   4170,
+   8759,
+   9436
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 13,
+   "intro-roadmap.md": 8,
+   "plan-e16-etat-partie.md": 5,
+   "plan-e19-d2c-valeurs.md": 3,
+   "plan-e4-deplacement-scripte.md": 2,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "32": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 13,
+   "plan-e15-yarn.md": 3,
+   "plan-conversion-totale.md": 1,
+   "plan-e13-hud.md": 1,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "33": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e7-mutation-tuiles.md": 10,
+   "plan-e13-hud.md": 4,
+   "intro-roadmap.md": 3,
+   "plan-e15-yarn.md": 2,
+   "plan-e20-heros.md": 2,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "34": {
+  "total": 2,
+  "slices": {
+   "1.2l E19.j": 1,
+   "1.2s.10 E19.m9": 1
+  },
+  "first_lines": [
+   6478,
+   10964
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 10,
+   "plan-e20-heros.md": 9,
+   "plan-conversion-totale.md": 2,
+   "plan-e13d-sous-inventaire.md": 2,
+   "intro-roadmap.md": 1,
+   "plan-e7-mutation-tuiles.md": 1
+  }
+ },
+ "35": {
+  "total": 3,
+  "slices": {
+   "0.2.5 Autres faits utile": 1,
+   "1.2s E19.m": 1,
+   "1.2s.9 E19.m8": 1
+  },
+  "first_lines": [
+   533,
+   10104,
+   10833
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 10,
+   "plan-conversion-totale.md": 1,
+   "plan-e15-yarn.md": 1,
+   "plan-e19-f2a-valeurs.md": 1,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "36": {
+  "total": 36,
+  "slices": {
+   "1.2z E19.v": 11,
+   "1.2m E19.l": 4,
+   "1.2e E19.c1": 3,
+   "1.2h.3 E19.d2c": 3,
+   "1.2s.9 E19.m8": 3,
+   "1.2d E19.b": 2,
+   "1.2g E19.d": 2,
+   "0.2.1 Diagnostic de prog": 1
+  },
+  "first_lines": [
+   378,
+   533,
+   1270,
+   1311
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 13,
+   "plan-e16-etat-partie.md": 7,
+   "plan-transitions-carte.md": 7,
+   "plan-e12-dialogues.md": 6,
+   "demarrage-nouvelle-partie.md": 2,
+   "plan-conversion-totale.md": 2
+  }
+ },
+ "37": {
+  "total": 21,
+  "slices": {
+   "1.2s.10 E19.m9": 8,
+   "1.2h.3 E19.d2c": 2,
+   "1.2l E19.j": 2,
+   "1.2o E19.g": 2,
+   "1.2s.9 E19.m8": 2,
+   "T\u00e2ches": 1,
+   "1.2d E19.b": 1,
+   "1.2g E19.d": 1
+  },
+  "first_lines": [
+   676,
+   1249,
+   2360,
+   3603
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 10,
+   "plan-e19-f2a-valeurs.md": 3,
+   "plan-e16-etat-partie.md": 2,
+   "plan-e20-heros.md": 2,
+   "census-0x24-waits.md": 1,
+   "plan-bgm-demarrage-binaire.md": 1
+  }
+ },
+ "38": {
+  "total": 8,
+  "slices": {
+   "1.2j E19.f": 3,
+   "1.2i E19.e": 2,
+   "E19.d2a": 2,
+   "1.2h.1 E19.d2a": 1
+  },
+  "first_lines": [
+   2777,
+   4220,
+   4223,
+   4314
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 4,
+   "plan-e13-hud.md": 3,
+   "plan-e16-etat-partie.md": 3,
+   "plan-e4-deplacement-scripte.md": 3,
+   "plan-portrait-inventaire.md": 2,
+   "plan-transitions-carte.md": 2
+  }
+ },
+ "39": {
+  "total": 12,
+  "slices": {
+   "1.2j E19.f": 6,
+   "1.2d E19.b": 2,
+   "0.2.5 Autres faits utile": 1,
+   "1.2f E19.c2": 1,
+   "1.2g E19.d": 1,
+   "E19.c2": 1
+  },
+  "first_lines": [
+   496,
+   1249,
+   1412,
+   2025
+  ],
+  "other_docs": {
+   "plan-e19-f2a-valeurs.md": 35,
+   "plan-e12-dialogues.md": 11,
+   "intro-roadmap.md": 4,
+   "plan-conversion-totale.md": 2,
+   "plan-e4-deplacement-scripte.md": 2,
+   "plan-transitions-carte.md": 2
+  }
+ },
+ "3A": {
+  "total": 6,
+  "slices": {
+   "1.2e E19.c1": 4,
+   "1.1 Enveloppe": 1,
+   "1.2g E19.d": 1
+  },
+  "first_lines": [
+   599,
+   1476,
+   1626,
+   1643
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 28,
+   "census-0x24-waits.md": 1,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "3B": {
+  "total": 12,
+  "slices": {
+   "1.2g E19.d": 3,
+   "T\u00e2ches": 2,
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "0.2.6 Banc de test": 1,
+   "V\u00e9rification E19.a": 1,
+   "1.2d E19.b": 1,
+   "1.2h.1 E19.d2a": 1,
+   "1.2h.3 E19.d2c": 1
+  },
+  "first_lines": [
+   111,
+   559,
+   665,
+   740
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 34,
+   "plan-e7-mutation-tuiles.md": 27,
+   "intro-roadmap.md": 8,
+   "plan-conversion-totale.md": 3,
+   "census-0x24-waits.md": 2,
+   "plan-e11-audio.md": 1
+  }
+ },
+ "3C": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e20-heros.md": 9,
+   "plan-bgm-demarrage-binaire.md": 3,
+   "plan-e11b-opcodes-audio.md": 3,
+   "plan-e13d-sous-inventaire.md": 3,
+   "plan-e14-ia-native.md": 2,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "3D": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10117
+  ],
+  "other_docs": {
+   "plan-e11b-opcodes-audio.md": 6,
+   "plan-e13d-sous-inventaire.md": 1
+  }
+ },
+ "3E": {
+  "total": 18,
+  "slices": {
+   "1.2h.3 E19.d2c": 11,
+   "1.2m E19.l": 3,
+   "T\u00e2ches": 1,
+   "V\u00e9rification E19.a": 1,
+   "1.2d E19.b": 1,
+   "1.2i E19.e": 1
+  },
+  "first_lines": [
+   665,
+   843,
+   1343,
+   3843
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 33,
+   "plan-e16-etat-partie.md": 8,
+   "plan-e11b-opcodes-audio.md": 2,
+   "plan-e13d-sous-inventaire.md": 2,
+   "plan-bgm-demarrage-binaire.md": 1,
+   "plan-e19-d2c-valeurs.md": 1
+  }
+ },
+ "3F": {
+  "total": 11,
+  "slices": {
+   "1.2m E19.l": 7,
+   "1.1 Enveloppe": 1,
+   "1.2h.2 E19.d2b": 1,
+   "1.2o E19.g": 1,
+   "E19.d2b": 1
+  },
+  "first_lines": [
+   612,
+   3104,
+   6581,
+   6624
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 8,
+   "plan-e11b-opcodes-audio.md": 1
+  }
+ },
+ "40": {
+  "total": 58,
+  "slices": {
+   "1.2g E19.d": 30,
+   "1.2o E19.g": 7,
+   "1.2n E19.h": 4,
+   "1.2j E19.f": 3,
+   "1.2i E19.e": 2,
+   "1.2m E19.l": 2,
+   "1.2r E19.t": 2,
+   "0.1 D\u00e9cisions de l'auteu": 1
+  },
+  "first_lines": [
+   101,
+   601,
+   638,
+   1467
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 55,
+   "plan-e16-etat-partie.md": 20,
+   "plan-audio-mix-exact-muet.md": 15,
+   "plan-e3-collisions.md": 8,
+   "plan-e4-deplacement-scripte.md": 8,
+   "plan-e14-ia-native.md": 6
+  }
+ },
+ "41": {
+  "total": 37,
+  "slices": {
+   "1.2g E19.d": 22,
+   "1.2b E19.a2": 3,
+   "E19.d": 2,
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "1.1 Enveloppe": 1,
+   "1.2 E19.a": 1,
+   "Recette en jeu T7 (auteu": 1,
+   "1.2e E19.c1": 1
+  },
+  "first_lines": [
+   101,
+   601,
+   638,
+   797
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 14,
+   "plan-e3-collisions.md": 5,
+   "plan-conversion-totale.md": 3,
+   "plan-e16-etat-partie.md": 3,
+   "census-0x24-waits.md": 1,
+   "plan-e11b-opcodes-audio.md": 1
+  }
+ },
+ "42": {
+  "total": 29,
+  "slices": {
+   "T\u00e2ches": 5,
+   "0.2.3 Entit\u00e9 de contexte": 3,
+   "V\u00e9rification E19.a": 3,
+   "Risques E19.a": 2,
+   "1.2g E19.d": 2,
+   "1.2j E19.f": 2,
+   "1.2n E19.h": 2,
+   "1.2s.9 E19.m8": 2
+  },
+  "first_lines": [
+   390,
+   424,
+   428,
+   461
+  ],
+  "other_docs": {
+   "plan-e13d-sous-inventaire.md": 3,
+   "plan-e16-etat-partie.md": 3,
+   "plan-conversion-totale.md": 2,
+   "plan-e20-heros.md": 2,
+   "census-0x24-waits.md": 1,
+   "intro-roadmap.md": 1
+  }
+ },
+ "43": {
+  "total": 52,
+  "slices": {
+   "1.2s.9 E19.m8": 16,
+   "T\u00e2ches": 9,
+   "0.2.3 Entit\u00e9 de contexte": 4,
+   "1.2j E19.f": 4,
+   "V\u00e9rification E19.a": 3,
+   "Risques E19.a": 2,
+   "1.2d E19.b": 2,
+   "1.2f E19.c2": 2
+  },
+  "first_lines": [
+   390,
+   424,
+   429,
+   433
+  ],
+  "other_docs": {
+   "plan-e12-dialogues.md": 4,
+   "census-0x24-waits.md": 3,
+   "plan-e15-yarn.md": 3,
+   "plan-conversion-totale.md": 2,
+   "intro-roadmap.md": 1,
+   "plan-e19-d2c-valeurs.md": 1
+  }
+ },
+ "44": {
+  "total": 20,
+  "slices": {
+   "1.2j E19.f": 16,
+   "1.2i E19.e": 2,
+   "1.2m E19.l": 1,
+   "1.2s.9 E19.m8": 1
+  },
+  "first_lines": [
+   4223,
+   4275,
+   4376,
+   4720
+  ],
+  "other_docs": {
+   "plan-e12-dialogues.md": 19,
+   "plan-e15-yarn.md": 5,
+   "intro-roadmap.md": 4,
+   "plan-e13d-sous-inventaire.md": 4,
+   "plan-e19-f2a-valeurs.md": 4,
+   "plan-e20-heros.md": 4
+  }
+ },
+ "45": {
+  "total": 15,
+  "slices": {
+   "1.2n E19.h": 7,
+   "1.2m E19.l": 3,
+   "1.2i E19.e": 2,
+   "1.2h.2 E19.d2b": 1,
+   "E19.d2b": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   3104,
+   4124,
+   4223,
+   6597
+  ],
+  "other_docs": {
+   "census-0x24-waits.md": 1,
+   "plan-transitions-carte.md": 1
+  }
+ },
+ "46": {
+  "total": 13,
+  "slices": {
+   "1.2n E19.h": 7,
+   "1.2i E19.e": 2,
+   "1.2h.2 E19.d2b": 1,
+   "1.2m E19.l": 1,
+   "E19.d2b": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   3104,
+   4124,
+   4223,
+   6798
+  ],
+  "other_docs": {
+   "census-0x24-waits.md": 1,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "47": {
+  "total": 17,
+  "slices": {
+   "1.2n E19.h": 11,
+   "0.2.5 Autres faits utile": 1,
+   "1.1 Enveloppe": 1,
+   "1.2g E19.d": 1,
+   "1.2i E19.e": 1,
+   "1.2l E19.j": 1,
+   "1.2m E19.l": 1
+  },
+  "first_lines": [
+   533,
+   608,
+   2548,
+   4179
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 2
+  }
+ },
+ "48": {
+  "total": 35,
+  "slices": {
+   "1.2o E19.g": 11,
+   "1.2n E19.h": 8,
+   "1.2p E19.r": 6,
+   "1.2m E19.l": 3,
+   "1.2l E19.j": 2,
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "0.2.5 Autres faits utile": 1,
+   "1.1 Enveloppe": 1
+  },
+  "first_lines": [
+   174,
+   533,
+   608,
+   4179
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 26,
+   "plan-transitions-carte.md": 2,
+   "intro-roadmap.md": 1,
+   "plan-bgm-demarrage-binaire.md": 1,
+   "plan-conversion-totale.md": 1,
+   "plan-e13c-icones-hud.md": 1
+  }
+ },
+ "49": {
+  "total": 2,
+  "slices": {
+   "1.2i E19.e": 1,
+   "1.2m E19.l": 1
+  },
+  "first_lines": [
+   4172,
+   6654
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 6,
+   "plan-e4-deplacement-scripte.md": 4,
+   "plan-e20-heros.md": 2,
+   "plan-conversion-totale.md": 1,
+   "plan-e11-audio.md": 1
+  }
+ },
+ "4A": {
+  "total": 9,
+  "slices": {
+   "1.2m E19.l": 7,
+   "1.1 Enveloppe": 1,
+   "1.2j E19.f": 1
+  },
+  "first_lines": [
+   612,
+   5346,
+   6585,
+   6624
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 4
+  }
+ },
+ "4B": {
+  "total": 3,
+  "slices": {
+   "1.2i E19.e": 1,
+   "1.2j E19.f": 1,
+   "1.2m E19.l": 1
+  },
+  "first_lines": [
+   4172,
+   5346,
+   6654
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 4,
+   "intro-roadmap.md": 3,
+   "plan-e4-deplacement-scripte.md": 3,
+   "plan-conversion-totale.md": 1,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "4C": {
+  "total": 31,
+  "slices": {
+   "1.2j E19.f": 14,
+   "0.1 D\u00e9cisions de l'auteu": 3,
+   "1.2d E19.b": 3,
+   "1.1 Enveloppe": 2,
+   "1.2g E19.d": 2,
+   "0.2.4 Sites de la cha\u00eene": 1,
+   "0.2.6 Banc de test": 1,
+   "1.2h.1 E19.d2a": 1
+  },
+  "first_lines": [
+   152,
+   216,
+   217,
+   486
+  ],
+  "other_docs": {
+   "plan-e19-f2a-valeurs.md": 21,
+   "plan-e12-dialogues.md": 3,
+   "plan-e13d-sous-inventaire.md": 3,
+   "plan-e15-yarn.md": 1,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "4D": {
+  "total": 19,
+  "slices": {
+   "1.2j E19.f": 11,
+   "0.1 D\u00e9cisions de l'auteu": 3,
+   "1.2h.1 E19.d2a": 2,
+   "1.1 Enveloppe": 1,
+   "1.2h.2 E19.d2b": 1,
+   "E19.d2b": 1
+  },
+  "first_lines": [
+   152,
+   215,
+   217,
+   606
+  ],
+  "other_docs": {
+   "plan-e19-f2a-valeurs.md": 11,
+   "plan-e12-dialogues.md": 3,
+   "plan-e13d-inventaire.md": 3,
+   "plan-e13d-sous-inventaire.md": 1,
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "4E": {
+  "total": 3,
+  "slices": {
+   "1.2j E19.f": 3
+  },
+  "first_lines": [
+   4324,
+   4652,
+   4726
+  ],
+  "other_docs": {
+   "plan-e13d-sous-inventaire.md": 1,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "4F": {
+  "total": 9,
+  "slices": {
+   "1.2j E19.f": 6,
+   "1.2m E19.l": 3
+  },
+  "first_lines": [
+   4324,
+   4631,
+   4652,
+   4726
+  ],
+  "other_docs": {
+   "plan-e19-f2a-valeurs.md": 1
+  }
+ },
+ "50": {
+  "total": 12,
+  "slices": {
+   "1.2o E19.g": 5,
+   "1.2m E19.l": 4,
+   "1.2j E19.f": 2,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   4653,
+   4726,
+   6598,
+   6630
+  ],
+  "other_docs": {
+   "plan-e12-dialogues.md": 6,
+   "plan-e19-f2a-valeurs.md": 5,
+   "plan-e20-heros.md": 4,
+   "intro-roadmap.md": 3,
+   "plan-audio-mix-exact-muet.md": 2,
+   "plan-conversion-totale.md": 2
+  }
+ },
+ "51": {
+  "total": 16,
+  "slices": {
+   "1.2j E19.f": 15,
+   "1.2g E19.d": 1
+  },
+  "first_lines": [
+   2351,
+   4320,
+   4371,
+   4619
+  ],
+  "other_docs": {
+   "plan-e19-f2a-valeurs.md": 20,
+   "plan-e12-dialogues.md": 9,
+   "intro-roadmap.md": 4,
+   "plan-conversion-totale.md": 2,
+   "plan-e20-heros.md": 2,
+   "plan-e4-deplacement-scripte.md": 2
+  }
+ },
+ "52": {
+  "total": 19,
+  "slices": {
+   "1.2m E19.l": 11,
+   "1.2i E19.e": 2,
+   "1.2o E19.g": 2,
+   "3. Points ouverts": 2,
+   "1.2h.2 E19.d2b": 1,
+   "E19.d2b": 1
+  },
+  "first_lines": [
+   3104,
+   4137,
+   4181,
+   6586
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 3
+  }
+ },
+ "53": {
+  "total": 111,
+  "slices": {
+   "1.2e E19.c1": 18,
+   "1.2i E19.e": 17,
+   "1.2o E19.g": 10,
+   "1.2h.3 E19.d2c": 9,
+   "1.3 E19.a": 8,
+   "1.2g E19.d": 5,
+   "1.2z E19.v": 5,
+   "3. Points ouverts": 5
+  },
+  "first_lines": [
+   24,
+   25,
+   110,
+   322
+  ],
+  "other_docs": {
+   "plan-transitions-carte.md": 14,
+   "plan-bgm-demarrage-binaire.md": 13,
+   "census-0x24-waits.md": 7,
+   "plan-e19-d2c-valeurs.md": 6,
+   "plan-e15-yarn.md": 4,
+   "plan-e16-etat-partie.md": 4
+  }
+ },
+ "54": {
+  "total": 5,
+  "slices": {
+   "1.2o E19.g": 2,
+   "Recette en jeu T7 (auteu": 1,
+   "1.2b E19.a2": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   796,
+   966,
+   9479,
+   9499
+  ],
+  "other_docs": {
+   "plan-e7-mutation-tuiles.md": 10,
+   "intro-roadmap.md": 4,
+   "plan-conversion-totale.md": 2,
+   "plan-e14-ia-native.md": 2,
+   "plan-e11-audio.md": 1,
+   "plan-e13d-sous-inventaire.md": 1
+  }
+ },
+ "55": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e7-mutation-tuiles.md": 11,
+   "intro-roadmap.md": 4,
+   "plan-conversion-totale.md": 2,
+   "plan-e14-ia-native.md": 2,
+   "plan-e4-deplacement-scripte.md": 1
+  }
+ },
+ "56": {
+  "total": 10,
+  "slices": {
+   "1.2m E19.l": 4,
+   "1.2o E19.g": 4,
+   "1.2s E19.m": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   6599,
+   6630,
+   6764,
+   6827
+  ],
+  "other_docs": {
+   "plan-e7-mutation-tuiles.md": 4,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "57": {
+  "total": 16,
+  "slices": {
+   "1.2m E19.l": 12,
+   "1.1 Enveloppe": 1,
+   "1.2s.6 E19.m5": 1,
+   "1.2s.9 E19.m8": 1,
+   "1.2s.13 E19.m12": 1
+  },
+  "first_lines": [
+   612,
+   6590,
+   6591,
+   6624
+  ],
+  "other_docs": {
+   "plan-e19-d2c-valeurs.md": 1
+  }
+ },
+ "58": {
+  "total": 32,
+  "slices": {
+   "1.2m E19.l": 17,
+   "1.2i E19.e": 3,
+   "1.2s.6 E19.m5": 3,
+   "1.2h.1 E19.d2a": 2,
+   "1.1 Enveloppe": 1,
+   "1.2h.2 E19.d2b": 1,
+   "1.2s.9 E19.m8": 1,
+   "1.2s.13 E19.m12": 1
+  },
+  "first_lines": [
+   612,
+   2780,
+   2829,
+   3104
+  ],
+  "other_docs": {
+   "plan-e13d-sous-inventaire.md": 2,
+   "plan-e20-heros.md": 2,
+   "plan-e19-d2c-valeurs.md": 1,
+   "plan-portrait-inventaire.md": 1
+  }
+ },
+ "59": {
+  "total": 21,
+  "slices": {
+   "T\u00e2ches": 6,
+   "V\u00e9rification E19.a": 5,
+   "0.2.4 Sites de la cha\u00eene": 3,
+   "0.2.1 Diagnostic de prog": 1,
+   "1.1 Enveloppe": 1,
+   "1.2 E19.a": 1,
+   "Risques E19.a": 1,
+   "1.2g E19.d": 1
+  },
+  "first_lines": [
+   390,
+   483,
+   486,
+   488
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 2,
+   "plan-e12-dialogues.md": 2,
+   "census-0x24-waits.md": 1,
+   "plan-conversion-totale.md": 1,
+   "plan-e7-mutation-tuiles.md": 1
+  }
+ },
+ "5A": {
+  "total": 12,
+  "slices": {
+   "1.2s.2 E19.m1": 7,
+   "1.2s.1 E19.m0": 3,
+   "1.2s E19.m": 2
+  },
+  "first_lines": [
+   10111,
+   10122,
+   10138,
+   10158
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 5,
+   "plan-e4-deplacement-scripte.md": 5,
+   "plan-e19-f2a-valeurs.md": 3,
+   "plan-e20-heros.md": 3,
+   "plan-conversion-totale.md": 2,
+   "census-0x24-waits.md": 1
+  }
+ },
+ "5B": {
+  "total": 24,
+  "slices": {
+   "1.2s.2 E19.m1": 7,
+   "1.2g E19.d": 5,
+   "1.2e E19.c1": 4,
+   "1.2r E19.t": 2,
+   "3. Points ouverts": 2,
+   "1.2c E19.a3": 1,
+   "1.2o E19.g": 1,
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   1124,
+   1587,
+   1594,
+   1595
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 12,
+   "plan-e4-deplacement-scripte.md": 7,
+   "census-0x24-waits.md": 2,
+   "plan-conversion-totale.md": 2,
+   "plan-e19-f2a-valeurs.md": 2,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "5C": {
+  "total": 22,
+  "slices": {
+   "1.2j E19.f": 9,
+   "1.2d E19.b": 5,
+   "0.2.5 Autres faits utile": 3,
+   "0.1 D\u00e9cisions de l'auteu": 2,
+   "0.2.4 Sites de la cha\u00eene": 1,
+   "1.1 Enveloppe": 1,
+   "1.2g E19.d": 1
+  },
+  "first_lines": [
+   58,
+   60,
+   479,
+   499
+  ],
+  "other_docs": {
+   "plan-e12-dialogues.md": 4,
+   "plan-conversion-totale.md": 3,
+   "plan-e15-yarn.md": 2,
+   "intro-roadmap.md": 1,
+   "plan-e13d-sous-inventaire.md": 1,
+   "plan-e19-f2a-valeurs.md": 1
+  }
+ },
+ "5D": {
+  "total": 10,
+  "slices": {
+   "1.2m E19.l": 7,
+   "1.1 Enveloppe": 1,
+   "1.2h.2 E19.d2b": 1,
+   "E19.d2b": 1
+  },
+  "first_lines": [
+   612,
+   3104,
+   6594,
+   6624
+  ],
+  "other_docs": {}
+ },
+ "5E": {
+  "total": 16,
+  "slices": {
+   "1.2e E19.c1": 10,
+   "0.2.4 Sites de la cha\u00eene": 2,
+   "0.2.5 Autres faits utile": 1,
+   "1.1 Enveloppe": 1,
+   "1.2g E19.d": 1,
+   "1.2n E19.h": 1
+  },
+  "first_lines": [
+   481,
+   486,
+   517,
+   599
+  ],
+  "other_docs": {
+   "plan-conversion-totale.md": 1,
+   "plan-e19-d2c-valeurs.md": 1
+  }
+ },
+ "5F": {
+  "total": 11,
+  "slices": {
+   "1.2s.9 E19.m8": 4,
+   "0.2.3 Entit\u00e9 de contexte": 1,
+   "0.2.5 Autres faits utile": 1,
+   "1.1 Enveloppe": 1,
+   "1.2i E19.e": 1,
+   "1.2r E19.t": 1,
+   "1.2s E19.m": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   426,
+   532,
+   615,
+   4179
+  ],
+  "other_docs": {}
+ },
+ "60": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10116
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 3,
+   "intro-roadmap.md": 1,
+   "plan-e13d-inventaire.md": 1,
+   "plan-portrait-inventaire.md": 1
+  }
+ },
+ "61": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10116
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 3
+  }
+ },
+ "62": {
+  "total": 7,
+  "slices": {
+   "3. Points ouverts": 2,
+   "1.2g E19.d": 1,
+   "1.2h.2 E19.d2b": 1,
+   "1.2h.3 E19.d2c": 1,
+   "1.2m E19.l": 1,
+   "1.2o E19.g": 1
+  },
+  "first_lines": [
+   2416,
+   2897,
+   3274,
+   6649
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 5,
+   "plan-e13c-icones-hud.md": 3,
+   "plan-e20-heros.md": 3,
+   "plan-e4-deplacement-scripte.md": 2,
+   "plan-e13d-sous-inventaire.md": 1
+  }
+ },
+ "63": {
+  "total": 10,
+  "slices": {
+   "1.2e E19.c1": 2,
+   "1.2h.2 E19.d2b": 2,
+   "1.2h.3 E19.d2c": 2,
+   "3. Points ouverts": 2,
+   "1.2g E19.d": 1,
+   "1.2m E19.l": 1
+  },
+  "first_lines": [
+   1444,
+   1570,
+   2356,
+   2897
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 6,
+   "intro-roadmap.md": 5,
+   "plan-e20-heros.md": 2,
+   "plan-e19-d2c-valeurs.md": 1
+  }
+ },
+ "64": {
+  "total": 34,
+  "slices": {
+   "1.2n E19.h": 16,
+   "1.2g E19.d": 5,
+   "1.2h.1 E19.d2a": 3,
+   "0.1 D\u00e9cisions de l'auteu": 2,
+   "1.2e E19.c1": 2,
+   "1.2h.2 E19.d2b": 2,
+   "3. Points ouverts": 2,
+   "1.2l E19.j": 1
+  },
+  "first_lines": [
+   109,
+   207,
+   1519,
+   1586
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 10,
+   "plan-camera-ordre-frame.md": 6,
+   "plan-e3-collisions.md": 6,
+   "plan-e20-heros.md": 4,
+   "plan-e7-mutation-tuiles.md": 4,
+   "census-0x24-waits.md": 2
+  }
+ },
+ "65": {
+  "total": 6,
+  "slices": {
+   "1.2g E19.d": 2,
+   "1.2n E19.h": 2,
+   "1.2e E19.c1": 1,
+   "1.2h.2 E19.d2b": 1
+  },
+  "first_lines": [
+   1519,
+   2274,
+   2358,
+   2881
+  ],
+  "other_docs": {
+   "plan-e4-deplacement-scripte.md": 3,
+   "plan-e3-collisions.md": 2,
+   "plan-camera-ordre-frame.md": 1,
+   "plan-e19-f2a-valeurs.md": 1,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "66": {
+  "total": 5,
+  "slices": {
+   "0.2.3 Entit\u00e9 de contexte": 2,
+   "T\u00e2ches": 2,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   424,
+   435,
+   657,
+   660
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 1
+  }
+ },
+ "67": {
+  "total": 1,
+  "slices": {
+   "1.2d E19.b": 1
+  },
+  "first_lines": [
+   1329
+  ],
+  "other_docs": {
+   "intro-roadmap.md": 12,
+   "plan-e5-camera.md": 6,
+   "plan-camera-ordre-frame.md": 4,
+   "plan-conversion-totale.md": 2,
+   "plan-camera-premiere-frame.md": 1,
+   "plan-e4-deplacement-scripte.md": 1
+  }
+ },
+ "68": {
+  "total": 4,
+  "slices": {
+   "1.2j E19.f": 3,
+   "1.2o E19.g": 1
+  },
+  "first_lines": [
+   4326,
+   4380,
+   5748,
+   9443
+  ],
+  "other_docs": {
+   "plan-portrait-inventaire.md": 5,
+   "plan-e20-heros.md": 3,
+   "plan-e5-camera.md": 3,
+   "plan-conversion-totale.md": 2,
+   "intro-roadmap.md": 1,
+   "plan-e14-ia-native.md": 1
+  }
+ },
+ "69": {
+  "total": 2,
+  "slices": {
+   "1.2h.1 E19.d2a": 2
+  },
+  "first_lines": [
+   2759,
+   2828
+  ],
+  "other_docs": {
+   "plan-e5-camera.md": 4,
+   "plan-camera-ordre-frame.md": 3,
+   "plan-conversion-totale.md": 2,
+   "intro-roadmap.md": 1,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "6A": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10116
+  ],
+  "other_docs": {
+   "plan-e13d-sous-inventaire.md": 2
+  }
+ },
+ "6B": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10116
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "6C": {
+  "total": 4,
+  "slices": {
+   "1.2h E19.d2": 1,
+   "1.2n E19.h": 1,
+   "1.2s E19.m": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   2573,
+   6858,
+   10117,
+   12325
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 8,
+   "plan-e14-ia-native.md": 1,
+   "plan-portrait-inventaire.md": 1
+  }
+ },
+ "6D": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10116
+  ],
+  "other_docs": {}
+ },
+ "6E": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 8
+  }
+ },
+ "6F": {
+  "total": 9,
+  "slices": {
+   "1.2n E19.h": 9
+  },
+  "first_lines": [
+   6842,
+   6844,
+   6872,
+   6887
+  ],
+  "other_docs": {}
+ },
+ "70": {
+  "total": 1,
+  "slices": {
+   "1.2g E19.d": 1
+  },
+  "first_lines": [
+   2379
+  ],
+  "other_docs": {
+   "plan-e4-deplacement-scripte.md": 14,
+   "intro-roadmap.md": 9,
+   "plan-portrait-inventaire.md": 7,
+   "plan-e7-mutation-tuiles.md": 6,
+   "plan-conversion-totale.md": 3,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "71": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e20-heros.md": 6,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "72": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10116
+  ],
+  "other_docs": {
+   "plan-e13d-sous-inventaire.md": 1
+  }
+ },
+ "73": {
+  "total": 14,
+  "slices": {
+   "1.2e E19.c1": 6,
+   "0.2.4 Sites de la cha\u00eene": 2,
+   "0.2.2 Interpr\u00e9teur de la": 1,
+   "1.1 Enveloppe": 1,
+   "1.2f E19.c2": 1,
+   "1.2g E19.d": 1,
+   "1.2m E19.l": 1,
+   "1.2s.1 E19.m0": 1
+  },
+  "first_lines": [
+   410,
+   482,
+   486,
+   599
+  ],
+  "other_docs": {
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "74": {
+  "total": 14,
+  "slices": {
+   "1.2e E19.c1": 8,
+   "0.2.4 Sites de la cha\u00eene": 2,
+   "0.2.2 Interpr\u00e9teur de la": 1,
+   "1.1 Enveloppe": 1,
+   "1.2g E19.d": 1,
+   "1.2i E19.e": 1
+  },
+  "first_lines": [
+   410,
+   482,
+   486,
+   599
+  ],
+  "other_docs": {
+   "plan-conversion-totale.md": 1,
+   "plan-e16-etat-partie.md": 1,
+   "plan-portrait-inventaire.md": 1
+  }
+ },
+ "75": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e11-audio.md": 5,
+   "plan-bgm-demarrage-binaire.md": 1,
+   "plan-e11b-opcodes-audio.md": 1
+  }
+ },
+ "76": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "77": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e13c-icones-hud.md": 1
+  }
+ },
+ "78": {
+  "total": 3,
+  "slices": {
+   "1.2i E19.e": 1,
+   "1.2s.9 E19.m8": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   4170,
+   10923,
+   12308
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 29,
+   "plan-e20-heros.md": 6,
+   "plan-e11b-opcodes-audio.md": 5,
+   "plan-bgm-demarrage-binaire.md": 3,
+   "plan-portrait-inventaire.md": 2,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "79": {
+  "total": 2,
+  "slices": {
+   "1.2i E19.e": 1,
+   "1.2s.9 E19.m8": 1
+  },
+  "first_lines": [
+   4171,
+   10923
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 5
+  }
+ },
+ "7A": {
+  "total": 1,
+  "slices": {
+   "1.2i E19.e": 1
+  },
+  "first_lines": [
+   4172
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 7
+  }
+ },
+ "7B": {
+  "total": 3,
+  "slices": {
+   "0.2.1 Diagnostic de prog": 1,
+   "1.2i E19.e": 1,
+   "1.2s.9 E19.m8": 1
+  },
+  "first_lines": [
+   378,
+   4171,
+   10923
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 11,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "7C": {
+  "total": 3,
+  "slices": {
+   "0.2.1 Diagnostic de prog": 1,
+   "1.2i E19.e": 1,
+   "1.2s.9 E19.m8": 1
+  },
+  "first_lines": [
+   379,
+   4171,
+   10923
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 10,
+   "plan-conversion-totale.md": 3,
+   "plan-e20-heros.md": 1,
+   "plan-portrait-inventaire.md": 1
+  }
+ },
+ "7D": {
+  "total": 2,
+  "slices": {
+   "1.2i E19.e": 1,
+   "1.2s.9 E19.m8": 1
+  },
+  "first_lines": [
+   4171,
+   10922
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 13,
+   "plan-e20-heros.md": 9,
+   "plan-bgm-demarrage-binaire.md": 2,
+   "census-0x24-waits.md": 1,
+   "plan-e10-fondu.md": 1
+  }
+ },
+ "7E": {
+  "total": 1,
+  "slices": {
+   "1.2i E19.e": 1
+  },
+  "first_lines": [
+   4171
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 7,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "7F": {
+  "total": 10,
+  "slices": {
+   "1.2l E19.j": 3,
+   "1.2o E19.g": 3,
+   "1.2i E19.e": 2,
+   "1.2g E19.d": 1,
+   "1.2s.8 E19.m7": 1
+  },
+  "first_lines": [
+   2261,
+   4169,
+   4171,
+   6478
+  ],
+  "other_docs": {
+   "plan-audio-mix-exact-muet.md": 14,
+   "plan-bgm-demarrage-binaire.md": 12,
+   "plan-e11b-opcodes-audio.md": 9,
+   "plan-e16-etat-partie.md": 9,
+   "plan-e11c-musique.md": 4,
+   "plan-e20-heros.md": 4
+  }
+ },
+ "80": {
+  "total": 53,
+  "slices": {
+   "1.2o E19.g": 13,
+   "1.2j E19.f": 8,
+   "1.2s.1 E19.m0": 5,
+   "T\u00e2ches": 3,
+   "1.2g E19.d": 3,
+   "1.2h E19.d2": 3,
+   "1.2l E19.j": 3,
+   "0.2.3 Entit\u00e9 de contexte": 2
+  },
+  "first_lines": [
+   379,
+   433,
+   452,
+   670
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 62,
+   "plan-e16-etat-partie.md": 20,
+   "census-0x24-waits.md": 6,
+   "plan-conversion-totale.md": 6,
+   "plan-e7-mutation-tuiles.md": 5,
+   "plan-portrait-inventaire.md": 5
+  }
+ },
+ "81": {
+  "total": 18,
+  "slices": {
+   "1.2s.9 E19.m8": 8,
+   "3. Points ouverts": 2,
+   "0.2.1 Diagnostic de prog": 1,
+   "0.2.3 Entit\u00e9 de contexte": 1,
+   "T\u00e2ches": 1,
+   "1.2g E19.d": 1,
+   "1.2i E19.e": 1,
+   "1.2j E19.f": 1
+  },
+  "first_lines": [
+   379,
+   452,
+   725,
+   2444
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 13,
+   "plan-e14-ia-native.md": 8,
+   "plan-bgm-demarrage-binaire.md": 2,
+   "plan-e20-heros.md": 2,
+   "census-0x24-waits.md": 1,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "82": {
+  "total": 38,
+  "slices": {
+   "1.2m E19.l": 15,
+   "1.2o E19.g": 6,
+   "1.2i E19.e": 3,
+   "1.2s.2 E19.m1": 2,
+   "1.2s.6 E19.m5": 2,
+   "1.2s.8 E19.m7": 2,
+   "3. Points ouverts": 2,
+   "0.1 D\u00e9cisions de l'auteu": 1
+  },
+  "first_lines": [
+   322,
+   526,
+   612,
+   2444
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 3,
+   "plan-transitions-carte.md": 2,
+   "plan-e19-f2a-valeurs.md": 1
+  }
+ },
+ "83": {
+  "total": 12,
+  "slices": {
+   "1.2m E19.l": 7,
+   "1.2s.2 E19.m1": 3,
+   "1.1 Enveloppe": 1,
+   "1.2s.9 E19.m8": 1
+  },
+  "first_lines": [
+   612,
+   6604,
+   6766,
+   6771
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 7,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "84": {
+  "total": 13,
+  "slices": {
+   "1.2m E19.l": 7,
+   "1.2i E19.e": 2,
+   "1.1 Enveloppe": 1,
+   "1.2g E19.d": 1,
+   "1.2s.1 E19.m0": 1,
+   "1.2s.2 E19.m1": 1
+  },
+  "first_lines": [
+   612,
+   2428,
+   4182,
+   4183
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 9,
+   "plan-portrait-inventaire.md": 3,
+   "plan-e14-ia-native.md": 1
+  }
+ },
+ "85": {
+  "total": 4,
+  "slices": {
+   "1.2p E19.r": 3,
+   "1.2s.2 E19.m1": 1
+  },
+  "first_lines": [
+   9531,
+   9571,
+   9579,
+   10213
+  ],
+  "other_docs": {
+   "plan-e7-mutation-tuiles.md": 13,
+   "intro-roadmap.md": 8,
+   "plan-conversion-totale.md": 2,
+   "plan-e20-heros.md": 2,
+   "plan-camera-ordre-frame.md": 1,
+   "plan-e11-audio.md": 1
+  }
+ },
+ "86": {
+  "total": 2,
+  "slices": {
+   "1.2i E19.e": 1,
+   "1.2n E19.h": 1
+  },
+  "first_lines": [
+   4137,
+   7221
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 16,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "87": {
+  "total": 6,
+  "slices": {
+   "1.2m E19.l": 3,
+   "1.1 Enveloppe": 1,
+   "1.2i E19.e": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   612,
+   4182,
+   6573,
+   6614
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 27,
+   "plan-conversion-totale.md": 1,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "88": {
+  "total": 5,
+  "slices": {
+   "1.2k E19.k": 1,
+   "1.2s E19.m": 1,
+   "1.2s.2 E19.m1": 1,
+   "1.2s.9 E19.m8": 1,
+   "1.2z E19.v": 1
+  },
+  "first_lines": [
+   6230,
+   10117,
+   10212,
+   10876
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 15,
+   "plan-e5-camera.md": 4,
+   "plan-e14-ia-native.md": 3,
+   "plan-portrait-inventaire.md": 3,
+   "plan-e16-etat-partie.md": 2,
+   "plan-e9-backdrops-residus.md": 1
+  }
+ },
+ "89": {
+  "total": 14,
+  "slices": {
+   "1.2e E19.c1": 10,
+   "1.2n E19.h": 2,
+   "0.2.4 Sites de la cha\u00eene": 1,
+   "1.1 Enveloppe": 1
+  },
+  "first_lines": [
+   482,
+   599,
+   1453,
+   1484
+  ],
+  "other_docs": {
+   "plan-conversion-totale.md": 1,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "8A": {
+  "total": 51,
+  "slices": {
+   "1.2d E19.b": 14,
+   "1.2n E19.h": 13,
+   "1.2r E19.t": 7,
+   "1.2e E19.c1": 3,
+   "3. Points ouverts": 3,
+   "0.1 D\u00e9cisions de l'auteu": 2,
+   "1.2i E19.e": 2,
+   "1.2s.8 E19.m7": 2
+  },
+  "first_lines": [
+   109,
+   207,
+   478,
+   598
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 35,
+   "census-0x24-waits.md": 2,
+   "plan-conversion-totale.md": 2
+  }
+ },
+ "8B": {
+  "total": 16,
+  "slices": {
+   "1.2d E19.b": 5,
+   "1.2n E19.h": 4,
+   "1.2r E19.t": 2,
+   "1.2h.1 E19.d2a": 1,
+   "1.2h.2 E19.d2b": 1,
+   "1.2h.3 E19.d2c": 1,
+   "1.2s.2 E19.m1": 1,
+   "E19.d2a": 1
+  },
+  "first_lines": [
+   1241,
+   1325,
+   1334,
+   1335
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 37,
+   "intro-roadmap.md": 7,
+   "plan-e4-deplacement-scripte.md": 3,
+   "plan-conversion-totale.md": 2,
+   "plan-e16-etat-partie.md": 1,
+   "plan-e3-collisions.md": 1
+  }
+ },
+ "8C": {
+  "total": 15,
+  "slices": {
+   "1.2m E19.l": 9,
+   "1.2s.1 E19.m0": 2,
+   "1.2i E19.e": 1,
+   "1.2j E19.f": 1,
+   "1.2o E19.g": 1,
+   "1.2s.2 E19.m1": 1
+  },
+  "first_lines": [
+   4137,
+   4521,
+   6595,
+   6624
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 10,
+   "plan-e14-ia-native.md": 4,
+   "plan-e16-etat-partie.md": 2,
+   "plan-portrait-inventaire.md": 1
+  }
+ },
+ "8D": {
+  "total": 1,
+  "slices": {
+   "1.2n E19.h": 1
+  },
+  "first_lines": [
+   7072
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 21,
+   "plan-e13d-sous-inventaire.md": 1
+  }
+ },
+ "8E": {
+  "total": 32,
+  "slices": {
+   "1.2k E19.k": 18,
+   "1.2g E19.d": 6,
+   "0.2.4 Sites de la cha\u00eene": 2,
+   "3. Points ouverts": 2,
+   "0.2.5 Autres faits utile": 1,
+   "1.1 Enveloppe": 1,
+   "1.2i E19.e": 1,
+   "E19.k1": 1
+  },
+  "first_lines": [
+   484,
+   486,
+   525,
+   611
+  ],
+  "other_docs": {
+   "plan-e19-f2a-valeurs.md": 3,
+   "plan-e13d-inventaire.md": 1,
+   "plan-e13d-sous-inventaire.md": 1
+  }
+ },
+ "8F": {
+  "total": 21,
+  "slices": {
+   "1.2k E19.k": 16,
+   "3. Points ouverts": 2,
+   "0.2.5 Autres faits utile": 1,
+   "1.1 Enveloppe": 1,
+   "1.2i E19.e": 1
+  },
+  "first_lines": [
+   525,
+   611,
+   4223,
+   6216
+  ],
+  "other_docs": {
+   "plan-e13d-sous-inventaire.md": 12,
+   "plan-e13d-inventaire.md": 1
+  }
+ },
+ "90": {
+  "total": 18,
+  "slices": {
+   "1.2o E19.g": 10,
+   "1.2h.3 E19.d2c": 3,
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "1.1 Enveloppe": 1,
+   "1.2h.2 E19.d2b": 1,
+   "1.2j E19.f": 1,
+   "E19.d2b": 1
+  },
+  "first_lines": [
+   66,
+   607,
+   3104,
+   3560
+  ],
+  "other_docs": {
+   "plan-e13d-sous-inventaire.md": 6,
+   "plan-e19-d2c-valeurs.md": 5,
+   "plan-bgm-demarrage-binaire.md": 4,
+   "plan-e16-etat-partie.md": 2,
+   "plan-e15-yarn.md": 1,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "91": {
+  "total": 8,
+  "slices": {
+   "1.2o E19.g": 7,
+   "1.2p E19.r": 1
+  },
+  "first_lines": [
+   9058,
+   9063,
+   9096,
+   9130
+  ],
+  "other_docs": {}
+ },
+ "92": {
+  "total": 17,
+  "slices": {
+   "1.2o E19.g": 13,
+   "1.2d E19.b": 2,
+   "1.2p E19.r": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   1252,
+   1286,
+   8739,
+   8754
+  ],
+  "other_docs": {
+   "plan-e13d-sous-inventaire.md": 1,
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "93": {
+  "total": 14,
+  "slices": {
+   "1.2o E19.g": 9,
+   "1.2d E19.b": 2,
+   "1.2j E19.f": 1,
+   "1.2p E19.r": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   1252,
+   1286,
+   4856,
+   7578
+  ],
+  "other_docs": {}
+ },
+ "94": {
+  "total": 17,
+  "slices": {
+   "1.2o E19.g": 12,
+   "1.2g E19.d": 2,
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "0.2.4 Sites de la cha\u00eene": 1,
+   "1.1 Enveloppe": 1
+  },
+  "first_lines": [
+   66,
+   486,
+   607,
+   2161
+  ],
+  "other_docs": {
+   "plan-portrait-inventaire.md": 8,
+   "plan-bgm-demarrage-binaire.md": 1
+  }
+ },
+ "95": {
+  "total": 17,
+  "slices": {
+   "1.2m E19.l": 8,
+   "1.2i E19.e": 3,
+   "1.1 Enveloppe": 1,
+   "1.2h.2 E19.d2b": 1,
+   "1.2h.3 E19.d2c": 1,
+   "E19.d2b": 1,
+   "E19.l2": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   612,
+   3104,
+   3561,
+   4125
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 23,
+   "plan-e19-d2c-valeurs.md": 2,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "96": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10116
+  ],
+  "other_docs": {}
+ },
+ "97": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10116
+  ],
+  "other_docs": {}
+ },
+ "98": {
+  "total": 3,
+  "slices": {
+   "1.2m E19.l": 3
+  },
+  "first_lines": [
+   6607,
+   6767,
+   6787
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 11,
+   "plan-e14-ia-native.md": 6,
+   "plan-bgm-demarrage-binaire.md": 1,
+   "plan-e13d-sous-inventaire.md": 1
+  }
+ },
+ "99": {
+  "total": 9,
+  "slices": {
+   "1.2m E19.l": 7,
+   "1.1 Enveloppe": 1,
+   "1.2i E19.e": 1
+  },
+  "first_lines": [
+   612,
+   4182,
+   6607,
+   6635
+  ],
+  "other_docs": {
+   "plan-e14-ia-native.md": 4,
+   "plan-e16-etat-partie.md": 2
+  }
+ },
+ "9A": {
+  "total": 9,
+  "slices": {
+   "1.2m E19.l": 7,
+   "1.1 Enveloppe": 1,
+   "1.2i E19.e": 1
+  },
+  "first_lines": [
+   612,
+   4182,
+   6608,
+   6635
+  ],
+  "other_docs": {}
+ },
+ "9B": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-transitions-carte.md": 9
+  }
+ },
+ "9C": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-transitions-carte.md": 8,
+   "plan-e15-yarn.md": 3,
+   "plan-e14-ia-native.md": 2
+  }
+ },
+ "9D": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "9E": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e7-mutation-tuiles.md": 1
+  }
+ },
+ "9F": {
+  "total": 16,
+  "slices": {
+   "1.2m E19.l": 10,
+   "1.2s.1 E19.m0": 2,
+   "1.1 Enveloppe": 1,
+   "1.2i E19.e": 1,
+   "1.2o E19.g": 1,
+   "E19.l2": 1
+  },
+  "first_lines": [
+   612,
+   4179,
+   6610,
+   6625
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 2,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "A0": {
+  "total": 19,
+  "slices": {
+   "1.2o E19.g": 10,
+   "1.2s.1 E19.m0": 2,
+   "1.2s.2 E19.m1": 2,
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "1.1 Enveloppe": 1,
+   "1.2i E19.e": 1,
+   "1.2k E19.k": 1,
+   "E19.e": 1
+  },
+  "first_lines": [
+   66,
+   607,
+   4223,
+   6230
+  ],
+  "other_docs": {
+   "plan-e5-camera.md": 4,
+   "plan-e20-heros.md": 3,
+   "plan-e16-etat-partie.md": 2,
+   "plan-e9-backdrops-residus.md": 1
+  }
+ },
+ "A1": {
+  "total": 5,
+  "slices": {
+   "1.2o E19.g": 5
+  },
+  "first_lines": [
+   7578,
+   9060,
+   9063,
+   9065
+  ],
+  "other_docs": {
+   "plan-e12d-interaction-joueur.md": 1
+  }
+ },
+ "A2": {
+  "total": 37,
+  "slices": {
+   "1.2o E19.g": 21,
+   "1.2h.1 E19.d2a": 3,
+   "1.2d E19.b": 2,
+   "1.2g E19.d": 2,
+   "1.2h.2 E19.d2b": 2,
+   "0.2.4 Sites de la cha\u00eene": 1,
+   "1.2i E19.e": 1,
+   "1.2m E19.l": 1
+  },
+  "first_lines": [
+   486,
+   1252,
+   1286,
+   2161
+  ],
+  "other_docs": {}
+ },
+ "A3": {
+  "total": 13,
+  "slices": {
+   "1.2o E19.g": 11,
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "1.1 Enveloppe": 1
+  },
+  "first_lines": [
+   66,
+   607,
+   7576,
+   7578
+  ],
+  "other_docs": {}
+ },
+ "A4": {
+  "total": 23,
+  "slices": {
+   "1.2k E19.k": 18,
+   "3. Points ouverts": 2,
+   "0.2.5 Autres faits utile": 1,
+   "1.1 Enveloppe": 1,
+   "1.2s.4 E19.m3": 1
+  },
+  "first_lines": [
+   525,
+   611,
+   6216,
+   6220
+  ],
+  "other_docs": {
+   "plan-e9b-backdrops-moteur.md": 3,
+   "plan-e16-etat-partie.md": 1,
+   "plan-e9d-mode-cellulaire.md": 1
+  }
+ },
+ "A5": {
+  "total": 2,
+  "slices": {
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "1.2w.2 E19.L-b \u2014 Donn\u00e9es": 1
+  },
+  "first_lines": [
+   355,
+   11714
+  ],
+  "other_docs": {
+   "plan-bgm-demarrage-binaire.md": 24,
+   "plan-e11b-opcodes-audio.md": 19,
+   "plan-conversion-totale.md": 2,
+   "plan-e11-audio.md": 2,
+   "plan-e11c-musique.md": 1,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "A6": {
+  "total": 1,
+  "slices": {
+   "1.2e E19.c1": 1
+  },
+  "first_lines": [
+   1450
+  ],
+  "other_docs": {
+   "plan-bgm-demarrage-binaire.md": 17,
+   "plan-e11b-opcodes-audio.md": 17,
+   "plan-conversion-totale.md": 2,
+   "plan-e11-audio.md": 2,
+   "plan-e16-etat-partie.md": 2,
+   "plan-audio-mix-exact-muet.md": 1
+  }
+ },
+ "A7": {
+  "total": 1,
+  "slices": {
+   "1.2v X2": 1
+  },
+  "first_lines": [
+   11378
+  ],
+  "other_docs": {
+   "plan-bgm-demarrage-binaire.md": 34,
+   "plan-e11b-opcodes-audio.md": 12,
+   "plan-conversion-totale.md": 3,
+   "plan-audio-mix-exact-muet.md": 2,
+   "plan-e11-audio.md": 2,
+   "plan-e11c-musique.md": 1
+  }
+ },
+ "A8": {
+  "total": 1,
+  "slices": {
+   "1.2s.8 E19.m7": 1
+  },
+  "first_lines": [
+   10781
+  ],
+  "other_docs": {
+   "plan-bgm-demarrage-binaire.md": 6,
+   "plan-e11-audio.md": 6,
+   "plan-e20-heros.md": 2,
+   "plan-e11b-opcodes-audio.md": 1,
+   "plan-e13d-inventaire.md": 1
+  }
+ },
+ "A9": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10117
+  ],
+  "other_docs": {}
+ },
+ "AA": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10116
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "AB": {
+  "total": 2,
+  "slices": {
+   "1.2l E19.j": 2
+  },
+  "first_lines": [
+   6520,
+   6533
+  ],
+  "other_docs": {
+   "plan-e11b-opcodes-audio.md": 12,
+   "plan-audio-mix-exact-muet.md": 9,
+   "plan-conversion-totale.md": 3,
+   "plan-e11-audio.md": 2,
+   "plan-bgm-demarrage-binaire.md": 1,
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "AC": {
+  "total": 1,
+  "slices": {
+   "0.2.5 Autres faits utile": 1
+  },
+  "first_lines": [
+   515
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 15,
+   "intro-roadmap.md": 4,
+   "plan-e14-ia-native.md": 1,
+   "plan-e4-deplacement-scripte.md": 1
+  }
+ },
+ "AD": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 17,
+   "plan-portrait-inventaire.md": 1
+  }
+ },
+ "AE": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "AF": {
+  "total": 4,
+  "slices": {
+   "1.2d E19.b": 1,
+   "1.2e E19.c1": 1,
+   "1.2g E19.d": 1,
+   "1.2k E19.k": 1
+  },
+  "first_lines": [
+   1255,
+   1450,
+   2360,
+   6273
+  ],
+  "other_docs": {
+   "plan-e10-fondu.md": 9,
+   "plan-e13-hud.md": 1,
+   "plan-e16-etat-partie.md": 1,
+   "plan-e19-f2a-valeurs.md": 1
+  }
+ },
+ "B0": {
+  "total": 5,
+  "slices": {
+   "1.2j E19.f": 3,
+   "0.2.5 Autres faits utile": 1,
+   "1.2s.8 E19.m7": 1
+  },
+  "first_lines": [
+   514,
+   4522,
+   4884,
+   5039
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 8,
+   "plan-e10-fondu.md": 4,
+   "plan-e13d-inventaire.md": 3,
+   "plan-e15-yarn.md": 1,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "B1": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e10-fondu.md": 12,
+   "plan-e16-etat-partie.md": 2
+  }
+ },
+ "B2": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10117
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "B3": {
+  "total": 2,
+  "slices": {
+   "1.2o E19.g": 1,
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   9154,
+   10117
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "B4": {
+  "total": 1,
+  "slices": {
+   "1.2h E19.d2": 1
+  },
+  "first_lines": [
+   2573
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 9,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "B5": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10117
+  ],
+  "other_docs": {}
+ },
+ "B6": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10117
+  ],
+  "other_docs": {}
+ },
+ "B7": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 5
+  }
+ },
+ "B8": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 17,
+   "plan-portrait-inventaire.md": 2,
+   "plan-e14-ia-native.md": 1,
+   "plan-extraction-bgm.md": 1
+  }
+ },
+ "B9": {
+  "total": 8,
+  "slices": {
+   "1.2m E19.l": 3,
+   "1.1 Enveloppe": 1,
+   "1.2i E19.e": 1,
+   "1.2o E19.g": 1,
+   "1.2s E19.m": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   612,
+   4137,
+   6573,
+   6617
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 3,
+   "plan-e11b-opcodes-audio.md": 2,
+   "plan-bgm-demarrage-binaire.md": 1,
+   "plan-e11-audio.md": 1
+  }
+ },
+ "BA": {
+  "total": 3,
+  "slices": {
+   "1.2m E19.l": 1,
+   "1.2o E19.g": 1,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   6618,
+   8047,
+   12342
+  ],
+  "other_docs": {
+   "plan-e11-audio.md": 4,
+   "plan-bgm-demarrage-binaire.md": 1,
+   "plan-e11b-opcodes-audio.md": 1
+  }
+ },
+ "BB": {
+  "total": 5,
+  "slices": {
+   "0.1 D\u00e9cisions de l'auteu": 1,
+   "1.1 Enveloppe": 1,
+   "1.2o E19.g": 1,
+   "3. Points ouverts": 1,
+   "4. Hors p\u00e9rim\u00e8tre": 1
+  },
+  "first_lines": [
+   324,
+   615,
+   8760,
+   12378
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 3,
+   "plan-conversion-totale.md": 2,
+   "plan-e15-yarn.md": 1,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "BC": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e20-heros.md": 11,
+   "plan-e14-ia-native.md": 2,
+   "plan-conversion-totale.md": 1,
+   "plan-e13-hud.md": 1
+  }
+ },
+ "BD": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e11-audio.md": 12,
+   "intro-roadmap.md": 10,
+   "plan-e7-mutation-tuiles.md": 5,
+   "plan-e11b-opcodes-audio.md": 4,
+   "plan-conversion-totale.md": 3,
+   "plan-audio-mix-exact-muet.md": 1
+  }
+ },
+ "BE": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e11-audio.md": 4,
+   "plan-bgm-demarrage-binaire.md": 1,
+   "plan-e11b-opcodes-audio.md": 1
+  }
+ },
+ "BF": {
+  "total": 2,
+  "slices": {
+   "1.2s.1 E19.m0": 2
+  },
+  "first_lines": [
+   10157,
+   10178
+  ],
+  "other_docs": {
+   "plan-audio-mix-exact-muet.md": 30,
+   "plan-e11b-opcodes-audio.md": 14,
+   "plan-bgm-demarrage-binaire.md": 2,
+   "plan-conversion-totale.md": 2,
+   "plan-e11-audio.md": 2,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "C0": {
+  "total": 3,
+  "slices": {
+   "1.2j E19.f": 1,
+   "1.2o E19.g": 1,
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   4884,
+   8861,
+   10117
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 32,
+   "intro-roadmap.md": 4,
+   "plan-conversion-totale.md": 2,
+   "plan-e14-ia-native.md": 1
+  }
+ },
+ "C1": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10117
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 10,
+   "plan-conversion-totale.md": 2,
+   "intro-roadmap.md": 1
+  }
+ },
+ "C2": {
+  "total": 1,
+  "slices": {
+   "1.2s E19.m": 1
+  },
+  "first_lines": [
+   10117
+  ],
+  "other_docs": {
+   "plan-e16-etat-partie.md": 6,
+   "intro-roadmap.md": 2,
+   "plan-conversion-totale.md": 2
+  }
+ },
+ "C3": {
+  "total": 2,
+  "slices": {
+   "1.2s E19.m": 1,
+   "1.2s.2 E19.m1": 1
+  },
+  "first_lines": [
+   10117,
+   10233
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 14,
+   "intro-roadmap.md": 1,
+   "plan-conversion-totale.md": 1
+  }
+ },
+ "C4": {
+  "total": 33,
+  "slices": {
+   "1.2j E19.f": 12,
+   "1.2d E19.b": 9,
+   "0.1 D\u00e9cisions de l'auteu": 2,
+   "0.2.4 Sites de la cha\u00eene": 2,
+   "1.1 Enveloppe": 2,
+   "0.2.1 Diagnostic de prog": 1,
+   "0.2.5 Autres faits utile": 1,
+   "0.2.6 Banc de test": 1
+  },
+  "first_lines": [
+   58,
+   60,
+   394,
+   476
+  ],
+  "other_docs": {
+   "plan-e12-dialogues.md": 5,
+   "plan-conversion-totale.md": 2,
+   "plan-e14-ia-native.md": 1,
+   "plan-e15-yarn.md": 1,
+   "plan-e19-f2a-valeurs.md": 1,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "C5": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "C6": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "C7": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "C8": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e14-ia-native.md": 1,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "C9": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "CA": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "CB": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "CC": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e14-ia-native.md": 1
+  }
+ },
+ "CD": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e14-ia-native.md": 1
+  }
+ },
+ "CE": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e13d-sous-inventaire.md": 2
+  }
+ },
+ "CF": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e13d-sous-inventaire.md": 6,
+   "plan-e13d-inventaire.md": 2
+  }
+ },
+ "D0": {
+  "total": 3,
+  "slices": {
+   "1.2h.2 E19.d2b": 2,
+   "1.2j E19.f": 1
+  },
+  "first_lines": [
+   2945,
+   2946,
+   4884
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 7,
+   "plan-e14-ia-native.md": 1,
+   "plan-e19-d2c-valeurs.md": 1
+  }
+ },
+ "D1": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "D2": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "D3": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "D4": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e14-ia-native.md": 1
+  }
+ },
+ "D5": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "D6": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "D7": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "D8": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e14-ia-native.md": 2
+  }
+ },
+ "D9": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "DA": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "DB": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "DC": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e14-ia-native.md": 1,
+   "plan-e20-heros.md": 1
+  }
+ },
+ "DD": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "DE": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "DF": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "E0": {
+  "total": 2,
+  "slices": {
+   "1.2j E19.f": 2
+  },
+  "first_lines": [
+   4884,
+   5039
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 3,
+   "plan-e15-yarn.md": 1,
+   "plan-e19-d2c-valeurs.md": 1
+  }
+ },
+ "E1": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "E2": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "E3": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "E4": {
+  "total": 1,
+  "slices": {
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   12350
+  ],
+  "other_docs": {}
+ },
+ "E5": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "E6": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "E7": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "E8": {
+  "total": 1,
+  "slices": {
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   12350
+  ],
+  "other_docs": {
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "E9": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e15-yarn.md": 2
+  }
+ },
+ "EA": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "EB": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "EC": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "ED": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "EE": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "EF": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "F0": {
+  "total": 3,
+  "slices": {
+   "1.2q E19.s": 2,
+   "3. Points ouverts": 1
+  },
+  "first_lines": [
+   9705,
+   9707,
+   12352
+  ],
+  "other_docs": {
+   "plan-e9-backdrops-residus.md": 3,
+   "guidelines-runtime-alundra-casaengine.md": 2,
+   "plan-e13d-sous-inventaire.md": 1,
+   "plan-e19-d2c-valeurs.md": 1
+  }
+ },
+ "F1": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "F2": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "F3": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "F4": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "F5": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "F6": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e20-heros.md": 1
+  }
+ },
+ "F7": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e20-heros.md": 1
+  }
+ },
+ "F8": {
+  "total": 8,
+  "slices": {
+   "1.2h.3 E19.d2c": 3,
+   "1.2n E19.h": 2,
+   "3. Points ouverts": 2,
+   "1.2h E19.d2": 1
+  },
+  "first_lines": [
+   2603,
+   3240,
+   3244,
+   3716
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 4,
+   "plan-portrait-inventaire.md": 2
+  }
+ },
+ "F9": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "FA": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e20-heros.md": 2,
+   "plan-e16-etat-partie.md": 1
+  }
+ },
+ "FB": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {
+   "plan-e20-heros.md": 3,
+   "plan-e15-yarn.md": 1
+  }
+ },
+ "FC": {
+  "total": 1,
+  "slices": {
+   "1.2k E19.k": 1
+  },
+  "first_lines": [
+   6443
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 3
+  }
+ },
+ "FD": {
+  "total": 0,
+  "slices": {},
+  "first_lines": [],
+  "other_docs": {}
+ },
+ "FE": {
+  "total": 1,
+  "slices": {
+   "1.2e E19.c1": 1
+  },
+  "first_lines": [
+   1658
+  ],
+  "other_docs": {}
+ },
+ "FF": {
+  "total": 46,
+  "slices": {
+   "1.2m E19.l": 13,
+   "1.2c E19.a3": 6,
+   "1.2e E19.c1": 4,
+   "1.2g E19.d": 3,
+   "1.2i E19.e": 2,
+   "1.2l E19.j": 2,
+   "1.2n E19.h": 2,
+   "1.2o E19.g": 2
+  },
+  "first_lines": [
+   25,
+   384,
+   406,
+   439
+  ],
+  "other_docs": {
+   "plan-e20-heros.md": 7,
+   "plan-e9d-mode-cellulaire.md": 7,
+   "plan-transitions-carte.md": 6,
+   "plan-bgm-demarrage-binaire.md": 5,
+   "plan-audio-mix-exact-muet.md": 4,
+   "plan-e16-etat-partie.md": 3
+  }
+ }
+}

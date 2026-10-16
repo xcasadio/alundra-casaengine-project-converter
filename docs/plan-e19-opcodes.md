@@ -12009,6 +12009,53 @@ avant le code.
 
 ---
 
+### 1.4 E19.SM — Les opcodes encore sautés : relevé du corpus entier et découpage proposé ⏳ (2026-10-17, lecture seule ; à approuver)
+
+**Origine.** Thème de repli donné par l'auteur le 2026-10-16 (« finir le moteur de script »), pendant la pause du chantier de
+restructuration (aucune tranche de code pendant le chantier). Preuves : `docs/plan-e19-sm-annexe/` (rapport, `opcodes.tsv`,
+`skipped-sites.tsv`, scripts, critique `check.md`).
+
+**Faits (contre-vérifiés ; réserves plus bas).**
+- `Dispatch` (`AlundraEventProgramRunner.cs:613-2154`) a 158 `case` ; `0x00` et `0xFF` sont dans la boucle d'appel. La table des tailles a
+  198 entrées (son commentaire dit 197) ; `0xC5-0xFE` n'y sont pas. Un opcode inconnu passe par `UnknownOpcode` (`:3115-3141`), sauté par
+  sa taille, ou fin d'appel sans taille.
+- Corpus de 483 cartes : 110 140 instructions atteignables (relevé statique, les deux branches de chaque saut), 171 valeurs d'opcode.
+  Le chiffre de 111 136 instructions du §0.2.1 est périmé (aucune variante de marche ne le redonne).
+- **29 opcodes sont sautés par leur taille** : `15 3C 3D 56 5F 60 61 66 6A 6B 6C 6D 72 7A 88 96 97 9E A9 AA B2 B3 B4 B5 B6 B7 B9 BB C2`.
+  21 sont atteints : **510 sites dans 96 cartes** ; **aucun** sur les 30 cartes de la chaîne ni sur les 8 cartes centrales ; un seul
+  (`0xB9`) sur une carte de combat. Les plus utilisés : `0x60` (172 sites, 7 cartes, dont 400 ×128), `0x6A` (59), `0x96` (42, 36 cartes),
+  `0xB9` (42), `0x6B`/`0x6D` (29 chacun), `0x97` (24), `0xAA` (24). Dix d'entre eux sont des prédicats dont un lecteur de `Result` suit :
+  les sauter laisse un `Result` périmé et change le flot.
+- 5 opcodes partiels (`2F 53 82 A4 AC`) : le manque n'a de site atteint que pour le cycle de palettes de `0xA4` (1 site, carte 471) et les
+  ombres de `0xAC` (32 sites, sans propriétaire : rien ne dessine d'ombre dans la DLL ni le moteur). No-op délibérés : `01` (rend 1, le
+  binaire 0 : M-03), `A8`, `BA` (pas de CD, D-E11-5).
+- La table globale `map_alundra` (bit `0x80` clair) n'est pas portée : 6 enregistrements, carte 60 (pots).
+- 72 gestionnaires portés ne citent pas le binaire dans leur commentaire (65 % du corpus) : non cité ne veut pas dire faux, mais
+  « porté » n'est pas « relu au binaire ».
+
+**Réserves de la critique** : « FAITHFUL » dans `opcodes.tsv` veut dire « un `case` existe », pas « relu ligne à ligne » ; `0x40` porte un
+écart délibéré documenté (`v1 >= 6` ne fait rien) ; les libellés de la table pour `0xB4`-`0xB6` sont faux (le binaire : `ForceZ > 0`,
+`< 0`, `== 0`), à confirmer en tranche.
+
+**Découpage proposé** (chaque tranche suit le motif d'E19.l : gestionnaire relu au binaire par la table `0x80098FAC`, petit oracle de
+valeurs, tests rouges d'abord, verifier frais, une ligne de moins dans la liste fermée) :
+
+| Tranche | Contenu | Sites fermés | Dépend de |
+|---|---|---|---|
+| E19.sm0 | Filet : test statique du corpus entier (M-05/G7), liste fermée des 510 sites avec un propriétaire ; aucune ligne manquante ou périmée, aucune attente sautée, aucune taille nulle atteignable | 0 | — |
+| E19.sm1 | Prédicats d'appui et de zone `0x60 0x61 0x3D 0x3C` | 187 (11 cartes) | sm0 |
+| E19.sm2 | Mémo de position et seuils `0x6A 0x6B 0x6C 0x6D` | 129 (8 cartes) | sm0 |
+| E19.sm3 | Prédicats de contact, de groupe et de `ForceZ` `0xA9 0xAA 0xB2 0xB4-0xB7 0x9E`, libellés corrigés | 42 (11 cartes) | sm0 |
+| E19.sm4 | Actions `0x72 0x88 0x96 0x97 0xB3` (et `0x15 0x66 0x7A`, 0 site) | 90 (50 cartes) | sm0 |
+| E19.sm5 | `0x56` (copie de rectangles de cases, `MapCopies` à exporter) | 17 (cartes 21, 60) | convertisseur, export complet |
+| E19.sm6 | Restes des partiels : `0x82`, cycle de palettes de `0xA4` (moteur), ombres de `0xAC` | 33 | sm4 ; propriétaire de `0xAC` |
+| E19.sm7 | Pistes XA `0xB9`, `0xBA` | 42 (+37) | l'auteur (O-E19-36) |
+| E19.sm8 | `0xBB`, `0xC2` | 3 | E18 |
+| E19.sm9 | Niveau interpréteur : table `map_alundra`, `0x01` (M-03), plafond de 63 entités (M-12), rognage de bord (O-E19-17) | — | sm0 ; l'auteur pour M-03 et le rognage |
+| E19.sm10 | Relecture au binaire des 72 gestionnaires sans citation, par poids (`0x37 0x1A 0x02 0x05 0x04 0xBD 0x30…`) | — | sm0 |
+
+Après sm1 à sm4 : 448 des 510 sites fermés (88 %) et plus aucun prédicat à `Result` périmé. Question : Q-E19-SM1 (§3).
+
 ## 2. Mesures
 
 Réservé aux mesures faites en exécutant les tranches.
@@ -12384,6 +12431,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-78 | **Tranché le 2026-10-08 (D-E19-103 : à corriger, tranche à part) ; planifié en E19.u (§1.2y) ; fait et CONFIRMED le 2026-10-08 (`cd0f3f3`, ADR-0050), recette U-4 en attente.** **Ordre d'image du déclencheur de l'inventaire** (contre-vérification d'O-E19-77, 2026-10-07, `docs/plan-e19-pad-age-annexe/o77/verify/`) : dans le binaire, le déclencheur (`Update(0)`, `0x8002BCA4`) tourne après `RenderScene(k)` (où la boîte de texte se ferme, `0x8004501C`, et efface les bits 0x18 de `0x800DC4B8` que le déclencheur teste à `0x8002BC70`) et après les événements de carte ; dans le portage, il tourne dans la première boucle de ticks, avant la passe du dialogue, l'écran de sauvegarde et les événements de carte du même tick. **Mesuré** : autour d'un inventaire ouvert à P et fermé à P+19, le binaire saute les événements de carte dans `Update(P+1)` à `Update(P+37)`, le portage aux ticks P à P+36 : un tick trop tôt aux deux bouts. **Non mesuré** (hypothèses) : un Start donné à l'échantillon où une boîte se ferme ouvre l'inventaire dans le binaire, pas dans le portage ; un événement de carte qui ouvre une boîte au même tick que le déclencheur l'emporte dans le binaire, l'inventaire dans le portage. Corriger demanderait de déplacer le déclencheur après la passe du dialogue et les événements de carte (épingles de l'inventaire à reprendre), comme E19.f3c l'a fait pour l'écran de sauvegarde. | Auteur, puis tranche à part |
 | O-E19-79 | **Clos le 2026-10-09 (E19.m8 M8-d) : prémisse fausse.** `0x43 [0x81]` (240 `@529`, 292 `@423`) pose le héros comme entité logique avant `0x1A [80]` ; le gestionnaire de `0x1A` agit sur l'entité logique (`0x8003D7B4`, relue en `0x80042284`) : l'animation 80 est celle du héros (94 jeux, 80 Hold, 81 Loop), puis `0x43 [0]` ou `0x43 [1]` rend le contexte. Aucune lecture hors table. Texte d'origine, faux : **Animation 80 sur deux préfabs de 19 et 15 jeux** (E19.m8 M8-b, 2026-10-08, hors chaîne) : 240 `@535` (Giles, préfab `9b582582`) et 292 `@429` (Nestus, préfab `bbeba3db`) font `1A [80]` puis attendent par `0x1C`. Le binaire range `v[1]` sans contrôle (`0x8003D7B4`) et `UpdateAnimation` (`0x80038AB4`) indexe la table des jeux sans borne : l'original lit 61 et 65 entrées après la fin de la table, et ce qu'il montre alors n'est pas établi (pour les Flammes, une seule entrée après la table, E19.c2 l'a établi : les images vers le bas de l'animation 0). La DLL applique la même règle qu'aux Flammes (l'animation qui joue repart de son image 0). Question de fait à mesurer plus tard (lecture du binaire et de la mémoire des préfabs), ou écart à consigner si la lecture désigne des données sans sens (défaut de l'original). | à placer |
 | O-E19-80 | **Pose de saut figée possible à une arrivée hors `LoadingMap`** (vérification d'E19.v2, P4, 2026-10-09, non mesuré). Une arrivée par `0x52`/`0x53` recopie l'animation du héros : Idle ou Moving passent par la queue commune, qui lit le contact au sol sans la garde de terrain de V-R4. À la première image d'un pion neuf (contrôleur pas encore au sol), elle donnerait `0x2C` ou `0x2D`, que l'image suivante corrige, sauf si un verrou gèle `MovePlayer`, comme dans le bug du début de partie. Il en va de même d'une arrivée posée sur une entité. Les arrivées `0x53` de la chaîne vers la 476, la 478 et la 416 sont mesurées au sol ou en `0xD`. À mesurer avec le harnais du vrai jeu sur une arrivée `0x52`/`0x53` suivie d'un verrou, puis à corriger par la même règle du plancher si le cas existe. | **E20.a** (2026-10-09 : le passage du héros par tick change ses premières images ; `docs/plan-e20-heros.md` §0.3) |
+| Q-E19-SM1 | (2026-10-17) Le découpage E19.sm0 à sm10 (§1.4) devient-il la suite d'E19 ? Quand : après la restructuration de la DLL (règle du chantier), ou avant, en suspendant le chantier ? Et qui porte les ombres de `0xAC` (32 sites ; rien ne dessine d'ombre aujourd'hui) ? | l'auteur |
 
 ## 4. Hors périmètre
 

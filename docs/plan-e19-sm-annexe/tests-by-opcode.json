@@ -1,0 +1,3986 @@
+{
+ "00": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [
+   "AlundraClassAndBranchOpcodesTests.cs",
+   "AlundraShipBlockArcTests.cs"
+  ],
+  "body_methods": 75,
+  "body_files": 30,
+  "files_any": 46
+ },
+ "01": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraHeightWaitOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 105,
+  "body_files": 28,
+  "files_any": 34
+ },
+ "02": {
+  "named_methods": 0,
+  "named_methods_all_files": 1,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraMissingAnimationWaitCorpusTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 21,
+  "body_files": 11,
+  "files_any": 19
+ },
+ "03": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraBgmFadeDirectorTests.cs",
+   "AlundraMissingAnimationWaitCorpusTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 24,
+  "body_files": 14,
+  "files_any": 22
+ },
+ "04": {
+  "named_methods": 0,
+  "named_methods_all_files": 1,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraMissingAnimationWaitCorpusTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 27,
+  "body_files": 18,
+  "files_any": 29
+ },
+ "05": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraYarnVariableStorageTests.cs"
+  ],
+  "named_examples": [
+   "Read_BitSetByOpcode0x05_IsTrueInIf",
+   "BoundaryIds_SetTrue_MatchOpcode0x05_InBothBanks"
+  ],
+  "doc_files": [
+   "AlundraFireSwitchRegressionTests.cs",
+   "AlundraYarnVariableStorageTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraFireSwitchRegressionTests.cs",
+   "AlundraVisionAndCoastArcTests.cs"
+  ],
+  "body_methods": 35,
+  "body_files": 21,
+  "files_any": 26
+ },
+ "06": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraYarnVariableStorageTests.cs"
+  ],
+  "named_examples": [
+   "BoundaryIds_SetFalse_MatchOpcode0x06_InBothBanks"
+  ],
+  "doc_files": [
+   "AlundraYarnVariableStorageTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 17,
+  "body_files": 9,
+  "files_any": 12
+ },
+ "07": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "CheckEntityInArea_0x07_MatchInsideBox_ResultOne",
+   "CheckEntityInArea_0x07_MatchOutsideBox_ResultZero",
+   "CheckEntityInArea_0x07_RealMap389Params_TileZDerivedFromPosZ"
+  ],
+  "doc_files": [],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "body_methods": 14,
+  "body_files": 6,
+  "files_any": 10
+ },
+ "08": {
+  "named_methods": 1,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "Turn_0x08_AddsV1ToTheDirection_Modulo32"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraShipCorridorArcTests.cs",
+   "AlundraVisionAndCoastArcTests.cs"
+  ],
+  "body_methods": 56,
+  "body_files": 26,
+  "files_any": 39
+ },
+ "09": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs"
+  ],
+  "named_examples": [
+   "SetAnim_0x1A_AndSetDirection_0x09_ActOnTheLogicEntity_NotTheOwner"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 5,
+  "body_files": 5,
+  "files_any": 7
+ },
+ "0A": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "ReverseDirection_0x0A_AddsSixteen",
+   "ReverseDirection_0x0A_WrapsAroundThirtyTwo"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 18,
+  "body_files": 7,
+  "files_any": 11
+ },
+ "0B": {
+  "named_methods": 8,
+  "named_methods_all_files": 8,
+  "named_files": [
+   "AlundraEntityContactReportTests.cs",
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "TR8_WalkUntilBeyondRadius0x0B_ForceAdjustedWithAnEntityInContact_DoesNotDetour_AndDoesNotLatchAnAttempt",
+   "TR8_WalkUntilBeyondRadius0x0B_ForceAdjustedOnACellContact_StillDetours",
+   "WalkUntilBeyondRadius_0x0B_SuspendsUntilTheEntityMovedTheRadius_AndOnlyWritesTheAnimation",
+   "WalkUntilBeyondRadius_0x0B_RewritesTheAnimationOnEveryCall"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "body_methods": 22,
+  "body_files": 10,
+  "files_any": 14
+ },
+ "0C": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraRandomOpcodeTests.cs"
+  ],
+  "named_examples": [
+   "SetRandomCardinalDirection_0x0C_FiveDrawsGiveTheBinarysDirections_AndTheSeedAdvancesOnce"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraRandomOpcodeTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraRandomOpcodeTests.cs"
+  ],
+  "body_methods": 12,
+  "body_files": 8,
+  "files_any": 16
+ },
+ "0D": {
+  "named_methods": 3,
+  "named_methods_all_files": 5,
+  "named_files": [
+   "AlundraDialogueOpcodeDispatchTests.cs"
+  ],
+  "named_examples": [
+   "OpenDialog_0x0D_DispatchedAgainWhileStillOpen_RetriesInsteadOfOpeningASecondBox",
+   "Degraded_0x0D_StillParsesAndAppliesNumericFlags_SoALaterWaitDoesNotDeadlock",
+   "OpenDialog_0x0D_MasksTextIdWith0x7F_ToIndexLocalStrings"
+  ],
+  "doc_files": [
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraVisionAndCoastArcTests.cs"
+  ],
+  "body_methods": 20,
+  "body_files": 15,
+  "files_any": 27
+ },
+ "0E": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 5,
+  "body_files": 4,
+  "files_any": 7
+ },
+ "0F": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 9,
+  "body_files": 6,
+  "files_any": 11
+ },
+ "10": {
+  "named_methods": 1,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "PlayerLoseControl_0x10_SetsControlLockedBit"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 125,
+  "body_files": 51,
+  "files_any": 66
+ },
+ "11": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "PlayerGainControl_0x11_ClearsControlLockedBit_PreservesOtherBits"
+  ],
+  "doc_files": [
+   "AlundraNpcCharacterControllerMoverTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraShipCorridorArcTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "body_methods": 22,
+  "body_files": 16,
+  "files_any": 19
+ },
+ "12": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "PlaySound1_0x12_Implemented_DerivesIdFromSingleByte_NotTwo",
+   "PlaySound1_0x12_NullSoundPlayer_DegradedNoOp_SkipsBySize"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 24,
+  "body_files": 11,
+  "files_any": 14
+ },
+ "13": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 3,
+  "files_any": 9
+ },
+ "14": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 9,
+  "body_files": 6,
+  "files_any": 14
+ },
+ "15": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 2,
+  "body_files": 2,
+  "files_any": 5
+ },
+ "16": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "HighGravity_0x16_SetsFlagAndKeepsControllerGravityAtZero"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 7,
+  "body_files": 6,
+  "files_any": 7
+ },
+ "17": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "LowGravity_0x17_ClearsFlagAndZeroesControllerGravity",
+   "LowGravity_0x17_NoController_DoesNotThrow"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 16,
+  "body_files": 9,
+  "files_any": 11
+ },
+ "18": {
+  "named_methods": 0,
+  "named_methods_all_files": 1,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 83,
+  "body_files": 29,
+  "files_any": 40
+ },
+ "19": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEntityDestructionTests.cs",
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "TR5_AChainOf0x19_DeactivatesThenDestroys_AndTheEntityLeavesTheListOnTheFollowingFrame",
+   "Deactivate_0x19_SetsStatusToDeactivated",
+   "Deactivate_0x19_FromLoaded_AlsoBecomesDeactivated"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 15,
+  "body_files": 7,
+  "files_any": 11
+ },
+ "1A": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs"
+  ],
+  "named_examples": [
+   "SetAnim_0x1A_AndSetDirection_0x09_ActOnTheLogicEntity_NotTheOwner"
+  ],
+  "doc_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs",
+   "AlundraMissingAnimationWaitCorpusTests.cs",
+   "AlundraNpcCharacterControllerMoverTests.cs",
+   "AlundraWeaponLockOpcodesTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraVisionAndCoastArcTests.cs"
+  ],
+  "body_methods": 123,
+  "body_files": 19,
+  "files_any": 32
+ },
+ "1B": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "Fly_0x1B_BlockEighteenRealImpulse_SetsForceZOnlyNeverPokesControllerVelocity",
+   "Fly_0x1B_NoController_OnlyStoresForceZ",
+   "Fly_0x1B_PositiveImpulse_SignExtendsCorrectly"
+  ],
+  "doc_files": [
+   "AlundraHeroJumpTests.cs",
+   "AlundraNpcCharacterControllerMoverTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 19,
+  "body_files": 9,
+  "files_any": 14
+ },
+ "1C": {
+  "named_methods": 8,
+  "named_methods_all_files": 8,
+  "named_files": [
+   "AlundraRepeatAnimationOpcodeTests.cs"
+  ],
+  "named_examples": [
+   "RepeatAnimation_0x1C_FirstCall_MemorisesThePc_ZeroesTheCounter_KeepsTheHoldFlag_AndSuspends",
+   "RepeatAnimation_0x1C_WithTheHoldFlag_RestartsTheAnimationByComplementingTheCurrentId_AndEnds",
+   "RepeatAnimation_0x1C_ACounterOfThree_CountsOnce_AndIsZeroed",
+   "RepeatAnimation_0x1C_TheHoldFlagAndTheCounterTogether_CountOnce"
+  ],
+  "doc_files": [
+   "AlundraRepeatAnimationOpcodeTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraAnimationClockDriveTests.cs"
+  ],
+  "body_methods": 48,
+  "body_files": 16,
+  "files_any": 32
+ },
+ "1D": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraRepeatAnimationOpcodeTests.cs"
+  ],
+  "named_examples": [
+   "RepeatAnimationWithCollision_0x1D_ForceAdjustedAtTheFirstCall_EndsAtOnce",
+   "RepeatAnimationWithCollision_0x1D_WithoutForceAdjusted_BehavesLike0x1C"
+  ],
+  "doc_files": [
+   "AlundraRepeatAnimationOpcodeTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraAnimationClockDriveTests.cs"
+  ],
+  "body_methods": 9,
+  "body_files": 6,
+  "files_any": 11
+ },
+ "1E": {
+  "named_methods": 11,
+  "named_methods_all_files": 13,
+  "named_files": [
+   "AlundraEntityContactReportTests.cs",
+   "AlundraEventProgramRunnerLogicEntityTests.cs",
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraNpcCharacterControllerMoverTests.cs"
+  ],
+  "named_examples": [
+   "TR8_Walk0x1E_ForceAdjustedWithAnEntityInContact_DoesNotDetour_AndDoesNotLatchAnAttempt",
+   "TR8_Walk0x1E_ForceAdjustedOnACellContact_StillDetours",
+   "Walk_0x1E_MeasuresTheDistanceOfTheLogicEntity_ButKeepsItsMemoOnTheOwnersState",
+   "Walk_0x1E_FirstPass_MemorizesPositionAndSuspends"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraVisionArcTests.cs"
+  ],
+  "body_methods": 27,
+  "body_files": 15,
+  "files_any": 19
+ },
+ "1F": {
+  "named_methods": 5,
+  "named_methods_all_files": 6,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraNpcCharacterControllerMoverTests.cs"
+  ],
+  "named_examples": [
+   "WalkWithCollision_0x1F_ForceAdjustedNonzero_EndsEarlyDespiteDistanceNotReached",
+   "WalkWithCollision_0x1F_NeitherDistanceNorForceAdjusted_KeepsSuspending",
+   "RealWalk_0x1F_SailorElevenProgramOffsetTwelveThirtyEight_CompletesAtHandComputedFrame",
+   "Walk0x1F_RealWallCurtailsMovement_EndsEarlyOnForceAdjustedRatherThanDistance"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraNpcCharacterControllerMoverTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 65,
+  "body_files": 22,
+  "files_any": 31
+ },
+ "20": {
+  "named_methods": 0,
+  "named_methods_all_files": 2,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraHeightWaitOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 25,
+  "body_files": 17,
+  "files_any": 30
+ },
+ "21": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraZWaitOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 11,
+  "body_files": 6,
+  "files_any": 10
+ },
+ "22": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraHeightWaitOpcodesTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraHeightWaitOpcodesTests.cs"
+  ],
+  "body_methods": 6,
+  "body_files": 4,
+  "files_any": 6
+ },
+ "23": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 3,
+  "files_any": 7
+ },
+ "24": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraEventProgramRunnerWaitForceAdjustedTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 19,
+  "body_files": 8,
+  "files_any": 13
+ },
+ "25": {
+  "named_methods": 0,
+  "named_methods_all_files": 1,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraEventProgramRunnerWaitCollidedZTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 11,
+  "body_files": 9,
+  "files_any": 11
+ },
+ "26": {
+  "named_methods": 0,
+  "named_methods_all_files": 1,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraZWaitOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 6,
+  "body_files": 4,
+  "files_any": 7
+ },
+ "27": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "FacePlayer_0x27_HandComputedCardinalCase_PlayerDueEast",
+   "FacePlayer_0x27_HandComputedDiagonalCase_PlayerUpAndRight",
+   "FacePlayer_0x27_NoPlayerSpawned_LeavesDirectionUnchanged"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 8,
+  "body_files": 5,
+  "files_any": 9
+ },
+ "28": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraClassAndBranchOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "SetClassB_0x28_SetsTheBit_AndTheControllerMaskFollows"
+  ],
+  "doc_files": [
+   "AlundraClassAndBranchOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 9,
+  "body_files": 6,
+  "files_any": 13
+ },
+ "29": {
+  "named_methods": 1,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraClassAndBranchOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "ClearClassB_0x29_ClearsTheBit_AndTheControllerMaskFollows"
+  ],
+  "doc_files": [
+   "AlundraClassAndBranchOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 16,
+  "body_files": 10,
+  "files_any": 15
+ },
+ "2A": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraClassAndBranchOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "SetClassA_0x2A_SetsTheBit_AndTheControllerMaskFollows"
+  ],
+  "doc_files": [
+   "AlundraClassAndBranchOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 12,
+  "body_files": 8,
+  "files_any": 14
+ },
+ "2B": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraClassAndBranchOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "ClearClassA_0x2B_ClearsTheBit_AndTheControllerMaskFollows"
+  ],
+  "doc_files": [
+   "AlundraClassAndBranchOpcodesTests.cs",
+   "AlundraFireSwitchRegressionTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraFireSwitchRegressionTests.cs"
+  ],
+  "body_methods": 11,
+  "body_files": 8,
+  "files_any": 14
+ },
+ "2C": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "CheckNoEntityByFunctionId_0x2C_NoMatches_SetsResult1",
+   "CheckNoEntityByFunctionId_0x2C_OneMatch_SetsResult0",
+   "CheckNoEntityByFunctionId_0x2C_RealOccurrence_AncientShrineGolem34"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 40,
+  "body_files": 11,
+  "files_any": 22
+ },
+ "2D": {
+  "named_methods": 2,
+  "named_methods_all_files": 11,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraRecordBirthClockTests.cs"
+  ],
+  "named_examples": [
+   "ActivateEntity_0x2D_DelegatesToContext_WithSelfAsLogicEntity",
+   "A1_R_TheBoxOfTheCreation_OfAnEntityBornBy0x2D_IsTheOneOfTheBinary_BeforeTheIntegration"
+  ],
+  "doc_files": [
+   "AlundraBirthTickTests.cs",
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraRecordBirthClockTests.cs",
+   "AlundraRecordBirthTickTests.cs",
+   "AlundraTickStructureTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraShipBlockArcTests.cs",
+   "AlundraVisionAndCoastArcTests.cs"
+  ],
+  "body_methods": 43,
+  "body_files": 20,
+  "files_any": 33
+ },
+ "2E": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "DestroyEntity_0x2E_DestroysEveryMatch_AndSetsResult1",
+   "DestroyEntity_0x2E_NoMatches_SetsResult0",
+   "DestroyEntity_0x2E_NoWorldContext_DoesNotThrow_StillMatchesOwner"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraDay3SceneArcTests.cs"
+  ],
+  "body_methods": 12,
+  "body_files": 7,
+  "files_any": 11
+ },
+ "2F": {
+  "named_methods": 4,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "CheckPadButtons_0x2F_ButtonHeld_ResultOne",
+   "CheckPadButtons_0x2F_ButtonNotHeld_ResultZero",
+   "CheckPadButtons_0x2F_Mode1_ReadsButtonsJustPressed_NotButtonsHold",
+   "CheckPadButtons_0x2F_MaskComposedFromTwoOperandBytes"
+  ],
+  "doc_files": [
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraShipCorridorArcTests.cs"
+  ],
+  "body_methods": 9,
+  "body_files": 3,
+  "files_any": 5
+ },
+ "30": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraDialogueOpcodesProductionTests.cs",
+   "AlundraMissingAnimationWaitCorpusTests.cs",
+   "AlundraYarnVariableStorageTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 8,
+  "body_files": 7,
+  "files_any": 14
+ },
+ "31": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraMissingAnimationWaitCorpusTests.cs",
+   "AlundraSaveGameApplyTests.cs",
+   "AlundraYarnVariableStorageTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 12,
+  "body_files": 7,
+  "files_any": 14
+ },
+ "32": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "ToggleFlag_0x32_TogglesClearBitOnThenOff_PersistentBank",
+   "ToggleFlag_0x32_TogglesClearBitOnThenOff_TemporaryBank",
+   "ToggleFlag_0x32_RealOccurrence_AncientShrine26"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 8,
+  "body_files": 4,
+  "files_any": 7
+ },
+ "33": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "CheckFlagsOn_0x33_AllFourSet_SetsResult1",
+   "CheckFlagsOn_0x33_OnePairClear_SetsResult0_ShortCircuits"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 17,
+  "body_files": 9,
+  "files_any": 13
+ },
+ "34": {
+  "named_methods": 5,
+  "named_methods_all_files": 5,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "CheckFlagsOff_0x34_NoBitsSet_SetsResult1",
+   "CheckFlagsOff_0x34_OnlyFirstBitSet_SetsResult0",
+   "CheckFlagsOff_0x34_OnlyFourthBitSet_SetsResult0",
+   "CheckFlagsOff_0x34_AllFourBitsSet_SetsResult0"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 14,
+  "body_files": 7,
+  "files_any": 12
+ },
+ "35": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "WaitUntilFlagOff_0x35_FlagSet_SuspendsAtSameCodeIndex",
+   "WaitUntilFlagOff_0x35_FlagClear_AdvancesByThree",
+   "WaitUntilFlagOff_0x35_RealOccurrence_AncientShrine28"
+  ],
+  "doc_files": [
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 6,
+  "body_files": 4,
+  "files_any": 5
+ },
+ "36": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraScriptedPortalOpcodeTests.cs"
+  ],
+  "named_examples": [
+   "BeginDeparture_ByDefault_KeepsTheLoadingAnimation_0x36"
+  ],
+  "doc_files": [
+   "AlundraDialogueOpcodesProductionTests.cs",
+   "AlundraEventProgramRunnerTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 23,
+  "body_files": 14,
+  "files_any": 24
+ },
+ "37": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraBgmFadeDirectorTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraEventProgramRunnerProgramIndexTests.cs"
+  ],
+  "body_methods": 20,
+  "body_files": 12,
+  "files_any": 15
+ },
+ "38": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SetSaveMapIdToInternalMapIndex_0x38_RealMap389Operands_WritesTable",
+   "SetSaveMapIdToInternalMapIndex_0x38_OutOfRangeIndex_SkipsWithoutThrowing"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 9,
+  "body_files": 6,
+  "files_any": 10
+ },
+ "39": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraDialogueOpcodeDispatchTests.cs"
+  ],
+  "named_examples": [
+   "Degraded_NoDirectorAtAll_0x39_AlwaysAdvances"
+  ],
+  "doc_files": [
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 23,
+  "body_files": 8,
+  "files_any": 11
+ },
+ "3A": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SetCardinalDirection_0x3A_TakesTheTableEntryOfV1AndThree"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "body_methods": 6,
+  "body_files": 3,
+  "files_any": 8
+ },
+ "3B": {
+  "named_methods": 5,
+  "named_methods_all_files": 6,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "CheckPlayerInArea_0x3B_PlayerInsideBox_ResultOne_AdvancesBySeven",
+   "CheckPlayerInArea_0x3B_ReadsThePlayerEntity_NotTheExecutingEntity",
+   "CheckPlayerInArea_0x3B_NoPlayerSpawned_ResultZero_DegradedKind_StillAdvances",
+   "CheckPlayerInArea_0x3B_RealHatchDoorProgram_PlayerInZone_TakesInZoneBranch_Not0x3BAlone"
+  ],
+  "doc_files": [
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraShipCorridorArcTests.cs"
+  ],
+  "body_methods": 21,
+  "body_files": 7,
+  "files_any": 14
+ },
+ "3C": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 7,
+  "body_files": 5,
+  "files_any": 8
+ },
+ "3D": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraBgmFadeDirectorTests.cs"
+  ],
+  "named_examples": [
+   "Advance_FullyPastState0x3d_TheSwapTick_StopsTheCurrentBgm_NeverRestartsIt"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 2,
+  "files_any": 3
+ },
+ "3E": {
+  "named_methods": 4,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "IsPlayerRidingEntity_0x3E_PlayerRidingThisEntity_SetsResult1",
+   "IsPlayerRidingEntity_0x3E_PlayerRidingAnotherEntity_SetsResult0",
+   "IsPlayerRidingEntity_0x3E_NoPlayerSpawned_ResultZero_DegradedKind",
+   "IsPlayerRidingEntity_0x3E_RealOccurrence_AncientShrine26"
+  ],
+  "doc_files": [
+   "AlundraHeroObjectTopsTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 16,
+  "body_files": 9,
+  "files_any": 13
+ },
+ "3F": {
+  "named_methods": 6,
+  "named_methods_all_files": 6,
+  "named_files": [
+   "AlundraClassAndBranchOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "IsAnyEntityRidingMe_0x3F_ANormalRider_GivesOne",
+   "IsAnyEntityRidingMe_0x3F_ADeactivatedRider_GivesOne",
+   "IsAnyEntityRidingMe_0x3F_ALoadedRider_GivesZero_TheBinaryNotTheDecompilation",
+   "IsAnyEntityRidingMe_0x3F_TheHeroCarried_GivesOne"
+  ],
+  "doc_files": [
+   "AlundraClassAndBranchOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 15,
+  "body_files": 7,
+  "files_any": 12
+ },
+ "40": {
+  "named_methods": 0,
+  "named_methods_all_files": 8,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraEventProgramRunnerProgramIndexTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraEventProgramRunnerProgramIndexTests.cs"
+  ],
+  "body_methods": 77,
+  "body_files": 37,
+  "files_any": 55
+ },
+ "41": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 25,
+  "body_files": 16,
+  "files_any": 22
+ },
+ "42": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs"
+  ],
+  "named_examples": [
+   "SetLogicEntityToPlayer_0x42_SetsTheHero_NotTheOwner_AndAdvancesBy1",
+   "NoObstacleSlide_0x46And0x45_AfterA0x42_WriteTheFlagsOfTheHero_NotTheOwners_ResultUntouched",
+   "SetLogicEntityToPlayer_0x42_WithoutAHero_LeavesTheContext_IsDegraded_AndAdvancesBy1"
+  ],
+  "doc_files": [
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 10,
+  "body_files": 7,
+  "files_any": 11
+ },
+ "43": {
+  "named_methods": 5,
+  "named_methods_all_files": 6,
+  "named_files": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs",
+   "AlundraMissingAnimationWaitCorpusTests.cs"
+  ],
+  "named_examples": [
+   "SetLogicEntityByMatch_0x43_Found_TakesTheLastMatch_SetsResult1_AndAdvancesBy2",
+   "SetLogicEntityByMatch_0x43_NotFound_SetsResult0_KeepsTheContext_AndAdvancesBy2",
+   "SetLogicEntityByMatch_0x43_GetOwner_0x80_LeavesTheContextAlone_ButSetsResult1",
+   "SetLogicEntityByMatch_0x43_GetPlayer_0x81_MakesTheHeroTheLogicEntity_AndTheNextSetAnimActsOnTheHero"
+  ],
+  "doc_files": [
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 24,
+  "body_files": 13,
+  "files_any": 20
+ },
+ "44": {
+  "named_methods": 4,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraDialogueOpcodeDispatchTests.cs"
+  ],
+  "named_examples": [
+   "Degraded_NoDirectorAtAll_0x44_WritesResultOne_KindDegraded",
+   "Degraded_ADirectorWithoutAPresenter_0x44_WritesResultOne_AndOpensNoChoice",
+   "Choice_0x44_FirstEntry_OpensRealOuiNonLabels_ThenBlocksUntilSelected_ThenWritesResult",
+   "Choice_0x44_FirstOptionSelected_ResultOne"
+  ],
+  "doc_files": [
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 15,
+  "body_files": 10,
+  "files_any": 14
+ },
+ "45": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs"
+  ],
+  "named_examples": [
+   "NoObstacleSlide_0x46And0x45_AfterA0x42_WriteTheFlagsOfTheHero_NotTheOwners_ResultUntouched"
+  ],
+  "doc_files": [
+   "AlundraHeroSlideTests.cs",
+   "AlundraStoryChainOpcodeAudit.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 8,
+  "body_files": 7,
+  "files_any": 12
+ },
+ "46": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Give_0x82_Id0x45And0x46_AddOneAndFiveGold"
+  ],
+  "doc_files": [
+   "AlundraHeroSlideTests.cs",
+   "AlundraStoryChainOpcodeAudit.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 5,
+  "body_files": 4,
+  "files_any": 9
+ },
+ "47": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Give_0x82_Id0x47_AddsTenGold_ClampedTo9999"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 5,
+  "body_files": 4,
+  "files_any": 7
+ },
+ "48": {
+  "named_methods": 1,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Give_0x82_Id0x48_AddsThirtyGold"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 7,
+  "body_files": 6,
+  "files_any": 13
+ },
+ "49": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "Restart_0x49_JumpsBackToProgramStartAndResumesExecution"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 4,
+  "files_any": 9
+ },
+ "4A": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraClassAndBranchOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "IfTrueRestart_0x4A_ResultNonZero_JumpsBackToTheProgramStart",
+   "IfTrueRestart_0x4A_ResultZero_Advances"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 5,
+  "body_files": 4,
+  "files_any": 7
+ },
+ "4B": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "IfFalseRestart_0x4B_ResultZero_JumpsBackToProgramStart",
+   "IfFalseRestart_0x4B_ResultNonZero_AdvancesPastInstructionInstead"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 3,
+  "files_any": 8
+ },
+ "4C": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraStoryChainSkippedOpcodesTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraShipBlockArcTests.cs"
+  ],
+  "body_methods": 9,
+  "body_files": 8,
+  "files_any": 15
+ },
+ "4D": {
+  "named_methods": 0,
+  "named_methods_all_files": 2,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 7,
+  "body_files": 5,
+  "files_any": 8
+ },
+ "4E": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 3,
+  "body_files": 2,
+  "files_any": 2
+ },
+ "4F": {
+  "named_methods": 4,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraDialogueOpcodeDispatchTests.cs",
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Opcodes0x4CTo0x4F_AreExecutedBySize_NoneGivesTheHandBack_AndTheyReachTheBox",
+   "Degraded_0x4CTo0x4F_NoDirector_AdvanceBySizeWithoutThrowing",
+   "Give_0x82_Id0x4F_RaisesFalconTemp_AndSetsG1450",
+   "Give_0x82_Id0x4F_AtTheCap_StaysAt50_AndStillAnswersOne"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 2,
+  "files_any": 3
+ },
+ "50": {
+  "named_methods": 0,
+  "named_methods_all_files": 1,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 10,
+  "body_files": 4,
+  "files_any": 12
+ },
+ "51": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraDialogueOpcodeDispatchTests.cs"
+  ],
+  "named_examples": [
+   "Degraded_0x50And0x51_NoOpButNeverThrow"
+  ],
+  "doc_files": [
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 8,
+  "body_files": 6,
+  "files_any": 11
+ },
+ "52": {
+  "named_methods": 4,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraScriptedPortalOpcodeTests.cs"
+  ],
+  "named_examples": [
+   "UsePortalUnderHero_0x52_StartsTheDeparture_WithTheHerosCurrentAnimationAndDirection",
+   "UsePortalUnderHero_0x52_NoPortalUnderTheHero_GivesZero_AndNoDeparture",
+   "UsePortalUnderHero_0x52_WarpDisabled_StillGivesOne_ButNoDepartureStarts",
+   "UsePortalUnderHero_0x52_WithoutAHost_GivesZero_Degraded"
+  ],
+  "doc_files": [
+   "AlundraScriptedPortalOpcodeTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 5
+ },
+ "53": {
+  "named_methods": 5,
+  "named_methods_all_files": 6,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "ChangeMap_0x53_KeepsPlayerCurrentAnimationAndDirection_NotThePortalPathConstant",
+   "ChangeMap_0x53_DecodesMapIdTileEffectAndSfx_ExactValues",
+   "ChangeMap_0x53_NoPlayerEntity_DegradedNoOp_SkipsBySize",
+   "ChangeMap_0x53_WithIsWarpDisabled_DoesNothing"
+  ],
+  "doc_files": [
+   "AlundraAnimationImpulseSpawnTests.cs",
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraNativeEffectTests.cs",
+   "AlundraWarpDepartureTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraShipCorridorArcTests.cs",
+   "AlundraVisionAndCoastArcTests.cs"
+  ],
+  "body_methods": 31,
+  "body_files": 17,
+  "files_any": 18
+ },
+ "54": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SetWalkable_0x54_Implemented_OrsBitsIntoClampedCell_ResultUntouched",
+   "SetCellBits_0x54_ClampsCoordinatesToHardcodedBounds",
+   "Opcode54_NullCellMutator_DegradedNoOp_SkipsBySize"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 6,
+  "body_files": 4,
+  "files_any": 11
+ },
+ "55": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SetUnwalkable_0x55_Implemented_AndsComplementIntoClampedCell_ResultUntouched",
+   "Opcode55_NullCellMutator_DegradedNoOp_SkipsBySize"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 12,
+  "body_files": 9,
+  "files_any": 13
+ },
+ "56": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 1
+ },
+ "57": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraClassAndBranchOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "GotoByHeroDirection_0x57_ReadsTheHerosDirection_NotTheEntitys"
+  ],
+  "doc_files": [
+   "AlundraMissingAnimationWaitCorpusTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 4
+ },
+ "58": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraClassAndBranchOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "DirectionalBranch_0x58_JumpsToTheTargetOfTheEntitysDirection",
+   "DirectionalBranch_0x58_ANegativeOffsetJumpsBackwards",
+   "DirectionalBranch_0x58_WithAHeroFacingElsewhere_ReadsTheLogicEntitysDirection"
+  ],
+  "doc_files": [
+   "AlundraMissingAnimationWaitCorpusTests.cs",
+   "AlundraStoryChainSkippedOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 6,
+  "body_files": 5,
+  "files_any": 9
+ },
+ "59": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs"
+  ],
+  "named_examples": [
+   "SetEntityAnim_0x59_OnTheHero_0x81_SetsItsTargetAnimation_AndAdvancesBy3",
+   "SetEntityAnim_0x59_ById_SetsEveryMatch_AndTakesTheLogicEntityAsReference",
+   "SetEntityAnim_0x59_GetOwner_0x80_SetsTheLogicEntity"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 3,
+  "body_files": 1,
+  "files_any": 2
+ },
+ "5A": {
+  "named_methods": 4,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraTurnOrderTests.cs"
+  ],
+  "named_examples": [
+   "TurnEntity_0x5A_RealMap389Params_Mode2Cardinal",
+   "Turn_0x5A_Mode4_TwoEntitiesFound_TheLastFoundTakesTheFirstDraw",
+   "Turn_0x5A_Mode5_TwoEntitiesFound_TheLastFoundTakesTheFirstDraw",
+   "Turn_0x5A_Mode6_HeroFirstThenX_TheHeroIsProcessedLast_XReadsTheHeroOldDirection"
+  ],
+  "doc_files": [
+   "AlundraTurnOrderTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 9,
+  "body_files": 5,
+  "files_any": 5
+ },
+ "5B": {
+  "named_methods": 3,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraTurnOrderTests.cs"
+  ],
+  "named_examples": [
+   "TurnEntityWithAnim_0x5B_RealMap389Params_SetsAnimAndDirection",
+   "StoredChoiceParamFamily_0x78_0x5B_0x1E_0x7D_RealSequence_Cave140",
+   "Turn_0x5B_Mode5_TwoEntitiesFound_BothGetTheAnimation_TheLastFoundTakesTheFirstDraw"
+  ],
+  "doc_files": [
+   "AlundraTurnOrderTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraShipBlockArcTests.cs",
+   "AlundraVisionAndCoastArcTests.cs"
+  ],
+  "body_methods": 9,
+  "body_files": 8,
+  "files_any": 9
+ },
+ "5C": {
+  "named_methods": 0,
+  "named_methods_all_files": 3,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraVisionArcTests.cs"
+  ],
+  "body_methods": 4,
+  "body_files": 4,
+  "files_any": 11
+ },
+ "5D": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraClassAndBranchOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "DeactivateMatching_0x5D_OneMatch_BecomesDeactivated",
+   "DeactivateMatching_0x5D_TwoMatches_BothBecomeDeactivated_AndOthersStay",
+   "DeactivateMatching_0x5D_NoMatch_ChangesNothing"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 2,
+  "files_any": 3
+ },
+ "5E": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SetEntitiesForceZ_0x5E_WritesInt16Shifted8_OnEveryEntityFound",
+   "SetEntitiesForceZ_0x5E_WithNoEntityFound_WritesNothing"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraShipBlockArcTests.cs",
+   "AlundraVisionAndCoastArcTests.cs"
+  ],
+  "body_methods": 3,
+  "body_files": 2,
+  "files_any": 4
+ },
+ "5F": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "UnknownOpcode_0x5F_SkipsEightBytes_AsTheBinary"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 2
+ },
+ "60": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 8,
+  "body_files": 4,
+  "files_any": 5
+ },
+ "61": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 2,
+  "body_files": 2,
+  "files_any": 2
+ },
+ "62": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SetEntitiesFlagsLow16_0x62_OrsFlagIntoEveryMatch",
+   "SetEntitiesFlagsLow16_0x62_ResyncsControllerGravityAndWalkabilityMask",
+   "SetEntitiesFlagsLow16_0x62_NoController_DoesNotThrow"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraNpcCharacterControllerMoverTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 6,
+  "body_files": 4,
+  "files_any": 5
+ },
+ "63": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "ClearEntitiesFlagsLow16_0x63_ClearsOnlyLow16Bits",
+   "ClearEntitiesFlagsLow16_0x63_ResyncsControllerGravityAndWalkabilityMask"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraNpcCharacterControllerMoverTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraShipBlockArcTests.cs",
+   "AlundraVisionAndCoastArcTests.cs"
+  ],
+  "body_methods": 8,
+  "body_files": 6,
+  "files_any": 10
+ },
+ "64": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SetEntitiesPosition_0x64_SetsPosXYZ_FromRealMap389Operands"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraShipBlockArcTests.cs",
+   "AlundraShipCorridorArcTests.cs",
+   "AlundraVisionAndCoastArcTests.cs"
+  ],
+  "body_methods": 16,
+  "body_files": 14,
+  "files_any": 17
+ },
+ "65": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "AddEntitiesPositionOffset_0x65_AddsOffset_ToEveryMatch"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 4,
+  "files_any": 5
+ },
+ "66": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "67": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SpawnEntityAtPosition_0x8A_ThenCameraFollow_0x67_FindsTheNewEntityByItsRecordNumber",
+   "CameraFollowEntity_0x67_RealMap389Param_DesignatesTheMatchingEntity",
+   "CameraFollowEntity_0x67_NoMatch_SetsNull_DoesNotKeepPreviousTarget"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraWorldProxyCameraFollowTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraVisionArcTests.cs"
+  ],
+  "body_methods": 5,
+  "body_files": 3,
+  "files_any": 5
+ },
+ "68": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "CameraStopFollowEntity_0x68_SetsNull"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraWorldProxyCameraFollowTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 4
+ },
+ "69": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "CameraForceLookAt_0x69_NullsFollowedEntity_AndForwardsPackedCoordinates"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraWorldProxyCameraFollowTests.cs",
+   "AlundraWorldProxyUpdateCharacterizationTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 3,
+  "body_files": 3,
+  "files_any": 5
+ },
+ "6A": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 1
+ },
+ "6B": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "6C": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "6D": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "6E": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "IsForceAdjusted_0x6E_ZeroForceAdjusted_SetsResult0",
+   "IsForceAdjusted_0x6E_NonZeroForceAdjusted_SetsResult1",
+   "IsForceAdjusted_0x6E_RealOccurrence_AncientShrine27"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 2,
+  "files_any": 3
+ },
+ "6F": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 2
+ },
+ "70": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "IsAboveGround_0x70_ReadsProxyIsOnGround",
+   "IsAboveGround_0x70_FallingEntity_ResultZero"
+  ],
+  "doc_files": [
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraShipCorridorArcTests.cs"
+  ],
+  "body_methods": 6,
+  "body_files": 3,
+  "files_any": 4
+ },
+ "71": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraHitOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Op71_ResultIsTheHitCounterOfTheLogicEntity_Size1"
+  ],
+  "doc_files": [
+   "AlundraHitOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "72": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 1
+ },
+ "73": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "Timer_0x73_0x74_ALoopRunsItsBodyV1Times_InOneCall",
+   "Timer_0x73_0x74_OnAPersistedState_ResumesAcrossCalls_AndTheCounterSurvivesInitializeEventData"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 1,
+  "files_any": 3
+ },
+ "74": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "Timer_0x73_0x74_ALoopRunsItsBodyV1Times_InOneCall",
+   "Timer_0x74_AtOrBelowZeroAfterTheDecrement_EndsAtOnce",
+   "Timer_0x73_0x74_OnAPersistedState_ResumesAcrossCalls_AndTheCounterSurvivesInitializeEventData"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraMissingAnimationWaitCorpusTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "body_methods": 4,
+  "body_files": 2,
+  "files_any": 6
+ },
+ "75": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "PlaySoundEffect_0x75_Implemented_DerivesIdFromSingleByte_NotTwo"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 2,
+  "body_files": 2,
+  "files_any": 3
+ },
+ "76": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "77": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 3,
+  "body_files": 3,
+  "files_any": 3
+ },
+ "78": {
+  "named_methods": 4,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraBgmFadeDirectorTests.cs",
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "Advance_FromArmed0x78_HandComputedMilestones_124_2_Swap_Restore_Rest",
+   "StoreChoiceParamAndJump_0x78_AlwaysJumps_SetsMarkToCodeIndexPlusThree",
+   "StoredChoiceParamFamily_0x78_0x81_RealSequence_LakeShrineInner337",
+   "StoredChoiceParamFamily_0x78_0x5B_0x1E_0x7D_RealSequence_Cave140"
+  ],
+  "doc_files": [],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "body_methods": 8,
+  "body_files": 5,
+  "files_any": 8
+ },
+ "79": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "StoreChoiceParamAndJumpIfTrue_0x79_ResultNonzero_JumpsAndSetsMark",
+   "StoreChoiceParamAndJumpIfTrue_0x79_ResultZero_AdvancesBySize_MarkUntouched"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 3,
+  "body_files": 2,
+  "files_any": 5
+ },
+ "7A": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 2,
+  "body_files": 2,
+  "files_any": 2
+ },
+ "7B": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "JumpIfFlagSet_0x7B_FlagSet_JumpsAndSetsMark_GameBank",
+   "JumpIfFlagSet_0x7B_FlagClear_AdvancesBySize_MarkUntouched",
+   "StoredChoiceParamFamily_0x7B_0x7E_RealSequence_LizardmansLairBoss411"
+  ],
+  "doc_files": [],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "body_methods": 4,
+  "body_files": 2,
+  "files_any": 6
+ },
+ "7C": {
+  "named_methods": 2,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "JumpIfFlagClear_0x7C_FlagClear_JumpsAndSetsMark_TemporaryBank",
+   "JumpIfFlagClear_0x7C_FlagSet_AdvancesBySize_MarkUntouched"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 3,
+  "body_files": 2,
+  "files_any": 6
+ },
+ "7D": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "JumpRelativeFromStoredParam_0x7D_AlwaysReturnsToMark",
+   "StoredChoiceParamFamily_0x78_0x5B_0x1E_0x7D_RealSequence_Cave140"
+  ],
+  "doc_files": [],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "body_methods": 5,
+  "body_files": 3,
+  "files_any": 8
+ },
+ "7E": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "ConditionalJumpIfTrue_0x7E_ResultNonzero_ReturnsToMark",
+   "ConditionalJumpIfTrue_0x7E_ResultZero_AdvancesByOne",
+   "StoredChoiceParamFamily_0x7B_0x7E_RealSequence_LizardmansLairBoss411"
+  ],
+  "doc_files": [],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "body_methods": 4,
+  "body_files": 2,
+  "files_any": 5
+ },
+ "7F": {
+  "named_methods": 5,
+  "named_methods_all_files": 6,
+  "named_files": [
+   "AlundraDialogueOpcodeDispatchTests.cs",
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraWorldProxyEventPassTests.cs"
+  ],
+  "named_examples": [
+   "OpenDialog_0x0D_MasksTextIdWith0x7F_ToIndexLocalStrings",
+   "InitializeEventData_MasksIndexWith0x7f_AndResolvesATableOffset",
+   "ConditionalJumpIfFalse_0x7F_ResultZero_ReturnsToMark",
+   "ConditionalJumpIfFalse_0x7F_ResultNonzero_AdvancesByOne"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 21,
+  "body_files": 14,
+  "files_any": 25
+ },
+ "80": {
+  "named_methods": 10,
+  "named_methods_all_files": 14,
+  "named_files": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs",
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraHitOpcodesTests.cs",
+   "AlundraRandomDirectionModesTests.cs",
+   "AlundraWeaponLockOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "SetLogicEntityByMatch_0x43_GetOwner_0x80_LeavesTheContextAlone_ButSetsResult1",
+   "SetEntityAnim_0x59_GetOwner_0x80_SetsTheLogicEntity",
+   "JumpFromParamIfFlagSet_0x80_FlagSet_ReturnsToMark_TemporaryBank",
+   "JumpFromParamIfFlagSet_0x80_FlagClear_AdvancesBySize"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 127,
+  "body_files": 44,
+  "files_any": 61
+ },
+ "81": {
+  "named_methods": 6,
+  "named_methods_all_files": 6,
+  "named_files": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs",
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraHitOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "SetLogicEntityByMatch_0x43_GetPlayer_0x81_MakesTheHeroTheLogicEntity_AndTheNextSetAnimActsOnTheHero",
+   "SetEntityAnim_0x59_OnTheHero_0x81_SetsItsTargetAnimation_AndAdvancesBy3",
+   "JumpFromParamIfFlagClear_0x81_FlagClear_ReturnsToMark_GameBank",
+   "JumpFromParamIfFlagClear_0x81_FlagSet_AdvancesBySize"
+  ],
+  "doc_files": [],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "body_methods": 54,
+  "body_files": 22,
+  "files_any": 29
+ },
+ "82": {
+  "named_methods": 14,
+  "named_methods_all_files": 14,
+  "named_files": [
+   "AlundraHitOpcodesTests.cs",
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Op86_TheSpecialSearches_Self0x80_Hero0x81_Everyone0x82",
+   "Give_0x82_Item36AtCount0_GivesOne",
+   "Give_0x82_Item36AtCount8_GivesTheLastOne_ThenRefuses",
+   "Give_0x82_Item41AtItsMaximum_Refuses_BecauseTheBinaryReturnsTheCountNotTheId"
+  ],
+  "doc_files": [
+   "AlundraArcSupport.cs",
+   "AlundraItemAndMoneyOpcodesTests.cs",
+   "AlundraNativeEffectTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs",
+   "AlundraNativeEffectTests.cs"
+  ],
+  "body_methods": 39,
+  "body_files": 12,
+  "files_any": 18
+ },
+ "83": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "HasCount_0x83_IsCountAtLeastV2",
+   "HasCount_0x83_IdOutOfTheTable_AnswersZero"
+  ],
+  "doc_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 10,
+  "body_files": 7,
+  "files_any": 11
+ },
+ "84": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Use_0x84_Item88AtCount1_ConsumesIt_AnswersOne",
+   "Use_0x84_Item88AtCount0_AnswersZero_AndWritesNothing",
+   "Use_0x84_AnInvalidId_AnswersOne_AsTheBinaryDoes_AndWritesNothing"
+  ],
+  "doc_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs",
+   "AlundraStoryChainOpcodeAudit.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 7,
+  "body_files": 4,
+  "files_any": 8
+ },
+ "85": {
+  "named_methods": 4,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "ChangeAreaTileProperties_0x85_Implemented_CopiesSixFieldsAndWallStack_ResultUntouched",
+   "ChangeAreaTileProperties_0x85_ShorterSourceStack_HidesTheDestinationsStaleTail",
+   "ChangeAreaTileProperties_0x85_SourceWithNoStack_DestroysDestinationStack",
+   "Opcode85_NullCellMutator_DegradedNoOp_SkipsBySize"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 14,
+  "body_files": 9,
+  "files_any": 12
+ },
+ "86": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraHitOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Op86_SetsTheCounterOfEveryMatch_NotAnAdd_AndLeavesResultAlone",
+   "Op86_TheSpecialSearches_Self0x80_Hero0x81_Everyone0x82",
+   "Op86_ADamagedTarget_IsSkippedByTheHitPass_UntilTheCountersPassRunsItDown"
+  ],
+  "doc_files": [
+   "AlundraHitOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 2,
+  "files_any": 3
+ },
+ "87": {
+  "named_methods": 6,
+  "named_methods_all_files": 6,
+  "named_files": [
+   "AlundraHitOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Op87_TouchedByTheHerosSword_OnlyTheSwordTypeIndex0Matches",
+   "Op87_SearchSelf0x80_ReadsTheLeverCase",
+   "Op87_ASharedRecordId_AnyMatchQualifies_AndNoEntityGivesZero",
+   "Op87_TheAttackerWithoutABoxOrAnAttackOrAnAttribute_AndTheTargetNotTouched_GiveZero"
+  ],
+  "doc_files": [
+   "AlundraFireSwitchRegressionTests.cs",
+   "AlundraHitOpcodesTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraFireSwitchRegressionTests.cs"
+  ],
+  "body_methods": 3,
+  "body_files": 2,
+  "files_any": 6
+ },
+ "88": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 7,
+  "body_files": 6,
+  "files_any": 10
+ },
+ "89": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SetEntitiesPositionFromReference_0x89_TheReferenceIsTheFirstEntityFound_AndZGetsNoPlusOne",
+   "SetEntitiesPositionFromReference_0x89_WithoutAReference_TheTargetsDoNotMove_AndItStillReturns9",
+   "SetEntitiesPositionFromReference_0x89_AnEntityThatIsItsOwnReferenceAndTarget_MovesOnlyOnce"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraVisionAndCoastArcTests.cs"
+  ],
+  "body_methods": 5,
+  "body_files": 3,
+  "files_any": 5
+ },
+ "8A": {
+  "named_methods": 6,
+  "named_methods_all_files": 8,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SpawnEntityAtPosition_0x8A_WritesTheAbsolutePosition_InTheDllConvention_WithTheLogicEntityAsParent",
+   "SpawnEntityAtPosition_0x8A_TheHighBytesOfYAndZAreRead_NotOnlyOnX",
+   "SpawnEntityAtPosition_0x8A_ZeroPosition_WritesZeroOnZ",
+   "SpawnEntityAtPosition_0x8A_AFailedSpawn_DoesNotThrow_AdvancesByEight_WritesNoPosition_AndWarnsOncePerRecord"
+  ],
+  "doc_files": [
+   "AlundraBirthTickTests.cs",
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraRecordBirthTickTests.cs",
+   "AlundraTickStructureTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraVisionArcTests.cs"
+  ],
+  "body_methods": 13,
+  "body_files": 7,
+  "files_any": 13
+ },
+ "8B": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SpawnEntityNextToEntity_0x8B_MatchFound_AppliesOffsetToMatchPosition",
+   "SpawnEntityNextToEntity_0x8B_NoMatch_LeavesSpawnedAtItsOwnRecordPosition"
+  ],
+  "doc_files": [
+   "AlundraBirthTickTests.cs",
+   "AlundraRecordBirthTickTests.cs",
+   "AlundraTickStructureTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 7,
+  "body_files": 6,
+  "files_any": 13
+ },
+ "8C": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraRandomBranchOpcodeTests.cs"
+  ],
+  "named_examples": [
+   "IfRandomAtLeast_0x8C_TheFirstDrawIs53_SoThreshold128GivesZero_AndTheSeedAdvancesOnce",
+   "IfRandomAtLeast_0x8C_TheComparisonIsGreaterOrEqual",
+   "IfRandomAtLeast_0x8C_TwoCallsDrawTwiceFromTheSameStream"
+  ],
+  "doc_files": [
+   "AlundraRandomBranchOpcodeTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 6,
+  "body_files": 5,
+  "files_any": 8
+ },
+ "8D": {
+  "named_methods": 8,
+  "named_methods_all_files": 8,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "CheckAnyMatchOnGround_0x8D_PlayerAtTerrainHeightPlusOne_SetsResult1",
+   "CheckAnyMatchOnGround_0x8D_PlayerAtTerrainHeight_SetsResult1",
+   "CheckAnyMatchOnGround_0x8D_PlayerInAir_SetsResult0",
+   "CheckAnyMatchOnGround_0x8D_NpcWithController_UsesItsOwnTerrainHeight_SetsResult1"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 14,
+  "body_files": 2,
+  "files_any": 3
+ },
+ "8E": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraCameraSwayTests.cs"
+  ],
+  "named_examples": [
+   "Opcode_0x8E_SetsTheFourValuesAndFlag_Size5",
+   "Opcode_0x8E_ReadsOperandsAsUnsignedBytes"
+  ],
+  "doc_files": [
+   "AlundraCameraSwayTests.cs",
+   "AlundraStoryChainOpcodeAudit.cs"
+  ],
+  "cmp_files": [
+   "AlundraDay3SceneArcTests.cs",
+   "AlundraShipBlockArcTests.cs",
+   "AlundraShipCorridorArcTests.cs"
+  ],
+  "body_methods": 8,
+  "body_files": 5,
+  "files_any": 8
+ },
+ "8F": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraCameraSwayTests.cs"
+  ],
+  "named_examples": [
+   "Opcode_0x8F_ClearsTheFlag_Size1"
+  ],
+  "doc_files": [
+   "AlundraCameraSwayTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraDay3SceneArcTests.cs",
+   "AlundraShipBlockArcTests.cs"
+  ],
+  "body_methods": 4,
+  "body_files": 4,
+  "files_any": 7
+ },
+ "90": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEffectOpcodeTests.cs"
+  ],
+  "named_examples": [
+   "Op0x90_SpawnsTheRecordAtItsPosition_AndARecordOutsideTheTableCreatesNothing",
+   "A0x90_AtTheTickThatStartsAWarpDeparture_TheSlotExistsDuringTheDeparture_AndTheQueueIsEmptyAfterEachUpdate"
+  ],
+  "doc_files": [
+   "AlundraEffectOpcodeTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 11,
+  "body_files": 6,
+  "files_any": 8
+ },
+ "91": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEffectOpcodeTests.cs"
+  ],
+  "named_examples": [
+   "Op0x91_FreesBothSlotsOfARecordAtOnce_NotDrawn_AndARecordOutsideTheTableIsANoOp"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 3,
+  "body_files": 1,
+  "files_any": 2
+ },
+ "92": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEffectOpcodeTests.cs"
+  ],
+  "named_examples": [
+   "Map10_TheRollingRock_0x90Then0x92_IsDrawnAtTicks0To154_AndFreedAtTick155_TheEntrySlotStays",
+   "Op0x92_WithAnAnimationOutsideTheTable_WarnsOnce_AndIgnoresTheOperation"
+  ],
+  "doc_files": [],
+  "cmp_files": [
+   "AlundraVisionArcTests.cs"
+  ],
+  "body_methods": 9,
+  "body_files": 4,
+  "files_any": 6
+ },
+ "93": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEffectOpcodeTests.cs"
+  ],
+  "named_examples": [
+   "ASlotInItsDestroyTick_StillObeys0x93_AndIs0x91Freed"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 3,
+  "files_any": 4
+ },
+ "94": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEffectOpcodeTests.cs"
+  ],
+  "named_examples": [
+   "Map391_TheFourFirst0x94_GiveTheOracleOfTheBinary_OnTheLoadSlots"
+  ],
+  "doc_files": [
+   "AlundraEffectOpcodeTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 3
+ },
+ "95": {
+  "named_methods": 4,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraHitOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Op95_TheRectangleAroundTheHerosSwing_AndTheFilters",
+   "Op95_TheRectangleAroundTheArmedBeannoid_MaskAndTypeSelectWhoCounts",
+   "Op95_TheStatusTheBlockerTheBoxAndTheAttackOfTheAttackerAreFilters",
+   "Op95_InAProgramD_ReadsTheStoredBox_AndTheStateItLeavesIsTheNextProgramsInput"
+  ],
+  "doc_files": [
+   "AlundraHitOpcodesTests.cs",
+   "AlundraStoryChainOpcodeAudit.cs",
+   "AlundraStoryChainSkippedOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 4,
+  "files_any": 6
+ },
+ "96": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 1
+ },
+ "97": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 1
+ },
+ "98": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "AddMoney_0x98_Adds_AndLeavesResultAlone",
+   "AddMoney_0x98_ClampsTo9999_WithoutWrappingTheShort"
+  ],
+  "doc_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 2,
+  "body_files": 1,
+  "files_any": 5
+ },
+ "99": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Spend_0x99_TakesThePrice_OnlyWhenTheMoneyCoversIt"
+  ],
+  "doc_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 4
+ },
+ "9A": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Enough_0x9A_ComparesWithoutWriting"
+  ],
+  "doc_files": [
+   "AlundraItemAndMoneyOpcodesTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 4
+ },
+ "9B": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SetWarpDisabled_0x9B_SetsFlag_AndBlocksASubsequentDeparture"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 3
+ },
+ "9C": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SetWarpDisabled_0x9C_ClearsFlag_UnblocksADeparture"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 2,
+  "body_files": 2,
+  "files_any": 4
+ },
+ "9D": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "9E": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 1
+ },
+ "9F": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraChestOpcodeTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 5
+ },
+ "A0": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraRandomDirectionModesTests.cs"
+  ],
+  "named_examples": [
+   "Mode5_TheLowFiveBitsAreIgnored_0xBFBehavesLike0xA0"
+  ],
+  "doc_files": [
+   "AlundraEffectOpcodeTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 8,
+  "body_files": 7,
+  "files_any": 12
+ },
+ "A1": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEffectOpcodeTests.cs"
+  ],
+  "named_examples": [
+   "OpA1_MovesEverySlotOfTheRecordToTheEntityPlusTheOffsets_NoPlusOne_AndDoesNothingWithoutEntity"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "A2": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEffectOpcodeTests.cs"
+  ],
+  "named_examples": [
+   "A0xA2_AndABoxThatPosts0x40AtTheSameTick_TheSlotExistsFrozenAndReadable_NotAnimated"
+  ],
+  "doc_files": [
+   "AlundraEffectOpcodeTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 13,
+  "body_files": 6,
+  "files_any": 7
+ },
+ "A3": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraEffectOpcodeTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "A4": {
+  "named_methods": 4,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraBackgroundLayerMaskTests.cs"
+  ],
+  "named_examples": [
+   "Opcode_0xA4_PassesTheLowTwoBitsOfTheModeToTheContext_Size3",
+   "Opcode_0xA4_WithAPaletteBank_StillSetsTheMask_ButTracesDegraded",
+   "Opcode_0xA4_WithAContextWithoutBackdrops_TracesDegraded_AndLogsOnce",
+   "Opcode_0xA4_WithAContextThatReportsNotHandled_TracesDegraded"
+  ],
+  "doc_files": [
+   "AlundraBackgroundLayerMaskTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraBackgroundLayerMaskTests.cs"
+  ],
+  "body_methods": 4,
+  "body_files": 1,
+  "files_any": 2
+ },
+ "A5": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "StopAllSound_0xA5_Implemented_CallsBgmFadeDirectorStopAllSound",
+   "StopAllSound_0xA5_NullBgmFadeDirector_DegradedNoOp_SkipsBySize"
+  ],
+  "doc_files": [
+   "AlundraBgmFadeDirectorTests.cs",
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 16,
+  "body_files": 4,
+  "files_any": 5
+ },
+ "A6": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "LoadBgm_0xA6_Implemented_ForwardsOperandVerbatim",
+   "LoadBgm_0xA6_NullBgmFadeDirector_DegradedNoOp_SkipsBySize"
+  ],
+  "doc_files": [
+   "AlundraBgmFadeDirectorTests.cs",
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 9,
+  "body_files": 3,
+  "files_any": 4
+ },
+ "A7": {
+  "named_methods": 7,
+  "named_methods_all_files": 7,
+  "named_files": [
+   "AlundraBgmFadeDirectorTests.cs",
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "PlayMusic_0xA7_StopAllFlagZero_OnATrackAlreadyPlaying_LoadsSilently_ThenA5StartsTheNewTrack",
+   "PlayMusic_0xA7_StopAllFlagSet_StartsTheVoiceRightFromTheOpcode",
+   "PlayMusic_0xA7_ZeroIndex_ThenA5_StaysSilent",
+   "PlayMusic_0xA7_StopAllFlagZero_LoadsOnly_NeverCallsStopAllSound"
+  ],
+  "doc_files": [
+   "AlundraBgmFadeDirectorTests.cs",
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 11,
+  "body_files": 3,
+  "files_any": 4
+ },
+ "A8": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "IsSoundLoading_0xA8_AlwaysWritesResultZero_OverwritingAStalePredicateValue"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 6,
+  "body_files": 4,
+  "files_any": 5
+ },
+ "A9": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "AA": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "AB": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "RemixVoice_0xAB_Implemented_DerivesSfxIdMixLeftMixRight_InOperandOrder",
+   "RemixVoice_0xAB_NullSoundPlayer_DegradedNoOp_SkipsBySize"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 5,
+  "body_files": 2,
+  "files_any": 5
+ },
+ "AC": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SetEntityShadowSize_0xAC_RewritesFirstMatchOnly"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 3
+ },
+ "AD": {
+  "named_methods": 8,
+  "named_methods_all_files": 8,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "CheckEntityInAabb_0xAD_SingleCandidateAtIndexZero_Inside_SetsResult1",
+   "CheckEntityInAabb_0xAD_SeveralCandidates_OnlyLastInside_SetsResult1",
+   "CheckEntityInAabb_0xAD_SeveralCandidates_OnlyFirstInside_SetsResult1",
+   "CheckEntityInAabb_0xAD_NoCandidateInside_SetsResult0_EvenIfResultWasOne"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 9,
+  "body_files": 1,
+  "files_any": 2
+ },
+ "AE": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "AF": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "BeginFadeTransition_0xAF_Implemented_ExtractsAllSixOperandsInDisplayOrder",
+   "BeginFadeTransition_0xAF_NullScreenFadeDirector_DegradedNoOp_SkipsBySize"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraScreenFadeDirectorTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 3,
+  "body_files": 2,
+  "files_any": 3
+ },
+ "B0": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "SetWarpFadeDuration_0xB0_Implemented_ExtractsAllFourOperands"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 10,
+  "body_files": 4,
+  "files_any": 9
+ },
+ "B1": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "CheckFadeAndWarpFlags_0xB1_WritesResultBothWays_OverwritingAStaleValue",
+   "CheckFadeAndWarpFlags_0xB1_NullScreenFadeDirector_WritesResultZero"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 2,
+  "files_any": 3
+ },
+ "B2": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "B3": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "B4": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 3
+ },
+ "B5": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "B6": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "B7": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "B8": {
+  "named_methods": 4,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "CheckCurrentAnimationId_0xB8_Equal_SetsResult1",
+   "CheckCurrentAnimationId_0xB8_Different_SetsResult0",
+   "CheckCurrentAnimationId_0xB8_TargetAnimationIdEqual_CurrentAnimationIdDifferent_SetsResult0",
+   "CheckCurrentAnimationId_0xB8_RealOccurrence_ArenaBlackDragonBoss323"
+  ],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 5,
+  "body_files": 1,
+  "files_any": 2
+ },
+ "B9": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "BA": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "CheckLoadingFromCd_0xBA_AlwaysWritesResultZero_OverwritingAStalePredicateValue"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 2
+ },
+ "BB": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "BC": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraNativeEffectTests.cs"
+  ],
+  "named_examples": [
+   "Opcode0xBC_OnAnEntityAlreadyAbove50_StillGives50",
+   "Opcode0xBC_WithoutAHeroThatCarriesItsLife_RaisesTheStats"
+  ],
+  "doc_files": [
+   "AlundraNativeEffectTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 2
+ },
+ "BD": {
+  "named_methods": 4,
+  "named_methods_all_files": 4,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraSoundOpcodesProductionTests.cs"
+  ],
+  "named_examples": [
+   "PlaySound2_0xBD_Implemented_DerivesIdFromTwoBytes_ResultUntouched",
+   "PlaySound2_0xBD_NullSoundPlayer_DegradedNoOp_SkipsBySize",
+   "PlaySound2Bis_0xBE_Implemented_SameTwoByteDerivationAs0xBD",
+   "Intro_NeutralizedNullSoundPlayer_RequestsNothingAndDegrades0xBD"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 5,
+  "body_files": 4,
+  "files_any": 5
+ },
+ "BE": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "PlaySound2Bis_0xBE_Implemented_SameTwoByteDerivationAs0xBD"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "IntroTraceHarnessTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 2,
+  "body_files": 2,
+  "files_any": 3
+ },
+ "BF": {
+  "named_methods": 3,
+  "named_methods_all_files": 3,
+  "named_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "named_examples": [
+   "RemixVoice_0xBF_Implemented_LowIdByte_DerivesSfxIdMixLeftMixRightFromOneThreeFour",
+   "RemixVoice_0xBF_Implemented_NonZeroIdHighByte_ReachesRemixVoiceAsId_V1_Plus_256",
+   "RemixVoice_0xBF_NullSoundPlayer_DegradedNoOp_SkipsBySize"
+  ],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 5,
+  "body_files": 3,
+  "files_any": 7
+ },
+ "C0": {
+  "named_methods": 3,
+  "named_methods_all_files": 5,
+  "named_files": [
+   "AlundraWeaponLockOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Opcode0xC0_AddsOneToTheOperand_KeepsTheOtherBits_AndReturns2",
+   "Opcode0xC0_AnOperandPastSlot6_IsRejectedBySetPlayerWeaponId_ButTheBitIsStillPosed",
+   "Opcode0xC0_WithoutItemTables_StillPosesTheBit_AndConsumesItsSize"
+  ],
+  "doc_files": [
+   "AlundraWeaponLockOpcodesTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraWeaponLockOpcodesTests.cs"
+  ],
+  "body_methods": 15,
+  "body_files": 7,
+  "files_any": 9
+ },
+ "C1": {
+  "named_methods": 1,
+  "named_methods_all_files": 1,
+  "named_files": [
+   "AlundraWeaponLockOpcodesTests.cs"
+  ],
+  "named_examples": [
+   "Opcode0xC1_OnAClearBit_ChangesNothing"
+  ],
+  "doc_files": [
+   "AlundraWeaponLockOpcodesTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraWeaponLockOpcodesTests.cs"
+  ],
+  "body_methods": 3,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "C2": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "C3": {
+  "named_methods": 2,
+  "named_methods_all_files": 2,
+  "named_files": [
+   "AlundraNativeEffectTests.cs"
+  ],
+  "named_examples": [
+   "Opcode0xC3_FillsTheEntityLife_TheMagic_AndSnapsTheFourCountersOfTheHud",
+   "Opcode0xC3_WithoutAHeroThatCarriesItsLife_FillsTheStats"
+  ],
+  "doc_files": [
+   "AlundraNativeEffectTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 2,
+  "body_files": 2,
+  "files_any": 3
+ },
+ "C4": {
+  "named_methods": 0,
+  "named_methods_all_files": 3,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraDialogueSpeakerOpcodeTests.cs",
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraVisionArcTests.cs"
+  ],
+  "body_methods": 6,
+  "body_files": 6,
+  "files_any": 10
+ },
+ "C5": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "C6": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "C7": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "C8": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "C9": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "CA": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "CB": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "CC": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs"
+  ],
+  "cmp_files": [],
+  "body_methods": 3,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "CD": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 1
+ },
+ "CE": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "CF": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 2,
+  "files_any": 2
+ },
+ "D0": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 3,
+  "body_files": 2,
+  "files_any": 2
+ },
+ "D1": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "D2": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "D3": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "D4": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "D5": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "D6": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "D7": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "D8": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 3,
+  "files_any": 3
+ },
+ "D9": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 1
+ },
+ "DA": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "DB": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "DC": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "DD": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "DE": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "DF": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "E0": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 2,
+  "body_files": 2,
+  "files_any": 2
+ },
+ "E1": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "E2": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "E3": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "E4": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "E5": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "E6": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "E7": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "E8": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 2,
+  "body_files": 2,
+  "files_any": 2
+ },
+ "E9": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "EA": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "EB": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "EC": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 1,
+  "body_files": 1,
+  "files_any": 1
+ },
+ "ED": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "EE": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "EF": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "F0": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 5,
+  "body_files": 5,
+  "files_any": 5
+ },
+ "F1": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "F2": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "F3": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "F4": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "F5": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "F6": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "F7": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "F8": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 1
+ },
+ "F9": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "FA": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 1
+ },
+ "FB": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 0,
+  "body_files": 0,
+  "files_any": 0
+ },
+ "FC": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 2,
+  "files_any": 3
+ },
+ "FD": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 6,
+  "body_files": 4,
+  "files_any": 4
+ },
+ "FE": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [],
+  "cmp_files": [],
+  "body_methods": 4,
+  "body_files": 2,
+  "files_any": 3
+ },
+ "FF": {
+  "named_methods": 0,
+  "named_methods_all_files": 0,
+  "named_files": [],
+  "named_examples": [],
+  "doc_files": [
+   "AlundraEventProgramRunnerTests.cs",
+   "AlundraItemAndMoneyOpcodesTests.cs",
+   "AlundraStoryChainSkippedOpcodesTests.cs",
+   "AlundraWeaponLockOpcodesTests.cs"
+  ],
+  "cmp_files": [
+   "AlundraInoaAwakeningArcTests.cs",
+   "AlundraSailor12EndOfIntroTests.cs"
+  ],
+  "body_methods": 433,
+  "body_files": 50,
+  "files_any": 73
+ },
+ "_interp_files": 105
+}

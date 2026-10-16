@@ -1,0 +1,9 @@
+map	map_name	slot	program	entry	cycle_start_pc	cycle_len	cycle_opcodes
+39	Nirude’s Lair-39	C	1	96	96	9	06 1A 3F 03 BD 05 1A 3F 04
+135	Church-135	F	4	2812	2812	11	27 30 30 30 30 30 30 30 30 30 49
+145	Cave-145	B	1	72	72	6	30 30 30 09 06 02
+304	Ice manor-304	C	19	828	828	6	30 30 30 30 05 49
+304	Ice manor-304	C	20	952	952	6	30 30 30 30 05 49
+343	Lake Shrine (inner)-343	C	39	1988	1988	2	30 31
+440	Meia Dream-440	C	5	1240	1253	3	B8 7F 74
+476	Lars & Melzas Room (beginning Event)-476	B	2	220	288	9	30 30 30 30 30 30 06 BD 02

@@ -860,6 +860,62 @@ fermé. La grille de la 116 : animée après les deux Beannoïde. La 14 : les se
   `AlundraTarnMurggArcTests` R3-2, qui ferme O-E14-2 s'il ne bouge pas. Inchangés par l'interrupteur : les classes de `HitArena` (dont
   `AlundraEnemyGroundTests` et `AlundraEnemyHitReactionTests`).
 
+### 1.4 E14.b — Les autres ennemis : recensement complet et découpage proposé ⏳ (2026-10-17, lecture seule ; à approuver)
+
+**Origine.** Thème de repli donné par l'auteur le 2026-10-16 (« implémenter toutes les IA des ennemis »), pendant la pause du chantier de
+restructuration (`docs/plan-restructuration-dll.md`, Q-R-2). Le §3 de ce plan excluait « les autres ennemis » : cette section les recense
+et propose un découpage ; rien n'est exécuté (aucune tranche de code pendant le chantier, règle du programme de restructuration).
+Preuves : `docs/plan-e14-annexe/e14-roster/` (rapport, `roster.tsv`, `handlers.tsv`, `slices.tsv`, scripts, critique `check.md`).
+
+**Faits (contre-vérifiés par une critique fraîche ; réserves plus bas).**
+- La règle de répartition, ré-établie au binaire : pour l'emplacement `s`, si `entity[+0x4C+4*s] & 0x7F == 0`, le gestionnaire natif
+  `table[s][entity[+0x70+4*s]]` est appelé (`0x800388F8-0x80038944`, déjà CONFIRMED dans `e14a/check.md:75`) ; les codes viennent des
+  octets `+0x13..+0x17` de l'en-tête du sprite (`InitializeEntity`) ; la DLL suit la même règle (`AlundraEventProgramRunner.cs:347-349`).
+- Les tables natives du binaire : 203 entrées non nulles (A 24, C 103, D 45, E 29, F 2), 201 adresses distinctes.
+- **52 types d'ennemis avec enregistrements** (39 ennemis, 13 boss ; 1 566 enregistrements sur 185 cartes), plus 17 types nés à
+  l'exécution par `SpawnWarpEntity` (enfants de boss, projectiles d'ennemis…). **Portés : 2** (Beannoïde 335, Muruta 347). **Non portés :
+  50** (1 233 enregistrements, 171 cartes), dont les 13 boss.
+- Ordre de l'histoire connu (chaîne d'E19, `docs/plan-e19-opcodes.md:382`, `:2564-2566`) : carte 14 (jour 2) Poisson 392 ×2 et Guêpe 455
+  ×3 ; carte 15 (jour 2) Orc (masse) 341 ×3 ; carte 44 (jour 3) les deux slimes géants 459 et 460 (enregistrements activés recomptés par la
+  session principale dans `data-extracted/data/map_{14,15,44}.json`). Au-delà du jour 4 : **ordre inconnu**.
+- La DLL : `AlundraNativeSpriteRegistry.Register` lève une exception sur une clé déjà inscrite (`AlundraNativeSpriteRegistry.cs:53-55`),
+  alors que D6 et D11 servent chacun 8 types et que A1, D1, C1, C10, D9 sont partagés : l'inscription doit devenir cumulative par type.
+  E0, E1 et E10 sont traités en ligne pour tout type (`AlundraEventProgramRunner.cs:378`) ; E6, E7, E8, E27 ont un corps identique à
+  E0/E1 (comparaison d'octets) ; **E11 n'est pas un alias** (`0x8007F25C` appelle `0x8003A648` : destruction récursive des enfants, butin,
+  effet), atteint par 8 boss.
+- Dix gestionnaires D ont la forme de `HitReaction` (déjà dans la DLL : `AlundraEnemyHelpers.HitReaction`) ; D2, D3, D5, D10, D12 sont
+  plus longs.
+- Aides du binaire absentes de la DLL, appelées par les clés manquantes : `0x800808DC` (11 clés), `CanMoveForward` `0x80080260` (10),
+  `SetEntityRandomDirection` `0x80080030` (7), `TryAttackPlayer` `0x80080704` (3), `GetEntityTileHeight` `0x8003AB54` (2),
+  `CreateEffectEntity` `0x8003BDD8` pour d'autres effets que le bris (9).
+- Prérequis hors E14 : le butin (E20.e0c) et la blessure du héros au contact (E20.c2b) pour toute recette qui les compte ; les effets et
+  `CheckAndTriggerTileEffect` (E20.e) ; la création d'enfants par les gestionnaires (C7, C8, créateurs A11, A15, A21, A22, clés de boss).
+
+**Réserves de la critique** (à reprendre en T0 de la première tranche) : le Beannoïde « partiel » (des `0x41 [C,99]`, `[D,44]`, `[C,96]`
+sur les cartes 472 et 473) n'est établi que par le script de l'annexe ; l'origine de l'E11 de Zazan (en-tête ou `0x41 [E,11]`) est dite
+de deux façons ; les comptes bruts sont internes au pipeline (non recalculés indépendamment, sauf les cartes 14, 15 et 44).
+
+**Découpage proposé** (`slices.tsv` ; chaque tranche suit le motif d'E14.a : oracle MIPS par gestionnaire, tests rouges d'abord,
+verifier frais ; les arènes de test qui contiennent ces types changent de base, à recenser en T0) :
+
+| Tranche | Contenu | Enreg. | Cartes | Dépend de |
+|---|---|---|---|---|
+| E14.b0 | Socle : inscription cumulative par type, E6/E7/E8/E27 en ligne, formes `HitReaction`, setters A, E3 et C36, aides manquantes ; aucun comportement visible | — | — | E14.a faite |
+| E14.b1 | Jour 2, cartes 14 et 15 : Poisson, Guêpe, Orc (masse, hache, armure de fer) | 157 | 31 | b0 |
+| E14.b2 | Slimes géants de la 44 (jour 3) | 2 | 1 | b0 |
+| E14.b3 | Slime gélatineux (A1 et D1 rouverts au type 329, C26, projectile 330) | 118 | 18 | b0 |
+| E14.b4 | Mimming et mimique | 102 | 25 | b0 |
+| E14.b5 | Roches, insectes, ver (C7 et C8 créent des entités) | 253 | 40 | b0, projectile 411 |
+| E14.b6 | Momies, fantôme, zombie, loup-garou | 81 | 21 | b0 |
+| E14.b7 | Muruta à l'arc et au boomerang | 69 | 14 | b0, projectiles 351, 357 |
+| E14.b8 | Hommes-lézards (épée, lance, projectiles) | 175 | 12 | b0, projectiles 366, 372 |
+| E14.b9 | Roper, Homme de boue, Homme-ombre, Champignon, Fourneau, Oiseau de feu, Homme de bois, P-Zoldia | 243 | 45 | b0, projectiles 432, 444, 468, 474 |
+| E14.b10 | Slime géant d'Elane (œil, corps) et petit slime | 6 | 4 | b0, C1 du Beannoïde |
+| E14.c1 à c14 | Un boss par tranche, avec son oracle MIPS (Zorgia, Élément, Melzas, Monsieur Aspiration, Zazan-Roi Muruta, Boss lézard, Mille-pattes, Dragon, Après Melzas, Nirude, Ronan divin corrompu, Abyss, Frère Rayon, Wilda) | 1 à 4 | 1 à 4 | b0 ; Zazan après b8 (D2) ; E11 pour 8 boss |
+
+Ordre : l'histoire connue d'abord (b1, b2), puis le rendement en cartes (b3 à b10), puis les boss ; l'auteur peut réordonner b3 à b10 et
+les boss sans casser les dépendances. Questions : Q-E14-b1 à Q-E14-b3 (§2).
+
 ## 2. Points ouverts
 
 | Point | Question | Où |
@@ -873,7 +929,10 @@ fermé. La grille de la 116 : animée après les deux Beannoïde. La 14 : les se
 | O-E14-6 | **Tranché par la session principale (2026-10-10)** : les sorties d'`oracle-a1/out/` (24 Mo de texte, lues par les tests) sont versées en texte | — |
 | O-E14-7 | **Tranché par la session principale (2026-10-10)** : E14.a1a tourne seule (aucun autre exécuteur ni verifier sur l'arbre pendant ses exports) | — |
 | O-E14-3 | Le sprite C10/D18 (cartes 329, 153, 368) et le petit slime (C1/D23) partagent du code avec E14.a : ils restent inertes jusqu'à leurs propres gestionnaires (D-E14-1) | plus tard dans E14 |
+| Q-E14-b1 | (2026-10-17) Le recensement de §1.4 (50 types non portés, 13 boss) devient-il le périmètre d'E14, dans l'ordre proposé (b0, b1 et b2 pour l'histoire connue, puis le rendement, puis les boss) ? Et quand : après la restructuration de la DLL (règle du chantier), ou avant, en suspendant le chantier ? | l'auteur |
+| Q-E14-b2 | (2026-10-17) L'ordre de jeu au-delà du jour 4 est inconnu des plans : l'auteur en a-t-il un (régions dans l'ordre), ou l'ordre par rendement de §1.4 convient-il ? | l'auteur |
+| Q-E14-b3 | (2026-10-17) Une recette d'ennemi suppose souvent que le héros soit blessé (E20.c2b) et que l'ennemi lâche son butin (E20.e0c) : ces deux tranches d'E20 passent-elles avant E14.b1, ou E14.b1 s'accepte-t-elle sans elles (ennemis qui bougent, frappent et meurent, sans dégâts au héros ni butin) ? | l'auteur |
 
 ## 3. Hors périmètre
 
-Le butin (E20.e0) ; la mort du héros (E18) ; le héros blessé (E20.c2b) ; les autres ennemis.
+Le butin (E20.e0) ; la mort du héros (E18) ; le héros blessé (E20.c2b) ; les autres ennemis, recensés et proposés en §1.4 (Q-E14-b1).

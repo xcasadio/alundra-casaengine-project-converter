@@ -1,0 +1,3381 @@
+{
+ "00": {
+  "site_programs": 10235,
+  "unique_sites": 10095,
+  "maps": 397,
+  "slots": {
+   "B": 4747,
+   "C": 5248,
+   "D": 25,
+   "F": 81,
+   "A": 126,
+   "E": 8
+  },
+  "core8_sp": 233,
+  "core8_sites": 233,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   391,
+   392,
+   416,
+   476,
+   478
+  ],
+  "chain30_sp": 752,
+  "chain30_sites": 752,
+  "chain30_maps": 26,
+  "combat7_sp": 307,
+  "combat7_sites": 307
+ },
+ "02": {
+  "site_programs": 4208,
+  "unique_sites": 4170,
+  "maps": 346,
+  "slots": {
+   "B": 1633,
+   "C": 2458,
+   "A": 51,
+   "F": 24,
+   "D": 42
+  },
+  "core8_sp": 42,
+  "core8_sites": 42,
+  "core8_maps": [
+   163,
+   389,
+   391,
+   392,
+   416,
+   476,
+   478
+  ],
+  "chain30_sp": 403,
+  "chain30_sites": 403,
+  "chain30_maps": 27,
+  "combat7_sp": 87,
+  "combat7_sites": 87
+ },
+ "03": {
+  "site_programs": 1977,
+  "unique_sites": 1899,
+  "maps": 254,
+  "slots": {
+   "B": 1003,
+   "C": 905,
+   "D": 29,
+   "A": 36,
+   "F": 4
+  },
+  "core8_sp": 15,
+  "core8_sites": 15,
+  "core8_maps": [
+   163,
+   389,
+   476,
+   478
+  ],
+  "chain30_sp": 51,
+  "chain30_sites": 51,
+  "chain30_maps": 13,
+  "combat7_sp": 51,
+  "combat7_sites": 51
+ },
+ "04": {
+  "site_programs": 3554,
+  "unique_sites": 3516,
+  "maps": 288,
+  "slots": {
+   "B": 2242,
+   "C": 1144,
+   "D": 152,
+   "A": 9,
+   "F": 7
+  },
+  "core8_sp": 45,
+  "core8_sites": 45,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   391,
+   392,
+   478
+  ],
+  "chain30_sp": 199,
+  "chain30_sites": 199,
+  "chain30_maps": 15,
+  "combat7_sp": 95,
+  "combat7_sites": 95
+ },
+ "05": {
+  "site_programs": 4153,
+  "unique_sites": 4110,
+  "maps": 370,
+  "slots": {
+   "B": 1315,
+   "C": 1695,
+   "F": 592,
+   "D": 530,
+   "A": 11,
+   "E": 10
+  },
+  "core8_sp": 40,
+  "core8_sites": 40,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   391,
+   416,
+   476,
+   478
+  ],
+  "chain30_sp": 283,
+  "chain30_sites": 283,
+  "chain30_maps": 27,
+  "combat7_sp": 88,
+  "combat7_sites": 88
+ },
+ "06": {
+  "site_programs": 2713,
+  "unique_sites": 2654,
+  "maps": 323,
+  "slots": {
+   "B": 648,
+   "C": 2022,
+   "D": 16,
+   "F": 2,
+   "A": 25
+  },
+  "core8_sp": 23,
+  "core8_sites": 22,
+  "core8_maps": [
+   163,
+   389,
+   391,
+   476
+  ],
+  "chain30_sp": 191,
+  "chain30_sites": 190,
+  "chain30_maps": 24,
+  "combat7_sp": 58,
+  "combat7_sites": 58
+ },
+ "07": {
+  "site_programs": 461,
+  "unique_sites": 459,
+  "maps": 73,
+  "slots": {
+   "C": 192,
+   "B": 269
+  },
+  "core8_sp": 23,
+  "core8_sites": 23,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   391,
+   478
+  ],
+  "chain30_sp": 35,
+  "chain30_sites": 35,
+  "chain30_maps": 8,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "08": {
+  "site_programs": 203,
+  "unique_sites": 191,
+  "maps": 52,
+  "slots": {
+   "C": 175,
+   "B": 28
+  },
+  "core8_sp": 3,
+  "core8_sites": 3,
+  "core8_maps": [
+   392,
+   478
+  ],
+  "chain30_sp": 9,
+  "chain30_sites": 9,
+  "chain30_maps": 4,
+  "combat7_sp": 8,
+  "combat7_sites": 8
+ },
+ "09": {
+  "site_programs": 2750,
+  "unique_sites": 2730,
+  "maps": 195,
+  "slots": {
+   "B": 905,
+   "C": 1807,
+   "A": 34,
+   "D": 4
+  },
+  "core8_sp": 19,
+  "core8_sites": 19,
+  "core8_maps": [
+   163,
+   389,
+   391
+  ],
+  "chain30_sp": 426,
+  "chain30_sites": 426,
+  "chain30_maps": 18,
+  "combat7_sp": 71,
+  "combat7_sites": 71
+ },
+ "0A": {
+  "site_programs": 151,
+  "unique_sites": 151,
+  "maps": 50,
+  "slots": {
+   "C": 127,
+   "F": 5,
+   "B": 5,
+   "D": 7,
+   "A": 7
+  },
+  "core8_sp": 3,
+  "core8_sites": 3,
+  "core8_maps": [
+   389
+  ],
+  "chain30_sp": 3,
+  "chain30_sites": 3,
+  "chain30_maps": 1,
+  "combat7_sp": 5,
+  "combat7_sites": 5
+ },
+ "0B": {
+  "site_programs": 1199,
+  "unique_sites": 1170,
+  "maps": 95,
+  "slots": {
+   "B": 298,
+   "C": 901
+  },
+  "core8_sp": 29,
+  "core8_sites": 29,
+  "core8_maps": [
+   163,
+   416,
+   478
+  ],
+  "chain30_sp": 240,
+  "chain30_sites": 240,
+  "chain30_maps": 14,
+  "combat7_sp": 17,
+  "combat7_sites": 17
+ },
+ "0C": {
+  "site_programs": 10,
+  "unique_sites": 10,
+  "maps": 5,
+  "slots": {
+   "C": 8,
+   "B": 2
+  },
+  "core8_sp": 1,
+  "core8_sites": 1,
+  "core8_maps": [
+   392
+  ],
+  "chain30_sp": 1,
+  "chain30_sites": 1,
+  "chain30_maps": 1,
+  "combat7_sp": 4,
+  "combat7_sites": 4
+ },
+ "0D": {
+  "site_programs": 2073,
+  "unique_sites": 2055,
+  "maps": 332,
+  "slots": {
+   "B": 569,
+   "C": 1210,
+   "F": 294
+  },
+  "core8_sp": 32,
+  "core8_sites": 32,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   392
+  ],
+  "chain30_sp": 317,
+  "chain30_sites": 317,
+  "chain30_maps": 26,
+  "combat7_sp": 23,
+  "combat7_sites": 23
+ },
+ "10": {
+  "site_programs": 1437,
+  "unique_sites": 1414,
+  "maps": 337,
+  "slots": {
+   "B": 663,
+   "C": 544,
+   "F": 225,
+   "D": 2,
+   "A": 3
+  },
+  "core8_sp": 22,
+  "core8_sites": 22,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   391,
+   392,
+   416,
+   476,
+   478
+  ],
+  "chain30_sp": 181,
+  "chain30_sites": 181,
+  "chain30_maps": 28,
+  "combat7_sp": 29,
+  "combat7_sites": 29
+ },
+ "11": {
+  "site_programs": 1468,
+  "unique_sites": 1460,
+  "maps": 332,
+  "slots": {
+   "B": 622,
+   "C": 843,
+   "A": 3
+  },
+  "core8_sp": 23,
+  "core8_sites": 23,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   392
+  ],
+  "chain30_sp": 181,
+  "chain30_sites": 181,
+  "chain30_maps": 24,
+  "combat7_sp": 29,
+  "combat7_sites": 29
+ },
+ "16": {
+  "site_programs": 203,
+  "unique_sites": 186,
+  "maps": 72,
+  "slots": {
+   "B": 3,
+   "C": 184,
+   "A": 16
+  },
+  "core8_sp": 2,
+  "core8_sites": 2,
+  "core8_maps": [
+   389
+  ],
+  "chain30_sp": 2,
+  "chain30_sites": 2,
+  "chain30_maps": 1,
+  "combat7_sp": 22,
+  "combat7_sites": 9
+ },
+ "17": {
+  "site_programs": 136,
+  "unique_sites": 136,
+  "maps": 70,
+  "slots": {
+   "B": 4,
+   "C": 116,
+   "A": 16
+  },
+  "core8_sp": 7,
+  "core8_sites": 7,
+  "core8_maps": [
+   163,
+   389,
+   391
+  ],
+  "chain30_sp": 18,
+  "chain30_sites": 18,
+  "chain30_maps": 9,
+  "combat7_sp": 3,
+  "combat7_sites": 3
+ },
+ "19": {
+  "site_programs": 421,
+  "unique_sites": 393,
+  "maps": 120,
+  "slots": {
+   "C": 357,
+   "A": 48,
+   "D": 8,
+   "F": 4,
+   "E": 4
+  },
+  "core8_sp": 1,
+  "core8_sites": 1,
+  "core8_maps": [
+   389
+  ],
+  "chain30_sp": 27,
+  "chain30_sites": 27,
+  "chain30_maps": 5,
+  "combat7_sp": 35,
+  "combat7_sites": 9
+ },
+ "1A": {
+  "site_programs": 7130,
+  "unique_sites": 6928,
+  "maps": 338,
+  "slots": {
+   "B": 1190,
+   "C": 5537,
+   "A": 381,
+   "F": 7,
+   "D": 15
+  },
+  "core8_sp": 67,
+  "core8_sites": 67,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   391,
+   416,
+   478
+  ],
+  "chain30_sp": 444,
+  "chain30_sites": 444,
+  "chain30_maps": 20,
+  "combat7_sp": 232,
+  "combat7_sites": 193
+ },
+ "1B": {
+  "site_programs": 916,
+  "unique_sites": 896,
+  "maps": 143,
+  "slots": {
+   "B": 83,
+   "C": 822,
+   "A": 9,
+   "E": 2
+  },
+  "core8_sp": 23,
+  "core8_sites": 23,
+  "core8_maps": [
+   389,
+   391,
+   478
+  ],
+  "chain30_sp": 38,
+  "chain30_sites": 38,
+  "chain30_maps": 9,
+  "combat7_sp": 11,
+  "combat7_sites": 11
+ },
+ "1C": {
+  "site_programs": 1959,
+  "unique_sites": 1922,
+  "maps": 212,
+  "slots": {
+   "C": 1796,
+   "B": 163
+  },
+  "core8_sp": 4,
+  "core8_sites": 4,
+  "core8_maps": [
+   163,
+   478
+  ],
+  "chain30_sp": 83,
+  "chain30_sites": 83,
+  "chain30_maps": 12,
+  "combat7_sp": 72,
+  "combat7_sites": 46
+ },
+ "1D": {
+  "site_programs": 251,
+  "unique_sites": 151,
+  "maps": 19,
+  "slots": {
+   "C": 243,
+   "B": 8
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "1E": {
+  "site_programs": 1049,
+  "unique_sites": 1045,
+  "maps": 123,
+  "slots": {
+   "B": 272,
+   "C": 777
+  },
+  "core8_sp": 12,
+  "core8_sites": 12,
+  "core8_maps": [
+   389,
+   390,
+   476
+  ],
+  "chain30_sp": 12,
+  "chain30_sites": 12,
+  "chain30_maps": 3,
+  "combat7_sp": 56,
+  "combat7_sites": 56
+ },
+ "1F": {
+  "site_programs": 216,
+  "unique_sites": 212,
+  "maps": 61,
+  "slots": {
+   "C": 167,
+   "B": 48,
+   "D": 1
+  },
+  "core8_sp": 22,
+  "core8_sites": 22,
+  "core8_maps": [
+   389,
+   390,
+   391,
+   392
+  ],
+  "chain30_sp": 22,
+  "chain30_sites": 22,
+  "chain30_maps": 4,
+  "combat7_sp": 3,
+  "combat7_sites": 3
+ },
+ "20": {
+  "site_programs": 266,
+  "unique_sites": 266,
+  "maps": 78,
+  "slots": {
+   "B": 18,
+   "C": 248
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "21": {
+  "site_programs": 16,
+  "unique_sites": 16,
+  "maps": 8,
+  "slots": {
+   "C": 16
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "22": {
+  "site_programs": 16,
+  "unique_sites": 16,
+  "maps": 5,
+  "slots": {
+   "C": 15,
+   "B": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 1,
+  "combat7_sites": 1
+ },
+ "23": {
+  "site_programs": 1,
+  "unique_sites": 1,
+  "maps": 1,
+  "slots": {
+   "C": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "24": {
+  "site_programs": 397,
+  "unique_sites": 395,
+  "maps": 76,
+  "slots": {
+   "B": 181,
+   "C": 216
+  },
+  "core8_sp": 1,
+  "core8_sites": 1,
+  "core8_maps": [
+   163
+  ],
+  "chain30_sp": 81,
+  "chain30_sites": 81,
+  "chain30_maps": 10,
+  "combat7_sp": 10,
+  "combat7_sites": 10
+ },
+ "25": {
+  "site_programs": 496,
+  "unique_sites": 467,
+  "maps": 134,
+  "slots": {
+   "B": 72,
+   "C": 423,
+   "D": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 14,
+  "chain30_sites": 14,
+  "chain30_maps": 7,
+  "combat7_sp": 40,
+  "combat7_sites": 27
+ },
+ "26": {
+  "site_programs": 28,
+  "unique_sites": 28,
+  "maps": 13,
+  "slots": {
+   "C": 16,
+   "B": 12
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "27": {
+  "site_programs": 741,
+  "unique_sites": 741,
+  "maps": 197,
+  "slots": {
+   "C": 561,
+   "F": 160,
+   "D": 7,
+   "B": 13
+  },
+  "core8_sp": 15,
+  "core8_sites": 15,
+  "core8_maps": [
+   163,
+   389,
+   390
+  ],
+  "chain30_sp": 132,
+  "chain30_sites": 132,
+  "chain30_maps": 25,
+  "combat7_sp": 4,
+  "combat7_sites": 4
+ },
+ "28": {
+  "site_programs": 15,
+  "unique_sites": 15,
+  "maps": 9,
+  "slots": {
+   "C": 4,
+   "B": 11
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 3,
+  "combat7_sites": 3
+ },
+ "29": {
+  "site_programs": 20,
+  "unique_sites": 20,
+  "maps": 8,
+  "slots": {
+   "B": 20
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "2A": {
+  "site_programs": 671,
+  "unique_sites": 641,
+  "maps": 122,
+  "slots": {
+   "C": 644,
+   "D": 1,
+   "A": 26
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 14,
+  "combat7_sites": 14
+ },
+ "2B": {
+  "site_programs": 842,
+  "unique_sites": 812,
+  "maps": 157,
+  "slots": {
+   "C": 470,
+   "D": 289,
+   "A": 83
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 1,
+  "chain30_sites": 1,
+  "chain30_maps": 1,
+  "combat7_sp": 21,
+  "combat7_sites": 21
+ },
+ "2C": {
+  "site_programs": 758,
+  "unique_sites": 752,
+  "maps": 117,
+  "slots": {
+   "B": 531,
+   "C": 225,
+   "A": 2
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 38,
+  "combat7_sites": 38
+ },
+ "2D": {
+  "site_programs": 1804,
+  "unique_sites": 1774,
+  "maps": 223,
+  "slots": {
+   "B": 1338,
+   "C": 371,
+   "A": 91,
+   "D": 3,
+   "E": 1
+  },
+  "core8_sp": 8,
+  "core8_sites": 8,
+  "core8_maps": [
+   163,
+   389,
+   391,
+   416
+  ],
+  "chain30_sp": 127,
+  "chain30_sites": 127,
+  "chain30_maps": 13,
+  "combat7_sp": 34,
+  "combat7_sites": 34
+ },
+ "2E": {
+  "site_programs": 960,
+  "unique_sites": 946,
+  "maps": 202,
+  "slots": {
+   "B": 383,
+   "C": 418,
+   "A": 143,
+   "F": 8,
+   "D": 8
+  },
+  "core8_sp": 11,
+  "core8_sites": 11,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   391,
+   478
+  ],
+  "chain30_sp": 28,
+  "chain30_sites": 28,
+  "chain30_maps": 9,
+  "combat7_sp": 15,
+  "combat7_sites": 15
+ },
+ "2F": {
+  "site_programs": 352,
+  "unique_sites": 315,
+  "maps": 103,
+  "slots": {
+   "B": 260,
+   "F": 2,
+   "C": 89,
+   "A": 1
+  },
+  "core8_sp": 9,
+  "core8_sites": 9,
+  "core8_maps": [
+   389,
+   392,
+   478
+  ],
+  "chain30_sp": 31,
+  "chain30_sites": 31,
+  "chain30_maps": 8,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "30": {
+  "site_programs": 3020,
+  "unique_sites": 2988,
+  "maps": 284,
+  "slots": {
+   "B": 1096,
+   "C": 1748,
+   "A": 107,
+   "F": 54,
+   "D": 15
+  },
+  "core8_sp": 35,
+  "core8_sites": 35,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   391,
+   476,
+   478
+  ],
+  "chain30_sp": 261,
+  "chain30_sites": 261,
+  "chain30_maps": 23,
+  "combat7_sp": 66,
+  "combat7_sites": 66
+ },
+ "31": {
+  "site_programs": 1617,
+  "unique_sites": 1588,
+  "maps": 257,
+  "slots": {
+   "B": 664,
+   "A": 406,
+   "C": 516,
+   "F": 16,
+   "D": 15
+  },
+  "core8_sp": 13,
+  "core8_sites": 13,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   391
+  ],
+  "chain30_sp": 122,
+  "chain30_sites": 122,
+  "chain30_maps": 11,
+  "combat7_sp": 21,
+  "combat7_sites": 21
+ },
+ "32": {
+  "site_programs": 112,
+  "unique_sites": 112,
+  "maps": 20,
+  "slots": {
+   "C": 88,
+   "D": 22,
+   "B": 2
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "33": {
+  "site_programs": 47,
+  "unique_sites": 47,
+  "maps": 24,
+  "slots": {
+   "B": 37,
+   "C": 9,
+   "A": 1
+  },
+  "core8_sp": 3,
+  "core8_sites": 3,
+  "core8_maps": [
+   389
+  ],
+  "chain30_sp": 4,
+  "chain30_sites": 4,
+  "chain30_maps": 2,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "34": {
+  "site_programs": 8,
+  "unique_sites": 8,
+  "maps": 3,
+  "slots": {
+   "B": 5,
+   "C": 3
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "35": {
+  "site_programs": 704,
+  "unique_sites": 700,
+  "maps": 110,
+  "slots": {
+   "B": 372,
+   "C": 329,
+   "F": 1,
+   "A": 2
+  },
+  "core8_sp": 3,
+  "core8_sites": 3,
+  "core8_maps": [
+   476
+  ],
+  "chain30_sp": 49,
+  "chain30_sites": 49,
+  "chain30_maps": 9,
+  "combat7_sp": 10,
+  "combat7_sites": 10
+ },
+ "36": {
+  "site_programs": 2664,
+  "unique_sites": 2641,
+  "maps": 300,
+  "slots": {
+   "B": 642,
+   "C": 2020,
+   "A": 2
+  },
+  "core8_sp": 27,
+  "core8_sites": 26,
+  "core8_maps": [
+   163,
+   389,
+   416,
+   476,
+   478
+  ],
+  "chain30_sp": 197,
+  "chain30_sites": 196,
+  "chain30_maps": 20,
+  "combat7_sp": 76,
+  "combat7_sites": 76
+ },
+ "37": {
+  "site_programs": 9071,
+  "unique_sites": 8901,
+  "maps": 376,
+  "slots": {
+   "B": 4923,
+   "C": 4147,
+   "D": 1
+  },
+  "core8_sp": 211,
+  "core8_sites": 209,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   391,
+   392,
+   416,
+   476,
+   478
+  ],
+  "chain30_sp": 740,
+  "chain30_sites": 737,
+  "chain30_maps": 25,
+  "combat7_sp": 226,
+  "combat7_sites": 213
+ },
+ "38": {
+  "site_programs": 66,
+  "unique_sites": 66,
+  "maps": 39,
+  "slots": {
+   "B": 58,
+   "C": 8
+  },
+  "core8_sp": 2,
+  "core8_sites": 2,
+  "core8_maps": [
+   389
+  ],
+  "chain30_sp": 7,
+  "chain30_sites": 7,
+  "chain30_maps": 5,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "39": {
+  "site_programs": 2308,
+  "unique_sites": 2245,
+  "maps": 302,
+  "slots": {
+   "B": 1030,
+   "C": 1271,
+   "F": 7
+  },
+  "core8_sp": 30,
+  "core8_sites": 29,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   391,
+   392,
+   476
+  ],
+  "chain30_sp": 298,
+  "chain30_sites": 297,
+  "chain30_maps": 26,
+  "combat7_sp": 23,
+  "combat7_sites": 23
+ },
+ "3A": {
+  "site_programs": 142,
+  "unique_sites": 142,
+  "maps": 13,
+  "slots": {
+   "C": 90,
+   "B": 48,
+   "F": 4
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 8,
+  "combat7_sites": 8
+ },
+ "3B": {
+  "site_programs": 1793,
+  "unique_sites": 1770,
+  "maps": 252,
+  "slots": {
+   "B": 1407,
+   "C": 355,
+   "A": 30,
+   "F": 1
+  },
+  "core8_sp": 13,
+  "core8_sites": 13,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   392
+  ],
+  "chain30_sp": 121,
+  "chain30_sites": 121,
+  "chain30_maps": 16,
+  "combat7_sp": 49,
+  "combat7_sites": 49
+ },
+ "3D": {
+  "site_programs": 1,
+  "unique_sites": 1,
+  "maps": 1,
+  "slots": {
+   "B": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "3E": {
+  "site_programs": 464,
+  "unique_sites": 455,
+  "maps": 82,
+  "slots": {
+   "C": 462,
+   "B": 2
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 4,
+  "combat7_sites": 4
+ },
+ "3F": {
+  "site_programs": 211,
+  "unique_sites": 211,
+  "maps": 42,
+  "slots": {
+   "C": 211
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 16,
+  "combat7_sites": 16
+ },
+ "40": {
+  "site_programs": 426,
+  "unique_sites": 426,
+  "maps": 121,
+  "slots": {
+   "A": 103,
+   "C": 301,
+   "E": 22
+  },
+  "core8_sp": 1,
+  "core8_sites": 1,
+  "core8_maps": [
+   163
+  ],
+  "chain30_sp": 1,
+  "chain30_sites": 1,
+  "chain30_maps": 1,
+  "combat7_sp": 13,
+  "combat7_sites": 13
+ },
+ "41": {
+  "site_programs": 85,
+  "unique_sites": 85,
+  "maps": 44,
+  "slots": {
+   "A": 64,
+   "C": 13,
+   "B": 8
+  },
+  "core8_sp": 2,
+  "core8_sites": 2,
+  "core8_maps": [
+   163
+  ],
+  "chain30_sp": 5,
+  "chain30_sites": 5,
+  "chain30_maps": 4,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "42": {
+  "site_programs": 169,
+  "unique_sites": 163,
+  "maps": 71,
+  "slots": {
+   "B": 109,
+   "C": 60
+  },
+  "core8_sp": 2,
+  "core8_sites": 2,
+  "core8_maps": [
+   163,
+   390
+  ],
+  "chain30_sp": 14,
+  "chain30_sites": 14,
+  "chain30_maps": 6,
+  "combat7_sp": 3,
+  "combat7_sites": 3
+ },
+ "43": {
+  "site_programs": 477,
+  "unique_sites": 471,
+  "maps": 97,
+  "slots": {
+   "B": 311,
+   "C": 166
+  },
+  "core8_sp": 6,
+  "core8_sites": 6,
+  "core8_maps": [
+   163,
+   390,
+   476
+  ],
+  "chain30_sp": 28,
+  "chain30_sites": 28,
+  "chain30_maps": 8,
+  "combat7_sp": 5,
+  "combat7_sites": 5
+ },
+ "44": {
+  "site_programs": 106,
+  "unique_sites": 95,
+  "maps": 37,
+  "slots": {
+   "C": 53,
+   "B": 53
+  },
+  "core8_sp": 4,
+  "core8_sites": 4,
+  "core8_maps": [
+   163,
+   389
+  ],
+  "chain30_sp": 11,
+  "chain30_sites": 11,
+  "chain30_maps": 5,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "45": {
+  "site_programs": 11,
+  "unique_sites": 11,
+  "maps": 9,
+  "slots": {
+   "C": 4,
+   "B": 7
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 3,
+  "chain30_sites": 3,
+  "chain30_maps": 2,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "46": {
+  "site_programs": 8,
+  "unique_sites": 8,
+  "maps": 6,
+  "slots": {
+   "B": 7,
+   "C": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 3,
+  "chain30_sites": 3,
+  "chain30_maps": 2,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "47": {
+  "site_programs": 11,
+  "unique_sites": 11,
+  "maps": 7,
+  "slots": {
+   "C": 11
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "49": {
+  "site_programs": 979,
+  "unique_sites": 979,
+  "maps": 211,
+  "slots": {
+   "C": 730,
+   "B": 248,
+   "F": 1
+  },
+  "core8_sp": 9,
+  "core8_sites": 9,
+  "core8_maps": [
+   389,
+   392,
+   478
+  ],
+  "chain30_sp": 10,
+  "chain30_sites": 10,
+  "chain30_maps": 4,
+  "combat7_sp": 11,
+  "combat7_sites": 11
+ },
+ "4A": {
+  "site_programs": 32,
+  "unique_sites": 32,
+  "maps": 12,
+  "slots": {
+   "B": 21,
+   "C": 11
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "4B": {
+  "site_programs": 377,
+  "unique_sites": 377,
+  "maps": 102,
+  "slots": {
+   "C": 172,
+   "B": 205
+  },
+  "core8_sp": 7,
+  "core8_sites": 7,
+  "core8_maps": [
+   389,
+   392
+  ],
+  "chain30_sp": 8,
+  "chain30_sites": 8,
+  "chain30_maps": 3,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "4C": {
+  "site_programs": 60,
+  "unique_sites": 54,
+  "maps": 12,
+  "slots": {
+   "B": 31,
+   "C": 29
+  },
+  "core8_sp": 3,
+  "core8_sites": 2,
+  "core8_maps": [
+   391,
+   476
+  ],
+  "chain30_sp": 22,
+  "chain30_sites": 21,
+  "chain30_maps": 5,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "4D": {
+  "site_programs": 37,
+  "unique_sites": 26,
+  "maps": 6,
+  "slots": {
+   "C": 35,
+   "B": 2
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 10,
+  "chain30_sites": 10,
+  "chain30_maps": 2,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "50": {
+  "site_programs": 200,
+  "unique_sites": 173,
+  "maps": 78,
+  "slots": {
+   "B": 106,
+   "C": 94
+  },
+  "core8_sp": 7,
+  "core8_sites": 6,
+  "core8_maps": [
+   163,
+   389,
+   391,
+   476
+  ],
+  "chain30_sp": 14,
+  "chain30_sites": 13,
+  "chain30_maps": 7,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "51": {
+  "site_programs": 200,
+  "unique_sites": 171,
+  "maps": 79,
+  "slots": {
+   "B": 108,
+   "C": 92
+  },
+  "core8_sp": 7,
+  "core8_sites": 6,
+  "core8_maps": [
+   163,
+   389,
+   391,
+   476
+  ],
+  "chain30_sp": 14,
+  "chain30_sites": 13,
+  "chain30_maps": 7,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "52": {
+  "site_programs": 38,
+  "unique_sites": 38,
+  "maps": 22,
+  "slots": {
+   "B": 38
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 2,
+  "chain30_sites": 2,
+  "chain30_maps": 2,
+  "combat7_sp": 1,
+  "combat7_sites": 1
+ },
+ "53": {
+  "site_programs": 333,
+  "unique_sites": 329,
+  "maps": 148,
+  "slots": {
+   "B": 258,
+   "C": 73,
+   "F": 2
+  },
+  "core8_sp": 7,
+  "core8_sites": 7,
+  "core8_maps": [
+   390,
+   391,
+   416,
+   476,
+   478
+  ],
+  "chain30_sp": 28,
+  "chain30_sites": 28,
+  "chain30_maps": 11,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "54": {
+  "site_programs": 570,
+  "unique_sites": 570,
+  "maps": 75,
+  "slots": {
+   "A": 121,
+   "C": 67,
+   "B": 376,
+   "E": 6
+  },
+  "core8_sp": 35,
+  "core8_sites": 35,
+  "core8_maps": [
+   389,
+   390,
+   478
+  ],
+  "chain30_sp": 41,
+  "chain30_sites": 41,
+  "chain30_maps": 5,
+  "combat7_sp": 32,
+  "combat7_sites": 32
+ },
+ "55": {
+  "site_programs": 538,
+  "unique_sites": 538,
+  "maps": 89,
+  "slots": {
+   "B": 391,
+   "C": 101,
+   "A": 43,
+   "D": 3
+  },
+  "core8_sp": 14,
+  "core8_sites": 14,
+  "core8_maps": [
+   389,
+   391
+  ],
+  "chain30_sp": 39,
+  "chain30_sites": 39,
+  "chain30_maps": 8,
+  "combat7_sp": 18,
+  "combat7_sites": 18
+ },
+ "56": {
+  "site_programs": 17,
+  "unique_sites": 17,
+  "maps": 2,
+  "slots": {
+   "B": 17
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "57": {
+  "site_programs": 44,
+  "unique_sites": 42,
+  "maps": 15,
+  "slots": {
+   "F": 1,
+   "C": 40,
+   "B": 3
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 1,
+  "combat7_sites": 1
+ },
+ "58": {
+  "site_programs": 134,
+  "unique_sites": 112,
+  "maps": 48,
+  "slots": {
+   "C": 122,
+   "B": 10,
+   "D": 2
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 14,
+  "chain30_sites": 13,
+  "chain30_maps": 7,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "59": {
+  "site_programs": 1008,
+  "unique_sites": 1000,
+  "maps": 213,
+  "slots": {
+   "C": 756,
+   "B": 238,
+   "F": 8,
+   "A": 6
+  },
+  "core8_sp": 31,
+  "core8_sites": 31,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   391,
+   476,
+   478
+  ],
+  "chain30_sp": 162,
+  "chain30_sites": 162,
+  "chain30_maps": 26,
+  "combat7_sp": 35,
+  "combat7_sites": 35
+ },
+ "5A": {
+  "site_programs": 658,
+  "unique_sites": 578,
+  "maps": 107,
+  "slots": {
+   "B": 202,
+   "C": 451,
+   "A": 4,
+   "F": 1
+  },
+  "core8_sp": 26,
+  "core8_sites": 26,
+  "core8_maps": [
+   163,
+   389,
+   391,
+   478
+  ],
+  "chain30_sp": 61,
+  "chain30_sites": 59,
+  "chain30_maps": 10,
+  "combat7_sp": 1,
+  "combat7_sites": 1
+ },
+ "5B": {
+  "site_programs": 1149,
+  "unique_sites": 1122,
+  "maps": 168,
+  "slots": {
+   "B": 489,
+   "C": 650,
+   "D": 1,
+   "A": 9
+  },
+  "core8_sp": 76,
+  "core8_sites": 76,
+  "core8_maps": [
+   389,
+   390,
+   391,
+   392,
+   416,
+   476,
+   478
+  ],
+  "chain30_sp": 93,
+  "chain30_sites": 93,
+  "chain30_maps": 10,
+  "combat7_sp": 28,
+  "combat7_sites": 28
+ },
+ "5C": {
+  "site_programs": 797,
+  "unique_sites": 761,
+  "maps": 105,
+  "slots": {
+   "B": 581,
+   "C": 210,
+   "F": 6
+  },
+  "core8_sp": 28,
+  "core8_sites": 28,
+  "core8_maps": [
+   163,
+   391,
+   476
+  ],
+  "chain30_sp": 73,
+  "chain30_sites": 73,
+  "chain30_maps": 9,
+  "combat7_sp": 5,
+  "combat7_sites": 5
+ },
+ "5D": {
+  "site_programs": 83,
+  "unique_sites": 83,
+  "maps": 43,
+  "slots": {
+   "C": 34,
+   "D": 2,
+   "B": 46,
+   "A": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 5,
+  "combat7_sites": 5
+ },
+ "5E": {
+  "site_programs": 119,
+  "unique_sites": 119,
+  "maps": 48,
+  "slots": {
+   "C": 74,
+   "B": 44,
+   "D": 1
+  },
+  "core8_sp": 5,
+  "core8_sites": 5,
+  "core8_maps": [
+   391,
+   478
+  ],
+  "chain30_sp": 6,
+  "chain30_sites": 6,
+  "chain30_maps": 3,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "60": {
+  "site_programs": 172,
+  "unique_sites": 172,
+  "maps": 7,
+  "slots": {
+   "C": 172
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "61": {
+  "site_programs": 14,
+  "unique_sites": 14,
+  "maps": 4,
+  "slots": {
+   "C": 6,
+   "B": 8
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "62": {
+  "site_programs": 501,
+  "unique_sites": 477,
+  "maps": 141,
+  "slots": {
+   "C": 308,
+   "B": 71,
+   "A": 122
+  },
+  "core8_sp": 7,
+  "core8_sites": 7,
+  "core8_maps": [
+   163,
+   389
+  ],
+  "chain30_sp": 14,
+  "chain30_sites": 14,
+  "chain30_maps": 5,
+  "combat7_sp": 23,
+  "combat7_sites": 23
+ },
+ "63": {
+  "site_programs": 462,
+  "unique_sites": 444,
+  "maps": 135,
+  "slots": {
+   "C": 253,
+   "B": 72,
+   "A": 122,
+   "D": 15
+  },
+  "core8_sp": 11,
+  "core8_sites": 11,
+  "core8_maps": [
+   389,
+   391,
+   478
+  ],
+  "chain30_sp": 20,
+  "chain30_sites": 20,
+  "chain30_maps": 5,
+  "combat7_sp": 13,
+  "combat7_sites": 13
+ },
+ "64": {
+  "site_programs": 560,
+  "unique_sites": 544,
+  "maps": 155,
+  "slots": {
+   "C": 128,
+   "A": 41,
+   "B": 390,
+   "F": 1
+  },
+  "core8_sp": 24,
+  "core8_sites": 24,
+  "core8_maps": [
+   163,
+   389,
+   391,
+   392,
+   416,
+   476,
+   478
+  ],
+  "chain30_sp": 62,
+  "chain30_sites": 62,
+  "chain30_maps": 13,
+  "combat7_sp": 7,
+  "combat7_sites": 7
+ },
+ "65": {
+  "site_programs": 270,
+  "unique_sites": 250,
+  "maps": 101,
+  "slots": {
+   "C": 115,
+   "A": 82,
+   "B": 73
+  },
+  "core8_sp": 5,
+  "core8_sites": 5,
+  "core8_maps": [
+   391,
+   478
+  ],
+  "chain30_sp": 25,
+  "chain30_sites": 25,
+  "chain30_maps": 8,
+  "combat7_sp": 4,
+  "combat7_sites": 4
+ },
+ "67": {
+  "site_programs": 312,
+  "unique_sites": 296,
+  "maps": 111,
+  "slots": {
+   "C": 106,
+   "B": 203,
+   "A": 3
+  },
+  "core8_sp": 10,
+  "core8_sites": 10,
+  "core8_maps": [
+   389,
+   391,
+   416,
+   476,
+   478
+  ],
+  "chain30_sp": 18,
+  "chain30_sites": 18,
+  "chain30_maps": 9,
+  "combat7_sp": 8,
+  "combat7_sites": 8
+ },
+ "68": {
+  "site_programs": 8,
+  "unique_sites": 8,
+  "maps": 8,
+  "slots": {
+   "C": 2,
+   "B": 5,
+   "A": 1
+  },
+  "core8_sp": 1,
+  "core8_sites": 1,
+  "core8_maps": [
+   390
+  ],
+  "chain30_sp": 2,
+  "chain30_sites": 2,
+  "chain30_maps": 2,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "69": {
+  "site_programs": 106,
+  "unique_sites": 106,
+  "maps": 58,
+  "slots": {
+   "B": 84,
+   "C": 22
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 8,
+  "chain30_sites": 8,
+  "chain30_maps": 4,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "6A": {
+  "site_programs": 59,
+  "unique_sites": 59,
+  "maps": 6,
+  "slots": {
+   "C": 59
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "6B": {
+  "site_programs": 29,
+  "unique_sites": 29,
+  "maps": 5,
+  "slots": {
+   "C": 29
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "6C": {
+  "site_programs": 12,
+  "unique_sites": 12,
+  "maps": 2,
+  "slots": {
+   "C": 12
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "6D": {
+  "site_programs": 29,
+  "unique_sites": 29,
+  "maps": 5,
+  "slots": {
+   "C": 29
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "6E": {
+  "site_programs": 208,
+  "unique_sites": 207,
+  "maps": 95,
+  "slots": {
+   "B": 171,
+   "C": 37
+  },
+  "core8_sp": 1,
+  "core8_sites": 1,
+  "core8_maps": [
+   392
+  ],
+  "chain30_sp": 19,
+  "chain30_sites": 19,
+  "chain30_maps": 5,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "6F": {
+  "site_programs": 16,
+  "unique_sites": 16,
+  "maps": 6,
+  "slots": {
+   "C": 16
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "70": {
+  "site_programs": 356,
+  "unique_sites": 339,
+  "maps": 138,
+  "slots": {
+   "B": 217,
+   "C": 139
+  },
+  "core8_sp": 8,
+  "core8_sites": 8,
+  "core8_maps": [
+   389,
+   392,
+   478
+  ],
+  "chain30_sp": 12,
+  "chain30_sites": 12,
+  "chain30_maps": 5,
+  "combat7_sp": 4,
+  "combat7_sites": 4
+ },
+ "72": {
+  "site_programs": 20,
+  "unique_sites": 20,
+  "maps": 12,
+  "slots": {
+   "F": 10,
+   "D": 10
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "73": {
+  "site_programs": 697,
+  "unique_sites": 676,
+  "maps": 101,
+  "slots": {
+   "C": 500,
+   "B": 197
+  },
+  "core8_sp": 4,
+  "core8_sites": 4,
+  "core8_maps": [
+   391,
+   478
+  ],
+  "chain30_sp": 13,
+  "chain30_sites": 13,
+  "chain30_maps": 6,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "74": {
+  "site_programs": 591,
+  "unique_sites": 570,
+  "maps": 100,
+  "slots": {
+   "C": 498,
+   "B": 93
+  },
+  "core8_sp": 4,
+  "core8_sites": 4,
+  "core8_maps": [
+   391,
+   478
+  ],
+  "chain30_sp": 13,
+  "chain30_sites": 13,
+  "chain30_maps": 6,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "78": {
+  "site_programs": 1065,
+  "unique_sites": 1061,
+  "maps": 129,
+  "slots": {
+   "C": 497,
+   "B": 568
+  },
+  "core8_sp": 57,
+  "core8_sites": 57,
+  "core8_maps": [
+   391,
+   476
+  ],
+  "chain30_sp": 61,
+  "chain30_sites": 61,
+  "chain30_maps": 4,
+  "combat7_sp": 19,
+  "combat7_sites": 19
+ },
+ "79": {
+  "site_programs": 9,
+  "unique_sites": 9,
+  "maps": 2,
+  "slots": {
+   "C": 9
+  },
+  "core8_sp": 5,
+  "core8_sites": 5,
+  "core8_maps": [
+   478
+  ],
+  "chain30_sp": 5,
+  "chain30_sites": 5,
+  "chain30_maps": 1,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "7B": {
+  "site_programs": 43,
+  "unique_sites": 43,
+  "maps": 3,
+  "slots": {
+   "B": 8,
+   "C": 35
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "7C": {
+  "site_programs": 4,
+  "unique_sites": 4,
+  "maps": 2,
+  "slots": {
+   "C": 4
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "7D": {
+  "site_programs": 540,
+  "unique_sites": 313,
+  "maps": 127,
+  "slots": {
+   "B": 157,
+   "C": 382,
+   "D": 1
+  },
+  "core8_sp": 20,
+  "core8_sites": 18,
+  "core8_maps": [
+   391,
+   476,
+   478
+  ],
+  "chain30_sp": 23,
+  "chain30_sites": 20,
+  "chain30_maps": 5,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "7E": {
+  "site_programs": 82,
+  "unique_sites": 58,
+  "maps": 30,
+  "slots": {
+   "B": 8,
+   "C": 74
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 2,
+  "chain30_sites": 1,
+  "chain30_maps": 1,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "7F": {
+  "site_programs": 21,
+  "unique_sites": 10,
+  "maps": 4,
+  "slots": {
+   "C": 21
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "80": {
+  "site_programs": 1,
+  "unique_sites": 1,
+  "maps": 1,
+  "slots": {
+   "C": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "81": {
+  "site_programs": 6,
+  "unique_sites": 6,
+  "maps": 1,
+  "slots": {
+   "B": 6
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "82": {
+  "site_programs": 235,
+  "unique_sites": 235,
+  "maps": 44,
+  "slots": {
+   "B": 134,
+   "F": 50,
+   "C": 51
+  },
+  "core8_sp": 3,
+  "core8_sites": 3,
+  "core8_maps": [
+   163
+  ],
+  "chain30_sp": 4,
+  "chain30_sites": 4,
+  "chain30_maps": 2,
+  "combat7_sp": 1,
+  "combat7_sites": 1
+ },
+ "83": {
+  "site_programs": 51,
+  "unique_sites": 51,
+  "maps": 26,
+  "slots": {
+   "C": 7,
+   "B": 34,
+   "F": 7,
+   "A": 3
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "84": {
+  "site_programs": 76,
+  "unique_sites": 76,
+  "maps": 48,
+  "slots": {
+   "B": 54,
+   "C": 15,
+   "F": 7
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 3,
+  "chain30_sites": 3,
+  "chain30_maps": 3,
+  "combat7_sp": 1,
+  "combat7_sites": 1
+ },
+ "85": {
+  "site_programs": 1562,
+  "unique_sites": 1558,
+  "maps": 121,
+  "slots": {
+   "B": 1134,
+   "A": 140,
+   "C": 272,
+   "E": 16
+  },
+  "core8_sp": 25,
+  "core8_sites": 24,
+  "core8_maps": [
+   389,
+   476
+  ],
+  "chain30_sp": 31,
+  "chain30_sites": 30,
+  "chain30_maps": 4,
+  "combat7_sp": 94,
+  "combat7_sites": 94
+ },
+ "86": {
+  "site_programs": 94,
+  "unique_sites": 76,
+  "maps": 24,
+  "slots": {
+   "B": 55,
+   "C": 39
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 4,
+  "combat7_sites": 4
+ },
+ "87": {
+  "site_programs": 182,
+  "unique_sites": 182,
+  "maps": 40,
+  "slots": {
+   "D": 181,
+   "B": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 2,
+  "chain30_sites": 2,
+  "chain30_maps": 1,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "88": {
+  "site_programs": 3,
+  "unique_sites": 3,
+  "maps": 2,
+  "slots": {
+   "E": 3
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "89": {
+  "site_programs": 83,
+  "unique_sites": 83,
+  "maps": 21,
+  "slots": {
+   "C": 78,
+   "A": 4,
+   "B": 1
+  },
+  "core8_sp": 1,
+  "core8_sites": 1,
+  "core8_maps": [
+   478
+  ],
+  "chain30_sp": 15,
+  "chain30_sites": 15,
+  "chain30_maps": 5,
+  "combat7_sp": 1,
+  "combat7_sites": 1
+ },
+ "8A": {
+  "site_programs": 692,
+  "unique_sites": 684,
+  "maps": 69,
+  "slots": {
+   "B": 566,
+   "C": 118,
+   "A": 8
+  },
+  "core8_sp": 2,
+  "core8_sites": 2,
+  "core8_maps": [
+   476
+  ],
+  "chain30_sp": 49,
+  "chain30_sites": 49,
+  "chain30_maps": 4,
+  "combat7_sp": 17,
+  "combat7_sites": 17
+ },
+ "8B": {
+  "site_programs": 333,
+  "unique_sites": 333,
+  "maps": 74,
+  "slots": {
+   "C": 223,
+   "B": 101,
+   "A": 9
+  },
+  "core8_sp": 1,
+  "core8_sites": 1,
+  "core8_maps": [
+   389
+  ],
+  "chain30_sp": 4,
+  "chain30_sites": 4,
+  "chain30_maps": 4,
+  "combat7_sp": 7,
+  "combat7_sites": 7
+ },
+ "8C": {
+  "site_programs": 88,
+  "unique_sites": 87,
+  "maps": 24,
+  "slots": {
+   "B": 67,
+   "C": 12,
+   "F": 1,
+   "A": 8
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 1,
+  "combat7_sites": 1
+ },
+ "8D": {
+  "site_programs": 195,
+  "unique_sites": 182,
+  "maps": 104,
+  "slots": {
+   "B": 114,
+   "C": 81
+  },
+  "core8_sp": 3,
+  "core8_sites": 3,
+  "core8_maps": [
+   163
+  ],
+  "chain30_sp": 16,
+  "chain30_sites": 16,
+  "chain30_maps": 4,
+  "combat7_sp": 5,
+  "combat7_sites": 5
+ },
+ "8E": {
+  "site_programs": 168,
+  "unique_sites": 163,
+  "maps": 63,
+  "slots": {
+   "C": 70,
+   "B": 98
+  },
+  "core8_sp": 5,
+  "core8_sites": 5,
+  "core8_maps": [
+   391,
+   392
+  ],
+  "chain30_sp": 19,
+  "chain30_sites": 19,
+  "chain30_maps": 7,
+  "combat7_sp": 3,
+  "combat7_sites": 3
+ },
+ "8F": {
+  "site_programs": 76,
+  "unique_sites": 71,
+  "maps": 48,
+  "slots": {
+   "C": 47,
+   "B": 29
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 9,
+  "chain30_sites": 9,
+  "chain30_maps": 5,
+  "combat7_sp": 3,
+  "combat7_sites": 3
+ },
+ "90": {
+  "site_programs": 105,
+  "unique_sites": 105,
+  "maps": 39,
+  "slots": {
+   "B": 71,
+   "C": 25,
+   "A": 5,
+   "D": 4
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 15,
+  "chain30_sites": 15,
+  "chain30_maps": 3,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "91": {
+  "site_programs": 29,
+  "unique_sites": 29,
+  "maps": 15,
+  "slots": {
+   "B": 19,
+   "C": 8,
+   "A": 2
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 2,
+  "chain30_sites": 2,
+  "chain30_maps": 1,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "92": {
+  "site_programs": 344,
+  "unique_sites": 344,
+  "maps": 57,
+  "slots": {
+   "B": 288,
+   "C": 54,
+   "A": 2
+  },
+  "core8_sp": 13,
+  "core8_sites": 13,
+  "core8_maps": [
+   476
+  ],
+  "chain30_sp": 19,
+  "chain30_sites": 19,
+  "chain30_maps": 3,
+  "combat7_sp": 1,
+  "combat7_sites": 1
+ },
+ "93": {
+  "site_programs": 13,
+  "unique_sites": 13,
+  "maps": 2,
+  "slots": {
+   "B": 8,
+   "C": 5
+  },
+  "core8_sp": 5,
+  "core8_sites": 5,
+  "core8_maps": [
+   476
+  ],
+  "chain30_sp": 5,
+  "chain30_sites": 5,
+  "chain30_maps": 1,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "94": {
+  "site_programs": 19,
+  "unique_sites": 19,
+  "maps": 5,
+  "slots": {
+   "B": 19
+  },
+  "core8_sp": 5,
+  "core8_sites": 5,
+  "core8_maps": [
+   391
+  ],
+  "chain30_sp": 5,
+  "chain30_sites": 5,
+  "chain30_maps": 1,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "95": {
+  "site_programs": 42,
+  "unique_sites": 42,
+  "maps": 29,
+  "slots": {
+   "C": 33,
+   "B": 9
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 1,
+  "chain30_sites": 1,
+  "chain30_maps": 1,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "96": {
+  "site_programs": 42,
+  "unique_sites": 42,
+  "maps": 36,
+  "slots": {
+   "C": 11,
+   "B": 31
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "97": {
+  "site_programs": 24,
+  "unique_sites": 24,
+  "maps": 24,
+  "slots": {
+   "B": 23,
+   "C": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "98": {
+  "site_programs": 15,
+  "unique_sites": 15,
+  "maps": 3,
+  "slots": {
+   "B": 15
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "99": {
+  "site_programs": 23,
+  "unique_sites": 23,
+  "maps": 8,
+  "slots": {
+   "B": 22,
+   "C": 1
+  },
+  "core8_sp": 3,
+  "core8_sites": 3,
+  "core8_maps": [
+   163
+  ],
+  "chain30_sp": 3,
+  "chain30_sites": 3,
+  "chain30_maps": 1,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "9A": {
+  "site_programs": 23,
+  "unique_sites": 23,
+  "maps": 8,
+  "slots": {
+   "B": 22,
+   "C": 1
+  },
+  "core8_sp": 3,
+  "core8_sites": 3,
+  "core8_maps": [
+   163
+  ],
+  "chain30_sp": 3,
+  "chain30_sites": 3,
+  "chain30_maps": 1,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "9B": {
+  "site_programs": 9,
+  "unique_sites": 9,
+  "maps": 7,
+  "slots": {
+   "B": 8,
+   "C": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "9C": {
+  "site_programs": 7,
+  "unique_sites": 7,
+  "maps": 6,
+  "slots": {
+   "B": 6,
+   "C": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "9F": {
+  "site_programs": 21,
+  "unique_sites": 21,
+  "maps": 10,
+  "slots": {
+   "B": 15,
+   "C": 6
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 1,
+  "combat7_sites": 1
+ },
+ "A0": {
+  "site_programs": 18,
+  "unique_sites": 18,
+  "maps": 8,
+  "slots": {
+   "B": 11,
+   "C": 7
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 6,
+  "chain30_sites": 6,
+  "chain30_maps": 1,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "A1": {
+  "site_programs": 6,
+  "unique_sites": 6,
+  "maps": 2,
+  "slots": {
+   "A": 1,
+   "C": 2,
+   "B": 3
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "A2": {
+  "site_programs": 455,
+  "unique_sites": 455,
+  "maps": 65,
+  "slots": {
+   "C": 24,
+   "B": 423,
+   "A": 8
+  },
+  "core8_sp": 7,
+  "core8_sites": 7,
+  "core8_maps": [
+   391,
+   476
+  ],
+  "chain30_sp": 46,
+  "chain30_sites": 46,
+  "chain30_maps": 7,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "A3": {
+  "site_programs": 438,
+  "unique_sites": 438,
+  "maps": 46,
+  "slots": {
+   "C": 89,
+   "B": 348,
+   "E": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 1,
+  "chain30_sites": 1,
+  "chain30_maps": 1,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "A4": {
+  "site_programs": 21,
+  "unique_sites": 21,
+  "maps": 12,
+  "slots": {
+   "B": 14,
+   "C": 7
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "A5": {
+  "site_programs": 116,
+  "unique_sites": 108,
+  "maps": 59,
+  "slots": {
+   "B": 89,
+   "C": 27
+  },
+  "core8_sp": 2,
+  "core8_sites": 2,
+  "core8_maps": [
+   476
+  ],
+  "chain30_sp": 4,
+  "chain30_sites": 4,
+  "chain30_maps": 2,
+  "combat7_sp": 3,
+  "combat7_sites": 3
+ },
+ "A6": {
+  "site_programs": 172,
+  "unique_sites": 155,
+  "maps": 75,
+  "slots": {
+   "B": 122,
+   "C": 45,
+   "F": 1,
+   "A": 4
+  },
+  "core8_sp": 4,
+  "core8_sites": 4,
+  "core8_maps": [
+   163,
+   476,
+   478
+  ],
+  "chain30_sp": 11,
+  "chain30_sites": 11,
+  "chain30_maps": 6,
+  "combat7_sp": 3,
+  "combat7_sites": 3
+ },
+ "A7": {
+  "site_programs": 134,
+  "unique_sites": 122,
+  "maps": 35,
+  "slots": {
+   "B": 90,
+   "C": 44
+  },
+  "core8_sp": 2,
+  "core8_sites": 2,
+  "core8_maps": [
+   163,
+   476
+  ],
+  "chain30_sp": 3,
+  "chain30_sites": 3,
+  "chain30_maps": 3,
+  "combat7_sp": 3,
+  "combat7_sites": 3
+ },
+ "A8": {
+  "site_programs": 101,
+  "unique_sites": 89,
+  "maps": 35,
+  "slots": {
+   "B": 88,
+   "C": 13
+  },
+  "core8_sp": 2,
+  "core8_sites": 2,
+  "core8_maps": [
+   163,
+   476
+  ],
+  "chain30_sp": 3,
+  "chain30_sites": 3,
+  "chain30_maps": 3,
+  "combat7_sp": 3,
+  "combat7_sites": 3
+ },
+ "A9": {
+  "site_programs": 4,
+  "unique_sites": 4,
+  "maps": 1,
+  "slots": {
+   "B": 1,
+   "C": 3
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "AA": {
+  "site_programs": 24,
+  "unique_sites": 22,
+  "maps": 8,
+  "slots": {
+   "C": 24
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "AC": {
+  "site_programs": 32,
+  "unique_sites": 32,
+  "maps": 15,
+  "slots": {
+   "C": 10,
+   "A": 19,
+   "B": 3
+  },
+  "core8_sp": 7,
+  "core8_sites": 7,
+  "core8_maps": [
+   389,
+   478
+  ],
+  "chain30_sp": 8,
+  "chain30_sites": 8,
+  "chain30_maps": 3,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "AD": {
+  "site_programs": 84,
+  "unique_sites": 67,
+  "maps": 34,
+  "slots": {
+   "B": 13,
+   "C": 71
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 2,
+  "chain30_sites": 1,
+  "chain30_maps": 1,
+  "combat7_sp": 3,
+  "combat7_sites": 3
+ },
+ "AF": {
+  "site_programs": 242,
+  "unique_sites": 242,
+  "maps": 60,
+  "slots": {
+   "B": 198,
+   "C": 44
+  },
+  "core8_sp": 21,
+  "core8_sites": 21,
+  "core8_maps": [
+   391,
+   416,
+   476,
+   478
+  ],
+  "chain30_sp": 36,
+  "chain30_sites": 36,
+  "chain30_maps": 5,
+  "combat7_sp": 2,
+  "combat7_sites": 2
+ },
+ "B1": {
+  "site_programs": 7,
+  "unique_sites": 7,
+  "maps": 4,
+  "slots": {
+   "C": 4,
+   "B": 3
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "B2": {
+  "site_programs": 10,
+  "unique_sites": 10,
+  "maps": 2,
+  "slots": {
+   "B": 10
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "B3": {
+  "site_programs": 1,
+  "unique_sites": 1,
+  "maps": 1,
+  "slots": {
+   "B": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "B5": {
+  "site_programs": 3,
+  "unique_sites": 3,
+  "maps": 2,
+  "slots": {
+   "B": 2,
+   "C": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "B6": {
+  "site_programs": 1,
+  "unique_sites": 1,
+  "maps": 1,
+  "slots": {
+   "C": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "B8": {
+  "site_programs": 96,
+  "unique_sites": 95,
+  "maps": 22,
+  "slots": {
+   "B": 89,
+   "C": 7
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 3,
+  "chain30_sites": 3,
+  "chain30_maps": 1,
+  "combat7_sp": 14,
+  "combat7_sites": 14
+ },
+ "B9": {
+  "site_programs": 42,
+  "unique_sites": 42,
+  "maps": 26,
+  "slots": {
+   "B": 20,
+   "C": 22
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 1,
+  "combat7_sites": 1
+ },
+ "BA": {
+  "site_programs": 37,
+  "unique_sites": 37,
+  "maps": 22,
+  "slots": {
+   "B": 18,
+   "C": 19
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 1,
+  "combat7_sites": 1
+ },
+ "BB": {
+  "site_programs": 2,
+  "unique_sites": 2,
+  "maps": 2,
+  "slots": {
+   "B": 2
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "BD": {
+  "site_programs": 3303,
+  "unique_sites": 3237,
+  "maps": 307,
+  "slots": {
+   "B": 1260,
+   "C": 1968,
+   "A": 9,
+   "D": 50,
+   "F": 15,
+   "E": 1
+  },
+  "core8_sp": 55,
+  "core8_sites": 55,
+  "core8_maps": [
+   389,
+   390,
+   391,
+   392,
+   416,
+   476
+  ],
+  "chain30_sp": 102,
+  "chain30_sites": 102,
+  "chain30_maps": 16,
+  "combat7_sp": 105,
+  "combat7_sites": 89
+ },
+ "BE": {
+  "site_programs": 393,
+  "unique_sites": 391,
+  "maps": 119,
+  "slots": {
+   "C": 251,
+   "B": 141,
+   "A": 1
+  },
+  "core8_sp": 6,
+  "core8_sites": 6,
+  "core8_maps": [
+   391
+  ],
+  "chain30_sp": 12,
+  "chain30_sites": 12,
+  "chain30_maps": 4,
+  "combat7_sp": 18,
+  "combat7_sites": 18
+ },
+ "BF": {
+  "site_programs": 1135,
+  "unique_sites": 1135,
+  "maps": 72,
+  "slots": {
+   "B": 1127,
+   "C": 8
+  },
+  "core8_sp": 21,
+  "core8_sites": 21,
+  "core8_maps": [
+   390,
+   392,
+   416,
+   476
+  ],
+  "chain30_sp": 89,
+  "chain30_sites": 89,
+  "chain30_maps": 8,
+  "combat7_sp": 43,
+  "combat7_sites": 43
+ },
+ "C0": {
+  "site_programs": 2,
+  "unique_sites": 2,
+  "maps": 2,
+  "slots": {
+   "B": 2
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "C1": {
+  "site_programs": 2,
+  "unique_sites": 2,
+  "maps": 2,
+  "slots": {
+   "B": 2
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "C2": {
+  "site_programs": 1,
+  "unique_sites": 1,
+  "maps": 1,
+  "slots": {
+   "B": 1
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "C3": {
+  "site_programs": 13,
+  "unique_sites": 13,
+  "maps": 13,
+  "slots": {
+   "B": 13
+  },
+  "core8_sp": 0,
+  "core8_sites": 0,
+  "core8_maps": [],
+  "chain30_sp": 0,
+  "chain30_sites": 0,
+  "chain30_maps": 0,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "C4": {
+  "site_programs": 31,
+  "unique_sites": 31,
+  "maps": 11,
+  "slots": {
+   "B": 27,
+   "C": 4
+  },
+  "core8_sp": 7,
+  "core8_sites": 7,
+  "core8_maps": [
+   476
+  ],
+  "chain30_sp": 7,
+  "chain30_sites": 7,
+  "chain30_maps": 1,
+  "combat7_sp": 0,
+  "combat7_sites": 0
+ },
+ "FF": {
+  "site_programs": 5317,
+  "unique_sites": 5288,
+  "maps": 464,
+  "slots": {
+   "B": 1166,
+   "C": 1879,
+   "D": 550,
+   "A": 835,
+   "F": 856,
+   "E": 31
+  },
+  "core8_sp": 77,
+  "core8_sites": 77,
+  "core8_maps": [
+   163,
+   389,
+   390,
+   391,
+   416,
+   476,
+   478
+  ],
+  "chain30_sp": 340,
+  "chain30_sites": 340,
+  "chain30_maps": 29,
+  "combat7_sp": 117,
+  "combat7_sites": 104
+ }
+}

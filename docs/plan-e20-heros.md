@@ -6601,6 +6601,31 @@ deviendra la tranche suivante) : §1.1, ligne 10 : l'ordre interne g1a, g2a, g2b
 e0b2 des prérequis de g2. Jusque-là l'enveloppe READY (révision 9) fait foi. (2) `docs/plan-e20-annexe/e20-armes/h-g-deps.md` §3.1 et `order-critic.md` ligne 19 : les cinq corrections des écarts 1 à 4 et 9 (annexes en lecture seule : une note de renvoi dans le plan, pas de modification). (3) §1.18 O-E0K-5 : « Porté `+0x28` et passagers » renvoie à D-G-2, D-G-3 et D-G-12 (fait à l'insertion) ; O-E0K-2 : la révision 9 a déjà
 nommé ses propriétaires (f6a, et le recensement de son T0) ; g2b ne prend rien de plus sans la révision 10. (4) Commentaires périmés à corriger par la tranche qui touche le fichier : `EntityFlags.cs` (`EntityPickupKind`, g1a), `AlundraWorldProxy.cs:2930` et `:3553`.
 
+### 1.25 État des lieux des attaques et du portage (2026-10-16, lecture seule)
+
+Thèmes de repli donnés par l'auteur le 2026-10-16 (« toutes les attaques du joueur doivent être implémentées » ; « le joueur doit pouvoir
+transporter un objet et monter sur une plateforme »), relevés pendant la pause du chantier de restructuration (aucune tranche de code
+pendant le chantier). Preuves : `docs/plan-e20-annexe/e20-themes/` (`attacks.md`, `carry.md`, avec les critiques).
+
+**Attaques.** Faites : les quatre épées et leurs coups, la charge et l'aura, le fléau et son rebond, la charge du Crusher `0x19`
+(`AlundraHeroChargeTests.cs:466-485`), les effets de coup 4 et 5, la vague de l'épée (f3c, 🧪). Planifiées, non faites : les flèches
+(f5), la flèche chargée (f4), les baguettes de feu et de glace (f6a, f6b), la bombe et les graines (h3), les magies des tomes (h4). En
+production, seuls les types 27 à 29 sont câblés au tir (`AlundraPlayerManager.cs:1213`) : tout autre tir ne fait naître rien ;
+`TryUseItem` et `PlayerTryAction` sont des bouchons (`:919`, `:927`). Hors de tout plan : l'objet 008 (O-E20-18) ; la règle de dégâts d'un
+objet lancé (O-E20-19) ; E20.h n'a pas de section détaillée (O-E20-20). `CheckAndTriggerTileEffect` existe comme bouchon nommé
+(`AlundraWaveSwordAi.cs:34-37`), sans effet : E20.e le remplit.
+
+**Portage et plateformes.** Porter, lancer, briser, soulever : §1.24 (g1a, g2a, g2b, g1b, g2c), non faits ; `UpdatePlayerCarriedEntity`
+est vide (`AlundraPlayerManager.cs:1271-1274`), `CarriedEntity` n'a pas de lecteur de portage. L'appui sur une entité (`RidingEntity`,
+`+0x12C`) est fait (`EntitySupport.cs`, E4.f, E19.d2c2 D1-D5a) ; la plateforme horizontale emporte le héros (D-E20-40), l'objet porté ne
+suit pas encore (g1a) ; la plateforme verticale et les ascenseurs restent à E19.d2c2 D5b, en pause. Les définitions de `PlayerTryAction`
+(`PlayerManager.cs:1037`) et d'`UpdatePlayerCarriedEntity` (`:3203-3204`) existent dans la décompilation. Les blocs poussables n'ont pas
+de plan (O-E20-21). Le nettoyage de `PlatformEntity.CarriedEntity` au recyclage n'est pas porté (`AlundraWorldProxy.cs:3290`, O-E20-22).
+
+**Ordre proposé** (sans changer les dépendances écrites des sections) : E20.e (la coupe de l'herbe, que C61, C94 et la bombe appellent)
+avant f4 ; f4, f5, f6a, f6b ; h0 et h1 (le cadre de l'usage d'un objet) ; g1a, g2a (porter, lancer ; la bombe et les graines naissent
+portées) ; h3 (bombe, graines) ; une lecture seule des magies (C63, C65, C75, E3, E13, E28) avant de découper h4.
+
 ## 2. Points ouverts
 
 | Point | Question | Où elle se tranche |
@@ -6623,6 +6648,11 @@ nommé ses propriétaires (f6a, et le recensement de son T0) ; g2b ne prend rien
 | O-E20-17 | **Le haut de l'échelle (2026-10-16).** L'auteur a vu Alundra retomber en haut d'une échelle, puis les échelles passer à un second essai. Deux sondes indépendantes sur la machine MIPS (`docs/plan-e20-annexe/e20-a1/`) : à la sortie par le haut (`0x80031E7C`), le binaire n'écrit que l'animation (Idle) ; ForceZ garde le `0x10000` de la montée, la gravité du même tick le réduit à `0x8000` (+0,5 px), le tick suivant est `0x2C` à l'apex et la marche de 3 px (`0x80037848`) pose le héros sur la case du haut. La DLL monte d'un tick de plus (garde `PosZ <= H`, le binaire `PosZ < H` dans la convention de la DLL, ADR-0026) et remet ForceZ à 0 en rendant la verticale au moteur. Un test du monde réel (carte 14, échelle (45, 27), de 30 à 120 Hz, Haut tenu) arrive pourtant en haut : aucun effet visible trouvé, rien de changé ; le correctif fidèle (garder ForceZ, l'état aérien tenu par le tick dès la sortie, la garde du binaire) et son test sont prêts hors du dépôt. Si l'auteur revoit la chute : noter l'échelle, le contrôle (clavier, croix ou stick) et si Haut était tenu au sommet (l'original retombe aussi si on relâche Haut). | l'auteur, si la chute revient |
 | O-E19-22 (rappel, ligne du plan d'E19 : `docs/plan-e19-opcodes.md`) | Le mur d'eau profonde sans bottes de niveau ≥ 2 (`(cellule & 0xE00) == 0x800`, `0x80037504`) : toujours sans propriétaire. **Après E20.i, un héros sans bottes nage là où l'original le bloque** (la mer de la 416 dès la nouvelle partie) ; les traces `*-L0`, `*-L1` et `R9-deepwater-noboots` sont mesurées (information). Recommandé : E20.i2, juste après (une égalité sur `0xE00`, pas un bit de masque : les échelles valent `0xC00`) | l'auteur (Q-N3) |
 | O-E20-10 | **Tranché le 2026-10-09 (D-E20-14).** `UpdateItemEffectState` (table de défense, bottes, régénération, PV) et `0x8003634C` : bouchons dans E20.a et portage dans E20.c2, ou portage dès E20.a | — |
+| O-E20-18 | (2026-10-16) L'objet 008 (une arme de rang 4 du créneau 1, fiche +50 sur tous les coups à bit d'équipement ; `docs/plan-e20-annexe/e20-armes/f-weapons.md:55`, `:73` ; on ignore si une carte la donne) : à porter, ou hors périmètre ? | l'auteur |
+| O-E20-19 | (2026-10-16) Un objet lancé qui a des attaques (graines, bombe, caisse) blesse-t-il au contact ? Le binaire le détruit après 5 ticks quand le héros le rattrape (`docs/plan-e20-annexe/e20-armes/h-g-deps.md:44`) ; la règle de dégâts n'est écrite nulle part | E20.g2a (T0) |
+| O-E20-20 | (2026-10-16) E20.h (h0 cadre de l'usage d'un objet, h1 soins, h3 bombe et graines, h4 magies) n'a pas de section détaillée ; les corps de C63, C65, C75, E3, E13 et E28 ne sont pas lus (`docs/plan-e20-annexe/e20-armes/h-g-deps.md:111`) | E20.h (T0) |
+| O-E20-21 | (2026-10-16) Les blocs poussables : aucune tranche ; la tête de C4 (« pierres, tonneaux, blocs ») seule est décodée (g2c). Font-ils partie du portage ou des plateformes ? | E20.g2c (T0), l'auteur |
+| O-E20-22 | (2026-10-16) Le nettoyage de `PlatformEntity.CarriedEntity` au recyclage d'une entité n'est pas porté (`AlundraWorldProxy.cs:3290`, commentaire) : sans effet tant que rien ne porte, à reprendre dans g1a | E20.g1a |
 
 ## 3. Hors périmètre
 

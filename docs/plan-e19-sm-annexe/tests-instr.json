@@ -1,0 +1,1758 @@
+{
+ "00": {
+  "methods": 153,
+  "files": 67,
+  "examples": [
+   "AlundraAnimationClockDriveTests.cs::RunSpriteEvent",
+   "AlundraAnimationClockDriveTests.cs::TD12_ASwitchMadeOnAFrameWithoutATick_OwesItsTickToTheNextFrame",
+   "AlundraAnimationClockDriveTests.cs::TD20_TwoWaitsInARow_TheSecondOnTheLoopTheChainLeadsTo"
+  ]
+ },
+ "01": {
+  "methods": 120,
+  "files": 37,
+  "examples": [
+   "AlundraAnimationClockDriveTests.cs::TD10_MapProgram_LoopOf10Ticks_NTurns",
+   "AlundraAnimationClockDriveTests.cs::TD11_TheOwedTick_IsClearedByASwitchTheScriptMakesBeforeTheStep",
+   "AlundraAnimationClockDriveTests.cs::TD12_ASwitchMadeOnAFrameWithoutATick_OwesItsTickToTheNextFrame"
+  ]
+ },
+ "02": {
+  "methods": 15,
+  "files": 15,
+  "examples": [
+   "AlundraCameraSwayFollowTests.cs::Sway_AtTheLeftBorder_TheBoundCutsTheNegativeSideAndTheFollowAbsorbsTheRest",
+   "AlundraDialogueOpcodeDispatchTests.cs::OpenDialog_0x0D_DispatchedAgainWhileStillOpen_RetriesInsteadOfOpeningASecondBox",
+   "AlundraEffectStageWiringTests.cs::Map391_ACreationQueuedBeforeTheFirstUpdateOfTheProxy_TakesSlot9_AfterTheMapEventCreations_NothingIsErased"
+  ]
+ },
+ "03": {
+  "methods": 8,
+  "files": 8,
+  "examples": [
+   "AlundraBgmFadeDirectorTests.cs::ProductionSite_CorpusFadeSilentLoadThenA5Start_TheMostFrequentBlock_DrivenThroughTheRealRunner",
+   "AlundraEntitySlotTableTests.cs::AReleasedSlotLowerThanTheOthers_IsTakenBeforeAnyFreshHigherOne",
+   "AlundraEventProgramRunnerTests.cs::RunScript_SlotA_ResultCarriesAcrossSequentialCalls"
+  ]
+ },
+ "04": {
+  "methods": 5,
+  "files": 4,
+  "examples": [
+   "AlundraEffectStageWiringTests.cs::TheLoadSpawn_ReadsTheArrivalTile_NotTheTileTheHeroHasWhenTheFirstUpdateRuns_Inside",
+   "AlundraEffectStageWiringTests.cs::TheRaysOfMap163_AreDrawnAtTicks0To10_AndFreedAtTick11_NotAt10Nor12",
+   "AlundraHitOpcodesTests.cs::Op95_InAProgramD_ReadsTheStoredBox_AndTheStateItLeavesIsTheNextProgramsInput"
+  ]
+ },
+ "05": {
+  "methods": 9,
+  "files": 8,
+  "examples": [
+   "AlundraCameraSwayFollowTests.cs::Sway_AtTheLeftBorder_TheBoundCutsTheNegativeSideAndTheFollowAbsorbsTheRest",
+   "AlundraEffectStageWiringTests.cs::Map391_ACreationQueuedBeforeTheFirstUpdateOfTheProxy_TakesSlot9_AfterTheMapEventCreations_NothingIsErased",
+   "AlundraEventProgramRunnerTests.cs::FlagOnThenOff_RoundTrips"
+  ]
+ },
+ "06": {
+  "methods": 4,
+  "files": 3,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::FlagOnThenOff_RoundTrips",
+   "AlundraWorldProxySpawnInitializationTests.cs::ApplySpawnInitialization_KnownHeaderWithIdsvAnimDirs_StashesTheFrameZeroTableOnTheProxy",
+   "AlundraWorldProxySpawnInitializationTests.cs::BuildIdsvByAnimDirection_KeepsOnlyFrameZeroPerAnimDirection"
+  ]
+ },
+ "07": {
+  "methods": 3,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::CheckEntityInArea_0x07_MatchInsideBox_ResultOne",
+   "AlundraEventProgramRunnerTests.cs::CheckEntityInArea_0x07_MatchOutsideBox_ResultZero",
+   "AlundraEventProgramRunnerTests.cs::CheckEntityInArea_0x07_RealMap389Params_TileZDerivedFromPosZ"
+  ]
+ },
+ "08": {
+  "methods": 7,
+  "files": 4,
+  "examples": [
+   "AlundraCameraSwayTests.cs::Step_ChangeInTheMiddle_KeepsOffsetAndReachAndClampsToTheNewLimit",
+   "AlundraEffectStageWiringTests.cs::Map391_ACreationQueuedBeforeTheFirstUpdateOfTheProxy_TakesSlot9_AfterTheMapEventCreations_NothingIsErased",
+   "AlundraEventProgramRunnerTests.cs::Timer_0x73_0x74_ALoopRunsItsBodyV1Times_InOneCall"
+  ]
+ },
+ "09": {
+  "methods": 4,
+  "files": 4,
+  "examples": [
+   "AlundraEntitySlotTableTests.cs::V5_lowest_first_AfterReleasing40_9_And21_TheNextThreeApparitionsTakeThemLowestFirst",
+   "AlundraEventProgramRunnerLogicEntityTests.cs::SetAnim_0x1A_AndSetDirection_0x09_ActOnTheLogicEntity_NotTheOwner",
+   "AlundraHeroAttackTests.cs::B1_TheTablesAreTheBinarys_AddressesAndValues"
+  ]
+ },
+ "0A": {
+  "methods": 7,
+  "files": 5,
+  "examples": [
+   "AlundraAnimationSoundTests.cs::T1_TheHeroArrivingByAdoptPlayerPawnInTheAnimation43_AsksSound10_AndTheFirstSwitchAsksNoSecond",
+   "AlundraEffectBankLoaderTests.cs::AWellFormedCompanion_GivesItsRecordsAndTables_AndTheGlobalTablesAreTheGlobalOnes",
+   "AlundraEventProgramRunnerTests.cs::ReverseDirection_0x0A_AddsSixteen"
+  ]
+ },
+ "0B": {
+  "methods": 8,
+  "files": 3,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::WalkUntilBeyondRadius_0x0B_ARadiusOfAHighByteIsRead_256Pixels",
+   "AlundraEventProgramRunnerTests.cs::WalkUntilBeyondRadius_0x0B_EndsOnAMoveTowardsMinusXOrOnYAlone",
+   "AlundraEventProgramRunnerTests.cs::WalkUntilBeyondRadius_0x0B_ForceAdjustedWithNavigationGrid_EngagesTheDetourOnce_AndResetsItOnCompletion"
+  ]
+ },
+ "0C": {
+  "methods": 2,
+  "files": 2,
+  "examples": [
+   "AlundraItemAndMoneyOpcodesTests.cs::DestroyEntity",
+   "AlundraRandomOpcodeTests.cs::SetRandomCardinalDirection_0x0C_FiveDrawsGiveTheBinarysDirections_AndTheSeedAdvancesOnce"
+  ]
+ },
+ "0D": {
+  "methods": 8,
+  "files": 5,
+  "examples": [
+   "AlundraDialogueFlagMarkerTests.cs::DegradedPath_NoDirector_ReadsTheFlagMarkersOfEveryPage",
+   "AlundraDialogueOpcodeDispatchTests.cs::Degraded_0x0D_StillParsesAndAppliesNumericFlags_SoALaterWaitDoesNotDeadlock",
+   "AlundraDialogueOpcodeDispatchTests.cs::OpenDialog_0x0D_DispatchedAgainWhileStillOpen_RetriesInsteadOfOpeningASecondBox"
+  ]
+ },
+ "0E": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "0F": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "10": {
+  "methods": 5,
+  "files": 5,
+  "examples": [
+   "AlundraAnimationClockDriveTests.cs::TD20_TwoWaitsInARow_TheSecondOnTheLoopTheChainLeadsTo",
+   "AlundraBeannoideGrateArcTests.cs::<class>",
+   "AlundraEventProgramRunnerTests.cs::PlayerLoseControl_0x10_SetsControlLockedBit"
+  ]
+ },
+ "11": {
+  "methods": 2,
+  "files": 2,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::PlayerGainControl_0x11_ClearsControlLockedBit_PreservesOtherBits",
+   "WallPlacementOverlayTests.cs::TryParseFloor_MultipleEntries_ParsesElevatedAndClosureEntriesTheSameWay"
+  ]
+ },
+ "12": {
+  "methods": 3,
+  "files": 2,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::PlaySound1_0x12_Implemented_DerivesIdFromSingleByte_NotTwo",
+   "AlundraEventProgramRunnerTests.cs::PlaySound1_0x12_NullSoundPlayer_DegradedNoOp_SkipsBySize",
+   "AlundraTextBoxOracleTests.cs::O11_AB_UnderTheArcsPad_FromAMapEvent_AndFromAnEntityScript"
+  ]
+ },
+ "13": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "14": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "15": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "16": {
+  "methods": 4,
+  "files": 3,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::HighGravity_0x16_SetsFlagAndKeepsControllerGravityAtZero",
+   "AlundraFlailBounceTests.cs::FIronAir_AHitAtTick8_BouncesTo0x1F_Then0x2D_AndTheJumpLandsAtTick22_LandingStubCalledThere",
+   "AlundraFlailBounceTests.cs::FSteelAir_AHitAtTick8_BouncesTo0x26_ThenLands_LandingStubCalledAtTick22"
+  ]
+ },
+ "17": {
+  "methods": 5,
+  "files": 4,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::LowGravity_0x17_ClearsFlagAndZeroesControllerGravity",
+   "AlundraEventProgramRunnerTests.cs::LowGravity_0x17_NoController_DoesNotThrow",
+   "AlundraHeroAttackTests.cs::AT8n_OnePixelBeforeTheEdge_TheSwingRunsToItsEnd"
+  ]
+ },
+ "18": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "19": {
+  "methods": 6,
+  "files": 3,
+  "examples": [
+   "AlundraAnimationClockDriveTests.cs::TD7_AChainEndOnTheTickOfTheFirstCall_IsNotLost_AndTheLoopThatFollowsIsNotCounted",
+   "AlundraEntityDestructionTests.cs::TR5_AChainOf0x19_DeactivatesThenDestroys_AndTheEntityLeavesTheListOnTheFollowingFrame",
+   "AlundraEventProgramRunnerTests.cs::Deactivate_0x19_FromLoaded_AlsoBecomesDeactivated"
+  ]
+ },
+ "1A": {
+  "methods": 96,
+  "files": 14,
+  "examples": [
+   "AlundraAnimationClockDriveTests.cs::TD10_MapProgram_LoopOf10Ticks_NTurns",
+   "AlundraAnimationClockDriveTests.cs::TD11_TheOwedTick_IsClearedByASwitchTheScriptMakesBeforeTheStep",
+   "AlundraAnimationClockDriveTests.cs::TD13_WhileTheGameplayIsFrozen_TheLogicalClockStops"
+  ]
+ },
+ "1B": {
+  "methods": 6,
+  "files": 3,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::Fly_0x1B_BlockEighteenRealImpulse_SetsForceZOnlyNeverPokesControllerVelocity",
+   "AlundraEventProgramRunnerTests.cs::Fly_0x1B_NoController_OnlyStoresForceZ",
+   "AlundraEventProgramRunnerTests.cs::Fly_0x1B_PositiveImpulse_SignExtendsCorrectly"
+  ]
+ },
+ "1C": {
+  "methods": 26,
+  "files": 6,
+  "examples": [
+   "AlundraAnimationClockDriveTests.cs::TD10_MapProgram_LoopOf10Ticks_NTurns",
+   "AlundraAnimationClockDriveTests.cs::TD13_WhileTheGameplayIsFrozen_TheLogicalClockStops",
+   "AlundraAnimationClockDriveTests.cs::TD16_AnAnimationTheEntityDoesNotHave_RestartsTheOneThatPlays"
+  ]
+ },
+ "1D": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraAnimationClockDriveTests.cs::TD15_AMapEventWaitOnTheHeroIdleLoop_EndsOnTheTurn"
+  ]
+ },
+ "1E": {
+  "methods": 8,
+  "files": 3,
+  "examples": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs::Walk_0x1E_MeasuresTheDistanceOfTheLogicEntity_ButKeepsItsMemoOnTheOwnersState",
+   "AlundraEventProgramRunnerTests.cs::Walk_0x1E_BelowThreshold_KeepsSuspending",
+   "AlundraEventProgramRunnerTests.cs::Walk_0x1E_ExactThreshold_CompletesInclusive_AndResetsParameters"
+  ]
+ },
+ "1F": {
+  "methods": 6,
+  "files": 3,
+  "examples": [
+   "AlundraBalanceTablesTests.cs::TheBalanceIndexIn0x1FTo0x7F_IsReadAs0x1E_AndTheChainAdvancesWhileTheLevelIsBelowTheThreshold",
+   "AlundraEventProgramRunnerTests.cs::WalkWithCollision_0x1F_ForceAdjustedNonzero_EndsEarlyDespiteDistanceNotReached",
+   "AlundraEventProgramRunnerTests.cs::WalkWithCollision_0x1F_NeitherDistanceNorForceAdjusted_KeepsSuspending"
+  ]
+ },
+ "20": {
+  "methods": 6,
+  "files": 3,
+  "examples": [
+   "AlundraEntityContactArcTests.cs::TC61_TheCartRailsOnMap61_TheHeroStopsAtEachBlock_TheSceneSetsG672",
+   "AlundraHeightWaitOpcodesTests.cs::TZ20_ALimitOfZeroStillEndsOnlyAtTheSecondCall",
+   "AlundraHeightWaitOpcodesTests.cs::TZ20_TheDistanceIsAbsolute_DownwardEndsToo_AndSixteenPixelsDownIsExact"
+  ]
+ },
+ "21": {
+  "methods": 7,
+  "files": 2,
+  "examples": [
+   "AlundraVisionAndCoastArcTests.cs::A3_TheVisionOnMap478_TheBlockRises_T20ToT60Fall_ThenTheWarpBackToMap476Departs",
+   "AlundraZWaitOpcodesTests.cs::TZ21_ACollisionAtALaterCallEnds",
+   "AlundraZWaitOpcodesTests.cs::TZ21_ACollisionAtTheFirstCallEndsAtOnce"
+  ]
+ },
+ "22": {
+  "methods": 7,
+  "files": 4,
+  "examples": [
+   "AlundraBeannoideGrateArcTests.cs::<class>",
+   "AlundraHeightWaitOpcodesTests.cs::TZ20_ALimitOfZeroStillEndsOnlyAtTheSecondCall",
+   "AlundraHeightWaitOpcodesTests.cs::TZ22_TheFirstCallMemorisesTheShiftedTargetOfTheRecordHeight_AndLeavesTheForce"
+  ]
+ },
+ "23": {
+  "methods": 3,
+  "files": 2,
+  "examples": [
+   "AlundraEntityContactArcTests.cs::TC61_TheCartRailsOnMap61_TheHeroStopsAtEachBlock_TheSceneSetsG672",
+   "AlundraHeightWaitOpcodesTests.cs::TZ23_IsTheHeightWaitOrAZContact_AndTheContactEndsItFarFromTheTarget",
+   "AlundraHeightWaitOpcodesTests.cs::TZ23_TheTargetEndsItToo_AndAContactAlreadyPostedEndsItAtTheFirstCall_WithTheMemoWritten"
+  ]
+ },
+ "24": {
+  "methods": 5,
+  "files": 2,
+  "examples": [
+   "AlundraAnimationClockDriveTests.cs::TD20_TwoWaitsInARow_TheSecondOnTheLoopTheChainLeadsTo",
+   "AlundraEventProgramRunnerWaitForceAdjustedTests.cs::U1_TheWaitSuspendsWhileForceAdjustedIsZero_AndEndsOnceItIsNonZero",
+   "AlundraEventProgramRunnerWaitForceAdjustedTests.cs::U2_AnyNonZeroForceAdjustedEndsTheWait"
+  ]
+ },
+ "25": {
+  "methods": 4,
+  "files": 2,
+  "examples": [
+   "AlundraAnimationClockDriveTests.cs::TD19_AChainOf16Ticks_ThenALoopOf10Ticks",
+   "AlundraEventProgramRunnerWaitCollidedZTests.cs::UJ2_TheWaitHasNoSideEffect_NoDetourNoDirectionNoAnimation_EvenWithANavigationGrid",
+   "AlundraEventProgramRunnerWaitCollidedZTests.cs::UJ2_TheWaitReadsTheLogicEntity_NotTheOwner"
+  ]
+ },
+ "26": {
+  "methods": 3,
+  "files": 2,
+  "examples": [
+   "AlundraTextBoxOracleTests.cs::O10_A0x4CClearsThePending0x4D_TheBinaryKeepsItAndTypesALetterTooMany",
+   "AlundraZWaitOpcodesTests.cs::TZ26_TenCallsHaveNoSideEffect",
+   "AlundraZWaitOpcodesTests.cs::TZ26_WaitsUntilForceAdjustedOrCollidedZ"
+  ]
+ },
+ "27": {
+  "methods": 6,
+  "files": 3,
+  "examples": [
+   "AlundraEntityContactArcTests.cs::TB9_CounterProof_AHeroPlacedInTheSouthHalfOfTheTileParksInTheWayOfSeptimus_TheSceneStalls",
+   "AlundraEntityContactArcTests.cs::TB9_SeptimusAndTheBlockOnMap10_BothStopAtRec41_TheSceneSetsG482",
+   "AlundraEventProgramRunnerTests.cs::FacePlayer_0x27_HandComputedCardinalCase_PlayerDueEast"
+  ]
+ },
+ "28": {
+  "methods": 6,
+  "files": 5,
+  "examples": [
+   "AlundraBeannoideGrateArcTests.cs::<class>",
+   "AlundraClassAndBranchOpcodesTests.cs::SetClassB_0x28_SetsTheBit_AndTheControllerMaskFollows",
+   "AlundraClassAndBranchOpcodesTests.cs::TheClassOpcodes_WithoutAController_OnlyTouchTheFlags"
+  ]
+ },
+ "29": {
+  "methods": 3,
+  "files": 3,
+  "examples": [
+   "AlundraClassAndBranchOpcodesTests.cs::ClearClassB_0x29_ClearsTheBit_AndTheControllerMaskFollows",
+   "AlundraEntityContactArcTests.cs::TB9_SeptimusAndTheBlockOnMap10_BothStopAtRec41_TheSceneSetsG482",
+   "AlundraTextBoxOracleTests.cs::O10_A0x4CClearsThePending0x4D_TheBinaryKeepsItAndTypesALetterTooMany"
+  ]
+ },
+ "2A": {
+  "methods": 4,
+  "files": 2,
+  "examples": [
+   "AlundraClassAndBranchOpcodesTests.cs::SetClassA_0x2A_SetsTheBit_AndTheControllerMaskFollows",
+   "AlundraClassAndBranchOpcodesTests.cs::TheClassOpcodes_WithoutAController_OnlyTouchTheFlags",
+   "AlundraEventProgramRunnerTests.cs::PlaySound1_0x12_Implemented_DerivesIdFromSingleByte_NotTwo"
+  ]
+ },
+ "2B": {
+  "methods": 4,
+  "files": 3,
+  "examples": [
+   "AlundraClassAndBranchOpcodesTests.cs::ClearClassA_0x2B_ClearsTheBit_AndTheControllerMaskFollows",
+   "AlundraHeroChargeTests.cs::C2Steel_TheRelease_AtTick91_StartsTheChargedSwing_16Effects_Sound43_ThenTheShotAtTick112",
+   "AlundraHeroChargeTests.cs::FiveFreeSlots_AtTheRelease_CreateTheFirstFiveEffectsOfTheBurst_AndTheReleaseStillCompletes"
+  ]
+ },
+ "2C": {
+  "methods": 4,
+  "files": 3,
+  "examples": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs::IdSearch_TakesTheLogicEntityAsItsReference",
+   "AlundraEventProgramRunnerTests.cs::CheckNoEntityByFunctionId_0x2C_NoMatches_SetsResult1",
+   "AlundraEventProgramRunnerTests.cs::CheckNoEntityByFunctionId_0x2C_OneMatch_SetsResult0"
+  ]
+ },
+ "2D": {
+  "methods": 2,
+  "files": 2,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::ActivateEntity_0x2D_DelegatesToContext_WithSelfAsLogicEntity",
+   "AlundraRecordBirthClockTests.cs::Dispose"
+  ]
+ },
+ "2E": {
+  "methods": 4,
+  "files": 2,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::DestroyEntity_0x2E_DestroysEveryMatch_AndSetsResult1",
+   "AlundraEventProgramRunnerTests.cs::DestroyEntity_0x2E_NoMatches_SetsResult0",
+   "AlundraEventProgramRunnerTests.cs::DestroyEntity_0x2E_NoWorldContext_DoesNotThrow_StillMatchesOwner"
+  ]
+ },
+ "2F": {
+  "methods": 7,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::CheckPadButtons_0x2F_ButtonHeld_ResultOne",
+   "AlundraEventProgramRunnerTests.cs::CheckPadButtons_0x2F_ButtonNotHeld_ResultZero",
+   "AlundraEventProgramRunnerTests.cs::CheckPadButtons_0x2F_MaskComposedFromTwoOperandBytes"
+  ]
+ },
+ "30": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "31": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::IfFlagOff_FallsThrough_WhenFlagSet",
+   "AlundraEventProgramRunnerTests.cs::IfFlagOff_TakesBranch_WhenFlagClear"
+  ]
+ },
+ "32": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::ToggleFlag_0x32_TogglesClearBitOnThenOff_PersistentBank",
+   "AlundraEventProgramRunnerTests.cs::ToggleFlag_0x32_TogglesClearBitOnThenOff_TemporaryBank"
+  ]
+ },
+ "33": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::CheckFlagsOn_0x33_AllFourSet_SetsResult1",
+   "AlundraEventProgramRunnerTests.cs::CheckFlagsOn_0x33_OnePairClear_SetsResult0_ShortCircuits"
+  ]
+ },
+ "34": {
+  "methods": 4,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::CheckFlagsOff_0x34_AllFourBitsSet_SetsResult0",
+   "AlundraEventProgramRunnerTests.cs::CheckFlagsOff_0x34_NoBitsSet_SetsResult1",
+   "AlundraEventProgramRunnerTests.cs::CheckFlagsOff_0x34_OnlyFirstBitSet_SetsResult0"
+  ]
+ },
+ "35": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::WaitUntilFlagOff_0x35_FlagClear_AdvancesByThree",
+   "AlundraEventProgramRunnerTests.cs::WaitUntilFlagOff_0x35_FlagSet_SuspendsAtSameCodeIndex"
+  ]
+ },
+ "36": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::WaitUntilFlagOn_FlagClear_SuspendsAtSameCodeIndex",
+   "AlundraEventProgramRunnerTests.cs::WaitUntilFlagOn_FlagSet_AdvancesByThree"
+  ]
+ },
+ "37": {
+  "methods": 9,
+  "files": 5,
+  "examples": [
+   "AlundraAnimationClockDriveTests.cs::TD20_TwoWaitsInARow_TheSecondOnTheLoopTheChainLeadsTo",
+   "AlundraAnimationClockDriveTests.cs::TD7_AChainEndOnTheTickOfTheFirstCall_IsNotLost_AndTheLoopThatFollowsIsNotCounted",
+   "AlundraBgmFadeDirectorTests.cs::ProductionSite_CorpusFadeSilentLoadThenA5Start_TheMostFrequentBlock_DrivenThroughTheRealRunner"
+  ]
+ },
+ "38": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::SetSaveMapIdToInternalMapIndex_0x38_OutOfRangeIndex_SkipsWithoutThrowing",
+   "AlundraEventProgramRunnerTests.cs::SetSaveMapIdToInternalMapIndex_0x38_RealMap389Operands_WritesTable"
+  ]
+ },
+ "39": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraDialogueOpcodeDispatchTests.cs::Degraded_NoDirectorAtAll_0x39_AlwaysAdvances"
+  ]
+ },
+ "3A": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::SetCardinalDirection_0x3A_TakesTheTableEntryOfV1AndThree"
+  ]
+ },
+ "3B": {
+  "methods": 4,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::CheckPlayerInArea_0x3B_BoundsAreInclusiveOnEveryFace",
+   "AlundraEventProgramRunnerTests.cs::CheckPlayerInArea_0x3B_NoPlayerSpawned_ResultZero_DegradedKind_StillAdvances",
+   "AlundraEventProgramRunnerTests.cs::CheckPlayerInArea_0x3B_PlayerInsideBox_ResultOne_AdvancesBySeven"
+  ]
+ },
+ "3C": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "3D": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "3E": {
+  "methods": 7,
+  "files": 4,
+  "examples": [
+   "AlundraEntitySlotWorldTests.cs::AMapLoadWithAFullTable_SkipsTheRecordsThatFindNoSlot_AndLogsEach",
+   "AlundraEventProgramRunnerTests.cs::IsPlayerRidingEntity_0x3E_NoPlayerSpawned_ResultZero_DegradedKind",
+   "AlundraEventProgramRunnerTests.cs::IsPlayerRidingEntity_0x3E_PlayerRidingAnotherEntity_SetsResult0"
+  ]
+ },
+ "3F": {
+  "methods": 9,
+  "files": 3,
+  "examples": [
+   "AlundraClassAndBranchOpcodesTests.cs::IsAnyEntityRidingMe_0x3F_ABlockedRider_GivesZero",
+   "AlundraClassAndBranchOpcodesTests.cs::IsAnyEntityRidingMe_0x3F_ADeactivatedRider_GivesOne",
+   "AlundraClassAndBranchOpcodesTests.cs::IsAnyEntityRidingMe_0x3F_ALoadedRider_GivesZero_TheBinaryNotTheDecompilation"
+  ]
+ },
+ "40": {
+  "methods": 9,
+  "files": 2,
+  "examples": [
+   "AlundraEventProgramRunnerProgramIndexTests.cs::U10_AProgramSlotOfSixOrMore_DoesNothing_ClearsNothing_WarnsOncePerOpcode_AndReturnsSize3",
+   "AlundraEventProgramRunnerProgramIndexTests.cs::U12_SetProgramIndex_ThenABreak_ClearsTheStateAtTheEndOfTheCall_AndTheNextCallStartsOver",
+   "AlundraEventProgramRunnerProgramIndexTests.cs::U13_SetProgramIndex_ThenAWait_ClearsTheStateAtTheEndOfTheCall_SoTheProgramNeverGetsPastTheWait"
+  ]
+ },
+ "41": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerProgramIndexTests.cs::U10_AProgramSlotOfSixOrMore_DoesNothing_ClearsNothing_WarnsOncePerOpcode_AndReturnsSize3",
+   "AlundraEventProgramRunnerProgramIndexTests.cs::U11_SetSpriteProgramIndex_WritesTheLogicEntitysSpriteIndex_ClearsNothing_AndSizeIs3"
+  ]
+ },
+ "42": {
+  "methods": 4,
+  "files": 2,
+  "examples": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs::NoObstacleSlide_0x46And0x45_AfterA0x42_WriteTheFlagsOfTheHero_NotTheOwners_ResultUntouched",
+   "AlundraEventProgramRunnerLogicEntityTests.cs::SetLogicEntityToPlayer_0x42_SetsTheHero_NotTheOwner_AndAdvancesBy1",
+   "AlundraEventProgramRunnerLogicEntityTests.cs::SetLogicEntityToPlayer_0x42_WithoutAHero_LeavesTheContext_IsDegraded_AndAdvancesBy1"
+  ]
+ },
+ "43": {
+  "methods": 14,
+  "files": 5,
+  "examples": [
+   "AlundraDialogueBoxOrderTests.cs::K3_AMenuOpenBoxOpenedAtTick0_ReleasedAtTick67_ThawsTheMapEventsInTheMiddleOfTheCatchUpFrame22_AndTheEntitiesAtFrame23",
+   "AlundraDialogueSpeakerRuleTests.cs::Dialog0x0D_AfterA0x43_TakesTheEntityTheSearchFound",
+   "AlundraEventProgramRunnerLogicEntityTests.cs::AMapEvent_ThatRetargetsItsContext_KeepsItForItsNextFrame"
+  ]
+ },
+ "44": {
+  "methods": 4,
+  "files": 1,
+  "examples": [
+   "AlundraDialogueOpcodeDispatchTests.cs::Choice_0x44_FirstEntry_OpensRealOuiNonLabels_ThenBlocksUntilSelected_ThenWritesResult",
+   "AlundraDialogueOpcodeDispatchTests.cs::Choice_0x44_FirstOptionSelected_ResultOne",
+   "AlundraDialogueOpcodeDispatchTests.cs::Degraded_ADirectorWithoutAPresenter_0x44_WritesResultOne_AndOpensNoChoice"
+  ]
+ },
+ "45": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs::NoObstacleSlide_0x46And0x45_AfterA0x42_WriteTheFlagsOfTheHero_NotTheOwners_ResultUntouched"
+  ]
+ },
+ "46": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs::NoObstacleSlide_0x46And0x45_AfterA0x42_WriteTheFlagsOfTheHero_NotTheOwners_ResultUntouched"
+  ]
+ },
+ "47": {
+  "methods": 3,
+  "files": 2,
+  "examples": [
+   "AlundraEntityContactArcTests.cs::TA10v_TheVillagersOnMap10_NestusStopsAtMeade_TheSceneReachesItsEnd",
+   "AlundraZWaitOpcodesTests.cs::TZ47_ACollidedZAloneDoesNotEndTheWait",
+   "AlundraZWaitOpcodesTests.cs::TZ47_WaitsUntilHitCounterOrForceAdjusted"
+  ]
+ },
+ "48": {
+  "methods": 3,
+  "files": 2,
+  "examples": [
+   "AlundraEntityContactArcTests.cs::TA10v_TheVillagersOnMap10_NestusStopsAtMeade_TheSceneReachesItsEnd",
+   "AlundraZWaitOpcodesTests.cs::TZ48_AForceAdjustedAloneDoesNotEndTheWait",
+   "AlundraZWaitOpcodesTests.cs::TZ48_WaitsUntilHitCounterOrCollidedZ"
+  ]
+ },
+ "49": {
+  "methods": 3,
+  "files": 3,
+  "examples": [
+   "AlundraEntityContactArcTests.cs::TA10v_TheVillagersOnMap10_NestusStopsAtMeade_TheSceneReachesItsEnd",
+   "AlundraEventProgramRunnerTests.cs::Restart_0x49_JumpsBackToProgramStartAndResumesExecution",
+   "AlundraStoryChainSkippedOpcodesTests.cs::Walk_ARestartEndsTheWalkOnCodeAlreadySeen"
+  ]
+ },
+ "4A": {
+  "methods": 3,
+  "files": 2,
+  "examples": [
+   "AlundraClassAndBranchOpcodesTests.cs::IfTrueRestart_0x4A_ResultNonZero_JumpsBackToTheProgramStart",
+   "AlundraClassAndBranchOpcodesTests.cs::IfTrueRestart_0x4A_ResultZero_Advances",
+   "AlundraEntityContactArcTests.cs::TA10v_TheVillagersOnMap10_NestusStopsAtMeade_TheSceneReachesItsEnd"
+  ]
+ },
+ "4B": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::IfFalseRestart_0x4B_ResultNonZero_AdvancesPastInstructionInstead",
+   "AlundraEventProgramRunnerTests.cs::IfFalseRestart_0x4B_ResultZero_JumpsBackToProgramStart"
+  ]
+ },
+ "4C": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraDialogueOpcodeDispatchTests.cs::Degraded_0x4CTo0x4F_NoDirector_AdvanceBySizeWithoutThrowing",
+   "AlundraDialogueOpcodeDispatchTests.cs::Opcodes0x4CTo0x4F_AreExecutedBySize_NoneGivesTheHandBack_AndTheyReachTheBox"
+  ]
+ },
+ "4D": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraDialogueOpcodeDispatchTests.cs::Degraded_0x4CTo0x4F_NoDirector_AdvanceBySizeWithoutThrowing",
+   "AlundraDialogueOpcodeDispatchTests.cs::Opcodes0x4CTo0x4F_AreExecutedBySize_NoneGivesTheHandBack_AndTheyReachTheBox"
+  ]
+ },
+ "4E": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraDialogueOpcodeDispatchTests.cs::Degraded_0x4CTo0x4F_NoDirector_AdvanceBySizeWithoutThrowing",
+   "AlundraDialogueOpcodeDispatchTests.cs::Opcodes0x4CTo0x4F_AreExecutedBySize_NoneGivesTheHandBack_AndTheyReachTheBox"
+  ]
+ },
+ "4F": {
+  "methods": 3,
+  "files": 2,
+  "examples": [
+   "AlundraDialogueOpcodeDispatchTests.cs::Degraded_0x4CTo0x4F_NoDirector_AdvanceBySizeWithoutThrowing",
+   "AlundraDialogueOpcodeDispatchTests.cs::Opcodes0x4CTo0x4F_AreExecutedBySize_NoneGivesTheHandBack_AndTheyReachTheBox",
+   "AlundraSpawnBySpriteIndexInterfaceTests.cs::C_TheNullContract_AnInvalidIndexAnAbsentPrefabOrAnUnknownMap_AddsNothing_AndLogsOneLine"
+  ]
+ },
+ "50": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraDialogueOpcodeDispatchTests.cs::Degraded_0x50And0x51_NoOpButNeverThrow",
+   "AlundraDialogueOpcodeDispatchTests.cs::Opcodes0x4CTo0x4F_AreExecutedBySize_NoneGivesTheHandBack_AndTheyReachTheBox"
+  ]
+ },
+ "51": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraDialogueOpcodeDispatchTests.cs::Degraded_0x50And0x51_NoOpButNeverThrow",
+   "AlundraDialogueOpcodeDispatchTests.cs::Opcodes0x4CTo0x4F_AreExecutedBySize_NoneGivesTheHandBack_AndTheyReachTheBox"
+  ]
+ },
+ "52": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraScriptedPortalOpcodeTests.cs::DestroyEntity"
+  ]
+ },
+ "53": {
+  "methods": 6,
+  "files": 3,
+  "examples": [
+   "AlundraAnimationImpulseSpawnTests.cs::UJ7_TheHeroArrivingByThe0x53LaunchedDuringTheAnimation2_TakesNoImpulse_AndStaysAtItsHeightFor5Ticks",
+   "AlundraEventProgramRunnerTests.cs::ChangeMap_0x53_DecodesMapIdTileEffectAndSfx_ExactValues",
+   "AlundraEventProgramRunnerTests.cs::ChangeMap_0x53_KeepsPlayerCurrentAnimationAndDirection_NotThePortalPathConstant"
+  ]
+ },
+ "54": {
+  "methods": 3,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::Opcode54_NullCellMutator_DegradedNoOp_SkipsBySize",
+   "AlundraEventProgramRunnerTests.cs::SetCellBits_0x54_ClampsCoordinatesToHardcodedBounds",
+   "AlundraEventProgramRunnerTests.cs::SetWalkable_0x54_Implemented_OrsBitsIntoClampedCell_ResultUntouched"
+  ]
+ },
+ "55": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::Opcode55_NullCellMutator_DegradedNoOp_SkipsBySize",
+   "AlundraEventProgramRunnerTests.cs::SetUnwalkable_0x55_Implemented_AndsComplementIntoClampedCell_ResultUntouched"
+  ]
+ },
+ "56": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraHeroRunTests.cs::G5_TheEastVariants_FollowTheOracleShiftedByTheSameTick",
+   "AlundraHeroRunTests.cs::G5_TheEastWall_BouncesOneTickEarly_O_E19_42_ThenTheOracleShifted"
+  ]
+ },
+ "57": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "58": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "59": {
+  "methods": 3,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerLogicEntityTests.cs::SetEntityAnim_0x59_ById_SetsEveryMatch_AndTakesTheLogicEntityAsReference",
+   "AlundraEventProgramRunnerLogicEntityTests.cs::SetEntityAnim_0x59_GetOwner_0x80_SetsTheLogicEntity",
+   "AlundraEventProgramRunnerLogicEntityTests.cs::SetEntityAnim_0x59_OnTheHero_0x81_SetsItsTargetAnimation_AndAdvancesBy3"
+  ]
+ },
+ "5A": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::TurnEntity_0x5A_RealMap389Params_Mode2Cardinal"
+  ]
+ },
+ "5B": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::TurnEntityWithAnim_0x5B_RealMap389Params_SetsAnimAndDirection"
+  ]
+ },
+ "5C": {
+  "methods": 2,
+  "files": 2,
+  "examples": [
+   "AlundraDialogueSpeakerOpcodeTests.cs::Dispose",
+   "AlundraDialogueSpeakerRig.cs::DestroyEntity"
+  ]
+ },
+ "5D": {
+  "methods": 3,
+  "files": 1,
+  "examples": [
+   "AlundraClassAndBranchOpcodesTests.cs::DeactivateMatching_0x5D_NoMatch_ChangesNothing",
+   "AlundraClassAndBranchOpcodesTests.cs::DeactivateMatching_0x5D_OneMatch_BecomesDeactivated",
+   "AlundraClassAndBranchOpcodesTests.cs::DeactivateMatching_0x5D_TwoMatches_BothBecomeDeactivated_AndOthersStay"
+  ]
+ },
+ "5E": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::SetEntitiesForceZ_0x5E_WithNoEntityFound_WritesNothing",
+   "AlundraEventProgramRunnerTests.cs::SetEntitiesForceZ_0x5E_WritesInt16Shifted8_OnEveryEntityFound"
+  ]
+ },
+ "5F": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::UnknownOpcode_0x5F_SkipsEightBytes_AsTheBinary"
+  ]
+ },
+ "60": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "61": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "62": {
+  "methods": 3,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::SetEntitiesFlagsLow16_0x62_NoController_DoesNotThrow",
+   "AlundraEventProgramRunnerTests.cs::SetEntitiesFlagsLow16_0x62_OrsFlagIntoEveryMatch",
+   "AlundraEventProgramRunnerTests.cs::SetEntitiesFlagsLow16_0x62_ResyncsControllerGravityAndWalkabilityMask"
+  ]
+ },
+ "63": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::ClearEntitiesFlagsLow16_0x63_ClearsOnlyLow16Bits",
+   "AlundraEventProgramRunnerTests.cs::ClearEntitiesFlagsLow16_0x63_ResyncsControllerGravityAndWalkabilityMask"
+  ]
+ },
+ "64": {
+  "methods": 2,
+  "files": 2,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::SetEntitiesPosition_0x64_SetsPosXYZ_FromRealMap389Operands",
+   "AlundraWorldProxyUpdateCharacterizationTests.cs::MapEventTeleport_IsVisibleToCameraTarget_SameFrame"
+  ]
+ },
+ "65": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::AddEntitiesPositionOffset_0x65_AddsOffset_ToEveryMatch"
+  ]
+ },
+ "66": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "67": {
+  "methods": 3,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::CameraFollowEntity_0x67_NoMatch_SetsNull_DoesNotKeepPreviousTarget",
+   "AlundraEventProgramRunnerTests.cs::CameraFollowEntity_0x67_RealMap389Param_DesignatesTheMatchingEntity",
+   "AlundraEventProgramRunnerTests.cs::SpawnEntityAtPosition_0x8A_ThenCameraFollow_0x67_FindsTheNewEntityByItsRecordNumber"
+  ]
+ },
+ "68": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::CameraStopFollowEntity_0x68_SetsNull"
+  ]
+ },
+ "69": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::CameraForceLookAt_0x69_NullsFollowedEntity_AndForwardsPackedCoordinates"
+  ]
+ },
+ "6A": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "6B": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "6C": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "6D": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "6E": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::IsForceAdjusted_0x6E_NonZeroForceAdjusted_SetsResult1",
+   "AlundraEventProgramRunnerTests.cs::IsForceAdjusted_0x6E_ZeroForceAdjusted_SetsResult0"
+  ]
+ },
+ "6F": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraZWaitOpcodesTests.cs::TZ6F_ResultIsCollidedWithEntityZ"
+  ]
+ },
+ "70": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::IsAboveGround_0x70_FallingEntity_ResultZero",
+   "AlundraEventProgramRunnerTests.cs::IsAboveGround_0x70_ReadsProxyIsOnGround"
+  ]
+ },
+ "71": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "72": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "73": {
+  "methods": 3,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::Timer_0x73_0x74_ALoopRunsItsBodyV1Times_InOneCall",
+   "AlundraEventProgramRunnerTests.cs::Timer_0x73_0x74_OnAPersistedState_ResumesAcrossCalls_AndTheCounterSurvivesInitializeEventData",
+   "AlundraEventProgramRunnerTests.cs::Timer_0x74_AtOrBelowZeroAfterTheDecrement_EndsAtOnce"
+  ]
+ },
+ "74": {
+  "methods": 3,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::Timer_0x73_0x74_ALoopRunsItsBodyV1Times_InOneCall",
+   "AlundraEventProgramRunnerTests.cs::Timer_0x73_0x74_OnAPersistedState_ResumesAcrossCalls_AndTheCounterSurvivesInitializeEventData",
+   "AlundraEventProgramRunnerTests.cs::Timer_0x74_AtOrBelowZeroAfterTheDecrement_EndsAtOnce"
+  ]
+ },
+ "75": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::PlaySoundEffect_0x75_Implemented_DerivesIdFromSingleByte_NotTwo"
+  ]
+ },
+ "76": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "77": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "78": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "79": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::StoreChoiceParamAndJumpIfTrue_0x79_ResultZero_AdvancesBySize_MarkUntouched"
+  ]
+ },
+ "7A": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "7B": {
+  "methods": 2,
+  "files": 2,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::JumpIfFlagSet_0x7B_FlagClear_AdvancesBySize_MarkUntouched",
+   "AlundraHeroChargeTests.cs::FiveFreeSlots_AtTheRelease_CreateTheFirstFiveEffectsOfTheBurst_AndTheReleaseStillCompletes"
+  ]
+ },
+ "7C": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::JumpIfFlagClear_0x7C_FlagSet_AdvancesBySize_MarkUntouched"
+  ]
+ },
+ "7D": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "7E": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "7F": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "80": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraWorldProxyEventPassTests.cs::ProgramIndexNonZeroMaskedTo0x7f_DispatchesRunScript"
+  ]
+ },
+ "81": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "82": {
+  "methods": 17,
+  "files": 4,
+  "examples": [
+   "AlundraItemAndMoneyOpcodesTests.cs::Give_0x82_AnItem_WithoutTables_IsDegraded_ResultZero_NothingWritten",
+   "AlundraItemAndMoneyOpcodesTests.cs::Give_0x82_Id0_AnswersZero_EvenWhenTheItem0HasAMaximum",
+   "AlundraItemAndMoneyOpcodesTests.cs::Give_0x82_Id0_Or_AnIdOutOfTheTable_AnswersZero_AndWritesNothing"
+  ]
+ },
+ "83": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraItemAndMoneyOpcodesTests.cs::HasCount_0x83_IdOutOfTheTable_AnswersZero",
+   "AlundraItemAndMoneyOpcodesTests.cs::HasCount_0x83_IsCountAtLeastV2"
+  ]
+ },
+ "84": {
+  "methods": 3,
+  "files": 1,
+  "examples": [
+   "AlundraItemAndMoneyOpcodesTests.cs::Use_0x84_AnInvalidId_AnswersOne_AsTheBinaryDoes_AndWritesNothing",
+   "AlundraItemAndMoneyOpcodesTests.cs::Use_0x84_Item88AtCount0_AnswersZero_AndWritesNothing",
+   "AlundraItemAndMoneyOpcodesTests.cs::Use_0x84_Item88AtCount1_ConsumesIt_AnswersOne"
+  ]
+ },
+ "85": {
+  "methods": 4,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::ChangeAreaTileProperties_0x85_Implemented_CopiesSixFieldsAndWallStack_ResultUntouched",
+   "AlundraEventProgramRunnerTests.cs::ChangeAreaTileProperties_0x85_ShorterSourceStack_HidesTheDestinationsStaleTail",
+   "AlundraEventProgramRunnerTests.cs::ChangeAreaTileProperties_0x85_SourceWithNoStack_DestroysDestinationStack"
+  ]
+ },
+ "86": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "87": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "88": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "89": {
+  "methods": 3,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::SetEntitiesPositionFromReference_0x89_AnEntityThatIsItsOwnReferenceAndTarget_MovesOnlyOnce",
+   "AlundraEventProgramRunnerTests.cs::SetEntitiesPositionFromReference_0x89_TheReferenceIsTheFirstEntityFound_AndZGetsNoPlusOne",
+   "AlundraEventProgramRunnerTests.cs::SetEntitiesPositionFromReference_0x89_WithoutAReference_TheTargetsDoNotMove_AndItStillReturns9"
+  ]
+ },
+ "8A": {
+  "methods": 6,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::SpawnEntityAtPosition_0x8A_AFailedSpawn_DoesNotThrow_AdvancesByEight_WritesNoPosition_AndWarnsOncePerRecord",
+   "AlundraEventProgramRunnerTests.cs::SpawnEntityAtPosition_0x8A_TheHighBytesOfYAndZAreRead_NotOnlyOnX",
+   "AlundraEventProgramRunnerTests.cs::SpawnEntityAtPosition_0x8A_ThenCameraFollow_0x67_FindsTheNewEntityByItsRecordNumber"
+  ]
+ },
+ "8B": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::SpawnEntityNextToEntity_0x8B_MatchFound_AppliesOffsetToMatchPosition",
+   "AlundraEventProgramRunnerTests.cs::SpawnEntityNextToEntity_0x8B_NoMatch_LeavesSpawnedAtItsOwnRecordPosition"
+  ]
+ },
+ "8C": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraRandomBranchOpcodeTests.cs::Dispose"
+  ]
+ },
+ "8D": {
+  "methods": 7,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::CheckAnyMatchOnGround_0x8D_ControllerLessEntity_UsesItsOwnTerrainHeight_SetsResult1",
+   "AlundraEventProgramRunnerTests.cs::CheckAnyMatchOnGround_0x8D_NoMatch_SetsResult0",
+   "AlundraEventProgramRunnerTests.cs::CheckAnyMatchOnGround_0x8D_NpcWithController_UsesItsOwnTerrainHeight_SetsResult1"
+  ]
+ },
+ "8E": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "8F": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "90": {
+  "methods": 4,
+  "files": 1,
+  "examples": [
+   "AlundraEffectOpcodeTests.cs::A0x90_AtTheTickThatStartsAWarpDeparture_TheSlotExistsDuringTheDeparture_AndTheQueueIsEmptyAfterEachUpdate",
+   "AlundraEffectOpcodeTests.cs::Op0x90_SpawnsTheRecordAtItsPosition_AndARecordOutsideTheTableCreatesNothing",
+   "AlundraEffectOpcodeTests.cs::TheFullReservoir_Takes128_AMoreCreationDoesNothing_And0x91FreesTheSlotThatTheNextOneTakes"
+  ]
+ },
+ "91": {
+  "methods": 3,
+  "files": 1,
+  "examples": [
+   "AlundraEffectOpcodeTests.cs::ASlotInItsDestroyTick_StillObeys0x93_AndIs0x91Freed",
+   "AlundraEffectOpcodeTests.cs::Op0x91_FreesBothSlotsOfARecordAtOnce_NotDrawn_AndARecordOutsideTheTableIsANoOp",
+   "AlundraEffectOpcodeTests.cs::TheFullReservoir_Takes128_AMoreCreationDoesNothing_And0x91FreesTheSlotThatTheNextOneTakes"
+  ]
+ },
+ "92": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEffectOpcodeTests.cs::Map476_Animation1Asked_AfterNUpdates_RevivesTheAuraUpTo222_AndNotFrom223",
+   "AlundraEffectOpcodeTests.cs::Op0x92_WithAnAnimationOutsideTheTable_WarnsOnce_AndIgnoresTheOperation"
+  ]
+ },
+ "93": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEffectOpcodeTests.cs::ASlotInItsDestroyTick_StillObeys0x93_AndIs0x91Freed"
+  ]
+ },
+ "94": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "95": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraHitOpcodesTests.cs::Op95_InAProgramD_ReadsTheStoredBox_AndTheStateItLeavesIsTheNextProgramsInput"
+  ]
+ },
+ "96": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraBirthTickTests.cs::AnEntityWithoutTheMarker_KeysItsKinematicsOnItsCurrentAnimation_NeverOnTheTarget_EvenWithCurrentStillNotValidated"
+  ]
+ },
+ "97": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "98": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraItemAndMoneyOpcodesTests.cs::AddMoney_0x98_Adds_AndLeavesResultAlone",
+   "AlundraItemAndMoneyOpcodesTests.cs::AddMoney_0x98_ClampsTo9999_WithoutWrappingTheShort"
+  ]
+ },
+ "99": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraItemAndMoneyOpcodesTests.cs::Spend_0x99_TakesThePrice_OnlyWhenTheMoneyCoversIt"
+  ]
+ },
+ "9A": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraItemAndMoneyOpcodesTests.cs::Enough_0x9A_ComparesWithoutWriting"
+  ]
+ },
+ "9B": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::SetWarpDisabled_0x9B_SetsFlag_AndBlocksASubsequentDeparture"
+  ]
+ },
+ "9C": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::SetWarpDisabled_0x9C_ClearsFlag_UnblocksADeparture"
+  ]
+ },
+ "9D": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "9E": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "9F": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraChestOpcodeTests.cs::DestroyEntity"
+  ]
+ },
+ "A0": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "A1": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEffectOpcodeTests.cs::OpA1_MovesEverySlotOfTheRecordToTheEntityPlusTheOffsets_NoPlusOne_AndDoesNothingWithoutEntity"
+  ]
+ },
+ "A2": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "A3": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEffectOpcodeTests.cs::Map135_TheA3_SpawnsAtTheEntityWhenOneIsFound_AndNothingWhenNone"
+  ]
+ },
+ "A4": {
+  "methods": 2,
+  "files": 2,
+  "examples": [
+   "AlundraBackgroundLayerMaskTests.cs::Opcode_0xA4_WithAContextWithoutBackdrops_TracesDegraded_AndLogsOnce",
+   "AlundraLeverBridgeArcTests.cs::B_Map116_TheTwoLeversExtendTheBridge_AndTheSecondHitOnTheLever40RetractsIt"
+  ]
+ },
+ "A5": {
+  "methods": 7,
+  "files": 2,
+  "examples": [
+   "AlundraBgmFadeDirectorTests.cs::D2_ATrackTheManifestSaysDoesNotLoop_IsAStreamThatDoesNotLoop",
+   "AlundraBgmFadeDirectorTests.cs::PlayMusic_0xA7_StopAllFlagZero_OnATrackAlreadyPlaying_LoadsSilently_ThenA5StartsTheNewTrack",
+   "AlundraBgmFadeDirectorTests.cs::PlayMusic_0xA7_ZeroIndex_ThenA5_StaysSilent"
+  ]
+ },
+ "A6": {
+  "methods": 4,
+  "files": 2,
+  "examples": [
+   "AlundraBgmFadeDirectorTests.cs::ProductionSite_CorpusFadeSilentLoadThenA5Start_TheMostFrequentBlock_DrivenThroughTheRealRunner",
+   "AlundraBgmFadeDirectorTests.cs::ProductionSite_SyntheticProgram_DispatchesAllThreeOpcodesThroughTheRealRunner",
+   "AlundraEventProgramRunnerTests.cs::LoadBgm_0xA6_Implemented_ForwardsOperandVerbatim"
+  ]
+ },
+ "A7": {
+  "methods": 10,
+  "files": 2,
+  "examples": [
+   "AlundraBgmFadeDirectorTests.cs::D2_ATrackTheManifestSaysDoesNotLoop_IsAStreamThatDoesNotLoop",
+   "AlundraBgmFadeDirectorTests.cs::PlayMusic_0xA7_StopAllFlagSet_StartsTheVoiceRightFromTheOpcode",
+   "AlundraBgmFadeDirectorTests.cs::PlayMusic_0xA7_StopAllFlagZero_OnATrackAlreadyPlaying_LoadsSilently_ThenA5StartsTheNewTrack"
+  ]
+ },
+ "A8": {
+  "methods": 2,
+  "files": 2,
+  "examples": [
+   "AlundraBgmFadeDirectorTests.cs::ProductionSite_CorpusFadeSilentLoadThenA5Start_TheMostFrequentBlock_DrivenThroughTheRealRunner",
+   "AlundraEventProgramRunnerTests.cs::IsSoundLoading_0xA8_AlwaysWritesResultZero_OverwritingAStalePredicateValue"
+  ]
+ },
+ "A9": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "AA": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "AB": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::RemixVoice_0xAB_Implemented_DerivesSfxIdMixLeftMixRight_InOperandOrder",
+   "AlundraEventProgramRunnerTests.cs::RemixVoice_0xAB_NullSoundPlayer_DegradedNoOp_SkipsBySize"
+  ]
+ },
+ "AC": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::SetEntityShadowSize_0xAC_RewritesFirstMatchOnly"
+  ]
+ },
+ "AD": {
+  "methods": 8,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::CheckEntityInAabb_0xAD_BoundsAreInclusive",
+   "AlundraEventProgramRunnerTests.cs::CheckEntityInAabb_0xAD_EmptyFirstSearch_SetsResult0",
+   "AlundraEventProgramRunnerTests.cs::CheckEntityInAabb_0xAD_EmptySecondSearch_SetsResult0"
+  ]
+ },
+ "AE": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "AF": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::BeginFadeTransition_0xAF_Implemented_ExtractsAllSixOperandsInDisplayOrder",
+   "AlundraEventProgramRunnerTests.cs::BeginFadeTransition_0xAF_NullScreenFadeDirector_DegradedNoOp_SkipsBySize"
+  ]
+ },
+ "B0": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::SetWarpFadeDuration_0xB0_Implemented_ExtractsAllFourOperands"
+  ]
+ },
+ "B1": {
+  "methods": 2,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::CheckFadeAndWarpFlags_0xB1_NullScreenFadeDirector_WritesResultZero",
+   "AlundraEventProgramRunnerTests.cs::CheckFadeAndWarpFlags_0xB1_WritesResultBothWays_OverwritingAStaleValue"
+  ]
+ },
+ "B2": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "B3": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::UnknownOpcode_KnownSize_SkipsBySize"
+  ]
+ },
+ "B4": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "B5": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "B6": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "B7": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "B8": {
+  "methods": 3,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::CheckCurrentAnimationId_0xB8_Different_SetsResult0",
+   "AlundraEventProgramRunnerTests.cs::CheckCurrentAnimationId_0xB8_Equal_SetsResult1",
+   "AlundraEventProgramRunnerTests.cs::CheckCurrentAnimationId_0xB8_TargetAnimationIdEqual_CurrentAnimationIdDifferent_SetsResult0"
+  ]
+ },
+ "B9": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "BA": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::CheckLoadingFromCd_0xBA_AlwaysWritesResultZero_OverwritingAStalePredicateValue"
+  ]
+ },
+ "BB": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "BC": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "BD": {
+  "methods": 3,
+  "files": 2,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::PlaySound2_0xBD_Implemented_DerivesIdFromTwoBytes_ResultUntouched",
+   "AlundraEventProgramRunnerTests.cs::PlaySound2_0xBD_NullSoundPlayer_DegradedNoOp_SkipsBySize",
+   "AlundraWorldProxyAudioInstallationTests.cs::InstallAudioSystems_LoadsTheMapsOwnSoundGroup_SoPlaySfxRedirectsThroughRefSfxIdChain"
+  ]
+ },
+ "BE": {
+  "methods": 1,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::PlaySound2Bis_0xBE_Implemented_SameTwoByteDerivationAs0xBD"
+  ]
+ },
+ "BF": {
+  "methods": 3,
+  "files": 1,
+  "examples": [
+   "AlundraEventProgramRunnerTests.cs::RemixVoice_0xBF_Implemented_LowIdByte_DerivesSfxIdMixLeftMixRightFromOneThreeFour",
+   "AlundraEventProgramRunnerTests.cs::RemixVoice_0xBF_Implemented_NonZeroIdHighByte_ReachesRemixVoiceAsId_V1_Plus_256",
+   "AlundraEventProgramRunnerTests.cs::RemixVoice_0xBF_NullSoundPlayer_DegradedNoOp_SkipsBySize"
+  ]
+ },
+ "C0": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "C1": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "C2": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "C3": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "C4": {
+  "methods": 2,
+  "files": 2,
+  "examples": [
+   "AlundraDialogueSpeakerOpcodeTests.cs::Dispose",
+   "AlundraDialogueSpeakerRig.cs::DestroyEntity"
+  ]
+ },
+ "C5": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "C6": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "C7": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "C8": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "C9": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "CA": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "CB": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "CC": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "CD": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "CE": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "CF": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "D0": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "D1": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "D2": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "D3": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "D4": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "D5": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "D6": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "D7": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "D8": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "D9": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "DA": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "DB": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "DC": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "DD": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "DE": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "DF": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "E0": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "E1": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "E2": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "E3": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "E4": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "E5": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "E6": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "E7": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "E8": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "E9": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "EA": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "EB": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "EC": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "ED": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "EE": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "EF": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "F0": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "F1": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "F2": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "F3": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "F4": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "F5": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "F6": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "F7": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "F8": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "F9": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "FA": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "FB": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "FC": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "FD": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "FE": {
+  "methods": 0,
+  "files": 0,
+  "examples": []
+ },
+ "FF": {
+  "methods": 355,
+  "files": 40,
+  "examples": [
+   "AlundraAnimationClockDriveTests.cs::TD10_MapProgram_LoopOf10Ticks_NTurns",
+   "AlundraAnimationClockDriveTests.cs::TD11_TheOwedTick_IsClearedByASwitchTheScriptMakesBeforeTheStep",
+   "AlundraAnimationClockDriveTests.cs::TD12_ASwitchMadeOnAFrameWithoutATick_OwesItsTickToTheNextFrame"
+  ]
+ },
+ "_programs_decoded": 680
+}

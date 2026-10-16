@@ -1,0 +1,1282 @@
+{
+ "00": {
+  "lines": 13,
+  "files": 12,
+  "example": "docs/plan-e19-opcodes.md:10962"
+ },
+ "01": {
+  "lines": 12,
+  "files": 9,
+  "example": "docs/plan-e20-heros.md:4978"
+ },
+ "02": {
+  "lines": 3,
+  "files": 2,
+  "example": "docs/plan-e20-annexe/decouverte-2026-10-09/3-hits-binary-check.md:27"
+ },
+ "03": {
+  "lines": 26,
+  "files": 16,
+  "example": "docs/plan-e20-heros.md:244"
+ },
+ "04": {
+  "lines": 34,
+  "files": 13,
+  "example": "docs/plan-e20-heros.md:245"
+ },
+ "05": {
+  "lines": 4,
+  "files": 2,
+  "example": "docs/plan-e20-heros.md:6269"
+ },
+ "06": {
+  "lines": 4,
+  "files": 2,
+  "example": "docs/plan-e20-heros.md:6309"
+ },
+ "07": {
+  "lines": 4,
+  "files": 3,
+  "example": "docs/plan-e20-heros.md:6309"
+ },
+ "08": {
+  "lines": 33,
+  "files": 25,
+  "example": "docs/plan-e19-d2c-valeurs.md:350"
+ },
+ "09": {
+  "lines": 2,
+  "files": 1,
+  "example": "docs/plan-e20-heros.md:1093"
+ },
+ "0A": {
+  "lines": 4,
+  "files": 3,
+  "example": "docs/plan-e20-heros.md:1094"
+ },
+ "0B": {
+  "lines": 17,
+  "files": 7,
+  "example": "docs/census-0x24-waits.md:24"
+ },
+ "0C": {
+  "lines": 35,
+  "files": 20,
+  "example": "docs/plan-e16-etat-partie.md:1589"
+ },
+ "0D": {
+  "lines": 17,
+  "files": 11,
+  "example": "docs/plan-e19-opcodes.md:504"
+ },
+ "0E": {
+  "lines": 9,
+  "files": 8,
+  "example": "docs/plan-e20-heros.md:266"
+ },
+ "0F": {
+  "lines": 28,
+  "files": 10,
+  "example": "docs/plan-e20-heros.md:300"
+ },
+ "10": {
+  "lines": 215,
+  "files": 83,
+  "example": "docs/plan-bgm-demarrage-binaire.md:152"
+ },
+ "11": {
+  "lines": 27,
+  "files": 19,
+  "example": "docs/plan-e19-opcodes.md:1779"
+ },
+ "12": {
+  "lines": 39,
+  "files": 25,
+  "example": "docs/plan-e20-heros.md:2145"
+ },
+ "13": {
+  "lines": 18,
+  "files": 13,
+  "example": "docs/plan-e19-opcodes.md:5696"
+ },
+ "14": {
+  "lines": 135,
+  "files": 62,
+  "example": "docs/plan-e13-hud.md:310"
+ },
+ "15": {
+  "lines": 12,
+  "files": 12,
+  "example": "docs/plan-e20-heros.md:5351"
+ },
+ "16": {
+  "lines": 19,
+  "files": 14,
+  "example": "docs/plan-bgm-demarrage-binaire.md:151"
+ },
+ "17": {
+  "lines": 11,
+  "files": 9,
+  "example": "docs/plan-e19-d2c-valeurs.md:277"
+ },
+ "18": {
+  "lines": 135,
+  "files": 63,
+  "example": "docs/plan-audio-mix-exact-muet.md:321"
+ },
+ "19": {
+  "lines": 31,
+  "files": 20,
+  "example": "docs/plan-e19-opcodes.md:2591"
+ },
+ "1A": {
+  "lines": 36,
+  "files": 24,
+  "example": "docs/plan-e19-opcodes.md:1779"
+ },
+ "1B": {
+  "lines": 18,
+  "files": 14,
+  "example": "docs/plan-e19-opcodes.md:2620"
+ },
+ "1C": {
+  "lines": 144,
+  "files": 57,
+  "example": "docs/plan-e19-opcodes.md:513"
+ },
+ "1D": {
+  "lines": 79,
+  "files": 22,
+  "example": "docs/plan-e19-opcodes.md:1779"
+ },
+ "1E": {
+  "lines": 72,
+  "files": 42,
+  "example": "docs/plan-e14-ia-native.md:255"
+ },
+ "1F": {
+  "lines": 60,
+  "files": 33,
+  "example": "docs/plan-e16-etat-partie.md:391"
+ },
+ "20": {
+  "lines": 170,
+  "files": 69,
+  "example": "docs/plan-e15-yarn.md:197"
+ },
+ "21": {
+  "lines": 17,
+  "files": 11,
+  "example": "docs/plan-e19-opcodes.md:6838"
+ },
+ "22": {
+  "lines": 37,
+  "files": 16,
+  "example": "docs/plan-e16-etat-partie.md:788"
+ },
+ "23": {
+  "lines": 23,
+  "files": 18,
+  "example": "docs/plan-e19-opcodes.md:6840"
+ },
+ "24": {
+  "lines": 33,
+  "files": 19,
+  "example": "docs/plan-e19-d2c-valeurs.md:346"
+ },
+ "25": {
+  "lines": 23,
+  "files": 17,
+  "example": "docs/plan-e19-opcodes.md:2548"
+ },
+ "26": {
+  "lines": 18,
+  "files": 13,
+  "example": "docs/plan-e19-opcodes.md:2548"
+ },
+ "27": {
+  "lines": 16,
+  "files": 11,
+  "example": "docs/plan-e15-yarn.md:197"
+ },
+ "28": {
+  "lines": 74,
+  "files": 30,
+  "example": "docs/plan-e14-ia-native.md:385"
+ },
+ "29": {
+  "lines": 55,
+  "files": 23,
+  "example": "docs/plan-e19-opcodes.md:6579"
+ },
+ "2A": {
+  "lines": 46,
+  "files": 21,
+  "example": "docs/plan-e19-opcodes.md:6579"
+ },
+ "2B": {
+  "lines": 33,
+  "files": 17,
+  "example": "docs/plan-e19-opcodes.md:6579"
+ },
+ "2C": {
+  "lines": 105,
+  "files": 52,
+  "example": "docs/plan-e14-ia-native.md:59"
+ },
+ "2D": {
+  "lines": 76,
+  "files": 38,
+  "example": "docs/census-0x24-waits.md:9"
+ },
+ "2E": {
+  "lines": 15,
+  "files": 10,
+  "example": "docs/plan-e20-heros.md:6309"
+ },
+ "2F": {
+  "lines": 8,
+  "files": 5,
+  "example": "docs/plan-e20-heros.md:6309"
+ },
+ "30": {
+  "lines": 46,
+  "files": 19,
+  "example": "docs/plan-e19-opcodes.md:7944"
+ },
+ "31": {
+  "lines": 55,
+  "files": 25,
+  "example": "docs/plan-e19-opcodes.md:9436"
+ },
+ "32": {
+  "lines": 34,
+  "files": 16,
+  "example": "docs/plan-e16-etat-partie.md:391"
+ },
+ "33": {
+  "lines": 22,
+  "files": 17,
+  "example": "docs/plan-e15-yarn.md:1144"
+ },
+ "34": {
+  "lines": 34,
+  "files": 25,
+  "example": "docs/plan-e16-etat-partie.md:392"
+ },
+ "35": {
+  "lines": 7,
+  "files": 7,
+  "example": "docs/plan-e15-yarn.md:1144"
+ },
+ "36": {
+  "lines": 16,
+  "files": 12,
+  "example": "docs/census-0x24-waits.md:24"
+ },
+ "37": {
+  "lines": 18,
+  "files": 12,
+  "example": "docs/plan-e19-opcodes.md:676"
+ },
+ "38": {
+  "lines": 34,
+  "files": 22,
+  "example": "docs/plan-e20-heros.md:6302"
+ },
+ "39": {
+  "lines": 18,
+  "files": 7,
+  "example": "docs/plan-e19-f4-annexe/binary-notes.md:31"
+ },
+ "3A": {
+  "lines": 67,
+  "files": 20,
+  "example": "docs/plan-e20-heros.md:301"
+ },
+ "3B": {
+  "lines": 59,
+  "files": 17,
+  "example": "docs/plan-e20-heros.md:301"
+ },
+ "3C": {
+  "lines": 34,
+  "files": 23,
+  "example": "docs/plan-e14-ia-native.md:380"
+ },
+ "3D": {
+  "lines": 3,
+  "files": 3,
+  "example": "docs/plan-e20-annexe/e20-0-rapports/D7-D8-D9-check.md:18"
+ },
+ "3E": {
+  "lines": 49,
+  "files": 19,
+  "example": "docs/plan-e16-etat-partie.md:401"
+ },
+ "3F": {
+  "lines": 12,
+  "files": 10,
+  "example": "docs/plan-e19-opcodes.md:6581"
+ },
+ "40": {
+  "lines": 134,
+  "files": 60,
+  "example": "docs/census-0x24-waits.md:9"
+ },
+ "41": {
+  "lines": 20,
+  "files": 15,
+  "example": "docs/plan-e16-etat-partie.md:1496"
+ },
+ "42": {
+  "lines": 29,
+  "files": 17,
+  "example": "docs/plan-e16-etat-partie.md:1496"
+ },
+ "43": {
+  "lines": 27,
+  "files": 13,
+  "example": "docs/plan-e19-opcodes.md:429"
+ },
+ "44": {
+  "lines": 45,
+  "files": 19,
+  "example": "docs/plan-e19-opcodes.md:4376"
+ },
+ "45": {
+  "lines": 13,
+  "files": 10,
+  "example": "docs/plan-e19-opcodes.md:6597"
+ },
+ "46": {
+  "lines": 11,
+  "files": 8,
+  "example": "docs/plan-e19-opcodes.md:6858"
+ },
+ "47": {
+  "lines": 8,
+  "files": 7,
+  "example": "docs/plan-e19-opcodes.md:2548"
+ },
+ "48": {
+  "lines": 103,
+  "files": 50,
+  "example": "docs/plan-e14-ia-native.md:59"
+ },
+ "49": {
+  "lines": 6,
+  "files": 6,
+  "example": "docs/plan-e20-heros.md:1094"
+ },
+ "4A": {
+  "lines": 16,
+  "files": 13,
+  "example": "docs/plan-e16-etat-partie.md:1589"
+ },
+ "4B": {
+  "lines": 11,
+  "files": 8,
+  "example": "docs/plan-e16-etat-partie.md:1589"
+ },
+ "4C": {
+  "lines": 16,
+  "files": 12,
+  "example": "docs/plan-e14-annexe/e14a/beannoide.md:76"
+ },
+ "4D": {
+  "lines": 4,
+  "files": 4,
+  "example": "docs/decisions/0029-the-dialogue-text-box-follows-the-binary-to-the-tick.md:9"
+ },
+ "4E": {
+  "lines": 7,
+  "files": 5,
+  "example": "docs/plan-e20-annexe/e20-c2/c2-binary.md:158"
+ },
+ "4F": {
+  "lines": 13,
+  "files": 9,
+  "example": "docs/decisions/0029-the-dialogue-text-box-follows-the-binary-to-the-tick.md:9"
+ },
+ "50": {
+  "lines": 44,
+  "files": 31,
+  "example": "docs/plan-e13-hud.md:310"
+ },
+ "51": {
+  "lines": 12,
+  "files": 10,
+  "example": "docs/plan-e20-heros.md:527"
+ },
+ "52": {
+  "lines": 13,
+  "files": 11,
+  "example": "docs/plan-e19-opcodes.md:6586"
+ },
+ "53": {
+  "lines": 20,
+  "files": 9,
+  "example": "docs/plan-bgm-demarrage-binaire.md:742"
+ },
+ "54": {
+  "lines": 17,
+  "files": 13,
+  "example": "docs/decisions/0016-a-blocked-field-step-advances-to-contact-and-forceadjusted-keeps-its-shortfall-rule.md:10"
+ },
+ "55": {
+  "lines": 7,
+  "files": 4,
+  "example": "docs/plan-e14-ia-native.md:805"
+ },
+ "56": {
+  "lines": 8,
+  "files": 6,
+  "example": "docs/plan-e19-opcodes.md:9436"
+ },
+ "57": {
+  "lines": 4,
+  "files": 4,
+  "example": "docs/plan-e19-opcodes.md:6590"
+ },
+ "58": {
+  "lines": 11,
+  "files": 9,
+  "example": "docs/plan-e19-opcodes.md:6590"
+ },
+ "59": {
+  "lines": 4,
+  "files": 3,
+  "example": "docs/plan-e19-opcodes.md:672"
+ },
+ "5A": {
+  "lines": 4,
+  "files": 3,
+  "example": "docs/plan-e19-opcodes.md:10138"
+ },
+ "5B": {
+  "lines": 7,
+  "files": 3,
+  "example": "docs/plan-e19-opcodes.md:10138"
+ },
+ "5C": {
+  "lines": 17,
+  "files": 9,
+  "example": "docs/plan-e19-opcodes.md:504"
+ },
+ "5D": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-e19-opcodes.md:6594"
+ },
+ "5E": {
+  "lines": 1,
+  "files": 1,
+  "example": "Alundra/Scripts/AlundraEventProgramRunner.cs:1244"
+ },
+ "5F": {
+  "lines": 3,
+  "files": 3,
+  "example": "docs/plan-e19-m-annexe/backlog-2026-10-03.md:81"
+ },
+ "60": {
+  "lines": 15,
+  "files": 13,
+  "example": "docs/plan-e20-heros.md:3062"
+ },
+ "61": {
+  "lines": 9,
+  "files": 5,
+  "example": "docs/plan-e20-heros.md:1391"
+ },
+ "62": {
+  "lines": 17,
+  "files": 15,
+  "example": "docs/plan-e20-heros.md:1394"
+ },
+ "63": {
+  "lines": 5,
+  "files": 4,
+  "example": "docs/plan-e20-heros.md:5717"
+ },
+ "64": {
+  "lines": 22,
+  "files": 17,
+  "example": "docs/census-0x24-waits.md:9"
+ },
+ "65": {
+  "lines": 7,
+  "files": 7,
+  "example": "docs/plan-e19-opcodes.md:6953"
+ },
+ "66": {
+  "lines": 4,
+  "files": 3,
+  "example": "docs/decisions/0015-interpreter-opcodes-follow-the-binary-with-a-loop-guard-and-a-walk-detour.md:14"
+ },
+ "67": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "68": {
+  "lines": 52,
+  "files": 26,
+  "example": "docs/plan-e14-ia-native.md:382"
+ },
+ "69": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e19-f3-annexe/dll-verify.md:46"
+ },
+ "6A": {
+  "lines": 2,
+  "files": 1,
+  "example": "docs/plan-e19-m9-annexe/binary.md:78"
+ },
+ "6B": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e19-m9-annexe/binary.md:78"
+ },
+ "6C": {
+  "lines": 25,
+  "files": 19,
+  "example": "docs/plan-e14-ia-native.md:445"
+ },
+ "6D": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e19-m9-annexe/binary.md:78"
+ },
+ "6E": {
+  "lines": 3,
+  "files": 3,
+  "example": "docs/plan-e16-etat-partie.md:402"
+ },
+ "6F": {
+  "lines": 4,
+  "files": 4,
+  "example": "docs/plan-e19-opcodes.md:6842"
+ },
+ "70": {
+  "lines": 18,
+  "files": 14,
+  "example": "docs/plan-portrait-inventaire.md:1643"
+ },
+ "71": {
+  "lines": 11,
+  "files": 8,
+  "example": "docs/plan-e19-g1g3-annexe/dll-notes.md:67"
+ },
+ "72": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "73": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-e19-m9-annexe/binary.md:36"
+ },
+ "74": {
+  "lines": 12,
+  "files": 10,
+  "example": "docs/plan-e16-etat-partie.md:1832"
+ },
+ "75": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "76": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-e14-annexe/e14a/check.md:109"
+ },
+ "77": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e20-annexe/e20-c2/c2-oracle.md:272"
+ },
+ "78": {
+  "lines": 38,
+  "files": 17,
+  "example": "docs/plan-bgm-demarrage-binaire.md:141"
+ },
+ "79": {
+  "lines": 3,
+  "files": 3,
+  "example": "docs/plan-e16-etat-partie.md:395"
+ },
+ "7A": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "7B": {
+  "lines": 4,
+  "files": 3,
+  "example": "docs/plan-e16-etat-partie.md:396"
+ },
+ "7C": {
+  "lines": 22,
+  "files": 14,
+  "example": "docs/plan-e16-etat-partie.md:396"
+ },
+ "7D": {
+  "lines": 30,
+  "files": 16,
+  "example": "docs/plan-e16-etat-partie.md:397"
+ },
+ "7E": {
+  "lines": 6,
+  "files": 4,
+  "example": "docs/plan-e16-etat-partie.md:398"
+ },
+ "7F": {
+  "lines": 55,
+  "files": 31,
+  "example": "docs/plan-audio-mix-exact-muet.md:146"
+ },
+ "80": {
+  "lines": 216,
+  "files": 76,
+  "example": "docs/plan-e16-etat-partie.md:399"
+ },
+ "81": {
+  "lines": 29,
+  "files": 17,
+  "example": "docs/plan-e14-ia-native.md:461"
+ },
+ "82": {
+  "lines": 22,
+  "files": 13,
+  "example": "docs/plan-e19-opcodes.md:6597"
+ },
+ "83": {
+  "lines": 8,
+  "files": 6,
+  "example": "docs/plan-e16-etat-partie.md:1589"
+ },
+ "84": {
+  "lines": 17,
+  "files": 13,
+  "example": "docs/plan-e14-ia-native.md:386"
+ },
+ "85": {
+  "lines": 5,
+  "files": 4,
+  "example": "docs/plan-e20-annexe/decouverte-2026-10-09/5-chain-needs.md:43"
+ },
+ "86": {
+  "lines": 16,
+  "files": 12,
+  "example": "docs/plan-e20-heros.md:375"
+ },
+ "87": {
+  "lines": 24,
+  "files": 12,
+  "example": "docs/plan-e20-heros.md:376"
+ },
+ "88": {
+  "lines": 111,
+  "files": 49,
+  "example": "docs/plan-e14-ia-native.md:150"
+ },
+ "89": {
+  "lines": 3,
+  "files": 3,
+  "example": "docs/plan-e19-opcodes.md:6953"
+ },
+ "8A": {
+  "lines": 23,
+  "files": 13,
+  "example": "docs/census-0x24-waits.md:9"
+ },
+ "8B": {
+  "lines": 18,
+  "files": 12,
+  "example": "docs/plan-e19-opcodes.md:6953"
+ },
+ "8C": {
+  "lines": 77,
+  "files": 27,
+  "example": "docs/plan-e14-ia-native.md:144"
+ },
+ "8D": {
+  "lines": 4,
+  "files": 4,
+  "example": "docs/plan-e16-etat-partie.md:403"
+ },
+ "8E": {
+  "lines": 5,
+  "files": 3,
+  "example": "docs/plan-e19-opcodes.md:6220"
+ },
+ "8F": {
+  "lines": 11,
+  "files": 7,
+  "example": "docs/plan-e13d-sous-inventaire.md:174"
+ },
+ "90": {
+  "lines": 18,
+  "files": 13,
+  "example": "docs/plan-bgm-demarrage-binaire.md:1059"
+ },
+ "91": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e19-g1g3-annexe/port-verify.md:38"
+ },
+ "92": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-e19-g1g3-annexe/binary-data-verify.md:16"
+ },
+ "93": {
+  "lines": 4,
+  "files": 4,
+  "example": "docs/plan-e19-f3-annexe/binary-notes.md:60"
+ },
+ "94": {
+  "lines": 6,
+  "files": 5,
+  "example": "docs/plan-e19-f3-annexe/binary-notes.md:60"
+ },
+ "95": {
+  "lines": 24,
+  "files": 12,
+  "example": "docs/plan-e20-heros.md:376"
+ },
+ "96": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "97": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "98": {
+  "lines": 42,
+  "files": 22,
+  "example": "docs/plan-e14-ia-native.md:15"
+ },
+ "99": {
+  "lines": 9,
+  "files": 8,
+  "example": "docs/plan-e14-ia-native.md:677"
+ },
+ "9A": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-e19-opcodes.md:6608"
+ },
+ "9B": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "9C": {
+  "lines": 5,
+  "files": 4,
+  "example": "docs/plan-e14-ia-native.md:15"
+ },
+ "9D": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "9E": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "9F": {
+  "lines": 3,
+  "files": 3,
+  "example": "docs/plan-e16-etat-partie.md:1498"
+ },
+ "A0": {
+  "lines": 6,
+  "files": 5,
+  "example": "docs/plan-e16-etat-partie.md:1498"
+ },
+ "A1": {
+  "lines": 3,
+  "files": 3,
+  "example": "docs/plan-e19-g1g3-annexe/binary-data-notes.md:120"
+ },
+ "A2": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-e19-g1g3-annexe/binary-data-notes.md:42"
+ },
+ "A3": {
+  "lines": 3,
+  "files": 2,
+  "example": "docs/plan-e19-g1g3-annexe/binary-data-notes.md:42"
+ },
+ "A4": {
+  "lines": 6,
+  "files": 4,
+  "example": "docs/plan-e16-etat-partie.md:1498"
+ },
+ "A5": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-bgm-demarrage-binaire.md:79"
+ },
+ "A6": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-bgm-demarrage-binaire.md:125"
+ },
+ "A7": {
+  "lines": 4,
+  "files": 1,
+  "example": "docs/plan-bgm-demarrage-binaire.md:103"
+ },
+ "A8": {
+  "lines": 12,
+  "files": 9,
+  "example": "docs/plan-bgm-demarrage-binaire.md:127"
+ },
+ "A9": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e20-annexe/d1-oracle-moveplayer/notes.md:160"
+ },
+ "AA": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e16-etat-partie.md:1498"
+ },
+ "AB": {
+  "lines": 3,
+  "files": 3,
+  "example": "docs/plan-audio-mix-exact-muet.md:143"
+ },
+ "AC": {
+  "lines": 37,
+  "files": 22,
+  "example": "docs/plan-e14-ia-native.md:449"
+ },
+ "AD": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-e16-etat-partie.md:404"
+ },
+ "AE": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e16-etat-partie.md:1498"
+ },
+ "AF": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "B0": {
+  "lines": 30,
+  "files": 20,
+  "example": "docs/plan-e19-opcodes.md:514"
+ },
+ "B1": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "B2": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-e16-etat-partie.md:1498"
+ },
+ "B3": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "B4": {
+  "lines": 26,
+  "files": 19,
+  "example": "docs/plan-e20-heros.md:1243"
+ },
+ "B5": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "B6": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "B7": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "B8": {
+  "lines": 15,
+  "files": 12,
+  "example": "docs/plan-e16-etat-partie.md:405"
+ },
+ "B9": {
+  "lines": 4,
+  "files": 2,
+  "example": "docs/plan-e19-opcodes.md:6617"
+ },
+ "BA": {
+  "lines": 2,
+  "files": 1,
+  "example": "docs/plan-e19-opcodes.md:12342"
+ },
+ "BB": {
+  "lines": 5,
+  "files": 3,
+  "example": "docs/plan-e16-etat-partie.md:251"
+ },
+ "BC": {
+  "lines": 12,
+  "files": 10,
+  "example": "docs/plan-e14-ia-native.md:154"
+ },
+ "BD": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "BE": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "BF": {
+  "lines": 3,
+  "files": 3,
+  "example": "docs/plan-audio-mix-exact-muet.md:143"
+ },
+ "C0": {
+  "lines": 40,
+  "files": 19,
+  "example": "docs/plan-e14-ia-native.md:451"
+ },
+ "C1": {
+  "lines": 6,
+  "files": 5,
+  "example": "docs/plan-e20-heros.md:1691"
+ },
+ "C2": {
+  "lines": 4,
+  "files": 3,
+  "example": "docs/plan-e16-etat-partie.md:2363"
+ },
+ "C3": {
+  "lines": 9,
+  "files": 7,
+  "example": "docs/plan-e20-heros.md:2368"
+ },
+ "C4": {
+  "lines": 24,
+  "files": 12,
+  "example": "docs/plan-e14-ia-native.md:451"
+ },
+ "C5": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "C6": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "C7": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "C8": {
+  "lines": 6,
+  "files": 6,
+  "example": "docs/plan-e14-ia-native.md:451"
+ },
+ "C9": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "CA": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "CB": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "CC": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "CD": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-e14-annexe/e14a/dll-natives.md:211"
+ },
+ "CE": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-e13d-sous-inventaire.md:174"
+ },
+ "CF": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "D0": {
+  "lines": 21,
+  "files": 15,
+  "example": "docs/plan-e19-d2c-valeurs.md:351"
+ },
+ "D1": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-e20-annexe/decouverte-2026-10-09/3-hits.md:112"
+ },
+ "D2": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "D3": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "D4": {
+  "lines": 4,
+  "files": 4,
+  "example": "docs/plan-e14-ia-native.md:451"
+ },
+ "D5": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "D6": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "D7": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "D8": {
+  "lines": 5,
+  "files": 4,
+  "example": "docs/plan-e14-ia-native.md:154"
+ },
+ "D9": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "DA": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "DB": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "DC": {
+  "lines": 3,
+  "files": 3,
+  "example": "docs/plan-e20-heros.md:5220"
+ },
+ "DD": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "DE": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "DF": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "E0": {
+  "lines": 11,
+  "files": 10,
+  "example": "docs/plan-e19-d2c-valeurs.md:351"
+ },
+ "E1": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "E2": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "E3": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "E4": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e19-opcodes.md:12350"
+ },
+ "E5": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "E6": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e20-annexe/e20-armes/e0-spawn.md:177"
+ },
+ "E7": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "E8": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-e19-opcodes.md:12350"
+ },
+ "E9": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "EA": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e20-annexe/e20-armes/e0-spawn.md:177"
+ },
+ "EB": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "EC": {
+  "lines": 4,
+  "files": 3,
+  "example": "docs/plan-e19-h1b2-annexe/binary-notes.md:32"
+ },
+ "ED": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "EE": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e20-annexe/e20-armes/e0-spawn.md:177"
+ },
+ "EF": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e20-annexe/e20-armes/e0-spawn.md:177"
+ },
+ "F0": {
+  "lines": 9,
+  "files": 5,
+  "example": "docs/guidelines-runtime-alundra-casaengine.md:34"
+ },
+ "F1": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "F2": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "F3": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "F4": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e20-annexe/decouverte-2026-10-09/1-sprint-binary-check.md:25"
+ },
+ "F5": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "F6": {
+  "lines": 4,
+  "files": 3,
+  "example": "docs/plan-e20-heros.md:4542"
+ },
+ "F7": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e20-heros.md:4542"
+ },
+ "F8": {
+  "lines": 23,
+  "files": 15,
+  "example": "docs/plan-e19-opcodes.md:2603"
+ },
+ "F9": {
+  "lines": 0,
+  "files": 0,
+  "example": null
+ },
+ "FA": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e20-heros.md:4542"
+ },
+ "FB": {
+  "lines": 1,
+  "files": 1,
+  "example": "docs/plan-e20-heros.md:4542"
+ },
+ "FC": {
+  "lines": 4,
+  "files": 3,
+  "example": "docs/plan-e20-heros.md:4542"
+ },
+ "FD": {
+  "lines": 2,
+  "files": 2,
+  "example": "docs/plan-e14-annexe/e14a/beannoide.md:287"
+ },
+ "FE": {
+  "lines": 4,
+  "files": 3,
+  "example": "docs/plan-e14-annexe/e14a/beannoide.md:287"
+ },
+ "FF": {
+  "lines": 39,
+  "files": 28,
+  "example": "docs/plan-bgm-demarrage-binaire.md:95"
+ }
+}

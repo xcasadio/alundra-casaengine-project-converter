@@ -1,0 +1,511 @@
+map	map_name	slot	program	pc	opcode	operands	next_opcode	next_is_Result_consumer
+7	Overworld 1,2-7	B	10	1508	C2	14	03	Y
+7	Overworld 1,2-7	B	10	1628	B9	0B	5B	N
+17	Overworld 4,0-17	B	20	2410	B9	0B	5C	N
+17	Overworld 4,0-17	B	20	2435	B9	0B	5C	N
+19	Overworld 4,2-19	B	3	223	B9	07	37	N
+21	Lars' Crypt-21	B	11	998	56	01	BD	N
+21	Lars' Crypt-21	B	11	1005	56	02	BD	N
+21	Lars' Crypt-21	B	11	1012	56	03	BD	N
+21	Lars' Crypt-21	B	11	1019	56	04	BD	N
+21	Lars' Crypt-21	B	11	1026	56	05	BD	N
+21	Lars' Crypt-21	B	11	1033	56	06	BD	N
+21	Lars' Crypt-21	B	11	1040	56	07	BD	N
+21	Lars' Crypt-21	B	11	1047	56	08	BD	N
+21	Lars' Crypt-21	B	11	1055	56	01	56	N
+21	Lars' Crypt-21	B	11	1057	56	02	56	N
+21	Lars' Crypt-21	B	11	1059	56	03	56	N
+21	Lars' Crypt-21	B	11	1061	56	04	56	N
+21	Lars' Crypt-21	B	11	1063	56	05	56	N
+21	Lars' Crypt-21	B	11	1065	56	06	56	N
+21	Lars' Crypt-21	B	11	1067	56	07	56	N
+21	Lars' Crypt-21	B	11	1069	56	08	05	N
+22	Lars' Crypt-22	C	6	863	96	81 FF	11	N
+23	Lars' Crypt-23	C	15	1241	96	81 FF	11	N
+27	Ancient Shrine-27	C	2	612	60	05	03	Y
+27	Ancient Shrine-27	C	2	617	60	06	03	Y
+27	Ancient Shrine-27	C	2	622	60	07	03	Y
+27	Ancient Shrine-27	C	2	627	60	08	03	Y
+27	Ancient Shrine-27	C	2	643	60	05	03	Y
+27	Ancient Shrine-27	C	2	648	60	06	03	Y
+27	Ancient Shrine-27	C	2	653	60	07	03	Y
+27	Ancient Shrine-27	C	2	658	60	08	03	Y
+27	Ancient Shrine-27	C	2	674	60	05	03	Y
+27	Ancient Shrine-27	C	2	679	60	06	03	Y
+27	Ancient Shrine-27	C	2	684	60	07	03	Y
+27	Ancient Shrine-27	C	2	689	60	08	03	Y
+27	Ancient Shrine-27	C	2	705	60	05	03	Y
+27	Ancient Shrine-27	C	2	710	60	06	03	Y
+27	Ancient Shrine-27	C	2	715	60	07	03	Y
+27	Ancient Shrine-27	C	2	720	60	08	03	Y
+27	Ancient Shrine-27	C	26	985	60	1F	04	Y
+27	Ancient Shrine-27	C	27	1005	60	20	04	Y
+27	Ancient Shrine-27	C	28	1025	60	1D	04	Y
+27	Ancient Shrine-27	C	29	1045	60	1E	04	Y
+27	Ancient Shrine-27	C	36	1109	60	2D	04	Y
+27	Ancient Shrine-27	C	36	1116	60	2E	04	Y
+27	Ancient Shrine-27	C	36	1123	60	2F	04	Y
+27	Ancient Shrine-27	C	36	1130	60	30	04	Y
+29	Ancient Shrine-29	C	9	671	96	81 FF	11	N
+29	Ancient Shrine-29	C	10	803	96	81 FF	11	N
+29	Ancient Shrine-29	C	17	813	60	14	04	Y
+29	Ancient Shrine-29	C	18	837	60	15	04	Y
+29	Ancient Shrine-29	C	19	861	60	16	04	Y
+29	Ancient Shrine-29	C	20	885	60	17	04	Y
+29	Ancient Shrine-29	C	25	909	60	03	04	Y
+29	Ancient Shrine-29	C	26	933	60	04	04	Y
+29	Ancient Shrine-29	C	27	957	60	05	04	Y
+29	Ancient Shrine-29	C	28	981	60	06	04	Y
+30	Ancient Shrine-30	C	19	1686	60	16	04	Y
+30	Ancient Shrine-30	C	20	1730	60	17	04	Y
+30	Ancient Shrine-30	C	21	1774	60	18	04	Y
+30	Ancient Shrine-30	C	22	1818	60	19	04	Y
+31	Ancient Shrine-31	C	1	355	96	81 FF	11	N
+31	Ancient Shrine-31	C	2	487	96	81 FF	11	N
+40	Nirude’s Lair-40	F	2	1153	72		FF	N
+40	Nirude’s Lair-40	F	1	1141	72		FF	N
+40	Nirude’s Lair-40	F	3	1165	72		FF	N
+40	Nirude’s Lair-40	F	4	1177	72		FF	N
+51	Elenes Nightmare-51	F	21	856	72		FF	N
+53	Elenes Nightmare-53	F	7	1378	72		FF	N
+54	Elenes Nightmare-54	B	14	1226	B5	81	04	Y
+54	Elenes Nightmare-54	B	14	1244	B5	81	04	Y
+54	Elenes Nightmare-54	F	39	2243	72		39	N
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	4	272	6A		1A	N
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	4	276	6B	78 00	03	Y
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	5	324	6A		1A	N
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	5	328	6B	78 00	03	Y
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	7	424	6A		1A	N
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	7	428	6B	78 00	03	Y
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	8	476	6A		1A	N
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	8	480	6B	78 00	03	Y
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	9	528	6A		1A	N
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	9	532	6B	78 00	03	Y
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	20	1397	6D	70 00	03	Y
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	21	1493	6D	70 00	03	Y
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	22	1589	6D	70 00	03	Y
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	23	1685	6D	70 00	03	Y
+55	Torla Buggy_ with bar music and random texts (early version of Torla)-55	C	24	1781	6D	70 00	03	Y
+56	Torla Buggy_ with bar music and random texts (early version of Torla)-56	C	1	97	6D	00 01	03	Y
+56	Torla Buggy_ with bar music and random texts (early version of Torla)-56	C	2	201	6D	00 01	03	Y
+56	Torla Buggy_ with bar music and random texts (early version of Torla)-56	C	3	305	6D	00 01	03	Y
+56	Torla Buggy_ with bar music and random texts (early version of Torla)-56	C	4	409	6D	00 01	03	Y
+57	Torla Buggy_ with bar music and random texts (early version of Torla)-57	C	4	217	6D	50 00	03	Y
+57	Torla Buggy_ with bar music and random texts (early version of Torla)-57	C	7	413	6D	50 00	03	Y
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	6	457	6A		1B	N
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	6	462	6D	20 00	03	Y
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	6	476	6A		1B	N
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	6	481	6D	20 00	03	Y
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	8	553	6A		1B	N
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	8	558	6D	20 00	03	Y
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	8	572	6A		1B	N
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	8	577	6D	20 00	03	Y
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	9	601	6A		1B	N
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	9	606	6D	20 00	03	Y
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	9	620	6A		1B	N
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	9	625	6D	20 00	03	Y
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	10	649	6A		1B	N
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	10	654	6D	20 00	03	Y
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	10	668	6A		1B	N
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	10	673	6D	20 00	03	Y
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	11	697	6A		1B	N
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	11	702	6D	20 00	03	Y
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	11	716	6A		1B	N
+59	Torla Buggy_ with bar music and random texts (early version of Torla)-59	C	11	721	6D	20 00	03	Y
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	B	3	128	56	00	00	N
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	1	164	6A		1A	N
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	1	168	6B	60 00	03	Y
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	1	185	6A		1A	N
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	1	189	6C	80 00	03	Y
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	6	449	6A		1B	N
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	6	454	6D	20 00	03	Y
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	6	468	6A		1B	N
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	6	473	6D	20 00	03	Y
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	7	497	6A		1B	N
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	7	502	6D	20 00	03	Y
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	7	516	6A		1B	N
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	7	521	6D	20 00	03	Y
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	8	545	6A		1B	N
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	8	550	6D	20 00	03	Y
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	8	564	6A		1B	N
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	8	569	6D	20 00	03	Y
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	9	593	6A		1B	N
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	9	598	6D	20 00	03	Y
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	9	612	6A		1B	N
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	9	617	6D	20 00	03	Y
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	10	644	6A		1A	N
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	10	648	6B	60 00	03	Y
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	10	665	6A		1A	N
+60	Torla Buggy_ with bar music and random texts (early version of Torla)-60	C	10	669	6C	80 00	03	Y
+68	Coal Mine (unused_)-68	B	3	691	96	81 FF	0D	N
+77	Underground Watercourse-77	C	14	1871	61	81	03	Y
+77	Underground Watercourse-77	C	15	1903	61	81	03	Y
+77	Underground Watercourse-77	C	16	1935	61	81	03	Y
+77	Underground Watercourse-77	C	17	1967	61	81	03	Y
+77	Underground Watercourse-77	C	24	2007	61	81	03	Y
+78	Underground Watercourse-78	C	19	1679	61	81	03	Y
+84	Lizardman's Lair-84	B	4	1056	96	80 32	11	N
+84	Lizardman's Lair-84	B	5	1164	96	80 32	11	N
+84	Lizardman's Lair-84	B	11	1996	96	80 32	11	N
+113	Nestus' Dream-113	C	9	993	60	0A	04	Y
+113	Nestus' Dream-113	C	10	1069	60	0B	04	Y
+113	Nestus' Dream-113	C	10	1083	60	0B	03	Y
+117	Tarn's Manor (unused broken)-117	B	1	171	B9	0B	0D	N
+123	Kline's Nightmare-123	C	3	331	96	81 FF	05	N
+126	Kline's Nightmare-126	C	47	1187	96	81 FF	11	N
+134	Church (lobby)-134	C	4	1073	B9	0B	00	N
+134	Church (lobby)-134	C	5	1129	B9	0B	00	N
+134	Church (lobby)-134	C	9	1321	B9	0B	00	N
+134	Church (lobby)-134	C	6	1177	B9	0B	00	N
+134	Church (lobby)-134	C	10	1377	B9	0B	00	N
+134	Church (lobby)-134	C	7	1225	B9	0B	00	N
+134	Church (lobby)-134	C	11	1433	B9	0B	00	N
+134	Church (lobby)-134	C	8	1271	B9	0B	00	N
+136	Church-136	C	5	1579	60	81	04	Y
+136	Church-136	C	7	1848	B9	0B	00	N
+136	Church-136	C	10	2067	60	81	04	Y
+136	Church-136	C	13	2481	B9	0B	00	N
+137	Church (basement, Holy sword)-137	C	14	2375	B9	0B	00	N
+139	Cave (Fire manor)-139	D	9	793	72		FF	N
+140	Cave-140	D	2	2037	72		FF	N
+140	Cave-140	D	16	2125	72		FF	N
+144	Magyscar Entrance-144	C	14	1390	B9	0B	5C	N
+147	Murgg Tree (inner)-147	B	3	524	96	80 32	11	N
+147	Murgg Tree (inner)-147	B	4	650	97	32	11	N
+159	Fairy cave (underwater)-159	B	5	729	61	0D	4B	Y
+159	Fairy cave (underwater)-159	C	13	1654	60	03	4A	Y
+159	Fairy cave (underwater)-159	C	13	1657	60	04	4A	Y
+159	Fairy cave (underwater)-159	C	13	1660	60	0A	4A	Y
+159	Fairy cave (underwater)-159	C	13	1698	AA	81	04	Y
+159	Fairy cave (underwater)-159	D	13	1787	72		FF	N
+160	Fairy cave (underwater)-160	C	1	944	AA	81	04	Y
+160	Fairy cave (underwater)-160	D	1	1607	72		FF	N
+160	Fairy cave (underwater)-160	D	5	1612	72		63	N
+160	Fairy cave (underwater)-160	C	6	1013	B6	80	04	Y
+161	Fairy cave (Stenia)-161	B	1	54	B3	00 10 00 00 00 00 00 00	00	N
+199	Inoa (inner)-199	B	3	860	B9	0B	37	N
+199	Inoa (inner)-199	F	1	1232	72		FF	N
+226	Inoa-226	B	3	247	3D	2B 2B 30 33 0C 0C	00	N
+231	Inoa (inner)-231	B	4	437	B9	0B	5C	N
+249	Inoa (inner)-249	B	2	432	B9	0B	37	N
+258	Inoa (inner)-258	B	5	605	B9	0B	00	N
+258	Inoa (inner)-258	B	6	639	B2	03 8B	03	Y
+258	Inoa (inner)-258	B	6	645	B2	04 8B	03	Y
+258	Inoa (inner)-258	B	6	651	B2	05 8B	03	Y
+258	Inoa (inner)-258	B	6	657	B2	06 8B	03	Y
+258	Inoa (inner)-258	B	6	663	B2	08 8B	03	Y
+260	Inoa (inner)-260	C	7	780	B9	0B	00	N
+270	Inoa (inner)-270	B	2	328	B9	0B	5C	N
+278	Inoa (inner)-278	C	7	307	B9	0B	5C	N
+298	Inoa (inner, destroyed)-298	B	5	697	B9	0B	00	N
+298	Inoa (inner, destroyed)-298	B	6	726	B2	03 8B	03	Y
+298	Inoa (inner, destroyed)-298	B	6	732	B2	04 8B	03	Y
+298	Inoa (inner, destroyed)-298	B	6	738	B2	05 8B	03	Y
+298	Inoa (inner, destroyed)-298	B	6	744	B2	05 8B	03	Y
+298	Inoa (inner, destroyed)-298	B	6	750	B2	08 8B	03	Y
+298	Inoa (inner, destroyed)-298	B	6	1220	B9	0B	00	N
+302	Inoa (inner, destroyed)-302	C	8	614	B9	0B	00	N
+302	Inoa (inner, destroyed)-302	C	5	491	B9	0B	00	N
+306	Meia Dream-306	E	14	1110	88	80 00	FF	N
+306	Meia Dream-306	E	15	1122	88	80 00	FF	N
+307	Meia Dream-307	C	1	426	6A		1B	N
+307	Meia Dream-307	C	1	433	6B	3C 00	03	Y
+307	Meia Dream-307	C	1	444	6A		1B	N
+307	Meia Dream-307	C	1	451	6B	3C 00	03	Y
+307	Meia Dream-307	C	2	491	6A		1B	N
+307	Meia Dream-307	C	2	498	6B	3C 00	03	Y
+307	Meia Dream-307	C	2	509	6A		1B	N
+307	Meia Dream-307	C	2	516	6B	3C 00	03	Y
+327	Arena Melzas 1 (Boss)-327	B	1	292	96	80 32	0D	N
+327	Arena Melzas 1 (Boss)-327	B	1	376	97	32	0D	N
+344	Lake Shrine (inner)-344	C	60	2358	6A		00	N
+344	Lake Shrine (inner)-344	C	60	2374	6C	40 00	04	Y
+344	Lake Shrine (inner)-344	C	60	2382	6A		00	N
+344	Lake Shrine (inner)-344	C	60	2398	6B	60 00	04	Y
+344	Lake Shrine (inner)-344	C	61	2418	6A		00	N
+344	Lake Shrine (inner)-344	C	61	2434	6B	30 00	04	Y
+344	Lake Shrine (inner)-344	C	61	2442	6A		00	N
+344	Lake Shrine (inner)-344	C	61	2458	6C	40 00	04	Y
+344	Lake Shrine (inner)-344	C	61	2466	6A		00	N
+344	Lake Shrine (inner)-344	C	61	2482	6B	60 00	04	Y
+344	Lake Shrine (inner)-344	C	62	2502	6A		00	N
+344	Lake Shrine (inner)-344	C	62	2518	6B	60 00	04	Y
+344	Lake Shrine (inner)-344	C	62	2526	6A		00	N
+344	Lake Shrine (inner)-344	C	62	2542	6C	40 00	04	Y
+344	Lake Shrine (inner)-344	C	63	2562	6A		00	N
+344	Lake Shrine (inner)-344	C	63	2578	6C	20 00	04	Y
+344	Lake Shrine (inner)-344	C	63	2586	6A		00	N
+344	Lake Shrine (inner)-344	C	63	2602	6B	60 00	04	Y
+344	Lake Shrine (inner)-344	C	63	2610	6A		00	N
+344	Lake Shrine (inner)-344	C	63	2626	6C	40 00	04	Y
+344	Lake Shrine (inner)-344	C	64	2646	6A		00	N
+344	Lake Shrine (inner)-344	C	64	2662	6C	20 00	04	Y
+344	Lake Shrine (inner)-344	C	64	2670	6A		00	N
+344	Lake Shrine (inner)-344	C	64	2686	6B	60 00	04	Y
+344	Lake Shrine (inner)-344	C	64	2694	6A		00	N
+344	Lake Shrine (inner)-344	C	64	2710	6C	40 00	04	Y
+344	Lake Shrine (inner)-344	C	65	2730	6A		00	N
+344	Lake Shrine (inner)-344	C	65	2746	6B	60 00	04	Y
+344	Lake Shrine (inner)-344	C	65	2754	6A		00	N
+344	Lake Shrine (inner)-344	C	65	2770	6C	40 00	04	Y
+344	Lake Shrine (inner)-344	C	66	2790	6A		00	N
+344	Lake Shrine (inner)-344	C	66	2806	6B	30 00	04	Y
+344	Lake Shrine (inner)-344	C	66	2814	6A		00	N
+344	Lake Shrine (inner)-344	C	66	2830	6C	40 00	04	Y
+344	Lake Shrine (inner)-344	C	66	2838	6A		00	N
+344	Lake Shrine (inner)-344	C	66	2854	6B	60 00	04	Y
+344	Lake Shrine (inner)-344	C	67	2874	6A		00	N
+344	Lake Shrine (inner)-344	C	67	2890	6C	40 00	04	Y
+344	Lake Shrine (inner)-344	C	67	2898	6A		00	N
+344	Lake Shrine (inner)-344	C	67	2914	6B	60 00	04	Y
+347	Lake Shrine (inner)-347	B	6	837	BB		FF	N
+347	Lake Shrine (inner)-347	C	2	924	B9	0A	37	N
+347	Lake Shrine (inner)-347	C	2	953	B9	0A	37	N
+365	Inoa (inner)-365	C	2	430	B9	0B	00	N
+372	Inoa (inner)-372	B	1	106	B9	0B	00	N
+378	Lake Shrine Bridge (Event)_-378	B	2	86	B9	09	00	N
+379	Lake Shrine teleporter-379	B	1	156	96	81 32	97	N
+379	Lake Shrine teleporter-379	B	1	159	97	32	5C	N
+383	Murgg Caves-383	B	1	330	96	80 32	0D	N
+394	Pub Entrance + Floor-394	C	3	749	96	80 32	97	N
+394	Pub Entrance + Floor-394	C	3	752	97	0A	73	N
+394	Pub Entrance + Floor-394	F	9	1257	72		FF	N
+394	Pub Entrance + Floor-394	F	10	1265	72		FF	N
+398	Lurvy House, Well-398	B	1	88	61	00	42	N
+398	Lurvy House, Well-398	B	2	268	61	00	42	N
+398	Lurvy House, Well-398	B	3	448	61	00	42	N
+398	Lurvy House, Well-398	B	4	628	61	00	42	N
+398	Lurvy House, Well-398	B	5	823	61	00	42	N
+398	Lurvy House, Well-398	B	5	993	B9	0B	00	N
+398	Lurvy House, Well-398	B	6	1043	61	00	42	N
+398	Lurvy House, Well-398	B	6	1195	B9	0B	00	N
+398	Lurvy House, Well-398	B	7	1251	61	00	42	N
+398	Lurvy House, Well-398	C	2	2344	B9	0B	00	N
+400	Desert _ Ancient Shrine-400	C	1	448	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	1	453	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	1	458	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	1	463	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	1	479	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	1	484	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	1	489	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	1	494	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	1	510	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	1	515	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	1	520	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	1	525	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	1	541	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	1	546	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	1	551	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	1	556	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	2	764	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	2	769	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	2	774	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	2	779	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	2	795	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	2	800	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	2	805	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	2	810	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	2	826	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	2	831	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	2	836	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	2	841	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	2	857	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	2	862	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	2	867	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	2	872	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1080	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1085	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1090	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1095	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1111	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1116	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1121	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1126	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1142	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1147	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1152	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1157	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1173	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1178	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1183	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	3	1188	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1396	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1401	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1406	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1411	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1427	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1432	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1437	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1442	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1458	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1463	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1468	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1473	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1489	60	04	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1494	60	05	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1499	60	06	03	Y
+400	Desert _ Ancient Shrine-400	C	4	1504	60	07	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1712	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1717	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1722	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1727	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1743	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1748	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1753	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1758	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1774	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1779	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1784	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1789	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1805	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1810	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1815	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	9	1820	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2028	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2033	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2038	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2043	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2059	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2064	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2069	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2074	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2090	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2095	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2100	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2105	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2121	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2126	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2131	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	10	2136	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2344	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2349	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2354	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2359	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2375	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2380	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2385	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2390	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2406	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2411	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2416	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2421	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2437	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2442	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2447	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	11	2452	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2660	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2665	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2670	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2675	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2691	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2696	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2701	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2706	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2722	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2727	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2732	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2737	60	0F	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2753	60	0C	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2758	60	0D	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2763	60	0E	03	Y
+400	Desert _ Ancient Shrine-400	C	12	2768	60	0F	03	Y
+411	Lizardman's Lair (Boss)-411	B	4	1056	96	80 32	11	N
+411	Lizardman's Lair (Boss)-411	B	5	1164	96	80 32	11	N
+411	Lizardman's Lair (Boss)-411	B	11	1996	96	80 32	11	N
+415	Lake Shrine Melzas (inner, Beginning Event_)-415	C	2	178	B9	0A	37	N
+421	Nirude (inner)-421	C	8	1467	AA	81	4B	Y
+421	Nirude (inner)-421	C	14	1555	AA	81	4B	Y
+421	Nirude (inner)-421	C	17	1603	AA	81	4B	Y
+421	Nirude (inner)-421	C	24	1702	96	81 32	A3	N
+423	Nirude (inner)-423	C	25	971	AA	81	04	Y
+423	Nirude (inner)-423	C	26	1039	AA	81	04	Y
+424	Nirude (inner)-424	C	3	700	AA	81	04	Y
+424	Nirude (inner)-424	C	4	751	AA	81	04	Y
+424	Nirude (inner)-424	C	5	787	AA	81	04	Y
+424	Nirude (inner)-424	C	6	823	AA	81	04	Y
+424	Nirude (inner)-424	C	9	899	AA	81	04	Y
+424	Nirude (inner)-424	C	15	1039	AA	81	04	Y
+424	Nirude (inner)-424	C	16	1111	AA	81	04	Y
+424	Nirude (inner)-424	C	17	1175	AA	81	04	Y
+425	Nirude (inner)-425	C	12	402	AA	81	04	Y
+426	Nirude (inner)-426	C	13	1484	AA	81	04	Y
+426	Nirude (inner)-426	C	14	1551	AA	81	04	Y
+426	Nirude (inner)-426	C	15	1619	AA	81	04	Y
+426	Nirude (inner)-426	C	16	1687	AA	81	04	Y
+426	Nirude (inner)-426	C	17	1752	AA	81	04	Y
+432	Nava''s House (inner)-432	B	1	106	B9	0B	5C	N
+432	Nava''s House (inner)-432	C	1	377	B9	0B	5C	N
+439	Nirude (outer, Event, water cape)-439	B	20	2410	B9	0B	5C	N
+439	Nirude (outer, Event, water cape)-439	B	20	2435	B9	0B	5C	N
+440	Meia Dream-440	B	9	628	A9	18	04	Y
+440	Meia Dream-440	C	2	1140	AA	81	04	Y
+440	Meia Dream-440	C	3	1140	AA	81	04	Y
+440	Meia Dream-440	C	4	1140	AA	81	04	Y
+440	Meia Dream-440	C	16	1755	A9	81	04	Y
+440	Meia Dream-440	C	18	1880	A9	81	04	Y
+440	Meia Dream-440	C	21	2000	A9	81	04	Y
+440	Meia Dream-440	C	21	2012	B5	80	04	Y
+442	Meia Dream-442	C	23	1108	6A		1A	N
+442	Meia Dream-442	C	23	1122	6B	48 00	04	Y
+442	Meia Dream-442	E	1	1312	88	80 02	FF	N
+442	Meia Dream-442	C	22	1068	6A		1A	N
+442	Meia Dream-442	C	22	1082	6B	48 00	04	Y
+442	Meia Dream-442	C	3	512	6A		1A	N
+442	Meia Dream-442	C	3	526	6B	48 00	04	Y
+442	Meia Dream-442	C	5	568	6A		1A	N
+442	Meia Dream-442	C	5	582	6B	48 00	04	Y
+442	Meia Dream-442	C	6	608	6A		1A	N
+442	Meia Dream-442	C	6	622	6B	48 00	04	Y
+442	Meia Dream-442	C	7	648	6A		1A	N
+442	Meia Dream-442	C	7	662	6B	48 00	04	Y
+442	Meia Dream-442	C	8	688	6A		1A	N
+442	Meia Dream-442	C	8	702	6B	48 00	04	Y
+442	Meia Dream-442	C	9	728	6A		1A	N
+442	Meia Dream-442	C	9	742	6B	48 00	04	Y
+444	Torla (inner)-444	D	15	1302	72		02	N
+444	Torla (inner)-444	D	15	1317	72		02	N
+446	Torla (inner)-446	D	1	1114	72		02	N
+446	Torla (inner)-446	D	1	1129	72		02	N
+448	Torla (inner)-448	C	2	369	96	81 32	11	N
+452	Save Room (Coal Mine)-452	B	2	204	96	80 32	11	N
+452	Save Room (Coal Mine)-452	B	3	330	97	32	11	N
+453	Save Room (Lars Crypt)-453	B	2	204	96	80 32	11	N
+453	Save Room (Lars Crypt)-453	B	3	330	97	32	11	N
+454	Save Room (Coastal Cave_)-454	B	2	204	96	80 32	11	N
+454	Save Room (Coastal Cave_)-454	B	3	330	97	32	11	N
+455	Save Room (Desert _ Ancient Shrine)-455	B	2	204	96	80 32	11	N
+455	Save Room (Desert _ Ancient Shrine)-455	B	3	330	97	32	11	N
+456	Save Room (Magyscar)-456	B	2	204	96	80 32	11	N
+456	Save Room (Magyscar)-456	B	3	330	97	32	11	N
+457	Save Room (Underground Watercourse)-457	B	2	204	96	80 32	11	N
+457	Save Room (Underground Watercourse)-457	B	3	330	97	32	11	N
+458	Save Room (Lizardman's Lair)-458	B	2	204	96	80 32	11	N
+458	Save Room (Lizardman's Lair)-458	B	3	330	97	32	11	N
+459	Save Room (Magyscar_)-459	B	2	204	96	80 32	11	N
+459	Save Room (Magyscar_)-459	B	3	330	97	32	11	N
+460	Save Room (Nirude)-460	B	2	204	96	80 32	11	N
+460	Save Room (Nirude)-460	B	3	330	97	32	11	N
+461	Save Room (_)-461	B	2	204	96	80 32	11	N
+461	Save Room (_)-461	B	3	330	97	32	11	N
+462	Save Room (Murgg Tree)-462	B	2	204	96	80 32	11	N
+462	Save Room (Murgg Tree)-462	B	3	330	97	32	11	N
+463	Save Room (Fairy cave)-463	B	2	204	96	80 32	11	N
+463	Save Room (Fairy cave)-463	B	3	330	97	32	11	N
+464	Save Room (Lake Shrine_)-464	B	2	204	96	80 32	11	N
+464	Save Room (Lake Shrine_)-464	B	3	330	97	32	11	N
+465	Save Room (Nightmare ...)-465	B	2	204	96	80 32	11	N
+465	Save Room (Nightmare ...)-465	B	3	330	97	32	11	N
+466	Save Room (Kline's Nightmare)-466	B	2	204	96	80 32	11	N
+466	Save Room (Kline's Nightmare)-466	B	3	330	97	32	11	N
+467	Save Room (Giles Nightmare)-467	B	2	204	96	80 32	11	N
+467	Save Room (Giles Nightmare)-467	B	3	330	97	32	11	N
+468	Save Room (Meia Dream)-468	B	2	204	96	80 32	11	N
+468	Save Room (Meia Dream)-468	B	3	330	97	32	11	N
+469	Save Room (Elenes Nightmare)-469	B	2	204	96	80 32	11	N
+469	Save Room (Elenes Nightmare)-469	B	3	330	97	32	11	N
+470	Save Room (Nestus' Dream)-470	B	2	204	96	80 32	11	N
+470	Save Room (Nestus' Dream)-470	B	3	330	97	32	11	N
+475	Inoa (inner, Yustel, Map)-475	B	2	502	96	81 32	97	N
+475	Inoa (inner, Yustel, Map)-475	B	2	505	97	32	5C	N
+477	Continue Screen-477	B	1	151	BB		FF	N
+480	Lake Shrine (Melzas, Dark Dragon Event)-480	B	1	67	B9	08	8E	N

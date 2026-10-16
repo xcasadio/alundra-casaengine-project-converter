@@ -1,0 +1,17 @@
+## 5. Arrêts, budgets et retours arrière
+
+- **Budgets** : au plus deux tentatives par tranche au même niveau d'exécutant, jamais une troisième
+  identique ; au plus cinq passes de correction et re-vérification par tranche, chacune sur un état
+  réellement changé.
+- **Arrêts** :
+  - un fait mesuré qui contredit une décision D-E19 ou un fait marqué [binaire] ;
+  - un point épinglé de l'intro qui bouge ;
+  - un test existant qui devrait changer pour une autre raison que la tranche ;
+  - un arc qui passe sans avoir produit son signal de fin ou son résultat attendu, ou un arc qui
+    fige la suite de tests au lieu d'échouer dans sa limite ;
+  - une modification de l'auteur indexée par erreur ; un commit sur `main` ; un push ;
+  - tout contact avec `CasaEngine.Launcher/Program.cs`.
+- **Retours arrière** :
+  - DLL et tests : abandon de la branche (`git switch main`) ; rien n'est fusionné sans l'auteur ;
+  - docs et ADR : `git revert` de leur commit ;
+  - annexes de trace régénérées : elles reviennent avec le commit qui les a changées.

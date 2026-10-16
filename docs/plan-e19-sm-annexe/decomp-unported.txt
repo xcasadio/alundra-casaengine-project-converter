@@ -1,0 +1,633 @@
+### 0x15 Script_21_015  (EntityEventHandlers.cs:701-714)
+    public int Script_21_015(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        var entityRecord = logicEntity.EntityRecord;
+
+        if (entityRecord == null)
+        {
+            //_gameEngine.PrintCommandMap();
+        }
+
+        logicEntity.PosZ = (int)(((uint)entityRecord.Height * 8 - logicEntity.ModZ) * 0x10000);
+        return 1;
+    }
+
+    // 8003D774
+### 0x3C Script_60_03C  (EntityEventHandlers.cs:1243-1271)
+    public int Script_60_03C(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        Breakpoint.TriggerBreak();
+
+        for (int i = 0; i < _gameEngine.StaticVariables.g_numberOfEntities; i++)
+        {
+            var entity = _gameEngine.StaticVariables.g_entitySlots[i];
+
+            if (entity.IsLoadedNormalOrDeactivated
+                && (entity.AnimFlags & EntityAnimFlags.NoEntityCollision) != 0
+                && (entity.Flags & EntityFlags.Collidable) == 0
+                && entity.PlatformEntity == null)
+            {
+                if (variables[1] <= entity.TileX && entity.TileX <= variables[2]
+                    && variables[3] <= entity.TileY && entity.TileY <= variables[4]
+                    && variables[5] <= entity.TileZ && entity.TileZ <= variables[6])
+                {
+                    eventProgramState.Result = 1;
+                    return 7;
+                }
+            }
+        }
+
+        eventProgramState.Result = 0;
+
+        return 7;
+    }
+
+    // 8003E64C
+### 0x3D Script_61_03D  (EntityEventHandlers.cs:1272-1297)
+    public int Script_61_03D(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        //Breakpoint.TriggerBreak();
+
+        for (int i = 0; i < _gameEngine.StaticVariables.g_numberOfEntities; i++)
+        {
+            var entity = _gameEngine.StaticVariables.g_entitySlots[i];
+
+            if (entity.IsLoadedNormalOrDeactivated)
+            {
+                if (variables[1] <= entity.TileX && entity.TileX <= variables[2]
+                    && variables[3] <= entity.TileY && entity.TileY <= variables[4]
+                    && variables[5] <= entity.TileZ && entity.TileZ <= variables[6])
+                {
+                    eventProgramState.Result = 1;
+                    return 7;
+                }
+            }
+        }
+
+        eventProgramState.Result = 0;
+
+        return 7;
+    }
+
+    // 8003E708
+### 0x56 Script_86_056  (EntityEventHandlers.cs:1657-1663)
+    public int Script_86_056(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        _gameEngine.ChangeAreaTileProperties(variables[1]);
+        return 2;
+    }
+
+    // 8003EE28
+### 0x5F Script_WaitForAnimOrDistance  (EntityEventHandlers.cs:1805-1932)
+    public int Script_WaitForAnimOrDistance(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        Breakpoint.TriggerBreak();
+
+        if (eventProgramState.Parameters[1] != eventProgramState.CodeIndex)
+        {
+            eventProgramState.Parameters[1] = eventProgramState.CodeIndex;
+            eventProgramState.Parameters[2] = ownerEntity.PosX;
+            eventProgramState.Parameters[3] = ownerEntity.PosY;
+            eventProgramState.Parameters[4] = ownerEntity.PosZ;
+            eventProgramState.Parameters[5] = 0; // animDoneCount
+            eventProgramState.Parameters[6] = 0; // frameTimer
+
+            ownerEntity.AnimCompleteCounter = 0;
+            return 0;
+        }
+
+        // --- suivi animation ---
+        if (ownerEntity.ForceResetAnimationFlag != 0)
+        {
+            ownerEntity.CurrentAnimationId = ~ownerEntity.TargetAnimationId;
+
+            eventProgramState.Parameters[5] += 1;
+            ownerEntity.AnimCompleteCounter = 0;
+        }
+        else
+        {
+            if (ownerEntity.AnimCompleteCounter != 0)
+            {
+                eventProgramState.Parameters[5] += 1;
+                ownerEntity.AnimCompleteCounter = 0;
+            }
+        }
+
+        // frameTimer++
+        eventProgramState.Parameters[6] += 1;
+        {
+            int animDoneCount = eventProgramState.Parameters[5];
+            int frameTimer = eventProgramState.Parameters[6];
+
+            if (animDoneCount < variables[4])
+            {
+                return 0;
+            }
+
+            if (frameTimer < variables[5])
+### 0x60 Script_96_060  (EntityEventHandlers.cs:1933-1953)
+    public int Script_96_060(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        int num;
+        num = _gameEngine.GetMatchingEntityBySearchType(logicEntity, variables[1]);
+
+        for (int i = 0; i < num; i++)
+        {
+            var entity = _gameEngine.StaticVariables.g_matchingEntitiesBuffer[i];
+
+            if (entity.RidingEntity == logicEntity)
+            {
+                eventProgramState.Result = 1;
+                return 2;
+            }
+        }
+
+        eventProgramState.Result = 0;
+        return 2;
+    }
+
+    // 8003F488
+### 0x61 Script_97_061  (EntityEventHandlers.cs:1954-1974)
+    public int Script_97_061(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        int num;
+        num = _gameEngine.GetMatchingEntityBySearchType(logicEntity, variables[1]);
+
+        for (int i = 0; i < num; i++)
+        {
+            var entity = _gameEngine.StaticVariables.g_matchingEntitiesBuffer[i];
+
+            if (logicEntity.RidingEntity == entity)
+            {
+                eventProgramState.Result = 1;
+                return 2;
+            }
+        }
+
+        eventProgramState.Result = 0;
+        return 2;
+    }
+
+    // 8003F514
+### 0x66 Script_CopyLogicContextAndAssignScript  (EntityEventHandlers.cs:2052-2069)
+    public int Script_CopyLogicContextAndAssignScript(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        Breakpoint.TriggerBreak();
+
+        _gameEngine.StaticVariables.g_eventProgramState.CopyFrom(ownerEntity.EventProgramState);
+
+        logicEntity.LastTargetAnimationId = logicEntity.TargetAnimationId;
+        logicEntity.LastTargetDirection = logicEntity.TargetDirection;
+
+        var index = ((variables[1] + variables[2] * 0x100) * 0x10000) >> 0x10;
+        var value = variables[index];
+        ownerEntity.EventProgramState.Parameters[0] = value;
+        ownerEntity.EventProgramState.CodeIndex = value;
+
+        return 3;
+    }
+
+    // 8003F82C
+### 0x6A Script_106_06A  (EntityEventHandlers.cs:2095-2103)
+    public int Script_106_06A(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        eventProgramState.Parameters[2] = logicEntity.PosX;
+        eventProgramState.Parameters[3] = logicEntity.PosY;
+        eventProgramState.Parameters[4] = logicEntity.PosZ;
+        return 1;
+    }
+
+    // 8003F908
+### 0x6B Script_107_06B  (EntityEventHandlers.cs:2104-2118)
+    public int Script_107_06B(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        var iVar1 = eventProgramState.Parameters[2] - logicEntity.PosX;
+
+        if (iVar1 < 0)
+        {
+            iVar1 = -iVar1;
+        }
+
+        eventProgramState.Result = iVar1 < ((variables[1] | (variables[2] << 8)) << 0x10) ? 0 : 1;
+
+        return 3;
+    }
+
+    // 8003F94C
+### 0x6C Script_108_06C  (EntityEventHandlers.cs:2119-2132)
+    public int Script_108_06C(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        var iVar1 = eventProgramState.Parameters[3] - logicEntity.PosY;
+
+        if (iVar1 < 0)
+        {
+            iVar1 = -iVar1;
+        }
+
+        eventProgramState.Result = iVar1 < ((variables[1] | (variables[2] << 8)) << 0x10) ? 0 : 1;
+        return 3;
+    }
+
+    // 8003F990
+### 0x6D Script_109_06D  (EntityEventHandlers.cs:2133-2146)
+    public int Script_109_06D(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        var iVar1 = eventProgramState.Parameters[4] - logicEntity.PosZ;
+
+        if (iVar1 < 0)
+        {
+            iVar1 = -iVar1;
+        }
+
+        eventProgramState.Result = iVar1 < ((variables[1] | (variables[2] << 8)) << 0x10) ? 0 : 1;
+        return 3;
+    }
+
+    // 8003F9D4
+### 0x72 Script_114_072  (EntityEventHandlers.cs:2175-2182)
+    public int Script_114_072(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        logicEntity.LastTargetAnimationId = logicEntity.TargetAnimationId;
+        logicEntity.LastTargetDirection = logicEntity.TargetDirection;
+        return 1;
+    }
+
+    // 8003FA3C
+### 0x7A Script_JumpIfChoiceRejected_07A  (EntityEventHandlers.cs:2250-2263)
+    public int Script_JumpIfChoiceRejected_07A(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        int result = 3;
+
+        if (eventProgramState.Result == 0)
+        {
+            eventProgramState._34 = eventProgramState.CodeIndex + 3; //variables[3];
+            result = (((variables[2] << 8) | variables[1]) * 0x10000) >> 0x10;
+        }
+
+        return result;
+    }
+
+    // 8003FBD4
+### 0x88 Script_136_088  (EntityEventHandlers.cs:2496-2513)
+    public int Script_136_088(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        var status = DAT_80023d2c[variables[2]];
+        var matchingEntityCount = _gameEngine.GetMatchingEntityBySearchType(logicEntity, variables[1]);
+
+        if (0 < matchingEntityCount)
+        {
+            do
+            {
+                var entity = _gameEngine.StaticVariables.g_matchingEntitiesBuffer[--matchingEntityCount];
+                entity.Status = (EntityStatus)status;
+            } while (0 < matchingEntityCount);
+        }
+
+        return 3;
+    }
+
+    // 80040194
+### 0x96 Script_150_096  (EntityEventHandlers.cs:2859-2878)
+    public int Script_150_096(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        var value = variables[1];
+        var num = _gameEngine.GetMatchingEntityBySearchType(logicEntity, variables[1]);
+
+        for (var i = 0; i < num; i++)
+        {
+            var entity = _gameEngine.StaticVariables.g_matchingEntitiesBuffer[i];
+            entity.Hp += value;
+
+            if (entity.HpMax < entity.Hp)
+            {
+                entity.Hp = entity.HpMax;
+            }
+        }
+
+        return 3;
+    }
+
+    // 80040A2C
+### 0x97 Script_151_097  (EntityEventHandlers.cs:2879-2885)
+    public int Script_151_097(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        _gameEngine.PlayerManager.SpendMoney(variables[1]);
+        return 2;
+    }
+
+    // 80040A58
+### 0x9E Script_158_09E  (EntityEventHandlers.cs:2951-2997)
+    public int Script_158_09E(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        Breakpoint.TriggerBreak();
+
+        MapTile mapTile;
+        int x;
+        int y;
+        int count;
+
+        y = 0;
+        count = 0;
+        var x1 = variables[1];
+        var y1 = variables[2];
+        var x2 = variables[3];
+        var y2 = variables[4];
+        var mapWidth = _gameEngine.CurrentMap.Map.Width;
+
+        if (y2 != 0)
+        {
+            do
+            {
+                x = 0;
+                mapTile = _gameEngine.CurrentMap.Map.MapTiles[(y1 + y) * mapWidth + x1]; //x1 - 2
+
+                if (x2 != 0)
+                {
+                    do
+                    {
+                        if ((mapTile.Walkability & 2) != 0)
+                        {
+                            count = count + 1;
+                        }
+
+                        x = x + 1;
+                    } while (x < x2);
+                }
+
+                y = y + 1;
+            } while (y < y2);
+        }
+
+        eventProgramState.Result = count < variables[5] ? 0 : 1;
+
+        return 6;
+    }
+
+### 0xA9 Script_169_0A9  (EntityEventHandlers.cs:3159-3181)
+    public int Script_169_0A9(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        var matchingEntityCount = _gameEngine.GetMatchingEntityBySearchType(logicEntity, variables[1]);
+
+        if (0 < matchingEntityCount)
+        {
+            do
+            {
+                var entity = _gameEngine.StaticVariables.g_matchingEntitiesBuffer[--matchingEntityCount];
+
+                if (logicEntity.XCollisionEntity == entity)
+                {
+                    eventProgramState.Result = 1;
+                    return 2;
+                }
+            } while (0 < matchingEntityCount);
+        }
+
+        eventProgramState.Result = 0;
+        return 2;
+    }
+
+    // 80041200
+### 0xAA Script_170_0AA  (EntityEventHandlers.cs:3182-3204)
+    public int Script_170_0AA(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        var matchingEntityCount = _gameEngine.GetMatchingEntityBySearchType(logicEntity, variables[1]);
+
+        if (0 < matchingEntityCount)
+        {
+            do
+            {
+                var entity = _gameEngine.StaticVariables.g_matchingEntitiesBuffer[--matchingEntityCount];
+
+                if (entity.XCollisionEntity == logicEntity)
+                {
+                    eventProgramState.Result = 1;
+                    return 2;
+                }
+            } while (0 < matchingEntityCount);
+        }
+
+        eventProgramState.Result = 0;
+        return 2;
+    }
+
+    // 80041290
+### 0xB2 Script_CompareEntityGroupsForMatch_0B2  (EntityEventHandlers.cs:3347-3400)
+    public int Script_CompareEntityGroupsForMatch_0B2(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        int group1Count;
+        int group2Count;
+        Entity entity1;
+        Entity entity2;
+        int matchIndex;
+
+        group1Count = _gameEngine.GetMatchingEntityBySearchType(logicEntity, variables[1]);
+
+        if (group1Count == 0)
+        {
+            eventProgramState.Result = 0;
+            return 3;
+        }
+
+        Entity[] group1Entities = new Entity[group1Count];
+        Array.Copy(_gameEngine.StaticVariables.g_matchingEntitiesBuffer, group1Entities, group1Count);
+
+        group2Count = _gameEngine.GetMatchingEntityBySearchType(logicEntity, variables[2]);
+
+        if (0 < group2Count)
+        {
+            do
+            {
+                matchIndex = 0;
+                entity2 = _gameEngine.StaticVariables.g_matchingEntitiesBuffer[group2Count - 1];
+
+                if (0 < group1Count)
+                {
+                    do
+                    {
+                        entity1 = group1Entities[matchIndex];
+
+                        if (entity2 == entity1)
+                        {
+                            eventProgramState.Result = 1;
+                            return 3;
+                        }
+
+                        matchIndex++;
+                    } while (matchIndex < group1Count);
+                }
+
+                group2Count--;
+            } while (0 < group2Count);
+### 0xB3 Script_UpdatePadState  (EntityEventHandlers.cs:3401-3410)
+    public int Script_UpdatePadState(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        _gameEngine.StaticVariables.g_padState1.ButtonsHold = (ushort)(variables[1] + variables[2] * 0x100);
+        _gameEngine.StaticVariables.g_padState1.ButtonsJustPressed = (ushort)(variables[3] + variables[4] * 0x100);
+        _gameEngine.StaticVariables.g_padState1.ButtonsReleased = (ushort)(variables[5] + variables[6] * 0x100);
+        _gameEngine.StaticVariables.g_padState1.ButtonsJustPressedByInterval = (ushort)(variables[7] + variables[8] * 0x100);
+        return 9;
+    }
+
+    // 800417CC
+### 0xB4 Script_180_0B4  (EntityEventHandlers.cs:3411-3427)
+    public int Script_180_0B4(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        var iVar1 = _gameEngine.GetMatchingEntityBySearchType(logicEntity, variables[1]);
+
+        if (iVar1 == 0 || _gameEngine.StaticVariables.g_matchingEntitiesBuffer[0].ForceZ < 1)
+        {
+            eventProgramState.Result = 0;
+        }
+        else
+        {
+            eventProgramState.Result = 1;
+        }
+
+        return 2;
+    }
+
+    // 80041830
+### 0xB5 Script_181_0B5  (EntityEventHandlers.cs:3428-3444)
+    public int Script_181_0B5(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        var num = _gameEngine.GetMatchingEntityBySearchType(logicEntity, variables[1]);
+
+        if (num == 0 || -1 < _gameEngine.StaticVariables.g_matchingEntitiesBuffer[0].ForceZ)
+        {
+            eventProgramState.Result = 0;
+        }
+        else
+        {
+            eventProgramState.Result = 1;
+        }
+
+        return 2;
+    }
+
+    // 80041894
+### 0xB6 Script_182_0B6  (EntityEventHandlers.cs:3445-3465)
+    public int Script_182_0B6(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        var num = _gameEngine.GetMatchingEntityBySearchType(logicEntity, variables[1]);
+
+        if (num == 0 || _gameEngine.StaticVariables.g_matchingEntitiesBuffer[0].ForceZ != 0)
+        {
+            eventProgramState.Result = 0;
+        }
+        else
+        {
+            eventProgramState.Result = 1;
+        }
+
+        return 2;
+    }
+
+    // 800418F8
+    // ALUN_CD.EXE (France) 0x800418F8: passes variables[1] (not variables[2]) as the search type to
+    // GetMatchingEntityBySearchType (T5 cross-check, D-E16-28); compared value and field stay
+    // variables[2]/TargetAnimationId (+0x88). Same loop shape as 0xAD/0xB8: every match is tested down
+    // to index 0 inclusive (the decompilation's `while (i > 0)` skipped index 0).
+### 0xB7 Script_183_0B7  (EntityEventHandlers.cs:3466-3494)
+    public int Script_183_0B7(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        Breakpoint.TriggerBreak();
+
+        var animationId = (byte)variables[2];
+
+        int i = _gameEngine.GetMatchingEntityBySearchType(logicEntity, variables[1]) - 1;
+
+        while (i >= 0)
+        {
+            var entity = _gameEngine.StaticVariables.g_matchingEntitiesBuffer[i];
+
+            if (entity.TargetAnimationId == animationId)
+            {
+                eventProgramState.Result = 1;
+                return 3;
+            }
+
+            i--;
+        }
+
+        eventProgramState.Result = 0;
+
+        return 3;
+    }
+
+    // 80041988
+    // ALUN_CD.EXE (France) 0x80041988: compares CurrentAnimationId (+0x90), not TargetAnimationId
+    // (+0x88) - the decompilation and both size tables named this opcode/field wrong (D-E16-27/28).
+### 0xB9 Script_185_0B9  (EntityEventHandlers.cs:3520-3526)
+    public int Script_185_0B9(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        _gameEngine.CdManager.StartCdStreaming(variables[1]);
+        return 2;
+    }
+
+    // 80041A44
+### 0xBB Script_187_0BB  (EntityEventHandlers.cs:3538-3606)
+    public int Script_187_0BB(Entity logicEntity, Entity ownerEngtity, int[] variables, EventProgramState eventProgramState)
+    {
+        int result;
+
+        if (_gameEngine.StaticVariables.g_currentMap == 0x1dd)
+        {
+            result = 1;
+
+            if ((_gameEngine.StaticVariables.g_temporaryFlags[0] & 2U) == 0)
+            {
+                if (eventProgramState.Parameters[1] == eventProgramState.CodeIndex)
+                {
+                    if (_gameEngine.StaticVariables.g_debugState < 0)
+                    {
+                        result = 0xff;
+
+                        if (_gameEngine.StaticVariables.g_saveDataInRam.SaveSlotIndex != 0xff)
+                        {
+                            result = _gameEngine.StaticVariables.g_saveDataInRam.SaveSlotIndex + 1;
+                        }
+
+                        _gameEngine.LogManager.Log($"Retry = {result}");
+                    }
+
+                    result = eventProgramState.Parameters[2];
+
+                    eventProgramState.Parameters[2] = result + 1;
+
+                    if (result < 0x3c)
+                    {
+                        result = 0;
+                    }
+                    else
+                    {
+                        result = 1;
+                        _gameEngine.StaticVariables.g_isGameEnding = 1;
+                        _gameEngine.StaticVariables.g_mapTransitionEffectId = 10;
+                        _gameEngine.StaticVariables.g_warpSoundEffectId = 0;
+                        _gameEngine.StaticVariables.g_desiredMap = 0xb;
+                    }
+                }
+                else
+                {
+                    _gameEngine.PlayerManager.RestoreHpAndMpAndCreateEffect(_gameEngine.StaticVariables.PlayerEntity);
+                    _gameEngine.SoundManager.PlaySoundEffect(0x31);
+                    result = 0;
+### 0xC2 Script_194_0C2  (EntityEventHandlers.cs:3660-3677)
+    public int Script_194_0C2(Entity logicEntity, Entity ownerEntity, int[] variables, EventProgramState eventProgramState)
+    {
+        Breakpoint.TriggerBreak();
+        var slotId = (variables[2] << 8) | variables[1];
+
+        if (_gameEngine.StaticVariables.g_saveData.SaveSlotIndex < slotId)
+        {
+            eventProgramState.Result = 0;
+        }
+        else
+        {
+            eventProgramState.Result = 1;
+        }
+
+        return 2;
+    }
+
+    // 80041D6C

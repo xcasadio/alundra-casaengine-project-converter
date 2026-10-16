@@ -1,0 +1,2551 @@
+{
+ "01": {
+  "line": 617,
+  "end_line": 619,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_DoNothing"
+  },
+  "comment_head": "Do nothing (debug command) - Script_DoNothing"
+ },
+ "02": {
+  "line": 620,
+  "end_line": 622,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_2_002"
+  },
+  "comment_head": "Goto - Script_2_002"
+ },
+ "03": {
+  "line": 623,
+  "end_line": 625,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_3_003"
+  },
+  "comment_head": "If true goto - Script_3_003"
+ },
+ "04": {
+  "line": 626,
+  "end_line": 628,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_4_004"
+  },
+  "comment_head": "If false goto - Script_4_004"
+ },
+ "05": {
+  "line": 629,
+  "end_line": 636,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_5_005"
+  },
+  "comment_head": "Flag on - Script_5_005"
+ },
+ "06": {
+  "line": 637,
+  "end_line": 644,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_6_006"
+  },
+  "comment_head": "Flag off - Script_6_006"
+ },
+ "07": {
+  "line": 645,
+  "end_line": 652,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_7_007"
+  },
+  "comment_head": "Check entity in area - Script_7_007 (EntityEventHandlers.cs:539-582): Result = 1 if ANY entity matched by v1's search type has TileX/TileY/TileZ inside the inclusive box v2..v7, else 0. The original iterates the match buffer BACKWARD (last "
+ },
+ "08": {
+  "line": 653,
+  "end_line": 657,
+  "addresses": [
+   "0x8003D404"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_8_008"
+  },
+  "comment_head": "Turn by an amount - Script_8_008 @ 0x8003D404 (E19.c1 T3, docs/plan-e19-opcodes.md \u00a71.2e): TargetDirection = (TargetDirection + v1) & 0x1F. Size 2."
+ },
+ "09": {
+  "line": 658,
+  "end_line": 661,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_9_009"
+  },
+  "comment_head": "Set direction - Script_9_009"
+ },
+ "0A": {
+  "line": 662,
+  "end_line": 665,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_10_00A"
+  },
+  "comment_head": "Reverse direction - Script_10_00A"
+ },
+ "0B": {
+  "line": 666,
+  "end_line": 669,
+  "addresses": [
+   "0x8003D468"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_11_00B"
+  },
+  "comment_head": "Wait until the entity moved beyond a radius - Script_11_00B @ 0x8003D468 (E19.c1 T3): see WalkUntilBeyondRadius below."
+ },
+ "0C": {
+  "line": 670,
+  "end_line": 675,
+  "addresses": [
+   "0x80098708"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_12_00C"
+  },
+  "comment_head": "Random cardinal direction - Script_12_00C (E19.c1 T3): one draw of the shared generator (AlundraRandom, the original's seed 0x80098708 and constants), then TargetDirection = cardinal table[seed >> 30]. Size 1."
+ },
+ "10": {
+  "line": 676,
+  "end_line": 683,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_16_010"
+  },
+  "comment_head": "Player lose control - Script_16_010 (EntityEventHandlers.cs:680-684). The flag store IS the whole port: AlundraPlayerManager.MovePlayer's own InputBlockedMask gate reads it, at the same site the original tests it (PlayerManager.cs:38). E6 d"
+ },
+ "11": {
+  "line": 684,
+  "end_line": 687,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_17_011"
+  },
+  "comment_head": "Player gain control - Script_17_011 (EntityEventHandlers.cs:686-690)."
+ },
+ "C0": {
+  "line": 688,
+  "end_line": 704,
+  "addresses": [
+   "0x8002BB68",
+   "0x8002ED80",
+   "0x8002F1C4",
+   "0x80041CDC",
+   "0x8004E484"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": true,
+   "decomp_ref": false,
+   "script_name": "Script_192_0C0"
+  },
+  "comment_head": "Set equipped weapon - Script_192_0C0 @ 0x80041CDC (E20.f0 T1), PER THE BINARY: SetPlayerWeaponId(v1 + 1) (0x8004E484, the operand is a byte so the slot is 1..256 and only 1..6 is accepted), then PlayerControlFlags |= 0x80 (ForcedWeapon). Si"
+ },
+ "BC": {
+  "line": 705,
+  "end_line": 709,
+  "addresses": [
+   "0x80041C00"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_188_0BC"
+  },
+  "comment_head": "Increase player HpMax - Script_188_0BC @ 0x80041C00 (E20.c2a T3), PER THE BINARY: the hero entity's HpMax (+0x18) += the operand byte v1, capped at 0x32; the life is not touched. Written on the entity (the stats follow at the end of the nex"
+ },
+ "C3": {
+  "line": 710,
+  "end_line": 714,
+  "addresses": [
+   "0x80041D6C",
+   "0x8004B730"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_195_0C3"
+  },
+  "comment_head": "Restore and init HP and MP - Script_195_0C3 @ 0x80041D6C (E20.c2a T3), PER THE BINARY: hero Hp (+0x14) = HpMax (+0x18); SetPlayerMp(GetPlayerMpMax()); then InitializeHpAndMp (0x8004B730), which snaps the four displayed counters of the HUD t"
+ },
+ "C1": {
+  "line": 715,
+  "end_line": 718,
+  "addresses": [
+   "0x80041D18"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_193_0C1"
+  },
+  "comment_head": "Clear the scripted weapon lock - Script_193_0C1 @ 0x80041D18 (E20.f0 T1): PlayerControlFlags &= ~0x80. Size 1."
+ },
+ "16": {
+  "line": 719,
+  "end_line": 723,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_22_016"
+  },
+  "comment_head": "High gravity - Script_22_016"
+ },
+ "17": {
+  "line": 724,
+  "end_line": 728,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_23_017"
+  },
+  "comment_head": "Low gravity - Script_23_017"
+ },
+ "28": {
+  "line": 729,
+  "end_line": 735,
+  "addresses": [
+   "0x8003DC24"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_40_028"
+  },
+  "comment_head": "Set class B - Script_40_028 @ 0x8003DC24 (E19.l1, docs/plan-e19-opcodes.md section 1.2m): ClassB (bit 3) of the logic entity's flags, nothing else. Size 1. The controller's walkability mask follows (ResyncControllerFromFlags, like 0x16/0x17"
+ },
+ "29": {
+  "line": 736,
+  "end_line": 740,
+  "addresses": [
+   "0x8003DC40"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_41_029"
+  },
+  "comment_head": "Clear class B - Script_41_029 @ 0x8003DC40."
+ },
+ "2A": {
+  "line": 741,
+  "end_line": 745,
+  "addresses": [
+   "0x8003DC54"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_42_02A"
+  },
+  "comment_head": "Set class A - Script_42_02A @ 0x8003DC54: ClassA (bit 0)."
+ },
+ "2B": {
+  "line": 746,
+  "end_line": 750,
+  "addresses": [
+   "0x8003DC6C"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_43_02B"
+  },
+  "comment_head": "Clear class A - Script_43_02B @ 0x8003DC6C."
+ },
+ "45": {
+  "line": 751,
+  "end_line": 755,
+  "addresses": [
+   "0x8003E954"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_69_045"
+  },
+  "comment_head": "Clear NoObstacleSlide - Script_69_045 @ 0x8003E954 (E19.h4 H4-R1, docs/plan-e19-opcodes.md \u00a71.2n.4): bit 0x2000 of the logic entity's flags, nothing else (no Result, no resync of the controller: the bit is read by the kinematic tick only). "
+ },
+ "46": {
+  "line": 756,
+  "end_line": 759,
+  "addresses": [
+   "0x8003E96C"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_70_046"
+  },
+  "comment_head": "Set NoObstacleSlide - Script_70_046 @ 0x8003E96C (E19.h4 H4-R1): the slide along walls is forbidden for the entity."
+ },
+ "19": {
+  "line": 760,
+  "end_line": 763,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_25_019"
+  },
+  "comment_head": "Deactivate entity - Script_25_019 (EntityEventHandlers.cs:729-733)."
+ },
+ "1A": {
+  "line": 764,
+  "end_line": 767,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_26_01A"
+  },
+  "comment_head": "Set anim - Script_26_01A"
+ },
+ "1C": {
+  "line": 768,
+  "end_line": 770,
+  "addresses": [
+   "0x8003D7FC"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_28_01C"
+  },
+  "comment_head": "Repeat anim - Script_28_01C @ 0x8003D7FC (E19.c1 T4): see RepeatAnimation below. Size 2."
+ },
+ "1D": {
+  "line": 771,
+  "end_line": 777,
+  "addresses": [
+   "0x8003D890"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_29_01D"
+  },
+  "comment_head": "Repeat anim with collision - Script_29_01D @ 0x8003D890 (E19.c1 T4): 0x1C, which ALSO ends (returns 2) as soon as ForceAdjusted is nonzero - from its very first call. Size 2."
+ },
+ "1E": {
+  "line": 778,
+  "end_line": 783,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_30_01E"
+  },
+  "comment_head": "Walk - Script_30_01E (EntityEventHandlers.cs:793-829): see this case's own doc on Walk below for the full port + E4.d navigation-detour extension (D5). Sets NEITHER anim NOR direction by itself (0x5A/0x5B do - free walk comes from the perma"
+ },
+ "1F": {
+  "line": 784,
+  "end_line": 792,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": true,
+   "decomp_ref": true,
+   "script_name": "Script_31_01F"
+  },
+  "comment_head": "Walk with collision - Script_31_01F (EntityEventHandlers.cs:832-841): delegates to the SAME 0x1E core (Walk below, allowDetour: false - D5: no navigation detour for 0x1F, the original itself just ends on a curtailed movement), but ALSO ends"
+ },
+ "24": {
+  "line": 793,
+  "end_line": 799,
+  "addresses": [
+   "0x8003DB70"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_36_024"
+  },
+  "comment_head": "Wait force adjusted - Script_36_024 @ 0x8003DB70 (E19.d D4, D-E19-21, docs/plan-e19-opcodes.md \u00a71.2g), PER THE BINARY: returns 1 when the LOGIC entity's ForceAdjusted (+0x13C) is nonzero, else 0 (the script waits and re-tests at the next ti"
+ },
+ "25": {
+  "line": 800,
+  "end_line": 805,
+  "addresses": [
+   "0x8003DB7C"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_37_025"
+  },
+  "comment_head": "Wait entity collision z or on ground - Script_37_025 @ 0x8003DB7C (E19.d2c1 R4, docs/plan-e19-opcodes.md \u00a71.2h.3.1), PER THE BINARY: returns 1 when the LOGIC entity's CollidedWithEntityZ (+0x140) or IsOnGround (+0x144) is nonzero, else 0 (t"
+ },
+ "20": {
+  "line": 806,
+  "end_line": 810,
+  "addresses": [
+   "0x8003D9BC"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_32_020"
+  },
+  "comment_head": "Wait Z distance - Script_32_020 @ 0x8003D9BC (E19.h1b2 H1B2-R1, docs/plan-e19-opcodes.md \u00a71.2n.1c), PER THE BINARY: a pure wait on the PosZ of the LOGIC entity (WaitZDistance: the first call at a pc memorises the pc and PosZ and returns 0, "
+ },
+ "21": {
+  "line": 811,
+  "end_line": 816,
+  "addresses": [
+   "0x8003DA28"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_33_021"
+  },
+  "comment_head": "Wait Z distance or Z contact - Script_33_021 @ 0x8003DA28 (E19.h1 H1-1, docs/plan-e19-opcodes.md \u00a71.2n.1), PER THE BINARY: calls the 0x20 handler (WaitZDistance, same operands) and returns 3 when it ends, else 3 when the LOGIC entity's Coll"
+ },
+ "22": {
+  "line": 817,
+  "end_line": 819,
+  "addresses": [
+   "0x8003DA70"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_34_022"
+  },
+  "comment_head": "Wait height target - Script_34_022 @ 0x8003DA70 (E19.h1b2 H1B2-R1, docs/plan-e19-opcodes.md \u00a71.2n.1c), PER THE BINARY: see WaitHeightTarget. Size 1."
+ },
+ "23": {
+  "line": 820,
+  "end_line": 823,
+  "addresses": [
+   "0x8003DB28"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_35_023"
+  },
+  "comment_head": "Wait height target or Z contact - Script_35_023 @ 0x8003DB28 (E19.h1b2 H1B2-R1), PER THE BINARY: the 0x22 handler first (its memo and its clamp always run, from the first call), then 1 when the LOGIC entity's CollidedWithEntityZ (+0x140) is"
+ },
+ "26": {
+  "line": 824,
+  "end_line": 827,
+  "addresses": [
+   "0x8003DBA8"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_38_026"
+  },
+  "comment_head": "Wait force adjusted or Z contact - Script_38_026 @ 0x8003DBA8 (E19.h1 H1-1), PER THE BINARY: returns 1 when the LOGIC entity's ForceAdjusted (+0x13C) or CollidedWithEntityZ (+0x140) is nonzero, else 0. Same shape as 0x24/0x25. Size 1."
+ },
+ "47": {
+  "line": 828,
+  "end_line": 832,
+  "addresses": [
+   "0x8003E984"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_71_047"
+  },
+  "comment_head": "Wait hit or force adjusted - Script_71_047 @ 0x8003E984 (E19.h1 H1-1), PER THE BINARY: returns 1 when the LOGIC entity's HitCounter (+0x220) or ForceAdjusted (+0x13C) is nonzero, else 0; Result untouched. HitCounter is written by the hit pa"
+ },
+ "71": {
+  "line": 833,
+  "end_line": 836,
+  "addresses": [
+   "0x8003FA10"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_113_071"
+  },
+  "comment_head": "Get hit counter - Script_113_071 @ 0x8003FA10 (E20.c1b K4), PER THE BINARY: Result = the LOGIC entity's HitCounter (+0x220). Size 1."
+ },
+ "86": {
+  "line": 837,
+  "end_line": 848,
+  "addresses": [
+   "0x8003FFD4"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_134_086"
+  },
+  "comment_head": "Set DamagedTickCounter - Script_134_086 @ 0x8003FFD4 (E20.c1b K4), PER THE BINARY: +0x1CC = v2 | v3 << 8 on every entity the search v1 finds. A SET, not an add (the size table used to say \"Add\"); Result untouched. The counters pass decremen"
+ },
+ "87": {
+  "line": 849,
+  "end_line": 866,
+  "addresses": [
+   "0x80040048",
+   "0x80098FA4",
+   "0x8013D9E8"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_135_087"
+  },
+  "comment_head": "Check touched by attack type - Script_135_087 @ 0x80040048 (E20.c1b K4), PER THE BINARY: Result = 1 when some entity the search v1 finds is touched (+0x224) by an entity with a frame box and an attack of a non-zero attribute whose nibble is"
+ },
+ "95": {
+  "line": 867,
+  "end_line": 876,
+  "addresses": [
+   "0x800407C0"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_149_095"
+  },
+  "comment_head": "Check entities attacking a box - Script_149_095 @ 0x800407C0 (E20.c1b K4), PER THE BINARY: [x, y, z, wx, hy, unused, maskLo, maskHi, typeIdx]; the rectangle is (24 x, 16 y, 16 z) px with the sizes (24 wx, 16 hy, 24 wx) px (the Z size is the"
+ },
+ "48": {
+  "line": 877,
+  "end_line": 880,
+  "addresses": [
+   "0x8003E9B0"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_72_048"
+  },
+  "comment_head": "Wait hit or Z contact - Script_72_048 @ 0x8003E9B0 (E19.h1 H1-1), PER THE BINARY: returns 1 when the LOGIC entity's HitCounter (+0x220) or CollidedWithEntityZ (+0x140) is nonzero, else 0. Size 1."
+ },
+ "6F": {
+  "line": 881,
+  "end_line": 885,
+  "addresses": [
+   "0x8003F9E8"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_111_06F"
+  },
+  "comment_head": "Is collided with entity Z - Script_111_06F @ 0x8003F9E8 (E19.h1 H1-1): Result = the LOGIC entity's CollidedWithEntityZ (+0x140), copied as is like 0x6E does ForceAdjusted. Size 1."
+ },
+ "40": {
+  "line": 886,
+  "end_line": 900,
+  "addresses": [
+   "0x8003E7B8"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_64_040"
+  },
+  "comment_head": "Set program index - Script_64_040 @ 0x8003E7B8 (E19.d D6, D-E19-22), PER THE BINARY: raises g_clearProgramState, then ProgramIndexes[v1] = v2 of the LOGIC entity; size 3. The original bounds nothing: v1 >= 6 would write past the array (no s"
+ },
+ "41": {
+  "line": 901,
+  "end_line": 911,
+  "addresses": [
+   "0x8003E7E4"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_65_041"
+  },
+  "comment_head": "Set sprite program index - Script_65_041 @ 0x8003E7E4 (E19.d D6, D-E19-22), PER THE BINARY: SpriteProgramIndexes[v1] = v2 of the LOGIC entity, no clearing, size 3. Same out-of-range correction as 0x40."
+ },
+ "1B": {
+  "line": 912,
+  "end_line": 939,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_27_01B"
+  },
+  "comment_head": "Fly - Script_27_01B (EntityEventHandlers.cs:743-747): ForceZ = (((v2<<8)|v1) * 0x10000) >> 8, a signed 16.16 vertical impulse. Only the DLL-side struct field is set here now (root-cause vertical-fidelity fix, gull entity 6 map 389 - see Alu"
+ },
+ "27": {
+  "line": 940,
+  "end_line": 950,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_39_027"
+  },
+  "comment_head": "Face player - Script_39_027 (EntityEventHandlers.cs:973-978): TargetDirection = GetDirectionToTarget(player.Pos - entity.Pos). No player spawned this session (degraded mode) -> TargetDirection left unchanged, same \"nothing to search\" shape "
+ },
+ "30": {
+  "line": 951,
+  "end_line": 953,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_48_030"
+  },
+  "comment_head": "If flag on - Script_48_030"
+ },
+ "31": {
+  "line": 954,
+  "end_line": 956,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_49_031"
+  },
+  "comment_head": "If flag off - Script_49_031"
+ },
+ "32": {
+  "line": 957,
+  "end_line": 967,
+  "addresses": [
+   "0x8003DEFC"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_50_032"
+  },
+  "comment_head": "Toggle flag - Script_50_032 @ 0x8003DEFC (EntityEventHandlers.cs:1102-1109): XorFlag(flag, 1 << (v1 & 0x1f)) - the FIRST caller of AlundraGameState.XorFlag (bank chosen by bit 0x8000 of the flag id, as its own BankFor already does). Always "
+ },
+ "37": {
+  "line": 968,
+  "end_line": 970,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_55_037"
+  },
+  "comment_head": "Wait - Script_55_037"
+ },
+ "36": {
+  "line": 971,
+  "end_line": 976,
+  "addresses": [
+   "0x8003E35C"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_54_036"
+  },
+  "comment_head": "Wait until flag on - Script_54_036 @ 0x8003E35C (EntityEventHandlers.cs:1166-1176); EventCodeDebugger names this \"Wait flag off\", which is misleading (EventOpcodeSizeTable swaps it back since E19.m8 M-02) - it returns 3 (advance) when the f"
+ },
+ "35": {
+  "line": 977,
+  "end_line": 982,
+  "addresses": [
+   "0x8003E2DC"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_53_035"
+  },
+  "comment_head": "Wait until flag off - Script_53_035 @ 0x8003E2DC (EntityEventHandlers.cs:1152-1163): the mirror image of 0x36 above, and EventCodeDebugger's name for THIS one (\"Wait flag on\") reads backwards for exactly the same reason - it returns 3 (adva"
+ },
+ "2D": {
+  "line": 983,
+  "end_line": 986,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_45_02D"
+  },
+  "comment_head": "Activate entity - Script_45_02D"
+ },
+ "2E": {
+  "line": 987,
+  "end_line": 990,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_46_02E"
+  },
+  "comment_head": "Destroy entity - Script_46_02E"
+ },
+ "33": {
+  "line": 991,
+  "end_line": 993,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_51_033"
+  },
+  "comment_head": "Check flags on - Script_51_033"
+ },
+ "34": {
+  "line": 994,
+  "end_line": 1000,
+  "addresses": [
+   "0x8003E128"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_52_034"
+  },
+  "comment_head": "Check flags off - Script_52_034 @ 0x8003E128 (EntityEventHandlers.cs:1132-1149): tests the SAME four (flag,bit) pairs from v[1..8] as CheckFlagsOn (0x33), but the OPPOSITE polarity: Result=0 as soon as ANY tested bit is SET (short-circuit, "
+ },
+ "78": {
+  "line": 1001,
+  "end_line": 1008,
+  "addresses": [
+   "0x8003FB10"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_120_078"
+  },
+  "comment_head": "Store choice param and jump - Script_120_078 @ 0x8003FB10 (D-E16-21, E16.a T4): ALWAYS jumps. Per the binary, reads only v[1]/v[2] and writes state._34 = CodeIndex + 3 (its OWN size, 3 bytes - NOT the 4 the decompilation's own dead v[3] rea"
+ },
+ "79": {
+  "line": 1009,
+  "end_line": 1020,
+  "addresses": [
+   "0x8003FB44"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_121_079"
+  },
+  "comment_head": "Store choice param and jump if true - Script_121_079 @ 0x8003FB44 (EntityEventHandlers.cs:2242-2256, agrees with the binary): only jumps (and remembers the return point, _34 = CodeIndex + 3) when Result != 0; otherwise just advances by its "
+ },
+ "7B": {
+  "line": 1021,
+  "end_line": 1027,
+  "addresses": [
+   "0x8003FBD4"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_123_07B"
+  },
+  "comment_head": "Jump if flag set, store param - Script_123_07B @ 0x8003FBD4 (EntityEventHandlers.cs:2286-... , agrees with the binary): flag id/bit from v[1]/v[2] (same (word&lt;&lt;5)+bit/bank-by-0x8000 shape as 0x05/0x30/etc.); when the bit is SET, remem"
+ },
+ "7C": {
+  "line": 1028,
+  "end_line": 1032,
+  "addresses": [
+   "0x8003FC74"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_124_07C"
+  },
+  "comment_head": "Jump if flag clear, store param - Script_124_07C @ 0x8003FC74 (EntityEventHandlers.cs:2316-...): mirror of 0x7B above - jumps (and remembers _34 = CodeIndex + 5) when the bit is CLEAR, else advances (5)."
+ },
+ "7D": {
+  "line": 1033,
+  "end_line": 1039,
+  "addresses": [
+   "0x8003FD14"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": true,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_125_07D"
+  },
+  "comment_head": "Jump relative from stored param - Script_125_07D @ 0x8003FD14 (EntityEventHandlers.cs:2326): ALWAYS returns to the point 0x78/0x79/0x7B/0x7C last remembered (state._34 - CodeIndex). Per the binary this reads NO operand - the decompilation's"
+ },
+ "7E": {
+  "line": 1040,
+  "end_line": 1044,
+  "addresses": [
+   "0x8003FD24"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_126_07E"
+  },
+  "comment_head": "Conditional jump if true - Script_126_07E @ 0x8003FD24: returns to the remembered point (state._34 - CodeIndex) when Result != 0, else just advances (1, its own size)."
+ },
+ "7F": {
+  "line": 1045,
+  "end_line": 1048,
+  "addresses": [
+   "0x8003FD4C"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_127_07F"
+  },
+  "comment_head": "Conditional jump if false - Script_127_07F @ 0x8003FD4C: mirror of 0x7E above - returns to the remembered point when Result == 0, else advances (1)."
+ },
+ "80": {
+  "line": 1049,
+  "end_line": 1053,
+  "addresses": [
+   "0x8003FD74"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_128_080"
+  },
+  "comment_head": "Jump from param if flag set - Script_128_080 @ 0x8003FD74: flag id/bit from v[1]/v[2], same shape as 0x7B/0x7C. Returns to the remembered point (state._34 - CodeIndex) when the bit is SET, else advances (3, its own size)."
+ },
+ "81": {
+  "line": 1054,
+  "end_line": 1057,
+  "addresses": [
+   "0x8003FDF8"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_129_081"
+  },
+  "comment_head": "Jump from param if flag clear - Script_129_081 @ 0x8003FDF8: mirror of 0x80 above - returns to the remembered point when the bit is CLEAR, else advances (3)."
+ },
+ "38": {
+  "line": 1058,
+  "end_line": 1064,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_SetSaveMapIdToInternalMapIndex_038"
+  },
+  "comment_head": "Set save map-id -> internal map index - Script_SetSaveMapIdToInternalMapIndex_038 (EntityEventHandlers.cs:1202-1207): MapIdToInternalMapIndexTable[v2<<8|v1] = v4<<8|v3. Real map-389 operand (docs/intro-programs-389.txt offset 305): params=["
+ },
+ "0D": {
+  "line": 1065,
+  "end_line": 1074,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_OpenDialog_13_00D"
+  },
+  "comment_head": "Dialog - Script_OpenDialog_13_00D (E12.a, docs/plan-e12-dialogues.md): opens a dialogue box. v[1]=textId (bit 0x80 -> LOCAL Strings[textId&0x7F], clear -> the SHARED dialogue_shared Yarn asset, E15.c T5 - degrades, once warned, when it is n"
+ },
+ "39": {
+  "line": 1075,
+  "end_line": 1092,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_59_039"
+  },
+  "comment_head": "Wait for dialog - Script_59_039 (E12.a): blocking gate, NOT a predicate - writes no Result either way. Returns 0 while a dialogue is open, advances (1) once CLOSED. PURE POLL, like the original's Script_IsDialogInProgress_039 - the box's ow"
+ },
+ "44": {
+  "line": 1093,
+  "end_line": 1133,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_WaitDialogChoice_44"
+  },
+  "comment_head": "Wait dialog choice - Script_WaitDialogChoice_44 (E12.a): the CHOICE, WITH STATE. First entry (not yet awaiting a choice) opens OUI/NON (labels = GLOBAL strings via the ETC index table, D-E12-6 - never local/map strings) and blocks; once the"
+ },
+ "4C": {
+  "line": 1134,
+  "end_line": 1139,
+  "addresses": [
+   "0x800450B0"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": null
+  },
+  "comment_head": "Set text flags - Script @ 0x800450B0 (E19.f2a F2-R4, docs/plan-e19-opcodes.md section 1.2j.3): textFlags = v1 (1 the held button gates a step, 2 the delay does, 4 a 0x4D does, 8 waits for the cursor's press) and a 0x4D in waiting is cleared"
+ },
+ "4D": {
+  "line": 1140,
+  "end_line": 1143,
+  "addresses": [
+   "0x80045088"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": null
+  },
+  "comment_head": "Try to activate textAutoAdvanceFlag - @ 0x80045088 (F2-R4): latches one step of the typing when textFlags & 4. Size 1."
+ },
+ "4E": {
+  "line": 1144,
+  "end_line": 1147,
+  "addresses": [
+   "0x800450E4"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": null
+  },
+  "comment_head": "Set scroll mode - @ 0x800450E4 (F2-R4): scrollMode = v1 (1 waits ten passes, 2 a press, 4 a 0x4F, 8 starts at once). Size 2."
+ },
+ "4F": {
+  "line": 1148,
+  "end_line": 1151,
+  "addresses": [
+   "0x800450BC"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": null
+  },
+  "comment_head": "Activate scroll auto advance - @ 0x800450BC (F2-R4): latches the start of a scroll when scrollMode & 4. Size 1."
+ },
+ "50": {
+  "line": 1152,
+  "end_line": 1157,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_SetDialogChoice_50"
+  },
+  "comment_head": "Set dialog choice (misnomer, \u00a71.3 - really sets the CLOSE-MODE mask) - Script_SetDialogChoice_50 (E12.a): bit0 auto-timer (360 ticks), bit1 button, bit2 script (0x51). No presenter needed to just remember the mask value."
+ },
+ "51": {
+  "line": 1158,
+  "end_line": 1164,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_GetDialogChoice_51"
+  },
+  "comment_head": "Get dialog choice (misnomer, \u00a71.3 - really a script-close LATCH) - Script_GetDialogChoice_51 (E12.a, E19.f2a F2-R4): latched only while the mask's bit2 is set (AlundraDialogueDirector.RequestScriptClose's own doc); the box takes the latch o"
+ },
+ "5C": {
+  "line": 1165,
+  "end_line": 1170,
+  "addresses": [
+   "0x8003F01C"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_DialogWithEntity_5C"
+  },
+  "comment_head": "Dialog with entity - Script_DialogWithEntity_5C (E12.a): same open semantics as 0x0D (textId is v[2] here, ctrl is v[3]); v[1] is the search of the SPEAKER (E19.f4b, @0x8003F01C): the first entity found takes the portrait (if it has the fla"
+ },
+ "C4": {
+  "line": 1171,
+  "end_line": 1179,
+  "addresses": [
+   "0x80041DA8"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_196_0C4"
+  },
+  "comment_head": "Dialog with speaker search - Script_196_0C4 @ 0x80041DA8 (E19.b, docs/plan-e19-opcodes.md \u00a71.2d, D-E19-5): v1 = speaker search, v2 | v3 << 8 = name index, v4 = textId, v5 = controlMode. Same open semantics as 0x0D/0x5C (retry, return 0, whi"
+ },
+ "49": {
+  "line": 1180,
+  "end_line": 1187,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_73_049"
+  },
+  "comment_head": "Restart - Script_73_049 (EntityEventHandlers.cs:1454-1459): unconditional jump back to Parameters[0] (this program's own start CodeIndex, set once by InitializeEventData - see that method's own doc). Same \"target - CodeIndexAtFetch\" shape a"
+ },
+ "4B": {
+  "line": 1188,
+  "end_line": 1192,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_75_04B"
+  },
+  "comment_head": "If false restart - Script_75_04B (EntityEventHandlers.cs:1476-1487): same jump as 0x49, but only when Result == 0; otherwise just advances past the 1-byte instruction (size 1, see EventOpcodeSizeTable)."
+ },
+ "4A": {
+  "line": 1193,
+  "end_line": 1196,
+  "addresses": [
+   "0x8003E9EC"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_74_04A"
+  },
+  "comment_head": "If true restart - Script_74_04A @ 0x8003E9EC (E19.l1): the same jump as 0x49, but only when Result != 0; otherwise advances past the 1-byte instruction."
+ },
+ "57": {
+  "line": 1197,
+  "end_line": 1207,
+  "addresses": [
+   "0x8003EE28"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_87_057"
+  },
+  "comment_head": "Goto by hero animation direction - Script_87_057 @ 0x8003EE28 (E19.l1): relative signed jump read at v[1 + 2d], d = the HERO's AnimationDirection; never falls through to pc + 9. No hero spawned: degraded, d = 0 (the hero's resting direction"
+ },
+ "58": {
+  "line": 1208,
+  "end_line": 1212,
+  "addresses": [
+   "0x8003EE5C"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_88_058"
+  },
+  "comment_head": "Goto by animation direction - Script_88_058 @ 0x8003EE5C (E19.l1): the same jump, d = the LOGIC entity's AnimationDirection (164 C[4]/C[5] @110: Beaumont and Thyea appear facing down, d = 0, and the binary takes @124 - the old skip fell thr"
+ },
+ "5D": {
+  "line": 1213,
+  "end_line": 1224,
+  "addresses": [
+   "0x8003F144"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_93_05D"
+  },
+  "comment_head": "Deactivate matching entities - Script_93_05D @ 0x8003F144 (E19.l1): every match of v1's search goes to state 3 (Deactivated). Size 2. No Result."
+ },
+ "59": {
+  "line": 1225,
+  "end_line": 1238,
+  "addresses": [
+   "0x8003EE8C"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_89_059"
+  },
+  "comment_head": "Set entity anim - Script_89_059 @ 0x8003EE8C (E19.a T3, docs/plan-e19-opcodes.md): for every entity matched by v1's search type (reference: the logic entity), TargetAnimationId = v2. Size 3. Covers the 669 \"hero at rest\" sites [0x81, 0] (39"
+ },
+ "3A": {
+  "line": 1239,
+  "end_line": 1243,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_58_03A"
+  },
+  "comment_head": "Set cardinal direction - Script_58_03A (E19.c1 T3): TargetDirection = cardinal table[v1 & 3] ({0, 0x10, 8, 0x18}). Size 2."
+ },
+ "5E": {
+  "line": 1244,
+  "end_line": 1248,
+  "addresses": [
+   "0x8003F1A0"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_94_05E"
+  },
+  "comment_head": "Set forceZ for entities - Script_94_05E @ 0x8003F1A0 (E19.c1 T3): for every entity matched by v1's search, ForceZ = int16(v2 | v3 << 8) << 8. Size 4."
+ },
+ "73": {
+  "line": 1249,
+  "end_line": 1253,
+  "addresses": [
+   "0x8003FA3C"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_115_073"
+  },
+  "comment_head": "Initialize timer _30 - Script_115_073 @ 0x8003FA3C (E19.c1 T3): the program state's own counter (state + 0x30) = v1. Size 2."
+ },
+ "74": {
+  "line": 1254,
+  "end_line": 1259,
+  "addresses": [
+   "0x8003FA58"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_116_074"
+  },
+  "comment_head": "Update timer _30 - Script_116_074 @ 0x8003FA58 (E19.c1 T3): decrements the counter; at 0 or below the instruction ends (size 3), else it jumps by int16(v1 | v2 << 8). The counter is never reset by the interpreter: only a following 0x73 sets"
+ },
+ "89": {
+  "line": 1260,
+  "end_line": 1264,
+  "addresses": [
+   "0x80040194"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_137_089"
+  },
+  "comment_head": "Set entities position relative to a reference - Script_137_089 @ 0x80040194 (E19.c1 T3): see SetEntitiesPositionFromReference. Size 9, also when nothing is found."
+ },
+ "5A": {
+  "line": 1265,
+  "end_line": 1269,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_90_05A"
+  },
+  "comment_head": "Turn entity - Script_90_05A (EntityEventHandlers.cs:1694-1710): for every entity matched by v1's search type, TargetDirection = ResolveDirectionFromParam(v2)."
+ },
+ "5B": {
+  "line": 1270,
+  "end_line": 1277,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_91_05B"
+  },
+  "comment_head": "Turn entity with anim - Script_91_05B (EntityEventHandlers.cs:1713-1733): same as 0x5A, plus TargetAnimationId = v2 (v3 is the direction param here). Real map-389 operands (docs/intro-programs-389.txt, e.g. offset 1126): every occurrence's "
+ },
+ "8A": {
+  "line": 1278,
+  "end_line": 1284,
+  "addresses": [
+   "0x80040284"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_138_08A"
+  },
+  "comment_head": "Spawn entity at a position - Script_138_08A @ 0x80040284 (E19.b, docs/plan-e19-opcodes.md \u00a71.2d): spawns record v1 with the logic entity as parent, then writes X = v2|v3<<8, Y = v4|v5<<8 and Z = v6|v7<<8 (absolute 16-bit values, shifted by "
+ },
+ "8B": {
+  "line": 1285,
+  "end_line": 1288,
+  "addresses": [
+   "0x8004033C"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_139_08B"
+  },
+  "comment_head": "Spawn entity next to entity - Script_139_08B @ 0x8004033C"
+ },
+ "62": {
+  "line": 1289,
+  "end_line": 1292,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_98_062"
+  },
+  "comment_head": "Set entities flags (low 16 bits) - Script_98_062"
+ },
+ "63": {
+  "line": 1293,
+  "end_line": 1296,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_99_063"
+  },
+  "comment_head": "Clear entities flags (low 16 bits) - Script_99_063"
+ },
+ "64": {
+  "line": 1297,
+  "end_line": 1300,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_100_064"
+  },
+  "comment_head": "Set entities position - Script_100_064"
+ },
+ "65": {
+  "line": 1301,
+  "end_line": 1304,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_101_065"
+  },
+  "comment_head": "Add entities position offset - Script_101_065"
+ },
+ "AC": {
+  "line": 1305,
+  "end_line": 1308,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_172_0AC"
+  },
+  "comment_head": "Set entity shadow size - Script_172_0AC"
+ },
+ "67": {
+  "line": 1309,
+  "end_line": 1312,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_103_067"
+  },
+  "comment_head": "Camera follow entity - Script_103_067 (E5.a, EntityEventHandlers.cs:2068-2074)"
+ },
+ "68": {
+  "line": 1313,
+  "end_line": 1316,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_104_068"
+  },
+  "comment_head": "Camera stop follow entity - Script_104_068 (E5.a, EntityEventHandlers.cs:2077-2081)"
+ },
+ "69": {
+  "line": 1317,
+  "end_line": 1320,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_105_069"
+  },
+  "comment_head": "Camera look at (forced) - Script_105_069 (E5.a, EntityEventHandlers.cs:2084-2091)"
+ },
+ "BD": {
+  "line": 1321,
+  "end_line": 1336,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_189_0BD"
+  },
+  "comment_head": "Play sound 2 - Script_189_0BD (EntityEventHandlers.cs:3597-3610, E11.a, docs/plan-e11-audio.md): sfxId = (v[2] << 8) | v[1] - see AlundraSoundPlayer's own doc for the resolution/playback mechanics. SoundPlayer null (no AudioSystemComponent "
+ },
+ "BE": {
+  "line": 1337,
+  "end_line": 1350,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_190_0BE"
+  },
+  "comment_head": "Play sound 2 (bis) - Script_190_0BE (E11.a, docs/plan-e11-audio.md): same derivation and dispatch shape as 0xBD above - the decompilation never gives 0xBE an id derivation distinct from 0xBD's."
+ },
+ "12": {
+  "line": 1351,
+  "end_line": 1365,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_18_012"
+  },
+  "comment_head": "Play sound 1 - Script_18_012 (EntityEventHandlers.cs:694-698, E11.a, docs/plan-e11-audio.md): sfxId = v[1] ALONE - a single-byte operand on a 2-byte instruction, NOT 0xBD's two-byte (v[2] << 8) | v[1] derivation (copying that would read one"
+ },
+ "75": {
+  "line": 1366,
+  "end_line": 1379,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_117_075"
+  },
+  "comment_head": "Play sound effect - Script_117_075 (EntityEventHandlers.cs:2208-2212, E11.a, docs/plan-e11-audio.md): same single-byte v[1] derivation as 0x12 above, on its own 2-byte instruction."
+ },
+ "AB": {
+  "line": 1380,
+  "end_line": 1396,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_171_0AB"
+  },
+  "comment_head": "Play sound effect with tone/volume mix - Script_171_0AB (EntityEventHandlers.cs:3201-3205, B1, docs/plan-e11b-opcodes-audio.md, fact 4): sfxId=v[1], mix left=v[2], mix right=v[3]. The original NEVER starts new playback here - it only remixe"
+ },
+ "A5": {
+  "line": 1397,
+  "end_line": 1414,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_165_0A5"
+  },
+  "comment_head": "Stop all sound - Script_165_0A5 (EntityEventHandlers.cs:3127-3131, B2, docs/plan-bgm-demarrage-binaire.md, D8): does nothing at all on a negative CurrentMapSoundIndex (B2's own immediate-return guard); otherwise conditionally stops every li"
+ },
+ "A6": {
+  "line": 1415,
+  "end_line": 1430,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_166_0A6"
+  },
+  "comment_head": "Load bgm - Script_166_0A6 (EntityEventHandlers.cs:3134-3138, B14, docs/plan-bgm-demarrage-binaire.md, D8): v[1] == 0 STOPS the current BGM outright (InitializeBgm, B14/B5 - not a restart); any non-zero value arms the 120-tick master fade ma"
+ },
+ "A7": {
+  "line": 1431,
+  "end_line": 1457,
+  "addresses": [
+   "0x8004b130",
+   "0x8004b168"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_167_0A7"
+  },
+  "comment_head": "Play music - Script_167_0A7 (EntityEventHandlers.cs:3141-3145, B12/B13, D8): v[1] = raw music index, unsigned byte (B12: the \"< 0 ignored\" branch of B13 is unreachable from this opcode) - 0 stops and closes, loads and closes otherwise (Alun"
+ },
+ "BF": {
+  "line": 1458,
+  "end_line": 1474,
+  "addresses": [
+   "0x80041CA0"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": null
+  },
+  "comment_head": "Play sound effect with tone/volume mix (bis) - EntityEventHandlers.cs:3613-3617 (B1, docs/plan-e11b-opcodes-audio.md, D-B-8; T4.3, docs/plan-audio-mix-exact-muet.md): SAME handler as 0xAB above, but on its own 5-byte instruction whose opcod"
+ },
+ "A8": {
+  "line": 1475,
+  "end_line": 1482,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_168_0A8"
+  },
+  "comment_head": "Is sound loading - Script_168_0A8 (D-E11-5, docs/plan-e11-audio.md): this DLL never streams sound effects from a CD, so this predicate is always false. Writes Result explicitly (unlike the old UnknownOpcode fallback, which does NOT clear Re"
+ },
+ "BA": {
+  "line": 1483,
+  "end_line": 1487,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_186_0BA"
+  },
+  "comment_head": "Check if loading from CD - Script_186_0BA (D-E11-5, docs/plan-e11-audio.md): same rationale as 0xA8 above - never streaming from a CD, always false."
+ },
+ "54": {
+  "line": 1488,
+  "end_line": 1504,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_84_054"
+  },
+  "comment_head": "Set walkable - Script_84_054 (EntityEventHandlers.cs:1589-1620): OR's v[3]/v[4] into (Walkability, GroundProperty) of the tile at (v[1],v[2]), clamped to the original's own hardcoded [0,0x33]x[0,0x3b] - see AlundraCellStore.SetCellBits's ow"
+ },
+ "55": {
+  "line": 1505,
+  "end_line": 1518,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_85_055"
+  },
+  "comment_head": "Set unwalkable - Script_85_055 (EntityEventHandlers.cs:1623-1654): same clamp as 0x54 above, AND's the COMPLEMENT of v[3]/v[4] into (Walkability, GroundProperty) instead (bit clear)."
+ },
+ "85": {
+  "line": 1519,
+  "end_line": 1534,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": true,
+   "decomp_ref": true,
+   "script_name": "Script_133_085"
+  },
+  "comment_head": "Set map tiles - Script_133_085 (EntityEventHandlers.cs:2440-2444): port of GameEngine.ChangeAreaTileProperties(srcX, srcY, width, height, dstX, dstY) - see AlundraCellStore.CopyCellRectangle's own doc for the exact field list and the docume"
+ },
+ "AF": {
+  "line": 1535,
+  "end_line": 1553,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_175_0AF"
+  },
+  "comment_head": "Begin fade transition with color - Script_175_0AF (E10.b, docs/plan-e10-fondu.md): machine B (the drawn fade rectangle). v[1]/v[2]/v[3] are (R,G,B) already in DISPLAY order (\u00a71.2 - see AlundraScreenFadeDirector's own class doc on the channe"
+ },
+ "8C": {
+  "line": 1554,
+  "end_line": 1559,
+  "addresses": [
+   "0x80040438",
+   "0x80098708"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_140_08C"
+  },
+  "comment_head": "If random >= value - Script_140_08C @ 0x80040438 (E19.l1): one draw of the shared generator (AlundraRandom, the same constants and initial seed as the binary's 0x80098708); Result = 1 when (seed >> 24) >= v1, else 0 (the old label said \"<\","
+ },
+ "82": {
+  "line": 1560,
+  "end_line": 1564,
+  "addresses": [
+   "0x80034108",
+   "0x8003FE7C"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_130_082"
+  },
+  "comment_head": "Give item or pickup by id - Script_130_082 @ 0x8003FE7C (E19.l2, docs/plan-e19-opcodes.md section 1.2m.2): Result = HandleMapTriggerCommand(v1) != 0 (0x80034108). Size 2."
+ },
+ "83": {
+  "line": 1565,
+  "end_line": 1569,
+  "addresses": [
+   "0x8003FEC8"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_131_083"
+  },
+  "comment_head": "If number of item >= value - Script_131_083 @ 0x8003FEC8 (E19.l2): Result = GetNumberOfItem(v1) >= v2. Size 3."
+ },
+ "84": {
+  "line": 1570,
+  "end_line": 1574,
+  "addresses": [
+   "0x8003FF34"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_132_084"
+  },
+  "comment_head": "Use item - Script_132_084 @ 0x8003FF34 (E19.l2): UseItem(v1); Result = 0 when the count was already 0 (-1), else 1 - an invalid id answers 1 too, as the binary does. Size 2."
+ },
+ "98": {
+  "line": 1575,
+  "end_line": 1578,
+  "addresses": [
+   "0x80040A58"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_152_098"
+  },
+  "comment_head": "Add money - Script_152_098 @ 0x80040A58 (E19.l2): AddMoney(v1 | v2 << 8), Result untouched. Size 3."
+ },
+ "99": {
+  "line": 1579,
+  "end_line": 1595,
+  "addresses": [
+   "0x80040A8C"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_153_099"
+  },
+  "comment_head": "Try spend money - Script_153_099 @ 0x80040A8C (E19.l2): price = v1 | v2 << 8 (unsigned 16 bits); money < price -> Result 0; else money - price and Result 1. Size 3."
+ },
+ "9A": {
+  "line": 1596,
+  "end_line": 1600,
+  "addresses": [
+   "0x80040B00"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_154_09A"
+  },
+  "comment_head": "Enough money - Script_154_09A @ 0x80040B00 (E19.l2): Result = money >= (v1 | v2 << 8), nothing written. Size 3."
+ },
+ "9F": {
+  "line": 1601,
+  "end_line": 1610,
+  "addresses": [
+   "0x80040C80"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_159_09F"
+  },
+  "comment_head": "If chest opened - Script_159_09F @ 0x80040C80 (E19.l2): Result = 1 when the FIRST match of v1's search has a non-zero ContentsGameFlag and that flag is set (banks G and T), else 0. It returns its size (2) in every case and never suspends: t"
+ },
+ "A4": {
+  "line": 1611,
+  "end_line": 1625,
+  "addresses": [
+   "0x8005D668"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": true,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_164_0A4"
+  },
+  "comment_head": "Background layer mask - Script_164_0A4 (E19.k2, docs/plan-e19-opcodes.md section 1.2k.2): calls 0x8005D668(v1, v2): the mode of the backgrounds = v1 (only bits 0 and 1 are read by the drawing routine, one per layer identifier), the palette "
+ },
+ "8E": {
+  "line": 1626,
+  "end_line": 1640,
+  "addresses": [
+   "0x80040534"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_142_08E"
+  },
+  "comment_head": "Camera sway start - Script_142_08E @ 0x80040534 (E19.k1, docs/plan-e19-opcodes.md section 1.2k): Flag = 1, SpeedX = v[1], SpeedY = v[2], LimitX = v[3], LimitY = v[4] (unsigned bytes); offsets and reach flags untouched. No sway state wired -"
+ },
+ "8F": {
+  "line": 1641,
+  "end_line": 1652,
+  "addresses": [
+   "0x80040598"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_143_08F"
+  },
+  "comment_head": "Camera sway stop - Script_143_08F @ 0x80040598: Flag = 0, nothing else."
+ },
+ "90": {
+  "line": 1653,
+  "end_line": 1667,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_144_090"
+  },
+  "comment_head": "Spawn map effect - Script_144_090 (E19.g G3b, docs/plan-e19-opcodes.md section 1.2o.6, ADR-0046): SpawnMapEffect(v1, force = 1), no zone test and no 0x40 test; a record outside the table creates nothing. Queued on the effect stage (the rese"
+ },
+ "91": {
+  "line": 1668,
+  "end_line": 1680,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_145_091"
+  },
+  "comment_head": "Free effect - Script_145_091: every slot of the record is freed at once (not drawn), the one in its destruction tick too. Size 2."
+ },
+ "92": {
+  "line": 1681,
+  "end_line": 1694,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_146_092"
+  },
+  "comment_head": "Set effect animation - Script_146_092: the target animation v2 of every slot of the record v1; the switch happens at the next update. Size 3."
+ },
+ "93": {
+  "line": 1695,
+  "end_line": 1710,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_147_093"
+  },
+  "comment_head": "Set effect position - Script_147_093: x = u16 << 16, y = u16 << 16, z = (u16 << 16) + 1 on every slot of the record. Size 8."
+ },
+ "94": {
+  "line": 1711,
+  "end_line": 1726,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_148_094"
+  },
+  "comment_head": "Set effect forces - Script_148_094: the forces of every slot of the record are the signed 16-bit operands shifted left by 8. Size 8."
+ },
+ "A0": {
+  "line": 1727,
+  "end_line": 1742,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_160_0A0"
+  },
+  "comment_head": "Add to effect position - Script_160_0A0: x, y, z += u16 << 16 (two's complement, no + 1) on every slot of the record. Size 8."
+ },
+ "A1": {
+  "line": 1743,
+  "end_line": 1765,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_161_0A1"
+  },
+  "comment_head": "Move effect to entity - Script_161_0A1: the first entity of the search v2 (none: nothing happens), then every slot of the record v1 goes to its position plus (u16 << 16) on each axis, no + 1. The position is read now (the binary reads it at"
+ },
+ "A2": {
+  "line": 1766,
+  "end_line": 1782,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_162_0A2"
+  },
+  "comment_head": "Create effect with position - Script_162_0A2: SpawnMapEffect(v1, force = 1), then, if a slot was created, the position of 0x93 (z + 1) - on that slot only; the animation stays the record's. Size 8."
+ },
+ "A3": {
+  "line": 1783,
+  "end_line": 1805,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_163_0A3"
+  },
+  "comment_head": "Create effect at entity - Script_163_0A3: the first entity of the search v2 first (none: NOTHING is created), then SpawnMapEffect(v1, force = 1) and, if a slot was created, its position is the entity's plus (u16 << 16) on each axis, no + 1."
+ },
+ "B0": {
+  "line": 1806,
+  "end_line": 1820,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_176_0B0"
+  },
+  "comment_head": "Set warp fade color and duration - Script_176_0B0 (E10.b): machine A, the \"warp\" timer - its colours are DEAD in this port (\u00a71.1: their only output has zero readers in the decompilation) - only its flag/duration matter, consumed by 0xB1 bel"
+ },
+ "B1": {
+  "line": 1821,
+  "end_line": 1831,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_177_0B1"
+  },
+  "comment_head": "Check fade and warp flags - Script_177_0B1 (E10.b): predicate, Result = (fadeFlags == 0 && warpFlags == 0) ? 1 : 0. Writes Result in BOTH cases - unlike UnknownOpcode's own no-touch fallback, which would leave a stale Result from whatever t"
+ },
+ "70": {
+  "line": 1832,
+  "end_line": 1838,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_112_070"
+  },
+  "comment_head": "Is above ground - Script_112_070 (EntityEventHandlers.cs:2161-2165): Result = logicEntity.IsOnGround, pulled from the controller every frame by AlundraEntityScriptProxy.Update's own root pull (E3.d) - 0 (falls) for an entity with no control"
+ },
+ "3B": {
+  "line": 1839,
+  "end_line": 1863,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_59_03B"
+  },
+  "comment_head": "Check player in area - Script_59_03B (EntityEventHandlers.cs:1223-1240): tests the PLAYER entity's own TileX/TileY/TileZ - NOT the logic entity this handler receives (the entity the program currently runs on, E19.a), unlike 0x07's EntityInA"
+ },
+ "2F": {
+  "line": 1864,
+  "end_line": 1897,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_47_02F"
+  },
+  "comment_head": "Check pad buttons - Script_47_02F (EntityEventHandlers.cs:1047-1069): NOT a direction test, despite the size table's old \"Check moving in dir\" label (D-E7-7 corrects it - see fact 1, docs/plan-e7-mutation-tuiles.md) - a raw pad- button test"
+ },
+ "52": {
+  "line": 1898,
+  "end_line": 1927,
+  "addresses": [
+   "0x8003EB20"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_82_052"
+  },
+  "comment_head": "Use portal under hero - Script_82_052 @ 0x8003EB20 (E19.l1, docs/plan-e19-opcodes.md section 1.2m): the portal under the hero (GetActivatedPortal, first match, same scanner as the walk onto a portal) -> HandleWarpTransition with the hero's "
+ },
+ "53": {
+  "line": 1928,
+  "end_line": 1966,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": true,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_ChangeMap_053"
+  },
+  "comment_head": "Change map - Script_ChangeMap_053 (EntityEventHandlers.cs:1554-1585, T7, docs/plan-transitions-carte.md, section \"T7 - Opcodes 0x53, 0x9B, 0x9C\"): v[1]/v[2] = desired map INDEX (v[2]<<8|v[1] - already the internal index, no MapIdToInternalM"
+ },
+ "9B": {
+  "line": 1967,
+  "end_line": 1973,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_155_09B"
+  },
+  "comment_head": "Set warp disabled = 1 - Script_155_09B (EntityEventHandlers.cs:2924-2929, T7): posts AlundraGameState.IsWarpDisabled, already read by AlundraPortalTrigger's predicate (T3) and by AlundraWarpDirector.BeginDeparture/ BeginDepartureFromChangeM"
+ },
+ "9C": {
+  "line": 1974,
+  "end_line": 1978,
+  "addresses": [],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_156_09C"
+  },
+  "comment_head": "Set warp disabled = 0 - Script_156_09C (EntityEventHandlers.cs:2931-2936, T7): the complementary writer to 0x9B above."
+ },
+ "2C": {
+  "line": 1979,
+  "end_line": 1989,
+  "addresses": [
+   "0x8003DC84"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_44_02C"
+  },
+  "comment_head": "Check no entity by function id - Script_44_02C @ 0x8003DC84 (EntityEventHandlers.cs:1008-1014): Result = 1 if v[1]'s search type matches NO entity, 0 otherwise (the OPPOSITE polarity of 0x2E DestroyMatchingEntities' own Result above - \"no m"
+ },
+ "3E": {
+  "line": 1990,
+  "end_line": 2010,
+  "addresses": [
+   "0x8003E708"
+  ],
+  "kw": {
+   "per_the_binary": false,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_62_03E"
+  },
+  "comment_head": "Is player riding entity - Script_62_03E @ 0x8003E708 (EntityEventHandlers.cs:1298-1310): Result = 1 iff the player's own RidingEntity points back at the LOGIC entity this handler receives (not a searched match) - same ReferenceEquals(player"
+ },
+ "3F": {
+  "line": 2011,
+  "end_line": 2036,
+  "addresses": [
+   "0x8003E734"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_63_03F"
+  },
+  "comment_head": "Is any entity riding me - Script_63_03F @ 0x8003E734 (E19.l1), PER THE BINARY: Result = 1 when one of the slots 0 to N INCLUSIVE (the hero included) is Normal or Deactivated (not Loaded: the decompilation accepts it and stops before N), has"
+ },
+ "42": {
+  "line": 2037,
+  "end_line": 2053,
+  "addresses": [
+   "0x8003E808",
+   "0x80127D30"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": true,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_66_042"
+  },
+  "comment_head": "Set logic entity to the player - Script_66_042 @ 0x8003E808 (E19.a T2, D-E19-2, docs/plan-e19-opcodes.md \u00a70.2.3), PER THE BINARY: writes the OWNER's word (+0x230) - the one every later instruction reads its logic entity from - with the HERO"
+ },
+ "43": {
+  "line": 2054,
+  "end_line": 2075,
+  "addresses": [
+   "0x8003E81C"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": false,
+   "script_name": "Script_67_043"
+  },
+  "comment_head": "Set logic entity by search - Script_67_043 @ 0x8003E81C (E19.a T2), PER THE BINARY: searches by v1 with the current LOGIC entity as the reference. With at least one match the owner's word takes the LAST one found and Result = 1; with none, "
+ },
+ "6E": {
+  "line": 2076,
+  "end_line": 2082,
+  "addresses": [
+   "0x8003F9D4"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_110_06E"
+  },
+  "comment_head": "Is force adjusted - Script_110_06E @ 0x8003F9D4 (EntityEventHandlers.cs:2146-2151): Result = entity.ForceAdjusted, copied as is like the binary does (`lw $v0,0x13c($a0)` / `sw $v0,0x2c($a3)`) - see ForceAdjusted's own doc (E4.d) for how/whe"
+ },
+ "AD": {
+  "line": 2083,
+  "end_line": 2103,
+  "addresses": [
+   "0x80041344"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_173_0AD"
+  },
+  "comment_head": "Check entity in AABB - Script_173_0AD @ 0x80041344 (EntityEventHandlers.cs: 3221-3278), PER THE BINARY (D-E16-27 - the decompilation disagrees on three points, all corrected here): 1) its `while (i > 0)` loop over the candidate buffer never"
+ },
+ "B8": {
+  "line": 2104,
+  "end_line": 2127,
+  "addresses": [
+   "0x80041988"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_184_0B8"
+  },
+  "comment_head": "Check CurrentAnimationId - Script_184_0B8 @ 0x80041988 (EntityEventHandlers.cs: 3471-3494), PER THE BINARY (D-E16-27): compares each v[1]-matched entity's CurrentAnimationId (+0x90, AlundraEntityScriptProxy.cs:87) against v[2]. The decompil"
+ },
+ "8D": {
+  "line": 2128,
+  "end_line": 2153,
+  "addresses": [
+   "0x800404A8"
+  ],
+  "kw": {
+   "per_the_binary": true,
+   "degraded": false,
+   "not_ported": false,
+   "frozen": false,
+   "deviation": false,
+   "decomp_ref": true,
+   "script_name": "Script_141_08D"
+  },
+  "comment_head": "Check any match on/under terrain - Script_141_08D @ 0x800404A8 (EntityEventHandlers.cs:2597-2615): Result = 1 if ANY v[1]-matched entity has PosZ <= (that MATCH's OWN) TerrainHeight + 1, else 0 - the same per-entity TerrainHeight E16.a now "
+ }
+}

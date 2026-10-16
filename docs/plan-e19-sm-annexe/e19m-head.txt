@@ -1,0 +1,103 @@
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 ✅ ; E19.m5 ✅ ; E19.m6 (M-19, M-31, moitié surcouche de M-32) ✅ faite le 2026-10-05 ; état au 2026-10-07 : le fichier `docs/plan-e19-m-annexe/backlog-2026-10-03.md` est en partie périmé (E19.m5 a fermé la plupart des tests de G1, E19.m0 M-04, E19.m5 M-23) ; reste : G3, G4, G5, G7, la fin de G1 (M-20, M-25, M-32, M-42, M-44), M-16, M-17 et SJ-12 avec D5b, la moitié test de M-45 ; contre-vérification de nuit, `docs/plan-e19-backlog-1006-annexe/verify/verify.md`)
+
+**Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
+anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
+de production, décision de l'auteur, autre tranche) et groupé : **G1** tests seuls, faisables maintenant ; **G1-late** tests seuls,
+après f2a ; **G2a/G2b** commentaires et docs ; **G3** interpréteur et table des tailles, après f2a (`0x5F` de taille 8, libellés
+`0x35`/`0x36` inversés qui changent deux traces, `InitializeEventData`, recherches sans allocation) ; **G4** petits correctifs de
+fidélité hors f2a et G0 (balayage des portails, deux portes de l'aimantation au sommet, exemption d'apparition et ligne de direction,
+plafond absolu) ; **G5** moteur (erreur du réglage qui ne nomme pas la clé) ; **G6** décisions de l'auteur ou autres tranches ;
+**G7** tests statiques du corpus, en dernier. La marche de la chaîne portée en Python retrouve exactement les 134 lignes de
+`story-chain-skipped-opcodes.tsv`.
+- **M-04, à corriger d'abord (E19.m0)** : les modes aléatoires 4 et 5 de `ResolveDirectionFromParam` lèvent toujours
+  `NotSupportedException` (`AlundraEventProgramRunner.cs` ~3024-3030) ; le mode 4 est atteint à la carte 167 (Inoa, intérieur),
+  enregistrement 1, `C[4]` `@144` et `@186` (`0x5A [0x80, 0x80]`), environ 120 ticks après le chargement si T1 n'est pas posé ; rien ne
+  rattrape l'exception : **plantage probable du jeu** (preuve statique, non reproduite). Le générateur du binaire est déjà porté
+  (`AlundraRandom`).
+- **Points pour l'auteur** (G6) : M-03 `0x01` rend 0 dans la décompilation, 1 dans la DLL (0 site du corpus ; des tests s'en servent
+  comme bourrage) ; M-05 le test statique « aucun opcode atteignable sauté hors E14 et E18 » ne peut pas passer de longtemps : 22
+  opcodes (483 sites) sans propriétaire (`0x60` 172 sites, `0x6A`, `0x96`, `0x6B`, `0x6D`, `0x97`, `0xAA`, `0x72`, `0x56`, `0x61`,
+  `0xC3`, `0x6C`, `0xB2`, `0xA9`, `0xB5`, `0x88`, `0xC0`, `0xC1`, `0xC2`, `0xB6`, `0xB3`, `0x3D`), les autres à E19.g (1427), E14 (318),
+  E19.h1b2 (283), E19.f (97), `0xB9` (42), E18 (2) : proposition, une liste versionnée avec une colonne de propriétaire ; M-12 réemploi
+  des créneaux et plafond de 63 entités (E14 ou E19.m) ; M-36 langue de la section de doc du moteur ; M-39 dépend du préréglage
+  `day3-start` (O-E19-33) ; M-41 écraser K1 à K3 avant le merge ; M-27 l'attribution des commits aux exécuteurs ; M-06 et M-08
+  (O-E19-2, O-E19-25) relèvent de la décompilation et des scripts de recensement, hors du portage (règle de l'auteur du 2026-10-03).
+- **M-47** (ajouté par E19.m0) : `0x5A`/`0x5B` parcourent les entités trouvées de la dernière à la première dans le binaire
+  (`0x8003EEF4`, `0x8003EF80`), la DLL de la première à la dernière ; effet sur les modes aléatoires et sur le mode 6 quand le héros est
+  trouvé avec d'autres entités ; à recenser (sites en mode 6 avec une recherche qui rend le héros et une autre entité) puis à porter
+  (groupe G4). Recensé le 2026-10-03 (aucun site réel où l'ordre compte) : E19.m1, avec M-10.
+
+#### 1.2s.1 E19.m0 — Modes aléatoires de `ResolveDirectionFromParam` (M-04) ✅ (relectures n°1 et n°2 REVISE ; resserrée et corrigée ; relecture de clôture)
+
+**Faits** **[binaire]** (question bornée du 2026-10-03, `e19m0-disc/notes.md` du scratchpad) :
+- `0x8003CFC8` : `result = a1 & 0x1F`, `mode = a1 >> 5` (8 ou plus : 0) ; table de sauts en `0x80023C60` : mode 4 → `0x8003D060`,
+  mode 5 → `0x8003D0BC` ; le générateur est écrit en ligne à chaque usage, état en `0x80098708` : `nouveau = germe × 0x7D2B89DD +
+  0xE06A02E7` (32 bits bas, rangés en `0x8003D08C` et `0x8003D0E8`) ; **mode 4** rend `table[nouveau >> 30]`, table en `0x80023644` =
+  {0, 16, 8, 24}, la même que le mode 2 (`AnimationTables.CardinalDirectionTable`) ; **mode 5** rend `nouveau >> 27` (0 à 31) ;
+  `result` n'y sert pas. La décompilation est d'accord (`GameEngine.cs:2354-2359`).
+- C'est le générateur d'`AlundraRandom` (mêmes constantes ; 10 000 pas comparés) ; 93 fonctions du binaire l'utilisent, la DLL en
+  porte deux (`0x0C` = `0x8003D518`, le même calcul que le mode 4 ; `0x8C` = `0x80040438`, `nouveau >> 24`) ; il n'est jamais
+  réensemencé (valeur initiale de l'image de l'exécutable, `0xB017C93D`, comme le champ statique de la DLL).
+- `0x5A` (`0x8003EEF4`) et `0x5B` (`0x8003EF80`) appellent la routine une fois par entité trouvée, **de la dernière trouvée à la
+  première** (tampon `0x8013D8D8`) ; la DLL (`TurnMatchingEntities`) et la décompilation vont dans l'autre sens. L'ordre compte pour
+  un mode aléatoire et pour le **mode 6** (direction du héros) quand le héros est l'une des entités trouvées (recherches 0x82 et 0x84,
+  `EntitySearchService.cs:134-143`, `:156-166`) : relevé par la relecture n°1, il sort de cette tranche (M-47, groupe G4, avec le
+  recensement des sites en mode 6). Les deux sites de la 167 (recherche 0x80, l'entité du script seule) n'ont qu'une entité : l'ordre
+  n'y joue pas.
+- **Seul `throw` d'opcode atteignable** : `AlundraEventProgramRunner.cs` ~3026 ; sa doc (~2991-2999) dit à tort qu'aucun générateur
+  n'est porté ; le test `ResolveDirectionFromParam_RandomModes_ThrowNotSupported` (`AlundraEventProgramRunnerTests.cs:1924-1933`)
+  épingle l'exception.
+
+**Règles.**
+- **M0-R1** : mode 4 → `AlundraRandom.Next()`, puis `CardinalDirectionTable[nouveau >> 30]` ; mode 5 → `AlundraRandom.Next()`, puis
+  `nouveau >> 27` ; `result` ignoré ; la doc de la méthode dit la règle et les adresses.
+- **M0-R2** (révision n°1) : l'ordre de parcours ne change pas dans cette tranche (M-47).
+
+**Tâches.**
+- **M0-1 — Tests d'abord** (dans la collection `AlundraRandomStaticStateCollection`, germe posé par le test, état comparé en
+  `(uint)RandomSeed`) : trois appels consécutifs, mode 4 (`0x80`) et mode 5 (`0xA0`) : germe `0xB017C93D` → 0, 24, 24 et 6, 25, 28 ;
+  germe 0 → 24, 8, 16 et 28, 19, 15 ; germe `0x12345678` → 8, 0, 16 et 23, 4, 11 ; en alternance 4, 5, 4 depuis `0xB017C93D` → 0, 25,
+  24 ; `0x9F` se comporte comme `0x80` et `0xBF` comme `0xA0` ; **test sur les octets réels** (révision n°1, au lieu d'un arc) : les
+  `Codes` de `alundra-project/Maps/Inoa/Inoa (inner)-167/events/Inoa (inner)-167.events.json` (l'octet 144 vaut `0x5A`, suivi de
+  `0x80, 0x80`) chargés dans un document du runner, l'état placé à `CodeIndex` 144, l'entité du script seule (recherche 0x80), germe
+  `0xB017C93D` : **un appel complet** du runner (révision n°2 : il enchaîne jusqu'à la première attente) n'élève aucune exception ;
+  après `0x5A @144` viennent `0x59 [0x80, 8]` (taille 3, animation cible 8), `0x73 [40]` (taille 2), puis l'attente `0x37 [1]` en
+  152, qui rend la main : `CodeIndex` 152, direction cible 0 (premier tirage du mode 4), animation cible 8, et
+  `(uint)AlundraRandom.RandomSeed` = `0x35E36190` (un seul tirage) ; le test saute si l'export est absent, comme les autres tests sur données réelles. Rouges d'abord (l'exception
+  de `:3026`), verts après.
+- **M0-2 — Code** (`AlundraEventProgramRunner.cs`).
+
+**Acceptation.** 1. Tests de M0-1 rouges d'abord, verts après, valeurs écrites tenues. 2. Test existant touché, liste fermée :
+`AlundraEventProgramRunnerTests.cs:1924-1933` (l'exception), remplacé par les tests de valeurs ; rien d'autre (l'ordre de parcours
+ne change pas). 3. `Alundra.Tests` en
+Release puis en Debug, la Debug en dernier, `cmp` sans écart ; les six traces à l'octet ; la liste fermée de la chaîne inchangée (aucun
+site sur la chaîne). **Retour arrière** : revert du commit (DLL seule).
+
+**Risques.** Les tirages du flux partagé se décalent pour les sites portés suivants (`0x0C`, `0x8C`, et la chute des cellules qui y
+puise à tort, O-E19-48) : le flux de la DLL ne suit déjà pas l'original tirage pour tirage (2 sites sur 93 portés).
+
+- **Fait le 2026-10-03** (M0-1, M0-2) : nouveau fichier `Alundra.Tests/AlundraRandomDirectionModesTests.cs` (collection
+  `AlundraRandomStaticStateCollection`, 11 cas : 3 germes en mode 4, 3 en mode 5, l'alternance 4-5-4 avec l'état final `0xE4013D62`, un
+  tirage `0x35E36190`, `0x9F` et `0xBF`, le test sur les octets réels de la 167 à `CodeIndex` 144). Rouges d'abord : les 11 sur
+  `NotSupportedException` de `AlundraEventProgramRunner.cs:3026` (le test de la 167 compris, donc l'export était présent). Verts
+  après le code : 11 sur 11, toutes les valeurs écrites tenues sans en changer une (167 : `CodeIndex` 152, direction 0, animation 8,
+  germe `0x35E36190`). Test existant touché : seulement `ResolveDirectionFromParam_RandomModes_ThrowNotSupported` (supprimé,
+  remplacé). Suite `Alundra.Tests` en Debug : 2548 réussis, 0 échec ; six traces à l'octet (rc 0), les quatre du héros remises.
+  Release non lancée (consigne du brief). Écart : aucun.
+- ✅ **Vérification d'E19.m0** (2026-10-03) : la session principale a lancé `Alundra.Tests` en Release puis en Debug (2548/2548
+  chacune, la Debug en dernier), `cmp` sans écart, les six traces à l'octet (la puce « Fait » ne parle que de la Debug de
+  l'exécuteur). Vérificateur neuf : **CONFIRMED** (binaire relu en `0x8003CFC8`-`0x8003D0E8` et table `0x80023644` ; valeurs
+  recalculées par un générateur indépendant ; rouges rejoués en remettant l'exception : 11 sur 11 rouges, dont le test sur les octets
+  réels de la 167 ; l'ordre de parcours inchangé). Avis reporté à E19.m : P4 des tests qui touchent `AlundraRandom` hors de la
+  collection `AlundraRandomStaticStateCollection` (`AlundraPrefabArcSupportTests.cs:19`, `AlundraShipCorridorArcTests.cs:21`),
+  antérieur. **Le plantage probable de la 167 (M-04) est corrigé.**
+
+#### 1.2s.2 E19.m1 — Balayage des portails (M-10) et ordre de `0x5A`/`0x5B` (M-47) ✅ (faite et CONFIRMED le 2026-10-03)
+
+- **Fait le 2026-10-03** (branche `chantier/e19-opcodes`). **Rouges d'abord** sur le code d'avant, valeurs lues égales aux valeurs
+  « aujourd'hui » écrites : portail `null` ; mode 5 sur `0x5A` et `0x5B` : A 6 (écrit 25) ; mode 4 : A 0 (écrit 24) ; mode 6 : X 10
+  (écrit 7). **Verts après** M1-R1 et M1-R2, valeurs écrites tenues (A 24, B 0 ; A 25, B 6 ; `0x5B` animation 5 pour les deux ; héros
+  7, X 7 ; germe final `0xC81B4C37`). Tests : `AlundraPortalDetectionTests` (1 réécrit, `FindPortalAtTile_DestMapIdZero_IsReturnedLikeAnyOtherSlot_TheLaterSlotIsNeverReached`)
+  et `AlundraTurnOrderTests` (4 nouveaux, collection `AlundraRandomStaticStateCollection`). Suite complète Debug : 2552 réussis, 0
+  échec. Six traces à l'octet (`git diff --ignore-cr-at-eol`) sans écart. Écarts : aucun. La Release et le `cmp` restent à la
+  clôture, par la session principale.

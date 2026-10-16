@@ -1,0 +1,26 @@
+id	label	types	records	maps	story_chain_maps	new_handler_keys	exe_words_of_new_keys(upper bound)	maps_per_1000_words	rng_sites	spawn_calls	missing_helpers	children_created(decompilation)	children_linked_by_name(INFERENCE)	depends_on
+S0	Socle partagé : inscription cumulative des types, alias de E, formes HitReaction et setters A, E3 et C36, aides manquantes		0	0			0	None	0	0		E14.a0, a0b, a1 faits
+S1	Route du jour 2 (cartes 14 et 15) : Poisson, Guêpe, Orc (masse, hache, armure de fer)	392:Poisson Niv.1,455:Guêpe Niv.1,341:Orc (masse) Niv.1,338:Orc (hache) Niv.1,344:Orc (armure de fer) Niv.1	157	31	14,15	A0,C15,C16,C17,C18,C19,D11,D12,D5,D6	1157	26.8	13	0	CanMoveForward->C17,C19;CreateEffectEntity->C16	S0
+S2	Slimes géants de la 44 (jour 3)	459:Slime géant (grand),460:Slime géant (petit)	2	1	44	A0,C102,D46	271	3.7	2	0		S0
+S3	Slime gélatineux (rouvre A1 et D1 au type 329 ; projectile 330)	329:Slime gélatineux	118	18		A1,C26,D1	272	66.2	3	1		S0 ; projectile 330 (C24 vide, E3)
+S4	Mimming et mimique	377:Mimming (faux) Niv.1,386:Mimming (rotation) Niv.1,404:Mimique Niv.1	102	25		A0,A3,C13,C14,C6,D11,D5	602	41.5	3	0	0x800808dc->C13,C14,C6;SetEntityRandomDirection->C6;TryAttackPlayer->C6	S0
+S5	Roches, insectes, ver	437:Tortue de roche Niv.1,441:Tortue de roche Niv.2,395:Tête de roche Niv.1,401:Homme-insecte Niv.1,410:Ver Niv.1	253	40		A1,A2,C29,C3,C7,C8,D3,D6,D7	1399	28.6	11	4	CanMoveForward->C29;CreateEffectEntity->C8	S0 ; projectile 411 ; C7 et C8 créent des entités
+S6	Momies, fantôme, zombie, loup-garou	425:Homme momie Niv.1,454:Homme momie Niv.2,428:Fantôme Niv.1,449:Zombie Niv.1,482:Loup-garou Niv.1	81	21		A0,C21,C37,C5,C9,D11,D5,D8	934	22.5	4	0	0x800808dc->C5,C9;CanMoveForward->C21;CreateEffectEntity->C21,C37;SetEntityRandomDirection->C5,C9;TryAttackPlayer->C5	S0
+S7	Muruta à l'arc et au boomerang	350:Muruta (arc) Niv.1,356:Muruta (boomerang) Niv.1	69	14		A0,C33,C35,D13,D6	679	20.6	7	2	0x800808dc->C35;CanMoveForward->C33,C35	S0 ; projectiles 351 (C24 vide, E3) et 357 (C36, E3)
+S8	Hommes-lézards (épée, lance, projectiles)	362:Homme-lézard (épée) Niv.1,365:Homme-lézard (lance) Niv.1,371:Homme-lézard (projectiles) Niv.1	175	12		A0,C2,C32,C34,D2	904	13.3	11	4	0x800808dc->C2,C32,C34;CreateEffectEntity->C2;TryAttackPlayer->C2	S0 ; projectiles 366 et 372 (E3)
+S9	Casters et divers : Roper, Homme de boue, Homme-ombre, Champignon, Fourneau, Oiseau de feu, Homme de bois, P-Zoldia	389:Roper Niv.1,456:Roper Niv.2,431:Homme de boue Niv.1,440:Homme-ombre Niv.1,443:Champignon Niv.1,467:Fourneau Niv.1,473:Oiseau de feu Niv.1,461:Homme de bois Niv.1,452:P-Zoldia Niv.1,453:P-Zoldia Niv.2	243	45		A0,A3,A4,A6,A7,C11,C12,C20,C25,C27,C28,C30,C31,C78,D10,D11,D35,D5,D6	3969	11.3	37	14	0x800808dc->C25,C28;CanMoveForward->C12,C20,C27,C31;GetEntityTileHeight->C12,C20;SetEntityRandomDirection->C11,C25,C27	S0 ; projectiles 432, 444, 468, 474
+S10	Slime géant d'Elane (œil, corps) et petit slime	471:Slime géant (œil),472:Slime géant (corps),478:Petit slime	6	4		A0,A21,C1,C84,D23,D40	600	6.7	5	1		S0 ; C1 du Beannoïde pour 478 (inscription cumulative)
+B1	Boss : Zorgia	509:Zorgia	4	4		A0,C44,D19,E11	623	6.4	8	3	SetEntityRandomDirection->C44	S0 (E11 : voir 5.1 si la clé est listée)
+B2	Boss : Élément Niv.1	497:Élément Niv.1	3	3		A10,C40,D17	454	6.6	2	2		S0 (E11 : voir 5.1 si la clé est listée)
+B3	Boss : Melzas (corps principal)	418:Melzas (corps principal)	3	3		A17,C55,D28,E11	534	5.6	4	4	CreateEffectEntity->C55	S0 (E11 : voir 5.1 si la clé est listée)
+B4	Boss : Monsieur Aspiration	476:Monsieur Aspiration	3	3		A0,C48,D22,E11	669	4.5	5	5		S0 (E11 : voir 5.1 si la clé est listée)
+B5	Boss : Zazan-Roi Muruta	506:Zazan-Roi Muruta	3	3		A0,C43,D2,E11	760	3.9	9	2		S0 (E11 : voir 5.1 si la clé est listée)
+B6	Boss : Boss lézard Niv.1	494:Boss lézard Niv.1	2	2		A9,C39,D16	619	3.2	5	0	CreateEffectEntity->C39	S0 (E11 : voir 5.1 si la clé est listée)
+B7	Boss : Mille-pattes (corps principal)	488:Mille-pattes (corps principal)	2	2		A12,C47,D21,E11	928	2.2	5	1		S0 (E11 : voir 5.1 si la clé est listée)
+B8	Boss : Dragon	479:Dragon	2	2		A0,C49,D24,E11	1274	1.6	6	3		S0 (E11 : voir 5.1 si la clé est listée)
+B9	Boss : Après Melzas	463:Après Melzas	1	1		A22,C88,D42,E11	221	4.5	0	6		S0 (E11 : voir 5.1 si la clé est listée)
+B10	Boss : Nirude (avec corps)	495:Nirude (avec corps)	2	1		A14,C50	556	1.8	5	1	CreateEffectEntity->C50	S0 (E11 : voir 5.1 si la clé est listée)
+B11	Boss : Ronan divin corrompu	446:Ronan divin corrompu	1	1		A16,C54,D27,E11	743	1.3	8	6		S0 (E11 : voir 5.1 si la clé est listée)
+B12	Boss : Abyss Niv.1	485:Abyss Niv.1	1	1		A8,C38,D14	837	1.2	10	6		S0 (E11 : voir 5.1 si la clé est listée)
+B13	Boss : Frère Rayon (aîné) Niv.1	500:Frère Rayon (aîné) Niv.1	1	1		A11,C46,D20	1122	0.9	12	5		S0 (E11 : voir 5.1 si la clé est listée)
+B14	Boss : Wilda (tête)	412:Wilda (tête)	1	1		A15,C51,D26	1280	0.8	11	5	CreateEffectEntity->C51	S0 (E11 : voir 5.1 si la clé est listée)

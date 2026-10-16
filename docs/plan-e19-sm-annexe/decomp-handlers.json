@@ -1,0 +1,790 @@
+{
+"00": {
+"name": "Script_DoNothing",
+"line": 477
+},
+"01": {
+"name": "Script_DoNothing",
+"line": 477
+},
+"02": {
+"name": "Script_2_002",
+"line": 491
+},
+"03": {
+"name": "Script_3_003",
+"line": 497
+},
+"04": {
+"name": "Script_4_004",
+"line": 508
+},
+"05": {
+"name": "Script_5_005",
+"line": 519
+},
+"06": {
+"name": "Script_6_006",
+"line": 529
+},
+"07": {
+"name": "Script_7_007",
+"line": 539
+},
+"08": {
+"name": "Script_8_008",
+"line": 585
+},
+"09": {
+"name": "Script_9_009",
+"line": 592
+},
+"0A": {
+"name": "Script_10_00A",
+"line": 599
+},
+"0B": {
+"name": "Script_WaitUntilEntityMovesBeyondRadius_00B",
+"line": 606
+},
+"0C": {
+"name": "Script_12_00C",
+"line": 642
+},
+"0D": {
+"name": "Script_OpenDialog_13_00D",
+"line": 651
+},
+"0E": {
+"name": "Script_DoNothing",
+"line": 477
+},
+"0F": {
+"name": "Script_DoNothing",
+"line": 477
+},
+"10": {
+"name": "Script_16_010",
+"line": 680
+},
+"11": {
+"name": "Script_17_011",
+"line": 687
+},
+"12": {
+"name": "Script_18_012",
+"line": 694
+},
+"13": {
+"name": "Script_DoNothing",
+"line": 477
+},
+"14": {
+"name": "Script_DoNothing2",
+"line": 484
+},
+"15": {
+"name": "Script_21_015",
+"line": 701
+},
+"16": {
+"name": "Script_22_016",
+"line": 715
+},
+"17": {
+"name": "Script_23_017",
+"line": 722
+},
+"18": {
+"name": "Script_DoNothing",
+"line": 477
+},
+"19": {
+"name": "Script_25_019",
+"line": 729
+},
+"1A": {
+"name": "Script_26_01A",
+"line": 736
+},
+"1B": {
+"name": "Script_27_01B",
+"line": 743
+},
+"1C": {
+"name": "Script_28_01C",
+"line": 750
+},
+"1D": {
+"name": "Script_29_01D",
+"line": 780
+},
+"1E": {
+"name": "Script_30_01E",
+"line": 793
+},
+"1F": {
+"name": "Script_31_01F",
+"line": 832
+},
+"20": {
+"name": "Script_32_020",
+"line": 844
+},
+"21": {
+"name": "Script_33_021",
+"line": 875
+},
+"22": {
+"name": "Script_34_022",
+"line": 888
+},
+"23": {
+"name": "Script_35_023",
+"line": 932
+},
+"24": {
+"name": "Script_36_024",
+"line": 945
+},
+"25": {
+"name": "Script_37_025",
+"line": 951
+},
+"26": {
+"name": "Script_38_026",
+"line": 962
+},
+"27": {
+"name": "Script_39_027",
+"line": 973
+},
+"28": {
+"name": "Script_40_028",
+"line": 981
+},
+"29": {
+"name": "Script_41_029",
+"line": 988
+},
+"2A": {
+"name": "Script_42_02A",
+"line": 995
+},
+"2B": {
+"name": "Script_43_02B",
+"line": 1002
+},
+"2C": {
+"name": "Script_44_02C",
+"line": 1009
+},
+"2D": {
+"name": "Script_45_02D",
+"line": 1017
+},
+"2E": {
+"name": "Script_46_02E",
+"line": 1031
+},
+"2F": {
+"name": "Script_47_02F",
+"line": 1047
+},
+"30": {
+"name": "Script_48_030",
+"line": 1072
+},
+"31": {
+"name": "Script_49_031",
+"line": 1087
+},
+"32": {
+"name": "Script_50_032",
+"line": 1102
+},
+"33": {
+"name": "Script_51_033",
+"line": 1112
+},
+"34": {
+"name": "Script_52_034",
+"line": 1132
+},
+"35": {
+"name": "Script_53_035",
+"line": 1152
+},
+"36": {
+"name": "Script_54_036",
+"line": 1166
+},
+"37": {
+"name": "Script_55_037",
+"line": 1180
+},
+"38": {
+"name": "Script_SetSaveMapIdToInternalMapIndex_038",
+"line": 1202
+},
+"39": {
+"name": "Script_IsDialogInProgress_039",
+"line": 1210
+},
+"3A": {
+"name": "Script_SetTargetDirection_03A",
+"line": 1216
+},
+"3B": {
+"name": "Script_59_03B",
+"line": 1223
+},
+"3C": {
+"name": "Script_60_03C",
+"line": 1243
+},
+"3D": {
+"name": "Script_61_03D",
+"line": 1272
+},
+"3E": {
+"name": "Script_62_03E",
+"line": 1298
+},
+"3F": {
+"name": "Script_63_03F",
+"line": 1313
+},
+"40": {
+"name": "Script_64_040",
+"line": 1333
+},
+"41": {
+"name": "Script_65_041",
+"line": 1342
+},
+"42": {
+"name": "Script_66_042",
+"line": 1350
+},
+"43": {
+"name": "Script_67_043",
+"line": 1358
+},
+"44": {
+"name": "Script_68_044",
+"line": 1377
+},
+"45": {
+"name": "Script_69_045",
+"line": 1415
+},
+"46": {
+"name": "Script_70_046",
+"line": 1422
+},
+"47": {
+"name": "Script_71_047",
+"line": 1429
+},
+"48": {
+"name": "Script_72_048",
+"line": 1442
+},
+"49": {
+"name": "Script_73_049",
+"line": null
+},
+"4A": {
+"name": "Script_74_04A",
+"line": 1462
+},
+"4B": {
+"name": "Script_75_04B",
+"line": 1476
+},
+"4C": {
+"name": "Script_76_04C",
+"line": 1490
+},
+"4D": {
+"name": "Script_77_04D",
+"line": 1497
+},
+"4E": {
+"name": "Script_78_04E",
+"line": 1504
+},
+"4F": {
+"name": "Script_ActivateDebugTextAutoAdvance",
+"line": 1511
+},
+"50": {
+"name": "Script_SetEtcAnimationMode",
+"line": 1518
+},
+"51": {
+"name": "Script_TryActivateTextHoldState",
+"line": 1525
+},
+"52": {
+"name": "Script_82_052",
+"line": 1532
+},
+"53": {
+"name": "Script_ChangeMap_053",
+"line": 1554
+},
+"54": {
+"name": "Script_84_054",
+"line": 1589
+},
+"55": {
+"name": "Script_85_055",
+"line": 1623
+},
+"56": {
+"name": "Script_86_056",
+"line": 1657
+},
+"57": {
+"name": "Script_87_057",
+"line": 1664
+},
+"58": {
+"name": "Script_88_058",
+"line": 1672
+},
+"59": {
+"name": "Script_89_059",
+"line": 1680
+},
+"5A": {
+"name": "Script_90_05A",
+"line": 1694
+},
+"5B": {
+"name": "Script_91_05B",
+"line": 1713
+},
+"5C": {
+"name": "Script_OpenDialogWithChoice_05C",
+"line": 1736
+},
+"5D": {
+"name": "Script_93_05D",
+"line": 1774
+},
+"5E": {
+"name": "Script_94_05E",
+"line": 1789
+},
+"5F": {
+"name": "Script_WaitForAnimOrDistance",
+"line": 1805
+},
+"60": {
+"name": "Script_96_060",
+"line": 1933
+},
+"61": {
+"name": "Script_97_061",
+"line": 1954
+},
+"62": {
+"name": "Script_98_062",
+"line": 1975
+},
+"63": {
+"name": "Script_99_063",
+"line": 1993
+},
+"64": {
+"name": "Script_100_064",
+"line": 2012
+},
+"65": {
+"name": "Script_101_065",
+"line": 2032
+},
+"66": {
+"name": "Script_CopyLogicContextAndAssignScript",
+"line": 2052
+},
+"67": {
+"name": "Script_103_067",
+"line": 2070
+},
+"68": {
+"name": "Script_104_068",
+"line": 2078
+},
+"69": {
+"name": "Script_105_069",
+"line": 2085
+},
+"6A": {
+"name": "Script_106_06A",
+"line": 2095
+},
+"6B": {
+"name": "Script_107_06B",
+"line": 2104
+},
+"6C": {
+"name": "Script_108_06C",
+"line": 2119
+},
+"6D": {
+"name": "Script_109_06D",
+"line": 2133
+},
+"6E": {
+"name": "Script_110_06E",
+"line": 2147
+},
+"6F": {
+"name": "Script_111_06F",
+"line": 2154
+},
+"70": {
+"name": "Script_112_070",
+"line": 2161
+},
+"71": {
+"name": "Script_113_071",
+"line": 2168
+},
+"72": {
+"name": "Script_114_072",
+"line": 2175
+},
+"73": {
+"name": "Script_115_073",
+"line": 2183
+},
+"74": {
+"name": "Script_116_074",
+"line": 2190
+},
+"75": {
+"name": "Script_117_075",
+"line": 2208
+},
+"76": {
+"name": "Script_118_076",
+"line": 2215
+},
+"77": {
+"name": "Script_119_077",
+"line": 2222
+},
+"78": {
+"name": "Script_StoreChoiceParamAndJump_078",
+"line": 2229
+},
+"79": {
+"name": "Script_JumpIfChoiceAccepted_079",
+"line": 2236
+},
+"7A": {
+"name": "Script_JumpIfChoiceRejected_07A",
+"line": 2250
+},
+"7B": {
+"name": "Script_JumpIfFlagSetStoreParam_07B",
+"line": 2264
+},
+"7C": {
+"name": "Script_JumpIfFlagClearStoreParam_07C",
+"line": 2294
+},
+"7D": {
+"name": "Script_JumpRelativeFromStoredParam_07D",
+"line": 2326
+},
+"7E": {
+"name": "Script_ConditionalJumpFromStoredParamIfTrue_07E",
+"line": 2332
+},
+"7F": {
+"name": "Script_ConditionalJumpFromStoredParamIfFalse_07F",
+"line": 2345
+},
+"80": {
+"name": "Script_JumpFromStoredParamIfFlagSet_080",
+"line": 2358
+},
+"81": {
+"name": "Script_JumpFromStoredParamIfFlagClear_081",
+"line": 2374
+},
+"82": {
+"name": "Script_130_082",
+"line": 2390
+},
+"83": {
+"name": "Script_131_083",
+"line": 2407
+},
+"84": {
+"name": "Script_132_084",
+"line": 2424
+},
+"85": {
+"name": "Script_133_085",
+"line": 2441
+},
+"86": {
+"name": "Script_134_086",
+"line": 2448
+},
+"87": {
+"name": "Script_135_087",
+"line": 2463
+},
+"88": {
+"name": "Script_136_088",
+"line": 2496
+},
+"89": {
+"name": "Script_137_089",
+"line": 2514
+},
+"8A": {
+"name": "Script_138_08A",
+"line": 2541
+},
+"8B": {
+"name": "Script_139_08B",
+"line": 2558
+},
+"8C": {
+"name": "Script_140_08C",
+"line": 2582
+},
+"8D": {
+"name": "Script_141_08D",
+"line": 2602
+},
+"8E": {
+"name": "Script_142_08E",
+"line": 2622
+},
+"8F": {
+"name": "Script_143_08F",
+"line": 2634
+},
+"90": {
+"name": "Script_144_090",
+"line": 2641
+},
+"91": {
+"name": "Script_145_091",
+"line": 2648
+},
+"92": {
+"name": "Script_146_092",
+"line": 2664
+},
+"93": {
+"name": "Script_147_093",
+"line": 2681
+},
+"94": {
+"name": "Script_148_094",
+"line": 2702
+},
+"95": {
+"name": "Script_149_095",
+"line": 2723
+},
+"96": {
+"name": "Script_150_096",
+"line": 2859
+},
+"97": {
+"name": "Script_151_097",
+"line": 2879
+},
+"98": {
+"name": "Script_152_098",
+"line": 2886
+},
+"99": {
+"name": "Script_153_099",
+"line": 2893
+},
+"9A": {
+"name": "Script_154_09A",
+"line": 2911
+},
+"9B": {
+"name": "Script_155_09B",
+"line": 2928
+},
+"9C": {
+"name": "Script_156_09C",
+"line": 2935
+},
+"9D": {
+"name": "Script_157_09D",
+"line": 2942
+},
+"9E": {
+"name": "Script_158_09E",
+"line": 2951
+},
+"9F": {
+"name": "Script_159_09F",
+"line": 2998
+},
+"A0": {
+"name": "Script_160_0A0",
+"line": 3032
+},
+"A1": {
+"name": "Script_161_0A1",
+"line": 3053
+},
+"A2": {
+"name": "Script_162_0A2",
+"line": 3088
+},
+"A3": {
+"name": "Script_163_0A3",
+"line": 3103
+},
+"A4": {
+"name": "Script_164_0A4",
+"line": 3124
+},
+"A5": {
+"name": "Script_165_0A5",
+"line": 3131
+},
+"A6": {
+"name": "Script_166_0A6",
+"line": 3138
+},
+"A7": {
+"name": "Script_167_0A7",
+"line": 3145
+},
+"A8": {
+"name": "Script_168_0A8",
+"line": 3152
+},
+"A9": {
+"name": "Script_169_0A9",
+"line": 3159
+},
+"AA": {
+"name": "Script_170_0AA",
+"line": 3182
+},
+"AB": {
+"name": "Script_171_0AB",
+"line": 3205
+},
+"AC": {
+"name": "Script_172_0AC",
+"line": 3212
+},
+"AD": {
+"name": "Script_173_0AD",
+"line": 3226
+},
+"AE": {
+"name": "Script_174_0AE",
+"line": 3298
+},
+"AF": {
+"name": "Script_175_0AF",
+"line": 3307
+},
+"B0": {
+"name": "Script_176_0B0",
+"line": 3320
+},
+"B1": {
+"name": "Script_177_0B1",
+"line": 3332
+},
+"B2": {
+"name": "Script_CompareEntityGroupsForMatch_0B2",
+"line": 3347
+},
+"B3": {
+"name": "Script_UpdatePadState",
+"line": 3401
+},
+"B4": {
+"name": "Script_180_0B4",
+"line": 3411
+},
+"B5": {
+"name": "Script_181_0B5",
+"line": 3428
+},
+"B6": {
+"name": "Script_182_0B6",
+"line": 3445
+},
+"B7": {
+"name": "Script_183_0B7",
+"line": 3466
+},
+"B8": {
+"name": "Script_184_0B8",
+"line": 3495
+},
+"B9": {
+"name": "Script_185_0B9",
+"line": 3520
+},
+"BA": {
+"name": "Script_186_0BA",
+"line": 3527
+},
+"BB": {
+"name": "Script_187_0BB",
+"line": 3538
+},
+"BC": {
+"name": "Script_188_0BC",
+"line": 3607
+},
+"BD": {
+"name": "Script_189_0BD",
+"line": 3620
+},
+"BE": {
+"name": "Script_190_0BE",
+"line": 3628
+},
+"BF": {
+"name": "Script_191_0BF",
+"line": 3636
+},
+"C0": {
+"name": "Script_192_0C0",
+"line": 3644
+},
+"C1": {
+"name": "Script_193_0C1",
+"line": 3653
+},
+"C2": {
+"name": "Script_194_0C2",
+"line": 3660
+},
+"C3": {
+"name": "Script_195_0C3",
+"line": 3678
+},
+"C4": {
+"name": "Script_196_0C4",
+"line": 3688
+}
+}
