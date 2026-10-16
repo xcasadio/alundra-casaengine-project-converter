@@ -139,7 +139,7 @@ script à chaque tranche ; (5) les renommages imposés : `AlundraPlayerControlle
   (`executor`) ; `plan-verifier` avant chaque tranche ; un verifier frais après chaque tranche, deux pour R0 et R4 (moteur, données).
 - Retour arrière : `git revert` de la tranche ; pour R0 et R4, revert du commit parent et réexport depuis le commit précédent.
 
-## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export ⏳
+## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export ⏸️ (en pause : la relecture de clôture a rendu REVISE ; correction faite en révision 3 ; une relecture de plus est à accorder par l'auteur)
 
 **Relecture (2026-10-16).** Enveloppe (§0 à §3) : **READY**. R0 : **REVISE**, trois blocages corrigés (FIX, révision 1) : (1) le lieu
 de l'exception de D-R-4 et le chemin de son contexte, sans casser les chargements sans DLL (vérification du convertisseur) ; (2) un seul
@@ -150,6 +150,12 @@ automatiques atteint) : **FIX** — le fichier du message de D-R-4 ne peut pas v
 reçoit un `Id` neuf et perd son `AssetId` (`ObjectBase.cs:37-42`, `EntityReference.cs:58,75`), et une entité en ligne n'a pas encore son
 monde à `Initialize` (`World.cs:788-789`). La règle d'origine du fichier est réécrite sur les vrais chemins, avec les tests qui la
 prouvent. Nouvelle époque de relecture : une seule relecture de clôture suit.
+Relecture de clôture : **REVISE**, un blocage : la boucle `World.InternalAddEntities` (`World.cs:784-801`) rattrape déjà toute exception de
+l'`Initialize` d'une entité (`catch (Exception e) { Logs.WriteException(e); }`) ; elle couvre les entités en ligne, celles des références
+de préfab (`:297-304`, `:471-475`) et le pion par défaut (`:380`, `:384`) : l'exception de D-R-4 serait journalisée et avalée, l'entité
+omise. **Révision 3 (2026-10-16)**, conforme à D-R-4 : un type d'exception dédié traverse ce filet par un filtre ; toutes les autres
+exceptions gardent le comportement d'aujourd'hui. Le cap de relecture étant atteint, la tranche est en pause jusqu'à ce que l'auteur
+accorde une relecture de clôture de plus.
 
 **But.** Le moteur crée un objet script depuis une chaîne en ne cherchant que dans l'assembly de gameplay enregistrée, par nom complet
 exact ; les types du moteur se créent par le code ; un nom introuvable, ambigu ou du mauvais genre lève une exception qui dit tout. Le jeu
@@ -179,11 +185,19 @@ n'est jamais indexée).
   enregistrée »), l'indice « vouliez-vous dire » (un type de même nom court dans l'assembly), et le fichier : celui de l'asset de
   l'objet, dans cet ordre : (1) son `FileName` (posé par `AssetContentManager.LoadNew`, `:237-239`, et gardé par le clone,
   `ObjectBase.cs:37-42`) ; (2) sinon `AssetCatalog.Get(AssetId)?.FileName` ; (3) pour une entité en ligne d'un monde (ni `FileName` ni
-  `AssetId`), le monde complète le message : `World.InternalAddEntities` rattrape l'exception de D-R-4 levée par `entity.Initialize()`
-  et la relance avec le `FileName` du monde (« entité en ligne du monde <fichier> », l'exception d'origine gardée comme cause) ;
+  `AssetId`), le monde complète le message (ci-dessous) ;
   (4) sinon « fichier inconnu », écrit tel quel. Le proxy du monde cite le `FileName` du monde ; le contrôleur du joueur et le mode de
   jeu citent le `FileName` du `PlayerStartupSettings` ou du `GameplayModeAsset` acquis (le `.gameMode`) ; le view model de l'aperçu cite
-  le fichier de données de conception qu'il lit. L'éditeur qui ouvre un monde sans DLL construite : la frontière qui
+  le fichier de données de conception qu'il lit.
+- **Le type d'exception et le filet du monde.** L'exception de D-R-4 est un type dédié du moteur, `ScriptTypeResolutionException` (nom
+  à confirmer contre les collisions par l'exécuteur), qui porte la clé, la valeur, l'assembly et le fichier. Le `catch (Exception e)` de
+  `World.InternalAddEntities` (`World.cs:797-800`) prend un filtre `when (e is not ScriptTypeResolutionException)` : toute autre
+  exception reste journalisée et l'entité omise, comme aujourd'hui ; l'exception de D-R-4 sort de la boucle. Pour une entité en ligne
+  (sans `FileName` ni `AssetId`), la boucle la rattrape **par ce seul type**, la complète du `FileName` du monde (« entité en ligne du
+  monde <fichier> », l'exception d'origine en cause) et la relance ; une entité qui a déjà son fichier n'est pas réécrite. Qui la voit :
+  au runtime, le chargement du monde (`GameManager`, `LoadCopy<World>`) la laisse remonter jusqu'au démarrage du jeu, qui s'arrête avec
+  ce message ; dans l'éditeur, la frontière que nomme T0 du plan du moteur (arrêt et question si elle n'existe pas). Un chargement réussi
+  ne change pas. L'éditeur qui ouvre un monde sans DLL construite : la frontière qui
   rattrape aujourd'hui un échec de création est nommée par T0 du plan du moteur ; s'il n'y en a pas (l'éditeur s'arrêterait), c'est un
   arrêt et une question à l'auteur.
 - Appelants basculés : `Entity.cs:214` et la comparaison `:212` en nom complet (sinon chaque `Initialize` recrée le proxy et perd son état
@@ -199,10 +213,14 @@ n'est jamais indexée).
   collecté (`Unload()` vrai) et seule la seconde assembly est enregistrée (dans le projet de tests qui référence `EditorServices`) ; proxy
   cloné gardé, tué par le mutant « `:212` en nom court » ; monde, contrôleur, mode, données de conception (`Fail` avec le message) ;
   **message de D-R-4**, sur les vrais chemins de création : (i) une entité chargée par `AssetContentManager.LoadCopy<Entity>(id).Clone()`
-  puis initialisée avec un mauvais `script_class_name` — le message contient le chemin relatif de son asset ; (ii) une entité en ligne
-  d'un monde chargé — le message nomme le fichier du monde ; (iii) un monde au mauvais `script_class_name` — son fichier ; (iv) un
-  contrôleur au mauvais `player_controller_class` — le fichier `.gameMode` ; chaque message contient aussi la clé, la valeur, l'assembly
-  consultée et l'indice ; (i) et (ii) sont rouges contre une version qui cherche le catalogue par `Id` ; un chargement (`Load`) sans assembly enregistrée ne lève pas ; aucune DLL à la création : message explicite) ; les tests
+  puis initialisée avec un mauvais `script_class_name` — le message contient le chemin relatif de son asset ; (ii) **le chargement réel
+  d'un monde** dont une entité en ligne a un mauvais `script_class_name` lève l'exception, qui nomme le fichier du monde ; (ii-b) le
+  chargement réel d'un monde qui référence un préfab au mauvais `script_class_name` lève l'exception, qui nomme le chemin relatif du
+  `.entity` du préfab, pas celui du monde ; (ii-c) un monde dont une entité échoue pour une **autre** raison journalise l'erreur, omet
+  l'entité et finit de charger, comme aujourd'hui ; (iii) un monde au mauvais `script_class_name` — son fichier ; (iv) un contrôleur au
+  mauvais `player_controller_class` — le fichier `.gameMode` ; chaque message contient aussi la clé, la valeur, l'assembly consultée et
+  l'indice ; (i) et (ii) sont rouges contre une version qui cherche le catalogue par `Id`, (ii) et (ii-b) rouges contre le moteur
+  d'aujourd'hui (l'exception y serait avalée) ; un chargement (`Load`) sans assembly enregistrée ne lève pas ; aucune DLL à la création : message explicite) ; les tests
   existants touchés réécrits (types imbriqués sortis au premier niveau).
 - Docs du moteur : les quatre docs du nom court, ADR-0075.
 - Validation du moteur (AGENTS.md §6) : les deux `.sln`, `CasaEngine.Tests` construit explicitement et vert, RPGDemo et les démos lancés
