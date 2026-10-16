@@ -1,0 +1,22 @@
+PASS  WAVE: end_AC is 0 up to S+24 and 1 at S+25   [first=25]
+PASS  WAVE: cnt1c is 1, 2, 3 at S, S+1, S+2   [[1, 2, 3]]
+PASS  WAVE: status 4 first at S+26   [first=26]
+PASS  WAVE: the box changes at S, S+1, S+3, S+5, S+7, S+9 (then no change to S+25)   [[0, 1, 3, 5, 7, 9, 27]]
+PASS  WAVE: hbx - px = -18 / -6 / +6 / +18 / +30 / +42 px at S / S+1 / S+3 / S+5 / S+7 / S+9   [[-18, -6, 6, 18, 30, 42]]
+PASS  WAVE: size 36 x 24 x 31 at S
+PASS  WAVE: cnt1c, reset_AC and hbx - px equal the e20-f3 keys for S..S+27   [S3=117]
+PASS  NOSWITCH: end_AC first at S+26 and status 4 at S+27 (the DLL lag)   [end=26 st4=27]
+PASS  NOSWITCH: the box changes at S+2, S+4, ... (not at S+1, S+3)   [[2, 4, 6, 8, 10, 28]]
+PASS  SW0: end_AC first at S+16   [first=16]
+PASS  SW1: end_AC first at S+17   [first=17]
+PASS  SW2: end_AC first at S+18   [first=18]
+PASS  SW5: end_AC first at S+21   [first=21]
+PASS  SW1-2: end_AC first at S+28   [first=28]
+PASS  SWD1: end_AC first at S+27   [first=27]
+PASS  SWD2: end_AC first at S+28   [first=28]
+PASS  SW0: box of the animation 1 at S: hbx 88, 23 x 23 x 15   [(88.0, 23, 23, 15)]
+PASS  SPR251: loops_B0 is 0 up to S+3, 1 at S+4, 2 at S+9   [[0, 1, 1, 2]]
+PASS  SPR3 (arrow): loops_B0 is 0 up to S+10 and 1 at S+11   [[0, 1]]
+PASS  LOAD27: end_AC first at tick 26 (call number 1 at tick 1; the DLL: tick 27)   [first=26 S=0]
+PASS  LOAD27: cnt1c is 1 at tick 1
+21 facts, 0 FAIL
