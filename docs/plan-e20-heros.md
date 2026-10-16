@@ -3926,7 +3926,7 @@ séparé ; leur mordant est prouvé par les mutations des deux verifiers.
 
 #### 1.16.4 E20.e0a4 — Participation au tick de naissance des apparitions par enregistrement ⏳ (décidée le 2026-10-15, Q-A1)
 
-**Prérequis.** E20.e0a3b ✅, **E20.e0a5** (même drapeau et même résolveur pour les naissances dans un tick ; la mesure P-B est refaite après elle) ; E20.e0a3b ✅ ; Q-A1 tranchée le 2026-10-15 (oui, après la mesure P-B) ; ordre : après E20.e0b2 (même fichier). Ne bloque
+**Prérequis.** E20.e0a3b ✅, **E20.e0a5** (même drapeau et même résolveur pour les naissances dans un tick ; la mesure P-B est refaite après elle) ; Q-A1 tranchée le 2026-10-15 (oui, après la mesure P-B) ; ordre : après E20.e0b2 (même fichier). Ne bloque
 aucune autre tranche.
 
 **Mesure P-B** (versée par E20.e0a3b, 2026-10-15, base `7b9b096` ; **à refaire après E20.e0a5**, qui change l'horloge du tick de naissance). Changement jetable, jamais commité : `proxy.JoinsBirthTick = true` à la fin de `AlundraEntitySpawnFactory.ApplyRecord` (donc pour la charge d'une carte
