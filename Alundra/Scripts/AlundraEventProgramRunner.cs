@@ -373,9 +373,9 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         }
     }
 
-    /// <summary>E19.d2b / E20.f3a (D-F3-4): the codes of the program E (deactivation) that <see cref="RunSpriteEvent"/> treats in line, outside the registry of the native handlers: 0 and 1 (<c>0x8007ED10</c>, <c>DestroyEntity(e, -1)</c>). The one
+    /// <summary>E19.d2b / E20.f3a (D-F3-4): the codes of the program E (deactivation) that <see cref="RunSpriteEvent"/> treats in line, outside the registry of the native handlers: 0 and 1 (<c>0x8007ED10</c>, <c>DestroyEntity(e, -1)</c>) and, since E20.f3c (D-F3-5), 10 (<c>0x8007F23C</c>, the same body, found only on the sprites 27 to 29 of the sword wave: one branch for two addresses). The one
     /// definition shared by the runner and by the checker of the wired weapon types (<see cref="AlundraPlayerManager.UnhandledWeaponSpriteCodes"/>).</summary>
-    internal static bool IsInlineDeactivateCode(int code) => (uint)code <= 1u;
+    internal static bool IsInlineDeactivateCode(int code) => (uint)code <= 1u || code == AlundraWaveSwordAi.DeactivateCode;
 
     /// <summary>Port of EntityEventHandlers.InitializeEventData @ 0x80041ee4 for slot A - see class doc
     /// on the 0x80 bit fallback. Internal for direct unit testing of the A-table &amp; 0x7f resolution.

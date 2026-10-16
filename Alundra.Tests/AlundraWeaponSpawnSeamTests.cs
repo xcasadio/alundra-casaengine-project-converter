@@ -274,4 +274,28 @@ public sealed class AlundraWeaponSpawnSeamTests : IDisposable
             Assert.Equal(expected, Assert.Single(journal).Direction);
         }
     }
+
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // (s7) E20.f3c: the order of D-F3-3, which f3a left without a pin: the counter and the journal are already written when the hook is called (vert par construction: it pins the behaviour of f3a).
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void S7_TheCounterAndTheJournalAreAlreadyWritten_WhenTheHookIsCalled_AndTheHookIsCalledOnce()
+    {
+        using var arc = Arc("s7");
+        arc.OneFrame(); // settles.
+        var counterBefore = AlundraPlayerManager.WeaponSpawnCallCountForTests;
+        var journal = new List<AlundraPlayerManager.WeaponSpawnCall>();
+        AlundraPlayerManager.WeaponSpawnCallsForTests = journal;
+        var seen = new List<(int Counter, int Journaled, int Type)>();
+        AlundraPlayerManager.WeaponSpawnBirthHookForTests = (_, call) => seen.Add((AlundraPlayerManager.WeaponSpawnCallCountForTests, journal.Count, call.Type));
+
+        Arm(arc.Hero);
+        arc.OneFrame();
+        AlundraPlayerManager.WeaponSpawnCallsForTests = null;
+
+        Assert.Equal(new[] { (counterBefore + 1, 1, Arrow) }, seen);
+        Assert.Equal(counterBefore + 1, AlundraPlayerManager.WeaponSpawnCallCountForTests);
+        Assert.Equal(Arrow, Assert.Single(journal).Type);
+    }
 }

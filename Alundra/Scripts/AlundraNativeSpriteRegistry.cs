@@ -19,18 +19,19 @@ internal delegate void AlundraNativeSpriteHandler(AlundraEntityScriptProxy entit
 /// ported yet, so a handler runs only for the types listed (the save book's <see cref="AlundraSaveBook.TryMatch"/> is
 /// the one precedent). <see cref="AlundraEventProgramRunner.RunSpriteEvent"/> consults it after the save book and
 /// E0/E1 (both stay outside the registry); an absent key or a type not listed is a counted no-op with one debug trace
-/// per key. In production it holds the handlers of the Beannoid (E14.a1b) and, with E14.a1c, of the Muruta (<see cref="CreateForProduction"/>).
+/// per key. In production it holds the handlers of the Beannoid (E14.a1b) with E14.a1c, of the Muruta and, with E20.f3c, the C61 of the sword wave (<see cref="CreateForProduction"/>).
 /// </summary>
 internal sealed class AlundraNativeSpriteRegistry
 {
     private readonly Dictionary<(int Slot, int Code), Entry> _entries = new();
 
-    /// <summary>The registry of a production runner: the Beannoid's A1, C1 and D1 (<see cref="AlundraBeannoideAi"/>, E14.a1b) and the Muruta's A0, C10 and D9 (<see cref="AlundraMurutaAi"/>, E14.a1c).</summary>
+    /// <summary>The registry of a production runner: the Beannoid's A1, C1 and D1 (<see cref="AlundraBeannoideAi"/>, E14.a1b) the Muruta's A0, C10 and D9 (<see cref="AlundraMurutaAi"/>, E14.a1c) and the C61 of the sword wave (<see cref="AlundraWaveSwordAi"/>, E20.f3c).</summary>
     internal static AlundraNativeSpriteRegistry CreateForProduction()
     {
         var registry = new AlundraNativeSpriteRegistry();
         AlundraBeannoideAi.Register(registry);
         AlundraMurutaAi.Register(registry);
+        AlundraWaveSwordAi.Register(registry);
         return registry;
     }
 

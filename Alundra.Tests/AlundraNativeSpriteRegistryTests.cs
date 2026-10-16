@@ -44,11 +44,11 @@ public sealed class AlundraNativeSpriteRegistryTests : IDisposable
     }
 
     [Fact]
-    public void ProductionRunner_RegistryHoldsTheSixHandlersOfTheBeannoidAndTheMuruta_AndTheSwitchIsOn()
+    public void ProductionRunner_RegistryHoldsTheSevenHandlersOfTheBeannoidTheMurutaAndTheSwordWave_AndTheSwitchIsOn()
     {
         var runner = NewRunner();
 
-        Assert.Equal(6, runner.NativeSprites.Count); // E14.a1b: A1, C1 and D1 of the Beannoid (335); E14.a1c: A0, C10 and D9 of the Muruta (347).
+        Assert.Equal(6 + 1, runner.NativeSprites.Count); // E14.a1b: A1, C1 and D1 of the Beannoid (335); E14.a1c: A0, C10 and D9 of the Muruta (347); E20.f3c (D-F3-6): (C, 61) of the sword wave (27 to 29).
         Assert.True(runner.NativeHandlersEnabled);
         Assert.True(runner.NativeSprites.TryGet(ScriptHelper.ProgramALoad, 1, TypeA, out _));
         Assert.True(runner.NativeSprites.TryGet(ScriptHelper.ProgramCTick, 1, TypeA, out _));
