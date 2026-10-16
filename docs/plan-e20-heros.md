@@ -4950,7 +4950,7 @@ Détaillée seulement si l'auteur répond à Q-K2 par l'option B. Contenu : un p
 est remplacé par le marqueur d'e0k2 et le repli B de Q-F3-1 tombe. (2) §1.1 : le fait [DLL] « seul le héros a un pas vertical » est
 corrigé, la ligne 4 est scindée (révision 8 de l'enveloppe). (3) `docs/plan-e14-ia-native.md` : la chute des Muruta passe par le chemin
 du contrôleur. (4) E20.g1 : poser le marqueur au soulèvement (ligne 10 de l'enveloppe).
-### 1.19 E20.f3 — Le tir du héros : direction, effets de coup 4 et 5, vague de l'épée (f3a, f3b, f3c) ⏳ (détaillée le 2026-10-15 ; f3a et f3b faites et CONFIRMED le 2026-10-15, ADR-0067 ; f3c après e0k2)
+### 1.19 E20.f3 — Le tir du héros : direction, effets de coup 4 et 5, vague de l'épée (f3a, f3b, f3c) 🧪 (détaillée le 2026-10-15 ; f3a et f3b faites et CONFIRMED le 2026-10-15, ADR-0067 ; f3c faite et CONFIRMED le 2026-10-16, ADR-0072 ; reste la recette en jeu de l'auteur)
 
 **Décisions de la session principale (2026-10-15, mode AUTO, l'auteur absent ; réversibles, signalées à l'auteur).** Q-F3-1 : option A —
 f3c attend la règle du Z logique (D-F3-8) d'E20.e0k, que l'enveloppe ordonne déjà avant f3 ; si la section d'e0k ne la contient pas, f3c
@@ -5170,7 +5170,7 @@ zéro échec ; preuve de retrait reproduite ; aucun test existant déplacé). **
 
 ---
 
-#### 1.19.3 E20.f3c — La vague de l'épée (C61, E10) et l'activation des types 27 à 29 🚧
+#### 1.19.3 E20.f3c — La vague de l'épée (C61, E10) et l'activation des types 27 à 29 🧪 (faite et CONFIRMED le 2026-10-16, `b3e0012` à `d56f0b0`, ADR-0072 ; reste la recette en jeu de l'auteur)
 
 **Arrêt de la phase A (2026-10-16) et décision de la session principale.** La phase A s'est arrêtée (T1 ⚠️, O-F3-7, `e2c625f`) sur deux
 défauts de la DLL qui touchent toute entité née par l'interface, vérifiés par la session principale dans le code : (1) `EvaluateFrameBox`
@@ -5268,10 +5268,10 @@ Relecture de clôture : **READY** (2026-10-16).
     Beannoïde ;
   - [R] (p7b) dans le monde, `TouchingEntity` de la cible = la vague de production au tick de la touche (le dégât de bout en bout reste à la
     recette).
+  Puis la ligne de câblage.
   **Écriture des tests de la phase B (2026-10-16, exécuteur de la phase A).** Les tests [R] (p1) à (p6) et (p7b) sont dans `Alundra.Tests/AlundraWaveSwordWiringTests.cs` (non commité, laissé dans l'arbre pour la phase B, copie dans le scratchpad `e20f3c-exec/phaseB/`), (p7a) dans `AlundraWaveSwordDamageTests.cs` (commité). Course sur le code de la phase A (ensemble de production vide) : (p7a) vert (réponse 16 de la fiche du Beannoïde pour l'attribut 129 : dégâts 10, 20, 38) ; **tous les [R] rouges, pour la bonne raison** — aucune entité n'est née : (p1) 4 cas sur 4 (acier est et nord, démon, saint : `Born` nul), (p2) rouge (la cible à +44 est touchée par le héros au tick 113, les cibles à +56, +68 et +80 ne sont touchées par personne), (p3) rouge (la cible à +68 n'est pas touchée), (p4) rouge (2 contacts `(5, hero) (113, hero)` déjà vrais, mais aucune vague : statuts `none`), (p5) rouge (le tir de l'arc ne crée rien, vrai ; le tir de l'épée avec l'ensemble de production ne crée rien), (p6) rouge (case libre unique : aucune entité), (p7b) rouge (aucune touche). Avertissement d'écriture : (p2) est un seul test, la cible à +44 (touchée par le héros, verte sans la vague) est dans la même assertion que les trois cibles de la vague ; la première version, en théorie à quatre cas, laissait le cas +44 vert, ce qui aurait été un arrêt. Courue avec le câblage en jetable (l'ensemble de production à {27, 28, 29}, puis revenu) : les 11 tests verts.
   **Résultats de T3 (2026-10-16, phase B).** La ligne de câblage : `ProductionWiredWeaponTypes = { 27, 28, 29 }` (`AlundraPlayerManager.cs`). Les dix tests [R] (p1) à (p6) et (p7b) passent au vert avec elle, comme (p7a). **Suites complètes** : Release 5 046 réussis / 0 échec, Debug 5 046 / 0 échec (5 010 au départ de la reprise + 25 de la phase A + 1 de (p7a) + 10 de la phase B). **Tests existants déplacés par la phase B : 1**, `AlundraWeaponSpawnSeamTests.S5_...`, réécrit par sa dérivation (`Assert.Equal({27, 28, 29}, ensemble de production)` ; `UnhandledWeaponSpriteCodes(production)` reste vide parce que C61 est enregistré et E10 traité en ligne). **Liste mesurée contre liste prédite** : les « possibles » (`AlundraHeroChargeArenaTests`, `AlundraHeroChargeTests`, `AlundraHeroAuraWorldTests`, `AlundraRandomPerTickTests`, les arcs de la grille et du hall, `AlundraCreationSwitchClockTests`, `AlundraBirthBoxTests`, `AlundraBirthTickTests`) sont **tous restés verts sans réécriture** : aucun « possible » n'a été réécrit en phase B (liste des « possibles réécrits » vide). L'épingle d'arène reste à 2 contacts ((p4) vert).
-  Puis la ligne de câblage.
-- 🚧 **T4 — ADR, plan, verifiers frais** (deux ; l'un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL,
+- ✅ **T4 — ADR, plan, verifiers frais** (deux ; l'un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL,
   au moins 12, tués ou prouvés équivalents par écrit : E10 absent, E10 sous l'interrupteur natif, C61 absent, C61 aussi au tick S,
   destruction avec effet, ensemble de production contenant 3, mapping des directions permuté, ordre de la garde, apparition deux fois,
   crochet qui ne remplace pas, tolérance du nul, M5b (compteur et journal après l'appel, tué par (s7)). L'ADR de la tranche (le prochain
@@ -5280,6 +5280,27 @@ Relecture de clôture : **READY** (2026-10-16).
   *Preuve de retrait* (HEAD `f616dc8`, l'ensemble de production vidé dans l'arbre de travail, Release, DLL neutralisée) : 5 046 tests, **11 rouges, exactement** les dix tests [R] — (p1) ×4 (acier est, acier nord, démon est, saint est), (p2), (p3), (p4), (p5), (p6), (p7b) — et `AlundraWeaponSpawnSeamTests.S5` (réécrit en phase B) ; aucun autre. Aucun « possible » n'ayant été réécrit en phase B (liste vide, nommée dans les résultats de T3 avant la preuve), il n'y en a pas dans l'ensemble rouge. Retour à l'état commité par `git checkout --`, `git status` identique.
   *Mutants du code de la DLL* (12, vrais, appliqués par script à l'arbre de travail, Release, DLL neutralisée, sous-ensemble de 101 tests des classes de la vague, du registre, du tir, de la charge d'arène et de la naissance ; chacun restauré par `git checkout -- Alundra/Scripts`, `git status` vérifié) — **les 12 sont tués** : M1 E10 absent (28 rouges : (v1), (v3), (v4), (p1), (p4), S5, `TheChargedSwing0x18`) ; M2 E10 sous l'interrupteur natif (25 : (v1), (v4), (p1), (p4), arène de la charge) ; M3 C61 absent (6 : (v2), (v3), registre, S5) ; M4 C61 aussi au tick S (appel du bouchon à la sortie de `SpawnEntityBySpriteIndex`, 3 : (v2)) ; M5 destruction avec l'effet de bris 8 (**survivait d'abord** : le crochet de création des tests ne voit pas l'effet de bris ; (v1) lit maintenant les cases actives du réservoir d'effets, `TargetEffect == 8`, aux ticks S+26 à S+28 ; tué : (v1) ×2) ; M6 ensemble de production contenant 3 (2 : S1, S5) ; M7 table des directions permutée (23 : (v4), (p1)–(p3), (p7b), D1–D3, S6) ; M8 garde de l'ensemble avant le crochet (1 : S2) ; M9 apparition deux fois (5 : (p5), S1–S4) ; M10 crochet qui ne remplace pas (4 : (v2), S2) ; M11 retour nul non toléré (2 : (p6), S4) ; M12 = M5b, compteur et journal après l'appel dans les deux branches (1 : **(s7)**). Aucun mutant équivalent. Écarts au libellé du plan : « C61 aussi au tick S » (M4) est appliqué à la sortie de l'interface d'apparition (le registre refuse une seconde clé A0, le Muruta la porte déjà) ; « ordre de la garde » (M8) place la garde de l'ensemble avant le crochet (permuter les deux membres du `&&` serait équivalent : deux lectures pures).
   *Suites finales* (arbre commité plus le renforcement de (v1), l'ADR et le plan) : Release 5 046 réussis / 0 échec, Debug 5 046 / 0 échec. `cmp alundra-project/Alundra.dll` contre la DLL Debug : **identique** (DLL non verrouillée au build Debug normal). Garde des cinq traces : propre (les quatre fichiers modifiés par fin de ligne ont été restaurés par `git checkout --`). Aucun diff du moteur, du convertisseur ni des données. **ADR-0072** (`docs/decisions/`, index mis à jour) : D-F3-5, D-F3-6 et la réfutation de la dernière phrase de D-F3-7. Liste prédite contre liste mesurée : certains = `AlundraNativeSpriteRegistryTests` (phase A) et S5 (phase B), mesurés ; possibles = aucun n'a bougé.
+
+**Vérification (2026-10-16) : CONFIRMED** par deux verifiers frais, l'un après l'autre, au HEAD `d56f0b0`. **Rejeu** : l'oracle d'`e20-f3`
+rejoué dans une copie (21 faits sur 21, manifeste de 45 fichiers identique, la boîte de la vague aux ticks S, S+1, S+3, S+5, S+7, S+9 et les
+touches de `wave_reach_sweep` relues) ; suites complètes 5 046 / 0 échec en Release (copie neutralisée) et en Debug ; 36 tests nouveaux,
+tous verts ; le squelette de la phase A (E10 et C61 retirés) donne 24 rouges sur 24 dans `AlundraWaveSwordLifeTests` ; la preuve de
+retrait reproduite (ensemble de production vidé : exactement les dix tests [R] et S5) ; deux tests existants seulement changent (l'épingle
+du registre, 6 + 1, et S5), tous deux dans la liste « certains » ; aucun « possible » ne bouge ; `cmp` de la DLL Debug identique.
+**Adversarial** : E10 traité en ligne avant l'interrupteur natif ; seuls les sprites 27 à 29 du catalogue portent E10 et C61 ; aucune
+couture de test affectée hors des tests ; six mutants de l'exécuteur rejoués et dix nouveaux, tous tués (C61 aussi à S+26, l'ensemble
+contenant 30, E10 un tick en retard, la production conditionnée à l'ensemble de test, la table des directions tournée, le vérificateur
+gardant l'ancienne règle, C61 pour le seul type 27, E en ligne pour tout code ≥ 10, l'apparition sur la page de carte, E10 sauté pour le
+démon). **Reportés (P4)** :
+- `IsInlineDeactivateCode` traite le code 10 en ligne pour tout type : sans effet aujourd'hui (seuls 27 à 29 le portent), à revoir si un
+  autre sprite porte E10 ;
+- (v1) ne voit que l'effet de bris 8 (limite notée par l'exécuteur, qui a comblé le survivant M5 avec lui) ;
+- le nom de `AlundraWeaponSpawnSeamTests.S1_TheEmptySet_…` est périmé (il tourne sous l'ensemble {27, 28, 29}) ; le comportement testé
+  est juste ;
+- les mutants « 30 dans l'ensemble » et « codes ≥ 10 en ligne » ne sont tués que par l'épingle de valeur S5 ;
+- l'observateur de (v4) et de (p1) évalue la boîte à chaque tick (une évaluation manquante en production serait masquée ; (p2), (p3) et
+  (p7b) touchent réellement les cibles aux ticks de l'oracle) ;
+- `flame_probe.py` (f3b) ne tourne pas depuis une copie à plat de l'oracle (chemin relatif vers `balance.json`).
 
 ##### Acceptation
 
