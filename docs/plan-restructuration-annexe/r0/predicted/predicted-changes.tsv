@@ -1,0 +1,886 @@
+path	old_size	new_size	new_sha1
+Entities/Alundra/Alundra.entity	26145	26161	e8201b0408102103d969c61ec76f49502a5f0160
+Entities/Armure cassable/Armure cassable.entity	6128	6144	de337a7d783494eea5dfe0b5db06d7da1caf37f9
+Entities/Beaumont (chef du village)/Beaumont (chef du village).entity	8336	8352	472b14097fd09c34acbc01209ce3771c80ece500
+Entities/Bergus (frère aîné)/Bergus (frère aîné).entity	8773	8789	639cfa4b76129880f42ad08a1549dbc724753524
+Entities/Bloc de glace transportable/Bloc de glace transportable.entity	6577	6593	9aa7d778dff9d7dcbad7b813efbb28f7eaf76f91
+Entities/Bloc transparent (1×1×2)/Bloc transparent (1×1×2).entity	6805	6821	638b75d0a91306371acad7aea0be09829b24ec07
+Entities/Bloc transparent (3×3×3)/Bloc transparent (3×3×3).entity	6807	6823	bea3e4565ac6cb740245467ad58b6a8d2ab4b1d0
+Entities/Bloc transparent (8×2×1)/Bloc transparent (8×2×1).entity	6807	6823	a2baa0757c2040b04be01b9d438d47a9452790ff
+Entities/Bloc transparent (gigantesque)/Bloc transparent (gigantesque).entity	5932	5948	5447339adeb0f3156cd36410ac615cc3cc6fcb87
+Entities/Bloc transparent (minuscule)/Bloc transparent (minuscule).entity	5927	5943	68fc3b35db4dfde8be50eebf6cc9ddc7102a58d8
+Entities/Bloc transparent (pour arc)/Bloc transparent (pour arc).entity	6806	6822	9f8d09d1e612965e008e0f34cbe50c1c2babb410
+Entities/Bloc à pousser_attaquer/Bloc à pousser_attaquer.entity	6585	6601	402a5709b7400d93dce1dff10c593ff8bae20b1a
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/Bois flottant .01 sur l’eau _ .23 en l’air.entity	6597	6613	3c02a934f7384eac4901b687f4048cdd581ddd8e
+Entities/Bombe/Bombe.entity	6122	6138	cc7c8c1e0596212edd6b491d40ad7979fb197fa0
+Entities/Bonaire & pierre (YM03)/Bonaire & pierre (YM03).entity	7014	7030	4bb0f721fc40a2e059eee9fc08d6ebdc23bf5361
+Entities/Bonaire (homme endormi à jamais)/Bonaire (homme endormi à jamais).entity	9004	9020	6ec1996b573b2a3380391332057393acdcde316a
+Entities/Bonaire mort/Bonaire mort.entity	7883	7899	ccc4175bc2f4e2edea1e9be41bd0d452a141201b
+Entities/Boule de fer (grande)/Boule de fer (grande).entity	7673	7689	438a15f30b27930436122b9c2a198a1546b57461
+Entities/Boule de fer (petite)/Boule de fer (petite).entity	7451	7467	d22cb91fb733d882846e9cb8493ad3f772ba75f0
+Entities/Boule de feu chargée/Boule de feu chargée.entity	6359	6375	138c3bb865257aa4197f7eeb737425dcd71a001d
+Entities/Boule de feu/Boule de feu.entity	5909	5925	6665066476c160d15529f4cb0064b99c92be8638
+Entities/Boule de glace chargée/Boule de glace chargée.entity	5921	5937	173a59bc0e1b748027975242466a34b9c9fa0d1f
+Entities/Boule de glace/Boule de glace.entity	5911	5927	04cdb3af0f14acbb988b4154e9ca3b1cb16849ed
+Entities/Boîte bicolore rouge_bleu/Boîte bicolore rouge_bleu.entity	6359	6375	c1325cf1c2e072eae85fde38f215406f4821828a
+Entities/Bulle .0-1-2 support _3-4 non support/Bulle .0-1-2 support _3-4 non support.entity	7028	7044	380c9af467418e3f5d0737208f503bdfb596c184
+Entities/Caisse en bois générique/Caisse en bois générique.entity	6576	6592	6eb943f8adcc919e9cb4f39798419cd1f74df22c
+Entities/Cephas (gardien de cimetière)/Cephas (gardien de cimetière).entity	8121	8137	3d4ffa2d6b6664763f693559a104e05cf76b1df8
+Entities/Cercueil/Cercueil.entity	6341	6357	ed7a640c45bb8bf42f8454b322a26af70f72e3ca
+Entities/Champignon non ennemi/Champignon non ennemi.entity	5912	5928	60ec1317e707543b93c3d47da97a095276851763
+Entities/Chariot de chargement/Chariot de chargement.entity	6360	6376	661172f830bfb17a5a6d6197860165d52e4c667f
+Entities/Chariot de mine/Chariot de mine.entity	6573	6589	32eb30b154785184e7293625e49d2613a4d5cb86
+Entities/Chaîne .0 traversable _1 détruite _2 attente/Chaîne .0 traversable _1 détruite _2 attente.entity	6158	6174	63fbf0e9afc837a7cbbc7d80e76185efb705de8e
+Entities/Coffre au trésor/Coffre au trésor.entity	6135	6151	22398427f17a0ebcd1b2f83ac70542d4ba1cc046
+Entities/Coffre d’Anzes/Coffre d’Anzes.entity	6136	6152	288c7d90ac8c07dd3c351740a6c18a669e767df2
+Entities/Colonne de glace/Colonne de glace.entity	6788	6804	40434a2554fc1e28434de675ab41cd01fd8bdb82
+Entities/Corbeau/Corbeau.entity	6118	6134	d18deb5cbdc4d05778db97f9ee80fa0c192402de
+Entities/Couvercle de tige-bombe (dessus)/Couvercle de tige-bombe (dessus).entity	5932	5948	37d40641c372ad1afb4ea04576a466716e9ebe8d
+Entities/Couvercle de tige-bombe (horizontal)/Couvercle de tige-bombe (horizontal).entity	5937	5953	c70427a06539619b54a75ec728bdbff3e30c0ffa
+Entities/Couvercle de tige-bombe (vertical)/Couvercle de tige-bombe (vertical).entity	5713	5729	f26272e4ae672693c3f1fdb1ebe0b79ec515e203
+Entities/Cruche générique/Cruche générique.entity	6568	6584	426cc13b51f4b8d61e4973da92173e13650b0819
+Entities/Cruche n°2/Cruche n°2.entity	6561	6577	a4b3489c058e5db0bafbad57d6cfd7d12c58475f
+Entities/Déclencheur clé invisible (standard)/Déclencheur clé invisible (standard).entity	6818	6834	736119cc2cd52fb5cb35725c0c8ab179c6ff8f6c
+Entities/Déclencheur clé invisible (très petit)/Déclencheur clé invisible (très petit).entity	5691	5707	b95acf7024c740fbe82bb6b0a3ee7bb7dd588720
+Entities/Elene (femme à personnalités multiples)/Elene (femme à personnalités multiples).entity	8572	8588	283213d6d4d6787348cb26a79bc33b84231a5332
+Entities/Fein (femme du gros)/Fein (femme du gros).entity	8331	8347	5a5fd24d091b7f8eed8248b92906fc1d771bbbbf
+Entities/Flamme/Flamme.entity	7436	7452	50213d94e7bd5e21e11ef846d59214e2722fcb6a
+Entities/Flammes (pour Ice Rod)/Flammes (pour Ice Rod).entity	7452	7468	d31e4dcd4390ddd1342fecb0940936553b41491a
+Entities/Flammes horizontales/Flammes horizontales.entity	6348	6364	616b239317eed98125aee9c4c80d2d0e3af1ce66
+Entities/Flotteur d’eau _ grande boule de fer/Flotteur d’eau _ grande boule de fer.entity	5930	5946	11df31b25178ccbd475ecc86764d8ebde9592924
+Entities/Flèches Niv.1/Flèches Niv.1.entity	5910	5926	2dcc34d41bfd2f98308890f1c381fc027f50b84a
+Entities/Flèches Niv.2/Flèches Niv.2.entity	5910	5926	ef86542932e7249ed3a4e2fddf89ebc0503e535b
+Entities/Flèches chargées/Flèches chargées.entity	5914	5930	7e5cff18bb8d276c03a5a62634a2dbf041f2acfd
+Entities/Giles (homme religieux)/Giles (homme religieux).entity	9654	9670	354da60f99ca6127d65bd420b6a9da708721fc91
+Entities/Goutte d’eau/Goutte d’eau.entity	6121	6137	80d6ec749754e1333d10b62011538bba88d7dab9
+Entities/Grand visage (Aida)/Grand visage (Aida).entity	8551	8567	8a3b85471656c033d8a047aa973bc70c2a7f9557
+Entities/Grille de fer (grande)/Grille de fer (grande).entity	6573	6589	20ed1e0dbc8fddb1298833d978beef49982f4fb2
+Entities/Grille de fer (petite)/Grille de fer (petite).entity	6573	6589	2e70be7eab1692edc5c8f258ec24b4b3266f8b0b
+Entities/Gros bloc transparent (6×10)/Gros bloc transparent (6×10).entity	5931	5947	ec1b1792792c11251c3f47d510de03ecd35334a8
+Entities/Gustav (ivrogne)/Gustav (ivrogne).entity	8547	8563	6d96075641978e86b62cb33ad3b95070ea0fce62
+Entities/Générateur/Générateur.entity	6343	6359	978ab509409acb7fb3ea3455b4e0a09c7d06ffa2
+Entities/Haricots de Jack/Haricots de Jack.entity	6133	6149	caacfee4fdb657d979f7a1fec8a2a37b6dac0aa6
+Entities/Herbe transportable/Herbe transportable.entity	6569	6585	f69a76f2ac0b747540b3aeb47e0dd99d2ce478c7
+Entities/Homme effondré/Homme effondré.entity	8767	8783	d28fc060135521e53e0d8068edd9bdd87e01d9d7
+Entities/I01_Épée de base/I01_Épée de base.entity	5696	5712	7beca12152fccb8d7ecbdbdba702f054d83613ed
+Entities/I02_Lame d’acier/I02_Lame d’acier.entity	5696	5712	72ea1685df8c10604400fa7ac17aa65d57928966
+Entities/I03_Destructeur de démons/I03_Destructeur de démons.entity	5704	5720	fbb7dde6de66ca9f043319b69354dfbd00028320
+Entities/I04_Épée sacrée Elnard/I04_Épée sacrée Elnard.entity	5703	5719	72c83544fef19b583316f57c18fdc114e6b09119
+Entities/I05_Arc du chasseur/I05_Arc du chasseur.entity	5697	5713	5f1b2beae3e017c4b891942f53c1d9b671b848a5
+Entities/I06_Arc de William/I06_Arc de William.entity	5696	5712	e62a575daa975a7e8192ac9268fde0b2975f831e
+Entities/I07_Bâton magique/I07_Bâton magique.entity	5696	5712	5a70404a387a55e93af976c5683036b772455b0a
+Entities/I08_Objet 008/I08_Objet 008.entity	6571	6587	7f45c0e76fc3fc7f923c43287b402b52ef68f975
+Entities/I09_Lancer de chaîne/I09_Lancer de chaîne.entity	5699	5715	5f2517141808b630cd9c01e4d8c01b0b55b54bc6
+Entities/I10_Le Broyeur/I10_Le Broyeur.entity	5692	5708	4efb80d7429bbfc57960bcc579e9a15ebca7b257
+Entities/I11_Objet 011/I11_Objet 011.entity	5691	5707	2bec7dae864f1cffc674ee63c43c967dd3031d53
+Entities/I12_Objet 012/I12_Objet 012.entity	5691	5707	3e50c4267f1feaad4d9536a5276ca416e75964e6
+Entities/I13_Objet 013/I13_Objet 013.entity	5691	5707	d5ecab2052c776f175c35d13202cb2e2dd1e2115
+Entities/I14_Bâton des glaces flottantes/I14_Bâton des glaces flottantes.entity	5710	5726	0e60a61bb5d833fdbbd21e5d07d18f8bc5d85a33
+Entities/I15_Objet 015/I15_Objet 015.entity	5691	5707	afaf16c6e3752cee63641beed17313a26dc1561e
+Entities/I16_Bâton de feu/I16_Bâton de feu.entity	5695	5711	bdb60165f067a653dc35e52cf9fabe4e85db344c
+Entities/I17_Veste en tissu/I17_Veste en tissu.entity	5696	5712	17cfaecb8f5bc43b0d779fbffa56cc7910c983f7
+Entities/I18_Veste en cuir/I18_Veste en cuir.entity	6575	6591	5ffe4796456303f23552394b38c934099d291d2f
+Entities/I19_Veste en acier/I19_Veste en acier.entity	5696	5712	c17ac21675169661373ea56f772c304f3e7ed22c
+Entities/I20_Veste en argent/I20_Veste en argent.entity	6577	6593	07e45bfb4338ec3532332d674491f3a892fe4b4d
+Entities/I21_Objet 021/I21_Objet 021.entity	5691	5707	d3381656afe162838d3e98f206c06a8d70c8015f
+Entities/I22_Objet 022/I22_Objet 022.entity	5691	5707	b6d5585ee8b8e01224d85152da2081ab4908d993
+Entities/I23_Objet 023/I23_Objet 023.entity	5691	5707	d7c074420ff1df682fd93c759dfef649656cdb87
+Entities/I24_Objet 024/I24_Objet 024.entity	5691	5707	10190518f7a81cb0dc5bfc91f618260ac8c245d6
+Entities/I25_Bottes normales/I25_Bottes normales.entity	5697	5713	2cf4be4fc15f877128fcb30dfab130e2c2bc7a64
+Entities/I26_Bottes longues/I26_Bottes longues.entity	5696	5712	9fb960e448b181f1fcd3ffe2245594d4aa182c4a
+Entities/I27_Bottes de triton/I27_Bottes de triton.entity	5698	5714	cae547d5e3bde6d4f798051d4c82d24437dd36a1
+Entities/I28_Bottes magiques/I28_Bottes magiques.entity	5697	5713	7fd5ad90aa24b148c8a551a7f296438b55b47031
+Entities/I29_Objet 029/I29_Objet 029.entity	5691	5707	3825d20f765da592fad04739296629f6b1741046
+Entities/I30_Objet 030/I30_Objet 030.entity	5691	5707	586938633f6688649504e36486c510f5d1861ace
+Entities/I31_Haricots de Jack/I31_Haricots de Jack.entity	5698	5714	400902b318d5a6bfcb9398c2449d8ed9dca8425c
+Entities/I32_Cape de sable/I32_Cape de sable.entity	5695	5711	50412041b4770c84235ff6375410e720f003bf19
+Entities/I33_Armure brisée/I33_Armure brisée.entity	3182	3198	20a148c7169873b53c8433ebc24cdd768dbbe584
+Entities/I34_Objet 034/I34_Objet 034.entity	5911	5927	70b0d8abb575f47fac175b015c833d36f4ee4a8b
+Entities/I35_Bombe explosive/I35_Bombe explosive.entity	5917	5933	a5c62509ea205791e8e249b05f7fe91c970afb69
+Entities/I36_Herbe médicinale/I36_Herbe médicinale.entity	6579	6595	d948bf7a84a2d3a7bde9a287a313769bbf4128eb
+Entities/I37_Potion L/I37_Potion L.entity	6570	6586	95f201cd4b20ce98388b12c231e242b8f62c2ab6
+Entities/I38_Extrait magique/I38_Extrait magique.entity	6577	6593	77641673976eef0808872e2d8bb885f6d8f67a5c
+Entities/I39_Breuvage de soin/I39_Breuvage de soin.entity	6578	6594	122d828f0d632622f2b6f573dbbf26e46673610f
+Entities/I40_Cape aquatique/I40_Cape aquatique.entity	5696	5712	ac81ff83fb683ddc4b5cd199cdc925f8305fcd27
+Entities/I41_Potion S/I41_Potion S.entity	6570	6586	30047095568de7d1ab5cad60dea969e2eaac9718
+Entities/I43_Tome de la Terre (haut)/I43_Tome de la Terre (haut).entity	5705	5721	f6a4b6f31af14d8e98b96746078a72b1044a2e00
+Entities/I44_Tome de la Terre (bas)/I44_Tome de la Terre (bas).entity	5704	5720	524b557f94360afe63af20595c051102560e8402
+Entities/I45_Tome du démon d’eau (haut)/I45_Tome du démon d’eau (haut).entity	5711	5727	e999d53f6fe9800861d9038777e133d539cadc1e
+Entities/I46_Tome du démon d’eau (bas)/I46_Tome du démon d’eau (bas).entity	5710	5726	56605f9d7f8bd667c8eb872f05c215aabf0707c9
+Entities/I47_Tome du dragon de feu (haut)/I47_Tome du dragon de feu (haut).entity	5710	5726	12e7b4abcacf050e5cb89d60f0c0644f9f4d3b51
+Entities/I48_Tome du dragon de feu (bas)/I48_Tome du dragon de feu (bas).entity	5709	5725	be02d16e5cbf424ee51f7a8e5daef0f4009f52cc
+Entities/I49_Tome du dieu du vent (haut)/I49_Tome du dieu du vent (haut).entity	5709	5725	278854e576544f6c063e96b512920c969c95e225
+Entities/I50_Tome du dieu du vent (bas)/I50_Tome du dieu du vent (bas).entity	5708	5724	b3910e12c20e78c41c0c18991f8e8c08cd243bc1
+Entities/I51_Anneau d’orc/I51_Anneau d’orc.entity	6576	6592	38d45dc649d68018ed6c7aa8056e083ec46f6f8e
+Entities/I52_Anneau d’ogre/I52_Anneau d’ogre.entity	5697	5713	7696719e1eefbad5a509fe2d6ffdf9d8590c3818
+Entities/I53_Bracelet d’armure d’acier/I53_Bracelet d’armure d’acier.entity	6591	6607	916732b3066892042f87fbb8d8e76e341a169704
+Entities/I54_Bracelet d’armure d’argent/I54_Bracelet d’armure d’argent.entity	5712	5728	c01433efe3635bf8532bef69ce73989c18f323f2
+Entities/I55_Anneau de régénération/I55_Anneau de régénération.entity	6587	6603	d3001a78e83c8483783da1b640832fca4be6ed4d
+Entities/I56_Anneau de guérison/I56_Anneau de guérison.entity	5701	5717	60252f209cb747e66b386362e3c123b2b43b4425
+Entities/I57_Billet d’entrée/I57_Billet d’entrée.entity	5700	5716	ebb0bb2efac8fbe6527f6338dc20abbf17619f89
+Entities/I58_Objet 058/I58_Objet 058.entity	5691	5707	a85ee85c0e52ca9688cb029a82e8eb67601e3cd3
+Entities/I59_Gant de puissance/I59_Gant de puissance.entity	5699	5715	326ad2264219f961952b04520579689db02a852a
+Entities/I60_Clé de l’ascenseur/I60_Clé de l’ascenseur.entity	5703	5719	1d198476d34b6b54124bcfdd46bff7629c0c1c49
+Entities/I61_Clé/I61_Clé.entity	5686	5702	29caef0690f3e3b4241f9fddcd81febd64437eca
+Entities/I62_Emblème du sang de pigeon/I62_Emblème du sang de pigeon.entity	5928	5944	fdf4fae397cf6e6af70724d0a8ec090559be99a5
+Entities/I63_Emblème azur/I63_Emblème azur.entity	5915	5931	c56d86b8538dbf731030f3cd36485e77b7bc46e5
+Entities/I64_Emblème de topaze/I64_Emblème de topaze.entity	5920	5936	ac62c4407ad4b8801c29000cc2cc5f2342a933a3
+Entities/I65_Emblème brun/I65_Emblème brun.entity	5915	5931	4d6397fbbc201e37bcb7f47032d245eee00e4ca2
+Entities/I66_Emblème écarlate/I66_Emblème écarlate.entity	5920	5936	ce75f079f609253714b0580f6032e4a000e9af03
+Entities/I67_Emblème vert sombre/I67_Emblème vert sombre.entity	5922	5938	e4e0a959988092fe27ae4fc9ad962f6d6c8f7a6c
+Entities/I68_Emblème d’argent/I68_Emblème d’argent.entity	5921	5937	8ba09ca9881218f53e7992b24f79135d7147478e
+Entities/I69_1 Gilda/I69_1 Gilda.entity	5686	5702	ca86ffb43bb8f9e22a403d1fc9f687b31cca9cce
+Entities/I70_5 Gildas/I70_5 Gildas.entity	5908	5924	00b85d5dee75473f8d4723b644f8691e277d93ec
+Entities/I71_10 Gildas/I71_10 Gildas.entity	5909	5925	a279870cdedf1ed4c06ae2d20164302f305fd322
+Entities/I72_30 Gildas/I72_30 Gildas.entity	5689	5705	02c0fa36c2b8db0eabc89c27e57868d2e3e8fca7
+Entities/I73__ Vieille clé/I73__ Vieille clé.entity	5697	5713	21f2111e6ac90fb5fc310377ca83f1b0bc27fa96
+Entities/I74_Bouquet de fleurs/I74_Bouquet de fleurs.entity	6140	6156	01328e575710e3441d3e85e53873469db5df2c1a
+Entities/I75_Clé d’Anzes/I75_Clé d’Anzes.entity	5697	5713	88d2dba95aa6b2b6bc18f03d102cc201e3ca5288
+Entities/I76_Testament d’Anzes/I76_Testament d’Anzes.entity	5702	5718	ea34f55647f75d7dc000c8112421b5af1c93dd64
+Entities/I77_Orbe du grand arbre/I77_Orbe du grand arbre.entity	5702	5718	f950475b2daf0b2d555a6ffaf2714657cba58e16
+Entities/I78_Pierre de Zolist/I78_Pierre de Zolist.entity	5699	5715	1d3ab75bac1a7123dda1fc67be95fc1c564f309c
+Entities/I79_Bec en or/I79_Bec en or.entity	5692	5708	83f639504f6701a562a4e3d78885f1fab4460164
+Entities/I80_Graine magique/I80_Graine magique.entity	5697	5713	f3027c0f2ee191ad6931bba49a088b15995ba1f4
+Entities/I81_Petit cristal/I81_Petit cristal.entity	5693	5709	71426161cf8d66ca216e2ee1ebef001802dc162b
+Entities/I82_Grand cristal/I82_Grand cristal.entity	5696	5712	3749d250f83e9444dab18ae0c8ae3315b4db4ed2
+Entities/I83_Récipient de vie/I83_Récipient de vie.entity	6580	6596	2b13f8449a793dbf1e935301617c2de0be678ebd
+Entities/I84_Petit cœur/I84_Petit cœur.entity	5690	5706	3202ca56ca398513d66d0c74564ee73d4ff85891
+Entities/I85_Cœur moyen/I85_Cœur moyen.entity	5911	5927	07d235dee02f363e7a79d52983a373920c60a2f0
+Entities/I86_Grand cœur/I86_Grand cœur.entity	5691	5707	aaa2015b491b09637fd4184ab1327e4d8c63a48a
+Entities/I87__ Cadeau de remerciement/I87__ Cadeau de remerciement.entity	5707	5723	cb5d4f8cd03031fae7679c60f75ebef0728d5d70
+Entities/I88_Livre d’Elna/I88_Livre d’Elna.entity	5697	5713	38a44e5f04e89bfd6571ba64e18217f5fcb1b8ae
+Entities/I89_Objet 089/I89_Objet 089.entity	5692	5708	6b00597f6b260b790ebde8f20ee16332f7309f2f
+Entities/Interrupteur (allumage)/Interrupteur (allumage).entity	6354	6370	84baf93da8f0f9914f2903b8edf52b7b66e09984
+Entities/Interrupteur (bascule)/Interrupteur (bascule).entity	6132	6148	20d857f46ae06b4635e9defc24c90f9d2d1cf755
+Entities/Interrupteur (levier)/Interrupteur (levier).entity	6351	6367	0a23053395691239d2e06509d16aa58fcf8fa5ac
+Entities/Interrupteur (monter) inutilisable/Interrupteur (monter) inutilisable.entity	6804	6820	6d147a5019d229bdde88e762c80c6476c5b743cb
+Entities/Interrupteur (mur)/Interrupteur (mur).entity	6349	6365	c028752ce6b50cb2267d3677b2dd00a2e7e25c87
+Entities/Interrupteur (piétiner) ← à utiliser !/Interrupteur (piétiner) ← à utiliser !.entity	6812	6828	517b3daa417c0718bf83283ce79e238138c1a41e
+Entities/Interrupteur de lampe/Interrupteur de lampe.entity	6353	6369	9a7a76d441703d8b54ed84311df596eddca6ad8c
+Entities/Interrupteur poussoir/Interrupteur poussoir.entity	5911	5927	b81b9b631aabfde55d6ce4db9e1c02b77261fa71
+Entities/Interrupteur tricolore/Interrupteur tricolore.entity	6573	6589	116f3a8d4ddc0bc2c72283bf6c33cb6273986186
+Entities/Interrupteur à ballon/Interrupteur à ballon.entity	7234	7250	a47ec6893ac4dbe3d4f41852a3450b604f516972
+Entities/Jaylen (mineur)/Jaylen (mineur).entity	7886	7902	b4eb24c89f148cf1c9fe5cd1f93fed0960f94b4c
+Entities/Jess (armurier)/Jess (armurier).entity	8545	8561	6c2c45d4c6d6751353d0e88c3050d9f2f5bc1353
+Entities/Jeune Meia/Jeune Meia.entity	7221	7237	c301b306208f568d43e59798d5210957266dc262
+Entities/Kisha (petite sœur)/Kisha (petite sœur).entity	9211	9227	a97a03f8d11243aea2664b5916a5511c344acca9
+Entities/Klein (rêve uniquement)/Klein (rêve uniquement).entity	9656	9672	a82ee56ceb8e59b1678c00580231e28ac211ca37
+Entities/Kline (somnambule)/Kline (somnambule).entity	9209	9225	1ee45f182c986088da38822d55dd2be0d2c35d5a
+Entities/Kohei/Kohei.entity	5897	5913	601db39f527e68a13e43c6dda5e4672c419a19f2
+Entities/Laser (_)/Laser (_).entity	4053	4069	379975a0f7ae4491e755fdee68604593146cd129
+Entities/Livre/Livre.entity	6557	6573	5755865d692d75c100501d06aeb15761c2214664
+Entities/Lurvy/Lurvy.entity	6996	7012	b70128642ce60be0430b52abda0397f5a9ce6985
+Entities/Lutas (gros bonhomme)/Lutas (gros bonhomme).entity	8332	8348	75aa344e4fcdcc1824ac2478514f91bbb20ca5f7
+Entities/Lyman (mineur)/Lyman (mineur).entity	7884	7900	c099f933c9c3168da696b8501a906916aea8a719
+Entities/L’Homme en robe/L’Homme en robe.entity	6129	6145	b9a86dcac85e94ff0b9072929717f77c083f54c0
+Entities/Magie de feu Niv.1/Magie de feu Niv.1.entity	5697	5713	64f8b551c265820d12a16c6256cc3b6a9763519a
+Entities/Magie de feu Niv.2/Magie de feu Niv.2.entity	5696	5712	203864ff83fcf891902e4e1b6d98ec931e877060
+Entities/Magie de terre Niv.1/Magie de terre Niv.1.entity	6138	6154	9594c5b1a3d6f588895b5e780914cf394567ba8e
+Entities/Magie de terre Niv.2/Magie de terre Niv.2.entity	6138	6154	8b017a7c8880073c75dfdb7a1b460c5c3f0f8718
+Entities/Magie de vent Niv.1/Magie de vent Niv.1.entity	5693	5709	706794ec820f55623f57c87a391a389565a0d36c
+Entities/Magie de vent Niv.2 (bas)/Magie de vent Niv.2 (bas).entity	5703	5719	8757908e484b84545d840440e9a972c0822e6914
+Entities/Magie d’eau Niv.2/Magie d’eau Niv.2.entity	5918	5934	a708a27357b3b846913c788c5ec3950fd0b05da5
+Entities/Marin-passager-mouette-146/Marin-passager-mouette-146.entity	8558	8574	df1118b3902383fbb661f36c6415e046c7dc8830
+Entities/Marin-passager-mouette-161/Marin-passager-mouette-161.entity	8558	8574	9b00337927971ee667bf77215de177a142d8885f
+Entities/Maître des clés/Maître des clés.entity	8549	8565	ce626b549cc01d52f6326d6178ead920599fcaf3
+Entities/Meade (père des jumeaux)/Meade (père des jumeaux).entity	8336	8352	d860effedf5cfbeb0a5f8bf87aa00c2a9ad4d4e0
+Entities/Meia (pour YM08)/Meia (pour YM08).entity	9868	9884	68f37e48a3f0b67419e5e7cab06c0549f0fa644e
+Entities/Meia/Meia.entity	8975	8991	5db0d51e9f4f5afe129f17fb16d406da339cb610
+Entities/Mini-Nilude (D12)/Mini-Nilude (D12).entity	5910	5926	9f53e03604917da4e71ccc7aa332421f3f3f98b4
+Entities/Moteur à ondes/Moteur à ondes.entity	6568	6584	f2a1fb553e79909bca5f102726193e8f67684570
+Entities/Mur à boule de fer (111)/Mur à boule de fer (111).entity	6136	6152	c063e108030889fd909bb246b97abf79b3bd6a07
+Entities/Mur à boule de fer (112) – axe/Mur à boule de fer (112) – axe.entity	6365	6381	67237ad8f49c6eab58608cc3a039d1e22bc8cd02
+Entities/Mur à boule de fer (221)/Mur à boule de fer (221).entity	5917	5933	de3fdfe81a3a57faef4c09b87fc08593c6cfd81d
+Entities/Mur à boule de fer (222) – boule de fer/Mur à boule de fer (222) – boule de fer.entity	6595	6611	de28bd098d4f8c6c2e152ef0c92aea904211b94c
+Entities/Mur à boule de fer (2×2×1) permanent/Mur à boule de fer (2×2×1) permanent.entity	5939	5955	4ea00f9fa5cf1df1c82e8f5a1f7bbeac8fb34804
+Entities/Mur à boule de fer (2×2×2) permanent/Mur à boule de fer (2×2×2) permanent.entity	5940	5956	3e3e8234e0db242b0d33528d7969b799efb04c13
+Entities/Myra (vieille femme)/Myra (vieille femme).entity	8551	8567	4057a547df631ccf53395291d1c758e29b1e373c
+Entities/Myra morte/Myra morte.entity	7881	7897	fd09b555d8d6f15421659fdfdc861fd7d9047aa9
+Entities/Mère du médium/Mère du médium.entity	6127	6143	e1f29b5228a68c52b9923c82ed24fe8758138cc0
+Entities/Médium ligoté/Médium ligoté.entity	6347	6363	646d9d117596aeabedecfd08cddf34b1ea714668
+Entities/Nadia (femme insomniaque)/Nadia (femme insomniaque).entity	8996	9012	2e5d51fb3630b60727a821a894f53cac4845d731
+Entities/Naomi (épouse courageuse)/Naomi (épouse courageuse).entity	8337	8353	a692f9399fd19d67395c92b1be021aebd0ee6103
+Entities/Nava (vieil homme du cap)/Nava (vieil homme du cap).entity	8556	8572	d66e8431d858aeb2c0e4a90e11bc8cb8080aefa0
+Entities/Nestus (frère cadet)/Nestus (frère cadet).entity	8772	8788	a14c94176f3d69d56a8d9dd37ac70e67a0519237
+Entities/Nuage de sable/Nuage de sable.entity	3618	3634	db43519b4fbab60e0ec6d2ad8a0079d843563072
+Entities/Objet eau (transportable)/Objet eau (transportable).entity	6576	6592	866f4df4e2da86d8a656b6316f5ed1645242b9ef
+Entities/Objet lune (transportable)/Objet lune (transportable).entity	6577	6593	cbbe69eee137c389a1970518d43aedb2fac28646
+Entities/Objet soleil (transportable)/Objet soleil (transportable).entity	6579	6595	dfa2c70d9211b092fc6dc75d13b24b9ba42ea362
+Entities/Objet étoile (transportable)/Objet étoile (transportable).entity	6580	6596	d69cb69d6c81e4e1c97efae700620976c33d0b43
+Entities/Olen (mineur)/Olen (mineur).entity	8983	8999	ea98eb3cb4ad15a3a3fbc5a1ffa3dccc1e28cc4a
+Entities/Panneau générique/Panneau générique.entity	6579	6595	6e1c1bb3d5e405194f851a0d3123c1ebaadb7993
+Entities/Phineas (père)/Phineas (père).entity	8546	8562	93c2a584cea7177ccd638274a8fbff61480a8dd2
+Entities/Pierre (destructible à la boule de fer) 1/Pierre (destructible à la boule de fer) 1.entity	7032	7048	a2d56b103f1add476738573f27cfd06244c7eace
+Entities/Pierre (destructible à la boule de fer) 2/Pierre (destructible à la boule de fer) 2.entity	7034	7050	b8aac99db42cd1a36fa3e9d494b42892df06d85d
+Entities/Pierre générique/Pierre générique.entity	6568	6584	54e9236ef807d5ea3ca0706f21a6b3ad5aad028d
+Entities/Pierre très lourde/Pierre très lourde.entity	6580	6596	2e52fd37f978f286a54ad2a261223c2db1d4867d
+Entities/Pilier de feu (Ice Rod)/Pilier de feu (Ice Rod).entity	6573	6589	9486fa41af7d56a9d44eec09830637cf3dfdce1b
+Entities/Pilier détruisible (UD■_LR●)/Pilier détruisible (UD■_LR●).entity	5925	5941	0c0e1558666edd0ba896936cc92f31344c54f873
+Entities/Pilier poussable (PRG)/Pilier poussable (PRG).entity	5914	5930	2bd82d6791e3a76aac9fd783c6bef546c574c80e
+Entities/Plafond suspendu/Plafond suspendu.entity	7226	7242	a94d8c50d9f2476a45796a45dda008d6f8930ae1
+Entities/Plaque à motif/Plaque à motif.entity	6567	6583	47be7d8cd0cdabc1be3bb82862251e858cc33971
+Entities/Plateforme flottante (grande)/Plateforme flottante (grande).entity	7019	7035	15164b73cee129d212035f71b8f1f96aceec14c4
+Entities/Plateforme flottante (petite)/Plateforme flottante (petite).entity	7018	7034	3754eb9a206171485f72a50104f644bf7629031c
+Entities/Plateforme flottante fragile (grande)/Plateforme flottante fragile (grande).entity	6807	6823	63cc238ac163143155b595e961e89cb4fa7bebdd
+Entities/Plateforme flottante fragile (petite)/Plateforme flottante fragile (petite).entity	6806	6822	02926b4545a0ac1a4fcfc8283d0f34d46a32d8d4
+Entities/Plateforme lance-flammes/Plateforme lance-flammes.entity	7234	7250	ada49223ed6921eec7b4a0073a029d0b9ba6e46e
+Entities/Plateforme mobile toutes directions/Plateforme mobile toutes directions.entity	5934	5950	b4cc31a828b9510c5b3ecd4934ee9943210672a7
+Entities/Porte (grande)/Porte (grande).entity	5905	5921	88a6fcaef917b1ae72dc3dc2c2123508843c3443
+Entities/Porte (petite)/Porte (petite).entity	5905	5921	404f5c47c3202aa68efafdb51dcbccfbfab71ded
+Entities/Porte Muruta/Porte Muruta.entity	5685	5701	230f4079a020ecb481b53c806e26338b39446ad1
+Entities/Porte rotative 45°/Porte rotative 45°.entity	6131	6147	10a10985c0289f031c4b15cd7db1df82ecb070ab
+Entities/Pot magique (boïng)/Pot magique (boïng).entity	6791	6807	1b6336e501e56393ede0f8a0f68a85fcd56baaa4
+Entities/Poulet/Poulet.entity	6556	6572	3683dd182019785b95a13dd39e6a783a6138f56a
+Entities/Projectile (boomerang)/Projectile (boomerang).entity	5921	5937	a44b872e32213efb37d72b040de9b9b98049995c
+Entities/Projectile (chute)/Projectile (chute).entity	5917	5933	29889ae83b78a19a38260b6144eba7d00cf72015
+Entities/Projectile (ligne droite)/Projectile (ligne droite).entity	5924	5940	dfd1712cf4211ce8ae26250d9abe4cfc850249ca
+Entities/Projectile (parabolique)/Projectile (parabolique).entity	6143	6159	1b1953babfa50f34e69f69e6e0c1d9d45ad555a0
+Entities/Projectile de magie de feu Niv.1/Projectile de magie de feu Niv.1.entity	5930	5946	369d75bb73f644c66dc4411189444a38b6b2fb94
+Entities/Racine destructible à la bombe/Racine destructible à la bombe.entity	5931	5947	e2f9bfe662bf8311ffc7e7884aee2eec615f73ed
+Entities/Rampe de lancement/Rampe de lancement.entity	7228	7244	c6643ab32f8a8dc3b45dd6aadd14a50b4259fe20
+Entities/Rampe de saut/Rampe de saut.entity	6783	6799	cbe396121b18f2893d3de197fda26f886c1aff90
+Entities/Rancune de Melzas/Rancune de Melzas.entity	3621	3637	fe2aaadb0424aa0588145262a9f6bc11e062ed22
+Entities/Rocher roulant (grand)/Rocher roulant (grand).entity	7014	7030	1c82daa581579ade69fa7d1cc44429d661eafbe1
+Entities/Rocher roulant (petit)/Rocher roulant (petit).entity	7012	7028	d6e64a501d0d1bf239b570aa66913b2e9dae0ae2
+Entities/Rocher tombant/Rocher tombant.entity	5693	5709	3503287d8bbe01c2ff21a26143975c91e072abda
+Entities/Rocher tortue non ennemi/Rocher tortue non ennemi.entity	6575	6591	41937df1bb0f3cc7ae30aad38f8feb5b71bc0f51
+Entities/Roi Mimming/Roi Mimming.entity	7663	7679	d9b1b7e8585b60358b4a0a59a022edbf38161000
+Entities/Ronan (prêtre)/Ronan (prêtre).entity	8545	8561	a3f79ab5dbc1a7490f91d899c8022d51ea58d354
+Entities/Ronces enflammées 112/Ronces enflammées 112.entity	5922	5938	5d70cf7f8f5a2a4d11672d06de94ff9d25bfdef3
+Entities/Ronces enflammées 222/Ronces enflammées 222.entity	5923	5939	cb7f4b9c313369b8835a1a7555188aef83061ba4
+Entities/Rumi (mère des jumeaux)/Rumi (mère des jumeaux).entity	8335	8351	0b69ad77e185f33cab244dc22f0a996cb5af39d5
+Entities/Sara (femme du rêve)/Sara (femme du rêve).entity	4505	4521	86ee5f620c77cb097e5af076756b509b074b400a
+Entities/SaveBook (Ne pas toucher !)/SaveBook (Ne pas toucher !).entity	5706	5722	7c0ac61893244d596d9a35f1145b6a6498ab4edb
+Entities/Septimus (chercheur)/Septimus (chercheur).entity	8991	9007	a23fbe20b629560e350e365a853565308a61851b
+Entities/Sierra (mère)/Sierra (mère).entity	8324	8340	54de17094cadf61c8262519d94fc37a7af603893
+Entities/Sol piquant/Sol piquant.entity	6341	6357	fa561f3ff3ea04b5fb9750c4dd9b80a4ce40c5e0
+Entities/Statue de pierre/Statue de pierre.entity	5907	5923	4059de0f421fc3d84a505afca025b5f98b5330ee
+Entities/Statue de roi, serviteur et déesse/Statue de roi, serviteur et déesse.entity	7688	7704	7c8b181eb04f489b2217780f3ac5aa9a87ccb0d9
+Entities/Statue divine de Melzas/Statue divine de Melzas.entity	6356	6372	d33c0ce487e698d79b22d560be7aa50e29c997a0
+Entities/Statue d’homme-lézard transformé/Statue d’homme-lézard transformé.entity	6588	6604	d9f756c29a3dcd5bb903d7b5ae8b88c104ae8ed0
+Entities/Statue poussable (événement)/Statue poussable (événement).entity	5921	5937	f9befab9bd6f91d61366816c8b18b8ec88dd073e
+Entities/Sybill (aux yeux rouges)/Sybill (aux yeux rouges).entity	8554	8570	da529a02ab8fbd47a0b41deb93af95ab2ddd90b4
+Entities/Talis (fils)/Talis (fils).entity	8542	8558	49d9d51ce729511999fb030270f48da8435cebf7
+Entities/Thyea (épouse)/Thyea (épouse).entity	8325	8341	2d0e9677139519e54aaae986b23e4ce17cdfc66f
+Entities/Tombe/Tombe.entity	5905	5921	9597bbb5d2d9175cfa2cdb3314e12cfdcfc760f6
+Entities/Tonneau générique/Tonneau générique.entity	6569	6585	d32cbf6b94c322361aee971d69b72dc99177aff5
+Entities/Torche/Torche.entity	6557	6573	47c3eecdd7acdade68056f5459224cd263f1fb93
+Entities/Tourelle à 4 directions/Tourelle à 4 directions.entity	6354	6370	bf51c3fc54dc18957d0b4904aed09dac03b3ee64
+Entities/Toutou (chien)/Toutou (chien).entity	8543	8559	f717c7d4b9ed154ef2d80f330bb224db1206366f
+Entities/Trappe d’escalier (grande)/Trappe d’escalier (grande).entity	6580	6596	2001f0416257059ee83c1cecfed65deffde7c842
+Entities/Trappe d’escalier (petite)/Trappe d’escalier (petite).entity	6579	6595	5d8ef009d9303c461789ea22bbf8608a45672759
+Entities/Tronc (transportable), petite boule de fer/Tronc (transportable), petite boule de fer.entity	7253	7269	af0a649cbd9b143205ef524ba1f829c52ac6b7c9
+Entities/Wendell (grand-père)/Wendell (grand-père).entity	9212	9228	afc7d089e20ea2f49d8d49cde819552faeb2247d
+Entities/YM08 barrière u=eau d=feu l=sable r=glace/YM08 barrière u=eau d=feu l=sable r=glace.entity	6595	6611	97047f4d3e0fac9009325e193c52b3616670632c
+Entities/Yuri (marchand d’objets)/Yuri (marchand d’objets).entity	8337	8353	aae1f6b01cd63e7a92c3d92550bd53079e1a2587
+Entities/Yustel (vieille voyante)/Yustel (vieille voyante).entity	8334	8350	2ed23f567cddcb8f3fc2a97014b77f19603865c8
+Entities/Zane (mineur)/Zane (mineur).entity	8324	8340	6afba845bffb51bbf2b7487afaa268a0639d7922
+Entities/asiba (plateforme)/asiba (plateforme).entity	5911	5927	7ee45ef305737c113dd7d7235808a8fcac9e0deb
+Entities/bank_alundra_10/bank_alundra_10.entity	5912	5928	c51f003e800b0a6454c806a3acc7190a21d16a17
+Entities/bank_alundra_13/bank_alundra_13.entity	5912	5928	673f6d86034cb8039d7336dc7f33bd438391a628
+Entities/bank_alundra_154/bank_alundra_154.entity	2960	2976	09f5fd807d6ed3da00ac5007075bb89954c370b5
+Entities/bank_alundra_250/bank_alundra_250.entity	5915	5931	daeb25d7cff1517db1ee6997c6247f53f692d961
+Entities/bank_alundra_5/bank_alundra_5.entity	5910	5926	a41ad0c2ed65e074d44a238d054cce5e6f5ff22a
+Entities/bank_alundra_6/bank_alundra_6.entity	5910	5926	e59925d8592e9f8b3e315e2a4e8f85b6d58e645c
+Entities/bank_alundra_8/bank_alundra_8.entity	5910	5926	1cefb6653115ac3e8af6f5d03aae3c5ad0369145
+Entities/bank_alundra_9/bank_alundra_9.entity	5910	5926	11f80e198e04f27a42db63787270179453d22cc6
+Entities/pont en bois/pont en bois.entity	5686	5702	afc37588c791a6b8dcd9c93a504ecb33acaf7907
+Entities/Épée d’onde Niv.1/Épée d’onde Niv.1.entity	5918	5934	bc066e9f1053d136a59b0c0445e512780edd90be
+Entities/Épée d’onde Niv.2/Épée d’onde Niv.2.entity	5918	5934	ad7c2b7a10daf6b5433b8a79f9cf71d6ef4656ae
+Entities/Épée d’onde Niv.3/Épée d’onde Niv.3.entity	5918	5934	f8aeb6d20477c7c097d5b3267a6850d58d9a5ccf
+Entities/◆Abyss (droite)/◆Abyss (droite).entity	7891	7907	8cb60db009f8d22d27cf0698dcc3192b15206b4d
+Entities/◆Abyss (gauche)/◆Abyss (gauche).entity	7891	7907	4a8ad83757c978ac3fee67d75e529865f3e6cddb
+Entities/◆Abyss (projectiles-bulles)/◆Abyss (projectiles-bulles).entity	6362	6378	b445e359f956aaffa2ded4aa1a7fea0132594d25
+Entities/◆Abyss Niv.1/◆Abyss Niv.1.entity	7448	7464	9f803fbcb90ab50faf6fb9fe1429d34e9ac803d9
+Entities/◆Après Melzas/◆Après Melzas.entity	5909	5925	4f0ca9bf7a5220602be5fe59962da574b8a5530a
+Entities/◆Beannoïde/◆Beannoïde.entity	9862	9878	3c59f2693ab9977741955646316c881e0549e7cf
+Entities/◆Bombardement de Roein/◆Bombardement de Roein.entity	6795	6811	ac44b6ba4bb63a3cdb6db8ac5d11c3ed93f50650
+Entities/◆Boomerang Niv.1/◆Boomerang Niv.1.entity	5910	5926	43c60291330eb00adf6b4457bd3c9d29f63a4e3b
+Entities/◆Boss lézard Niv.1/◆Boss lézard Niv.1.entity	9874	9890	d5d2a9a80ae2fedd4c91e37b1ffab9cc7001d391
+Entities/◆Bouclier de Roein/◆Bouclier de Roein.entity	6571	6587	83064d9a68ff9bf2106f003e20aab3b750a3e88d
+Entities/◆Boule de feu/◆Boule de feu.entity	6786	6802	1e39ccf53f58341e6296382d0e042cde536b7f28
+Entities/◆Bras, projectiles/◆Bras, projectiles.entity	9433	9449	c708207a6cbf20cc927514c99d5dfca0e48fac86
+Entities/◆Cercle magique de Zoldia/◆Cercle magique de Zoldia.entity	6579	6595	e22f971ddafc9f1c49d04ab03bf0a66c226ca0f9
+Entities/◆Champignon Niv.1/◆Champignon Niv.1.entity	7891	7907	8277d5fac5f40c0007469b9f4e11cfd4a4a5b1bc
+Entities/◆Chute de rochers de Nilude (111)/◆Chute de rochers de Nilude (111).entity	6806	6822	4e63dc5bffbd6a88f1bc019b6d7f724d79096230
+Entities/◆Chute de rochers de Nilude (112)/◆Chute de rochers de Nilude (112).entity	6807	6823	8436bb9567a490cdf674a01be844c9e6f0be3de4
+Entities/◆Chute de rochers de Nilude (222)/◆Chute de rochers de Nilude (222).entity	6808	6824	88d93d9e3a86013817b68d5e1e654ec6956fe55d
+Entities/◆Collider de Roein/◆Collider de Roein.entity	5907	5923	c36525f1fb5355146cbe4ffd5f635ded6a4a46e9
+Entities/◆Corps/◆Corps.entity	6345	6361	93b6bffa078db2d420392072ff8db3f66263367b
+Entities/◆Double de Melzas/◆Double de Melzas.entity	8772	8788	b242789bfd5ea41d5edf9a6630108d4eedb45cf7
+Entities/◆Dragon/◆Dragon.entity	8763	8779	0dfeb06a642874891d6b3c28864047728287a040
+Entities/◆Débris du roi/◆Débris du roi.entity	6568	6584	9cf97a55335f14a2ef53908efee5604d29c596d2
+Entities/◆Effet d’aspiration/◆Effet d’aspiration.entity	6137	6153	2d8921eaf33e8a9631054db827c8df88a7511882
+Entities/◆Fantôme Niv.1/◆Fantôme Niv.1.entity	7669	7685	08ac04df8d05612f859974fa7be51bedc1633290
+Entities/◆Flammes de dragon/◆Flammes de dragon.entity	6570	6586	8e90029f2f8f30362cea5e7754b33865e13d1125
+Entities/◆Flèche Niv.1/◆Flèche Niv.1.entity	6126	6142	c15974eb5ddde7a1a005ca8b85051e548afa76b7
+Entities/◆Fourneau Niv.1/◆Fourneau Niv.1.entity	7669	7685	cbd906e1b1a9b689f545e2b6b6edcd99470a22d6
+Entities/◆Frère Rayon (aîné) Niv.1/◆Frère Rayon (aîné) Niv.1.entity	10323	10339	c114f5c194be12ca62d1eb39b05df77350e4bf9a
+Entities/◆Frère Rayon (cadet)/◆Frère Rayon (cadet).entity	10316	10332	5f3f300ed01448bcee12417f9308802b4c9ce61d
+Entities/◆Frères Rayon (gaz toxique)/◆Frères Rayon (gaz toxique).entity	3414	3430	d80509f830cadf2a2037cba3ed6b49b321b65be3
+Entities/◆Grand rocher du roi/◆Grand rocher du roi.entity	6575	6591	7b36ffd1841331adc13eced6d60cc159d6f2f600
+Entities/◆Guêpe Niv.1/◆Guêpe Niv.1.entity	7008	7024	67fb8abd06e5fd55693ac7bbc9a3d468422cd016
+Entities/◆Homme de bois Niv.1/◆Homme de bois Niv.1.entity	7234	7250	04b2e7efd390ff4c1dc41d0f904b5400d69defbc
+Entities/◆Homme de boue Niv.1/◆Homme de boue Niv.1.entity	6794	6810	ddb711182a680c66680457d96556c3489f1b5356
+Entities/◆Homme momie Niv.1/◆Homme momie Niv.1.entity	8113	8129	85d967bf0492def173c0042aed9d6f86f55fa399
+Entities/◆Homme momie Niv.2/◆Homme momie Niv.2.entity	8113	8129	99654eb4cae6de8cc08f49d73372b56c77dfc6bd
+Entities/◆Homme-insecte Niv.1/◆Homme-insecte Niv.1.entity	8114	8130	d7ae3cfbde48154e761042e5e0956da30e5202f2
+Entities/◆Homme-lézard (lance) Niv.1/◆Homme-lézard (lance) Niv.1.entity	7902	7918	b9f6d87245880c41ac249c6110899ca155018a62
+Entities/◆Homme-lézard (projectiles) Niv.1/◆Homme-lézard (projectiles) Niv.1.entity	8128	8144	1a548ee4253b7cb672f7aba32dd889f1366a3edf
+Entities/◆Homme-lézard (épée) Niv.1/◆Homme-lézard (épée) Niv.1.entity	8563	8579	abac4759728dffb5abc63f750875bfd9fad3e350
+Entities/◆Homme-ombre Niv.1/◆Homme-ombre Niv.1.entity	7892	7908	b4e7705041163697a2f8d2f40f05ea2ef625417b
+Entities/◆Lance Niv.1/◆Lance Niv.1.entity	5904	5920	ef340aaec3325d67606963ba5ce90fc90026a9d0
+Entities/◆Laser à tête chercheuse/◆Laser à tête chercheuse.entity	2972	2988	e9c3959fbdd59544461a3bf4a0f49eb3609afeac
+Entities/◆Loup-garou Niv.1/◆Loup-garou Niv.1.entity	7011	7027	6f222821c23028dd101d9aa00dc8da0848b10728
+Entities/◆Magie de Zoldia/◆Magie de Zoldia.entity	6129	6145	9a1304645801ad177d34ac36a32aa65cabd32757
+Entities/◆Melzas (corps principal)/◆Melzas (corps principal).entity	9000	9016	a5ff685feb8642795c3d975576963f27557f8c5d
+Entities/◆Mille-pattes (corps principal)/◆Mille-pattes (corps principal).entity	7686	7702	d8079e0de717563d9108969abbd241f2b3411d5c
+Entities/◆Mille-pattes (joint)/◆Mille-pattes (joint).entity	7676	7692	4be7d6199f6d078fe728cdf816db7247d44a7408
+Entities/◆Mille-pattes (projectiles réfléchis)/◆Mille-pattes (projectiles réfléchis).entity	6152	6168	13661b330ed5030aabf0f14634ffad683c57d009
+Entities/◆Mille-pattes (queue)/◆Mille-pattes (queue).entity	7676	7692	707fb452d96a34fa56ba6c76fadd346a8d15cf44
+Entities/◆Mille-pattes (tronc 2)/◆Mille-pattes (tronc 2).entity	8998	9014	f0bbbeb851be4a01a5d2998074ccf7be185d9cbc
+Entities/◆Mille-pattes (tronc)/◆Mille-pattes (tronc).entity	8996	9012	59f61acf58c880fb2ab8dffa9528fd39fdb358df
+Entities/◆Mille-pattes (œufs explosifs)/◆Mille-pattes (œufs explosifs).entity	6586	6602	59f6a70173d1baab34d81a550c6c22dd018c3964
+Entities/◆Mimique Niv.1/◆Mimique Niv.1.entity	7228	7244	8fe84458368f1fbb3909fd1b52c5b5bc3c189087
+Entities/◆Mimming (faux) Niv.1/◆Mimming (faux) Niv.1.entity	7674	7690	b48bb1815f2c513074a2a02cb303f1ae5814f5a4
+Entities/◆Mimming (rotation) Niv.1/◆Mimming (rotation) Niv.1.entity	7898	7914	f2e8c330667b00f4be866e8c2bcd3c86b6d034da
+Entities/◆Monsieur Aspiration/◆Monsieur Aspiration.entity	7237	7253	ba55c024f136c6848a4e3cd4d292e4d151d4acd9
+Entities/◆Mouche Niv.1/◆Mouche Niv.1.entity	7446	7462	11a8f17a6db688c1f7961deb4a1a90cda8f06157
+Entities/◆Muruta (arc) Niv.1/◆Muruta (arc) Niv.1.entity	7012	7028	0bbec13b5c9c6fce7ffc1f61d8bb0b4c33fa4c69
+Entities/◆Muruta (boomerang) Niv.1/◆Muruta (boomerang) Niv.1.entity	7679	7695	d2dac2747150c6c730531993e6fdebca7d645740
+Entities/◆Muruta (griffes) Niv.1/◆Muruta (griffes) Niv.1.entity	8336	8352	9403a2d8c1d503c6567d09480150e1d18bb6750e
+Entities/◆Nirude (avec corps)/◆Nirude (avec corps).entity	8116	8132	74ab4deefbee150a723af79084a47dcfd2f34ec9
+Entities/◆Nirude (pensée résiduelle)/◆Nirude (pensée résiduelle).entity	3855	3871	91b877b04c2359f20b90fe40a470991bc49d926d
+Entities/◆Oiseau de feu Niv.1/◆Oiseau de feu Niv.1.entity	7672	7688	9d279fd64686626751d884110189ae246afbb062
+Entities/◆Orc (armure de fer) Niv.1/◆Orc (armure de fer) Niv.1.entity	7239	7255	cb52d9325917d1879ba55df1eb801f51250b2940
+Entities/◆Orc (hache) Niv.1/◆Orc (hache) Niv.1.entity	7011	7027	3d248ddaab31b7f31d7e59b6a74af460f389a8dd
+Entities/◆Orc (masse) Niv.1/◆Orc (masse) Niv.1.entity	7231	7247	1ab8f6c900ab191d25272c0c8e2d99f8a912e367
+Entities/◆P-Zoldia Niv.1/◆P-Zoldia Niv.1.entity	9210	9226	cdab7f702ff2838cd5291f100e1a6bca87268961
+Entities/◆P-Zoldia Niv.2/◆P-Zoldia Niv.2.entity	9210	9226	5f0c646a25f39930520d1d33de7830b81a6b9e4f
+Entities/◆Petit slime/◆Petit slime.entity	9864	9880	392aeb23b8083a3e1cb1841061908be89fff0b62
+Entities/◆Poisson Niv.1/◆Poisson Niv.1.entity	7887	7903	3044fbe9ec375b87e7f8385f763ac439f6b7fe02
+Entities/◆Projectile Niv.1-116/◆Projectile Niv.1-116.entity	6350	6366	bde6445da3980591d103ca5a131f43344c0b0719
+Entities/◆Projectile Niv.1-155/◆Projectile Niv.1-155.entity	5911	5927	f535868b2d5ff12d2f78f5628f80b036c05570b4
+Entities/◆Projectile Niv.1-176/◆Projectile Niv.1-176.entity	6130	6146	b403834f90d7dad305dcf421c49131bff6c18440
+Entities/◆Projectile Niv.1-206/◆Projectile Niv.1-206.entity	3407	3423	43ac5cda667c80560250fea8fddea29e8a7b6a08
+Entities/◆Projectile Niv.1-212/◆Projectile Niv.1-212.entity	5911	5927	55d94e0596a5dbf6168ffd90991e0899da324886
+Entities/◆Projectile/◆Projectile.entity	5902	5918	cc164882e6c3d057178862c39022ae8ffb61aac1
+Entities/◆Projectiles (plumes) Niv.1/◆Projectiles (plumes) Niv.1.entity	5921	5937	2b01517488c1921f518a90786fb438b4943e4d6d
+Entities/◆Projectiles (étincelles) Niv.1/◆Projectiles (étincelles) Niv.1.entity	5925	5941	e7df45c6fef21b70d3537ab058edd337b4436542
+Entities/◆Projectiles de Zoldia/◆Projectiles de Zoldia.entity	6575	6591	059e7a57a0923ffe89303867f9b96efdc572766c
+Entities/◆Projectiles en spirale (lents)/◆Projectiles en spirale (lents).entity	6364	6380	1c12bd0f85328e4c636da010ac42ea3cf32ff8d4
+Entities/◆Projectiles à tête chercheuse (lents)/◆Projectiles à tête chercheuse (lents).entity	7253	7269	81dd91a589e68508848800205c5a96d1d0112926
+Entities/◆Roche élémentaire/◆Roche élémentaire.entity	5913	5929	9c90a418aee0307317ff649949198db10d1df4eb
+Entities/◆Ronan divin corrompu/◆Ronan divin corrompu.entity	7896	7912	afd2578075a66500faaec7e421e106be02146a9e
+Entities/◆Roper Niv.1/◆Roper Niv.1.entity	7886	7902	53bbb94b739b291e9774094a325502164553de51
+Entities/◆Roper Niv.2/◆Roper Niv.2.entity	7886	7902	77437f277ebece14153bf35245224d38df8c66c4
+Entities/◆Sbires du roi/◆Sbires du roi.entity	8328	8344	1834d70d3ca3936013322578181e34a3b106d2d3
+Entities/◆Slime géant (corps)/◆Slime géant (corps).entity	6796	6812	da41fd4b38fc42e001ae5e96b059290dc4692710
+Entities/◆Slime géant (grand)/◆Slime géant (grand).entity	7016	7032	94eeb07e0d0f14cbaa2b9f463f05e0e735434b4a
+Entities/◆Slime géant (petit)/◆Slime géant (petit).entity	6576	6592	7d4ff19e8a19ac13579995af3c0164e9ff973bdf
+Entities/◆Slime géant (œil)/◆Slime géant (œil).entity	6356	6372	5770cf320750177c10fc0114ff4a8b623bb7c976
+Entities/◆Slime gélatineux/◆Slime gélatineux.entity	7450	7466	129005dc98a3b8ff34b64e9f0fb1f98521266840
+Entities/◆Souffle de dragon/◆Souffle de dragon.entity	6131	6147	adab1c51ec051bf84404ff78940de46f04c6beb4
+Entities/◆Spores Niv.1/◆Spores Niv.1.entity	5906	5922	8ef3c7d07c20bbc3561c3a56ab2501981c7bf02c
+Entities/◆Surveillance élémentaire/◆Surveillance élémentaire.entity	5922	5938	720547f2acad71130dbbd42530cf231fda322f97
+Entities/◆Tentacule/◆Tentacule.entity	4716	4732	a76d9e73c5e534477e429276d3b0c71782c71f81
+Entities/◆Tortue de roche Niv.1/◆Tortue de roche Niv.1.entity	7675	7691	10eb2a3fbe0086ad21adcb9f511053ea9a3442ef
+Entities/◆Tortue de roche Niv.2/◆Tortue de roche Niv.2.entity	7675	7691	ce883c5cdc7f8c4fcc50af3bb5e5f20a5812df16
+Entities/◆Triple projectile de dragon/◆Triple projectile de dragon.entity	5918	5934	1663d70cb0143b486eb4dd1aae808271264ca1dc
+Entities/◆Tête de roche Niv.1/◆Tête de roche Niv.1.entity	8114	8130	8fac8b2a68313faa92bd6c00ed51b12dc836c406
+Entities/◆Ver Niv.1/◆Ver Niv.1.entity	7444	7460	7f32cdef8cfef102061b9968b93b0a3ed77dddc2
+Entities/◆Wilda (tête)/◆Wilda (tête).entity	8332	8348	ecd0d90acea0a05300eba5c76bdf601537b8b4c6
+Entities/◆Zazan-Roi Muruta/◆Zazan-Roi Muruta.entity	7892	7908	99170cbd78fb7226eea50c02f5a7d7270179234c
+Entities/◆Zombie Niv.1/◆Zombie Niv.1.entity	7007	7023	fa859b4c91f644c9948b05c9d38a2fa4c3fb8d1d
+Entities/◆Zorgia/◆Zorgia.entity	7881	7897	a167352a39c1ea6c2fe1a4d0a44efdaad9f4e573
+Entities/◆Élément Niv.1/◆Élément Niv.1.entity	8771	8787	68614fd2e91ac367b7322997df8e68c7021b08b3
+Maps/A big mess/A big mess (unused)-428/A big mess (unused)-428.world	2652	2668	0f5ef48dc84f3ed0390e45a54ea25022b2807c7e
+Maps/Ancient Shrine/Ancient Shrine - Golem-34/Ancient Shrine - Golem-34.world	2654	2670	c9be86c1d078dd2ec2cef225b8d517a44306f229
+Maps/Ancient Shrine/Ancient Shrine-26/Ancient Shrine-26.world	2646	2662	e5374cbbc145636b92df22edf06b2f0c63e7f8aa
+Maps/Ancient Shrine/Ancient Shrine-27/Ancient Shrine-27.world	2646	2662	24a140eba80d759c39c8e7cb46af25446a6e5d6a
+Maps/Ancient Shrine/Ancient Shrine-28/Ancient Shrine-28.world	2646	2662	85e73e7a84521e87b7797d8d44995c2e124b8dd8
+Maps/Ancient Shrine/Ancient Shrine-29/Ancient Shrine-29.world	2646	2662	79170a82f2bdfb5635a9dbffb7df113802a884a0
+Maps/Ancient Shrine/Ancient Shrine-30/Ancient Shrine-30.world	2646	2662	83f9e661379de0f40d5af98a9f358f8ef8410a58
+Maps/Ancient Shrine/Ancient Shrine-31/Ancient Shrine-31.world	2646	2662	628ee52259b88bbc5d419ef13b3d7d4042c3efd7
+Maps/Ancient Shrine/Ancient Shrine-32/Ancient Shrine-32.world	2646	2662	242698f26130b92ca25156982500a897ad28c4ba
+Maps/Ancient Shrine/Ancient Shrine-33/Ancient Shrine-33.world	2646	2662	0a7fe9b200e8b8920fd8d5377576b41415d25fd8
+Maps/Arena Black Dragon/Arena Black Dragon (Boss)-323/Arena Black Dragon (Boss)-323.world	2658	2674	756b42e48ea8c043d3f954b284a05df73d5fe9a7
+Maps/Arena Corpse Worm/Arena Corpse Worm (Boss)-322/Arena Corpse Worm (Boss)-322.world	2657	2673	3a4e2996e5203faaa397bb41ef072edeac0d271f
+Maps/Arena Melzas 1/Arena Melzas 1 (Boss)-327/Arena Melzas 1 (Boss)-327.world	2654	2670	c354eeafc13ea668b96fc74d053ff56af4d1e6c1
+Maps/Arena Melzas 2/Arena Melzas 2 (Boss)-471/Arena Melzas 2 (Boss)-471.world	2654	2670	d3457e33068f04fd1c94b57597a6e6aa143a915a
+Maps/Arena Nirude/Arena Nirude (Boss)-324/Arena Nirude (Boss)-324.world	2652	2668	6161db3c546522074fcbe20772a81b24a9dff2a1
+Maps/Arena Ronan/Arena Ronan (Boss)-326/Arena Ronan (Boss)-326.world	2651	2667	9c647868d84d4fe1b6442a108d3337c45825a114
+Maps/Arena Wilda/Arena Wilda (Boss)-325/Arena Wilda (Boss)-325.world	2651	2667	72385ec2b12ab2d1f2fbed09129115c291f74aa5
+Maps/Arena Zazan/Arena Zazan (Sybil's vision)-368/Arena Zazan (Sybil's vision)-368.world	2661	2677	4de9a17965eeba81976d8df7444281276b9631b4
+Maps/Arena Zorgia/Arena Zorgia (Boss)-321/Arena Zorgia (Boss)-321.world	2652	2668	11a1fd7b2855368ce3d6883a78e82e187bcdf03f
+Maps/Cave/Cave (Fire manor)-139/Cave (Fire manor)-139.world	2650	2666	3308b1aa7459edf981fd298f57ebc9c16a4dda6b
+Maps/Cave/Cave (unused) probably Nava entrance early-316/Cave (unused) probably Nava entrance early-316.world	2675	2691	0c86fbe2460b7bab0a4b2ff053cafbfe1cc28d00
+Maps/Cave/Cave (unused) probably Nava entrance early-317/Cave (unused) probably Nava entrance early-317.world	2675	2691	457265a2b6420ef925a3a41d35506fad4d7fec01
+Maps/Cave/Cave (unused) probably Nava entrance early-318/Cave (unused) probably Nava entrance early-318.world	2675	2691	35a4dcc73596e848a4cabf07ab627f9345b14a94
+Maps/Cave/Cave (unused) probably Nava entrance early-319/Cave (unused) probably Nava entrance early-319.world	2675	2691	b491c0365cf3196c295bc7223a64cad28b547c75
+Maps/Cave/Cave-138/Cave-138.world	2637	2653	6e3d1d0775a8a65b30eacb4d0f2445aee3135e70
+Maps/Cave/Cave-140/Cave-140.world	2637	2653	ad8cba2e243a41be40ba301103efc5157cddebc3
+Maps/Cave/Cave-141/Cave-141.world	2637	2653	7db1f2dcf17bc622d424aede1c5e46d53cd1863f
+Maps/Cave/Cave-145/Cave-145.world	2637	2653	741699c30ed3551a1093188bfbbf3d09b5822bec
+Maps/Church Basement/Church Basement (Event for final Battle)-482/Church Basement (Event for final Battle)-482.world	2673	2689	c6ff9c381cd98d2f669dbe12959c92f0436438e5
+Maps/Church _ Graveyard/Church _ Graveyard (probably for events)-331/Church _ Graveyard (probably for events)-331.world	2673	2689	4e7831011edafdd5e35101312c5d48d9bd1f204e
+Maps/Church/Church (basement, Holy sword)-137/Church (basement, Holy sword)-137.world	2662	2678	d178cfc124030e0214ee06e187fb1402a21e726d
+Maps/Church/Church (lobby)-134/Church (lobby)-134.world	2647	2663	7b3928bc58cf4608828bfb6edfdeb45017e06755
+Maps/Church/Church-135/Church-135.world	2639	2655	126fa7a2f23689d22f7e624ad06a29d685312aac
+Maps/Church/Church-136/Church-136.world	2639	2655	5ea07ff8af4fa4dafcbd41c2c953f574d99a68f7
+Maps/Coal Mine _ Olen's Dream/Coal Mine _ Olen's Dream-362/Coal Mine _ Olen's Dream-362.world	2657	2673	d8437a34566f6069f912f74ff6de63ac8c0e1d3f
+Maps/Coal Mine _ Olen's Dream/Coal Mine _ Olen's Dream-363/Coal Mine _ Olen's Dream-363.world	2657	2673	7958b305a54065354492cc163757391cd2c40b64
+Maps/Coal Mine outer/Coal Mine outer (exit Event)-335/Coal Mine outer (exit Event)-335.world	2661	2677	09b2f16c51747b9464b7efe746a3c7114598aac7
+Maps/Coal Mine/Coal Mine (Elevator & Zazan & Murgg)-329/Coal Mine (Elevator & Zazan & Murgg)-329.world	2669	2685	1e4d06af10bea646e444cc177d376fc78a5bc6f8
+Maps/Coal Mine/Coal Mine (First Entrance)-61/Coal Mine (First Entrance)-61.world	2658	2674	a1712c4bc88b93f0c616db74b841ed9aa48e3240
+Maps/Coal Mine/Coal Mine (generator)-328/Coal Mine (generator)-328.world	2654	2670	e90f57cf183dae1aef03ee4deedf1e7381df23ea
+Maps/Coal Mine/Coal Mine (unused)-64/Coal Mine (unused)-64.world	2650	2666	0f240dbae573d3a6c22d9f65820a7200dc143c92
+Maps/Coal Mine/Coal Mine (unused_)-65/Coal Mine (unused_)-65.world	2651	2667	02b8b7cb874fd206dc2fd22c6d495e3e68185742
+Maps/Coal Mine/Coal Mine (unused_)-68/Coal Mine (unused_)-68.world	2651	2667	b9105e14c170fe078e8aa71ef522048ddfd8b4b8
+Maps/Coal Mine/Coal Mine-62/Coal Mine-62.world	2641	2657	b27307a95fa0fb215113ec2f0d49c45cbcdfeed1
+Maps/Coal Mine/Coal Mine-63/Coal Mine-63.world	2641	2657	9a98a279adcdf9ff60bb9e83ce56fd7bd0fad8d6
+Maps/Coal Mine/Coal Mine-66/Coal Mine-66.world	2641	2657	f70479529db86dbbdeb7369c875cd7f968153943
+Maps/Coal Mine/Coal Mine-67/Coal Mine-67.world	2641	2657	606f4f16a4b394d52020a71133c73ffdc73c430a
+Maps/Coast/Coast beginning-416/Coast beginning-416.world	2648	2664	e044d6bf1913671eb45165077d850e709d3d8a83
+Maps/Coast/Coast-407/Coast-407.world	2638	2654	ad781eaf949c36e8846f98f39ce83c355586797b
+Maps/Coastal Cave/Coastal Cave (Boss)-76/Coastal Cave (Boss)-76.world	2651	2667	eb6100d7fce1df7bbc446a673ef2664e4d2169c9
+Maps/Coastal Cave/Coastal Cave-69/Coastal Cave-69.world	2644	2660	69732ac6a796a5ba04ca2cf6c6c889907cb2c4ce
+Maps/Coastal Cave/Coastal Cave-70/Coastal Cave-70.world	2644	2660	93231a2a543aa8e7ae3ba0b3325506be61c5c148
+Maps/Coastal Cave/Coastal Cave-71/Coastal Cave-71.world	2644	2660	07064e5417d5fa23e495f7f44e01a4be7321c55b
+Maps/Coastal Cave/Coastal Cave-72/Coastal Cave-72.world	2644	2660	b2bb5fe15d817ecf256278c631954e0038aec6d0
+Maps/Coastal Cave/Coastal Cave-73/Coastal Cave-73.world	2644	2660	e339e4ef0af10b4059d41034538c99acf03a0324
+Maps/Coastal Cave/Coastal Cave-74/Coastal Cave-74.world	2644	2660	90424baaf6d81602dda51bcaacd26ff72756e9f7
+Maps/Coastal Cave/Coastal Cave-75/Coastal Cave-75.world	2644	2660	2e79905d68649fcc48bcfca8ddf97bccacd44174
+Maps/Continue Screen/Continue Screen-477/Continue Screen-477.world	2648	2664	9def544434d261258e9a6b8f83efc52c4594754e
+Maps/Dark Castle/Dark Castle (unused)-427/Dark Castle (unused)-427.world	2653	2669	b9f58dcc2c0d02f511916d80d27db4a7f5963f4c
+Maps/Debug zone/Debug zone-11/Debug zone-11.world	2642	2658	9bf2cb6cd8918152df274fbfae61ba5ebd138a49
+Maps/Deep Cave with Mimics/Deep Cave with Mimics (unused_)-397/Deep Cave with Mimics (unused_)-397.world	2664	2680	67073ee7ecae7e4823d529b95129e3780abf255e
+Maps/Deep Cave with Mimics/Deep Cave with Mimics-380/Deep Cave with Mimics-380.world	2654	2670	7af1497ceaa5c5b731cad5e740790dd8029264fb
+Maps/Desert Mini Puzle to Shrine/Desert Mini Puzle to Shrine-403/Desert Mini Puzle to Shrine-403.world	2660	2676	eae73894c1e7d4c8c24f2c03557dfedbfd50e19f
+Maps/Desert Mini Puzle to Shrine/Desert Mini Puzle to Shrine-404/Desert Mini Puzle to Shrine-404.world	2660	2676	1966afd57d45b14d4a6fcfdb0614a2fff59e0175
+Maps/Desert Mini Puzle to Shrine/Desert Mini Puzle to Shrine-405/Desert Mini Puzle to Shrine-405.world	2660	2676	46e37b074ec8332f7d86825150290fa75dab6f72
+Maps/Desert Mini Puzle to Shrine/Desert Mini Puzle to Shrine-406/Desert Mini Puzle to Shrine-406.world	2660	2676	0797e32aa015dc6522480f1c47de51abcc6ed634
+Maps/Desert/Desert Cave (sand Cape)-402/Desert Cave (sand Cape)-402.world	2656	2672	fa3580e7f4eb96ddbe9a5051b8dc74b6a49b1349
+Maps/Desert/Desert Entrance-401/Desert Entrance-401.world	2648	2664	c42a0bae9e3e20554022ceca5515ed7a75a24b92
+Maps/Desert/Desert _ Ancient Shrine-400/Desert _ Ancient Shrine-400.world	2656	2672	6b1f32f3f8608f3c4eb0428c14eb1e07d3181028
+Maps/Desert/Desert-450/Desert-450.world	2639	2655	5beed5bd8fb45ff9619b3e9760fc56afd89df095
+Maps/Elane Nightmare/Elane Nightmare-435/Elane Nightmare-435.world	2648	2664	21c12601c991da470cb756dd450953c654de7d8c
+Maps/Elane Nightmare/Elane Nightmare-436/Elane Nightmare-436.world	2648	2664	f1e14e5f679aa6c79299a347e24c65da9f4d7966
+Maps/Elane Nightmare/Elane Nightmare-437/Elane Nightmare-437.world	2648	2664	a0dfff85e79dc6873990490867c089ef848dd204
+Maps/Elane Nightmare/Elane Nightmare-438/Elane Nightmare-438.world	2648	2664	3817efd82be72b87d8decd9886df1ff7d76e6bd5
+Maps/Elenes Nightmare/Elenes Nightmare-48/Elenes Nightmare-48.world	2648	2664	63ad7c8d09b21a8534401589807346948beee88d
+Maps/Elenes Nightmare/Elenes Nightmare-49/Elenes Nightmare-49.world	2648	2664	001c01f63e3f2da648ee8d7702d30ae91e9c6909
+Maps/Elenes Nightmare/Elenes Nightmare-50/Elenes Nightmare-50.world	2648	2664	6b0507035179222bfd1476b5f2328b6c85985db5
+Maps/Elenes Nightmare/Elenes Nightmare-51/Elenes Nightmare-51.world	2648	2664	a56a9a4e7f31b4b949d5666ee0e7ef043ba21f40
+Maps/Elenes Nightmare/Elenes Nightmare-52/Elenes Nightmare-52.world	2648	2664	ecbb96d19747eef269a03add5e1e21883f97bbcc
+Maps/Elenes Nightmare/Elenes Nightmare-53/Elenes Nightmare-53.world	2648	2664	f572072bd596fc42036739158d6c8aa7c3d27cb4
+Maps/Elenes Nightmare/Elenes Nightmare-54/Elenes Nightmare-54.world	2648	2664	0f3a29b814d06a95a92695f139d6d87f83fbc234
+Maps/Fairy cave/Fairy cave (Stenia)-161/Fairy cave (Stenia)-161.world	2652	2668	a510a06a7c7a57c568121897dc782941198838d6
+Maps/Fairy cave/Fairy cave (underwater)-159/Fairy cave (underwater)-159.world	2656	2672	ea78171474fcad40ba70872aa7126e494386582f
+Maps/Fairy cave/Fairy cave (underwater)-160/Fairy cave (underwater)-160.world	2656	2672	05c60c5cb1421879448222d2256e55ccf519ea5d
+Maps/Fairy cave/Fairy cave-157/Fairy cave-157.world	2643	2659	fc1a471920fae41cd1065a244bd93cba2e87b99c
+Maps/Fairy cave/Fairy cave-158/Fairy cave-158.world	2643	2659	3210e87a53e86b371eef35e6757d7dee1f917c9b
+Maps/Fairy cave/Fairy cave_ (bugged _ unused_)-156/Fairy cave_ (bugged _ unused_)-156.world	2663	2679	da1440c5e060ec84b4dd191add32b55824a6e078
+Maps/Giles Nightmare/Giles Nightmare (Boss)-449/Giles Nightmare (Boss)-449.world	2655	2671	ae059d67c65af8f83c0c23c1a7c51741b089a111
+Maps/Giles Nightmare/Giles Nightmare-100/Giles Nightmare-100.world	2648	2664	47ea4013c4e70137ddb5682d77e8cdeca162ad8a
+Maps/Giles Nightmare/Giles Nightmare-101/Giles Nightmare-101.world	2648	2664	78b821812e102c0cded0609d799731c597fc2eff
+Maps/Giles Nightmare/Giles Nightmare-102/Giles Nightmare-102.world	2648	2664	ee2968e6694daedc69a736010d70cbbf49e72f6f
+Maps/Giles Nightmare/Giles Nightmare-103/Giles Nightmare-103.world	2648	2664	1052faefa7c899f8b2746d345f74912c74d660fc
+Maps/Giles Nightmare/Giles Nightmare-104/Giles Nightmare-104.world	2648	2664	41bea385217d76c4c0ce6ddc35e99643724adfcd
+Maps/Giles Nightmare/Giles Nightmare-105/Giles Nightmare-105.world	2648	2664	cb419b1351a284e112247d96b1002055c36b16e6
+Maps/Giles Nightmare/Giles Nightmare-106/Giles Nightmare-106.world	2648	2664	ec068166400c6ee188e4ec5bc73192ca9bf43024
+Maps/Giles Nightmare/Giles Nightmare-107/Giles Nightmare-107.world	2648	2664	18dc78e0899c4e29680a22ac7408cb4e20745aa2
+Maps/Giles Nightmare/Giles Nightmare-99/Giles Nightmare-99.world	2647	2663	e6468623f5d64a88c5fc6b4f1aba58112d4193ad
+Maps/Ice manor/Ice manor-304/Ice manor-304.world	2642	2658	26e05028da8104e32f6dd0b826310dedc09112f8
+Maps/Inoa/Inoa (Kline, Sybil's vision)-367/Inoa (Kline, Sybil's vision)-367.world	2661	2677	22c4024efcc98bd9a61c51c2cc3a3a13ec4d6911
+Maps/Inoa/Inoa (Vision Event from Lars and Melzas cutscene)-478/Inoa (Vision Event from Lars and Melzas cutscene)-478.world	2682	2698	9967630695f0ad66069eddafe2ed0fccf9c3095d
+Maps/Inoa/Inoa (burning)-293/Inoa (burning)-293.world	2647	2663	381317e838106515697ffdb8e585d3e4fba7cfbd
+Maps/Inoa/Inoa (destroyed)-297/Inoa (destroyed)-297.world	2649	2665	2c6b865bb11a19dde75be3e2137c56465f11bdb6
+Maps/Inoa/Inoa (destroyed)-301/Inoa (destroyed)-301.world	2649	2665	1df3f1efe2cc20c3f67cdc8628b5c327671c3fa9
+Maps/Inoa/Inoa (inner)-128/Inoa (inner)-128.world	2645	2661	3c99f6855280bdf31e87fc047237ded6e09ab0c0
+Maps/Inoa/Inoa (inner)-129/Inoa (inner)-129.world	2645	2661	fb858cfe64403d1c8217cf8cd91e0d569467beef
+Maps/Inoa/Inoa (inner)-130/Inoa (inner)-130.world	2645	2661	247594ff9794e1e2d8214b952f4fc97ed4566e61
+Maps/Inoa/Inoa (inner)-131/Inoa (inner)-131.world	2645	2661	8f0d80f1de25d578eaba650f535ecdf84553ec6b
+Maps/Inoa/Inoa (inner)-132/Inoa (inner)-132.world	2645	2661	d50a734a3228b05e4a0726bb36e682d248d79bc9
+Maps/Inoa/Inoa (inner)-163/Inoa (inner)-163.world	2645	2661	420f99f62a3c99e7cc48f8935b6f0cca4d447bce
+Maps/Inoa/Inoa (inner)-164/Inoa (inner)-164.world	2645	2661	db9467fc87205bbb1ee2bfd636c98be4db0d66f1
+Maps/Inoa/Inoa (inner)-165/Inoa (inner)-165.world	2645	2661	abfa1c2ca4fe841c84fa74f437b2273d57e53fc0
+Maps/Inoa/Inoa (inner)-166/Inoa (inner)-166.world	2645	2661	ef1155905aa3995bd98ec4cc1739ce6940641d3d
+Maps/Inoa/Inoa (inner)-167/Inoa (inner)-167.world	2645	2661	e4c552a260a60583f045828df50f8ce049db1dd3
+Maps/Inoa/Inoa (inner)-168/Inoa (inner)-168.world	2645	2661	555d57d9f48154f5c4a368b9b6e7d0fd30d06327
+Maps/Inoa/Inoa (inner)-170/Inoa (inner)-170.world	2645	2661	34bf82c0a3d672db05c9834df9895422c11e0fc9
+Maps/Inoa/Inoa (inner)-171/Inoa (inner)-171.world	2645	2661	a156cd24591cc4737cc07d424cb183e07a4bd5ed
+Maps/Inoa/Inoa (inner)-172/Inoa (inner)-172.world	2645	2661	a491fc5ee8cc33c3122b60795ca1090d0a956ee6
+Maps/Inoa/Inoa (inner)-173/Inoa (inner)-173.world	2645	2661	19f216ee2cc07acca2a56abb09bd7d155da7c086
+Maps/Inoa/Inoa (inner)-174/Inoa (inner)-174.world	2645	2661	49568cf73e3846e475206c15e77bc03847b3e2ff
+Maps/Inoa/Inoa (inner)-175/Inoa (inner)-175.world	2645	2661	b58597909c1a90ccf32f1261e8197a41a69017a2
+Maps/Inoa/Inoa (inner)-177/Inoa (inner)-177.world	2645	2661	8a45dea408d45b8c4bf45438d1d60893483469b6
+Maps/Inoa/Inoa (inner)-178/Inoa (inner)-178.world	2645	2661	e86b1fb3fda63a8adb7b56739b8f767ad21e1bbc
+Maps/Inoa/Inoa (inner)-179/Inoa (inner)-179.world	2645	2661	875b122863febb1890deaed9c44e21ffafce33ec
+Maps/Inoa/Inoa (inner)-180/Inoa (inner)-180.world	2645	2661	5020edd86e6bf59467c0b88fcdcf5b10d5f3183d
+Maps/Inoa/Inoa (inner)-181/Inoa (inner)-181.world	2645	2661	5e2491e088fe241f9f0888dbb2b4567f082384d5
+Maps/Inoa/Inoa (inner)-182/Inoa (inner)-182.world	2645	2661	8ddefc28d302d8482e8c64aa3f6b538426f642c7
+Maps/Inoa/Inoa (inner)-184/Inoa (inner)-184.world	2645	2661	8793e4252b517d4ab20e3b1be57d305a127c217d
+Maps/Inoa/Inoa (inner)-185/Inoa (inner)-185.world	2645	2661	1dfdaf2648ec1f050000d59c346b7c8ea219b766
+Maps/Inoa/Inoa (inner)-187/Inoa (inner)-187.world	2645	2661	d759bb48ba008f37187672860ba0da243cfbeb62
+Maps/Inoa/Inoa (inner)-188/Inoa (inner)-188.world	2645	2661	82f2c7ed14b85b6377ee7907e0f814a1a3426ca7
+Maps/Inoa/Inoa (inner)-189/Inoa (inner)-189.world	2645	2661	283d51be8449fd03a8afb13e5f2b6e51a560cc24
+Maps/Inoa/Inoa (inner)-190/Inoa (inner)-190.world	2645	2661	e60a60213171c2f9c1efb557244f4f3e2623f15a
+Maps/Inoa/Inoa (inner)-191/Inoa (inner)-191.world	2645	2661	7552b14ba9070353acd443bfdec339bdd1c2a160
+Maps/Inoa/Inoa (inner)-192/Inoa (inner)-192.world	2645	2661	07710e8f1bb4761de08cc1707409ee46a10fb747
+Maps/Inoa/Inoa (inner)-194/Inoa (inner)-194.world	2645	2661	ab08f1754365e9f6dfbcd0dc8dc4631ff87a5ba5
+Maps/Inoa/Inoa (inner)-195/Inoa (inner)-195.world	2645	2661	fe3addd9448b92dc09e262c8ed78979b853605cb
+Maps/Inoa/Inoa (inner)-196/Inoa (inner)-196.world	2645	2661	9f0f72483bd0f0fa2c88229b48cf05c52882cbce
+Maps/Inoa/Inoa (inner)-197/Inoa (inner)-197.world	2645	2661	9e1c69ec3ba64a482917f3f6d426f861ab8b52b8
+Maps/Inoa/Inoa (inner)-199/Inoa (inner)-199.world	2645	2661	686a6e4c1cbfcffcc7a23a2ba6ff365cab2b5019
+Maps/Inoa/Inoa (inner)-200/Inoa (inner)-200.world	2645	2661	68e31db81db81ef601d096e3502892851fcd7673
+Maps/Inoa/Inoa (inner)-201/Inoa (inner)-201.world	2645	2661	f42b77b5a4151882779953083f7287aec7ec1bbf
+Maps/Inoa/Inoa (inner)-202/Inoa (inner)-202.world	2645	2661	b816c0f2a2d3a519484663eca4a714195273e949
+Maps/Inoa/Inoa (inner)-203/Inoa (inner)-203.world	2645	2661	45135c2467ac8dd8d032031c6abdff5b4e3e20ae
+Maps/Inoa/Inoa (inner)-204/Inoa (inner)-204.world	2645	2661	572bbac77a201961b2fbd70a1b77575c2f4cfed3
+Maps/Inoa/Inoa (inner)-206/Inoa (inner)-206.world	2645	2661	b9c91916b0799939d97f866f46d4bc4910a66481
+Maps/Inoa/Inoa (inner)-207/Inoa (inner)-207.world	2645	2661	da4a4ef2504761c1108dda21aeed903c262cb2d3
+Maps/Inoa/Inoa (inner)-208/Inoa (inner)-208.world	2645	2661	2af77314bda3745e72bab33b272a1b968976bb79
+Maps/Inoa/Inoa (inner)-209/Inoa (inner)-209.world	2645	2661	785297275fca00b27456ec4c9c51fdc412bfe476
+Maps/Inoa/Inoa (inner)-210/Inoa (inner)-210.world	2645	2661	230bdcf8661f801c19f6a3bb234fcb6291934576
+Maps/Inoa/Inoa (inner)-211/Inoa (inner)-211.world	2645	2661	e4482e92341164b69d045da2616967e8f485a264
+Maps/Inoa/Inoa (inner)-213/Inoa (inner)-213.world	2645	2661	cca606e847ae1738f1b505e911b97295d693445a
+Maps/Inoa/Inoa (inner)-214/Inoa (inner)-214.world	2645	2661	31cbe50143821927c4ae1033e3145191dbeb9ec8
+Maps/Inoa/Inoa (inner)-215/Inoa (inner)-215.world	2645	2661	f4e2e72a6ab5745da815beffb9c4f8bcfb170bc2
+Maps/Inoa/Inoa (inner)-216/Inoa (inner)-216.world	2645	2661	413c67d2045e54d807e78de2097bc9652842927d
+Maps/Inoa/Inoa (inner)-217/Inoa (inner)-217.world	2645	2661	31a4a9c57555b9164e5c964e49ee32cec741f9c5
+Maps/Inoa/Inoa (inner)-218/Inoa (inner)-218.world	2645	2661	e7cad2f3b29e6e0e58eac747748feb95d01dc61c
+Maps/Inoa/Inoa (inner)-220/Inoa (inner)-220.world	2645	2661	b391fbf43433c46bbab18dfd0981169c1547cf23
+Maps/Inoa/Inoa (inner)-221/Inoa (inner)-221.world	2645	2661	997d62d0d3be8ebbd0bb4e8dc09502b97e06c959
+Maps/Inoa/Inoa (inner)-222/Inoa (inner)-222.world	2645	2661	521ba31c93fc9ffd15523986c29bb550f9a45db9
+Maps/Inoa/Inoa (inner)-223/Inoa (inner)-223.world	2645	2661	8370a030fc2b96eff16218e13d4ee10ad17f991a
+Maps/Inoa/Inoa (inner)-224/Inoa (inner)-224.world	2645	2661	002731d08901f02eefba59d3a235bdf0a8d35709
+Maps/Inoa/Inoa (inner)-225/Inoa (inner)-225.world	2645	2661	12c3d1216f034f7e9dfe4f7ab96fe9520334093a
+Maps/Inoa/Inoa (inner)-227/Inoa (inner)-227.world	2645	2661	b3b7a3d1010fe195f9971cfb717765dc35da3bd2
+Maps/Inoa/Inoa (inner)-228/Inoa (inner)-228.world	2645	2661	215b99a9230fb6f0f410b8d6ac3b201759be08ad
+Maps/Inoa/Inoa (inner)-229/Inoa (inner)-229.world	2645	2661	dfea0b6bde9a50cfb3274fff6c27f40f5c1b8d0f
+Maps/Inoa/Inoa (inner)-231/Inoa (inner)-231.world	2645	2661	40fed8f8992e8488985dc63af189651555e92071
+Maps/Inoa/Inoa (inner)-232/Inoa (inner)-232.world	2645	2661	72fd910f15e1f6b6bf99295f38e903dd3868465a
+Maps/Inoa/Inoa (inner)-233/Inoa (inner)-233.world	2645	2661	671eaabe386f77fed07d44b9bd1f7cc9d3af77a2
+Maps/Inoa/Inoa (inner)-234/Inoa (inner)-234.world	2645	2661	24e463373240510af761296412b52a07f71f93cb
+Maps/Inoa/Inoa (inner)-235/Inoa (inner)-235.world	2645	2661	bf1790174fb71f48ab3752b4e653af684930ae71
+Maps/Inoa/Inoa (inner)-236/Inoa (inner)-236.world	2645	2661	86b7fcb6a019344f709df0d20cdf1b4c96eb2c2b
+Maps/Inoa/Inoa (inner)-238/Inoa (inner)-238.world	2645	2661	e7aa0e0993d4d5a328879cf5144d4077d139a216
+Maps/Inoa/Inoa (inner)-239/Inoa (inner)-239.world	2645	2661	b21a5adffa338a6b53bc43eda618c22512f9ba2d
+Maps/Inoa/Inoa (inner)-240/Inoa (inner)-240.world	2645	2661	8ea8d7d3fda19254d852a677e75d087674ad8b18
+Maps/Inoa/Inoa (inner)-242/Inoa (inner)-242.world	2645	2661	62672045c636c51080dee337bbbfadb61dde8883
+Maps/Inoa/Inoa (inner)-243/Inoa (inner)-243.world	2645	2661	c1f19612804c7d657adc6ab54e7b59618e3bd834
+Maps/Inoa/Inoa (inner)-244/Inoa (inner)-244.world	2645	2661	331f226cb51fca21bdd1e11b078bbf3efd1a0103
+Maps/Inoa/Inoa (inner)-245/Inoa (inner)-245.world	2645	2661	68133aa78cd18b1d8cfb0acc210bef5ebf21d496
+Maps/Inoa/Inoa (inner)-246/Inoa (inner)-246.world	2645	2661	896e0d4c0663d4da673ee0157314ce665ce74658
+Maps/Inoa/Inoa (inner)-247/Inoa (inner)-247.world	2645	2661	58a6d060f171ec52b36ebb47f719aaff6d8e02c6
+Maps/Inoa/Inoa (inner)-249/Inoa (inner)-249.world	2645	2661	f78675434f4641db2f87a382736aa6582bc956ff
+Maps/Inoa/Inoa (inner)-250/Inoa (inner)-250.world	2645	2661	085b9b9c000dfa8edb27b93ca098048970be418f
+Maps/Inoa/Inoa (inner)-251/Inoa (inner)-251.world	2645	2661	cb03cd067c62da6c43858ac408669b5cf0055c1e
+Maps/Inoa/Inoa (inner)-253/Inoa (inner)-253.world	2645	2661	001f9dced30b761b57363a7bbebb0cd16954271d
+Maps/Inoa/Inoa (inner)-254/Inoa (inner)-254.world	2645	2661	2183d496aa7409b8b66f09d5d73603104e63e3de
+Maps/Inoa/Inoa (inner)-255/Inoa (inner)-255.world	2645	2661	e14e272f0b82cb5f40089000b1504294fb969d1d
+Maps/Inoa/Inoa (inner)-256/Inoa (inner)-256.world	2645	2661	67cdf04c6c2355aab152ea4085f7faef62a2f96b
+Maps/Inoa/Inoa (inner)-257/Inoa (inner)-257.world	2645	2661	ba145c1a7a04b21859d7652d94f21dba4599e2fe
+Maps/Inoa/Inoa (inner)-258/Inoa (inner)-258.world	2645	2661	544ea89d2ceb36c39355a04e2a4ef202d130daf1
+Maps/Inoa/Inoa (inner)-260/Inoa (inner)-260.world	2645	2661	5444afa978146f572e7afdf8dce0abd5a99c8f2d
+Maps/Inoa/Inoa (inner)-261/Inoa (inner)-261.world	2645	2661	b55720711c2f07663251dc640c40fdf9fe302b2d
+Maps/Inoa/Inoa (inner)-262/Inoa (inner)-262.world	2645	2661	65012db88282793db2fae79ac091c02249235e0b
+Maps/Inoa/Inoa (inner)-263/Inoa (inner)-263.world	2645	2661	912241055184a566a9b1f029c9172554a6761b42
+Maps/Inoa/Inoa (inner)-264/Inoa (inner)-264.world	2645	2661	fa708fd38b74574ba8cffacbd4ed1c1ab91cf7c0
+Maps/Inoa/Inoa (inner)-265/Inoa (inner)-265.world	2645	2661	b4690077ad072c75aca921f196756c3adb2823c3
+Maps/Inoa/Inoa (inner)-267/Inoa (inner)-267.world	2645	2661	729548a60955bfb7d281ec3c20db74a0627db23d
+Maps/Inoa/Inoa (inner)-268/Inoa (inner)-268.world	2645	2661	f54b0924463e87f73f13531db4af664d3a4706b5
+Maps/Inoa/Inoa (inner)-269/Inoa (inner)-269.world	2645	2661	66d51e6c280c1d073d9ce7e5f6b6fe88e04ef9c0
+Maps/Inoa/Inoa (inner)-270/Inoa (inner)-270.world	2645	2661	ebb0476942bbfdac137a1d138e73ebaf89619155
+Maps/Inoa/Inoa (inner)-272/Inoa (inner)-272.world	2645	2661	7aa25ab6c73042b73a4ce33da8976cd9021c83fc
+Maps/Inoa/Inoa (inner)-273/Inoa (inner)-273.world	2645	2661	5295aa37439f878f68322af6080ca8e891572625
+Maps/Inoa/Inoa (inner)-274/Inoa (inner)-274.world	2645	2661	e1c51da667e399b822d41bea2927b3d3084e7fad
+Maps/Inoa/Inoa (inner)-276/Inoa (inner)-276.world	2645	2661	fea814c385a9f5c6ef067a666e0b3ec3208d3cbf
+Maps/Inoa/Inoa (inner)-277/Inoa (inner)-277.world	2645	2661	d88b16647f5bdbe00190105db4431032d1b52caf
+Maps/Inoa/Inoa (inner)-278/Inoa (inner)-278.world	2645	2661	5a75b8193bbf2a0bc5b330578825c93403c321bc
+Maps/Inoa/Inoa (inner)-279/Inoa (inner)-279.world	2645	2661	74863a98253a59a0238f5fb7862d05abbb701802
+Maps/Inoa/Inoa (inner)-280/Inoa (inner)-280.world	2645	2661	b94e7a166ccb2acf7d9dc2ed66f2d3a75b859c1d
+Maps/Inoa/Inoa (inner)-281/Inoa (inner)-281.world	2645	2661	af0a900e188784e88fa5ceff4939eb9e80c6f55b
+Maps/Inoa/Inoa (inner)-283/Inoa (inner)-283.world	2645	2661	6b55926650fab574c3c35554f15e0618954a2e2a
+Maps/Inoa/Inoa (inner)-284/Inoa (inner)-284.world	2645	2661	80d01d938a5531f2308741e9e37c3b242504ec7f
+Maps/Inoa/Inoa (inner)-285/Inoa (inner)-285.world	2645	2661	53f0edda9a211d8df20d20de38fba936c53f9763
+Maps/Inoa/Inoa (inner)-286/Inoa (inner)-286.world	2645	2661	e81f57ddcf4854e7c1a42420b37f07bde8c52b29
+Maps/Inoa/Inoa (inner)-287/Inoa (inner)-287.world	2645	2661	5a3c9f995a8731975292250cf45be31586088abb
+Maps/Inoa/Inoa (inner)-288/Inoa (inner)-288.world	2645	2661	5dc4214168d4ffcca373cfc27e89422fb1e8139d
+Maps/Inoa/Inoa (inner)-332/Inoa (inner)-332.world	2645	2661	1f6f0272172971aaf2c88d5537b1c6a74c6cd138
+Maps/Inoa/Inoa (inner)-333/Inoa (inner)-333.world	2645	2661	c148fe7ccbe885e7c2deba4d6726df59b2c2e822
+Maps/Inoa/Inoa (inner)-334/Inoa (inner)-334.world	2645	2661	73fc375f3e0b95b8a02afc18fa6bbce318244976
+Maps/Inoa/Inoa (inner)-336/Inoa (inner)-336.world	2645	2661	5a05d709d7c8568bcd014c58bd3cc4e40843470a
+Maps/Inoa/Inoa (inner)-359/Inoa (inner)-359.world	2645	2661	39cabc157a3dfa640810098c3477fc34e3089d23
+Maps/Inoa/Inoa (inner)-361/Inoa (inner)-361.world	2645	2661	7ac80feed48ff6c96a54918999ecdc632daf6742
+Maps/Inoa/Inoa (inner)-365/Inoa (inner)-365.world	2645	2661	670321cddc256900584d971218213accf69f3655
+Maps/Inoa/Inoa (inner)-366/Inoa (inner)-366.world	2645	2661	01ba431c0f4043d9f07a03c0157ef3af4b69fb99
+Maps/Inoa/Inoa (inner)-370/Inoa (inner)-370.world	2645	2661	4294d5c9606464ace11621cfa7836c01abe1e7eb
+Maps/Inoa/Inoa (inner)-372/Inoa (inner)-372.world	2645	2661	7ca8b4c31c48ef721179302553c0c9ac89849ff2
+Maps/Inoa/Inoa (inner)-373/Inoa (inner)-373.world	2645	2661	6b305c47c7ac2824a01a5d40773a2f4ddfbdfcd2
+Maps/Inoa/Inoa (inner)-374/Inoa (inner)-374.world	2645	2661	da460c04f2cb5dd037a3503783444666b201c329
+Maps/Inoa/Inoa (inner)-375/Inoa (inner)-375.world	2645	2661	0cefe9fcdfcfc3d53169d6b220fe1aab6ade34a4
+Maps/Inoa/Inoa (inner)-376/Inoa (inner)-376.world	2645	2661	e22f96b4fef1dbe5819e62e7d6d19fe782fb8004
+Maps/Inoa/Inoa (inner)-377/Inoa (inner)-377.world	2645	2661	27e0d1d45f066fa3144906d444dee12f4405a13e
+Maps/Inoa/Inoa (inner)-417/Inoa (inner)-417.world	2645	2661	8a343dd075116458f62419650b18ac2240f92aa1
+Maps/Inoa/Inoa (inner)-418/Inoa (inner)-418.world	2645	2661	3ff0dbca36d79a6a34c9fe127414933c9d6a9133
+Maps/Inoa/Inoa (inner)-419/Inoa (inner)-419.world	2645	2661	3e40cd6724435d7f1fbe9b2584c1322404d2327e
+Maps/Inoa/Inoa (inner, Merrick)-133/Inoa (inner, Merrick)-133.world	2654	2670	3d630d2977b79a44b254f364f658f2a2b9d59b1b
+Maps/Inoa/Inoa (inner, Yustel, Map)-475/Inoa (inner, Yustel, Map)-475.world	2658	2674	5318927cb6a27a0aab5a667445be97032ce1751c
+Maps/Inoa/Inoa (inner, burning)-294/Inoa (inner, burning)-294.world	2654	2670	de08a4a200ab0124403c91cdb50f70664f8c2cf6
+Maps/Inoa/Inoa (inner, burning)-295/Inoa (inner, burning)-295.world	2654	2670	ed93748b1e8b30b119ae80c690fb870dfadd6a78
+Maps/Inoa/Inoa (inner, burning)-296/Inoa (inner, burning)-296.world	2654	2670	907f23effc1dbcfa523405fe37440f0cd7abc786
+Maps/Inoa/Inoa (inner, destroyed)-298/Inoa (inner, destroyed)-298.world	2656	2672	522a9c271a76bd4d07a0113b5d5371ad2392583f
+Maps/Inoa/Inoa (inner, destroyed)-299/Inoa (inner, destroyed)-299.world	2656	2672	1f3356bbe9760ef481f58aa9b76153731916b9cf
+Maps/Inoa/Inoa (inner, destroyed)-300/Inoa (inner, destroyed)-300.world	2656	2672	2e383c98506c4130021b0a6e3832006b2fff99fe
+Maps/Inoa/Inoa (inner, destroyed)-302/Inoa (inner, destroyed)-302.world	2656	2672	0137686aa304c92dcd26018415fcf5bd740d7a7c
+Maps/Inoa/Inoa (inner, night)-290/Inoa (inner, night)-290.world	2652	2668	bf4d7edd1f905856a817b95e332043d1714d49b2
+Maps/Inoa/Inoa (inner, night)-291/Inoa (inner, night)-291.world	2652	2668	93b849525f91bf82e89ac6e8fc52c5e761ff159c
+Maps/Inoa/Inoa (inner, night)-292/Inoa (inner, night)-292.world	2652	2668	781b9836e3e0cd8582b5e950a243c4df47f2e609
+Maps/Inoa/Inoa (night)-289/Inoa (night)-289.world	2645	2661	896f8fb3eb7419c77126463ca7d7bdd6f4b23cdf
+Maps/Inoa/Inoa (night, Kline Event)-357/Inoa (night, Kline Event)-357.world	2658	2674	73bc5ac16b4977b384a0f14ee8666af9b7c816b8
+Maps/Inoa/Inoa (night, Sybil crime scene)-481/Inoa (night, Sybil crime scene)-481.world	2664	2680	57a2d79b434d7311fb32a158bc0d0200b28fd1ac
+Maps/Inoa/Inoa (night, inner, Kline Event)-358/Inoa (night, inner, Kline Event)-358.world	2665	2681	f56013694495abb10319c73cd71b1b98e2e99455
+Maps/Inoa/Inoa (night, inner, Kline Event_)-360/Inoa (night, inner, Kline Event_)-360.world	2666	2682	57d0514e5399333add82d5bc7e1b31f30a3a9416
+Maps/Inoa/Inoa-162/Inoa-162.world	2637	2653	baeaa9e33469ea8a213c103af074a4ad40202a1c
+Maps/Inoa/Inoa-169/Inoa-169.world	2637	2653	04581783ae75002bea840e974a096317073e1c5b
+Maps/Inoa/Inoa-176/Inoa-176.world	2637	2653	800fcf313ee88e02c152e9bd84f5f68de72db2e9
+Maps/Inoa/Inoa-183/Inoa-183.world	2637	2653	7b4e8891632f9d96bf13f8f81e236bda2e31cb9d
+Maps/Inoa/Inoa-186/Inoa-186.world	2637	2653	08621395a542b978927fea80eb490189a6a4f9d0
+Maps/Inoa/Inoa-193/Inoa-193.world	2637	2653	1b9345f55f47556fa8ebc4e5f513505a37c17e9f
+Maps/Inoa/Inoa-198/Inoa-198.world	2637	2653	3ac63f608d70a984822a3cc675cb9e38bdc4d9f3
+Maps/Inoa/Inoa-205/Inoa-205.world	2637	2653	7840bdec4e84807cc88ade831bf4f8ebac49f31c
+Maps/Inoa/Inoa-212/Inoa-212.world	2637	2653	62b39a8efde66db8ad3625c8255ed64a9e707557
+Maps/Inoa/Inoa-219/Inoa-219.world	2637	2653	fabfaaf7bb7ba48da8270d996973ee0ee56315ed
+Maps/Inoa/Inoa-226/Inoa-226.world	2637	2653	e1d4a4f1c78d48212d3af505e90bf7852d03885e
+Maps/Inoa/Inoa-230/Inoa-230.world	2637	2653	838017170b080a8452d36c76067acd1f36a851ff
+Maps/Inoa/Inoa-237/Inoa-237.world	2637	2653	f4b35d30407d847c419cd2d3675c5d52c7e1fe92
+Maps/Inoa/Inoa-241/Inoa-241.world	2637	2653	bd099fd8ee830c34f326731600d592e0d13e8c67
+Maps/Inoa/Inoa-248/Inoa-248.world	2637	2653	9b714a0e9bec0744606c7d39f648ff68caa38e0c
+Maps/Inoa/Inoa-252/Inoa-252.world	2637	2653	e4a904e53bd8683943153a952df53090b14eebf6
+Maps/Inoa/Inoa-259/Inoa-259.world	2637	2653	c54201e87cb90f304243dec0260adece4b66de14
+Maps/Inoa/Inoa-266/Inoa-266.world	2637	2653	238743b448cebddcb17a90fbee3d4061af08bb0d
+Maps/Inoa/Inoa-271/Inoa-271.world	2637	2653	af286b31471e2cdc11adb44f92c50472a35752d8
+Maps/Inoa/Inoa-275/Inoa-275.world	2637	2653	4b040e48790901820bc64279cf5bee374af40b16
+Maps/Inoa/Inoa-282/Inoa-282.world	2637	2653	2b1ef220753e05c614c9e33cc75440d567b54e17
+Maps/Inoa/Inoa-330/Inoa-330.world	2637	2653	b055cb2d78064f265fbe7a75634fd07d37061252
+Maps/Inoa/Inoa-364/Inoa-364.world	2637	2653	83c78f2543ea76115f22c7fced109c2779652d2c
+Maps/Inoa/Inoa-371/Inoa-371.world	2637	2653	4f7dbcc047907f157d3abdd19971a5d9fbfe3860
+Maps/Kline's Nightmare/Kline's Nightmare (Boss)-122/Kline's Nightmare (Boss)-122.world	2657	2673	1e4b3db4ff21e8c68401c5bd939d1e2c9fdf0b1b
+Maps/Kline's Nightmare/Kline's Nightmare-123/Kline's Nightmare-123.world	2650	2666	3f15ef929210d9e395c15c6272dc4100a6c580c2
+Maps/Kline's Nightmare/Kline's Nightmare-124/Kline's Nightmare-124.world	2650	2666	d8346721f061996cc13963ca4bc2f2137f001d46
+Maps/Kline's Nightmare/Kline's Nightmare-125/Kline's Nightmare-125.world	2650	2666	9c6ad2c83ff2c35e4c925ad5e99e639bd5ed0c6d
+Maps/Kline's Nightmare/Kline's Nightmare-126/Kline's Nightmare-126.world	2650	2666	32276ee77f329641fcafca6f7d4680423a0a37df
+Maps/Kline's Nightmare/Kline's Nightmare-127/Kline's Nightmare-127.world	2650	2666	082b932779f7f32467f68db947a44b7408d68c86
+Maps/Kohei Tanaka House _ Olen_ house/Kohei Tanaka House _ Olen_ house (music house)-142/Kohei Tanaka House _ Olen_ house (music house)-142.world	2679	2695	28e546e9235653e0c7a751cabe4030e990ed7b22
+Maps/Lake Shrine Bridge/Lake Shrine Bridge (Event)_-378/Lake Shrine Bridge (Event)_-378.world	2660	2676	2de4205cd77bf21e4b7105932bea8f4bb7edf856
+Maps/Lake Shrine Bridge/Lake Shrine Bridge (Event_)-412/Lake Shrine Bridge (Event_)-412.world	2660	2676	e47e7de8961bf8b48a5ff0a299789528cd3126f7
+Maps/Lake Shrine Melzas/Lake Shrine Melzas (inner, Beginning Event_)-415/Lake Shrine Melzas (inner, Beginning Event_)-415.world	2677	2693	27fec1dc40149c98d0d23802497ce18ab3bace8a
+Maps/Lake Shrine teleporter/Lake Shrine teleporter-379/Lake Shrine teleporter-379.world	2655	2671	1e14a334fe22e689cebbaaa8796814d376fa4a8b
+Maps/Lake Shrine/Lake Shrine (Melzas, Dark Dragon Event)-480/Lake Shrine (Melzas, Dark Dragon Event)-480.world	2672	2688	22f8182872e9f5ee4de563f940e0a5952603839a
+Maps/Lake Shrine/Lake Shrine (garden)-434/Lake Shrine (garden)-434.world	2653	2669	af188e65d66cb0b815c74adf8ebfe0b50eb43cce
+Maps/Lake Shrine/Lake Shrine (inner)-337/Lake Shrine (inner)-337.world	2652	2668	96741927b91da20716a83a16975ea227a86471dc
+Maps/Lake Shrine/Lake Shrine (inner)-338/Lake Shrine (inner)-338.world	2652	2668	c7e06d81fc06886de666c67774879c30dfac2ab5
+Maps/Lake Shrine/Lake Shrine (inner)-339/Lake Shrine (inner)-339.world	2652	2668	f2f5ac8d50b5dc578320e0c26390d5867169a635
+Maps/Lake Shrine/Lake Shrine (inner)-340/Lake Shrine (inner)-340.world	2652	2668	e8a436a3c7df9312e4fa3b530275c0bd7a9dcd5f
+Maps/Lake Shrine/Lake Shrine (inner)-341/Lake Shrine (inner)-341.world	2652	2668	dd94d4eb990629f20c3083b74bb8873d98f5028d
+Maps/Lake Shrine/Lake Shrine (inner)-342/Lake Shrine (inner)-342.world	2652	2668	6afac4b52c7312066c914a8430f9a519cc6e56f4
+Maps/Lake Shrine/Lake Shrine (inner)-343/Lake Shrine (inner)-343.world	2652	2668	35de45469fea3bf9a52cd5fee4bc45e865d84226
+Maps/Lake Shrine/Lake Shrine (inner)-344/Lake Shrine (inner)-344.world	2652	2668	d910765afb667b8af39a0551f632b89555994350
+Maps/Lake Shrine/Lake Shrine (inner)-345/Lake Shrine (inner)-345.world	2652	2668	b1069f3d241ff4d49170e88fec0c353d0bad3571
+Maps/Lake Shrine/Lake Shrine (inner)-346/Lake Shrine (inner)-346.world	2652	2668	f7277d3fd384403e9b1842029d30bbed837cae8e
+Maps/Lake Shrine/Lake Shrine (inner)-347/Lake Shrine (inner)-347.world	2652	2668	6683949748fee8472bbc3aa9467de086feb93e3d
+Maps/Lake Shrine/Lake Shrine (inner)-348/Lake Shrine (inner)-348.world	2652	2668	5d182691c34209e3637a60b700853018efd5b8e9
+Maps/Lake Shrine/Lake Shrine (inner)-349/Lake Shrine (inner)-349.world	2652	2668	22c0d03d63eaaa11c2c28d1422b75b380d455f71
+Maps/Lake Shrine/Lake Shrine (inner)-350/Lake Shrine (inner)-350.world	2652	2668	3a3210679f4e907f333e1e8fabb889d355bcff56
+Maps/Lake Shrine/Lake Shrine (inner)-351/Lake Shrine (inner)-351.world	2652	2668	d430faf6cf002d67c0679a2328157a0b18a0ad31
+Maps/Lake Shrine/Lake Shrine (inner)-352/Lake Shrine (inner)-352.world	2652	2668	6261e5b7834d6cbb03c48cdc711ec856e937c3ff
+Maps/Lake Shrine/Lake Shrine (inner)-353/Lake Shrine (inner)-353.world	2652	2668	0665405fb4463be50d332af0855cfb5d7b877886
+Maps/Lake Shrine/Lake Shrine (inner, unused)-414/Lake Shrine (inner, unused)-414.world	2660	2676	0f7228a56e81e3f93f7985694d92f26e91589f8b
+Maps/Lake Shrine/Lake Shrine (outer, unused)-354/Lake Shrine (outer, unused)-354.world	2660	2676	4531e17552c0f636b4e4d998334468fbbf674937
+Maps/Lake Shrine/Lake Shrine (outer, unused)-413/Lake Shrine (outer, unused)-413.world	2660	2676	c995d546339054c166f60f33703bb51329c2c447
+Maps/Lake Shrine/Lake Shrine (roof)-355/Lake Shrine (roof)-355.world	2651	2667	3fc9d4f4c292b89bb0c98a8944947e2f10ca1877
+Maps/Lake Shrine/Lake Shrine (roof)-356/Lake Shrine (roof)-356.world	2651	2667	7afb6f613825ac99e29a1bc1379e53fc2953ab09
+Maps/Lake Shrine/Lake Shrine-433/Lake Shrine-433.world	2644	2660	3d1b4926cec9625a6f8cbf2bff6e0e6d488178f9
+Maps/Lars & Melzas Room/Lars & Melzas Room (beginning Event)-476/Lars & Melzas Room (beginning Event)-476.world	2669	2685	c5ac5d808332188dedc4a770df4260820f924e98
+Maps/Lars' Crypt/Lars' Crypt-21/Lars' Crypt-21.world	2643	2659	4fac777dc3ddfafda2a970efdbdf3d644f2cef04
+Maps/Lars' Crypt/Lars' Crypt-22/Lars' Crypt-22.world	2643	2659	3a7c01850a4bb8ac248ce0b43281d4193a0ca318
+Maps/Lars' Crypt/Lars' Crypt-23/Lars' Crypt-23.world	2643	2659	55008c2b83cef8b7d26fe813120dab07e66016bf
+Maps/Lars' Crypt/Lars' Crypt-24/Lars' Crypt-24.world	2643	2659	aeb824d014a61137e36314fd5f80024c0a208562
+Maps/Lars' Crypt/Lars' Crypt-25/Lars' Crypt-25.world	2643	2659	0bc66278208a668a1791aabf88c9e3ab6e3cb3d1
+Maps/Lizardman's Lair/Lizardman's Lair (Boss)-411/Lizardman's Lair (Boss)-411.world	2656	2672	74c30e7cdf1ab444ecbe657c466e5894661859c9
+Maps/Lizardman's Lair/Lizardman's Lair-408/Lizardman's Lair-408.world	2649	2665	c24c4943f3b42bd9c0b1619551c6099e9c3c061f
+Maps/Lizardman's Lair/Lizardman's Lair-409/Lizardman's Lair-409.world	2649	2665	bccce72ed27ee4fa110e7906429a82f826fc00f2
+Maps/Lizardman's Lair/Lizardman's Lair-410/Lizardman's Lair-410.world	2649	2665	98da285e41d5603c3573c30b64d5ed765471f6d3
+Maps/Lizardman's Lair/Lizardman's Lair-80/Lizardman's Lair-80.world	2648	2664	65feaefc58850a8918fc37a56c3a9302ae6d675a
+Maps/Lizardman's Lair/Lizardman's Lair-81/Lizardman's Lair-81.world	2648	2664	f27dcb0f1f33dfb5e73417d06f86c9e8abb6e614
+Maps/Lizardman's Lair/Lizardman's Lair-82/Lizardman's Lair-82.world	2648	2664	37cd5c4f97b2c16a7efde490f5db8543beaca689
+Maps/Lizardman's Lair/Lizardman's Lair-83/Lizardman's Lair-83.world	2648	2664	1f1a1bace1ec86483d27c8f3dba441f008890f0c
+Maps/Lizardman's Lair/Lizardman's Lair-84/Lizardman's Lair-84.world	2648	2664	1cb214688544fd8b708a96301a32027c46f2d642
+Maps/Lizardman's Lair/Lizardman's Lair-85/Lizardman's Lair-85.world	2648	2664	4355cbe542e8f1412733cfe5a051ac537a1a19af
+Maps/Lurvy House, Well/Lurvy House, Well-398/Lurvy House, Well-398.world	2650	2666	38977703d539227de27a774fbbb85922d63e70c0
+Maps/Magyscar Entrance/Magyscar Entrance-144/Magyscar Entrance-144.world	2650	2666	36fdc1b261b0baa350f3ea82230350c4e91b4c47
+Maps/Magyscar/Magyscar (Boss _ Uma)-94/Magyscar (Boss _ Uma)-94.world	2653	2669	017dc09cd6de862227b4efeeb4748d7aa8318a4d
+Maps/Magyscar/Magyscar-86/Magyscar-86.world	2640	2656	0367901d8e7caf11cfc3dbc1fa7e56e89eef95de
+Maps/Magyscar/Magyscar-87/Magyscar-87.world	2640	2656	5e67ba0f500ce0b29d11c43c77845aaf45329829
+Maps/Magyscar/Magyscar-88/Magyscar-88.world	2640	2656	25f8968d0eb2f9403970d049c9886b17eb86a59b
+Maps/Magyscar/Magyscar-89/Magyscar-89.world	2640	2656	e36c417cec5602e2b1b7b13e295d1e566b57a9f4
+Maps/Magyscar/Magyscar-90/Magyscar-90.world	2640	2656	c7e08269931ba5eb422085ab3a7f215e64a47eb8
+Maps/Magyscar/Magyscar-91/Magyscar-91.world	2640	2656	1037a0029bd42939a9fc9bd59e5b4d2f948dbeb1
+Maps/Magyscar/Magyscar-92/Magyscar-92.world	2640	2656	3d55bad1715ee26363db78b878a0110391fc3af1
+Maps/Magyscar/Magyscar-93/Magyscar-93.world	2640	2656	68cf73ac3d51c05689952c0c746c6d5b43ade7b2
+Maps/Meia Dream/Meia Dream (flashback)-308/Meia Dream (flashback)-308.world	2655	2671	48c7b85015d35fb32270c5dd3fd25f9cfbe7f33d
+Maps/Meia Dream/Meia Dream (flashback)-309/Meia Dream (flashback)-309.world	2655	2671	ee92c212087c2dc4b35cf2e2bc34f3957ab4b529
+Maps/Meia Dream/Meia Dream (flashback, Inoa)-310/Meia Dream (flashback, Inoa)-310.world	2661	2677	651c85d38c39efa5e2af0b5aa28cfc2f29d4d4f7
+Maps/Meia Dream/Meia Dream (unused_)-305/Meia Dream (unused_)-305.world	2653	2669	fa2f18718df50c08ed56323efca0d3035e6a4df3
+Maps/Meia Dream/Meia Dream-306/Meia Dream-306.world	2643	2659	317ed0714b6973062944a2bd05ef571db5b57e47
+Maps/Meia Dream/Meia Dream-307/Meia Dream-307.world	2643	2659	a571c53092685a5aa338b3fa13d1692f64a5206a
+Maps/Meia Dream/Meia Dream-440/Meia Dream-440.world	2643	2659	4087bd56d56557df3530a48a22b633751771fb5d
+Maps/Meia Dream/Meia Dream-441/Meia Dream-441.world	2643	2659	7fe5938b0e037a2878f71e28687731b86cdb93e8
+Maps/Meia Dream/Meia Dream-442/Meia Dream-442.world	2643	2659	f978d7cee62d228bbc93877affddc6153b461210
+Maps/Mrugg House/Mrugg House (Sybil's vision_)-369/Mrugg House (Sybil's vision_)-369.world	2662	2678	5ec231e01bf167a5a1781645f1315ef80c100b9f
+Maps/Murgg Caves/Murgg Caves-382/Murgg Caves-382.world	2644	2660	044c403d3f470aa0aba7222780d7581bccb087b1
+Maps/Murgg Caves/Murgg Caves-383/Murgg Caves-383.world	2644	2660	e1bf517512c596d5bd6f0adfd3d27e54b00bb80a
+Maps/Murgg Caves/Murgg Caves-384/Murgg Caves-384.world	2644	2660	9b2836fc94d0e7e6c520313ef645aad95c76b731
+Maps/Murgg Caves/Murgg Caves-385/Murgg Caves-385.world	2644	2660	9d730ce4fb217439c8c680527dee1e3069c87426
+Maps/Murgg Caves/Murgg Caves-386/Murgg Caves-386.world	2644	2660	f35cebf556d6d46ea22735c5f6a01372855799d9
+Maps/Murgg Tree/Murgg Golem (Boss)-399/Murgg Golem (Boss)-399.world	2651	2667	d56d6a0e2a7c8119effebfd2acdab3e9856a1d32
+Maps/Murgg Tree/Murgg Tree (Boss)-152/Murgg Tree (Boss)-152.world	2650	2666	9aa6b46035d4f1fa471d8dfca8459c888a959e93
+Maps/Murgg Tree/Murgg Tree (elevator)-155/Murgg Tree (elevator)-155.world	2654	2670	e40a0d94a9f0ff237cab87de33f4b2576e162883
+Maps/Murgg Tree/Murgg Tree (inner)-147/Murgg Tree (inner)-147.world	2651	2667	c1b577a4140235557d6d59fb1e906863b84c5eb2
+Maps/Murgg Tree/Murgg Tree (inner)-148/Murgg Tree (inner)-148.world	2651	2667	c2fb73452787d71468ee0230a1bcc269406ef7af
+Maps/Murgg Tree/Murgg Tree (inner)-149/Murgg Tree (inner)-149.world	2651	2667	97e2b1039ba4263e956d158b84bc66340c9387d0
+Maps/Murgg Tree/Murgg Tree (inner)-150/Murgg Tree (inner)-150.world	2651	2667	0f8f57f9739823949f5336cf59d221033cef2073
+Maps/Murgg Tree/Murgg Tree (inner)-151/Murgg Tree (inner)-151.world	2651	2667	b52ca8b87eb89fd9eaae6c10f7fd9957038f05df
+Maps/Murgg Tree/Murgg Tree (inner)-153/Murgg Tree (inner)-153.world	2651	2667	0531347ed6d77d1d9259805cd588b6c3025b01a7
+Maps/Murgg Tree/Murgg Tree (inner)-154/Murgg Tree (inner)-154.world	2651	2667	08f2d4f4422e6aaac162560d4c565e62936af31b
+Maps/Murgg Tree/Murgg Tree Houses-146/Murgg Tree Houses-146.world	2650	2666	0892bd21a7b8ec453bbd453e67972bb8eb02ad62
+Maps/Nava/Coast house (Nava)-420/Coast house (Nava)-420.world	2651	2667	4c2486180862474f2293d9fe351f246af6353f4a
+Maps/Nava/Coast house (nava's cave entrance)-143/Coast house (nava's cave entrance)-143.world	2667	2683	781a76cf8f2ffb5b3cd6184d3ea46eb34a31725d
+Maps/Nava/Island (unused) probably Nava early-314/Island (unused) probably Nava early-314.world	2668	2684	ac296851884b673d72315b273d1260fc9631c559
+Maps/Nava/Island (unused) probably Nava early-315/Island (unused) probably Nava early-315.world	2668	2684	d3e0ddc7218d264aa344f2a43b7edbba87fec61e
+Maps/Nava/Nava''s Entrance Caves-429/Nava''s Entrance Caves-429.world	2655	2671	efe50ffd38839d53b7465d85a4635f15e6ed6f18
+Maps/Nava/Nava''s Entrance Caves-430/Nava''s Entrance Caves-430.world	2655	2671	f943a7268f070f1d799866943f724edf2b6bde5b
+Maps/Nava/Nava''s House (inner)-432/Nava''s House (inner)-432.world	2654	2670	59e75068401e884845d6b7486980520ea65db207
+Maps/Nava/Nava''s Island-431/Nava''s Island-431.world	2647	2663	e7d82cbf3b9ac522b5498892d0dd697642414a2f
+Maps/Nestus' Dream/Nestus' Dream (Boss)-108/Nestus' Dream (Boss)-108.world	2653	2669	f0b00e897adb4554c6ecacbfd4cdfc04b206c931
+Maps/Nestus' Dream/Nestus' Dream-109/Nestus' Dream-109.world	2646	2662	3d4206cd0a8ebc5b8df1cc42d66f1fb18bdfd8b6
+Maps/Nestus' Dream/Nestus' Dream-110/Nestus' Dream-110.world	2646	2662	4b33b37c02386d99172f25fbcedadd99f40a792a
+Maps/Nestus' Dream/Nestus' Dream-111/Nestus' Dream-111.world	2646	2662	3657214432c548f8e23d15c889d1d41a034ff646
+Maps/Nestus' Dream/Nestus' Dream-112/Nestus' Dream-112.world	2646	2662	66ae15106e4e750c3a1282c4ca43c31edf237041
+Maps/Nestus' Dream/Nestus' Dream-113/Nestus' Dream-113.world	2646	2662	cb079b9b7d0381fece4654bb0e96849368c1a0c1
+Maps/Nirude/Nirude (inner)-421/Nirude (inner)-421.world	2647	2663	c4ce17baad576b66d04cf11bdae7113d3b1ca2f4
+Maps/Nirude/Nirude (inner)-422/Nirude (inner)-422.world	2647	2663	67c264b17e3bd7a1f04c68449ba9d587270ddb8c
+Maps/Nirude/Nirude (inner)-423/Nirude (inner)-423.world	2647	2663	73eccc946865c4252a70208d6014a841b930388a
+Maps/Nirude/Nirude (inner)-424/Nirude (inner)-424.world	2647	2663	66b96f9a104f5bb669575459d84a7d16785c5bd2
+Maps/Nirude/Nirude (inner)-425/Nirude (inner)-425.world	2647	2663	2f432c4bc8e754f01856094420535afaa9a4d9be
+Maps/Nirude/Nirude (inner)-426/Nirude (inner)-426.world	2647	2663	5350f1dfffe2d2a3ab87f1caea146a78a5daa611
+Maps/Nirude/Nirude (inner, Event)-451/Nirude (inner, Event)-451.world	2654	2670	4856fc68390f337a1fd28bbc13b71109f18dd7e4
+Maps/Nirude/Nirude (outer, Event, water cape)-439/Nirude (outer, Event, water cape)-439.world	2666	2682	9ce5987059c3d58815aacf455f9d43ba095e7a6d
+Maps/Nirude’s Lair/Nirude’s Lair-35/Nirude’s Lair-35.world	2647	2663	0327f97531b9ec1eb632aa3fda35b48244cc7a57
+Maps/Nirude’s Lair/Nirude’s Lair-36/Nirude’s Lair-36.world	2647	2663	44c6f7c399d75b6ecfee3c6b202ed2db81021a9b
+Maps/Nirude’s Lair/Nirude’s Lair-37/Nirude’s Lair-37.world	2647	2663	d17c2b6ad5f190cc5b27a021a1549b9eee96fdcd
+Maps/Nirude’s Lair/Nirude’s Lair-38/Nirude’s Lair-38.world	2647	2663	96e6a0bb8d56d2dc51c04ed8fc831e9cd086c99e
+Maps/Nirude’s Lair/Nirude’s Lair-39/Nirude’s Lair-39.world	2647	2663	acd65f898ae307a2d4c23d32f5c3417923492ca7
+Maps/Nirude’s Lair/Nirude’s Lair-40/Nirude’s Lair-40.world	2647	2663	b06051db7b5365c7878fce098c793cc03e68aa39
+Maps/Old desert entrance/Old desert entrance (unused)-118/Old desert entrance (unused)-118.world	2661	2677	ebe012bf4b2cae4e5ed43bb7c26daba8da44d787
+Maps/Old desert entrance/Old desert entrance (unused)-119/Old desert entrance (unused)-119.world	2661	2677	99bc39ce51e4942dea2c8485b962451b9ce177ef
+Maps/Old desert entrance/Old desert entrance (unused)-120/Old desert entrance (unused)-120.world	2661	2677	77b74deb124cdb4a129f24e679a7b68ede737b27
+Maps/Old desert entrance/Old desert entrance (unused)-121/Old desert entrance (unused)-121.world	2661	2677	79edb77c0993daa5c038a7657f7e6df8ed2cb380
+Maps/Olen, Cephas house/Olen, Cephas house-303/Olen, Cephas house-303.world	2651	2667	cdd8084357dbcece48b9ba7ae3666b9a36b2390e
+Maps/Overworld 0,0 with Lake Shrine Entrance/Overworld 0,0 with Lake Shrine Entrance-479/Overworld 0,0 with Lake Shrine Entrance-479.world	2672	2688	990f26c8fd163cf0e48f6106d838e98a372af2db
+Maps/Overworld/Overworld 0,0-1/Overworld 0,0-1.world	2644	2660	4cedf03f31105d400bced2374a8193335c7e61a0
+Maps/Overworld/Overworld 0,1-2/Overworld 0,1-2.world	2644	2660	d3d55b3deea226d0d23a8c73d35674d33f35b874
+Maps/Overworld/Overworld 0,2-3/Overworld 0,2-3.world	2644	2660	3e910db19c253f23c13e56cdf64954ea777cb16b
+Maps/Overworld/Overworld 0,3-4/Overworld 0,3-4.world	2644	2660	3e14c04fb8ed65386956ae0c9c2003e7339f7f1e
+Maps/Overworld/Overworld 1,0-5/Overworld 1,0-5.world	2644	2660	c5d7cf9a78b11162fdf725b522f457394f02a067
+Maps/Overworld/Overworld 1,1-6/Overworld 1,1-6.world	2644	2660	9dfbe261859f4588d9e3934e6a028a1d97a1b79b
+Maps/Overworld/Overworld 1,2-7/Overworld 1,2-7.world	2644	2660	e22574d8388aa0b706297d31980d1225d32f0231
+Maps/Overworld/Overworld 1,3-8/Overworld 1,3-8.world	2644	2660	1716cae025da872b30420b32dcb13f8f2fc9c80a
+Maps/Overworld/Overworld 2,0-9/Overworld 2,0-9.world	2644	2660	8050556c79fe5fc6557614d88abdc28c0d21ac99
+Maps/Overworld/Overworld 2,1-10/Overworld 2,1-10.world	2645	2661	1899d09dafc4df52381e585c06450f0f4e54231c
+Maps/Overworld/Overworld 2,3-12/Overworld 2,3-12.world	2645	2661	eda488519db362f3dab9885f8f38c5c1e6c968f6
+Maps/Overworld/Overworld 3,0-13/Overworld 3,0-13.world	2645	2661	317bcebd48e8d190015b5f832f97a2210fd2d2a5
+Maps/Overworld/Overworld 3,1-14/Overworld 3,1-14.world	2645	2661	3c10bad531ea834217e12aa34fa96f80728c1b2c
+Maps/Overworld/Overworld 3,2-15/Overworld 3,2-15.world	2645	2661	1637561c9c6b4282e3d7cd68309815a9e323d647
+Maps/Overworld/Overworld 3,3-16/Overworld 3,3-16.world	2645	2661	65370b18b134f5381d32a38ddd4bc82e90bb2751
+Maps/Overworld/Overworld 4,0-17/Overworld 4,0-17.world	2645	2661	705e7bf1a9b1ffd7ba73316a746abb73b959d231
+Maps/Overworld/Overworld 4,1-18/Overworld 4,1-18.world	2645	2661	336dce52b06e5528aafc64dc1ac637d9d8d5ba5c
+Maps/Overworld/Overworld 4,2-19/Overworld 4,2-19.world	2645	2661	999e303129bffaa3fbb7083f11110cc6fcb249b2
+Maps/Overworld/Overworld 4,3-20/Overworld 4,3-20.world	2645	2661	b1f7b47c91f437fd261b13dcd7e9bacd0474a677
+Maps/Pub Entrance + Floor/Pub Entrance + Floor-394/Pub Entrance + Floor-394.world	2653	2669	d3a44126e46e30698e4ea9ecc15e7241435c0ac5
+Maps/Pub/Pub (Ring)-472/Pub (Ring)-472.world	2643	2659	a4998afd591c5055de14b75dbd02515fdb7fcb2f
+Maps/Pub/Pub (Roulette)-474/Pub (Roulette)-474.world	2647	2663	6be27d594cbd18309e599ce19054a250856f8b29
+Maps/Pub/Pub (Shooting)-473/Pub (Shooting)-473.world	2647	2663	561710bb676ee35ee1d88353677e573b407256ce
+Maps/Save Room/Save Room (Coal Mine)-452/Save Room (Coal Mine)-452.world	2654	2670	12ccb0507f401f9960e24a537219499c3f86c293
+Maps/Save Room/Save Room (Coastal Cave_)-454/Save Room (Coastal Cave_)-454.world	2658	2674	9dbe9b6b5cc0afb9bd8d4a24ca5705b1072337cf
+Maps/Save Room/Save Room (Desert _ Ancient Shrine)-455/Save Room (Desert _ Ancient Shrine)-455.world	2668	2684	ee20f9cfd78095bd0946b71bcef81933e4305690
+Maps/Save Room/Save Room (Elenes Nightmare)-469/Save Room (Elenes Nightmare)-469.world	2661	2677	332fe635bc06e6a06da2fc9c315bdf5bb0c2ec28
+Maps/Save Room/Save Room (Fairy cave)-463/Save Room (Fairy cave)-463.world	2655	2671	511b930acc964165b3b7aa25887e6354fef48a3f
+Maps/Save Room/Save Room (Giles Nightmare)-467/Save Room (Giles Nightmare)-467.world	2660	2676	7113faba6849c5230c034d6784c7e26153947fd3
+Maps/Save Room/Save Room (Kline's Nightmare)-466/Save Room (Kline's Nightmare)-466.world	2662	2678	44f364ba3e203df75349e868534f9433871824fb
+Maps/Save Room/Save Room (Lake Shrine_)-464/Save Room (Lake Shrine_)-464.world	2657	2673	af6850c4f43677d28482dea108fb89fe9e3813be
+Maps/Save Room/Save Room (Lars Crypt)-453/Save Room (Lars Crypt)-453.world	2655	2671	b72ec1af571d7ae89c154743ee85bd8e9162d023
+Maps/Save Room/Save Room (Lizardman's Lair)-458/Save Room (Lizardman's Lair)-458.world	2661	2677	d254a088adbb3eaceac2414b91a68e11ed66f823
+Maps/Save Room/Save Room (Magyscar)-456/Save Room (Magyscar)-456.world	2653	2669	6a6e195a7e120c42c72a2e7ce226c552de5eb183
+Maps/Save Room/Save Room (Magyscar_)-459/Save Room (Magyscar_)-459.world	2654	2670	9d7e0a9ec189c15cf987428a80f78e6b146e4762
+Maps/Save Room/Save Room (Meia Dream)-468/Save Room (Meia Dream)-468.world	2655	2671	4a6317111127fb228c5dff4bdedc814fe8630849
+Maps/Save Room/Save Room (Murgg Tree)-462/Save Room (Murgg Tree)-462.world	2655	2671	98c99274a54018cc5cb6a60e7d5765beb5cb5f38
+Maps/Save Room/Save Room (Nestus' Dream)-470/Save Room (Nestus' Dream)-470.world	2658	2674	8d8d661905e3e09cc6e247f800e449dd35591f21
+Maps/Save Room/Save Room (Nightmare ...)-465/Save Room (Nightmare ...)-465.world	2658	2674	96b90ad5e93b170953c0c18ede10b6de85fb4dfb
+Maps/Save Room/Save Room (Nirude)-460/Save Room (Nirude)-460.world	2651	2667	0661c473d74f0b3702cb01145e2a455d6b753542
+Maps/Save Room/Save Room (Underground Watercourse)-457/Save Room (Underground Watercourse)-457.world	2668	2684	48c0538584cf96bac912d957f1a8dde42f406a1c
+Maps/Save Room/Save Room (_)-461/Save Room (_)-461.world	2646	2662	de43b4cb9ce0bda1311f820556b5664c79db9738
+Maps/Sluice, Berue, Cave/Sluice, Berue, Cave-396/Sluice, Berue, Cave-396.world	2652	2668	a15b88c7337ebac7da47552d0f84a5ab11e53f08
+Maps/Surferboy Nightmare/Surferboy Nightmare (inner)-42/Surferboy Nightmare (inner)-42.world	2659	2675	51955ebd0b0aefc447472b047db0334e60d3b494
+Maps/Surferboy Nightmare/Surferboy Nightmare (outer)-41/Surferboy Nightmare (outer)-41.world	2659	2675	243ae65818c1c9a5ad164d6ea9005d5a1b2d5302
+Maps/Surferboy Nightmare/Surferboy Nightmare (outer)-43/Surferboy Nightmare (outer)-43.world	2659	2675	1bc83f960ed0fe864210b54ebb971b6c67b2618d
+Maps/Tarn's Manor/Tarn's Manor (unused broken)-117/Tarn's Manor (unused broken)-117.world	2661	2677	ce92d4bc07c5795a0584d94b3c25d482a4c28655
+Maps/Tarn's Manor/Tarn's Manor-114/Tarn's Manor-114.world	2645	2661	44f389dc446fa8fd7ce60219a54a5f87a1671d08
+Maps/Tarn's Manor/Tarn's Manor-115/Tarn's Manor-115.world	2645	2661	fdc4e21d279332891cfd9718a0cb6eaf761be626
+Maps/Tarn's Manor/Tarn's Manor-116/Tarn's Manor-116.world	2645	2661	d7e9273098b049bf9fa412ab8207cc8db55cae93
+Maps/Test Map/Test Map-0/Test Map-0.world	2639	2655	2f213b1988072ec447af887ee0bf71f13e74ad18
+Maps/The Klark/Klark (outer, unused)-320/Klark (outer, unused)-320.world	2654	2670	cfa1c0021f61d202b6ef1535e06e76a413daba91
+Maps/The Klark/Ship (inner, broken, unused)-312/Ship (inner, broken, unused)-312.world	2661	2677	abd70dbc9dccb60cd34a9076d9b01361737dbcaa
+Maps/The Klark/Ship (inner, broken, unused)-313/Ship (inner, broken, unused)-313.world	2661	2677	aedc59c4453a25c6fc19c0ca1a241c4b246d7ba5
+Maps/The Klark/Ship Klark (beginning)-389/Ship Klark (beginning)-389.world	2655	2671	6ddfb05940aea35877641271e66024b8f9cd20ee
+Maps/The Klark/Ship Klark (inner)-390/Ship Klark (inner)-390.world	2651	2667	665eecf88bf0b294e442979949cf5504d861972c
+Maps/The Klark/Ship Klark (night, break, Event)-391/Ship Klark (night, break, Event)-391.world	2665	2681	b92b4c796f34fcfbae2aced33341d26eb480b50f
+Maps/The Klark/Ship Klark (night, inner, break)-392/Ship Klark (night, inner, break)-392.world	2665	2681	25f2ede7b6ea86dcb8bae377b533512a04f48dcc
+Maps/The Klark/The Klark - inner-388/The Klark - inner-388.world	2650	2666	29088179fc4871f9dedd25934aa9164c43b62ff9
+Maps/The Klark/The Klark-387/The Klark-387.world	2642	2658	3ed762e65f6929dd6c6692b51792222a1b959119
+Maps/Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-55/Torla Buggy_ with bar music and random texts (early version of Torla)-55.world	2701	2717	d4b4acaf248032280da59e4a7cf582dc57ba49c4
+Maps/Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-56/Torla Buggy_ with bar music and random texts (early version of Torla)-56.world	2701	2717	a49c84a07e12fcaab565c288ac08ab9f309d37b2
+Maps/Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-57/Torla Buggy_ with bar music and random texts (early version of Torla)-57.world	2701	2717	763fb7df60218d4a9eceb0322e47ac0868fe4a99
+Maps/Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-58/Torla Buggy_ with bar music and random texts (early version of Torla)-58.world	2701	2717	2ce6e541d75843221aa0dd3e11c02d6b4814fd84
+Maps/Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-59/Torla Buggy_ with bar music and random texts (early version of Torla)-59.world	2701	2717	cb5575815d135056ea7fad46b55b59bb9584bd00
+Maps/Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-60/Torla Buggy_ with bar music and random texts (early version of Torla)-60.world	2701	2717	0a7a2a3297dc2792669c673a79a98ef3783ad5ce
+Maps/Torla/Torla (inner)-443/Torla (inner)-443.world	2646	2662	81b0c51376a664c87b5145b82a4ec2b58a24793b
+Maps/Torla/Torla (inner)-444/Torla (inner)-444.world	2646	2662	f41ff4e818d9900cab13bbf7d4c47c11efe85b43
+Maps/Torla/Torla (inner)-445/Torla (inner)-445.world	2646	2662	86e5c6914aaeaadc3732c04fad3ba8dc7d0f38e2
+Maps/Torla/Torla (inner)-446/Torla (inner)-446.world	2646	2662	f0055c586cac9843c4dd9ca05db7efce7432fa3c
+Maps/Torla/Torla (inner)-447/Torla (inner)-447.world	2646	2662	a01cf6ec02173394752313c590a3a5aabc28d966
+Maps/Torla/Torla (inner)-448/Torla (inner)-448.world	2646	2662	e45f2c0ffdcb976706e8fc12ffa8b858c8c3f0d4
+Maps/Underground Watercourse/Underground Watercourse-77/Underground Watercourse-77.world	2655	2671	46f591fc0bedb19561ff8650479f987268ee48f6
+Maps/Underground Watercourse/Underground Watercourse-78/Underground Watercourse-78.world	2655	2671	8ca219d5b4fc3b7566baa5f040a9b14b7eca4de9
+Maps/Underground Watercourse/Underground Watercourse-79/Underground Watercourse-79.world	2655	2671	773480c15eeb1cbfc85218bd86f4c568c2c0ad03
+Maps/Unused Dream/Unused Dream (Boss) (Beta Surferboys Dream)_-47/Unused Dream (Boss) (Beta Surferboys Dream)_-47.world	2676	2692	e6e99e9dbd3285cc51854a4421f63247c61c752f
+Maps/Unused Dream/Unused Dream (inner) (Beta Surferboys Dream)_-45/Unused Dream (inner) (Beta Surferboys Dream)_-45.world	2677	2693	72cbd859c0121423b6787111ee5630a02b574f24
+Maps/Unused Dream/Unused Dream (outer) (Beta Surferboys Dream)_-46/Unused Dream (outer) (Beta Surferboys Dream)_-46.world	2677	2693	7837f918381c8c9b0904e34a9bc94fffa1a664ac
+Maps/Unused Nightmare/Unused Nightmare (Boss _ Dream Eater)-98/Unused Nightmare (Boss _ Dream Eater)-98.world	2669	2685	d2a81a705c45546408e668410f698fa0df762fa0
+Maps/Unused Nightmare/Unused Nightmare-95/Unused Nightmare-95.world	2648	2664	322b90a0a50125dcac134defbdda70824c517034
+Maps/Unused Nightmare/Unused Nightmare-96/Unused Nightmare-96.world	2648	2664	dda919c18411b96e36d11b23b7671a171fb36611
+Maps/Unused Nightmare/Unused Nightmare-97/Unused Nightmare-97.world	2648	2664	b0a2fbfb4fac78502ec0eaf151edfdd67aaaf961
+Maps/Warp-Zone/Warp-Zone-381/Warp-Zone-381.world	2642	2658	65c5e3fe1d82de9b6b793784c877cdea1c3d8848
+Maps/Water Mill/Water Mill (inner)-395/Water Mill (inner)-395.world	2651	2667	bd4b757470daf951e0857705f2e4f7a64e0d5229
+Maps/Water Mill/Water Mill-393/Water Mill-393.world	2643	2659	f6e4b6a3a7314408637852fce215c0a4054bb721
+Maps/Well/Well (+Lurvy house unused_)-311/Well (+Lurvy house unused_)-311.world	2660	2676	5d96eb9887b6311ded573e1fb0f4b1f19c8191f8
+Maps/Wendels Nightmare/Wendels Nightmare-44/Wendels Nightmare-44.world	2649	2665	d59bd693d61ad75a808fed1cc108b34e0cc63625
+Entities/Alundra/Alundra.gameMode	232	248	2fce384de1c32d42bcae8be61df391a9547a9e1c
+UI/Screens/ChoiceScreen.design.json	359	375	4a6e847b0a2b3e042fc1b177e579601279df56d9
+UI/Screens/HudScreen.design.json	5703	5719	c072df4d505426c4194fbc0242477d92a20c4f97
+UI/Screens/InventoryScreen.design.json	4246	4262	831aa80d0e0a4feac8806348d01e2a40c0fa6d9c
+UI/Screens/SaveScreen.design.json	1560	1576	08fcd86773c7bf39106973250d992ef7cccc7a0a
+UI/Screens/SubInventoryScreen.design.json	3968	3984	f9777869ff72ed59c6b078e0800b7d0f35363854
+UI/Screens/TextBoxScreen.design.json	665	681	7f97f5b2dcfe1b1dfd04070e4267dc23ac1d05c9

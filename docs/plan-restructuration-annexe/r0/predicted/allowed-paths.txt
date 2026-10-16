@@ -1,0 +1,886 @@
+Entities/Alundra/Alundra.entity
+Entities/Alundra/Alundra.gameMode
+Entities/Armure cassable/Armure cassable.entity
+Entities/Beaumont (chef du village)/Beaumont (chef du village).entity
+Entities/Bergus (frère aîné)/Bergus (frère aîné).entity
+Entities/Bloc de glace transportable/Bloc de glace transportable.entity
+Entities/Bloc transparent (1×1×2)/Bloc transparent (1×1×2).entity
+Entities/Bloc transparent (3×3×3)/Bloc transparent (3×3×3).entity
+Entities/Bloc transparent (8×2×1)/Bloc transparent (8×2×1).entity
+Entities/Bloc transparent (gigantesque)/Bloc transparent (gigantesque).entity
+Entities/Bloc transparent (minuscule)/Bloc transparent (minuscule).entity
+Entities/Bloc transparent (pour arc)/Bloc transparent (pour arc).entity
+Entities/Bloc à pousser_attaquer/Bloc à pousser_attaquer.entity
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/Bois flottant .01 sur l’eau _ .23 en l’air.entity
+Entities/Bombe/Bombe.entity
+Entities/Bonaire & pierre (YM03)/Bonaire & pierre (YM03).entity
+Entities/Bonaire (homme endormi à jamais)/Bonaire (homme endormi à jamais).entity
+Entities/Bonaire mort/Bonaire mort.entity
+Entities/Boule de fer (grande)/Boule de fer (grande).entity
+Entities/Boule de fer (petite)/Boule de fer (petite).entity
+Entities/Boule de feu chargée/Boule de feu chargée.entity
+Entities/Boule de feu/Boule de feu.entity
+Entities/Boule de glace chargée/Boule de glace chargée.entity
+Entities/Boule de glace/Boule de glace.entity
+Entities/Boîte bicolore rouge_bleu/Boîte bicolore rouge_bleu.entity
+Entities/Bulle .0-1-2 support _3-4 non support/Bulle .0-1-2 support _3-4 non support.entity
+Entities/Caisse en bois générique/Caisse en bois générique.entity
+Entities/Cephas (gardien de cimetière)/Cephas (gardien de cimetière).entity
+Entities/Cercueil/Cercueil.entity
+Entities/Champignon non ennemi/Champignon non ennemi.entity
+Entities/Chariot de chargement/Chariot de chargement.entity
+Entities/Chariot de mine/Chariot de mine.entity
+Entities/Chaîne .0 traversable _1 détruite _2 attente/Chaîne .0 traversable _1 détruite _2 attente.entity
+Entities/Coffre au trésor/Coffre au trésor.entity
+Entities/Coffre d’Anzes/Coffre d’Anzes.entity
+Entities/Colonne de glace/Colonne de glace.entity
+Entities/Corbeau/Corbeau.entity
+Entities/Couvercle de tige-bombe (dessus)/Couvercle de tige-bombe (dessus).entity
+Entities/Couvercle de tige-bombe (horizontal)/Couvercle de tige-bombe (horizontal).entity
+Entities/Couvercle de tige-bombe (vertical)/Couvercle de tige-bombe (vertical).entity
+Entities/Cruche générique/Cruche générique.entity
+Entities/Cruche n°2/Cruche n°2.entity
+Entities/Déclencheur clé invisible (standard)/Déclencheur clé invisible (standard).entity
+Entities/Déclencheur clé invisible (très petit)/Déclencheur clé invisible (très petit).entity
+Entities/Elene (femme à personnalités multiples)/Elene (femme à personnalités multiples).entity
+Entities/Fein (femme du gros)/Fein (femme du gros).entity
+Entities/Flamme/Flamme.entity
+Entities/Flammes (pour Ice Rod)/Flammes (pour Ice Rod).entity
+Entities/Flammes horizontales/Flammes horizontales.entity
+Entities/Flotteur d’eau _ grande boule de fer/Flotteur d’eau _ grande boule de fer.entity
+Entities/Flèches Niv.1/Flèches Niv.1.entity
+Entities/Flèches Niv.2/Flèches Niv.2.entity
+Entities/Flèches chargées/Flèches chargées.entity
+Entities/Giles (homme religieux)/Giles (homme religieux).entity
+Entities/Goutte d’eau/Goutte d’eau.entity
+Entities/Grand visage (Aida)/Grand visage (Aida).entity
+Entities/Grille de fer (grande)/Grille de fer (grande).entity
+Entities/Grille de fer (petite)/Grille de fer (petite).entity
+Entities/Gros bloc transparent (6×10)/Gros bloc transparent (6×10).entity
+Entities/Gustav (ivrogne)/Gustav (ivrogne).entity
+Entities/Générateur/Générateur.entity
+Entities/Haricots de Jack/Haricots de Jack.entity
+Entities/Herbe transportable/Herbe transportable.entity
+Entities/Homme effondré/Homme effondré.entity
+Entities/I01_Épée de base/I01_Épée de base.entity
+Entities/I02_Lame d’acier/I02_Lame d’acier.entity
+Entities/I03_Destructeur de démons/I03_Destructeur de démons.entity
+Entities/I04_Épée sacrée Elnard/I04_Épée sacrée Elnard.entity
+Entities/I05_Arc du chasseur/I05_Arc du chasseur.entity
+Entities/I06_Arc de William/I06_Arc de William.entity
+Entities/I07_Bâton magique/I07_Bâton magique.entity
+Entities/I08_Objet 008/I08_Objet 008.entity
+Entities/I09_Lancer de chaîne/I09_Lancer de chaîne.entity
+Entities/I10_Le Broyeur/I10_Le Broyeur.entity
+Entities/I11_Objet 011/I11_Objet 011.entity
+Entities/I12_Objet 012/I12_Objet 012.entity
+Entities/I13_Objet 013/I13_Objet 013.entity
+Entities/I14_Bâton des glaces flottantes/I14_Bâton des glaces flottantes.entity
+Entities/I15_Objet 015/I15_Objet 015.entity
+Entities/I16_Bâton de feu/I16_Bâton de feu.entity
+Entities/I17_Veste en tissu/I17_Veste en tissu.entity
+Entities/I18_Veste en cuir/I18_Veste en cuir.entity
+Entities/I19_Veste en acier/I19_Veste en acier.entity
+Entities/I20_Veste en argent/I20_Veste en argent.entity
+Entities/I21_Objet 021/I21_Objet 021.entity
+Entities/I22_Objet 022/I22_Objet 022.entity
+Entities/I23_Objet 023/I23_Objet 023.entity
+Entities/I24_Objet 024/I24_Objet 024.entity
+Entities/I25_Bottes normales/I25_Bottes normales.entity
+Entities/I26_Bottes longues/I26_Bottes longues.entity
+Entities/I27_Bottes de triton/I27_Bottes de triton.entity
+Entities/I28_Bottes magiques/I28_Bottes magiques.entity
+Entities/I29_Objet 029/I29_Objet 029.entity
+Entities/I30_Objet 030/I30_Objet 030.entity
+Entities/I31_Haricots de Jack/I31_Haricots de Jack.entity
+Entities/I32_Cape de sable/I32_Cape de sable.entity
+Entities/I33_Armure brisée/I33_Armure brisée.entity
+Entities/I34_Objet 034/I34_Objet 034.entity
+Entities/I35_Bombe explosive/I35_Bombe explosive.entity
+Entities/I36_Herbe médicinale/I36_Herbe médicinale.entity
+Entities/I37_Potion L/I37_Potion L.entity
+Entities/I38_Extrait magique/I38_Extrait magique.entity
+Entities/I39_Breuvage de soin/I39_Breuvage de soin.entity
+Entities/I40_Cape aquatique/I40_Cape aquatique.entity
+Entities/I41_Potion S/I41_Potion S.entity
+Entities/I43_Tome de la Terre (haut)/I43_Tome de la Terre (haut).entity
+Entities/I44_Tome de la Terre (bas)/I44_Tome de la Terre (bas).entity
+Entities/I45_Tome du démon d’eau (haut)/I45_Tome du démon d’eau (haut).entity
+Entities/I46_Tome du démon d’eau (bas)/I46_Tome du démon d’eau (bas).entity
+Entities/I47_Tome du dragon de feu (haut)/I47_Tome du dragon de feu (haut).entity
+Entities/I48_Tome du dragon de feu (bas)/I48_Tome du dragon de feu (bas).entity
+Entities/I49_Tome du dieu du vent (haut)/I49_Tome du dieu du vent (haut).entity
+Entities/I50_Tome du dieu du vent (bas)/I50_Tome du dieu du vent (bas).entity
+Entities/I51_Anneau d’orc/I51_Anneau d’orc.entity
+Entities/I52_Anneau d’ogre/I52_Anneau d’ogre.entity
+Entities/I53_Bracelet d’armure d’acier/I53_Bracelet d’armure d’acier.entity
+Entities/I54_Bracelet d’armure d’argent/I54_Bracelet d’armure d’argent.entity
+Entities/I55_Anneau de régénération/I55_Anneau de régénération.entity
+Entities/I56_Anneau de guérison/I56_Anneau de guérison.entity
+Entities/I57_Billet d’entrée/I57_Billet d’entrée.entity
+Entities/I58_Objet 058/I58_Objet 058.entity
+Entities/I59_Gant de puissance/I59_Gant de puissance.entity
+Entities/I60_Clé de l’ascenseur/I60_Clé de l’ascenseur.entity
+Entities/I61_Clé/I61_Clé.entity
+Entities/I62_Emblème du sang de pigeon/I62_Emblème du sang de pigeon.entity
+Entities/I63_Emblème azur/I63_Emblème azur.entity
+Entities/I64_Emblème de topaze/I64_Emblème de topaze.entity
+Entities/I65_Emblème brun/I65_Emblème brun.entity
+Entities/I66_Emblème écarlate/I66_Emblème écarlate.entity
+Entities/I67_Emblème vert sombre/I67_Emblème vert sombre.entity
+Entities/I68_Emblème d’argent/I68_Emblème d’argent.entity
+Entities/I69_1 Gilda/I69_1 Gilda.entity
+Entities/I70_5 Gildas/I70_5 Gildas.entity
+Entities/I71_10 Gildas/I71_10 Gildas.entity
+Entities/I72_30 Gildas/I72_30 Gildas.entity
+Entities/I73__ Vieille clé/I73__ Vieille clé.entity
+Entities/I74_Bouquet de fleurs/I74_Bouquet de fleurs.entity
+Entities/I75_Clé d’Anzes/I75_Clé d’Anzes.entity
+Entities/I76_Testament d’Anzes/I76_Testament d’Anzes.entity
+Entities/I77_Orbe du grand arbre/I77_Orbe du grand arbre.entity
+Entities/I78_Pierre de Zolist/I78_Pierre de Zolist.entity
+Entities/I79_Bec en or/I79_Bec en or.entity
+Entities/I80_Graine magique/I80_Graine magique.entity
+Entities/I81_Petit cristal/I81_Petit cristal.entity
+Entities/I82_Grand cristal/I82_Grand cristal.entity
+Entities/I83_Récipient de vie/I83_Récipient de vie.entity
+Entities/I84_Petit cœur/I84_Petit cœur.entity
+Entities/I85_Cœur moyen/I85_Cœur moyen.entity
+Entities/I86_Grand cœur/I86_Grand cœur.entity
+Entities/I87__ Cadeau de remerciement/I87__ Cadeau de remerciement.entity
+Entities/I88_Livre d’Elna/I88_Livre d’Elna.entity
+Entities/I89_Objet 089/I89_Objet 089.entity
+Entities/Interrupteur (allumage)/Interrupteur (allumage).entity
+Entities/Interrupteur (bascule)/Interrupteur (bascule).entity
+Entities/Interrupteur (levier)/Interrupteur (levier).entity
+Entities/Interrupteur (monter) inutilisable/Interrupteur (monter) inutilisable.entity
+Entities/Interrupteur (mur)/Interrupteur (mur).entity
+Entities/Interrupteur (piétiner) ← à utiliser !/Interrupteur (piétiner) ← à utiliser !.entity
+Entities/Interrupteur de lampe/Interrupteur de lampe.entity
+Entities/Interrupteur poussoir/Interrupteur poussoir.entity
+Entities/Interrupteur tricolore/Interrupteur tricolore.entity
+Entities/Interrupteur à ballon/Interrupteur à ballon.entity
+Entities/Jaylen (mineur)/Jaylen (mineur).entity
+Entities/Jess (armurier)/Jess (armurier).entity
+Entities/Jeune Meia/Jeune Meia.entity
+Entities/Kisha (petite sœur)/Kisha (petite sœur).entity
+Entities/Klein (rêve uniquement)/Klein (rêve uniquement).entity
+Entities/Kline (somnambule)/Kline (somnambule).entity
+Entities/Kohei/Kohei.entity
+Entities/Laser (_)/Laser (_).entity
+Entities/Livre/Livre.entity
+Entities/Lurvy/Lurvy.entity
+Entities/Lutas (gros bonhomme)/Lutas (gros bonhomme).entity
+Entities/Lyman (mineur)/Lyman (mineur).entity
+Entities/L’Homme en robe/L’Homme en robe.entity
+Entities/Magie de feu Niv.1/Magie de feu Niv.1.entity
+Entities/Magie de feu Niv.2/Magie de feu Niv.2.entity
+Entities/Magie de terre Niv.1/Magie de terre Niv.1.entity
+Entities/Magie de terre Niv.2/Magie de terre Niv.2.entity
+Entities/Magie de vent Niv.1/Magie de vent Niv.1.entity
+Entities/Magie de vent Niv.2 (bas)/Magie de vent Niv.2 (bas).entity
+Entities/Magie d’eau Niv.2/Magie d’eau Niv.2.entity
+Entities/Marin-passager-mouette-146/Marin-passager-mouette-146.entity
+Entities/Marin-passager-mouette-161/Marin-passager-mouette-161.entity
+Entities/Maître des clés/Maître des clés.entity
+Entities/Meade (père des jumeaux)/Meade (père des jumeaux).entity
+Entities/Meia (pour YM08)/Meia (pour YM08).entity
+Entities/Meia/Meia.entity
+Entities/Mini-Nilude (D12)/Mini-Nilude (D12).entity
+Entities/Moteur à ondes/Moteur à ondes.entity
+Entities/Mur à boule de fer (111)/Mur à boule de fer (111).entity
+Entities/Mur à boule de fer (112) – axe/Mur à boule de fer (112) – axe.entity
+Entities/Mur à boule de fer (221)/Mur à boule de fer (221).entity
+Entities/Mur à boule de fer (222) – boule de fer/Mur à boule de fer (222) – boule de fer.entity
+Entities/Mur à boule de fer (2×2×1) permanent/Mur à boule de fer (2×2×1) permanent.entity
+Entities/Mur à boule de fer (2×2×2) permanent/Mur à boule de fer (2×2×2) permanent.entity
+Entities/Myra (vieille femme)/Myra (vieille femme).entity
+Entities/Myra morte/Myra morte.entity
+Entities/Mère du médium/Mère du médium.entity
+Entities/Médium ligoté/Médium ligoté.entity
+Entities/Nadia (femme insomniaque)/Nadia (femme insomniaque).entity
+Entities/Naomi (épouse courageuse)/Naomi (épouse courageuse).entity
+Entities/Nava (vieil homme du cap)/Nava (vieil homme du cap).entity
+Entities/Nestus (frère cadet)/Nestus (frère cadet).entity
+Entities/Nuage de sable/Nuage de sable.entity
+Entities/Objet eau (transportable)/Objet eau (transportable).entity
+Entities/Objet lune (transportable)/Objet lune (transportable).entity
+Entities/Objet soleil (transportable)/Objet soleil (transportable).entity
+Entities/Objet étoile (transportable)/Objet étoile (transportable).entity
+Entities/Olen (mineur)/Olen (mineur).entity
+Entities/Panneau générique/Panneau générique.entity
+Entities/Phineas (père)/Phineas (père).entity
+Entities/Pierre (destructible à la boule de fer) 1/Pierre (destructible à la boule de fer) 1.entity
+Entities/Pierre (destructible à la boule de fer) 2/Pierre (destructible à la boule de fer) 2.entity
+Entities/Pierre générique/Pierre générique.entity
+Entities/Pierre très lourde/Pierre très lourde.entity
+Entities/Pilier de feu (Ice Rod)/Pilier de feu (Ice Rod).entity
+Entities/Pilier détruisible (UD■_LR●)/Pilier détruisible (UD■_LR●).entity
+Entities/Pilier poussable (PRG)/Pilier poussable (PRG).entity
+Entities/Plafond suspendu/Plafond suspendu.entity
+Entities/Plaque à motif/Plaque à motif.entity
+Entities/Plateforme flottante (grande)/Plateforme flottante (grande).entity
+Entities/Plateforme flottante (petite)/Plateforme flottante (petite).entity
+Entities/Plateforme flottante fragile (grande)/Plateforme flottante fragile (grande).entity
+Entities/Plateforme flottante fragile (petite)/Plateforme flottante fragile (petite).entity
+Entities/Plateforme lance-flammes/Plateforme lance-flammes.entity
+Entities/Plateforme mobile toutes directions/Plateforme mobile toutes directions.entity
+Entities/Porte (grande)/Porte (grande).entity
+Entities/Porte (petite)/Porte (petite).entity
+Entities/Porte Muruta/Porte Muruta.entity
+Entities/Porte rotative 45°/Porte rotative 45°.entity
+Entities/Pot magique (boïng)/Pot magique (boïng).entity
+Entities/Poulet/Poulet.entity
+Entities/Projectile (boomerang)/Projectile (boomerang).entity
+Entities/Projectile (chute)/Projectile (chute).entity
+Entities/Projectile (ligne droite)/Projectile (ligne droite).entity
+Entities/Projectile (parabolique)/Projectile (parabolique).entity
+Entities/Projectile de magie de feu Niv.1/Projectile de magie de feu Niv.1.entity
+Entities/Racine destructible à la bombe/Racine destructible à la bombe.entity
+Entities/Rampe de lancement/Rampe de lancement.entity
+Entities/Rampe de saut/Rampe de saut.entity
+Entities/Rancune de Melzas/Rancune de Melzas.entity
+Entities/Rocher roulant (grand)/Rocher roulant (grand).entity
+Entities/Rocher roulant (petit)/Rocher roulant (petit).entity
+Entities/Rocher tombant/Rocher tombant.entity
+Entities/Rocher tortue non ennemi/Rocher tortue non ennemi.entity
+Entities/Roi Mimming/Roi Mimming.entity
+Entities/Ronan (prêtre)/Ronan (prêtre).entity
+Entities/Ronces enflammées 112/Ronces enflammées 112.entity
+Entities/Ronces enflammées 222/Ronces enflammées 222.entity
+Entities/Rumi (mère des jumeaux)/Rumi (mère des jumeaux).entity
+Entities/Sara (femme du rêve)/Sara (femme du rêve).entity
+Entities/SaveBook (Ne pas toucher !)/SaveBook (Ne pas toucher !).entity
+Entities/Septimus (chercheur)/Septimus (chercheur).entity
+Entities/Sierra (mère)/Sierra (mère).entity
+Entities/Sol piquant/Sol piquant.entity
+Entities/Statue de pierre/Statue de pierre.entity
+Entities/Statue de roi, serviteur et déesse/Statue de roi, serviteur et déesse.entity
+Entities/Statue divine de Melzas/Statue divine de Melzas.entity
+Entities/Statue d’homme-lézard transformé/Statue d’homme-lézard transformé.entity
+Entities/Statue poussable (événement)/Statue poussable (événement).entity
+Entities/Sybill (aux yeux rouges)/Sybill (aux yeux rouges).entity
+Entities/Talis (fils)/Talis (fils).entity
+Entities/Thyea (épouse)/Thyea (épouse).entity
+Entities/Tombe/Tombe.entity
+Entities/Tonneau générique/Tonneau générique.entity
+Entities/Torche/Torche.entity
+Entities/Tourelle à 4 directions/Tourelle à 4 directions.entity
+Entities/Toutou (chien)/Toutou (chien).entity
+Entities/Trappe d’escalier (grande)/Trappe d’escalier (grande).entity
+Entities/Trappe d’escalier (petite)/Trappe d’escalier (petite).entity
+Entities/Tronc (transportable), petite boule de fer/Tronc (transportable), petite boule de fer.entity
+Entities/Wendell (grand-père)/Wendell (grand-père).entity
+Entities/YM08 barrière u=eau d=feu l=sable r=glace/YM08 barrière u=eau d=feu l=sable r=glace.entity
+Entities/Yuri (marchand d’objets)/Yuri (marchand d’objets).entity
+Entities/Yustel (vieille voyante)/Yustel (vieille voyante).entity
+Entities/Zane (mineur)/Zane (mineur).entity
+Entities/asiba (plateforme)/asiba (plateforme).entity
+Entities/bank_alundra_10/bank_alundra_10.entity
+Entities/bank_alundra_13/bank_alundra_13.entity
+Entities/bank_alundra_154/bank_alundra_154.entity
+Entities/bank_alundra_250/bank_alundra_250.entity
+Entities/bank_alundra_5/bank_alundra_5.entity
+Entities/bank_alundra_6/bank_alundra_6.entity
+Entities/bank_alundra_8/bank_alundra_8.entity
+Entities/bank_alundra_9/bank_alundra_9.entity
+Entities/pont en bois/pont en bois.entity
+Entities/Épée d’onde Niv.1/Épée d’onde Niv.1.entity
+Entities/Épée d’onde Niv.2/Épée d’onde Niv.2.entity
+Entities/Épée d’onde Niv.3/Épée d’onde Niv.3.entity
+Entities/◆Abyss (droite)/◆Abyss (droite).entity
+Entities/◆Abyss (gauche)/◆Abyss (gauche).entity
+Entities/◆Abyss (projectiles-bulles)/◆Abyss (projectiles-bulles).entity
+Entities/◆Abyss Niv.1/◆Abyss Niv.1.entity
+Entities/◆Après Melzas/◆Après Melzas.entity
+Entities/◆Beannoïde/◆Beannoïde.entity
+Entities/◆Bombardement de Roein/◆Bombardement de Roein.entity
+Entities/◆Boomerang Niv.1/◆Boomerang Niv.1.entity
+Entities/◆Boss lézard Niv.1/◆Boss lézard Niv.1.entity
+Entities/◆Bouclier de Roein/◆Bouclier de Roein.entity
+Entities/◆Boule de feu/◆Boule de feu.entity
+Entities/◆Bras, projectiles/◆Bras, projectiles.entity
+Entities/◆Cercle magique de Zoldia/◆Cercle magique de Zoldia.entity
+Entities/◆Champignon Niv.1/◆Champignon Niv.1.entity
+Entities/◆Chute de rochers de Nilude (111)/◆Chute de rochers de Nilude (111).entity
+Entities/◆Chute de rochers de Nilude (112)/◆Chute de rochers de Nilude (112).entity
+Entities/◆Chute de rochers de Nilude (222)/◆Chute de rochers de Nilude (222).entity
+Entities/◆Collider de Roein/◆Collider de Roein.entity
+Entities/◆Corps/◆Corps.entity
+Entities/◆Double de Melzas/◆Double de Melzas.entity
+Entities/◆Dragon/◆Dragon.entity
+Entities/◆Débris du roi/◆Débris du roi.entity
+Entities/◆Effet d’aspiration/◆Effet d’aspiration.entity
+Entities/◆Fantôme Niv.1/◆Fantôme Niv.1.entity
+Entities/◆Flammes de dragon/◆Flammes de dragon.entity
+Entities/◆Flèche Niv.1/◆Flèche Niv.1.entity
+Entities/◆Fourneau Niv.1/◆Fourneau Niv.1.entity
+Entities/◆Frère Rayon (aîné) Niv.1/◆Frère Rayon (aîné) Niv.1.entity
+Entities/◆Frère Rayon (cadet)/◆Frère Rayon (cadet).entity
+Entities/◆Frères Rayon (gaz toxique)/◆Frères Rayon (gaz toxique).entity
+Entities/◆Grand rocher du roi/◆Grand rocher du roi.entity
+Entities/◆Guêpe Niv.1/◆Guêpe Niv.1.entity
+Entities/◆Homme de bois Niv.1/◆Homme de bois Niv.1.entity
+Entities/◆Homme de boue Niv.1/◆Homme de boue Niv.1.entity
+Entities/◆Homme momie Niv.1/◆Homme momie Niv.1.entity
+Entities/◆Homme momie Niv.2/◆Homme momie Niv.2.entity
+Entities/◆Homme-insecte Niv.1/◆Homme-insecte Niv.1.entity
+Entities/◆Homme-lézard (lance) Niv.1/◆Homme-lézard (lance) Niv.1.entity
+Entities/◆Homme-lézard (projectiles) Niv.1/◆Homme-lézard (projectiles) Niv.1.entity
+Entities/◆Homme-lézard (épée) Niv.1/◆Homme-lézard (épée) Niv.1.entity
+Entities/◆Homme-ombre Niv.1/◆Homme-ombre Niv.1.entity
+Entities/◆Lance Niv.1/◆Lance Niv.1.entity
+Entities/◆Laser à tête chercheuse/◆Laser à tête chercheuse.entity
+Entities/◆Loup-garou Niv.1/◆Loup-garou Niv.1.entity
+Entities/◆Magie de Zoldia/◆Magie de Zoldia.entity
+Entities/◆Melzas (corps principal)/◆Melzas (corps principal).entity
+Entities/◆Mille-pattes (corps principal)/◆Mille-pattes (corps principal).entity
+Entities/◆Mille-pattes (joint)/◆Mille-pattes (joint).entity
+Entities/◆Mille-pattes (projectiles réfléchis)/◆Mille-pattes (projectiles réfléchis).entity
+Entities/◆Mille-pattes (queue)/◆Mille-pattes (queue).entity
+Entities/◆Mille-pattes (tronc 2)/◆Mille-pattes (tronc 2).entity
+Entities/◆Mille-pattes (tronc)/◆Mille-pattes (tronc).entity
+Entities/◆Mille-pattes (œufs explosifs)/◆Mille-pattes (œufs explosifs).entity
+Entities/◆Mimique Niv.1/◆Mimique Niv.1.entity
+Entities/◆Mimming (faux) Niv.1/◆Mimming (faux) Niv.1.entity
+Entities/◆Mimming (rotation) Niv.1/◆Mimming (rotation) Niv.1.entity
+Entities/◆Monsieur Aspiration/◆Monsieur Aspiration.entity
+Entities/◆Mouche Niv.1/◆Mouche Niv.1.entity
+Entities/◆Muruta (arc) Niv.1/◆Muruta (arc) Niv.1.entity
+Entities/◆Muruta (boomerang) Niv.1/◆Muruta (boomerang) Niv.1.entity
+Entities/◆Muruta (griffes) Niv.1/◆Muruta (griffes) Niv.1.entity
+Entities/◆Nirude (avec corps)/◆Nirude (avec corps).entity
+Entities/◆Nirude (pensée résiduelle)/◆Nirude (pensée résiduelle).entity
+Entities/◆Oiseau de feu Niv.1/◆Oiseau de feu Niv.1.entity
+Entities/◆Orc (armure de fer) Niv.1/◆Orc (armure de fer) Niv.1.entity
+Entities/◆Orc (hache) Niv.1/◆Orc (hache) Niv.1.entity
+Entities/◆Orc (masse) Niv.1/◆Orc (masse) Niv.1.entity
+Entities/◆P-Zoldia Niv.1/◆P-Zoldia Niv.1.entity
+Entities/◆P-Zoldia Niv.2/◆P-Zoldia Niv.2.entity
+Entities/◆Petit slime/◆Petit slime.entity
+Entities/◆Poisson Niv.1/◆Poisson Niv.1.entity
+Entities/◆Projectile Niv.1-116/◆Projectile Niv.1-116.entity
+Entities/◆Projectile Niv.1-155/◆Projectile Niv.1-155.entity
+Entities/◆Projectile Niv.1-176/◆Projectile Niv.1-176.entity
+Entities/◆Projectile Niv.1-206/◆Projectile Niv.1-206.entity
+Entities/◆Projectile Niv.1-212/◆Projectile Niv.1-212.entity
+Entities/◆Projectile/◆Projectile.entity
+Entities/◆Projectiles (plumes) Niv.1/◆Projectiles (plumes) Niv.1.entity
+Entities/◆Projectiles (étincelles) Niv.1/◆Projectiles (étincelles) Niv.1.entity
+Entities/◆Projectiles de Zoldia/◆Projectiles de Zoldia.entity
+Entities/◆Projectiles en spirale (lents)/◆Projectiles en spirale (lents).entity
+Entities/◆Projectiles à tête chercheuse (lents)/◆Projectiles à tête chercheuse (lents).entity
+Entities/◆Roche élémentaire/◆Roche élémentaire.entity
+Entities/◆Ronan divin corrompu/◆Ronan divin corrompu.entity
+Entities/◆Roper Niv.1/◆Roper Niv.1.entity
+Entities/◆Roper Niv.2/◆Roper Niv.2.entity
+Entities/◆Sbires du roi/◆Sbires du roi.entity
+Entities/◆Slime géant (corps)/◆Slime géant (corps).entity
+Entities/◆Slime géant (grand)/◆Slime géant (grand).entity
+Entities/◆Slime géant (petit)/◆Slime géant (petit).entity
+Entities/◆Slime géant (œil)/◆Slime géant (œil).entity
+Entities/◆Slime gélatineux/◆Slime gélatineux.entity
+Entities/◆Souffle de dragon/◆Souffle de dragon.entity
+Entities/◆Spores Niv.1/◆Spores Niv.1.entity
+Entities/◆Surveillance élémentaire/◆Surveillance élémentaire.entity
+Entities/◆Tentacule/◆Tentacule.entity
+Entities/◆Tortue de roche Niv.1/◆Tortue de roche Niv.1.entity
+Entities/◆Tortue de roche Niv.2/◆Tortue de roche Niv.2.entity
+Entities/◆Triple projectile de dragon/◆Triple projectile de dragon.entity
+Entities/◆Tête de roche Niv.1/◆Tête de roche Niv.1.entity
+Entities/◆Ver Niv.1/◆Ver Niv.1.entity
+Entities/◆Wilda (tête)/◆Wilda (tête).entity
+Entities/◆Zazan-Roi Muruta/◆Zazan-Roi Muruta.entity
+Entities/◆Zombie Niv.1/◆Zombie Niv.1.entity
+Entities/◆Zorgia/◆Zorgia.entity
+Entities/◆Élément Niv.1/◆Élément Niv.1.entity
+Maps/A big mess/A big mess (unused)-428/A big mess (unused)-428.world
+Maps/Ancient Shrine/Ancient Shrine - Golem-34/Ancient Shrine - Golem-34.world
+Maps/Ancient Shrine/Ancient Shrine-26/Ancient Shrine-26.world
+Maps/Ancient Shrine/Ancient Shrine-27/Ancient Shrine-27.world
+Maps/Ancient Shrine/Ancient Shrine-28/Ancient Shrine-28.world
+Maps/Ancient Shrine/Ancient Shrine-29/Ancient Shrine-29.world
+Maps/Ancient Shrine/Ancient Shrine-30/Ancient Shrine-30.world
+Maps/Ancient Shrine/Ancient Shrine-31/Ancient Shrine-31.world
+Maps/Ancient Shrine/Ancient Shrine-32/Ancient Shrine-32.world
+Maps/Ancient Shrine/Ancient Shrine-33/Ancient Shrine-33.world
+Maps/Arena Black Dragon/Arena Black Dragon (Boss)-323/Arena Black Dragon (Boss)-323.world
+Maps/Arena Corpse Worm/Arena Corpse Worm (Boss)-322/Arena Corpse Worm (Boss)-322.world
+Maps/Arena Melzas 1/Arena Melzas 1 (Boss)-327/Arena Melzas 1 (Boss)-327.world
+Maps/Arena Melzas 2/Arena Melzas 2 (Boss)-471/Arena Melzas 2 (Boss)-471.world
+Maps/Arena Nirude/Arena Nirude (Boss)-324/Arena Nirude (Boss)-324.world
+Maps/Arena Ronan/Arena Ronan (Boss)-326/Arena Ronan (Boss)-326.world
+Maps/Arena Wilda/Arena Wilda (Boss)-325/Arena Wilda (Boss)-325.world
+Maps/Arena Zazan/Arena Zazan (Sybil's vision)-368/Arena Zazan (Sybil's vision)-368.world
+Maps/Arena Zorgia/Arena Zorgia (Boss)-321/Arena Zorgia (Boss)-321.world
+Maps/Cave/Cave (Fire manor)-139/Cave (Fire manor)-139.world
+Maps/Cave/Cave (unused) probably Nava entrance early-316/Cave (unused) probably Nava entrance early-316.world
+Maps/Cave/Cave (unused) probably Nava entrance early-317/Cave (unused) probably Nava entrance early-317.world
+Maps/Cave/Cave (unused) probably Nava entrance early-318/Cave (unused) probably Nava entrance early-318.world
+Maps/Cave/Cave (unused) probably Nava entrance early-319/Cave (unused) probably Nava entrance early-319.world
+Maps/Cave/Cave-138/Cave-138.world
+Maps/Cave/Cave-140/Cave-140.world
+Maps/Cave/Cave-141/Cave-141.world
+Maps/Cave/Cave-145/Cave-145.world
+Maps/Church Basement/Church Basement (Event for final Battle)-482/Church Basement (Event for final Battle)-482.world
+Maps/Church _ Graveyard/Church _ Graveyard (probably for events)-331/Church _ Graveyard (probably for events)-331.world
+Maps/Church/Church (basement, Holy sword)-137/Church (basement, Holy sword)-137.world
+Maps/Church/Church (lobby)-134/Church (lobby)-134.world
+Maps/Church/Church-135/Church-135.world
+Maps/Church/Church-136/Church-136.world
+Maps/Coal Mine _ Olen's Dream/Coal Mine _ Olen's Dream-362/Coal Mine _ Olen's Dream-362.world
+Maps/Coal Mine _ Olen's Dream/Coal Mine _ Olen's Dream-363/Coal Mine _ Olen's Dream-363.world
+Maps/Coal Mine outer/Coal Mine outer (exit Event)-335/Coal Mine outer (exit Event)-335.world
+Maps/Coal Mine/Coal Mine (Elevator & Zazan & Murgg)-329/Coal Mine (Elevator & Zazan & Murgg)-329.world
+Maps/Coal Mine/Coal Mine (First Entrance)-61/Coal Mine (First Entrance)-61.world
+Maps/Coal Mine/Coal Mine (generator)-328/Coal Mine (generator)-328.world
+Maps/Coal Mine/Coal Mine (unused)-64/Coal Mine (unused)-64.world
+Maps/Coal Mine/Coal Mine (unused_)-65/Coal Mine (unused_)-65.world
+Maps/Coal Mine/Coal Mine (unused_)-68/Coal Mine (unused_)-68.world
+Maps/Coal Mine/Coal Mine-62/Coal Mine-62.world
+Maps/Coal Mine/Coal Mine-63/Coal Mine-63.world
+Maps/Coal Mine/Coal Mine-66/Coal Mine-66.world
+Maps/Coal Mine/Coal Mine-67/Coal Mine-67.world
+Maps/Coast/Coast beginning-416/Coast beginning-416.world
+Maps/Coast/Coast-407/Coast-407.world
+Maps/Coastal Cave/Coastal Cave (Boss)-76/Coastal Cave (Boss)-76.world
+Maps/Coastal Cave/Coastal Cave-69/Coastal Cave-69.world
+Maps/Coastal Cave/Coastal Cave-70/Coastal Cave-70.world
+Maps/Coastal Cave/Coastal Cave-71/Coastal Cave-71.world
+Maps/Coastal Cave/Coastal Cave-72/Coastal Cave-72.world
+Maps/Coastal Cave/Coastal Cave-73/Coastal Cave-73.world
+Maps/Coastal Cave/Coastal Cave-74/Coastal Cave-74.world
+Maps/Coastal Cave/Coastal Cave-75/Coastal Cave-75.world
+Maps/Continue Screen/Continue Screen-477/Continue Screen-477.world
+Maps/Dark Castle/Dark Castle (unused)-427/Dark Castle (unused)-427.world
+Maps/Debug zone/Debug zone-11/Debug zone-11.world
+Maps/Deep Cave with Mimics/Deep Cave with Mimics (unused_)-397/Deep Cave with Mimics (unused_)-397.world
+Maps/Deep Cave with Mimics/Deep Cave with Mimics-380/Deep Cave with Mimics-380.world
+Maps/Desert Mini Puzle to Shrine/Desert Mini Puzle to Shrine-403/Desert Mini Puzle to Shrine-403.world
+Maps/Desert Mini Puzle to Shrine/Desert Mini Puzle to Shrine-404/Desert Mini Puzle to Shrine-404.world
+Maps/Desert Mini Puzle to Shrine/Desert Mini Puzle to Shrine-405/Desert Mini Puzle to Shrine-405.world
+Maps/Desert Mini Puzle to Shrine/Desert Mini Puzle to Shrine-406/Desert Mini Puzle to Shrine-406.world
+Maps/Desert/Desert Cave (sand Cape)-402/Desert Cave (sand Cape)-402.world
+Maps/Desert/Desert Entrance-401/Desert Entrance-401.world
+Maps/Desert/Desert _ Ancient Shrine-400/Desert _ Ancient Shrine-400.world
+Maps/Desert/Desert-450/Desert-450.world
+Maps/Elane Nightmare/Elane Nightmare-435/Elane Nightmare-435.world
+Maps/Elane Nightmare/Elane Nightmare-436/Elane Nightmare-436.world
+Maps/Elane Nightmare/Elane Nightmare-437/Elane Nightmare-437.world
+Maps/Elane Nightmare/Elane Nightmare-438/Elane Nightmare-438.world
+Maps/Elenes Nightmare/Elenes Nightmare-48/Elenes Nightmare-48.world
+Maps/Elenes Nightmare/Elenes Nightmare-49/Elenes Nightmare-49.world
+Maps/Elenes Nightmare/Elenes Nightmare-50/Elenes Nightmare-50.world
+Maps/Elenes Nightmare/Elenes Nightmare-51/Elenes Nightmare-51.world
+Maps/Elenes Nightmare/Elenes Nightmare-52/Elenes Nightmare-52.world
+Maps/Elenes Nightmare/Elenes Nightmare-53/Elenes Nightmare-53.world
+Maps/Elenes Nightmare/Elenes Nightmare-54/Elenes Nightmare-54.world
+Maps/Fairy cave/Fairy cave (Stenia)-161/Fairy cave (Stenia)-161.world
+Maps/Fairy cave/Fairy cave (underwater)-159/Fairy cave (underwater)-159.world
+Maps/Fairy cave/Fairy cave (underwater)-160/Fairy cave (underwater)-160.world
+Maps/Fairy cave/Fairy cave-157/Fairy cave-157.world
+Maps/Fairy cave/Fairy cave-158/Fairy cave-158.world
+Maps/Fairy cave/Fairy cave_ (bugged _ unused_)-156/Fairy cave_ (bugged _ unused_)-156.world
+Maps/Giles Nightmare/Giles Nightmare (Boss)-449/Giles Nightmare (Boss)-449.world
+Maps/Giles Nightmare/Giles Nightmare-100/Giles Nightmare-100.world
+Maps/Giles Nightmare/Giles Nightmare-101/Giles Nightmare-101.world
+Maps/Giles Nightmare/Giles Nightmare-102/Giles Nightmare-102.world
+Maps/Giles Nightmare/Giles Nightmare-103/Giles Nightmare-103.world
+Maps/Giles Nightmare/Giles Nightmare-104/Giles Nightmare-104.world
+Maps/Giles Nightmare/Giles Nightmare-105/Giles Nightmare-105.world
+Maps/Giles Nightmare/Giles Nightmare-106/Giles Nightmare-106.world
+Maps/Giles Nightmare/Giles Nightmare-107/Giles Nightmare-107.world
+Maps/Giles Nightmare/Giles Nightmare-99/Giles Nightmare-99.world
+Maps/Ice manor/Ice manor-304/Ice manor-304.world
+Maps/Inoa/Inoa (Kline, Sybil's vision)-367/Inoa (Kline, Sybil's vision)-367.world
+Maps/Inoa/Inoa (Vision Event from Lars and Melzas cutscene)-478/Inoa (Vision Event from Lars and Melzas cutscene)-478.world
+Maps/Inoa/Inoa (burning)-293/Inoa (burning)-293.world
+Maps/Inoa/Inoa (destroyed)-297/Inoa (destroyed)-297.world
+Maps/Inoa/Inoa (destroyed)-301/Inoa (destroyed)-301.world
+Maps/Inoa/Inoa (inner)-128/Inoa (inner)-128.world
+Maps/Inoa/Inoa (inner)-129/Inoa (inner)-129.world
+Maps/Inoa/Inoa (inner)-130/Inoa (inner)-130.world
+Maps/Inoa/Inoa (inner)-131/Inoa (inner)-131.world
+Maps/Inoa/Inoa (inner)-132/Inoa (inner)-132.world
+Maps/Inoa/Inoa (inner)-163/Inoa (inner)-163.world
+Maps/Inoa/Inoa (inner)-164/Inoa (inner)-164.world
+Maps/Inoa/Inoa (inner)-165/Inoa (inner)-165.world
+Maps/Inoa/Inoa (inner)-166/Inoa (inner)-166.world
+Maps/Inoa/Inoa (inner)-167/Inoa (inner)-167.world
+Maps/Inoa/Inoa (inner)-168/Inoa (inner)-168.world
+Maps/Inoa/Inoa (inner)-170/Inoa (inner)-170.world
+Maps/Inoa/Inoa (inner)-171/Inoa (inner)-171.world
+Maps/Inoa/Inoa (inner)-172/Inoa (inner)-172.world
+Maps/Inoa/Inoa (inner)-173/Inoa (inner)-173.world
+Maps/Inoa/Inoa (inner)-174/Inoa (inner)-174.world
+Maps/Inoa/Inoa (inner)-175/Inoa (inner)-175.world
+Maps/Inoa/Inoa (inner)-177/Inoa (inner)-177.world
+Maps/Inoa/Inoa (inner)-178/Inoa (inner)-178.world
+Maps/Inoa/Inoa (inner)-179/Inoa (inner)-179.world
+Maps/Inoa/Inoa (inner)-180/Inoa (inner)-180.world
+Maps/Inoa/Inoa (inner)-181/Inoa (inner)-181.world
+Maps/Inoa/Inoa (inner)-182/Inoa (inner)-182.world
+Maps/Inoa/Inoa (inner)-184/Inoa (inner)-184.world
+Maps/Inoa/Inoa (inner)-185/Inoa (inner)-185.world
+Maps/Inoa/Inoa (inner)-187/Inoa (inner)-187.world
+Maps/Inoa/Inoa (inner)-188/Inoa (inner)-188.world
+Maps/Inoa/Inoa (inner)-189/Inoa (inner)-189.world
+Maps/Inoa/Inoa (inner)-190/Inoa (inner)-190.world
+Maps/Inoa/Inoa (inner)-191/Inoa (inner)-191.world
+Maps/Inoa/Inoa (inner)-192/Inoa (inner)-192.world
+Maps/Inoa/Inoa (inner)-194/Inoa (inner)-194.world
+Maps/Inoa/Inoa (inner)-195/Inoa (inner)-195.world
+Maps/Inoa/Inoa (inner)-196/Inoa (inner)-196.world
+Maps/Inoa/Inoa (inner)-197/Inoa (inner)-197.world
+Maps/Inoa/Inoa (inner)-199/Inoa (inner)-199.world
+Maps/Inoa/Inoa (inner)-200/Inoa (inner)-200.world
+Maps/Inoa/Inoa (inner)-201/Inoa (inner)-201.world
+Maps/Inoa/Inoa (inner)-202/Inoa (inner)-202.world
+Maps/Inoa/Inoa (inner)-203/Inoa (inner)-203.world
+Maps/Inoa/Inoa (inner)-204/Inoa (inner)-204.world
+Maps/Inoa/Inoa (inner)-206/Inoa (inner)-206.world
+Maps/Inoa/Inoa (inner)-207/Inoa (inner)-207.world
+Maps/Inoa/Inoa (inner)-208/Inoa (inner)-208.world
+Maps/Inoa/Inoa (inner)-209/Inoa (inner)-209.world
+Maps/Inoa/Inoa (inner)-210/Inoa (inner)-210.world
+Maps/Inoa/Inoa (inner)-211/Inoa (inner)-211.world
+Maps/Inoa/Inoa (inner)-213/Inoa (inner)-213.world
+Maps/Inoa/Inoa (inner)-214/Inoa (inner)-214.world
+Maps/Inoa/Inoa (inner)-215/Inoa (inner)-215.world
+Maps/Inoa/Inoa (inner)-216/Inoa (inner)-216.world
+Maps/Inoa/Inoa (inner)-217/Inoa (inner)-217.world
+Maps/Inoa/Inoa (inner)-218/Inoa (inner)-218.world
+Maps/Inoa/Inoa (inner)-220/Inoa (inner)-220.world
+Maps/Inoa/Inoa (inner)-221/Inoa (inner)-221.world
+Maps/Inoa/Inoa (inner)-222/Inoa (inner)-222.world
+Maps/Inoa/Inoa (inner)-223/Inoa (inner)-223.world
+Maps/Inoa/Inoa (inner)-224/Inoa (inner)-224.world
+Maps/Inoa/Inoa (inner)-225/Inoa (inner)-225.world
+Maps/Inoa/Inoa (inner)-227/Inoa (inner)-227.world
+Maps/Inoa/Inoa (inner)-228/Inoa (inner)-228.world
+Maps/Inoa/Inoa (inner)-229/Inoa (inner)-229.world
+Maps/Inoa/Inoa (inner)-231/Inoa (inner)-231.world
+Maps/Inoa/Inoa (inner)-232/Inoa (inner)-232.world
+Maps/Inoa/Inoa (inner)-233/Inoa (inner)-233.world
+Maps/Inoa/Inoa (inner)-234/Inoa (inner)-234.world
+Maps/Inoa/Inoa (inner)-235/Inoa (inner)-235.world
+Maps/Inoa/Inoa (inner)-236/Inoa (inner)-236.world
+Maps/Inoa/Inoa (inner)-238/Inoa (inner)-238.world
+Maps/Inoa/Inoa (inner)-239/Inoa (inner)-239.world
+Maps/Inoa/Inoa (inner)-240/Inoa (inner)-240.world
+Maps/Inoa/Inoa (inner)-242/Inoa (inner)-242.world
+Maps/Inoa/Inoa (inner)-243/Inoa (inner)-243.world
+Maps/Inoa/Inoa (inner)-244/Inoa (inner)-244.world
+Maps/Inoa/Inoa (inner)-245/Inoa (inner)-245.world
+Maps/Inoa/Inoa (inner)-246/Inoa (inner)-246.world
+Maps/Inoa/Inoa (inner)-247/Inoa (inner)-247.world
+Maps/Inoa/Inoa (inner)-249/Inoa (inner)-249.world
+Maps/Inoa/Inoa (inner)-250/Inoa (inner)-250.world
+Maps/Inoa/Inoa (inner)-251/Inoa (inner)-251.world
+Maps/Inoa/Inoa (inner)-253/Inoa (inner)-253.world
+Maps/Inoa/Inoa (inner)-254/Inoa (inner)-254.world
+Maps/Inoa/Inoa (inner)-255/Inoa (inner)-255.world
+Maps/Inoa/Inoa (inner)-256/Inoa (inner)-256.world
+Maps/Inoa/Inoa (inner)-257/Inoa (inner)-257.world
+Maps/Inoa/Inoa (inner)-258/Inoa (inner)-258.world
+Maps/Inoa/Inoa (inner)-260/Inoa (inner)-260.world
+Maps/Inoa/Inoa (inner)-261/Inoa (inner)-261.world
+Maps/Inoa/Inoa (inner)-262/Inoa (inner)-262.world
+Maps/Inoa/Inoa (inner)-263/Inoa (inner)-263.world
+Maps/Inoa/Inoa (inner)-264/Inoa (inner)-264.world
+Maps/Inoa/Inoa (inner)-265/Inoa (inner)-265.world
+Maps/Inoa/Inoa (inner)-267/Inoa (inner)-267.world
+Maps/Inoa/Inoa (inner)-268/Inoa (inner)-268.world
+Maps/Inoa/Inoa (inner)-269/Inoa (inner)-269.world
+Maps/Inoa/Inoa (inner)-270/Inoa (inner)-270.world
+Maps/Inoa/Inoa (inner)-272/Inoa (inner)-272.world
+Maps/Inoa/Inoa (inner)-273/Inoa (inner)-273.world
+Maps/Inoa/Inoa (inner)-274/Inoa (inner)-274.world
+Maps/Inoa/Inoa (inner)-276/Inoa (inner)-276.world
+Maps/Inoa/Inoa (inner)-277/Inoa (inner)-277.world
+Maps/Inoa/Inoa (inner)-278/Inoa (inner)-278.world
+Maps/Inoa/Inoa (inner)-279/Inoa (inner)-279.world
+Maps/Inoa/Inoa (inner)-280/Inoa (inner)-280.world
+Maps/Inoa/Inoa (inner)-281/Inoa (inner)-281.world
+Maps/Inoa/Inoa (inner)-283/Inoa (inner)-283.world
+Maps/Inoa/Inoa (inner)-284/Inoa (inner)-284.world
+Maps/Inoa/Inoa (inner)-285/Inoa (inner)-285.world
+Maps/Inoa/Inoa (inner)-286/Inoa (inner)-286.world
+Maps/Inoa/Inoa (inner)-287/Inoa (inner)-287.world
+Maps/Inoa/Inoa (inner)-288/Inoa (inner)-288.world
+Maps/Inoa/Inoa (inner)-332/Inoa (inner)-332.world
+Maps/Inoa/Inoa (inner)-333/Inoa (inner)-333.world
+Maps/Inoa/Inoa (inner)-334/Inoa (inner)-334.world
+Maps/Inoa/Inoa (inner)-336/Inoa (inner)-336.world
+Maps/Inoa/Inoa (inner)-359/Inoa (inner)-359.world
+Maps/Inoa/Inoa (inner)-361/Inoa (inner)-361.world
+Maps/Inoa/Inoa (inner)-365/Inoa (inner)-365.world
+Maps/Inoa/Inoa (inner)-366/Inoa (inner)-366.world
+Maps/Inoa/Inoa (inner)-370/Inoa (inner)-370.world
+Maps/Inoa/Inoa (inner)-372/Inoa (inner)-372.world
+Maps/Inoa/Inoa (inner)-373/Inoa (inner)-373.world
+Maps/Inoa/Inoa (inner)-374/Inoa (inner)-374.world
+Maps/Inoa/Inoa (inner)-375/Inoa (inner)-375.world
+Maps/Inoa/Inoa (inner)-376/Inoa (inner)-376.world
+Maps/Inoa/Inoa (inner)-377/Inoa (inner)-377.world
+Maps/Inoa/Inoa (inner)-417/Inoa (inner)-417.world
+Maps/Inoa/Inoa (inner)-418/Inoa (inner)-418.world
+Maps/Inoa/Inoa (inner)-419/Inoa (inner)-419.world
+Maps/Inoa/Inoa (inner, Merrick)-133/Inoa (inner, Merrick)-133.world
+Maps/Inoa/Inoa (inner, Yustel, Map)-475/Inoa (inner, Yustel, Map)-475.world
+Maps/Inoa/Inoa (inner, burning)-294/Inoa (inner, burning)-294.world
+Maps/Inoa/Inoa (inner, burning)-295/Inoa (inner, burning)-295.world
+Maps/Inoa/Inoa (inner, burning)-296/Inoa (inner, burning)-296.world
+Maps/Inoa/Inoa (inner, destroyed)-298/Inoa (inner, destroyed)-298.world
+Maps/Inoa/Inoa (inner, destroyed)-299/Inoa (inner, destroyed)-299.world
+Maps/Inoa/Inoa (inner, destroyed)-300/Inoa (inner, destroyed)-300.world
+Maps/Inoa/Inoa (inner, destroyed)-302/Inoa (inner, destroyed)-302.world
+Maps/Inoa/Inoa (inner, night)-290/Inoa (inner, night)-290.world
+Maps/Inoa/Inoa (inner, night)-291/Inoa (inner, night)-291.world
+Maps/Inoa/Inoa (inner, night)-292/Inoa (inner, night)-292.world
+Maps/Inoa/Inoa (night)-289/Inoa (night)-289.world
+Maps/Inoa/Inoa (night, Kline Event)-357/Inoa (night, Kline Event)-357.world
+Maps/Inoa/Inoa (night, Sybil crime scene)-481/Inoa (night, Sybil crime scene)-481.world
+Maps/Inoa/Inoa (night, inner, Kline Event)-358/Inoa (night, inner, Kline Event)-358.world
+Maps/Inoa/Inoa (night, inner, Kline Event_)-360/Inoa (night, inner, Kline Event_)-360.world
+Maps/Inoa/Inoa-162/Inoa-162.world
+Maps/Inoa/Inoa-169/Inoa-169.world
+Maps/Inoa/Inoa-176/Inoa-176.world
+Maps/Inoa/Inoa-183/Inoa-183.world
+Maps/Inoa/Inoa-186/Inoa-186.world
+Maps/Inoa/Inoa-193/Inoa-193.world
+Maps/Inoa/Inoa-198/Inoa-198.world
+Maps/Inoa/Inoa-205/Inoa-205.world
+Maps/Inoa/Inoa-212/Inoa-212.world
+Maps/Inoa/Inoa-219/Inoa-219.world
+Maps/Inoa/Inoa-226/Inoa-226.world
+Maps/Inoa/Inoa-230/Inoa-230.world
+Maps/Inoa/Inoa-237/Inoa-237.world
+Maps/Inoa/Inoa-241/Inoa-241.world
+Maps/Inoa/Inoa-248/Inoa-248.world
+Maps/Inoa/Inoa-252/Inoa-252.world
+Maps/Inoa/Inoa-259/Inoa-259.world
+Maps/Inoa/Inoa-266/Inoa-266.world
+Maps/Inoa/Inoa-271/Inoa-271.world
+Maps/Inoa/Inoa-275/Inoa-275.world
+Maps/Inoa/Inoa-282/Inoa-282.world
+Maps/Inoa/Inoa-330/Inoa-330.world
+Maps/Inoa/Inoa-364/Inoa-364.world
+Maps/Inoa/Inoa-371/Inoa-371.world
+Maps/Kline's Nightmare/Kline's Nightmare (Boss)-122/Kline's Nightmare (Boss)-122.world
+Maps/Kline's Nightmare/Kline's Nightmare-123/Kline's Nightmare-123.world
+Maps/Kline's Nightmare/Kline's Nightmare-124/Kline's Nightmare-124.world
+Maps/Kline's Nightmare/Kline's Nightmare-125/Kline's Nightmare-125.world
+Maps/Kline's Nightmare/Kline's Nightmare-126/Kline's Nightmare-126.world
+Maps/Kline's Nightmare/Kline's Nightmare-127/Kline's Nightmare-127.world
+Maps/Kohei Tanaka House _ Olen_ house/Kohei Tanaka House _ Olen_ house (music house)-142/Kohei Tanaka House _ Olen_ house (music house)-142.world
+Maps/Lake Shrine Bridge/Lake Shrine Bridge (Event)_-378/Lake Shrine Bridge (Event)_-378.world
+Maps/Lake Shrine Bridge/Lake Shrine Bridge (Event_)-412/Lake Shrine Bridge (Event_)-412.world
+Maps/Lake Shrine Melzas/Lake Shrine Melzas (inner, Beginning Event_)-415/Lake Shrine Melzas (inner, Beginning Event_)-415.world
+Maps/Lake Shrine teleporter/Lake Shrine teleporter-379/Lake Shrine teleporter-379.world
+Maps/Lake Shrine/Lake Shrine (Melzas, Dark Dragon Event)-480/Lake Shrine (Melzas, Dark Dragon Event)-480.world
+Maps/Lake Shrine/Lake Shrine (garden)-434/Lake Shrine (garden)-434.world
+Maps/Lake Shrine/Lake Shrine (inner)-337/Lake Shrine (inner)-337.world
+Maps/Lake Shrine/Lake Shrine (inner)-338/Lake Shrine (inner)-338.world
+Maps/Lake Shrine/Lake Shrine (inner)-339/Lake Shrine (inner)-339.world
+Maps/Lake Shrine/Lake Shrine (inner)-340/Lake Shrine (inner)-340.world
+Maps/Lake Shrine/Lake Shrine (inner)-341/Lake Shrine (inner)-341.world
+Maps/Lake Shrine/Lake Shrine (inner)-342/Lake Shrine (inner)-342.world
+Maps/Lake Shrine/Lake Shrine (inner)-343/Lake Shrine (inner)-343.world
+Maps/Lake Shrine/Lake Shrine (inner)-344/Lake Shrine (inner)-344.world
+Maps/Lake Shrine/Lake Shrine (inner)-345/Lake Shrine (inner)-345.world
+Maps/Lake Shrine/Lake Shrine (inner)-346/Lake Shrine (inner)-346.world
+Maps/Lake Shrine/Lake Shrine (inner)-347/Lake Shrine (inner)-347.world
+Maps/Lake Shrine/Lake Shrine (inner)-348/Lake Shrine (inner)-348.world
+Maps/Lake Shrine/Lake Shrine (inner)-349/Lake Shrine (inner)-349.world
+Maps/Lake Shrine/Lake Shrine (inner)-350/Lake Shrine (inner)-350.world
+Maps/Lake Shrine/Lake Shrine (inner)-351/Lake Shrine (inner)-351.world
+Maps/Lake Shrine/Lake Shrine (inner)-352/Lake Shrine (inner)-352.world
+Maps/Lake Shrine/Lake Shrine (inner)-353/Lake Shrine (inner)-353.world
+Maps/Lake Shrine/Lake Shrine (inner, unused)-414/Lake Shrine (inner, unused)-414.world
+Maps/Lake Shrine/Lake Shrine (outer, unused)-354/Lake Shrine (outer, unused)-354.world
+Maps/Lake Shrine/Lake Shrine (outer, unused)-413/Lake Shrine (outer, unused)-413.world
+Maps/Lake Shrine/Lake Shrine (roof)-355/Lake Shrine (roof)-355.world
+Maps/Lake Shrine/Lake Shrine (roof)-356/Lake Shrine (roof)-356.world
+Maps/Lake Shrine/Lake Shrine-433/Lake Shrine-433.world
+Maps/Lars & Melzas Room/Lars & Melzas Room (beginning Event)-476/Lars & Melzas Room (beginning Event)-476.world
+Maps/Lars' Crypt/Lars' Crypt-21/Lars' Crypt-21.world
+Maps/Lars' Crypt/Lars' Crypt-22/Lars' Crypt-22.world
+Maps/Lars' Crypt/Lars' Crypt-23/Lars' Crypt-23.world
+Maps/Lars' Crypt/Lars' Crypt-24/Lars' Crypt-24.world
+Maps/Lars' Crypt/Lars' Crypt-25/Lars' Crypt-25.world
+Maps/Lizardman's Lair/Lizardman's Lair (Boss)-411/Lizardman's Lair (Boss)-411.world
+Maps/Lizardman's Lair/Lizardman's Lair-408/Lizardman's Lair-408.world
+Maps/Lizardman's Lair/Lizardman's Lair-409/Lizardman's Lair-409.world
+Maps/Lizardman's Lair/Lizardman's Lair-410/Lizardman's Lair-410.world
+Maps/Lizardman's Lair/Lizardman's Lair-80/Lizardman's Lair-80.world
+Maps/Lizardman's Lair/Lizardman's Lair-81/Lizardman's Lair-81.world
+Maps/Lizardman's Lair/Lizardman's Lair-82/Lizardman's Lair-82.world
+Maps/Lizardman's Lair/Lizardman's Lair-83/Lizardman's Lair-83.world
+Maps/Lizardman's Lair/Lizardman's Lair-84/Lizardman's Lair-84.world
+Maps/Lizardman's Lair/Lizardman's Lair-85/Lizardman's Lair-85.world
+Maps/Lurvy House, Well/Lurvy House, Well-398/Lurvy House, Well-398.world
+Maps/Magyscar Entrance/Magyscar Entrance-144/Magyscar Entrance-144.world
+Maps/Magyscar/Magyscar (Boss _ Uma)-94/Magyscar (Boss _ Uma)-94.world
+Maps/Magyscar/Magyscar-86/Magyscar-86.world
+Maps/Magyscar/Magyscar-87/Magyscar-87.world
+Maps/Magyscar/Magyscar-88/Magyscar-88.world
+Maps/Magyscar/Magyscar-89/Magyscar-89.world
+Maps/Magyscar/Magyscar-90/Magyscar-90.world
+Maps/Magyscar/Magyscar-91/Magyscar-91.world
+Maps/Magyscar/Magyscar-92/Magyscar-92.world
+Maps/Magyscar/Magyscar-93/Magyscar-93.world
+Maps/Meia Dream/Meia Dream (flashback)-308/Meia Dream (flashback)-308.world
+Maps/Meia Dream/Meia Dream (flashback)-309/Meia Dream (flashback)-309.world
+Maps/Meia Dream/Meia Dream (flashback, Inoa)-310/Meia Dream (flashback, Inoa)-310.world
+Maps/Meia Dream/Meia Dream (unused_)-305/Meia Dream (unused_)-305.world
+Maps/Meia Dream/Meia Dream-306/Meia Dream-306.world
+Maps/Meia Dream/Meia Dream-307/Meia Dream-307.world
+Maps/Meia Dream/Meia Dream-440/Meia Dream-440.world
+Maps/Meia Dream/Meia Dream-441/Meia Dream-441.world
+Maps/Meia Dream/Meia Dream-442/Meia Dream-442.world
+Maps/Mrugg House/Mrugg House (Sybil's vision_)-369/Mrugg House (Sybil's vision_)-369.world
+Maps/Murgg Caves/Murgg Caves-382/Murgg Caves-382.world
+Maps/Murgg Caves/Murgg Caves-383/Murgg Caves-383.world
+Maps/Murgg Caves/Murgg Caves-384/Murgg Caves-384.world
+Maps/Murgg Caves/Murgg Caves-385/Murgg Caves-385.world
+Maps/Murgg Caves/Murgg Caves-386/Murgg Caves-386.world
+Maps/Murgg Tree/Murgg Golem (Boss)-399/Murgg Golem (Boss)-399.world
+Maps/Murgg Tree/Murgg Tree (Boss)-152/Murgg Tree (Boss)-152.world
+Maps/Murgg Tree/Murgg Tree (elevator)-155/Murgg Tree (elevator)-155.world
+Maps/Murgg Tree/Murgg Tree (inner)-147/Murgg Tree (inner)-147.world
+Maps/Murgg Tree/Murgg Tree (inner)-148/Murgg Tree (inner)-148.world
+Maps/Murgg Tree/Murgg Tree (inner)-149/Murgg Tree (inner)-149.world
+Maps/Murgg Tree/Murgg Tree (inner)-150/Murgg Tree (inner)-150.world
+Maps/Murgg Tree/Murgg Tree (inner)-151/Murgg Tree (inner)-151.world
+Maps/Murgg Tree/Murgg Tree (inner)-153/Murgg Tree (inner)-153.world
+Maps/Murgg Tree/Murgg Tree (inner)-154/Murgg Tree (inner)-154.world
+Maps/Murgg Tree/Murgg Tree Houses-146/Murgg Tree Houses-146.world
+Maps/Nava/Coast house (Nava)-420/Coast house (Nava)-420.world
+Maps/Nava/Coast house (nava's cave entrance)-143/Coast house (nava's cave entrance)-143.world
+Maps/Nava/Island (unused) probably Nava early-314/Island (unused) probably Nava early-314.world
+Maps/Nava/Island (unused) probably Nava early-315/Island (unused) probably Nava early-315.world
+Maps/Nava/Nava''s Entrance Caves-429/Nava''s Entrance Caves-429.world
+Maps/Nava/Nava''s Entrance Caves-430/Nava''s Entrance Caves-430.world
+Maps/Nava/Nava''s House (inner)-432/Nava''s House (inner)-432.world
+Maps/Nava/Nava''s Island-431/Nava''s Island-431.world
+Maps/Nestus' Dream/Nestus' Dream (Boss)-108/Nestus' Dream (Boss)-108.world
+Maps/Nestus' Dream/Nestus' Dream-109/Nestus' Dream-109.world
+Maps/Nestus' Dream/Nestus' Dream-110/Nestus' Dream-110.world
+Maps/Nestus' Dream/Nestus' Dream-111/Nestus' Dream-111.world
+Maps/Nestus' Dream/Nestus' Dream-112/Nestus' Dream-112.world
+Maps/Nestus' Dream/Nestus' Dream-113/Nestus' Dream-113.world
+Maps/Nirude/Nirude (inner)-421/Nirude (inner)-421.world
+Maps/Nirude/Nirude (inner)-422/Nirude (inner)-422.world
+Maps/Nirude/Nirude (inner)-423/Nirude (inner)-423.world
+Maps/Nirude/Nirude (inner)-424/Nirude (inner)-424.world
+Maps/Nirude/Nirude (inner)-425/Nirude (inner)-425.world
+Maps/Nirude/Nirude (inner)-426/Nirude (inner)-426.world
+Maps/Nirude/Nirude (inner, Event)-451/Nirude (inner, Event)-451.world
+Maps/Nirude/Nirude (outer, Event, water cape)-439/Nirude (outer, Event, water cape)-439.world
+Maps/Nirude’s Lair/Nirude’s Lair-35/Nirude’s Lair-35.world
+Maps/Nirude’s Lair/Nirude’s Lair-36/Nirude’s Lair-36.world
+Maps/Nirude’s Lair/Nirude’s Lair-37/Nirude’s Lair-37.world
+Maps/Nirude’s Lair/Nirude’s Lair-38/Nirude’s Lair-38.world
+Maps/Nirude’s Lair/Nirude’s Lair-39/Nirude’s Lair-39.world
+Maps/Nirude’s Lair/Nirude’s Lair-40/Nirude’s Lair-40.world
+Maps/Old desert entrance/Old desert entrance (unused)-118/Old desert entrance (unused)-118.world
+Maps/Old desert entrance/Old desert entrance (unused)-119/Old desert entrance (unused)-119.world
+Maps/Old desert entrance/Old desert entrance (unused)-120/Old desert entrance (unused)-120.world
+Maps/Old desert entrance/Old desert entrance (unused)-121/Old desert entrance (unused)-121.world
+Maps/Olen, Cephas house/Olen, Cephas house-303/Olen, Cephas house-303.world
+Maps/Overworld 0,0 with Lake Shrine Entrance/Overworld 0,0 with Lake Shrine Entrance-479/Overworld 0,0 with Lake Shrine Entrance-479.world
+Maps/Overworld/Overworld 0,0-1/Overworld 0,0-1.world
+Maps/Overworld/Overworld 0,1-2/Overworld 0,1-2.world
+Maps/Overworld/Overworld 0,2-3/Overworld 0,2-3.world
+Maps/Overworld/Overworld 0,3-4/Overworld 0,3-4.world
+Maps/Overworld/Overworld 1,0-5/Overworld 1,0-5.world
+Maps/Overworld/Overworld 1,1-6/Overworld 1,1-6.world
+Maps/Overworld/Overworld 1,2-7/Overworld 1,2-7.world
+Maps/Overworld/Overworld 1,3-8/Overworld 1,3-8.world
+Maps/Overworld/Overworld 2,0-9/Overworld 2,0-9.world
+Maps/Overworld/Overworld 2,1-10/Overworld 2,1-10.world
+Maps/Overworld/Overworld 2,3-12/Overworld 2,3-12.world
+Maps/Overworld/Overworld 3,0-13/Overworld 3,0-13.world
+Maps/Overworld/Overworld 3,1-14/Overworld 3,1-14.world
+Maps/Overworld/Overworld 3,2-15/Overworld 3,2-15.world
+Maps/Overworld/Overworld 3,3-16/Overworld 3,3-16.world
+Maps/Overworld/Overworld 4,0-17/Overworld 4,0-17.world
+Maps/Overworld/Overworld 4,1-18/Overworld 4,1-18.world
+Maps/Overworld/Overworld 4,2-19/Overworld 4,2-19.world
+Maps/Overworld/Overworld 4,3-20/Overworld 4,3-20.world
+Maps/Pub Entrance + Floor/Pub Entrance + Floor-394/Pub Entrance + Floor-394.world
+Maps/Pub/Pub (Ring)-472/Pub (Ring)-472.world
+Maps/Pub/Pub (Roulette)-474/Pub (Roulette)-474.world
+Maps/Pub/Pub (Shooting)-473/Pub (Shooting)-473.world
+Maps/Save Room/Save Room (Coal Mine)-452/Save Room (Coal Mine)-452.world
+Maps/Save Room/Save Room (Coastal Cave_)-454/Save Room (Coastal Cave_)-454.world
+Maps/Save Room/Save Room (Desert _ Ancient Shrine)-455/Save Room (Desert _ Ancient Shrine)-455.world
+Maps/Save Room/Save Room (Elenes Nightmare)-469/Save Room (Elenes Nightmare)-469.world
+Maps/Save Room/Save Room (Fairy cave)-463/Save Room (Fairy cave)-463.world
+Maps/Save Room/Save Room (Giles Nightmare)-467/Save Room (Giles Nightmare)-467.world
+Maps/Save Room/Save Room (Kline's Nightmare)-466/Save Room (Kline's Nightmare)-466.world
+Maps/Save Room/Save Room (Lake Shrine_)-464/Save Room (Lake Shrine_)-464.world
+Maps/Save Room/Save Room (Lars Crypt)-453/Save Room (Lars Crypt)-453.world
+Maps/Save Room/Save Room (Lizardman's Lair)-458/Save Room (Lizardman's Lair)-458.world
+Maps/Save Room/Save Room (Magyscar)-456/Save Room (Magyscar)-456.world
+Maps/Save Room/Save Room (Magyscar_)-459/Save Room (Magyscar_)-459.world
+Maps/Save Room/Save Room (Meia Dream)-468/Save Room (Meia Dream)-468.world
+Maps/Save Room/Save Room (Murgg Tree)-462/Save Room (Murgg Tree)-462.world
+Maps/Save Room/Save Room (Nestus' Dream)-470/Save Room (Nestus' Dream)-470.world
+Maps/Save Room/Save Room (Nightmare ...)-465/Save Room (Nightmare ...)-465.world
+Maps/Save Room/Save Room (Nirude)-460/Save Room (Nirude)-460.world
+Maps/Save Room/Save Room (Underground Watercourse)-457/Save Room (Underground Watercourse)-457.world
+Maps/Save Room/Save Room (_)-461/Save Room (_)-461.world
+Maps/Sluice, Berue, Cave/Sluice, Berue, Cave-396/Sluice, Berue, Cave-396.world
+Maps/Surferboy Nightmare/Surferboy Nightmare (inner)-42/Surferboy Nightmare (inner)-42.world
+Maps/Surferboy Nightmare/Surferboy Nightmare (outer)-41/Surferboy Nightmare (outer)-41.world
+Maps/Surferboy Nightmare/Surferboy Nightmare (outer)-43/Surferboy Nightmare (outer)-43.world
+Maps/Tarn's Manor/Tarn's Manor (unused broken)-117/Tarn's Manor (unused broken)-117.world
+Maps/Tarn's Manor/Tarn's Manor-114/Tarn's Manor-114.world
+Maps/Tarn's Manor/Tarn's Manor-115/Tarn's Manor-115.world
+Maps/Tarn's Manor/Tarn's Manor-116/Tarn's Manor-116.world
+Maps/Test Map/Test Map-0/Test Map-0.world
+Maps/The Klark/Klark (outer, unused)-320/Klark (outer, unused)-320.world
+Maps/The Klark/Ship (inner, broken, unused)-312/Ship (inner, broken, unused)-312.world
+Maps/The Klark/Ship (inner, broken, unused)-313/Ship (inner, broken, unused)-313.world
+Maps/The Klark/Ship Klark (beginning)-389/Ship Klark (beginning)-389.world
+Maps/The Klark/Ship Klark (inner)-390/Ship Klark (inner)-390.world
+Maps/The Klark/Ship Klark (night, break, Event)-391/Ship Klark (night, break, Event)-391.world
+Maps/The Klark/Ship Klark (night, inner, break)-392/Ship Klark (night, inner, break)-392.world
+Maps/The Klark/The Klark - inner-388/The Klark - inner-388.world
+Maps/The Klark/The Klark-387/The Klark-387.world
+Maps/Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-55/Torla Buggy_ with bar music and random texts (early version of Torla)-55.world
+Maps/Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-56/Torla Buggy_ with bar music and random texts (early version of Torla)-56.world
+Maps/Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-57/Torla Buggy_ with bar music and random texts (early version of Torla)-57.world
+Maps/Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-58/Torla Buggy_ with bar music and random texts (early version of Torla)-58.world
+Maps/Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-59/Torla Buggy_ with bar music and random texts (early version of Torla)-59.world
+Maps/Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-60/Torla Buggy_ with bar music and random texts (early version of Torla)-60.world
+Maps/Torla/Torla (inner)-443/Torla (inner)-443.world
+Maps/Torla/Torla (inner)-444/Torla (inner)-444.world
+Maps/Torla/Torla (inner)-445/Torla (inner)-445.world
+Maps/Torla/Torla (inner)-446/Torla (inner)-446.world
+Maps/Torla/Torla (inner)-447/Torla (inner)-447.world
+Maps/Torla/Torla (inner)-448/Torla (inner)-448.world
+Maps/Underground Watercourse/Underground Watercourse-77/Underground Watercourse-77.world
+Maps/Underground Watercourse/Underground Watercourse-78/Underground Watercourse-78.world
+Maps/Underground Watercourse/Underground Watercourse-79/Underground Watercourse-79.world
+Maps/Unused Dream/Unused Dream (Boss) (Beta Surferboys Dream)_-47/Unused Dream (Boss) (Beta Surferboys Dream)_-47.world
+Maps/Unused Dream/Unused Dream (inner) (Beta Surferboys Dream)_-45/Unused Dream (inner) (Beta Surferboys Dream)_-45.world
+Maps/Unused Dream/Unused Dream (outer) (Beta Surferboys Dream)_-46/Unused Dream (outer) (Beta Surferboys Dream)_-46.world
+Maps/Unused Nightmare/Unused Nightmare (Boss _ Dream Eater)-98/Unused Nightmare (Boss _ Dream Eater)-98.world
+Maps/Unused Nightmare/Unused Nightmare-95/Unused Nightmare-95.world
+Maps/Unused Nightmare/Unused Nightmare-96/Unused Nightmare-96.world
+Maps/Unused Nightmare/Unused Nightmare-97/Unused Nightmare-97.world
+Maps/Warp-Zone/Warp-Zone-381/Warp-Zone-381.world
+Maps/Water Mill/Water Mill (inner)-395/Water Mill (inner)-395.world
+Maps/Water Mill/Water Mill-393/Water Mill-393.world
+Maps/Well/Well (+Lurvy house unused_)-311/Well (+Lurvy house unused_)-311.world
+Maps/Wendels Nightmare/Wendels Nightmare-44/Wendels Nightmare-44.world
+UI/Screens/ChoiceScreen.design.json
+UI/Screens/HudScreen.design.json
+UI/Screens/InventoryScreen.design.json
+UI/Screens/SaveScreen.design.json
+UI/Screens/SubInventoryScreen.design.json
+UI/Screens/TextBoxScreen.design.json
+report.json

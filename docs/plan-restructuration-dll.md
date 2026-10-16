@@ -245,7 +245,9 @@ n'est jamais indexée).
 - Validation du moteur (AGENTS.md §6) : les deux `.sln`, `CasaEngine.Tests` construit explicitement et vert, RPGDemo et les démos lancés
   (preuve de démarrage).
 
-**T0 de la partie parent** (commit de docs, avant tout code du moteur ou du parent). Annexe `docs/plan-restructuration-annexe/r0/` :
+**T0 de la partie parent** ✅ (faite le 2026-10-16 : annexe `docs/plan-restructuration-annexe/r0/`, export de référence au HEAD
+`3f28554` avec `m0`/`m1` identiques sauf `report.json`, 24 104 fichiers ; convertisseur 854 tests, `Alundra.Tests` 5 092 en Release)
+(commit de docs, avant tout code du moteur ou du parent). Annexe `docs/plan-restructuration-annexe/r0/` :
 `predict_names.py` (copié du scratchpad `dll-structure/r0-data/`), des copies de `manifest.py` et `diff_manifests.py`
 (`docs/plan-e20-annexe/e20-e0x/`), avec leurs sommes de contrôle ; le README donne les valeurs attendues : 886 chemins autorisés (les
 879 sorties du convertisseur, les 6 `design.json`, `report.json`), +16 octets par fichier (+14 064 sur les sorties du convertisseur,
