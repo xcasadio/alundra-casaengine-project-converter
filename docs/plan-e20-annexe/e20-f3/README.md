@@ -121,3 +121,16 @@ Result: the binary frees effect 4 at hit + 41 and effect 5 at hit + 96 (the spar
 steps the effect slots is `0x8003C410`, called at `0x8002E110` by the frame function `0x8002E058` right after the world tick `0x8003B388`;
 `0x80038E84` (the DLL's `RunActiveEffectsPass`) never steps a slot. The f3b executor's inference (hit + 42 and + 97) does not hold;
 no DLL change.
+
+## E20.f3c - recount of the predicted list at the resumption HEAD c2f4a65 (2026-10-16, before any code)
+
+The list above (written at 59605d3) is not rewritten. Re-searched at c2f4a65, after E20.e0a5 (ADR-0071). Starting count to re-measure before any change (the plan says 5010).
+
+Searches: `ProductionWiredWeaponTypes` (still only `AlundraWeaponSpawnSeamTests` and `AlundraPlayerManager`); `WeaponSpawnBirthHookForTests` / `WiredWeaponTypesForTests` / `SpawnEntityBySpriteIndex` users (`AlundraBirthBoxTests`, `AlundraBirthTickTests`, `AlundraBirthTickProbePaTests`, `AlundraCreationSwitchClockTests`, `AlundraShotDirectionTests`, `AlundraWeaponSpawnSeamTests`, the slot, logical-Z and map-state tests, `AlundraSpawnBySpriteIndexInterfaceTests`); `Give(` / `Equip(` of an item in a world (`ArcRun`, `HitArena`): `AlundraHeroChargeArenaTests`, `AlundraHeroAuraWorldTests`, `AlundraRandomPerTickTests.Advance`, `AlundraShotDirectionTests` (hunter's bow), the flail tests (flail slot, no wave), `AlundraBeannoideGrateArcTests` and `AlundraMurutaHallArcTests` (item 1).
+
+Result: same certain and possible lists, with these precisions.
+- Certain (unchanged): `AlundraNativeSpriteRegistryTests` pin 6 to 7 (phase A, 6 + (C, 61)); `AlundraWeaponSpawnSeamTests.S5` (phase B).
+- New tests of E20.e0a5 (`AlundraCreationSwitchClockTests`, `AlundraBirthBoxTests`, `AlundraBirthTickTests`): they birth a wave (type 27 and others) through the test hook, which replaces the production call of the shot (D-F3-3, hook first): the production set of wired types does not take part, so they do not move in phase A nor in phase B. Their registry is the production one: C61 now exists for the types 27 to 29, so a wave born there calls the named stub from S+1 (a journal only, no state change) and E10 (in line) destroys it at S+26. Possible effect to watch in the empirical run: a test of those files that runs a wave past S+25 and asserts it alive, or asserts the slot table or the entity count after S+26 (the wave used to live for ever in a test without E10). Listed as possible, not expected to move: `AlundraCreationSwitchClockTests` (window of the wave, A6), `AlundraBirthBoxTests` (boxes up to the last oracle tick of the wave), `AlundraBirthTickTests`.
+- `AlundraRandomPerTickTests.Advance` (steel sword, `Give(2)`): possible, stops before S (see the list above), not expected to move.
+- `AlundraHeroChargeArenaTests`, `AlundraHeroAuraWorldTests`, `AlundraHeroChargeTests`, `AlundraBeannoideGrateArcTests`, `AlundraMurutaHallArcTests`: as in the list above.
+The measured list stays to be compared in the results of the slice.
