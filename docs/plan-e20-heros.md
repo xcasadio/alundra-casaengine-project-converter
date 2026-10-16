@@ -4174,7 +4174,7 @@ hors de la fenêtre ; le tick noté seulement avec un sprite). **Reportés (P4)*
 tranché (option A) ; enveloppe, révision 10 : e0a5 ajoutée aux prérequis des lignes 5 (f3c), 6, 7, 8 (f6b) et 11, et à la ligne 2 ;
 §1.16.4 : la mesure P-B d'e0a3b est à refaire après e0a5.
 
-### 1.17 E20.e0b — Le générateur pseudo-aléatoire : e0b1 (avance par tick), e0b2 (tirage du butin à la création) ⏳ (détaillée le 2026-10-15 ; e0b1 faite et CONFIRMED le 2026-10-15)
+### 1.17 E20.e0b — Le générateur pseudo-aléatoire : e0b1 (avance par tick), e0b2 (tirage du butin à la création) ✅ (détaillée le 2026-10-15 ; e0b1 faite et CONFIRMED le 2026-10-15 ; e0b2 faite et CONFIRMED le 2026-10-16)
 
 **Réponses de l'auteur (2026-10-15).** Q-B1 : `ArcRun` re-sème le flux avant **et** après le chargement. Q-B2 : les écarts de D-E0B-3
 sont acceptés, documentés. Q-B3 : le découpage e0b1 / e0b2 et le changement de prérequis de l'enveloppe sont accordés (révision 6 de
@@ -4421,7 +4421,7 @@ supprimés dans `D:/development/repo/` (absents, vérifié par la session princi
 
 ---
 
-#### 1.17.2 E20.e0b2 — Le tirage du butin à la création ⏳
+#### 1.17.2 E20.e0b2 — Le tirage du butin à la création ✅ (faite et CONFIRMED le 2026-10-16, `7549acf` à `a8d1b8d`, ADR-0073)
 
 **Révision 1 (2026-10-15).** Relecture : **REVISE**, quatre points corrigés (FIX) : (1) les couples de V8 se mesurent sur la case que le
 héros de la DLL occupe **pendant la boucle de chargement** (celle d'`AdoptPlayerPawn`, avant que l'arc ne pose la case de son `ArcSpec`),
@@ -4527,7 +4527,7 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
   le lecteur `AlundraSpawnIndexOracle.cs` est étendu à `loot` et `rng_out`, sans changer les comparaisons de `SpawnProjectionAsserts.Check`), dans une assertion propre à ce test, **jamais** dans
   `SpawnProjectionAsserts.Check`, partagée avec les tests du noyau d'e0a1 qui ne passent pas par l'assistant du monde ; les tests
   existants réécrits sont nommés dans les résultats de T2.
-- 🧪 **T3 — ADR, plan, verifiers frais** (ADR-0073, plan et mutants faits ; les deux verifiers frais restent à lancer par la session principale) (deux ; mutants du code de la DLL : au moins 12, tous tués — banque inversée, masque `0x7FFF`
+- ✅ **T3 — ADR, plan, verifiers frais** (ADR-0073, plan et mutants faits ; les deux verifiers frais : CONFIRMED, voir « Vérification ») (deux ; mutants du code de la DLL : au moins 12, tous tués — banque inversée, masque `0x7FFF`
   oublié, `& 0xFF` oublié, priorité du code d'enregistrement, repli sur l'en-tête, test du bit `0x80`, limite `0x62`, décalage de la rangée,
   `>> 28` changé, maillon non suivi, drapeau levé qui tire quand même, `+0x40` non écrit sans enregistrement, tirage placé avant l'abandon
   (tué par (m4)), le héros qui tire (tué par (m5)), assistant appelé deux fois par création).
@@ -4581,10 +4581,35 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
 - **Phase B** : l'assistant écrit `ContentsItemId` et `ContentsGameFlag` et tire sur le flux réel (`AlundraRandom.Next`) ; rien d'autre ne change. Un `git diff` d'`AlundraEntitySpawnFactory.cs` depuis le départ : la seule ligne `HeaderContents`.
 - **Comptes** : 5 062 en Release et en Debug à `b5b2c88` (5 046 + 16 nouveaux), zéro échec ; 5 065 à la fin de T3 (+3 tests : `OnlyTheLowByteOfTheHeaderCodeCounts_...`, M6, M7), Release ; Debug rejoué à la fin (voir le rapport).
 - **Prévu contre mesuré** : liste prédite 248 tests ; **aucun test existant ne bouge** (ni dans la liste ni hors d'elle), donc aucune réécriture ni dérivation (D-E0B-8) ; les 248 qui ne bougent pas sont expliqués par groupe dans le README de l'annexe (H115 : 130 tirages au lieu de 114 et plus de ticks, mais ses assertions portent sur la mort des Muruta et la porte ; 16 à tirages ambiants : booléens, positions, re-semence avant lecture ; 231 qui ne lisent que `SeedAfterTheLoad`).
-- **Preuve de retrait** : corps de l'assistant retiré, suite en Release : **6 rouges, exactement** M1, M2, M3, M4, M5 et `B2_TheFullPath_...` ; rien d'autre ; restauré par `git checkout --`.
+- **Preuve de retrait** : corps de l'assistant retiré, suite en Release : **6 rouges, exactement** M1, M2, M3, M4, M5 et `B2_TheFullPath_...` ; rien d'autre ; restauré par `git checkout --`. Ce compte vaut à `b5b2c88` : au HEAD de clôture `a8d1b8d`, les deux tests de monde M6 et M7 ajoutés en T3 rougissent aussi (8 rouges, rejoué par les deux verifiers), toujours aucun test existant.
 - **Ombre de la phase B** (`e0b2-shadow-b.txt`) : `divergent_draws` et `divergent_seed_reads` nuls sur les 1 141 lignes (V = R) ; 31 981 tirages réels dont 233 ambiants.
 - **Mutants du code de la DLL** : 21, tous rouges sauf M19 (équivalent : `Roll` masque deux fois). M04 (`& 0xFF` de l'en-tête) et M13 (`+0x40` non écrit sans enregistrement) ont d'abord survécu et sont tués par deux tests ajoutés en T3 ; le détail est dans le README de l'annexe.
 - **Écarts** : le brief de T3 attendait « tous tués » : M19 est équivalent, argumenté. `AlundraRandomShadow.OnVirtualRoll` reste, inutilisé, dans le code de production (nettoyage laissé à une autre tranche). Les trailers de commit portent « Claude Sonnet 5.5 » (modèle réel).
+
+
+##### Vérification (2026-10-16) : CONFIRMED
+
+Deux verifiers frais, l'un après l'autre, au HEAD `a8d1b8d`. **Rejeu** : l'oracle de l'annexe rejoué dans deux copies (25 contrôles,
+manifeste identique entre elles et à celui du dépôt ; la table de 2 048 octets remesurée dans l'exécutable, même md5) ; suites complètes
+5 065 / 0 échec en Release (copie neutralisée) et en Debug ; la phase A rejouée (l'assistant remis au tirage virtuel : M1 à M7 et B2
+rouges, M0, le chargement muet et l'inertie verts) ; la comparaison de B2 dans une assertion propre, `SpawnProjectionAsserts.Check`
+sans diff ; l'ombre de la phase B relancée (V = R, identique à `e0b2-shadow-b.txt`) ; aucun test existant ne bouge ; la vague de l'épée
+d'E20.f3c ne tire rien (en-tête `Contents` 0 des sprites 27 à 29) ; la preuve de retrait rejouée au HEAD (8 rouges, voir ci-dessus) ; le
+héros ne tire pas ; `cmp` de la DLL Debug identique. **Adversarial** : trois appels seulement, à leur place ; aucun autre site de
+création ; six mutants de l'exécuteur rejoués, dix nouveaux : sept tués (banques confondues, les 32 bits hauts, `& 15`, le site
+d'enregistrement sans enregistrement, le chargement sans enregistrement, `>=` changé en `>`, un pas de plus à l'interface), deux prouvés
+équivalents (le tirage avant `PushLogicalPositionToRoot` ; l'interface tirant comme avec un enregistrement, le drapeau du préfab cloné
+valant 0), un survivant (N9, ci-dessous). **Reportés** :
+- **P3** — mutant N9 non tué : un second tirage sur le parent au site d'enregistrement (`0x2D`, `0x8A`, `0x8B`) passe, parce que tous
+  les tests de `SpawnEntityByRecordId` créent depuis le héros, dont le code d'en-tête vaut 0. Le code de production est juste ; il manque
+  un test où un parent qui porte un code de butin (un Beannoïde qui exécute `0x2D`, par exemple) crée une entité, avec le mot du flux et
+  le butin du parent vérifiés. À faire avec E20.e0c (le lâcher du butin) ou E14.
+- **P4** — `AlundraRandomShadow.OnVirtualRoll` et ses deux compteurs restent dans le code de production, sans appelant après la phase B ;
+  nettoyage dans une tranche ultérieure.
+- **P4** — la carte 167 n'a pas d'`ArcSpec` dans la suite : elle est mesurée par un `ArcSpec` ad hoc à la case de Nouvelle Partie (noté
+  dans `v8.json` et le README).
+- Les trailers des commits de l'exécuteur portent son modèle réel (« Claude Sonnet 5.5 ») au lieu de la ligne de la consigne ; non
+  réécrits.
 
 ---
 
