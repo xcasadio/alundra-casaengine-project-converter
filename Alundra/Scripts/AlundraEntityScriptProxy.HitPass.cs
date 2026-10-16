@@ -44,6 +44,7 @@ public partial class AlundraEntityScriptProxy
 
     private AlundraFrameBoxTimeline? _boxTimeline;
     private bool _boxTimelineResolved;
+    private bool _boxHostAsked;
 
     /// <summary>The entity this proxy stands for in the fields of the binary that hold an entity (<c>TouchingEntity</c>, <c>+0x224</c>): the entity of the world, or the one that carries the proxy.</summary>
     internal Entity? SelfEntity => LogicContextEntity ?? Owner;
@@ -110,6 +111,7 @@ public partial class AlundraEntityScriptProxy
         BoxSwitchLoaded = fromClock;
         _boxTimeline = null;
         _boxTimelineResolved = false;
+        _boxHostAsked = false;
         HasFrameBox = false;
     }
 
@@ -193,11 +195,29 @@ public partial class AlundraEntityScriptProxy
     {
         if (!_boxTimelineResolved)
         {
-            _boxTimelineResolved = true;
             var sprite = LogicalClockSprite ?? Owner?.GetComponent<AnimatedSpriteComponent>();
-            _boxTimeline = sprite != null && AlundraFrameSyncPasses.TrySelectAnimationByNameSuffix(sprite, BoxAnimationId, BoxDirection, out var selected) && selected != null
-                ? AlundraFrameBoxTimeline.For(selected)
-                : null;
+            if (SwitchedAtCreation && sprite != null && sprite.Animations.Count == 0)
+            {
+                // E20.e0a5 (D-E0A5-3): an entity born by the interface reads the box of its frame in the tick of its birth, before the engine built the animations of its sprite: the data of the animation come from the host, by the asset ids
+                // of the sprite (the sprite is not touched). Asked once per switch: when the host has none, the timeline stays unresolved (never frozen at null) and the sprite answers once the engine integrated it.
+                if (!_boxHostAsked)
+                {
+                    _boxHostAsked = true;
+                    var data = ScriptHost?.ResolveAnimationData(sprite.AnimationAssetIds, BoxAnimationId, BoxDirection);
+                    if (data != null)
+                    {
+                        _boxTimeline = AlundraFrameBoxTimeline.ForData(data);
+                        _boxTimelineResolved = true;
+                    }
+                }
+            }
+            else
+            {
+                _boxTimelineResolved = true;
+                _boxTimeline = sprite != null && AlundraFrameSyncPasses.TrySelectAnimationByNameSuffix(sprite, BoxAnimationId, BoxDirection, out var selected) && selected != null
+                    ? AlundraFrameBoxTimeline.For(selected)
+                    : null;
+            }
         }
 
         if (_boxTimeline != null && _boxTimeline.TryGetBox(BoxTicks, out var box))

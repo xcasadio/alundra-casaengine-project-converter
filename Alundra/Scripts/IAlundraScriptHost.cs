@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using CasaEngine.Engine.Physics;
+using CasaEngine.Framework.Assets.Animations;
 
 namespace Alundra.Scripts;
 
@@ -89,6 +90,13 @@ public interface IAlundraScriptHost
     /// <see cref="AlundraWorldProxy.CollisionField"/> has another type, so the default would answer null).
     /// </summary>
     ICollisionField? CollisionField => null;
+
+    /// <summary>
+    /// E20.e0a5 (D-E0A5-3, ADR-0071): the animation data of the prefab of an entity that the engine has not integrated yet (its sprite has no <c>Animations</c> before the integration, but its <paramref name="animationAssetIds"/> are known):
+    /// the data of the animation <paramref name="animationId"/> in the row <paramref name="direction"/> (the names end with <c>_anim{n}_{down|up|left|right}</c>), the shared instance the sprite will hold after the integration. The entity reads
+    /// the box of its frame from it in the tick of its birth. Null (the default) for a host with no asset manager, and when no animation of the ids matches. Does not change the sprite.
+    /// </summary>
+    Animation2dData? ResolveAnimationData(IReadOnlyList<Guid> animationAssetIds, uint animationId, int direction) => null;
 
     /// <summary>
     /// T3 (docs/plan-transitions-carte.md §1.1/§3): this world's own parsed "Portals" object-layer

@@ -805,6 +805,35 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         }
     }
 
+    /// <summary>E20.e0a5 test seam: told every time an entity asks this host for the animation data of its prefab before the engine integrated it (<see cref="IAlundraScriptHost.ResolveAnimationData"/>).</summary>
+    internal Action? ResolveAnimationDataForTests;
+
+    /// <summary>
+    /// E20.e0a5 (D-E0A5-3): the animation data of the prefab of an entity that is not integrated yet, found by the name of its animations among the asset ids of its sprite. The handles taken on the way are given back at once: the
+    /// manager keeps the instance pending until the engine's own hold on it (the integration of the sprite) takes it again, the same instance. Null without a game (no asset manager) or when nothing matches.
+    /// </summary>
+    Animation2dData? IAlundraScriptHost.ResolveAnimationData(IReadOnlyList<Guid> animationAssetIds, uint animationId, int direction)
+    {
+        ResolveAnimationDataForTests?.Invoke();
+        var manager = _world?.Game?.AssetContentManager;
+        if (manager == null || direction < 0 || direction >= AnimationTables.DirectionNames.Length)
+        {
+            return null;
+        }
+
+        var suffix = AlundraFrameSyncPasses.AnimationNameSuffix(animationId, direction);
+        foreach (var id in animationAssetIds)
+        {
+            using var handle = manager.Acquire<Animation2dData>(id);
+            if (handle.Asset.Name.EndsWith(suffix, StringComparison.Ordinal))
+            {
+                return handle.Asset;
+            }
+        }
+
+        return null;
+    }
+
     /// <summary>See <see cref="IAlundraScriptHost.LogicTicksThisFrame"/>'s own doc; the sticky first-frame
     /// floor is documented on <see cref="_firstFrameStillOpen"/> itself.</summary>
     public int LogicTicksThisFrame(float elapsedTime)

@@ -224,5 +224,4 @@ Start: HEAD `71b209d` (phase A committed), clean tree except the two submodules.
 integration and never frozen), NO test of phase B yet. Release build with the copy of the DLL neutralised (`CopyGameplayDllToProject` emptied), full suite in Release: **4 988 passed, 0 failed** (the count of the end of phase A). Then `git checkout -- Alundra/Scripts/`
 (the tree is back; the trace files, EOL noise only, passed the guard and were restored).
 
-List `Class.Method - reason` of the existing tests that phase B alone moves: **empty**. None of the possible tests of T0 (K1 to K3, Z1, Z2, Z3, Z5, Z6, Z8, Z10, Z11, `Companion`, S1 to S4, S6) moves: the arrow gets its box, but no existing assertion reads the
-box, the hit pass result or the status of an arrow that this changes in the cases they build (the arrows of these flights hit nothing in their window). So the moved-test budget of phase B is zero: any existing test that moves in T2 is outside the list and is a STOP of the slice.
+List `Class.Method - reason` of the existing tests that phase B alone moves: **empty**. None of the possible tests of T0 (K1 to K3, Z1, Z2, Z3, Z5, Z6, Z8, Z10, Z11, `Companion`, S1 to S4, S6) moves (the reason was not investigated: the measure is what counts). So the moved-test budget of phase B is zero: any existing test that moves in T2 is outside the list and is a STOP of the slice.

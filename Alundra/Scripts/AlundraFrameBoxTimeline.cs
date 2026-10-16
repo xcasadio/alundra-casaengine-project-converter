@@ -21,6 +21,7 @@ internal readonly record struct AlundraFrameBox(int OffsetX, int OffsetY, int Of
 internal sealed class AlundraFrameBoxTimeline
 {
     private static readonly ConditionalWeakTable<Animation2d, AlundraFrameBoxTimeline> Cache = new();
+    private static readonly ConditionalWeakTable<Animation2dData, AlundraFrameBoxTimeline> DataCache = new();
 
     private readonly int[] _startTicks;
     private readonly bool[] _hasBox;
@@ -48,6 +49,21 @@ internal sealed class AlundraFrameBoxTimeline
         {
             timeline = Build(animation.Animation2dData);
             Cache.Add(animation, timeline);
+        }
+
+        return timeline;
+    }
+
+    /// <summary>
+    /// E20.e0a5 (D-E0A5-3): the timeline of the shared <paramref name="data"/> of an animation, built on the first request and kept with the data. It is the timeline of a sprite that holds this very instance (the
+    /// asset manager shares one instance per id), so an entity that is not integrated yet and the same entity after the integration read the same boxes.
+    /// </summary>
+    public static AlundraFrameBoxTimeline ForData(Animation2dData data)
+    {
+        if (!DataCache.TryGetValue(data, out var timeline))
+        {
+            timeline = Build(data);
+            DataCache.Add(data, timeline);
         }
 
         return timeline;

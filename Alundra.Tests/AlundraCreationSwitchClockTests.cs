@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 /// </summary>
 internal static class BirthClockOracle
 {
-    private static string Find(params string[] relative)
+    internal static string Find(params string[] relative)
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory is not null)
@@ -39,7 +39,7 @@ internal static class BirthClockOracle
         return document.RootElement.GetProperty("rows").EnumerateArray().First(r => r.GetProperty("label").GetString() == label).Clone();
     }
 
-    private static IEnumerable<JsonElement> Ticks(string label) => Row(label).GetProperty("ticks").EnumerateArray();
+    internal static IEnumerable<JsonElement> Ticks(string label) => Row(label).GetProperty("ticks").EnumerateArray();
 
     /// <summary>The first tick (relative to S) at which the end-of-animation flag of the row is raised.</summary>
     internal static int FirstEnd(string label) => Ticks(label).First(t => t.GetProperty("end_AC").GetInt32() == 1).GetProperty("k").GetInt32();
@@ -80,15 +80,15 @@ public sealed class AlundraCreationSwitchClockTests : IDisposable
 
     public void Dispose() => AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
 
-    private static ArcRun Arc(string name) => new(new ArcSpec("E20e0a5-" + name, "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true));
+    internal static ArcRun Arc(string name) => new(new ArcSpec("E20e0a5-" + name, "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true));
 
-    private static void Frame(ArcRun arc, int ticks) => arc.OneFrame(ticks * 0.02f + 0.0002f);
+    internal static void Frame(ArcRun arc, int ticks) => arc.OneFrame(ticks * 0.02f + 0.0002f);
 
     /// <summary>What the entity shows at the end of a tick (taken before the hit pass, after the clock and the physics).</summary>
-    private sealed record Sample(int Cursor, int Flag, int Loops, EntityStatus Status, bool Owed, int Reserved, uint Current, uint Target, int Impulse);
+    internal sealed record Sample(int Cursor, int Flag, int Loops, EntityStatus Status, bool Owed, int Reserved, uint Current, uint Target, int Impulse);
 
     /// <summary>One birth in the real world: the entity of the sprite <see cref="Sprite"/> born at the tick <see cref="S"/> (the <c>position</c>-th tick of its frame), sampled at the end of every tick.</summary>
-    private sealed class Birth : IDisposable
+    internal sealed class Birth : IDisposable
     {
         public readonly ArcRun Arc;
         public readonly int Sprite;
@@ -102,6 +102,9 @@ public sealed class AlundraCreationSwitchClockTests : IDisposable
 
         /// <summary>Told at the head of the lists pass of every tick from the birth on (before the clock), with the entity and the tick relative to S: the scripts that ask for another animation or direction.</summary>
         public Action<AlundraEntityScriptProxy, int>? AtLists;
+
+        /// <summary>E20.e0a5 phase B: told at the hit point of every tick from the birth on (after the clock and the physics), with the entity and the tick relative to S.</summary>
+        public Action<AlundraEntityScriptProxy, int>? AtHit;
 
         public Birth(string name, int sprite, int direction, bool native = false, bool lowerFlag = false)
         {
@@ -146,6 +149,7 @@ public sealed class AlundraCreationSwitchClockTests : IDisposable
                         {
                             After[Tick - S] = new Sample(Born.BoxTicks, Born.ForceResetAnimationFlag, Born.AnimCompleteCounter, Born.Status, Born.AnimationSwitchTickOwed, Born.AnimationSwitchTicksReserved,
                                 Born.CurrentAnimationId, Born.TargetAnimationId, Born.IsZForceApplied);
+                            AtHit?.Invoke(Born, Tick - S);
                         }
 
                         break;

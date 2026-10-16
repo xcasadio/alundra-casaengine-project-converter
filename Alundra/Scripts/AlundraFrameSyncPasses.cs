@@ -532,7 +532,7 @@ internal static class AlundraFrameSyncPasses
             return false;
         }
 
-        var suffix = "_anim" + animationId.ToString(CultureInfo.InvariantCulture) + "_" + AnimationTables.DirectionNames[animationDirection];
+        var suffix = AnimationNameSuffix(animationId, animationDirection);
 
         foreach (var animation in animatedSprite.Animations)
         {
@@ -546,4 +546,8 @@ internal static class AlundraFrameSyncPasses
         selected = null;
         return false;
     }
+
+    /// <summary>The end of the name of the animation <paramref name="animationId"/> in the row <paramref name="animationDirection"/> (<c>_anim{n}_{down|up|left|right}</c>, the converter's naming scheme); the direction must be a valid row.</summary>
+    internal static string AnimationNameSuffix(uint animationId, int animationDirection)
+        => "_anim" + animationId.ToString(CultureInfo.InvariantCulture) + "_" + AnimationTables.DirectionNames[animationDirection];
 }
