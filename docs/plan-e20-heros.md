@@ -4811,7 +4811,7 @@ fraction de pixel.
 - ✅ **T3 — Phase B** : le branchement. (b1) à (b4) passent au vert ; suite complète ; chaque test existant qui bouge appartient à la liste
   du T0 d'e0k3 et est réécrit par une dérivation (D-E0K-10).
   Fait (2026-10-16) : T2, 5 tests de monde (`AlundraMapEdgeWorldTests` : B1, B2 est, B2 diagonale, B3, B4), 5 rouges sur 5 avant T3 (phase A). T3 : `RunOneKinematicTick` borne `FinalForceX/Y` par `ClampStepToMapEdge` avant le mover pour une entité `HasLogicalZ`, puis lève `ForceAdjusted` APRÈS `SlideAlongWall` ; les 5 tests verts ; aucun test existant ne bouge ; suite 4 938 en Release et en Debug, 0 échec ; `cmp` de la DLL identique ; traces inchangées.
-- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre). Mutants, au moins 9, tués ou prouvés équivalents : bornes permutées,
+- 🧪 **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre ; ADR-0070, plan et 12 mutants faits, les deux verifiers restent à la session principale). Mutants, au moins 9, tués ou prouvés équivalents : bornes permutées,
   drapeau non levé, levé au tick suivant, effacé par `SlideAlongWall`, appliqué au héros (tué par (b4)), appliqué aux entités par
   enregistrement (tué par (b3)), bornes calculées sans les décalages, entité non marquée bornée, comparaison stricte devenue large (tuée par
   (c) de T1).
@@ -4824,6 +4824,13 @@ fraction de pixel.
   retiré (production remise au commit de la phase A, copie de la DLL neutralisée), suite complète en Release : rouges = exactement les cas
   nommés de (b1) à (b4) et les épingles réécrites en T3, rien d'autre ; fichiers restaurés ; traces inchangées ; `cmp` de la DLL ; moteur,
   convertisseur et données sans diff.
+
+##### Résultats (2026-10-16, phase B)
+
+- Commit de la phase B : `bef323b` (`RunOneKinematicTick`, les 5 tests de monde). Suite : 4 938 en Release et en Debug, 0 échec ; aucun test existant ne bouge (liste du T0 : aucun écart) ; `cmp` de la DLL identique ; traces inchangées.
+- Preuve de retrait (production remise au commit de la phase A, copie de la DLL neutralisée, suite complète en Release) : 4 933 verts, 5 rouges = exactement B1, B2 est, B2 diagonale, B3, B4 ; fichier restauré par `git checkout`.
+- Mutants (12, réels, à la copie neutralisée, classes `AlundraMapEdge*`) : tous tués. Bornes permutées (6 rouges : B1, B2 ×2, B3, B4, A) ; drapeau non levé (5 : B1 à B4) ; levé au tick suivant (5) ; effacé par `SlideAlongWall` (5) ; appliqué au héros (1 : B4) ; appliqué aux enregistrements (1 : B3) ; sans décalages (6) ; entité non marquée bornée (2 : B3, B4) ; comparaison large (3 : les cas (c) de T1) ; axe Y jamais borné (6 : (b) et (c) de T1) ; pas borné non réécrit (5) ; bornage après le mover (5).
+- Hors périmètre noté : le commentaire de `RunOneKinematicTick` sur le rognage non porté est corrigé ; la phase A et B ne touchent ni moteur, ni convertisseur, ni données.
 
 ##### Arrêts, budget, retour arrière
 
