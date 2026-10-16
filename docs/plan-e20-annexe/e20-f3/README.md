@@ -134,3 +134,7 @@ Result: same certain and possible lists, with these precisions.
 - `AlundraRandomPerTickTests.Advance` (steel sword, `Give(2)`): possible, stops before S (see the list above), not expected to move.
 - `AlundraHeroChargeArenaTests`, `AlundraHeroAuraWorldTests`, `AlundraHeroChargeTests`, `AlundraBeannoideGrateArcTests`, `AlundraMurutaHallArcTests`: as in the list above.
 The measured list stays to be compared in the results of the slice.
+
+## E20.f3c - measured list of the existing tests that move (2026-10-16, end of phase B)
+
+Empirical run with the wiring (full suite, Release and Debug, 5046 tests, 0 failures): the existing tests that moved are exactly the two certain ones, `AlundraNativeSpriteRegistryTests` (phase A, 6 + 1) and `AlundraWeaponSpawnSeamTests.S5` (phase B, `Equal({27, 28, 29})`). Not one of the "possible" tests moved (`AlundraHeroChargeArenaTests`, `AlundraHeroChargeTests`, `AlundraHeroAuraWorldTests`, `AlundraRandomPerTickTests`, the grate and hall arcs, `AlundraCreationSwitchClockTests`, `AlundraBirthBoxTests`, `AlundraBirthTickTests`): the arena pin stays at 2 contacts with E10 in line. Removal proof (production set emptied again): exactly the ten [R] tests and S5 are red. Detail in the results of tasks T3 and T4 of 1.19.3 of the plan.

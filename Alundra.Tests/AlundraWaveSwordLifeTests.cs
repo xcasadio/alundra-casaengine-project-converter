@@ -68,9 +68,15 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
         var statusAt = new Dictionary<int, string>();
         var slotDuringTheLife = -2; // read while the wave is alive (at S): once it is destroyed its slot is given back (Slot = -1).
         var slotHeldAt = new Dictionary<int, bool>();
+        var breakSlots = 0; // the active effect slots of the break effect 8 around the death: E10 has the body of E1 and the header of the wave has BreakEffect 0, so none (the mutant "destruction with the effect 8" creates one).
 
         run.Go(1, useHook: true, afterTick: t =>
         {
+            if (t is >= 112 + 26 and <= 112 + 28)
+            {
+                breakSlots += run.Arena.Arc.Proxy.EffectStage!.Reservoir.ActiveSlots.Count(s => s.TargetEffect == 8);
+            }
+
             if (t is >= 111 and <= 140)
             {
                 statusAt[t] = run.Born is null ? "none" : run.Arena.Arc.Entities.Contains(run.Born) ? ((int)run.Born.Status).ToString() : "free";
@@ -92,9 +98,9 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
         var createdAroundTheDeath = creationTicks.Count(t => t >= 112 + 25 && t <= 112 + 27);
 
         Assert.Equal(
-            ("none", "2", "2", "4", "free", true, true, true, false, true, 0),
+            ("none", "2", "2", "4", "free", true, true, true, false, true, 0, 0),
             (statusAt[111], statusAt[112], statusAt[112 + 25], statusAt[112 + 26], statusAt[112 + 27], burstTick >= 16, slotDuringTheLife >= 0,
-             slotHeldAt.GetValueOrDefault(112 + 26), slotHeldAt.GetValueOrDefault(112 + 27, true), second is not null && second.Slot == slotDuringTheLife, createdAroundTheDeath));
+             slotHeldAt.GetValueOrDefault(112 + 26), slotHeldAt.GetValueOrDefault(112 + 27, true), second is not null && second.Slot == slotDuringTheLife, createdAroundTheDeath, breakSlots));
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
