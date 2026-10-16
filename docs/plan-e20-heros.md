@@ -4874,6 +4874,12 @@ l'interface, porte le marqueur `HasLogicalZ` et garde son Z logique ; D-F3-8 est
 règle) est donc sans objet ; la sonde de vie devient un test de la phase A ; le témoin négatif (p5) prend un ensemble de test explicite
 (il reste vrai après f5, qui câblera l'arc) ; l'ordre « compteur, journal, puis appel » de D-F3-3, laissé sans épingle par f3a (P3
 reporté), est épinglé ici ; l'ADR de la tranche note que la dernière phrase de D-F3-7 dans l'ADR-0067 est réfutée (§1.20).
+**Révision 1 (2026-10-16).** Relecture : **REVISE**, trois points corrigés (FIX), vérifiés dans le code : (1) chaque test de la phase B porte
+son étiquette (« rouge avant le câblage et sous le retrait » ou « vert par construction »), qui découle de `WiredWeaponTypes =>
+WiredWeaponTypesForTests ?? ProductionWiredWeaponTypes` ; (p4) et (p5) sont réécrits pour dépendre de l'ensemble de production, (p7) est
+scindé ; (2) `AlundraWeaponSpawnSeamTests.S5` (« ensemble de production vide ») est dans la liste prédite, avec sa dérivation ; les tests qui
+relâchent une charge d'épée au-delà de R+21 dans un monde sont recensés comme « possibles » ; (3) (p6) se définit par l'état de la table
+(aucune case libre, puis exactement une), non par un nombre d'entités.
 
 **Prérequis.** E20.f3a ✅, E20.e0a1 à E20.e0a3 ✅, E20.e0b1 ✅, E20.e0k1 ✅ et E20.e0k2 ✅ (la règle du Z logique, D-F3-8). Touche
 `AlundraEventProgramRunner.cs` et `AlundraNativeSpriteRegistry.cs` ; relit ses numéros de ligne au HEAD d'exécution.
@@ -4917,17 +4923,32 @@ reporté), est épinglé ici ; l'ADR de la tranche note que la dernière phrase 
     (E10) dans la même assertion, donc rouge sur le squelette (la vague n'y meurt jamais) ;
   - (s7) l'ordre de D-F3-3 : un crochet de test qui lit, au moment de son appel, le compteur et le journal du tir : déjà incrémentés et déjà
     écrits (vert par construction ; il épingle le comportement d'f3a et tue le mutant M5b, ordre déplacé dans les deux branches).
-  Liste prédite des tests existants qui bougent : `AlundraNativeSpriteRegistryTests` (6 → 7), écrite au README avant le code.
+  **Liste prédite des tests existants qui bougent**, écrite au README avant le code : **certains** — `AlundraNativeSpriteRegistryTests`
+  (6 → 7 clés, phase A, dérivation 6 + (C, 61)) et `AlundraWeaponSpawnSeamTests.S5` (phase B : l'ensemble de production devient
+  {27, 28, 29} ; réécrit en `Assert.Equal({27, 28, 29}, …)`, et `UnhandledWeaponSpriteCodes(production)` reste vide parce que C61 est
+  enregistré et E10 traité en ligne) ; **possibles** — les tests qui relâchent une charge d'épée d'acier, de démon ou sainte au-delà de
+  R+21 dans un monde (la vague y naît désormais : son 30, une entité de plus), recensés par recherche en T1 (au moins
+  `AlundraHeroChargeArenaTests`, `AlundraHeroChargeTests`, `AlundraHeroAuraWorldTests`) et écrits au README avant la phase B ; aucun
+  autre test n'affirme l'ensemble de production vide (recherche de `ProductionWiredWeaponTypes`).
 - ~~T3 — La règle du Z logique~~ : sans objet (livrée par E20.e0k2, ADR-0069).
-- ⏳ **T3 — Phase B, câblage de production.** Tests écrits d'abord, **rouges avant le câblage**, crochet nul, dans `HitArena` et dans `ArcRun` (cartes 14, natifs allumés pour le second) :
-  - (p1) l'arène de la charge (relâchement à 91, S = 112) : une entité de type 27 fille du héros, aux clés du tableau, à la plus basse case libre mesurée avant le tir ; épées de démon et sainte : types 28 et 29, `atk_pow` 20 et 38 ;
-  - (p2) la cible à +56, +68, +80 est touchée par la vague aux ticks S+5, S+7, S+9 (clé `wave_reach_sweep`) ; la cible à +44 l'est par le héros (cas positif et « la vague ne passe pas devant le héros » dans la même assertion) ;
-  - (p3) la vague ne touche jamais le héros (`FrameCollisionTickCounter` du héros jamais posé par elle) dans la même exécution où la cible est touchée ;
-  - (p4) l'épingle d'arène : 2 contacts avec E10 en ligne ; le mutant « E10 dans le registre » en donne 3 au tick 138 (clé `arena_probe`) ;
-  - (p5) avec un ensemble de test explicite {27, 28, 29} (`WiredWeaponTypesForTests`, pour que le témoin reste vrai quand f5 câblera
-    l'arc) : un tir de l'arc du chasseur donne compteur 1, journal 1 appel, **zéro** entité ; accolé au tir de l'épée : une entité ;
-  - (p6) table pleine : 62 entités posées, le tir de la vague ne crée rien et le pointeur est effacé ; une case libre : une entité ;
-  - (p7) dégâts : la fonction pure `AlundraDamage.ResolveBalanceTarget` pour (attribut 129, puissance 10, 20, 38) contre la fiche du Beannoïde ; `TouchingEntity` = la vague au tick de la touche (le dégât de bout en bout reste à la recette).
+- ⏳ **T3 — Phase B, câblage de production.** Tests écrits d'abord, crochet nul et **sans ensemble de test** (sauf mention), dans `HitArena`
+  et dans `ArcRun` (carte 14, natifs allumés pour le second). Étiquettes : **[R]** rouge avant le câblage et sous le retrait (l'ensemble de
+  production vide) ; **[V]** vert par construction :
+  - [R] (p1) l'arène de la charge (relâchement à 91, S = 112) : une entité de type 27 fille du héros, aux clés du tableau, à la plus basse case libre mesurée avant le tir ; épées de démon et sainte : types 28 et 29, `atk_pow` 20 et 38 ;
+  - [R] (p2) la cible à +56, +68, +80 est touchée par la vague aux ticks S+5, S+7, S+9 (clé `wave_reach_sweep`) ; la cible à +44 l'est par le héros (cas positif et « la vague ne passe pas devant le héros » dans la même assertion) ;
+  - [R] (p3) la vague ne touche jamais le héros (`FrameCollisionTickCounter` du héros jamais posé par elle) dans la même exécution où la cible est touchée ;
+  - [R] (p4) dans la même assertion : la vague de production existe dans l'arène et y meurt à S+26 (E10 en ligne), **et** l'épingle
+    d'arène reste à 2 contacts ; le mutant « E10 dans le registre » en donne 3 au tick 138 (clé `arena_probe`) ;
+  - [R] (p5) le témoin négatif, avec un ensemble de test explicite {27, 28, 29} (`WiredWeaponTypesForTests`, pour qu'il reste vrai quand f5
+    câblera l'arc) : un tir de l'arc du chasseur donne compteur 1, journal 1 appel, **zéro** entité ; accolé, dans la même assertion, à un
+    tir de l'épée **avec l'ensemble de production** (ensemble de test remis à nul) : une entité ;
+  - [R] (p6) table pleine **par son état** (aucune case libre : `HeldCount == AlundraEntitySlotTable.SlotCount` avant le tir, motif
+    `FillSlots(free: 0)` d'f3a) : le tir de la vague ne crée rien et le pointeur est effacé ; **exactement une** case libre
+    (`FillSlots(free: 1)`) : une entité ;
+  - [V] (p7a) dégâts : la fonction pure `AlundraDamage.ResolveBalanceTarget` pour (attribut 129, puissance 10, 20, 38) contre la fiche du
+    Beannoïde ;
+  - [R] (p7b) dans le monde, `TouchingEntity` de la cible = la vague de production au tick de la touche (le dégât de bout en bout reste à la
+    recette).
   Puis la ligne de câblage.
 - ⏳ **T4 — ADR, plan, verifiers frais** (deux ; l'un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL,
   au moins 12, tués ou prouvés équivalents par écrit : E10 absent, E10 sous l'interrupteur natif, C61 absent, C61 aussi au tick S,
@@ -4938,15 +4959,16 @@ reporté), est épinglé ici ; l'ADR de la tranche note que la dernière phrase 
 ##### Acceptation
 
 - Oracle : les sorties de T0 (acier ×4 directions, démon, saint, balayages, `arena_probe`, mutants) ; manifeste identique.
-- DLL : (v1) à (v4), (s7), (p1) à (p7) verts ; (v1), (v2), (v4) rouges sur le squelette de T1 et (p1) à (p6) rouges avant le câblage
-  (nommés) ; **preuve de retrait** : l'ensemble de production vidé, exactement (p1) à (p6) rouges, rien d'autre ; la vague vit 26 ticks
-  aux trois groupements ; `Alundra.Tests` en Release **et** en Debug, compte de départ plus les nouveaux, zéro échec ; tests déplacés ⊂ liste prédite (registre : 6 → 7), chacun justifié par sa dérivation ; l'épingle d'arène reste à 2 ; `cmp` de la DLL ; cinq traces ; moteur, convertisseur et données sans diff.
+- DLL : (v1) à (v4), (s7), (p1) à (p6), (p7a), (p7b) verts ; (v1), (v2), (v4) rouges sur le squelette de T1 et les tests [R] rouges avant le câblage
+  (nommés) ; **preuve de retrait** : l'ensemble de production vidé, exactement les tests [R] — (p1) à (p6) et (p7b) — et la réécriture
+  de S5 rouges, rien d'autre ; la vague vit 26 ticks
+  aux trois groupements ; `Alundra.Tests` en Release **et** en Debug, compte de départ plus les nouveaux, zéro échec ; tests déplacés ⊂ liste prédite (certains et possibles), chacun justifié par sa dérivation ; l'épingle d'arène reste à 2 ; `cmp` de la DLL ; cinq traces ; moteur, convertisseur et données sans diff.
 - Recette de l'auteur : sauvegardes `steel-m14`, `demon-m14`, `arsenal-b-m14` (F9). Charger, relâcher, la vague apparaît 20 ticks après et dure 26 ticks. Attendu : elle ne coupe pas l'herbe (Q-F3-2) et touche un Beannoïde à 56 px et plus.
 
 ##### Arrêts, budget, retour arrière
 
 - **Arrêts** : la vague vit un nombre de ticks différent selon le groupement ; la vague meurt avant S+26 ou se pose (la règle d'e0k2 ne
-  tient pas pour elle : question) ; un test de (v1), (v2), (v4) vert sur le squelette ; un test de (p1) à (p6) vert avant le câblage ; un
+  tient pas pour elle : question) ; un test de (v1), (v2), (v4) vert sur le squelette ; un test [R] vert avant le câblage ; un
   test hors de la liste prédite bouge ; plus de 10 tests existants bougent ; la vague touche le héros ; l'arène donne 3 contacts avec E10 en ligne ; un besoin de changer le moteur.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B se retire seule (vider l'ensemble) ; la phase A reste inerte en production.
