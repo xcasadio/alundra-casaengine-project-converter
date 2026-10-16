@@ -235,7 +235,7 @@ public sealed class AlundraWeaponSpawnSeamTests : IDisposable
         var catalog = new SpriteRecordCatalog(ProjectRootFinder.Find());
         var registry = new AlundraEventProgramRunner(null, AlundraGameState.Instance).NativeSprites;
 
-        Assert.Empty(AlundraPlayerManager.ProductionWiredWeaponTypes); // this slice wires no type.
+        Assert.Equal(new[] { 27, 28, 29 }.OrderBy(t => t), AlundraPlayerManager.ProductionWiredWeaponTypes.OrderBy(t => t)); // E20.f3c wires the three waves of the sword; C61 is registered and E10 handled in line, so the checker stays empty.
         Assert.Empty(AlundraPlayerManager.UnhandledWeaponSpriteCodes(AlundraPlayerManager.ProductionWiredWeaponTypes, catalog, registry));
 
         var unhandled = AlundraPlayerManager.UnhandledWeaponSpriteCodes(new[] { Arrow }, catalog, registry);
