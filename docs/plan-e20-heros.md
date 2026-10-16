@@ -4340,7 +4340,7 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
 | O-E0B-3 | Fréquence réelle des images de deux ticks ou plus, et première image après une longue pause (jusqu'à 4 ticks) | recette de l'auteur (compteur de l'ombre) |
 | O-E0B-4 | Treize fonctions qui tirent (`0x80032F84`, `0x800330FC`, `0x800333AC`, `0x800335AC`, `0x8003382C`, `0x80033A2C`, `0x80034EC4`, `0x800354D0`, `0x80039188`, `0x80042FDC`, `0x800432A4`, `0x8004392C`, `0x80065204`) ne figuraient pas dans la liste antérieure des sites ; la plupart ne sont pas portées : chacune consommera le flux avancé (`0x80039188` est déjà porté : étincelles de coup) | tranches E20.e, E20.h, E14 |
 
-### 1.18 E20.e0k — Pas vertical et vol des entités autres que le héros : e0k1 (état de la carte), e0k2 (Z logique et pas vertical), e0k3 (bord de la carte), e0k4 (conditionnelle) ⏳ (e0k1 faite et CONFIRMED le 2026-10-16, ADR-0068 ; détaillée le 2026-10-15)
+### 1.18 E20.e0k — Pas vertical et vol des entités autres que le héros : e0k1 (état de la carte), e0k2 (Z logique et pas vertical), e0k3 (bord de la carte), e0k4 (conditionnelle) ⏳ (e0k1 et e0k2 faites et CONFIRMED le 2026-10-16, ADR-0068 et ADR-0069 ; détaillée le 2026-10-15)
 
 **Réponses de l'auteur.** Aucune à ce jour (2026-10-15, mode AUTO, l'auteur absent). Q-K1 et Q-K2 ont chacune un défaut réversible,
 **appliqué par la session principale jusqu'à la réponse de l'auteur** (option A dans les deux cas : périmètre étroit, aucun élargissement).
@@ -4504,7 +4504,7 @@ la carte transmise ; une ligne « T2 ⚠️ (première moitié) » reste dans le
 
 ---
 
-#### 1.18.2 E20.e0k2 — Le Z logique et le pas vertical des entités marquées ⏳ (en cours : T0 à T3 faites, T4 faite sauf les deux verifiers frais de la session principale)
+#### 1.18.2 E20.e0k2 — Le Z logique et le pas vertical des entités marquées ✅ (faite et CONFIRMED le 2026-10-16, `481e45c` à `2fb42f9`, ADR-0069)
 
 **Révision 1 (2026-10-16).** Relecture : **REVISE**, quatre points corrigés (FIX), vérifiés dans le code : (1) W2 doit aussi sauter, pour
 une entité marquée, le bloc de la loi de force de `EvaluateEntitySupport` (`AlundraEntityScriptProxy.cs`, vers `:774-798`) et l'écriture de
@@ -4545,15 +4545,28 @@ Relecture de clôture : **READY** (2026-10-16).
 - ✅ **T1 — Phase A** (tests d'abord, puis le code). `AlundraLogicalZStepTests`, chaque cas « sans effet » accolé dans la même assertion à un cas positif : (a) le marqueur est posé par l'interface et par elle seule : héros adopté, entité recyclée et créations par enregistrement sans marqueur, créée par l'interface avec marqueur, clone sans marqueur ; (b) la fonction, appelée à la main : boule (vecteur `arrows-ball-fire`, Z de l'oracle moins une unité brute, atterrissage au tick 11, `+0x140`), flèche (Z constant, `IsOnGround` 0 avec l'unité, 1 à `sol + 0`), impulsion 1 024 depuis 32 px (série de `crate-flat`, atterrissage au tick 23), cas d'effleurement exact (la somme vaut le sol : atterrit au tick suivant ; accolé à un cas non exact), plafond de 1 920 px, aimant de 3 px (seuils `0x30000` et `0x30001`, accolé à un cas à 4 px), plus 0x8000 sans gravité. Vert à la fin de T1.
 - ✅ **T2 — Tests de monde**, écrits après T1, **rouges avant T3** (la phase A ne branche rien), à 1, 2 et 3 ticks par image : (z1) une entité née sans gravité à la hauteur du héros garde `PosZ = héros + 1 unité` et `IsOnGround` 0 pendant 30 ticks (c'est la sonde de f3c : elle passe de 2 ticks de vie à 26 par la règle), accolée à la même entité par enregistrement, inchangée ; (z2) flèche à Z + 16 px au-dessus d'une marche de 16 px : `IsOnGround` 0 pendant 20 ticks, et contre une marche de 32 px : `ForceAdjusted` au tick 43 (oracle `arrow-h1`, `arrow-h2`) ; (z3) boule : série de Z de l'oracle **dès le tick 1** (31,5 px moins une unité brute ; une double décroissance
   la fausse), atterrissage au tick 11, `ForceAdjusted` au tick 7 contre la marche de 32 px (`ball-step32`), pose au tick 8 sur la marche de 16 px (`ball-step16`) ; (z4) entité à gravité lancée par une impulsion de 1 024 : atterrissage au tick 23 à plat, 21 sur 16 px, 18 sur 32 px ; (z5) gel puis dégel en l'air : le Z continue, sans ancrage, accolé à un PNJ par enregistrement inchangé ; (z6) la racine suit le Z logique sans que le moteur la déplace entre deux ticks ; (z7) la règle de `StepHeight` : 0 en l'air, la valeur du préfab au repos avec gravité ; (z8) invariance au groupement : mêmes séries à 1, 2 et 3 ticks par image ; (z9) aimant : une entité marquée à gravité, `ForceZ == 0`,
-  avec une force XY, posée sur un terrain 3 px plus haut (clé `magnet-3px`), accolée dans la même assertion à la même entité devant un
-  terrain 4 px plus haut, non posée (clé `magnet-4px`) ; (z10) téléportation en cours de vie : une entité marquée en l'air, déplacée par
+  avec une force XY, **côté descendant** (texte réécrit après l'exécution, décision de la session principale du 2026-10-16 : du côté
+  montant, le moteur monte déjà seul les 3 px et l'oracle « 4 px » finit aussi posé par un pas raffiné, aucun test de monde ne les
+  distingue) : sur une pente qui descend de 3 px par tick, l'entité reste posée (clé `magnet-down-3px`, `IsOnGround` 1 à chaque tick),
+  accolée dans la même assertion à la pente de 4 px par tick, où elle décolle (clé `magnet-down-4px`, en l'air des ticks 10 à 24) ; la
+  pose montante de 3 px est épinglée par le test direct B6 ; (z10) téléportation en cours de vie : une entité marquée en l'air, déplacée par
   une écriture de position scriptée (`PushLogicalPositionToRoot` appelé directement, ou l'opcode `0x64`), puis une mise à jour du moteur
   sans tick logique : elle n'est pas reposée au sol par le moteur ; accolée dans la même assertion à une entité par enregistrement,
   inchangée.
 - ✅ **T3 — Phase B** (commit de code B) : les quatre branchements. Les tests de T2 passent au vert ; suite complète.
-- 🚧 **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). Mutants, au moins 12, tous tués : marqueur posé sur le héros ou sur les créations par enregistrement, marqueur sur `EntityRefId == −1` (tué par le héros et l'entité recyclée de (a)), marqueur cloné, loi de force appliquée deux fois, retour anticipé de W2 avant l'écriture de `TerrainHeight`, `PosZ` rapatrié, `IsOnGround` lu sur le contrôleur, atterrissage `<=`, plafond changé, aimant de 4 px, aimant placé avant le XY (tué par (z9)), `IsOnGround` dérivé avant le XY, `StepHeight` inversé, sentinelle perdue après
+- ✅ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). Mutants, au moins 12, tous tués : marqueur posé sur le héros ou sur les créations par enregistrement, marqueur sur `EntityRefId == −1` (tué par le héros et l'entité recyclée de (a)), marqueur cloné, loi de force appliquée deux fois, retour anticipé de W2 avant l'écriture de `TerrainHeight`, `PosZ` rapatrié, `IsOnGround` lu sur le contrôleur, atterrissage `<=`, plafond changé, aimant de 4 px, aimant placé avant le XY (tué par (z9)), `IsOnGround` dérivé avant le XY, `StepHeight` inversé, sentinelle perdue après
   un `Teleport` (tué par (z10)), dégel qui rend `FinalForceZ`, Z après XY ; la loi appliquée deux fois doit être tuée par un test de **monde** ((z3)),
   pas seulement par T1.
+
+**Vérification (2026-10-16) : CONFIRMED** par deux verifiers frais, l'un après l'autre (rejeu : oracle et scénarios de l'aimant relancés
+sur une copie ; suites complètes en Release et en Debug, 4 926, zéro échec ; preuve de retrait : exactement (z1) à (z11) et K2 rouges ;
+une seule épingle déplacée, K2, dans la liste prédite et réécrite par dérivation ; aucun diff du code du héros ; écart racine / Z logique
+nul après la phase B, aucun déplacement du moteur ; adversarial : 22 mutants de la DLL tués, dont la loi appliquée deux fois par un test de
+monde). **Reportés** (P4) : la redérivation d'`IsOnGround` du post-pas est redondante dans le monde avec la ligne existante `if ZHeldByTick`
+(seuls les tests directs l'épinglent) ; une entité marquée sans racine n'a plus de pas vertical (cas théorique) ; le message du commit
+`2fb42f9` dit « docs » alors qu'il contient aussi des tests ; seuls z1, z3, z6, z8 testent les groupements (z2 et z9 vérifiés verts à 2 et
+3 ticks par un verifier) ; une description de théorie fausse dans le README de l'annexe (le total est juste) ; (z11), test ajouté hors du
+texte du plan pour tuer des mutants, est gardé.
 
 ##### Acceptation
 
