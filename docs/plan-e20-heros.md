@@ -4420,6 +4420,8 @@ d'entrée `0x12345678` ; le lecteur `AlundraSpawnIndexOracle.cs` est étendu à 
 `SpawnProjectionAsserts.Check`. La règle de relecture ne permet pas une relecture de plus sans l'auteur, absent cette nuit (mode AUTO) :
 la tranche est **en pause** jusqu'à son accord ; E20.e0a4 (ordonnée après e0b2), E20.g2 et E20.e0c attendent avec elle.
 L'auteur a accordé une relecture de clôture de plus (2026-10-16).
+Relecture de clôture accordée : **REVISE** (une ligne d'E20.e0k3 écrite par erreur dans le T0 d'e0b2, et un compte de départ périmé ; corrigés
+par `beb948d`) ; l'auteur accorde une dernière relecture : **READY** (2026-10-16).
 
 **Prérequis.** E20.e0a1 ✅, E20.e0a2 ✅, E20.e0b1 ✅ (ADR-0066 ; l'ombre `AlundraRandomShadow` et son registre virtuel `V` existent).
 Q-B1 tranchée : `ArcRun` re-sème avant et après le chargement.
