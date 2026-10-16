@@ -1358,7 +1358,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// E20.e0k2 (docs/plan-e20-heros.md section 1.18.2, D-E0K-1, ADR-0069): the entity keeps its Z in the logic tick (the "logical Z"), as the hero does in the air state: <see cref="PosZ"/> belongs to the
     /// tick, the root only follows it, nothing pulls it back from the root. Posed by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> ONLY, in the marker block of ADR-0065 (the last write of
     /// the creation); never by the creations from a record, never for the hero, never cloned. It is neither <c>EntityRefId == -1</c> (the adopted hero and the recycled entities have it too) nor
-    /// <see cref="JoinsBirthTick"/> (E20.e0a4 may extend that one to the records). Phase A of E20.e0k2: nothing reads it yet.
+    /// <see cref="JoinsBirthTick"/> (E20.e0a4 may extend that one to the records). Read by the logic tick (<see cref="AlundraScriptedMotion"/>, W1), by the support block and the root pull (W2, W3), by <see cref="PushLogicalPositionToRoot"/> and by the thaw (W4).
     /// </summary>
     internal bool HasLogicalZ;
 

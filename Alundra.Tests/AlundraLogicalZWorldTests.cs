@@ -533,4 +533,57 @@ public sealed class AlundraLogicalZWorldTests
             (3f, 0f),
             (MathF.Round(RootZ(ball), 3), MathF.Round(RootZ(companion), 3)));
     }
+
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // (z11) what the engine's support block would otherwise write for a marked entity: the terrain height field follows the entity, the force of the tick survives the landing, the ground flag is not read back from the controller.
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void Z11_TheMarkedEntity_KeepsTheTerrainHeightFieldAtItsPosition_TheForceOfTheLandingTick_AndTheLogicalGroundFlagAcrossAnEngineUpdate()
+    {
+        // (1) an arrow flying 16 px up crosses onto a step of 16 px (the cells are 24 px wide: the step starts at x = 360, tick 44): the terrain height field (written for every entity at the end of the step) is the terrain under the box at each tick, and it does rise to the step.
+        using var flight = Arc("z11-terrain");
+        Install(flight, Steps(15, 30, 1));
+        var arrow = Born(flight, false, Arrow, 100, 16 << 16);
+        var stale = new List<int>();
+        var fields = new List<int>();
+        Frames(flight, 1, 60, _ =>
+        {
+            fields.Add(arrow.TerrainHeight);
+            stale.Add(arrow.TerrainHeight - arrow.ComputeTerrainHeight());
+        });
+
+        // (2) the ball: on the tick of its landing the force of the tick is still the fall's (the support block of the engine would overwrite it with the force after the landing, 0), the force is 0.
+        using var fall = Arc("z11-force");
+        Install(fall, Flat());
+        var ball = Born(fall, false, FireBall, 100, 32 << 16);
+        var landingTick = FirstTick(OracleSlot(OracleRows("arrows-ball-fire.json")), "ground_144");
+        var forces = new List<(int Force, int TickForce)>();
+        Frames(fall, 1, landingTick, _ => forces.Add((ball.ForceZ, ball.TickForceZ)));
+
+        // (3) the ball that has landed, then engine updates without a logic tick: the logical ground flag stays 1 (the controller, whose vertical is held outside, does not report it).
+        using var rest = Arc("z11-ground");
+        Install(rest, Flat());
+        var landed = Born(rest, false, FireBall, 100, 32 << 16);
+        Frames(rest, 1, landingTick + 2);
+        rest.OneFrame(0.001f);
+        rest.OneFrame(0.001f);
+
+        // (4) a thaw followed by engine updates without a logic tick: the thaw hands the controller the sentinel, not the force of the entity (0 for the arrow one raw unit above the floor, which the engine would anchor down), so the root does not move.
+        using var thaw = Arc("z11-thaw");
+        Install(thaw, Flat());
+        var falling = Born(thaw, false, Arrow, 100, 0);
+        Frames(thaw, 1, 5);
+        var rootBefore = RootZ(falling);
+        thaw.Proxy.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        Frame(thaw, 1);
+        thaw.Proxy.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+        thaw.OneFrame(0.001f);
+        thaw.OneFrame(0.001f);
+        thaw.OneFrame(0.001f);
+
+        Assert.Equal(
+            (true, 16 << 16, 0, true, true, 1, true, 0f),
+            (stale.All(s => s == 0), fields.Max(), forces[^1].Force, forces[^1].TickForce < 0, forces[0].TickForce == forces[0].Force, landed.IsOnGround, falling.PosZ == falling.ComputeTerrainHeight() + 1, RootZ(falling) - rootBefore));
+    }
 }

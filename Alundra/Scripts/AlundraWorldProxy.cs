@@ -3465,7 +3465,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             if (spawnedProxy != null)
             {
                 spawnedProxy.JoinsBirthTick = true;
-                spawnedProxy.HasLogicalZ = true; // E20.e0k2 (D-E0K-1): the logical Z marker, in the same block; nothing reads it in phase A.
+                spawnedProxy.HasLogicalZ = true; // E20.e0k2 (D-E0K-1): the logical Z marker, in the same block.
                 _birthSpawnsThisTick++;
             }
 

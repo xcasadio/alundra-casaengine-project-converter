@@ -441,8 +441,8 @@ internal static class AlundraScriptedMotion
 
     /// <summary>
     /// E20.e0k2 (docs/plan-e20-heros.md section 1.18.2, D-E0K-3 to D-E0K-5), the first half of the logical step of an entity that is not the hero: the vertical step the binary takes BEFORE the XY step
-    /// (<c>MoveEntity</c> <c>0x80037E34</c>: <c>ComputeZ</c> <c>0x800375E0</c> then <c>ComputeXY</c> <c>0x80037730</c>), in the DLL's frame (the binary's minus one raw unit, ADR-0026). Phase A: no tick calls it yet, the
-    /// tests do (phase B wires it into <see cref="RunOneMotionTick"/> for an entity marked <see cref="AlundraEntityScriptProxy.HasLogicalZ"/>). Returns false, and changes nothing, for the hero and for an entity without a
+    /// (<c>MoveEntity</c> <c>0x80037E34</c>: <c>ComputeZ</c> <c>0x800375E0</c> then <c>ComputeXY</c> <c>0x80037730</c>), in the DLL's frame (the binary's minus one raw unit, ADR-0026). <see cref="RunOneMotionTick"/> calls it,
+    /// before the XY step, for an entity marked <see cref="AlundraEntityScriptProxy.HasLogicalZ"/> (phase B, W1). Returns false, and changes nothing, for the hero and for an entity without a
     /// controller or a root (the 12 prefabs without a controller keep <c>StepVerticalWithoutController</c>). The model is the hero's air state (<see cref="RunHeroVerticalTick"/>, which it does not touch):
     /// <list type="bullet">
     /// <item><description>Force: the law of the binary, <see cref="AlundraEntityScriptProxy.ApplyVerticalForceLaw"/> (the ONE decay site, shared with the support block of the controller); the force of the tick is kept in
@@ -529,7 +529,7 @@ internal static class AlundraScriptedMotion
     /// E20.e0k2 (D-E0K-4), the second half of the logical step: after the XY step of the tick, the magnet of 3 px (<c>0x80037848</c>, the body of <see cref="SnapHeroAtApex"/>, which stays untouched), then
     /// <see cref="AlundraEntityScriptProxy.IsOnGround"/> derived from the position after the step, not pulled from the engine: <c>PosZ + ModZ &lt;=</c> the floor (the binary's <c>!(FloorHeight &lt; PosZ)</c>,
     /// <c>0x800380F8</c>, without its +1; the floor is the higher of the terrain and the top of an entity under the box, <see cref="AlundraEntityScriptProxy.ComputeFloorHeight"/>). Same applicability as
-    /// <see cref="RunLogicalZPreXyStep"/>; phase A: no tick calls it yet.
+    /// <see cref="RunLogicalZPreXyStep"/>; <see cref="RunOneMotionTick"/> calls it after the XY step (W1).
     /// </summary>
     internal static void RunLogicalZPostXyStep(AlundraEntityScriptProxy entity)
     {

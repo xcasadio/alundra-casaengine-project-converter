@@ -257,3 +257,12 @@ The scenario (`k0_magnet.py`, run with the rest by `run_all.py`): the same Beann
 | `magnet-down-4px` | 480 (5.625 px per tick, the ground drops by 3 to 4 px per tick: outside the window) | `ground_144` = 0 at ticks 10 to 24 (15 ticks in the air: the ground drops faster than the fall); `pz` at tick 10 equal to tick 9 (3 866 625), then falling by 32 768, 65 536, 98 304, ... raw per tick (the gravity step accumulating) |
 
 The manifest of `run_all.py` is now 97 files (the 88 of E20.e0k1, the 5 of the first part of this section, 4 new ones; `magnet-summary.txt` has the two new lines), identical on two complete runs.
+
+## E20.e0k2 - phase B (T3) and T4: wirings, the one moved pin, the removal proof, the mutants
+
+- Commit `82a979d`: the four wirings of the logical Z (W1 two calls around the XY step, W2 the support block yields, W3 the root pull leaves `PosZ` and `IsOnGround`, W4 the step height rule, the sentinel after a `Teleport` and at a thaw). The 18 cases of (z1) to (z10) are green at 1, 2 and 3 ticks per frame. Suite: 4 925 of 4 925 in Release and in Debug (4 907 + 18).
+- Predicted list (70 methods, 82 cases, T0) against the measured moves: exactly one existing test moved, `AlundraMapStateWorldTests.K2` (in the list). Its "no map" witness was the whole pixel `32 << 16` (the root's truncation); it is now the oracle's `init.pz` (`arrows-ball-fire`) minus one raw unit (derivation, D-E0K-10).
+- Root / logical Z gap, measured after phase B: (z6) under 0.5 raw unit at 1, 2 and 3 ticks per frame and no displacement of the root by an engine update without a tick; the P6 probe resumed (ball until its landing, 30 ticks, an engine update without tick after every frame): gap 0, engine displacement 0, `PosZ` 2 064 385 at tick 1 and 294 913 at tick 10 (the oracle minus one), 0 with `IsOnGround` 1 at tick 11.
+- Removal proof (the production files put back to the phase A commit `181954f`, neutralised DLL copy, full suite in Release): exactly 20 red, (z1) to (z10) (18 cases), (z11) and `AlundraMapStateWorldTests.K2`; nothing else. Restored; `git status` back to the working state.
+- 22 real mutants (scripts in the session scratchpad, each restored), all killed; four survived the first pass and were closed by a stronger B6 (the order of the magnet and of the `IsOnGround` derivation, the shared entity's gravity flag left down by an earlier case) and by the world test (z11) (terrain height field, force of the landing tick, logical ground flag across tickless engine updates, thaw of an entity one raw unit above the floor).
+- ADR-0069.

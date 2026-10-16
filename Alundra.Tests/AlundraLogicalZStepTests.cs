@@ -310,6 +310,18 @@ public sealed class AlundraLogicalZStepTests
             return ball.PosZ - terrain;
         }
 
+        int RunGround(int posZ)
+        {
+            // A box with no Z offset, so that the foot at the terrain is on the ground (PosZ + ModZ <= floor); the order of the snap and of the derivation is what the case pins.
+            // (The case before it, "NoGravity", leaves the gravity flag down on the shared entity.)
+            var modZ = ball.ModZ;
+            ball.ModZ = 0;
+            ball.Flags |= EntityFlags.Gravity;
+            Run(posZ);
+            ball.ModZ = modZ;
+            return ball.IsOnGround;
+        }
+
         // Terrain above the foot by 3 px + 1 unit: posed on it; 3 px + 2 units: not. Terrain below the foot by 3 px: posed; by 3 px + 1 unit: not (the DLL's frame of the thresholds 0x30000 and 0x30001).
         var results = (
             Up3: Run(terrain - 0x30001),
@@ -320,10 +332,13 @@ public sealed class AlundraLogicalZStepTests
             ForceZ: Run(terrain - 0x20000, e => e.ForceZ = -1),
             NoXyForce: Run(terrain - 0x20000, e => { e.FinalForceX = 0; e.FinalForceY = 0; }),
             NoStep: Run(terrain - 0x20000, e => { e.LastTickDeltaX = 0; e.LastTickDeltaY = 0; }),
-            NoGravity: Run(terrain - 0x20000, e => e.Flags &= ~EntityFlags.Gravity));
+            NoGravity: Run(terrain - 0x20000, e => e.Flags &= ~EntityFlags.Gravity),
+            // IsOnGround is derived AFTER the snap (E20.e0k2 W1, the binary's order): the foot posed by the magnet is on the ground, the foot left 3 px + 1 unit above it is not.
+            Down3Ground: RunGround(terrain + 0x30000),
+            Down3MoreGround: RunGround(terrain + 0x30001));
 
         Assert.Equal(
-            (Up3: 0, Up3More: -0x30002, Up4: -0x40000, Down3: 0, Down3More: 0x30001, ForceZ: -0x20000, NoXyForce: -0x20000, NoStep: -0x20000, NoGravity: -0x20000),
+            (Up3: 0, Up3More: -0x30002, Up4: -0x40000, Down3: 0, Down3More: 0x30001, ForceZ: -0x20000, NoXyForce: -0x20000, NoStep: -0x20000, NoGravity: -0x20000, Down3Ground: 1, Down3MoreGround: 0),
             results);
     }
 
