@@ -4219,12 +4219,19 @@ S = tick de naissance, k = tick − S).
     `AlundraBirthTickTests.TheCreation_NeverReadsTheCollisionField…` — l'épingle du marqueur devient : aucune entité du chargement de carte ne le porte, les quatre entités nées par un opcode le portent, l'appel direct de `SpawnEntityByRecordId` ne le pose jamais. Ce test est renommé (`…AndAnEntityFromARecordOnlyWhenAScriptOpcodeMadeIt`),
     comme `AnEntityWithoutTheMarker_KeysItsKinematics…` et `TheMarker_IsPosedByTheInterface_NeverByTheLoadOfTheMap_AndNotCloned` dont les noms ne disaient plus vrai.
   - **Suite entière après la phase B** : **5 092 verts en Release** (copie neutralisée, 5 min 51 s) **et en Debug** (copie neutralisée, 6 min 6 s) = 5 076 + 16 ; la DLL de `alundra-project` (md5 `92742c8c…`) n'a pas été touchée.
-- ⏳ **T3 — Intégration.** Suites complètes ; **preuve de retrait de la phase B** (la production remise au commit de la phase A, copie
+- ✅ **T3 — Intégration.** Suites complètes ; **preuve de retrait de la phase B** (la production remise au commit de la phase A, copie
   neutralisée, suite complète en Release : rouges = exactement les [R] de T2 — (b1), (b2), (b4), (b4b), (b6) — et les épingles réécrites
   en T2, rien d'autre ; aucune déclaration inerte attendue, toute exception listée) ; la phase A est prouvée par les rouges de T1 sur le
   HEAD, versés au plan avant son code, sans second retrait ; ADR ; commentaires périmés corrigés (`SwitchedAtCreation`,
   `JoinsBirthTick`, `AlundraScriptedMotion.cs:167-168`, la documentation de `SpawnEntityByRecordId` « starting next frame », `ApplyRecord`,
   `AlundraTickStructureTests.cs:367`) ; les tests restés verts mais au nom inexact renommés (`AlundraBirthTickTests:433`, `:490`).
+  **Résultat de T3 (2026-10-16).**
+  - **Preuve de retrait de la phase B** (commit `bda8229`, la production remise au commit de la phase A par `git checkout 683b9dc -- Alundra`, Release, copie neutralisée, 5 092 tests, 5 min 47 s) : **18 rouges, exactement** les 13 cas [R] de T2 — (b1) × 6, (b2) × 3, (b4), (b4b) × 2, (b6) — et les 5 épingles
+    réécrites en T2 (`AlundraInoaDayOneArcTests.A10`, `AlundraShipBlockArcTests.A6`, `AlundraHeightTargetSitesTests…(s36c4_rec3)` et `…(s115_rec19)`, `AlundraBirthTickTests.TheCreation_NeverReadsTheCollisionField…`) ; les deux [V] de (b3) et le (b5) restent verts, ainsi que tout le reste (5 074 verts). Aucune déclaration inerte : le retrait
+    est le retrait du fichier de l'exécuteur et des commentaires, il compile. Remise en état par `git checkout HEAD -- Alundra` ; `git status` redevenu celui d'avant (les deux sous-modules déjà modifiés, rien d'autre) ; les gardes de traces vides. La même mesure, faite une première fois sur le code de T2 avant son commit, a donné les mêmes 18 rouges (liste d'essai conservée hors dépôt).
+  - **ADR-0074** (`docs/decisions/`, index mis à jour ; prochain numéro libre relu : 0074).
+  - **Commentaires périmés corrigés** (commit `bda8229`, commentaires et noms seulement) : `SwitchedAtCreation` et `JoinsBirthTick` (`AlundraEntityScriptProxy.cs`), la garde de `AlundraScriptedMotion.cs`, la collecte des entités du tick, la documentation de `SpawnEntityByRecordId` (« starting next frame »),
+    l'amorçage d'`EventTrigger` d'`ApplyRecord`, `AlundraLogicalZStepTests.cs`, `AlundraTickStructureTests.cs:367` (le test est renommé : il ajoute une entité sans le marqueur) ; renommés `AlundraBirthTickTests:433` (`AnEntityWithoutTheMarker_KeysItsKinematics…`) et `:490` (`TheMarker_IsPosedByTheInterface_NeverByTheLoadOfTheMap_AndNotCloned`), avec le test de l'épingle du marqueur (T2).
 - ⏳ **T4 — Verifiers frais** (deux, l'un après l'autre). Mutants, au moins 12, tués ou prouvés équivalents : `SwitchedAtCreation` jamais
   posé ; posé après `InitializeBalance` ; posé sur le chemin du chargement ; `JoinsBirthTick` sans `SwitchedAtCreation` (tué par (b3)) ;
   marqueur avant la poussée de `0x8A` (tué par (b4)) ; marqueur posé dans `ApplyRecord` (tué par le goéland ou (a5)) ; marqueur sur le
