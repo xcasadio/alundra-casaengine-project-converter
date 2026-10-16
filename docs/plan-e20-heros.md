@@ -163,6 +163,22 @@ ADR-0058) :
   au-dessus du compteur, fait tourner A deux fois dans le binaire) reste un écart documenté de la DLL (E20.e0a3, D-E0A-6, O-E0A-1).
 - **D-E20-35** (2026-10-15, réponse à Q-A3) — Une entité née pendant un tick tourne dès ce tick mais n'est dessinée qu'à l'image
   suivante (intégration du moteur) ; pas d'intégration immédiate, pas de changement du moteur.
+- **D-E20-36** (2026-10-16, réponse à Q-E0A5-1) — La règle « première animation comptée à la création » des entités nées par
+  l'interface (E20.e0a5) s'étendra plus tard, par une tranche mesurée avant (liste des tests qui bougent) : e0a4 l'applique aux naissances
+  par script dans un tick ; une tranche à part traite le chargement de carte et l'arrivée du héros. D'ici là, l'écart reste épinglé.
+- **D-E20-37** (2026-10-16, Q-K1 confirmée) — Seules les entités créées en jeu (flèches, boules, bombe lancée, objets lâchés) suivent les
+  règles exactes de chute du binaire ; les entités posées par la carte gardent l'ancienne règle jusqu'à E19.h2.
+- **D-E20-38** (2026-10-16, Q-K2 confirmée) — L'écart d'un tick du drapeau « bloqué » d'une flèche contre un mur (une fois sur trois) est
+  accepté et documenté ; E20.e0k4 n'est pas faite.
+- **D-E20-39** (2026-10-16, réponse à Q-G1) — Le soulèvement des caisses et des jarres n'est activé qu'avec E20.g3 (caisses et jarres
+  redevenues solides), fidèle dès le premier jour ; pas de détecteur de contact provisoire. Le découpage de §1.24 (g1b avant g3) est à
+  réordonner quand g deviendra la tranche suivante.
+- **D-E20-40** (2026-10-16, réponse à Q-G2) — La recette « porter un objet et monter sur une plateforme » couvre la marche de 16 px, le dessus
+  d'un autre objet et la plateforme qui se déplace à l'horizontale ; les ascenseurs viendront avec E19 D5b.
+- **D-E20-41** (2026-10-16, réponse à Q-G3) — Pas de « poser » : Carré lance toujours, comme l'original.
+- O-F3-6 (2026-10-16) — l'auteur demande de trancher sur le binaire, le portage pouvant avoir un bug : une sonde sur la machine MIPS, avec la
+  vraie passe des effets, mesure le tick de libération des effets 4 et 5 ; un écart du portage se corrige.
+- E20.e0b2 (2026-10-16) — l'auteur accorde une relecture de clôture de plus.
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
@@ -4018,7 +4034,8 @@ Relecture de clôture : **READY** (2026-10-16).
 - **D-E0A5-8 — Preuve.** Oracle d'abord. Chaque test est lancé rouge sur le HEAD avant le code ; la liste des rouges est versée au plan.
 
 **Questions à l'auteur.**
-- **Q-E0A5-1** — Voulez-vous la même règle (première animation comptée à la création) pour les entités nées d'un enregistrement de carte et pour l'arrivée du héros ? Le binaire le fait. Mais beaucoup d'arcs de test épinglent des numéros d'image après une arrivée ; on ne peut pas les mesurer sans l'exécuter. Recommandation : pas dans cette tranche ; e0a4 pose le même drapeau pour les naissances dans un tick ; une tranche mesurée comme P-B traite le chargement de carte et le héros.
+- **Q-E0A5-1** — **Tranchée le 2026-10-16 (D-E20-36)** : plus tard, par une tranche mesurée ; e0a4 pour les naissances par script dans un
+  tick. Question d'origine : voulez-vous la même règle (première animation comptée à la création) pour les entités nées d'un enregistrement de carte et pour l'arrivée du héros ? Le binaire le fait. Mais beaucoup d'arcs de test épinglent des numéros d'image après une arrivée ; on ne peut pas les mesurer sans l'exécuter. Recommandation : pas dans cette tranche ; e0a4 pose le même drapeau pour les naissances dans un tick ; une tranche mesurée comme P-B traite le chargement de carte et le héros.
 
 **Prérequis et dépendants.** Prérequis : E20.e0a3b ✅. Indépendante d'E20.e0k3 (l'ordre est libre ; celle qui passe en second recompte sa liste au HEAD de départ). Dépendants : **E20.f3c** (reprend à sa phase A ; O-F3-7 est fermé), E20.f4, E20.f5, E20.f6, E20.h3 (leurs projectiles naissent par l'interface), E20.e0a4 (hérite du drapeau et du résolveur ; sa mesure P-B est à refaire après e0a5), E20.e0c (le butin et l'objet ramassable nés par
 l'interface) et E20.e par elle.
@@ -4402,6 +4419,7 @@ apparition, `rng_out` relu après) : `p.loot[0]` → `ContentsItemId`, `p.loot[1
 d'entrée `0x12345678` ; le lecteur `AlundraSpawnIndexOracle.cs` est étendu à `loot` et `rng_out` sans toucher aux comparaisons de
 `SpawnProjectionAsserts.Check`. La règle de relecture ne permet pas une relecture de plus sans l'auteur, absent cette nuit (mode AUTO) :
 la tranche est **en pause** jusqu'à son accord ; E20.e0a4 (ordonnée après e0b2), E20.g2 et E20.e0c attendent avec elle.
+L'auteur a accordé une relecture de clôture de plus (2026-10-16).
 
 **Prérequis.** E20.e0a1 ✅, E20.e0a2 ✅, E20.e0b1 ✅ (ADR-0066 ; l'ombre `AlundraRandomShadow` et son registre virtuel `V` existent).
 Q-B1 tranchée : `ArcRun` re-sème avant et après le chargement.
@@ -4528,7 +4546,8 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
 
 ### 1.18 E20.e0k — Pas vertical et vol des entités autres que le héros : e0k1 (état de la carte), e0k2 (Z logique et pas vertical), e0k3 (bord de la carte), e0k4 (conditionnelle) ⏳ (e0k1, e0k2 et e0k3 faites et CONFIRMED le 2026-10-16, ADR-0068 à ADR-0070 ; détaillée le 2026-10-15)
 
-**Réponses de l'auteur.** Aucune à ce jour (2026-10-15, mode AUTO, l'auteur absent). Q-K1 et Q-K2 ont chacune un défaut réversible,
+**Réponses de l'auteur (2026-10-16).** Q-K1 et Q-K2 : l'option A est **confirmée** par l'auteur (D-E20-37, D-E20-38). Texte de la nuit :
+Aucune à ce jour (2026-10-15, mode AUTO, l'auteur absent). Q-K1 et Q-K2 ont chacune un défaut réversible,
 **appliqué par la session principale jusqu'à la réponse de l'auteur** (option A dans les deux cas : périmètre étroit, aucun élargissement).
 Aucune ne bloque e0k1. Ordre retenu par la session principale (révision 8 de l'enveloppe) : e0k1, e0k2, puis E20.f3c, puis e0k3.
 
@@ -5257,7 +5276,7 @@ Relecture de clôture : **READY** (2026-10-16).
 | O-F3-3 | ~~L'enregistrement A0 du Muruta devra devenir un ensemble de types partagé pour f4 à f6~~ **Fermé le 2026-10-15** (découverte d'f4 à f6 : A0 est une donnée morte) | — |
 | O-F3-4 | Les effets 4 et 5 sont créés en fin d'image : position de départ de fin d'image dans une image de plusieurs ticks | écart accepté ; E20.f6 si visible |
 | O-F3-5 | Recette de f3b : la flamme de la carte 14 (enregistrement 17) est un candidat, pas un fait | sonde de la flamme du T0 d'f3a |
-| O-F3-6 | La libération des effets 4 et 5 (et des étincelles, même rang) tombe un tick avant ce que le binaire donnerait probablement (touche + 41 au lieu de + 42) ; à rejouer sur le binaire, puis exactitude ou écart documenté | auteur, ou E20.f6 si visible |
+| O-F3-6 | La libération des effets 4 et 5 (et des étincelles, même rang) tombe un tick avant ce que le binaire donnerait probablement (touche + 41 au lieu de + 42) ; à rejouer sur le binaire, puis exactitude ou écart documenté | **2026-10-16** : l'auteur demande de trancher sur le binaire (le portage peut avoir un bug) ; sonde MIPS en cours |
 | O-F3-7 | **Bloquant pour E20.f3c (T1 en ⚠️).** Une entité née par l'interface n'a ni boîte de frame (chronologie figée à nul à la création) ni horloge d'animation alignée sur le binaire (un tick de retard) ; la vague de l'épée (boîtes balayantes, mort par fin d'animation à S+26) est la première à en dépendre. Fourche : (A) une tranche préalable qui corrige la DLL (ne pas figer une chronologie nulle avant l'intégration ; tick de naissance compté, ou création qui bascule l'animation comme le binaire) puis f3c reprend ; (B) intégrer l'entité née dès la création (côté moteur : arrêt de la tranche) ; (C) accepter un tick de retard et réécrire les clés (refusée : l'oracle est la vérité). Recommandation : (A), tests de naissance de e0a3b/e0k à relire en premier | auteur / session principale |
 
 ### 1.20 E20.f4 — La flèche chargée de William : C94 et E1 avec l'effet de bris 8 ⏳ (détaillée le 2026-10-15)
@@ -5815,7 +5834,9 @@ partagent l'annexe `e20-f4f6` et les décisions D-F4-7, D-F4-8 et D-F5-5, porté
 
 ### 1.24 E20.g1 et E20.g2 — Soulever, porter, lancer et briser : g1a (porter), g2a (lancer), g2b (briser), g1b (soulever), g2c (autres familles) ⏳ (détaillée le 2026-10-15)
 
-**Réponses de l'auteur.** Aucune à ce jour (2026-10-15, mode AUTO, l'auteur absent). Trois questions sont posées plus bas (Q-G1 à Q-G3). Chacune a un défaut réversible, **noté mais à confirmer par l'auteur** :
+**Réponses de l'auteur.** Aucune à ce jour (2026-10-15, mode AUTO, l'auteur absent). **Tranchées le 2026-10-16** : Q-G1 → soulèvement seulement avec g3 (D-E20-39, l'option B, pas le défaut proposé : l'ordre de g1b est à
+revoir) ; Q-G2 → marche, objet, plateforme horizontale (D-E20-40) ; Q-G3 → pas de poser (D-E20-41). Texte d'avant les réponses :
+Trois questions sont posées plus bas (Q-G1 à Q-G3). Chacune a un défaut réversible, **noté mais à confirmer par l'auteur** :
 ces tranches ne s'exécutent qu'après f6b, h0 et h1 et A362 (ordre de l'enveloppe), et l'auteur sera revenu. Aucune ne bloque g1a, g2a ni g2b. Demande de l'auteur du 2026-10-15 : « le joueur doit pouvoir transporter un objet et monter sur une plateforme ».
 
 Découverte en lecture seule du 2026-10-15, au HEAD `9ecc7d5` : trois relevés (binaire, impact sur la DLL, inventaire des tests), puis un critique adversarial. Le critique a redésassemblé les sites qui portent les décisions : `TryLift` `0x8002EDBC`, `PlayerTryAction` `0x8002EEAC`, `UpdatePlayerCarriedEntity` `0x8002F884` avec `StepTowards` `0x8002F854`, le groupe des états de portage `0x8003232C`, les états `0x05` et `0x0B`, la branche verrouillée `0x80031BC4`, la garde de l'échelle `0x80031D54`, `MoveEntity` `0x80037E34`, `DestroyEntity` `0x8003A59C` et `0x8003A774`, C23 `0x8006B848`, E0 et E2 `0x8007ED10` et `0x8007ED30`, la tête de C4 `0x80066984`, la fonction d'arrivée dans la même carte `0x80031340`. Il a fait un balayage de toute l'image : les écritures de `+0x28` et de `+0x2C`, les lectures de `+0x2C` et de `+0x28`, les appelants des fonctions ci-dessus. Il a rejoué les 19 scripts de l'oracle du relevé binaire dans son propre dossier (55 sorties identiques au manifeste des relevés), puis écrit trois scénarios nouveaux : l'égalité et les seuils de `UpdatePlayerCarriedEntity` (`c1_equality`), l'arrivée à pied et en sautant sur une plateforme qui bouge, caisse en main (`c2_platform`), la persistance du contact (`c3_contact`). Il a relu le code de la DLL (stubs, sonde, contact, riding, `DestroyEntity`, ordre du tick, horloge d'animation, registre, exports du héros et de la caisse) et recompté les en-têtes soulevables (17), la liste de la chaîne (30 cartes, 18 avec des soulevables) et les gardes des arcs. Scripts et sorties dans le scratchpad de la session : `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20g/` (`bin/`, `dll/`, `tests/`, `critic/`). Aucune modification du moteur, du convertisseur ni des données. La DLL n'a pas été exécutée : ce qui la concerne est lu dans le code ou inféré.
