@@ -141,6 +141,11 @@ script à chaque tranche ; (5) les renommages imposés : `AlundraPlayerControlle
 
 ## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export ⏳
 
+**Relecture (2026-10-16).** Enveloppe (§0 à §3) : **READY**. R0 : **REVISE**, trois blocages corrigés (FIX, révision 1) : (1) le lieu
+de l'exception de D-R-4 et le chemin de son contexte, sans casser les chargements sans DLL (vérification du convertisseur) ; (2) un seul
+propriétaire de l'enregistrement de l'assembly par chemin (le rechargement à chaud de l'éditeur) ; (3) la prédiction de l'export versée
+dans une annexe avant tout code (T0).
+
 **But.** Le moteur crée un objet script depuis une chaîne en ne cherchant que dans l'assembly de gameplay enregistrée, par nom complet
 exact ; les types du moteur se créent par le code ; un nom introuvable, ambigu ou du mauvais genre lève une exception qui dit tout. Le jeu
 charge les données réexportées avec les noms complets actuels (`Alundra.Scripts.AlundraWorldProxy`, etc.).
@@ -153,7 +158,24 @@ n'est jamais indexée).
   invalidé seulement à l'enregistrement et au désenregistrement (pas de reconstruction en plein jeu, pas d'allocation par appel au spawn :
   AGENTS.md du moteur §9.3) ; seuls les types publics de premier niveau, avec un constructeur sans paramètre et du bon genre, sont
   acceptés (D-R-4 sinon). Le cache ne doit pas épingler le contexte collectible de l'éditeur.
-- Runtime : `AssemblyManager.Load` enregistre l'assembly de gameplay qu'il charge (idempotent ; remplacée au chargement suivant).
+- **Enregistrement de l'assembly de gameplay : un propriétaire par chemin.** Runtime : `AssemblyManager.Load` enregistre l'assembly
+  **seulement avec le chargeur par défaut** (`Assembly.LoadFile`) ; s'il recharge, il désenregistre d'abord celle qu'il avait enregistrée.
+  Avec un chargeur fourni (l'éditeur : `GameEditor.cs:326`, `EditorScriptAssemblyService.LoadShadowCopy`), `AssemblyManager` n'enregistre
+  rien et ne garde aucune référence : le service de l'éditeur reste le seul à enregistrer et désenregistrer (`EditorScriptAssemblyService.cs:36,
+  48, 59-76`), donc le contexte collectible précédent reste collectable au rechargement (`EditorScriptReloadCoordinator.cs:89`).
+- **Où part l'exception de D-R-4 : à la création, jamais au chargement.** `Entity.Load` et `World.Load` (`Entity.cs:549,583`,
+  `World.cs:925,938`), `PlayerStartupSettings.Load` et `GameplayModeAsset` ne font que lire la chaîne : un chargement sans assembly de
+  gameplay enregistrée (la phase 8 du convertisseur, `AssetVerifier.cs:44,48,51` ; les tests du convertisseur ; l'éditeur avant la
+  construction de la DLL) continue de marcher. La résolution, et l'exception, ont lieu aux cinq créations : `Entity.InitializePrivate`
+  (`:210-214`), `World.CreateGameplayProxy` (`:325-332`), la création du contrôleur (`World.cs:440`), celle du mode de jeu, et
+  `UIScreenDesignTimeDataLoader` (`:87-113`), qui ne lève jamais : il convertit l'exception en son résultat `Fail` existant (`:47-49`,
+  `:110-118`) en gardant le message. **Le contexte du message** : la clé (`script_class_name`, `player_controller_class`,
+  `mode_class_name`, `view_model_type`), la valeur, l'assembly consultée (son nom et son chemin, ou « aucune assembly de gameplay
+  enregistrée »), l'indice « vouliez-vous dire » (un type de même nom court dans l'assembly), et le fichier : celui de l'asset de
+  l'entité ou du monde, retrouvé par son identifiant dans le catalogue d'assets (`AssetCatalog`), sinon « entité en ligne du monde X » avec
+  le fichier du monde, sinon « fichier inconnu » écrit tel quel. L'éditeur qui ouvre un monde sans DLL construite : la frontière qui
+  rattrape aujourd'hui un échec de création est nommée par T0 du plan du moteur ; s'il n'y en a pas (l'éditeur s'arrêterait), c'est un
+  arrêt et une question à l'auteur.
 - Appelants basculés : `Entity.cs:214` et la comparaison `:212` en nom complet (sinon chaque `Initialize` recrée le proxy et perd son état
   cloné) ; `World.cs:332` ; `World.cs:440` (vide = le `PlayerController` du moteur créé directement, D-R-3) ; `GameplayModeAsset.cs:18` ;
   `UIScreenDesignTimeDataLoader.cs:113`. Les composants restent sur `Create`/`Load` tels quels.
@@ -161,12 +183,24 @@ n'est jamais indexée).
   `SandBoxGame.cs:53` ; RPGDemo : ses 8 noms et `ThrowableWeapon.cs:34` en noms complets.
 - Tests du moteur : un initialiseur de module enregistre l'assembly de test ; les cas nouveaux (nom complet résolu ; nom court refusé avec
   l'indice ; nom complet d'un type du moteur introuvable ; assembly non enregistrée ; deux assemblys au même nom complet : ambiguïté citant les
-  deux ; mauvais genre ; casse ; désenregistrement puis contexte collecté ; `AssemblyManager` enregistre ; proxy cloné gardé, tué par le
-  mutant « `:212` en nom court » ; monde, contrôleur, mode, données de conception ; aucune DLL : message explicite) ; les tests existants
-  touchés réécrits (types imbriqués sortis au premier niveau).
+  deux ; mauvais genre ; casse ; désenregistrement puis contexte collecté ; `AssemblyManager` enregistre avec le chargeur par défaut et
+  n'enregistre rien avec un chargeur fourni ; **rechargement de l'éditeur** : une assembly de scripts compilée chargée deux fois par
+  `AssemblyManager.Load` avec `AssemblyLoader = EditorScriptAssemblyService.LoadShadowCopy` — le premier contexte collectible est
+  collecté (`Unload()` vrai) et seule la seconde assembly est enregistrée (dans le projet de tests qui référence `EditorServices`) ; proxy
+  cloné gardé, tué par le mutant « `:212` en nom court » ; monde, contrôleur, mode, données de conception (`Fail` avec le message) ;
+  **message de D-R-4** pour une entité et pour un monde : il contient la clé, le chemin du fichier, la valeur, l'assembly consultée et
+  l'indice ; un chargement (`Load`) sans assembly enregistrée ne lève pas ; aucune DLL à la création : message explicite) ; les tests
+  existants touchés réécrits (types imbriqués sortis au premier niveau).
 - Docs du moteur : les quatre docs du nom court, ADR-0075.
 - Validation du moteur (AGENTS.md §6) : les deux `.sln`, `CasaEngine.Tests` construit explicitement et vert, RPGDemo et les démos lancés
   (preuve de démarrage).
+
+**T0 de la partie parent** (commit de docs, avant tout code du moteur ou du parent). Annexe `docs/plan-restructuration-annexe/r0/` :
+`predict_names.py` (copié du scratchpad `dll-structure/r0-data/`), des copies de `manifest.py` et `diff_manifests.py`
+(`docs/plan-e20-annexe/e20-e0x/`), avec leurs sommes de contrôle ; le README donne les valeurs attendues : 886 chemins autorisés (les
+879 sorties du convertisseur, les 6 `design.json`, `report.json`), +16 octets par fichier (+14 064 sur les sorties du convertisseur,
++96 sur les `design.json`), nombre de fichiers inchangé, `AssetInfos.json` inchangé, `report.json` seul différent au second export ; la
+liste des chemins autorisés et les SHA-1 prédits versés ; le manifeste de départ `m0` de l'export actuel.
 
 **Partie parent** (un seul commit parent : le pointeur du sous-module, le convertisseur, les `design.json`, la DLL, les tests et l'export
 doivent concorder).
@@ -181,9 +215,10 @@ doivent concorder).
   à la prédiction, second export identique ; chemins autorisés : les 879 sorties, les 6 `design.json`, `report.json`) dans une fenêtre
   calme : aucun build ni test en cours, ni jeu ni éditeur ouverts (l'auteur les ferme).
 
-**Acceptation.** `CasaEngine.Tests` vert et ses nouveaux cas rouges sur le moteur d'avant (nommés) ; les deux `.sln` du moteur ; démos et
-RPGDemo démarrent ; `Alundra.Tests` Release et Debug, zéro échec ; le convertisseur et ses tests ; l'export double identique, seuls les
-chemins autorisés changent, comme prédit ; recette de l'auteur : nouvelle partie, les entités bougent (leurs proxies existent), F5, F6, F9.
+**Acceptation.** L'annexe de T0 existe à un commit antérieur au premier commit de code ; `CasaEngine.Tests` vert et ses nouveaux cas
+rouges sur le moteur d'avant (nommés) ; les deux `.sln` du moteur ; démos et RPGDemo démarrent ; `Alundra.Tests` Release et Debug, zéro
+échec ; la suite du convertisseur verte et sa phase 8 `Verification: PASSED` sur l'export de R0 ; le `diff_manifests.py` versé, contre la
+liste versée des chemins autorisés, sort 0 pour l'export 1, et seul `report.json` diffère à l'export 2 ; les SHA-1 égaux à la prédiction ; recette de l'auteur : nouvelle partie, les entités bougent (leurs proxies existent), F5, F6, F9.
 
 **Arrêts.** Un appelant de la fabrique non recensé qui crée un objet script ; un besoin de garder le nom court ; un fichier exporté hors des
 chemins autorisés qui change ; un test qui change de valeur attendue ; un démarrage de démo ou de RPGDemo qui échoue.
