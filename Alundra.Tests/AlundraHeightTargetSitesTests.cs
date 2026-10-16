@@ -55,7 +55,7 @@ public sealed class AlundraHeightTargetSitesTests
         yield return new Site("s363_rec0", 363, 10, 10, 3, 0, 2, 454, 0x22, 3000, 14, 62, 48, 5242879) { Flag = 32769 };
 
         // 36 C[4]: the floating platform, the hero rides it.
-        yield return new Site("s36c4_rec3", 36, 30, 19, 1, 3, 2, 491, 0x22, 3000, 166, 326, 160, 11534335) { RideHero = true };
+        yield return new Site("s36c4_rec3", 36, 30, 19, 1, 3, 2, 491, 0x22, 3000, 165, 325, 160, 11534335) { RideHero = true }; // E20.e0a4 phase B: 166/326 -> 165/325, by derivation of the rule (remeasure of T0): the platform, record 3, is born by 0x2D in the map-event pass and now acts at the tick of its birth (JoinsBirthTick), one image before the wait of this site is seen; the number of calls, 160, is the binary's.
 
         // 36 C[14] (0x23): the twelve hanging ceilings, the contact is posted from the first call: no call after it (guard).
         foreach (var rec in Enumerable.Range(42, 12))
@@ -64,7 +64,7 @@ public sealed class AlundraHeightTargetSitesTests
         }
 
         // 115 B[2]: the block of the descent, the hero in the zone, the dialogue button pressed.
-        yield return new Site("s115_rec19", 115, 10, 55, 0, 19, 1, 367, 0x22, 6000, 756, 1077, 321, 3145727) { Dialogue = true }; // E20.a (D-E20-11): 756/1077 -> 757/1078, the dialogue of this site is opened by an entity program: its first pass is at N+1. E20.e0a4 phase A: 757/1078 -> 756/1077, by derivation of the rule (measured by the remeasure of T0, docs/plan-e20-annexe/e20-e0a4): the entity of record 19, born by 0x2D in the map-event pass, now counts the first tick of its animation clock (the binary makes the first switch at the creation, E20.e0a5), which moves by one image the frame where the wait of this site is seen; the number of calls, 321, is the binary's and does not change.
+        yield return new Site("s115_rec19", 115, 10, 55, 0, 19, 1, 367, 0x22, 6000, 755, 1076, 321, 3145727) { Dialogue = true }; // E20.a (D-E20-11): 756/1077 -> 757/1078, the dialogue of this site is opened by an entity program: its first pass is at N+1. E20.e0a4 phase A: 757/1078 -> 756/1077, by derivation of the rule (measured by the remeasure of T0, docs/plan-e20-annexe/e20-e0a4): the entity of record 19, born by 0x2D in the map-event pass, now counts the first tick of its animation clock (the binary makes the first switch at the creation, E20.e0a5), which moves by one image the frame where the wait of this site is seen; the number of calls, 321, is the binary's and does not change. E20.e0a4 phase B: 756/1077 -> 755/1076, by derivation of the rule (remeasure of T0): the same entity now also acts at the tick of its birth (JoinsBirthTick), one more image earlier (the two images since E20.a are the counted clock of phase A and the participation of phase B).
     }
 
     public static IEnumerable<object[]> SiteIds() => AllSites().Select(s => new object[] { s.Id });

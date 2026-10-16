@@ -14,7 +14,8 @@ namespace Alundra.Tests;
 /// <summary>
 /// E20.e0a3b (docs/plan-e20-heros.md section 1.16.3b, revision 3, D-E0A-5, D-E0A-8, D-E20-34, ADR-0065): an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> in <c>MovePlayer</c> (the place of the shot, by the test
 /// seam <see cref="AlundraPlayerManager.WeaponSpawnBirthHookForTests"/>) takes part in the tick that sees it born, as the rows <c>BT-M1</c> to <c>BT-M3</c> of the oracle V6 (<c>docs/plan-e20-annexe/e20-e0a/oracle/out/v6.json</c>);
-/// one born in the native program of another entity runs from the next tick (the gap of <c>BT-H1</c>, <c>BT-H4</c>, <c>BT-H6</c>, D-E20-34); the entities from a record are untouched (the marker never leaves the interface). The real world
+/// one born in the native program of another entity runs from the next tick (the gap of <c>BT-H1</c>, <c>BT-H4</c>, <c>BT-H6</c>, D-E20-34); the entities from a record are untouched by the interface (E20.e0a4 gave the marker to the opcodes
+/// <c>0x2D</c>, <c>0x8A</c> and <c>0x8B</c> too, see <see cref="AlundraRecordBirthTickTests"/>; the map load and the direct call of <c>SpawnEntityByRecordId</c> never pose it). The real world
 /// of map 14 (<see cref="ArcRun"/>, real prefabs), the passes of the tick named by <see cref="AlundraWorldProxy.TickTraceForTests"/> (the state seen at the head of a pass is the state after the pass before it).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
@@ -392,9 +393,10 @@ public sealed class AlundraBirthTickTests : IDisposable
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     [Fact]
-    public void TheCreation_NeverReadsTheCollisionFieldOfTheHostByTheFallback_TheBirthTickDoes_AndAnEntityFromARecordNever()
+    public void TheCreation_NeverReadsTheCollisionFieldOfTheHostByTheFallback_TheBirthTickDoes_AndAnEntityFromARecordOnlyWhenAScriptOpcodeMadeIt()
     {
         using var arc = Arc("spy");
+        var loaded = arc.Entities.ToList(); // everything the load of the map made, from records.
         var reads = 0;
         arc.Proxy.CollisionFieldFallbackReadForTests = () => reads++;
 
@@ -418,8 +420,12 @@ public sealed class AlundraBirthTickTests : IDisposable
         arc.OneFrame();
         Assert.Equal(0, reads);
 
-        // An entity from a record (the load of the map, the opcode path): no marker, no fallback, ever.
-        Assert.All(arc.Entities.Where(e => e.EntityRefId >= 0), e => Assert.False(e.JoinsBirthTick));
+        // An entity from a record: the load of the map never poses the marker; the opcodes of the scripts that made the others of the map pose it (E20.e0a4: 0x2D, 0x8A and 0x8B, posed last, so no fallback during the
+        // creation); the direct call of SpawnEntityByRecordId, which is not an opcode, never does: no marker, no fallback, ever.
+        Assert.All(loaded, e => Assert.False(e.JoinsBirthTick));
+        var byScript = arc.Entities.Where(e => e.EntityRefId >= 0 && !loaded.Contains(e)).ToList();
+        Assert.NotEmpty(byScript);
+        Assert.All(byScript, e => Assert.True(e.JoinsBirthTick));
         var byRecord = arc.Proxy.SpawnEntityByRecordId(arc.Hero, 0);
         Assert.NotNull(byRecord);
         Assert.False(byRecord!.JoinsBirthTick);
@@ -430,9 +436,10 @@ public sealed class AlundraBirthTickTests : IDisposable
     }
 
     [Fact]
-    public void AnEntityFromARecord_KeysItsKinematicsOnItsCurrentAnimation_NeverOnTheTarget_EvenWithCurrentStillNotValidated()
+    public void AnEntityWithoutTheMarker_KeysItsKinematicsOnItsCurrentAnimation_NeverOnTheTarget_EvenWithCurrentStillNotValidated()
     {
-        // The line of D-E0A-8 is guarded by the marker: the same entity without it does not move (the measurement of P-A: X = 150, 150, 150).
+        // The line of D-E0A-8 is guarded by the marker: the same entity without it does not move (the measurement of P-A: X = 150, 150, 150). The entities of the map load never carry the marker; an entity made
+        // from a record by a script opcode does since E20.e0a4 and takes the speed of its target (B6 of AlundraRecordBirthTickTests).
         using var arc = Arc("guard");
         var proxy = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, Arrow, 150 << 16, 100 << 16, 0, Direction)!;
         proxy.JoinsBirthTick = false;
@@ -487,10 +494,10 @@ public sealed class AlundraBirthTickTests : IDisposable
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     [Fact]
-    public void TheMarker_IsPosedByTheInterfaceOnly_AndNotCloned()
+    public void TheMarker_IsPosedByTheInterface_NeverByTheLoadOfTheMap_AndNotCloned()
     {
         using var arc = Arc("marker");
-        Assert.All(arc.Entities, e => Assert.False(e.JoinsBirthTick)); // everything the load of the map spawned, from records.
+        Assert.All(arc.Entities, e => Assert.False(e.JoinsBirthTick)); // everything the load of the map spawned, from records (the opcodes that make an entity from a record pose it, E20.e0a4).
         var born = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, Arrow, 150 << 16, 100 << 16, 0, Direction)!;
         Assert.True(born.JoinsBirthTick);
         var clone = ArcRun.EntityOf(born)!.Clone();

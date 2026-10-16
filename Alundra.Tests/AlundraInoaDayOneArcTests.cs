@@ -198,13 +198,18 @@ public sealed class AlundraInoaDayOneArcTests
         // from 619 and returns at 638, @844 and @846 in the same call (a `0x39`: FrameOf gives its FIRST execution, 638, and it waits for the release of the box
         // M165_S030 that Bergus sees at 696 - annex V-95, R4), then `0x06 @847` at 696. Since E19.f2a the box S030 (opened by B[2] at 592, typed, released
         // at 695) comes between the two events that were 2 images apart: T104 is set at 593 and Bergus starts at 594, so every frame moves by 113.
-        Assert.Equal(Enumerable.Range(597, 20).ToList(), FramesOf(arc, C, 838, 0x25));
-        Assert.Equal(616, FrameOf(arc, C, 839));
-        Assert.Equal(616, FrameOf(arc, C, 841));
-        Assert.Equal(Enumerable.Range(619, 20).ToList(), FramesOf(arc, C, 843, 0x25));
-        Assert.Equal(638, FrameOf(arc, C, 844));
-        Assert.Equal(638, FrameOf(arc, C, 846));
-        Assert.Equal(696, FrameOf(arc, C, 847));
+        // E20.e0a4 phase B (D-E0A4-3), by derivation of the rule and not by a value of the oracle (the image numbers of the arcs are not binary, only the rule is): the five actors of the scene (records 0 to 3 and 5) are born by
+        // 0x2D in the map-events pass and now take part in the tick of their birth (JoinsBirthTick), as the binary's record spawner gives the newborn the tick that sees it born. Every frame anchored on a program of an
+        // actor is therefore exactly one image earlier than before (the first tick of the program, the 20 images of each jump of Bergus, the clear of his flag at 0x06 @847, the poll cadence of Wendell and of Meade, the
+        // heights of the flights), and the sets of the flags that follow a clear in the map events come one image earlier with it. The frames anchored on the map program B alone (its first call, the end at 354), asserted
+        // within +/- 3, stay where they were. Hence 597 -> 596, 616 -> 615, 619 -> 618, 638 -> 637, 696 -> 695, 697 -> 696, (699, 791) -> (698, 790), (793, 947) -> (792, 946), and the flights 594 -> 593, 616 -> 615.
+        Assert.Equal(Enumerable.Range(596, 20).ToList(), FramesOf(arc, C, 838, 0x25));
+        Assert.Equal(615, FrameOf(arc, C, 839));
+        Assert.Equal(615, FrameOf(arc, C, 841));
+        Assert.Equal(Enumerable.Range(618, 20).ToList(), FramesOf(arc, C, 843, 0x25));
+        Assert.Equal(637, FrameOf(arc, C, 844));
+        Assert.Equal(637, FrameOf(arc, C, 846));
+        Assert.Equal(695, FrameOf(arc, C, 847));
 
         // 3. The rest, in the order of the plan.
         AssertFrame(arc, B, 354, 1775); // 960 before E19.f2a (922 before E19.d2c1 C2): the release of the last box (M165_S000, seen by B[2] at 1768) plus 7.
@@ -258,25 +263,25 @@ public sealed class AlundraInoaDayOneArcTests
         // his own, next to Wendell's: he polls T105 once every two images, so T105 (set at 621) is cleared by his 0x06 @1026 at the image 774, i.e. edge 775.
         // E19.f2a (annex V-97 to V-99, simulated; the margins 2 and 3 are the periods of Bergus and of Wendell): T104 is cleared at 697, T102 set at 698 and
         // cleared at 791, T105 set at 792 and cleared at 947.
-        Assert.Equal(697, samples.FlagEdges[3].Cleared);
+        Assert.Equal(696, samples.FlagEdges[3].Cleared);
         // E20.a (D-E20-11): T102 is set by a program read by a map event of the next tick (0x8003C67C now precedes the entity pass): 698 -> 699; the clear at 791 is Wendell's own poll.
-        Assert.Equal((699, 791), (samples.FlagEdges[4].Set, samples.FlagEdges[4].Cleared));
-        Assert.Equal((793, 947), (samples.FlagEdges[5].Set, samples.FlagEdges[5].Cleared)); // E20.a: set +1 (it follows T102's clear at 791 through a map event read one tick later); the clear at 947 is Meade's own poll.
+        Assert.Equal((698, 790), (samples.FlagEdges[4].Set, samples.FlagEdges[4].Cleared));
+        Assert.Equal((792, 946), (samples.FlagEdges[5].Set, samples.FlagEdges[5].Cleared)); // E20.a: set +1 (it follows T102's clear at 791 through a map event read one tick later); the clear at 947 is Meade's own poll.
         int[] flight =
         {
             348160, 663552, 946176, 1196032, 1413120, 1597440, 1748992, 1867776, 1953792, 2007040, 2027520, 2015232, 1970176, 1892352, 1781760, 1638400,
             1462272, 1253376, 1011712, 737280, 430080, 90112,
         };
         int HeightAfterImage(int image) => samples.BergusHeights.Single(h => h.Frame == image + 1).PosZ;
-        var rest = HeightAfterImage(593); // E19.f2a: 480 before; the flights start at 594 and 616, the rest returns at 638
+        var rest = HeightAfterImage(592); // E19.f2a: 480 before; E20.e0a4 phase B: the flights start at 593 and 615, the rest returns at 637 (one image earlier than 594, 616 and 638, like every frame of Bergus above)
         for (var i = 0; i < flight.Length; i++)
         {
-            Assert.Equal(rest + flight[i], HeightAfterImage(594 + i));
-            Assert.Equal(rest + flight[i], HeightAfterImage(616 + i));
+            Assert.Equal(rest + flight[i], HeightAfterImage(593 + i));
+            Assert.Equal(rest + flight[i], HeightAfterImage(615 + i));
         }
 
+        Assert.Equal(rest, HeightAfterImage(637));
         Assert.Equal(rest, HeightAfterImage(638));
-        Assert.Equal(rest, HeightAfterImage(639));
 
         // The actors (slot C, the clearing 0x06): rec5 @703 (program @648), Wendell @774 (program @740, twice), Nestus @944 (program
         // @880), Bergus @847 (program @804), Meade @1026 (program @984). The frame of each edge is the frame after the 0x06.

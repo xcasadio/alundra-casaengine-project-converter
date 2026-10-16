@@ -2411,7 +2411,21 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 $"AlundraEventProgramRunner: opcode 0x2D ActivateEntity({v[1]}) - spawn failed (record "
                 + "disabled/missing, or the spawn path threw) - the original breakpoints here instead.");
         }
+
+        if (spawned != null)
+        {
+            JoinTheBirthTick(spawned);
+        }
     }
+
+    /// <summary>
+    /// E20.e0a4 phase B (docs/plan-e20-heros.md section 1.16.4, D-E0A4-2, D-E0A4-3, ADR-0074): the three opcodes that make an entity from a record (<c>0x2D</c>, <c>0x8A</c>, <c>0x8B</c>) pose
+    /// <see cref="AlundraEntityScriptProxy.JoinsBirthTick"/> as the LAST write of the apparition, after the position they write and its push to the root: the binary (<c>0x8003A1B8</c>) gives the newborn the tick that sees it
+    /// born (the tick of the map events that made it, or the next one of the programs of another entity), and writes no floor under the position of <c>0x8A</c>/<c>0x8B</c> (ADR-0026); posed earlier, the marker would
+    /// make the push of the opcode raise the written position to the ground by the field of the host. No signature changes: <c>SpawnEntityByRecordId</c> itself never poses it (the map load and the callers that are not
+    /// opcodes keep the exact behaviour they had).
+    /// </summary>
+    private static void JoinTheBirthTick(AlundraEntityScriptProxy spawned) => spawned.JoinsBirthTick = true;
 
     /// <summary>Script_138_08A (0x8A SpawnEntityAtPosition, <c>0x80040284</c>) - the same spawn as 0x2D (record v[1],
     /// <c>notCheckSpawnZone = 1</c>, the logic entity as parent), then the new entity is put at an ABSOLUTE position:
@@ -2439,6 +2453,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         spawned.PosY = (v[4] + v[5] * 0x100) << 16;
         spawned.PosZ = (v[6] + v[7] * 0x100) << 16;
         spawned.PushLogicalPositionToRoot();
+        JoinTheBirthTick(spawned); // E20.e0a4 phase B: last write, after the push (see JoinTheBirthTick).
     }
 
     /// <summary>Script_139_08B (0x8B SpawnEntityNextToEntity) - dynamic spawn by entity-record
@@ -2473,6 +2488,11 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             // carries a controller (the camera block of map 476, E19.b); a no-op for a bare entity. Kept
             // for parity with every other scripted Pos* write site.
             spawned.PushLogicalPositionToRoot();
+        }
+
+        if (spawned != null)
+        {
+            JoinTheBirthTick(spawned); // E20.e0a4 phase B: last write, after the push when a target was found and after the search when none was (see JoinTheBirthTick).
         }
     }
 

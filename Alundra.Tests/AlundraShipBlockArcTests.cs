@@ -255,9 +255,12 @@ public sealed class AlundraShipBlockArcTests
         // 412, 560 and 468 frames later (the end of each text, then the wait of 60).
         // E20.a (D-E20-11): the map program B polls the block, an entity, in the map-events pass, which now precedes the entity block of the tick (0x8003C67C before 0x8003B388): it sees the
         // block's landing one tick later, so the three boxes open one image later (180, 643, 1332 -> 181, 644, 1333).
-        Assert.Equal(new[] { 181, 644, 1333 }, new[] { 295, 306, 327 }.Select(pc => FrameOf(arc, B, pc)).ToArray());
-        Assert.Equal(new[] { 593, 1204, 1801 }, FramesOf(arc, B, 739, 0x51)); // the same pace after the opening: one image later too.
-        Assert.Equal(new[] { 412, 560, 468 }, new[] { 181, 644, 1333 }.Zip(FramesOf(arc, B, 739, 0x51), (open, close) => close - open).ToArray());
+        // E20.e0a4 phase B (D-E0A4-3): the block is an entity born by 0x2D in the map-events pass, and it now takes part in the tick that sees it born (the binary's record spawner, 0x8003A1B8,
+        // gives the newborn the tick of the map events that made it): its program, its clock and its physics run at the tick of the birth instead of the next one, so it lands one tick earlier and the map
+        // program that polls it opens each box one image earlier, by derivation of the rule: 181, 644, 1333 -> 180, 643, 1332 (the values from before E20.a, when the two passes were in the other order).
+        Assert.Equal(new[] { 180, 643, 1332 }, new[] { 295, 306, 327 }.Select(pc => FrameOf(arc, B, pc)).ToArray());
+        Assert.Equal(new[] { 592, 1203, 1800 }, FramesOf(arc, B, 739, 0x51)); // the same pace after the opening: one image earlier too.
+        Assert.Equal(new[] { 412, 560, 468 }, new[] { 180, 643, 1332 }.Zip(FramesOf(arc, B, 739, 0x51), (open, close) => close - open).ToArray());
         Assert.Equal(3u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
         Assert.False(AlundraDialogueDirector.Instance.IsOpen);
 
@@ -291,7 +294,9 @@ public sealed class AlundraShipBlockArcTests
         AssertFrame(arc, B, 514, 2302);
         Assert.Equal(40, FramesOf(arc, B, 517, 0x65).Count);
         Assert.Equal(40, FramesOf(arc, B, 525, 0x74).Count);
-        Assert.Equal(Enumerable.Range(2303, 40).ToArray(), FramesOf(arc, B, 517, 0x65).ToArray());
+        // E20.e0a4 phase B: the camera block (record 0, the only entity of this map born by a script, 0x2D) takes part in the tick of its birth, so everything that waits on its walk is one image earlier, this loop
+        // included (the instruction 0x37 @511 before it ends one image earlier): the 40 steps are read at 2302 and so on instead of 2303.
+        Assert.Equal(Enumerable.Range(2302, 40).ToArray(), FramesOf(arc, B, 517, 0x65).ToArray());
         Assert.Equal(51904512, samples.Record4PosYAt528);
         AssertFrame(arc, B, 528, 2342);
         AssertFrame(arc, B, 529, 2343);
