@@ -4880,6 +4880,10 @@ WiredWeaponTypesForTests ?? ProductionWiredWeaponTypes` ; (p4) et (p5) sont ré�
 scindé ; (2) `AlundraWeaponSpawnSeamTests.S5` (« ensemble de production vide ») est dans la liste prédite, avec sa dérivation ; les tests qui
 relâchent une charge d'épée au-delà de R+21 dans un monde sont recensés comme « possibles » ; (3) (p6) se définit par l'état de la table
 (aucune case libre, puis exactement une), non par un nombre d'entités.
+**Révision 2 (2026-10-16).** Seconde relecture : **REVISE**, un blocage ; disposition de la session principale (cap de deux relectures
+automatiques atteint) : **FIX** — la preuve de retrait ne comptait pas les tests « possibles » réécrits en phase B, qui redeviennent rouges
+quand l'ensemble de production est vidé (par exemple l'arène de la charge, qui tourne 140 ticks avec S = 112) ; l'ensemble rouge attendu
+les inclut, chacun nommé dans les résultats avant que la preuve ne tourne. Nouvelle époque de relecture : une seule relecture de clôture suit.
 
 **Prérequis.** E20.f3a ✅, E20.e0a1 à E20.e0a3 ✅, E20.e0b1 ✅, E20.e0k1 ✅ et E20.e0k2 ✅ (la règle du Z logique, D-F3-8). Touche
 `AlundraEventProgramRunner.cs` et `AlundraNativeSpriteRegistry.cs` ; relit ses numéros de ligne au HEAD d'exécution.
@@ -4960,8 +4964,8 @@ relâchent une charge d'épée au-delà de R+21 dans un monde sont recensés com
 
 - Oracle : les sorties de T0 (acier ×4 directions, démon, saint, balayages, `arena_probe`, mutants) ; manifeste identique.
 - DLL : (v1) à (v4), (s7), (p1) à (p6), (p7a), (p7b) verts ; (v1), (v2), (v4) rouges sur le squelette de T1 et les tests [R] rouges avant le câblage
-  (nommés) ; **preuve de retrait** : l'ensemble de production vidé, exactement les tests [R] — (p1) à (p6) et (p7b) — et la réécriture
-  de S5 rouges, rien d'autre ; la vague vit 26 ticks
+  (nommés) ; **preuve de retrait** : l'ensemble de production vidé, exactement les tests [R] — (p1) à (p6) et (p7b) —, la réécriture
+  de S5 et chaque test « possible » réécrit en phase B (nommé dans les résultats avant la preuve) rouges, rien d'autre ; la vague vit 26 ticks
   aux trois groupements ; `Alundra.Tests` en Release **et** en Debug, compte de départ plus les nouveaux, zéro échec ; tests déplacés ⊂ liste prédite (certains et possibles), chacun justifié par sa dérivation ; l'épingle d'arène reste à 2 ; `cmp` de la DLL ; cinq traces ; moteur, convertisseur et données sans diff.
 - Recette de l'auteur : sauvegardes `steel-m14`, `demon-m14`, `arsenal-b-m14` (F9). Charger, relâcher, la vague apparaît 20 ticks après et dure 26 ticks. Attendu : elle ne coupe pas l'herbe (Q-F3-2) et touche un Beannoïde à 56 px et plus.
 
