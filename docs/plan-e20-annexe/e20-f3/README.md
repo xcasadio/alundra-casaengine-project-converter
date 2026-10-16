@@ -92,3 +92,19 @@ selects the set 1 when the hero touches the flame is NOT established, so the rec
 - E20.f3b: no existing test moves (the effect call is added behind a nullable delegate); the visible change is real-game only (85 maps place an attacker of nibble 6, 7, 9 or 10).
 - E20.f3c: the production registry pin goes from 6 to 7 keys (C61 added); the arena pin stays at 2 contacts (E10 handled inline).
 - **Starting count: 4852 tests, Release and Debug, 0 failures** (re-measured at the HEAD `d0e91db` on 2026-10-15, after E20.e0b1).
+
+## E20.f3c - predicted list of the existing tests that move (written before any code, at HEAD 59605d3)
+
+Starting count re-measured at 59605d3 (Release, 2026-10-16): 4926 tests, 0 failures. Search done: `ProductionWiredWeaponTypes` (only `AlundraWeaponSpawnSeamTests` and `AlundraPlayerManager`), `Give(`/`Equip(` of a sword followed by a release of the Square in a world (`ArcRun` or `HitArena`), `SpawnEntityBySpriteIndex`/`WeaponSpawnBirthHookForTests` users, and the montages that are not an `IEntityWorldContext` (no entity is born there, so they cannot move).
+
+Certain:
+- `AlundraNativeSpriteRegistryTests.ProductionRunner_RegistryHoldsTheSixHandlersOfTheBeannoidAndTheMuruta_AndTheSwitchIsOn` (line 51): 6 keys become 7, by derivation 6 + (C, 61). Phase A.
+- `AlundraWeaponSpawnSeamTests.S5_TheProductionSetPassesTheInvariant_TheFakeSetWithTheArrowFailsOnE17`: it asserts `Assert.Empty(ProductionWiredWeaponTypes)`; phase B makes the set {27, 28, 29}, so the assertion is rewritten as `Equal({27, 28, 29})` and `UnhandledWeaponSpriteCodes(production)` stays empty (C61 registered, E10 handled in line). Phase B.
+
+Possible (a sword charge released past R + 21 in a world; the wave is born there from phase B on: sound 30, one more entity):
+- `AlundraHeroChargeArenaTests` (`HitArena`, steel sword, Square held 90 ticks, release at 91, wave at S = 112): `TheChargedSwing0x18_OfTheSteelSword_TouchesABeannoidOfMap14` runs 140 ticks and counts the contacts of a Beannoid 40 px east (2 contacts today; with E10 in line the arena pin stays at 2, the wave of the target at +40 touches it only if E10 does not run); `TheEffectsOfTheCharge_AreCreatedInTheWorldsReservoir_TheBurstAtTheRelease` and the reservoir-by-grouping theory stop at tick 95 and 96 (before S): not expected to move.
+- `AlundraHeroChargeTests`: montages (`Montage`, hosts that are not an `IEntityWorldContext`): the shot is counted and journalled, nothing is born; not expected to move.
+- `AlundraHeroAuraWorldTests` (`HitArena`, steel sword): the Square is held to the end of every scenario (no release), so no wave is born; not expected to move.
+- `AlundraRandomPerTickTests.TheChargeSparks_DrawBeforeTheAdvanceOfTheirTick_WhateverTheGrouping` (`HitArena`, steel sword, 96 ticks, release at 91, S = 112): stops before S; not expected to move.
+- `AlundraBeannoideGrateArcTests` and `AlundraMurutaHallArcTests` (`Give(1)`/`Equip(1)`, the item 1, presses of the Square of a few ticks): a press is a swing 0x3F, never a charge; not expected to move.
+No other test asserts the empty production set (`ProductionWiredWeaponTypes` is read only by `AlundraWeaponSpawnSeamTests.S5`); the tests that fire a bow (`AlundraWeaponSpawnSeamTests` S1 to S4, S6, `AlundraShotDirectionTests`, `AlundraBirthTickTests`) use the type 3 or a test set and the hook, which replaces the production call: not expected to move. The measured list (an empirical run with the wiring, throwaway) is compared with this one in the results of the slice.
