@@ -27,6 +27,9 @@ Statut : ⏳ proposé le 2026-10-16, à relire (enveloppe et tranche R0). Démar
   E20.e0a4.** Relevé du 2026-10-16 : avance rapide pure partout (parent : `main` ancêtre de `chantier/e20-heros`, 293 commits ; moteur : `main`
   `b2205d9f` ancêtre de `781d3527`, 33 commits ; MGUI `develop` et analyseur `master` déjà aux commits pointés) ; mise à jour des
   références par une avance rapide qui refuse tout autre cas (`git fetch . <branche>:main`), sans toucher l'arbre de travail.
+  **Fusion faite le 2026-10-16** après la clôture d'E20.e0a4 (`37a6df7`) : parent `main` `8e023d8..37a6df7` (pointeurs moteur `781d3527`,
+  analyseur `fc16872`) ; moteur `main` `b2205d9f..781d3527` ; MGUI `develop` et analyseur `master` inchangés ; rien poussé. Branche du
+  chantier : `chantier/restructuration-dll`, créée depuis `main`.
 - **D-R-9** (2026-10-16) — R0 démarre sur le texte de la révision 4, sans autre relecture du plan : le plan propre du moteur
   (`CasaEngineMonogame/ai-agent/tasks/`) recense d'abord, dans le code, **tous** les filets qui rattrapent la création d'un objet script
   (moteur et DLL) et applique la règle de D-R-4 à chacun ; un filet que la règle ne peut pas traverser sans changer un autre comportement
