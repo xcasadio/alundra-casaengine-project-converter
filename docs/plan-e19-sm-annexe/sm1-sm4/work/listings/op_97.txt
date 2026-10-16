@@ -1,0 +1,12 @@
+; opcode 0x97  handler 0x80040a2c..0x80040a58 (11 words)
+0x80040a2c  addiu   $sp, $sp, -0x18
+0x80040a30  sw      $ra, 0x10($sp)
+0x80040a34  lw      $v0, ($a2)
+0x80040a38  nop     
+0x80040a3c  lbu     $a0, 1($v0)
+0x80040a40  jal     0x8004df10  ; call 0x8004df10
+0x80040a44  nop     
+0x80040a48  lw      $ra, 0x10($sp)
+0x80040a4c  addiu   $v0, $zero, 2
+0x80040a50  jr      $ra
+0x80040a54  addiu   $sp, $sp, 0x18

@@ -1,0 +1,1 @@
+decompilation vs binary on 4000 vectors: identical=3586 differ=414 (only the Z of the effect/loot differs=264; other cause, i.e. rows/cells/counts=150)

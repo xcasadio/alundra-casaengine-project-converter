@@ -1,0 +1,59 @@
+mode: decomp
+op 0x3c handler 0x8003e558: 3000 random states, 269 mismatches, Result histogram {0: 2882, 1: 118}  FIRST: (8, 3, [60, 11, 11, 12, 15, 9, 9], 'Result 1 != 0')
+op 0x3d handler 0x8003e64c: 3000 random states, 211 mismatches, Result histogram {0: 2148, 1: 852}  FIRST: (8, 0, [61, 0, 1, 10, 12, 7, 10], 'Result 1 != 0')
+op 0x60 handler 0x8003f3f8: 3000 random states, 49 mismatches, Result histogram {0: 2828, 1: 172}  FIRST: (87, 1, [96, 131], 'Result 1 != 0')
+op 0x61 handler 0x8003f488: 3000 random states, 55 mismatches, Result histogram {0: 2842, 1: 158}  FIRST: (24, 1, [97, 133], 'Result 1 != 0')
+op 0x6a handler 0x8003f8dc: 3000 random states, 0 mismatches, Result histogram {None: 3000}
+op 0x6b handler 0x8003f908: 3000 random states, 0 mismatches, Result histogram {0: 888, 1: 2112}
+op 0x6c handler 0x8003f94c: 3000 random states, 0 mismatches, Result histogram {0: 881, 1: 2119}
+op 0x6d handler 0x8003f990: 3000 random states, 0 mismatches, Result histogram {0: 1133, 1: 1867}
+op 0x72 handler 0x8003fa24: 3000 random states, 0 mismatches, Result histogram {None: 3000}
+op 0x88 handler 0x8004011c: 3000 random states, 325 mismatches, Result histogram {None: 3000}  FIRST: (1, 2, [136, 134, 4], "memory writes differ: got {'0x80128268': '0xcd823735'} want {}")
+op 0x96 handler 0x800409a8: 3000 random states, 414 mismatches, Result histogram {None: 3000}  FIRST: (2, 2, [150, 130, 42], "memory writes differ: got {'0x80127d44': '0x5', '0x80128794': '0x32'} want {'0x80127d44': '0x5'}")
+op 0x97 handler 0x80040a2c: 3000 random states, 2762 mismatches, Result histogram {None: 3000}  FIRST: (0, 7, [151, 255], 'money (decompilation model) got {4: 1} want 9237')
+op 0x9e handler 0x80040bb4: 3000 random states, 179 mismatches, Result histogram {0: 1645, 1: 1355}  FIRST: (7, 1, [158, 9, 11, 5, 3, 8], 'Result 1 != 0')
+op 0xa9 handler 0x80041174: 3000 random states, 49 mismatches, Result histogram {0: 2810, 1: 190}  FIRST: (28, 1, [169, 135], 'Result 1 != 0')
+op 0xaa handler 0x80041200: 3000 random states, 65 mismatches, Result histogram {0: 2833, 1: 167}  FIRST: (14, 0, [170, 131], 'Result 1 != 0')
+op 0xb2 handler 0x80041628: 3000 random states, 66 mismatches, Result histogram {0: 2804, 1: 196}  FIRST: (39, 1, [178, 131, 128], 'Result 1 != 0')
+op 0xb3 handler 0x80041750: 3000 random states, 0 mismatches, Result histogram {None: 3000}
+op 0xb4 handler 0x800417cc: 3000 random states, 57 mismatches, Result histogram {0: 2576, 1: 424}  FIRST: (6, 0, [180, 133], 'Result 1 != 0')
+op 0xb5 handler 0x80041830: 3000 random states, 42 mismatches, Result histogram {0: 2571, 1: 429}  FIRST: (41, 0, [181, 133], 'Result 1 != 0')
+op 0xb6 handler 0x80041894: 3000 random states, 30 mismatches, Result histogram {0: 2804, 1: 196}  FIRST: (164, 0, [182, 134], 'Result 1 != 0')
+op 0xb7 handler 0x800418f8: 3000 random states, 72 mismatches, Result histogram {0: 2745, 1: 255}  FIRST: (32, 2, [183, 132, 2], 'Result 1 != 0')
+TOTAL 63000 runs, 4645 mismatches
+
+EntitySearchService.cs (python translation) vs the binary search model, every search type:
+  type 0 (raw id): 506 worlds, 0 set differences
+  type 1 (raw id): 534 worlds, 0 set differences
+  type 10 (raw id): 507 worlds, 0 set differences
+  type 11 (raw id): 507 worlds, 0 set differences
+  type 12 (raw id): 535 worlds, 0 set differences
+  type 127 (raw id): 504 worlds, 0 set differences
+  type 13 (raw id): 492 worlds, 0 set differences
+  type 14 (raw id): 481 worlds, 0 set differences
+  type 15 (raw id): 516 worlds, 0 set differences
+  type 2 (raw id): 551 worlds, 0 set differences
+  type 0x0 (group): 533 worlds, 0 set differences
+  type 0x1 (group): 501 worlds, 0 set differences
+  type 0x2 (group): 555 worlds, 0 set differences
+  type 0x3 (group): 580 worlds, 0 set differences
+  type 0x4 (group): 540 worlds, 0 set differences
+  type 0x5 (group): 536 worlds, 0 set differences
+  type 0x6 (group): 535 worlds, 0 set differences
+  type 0x7 (group): 560 worlds, 0 set differences
+  type 0x8 (group): 575 worlds, 0 set differences
+  type 0x9 (group): 527 worlds, 0 set differences
+  type 0xa (group): 560 worlds, 0 set differences
+  type 0xb (group): 536 worlds, 0 set differences
+  type 0xc (group): 508 worlds, 0 set differences
+  type 0xd (group): 574 worlds, 0 set differences
+  type 0xe (group): 507 worlds, 0 set differences
+  type 0xf (group): 536 worlds, 0 set differences
+  type 3 (raw id): 512 worlds, 0 set differences
+  type 0x7f (group): 544 worlds, 0 set differences
+  type 4 (raw id): 498 worlds, 0 set differences
+  type 5 (raw id): 522 worlds, 0 set differences
+  type 6 (raw id): 566 worlds, 0 set differences
+  type 7 (raw id): 511 worlds, 0 set differences
+  type 8 (raw id): 513 worlds, 0 set differences
+  type 9 (raw id): 538 worlds, 0 set differences

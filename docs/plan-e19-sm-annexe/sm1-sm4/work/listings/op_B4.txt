@@ -1,0 +1,26 @@
+; opcode 0xb4  handler 0x800417cc..0x80041830 (25 words)
+0x800417cc  addiu   $sp, $sp, -0x18
+0x800417d0  sw      $ra, 0x14($sp)
+0x800417d4  sw      $s0, 0x10($sp)
+0x800417d8  lw      $v0, ($a2)
+0x800417dc  nop     
+0x800417e0  lbu     $a1, 1($v0)
+0x800417e4  jal     0x8003c954  ; call 0x8003c954
+0x800417e8  move    $s0, $a3
+0x800417ec  beqz    $v0, 0x80041814
+0x800417f0  lui     $v0, 0x8014
+0x800417f4  lw      $v0, -0x2728($v0)  ; [0x8013d8d8]
+0x800417f8  nop     
+0x800417fc  lw      $v0, 0xb8($v0)
+0x80041800  nop     
+0x80041804  blez    $v0, 0x80041814
+0x80041808  addiu   $v0, $zero, 1
+0x8004180c  j       0x80041818
+0x80041810  sw      $v0, 0x2c($s0)
+0x80041814  sw      $zero, 0x2c($s0)
+0x80041818  addiu   $v0, $zero, 2
+0x8004181c  lw      $ra, 0x14($sp)
+0x80041820  lw      $s0, 0x10($sp)
+0x80041824  addiu   $sp, $sp, 0x18
+0x80041828  jr      $ra
+0x8004182c  nop     

@@ -1,0 +1,103 @@
+; function 0x8003A9E0..0x8003AB54 (93 words)
+8003A9E0  27bdffe0  addiu    $sp, $sp, -0x20
+8003A9E4  3c078012  lui      $a3, 0x8012
+8003A9E8  24e77168  addiu    $a3, $a3, 0x7168              ; =0x80127168
+8003A9EC  8c830114  lw       $v1, 0x114($a0)               ; a0.PosX
+8003A9F0  8c8201e4  lw       $v0, 0x1e4($a0)
+8003A9F4  8c8801e8  lw       $t0, 0x1e8($a0)
+8003A9F8  00621821  addu     $v1, $v1, $v0
+8003A9FC  00651821  addu     $v1, $v1, $a1
+8003AA00  00031403  sra      $v0, $v1, 0x10
+8003AA04  00021040  sll      $v0, $v0, 1
+8003AA08  00471021  addu     $v0, $v0, $a3
+8003AA0C  8c850118  lw       $a1, 0x118($a0)               ; a0.PosY
+8003AA10  84420000  lh       $v0, ($v0)
+8003AA14  00a82821  addu     $a1, $a1, $t0
+8003AA18  afa20008  sw       $v0, 8($sp)                   ; sp+0x8
+8003AA1C  afa20000  sw       $v0, ($sp)                    ; sp+0x0
+8003AA20  8c8201f0  lw       $v0, 0x1f0($a0)
+8003AA24  00a62821  addu     $a1, $a1, $a2
+8003AA28  00621821  addu     $v1, $v1, $v0
+8003AA2C  00031c03  sra      $v1, $v1, 0x10
+8003AA30  00031840  sll      $v1, $v1, 1
+8003AA34  00671821  addu     $v1, $v1, $a3
+8003AA38  84630000  lh       $v1, ($v1)
+8003AA3C  00051503  sra      $v0, $a1, 0x14
+8003AA40  afa20014  sw       $v0, 0x14($sp)                ; sp+0x14
+8003AA44  afa20010  sw       $v0, 0x10($sp)                ; sp+0x10
+8003AA48  afa3000c  sw       $v1, 0xc($sp)                 ; sp+0xC
+8003AA4C  afa30004  sw       $v1, 4($sp)                   ; sp+0x4
+8003AA50  8c8201f4  lw       $v0, 0x1f4($a0)
+8003AA54  00000000  nop      
+8003AA58  00a22821  addu     $a1, $a1, $v0
+8003AA5C  00052d03  sra      $a1, $a1, 0x14
+8003AA60  afa5001c  sw       $a1, 0x1c($sp)                ; sp+0x1C
+8003AA64  afa50018  sw       $a1, 0x18($sp)                ; sp+0x18
+8003AA68  8c82006c  lw       $v0, 0x6c($a0)                ; a0.Flags
+8003AA6C  00000000  nop      
+8003AA70  30430008  andi     $v1, $v0, 8
+8003AA74  30420001  andi     $v0, $v0, 1
+8003AA78  10400002  beqz     $v0, 0x8003aa84   -> L_8003AA84
+8003AA7C  0003382b  sltu     $a3, $zero, $v1
+8003AA80  34e71000  ori      $a3, $a3, 0x1000              ; =0x80127168
+L_8003AA84:
+8003AA84  00003021  move     $a2, $zero
+8003AA88  3c02800e  lui      $v0, 0x800e
+8003AA8C  8c49d86c  lw       $t1, -0x2794($v0)             ; [0x800DD86C]
+8003AA90  03a02821  move     $a1, $sp
+8003AA94  27a80010  addiu    $t0, $sp, 0x10
+L_8003AA98:
+8003AA98  8ca20000  lw       $v0, ($a1)
+8003AA9C  00000000  nop      
+8003AAA0  18400006  blez     $v0, 0x8003aabc   -> L_8003AABC
+8003AAA4  00401821  move     $v1, $v0
+8003AAA8  28620034  slti     $v0, $v1, 0x34
+8003AAAC  14400004  bnez     $v0, 0x8003aac0   -> L_8003AAC0
+8003AAB0  00000000  nop      
+8003AAB4  0800eab0  j        0x8003aac0   -> L_8003AAC0
+8003AAB8  24030033  addiu    $v1, $zero, 0x33
+L_8003AABC:
+8003AABC  00001821  move     $v1, $zero
+L_8003AAC0:
+8003AAC0  8ca20010  lw       $v0, 0x10($a1)                ; a1.Status
+8003AAC4  00000000  nop      
+8003AAC8  18400006  blez     $v0, 0x8003aae4   -> L_8003AAE4
+8003AACC  00402021  move     $a0, $v0
+8003AAD0  2882003c  slti     $v0, $a0, 0x3c
+8003AAD4  14400005  bnez     $v0, 0x8003aaec   -> L_8003AAEC
+8003AAD8  00041040  sll      $v0, $a0, 1
+8003AADC  0800eaba  j        0x8003aae8   -> L_8003AAE8
+8003AAE0  2404003b  addiu    $a0, $zero, 0x3b
+L_8003AAE4:
+8003AAE4  00002021  move     $a0, $zero
+L_8003AAE8:
+8003AAE8  00041040  sll      $v0, $a0, 1
+L_8003AAEC:
+8003AAEC  00441021  addu     $v0, $v0, $a0
+8003AAF0  00021080  sll      $v0, $v0, 2
+8003AAF4  00441021  addu     $v0, $v0, $a0
+8003AAF8  00021140  sll      $v0, $v0, 5
+8003AAFC  24420604  addiu    $v0, $v0, 0x604
+8003AB00  01221021  addu     $v0, $t1, $v0
+8003AB04  000318c0  sll      $v1, $v1, 3
+8003AB08  00431821  addu     $v1, $v0, $v1
+8003AB0C  94620000  lhu      $v0, ($v1)
+8003AB10  00000000  nop      
+8003AB14  00471024  and      $v0, $v0, $a3
+8003AB18  1440000b  bnez     $v0, 0x8003ab48   -> L_8003AB48
+8003AB1C  3c020780  lui      $v0, 0x780
+8003AB20  90630003  lbu      $v1, 3($v1)
+8003AB24  00000000  nop      
+8003AB28  00c3102a  slt      $v0, $a2, $v1
+8003AB2C  10400002  beqz     $v0, 0x8003ab38   -> L_8003AB38
+8003AB30  00000000  nop      
+8003AB34  00603021  move     $a2, $v1
+L_8003AB38:
+8003AB38  24a50004  addiu    $a1, $a1, 4
+8003AB3C  00a8102a  slt      $v0, $a1, $t0
+8003AB40  1440ffd5  bnez     $v0, 0x8003aa98   -> L_8003AA98
+8003AB44  00061500  sll      $v0, $a2, 0x14
+L_8003AB48:
+8003AB48  27bd0020  addiu    $sp, $sp, 0x20
+8003AB4C  03e00008  jr       $ra
+8003AB50  00000000  nop      

@@ -1,0 +1,73 @@
+; function 0x80080030..0x80080144 (69 words)
+80080030  27bdffe0  addiu    $sp, $sp, -0x20
+80080034  afb00010  sw       $s0, 0x10($sp)                ; sp+0x10
+80080038  00808021  move     $s0, $a0
+8008003C  3c037d2b  lui      $v1, 0x7d2b                   ; <<RNG step begins>>
+80080040  3c04800a  lui      $a0, 0x800a
+80080044  8c828708  lw       $v0, -0x78f8($a0)             ; [0x80098708=RNG_state]
+80080048  346389dd  ori      $v1, $v1, 0x89dd              ; =0x7D2B89DD
+8008004C  00430018  mult     $v0, $v1
+80080050  3c02e06a  lui      $v0, 0xe06a
+80080054  344202e7  ori      $v0, $v0, 0x2e7               ; =0xE06A02E7
+80080058  00004012  mflo     $t0
+8008005C  24032000  addiu    $v1, $zero, 0x2000
+80080060  01021021  addu     $v0, $t0, $v0
+80080064  00430019  multu    $v0, $v1                      ; <<multu: RNG scale (look at the addiu N above)>>
+80080068  afb10014  sw       $s1, 0x14($sp)                ; sp+0x14
+8008006C  00a08821  move     $s1, $a1
+80080070  afb20018  sw       $s2, 0x18($sp)                ; sp+0x18
+80080074  afbf001c  sw       $ra, 0x1c($sp)                ; sp+0x1C
+80080078  ac828708  sw       $v0, -0x78f8($a0)             ; [0x80098708=RNG_state]
+8008007C  00004810  mfhi     $t1
+80080080  00004012  mflo     $t0
+80080084  00091003  sra      $v0, $t1, 0
+80080088  00091fc3  sra      $v1, $t1, 0x1f
+8008008C  00401821  move     $v1, $v0
+80080090  30620001  andi     $v0, $v1, 1
+80080094  1040000c  beqz     $v0, 0x800800c8   -> L_800800C8
+80080098  00c09021  move     $s2, $a2
+8008009C  3c028012  lui      $v0, 0x8012
+800800A0  24427d30  addiu    $v0, $v0, 0x7d30              ; =0x80127D30 EntityTable(hero slot0)
+800800A4  8c430114  lw       $v1, 0x114($v0)               ; v0.PosX [0x80127E44]
+800800A8  8e040114  lw       $a0, 0x114($s0)               ; s0.PosX
+800800AC  8c420118  lw       $v0, 0x118($v0)               ; v0.PosY [0x80127E48]
+800800B0  8e050118  lw       $a1, 0x118($s0)               ; s0.PosY
+800800B4  00642023  subu     $a0, $v1, $a0
+800800B8  0c00ba05  jal      0x8002e814                    ; GetDirectionToTarget
+800800BC  00452823  subu     $a1, $v0, $a1
+800800C0  08020034  j        0x800800d0   -> L_800800D0
+800800C4  ae02008c  sw       $v0, 0x8c($s0)                ; s0.TargetDir
+L_800800C8:
+800800C8  00031203  sra      $v0, $v1, 8
+800800CC  ae02008c  sw       $v0, 0x8c($s0)                ; s0.TargetDir
+L_800800D0:
+800800D0  322200ff  andi     $v0, $s1, 0xff
+800800D4  ae020088  sw       $v0, 0x88($s0)                ; s0.TargetAnim
+800800D8  00121400  sll      $v0, $s2, 0x10
+800800DC  10400012  beqz     $v0, 0x80080128   -> L_80080128
+800800E0  3c037d2b  lui      $v1, 0x7d2b                   ; <<RNG step begins>>
+800800E4  3c04800a  lui      $a0, 0x800a
+800800E8  8c828708  lw       $v0, -0x78f8($a0)             ; [0x80098708=RNG_state]
+800800EC  346389dd  ori      $v1, $v1, 0x89dd              ; =0x7D2B89DD
+800800F0  00430018  mult     $v0, $v1
+800800F4  3c02e06a  lui      $v0, 0xe06a
+800800F8  344202e7  ori      $v0, $v0, 0x2e7               ; =0xE06A02E7
+800800FC  00004812  mflo     $t1
+80080100  24030010  addiu    $v1, $zero, 0x10
+80080104  01221021  addu     $v0, $t1, $v0
+80080108  00430019  multu    $v0, $v1                      ; <<multu: RNG scale (look at the addiu N above)>>
+8008010C  ac828708  sw       $v0, -0x78f8($a0)             ; [0x80098708=RNG_state]
+80080110  00004810  mfhi     $t1
+80080114  00004012  mflo     $t0
+80080118  00091003  sra      $v0, $t1, 0
+8008011C  00091fc3  sra      $v1, $t1, 0x1f
+80080120  00521021  addu     $v0, $v0, $s2
+80080124  a6020282  sh       $v0, 0x282($s0)               ; s0.AIValues1
+L_80080128:
+80080128  8fbf001c  lw       $ra, 0x1c($sp)                ; sp+0x1C
+8008012C  8fb20018  lw       $s2, 0x18($sp)                ; sp+0x18
+80080130  8fb10014  lw       $s1, 0x14($sp)                ; sp+0x14
+80080134  8fb00010  lw       $s0, 0x10($sp)                ; sp+0x10
+80080138  27bd0020  addiu    $sp, $sp, 0x20
+8008013C  03e00008  jr       $ra
+80080140  00000000  nop      

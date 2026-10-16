@@ -1,0 +1,82 @@
+; function 0x8007FEF8..0x80080030 (78 words)
+8007FEF8  3c0b7d2b  lui      $t3, 0x7d2b                   ; <<RNG step begins>>
+8007FEFC  3c0a800a  lui      $t2, 0x800a
+8007FF00  8d428708  lw       $v0, -0x78f8($t2)             ; [0x80098708=RNG_state]
+8007FF04  356b89dd  ori      $t3, $t3, 0x89dd              ; =0x7D2B89DD
+8007FF08  004b0018  mult     $v0, $t3
+8007FF0C  3c09e06a  lui      $t1, 0xe06a
+8007FF10  352902e7  ori      $t1, $t1, 0x2e7               ; =0xE06A02E7
+8007FF14  00006012  mflo     $t4
+8007FF18  24020065  addiu    $v0, $zero, 0x65
+8007FF1C  01894021  addu     $t0, $t4, $t1
+8007FF20  01020019  multu    $t0, $v0                      ; <<multu: RNG scale (look at the addiu N above)>>
+8007FF24  27bdffe0  addiu    $sp, $sp, -0x20
+8007FF28  afb00010  sw       $s0, 0x10($sp)                ; sp+0x10
+8007FF2C  00808021  move     $s0, $a0
+8007FF30  afb10014  sw       $s1, 0x14($sp)                ; sp+0x14
+8007FF34  00a08821  move     $s1, $a1
+8007FF38  afb20018  sw       $s2, 0x18($sp)                ; sp+0x18
+8007FF3C  00c09021  move     $s2, $a2
+8007FF40  30e700ff  andi     $a3, $a3, 0xff
+8007FF44  afbf001c  sw       $ra, 0x1c($sp)                ; sp+0x1C
+8007FF48  00006810  mfhi     $t5
+8007FF4C  00006012  mflo     $t4
+8007FF50  000d1003  sra      $v0, $t5, 0
+8007FF54  000d1fc3  sra      $v1, $t5, 0x1f
+8007FF58  0047102a  slt      $v0, $v0, $a3
+8007FF5C  1040000c  beqz     $v0, 0x8007ff90   -> L_8007FF90
+8007FF60  ad488708  sw       $t0, -0x78f8($t2)             ; [0x80098708=RNG_state]
+8007FF64  3c028012  lui      $v0, 0x8012
+8007FF68  24427d30  addiu    $v0, $v0, 0x7d30              ; =0x80127D30 EntityTable(hero slot0)
+8007FF6C  8c430114  lw       $v1, 0x114($v0)               ; v0.PosX [0x80127E44]
+8007FF70  8e040114  lw       $a0, 0x114($s0)               ; s0.PosX
+8007FF74  8c420118  lw       $v0, 0x118($v0)               ; v0.PosY [0x80127E48]
+8007FF78  8e050118  lw       $a1, 0x118($s0)               ; s0.PosY
+8007FF7C  00642023  subu     $a0, $v1, $a0
+8007FF80  0c00ba05  jal      0x8002e814                    ; GetDirectionToTarget
+8007FF84  00452823  subu     $a1, $v0, $a1
+8007FF88  0801ffef  j        0x8007ffbc   -> L_8007FFBC
+8007FF8C  ae02008c  sw       $v0, 0x8c($s0)                ; s0.TargetDir
+L_8007FF90:
+8007FF90  010b0018  mult     $t0, $t3
+8007FF94  00006812  mflo     $t5
+8007FF98  24020020  addiu    $v0, $zero, 0x20
+8007FF9C  01a91821  addu     $v1, $t5, $t1
+8007FFA0  00620019  multu    $v1, $v0                      ; <<multu: RNG scale (look at the addiu N above)>>
+8007FFA4  ad438708  sw       $v1, -0x78f8($t2)
+8007FFA8  00006810  mfhi     $t5
+8007FFAC  00006012  mflo     $t4
+8007FFB0  000d1003  sra      $v0, $t5, 0
+8007FFB4  000d1fc3  sra      $v1, $t5, 0x1f
+8007FFB8  ae02008c  sw       $v0, 0x8c($s0)                ; s0.TargetDir
+L_8007FFBC:
+8007FFBC  322200ff  andi     $v0, $s1, 0xff
+8007FFC0  ae020088  sw       $v0, 0x88($s0)                ; s0.TargetAnim
+8007FFC4  00121400  sll      $v0, $s2, 0x10
+8007FFC8  10400012  beqz     $v0, 0x80080014   -> L_80080014
+8007FFCC  3c037d2b  lui      $v1, 0x7d2b                   ; <<RNG step begins>>
+8007FFD0  3c04800a  lui      $a0, 0x800a
+8007FFD4  8c828708  lw       $v0, -0x78f8($a0)             ; [0x80098708=RNG_state]
+8007FFD8  346389dd  ori      $v1, $v1, 0x89dd              ; =0x7D2B89DD
+8007FFDC  00430018  mult     $v0, $v1
+8007FFE0  3c02e06a  lui      $v0, 0xe06a
+8007FFE4  344202e7  ori      $v0, $v0, 0x2e7               ; =0xE06A02E7
+8007FFE8  00006812  mflo     $t5
+8007FFEC  24030010  addiu    $v1, $zero, 0x10
+8007FFF0  01a21021  addu     $v0, $t5, $v0
+8007FFF4  00430019  multu    $v0, $v1                      ; <<multu: RNG scale (look at the addiu N above)>>
+8007FFF8  ac828708  sw       $v0, -0x78f8($a0)             ; [0x80098708=RNG_state]
+8007FFFC  00006810  mfhi     $t5
+80080000  00006012  mflo     $t4
+80080004  000d1003  sra      $v0, $t5, 0
+80080008  000d1fc3  sra      $v1, $t5, 0x1f
+8008000C  00521021  addu     $v0, $v0, $s2
+80080010  a6020282  sh       $v0, 0x282($s0)               ; s0.AIValues1
+L_80080014:
+80080014  8fbf001c  lw       $ra, 0x1c($sp)                ; sp+0x1C
+80080018  8fb20018  lw       $s2, 0x18($sp)                ; sp+0x18
+8008001C  8fb10014  lw       $s1, 0x14($sp)                ; sp+0x14
+80080020  8fb00010  lw       $s0, 0x10($sp)                ; sp+0x10
+80080024  27bd0020  addiu    $sp, $sp, 0x20
+80080028  03e00008  jr       $ra
+8008002C  00000000  nop      

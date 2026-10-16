@@ -1,0 +1,27 @@
+; function 0x8007DEE8..0x8007DF4C (25 words)
+8007DEE8  27bdffe8  addiu    $sp, $sp, -0x18
+8007DEEC  afb00010  sw       $s0, 0x10($sp)                ; sp+0x10
+8007DEF0  afbf0014  sw       $ra, 0x14($sp)                ; sp+0x14
+8007DEF4  0c00e8dd  jal      0x8003a374                    ; ComputeNewHp
+8007DEF8  00808021  move     $s0, $a0
+8007DEFC  10400002  beqz     $v0, 0x8007df08   -> L_8007DF08
+8007DF00  24020001  addiu    $v0, $zero, 1
+8007DF04  a2020277  sb       $v0, 0x277($s0)               ; s0.Bytes3
+L_8007DF08:
+8007DF08  24020004  addiu    $v0, $zero, 4
+8007DF0C  ae020088  sw       $v0, 0x88($s0)                ; s0.TargetAnim
+8007DF10  3c028012  lui      $v0, 0x8012
+8007DF14  24427d30  addiu    $v0, $v0, 0x7d30              ; =0x80127D30 EntityTable(hero slot0)
+8007DF18  8e060114  lw       $a2, 0x114($s0)               ; s0.PosX
+8007DF1C  8c440114  lw       $a0, 0x114($v0)               ; v0.PosX [0x80127E44]
+8007DF20  8e030118  lw       $v1, 0x118($s0)               ; s0.PosY
+8007DF24  8c450118  lw       $a1, 0x118($v0)               ; v0.PosY [0x80127E48]
+8007DF28  00c42023  subu     $a0, $a2, $a0
+8007DF2C  0c00ba05  jal      0x8002e814                    ; GetDirectionToTarget
+8007DF30  00652823  subu     $a1, $v1, $a1
+8007DF34  ae02008c  sw       $v0, 0x8c($s0)                ; s0.TargetDir
+8007DF38  8fbf0014  lw       $ra, 0x14($sp)                ; sp+0x14
+8007DF3C  8fb00010  lw       $s0, 0x10($sp)                ; sp+0x10
+8007DF40  27bd0018  addiu    $sp, $sp, 0x18
+8007DF44  03e00008  jr       $ra
+8007DF48  00000000  nop      

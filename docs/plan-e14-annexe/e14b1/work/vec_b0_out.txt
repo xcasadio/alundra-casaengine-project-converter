@@ -1,0 +1,2 @@
+TryAttackPlayer 0x80080704: real code vs the decompilation transcribed: 0 differences in 30000 vectors
+SetEntityRandomDirection 0x80080030: real code vs model: 0 differences in 5000 vectors

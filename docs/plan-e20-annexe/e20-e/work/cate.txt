@@ -1,0 +1,149 @@
+8003a7b0  addiu   $sp, $sp, -0x60
+8003a7b4  move    $a1, $a0
+8003a7b8  sw      $ra, 0x5c($sp)
+8003a7bc  sw      $fp, 0x58($sp)
+8003a7c0  sw      $s7, 0x54($sp)
+8003a7c4  sw      $s6, 0x50($sp)
+8003a7c8  sw      $s5, 0x4c($sp)
+8003a7cc  sw      $s4, 0x48($sp)
+8003a7d0  sw      $s3, 0x44($sp)
+8003a7d4  sw      $s2, 0x40($sp)
+8003a7d8  sw      $s1, 0x3c($sp)
+8003a7dc  sw      $s0, 0x38($sp)
+8003a7e0  lw      $v0, 0x1d4($a1)
+8003a7e4  nop     
+8003a7e8  beqz    $v0, 0x8003a9ac
+8003a7ec  lui     $a0, 0x8012
+8003a7f0  lh      $v0, 0x1fe($a1)
+8003a7f4  addiu   $a0, $a0, 0x7168
+8003a7f8  sll     $v0, $v0, 1
+8003a7fc  addu    $v0, $v0, $a0
+8003a800  lh      $v0, ($v0)
+8003a804  nop     
+8003a808  sw      $v0, 0x20($sp)
+8003a80c  sw      $v0, 0x18($sp)
+8003a810  lw      $v0, 0x1fc($a1)
+8003a814  lw      $v1, 0x214($a1)
+8003a818  lui     $fp, 0x800e
+8003a81c  addu    $v0, $v0, $v1
+8003a820  sra     $v0, $v0, 0x10
+8003a824  sll     $v0, $v0, 1
+8003a828  addu    $v0, $v0, $a0
+8003a82c  lh      $v0, ($v0)
+8003a830  lui     $s6, 8
+8003a834  sw      $v0, 0x24($sp)
+8003a838  sw      $v0, 0x1c($sp)
+8003a83c  lw      $v0, 0x200($a1)
+8003a840  addiu   $s5, $sp, 0x18
+8003a844  sra     $v0, $v0, 0x14
+8003a848  sw      $v0, 0x2c($sp)
+8003a84c  sw      $v0, 0x28($sp)
+8003a850  lw      $v0, 0x200($a1)
+8003a854  lw      $v1, 0x218($a1)
+8003a858  move    $s3, $s5
+8003a85c  addu    $v0, $v0, $v1
+8003a860  sra     $v0, $v0, 0x14
+8003a864  sw      $v0, 0x34($sp)
+8003a868  sw      $v0, 0x30($sp)
+8003a86c  lw      $s4, 0x204($a1)
+8003a870  lw      $s7, 0x21c($a1)
+L_8003a874:
+8003a874  lw      $v0, ($s3)
+8003a878  nop     
+8003a87c  blez    $v0, 0x8003a898
+8003a880  move    $a0, $v0
+8003a884  slti    $v0, $a0, 0x34
+8003a888  bnez    $v0, 0x8003a89c
+8003a88c  nop     
+8003a890  j       0x8003a89c
+8003a894  addiu   $a0, $zero, 0x33
+L_8003a898:
+8003a898  move    $a0, $zero
+L_8003a89c:
+8003a89c  lw      $v0, 0x10($s3)
+8003a8a0  nop     
+8003a8a4  blez    $v0, 0x8003a8c0
+8003a8a8  move    $v1, $v0
+8003a8ac  slti    $v0, $v1, 0x3c
+8003a8b0  bnez    $v0, 0x8003a8c8
+8003a8b4  sll     $v0, $v1, 1
+8003a8b8  j       0x8003a8c4
+8003a8bc  addiu   $v1, $zero, 0x3b
+L_8003a8c0:
+8003a8c0  move    $v1, $zero
+L_8003a8c4:
+8003a8c4  sll     $v0, $v1, 1
+L_8003a8c8:
+8003a8c8  addu    $v0, $v0, $v1
+8003a8cc  sll     $v0, $v0, 2
+8003a8d0  addu    $v0, $v0, $v1
+8003a8d4  sll     $v0, $v0, 5
+8003a8d8  lw      $v1, -0x2794($fp)
+8003a8dc  addiu   $v0, $v0, 0x604
+8003a8e0  addu    $v1, $v1, $v0
+8003a8e4  sll     $v0, $a0, 3
+8003a8e8  addu    $v1, $v1, $v0
+8003a8ec  lhu     $a1, ($v1)
+8003a8f0  nop     
+8003a8f4  andi    $v0, $a1, 2
+8003a8f8  beqz    $v0, 0x8003a998
+8003a8fc  nop     
+8003a900  lbu     $v0, 3($v1)
+8003a904  nop     
+8003a908  sll     $s2, $v0, 0x14
+8003a90c  addu    $a0, $s2, $s6
+8003a910  slt     $v0, $a0, $s4
+8003a914  bnez    $v0, 0x8003a998
+8003a918  addu    $v0, $s4, $s7
+8003a91c  slt     $v0, $v0, $a0
+8003a920  bnez    $v0, 0x8003a998
+8003a924  andi    $v0, $a1, 0xfffd
+8003a928  move    $a0, $zero
+8003a92c  sh      $v0, ($v1)
+8003a930  ori     $v0, $zero, 0xffff
+8003a934  move    $a2, $a0
+8003a938  sh      $v0, 6($v1)
+8003a93c  lw      $v0, ($s3)
+8003a940  lw      $s1, 0x10($s3)
+8003a944  sll     $s0, $v0, 1
+8003a948  addu    $s0, $s0, $v0
+8003a94c  sll     $s0, $s0, 0x13
+8003a950  lui     $v0, 0xc
+8003a954  addu    $s0, $s0, $v0
+8003a958  move    $a3, $s0
+8003a95c  lui     $v0, 0x800e
+8003a960  lw      $v0, 0x4334($v0)
+8003a964  sll     $s1, $s1, 0x14
+8003a968  lbu     $a1, 9($v0)
+8003a96c  addu    $s1, $s1, $s6
+8003a970  sw      $s1, 0x10($sp)
+8003a974  jal     0x8003bdd8
+8003a978  sw      $s2, 0x14($sp)
+8003a97c  addiu   $a0, $zero, 0xff
+8003a980  move    $a1, $s0
+8003a984  move    $a2, $s1
+8003a988  jal     0x80032c7c
+8003a98c  move    $a3, $s2
+8003a990  jal     0x800490fc
+8003a994  addiu   $a0, $zero, 0x1f
+L_8003a998:
+8003a998  addiu   $s3, $s3, 4
+8003a99c  addiu   $v0, $s5, 0x10
+8003a9a0  slt     $v0, $s3, $v0
+8003a9a4  bnez    $v0, 0x8003a874
+8003a9a8  nop     
+L_8003a9ac:
+8003a9ac  lw      $ra, 0x5c($sp)
+8003a9b0  lw      $fp, 0x58($sp)
+8003a9b4  lw      $s7, 0x54($sp)
+8003a9b8  lw      $s6, 0x50($sp)
+8003a9bc  lw      $s5, 0x4c($sp)
+8003a9c0  lw      $s4, 0x48($sp)
+8003a9c4  lw      $s3, 0x44($sp)
+8003a9c8  lw      $s2, 0x40($sp)
+8003a9cc  lw      $s1, 0x3c($sp)
+8003a9d0  lw      $s0, 0x38($sp)
+8003a9d4  addiu   $sp, $sp, 0x60
+8003a9d8  jr      $ra
+8003a9dc  nop     
+; end 8003a9e0

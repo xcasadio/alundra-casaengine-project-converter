@@ -1,0 +1,19 @@
+; opcode 0x1f  handler 0x8003d974..0x8003d9bc (18 words)
+0x8003d974  addiu   $sp, $sp, -0x18
+0x8003d978  sw      $s0, 0x10($sp)
+0x8003d97c  sw      $ra, 0x14($sp)
+0x8003d980  jal     0x8003d8d8  ; call 0x8003d8d8
+0x8003d984  move    $s0, $a0
+0x8003d988  move    $a0, $v0
+0x8003d98c  bnez    $a0, 0x8003d9a8
+0x8003d990  move    $v0, $a0
+0x8003d994  lw      $v1, 0x13c($s0)
+0x8003d998  nop     
+0x8003d99c  bnez    $v1, 0x8003d9a8
+0x8003d9a0  addiu   $v0, $zero, 3
+0x8003d9a4  move    $v0, $a0
+0x8003d9a8  lw      $ra, 0x14($sp)
+0x8003d9ac  lw      $s0, 0x10($sp)
+0x8003d9b0  addiu   $sp, $sp, 0x18
+0x8003d9b4  jr      $ra
+0x8003d9b8  nop     

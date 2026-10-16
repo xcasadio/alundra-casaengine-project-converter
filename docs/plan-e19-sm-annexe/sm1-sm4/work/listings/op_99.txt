@@ -1,0 +1,30 @@
+; opcode 0x99  handler 0x80040a8c..0x80040b00 (29 words)
+0x80040a8c  addiu   $sp, $sp, -0x20
+0x80040a90  sw      $s0, 0x10($sp)
+0x80040a94  move    $s0, $a2
+0x80040a98  sw      $s1, 0x14($sp)
+0x80040a9c  sw      $ra, 0x18($sp)
+0x80040aa0  jal     0x8004df68  ; call 0x8004df68
+0x80040aa4  move    $s1, $a3
+0x80040aa8  lw      $a0, ($s0)
+0x80040aac  nop     
+0x80040ab0  lbu     $v1, 2($a0)
+0x80040ab4  lbu     $a0, 1($a0)
+0x80040ab8  sll     $v1, $v1, 8
+0x80040abc  or      $a0, $a0, $v1
+0x80040ac0  slt     $v0, $v0, $a0
+0x80040ac4  bnez    $v0, 0x80040ae0
+0x80040ac8  nop     
+0x80040acc  jal     0x8004e004  ; call 0x8004e004
+0x80040ad0  nop     
+0x80040ad4  addiu   $v0, $zero, 1
+0x80040ad8  j       0x80040ae4
+0x80040adc  sw      $v0, 0x2c($s1)
+0x80040ae0  sw      $zero, 0x2c($s1)
+0x80040ae4  addiu   $v0, $zero, 3
+0x80040ae8  lw      $ra, 0x18($sp)
+0x80040aec  lw      $s1, 0x14($sp)
+0x80040af0  lw      $s0, 0x10($sp)
+0x80040af4  addiu   $sp, $sp, 0x20
+0x80040af8  jr      $ra
+0x80040afc  nop     

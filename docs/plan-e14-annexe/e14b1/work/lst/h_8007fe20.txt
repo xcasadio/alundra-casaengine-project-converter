@@ -1,0 +1,31 @@
+; function 0x8007FE20..0x8007FE8C (27 words)
+8007FE20  3c028012  lui      $v0, 0x8012
+8007FE24  24427d30  addiu    $v0, $v0, 0x7d30              ; =0x80127D30 EntityTable(hero slot0)
+8007FE28  8c830120  lw       $v1, 0x120($a0)               ; a0.TileX
+8007FE2C  8c470120  lw       $a3, 0x120($v0)               ; v0.TileX [0x80127E50]
+8007FE30  8c860124  lw       $a2, 0x124($a0)               ; a0.TileY
+8007FE34  8c480124  lw       $t0, 0x124($v0)               ; v0.TileY [0x80127E54]
+8007FE38  8c840134  lw       $a0, 0x134($a0)               ; a0.FloorHeight
+8007FE3C  8c420134  lw       $v0, 0x134($v0)               ; v0.FloorHeight [0x80127E64]
+8007FE40  00671823  subu     $v1, $v1, $a3
+8007FE44  00c83023  subu     $a2, $a2, $t0
+8007FE48  00822023  subu     $a0, $a0, $v0
+8007FE4C  aca3000c  sw       $v1, 0xc($a1)                 ; a1.Parent
+8007FE50  04610002  bgez     $v1, 0x8007fe5c   -> L_8007FE5C
+8007FE54  00000000  nop      
+8007FE58  00031823  negu     $v1, $v1
+L_8007FE5C:
+8007FE5C  aca60010  sw       $a2, 0x10($a1)                ; a1.Status
+8007FE60  04c10002  bgez     $a2, 0x8007fe6c   -> L_8007FE6C
+8007FE64  00000000  nop      
+8007FE68  00063023  negu     $a2, $a2
+L_8007FE6C:
+8007FE6C  aca40014  sw       $a0, 0x14($a1)                ; a1.Hp
+8007FE70  04810002  bgez     $a0, 0x8007fe7c   -> L_8007FE7C
+8007FE74  00000000  nop      
+8007FE78  00042023  negu     $a0, $a0
+L_8007FE7C:
+8007FE7C  aca30000  sw       $v1, ($a1)
+8007FE80  aca60004  sw       $a2, 4($a1)
+8007FE84  03e00008  jr       $ra
+8007FE88  aca40008  sw       $a0, 8($a1)

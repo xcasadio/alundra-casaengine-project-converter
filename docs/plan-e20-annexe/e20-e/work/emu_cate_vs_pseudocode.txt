@@ -1,0 +1,1 @@
+vectors=4000 mismatches=0 cuts_seen=460

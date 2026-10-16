@@ -1,0 +1,189 @@
+; function 0x80069C84..0x80069F44 (176 words)
+80069C84  27bdffc8  addiu    $sp, $sp, -0x38
+80069C88  afb00030  sw       $s0, 0x30($sp)                ; sp+0x30
+80069C8C  00808021  move     $s0, $a0
+80069C90  afbf0034  sw       $ra, 0x34($sp)                ; sp+0x34
+80069C94  0c01ff88  jal      0x8007fe20                    ; CalculateEntityRelativePosition
+80069C98  27a50018  addiu    $a1, $sp, 0x18
+80069C9C  8e030088  lw       $v1, 0x88($s0)                ; s0.TargetAnim
+80069CA0  00000000  nop      
+80069CA4  2c620007  sltiu    $v0, $v1, 7
+80069CA8  104000a1  beqz     $v0, 0x80069f30   -> L_80069F30
+80069CAC  3c028002  lui      $v0, 0x8002
+80069CB0  24427334  addiu    $v0, $v0, 0x7334              ; =0x80027334
+80069CB4  00031880  sll      $v1, $v1, 2
+80069CB8  00621821  addu     $v1, $v1, $v0
+80069CBC  8c620000  lw       $v0, ($v1)
+80069CC0  00000000  nop      
+80069CC4  00400008  jr       $v0
+    ; jump table @0x80027334 (7): 80069CCC 80069CCC 80069F30 80069E40 80069F30 80069ECC 80069ECC
+80069CC8  00000000  nop      
+L_80069CCC:
+80069CCC  92020274  lbu      $v0, 0x274($s0)               ; s0.Bytes0
+80069CD0  00000000  nop      
+80069CD4  1040000d  beqz     $v0, 0x80069d0c   -> L_80069D0C
+80069CD8  24020003  addiu    $v0, $zero, 3
+80069CDC  ae020088  sw       $v0, 0x88($s0)                ; s0.TargetAnim
+80069CE0  3c028012  lui      $v0, 0x8012
+80069CE4  24427d30  addiu    $v0, $v0, 0x7d30              ; =0x80127D30 EntityTable(hero slot0)
+80069CE8  8c430114  lw       $v1, 0x114($v0)               ; v0.PosX [0x80127E44]
+80069CEC  8e040114  lw       $a0, 0x114($s0)               ; s0.PosX
+80069CF0  8c420118  lw       $v0, 0x118($v0)               ; v0.PosY [0x80127E48]
+80069CF4  8e050118  lw       $a1, 0x118($s0)               ; s0.PosY
+80069CF8  00642023  subu     $a0, $v1, $a0
+80069CFC  0c00ba05  jal      0x8002e814                    ; GetDirectionToTarget
+80069D00  00452823  subu     $a1, $v0, $a1
+80069D04  0801a7cc  j        0x80069f30   -> L_80069F30
+80069D08  ae02008c  sw       $v0, 0x8c($s0)                ; s0.TargetDir
+L_80069D0C:
+80069D0C  92020275  lbu      $v0, 0x275($s0)               ; s0.Bytes1
+80069D10  00000000  nop      
+80069D14  14400010  bnez     $v0, 0x80069d58   -> L_80069D58
+80069D18  3c028003  lui      $v0, 0x8003
+80069D1C  8e030098  lw       $v1, 0x98($s0)                ; s0.AnimDir
+80069D20  24428b54  addiu    $v0, $v0, -0x74ac             ; =0x80028B54 CardinalDirTable
+80069D24  00621821  addu     $v1, $v1, $v0
+80069D28  90630000  lbu      $v1, ($v1)
+80069D2C  24020004  addiu    $v0, $zero, 4
+80069D30  a2020275  sb       $v0, 0x275($s0)               ; s0.Bytes1
+80069D34  ae0000d8  sw       $zero, 0xd8($s0)              ; s0.FStepY
+80069D38  ae0000d4  sw       $zero, 0xd4($s0)              ; s0.FStepX
+80069D3C  ae0000c8  sw       $zero, 0xc8($s0)              ; s0.ForceY
+80069D40  ae0000c4  sw       $zero, 0xc4($s0)              ; s0.ForceX
+80069D44  ae0000c0  sw       $zero, 0xc0($s0)              ; s0.TForceY
+80069D48  ae0000bc  sw       $zero, 0xbc($s0)              ; s0.TForceX
+80069D4C  2463fff8  addiu    $v1, $v1, -8
+80069D50  3063001f  andi     $v1, $v1, 0x1f
+80069D54  ae03008c  sw       $v1, 0x8c($s0)                ; s0.TargetDir
+L_80069D58:
+80069D58  96040282  lhu      $a0, 0x282($s0)               ; s0.AIValues1
+80069D5C  24020001  addiu    $v0, $zero, 1
+80069D60  14800021  bnez     $a0, 0x80069de8   -> L_80069DE8
+80069D64  ae020088  sw       $v0, 0x88($s0)                ; s0.TargetAnim
+80069D68  02002021  move     $a0, $s0
+80069D6C  27a50018  addiu    $a1, $sp, 0x18
+80069D70  2402001e  addiu    $v0, $zero, 0x1e
+80069D74  24060002  addiu    $a2, $zero, 2
+80069D78  00c03821  move     $a3, $a2
+80069D7C  a6020282  sh       $v0, 0x282($s0)               ; s0.AIValues1
+80069D80  0c020172  jal      0x800805c8                    ; TryAttackPlayerFront
+80069D84  afa00010  sw       $zero, 0x10($sp)              ; sp+0x10
+80069D88  10400069  beqz     $v0, 0x80069f30   -> L_80069F30
+80069D8C  3c037d2b  lui      $v1, 0x7d2b                   ; <<RNG step begins>>
+80069D90  3c04800a  lui      $a0, 0x800a
+80069D94  8c828708  lw       $v0, -0x78f8($a0)             ; [0x80098708=RNG_state]
+80069D98  346389dd  ori      $v1, $v1, 0x89dd              ; =0x7D2B89DD
+80069D9C  00430018  mult     $v0, $v1
+80069DA0  3c02e06a  lui      $v0, 0xe06a
+80069DA4  344202e7  ori      $v0, $v0, 0x2e7               ; =0xE06A02E7
+80069DA8  00004012  mflo     $t0
+80069DAC  24030005  addiu    $v1, $zero, 5
+80069DB0  01021021  addu     $v0, $t0, $v0
+80069DB4  00430019  multu    $v0, $v1                      ; <<multu: RNG scale (look at the addiu N above)>>
+80069DB8  ac828708  sw       $v0, -0x78f8($a0)             ; [0x80098708=RNG_state]
+80069DBC  00004810  mfhi     $t1
+80069DC0  00004012  mflo     $t0
+80069DC4  00091003  sra      $v0, $t1, 0
+80069DC8  00091fc3  sra      $v1, $t1, 0x1f
+80069DCC  14400004  bnez     $v0, 0x80069de0   -> L_80069DE0
+80069DD0  24020003  addiu    $v0, $zero, 3
+80069DD4  0c01243f  jal      0x800490fc                    ; PlaySoundEffect
+80069DD8  24040094  addiu    $a0, $zero, 0x94
+80069DDC  24020003  addiu    $v0, $zero, 3
+L_80069DE0:
+80069DE0  0801a7cc  j        0x80069f30   -> L_80069F30
+80069DE4  a2020274  sb       $v0, 0x274($s0)               ; s0.Bytes0
+L_80069DE8:
+80069DE8  8e03013c  lw       $v1, 0x13c($s0)               ; s0.ForceAdjusted
+80069DEC  2482ffff  addiu    $v0, $a0, -1
+80069DF0  1060004f  beqz     $v1, 0x80069f30   -> L_80069F30
+80069DF4  a6020282  sh       $v0, 0x282($s0)               ; s0.AIValues1
+80069DF8  3c028003  lui      $v0, 0x8003
+80069DFC  8e030098  lw       $v1, 0x98($s0)                ; s0.AnimDir
+80069E00  24428b54  addiu    $v0, $v0, -0x74ac             ; =0x80028B54 CardinalDirTable
+80069E04  00621821  addu     $v1, $v1, $v0
+80069E08  92020275  lbu      $v0, 0x275($s0)               ; s0.Bytes1
+80069E0C  90630000  lbu      $v1, ($v1)
+80069E10  ae0000d8  sw       $zero, 0xd8($s0)              ; s0.FStepY
+80069E14  ae0000d4  sw       $zero, 0xd4($s0)              ; s0.FStepX
+80069E18  ae0000c8  sw       $zero, 0xc8($s0)              ; s0.ForceY
+80069E1C  ae0000c4  sw       $zero, 0xc4($s0)              ; s0.ForceX
+80069E20  ae0000c0  sw       $zero, 0xc0($s0)              ; s0.TForceY
+80069E24  ae0000bc  sw       $zero, 0xbc($s0)              ; s0.TForceX
+80069E28  2442ffff  addiu    $v0, $v0, -1                  ; =0x80028B53
+80069E2C  2463fff0  addiu    $v1, $v1, -0x10
+80069E30  3063001f  andi     $v1, $v1, 0x1f
+80069E34  a2020275  sb       $v0, 0x275($s0)               ; s0.Bytes1
+80069E38  0801a7cc  j        0x80069f30   -> L_80069F30
+80069E3C  ae03008c  sw       $v1, 0x8c($s0)                ; s0.TargetDir
+L_80069E40:
+80069E40  8e0200ac  lw       $v0, 0xac($s0)                ; s0.AnimEndFlag
+80069E44  00000000  nop      
+80069E48  10400039  beqz     $v0, 0x80069f30   -> L_80069F30
+80069E4C  00000000  nop      
+80069E50  92020274  lbu      $v0, 0x274($s0)               ; s0.Bytes0
+80069E54  00000000  nop      
+80069E58  2442ffff  addiu    $v0, $v0, -1
+80069E5C  a2020274  sb       $v0, 0x274($s0)               ; s0.Bytes0
+80069E60  304200ff  andi     $v0, $v0, 0xff
+80069E64  14400017  bnez     $v0, 0x80069ec4   -> L_80069EC4
+80069E68  2402ffff  addiu    $v0, $zero, -1
+80069E6C  3c037d2b  lui      $v1, 0x7d2b                   ; <<RNG step begins>>
+80069E70  3c04800a  lui      $a0, 0x800a
+80069E74  8c828708  lw       $v0, -0x78f8($a0)             ; [0x80098708=RNG_state]
+80069E78  346389dd  ori      $v1, $v1, 0x89dd              ; =0x7D2B89DD
+80069E7C  00430018  mult     $v0, $v1
+80069E80  3c03e06a  lui      $v1, 0xe06a
+80069E84  346302e7  ori      $v1, $v1, 0x2e7               ; =0xE06A02E7
+80069E88  00004812  mflo     $t1
+80069E8C  24020004  addiu    $v0, $zero, 4
+80069E90  01231821  addu     $v1, $t1, $v1
+80069E94  00620019  multu    $v1, $v0                      ; <<multu: RNG scale (look at the addiu N above)>>
+80069E98  ae000088  sw       $zero, 0x88($s0)              ; s0.TargetAnim
+80069E9C  ac838708  sw       $v1, -0x78f8($a0)             ; [0x80098708=RNG_state]
+80069EA0  a6000282  sh       $zero, 0x282($s0)             ; s0.AIValues1
+80069EA4  a2000275  sb       $zero, 0x275($s0)             ; s0.Bytes1
+80069EA8  00004810  mfhi     $t1
+80069EAC  00004012  mflo     $t0
+80069EB0  00091003  sra      $v0, $t1, 0
+80069EB4  00091fc3  sra      $v1, $t1, 0x1f
+80069EB8  000210c0  sll      $v0, $v0, 3
+80069EBC  0801a7cc  j        0x80069f30   -> L_80069F30
+80069EC0  ae02008c  sw       $v0, 0x8c($s0)                ; s0.TargetDir
+L_80069EC4:
+80069EC4  0801a7cc  j        0x80069f30   -> L_80069F30
+80069EC8  ae020090  sw       $v0, 0x90($s0)                ; s0.CurAnim
+L_80069ECC:
+80069ECC  8e0200ac  lw       $v0, 0xac($s0)                ; s0.AnimEndFlag
+80069ED0  00000000  nop      
+80069ED4  10400016  beqz     $v0, 0x80069f30   -> L_80069F30
+80069ED8  00000000  nop      
+80069EDC  92020277  lbu      $v0, 0x277($s0)               ; s0.Bytes3
+80069EE0  00000000  nop      
+80069EE4  10400006  beqz     $v0, 0x80069f00   -> L_80069F00
+80069EE8  24030002  addiu    $v1, $zero, 2
+80069EEC  8e02006c  lw       $v0, 0x6c($s0)                ; s0.Flags
+80069EF0  ae030088  sw       $v1, 0x88($s0)                ; s0.TargetAnim
+80069EF4  34420040  ori      $v0, $v0, 0x40
+80069EF8  0801a7cc  j        0x80069f30   -> L_80069F30
+80069EFC  ae02006c  sw       $v0, 0x6c($s0)                ; s0.Flags
+L_80069F00:
+80069F00  8fa20018  lw       $v0, 0x18($sp)                ; sp+0x18
+80069F04  00000000  nop      
+80069F08  28420002  slti     $v0, $v0, 2
+80069F0C  10400007  beqz     $v0, 0x80069f2c   -> L_80069F2C
+80069F10  00000000  nop      
+80069F14  8fa2001c  lw       $v0, 0x1c($sp)                ; sp+0x1C
+80069F18  00000000  nop      
+80069F1C  28420002  slti     $v0, $v0, 2
+80069F20  10400002  beqz     $v0, 0x80069f2c   -> L_80069F2C
+80069F24  24020003  addiu    $v0, $zero, 3
+80069F28  a2020274  sb       $v0, 0x274($s0)               ; s0.Bytes0
+L_80069F2C:
+80069F2C  ae000088  sw       $zero, 0x88($s0)              ; s0.TargetAnim
+L_80069F30:
+80069F30  8fbf0034  lw       $ra, 0x34($sp)                ; sp+0x34
+80069F34  8fb00030  lw       $s0, 0x30($sp)                ; sp+0x30
+80069F38  27bd0038  addiu    $sp, $sp, 0x38
+80069F3C  03e00008  jr       $ra
+80069F40  00000000  nop      

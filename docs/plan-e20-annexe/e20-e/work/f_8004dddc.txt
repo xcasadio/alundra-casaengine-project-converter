@@ -1,0 +1,7 @@
+8004dddc  lui     $v0, 0x8017
+8004dde0  lw      $v0, 0x6318($v0)
+8004dde4  nop     
+8004dde8  lh      $v0, 6($v0)
+8004ddec  jr      $ra
+8004ddf0  nop     
+; end 8004ddf4

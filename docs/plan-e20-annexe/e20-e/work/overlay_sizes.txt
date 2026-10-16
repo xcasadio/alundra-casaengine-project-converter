@@ -1,0 +1,11 @@
+map  cuttable  wallPlacements  floorPlacements
+16 266 1816 2360
+14 179 2137 1931
+393 179 2137 1931
+3 165 1943 2172
+20 162 2577 1207
+479 158 1752 2646
+410 156 1428 1921
+83 156 1428 1921
+max wall placements over all maps: 3300 max floor: 2849
+max overlay entries (wall+floor): 5037

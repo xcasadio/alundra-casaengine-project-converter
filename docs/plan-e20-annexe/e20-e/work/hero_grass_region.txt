@@ -1,0 +1,111 @@
+8002fc80  sll     $v0, $s0, 1
+8002fc84  addu    $v0, $v0, $s1
+8002fc88  sll     $a0, $a0, 2
+8002fc8c  addu    $a0, $s1, $a0
+8002fc90  lh      $t2, 8($v0)
+8002fc94  mflo    $a1
+8002fc98  lh      $v0, 0x10($a0)
+8002fc9c  nop     
+8002fca0  mult    $v0, $t2
+8002fca4  lui     $a2, 0xe06a
+8002fca8  ori     $a2, $a2, 0x2e7
+8002fcac  mflo    $v1
+8002fcb0  addu    $a3, $a1, $a2
+8002fcb4  addiu   $v0, $v1, 1
+8002fcb8  multu   $a3, $v0
+8002fcbc  mfhi    $t7
+8002fcc0  mflo    $t6
+8002fcc4  sw      $t6, 0x38($sp)
+8002fcc8  sw      $t7, 0x3c($sp)
+8002fccc  lh      $v0, 0x12($a0)
+8002fcd0  nop     
+8002fcd4  mult    $v0, $t2
+8002fcd8  mflo    $t3
+8002fcdc  nop     
+8002fce0  nop     
+8002fce4  mult    $a3, $t0
+8002fce8  sra     $v0, $t7, 0
+8002fcec  sra     $v1, $t7, 0x1f
+8002fcf0  addu    $v0, $t3, $v0
+8002fcf4  sw      $v0, 0x54($t4)
+8002fcf8  mflo    $t5
+8002fcfc  lh      $v0, 0x24($a0)
+8002fd00  nop     
+8002fd04  mult    $v0, $t2
+8002fd08  mflo    $v1
+8002fd0c  addu    $a1, $t5, $a2
+8002fd10  addiu   $v0, $v1, 1
+8002fd14  multu   $a1, $v0
+8002fd18  mfhi    $t7
+8002fd1c  mflo    $t6
+8002fd20  sw      $t6, 0x38($sp)
+8002fd24  sw      $t7, 0x3c($sp)
+8002fd28  lh      $v0, 0x26($a0)
+8002fd2c  nop     
+8002fd30  mult    $v0, $t2
+8002fd34  mflo    $t3
+8002fd38  nop     
+8002fd3c  nop     
+8002fd40  mult    $a1, $t0
+8002fd44  sra     $v0, $t7, 0
+8002fd48  sra     $v1, $t7, 0x1f
+8002fd4c  addu    $v0, $t3, $v0
+8002fd50  sw      $v0, 0x58($t4)
+8002fd54  mflo    $t0
+8002fd58  lh      $v0, 0x30($s1)
+8002fd5c  nop     
+8002fd60  mult    $v0, $t2
+8002fd64  mflo    $v1
+8002fd68  addu    $a2, $t0, $a2
+8002fd6c  addiu   $v0, $v1, 1
+8002fd70  multu   $a2, $v0
+8002fd74  mfhi    $t7
+8002fd78  mflo    $t6
+8002fd7c  sw      $t6, 0x38($sp)
+8002fd80  sw      $t7, 0x3c($sp)
+8002fd84  lh      $v0, 0x32($s1)
+8002fd88  nop     
+8002fd8c  mult    $v0, $t2
+8002fd90  lw      $t6, 0x38($sp)
+8002fd94  lw      $t7, 0x3c($sp)
+8002fd98  sw      $a3, -0x78f8($t1)
+8002fd9c  sw      $a1, -0x78f8($t1)
+8002fda0  sw      $a2, -0x78f8($t1)
+8002fda4  sra     $v0, $t7, 0
+8002fda8  sra     $v1, $t7, 0x1f
+8002fdac  mflo    $t0
+8002fdb0  addu    $v0, $t0, $v0
+8002fdb4  j       0x8002fdc8
+8002fdb8  sw      $v0, 0x5c($t4)
+8002fdbc  lui     $a0, 0x8012
+8002fdc0  jal     0x8003a7b0
+8002fdc4  addiu   $a0, $a0, 0x7d30
+L_8002fdc8:
+8002fdc8  lui     $v0, 0x8012
+8002fdcc  addiu   $v1, $v0, 0x7d30
+8002fdd0  lw      $v0, 0xc4($v1)
+8002fdd4  nop     
+8002fdd8  bnez    $v0, 0x8002fdf0
+8002fddc  nop     
+8002fde0  lw      $v0, 0xc8($v1)
+8002fde4  nop     
+8002fde8  beqz    $v0, 0x800301d8
+8002fdec  lui     $v0, 0x8012
+L_8002fdf0:
+8002fdf0  lw      $v0, 0x88($v1)
+8002fdf4  nop     
+8002fdf8  addiu   $v1, $v0, -1
+8002fdfc  sltiu   $v0, $v1, 0x2a
+8002fe00  beqz    $v0, 0x800301d4
+8002fe04  lui     $v0, 0x8002
+8002fe08  addiu   $v0, $v0, 0x29cc
+8002fe0c  sll     $v1, $v1, 2
+8002fe10  addu    $v1, $v1, $v0
+8002fe14  lw      $v0, ($v1)
+8002fe18  nop     
+8002fe1c  jr      $v0
+8002fe20  nop     
+8002fe24  lui     $v0, 0x8012
+8002fe28  addiu   $a0, $v0, 0x7d30
+8002fe2c  lw      $v0, 0x1c($a0)
+; end 8002fe30

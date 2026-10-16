@@ -1,0 +1,69 @@
+; 0x8004DEBC SetPlayerMp (clamp 0..MpMax) / 0x8004DF10 IncreaseMp / 0x8004DF3C DecreaseMp / 0x8004DFD8 AddMoney / 0x8004DF80 SetMoney
+0x8004debc  lui     $v0, 0x8017
+0x8004dec0  lw      $v1, 0x6318($v0)  ; [0x80176318]
+0x8004dec4  nop     
+0x8004dec8  lh      $v0, 6($v1)
+0x8004decc  lhu     $a1, 6($v1)
+0x8004ded0  slt     $v0, $v0, $a0
+0x8004ded4  beqz    $v0, 0x8004dee4
+0x8004ded8  nop     
+0x8004dedc  j       0x8004def8
+0x8004dee0  sh      $a1, 4($v1)
+0x8004dee4  bgez    $a0, 0x8004def4
+0x8004dee8  nop     
+0x8004deec  j       0x8004def8
+0x8004def0  sh      $zero, 4($v1)
+0x8004def4  sh      $a0, 4($v1)
+0x8004def8  lui     $v0, 0x8017
+0x8004defc  lw      $v0, 0x6318($v0)  ; [0x80176318]
+0x8004df00  nop     
+0x8004df04  lh      $v0, 4($v0)
+0x8004df08  jr      $ra
+0x8004df0c  nop     
+0x8004df10  lui     $v0, 0x8017
+0x8004df14  lw      $v0, 0x6318($v0)  ; [0x80176318]
+0x8004df18  addiu   $sp, $sp, -0x18
+0x8004df1c  sw      $ra, 0x10($sp)
+0x8004df20  lh      $v0, 4($v0)
+0x8004df24  jal     0x8004debc  ; call 0x8004debc
+0x8004df28  addu    $a0, $a0, $v0
+0x8004df2c  lw      $ra, 0x10($sp)
+0x8004df30  addiu   $sp, $sp, 0x18
+0x8004df34  jr      $ra
+0x8004df38  nop     
+0x8004df3c  lui     $v0, 0x8017
+; --- SetMoney 0x8004df80
+0x8004df80  slti    $v0, $a0, 0x2710
+0x8004df84  bnez    $v0, 0x8004df9c
+0x8004df88  lui     $v0, 0x8017
+0x8004df8c  lw      $v1, 0x6318($v0)  ; [0x80176318]
+0x8004df90  addiu   $v0, $zero, 0x270f
+0x8004df94  j       0x8004dfc0
+0x8004df98  sh      $v0, 8($v1)
+0x8004df9c  bgez    $a0, 0x8004dfb4
+0x8004dfa0  nop     
+0x8004dfa4  lui     $v0, 0x8017
+0x8004dfa8  lw      $v0, 0x6318($v0)  ; [0x80176318]
+0x8004dfac  j       0x8004dfc0
+0x8004dfb0  sh      $zero, 8($v0)
+0x8004dfb4  lw      $v0, 0x6318($v0)
+0x8004dfb8  nop     
+0x8004dfbc  sh      $a0, 8($v0)
+0x8004dfc0  lui     $v0, 0x8017
+0x8004dfc4  lw      $v0, 0x6318($v0)  ; [0x80176318]
+0x8004dfc8  nop     
+0x8004dfcc  lh      $v0, 8($v0)
+0x8004dfd0  jr      $ra
+0x8004dfd4  nop     
+; --- AddMoney 0x8004dfd8
+0x8004dfd8  lui     $v0, 0x8017
+0x8004dfdc  lw      $v0, 0x6318($v0)  ; [0x80176318]
+0x8004dfe0  addiu   $sp, $sp, -0x18
+0x8004dfe4  sw      $ra, 0x10($sp)
+0x8004dfe8  lh      $v0, 8($v0)
+0x8004dfec  jal     0x8004df80  ; call 0x8004df80
+0x8004dff0  addu    $a0, $a0, $v0
+0x8004dff4  lw      $ra, 0x10($sp)
+0x8004dff8  addiu   $sp, $sp, 0x18
+0x8004dffc  jr      $ra
+0x8004e000  nop     

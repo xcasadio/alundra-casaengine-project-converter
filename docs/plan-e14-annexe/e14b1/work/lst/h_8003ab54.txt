@@ -1,0 +1,31 @@
+; function 0x8003AB54..0x8003ABCC (30 words)
+8003AB54  27bdffe8  addiu    $sp, $sp, -0x18
+8003AB58  000510c0  sll      $v0, $a1, 3
+8003AB5C  00451023  subu     $v0, $v0, $a1
+8003AB60  afbf0010  sw       $ra, 0x10($sp)                ; sp+0x10
+8003AB64  8c830064  lw       $v1, 0x64($a0)                ; a0.SpriteRecord
+8003AB68  00021040  sll      $v0, $v0, 1
+8003AB6C  8c630000  lw       $v1, ($v1)
+8003AB70  00063040  sll      $a2, $a2, 1
+8003AB74  00621821  addu     $v1, $v1, $v0
+8003AB78  3c028002  lui      $v0, 0x8002
+8003AB7C  24423654  addiu    $v0, $v0, 0x3654              ; =0x80023654 DirForceTableX?
+8003AB80  00c21021  addu     $v0, $a2, $v0
+8003AB84  94630008  lhu      $v1, 8($v1)
+8003AB88  84450000  lh       $a1, ($v0)                    ; [0x80023654=DirForceTableX?]
+8003AB8C  00000000  nop      
+8003AB90  00a30018  mult     $a1, $v1
+8003AB94  3c028002  lui      $v0, 0x8002
+8003AB98  24423694  addiu    $v0, $v0, 0x3694              ; =0x80023694 DirForceTableY?
+8003AB9C  00c23021  addu     $a2, $a2, $v0
+8003ABA0  00002812  mflo     $a1
+8003ABA4  84c60000  lh       $a2, ($a2)
+8003ABA8  00000000  nop      
+8003ABAC  00c30018  mult     $a2, $v1
+8003ABB0  00003012  mflo     $a2
+8003ABB4  0c00ea78  jal      0x8003a9e0                    ; FUN_8003A9E0
+8003ABB8  00000000  nop      
+8003ABBC  8fbf0010  lw       $ra, 0x10($sp)                ; sp+0x10
+8003ABC0  27bd0018  addiu    $sp, $sp, 0x18
+8003ABC4  03e00008  jr       $ra
+8003ABC8  00000000  nop      

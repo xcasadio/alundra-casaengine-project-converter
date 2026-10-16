@@ -1,0 +1,28 @@
+ 0x8007fe8c  lui     $v0, 0x8012
+ 0x8007fe90  addiu   $v0, $v0, 0x7d30
+ 0x8007fe94  lw      $v1, 0x120($a0)
+ 0x8007fe98  lw      $a3, 0x120($v0)
+ 0x8007fe9c  lw      $a2, 0x124($a0)
+ 0x8007fea0  lw      $t0, 0x124($v0)
+ 0x8007fea4  lw      $a0, 0x11c($a0)
+ 0x8007fea8  lw      $v0, 0x134($v0)
+ 0x8007feac  subu    $v1, $v1, $a3
+ 0x8007feb0  subu    $a2, $a2, $t0
+ 0x8007feb4  subu    $a0, $a0, $v0
+ 0x8007feb8  sw      $v1, 0xc($a1)
+ 0x8007febc  bgez    $v1, 0x8007fec8
+ 0x8007fec0  nop     
+ 0x8007fec4  negu    $v1, $v1
+>0x8007fec8  sw      $a2, 0x10($a1)
+ 0x8007fecc  bgez    $a2, 0x8007fed8
+ 0x8007fed0  nop     
+ 0x8007fed4  negu    $a2, $a2
+>0x8007fed8  sw      $a0, 0x14($a1)
+ 0x8007fedc  bgez    $a0, 0x8007fee8
+ 0x8007fee0  nop     
+ 0x8007fee4  negu    $a0, $a0
+>0x8007fee8  sw      $v1, ($a1)
+ 0x8007feec  sw      $a2, 4($a1)
+ 0x8007fef0  jr      $ra
+ 0x8007fef4  sw      $a0, 8($a1)
+ 0x8007fef8  lui     $t3, 0x7d2b

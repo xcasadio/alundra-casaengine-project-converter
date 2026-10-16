@@ -6626,6 +6626,16 @@ de plan (O-E20-21). Le nettoyage de `PlatformEntity.CarriedEntity` au recyclage 
 avant f4 ; f4, f5, f6a, f6b ; h0 et h1 (le cadre de l'usage d'un objet) ; g1a, g2a (porter, lancer ; la bombe et les graines naissent
 portées) ; h3 (bombe, graines) ; une lecture seule des magies (C63, C65, C75, E3, E13, E28) avant de découper h4.
 
+**Lecture au binaire d'E20.e (2026-10-17, `docs/plan-e20-annexe/e20-e/`).** `CheckAndTriggerTileEffect` (`0x8003A7B0`, 140 instructions)
+est lu au binaire et vérifié par une critique indépendante (son propre interpréteur MIPS : 0 écart sur 6 000 vecteurs, 4 146 coupes). Il
+a quatre appelants (le héros dans 15 états d'attaque, la vague C61, la flèche chargée C94, la bombe E12) ; il teste les quatre coins de la
+boîte de coup **stockée à la fin de l'image précédente**, sur le seul bit `0x02` de la case et une bande de Z ; une case coupée perd ce
+bit et sa pile de tuiles (`+6 = 0xFFFF`, la tuile disparaît à l'image suivante), fait naître l'effet global 2, tire le butin
+(`0x80032C7C` → `0x80032968`, un ou deux pas du générateur par case : 224 chances sur 256 de rien) et joue le son `0x1F`. Rien d'autre ne
+consomme le générateur. 9 089 cases coupables dans 165 cartes (179 sur la carte 14). La décompilation a neuf écarts (D1 à D9 : une rangée
+divisée deux fois, un `+0x80000` de trop, deux tirages par maillon de butin au lieu d'un, une division tronquée au lieu d'un plancher…) :
+le binaire tranche. Tâches e-T0 à e-T5 au §9 du rapport ; dépendance au butin (E20.e0c).
+
 ## 2. Points ouverts
 
 | Point | Question | Où elle se tranche |

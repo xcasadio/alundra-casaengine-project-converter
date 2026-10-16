@@ -1,0 +1,43 @@
+80032968  move    $a1, $a0
+8003296c  slti    $v0, $a1, 0x100
+L_80032970:
+80032970  bnez    $v0, 0x80032980
+80032974  andi    $v0, $a1, 0x80
+80032978  j       0x800329f8
+8003297c  move    $v0, $zero
+L_80032980:
+80032980  beqz    $v0, 0x800329e8
+80032984  lui     $v1, 0x7d2b
+80032988  lui     $a0, 0x800a
+8003298c  lw      $v0, -0x78f8($a0)
+80032990  ori     $v1, $v1, 0x89dd
+80032994  mult    $v0, $v1
+80032998  lui     $v0, 0xe06a
+8003299c  ori     $v0, $v0, 0x2e7
+800329a0  mflo    $a2
+800329a4  addiu   $v1, $zero, 0x10
+800329a8  addu    $v0, $a2, $v0
+800329ac  multu   $v0, $v1
+800329b0  sw      $v0, -0x78f8($a0)
+800329b4  andi    $a0, $a1, 0x7f
+800329b8  lui     $v0, 0x8003
+800329bc  addiu   $v0, $v0, -0x71f4
+800329c0  sll     $a0, $a0, 4
+800329c4  addu    $a0, $a0, $v0
+800329c8  mfhi    $a3
+800329cc  mflo    $a2
+800329d0  sra     $v0, $a3, 0
+800329d4  sra     $v1, $a3, 0x1f
+800329d8  addu    $a0, $a0, $v0
+800329dc  lbu     $a1, ($a0)
+800329e0  j       0x80032970
+800329e4  slti    $v0, $a1, 0x100
+L_800329e8:
+800329e8  slti    $v1, $a1, 0x62
+800329ec  beqz    $v1, 0x800329f8
+800329f0  move    $v0, $zero
+800329f4  move    $v0, $a1
+L_800329f8:
+800329f8  jr      $ra
+800329fc  nop     
+; end 80032a00

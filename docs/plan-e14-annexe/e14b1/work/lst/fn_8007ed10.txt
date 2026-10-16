@@ -1,0 +1,9 @@
+; function 0x8007ED10..0x8007ED30 (8 words)
+8007ED10  27bdffe8  addiu    $sp, $sp, -0x18
+8007ED14  afbf0010  sw       $ra, 0x10($sp)                ; sp+0x10
+8007ED18  0c00e967  jal      0x8003a59c                    ; DestroyEntity
+8007ED1C  2405ffff  addiu    $a1, $zero, -1
+8007ED20  8fbf0010  lw       $ra, 0x10($sp)                ; sp+0x10
+8007ED24  27bd0018  addiu    $sp, $sp, 0x18
+8007ED28  03e00008  jr       $ra
+8007ED2C  00000000  nop      

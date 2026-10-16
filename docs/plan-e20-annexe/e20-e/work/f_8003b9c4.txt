@@ -1,0 +1,17 @@
+8003b9c4  move    $a0, $zero
+8003b9c8  lui     $v0, 0x8014
+8003b9cc  addiu   $v1, $v0, -0x79f8
+L_8003b9d0:
+8003b9d0  lw      $v0, 0x68($v1)
+8003b9d4  nop     
+8003b9d8  beqz    $v0, 0x8003b9f4
+8003b9dc  move    $v0, $v1
+8003b9e0  addiu   $a0, $a0, 1
+8003b9e4  slti    $v0, $a0, 0x80
+8003b9e8  bnez    $v0, 0x8003b9d0
+8003b9ec  addiu   $v1, $v1, 0x80
+8003b9f0  move    $v0, $zero
+L_8003b9f4:
+8003b9f4  jr      $ra
+8003b9f8  nop     
+; end 8003b9fc

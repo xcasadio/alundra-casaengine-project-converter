@@ -1,0 +1,18 @@
+; opcode 0x6b  handler 0x8003f908..0x8003f94c (17 words)
+0x8003f908  lw      $v1, 0xc($a3)
+0x8003f90c  lw      $v0, 0x114($a0)
+0x8003f910  lw      $a0, ($a2)
+0x8003f914  subu    $v1, $v1, $v0
+0x8003f918  bgez    $v1, 0x8003f924
+0x8003f91c  nop     
+0x8003f920  negu    $v1, $v1
+0x8003f924  lbu     $v0, 2($a0)
+0x8003f928  lbu     $a0, 1($a0)
+0x8003f92c  sll     $v0, $v0, 8
+0x8003f930  or      $a0, $a0, $v0
+0x8003f934  sll     $a0, $a0, 0x10
+0x8003f938  slt     $v1, $v1, $a0
+0x8003f93c  xori    $v1, $v1, 1
+0x8003f940  addiu   $v0, $zero, 3
+0x8003f944  jr      $ra
+0x8003f948  sw      $v1, 0x2c($a3)

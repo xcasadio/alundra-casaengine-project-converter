@@ -916,6 +916,19 @@ verifier frais ; les arènes de test qui contiennent ces types changent de base,
 Ordre : l'histoire connue d'abord (b1, b2), puis le rendement en cartes (b3 à b10), puis les boss ; l'auteur peut réordonner b3 à b10 et
 les boss sans casser les dépendances. Questions : Q-E14-b1 à Q-E14-b3 (§2).
 
+**Lecture au binaire d'E14.b1 (2026-10-17, `docs/plan-e14-annexe/e14b1/`).** Les dix gestionnaires des cinq types des cartes 14 et 15
+(A0 ; C15 hache, C16 masse, C17 armure de fer, C18 Guêpe, C19 Poisson ; D5, D6, D11, D12) et leurs aides sont lus au binaire, transcrits en
+modèles Python (`work/models.py`) et comparés au vrai code exécuté dans un interpréteur MIPS : 0 écart sur 9 000 vecteurs par gestionnaire,
+100 % des instructions, 10 mutants tués ; une critique indépendante, avec **son propre** interpréteur, redonne 0 écart sur 20 000 vecteurs par
+gestionnaire (`check.md`). Faits qui comptent : `CanMoveForward` (`0x80080260`) est exactement la décision d'`AlundraEnemyHelpers.HandleAnimationDirection`
+déjà portée, sans ses effets (0 écart sur 82 944 cas) ; la décompilation se trompe sur `CanMoveForward` (sur sol plat, elle répond 1 et le
+binaire 0), a perdu la **parade de l'Orc masse** (code mort par un test imbriqué, 30 % des coups parés), fait tomber la Guêpe dans sa course
+d'attaque là où le binaire finit le tick, lit `FloorHeight` là où le binaire lit `+0x11C`, et teste ses nibbles en signé (un tirage de trop) : le binaire
+tranche. 157 enregistrements sur 31 cartes. Le registre doit devenir cumulatif par type (D6 et D11 servent 8 types). Exposés aux
+gestionnaires vivants : une vingtaine de classes de tests de la carte 14 et `AlundraTarnMurggArcTests` R3-2 (carte 15) ; les arènes
+`AlundraHitArena` coupent les natifs. Tâches proposées T0 à T9 au §9 du rapport (oracle par la méthode d'`e14a/oracle-a1/`, socle, Poisson,
+Orcs, Guêpe, câblage, verifiers, recette). Questions Q-b1-1 à Q-b1-5 (§2 de ce plan).
+
 ## 2. Points ouverts
 
 | Point | Question | Où |
@@ -932,6 +945,11 @@ les boss sans casser les dépendances. Questions : Q-E14-b1 à Q-E14-b3 (§2).
 | Q-E14-b1 | (2026-10-17) Le recensement de §1.4 (50 types non portés, 13 boss) devient-il le périmètre d'E14, dans l'ordre proposé (b0, b1 et b2 pour l'histoire connue, puis le rendement, puis les boss) ? Et quand : après la restructuration de la DLL (règle du chantier), ou avant, en suspendant le chantier ? | l'auteur |
 | Q-E14-b2 | (2026-10-17) L'ordre de jeu au-delà du jour 4 est inconnu des plans : l'auteur en a-t-il un (régions dans l'ordre), ou l'ordre par rendement de §1.4 convient-il ? | l'auteur |
 | Q-E14-b3 | (2026-10-17) Une recette d'ennemi suppose souvent que le héros soit blessé (E20.c2b) et que l'ennemi lâche son butin (E20.e0c) : ces deux tranches d'E20 passent-elles avant E14.b1, ou E14.b1 s'accepte-t-elle sans elles (ennemis qui bougent, frappent et meurent, sans dégâts au héros ni butin) ? | l'auteur |
+| Q-b1-1 | (2026-10-17) Porter la **parade de l'Orc masse** (30 % des coups d'épée parés dans ses états 0, 1 et 7), que la décompilation a perdue ? Le binaire tranche (règle de l'auteur) : recommandé oui | l'auteur |
+| Q-b1-2 | (2026-10-17) Porter dès b1 la branche « Homme momie » de D5 (esquive 40 %, morte tant que le type 425 n'est pas inscrit), testée par vecteurs ? Recommandé oui (corps partagé, fidèle) | l'auteur |
+| Q-b1-3 | (2026-10-17) Les ~20 classes de tests de la carte 14 qui gardent les natifs vivants : les laisser exposées et ne réépingler que ce qui bouge, preuve à l'appui (recommandé), ou couper les natifs dans chacune ? | l'auteur |
+| Q-b1-4 | (2026-10-17) La poussière de l'Orc masse lit l'octet C de la carte (`[0x800E4334]+0xA`, 7 sur ses 13 cartes) : lire la donnée de carte exportée (recommandé) ou coder 7 ? | l'auteur |
+| Q-b1-5 | (2026-10-17) Après b1, les cartes 14 et 15 gardent des types inertes (Boss lézard 494, Mille-pattes 488, Muruta au boomerang 356, projectiles 371) : sont-ils attendus là au jour 2 ? | l'auteur, Q-E14-b2 |
 
 ## 3. Hors périmètre
 

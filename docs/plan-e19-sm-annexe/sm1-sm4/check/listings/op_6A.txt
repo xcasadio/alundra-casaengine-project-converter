@@ -1,0 +1,11 @@
+0x8003f8dc  lw      $v0, 0x114($a0)
+0x8003f8e0  nop     
+0x8003f8e4  sw      $v0, 0xc($a3)
+0x8003f8e8  lw      $v0, 0x118($a0)
+0x8003f8ec  nop     
+0x8003f8f0  sw      $v0, 0x10($a3)
+0x8003f8f4  lw      $v0, 0x11c($a0)
+0x8003f8f8  nop     
+0x8003f8fc  sw      $v0, 0x14($a3)
+0x8003f900  jr      $ra
+0x8003f904  addiu   $v0, $zero, 1

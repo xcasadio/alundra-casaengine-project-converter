@@ -1,0 +1,6 @@
+0x8003fa24  lw      $v0, 0x88($a0)
+0x8003fa28  lw      $v1, 0x8c($a0)
+0x8003fa2c  sw      $v0, 0x26c($a0)
+0x8003fa30  addiu   $v0, $zero, 1
+0x8003fa34  jr      $ra
+0x8003fa38  sw      $v1, 0x270($a0)

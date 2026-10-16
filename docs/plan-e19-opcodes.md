@@ -12056,6 +12056,24 @@ valeurs, tests rouges d'abord, verifier frais, une ligne de moins dans la liste 
 
 Après sm1 à sm4 : 448 des 510 sites fermés (88 %) et plus aucun prédicat à `Result` périmé. Question : Q-E19-SM1 (§3).
 
+**Lecture au binaire de sm1 à sm4 (2026-10-17, `docs/plan-e19-sm-annexe/sm1-sm4/`).** Les 21 opcodes sautés atteints sont lus au binaire
+(table `0x80098FAC`), avec la recherche d'entités `0x8003C954` ; une critique indépendante les relit instruction par instruction et exécute
+les vrais gestionnaires contre ses propres modèles : 21 000 exécutions, 0 écart (`check.md`). Faits qui changent le plan :
+- **`0x97` n'est pas « dépenser de l'argent » mais « ajouter des PM »** (`0x80040A2C` appelle `IncreaseMp` `0x8004DF10`) : les 24 sites
+  sont des salles de sauvegarde et des fontaines (`96 80 32` puis `97 32`). La décompilation et le libellé de la table se trompent ; la
+  porter ferait payer 50 pièces dans chaque salle de sauvegarde.
+- `0x3C` est inversé dans la décompilation (0 site) ; `0x9E` n'y avance pas le long de x (0 site) ; les libellés de `0xB4`-`0xB6` sont faux
+  (`ForceZ > 0`, `< 0`, `== 0` du premier résultat) ; `0x6B`-`0x6D` rendent 1 quand la distance est **supérieure ou égale** au seuil.
+- `0x96` lit son octet 1 comme type de recherche **et** comme montant (`96 80 32` soigne de 128, l'octet `0x32` est ignoré).
+- `EntitySearchService.cs` égale le binaire pour les 12 types de groupe et l'identifiant brut ; la critique **réfute** que les boucles de la
+  décompilation « perdent le dernier slot » (sa propre valeur de `g_numberOfEntities` vaut N+1) : seul un débordement de la branche à
+  identifiant brut et une garde d'`InitializeEntity` y sont faux, sans effet sur la DLL.
+- Aucun mémo `Parameters[2..4]` de `0x6A` n'est écrasé par une attente sur aucun chemin du corpus ; `PlatformEntity` n'est jamais écrit par
+  la DLL (les 10 sites de `0xB2` rendront 0 jusqu'à E20.g1a) ; `0xB3` écrit le pavé pendant les événements de carte, avant `MovePlayer`
+  (couture à ajouter dans `AlundraTickPad`).
+Tâches proposées par tranche (T0 vecteurs, T1 rouges, T2 code et libellés, T3 arcs sur des sites réels, T4 liste fermée et ADR, T5 verifier) au
+§7 du rapport. Questions Q-sm-1 à Q-sm-9 (§3 de ce plan).
+
 ## 2. Mesures
 
 Réservé aux mesures faites en exécutant les tranches.
@@ -12432,6 +12450,14 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-79 | **Clos le 2026-10-09 (E19.m8 M8-d) : prémisse fausse.** `0x43 [0x81]` (240 `@529`, 292 `@423`) pose le héros comme entité logique avant `0x1A [80]` ; le gestionnaire de `0x1A` agit sur l'entité logique (`0x8003D7B4`, relue en `0x80042284`) : l'animation 80 est celle du héros (94 jeux, 80 Hold, 81 Loop), puis `0x43 [0]` ou `0x43 [1]` rend le contexte. Aucune lecture hors table. Texte d'origine, faux : **Animation 80 sur deux préfabs de 19 et 15 jeux** (E19.m8 M8-b, 2026-10-08, hors chaîne) : 240 `@535` (Giles, préfab `9b582582`) et 292 `@429` (Nestus, préfab `bbeba3db`) font `1A [80]` puis attendent par `0x1C`. Le binaire range `v[1]` sans contrôle (`0x8003D7B4`) et `UpdateAnimation` (`0x80038AB4`) indexe la table des jeux sans borne : l'original lit 61 et 65 entrées après la fin de la table, et ce qu'il montre alors n'est pas établi (pour les Flammes, une seule entrée après la table, E19.c2 l'a établi : les images vers le bas de l'animation 0). La DLL applique la même règle qu'aux Flammes (l'animation qui joue repart de son image 0). Question de fait à mesurer plus tard (lecture du binaire et de la mémoire des préfabs), ou écart à consigner si la lecture désigne des données sans sens (défaut de l'original). | à placer |
 | O-E19-80 | **Pose de saut figée possible à une arrivée hors `LoadingMap`** (vérification d'E19.v2, P4, 2026-10-09, non mesuré). Une arrivée par `0x52`/`0x53` recopie l'animation du héros : Idle ou Moving passent par la queue commune, qui lit le contact au sol sans la garde de terrain de V-R4. À la première image d'un pion neuf (contrôleur pas encore au sol), elle donnerait `0x2C` ou `0x2D`, que l'image suivante corrige, sauf si un verrou gèle `MovePlayer`, comme dans le bug du début de partie. Il en va de même d'une arrivée posée sur une entité. Les arrivées `0x53` de la chaîne vers la 476, la 478 et la 416 sont mesurées au sol ou en `0xD`. À mesurer avec le harnais du vrai jeu sur une arrivée `0x52`/`0x53` suivie d'un verrou, puis à corriger par la même règle du plancher si le cas existe. | **E20.a** (2026-10-09 : le passage du héros par tick change ses premières images ; `docs/plan-e20-heros.md` §0.3) |
 | Q-E19-SM1 | (2026-10-17) Le découpage E19.sm0 à sm10 (§1.4) devient-il la suite d'E19 ? Quand : après la restructuration de la DLL (règle du chantier), ou avant, en suspendant le chantier ? Et qui porte les ombres de `0xAC` (32 sites ; rien ne dessine d'ombre aujourd'hui) ? | l'auteur |
+| Q-sm-1 | (2026-10-17) `0x97` ajoute des PM (binaire), alors que la décompilation et la table disent « argent » : le porter comme le binaire et l'acter par ADR ? Recommandé oui | l'auteur |
+| Q-sm-2 | (2026-10-17) `0x96` : suivre le binaire à la lettre (montant = octet 1, octet 2 ignoré) ? Aucune différence visible tant que les PV max du héros restent inférieurs ou égaux à 51 (rapport, §6) | l'auteur |
+| Q-sm-3 | (2026-10-17) `0xB3` (pavé forcé, 1 site, carte 161) : une couture dans `AlundraTickPad` suffit-elle, ou faut-il aussi réécrire ce que lit la boîte de dialogue ? | E19.sm4 (T0) |
+| Q-sm-4 | (2026-10-17) `0xB2` : le porter maintenant (rend 0 tant que rien n'est porté) ou attendre E20.g1a ? Attendre laisse 10 sites sautés | l'auteur |
+| Q-sm-5 | (2026-10-17) `0x60`/`0x61` ferment 186 sites d'énigmes à plaques, mais les blocs poussables des cartes 27, 29, 30, 113 et 400 n'ont pas de tranche (O-E20-21) : ces énigmes ne se résoudront pas en jeu même avec sm1 | l'auteur |
+| Q-sm-6 | (2026-10-17) `0x9E` et `0x88` (0 site) : les porter avec des vecteurs seulement, ou les laisser sautés ? | l'auteur |
+| Q-sm-7 | (2026-10-17) Les libellés faux de `EventOpcodeSizeTable.cs` (`0x6B`-`0x6D`, `0x88`, `0x97`, `0xA9`, `0xAA`, `0xB4`-`0xB6`) sont corrigés dans la tranche qui porte l'opcode | E19.sm1 à sm4 |
+| Q-sm-8 | (2026-10-17) Les cartes 55 à 57 (11 lectures de `0x6D` sans `0x6A`) sont-elles atteignables dans le jeu livré ? | l'auteur |
 
 ## 4. Hors périmètre
 

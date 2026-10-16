@@ -1,0 +1,31 @@
+vectors per handler: 3000 (helpers), 9000 (handlers)
+relpos                         3000 vectors, 0 mismatches
+relposZ                        3000 vectors, 0 mismatches
+TryAttackPlayerFront           3000 vectors, 0 mismatches
+CanMoveForward                 3000 vectors, 0 mismatches
+StartFlying                    3000 vectors, 0 mismatches
+CanMoveForward-exhaustive      1536 vectors, 0 mismatches
+C15                            9000 vectors, 0 mismatches
+C16                            9000 vectors, 0 mismatches
+C17                            9000 vectors, 0 mismatches
+C18                            9000 vectors, 0 mismatches
+C19                            9000 vectors, 0 mismatches
+A0                             3000 vectors, 0 mismatches
+D5                             9000 vectors, 0 mismatches
+D6                             9000 vectors, 0 mismatches
+D11                            9000 vectors, 0 mismatches
+D12                            9000 vectors, 0 mismatches
+INSTR A0: 3/3 instructions executed (100.0%); not executed: 
+INSTR C15: 176/176 instructions executed (100.0%); not executed: 
+INSTR C16: 214/214 instructions executed (100.0%); not executed: 
+INSTR C17: 178/178 instructions executed (100.0%); not executed: 
+INSTR C18: 260/260 instructions executed (100.0%); not executed: 
+INSTR C19: 141/143 instructions executed (98.6%); not executed: 8006A9AC 8006A9B0
+INSTR CanMoveForward: 58/58 instructions executed (100.0%); not executed: 
+INSTR D11: 25/25 instructions executed (100.0%); not executed: 
+INSTR D12: 74/74 instructions executed (100.0%); not executed: 
+INSTR D5: 62/62 instructions executed (100.0%); not executed: 
+INSTR D6: 25/25 instructions executed (100.0%); not executed: 
+INSTR GetDirectionToTarget: 59/63 instructions executed (93.7%); not executed: 8002E8C0 8002E8C4 8002E8D8 8002E8DC
+INSTR StartFlying: 78/78 instructions executed (100.0%); not executed: 
+ALL MATCH

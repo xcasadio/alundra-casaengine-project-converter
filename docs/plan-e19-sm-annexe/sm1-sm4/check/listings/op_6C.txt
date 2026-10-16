@@ -1,0 +1,17 @@
+0x8003f94c  lw      $v1, 0x10($a3)
+0x8003f950  lw      $v0, 0x118($a0)
+0x8003f954  lw      $a0, ($a2)
+0x8003f958  subu    $v1, $v1, $v0
+0x8003f95c  bgez    $v1, 0x8003f968
+0x8003f960  nop     
+0x8003f964  negu    $v1, $v1
+0x8003f968  lbu     $v0, 2($a0)
+0x8003f96c  lbu     $a0, 1($a0)
+0x8003f970  sll     $v0, $v0, 8
+0x8003f974  or      $a0, $a0, $v0
+0x8003f978  sll     $a0, $a0, 0x10
+0x8003f97c  slt     $v1, $v1, $a0
+0x8003f980  xori    $v1, $v1, 1
+0x8003f984  addiu   $v0, $zero, 3
+0x8003f988  jr      $ra
+0x8003f98c  sw      $v1, 0x2c($a3)

@@ -1,0 +1,19 @@
+; opcode 0x23  handler 0x8003db28..0x8003db70 (18 words)
+0x8003db28  addiu   $sp, $sp, -0x18
+0x8003db2c  sw      $s0, 0x10($sp)
+0x8003db30  sw      $ra, 0x14($sp)
+0x8003db34  jal     0x8003da70  ; call 0x8003da70
+0x8003db38  move    $s0, $a0
+0x8003db3c  move    $a0, $v0
+0x8003db40  bnez    $a0, 0x8003db5c
+0x8003db44  move    $v0, $a0
+0x8003db48  lw      $v1, 0x140($s0)
+0x8003db4c  nop     
+0x8003db50  bnez    $v1, 0x8003db5c
+0x8003db54  addiu   $v0, $zero, 1
+0x8003db58  move    $v0, $a0
+0x8003db5c  lw      $ra, 0x14($sp)
+0x8003db60  lw      $s0, 0x10($sp)
+0x8003db64  addiu   $sp, $sp, 0x18
+0x8003db68  jr      $ra
+0x8003db6c  nop     

@@ -1,0 +1,1 @@
+82944 cases, 0 differences (return value, or CanMoveForward writing the entity); HandleAnimationDirection turned in 17088

@@ -1,0 +1,15 @@
+A0   vectors=20000 mismatches=0 insn-coverage=3/3
+C15  vectors=20000 mismatches=0 insn-coverage=176/176
+C16  vectors=20000 mismatches=0 insn-coverage=214/214
+C17  vectors=20000 mismatches=0 insn-coverage=178/178
+C18  vectors=20000 mismatches=0 insn-coverage=260/260
+C19  vectors=20000 mismatches=0 insn-coverage=143/143
+D5   vectors=20000 mismatches=0 insn-coverage=62/62
+D6   vectors=20000 mismatches=0 insn-coverage=25/25
+D11  vectors=20000 mismatches=0 insn-coverage=25/25
+D12  vectors=20000 mismatches=0 insn-coverage=74/74
+gdt(0,+100)=0 gdt(+100,0)=24 gdt(0,-100)=16 gdt(-100,0)=8
+
+real	1m50.671s
+user	0m0.015s
+sys	0m0.015s

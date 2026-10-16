@@ -1,0 +1,21 @@
+op 3C: 1000 runs, 0 mismatches, Result word hist {0: 895, 1: 105}
+op 3D: 1000 runs, 0 mismatches, Result word hist {0: 643, 1: 357}
+op 60: 1000 runs, 0 mismatches, Result word hist {0: 970, 1: 30}
+op 61: 1000 runs, 0 mismatches, Result word hist {0: 961, 1: 39}
+op 6A: 1000 runs, 0 mismatches, Result word hist {'sentinel': 1000}
+op 6B: 1000 runs, 0 mismatches, Result word hist {0: 361, 1: 639}
+op 6C: 1000 runs, 0 mismatches, Result word hist {0: 363, 1: 637}
+op 6D: 1000 runs, 0 mismatches, Result word hist {0: 364, 1: 636}
+op 72: 1000 runs, 0 mismatches, Result word hist {'sentinel': 1000}
+op 88: 1000 runs, 0 mismatches, Result word hist {'sentinel': 1000}
+op 96: 1000 runs, 0 mismatches, Result word hist {'sentinel': 1000}
+op 97: 1000 runs, 0 mismatches, Result word hist {'sentinel': 1000}
+op 9E: 1000 runs, 0 mismatches, Result word hist {0: 689, 1: 311}
+op A9: 1000 runs, 0 mismatches, Result word hist {0: 952, 1: 48}
+op AA: 1000 runs, 0 mismatches, Result word hist {0: 965, 1: 35}
+op B2: 1000 runs, 0 mismatches, Result word hist {0: 894, 1: 106}
+op B3: 1000 runs, 0 mismatches, Result word hist {'sentinel': 1000}
+op B4: 1000 runs, 0 mismatches, Result word hist {0: 807, 1: 193}
+op B5: 1000 runs, 0 mismatches, Result word hist {0: 867, 1: 133}
+op B6: 1000 runs, 0 mismatches, Result word hist {0: 937, 1: 63}
+op B7: 1000 runs, 0 mismatches, Result word hist {0: 933, 1: 67}

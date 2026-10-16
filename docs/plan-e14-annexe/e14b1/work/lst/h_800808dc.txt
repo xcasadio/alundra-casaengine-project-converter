@@ -1,0 +1,49 @@
+; function 0x800808DC..0x80080990 (45 words)
+800808DC  27bdffd8  addiu    $sp, $sp, -0x28
+800808E0  afb10014  sw       $s1, 0x14($sp)                ; sp+0x14
+800808E4  00808821  move     $s1, $a0
+800808E8  afb00010  sw       $s0, 0x10($sp)                ; sp+0x10
+800808EC  00e08021  move     $s0, $a3
+800808F0  afb3001c  sw       $s3, 0x1c($sp)                ; sp+0x1C
+800808F4  00c09821  move     $s3, $a2
+800808F8  afb20018  sw       $s2, 0x18($sp)                ; sp+0x18
+800808FC  30b200ff  andi     $s2, $a1, 0xff
+80080900  afbf0020  sw       $ra, 0x20($sp)                ; sp+0x20
+80080904  8e26008c  lw       $a2, 0x8c($s1)                ; s1.TargetDir
+80080908  0c00ead5  jal      0x8003ab54                    ; GetEntityTileHeight
+8008090C  02402821  move     $a1, $s2
+80080910  8e230134  lw       $v1, 0x134($s1)               ; s1.FloorHeight
+80080914  00000000  nop      
+80080918  00432023  subu     $a0, $v0, $v1
+8008091C  0204802a  slt      $s0, $s0, $a0
+80080920  16000004  bnez     $s0, 0x80080934   -> L_80080934
+80080924  3c028003  lui      $v0, 0x8003
+80080928  1c80000f  bgtz     $a0, 0x80080968   -> L_80080968
+8008092C  326200ff  andi     $v0, $s3, 0xff
+80080930  3c028003  lui      $v0, 0x8003
+L_80080934:
+80080934  8e23008c  lw       $v1, 0x8c($s1)                ; s1.TargetDir
+80080938  24428b34  addiu    $v0, $v0, -0x74cc
+8008093C  00621821  addu     $v1, $v1, $v0
+80080940  90620000  lbu      $v0, ($v1)
+80080944  ae320088  sw       $s2, 0x88($s1)                ; s1.TargetAnim
+80080948  ae2000d8  sw       $zero, 0xd8($s1)              ; s1.FStepY
+8008094C  ae2000d4  sw       $zero, 0xd4($s1)              ; s1.FStepX
+80080950  ae2000c8  sw       $zero, 0xc8($s1)              ; s1.ForceY
+80080954  ae2000c4  sw       $zero, 0xc4($s1)              ; s1.ForceX
+80080958  ae2000c0  sw       $zero, 0xc0($s1)              ; s1.TForceY
+8008095C  ae2000bc  sw       $zero, 0xbc($s1)              ; s1.TForceX
+80080960  0802025b  j        0x8008096c   -> L_8008096C
+80080964  ae22008c  sw       $v0, 0x8c($s1)                ; s1.TargetDir
+L_80080968:
+80080968  ae220088  sw       $v0, 0x88($s1)                ; s1.TargetAnim
+L_8008096C:
+8008096C  00801021  move     $v0, $a0
+80080970  8fbf0020  lw       $ra, 0x20($sp)                ; sp+0x20
+80080974  8fb3001c  lw       $s3, 0x1c($sp)                ; sp+0x1C
+80080978  8fb20018  lw       $s2, 0x18($sp)                ; sp+0x18
+8008097C  8fb10014  lw       $s1, 0x14($sp)                ; sp+0x14
+80080980  8fb00010  lw       $s0, 0x10($sp)                ; sp+0x10
+80080984  27bd0028  addiu    $sp, $sp, 0x28
+80080988  03e00008  jr       $ra
+8008098C  00000000  nop      

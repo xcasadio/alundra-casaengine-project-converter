@@ -1,0 +1,45 @@
+vectors per handler: 3000 (helpers), 9000 (handlers)
+relpos                         3000 vectors, 0 mismatches
+relposZ                        3000 vectors, 0 mismatches
+TryAttackPlayerFront           3000 vectors, 0 mismatches
+CanMoveForward                 3000 vectors, 0 mismatches
+StartFlying                    3000 vectors, 0 mismatches
+CanMoveForward-exhaustive      1536 vectors, 0 mismatches
+C15                            9000 vectors, 0 mismatches
+C16                            9000 vectors, 0 mismatches
+C17                            9000 vectors, 0 mismatches
+C18                            9000 vectors, 0 mismatches
+C19                            9000 vectors, 0 mismatches
+A0                             3000 vectors, 0 mismatches
+D5                             9000 vectors, 0 mismatches
+D6                             9000 vectors, 0 mismatches
+D11                            9000 vectors, 0 mismatches
+D12                            9000 vectors, 0 mismatches
+INSTR A0: 3/3 instructions executed (100.0%); not executed: 
+INSTR C15: 176/176 instructions executed (100.0%); not executed: 
+INSTR C16: 214/214 instructions executed (100.0%); not executed: 
+INSTR C17: 178/178 instructions executed (100.0%); not executed: 
+INSTR C18: 260/260 instructions executed (100.0%); not executed: 
+INSTR C19: 141/143 instructions executed (98.6%); not executed: 8006A9AC 8006A9B0
+INSTR CanMoveForward: 58/58 instructions executed (100.0%); not executed: 
+INSTR D11: 25/25 instructions executed (100.0%); not executed: 
+INSTR D12: 74/74 instructions executed (100.0%); not executed: 
+INSTR D5: 62/62 instructions executed (100.0%); not executed: 
+INSTR D6: 25/25 instructions executed (100.0%); not executed: 
+INSTR GetDirectionToTarget: 59/63 instructions executed (93.7%); not executed: 8002E8C0 8002E8C4 8002E8D8 8002E8DC
+INSTR StartFlying: 78/78 instructions executed (100.0%); not executed: 
+INSTR TryAttackPlayerFront: 75/79 instructions executed (94.9%); not executed: 80080600 80080604 80080618 8008061C
+INSTR relpos: 27/27 instructions executed (100.0%); not executed: 
+INSTR relposZ: 27/27 instructions executed (100.0%); not executed: 
+coverage TryAttackPlayerFront: 2 distinct keys; 0:2086, 1:914
+coverage CanMoveForward: 2 distinct keys; 0:2340, 1:660
+coverage StartFlying: 3 distinct keys; 1:364, 2:1580, 3:1056
+coverage C15: 17 distinct keys; a0>1 draws0:481, a0>1 draws1:107, a0>3 draws0:732, a1 draws0:505, a1 draws1:119, a1>3 draws0:763, a2 draws0:688, a3 draws0:1278, a3>0 draws1:114, a4 draws0:733, a5 draws0:619, a5>0 draws0:470, a5>2 draws0:220, a6 draws0:688, a6>0 draws0:494, a6>2 draws0:269, a7 draws0:720
+coverage C16: 17 distinct keys; a0 draws0:1071, a0>1 draws2:261, a0>1 draws3:107, a1 draws0:344, a1 draws1:473, a1>0 draws0:121, a1>7 draws1:388, a2 draws0:658, a3 draws0:717, a3>0 draws0:705, a4 draws0:666, a5 draws0:705, a5>2 draws0:246, a5>7 draws0:467, a6 draws0:726, a6>0 draws0:673, a7 draws0:672
+coverage C17: 20 distinct keys; a0 draws0:823, a0 draws1:356, a0>1 draws1:271, a1 draws0:1007, a1>0 draws0:608, a1>2 draws0:241, a1>3 draws0:175, a1>4 draws0:88, a2 draws0:339, a2>0 draws0:310, a3 draws0:383, a3>0 draws0:356, a4 draws0:338, a4>0 draws0:347, a5 draws0:649, a6 draws0:696, a6>1 draws0:438, a6>7 draws0:202, a7 draws0:698, a8 draws0:675
+coverage C18: 21 distinct keys; a0 draws0:451, a0>1 draws0:217, a0>1 draws3:11, a0>2 draws0:333, a0>2 draws2:14, a0>2 draws3:14, a0>3 draws0:389, a0>3 draws2:21, a0>3 draws3:20, a1 draws0:789, a1>0 draws0:565, a2 draws0:1001, a2>0 draws0:388, a3 draws0:549, a3>0 draws0:836, a4 draws0:695, a5 draws0:643, a5>0 draws0:449, a5>6 draws0:234, a6 draws0:687, a7 draws0:694
+coverage C19: 16 distinct keys; a0 draws0:935, a0>1 draws0:189, a0>3 draws0:120, a1 draws0:309, a1>0 draws1:1032, a2 draws0:643, a3 draws0:635, a4 draws0:619, a5 draws0:678, a5>0 draws0:641, a6 draws0:594, a7 draws0:671, a7>0 draws0:422, a7>8 draws0:184, a8 draws0:684, a9 draws0:644
+coverage D5: 738 distinct keys; t344 nib0 a0>5 draws0:23, t344 nib0 a1>5 draws0:24, t344 nib0 a2>5 draws0:26, t344 nib0 a3>5 draws0:18, t344 nib0 a4>5 draws0:21, t344 nib0 a5>5 draws0:25, t344 nib0 a6>5 draws0:22, t344 nib0 a7>5 draws0:20, t344 nib0 a8>5 draws0:16, t344 nib1 a0>5 draws0:20, t344 nib1 a1>5 draws0:16, t344 nib1 a2>5 draws0:17, t344 nib1 a3>5 draws0:15, t344 nib1 a4>5 draws0:23, t344 nib1 a5>5 draws0:27, t344 nib1 a6>5 draws0:24, t344 nib1 a7>5 draws0:25, t344 nib1 a8>5 draws0:23, t344 nib10 a0>5 draws0:1, t344 nib10 a1>5 draws0:2, t344 nib10 a2>5 draws0:2, t344 nib10 a3>5 draws0:3, t344 nib10 a4>5 draws0:2, t344 nib10 a5>5 draws0:4, t344 nib10 a8>5 draws0:1, t344 nib11 a2>5 draws0:2, t344 nib11 a3>5 draws0:1, t344 nib11 a4>5 draws0:2, t344 nib11 a5>5 draws0:1, t344 nib11 a6>5 draws0:1, t344 nib11 a8>5 draws0:2, t344 nib12 a1>5 draws0:1, t344 nib12 a2>5 draws0:2, t344 nib12 a4>5 draws0:1, t344 nib12 a5>5 draws0:1, t344 nib12 a7>5 draws0:1, t344 nib12 a8>5 draws0:2, t344 nib13 a0>5 draws0:1, t344 nib13 a3>5 draws0:1, t344 nib13 a4>5 draws0:3, t344 nib13 a5>5 draws0:1, t344 nib13 a6>5 draws0:1, t344 nib13 a7>5 draws0:2, t344 nib13 a8>5 draws0:2, t344 nib14 a0>5 draws0:1, t344 nib14 a1>5 draws0:1, t344 nib14 a2>5 draws0:3, t344 nib14 a3>5 draws0:3, t344 nib14 a7>5 draws0:2, t344 nib14 a8>5 draws0:3, t344 nib15 a0>5 draws0:35, t344 nib15 a1>5 draws0:28, t344 nib15 a2>5 draws0:24, t344 nib15 a3>5 draws0:22, t344 nib15 a4>5 draws0:29, t344 nib15 a5>5 draws0:33, t344 nib15 a6>5 draws0:21, t344 nib15 a7>5 draws0:17, t344 nib15 a8>5 draws0:15, t344 nib2 a0>5 draws0:21
+coverage D6: 9 distinct keys; a0 draws0:1019, a1 draws0:1027, a2 draws0:998, a3 draws0:976, a4 draws0:1030, a5 draws0:949, a6 draws0:961, a7 draws0:1047, a8 draws0:993
+coverage D11: 9 distinct keys; a0 draws0:997, a1 draws0:1004, a2 draws0:976, a3 draws0:977, a4 draws0:1000, a5 draws0:953, a6 draws0:1068, a7 draws0:1077, a8 draws0:948
+coverage D12: 299 distinct keys; t338 nib0 a0>4 draws0:84, t338 nib0 a1>4 draws0:80, t338 nib0 a2>4 draws0:61, t338 nib0 a3>4 draws0:66, t338 nib0 a4>4 draws0:59, t338 nib0 a5>4 draws0:56, t338 nib0 a6>4 draws0:78, t338 nib0 a7>4 draws0:72, t338 nib0 a8>4 draws0:75, t338 nib1 a0>4 draws1:51, t338 nib1 a0>6 draws1:19, t338 nib1 a1>4 draws1:51, t338 nib1 a1>6 draws1:21, t338 nib1 a2>4 draws1:78, t338 nib1 a3>4 draws1:66, t338 nib1 a4>4 draws1:62, t338 nib1 a5>4 draws1:70, t338 nib1 a6>4 draws1:71, t338 nib1 a7>4 draws1:61, t338 nib1 a8>4 draws1:61, t338 nib10 a0>4 draws0:5, t338 nib10 a1>4 draws0:5, t338 nib10 a2>4 draws0:3, t338 nib10 a3>4 draws0:2, t338 nib10 a4>4 draws0:4, t338 nib10 a5>4 draws0:3, t338 nib10 a6>4 draws0:1, t338 nib10 a7>4 draws0:7, t338 nib10 a8>4 draws0:4, t338 nib11 a0>4 draws0:6, t338 nib11 a1>4 draws0:5, t338 nib11 a2>4 draws0:4, t338 nib11 a3>4 draws0:4, t338 nib11 a4>4 draws0:7, t338 nib11 a5>4 draws0:4, t338 nib11 a6>4 draws0:3, t338 nib11 a7>4 draws0:2, t338 nib11 a8>4 draws0:11, t338 nib12 a1>4 draws0:2, t338 nib12 a2>4 draws0:3, t338 nib12 a3>4 draws0:4, t338 nib12 a4>4 draws0:4, t338 nib12 a5>4 draws0:5, t338 nib12 a6>4 draws0:4, t338 nib12 a7>4 draws0:4, t338 nib12 a8>4 draws0:3, t338 nib13 a0>4 draws0:8, t338 nib13 a1>4 draws0:9, t338 nib13 a2>4 draws0:6, t338 nib13 a3>4 draws0:7, t338 nib13 a4>4 draws0:3, t338 nib13 a5>4 draws0:1, t338 nib13 a6>4 draws0:6, t338 nib13 a7>4 draws0:5, t338 nib13 a8>4 draws0:7, t338 nib14 a0>4 draws0:2, t338 nib14 a1>4 draws0:4, t338 nib14 a2>4 draws0:1, t338 nib14 a3>4 draws0:4, t338 nib14 a4>4 draws0:5

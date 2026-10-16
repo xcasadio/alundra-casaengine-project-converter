@@ -1,0 +1,80 @@
+; function 0x80080144..0x80080260 (71 words)
+80080144  00803821  move     $a3, $a0
+80080148  24c60001  addiu    $a2, $a2, 1
+8008014C  8ce20134  lw       $v0, 0x134($a3)               ; a3.FloorHeight
+80080150  8ce30158  lw       $v1, 0x158($a3)               ; a3.MapH0
+80080154  8ce4015c  lw       $a0, 0x15c($a3)               ; a3.MapH1
+80080158  00435023  subu     $t2, $v0, $v1
+8008015C  00444023  subu     $t0, $v0, $a0
+80080160  8ce30160  lw       $v1, 0x160($a3)               ; a3.MapH2
+80080164  8ce40164  lw       $a0, 0x164($a3)               ; a3.MapH3
+80080168  00434823  subu     $t1, $v0, $v1
+8008016C  00441823  subu     $v1, $v0, $a0
+80080170  00ca102a  slt      $v0, $a2, $t2
+80080174  10400009  beqz     $v0, 0x8008019c   -> L_8008019C
+80080178  00c8102a  slt      $v0, $a2, $t0
+8008017C  10400013  beqz     $v0, 0x800801cc   -> L_800801CC
+80080180  00c3102a  slt      $v0, $a2, $v1
+80080184  8ce4008c  lw       $a0, 0x8c($a3)                ; a3.TargetDir
+80080188  00000000  nop      
+8008018C  2482fff7  addiu    $v0, $a0, -9
+80080190  2c42000f  sltiu    $v0, $v0, 0xf
+80080194  14400021  bnez     $v0, 0x8008021c   -> L_8008021C
+80080198  24020001  addiu    $v0, $zero, 1
+L_8008019C:
+8008019C  00c8102a  slt      $v0, $a2, $t0
+800801A0  10400009  beqz     $v0, 0x800801c8   -> L_800801C8
+800801A4  00c3102a  slt      $v0, $a2, $v1
+800801A8  10400013  beqz     $v0, 0x800801f8   -> L_800801F8
+800801AC  00c9102a  slt      $v0, $a2, $t1
+800801B0  8ce4008c  lw       $a0, 0x8c($a3)                ; a3.TargetDir
+800801B4  00000000  nop      
+800801B8  2482ffef  addiu    $v0, $a0, -0x11
+800801BC  2c42000f  sltiu    $v0, $v0, 0xf
+800801C0  14400016  bnez     $v0, 0x8008021c   -> L_8008021C
+800801C4  24020001  addiu    $v0, $zero, 1
+L_800801C8:
+800801C8  00c3102a  slt      $v0, $a2, $v1
+L_800801CC:
+800801CC  10400009  beqz     $v0, 0x800801f4   -> L_800801F4
+800801D0  00c9102a  slt      $v0, $a2, $t1
+800801D4  10400020  beqz     $v0, 0x80080258   -> L_80080258
+800801D8  00001021  move     $v0, $zero
+800801DC  8ce4008c  lw       $a0, 0x8c($a3)                ; a3.TargetDir
+800801E0  00000000  nop      
+800801E4  2482fff8  addiu    $v0, $a0, -8
+800801E8  2c420011  sltiu    $v0, $v0, 0x11
+800801EC  1040000b  beqz     $v0, 0x8008021c   -> L_8008021C
+800801F0  24020001  addiu    $v0, $zero, 1
+L_800801F4:
+800801F4  00c9102a  slt      $v0, $a2, $t1
+L_800801F8:
+800801F8  10400016  beqz     $v0, 0x80080254   -> L_80080254
+800801FC  00ca102a  slt      $v0, $a2, $t2
+80080200  10400015  beqz     $v0, 0x80080258   -> L_80080258
+80080204  00001021  move     $v0, $zero
+80080208  8ce4008c  lw       $a0, 0x8c($a3)                ; a3.TargetDir
+8008020C  00000000  nop      
+80080210  28820010  slti     $v0, $a0, 0x10
+80080214  1040000f  beqz     $v0, 0x80080254   -> L_80080254
+80080218  24020001  addiu    $v0, $zero, 1
+L_8008021C:
+8008021C  3c038003  lui      $v1, 0x8003
+80080220  24638b34  addiu    $v1, $v1, -0x74cc             ; =0x80028B34 QuarterTurnTable
+80080224  00831821  addu     $v1, $a0, $v1
+80080228  90640000  lbu      $a0, ($v1)                    ; [0x80028B34=QuarterTurnTable]
+8008022C  30a300ff  andi     $v1, $a1, 0xff
+80080230  ace30088  sw       $v1, 0x88($a3)                ; a3.TargetAnim
+80080234  ace000d8  sw       $zero, 0xd8($a3)              ; a3.FStepY
+80080238  ace000d4  sw       $zero, 0xd4($a3)              ; a3.FStepX
+8008023C  ace000c8  sw       $zero, 0xc8($a3)              ; a3.ForceY
+80080240  ace000c4  sw       $zero, 0xc4($a3)              ; a3.ForceX
+80080244  ace000c0  sw       $zero, 0xc0($a3)              ; a3.TForceY
+80080248  ace000bc  sw       $zero, 0xbc($a3)              ; a3.TForceX
+8008024C  08020096  j        0x80080258   -> L_80080258
+80080250  ace4008c  sw       $a0, 0x8c($a3)                ; a3.TargetDir
+L_80080254:
+80080254  00001021  move     $v0, $zero
+L_80080258:
+80080258  03e00008  jr       $ra
+8008025C  00000000  nop      

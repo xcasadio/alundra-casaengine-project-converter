@@ -1,0 +1,41 @@
+8007c0d8  addiu   $sp, $sp, -0x20
+8007c0dc  sw      $s0, 0x18($sp)
+8007c0e0  sw      $ra, 0x1c($sp)
+8007c0e4  jal     0x8003a7b0
+8007c0e8  move    $s0, $a0
+8007c0ec  lw      $v0, 0x1c($s0)
+8007c0f0  nop     
+8007c0f4  andi    $v0, $v0, 3
+8007c0f8  bnez    $v0, 0x8007c160
+8007c0fc  move    $a0, $zero
+8007c100  lw      $v0, 0x118($s0)
+8007c104  nop     
+8007c108  sw      $v0, 0x10($sp)
+8007c10c  lw      $v0, 0x11c($s0)
+8007c110  lui     $v1, 8
+8007c114  addu    $v0, $v0, $v1
+8007c118  sw      $v0, 0x14($sp)
+8007c11c  lw      $a2, 0x98($s0)
+8007c120  lw      $a3, 0x114($s0)
+8007c124  jal     0x8003bdd8
+8007c128  addiu   $a1, $zero, 0x19
+8007c12c  move    $v1, $v0
+8007c130  beqz    $v1, 0x8007c160
+8007c134  nop     
+8007c138  lw      $v0, 0xc4($s0)
+8007c13c  nop     
+8007c140  negu    $v0, $v0
+8007c144  sra     $v0, $v0, 1
+8007c148  sw      $v0, 0x54($v1)
+8007c14c  lw      $v0, 0xc8($s0)
+8007c150  nop     
+8007c154  negu    $v0, $v0
+8007c158  sra     $v0, $v0, 1
+8007c15c  sw      $v0, 0x58($v1)
+L_8007c160:
+8007c160  lw      $ra, 0x1c($sp)
+8007c164  lw      $s0, 0x18($sp)
+8007c168  addiu   $sp, $sp, 0x20
+8007c16c  jr      $ra
+8007c170  nop     
+; end 8007c174

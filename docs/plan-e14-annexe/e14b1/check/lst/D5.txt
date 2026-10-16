@@ -1,0 +1,62 @@
+ 0x8007dbe0  addiu   $sp, $sp, -0x20
+ 0x8007dbe4  sw      $s1, 0x14($sp)
+ 0x8007dbe8  move    $s1, $a0
+ 0x8007dbec  lui     $v0, 0x8012
+ 0x8007dbf0  addiu   $v0, $v0, 0x7d30
+ 0x8007dbf4  sw      $ra, 0x18($sp)
+ 0x8007dbf8  sw      $s0, 0x10($sp)
+ 0x8007dbfc  lw      $a1, 0x114($s1)
+ 0x8007dc00  lw      $a0, 0x114($v0)
+ 0x8007dc04  lw      $v1, 0x224($s1)
+ 0x8007dc08  subu    $a0, $a1, $a0
+ 0x8007dc0c  lw      $v1, 0x1c8($v1)
+ 0x8007dc10  lw      $a1, 0x118($v0)
+ 0x8007dc14  lbu     $s0, ($v1)
+ 0x8007dc18  lw      $v1, 0x118($s1)
+ 0x8007dc1c  andi    $s0, $s0, 0xf
+ 0x8007dc20  jal     0x8002e814
+ 0x8007dc24  subu    $a1, $v1, $a1
+ 0x8007dc28  addiu   $s0, $s0, -1
+ 0x8007dc2c  sltiu   $s0, $s0, 3
+ 0x8007dc30  beqz    $s0, 0x8007dca4
+ 0x8007dc34  sw      $v0, 0x8c($s1)
+ 0x8007dc38  lw      $v1, 0x68($s1)
+ 0x8007dc3c  addiu   $v0, $zero, 0x1a9
+ 0x8007dc40  bne     $v1, $v0, 0x8007dca4
+ 0x8007dc44  nop     
+ 0x8007dc48  lw      $v0, 0x88($s1)
+ 0x8007dc4c  nop     
+ 0x8007dc50  sltiu   $v0, $v0, 2
+ 0x8007dc54  beqz    $v0, 0x8007dca4
+ 0x8007dc58  lui     $v1, 0x7d2b
+ 0x8007dc5c  lui     $a0, 0x800a
+ 0x8007dc60  lw      $v0, -0x78f8($a0)
+ 0x8007dc64  ori     $v1, $v1, 0x89dd
+ 0x8007dc68  mult    $v0, $v1
+ 0x8007dc6c  lui     $v0, 0xe06a
+ 0x8007dc70  ori     $v0, $v0, 0x2e7
+ 0x8007dc74  mflo    $a2
+ 0x8007dc78  addiu   $v1, $zero, 0x64
+ 0x8007dc7c  addu    $v0, $a2, $v0
+ 0x8007dc80  multu   $v0, $v1
+ 0x8007dc84  sw      $v0, -0x78f8($a0)
+ 0x8007dc88  mfhi    $a3
+ 0x8007dc8c  mflo    $a2
+ 0x8007dc90  sra     $v0, $a3, 0
+ 0x8007dc94  sra     $v1, $a3, 0x1f
+ 0x8007dc98  slti    $v0, $v0, 0x3c
+ 0x8007dc9c  beqz    $v0, 0x8007dcbc
+ 0x8007dca0  addiu   $v0, $zero, 0xb
+>0x8007dca4  jal     0x8003a374
+ 0x8007dca8  move    $a0, $s1
+ 0x8007dcac  beqz    $v0, 0x8007dcb8
+ 0x8007dcb0  addiu   $v0, $zero, 1
+ 0x8007dcb4  sb      $v0, 0x277($s1)
+>0x8007dcb8  addiu   $v0, $zero, 5
+>0x8007dcbc  sw      $v0, 0x88($s1)
+ 0x8007dcc0  lw      $ra, 0x18($sp)
+ 0x8007dcc4  lw      $s1, 0x14($sp)
+ 0x8007dcc8  lw      $s0, 0x10($sp)
+ 0x8007dccc  addiu   $sp, $sp, 0x20
+ 0x8007dcd0  jr      $ra
+ 0x8007dcd4  nop     

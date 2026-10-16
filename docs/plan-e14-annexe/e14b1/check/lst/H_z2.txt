@@ -1,0 +1,256 @@
+ 0x80037780  sw      $v0, 0x20($sp)
+ 0x80037784  lw      $v0, 0x8c($s0)
+ 0x80037788  sw      $zero, 0x28($sp)
+ 0x8003778c  andi    $v0, $v0, 7
+ 0x80037790  sltiu   $v0, $v0, 1
+ 0x80037794  sw      $v0, 0x24($sp)
+>0x80037798  lw      $s2, 0xe4($s0)
+ 0x8003779c  lw      $s1, 0xe8($s0)
+ 0x800377a0  bnez    $s2, 0x800377b0
+ 0x800377a4  nop     
+ 0x800377a8  beqz    $s1, 0x80037dc0
+ 0x800377ac  move    $a0, $s0
+>0x800377b0  sw      $zero, 0x2c($sp)
+ 0x800377b4  move    $s4, $zero
+ 0x800377b8  move    $s5, $s4
+ 0x800377bc  addiu   $s6, $zero, -1
+ 0x800377c0  lw      $s7, 0x114($s0)
+ 0x800377c4  lw      $fp, 0x118($s0)
+ 0x800377c8  lw      $a3, 0x11c($s0)
+ 0x800377cc  sw      $s4, 0x34($sp)
+ 0x800377d0  sw      $zero, 0x1c($sp)
+ 0x800377d4  sw      $zero, 0x18($sp)
+ 0x800377d8  sw      $zero, 0x14($sp)
+ 0x800377dc  sw      $zero, 0x10($sp)
+ 0x800377e0  sw      $a3, 0x30($sp)
+ 0x800377e4  lw      $v0, 0x114($s0)
+ 0x800377e8  lw      $v1, 0x11c($s0)
+ 0x800377ec  lw      $a1, 0x1ec($s0)
+ 0x800377f0  lw      $a2, 0x1e8($s0)
+ 0x800377f4  addu    $v0, $v0, $s2
+ 0x800377f8  addu    $v1, $v1, $a1
+ 0x800377fc  sw      $v0, 0x114($s0)
+ 0x80037800  lw      $v0, 0x118($s0)
+ 0x80037804  lw      $a1, 0x1e4($s0)
+ 0x80037808  move    $a0, $s0
+ 0x8003780c  sw      $v1, 0x1e0($s0)
+ 0x80037810  addu    $v0, $v0, $s1
+ 0x80037814  sw      $v0, 0x118($s0)
+ 0x80037818  lw      $v0, 0x114($s0)
+ 0x8003781c  lw      $v1, 0x118($s0)
+ 0x80037820  addu    $v0, $v0, $a1
+ 0x80037824  addu    $v1, $v1, $a2
+ 0x80037828  sw      $v0, 0x1d8($s0)
+ 0x8003782c  jal     0x800370c4
+ 0x80037830  sw      $v1, 0x1dc($s0)
+ 0x80037834  lw      $v1, 0x6c($s0)
+ 0x80037838  move    $a2, $v0
+ 0x8003783c  andi    $v1, $v1, 0x100
+ 0x80037840  beqz    $v1, 0x80037908
+ 0x80037844  sw      $a2, 0x138($s0)
+ 0x80037848  lw      $v0, 0xb8($s0)
+ 0x8003784c  nop     
+ 0x80037850  bnez    $v0, 0x80037908
+ 0x80037854  nop     
+ 0x80037858  lw      $v0, 0x1e0($s0)
+ 0x8003785c  nop     
+ 0x80037860  subu    $v0, $a2, $v0
+ 0x80037864  addiu   $v0, $v0, -1
+ 0x80037868  bgez    $v0, 0x80037874
+ 0x8003786c  lui     $v1, 3
+ 0x80037870  ori     $v1, $v1, 3
+>0x80037874  bgez    $v0, 0x80037880
+ 0x80037878  nop     
+ 0x8003787c  negu    $v0, $v0
+>0x80037880  slt     $v0, $v0, $v1
+ 0x80037884  beqz    $v0, 0x80037908
+ 0x80037888  addiu   $v0, $a2, 1
+ 0x8003788c  lw      $s3, 0x11c($s0)
+ 0x80037890  lw      $v1, 0x114($s0)
+ 0x80037894  lw      $a1, 0x1e4($s0)
+ 0x80037898  sw      $v0, 0x11c($s0)
+ 0x8003789c  lw      $v0, 0x118($s0)
+ 0x800378a0  lw      $a2, 0x1ec($s0)
+ 0x800378a4  addu    $v1, $v1, $a1
+ 0x800378a8  lw      $a1, 0x1e8($s0)
+ 0x800378ac  move    $a0, $s0
+ 0x800378b0  sw      $v1, 0x1d8($s0)
+ 0x800378b4  lw      $v1, 0x11c($s0)
+ 0x800378b8  addu    $v0, $v0, $a1
+ 0x800378bc  addu    $v1, $v1, $a2
+ 0x800378c0  sw      $v0, 0x1dc($s0)
+ 0x800378c4  jal     0x80036f34
+ 0x800378c8  sw      $v1, 0x1e0($s0)
+ 0x800378cc  beqz    $v0, 0x8003791c
+ 0x800378d0  nop     
+ 0x800378d4  lw      $v0, 0x114($s0)
+ 0x800378d8  lw      $v1, 0x1e4($s0)
+ 0x800378dc  lw      $a0, 0x1e8($s0)
+ 0x800378e0  lw      $a1, 0x1ec($s0)
+ 0x800378e4  sw      $s3, 0x11c($s0)
+ 0x800378e8  addu    $v0, $v0, $v1
+ 0x800378ec  move    $v1, $s3
+ 0x800378f0  sw      $v0, 0x1d8($s0)
+ 0x800378f4  lw      $v0, 0x118($s0)
+ 0x800378f8  addu    $v1, $v1, $a1
+ 0x800378fc  sw      $v1, 0x1e0($s0)
+ 0x80037900  addu    $v0, $v0, $a0
+ 0x80037904  sw      $v0, 0x1dc($s0)
+>0x80037908  jal     0x80036f34
+ 0x8003790c  move    $a0, $s0
+ 0x80037910  move    $s4, $v0
+ 0x80037914  bnez    $s4, 0x80037938
+ 0x80037918  nop     
+>0x8003791c  move    $a0, $s0
+ 0x80037920  lw      $a3, 0x20($sp)
+ 0x80037924  nop     
+ 0x80037928  jalr    $a3
+ 0x8003792c  addiu   $a1, $sp, 0x10
+ 0x80037930  beqz    $v0, 0x80037d68
+ 0x80037934  addiu   $a3, $zero, 1
+>0x80037938  sw      $s7, 0x114($s0)
+ 0x8003793c  sw      $fp, 0x118($s0)
+ 0x80037940  lw      $a3, 0x30($sp)
+ 0x80037944  beq     $s2, $s6, 0x80037954
+ 0x80037948  sw      $a3, 0x11c($s0)
+ 0x8003794c  j       0x80037958
+ 0x80037950  sra     $s2, $s2, 1
+>0x80037954  move    $s2, $zero
+ 0x80037958  bne     $s1, $s6, 0x80037964
+ 0x8003795c  sra     $s1, $s1, 1
+ 0x80037960  move    $s1, $zero
+>0x80037964  lw      $a3, 0x24($sp)
+ 0x80037968  nop     
+ 0x8003796c  beqz    $a3, 0x8003798c
+ 0x80037970  nop     
+ 0x80037974  bnez    $s2, 0x80037db8
+ 0x80037978  nop     
+ 0x8003797c  beqz    $s1, 0x8003799c
+ 0x80037980  nop     
+ 0x80037984  j       0x800377c0
+ 0x80037988  addiu   $s5, $s5, 1
+>0x8003798c  beqz    $s2, 0x8003799c
+ 0x80037990  nop     
+ 0x80037994  bnez    $s1, 0x80037db8
+ 0x80037998  nop     
+>0x8003799c  lw      $a3, 0x2c($sp)
+ 0x800379a0  nop     
+ 0x800379a4  bnez    $a3, 0x80037d58
+ 0x800379a8  addiu   $v0, $zero, 1
+ 0x800379ac  lw      $a3, 0x28($sp)
+ 0x800379b0  nop     
+ 0x800379b4  beq     $a3, $v0, 0x80037d54
+ 0x800379b8  nop     
+ 0x800379bc  lw      $v0, 0x6c($s0)
+ 0x800379c0  nop     
+ 0x800379c4  andi    $v0, $v0, 0x2000
+ 0x800379c8  bnez    $v0, 0x80037d54
+ 0x800379cc  addiu   $v0, $zero, 1
+ 0x800379d0  bnez    $s4, 0x80037d54
+ 0x800379d4  addiu   $a3, $zero, 1
+ 0x800379d8  lw      $v1, 0x8c($s0)
+ 0x800379dc  nop     
+ 0x800379e0  sltiu   $v0, $v1, 0x20
+ 0x800379e4  beqz    $v0, 0x80037d50
+ 0x800379e8  sw      $a3, 0x28($sp)
+ 0x800379ec  lui     $v0, 0x8002
+ 0x800379f0  addiu   $v0, $v0, 0x3734
+ 0x800379f4  sll     $v1, $v1, 2
+ 0x800379f8  addu    $v1, $v1, $v0
+ 0x800379fc  lw      $v0, ($v1)
+ 0x80037a00  nop     
+ 0x80037a04  jr      $v0
+ 0x80037a08  nop     
+ 0x80037a0c  lw      $v0, 0x18($sp)
+ 0x80037a10  nop     
+ 0x80037a14  beqz    $v0, 0x80037a2c
+ 0x80037a18  nop     
+ 0x80037a1c  lw      $v0, 0x1c($sp)
+ 0x80037a20  nop     
+ 0x80037a24  bnez    $v0, 0x80037d54
+ 0x80037a28  addiu   $v0, $zero, 1
+>0x80037a2c  lw      $v0, 0x10($sp)
+ 0x80037a30  nop     
+ 0x80037a34  bnez    $v0, 0x80037d54
+ 0x80037a38  addiu   $v0, $zero, 1
+ 0x80037a3c  lw      $v0, 0x14($sp)
+ 0x80037a40  nop     
+ 0x80037a44  bnez    $v0, 0x80037d54
+ 0x80037a48  addiu   $v0, $zero, 1
+ 0x80037a4c  sw      $zero, 0xe8($s0)
+ 0x80037a50  lw      $v0, 0x18($sp)
+ 0x80037a54  nop     
+ 0x80037a58  beqz    $v0, 0x80037a78
+ 0x80037a5c  nop     
+ 0x80037a60  lw      $v0, 0x1c($sp)
+ 0x80037a64  nop     
+ 0x80037a68  bnez    $v0, 0x80037a88
+ 0x80037a6c  ori     $v0, $zero, 0xc000
+ 0x80037a70  j       0x80037798
+ 0x80037a74  sw      $v0, 0xe4($s0)
+>0x80037a78  lw      $v0, 0x1c($sp)
+ 0x80037a7c  nop     
+ 0x80037a80  beqz    $v0, 0x80037798
+ 0x80037a84  nop     
+>0x80037a88  lw      $v0, 0x18($sp)
+ 0x80037a8c  j       0x80037b9c
+ 0x80037a90  nop     
+ 0x80037a94  lw      $v0, 0x10($sp)
+ 0x80037a98  nop     
+ 0x80037a9c  beqz    $v0, 0x80037ab4
+ 0x80037aa0  nop     
+ 0x80037aa4  lw      $v0, 0x18($sp)
+ 0x80037aa8  nop     
+ 0x80037aac  bnez    $v0, 0x80037d54
+ 0x80037ab0  addiu   $v0, $zero, 1
+>0x80037ab4  lw      $v0, 0x14($sp)
+ 0x80037ab8  nop     
+ 0x80037abc  bnez    $v0, 0x80037d54
+ 0x80037ac0  addiu   $v0, $zero, 1
+ 0x80037ac4  lw      $v0, 0x1c($sp)
+ 0x80037ac8  nop     
+ 0x80037acc  bnez    $v0, 0x80037d54
+ 0x80037ad0  addiu   $v0, $zero, 1
+ 0x80037ad4  sw      $zero, 0xe4($s0)
+ 0x80037ad8  lw      $v0, 0x10($sp)
+ 0x80037adc  nop     
+ 0x80037ae0  beqz    $v0, 0x80037b00
+ 0x80037ae4  nop     
+ 0x80037ae8  lw      $v0, 0x18($sp)
+ 0x80037aec  nop     
+ 0x80037af0  bnez    $v0, 0x80037b10
+ 0x80037af4  ori     $v0, $zero, 0x8000
+ 0x80037af8  j       0x80037798
+ 0x80037afc  sw      $v0, 0xe8($s0)
+>0x80037b00  lw      $v0, 0x18($sp)
+ 0x80037b04  nop     
+ 0x80037b08  beqz    $v0, 0x80037798
+ 0x80037b0c  nop     
+>0x80037b10  lw      $v0, 0x10($sp)
+ 0x80037b14  j       0x80037c38
+ 0x80037b18  nop     
+ 0x80037b1c  lw      $v0, 0x10($sp)
+ 0x80037b20  nop     
+ 0x80037b24  beqz    $v0, 0x80037b3c
+ 0x80037b28  nop     
+ 0x80037b2c  lw      $v0, 0x14($sp)
+ 0x80037b30  nop     
+ 0x80037b34  bnez    $v0, 0x80037d54
+ 0x80037b38  addiu   $v0, $zero, 1
+>0x80037b3c  lw      $v0, 0x18($sp)
+ 0x80037b40  nop     
+ 0x80037b44  bnez    $v0, 0x80037d54
+ 0x80037b48  addiu   $v0, $zero, 1
+ 0x80037b4c  lw      $v0, 0x1c($sp)
+ 0x80037b50  nop     
+ 0x80037b54  bnez    $v0, 0x80037d54
+ 0x80037b58  addiu   $v0, $zero, 1
+ 0x80037b5c  sw      $zero, 0xe8($s0)
+ 0x80037b60  lw      $v0, 0x10($sp)
+ 0x80037b64  nop     
+ 0x80037b68  beqz    $v0, 0x80037b88
+ 0x80037b6c  nop     
+ 0x80037b70  lw      $v0, 0x14($sp)
+ 0x80037b74  nop     
+ 0x80037b78  bnez    $v0, 0x80037b98
+ 0x80037b7c  ori     $v0, $zero, 0xc000

@@ -1,0 +1,18 @@
+; opcode 0x6d  handler 0x8003f990..0x8003f9d4 (17 words)
+0x8003f990  lw      $v1, 0x14($a3)
+0x8003f994  lw      $v0, 0x11c($a0)
+0x8003f998  lw      $a0, ($a2)
+0x8003f99c  subu    $v1, $v1, $v0
+0x8003f9a0  bgez    $v1, 0x8003f9ac
+0x8003f9a4  nop     
+0x8003f9a8  negu    $v1, $v1
+0x8003f9ac  lbu     $v0, 2($a0)
+0x8003f9b0  lbu     $a0, 1($a0)
+0x8003f9b4  sll     $v0, $v0, 8
+0x8003f9b8  or      $a0, $a0, $v0
+0x8003f9bc  sll     $a0, $a0, 0x10
+0x8003f9c0  slt     $v1, $v1, $a0
+0x8003f9c4  xori    $v1, $v1, 1
+0x8003f9c8  addiu   $v0, $zero, 3
+0x8003f9cc  jr      $ra
+0x8003f9d0  sw      $v1, 0x2c($a3)

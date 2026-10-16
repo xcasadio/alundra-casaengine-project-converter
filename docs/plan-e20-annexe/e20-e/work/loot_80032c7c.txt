@@ -1,0 +1,66 @@
+80032c7c  addiu   $sp, $sp, -0x38
+80032c80  sw      $s3, 0x2c($sp)
+80032c84  move    $s3, $a1
+80032c88  sw      $s1, 0x24($sp)
+80032c8c  move    $s1, $a2
+80032c90  sw      $s2, 0x28($sp)
+80032c94  move    $s2, $a3
+80032c98  sw      $ra, 0x30($sp)
+80032c9c  jal     0x80032968
+80032ca0  sw      $s0, 0x20($sp)
+80032ca4  move    $s0, $v0
+80032ca8  beqz    $s0, 0x80032d54
+80032cac  move    $v0, $zero
+80032cb0  jal     0x80032a00
+80032cb4  move    $a0, $s0
+80032cb8  bnez    $v0, 0x80032d54
+80032cbc  move    $v0, $zero
+80032cc0  move    $a0, $zero
+80032cc4  move    $a1, $a0
+80032cc8  addiu   $a2, $s0, 0x1e
+80032ccc  move    $a3, $s3
+80032cd0  sw      $s1, 0x10($sp)
+80032cd4  sw      $s2, 0x14($sp)
+80032cd8  jal     0x80039f58
+80032cdc  sw      $zero, 0x18($sp)
+80032ce0  move    $a1, $v0
+80032ce4  bnez    $a1, 0x80032cf4
+80032ce8  lui     $v0, 0xa
+80032cec  j       0x80032d54
+80032cf0  move    $v0, $zero
+L_80032cf4:
+80032cf4  sw      $v0, 0xb8($a1)
+80032cf8  addiu   $v0, $zero, 1
+80032cfc  sw      $v0, 0x274($a1)
+80032d00  lw      $v0, 0x6c($a1)
+80032d04  addiu   $v1, $zero, -0x81
+80032d08  and     $v0, $v0, $v1
+80032d0c  lui     $v1, 0x800c
+80032d10  addiu   $v1, $v1, 0x5f7c
+80032d14  sw      $v0, 0x6c($a1)
+80032d18  sll     $v0, $s0, 3
+80032d1c  addu    $v0, $v0, $v1
+80032d20  lbu     $v0, 4($v0)
+80032d24  nop     
+80032d28  bnez    $v0, 0x80032d34
+80032d2c  addiu   $v0, $zero, 0x258
+80032d30  addiu   $v0, $zero, -1
+L_80032d34:
+80032d34  sw      $v0, 0x278($a1)
+80032d38  addiu   $a0, $zero, 0x54
+80032d3c  lui     $v0, 0xa
+80032d40  sw      $zero, 0x27c($a1)
+80032d44  sw      $zero, 0x280($a1)
+80032d48  jal     0x800490fc
+80032d4c  sw      $v0, 0x284($a1)
+80032d50  addiu   $v0, $zero, 1
+L_80032d54:
+80032d54  lw      $ra, 0x30($sp)
+80032d58  lw      $s3, 0x2c($sp)
+80032d5c  lw      $s2, 0x28($sp)
+80032d60  lw      $s1, 0x24($sp)
+80032d64  lw      $s0, 0x20($sp)
+80032d68  addiu   $sp, $sp, 0x38
+80032d6c  jr      $ra
+80032d70  nop     
+; end 80032d74
