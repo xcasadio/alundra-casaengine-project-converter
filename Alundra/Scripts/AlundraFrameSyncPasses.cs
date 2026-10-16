@@ -72,6 +72,8 @@ internal static class AlundraFrameSyncPasses
     /// <list type="bullet">
     /// <item><description>it reads and zeroes <see cref="AlundraEntityScriptProxy.AnimationSwitchTicksReserved"/>, the ticks of this
     /// frame the clock spent on the switch (whatever it decides, so a frame never leaks its count into the next);</description></item>
+    /// <item><description>E20.e0a5: when the switch it validates is the one of the creation (still current), the ticks reserved were counted ticks of the binary: it replays all of them (not all but one) and owes no tick, even when none was
+    /// reserved (a frame without a tick between the birth and the validation);</description></item>
     /// <item><description>on a switch it restarts the animation (the logical tick goes back to 0: the binary shows frame 0 on the tick
     /// of the switch without counting it). With no tick reserved (the switch was asked on a frame without a logic tick, by a map
     /// event or by the hero's input) the next tick is owed to the switch and consumed without advancing; with several reserved (a
@@ -122,6 +124,10 @@ internal static class AlundraFrameSyncPasses
             proxy.NoteSwitchCancelled(); // E20.c1a C2: a switch the clock loaded and the script cancelled: the box cursor goes back to the animation the sprite never left.
             return;
         }
+
+        // E20.e0a5 (D-E0A5-1): the switch this validation makes is the one of the creation, still current (no other switch seen in the window): the ticks it reserved were counted ticks of the binary, replayed in full below,
+        // and no tick is owed even when none was reserved. Read before the validation clears the cursor's latch and the appearance flag.
+        var creationValidated = proxy.SwitchedAtCreation && !chainRestartRequested && proxy.IsCreationSwitchCurrent();
 
         proxy.BoxSwitchLoaded = false; // E20.c1a C2: validated, the sprite now holds the animation of the box cursor (its logical tick follows the cursor).
 
@@ -178,6 +184,16 @@ internal static class AlundraFrameSyncPasses
             return;
         }
 
+        if (creationValidated)
+        {
+            if (reservedTicks > 0)
+            {
+                animatedSprite.AdvanceLogicalTicks(reservedTicks);
+            }
+
+            return;
+        }
+
         if (reservedTicks == 0)
         {
             proxy.AnimationSwitchTickOwed = true;
@@ -198,6 +214,9 @@ internal static class AlundraFrameSyncPasses
     /// <see cref="TryResolveAnimationTarget"/> would change the animation, a new target or a new direction): the tick belongs to the
     /// switch, the old animation neither advances nor ends on it. The tick is reserved for <see cref="SyncAnimation"/> and the tick
     /// owed is cleared (this switch spends it);</description></item>
+    /// <item><description>E20.e0a5 (D-E0A5-1, D-E0A5-2): an entity born by the interface (<see cref="AlundraEntityScriptProxy.SwitchedAtCreation"/>) has made its first switch inside the creation, as the binary does: while that switch is still the current one
+    /// (<see cref="AlundraEntityScriptProxy.IsCreationSwitchCurrent"/>) every tick the clock sees it is a COUNTED tick (reserved as any tick of an unvalidated switch, the box cursor reads 1, 2, ...), and the first other switch seen in the window
+    /// drops the ticks counted so far;</description></item>
     /// <item><description>otherwise, a tick owed to an earlier switch is consumed without advancing (the new animation shows its frame 0
     /// on the tick of its switch, uncounted);</description></item>
     /// <item><description>otherwise the sprite's logical clock advances by one tick and raises the ends (Hold flag, Chain, Loop turn)
@@ -230,6 +249,20 @@ internal static class AlundraFrameSyncPasses
         }
 
         var switchPending = proxy.PendingChainRestartFlag != 0 || TryResolveAnimationTarget(proxy, out _, out _);
+
+        // E20.e0a5 (D-E0A5-1, D-E0A5-2): an entity born by the interface has made the first switch of its animation inside the creation, as the binary does (0x80039EA8): while that switch is the current one, every tick
+        // the clock sees is a COUNTED tick (reserved below as any tick of an unvalidated switch, replayed in full by SyncAnimation). The first other switch seen in the window drops the ticks counted so far (the binary
+        // switches at that tick; the ticks counted before it belong to the animation that ends), then follows the ordinary rule.
+        var creationCurrent = false;
+        if (switchPending && proxy.SwitchedAtCreation)
+        {
+            creationCurrent = proxy.IsCreationSwitchCurrent();
+            if (!creationCurrent && proxy.SpawnAnimationActive && !proxy.BoxSwitchLoaded)
+            {
+                proxy.AnimationSwitchTicksReserved = 0;
+            }
+        }
+
         if (switchPending && (!proxy.ZImpulseTaken || proxy.ZImpulseTakenForTarget != proxy.TargetAnimationId))
         {
             // E20.b B6: a lock raised for ANOTHER target belongs to an earlier switch of this catch-up frame (a Chain the clock raised at a previous tick, then a press at this one): this is a
@@ -245,7 +278,11 @@ internal static class AlundraFrameSyncPasses
 
         // E20.c1a C2: the switch block of UpdateAnimation (0x80038B18-0x80038BAC) reloads the animation byte (+0xB4), the current attack (+0x1C8) and the frame box at the tick that sees the switch,
         // for every entity (a sprite-less one included); the hit pass of that tick reads them. SyncAnimation, at the end of the frame, is unchanged (D-E19-13).
-        if (switchPending)
+        if (creationCurrent)
+        {
+            proxy.NoteCreationTick();
+        }
+        else if (switchPending)
         {
             proxy.NoteSwitchPendingAtTick();
         }

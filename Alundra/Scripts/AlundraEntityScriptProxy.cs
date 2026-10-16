@@ -1363,6 +1363,14 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     internal bool HasLogicalZ;
 
     /// <summary>
+    /// E20.e0a5 (docs/plan-e20-heros.md section 1.16.5, D-E0A5-1 to D-E0A5-4, ADR-0071): the entity was born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, so the first switch of its creation (the animation 0, made inside
+    /// <c>InitializeEntity</c> at <c>0x80039EA8</c>) is a switch of the binary that is already done: the first tick the clock sees it is a COUNTED tick (the box cursor reads 1, the animation advances), not an uncounted switch tick,
+    /// and the end of the frame that validates the switch replays all the ticks reserved. Posed by <see cref="AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex"/> ONLY, before the balance sheet (the first switch of the creation);
+    /// never by the creations from a record, never for the hero, never cloned. It is neither <see cref="JoinsBirthTick"/> (posed last, E20.e0a4 may extend that one) nor <see cref="HasLogicalZ"/>.
+    /// </summary>
+    internal bool SwitchedAtCreation;
+
+    /// <summary>
     /// E20.e0k2 W4 (D-E0K-5): the <c>Settings.StepHeight</c> of the prefab, captured by the first logical step of a marked entity (negative until then). The controller carries it only while the entity has gravity and
     /// <c>ForceZ == 0</c> (the binary has no tolerance outside the magnet of 3 px); it carries 0 otherwise, as the hero's S6 (<see cref="AirborneSavedStepHeight"/>).
     /// </summary>

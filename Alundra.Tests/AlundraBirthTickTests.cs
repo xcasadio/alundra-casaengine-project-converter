@@ -158,7 +158,7 @@ public sealed class AlundraBirthTickTests : IDisposable
         Assert.True(afterLists.InUpdateList);                                  // BT-M: in the lists after the lists pass.
         Assert.True(afterLists.InHitList);
         Assert.False(afterLists.ClockRan);
-        Assert.True(shot.At(tick, "physics").ClockRan);                        // the animation clock saw the pending switch once.
+        Assert.Equal(BirthClockOracle.Cursor("WAVE", 0), shot.At(tick, "physics").ClockTicks); // E20.e0a5: the clock saw the entity once, and that tick COUNTS (call number 1 of the binary, cnt1c; ClockRan is only the mark of an uncounted switch tick).
         var startX = shot.At(tick, "physics").PosX;
         Assert.Equal(startX + (3 << 16), shot.At(tick, "activeEffects").PosX); // the physics of the tick moved it: 3 px for the arrow facing right.
         Assert.False(shot.At(tick, "hit").Integrated);                         // not integrated by the engine during its birth tick (D-E20-35).
@@ -188,7 +188,7 @@ public sealed class AlundraBirthTickTests : IDisposable
         var startX = shot.At(first, "physics").PosX;
         Assert.False(shot.At(second, "hit").Integrated);                        // still not integrated at the second tick of the frame.
         Assert.Equal(1, shot.ARuns);
-        Assert.Equal(1, shot.At(second, "physics").ClockTicks);                 // the clock: the switch tick of the first tick, then a counted tick of the second.
+        Assert.Equal(BirthClockOracle.Cursor("WAVE", 1), shot.At(second, "physics").ClockTicks); // E20.e0a5: two counted ticks, the first call and the second (cnt1c 1 then 2), no uncounted switch tick.
         Assert.Equal(2, shot.At(second, "activeEffects").FrameCounter);
         Assert.Equal(startX + (9 << 16), born.PosX);                            // 3 px, then 6 px: the physics ran twice.
     }

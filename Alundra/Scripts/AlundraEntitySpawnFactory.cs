@@ -539,6 +539,10 @@ internal static class AlundraEntitySpawnFactory
         // E20.e0k1 (D-E0K-2): what reads the tile data of the map, as the record path does right after its header initialization. Nothing when no map is given (the default).
         ApplyMapDependentState(proxy, tileMapData);
 
+        // E20.e0a5 (D-E0A5-4, ADR-0071), HERE and not in the core the record path shares, and BEFORE the balance sheet (the caller's InitializeBalance makes the first switch of the cursor): the creation has made the first switch of the
+        // animation 0 (InitializeEntity, 0x80039EA8), which the clock and the end of the frame take into account (AlundraFrameSyncPasses). Not cloned, not posed by the records or for the hero.
+        proxy.SwitchedAtCreation = true;
+
         // E20.e0a3b (D-E0A-8, ADR-0065), HERE and not in the core the record path shares: the first switch of the creation (0x80038AB4, the block 0x80038B18-0x80038BAC) loads the byte 0xD of the animation set of the
         // animation 0 into +0xB4/AnimFlags. SyncAnimation reloads the same byte when it validates the pending switch at the end of the first frame; until then (the tick of the birth) the field would read 0, and the bit 0x80 of
         // the sprites 20, 21, 27, 28 and 29 (out of the lists of the collisions and of the support) would be missing. Current and Direction stay as the core leaves them: the switch stays pending in the four directions.

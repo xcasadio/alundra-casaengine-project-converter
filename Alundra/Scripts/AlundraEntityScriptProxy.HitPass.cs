@@ -134,6 +134,23 @@ public partial class AlundraEntityScriptProxy
         LoadAnimationSwitch(TargetAnimationId, direction, fromClock: true);
     }
 
+    /// <summary>
+    /// E20.e0a5 (D-E0A5-2): the switch of the creation is still the current one. True while the entity is flagged <see cref="SwitchedAtCreation"/>, the appearance flag is still up (<see cref="SpawnAnimationActive"/>, so no end of frame validated anything and no
+    /// <c>RepeatAnimation</c> relaunched it), the target is the animation of the creation, no restart of a chain is asked, the direction the target derives (a switch is pending, <see cref="AlundraFrameSyncPasses.TryResolveAnimationTarget"/>) is the one of the
+    /// cursor, and the cursor was not reloaded by another switch (<see cref="BoxSwitchLoaded"/>). Once any other switch is seen it is false for good in the window: a target that comes back to the animation of the creation is an ordinary switch.
+    /// </summary>
+    internal bool IsCreationSwitchCurrent()
+        => SwitchedAtCreation
+        && SpawnAnimationActive
+        && !BoxSwitchLoaded
+        && PendingChainRestartFlag == 0
+        && TargetAnimationId == SpawnAnimationId
+        && AlundraFrameSyncPasses.TryResolveAnimationTarget(this, out _, out var direction)
+        && direction == BoxDirection;
+
+    /// <summary>E20.e0a5 (D-E0A5-1): the clock saw the entity while the switch of the creation is current: a COUNTED tick of the binary (the first call of the animation pass counts), the cursor follows (1 at the first tick, 2 at the next: <c>+0x1C</c>).</summary>
+    internal void NoteCreationTick() => BoxTicks++;
+
     /// <summary>The clock consumed the tick owed to a switch the end of the frame validated without a tick to spend on it: this tick is the switch tick of the binary (the frame 0, uncounted).</summary>
     internal void NoteOwedSwitchTick() => LoadAnimationSwitch(TargetAnimationId, AnimationDirection, fromClock: false);
 
