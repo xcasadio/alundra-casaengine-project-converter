@@ -3207,7 +3207,7 @@ change que `report.json`, les deux fichiers égaux à leurs prédictions, compte
 - `Alundra.dll` et `Alundra.pdb` ont changé de taille après les builds de T5 (redéposés par la suite de tests), sans effet sur la preuve
   (le manifeste les exclut) : **noté**.
 
-### 1.16 E20.e0a — Apparition par indice de sprite : e0a1 (oracle, catalogue, interface), e0a2 (table de cases), e0a3 (tick de naissance) ✅ (détaillée le 2026-10-15 ; e0a1 à e0a3 faites et CONFIRMED le 2026-10-15 ; e0a4 conditionnelle, selon Q-A1)
+### 1.16 E20.e0a — Apparition par indice de sprite : e0a1 (oracle, catalogue, interface), e0a2 (table de cases), e0a3 (tick de naissance) ✅ (détaillée le 2026-10-15 ; e0a1 à e0a3 faites et CONFIRMED le 2026-10-15 ; e0a5 et e0a4 faites et CONFIRMED le 2026-10-16)
 
 Découverte en lecture seule du 2026-10-15 : trois relevés (binaire, impact sur la DLL, moyens de test), puis un critique adversarial qui a revérifié plus de trente affirmations
 (désassemblage de `ALUN_CD.EXE`, rejeu des sondes de l'oracle, lecture de la DLL et du moteur) et mené sa propre batterie de mutants. Scripts et sorties dans le
@@ -3944,7 +3944,7 @@ séparé ; leur mordant est prouvé par les mutations des deux verifiers.
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : `git revert` des commits d'E20.e0a3b (la mesure P-B ne laisse aucun code).
 
-#### 1.16.4 E20.e0a4 — Participation au tick de naissance des apparitions par script (`0x2D`, `0x8A`, `0x8B`) ⏳ (décidée le 2026-10-15, Q-A1 ; détaillée le 2026-10-16, READY)
+#### 1.16.4 E20.e0a4 — Participation au tick de naissance des apparitions par script (`0x2D`, `0x8A`, `0x8B`) ✅ (faite et CONFIRMED le 2026-10-16, `32f14a1` à `ff59a42`, ADR-0074 ; recette non bloquante à faire)
 
 **Révision 1 (2026-10-16).** Relecture : **REVISE**, trois blocages corrigés (FIX) : (1) la preuve de retrait « par phase » ne tenait
 pas (le retrait de la phase A rend aussi rouges les tests de la phase B) : comme e0a5, la phase A est prouvée par ses rouges sur le HEAD
@@ -4232,7 +4232,7 @@ S = tick de naissance, k = tick − S).
   - **ADR-0074** (`docs/decisions/`, index mis à jour ; prochain numéro libre relu : 0074).
   - **Commentaires périmés corrigés** (commit `bda8229`, commentaires et noms seulement) : `SwitchedAtCreation` et `JoinsBirthTick` (`AlundraEntityScriptProxy.cs`), la garde de `AlundraScriptedMotion.cs`, la collecte des entités du tick, la documentation de `SpawnEntityByRecordId` (« starting next frame »),
     l'amorçage d'`EventTrigger` d'`ApplyRecord`, `AlundraLogicalZStepTests.cs`, `AlundraTickStructureTests.cs:367` (le test est renommé : il ajoute une entité sans le marqueur) ; renommés `AlundraBirthTickTests:433` (`AnEntityWithoutTheMarker_KeysItsKinematics…`) et `:490` (`TheMarker_IsPosedByTheInterface_NeverByTheLoadOfTheMap_AndNotCloned`), avec le test de l'épingle du marqueur (T2).
-- ⏳ **T4 — Verifiers frais** (deux, l'un après l'autre). Mutants, au moins 12, tués ou prouvés équivalents : `SwitchedAtCreation` jamais
+- ✅ **T4 — Verifiers frais** (deux, l'un après l'autre). Mutants, au moins 12, tués ou prouvés équivalents : `SwitchedAtCreation` jamais
   posé ; posé après `InitializeBalance` ; posé sur le chemin du chargement ; `JoinsBirthTick` sans `SwitchedAtCreation` (tué par (b3)) ;
   marqueur avant la poussée de `0x8A` (tué par (b4)) ; marqueur posé dans `ApplyRecord` (tué par le goéland ou (a5)) ; marqueur sur le
   héros ; `EventTrigger` à 0 (« A deux fois » porté, tué par (b5)) ; `AnimFlags` non chargé (tué par (a4)) ; marqueur jamais posé par
@@ -4240,6 +4240,22 @@ S = tick de naissance, k = tick − S).
   (naissance dans les programmes rejoignant son propre tick) ; curseur qui part de 0 ; épingle de l'écart réépinglée sur une entité par
   script.
   - **Mutants (2026-10-16, faits par l'exécuteur de la phase B, HEAD `ae849d8` ; les deux verifiers frais restent à lancer par la session principale).** Quinze mutations réelles du code de la DLL, appliquées par script (`mut_b.py`) à un fichier de l'arbre de travail, copie neutralisée, build Release puis les classes `AlundraRecordBirthTickTests`, `AlundraRecordBirthClockTests`, `AlundraCreationSwitchClockTests`, `AlundraBirthBoxTests`, `AlundraBirthTickTests`, `AlundraInoaDayOneArcTests`, `AlundraShipBlockArcTests`, `AlundraHeightTargetSitesTests` (155 tests, vérifiés verts sur le code livré), fichier restitué par `git checkout --` puis `git status` vérifié après chacun : **quatorze tués, un équivalent prouvé**. (M1) `SwitchedAtCreation` jamais posé, ce qui est aussi le mutant « marqueur sans `SwitchedAtCreation` » : 17 rouges (b1, b2, b3, b4, A1, A2, A4, `s115_rec19`, `B6_V`). (M2) posé après `InitializeBalance` : 11 rouges (b1, b3, b4, A1, `B6_V`). (M3) posé aussi sur le chargement de la carte : 3 rouges (`A6_V`, `B6_V`, `A5_V` : c'est aussi le mutant « épingle de l'écart réépinglée », l'écart connu d'e0a5 est épinglé sur une entité du chargement). (M5) marqueur avant la poussée de `0x8A` : 1 rouge, (b4). (M6) marqueur posé dans `ApplyRecord` : 5 rouges (b4, b4b × 2, les deux épingles du marqueur de `AlundraBirthTickTests`). (M7) marqueur sur le héros : 2 rouges (les deux épingles du marqueur). (M8) `EventTrigger` à 0 (« A deux fois » porté) : 1 rouge, (b5). (M9) `AnimFlags` non chargé : 1 rouge, (a4). (M10) `0x8B` ne pose jamais le marqueur : 2 rouges, (b4b) avec et sans cible. (M11) `0x8B` pose le marqueur seulement quand une cible est trouvée : 1 rouge, (b4b) sans cible. (M13) curseur de la création qui part de 0 (`NoteCreationTick` sans effet) : 43 rouges (`AlundraBirthBoxTests` b1 et b3, etc.). (M14) `0x2D` ne pose jamais le marqueur : 15 rouges (b1, b2, b6, A10, `s36c4_rec3`, `s115_rec19`, l'épingle). (M15) `0x8A` ne pose jamais le marqueur : 1 rouge, (b4). (M12) `_birthSpawnsThisTick++` dans `SpawnEntityByRecordId` : **0 rouge, équivalent prouvé** : le compteur n'est lu qu'une fois par tick, juste après `MovePlayer`, et remis à zéro au début du bloc (`RunEntityBlock`, après `CollectTickEntities`) ; une naissance par enregistrement n'arrive que dans la passe des événements de carte (avant le bloc, donc remise à zéro) ou dans les programmes (après la lecture, donc remise à zéro au tick suivant), et `MovePlayerOnTickPad` ne lance aucun programme, donc aucun opcode `0x2D`/`0x8A`/`0x8B`. Remesure de l'état : Release 5 092 verts et Debug 5 092 verts (copie neutralisée en Release, build normal en Debug) ; gardes de traces vides (le bruit d'EOL des quatre fichiers `hero-trace-389-*.txt` restauré par `git checkout --`, jamais indexé) ; `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll` identique.
+
+**Vérification (2026-10-16) : CONFIRMED** par deux verifiers frais, l'un après l'autre, au HEAD `ff59a42` (la phase B, interrompue par la fin
+du processus de la session après `9e26783`, a été reprise par un exécuteur de continuation pour les mutants de T4). **Rejeu** : l'oracle de
+l'annexe rejoué depuis une copie (sommes des 5 scripts et des 7 sorties égales au manifeste ; `REC-H1` ≡ `BT-H1`, `REC-H2` ≡ `BT-H2` ; les clés
+lues par les tests égales au tableau) ; suites complètes 5 092 / 0 échec en Release (copie neutralisée) et en Debug (5 065 + 11 + 16) ; les
+rouges de T1 et la preuve de retrait de la phase B rejoués ; les déplacements dans les listes de T0 ; le goéland et les épingles du
+chargement et du héros inchangés ; `cmp` de la DLL Debug identique. **Adversarial** : périmètre (drapeaux sur les seules naissances par
+script, `EventTrigger` à −1), placement du marqueur en dernier aux trois opcodes, `0x8B` avec et sans cible ; mutants de la liste rejoués et
+nouveaux mutants tués ou prouvés équivalents ; aucun constat P0 à P2. **Reportés (P4)** :
+- la réécriture d'`AlundraInoaDayOneArcTests.A10` déplace une assertion de deux images (`HeightAfterImage(639)` → `637`, plus stricte et verte,
+  là où la dérivation donnait 638) et laisse périmés deux commentaires (`FlagEdges[5]` cite encore 791 et 947 ; lignes 268-269) ;
+- (b2) n'épingle que la naissance à une position qui laisse un tick suivant dans l'image (le texte de la tranche) ; la naissance au dernier
+  tick d'une image n'a pas de test nouveau ;
+- la « réépingle de l'écart sur une entité par script » n'est pas une mutation du code de production : couverte par M3 et par l'assertion de
+  B6_V ;
+- le README de l'annexe citait la carte 476 pour le test du navire (A6) : corrigé en 391 à la clôture.
 
 ##### Acceptation
 

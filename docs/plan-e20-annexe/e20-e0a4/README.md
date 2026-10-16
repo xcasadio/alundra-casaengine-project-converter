@@ -79,7 +79,7 @@ A throwaway reflection probe (never committed) ran the four arc tests with `Alun
 | Test | Birth (pass, opcode, record) | Phase of the move | Mechanism |
 |---|---|---|---|
 | `A10_TheFirstVisitOnMap165...` | map-event pass, `0x2D`; records 0 (sprite 282), 1 (280), 2 (278), 3 (279), 5 (25) of map 165 | B | participation: the actors run in the tick S of their birth instead of S+1; every image number of the list shifts by one |
-| `A6_TheCameraBlockLandsAndWalksSouth...` | map-event pass, `0x2D`; record 0 (sprite 25) of map 476 | B | participation (the block after the `0x2D` at 265 reads one image earlier) |
+| `A6_TheCameraBlockLandsAndWalksSouth...` | map-event pass, `0x2D`; record 0 (sprite 25) of map 391 | B | participation (the block after the `0x2D` at 265 reads one image earlier) |
 | `...(id: "s36c4_rec3")` | map-event pass, `0x2D`; record 3 (sprite 313, creation animation byte `0x40`) of map 36, then records 13 to 26 (sprite 251) | B | participation (the platform acts at S) |
 | `...(id: "s115_rec19")` | map-event pass, `0x2D`; record 19 (sprite 25) and 22 (sprite 426) of map 115 | A, then B | A: counted first clock tick (one image earlier: 756/1077); B: participation as well (755/1076) |
 | `B6_V_...` | `SpawnEntityByRecordId` from the test on the first record of map 14 (the pin of the known deviation of e0a5) | A | `SwitchedAtCreation` raises the box rule at the creation: the box exists, the flag is set, the host is asked once |
