@@ -4144,7 +4144,7 @@ S = tick de naissance, k = tick − S).
   carte 36 (sprite 313, octet `0x40`) et un enregistrement de test du sprite 27 (octet 193) ; vitesse de création non nulle = l'enregistrement 1 de la carte 321 (sprite 469, vitesse 160) ; **aucun site réel `0x8A`/`0x8B` sous le terrain n'a été
   recensé (pas de recensement des 684 sites `0x8A` en T0) : programmes de test** (autorisé par le texte de T0 (5)) ; naissances par événement de carte et en boucle 2 : appel de `SpawnEntityByRecordId` aux passes `mapEvents` et `programs` de
   `TickTraceForTests` (T2 les remplace par les vrais opcodes dans des programmes de test). Aucun arrêt.
-- ⏳ **T1 — Phase A** (tests d'abord, rouges sur le HEAD, noms versés au plan ; puis le code ; verts à la fin de T1). Fichier
+- 🚧 **T1 — Phase A** (tests d'abord, rouges sur le HEAD, noms versés au plan ; puis le code ; verts à la fin de T1). Fichier
   `AlundraRecordBirthClockTests.cs`. Étiquettes : **[R]** rouge sur le HEAD (prédit) ; **[V]** vert par construction.
   - [R] (a1) La boîte à la création d'une entité née par `0x2D` (sprite 27 par un enregistrement de test, ou un enregistrement réel dont
     `box_table` donne la boîte) : `HasFrameBox` et la boîte égalent `box_table` à la création, avant l'intégration, `Animations` vide.
@@ -4159,6 +4159,14 @@ S = tick de naissance, k = tick − S).
   - [V] (a5) Zéro changement : une entité du chargement de carte garde son premier tick d'horloge non compté et aucune boîte à la création
     (A6_V et B6_V réécrits sur elle, D-E0A4-6) ; l'interface et le héros inchangés ; le goéland vert.
   - Existants : A6_V et B6_V (réécrits, D-E0A4-6), `s115_rec19` et les autres de la liste A de T0, réécrits par dérivation.
+  - **Rouges et verts sur le HEAD `4da2914` (2026-10-16), avant tout code de la phase A** (`AlundraRecordBirthClockTests.cs`, Release, copie neutralisée, 11 cas : **3 rouges, 8 verts**, aucun [R] vert : pas d'arrêt). Sujet : un enregistrement de
+  test du sprite 27 (index 200, `SpriteTableIndex` 27, préfabriqué du sprite global 27, direction 3) ajouté à la table des enregistrements du monde de la carte 14, né par la vraie `0x2D` passée au vrai exécuteur, dans la passe `programs` à un
+  tick par image ; les valeurs attendues sont lues par clé dans `docs/plan-e20-annexe/e20-e0a4/oracle/out/`.
+    - (a1) `A1_R_TheBoxOfTheCreation_OfAnEntityBornBy0x2D_IsTheOneOfTheBinary_BeforeTheIntegration` — **rouge** : attendu `((-1179648, -786432, 0, 2359295, 1572863, 2031615), 0, True)`, obtenu `(null, 0, True)` (pas de boîte à la création).
+    - (a2) `A2_R_BornInTheProgramsOfAnotherEntity_TheFirstClockTickCounts_…` — **rouge** : attendu `([1, 2, 3], 26, 27)`, obtenu `([0, 1, 2], 27, 27)` (curseurs en retard d'un tick, drapeau de fin à S+27 ; le contrôle drapeau baissé donne 27 : vert).
+    - (a3) `A3_C_BornInTheProgramsOfAnotherEntity_ASwitchInTheWindow_…` × 7 (`REC-SW0`, `-SW1`, `-SW2`, `-SW5`, `-SW1-2`, `-SWD1`, `-SWD2`) — contrôles [C], **les sept verts** sur le HEAD (relevé sans valeur d'arrêt, hors de toute preuve).
+    - (a4) `A4_R_AnimFlagsOfTheCreationAnimation_IsLoadedAtTheCreation_ForTheSprite27AndForTheRealRecord3OfMap36` — **rouge** : attendu `((193, True, False), 64)`, obtenu `((0, False, False), 0)` (`AnimFlags` à 0 pour les deux sujets ; drapeau absent ; le clone sans drapeau est accolé).
+    - (a5) `A5_V_TheMapLoadAndTheHero_CarryNeitherTheFlagNorALoadedAnimFlags` — **vert** (zéro changement : aucune entité du chargement ni le héros ne porte le drapeau ni un `AnimFlags` chargé).
 - ⏳ **T2 — Phase B** (T2.0 : la liste B de T0 relue au HEAD de T2 ; puis tests rouges, puis code). Fichier `AlundraRecordBirthTickTests.cs`.
   - [R] (b1) Naissance par un programme d'événement de carte (`REC-ME`) : à S statut 2, A une fois, `+0x1C` 1, dans les listes, curseur 1,
     physique et coups ; drapeau de fin à S+25 ; à 1, 2 et 3 ticks par image, naissance à chaque position de l'image.
