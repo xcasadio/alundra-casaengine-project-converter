@@ -145,6 +145,11 @@ script à chaque tranche ; (5) les renommages imposés : `AlundraPlayerControlle
 de l'exception de D-R-4 et le chemin de son contexte, sans casser les chargements sans DLL (vérification du convertisseur) ; (2) un seul
 propriétaire de l'enregistrement de l'assembly par chemin (le rechargement à chaud de l'éditeur) ; (3) la prédiction de l'export versée
 dans une annexe avant tout code (T0).
+**Révision 2 (2026-10-16).** Seconde relecture : **REVISE**, un blocage ; disposition de la session principale (cap de deux relectures
+automatiques atteint) : **FIX** — le fichier du message de D-R-4 ne peut pas venir du catalogue par l'identifiant : un clone de préfab
+reçoit un `Id` neuf et perd son `AssetId` (`ObjectBase.cs:37-42`, `EntityReference.cs:58,75`), et une entité en ligne n'a pas encore son
+monde à `Initialize` (`World.cs:788-789`). La règle d'origine du fichier est réécrite sur les vrais chemins, avec les tests qui la
+prouvent. Nouvelle époque de relecture : une seule relecture de clôture suit.
 
 **But.** Le moteur crée un objet script depuis une chaîne en ne cherchant que dans l'assembly de gameplay enregistrée, par nom complet
 exact ; les types du moteur se créent par le code ; un nom introuvable, ambigu ou du mauvais genre lève une exception qui dit tout. Le jeu
@@ -172,8 +177,13 @@ n'est jamais indexée).
   `:110-118`) en gardant le message. **Le contexte du message** : la clé (`script_class_name`, `player_controller_class`,
   `mode_class_name`, `view_model_type`), la valeur, l'assembly consultée (son nom et son chemin, ou « aucune assembly de gameplay
   enregistrée »), l'indice « vouliez-vous dire » (un type de même nom court dans l'assembly), et le fichier : celui de l'asset de
-  l'entité ou du monde, retrouvé par son identifiant dans le catalogue d'assets (`AssetCatalog`), sinon « entité en ligne du monde X » avec
-  le fichier du monde, sinon « fichier inconnu » écrit tel quel. L'éditeur qui ouvre un monde sans DLL construite : la frontière qui
+  l'objet, dans cet ordre : (1) son `FileName` (posé par `AssetContentManager.LoadNew`, `:237-239`, et gardé par le clone,
+  `ObjectBase.cs:37-42`) ; (2) sinon `AssetCatalog.Get(AssetId)?.FileName` ; (3) pour une entité en ligne d'un monde (ni `FileName` ni
+  `AssetId`), le monde complète le message : `World.InternalAddEntities` rattrape l'exception de D-R-4 levée par `entity.Initialize()`
+  et la relance avec le `FileName` du monde (« entité en ligne du monde <fichier> », l'exception d'origine gardée comme cause) ;
+  (4) sinon « fichier inconnu », écrit tel quel. Le proxy du monde cite le `FileName` du monde ; le contrôleur du joueur et le mode de
+  jeu citent le `FileName` du `PlayerStartupSettings` ou du `GameplayModeAsset` acquis (le `.gameMode`) ; le view model de l'aperçu cite
+  le fichier de données de conception qu'il lit. L'éditeur qui ouvre un monde sans DLL construite : la frontière qui
   rattrape aujourd'hui un échec de création est nommée par T0 du plan du moteur ; s'il n'y en a pas (l'éditeur s'arrêterait), c'est un
   arrêt et une question à l'auteur.
 - Appelants basculés : `Entity.cs:214` et la comparaison `:212` en nom complet (sinon chaque `Initialize` recrée le proxy et perd son état
@@ -188,8 +198,11 @@ n'est jamais indexée).
   `AssemblyManager.Load` avec `AssemblyLoader = EditorScriptAssemblyService.LoadShadowCopy` — le premier contexte collectible est
   collecté (`Unload()` vrai) et seule la seconde assembly est enregistrée (dans le projet de tests qui référence `EditorServices`) ; proxy
   cloné gardé, tué par le mutant « `:212` en nom court » ; monde, contrôleur, mode, données de conception (`Fail` avec le message) ;
-  **message de D-R-4** pour une entité et pour un monde : il contient la clé, le chemin du fichier, la valeur, l'assembly consultée et
-  l'indice ; un chargement (`Load`) sans assembly enregistrée ne lève pas ; aucune DLL à la création : message explicite) ; les tests
+  **message de D-R-4**, sur les vrais chemins de création : (i) une entité chargée par `AssetContentManager.LoadCopy<Entity>(id).Clone()`
+  puis initialisée avec un mauvais `script_class_name` — le message contient le chemin relatif de son asset ; (ii) une entité en ligne
+  d'un monde chargé — le message nomme le fichier du monde ; (iii) un monde au mauvais `script_class_name` — son fichier ; (iv) un
+  contrôleur au mauvais `player_controller_class` — le fichier `.gameMode` ; chaque message contient aussi la clé, la valeur, l'assembly
+  consultée et l'indice ; (i) et (ii) sont rouges contre une version qui cherche le catalogue par `Id` ; un chargement (`Load`) sans assembly enregistrée ne lève pas ; aucune DLL à la création : message explicite) ; les tests
   existants touchés réécrits (types imbriqués sortis au premier niveau).
 - Docs du moteur : les quatre docs du nom court, ADR-0075.
 - Validation du moteur (AGENTS.md §6) : les deux `.sln`, `CasaEngine.Tests` construit explicitement et vert, RPGDemo et les démos lancés
