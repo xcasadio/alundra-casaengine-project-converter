@@ -4869,6 +4869,16 @@ zéro échec ; preuve de retrait reproduite ; aucun test existant déplacé). **
 
 #### 1.19.3 E20.f3c — La vague de l'épée (C61, E10) et l'activation des types 27 à 29 ⏳
 
+**Arrêt de la phase A (2026-10-16) et décision de la session principale.** La phase A s'est arrêtée (T1 ⚠️, O-F3-7, `e2c625f`) sur deux
+défauts de la DLL qui touchent toute entité née par l'interface, vérifiés par la session principale dans le code : (1) `EvaluateFrameBox`
+(`AlundraEntityScriptProxy.HitPass.cs`) marque la chronologie des boîtes résolue même quand l'animation est introuvable (le sprite n'a
+aucune animation avant l'intégration par le moteur, D-E20-35) et aucune bascule ne la remet à zéro ensuite : la vague garde une boîte nulle
+toute sa vie ; (2) l'horloge (`StepAnimationClock`) voit au tick de naissance une bascule en attente (`CurrentAnimationId` à ~0, D-E0A-8) et
+le compte comme tick de bascule non compté, alors que le binaire bascule à la création et compte ce tick : drapeau de fin, mort et case
+libre un tick plus tard (S+26, S+27, S+28). Fourche O-F3-7 : **option A retenue** (mode AUTO, réversible) — une tranche préalable
+(E20.e0a5, §1.16.5, à détailler après une découverte en lecture seule) corrige l'horloge et la boîte du tick de naissance ; f3c reprend
+ensuite à sa phase A. Les options B (intégration par le moteur dès la création) et C (accepter le tick de retard) sont écartées.
+
 **Mise à jour avant relecture (2026-10-16).** E20.e0k1 et E20.e0k2 sont faites et CONFIRMED (ADR-0068, ADR-0069) : la vague, née par
 l'interface, porte le marqueur `HasLogicalZ` et garde son Z logique ; D-F3-8 est livrée par e0k2 et le repli B tombe. La tâche T3 (la
 règle) est donc sans objet ; la sonde de vie devient un test de la phase A ; le témoin négatif (p5) prend un ensemble de test explicite
