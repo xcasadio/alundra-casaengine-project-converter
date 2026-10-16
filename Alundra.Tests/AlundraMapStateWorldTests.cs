@@ -125,14 +125,19 @@ public sealed class AlundraMapStateWorldTests
     public void K2_ABallBornWithTheMap_FallsAndLandsAtTheTickOfTheOracle_AndTheSameBallWithoutAMapStaysInTheAir()
     {
         const int ticks = 16;
-        var oracle = OracleSlot(OracleRows("arrows-ball-fire.json"));
+        var oracleRoot = OracleRows("arrows-ball-fire.json");
+        var oracle = OracleSlot(oracleRoot);
         var landingTick = oracle.Select((s, i) => (s, i)).First(p => p.s.GetProperty("ground_144").GetInt32() != 0).i + 1;
         var restZ = oracle[landingTick - 1].GetProperty("pz").GetInt32() - 1; // the DLL's frame is the binary's minus one raw unit (ADR-0026).
+
+        // E20.e0k2 (D-E0K-10, derivation): the witness without a map stays in the air at the Z it was born at, and since the logical Z (HasLogicalZ) keeps the raw unit of the birth instead of the root's pixel, that Z is
+        // the oracle's initial Z (the binary's Z_arg - offZ + 1) minus one raw unit (ADR-0026), not the whole pixel 32 << 16 the root used to give back.
+        var bornZ = oracleRoot.GetProperty("meta").GetProperty("init").GetProperty("pz").GetInt32() - 1;
 
         var with = Fly(FireBall, 100, 32, FlatCells.Create(), Map(128, 4096), ticks);
         var without = Fly(FireBall, 100, 32, FlatCells.Create(), null, ticks);
 
-        Assert.Equal((landingTick, restZ, 32 << 16, 0), (with.FirstGroundTick, with.Z[landingTick - 1], without.Z[^1], without.Ground.Max()));
+        Assert.Equal((landingTick, restZ, bornZ, 0), (with.FirstGroundTick, with.Z[landingTick - 1], without.Z[^1], without.Ground.Max()));
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------

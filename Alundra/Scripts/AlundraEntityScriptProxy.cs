@@ -771,13 +771,14 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         //
         // E19.h1b2 (H1B2-R4): the same impulse and decay for an entity without a controller that steps its own Z (stepsWithoutController). The impulse is shared as in
         // the binary (inert in production: none of the 6 prefabs without a controller has an animation with one).
-        if ((Controller != null || stepsWithoutController) && !immediateAtSpawn)
+        // E20.e0k2 W2: a marked entity (HasLogicalZ) with a controller takes its law and its TickForceZ from AlundraScriptedMotion.RunLogicalZPreXyStep, before the XY step; applying it here too would decay twice per tick.
+        if ((Controller != null || stepsWithoutController) && !immediateAtSpawn && !(HasLogicalZ && Controller != null))
         {
             ApplyVerticalForceLaw();
         }
 
         // E19.d2c2 F2b: the force of this tick as the binary's passes read it, before the landing below resets it (see TickForceZ). The hero carried by this entity copies it.
-        if (!immediateAtSpawn)
+        if (!immediateAtSpawn && !(HasLogicalZ && Controller != null))
         {
             TickForceZ = FinalForceZ;
         }
@@ -825,6 +826,13 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         if (!IsPlayer)
         {
             UpdateEnemyGroundHeights();
+        }
+
+        // E20.e0k2 W2: the vertical of a marked entity is the logical step's (Z before XY, strict landing, magnet): nothing below, which is the engine's support and landing block, may move PosZ.
+        // TerrainHeight and the floor heights written above stay (the binary writes them for every entity).
+        if (HasLogicalZ && Controller != null && !immediateAtSpawn)
+        {
+            return;
         }
 
         if (stepsWithoutController)
@@ -1355,6 +1363,12 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     internal bool HasLogicalZ;
 
     /// <summary>
+    /// E20.e0k2 W4 (D-E0K-5): the <c>Settings.StepHeight</c> of the prefab, captured by the first logical step of a marked entity (negative until then). The controller carries it only while the entity has gravity and
+    /// <c>ForceZ == 0</c> (the binary has no tolerance outside the magnet of 3 px); it carries 0 otherwise, as the hero's S6 (<see cref="AirborneSavedStepHeight"/>).
+    /// </summary>
+    internal float LogicalZStepHeight = -1f;
+
+    /// <summary>
     /// E20.e0a3b (D-E0A-5): the collision field the reads of <c>Owner.World.CollisionField</c> of this proxy use: the world's, once the engine integrated the entity; before that, and only for an entity that
     /// <see cref="JoinsBirthTick"/>, the host's (<see cref="IAlundraScriptHost.CollisionField"/>). An entity from a record keeps the exact read it had (null before its integration).
     /// </summary>
@@ -1433,12 +1447,13 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
             PosY = (int)Math.Round((double)root.Y * 65536.0);
 
             // E19.d2c1 R6: in the air state the logic tick owns PosZ and IsOnGround (the engine only follows the root).
-            if (!WasEntitySupportedLastTick && !HeroAirborne)
+            // E20.e0k2 W3: nor does the pull rewrite the PosZ and IsOnGround of a marked entity (the logical step owns them; the root only follows).
+            if (!WasEntitySupportedLastTick && !HeroAirborne && !HasLogicalZ)
             {
                 PosZ = (int)Math.Round((double)root.Z * 65536.0);
             }
 
-            if (!HeroAirborne)
+            if (!HeroAirborne && !HasLogicalZ)
             {
                 IsOnGround = Controller.IsGrounded ? 1 : 0;
             }
@@ -2334,6 +2349,11 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         Owner.RootComponent.LocalTransform.Position = root;
         RenderProjection?.UpdateProjection();
         Controller.Teleport(root);
+        // E20.e0k2 W4 (z10): Teleport resets the vertical latch; a marked entity declares the sentinel again so the engine does not anchor it to the ground before the next logical step.
+        if (HasLogicalZ)
+        {
+            Controller.SetExternalVerticalDisplacement(AlundraScriptedMotion.AirborneExternalDisplacementSentinel);
+        }
     }
 
     /// <summary>

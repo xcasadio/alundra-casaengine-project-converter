@@ -134,6 +134,12 @@ internal static class AlundraGameplayFreeze
                 : 0f;
         }
 
+        // E20.e0k2 W4: a marked entity owns its vertical (its logical Z); the thaw gives back the sentinel, never FinalForceZ, which would anchor the root.
+        if (proxy.HasLogicalZ)
+        {
+            return AlundraScriptedMotion.AirborneExternalDisplacementSentinel;
+        }
+
         return proxy.FinalForceZ / 65536f;
     }
 }

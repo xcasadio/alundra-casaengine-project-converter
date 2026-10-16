@@ -202,7 +202,13 @@ internal static class AlundraScriptedMotion
             entity.CollidedWithEntityZ = 1;
         }
 
+        // E20.e0k2 W1 (D-E0K-4): an entity marked HasLogicalZ takes its vertical step BEFORE the XY step and its magnet and IsOnGround AFTER it, as the binary's MoveEntity (0x80037E34).
+        var logicalZ = entity.HasLogicalZ && RunLogicalZPreXyStep(entity);
         RunOneKinematicTick(entity, animSetAnimationId);
+        if (logicalZ)
+        {
+            RunLogicalZPostXyStep(entity);
+        }
 
         // E19.h3 (H3-R1): after the XY step, a hero still in the state snaps at the top of its jump. E19.m13 (M-11): only with an XY force and an accepted step.
         if (airborne && entity.HeroAirborne)
@@ -509,6 +515,13 @@ internal static class AlundraScriptedMotion
         entity.ZHeldByTick = true;
         entity.FollowPosZOnRoot();
         controller.SetExternalVerticalDisplacement(AirborneExternalDisplacementSentinel);
+        // W4: the step height of the controller (the hero's S6, generalised): the prefab's value only with gravity and no vertical force.
+        if (entity.LogicalZStepHeight < 0f)
+        {
+            entity.LogicalZStepHeight = controller.Settings.StepHeight;
+        }
+
+        controller.Settings.StepHeight = gravity && entity.ForceZ == 0 ? entity.LogicalZStepHeight : 0f;
         return true;
     }
 
