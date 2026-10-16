@@ -4594,32 +4594,78 @@ texte du plan pour tuer des mutants, est gardé.
 
 #### 1.18.3 E20.e0k3 — Le bord de la carte pour les entités marquées ⏳
 
-**Prérequis.** E20.e0k1.
+**Révision 1 (2026-10-16).** Relecture : **REVISE**, cinq points corrigés (FIX) : un T0 recompte la liste prédite au HEAD de départ
+d'e0k3 ; une preuve de retrait à l'ensemble rouge fermé ; (b2) a ses valeurs attendues par des clés d'oracle à ajouter (poussée continue,
+cardinale et oblique), « le tick suivant » ne vaut pas pour la flèche qui rebondit ; (b4) devient un cas positif (le héros passe sa borne) ;
+le cas d'égalité exacte est établi dans le binaire et épinglé.
 
-**But.** D-E0K-7. Le pas d'une entité marquée est borné à la grille de 52 × 60 cases avec `NegMod*` et `ScreenClip*`, déjà stockés, et le drapeau est levé le même tick.
+**Prérequis.** E20.e0k1 ✅, E20.e0k2 ✅ (le marqueur `HasLogicalZ`).
 
-**Périmètre.** `AlundraScriptedMotion.cs` (`RunOneKinematicTick`, `SlideAlongWall`), `Alundra.Tests/`, annexe, ADR. **Hors périmètre.** Les entités par enregistrement et le héros (O-E19-17, D-E19-25) ; la dérive de tuile ; la fraction de pixel.
+**But.** D-E0K-7. Le pas d'une entité marquée est borné à la grille de 52 × 60 cases avec `NegMod*` et `ScreenClip*`, déjà stockés, et le
+drapeau est levé le même tick, puis conservé à travers `SlideAlongWall`.
 
-**Partage des phases** :
+**Fait propre à la tranche** (relevé par la session principale le 2026-10-16, désassemblage de `0x800366FC-0x800367E0`) : X d'arrivée =
+`+0x114` + pas ; s'il est **strictement** sous la borne basse `+0x108` (`slt` en `0x80036774`), il est ramené à elle et `+0x13C` = 1 ; sinon,
+si la borne haute `+0xFC` est **strictement** sous lui (`slt` en `0x80036788`), il est ramené à elle et `+0x13C` = 1. Même chose en Y (bornes
+`+0x10C` et `+0x100`, `0x800367AC` et `0x800367C0`). Un pas qui arrive **exactement** sur une borne n'est donc ni rogné ni signalé. Le pas
+borné est écrit en `+0xDC` / `+0xE0` (`0x800367D8`, `0x800367E0`).
+
+**Périmètre.** `AlundraScriptedMotion.cs` (`RunOneKinematicTick`, `SlideAlongWall`), `Alundra.Tests/`, `docs/plan-e20-annexe/e20-e0k/`
+(README, oracle), ADR. **Hors périmètre.** Les entités par enregistrement et le héros (O-E19-17, D-E19-25) ; la dérive de tuile ; la
+fraction de pixel.
+
+**Partage des phases** (seul à faire foi) :
 - **Phase A** (T1, sans changement de comportement) : la fonction pure de bornage et ses tests directs.
-- **Phase B** (T3) : l'appel avant le mover et la conservation du drapeau dans `SlideAlongWall`.
+- **Phase B** (T3) : l'appel avant le mover pour une entité marquée et la conservation du drapeau dans `SlideAlongWall`.
 
 ##### Tâches
 
-- ⏳ **T1 — Phase A** : tests directs de la fonction, accolés deux à deux : (a) pas qui tient (inchangé) accolé à un pas qui dépasse (borné, drapeau) ; (b) les quatre bords avec les décalages du préfab (`PosX + ModX ≥ 0`, `PosY + ModY ≥ 0`, bornes `0x4E00000` et `0x3C00000` moins la boîte).
-- ⏳ **T2 — Tests de monde**, **rouges avant T3** : (b1) flèche née en X = 1 200 vers l'est sur un champ ouvert : X = 1 233 au tick 6, X = 1 237,0 au tick 7 avec `ForceAdjusted` **le même tick** (oracle `map-edge`), accolée à une flèche née en X = 1 100 qui n'est pas bornée pendant 20 ticks ; (b2) drapeau conservé à travers `SlideAlongWall` (cas cardinal et oblique), y compris au tick qui progresse encore, et au tick suivant ; (b3) une entité par enregistrement au bord est inchangée (O-E19-17), accolée à la même flèche bornée ; (b4) le héros inchangé.
-- ⏳ **T3 — Phase B** : le branchement. Verts.
-- ⏳ **T4 — ADR, verifiers frais.** Mutants, au moins 8 : bornes permutées, drapeau non levé, levé au tick suivant, effacé par `SlideAlongWall`, appliqué au héros, appliqué aux entités par enregistrement, bornes calculées sans les décalages, entité non marquée bornée.
+- ⏳ **T0 — Liste prédite et oracle** (commit de docs, avant tout code). Au README de l'annexe : la liste recomptée au HEAD de départ
+  d'e0k3 (même méthode que l'annexe : recherche puis `--list-tests`) de toutes les méthodes qui créent une entité marquée (par
+  `SpawnEntityBySpriteIndex` ou `CreateEntityFromSpriteIndex`, les tests d'e0k1 et d'e0k2 et ceux d'f3 compris), avec son compte ; elle
+  remplace les listes antérieures pour l'acceptation et les arrêts d'e0k3. À l'oracle (copie du scratchpad, deux exécutions au manifeste
+  identique, sorties ajoutées à l'annexe) : deux scénarios de poussée continue contre le bord pour une entité qui marche, sans rebond (le
+  Beannoïde, sprite 79 de la carte 14, comme les scénarios `walker-*`) : vers l'est (clé `edge-push-east`) et en diagonale nord-est (clé
+  `edge-push-diag`), avec par tick `px`, `py` et `adj_13C` ; plus le cas d'égalité exacte (clé `edge-exact`, un pas qui arrive pile sur la
+  borne : `adj_13C` 0).
+- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette, puis la fonction pure ; verts à la fin de T1). Tests directs, accolés deux à
+  deux : (a) pas qui tient (inchangé) accolé à un pas qui dépasse (borné, drapeau) ; (b) les quatre bords avec les décalages du préfab
+  (`PosX + ModX ≥ 0`, `PosY + ModY ≥ 0`, bornes `0x4E00000` et `0x3C00000` moins la boîte) ; (c) **égalité exacte** : un pas qui arrive
+  exactement sur la borne n'est ni rogné ni signalé, accolé dans la même assertion au pas qui la dépasse d'une unité brute (rogné, signalé),
+  sur les deux axes et les deux côtés.
+- ⏳ **T2 — Tests de monde**, écrits après T1, **rouges avant T3** (chacun attend un rognage ou un drapeau que la phase A ne produit pas) :
+  - (b1) flèche née en X = 1 200 vers l'est sur un champ ouvert : X = 1 233 au tick 6, X = 1 237,0 au tick 7 avec `ForceAdjusted` **le même
+    tick** (clé `arrows2-map-edge`), accolée à une flèche née en X = 1 100 qui n'est pas bornée pendant 20 ticks ; au tick 8 la flèche rebondit
+    (statut 3) et `adj_13C` vaut 0 (même clé) : aucun « tick suivant » ne s'applique à elle ;
+  - (b2) poussée continue (clés `edge-push-east` et `edge-push-diag`) : au tick du rognage et au tick suivant, X à la borne et
+    `ForceAdjusted` égaux aux clés à chaque tick ; en diagonale, X borné pendant que Y progresse encore, le drapeau levé le même tick et
+    **conservé à travers `SlideAlongWall`** (qui le remettrait à 0 sur l'axe qui progresse) ;
+  - (b3) une entité par enregistrement au bord reste inchangée (O-E19-17), accolée dans la même assertion à la flèche marquée bornée de (b1) ;
+  - (b4) le héros, poussé vers l'est au-delà de sa propre borne (`ScreenClipX` de sa boîte), dépasse la borne au tick nommé (position
+    mesurée au commit de la phase A, dérivée de sa vitesse, et inchangée en phase B), accolé dans la même assertion à la flèche marquée bornée.
+- ⏳ **T3 — Phase B** : le branchement. (b1) à (b4) passent au vert ; suite complète ; chaque test existant qui bouge appartient à la liste
+  du T0 d'e0k3 et est réécrit par une dérivation (D-E0K-10).
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre). Mutants, au moins 9, tués ou prouvés équivalents : bornes permutées,
+  drapeau non levé, levé au tick suivant, effacé par `SlideAlongWall`, appliqué au héros (tué par (b4)), appliqué aux entités par
+  enregistrement (tué par (b3)), bornes calculées sans les décalages, entité non marquée bornée, comparaison stricte devenue large (tuée par
+  (c) de T1).
 
 ##### Acceptation
 
-- DLL : tests verts ; (b1) à (b3) rouges avant T3 ; `Alundra.Tests` en Release et en Debug, zéro échec ; aucun test existant ne bouge hors de la liste prédite recomptée au HEAD de départ de la tranche (T0 d'e0k1) ; traces inchangées ; moteur, convertisseur et données sans diff.
+- Oracle : les clés de T0 ajoutées ; manifeste identique sur deux exécutions.
+- DLL : T1 et T2 verts ; (b1) à (b4) rouges avant T3 (nommés, avec leurs cas) ; `Alundra.Tests` en Release et en Debug, zéro échec ;
+  **tests existants déplacés ⊂ la liste du T0 d'e0k3**, chacun réécrit par dérivation ; **preuve de retrait** : le branchement de la phase B
+  retiré (production remise au commit de la phase A, copie de la DLL neutralisée), suite complète en Release : rouges = exactement les cas
+  nommés de (b1) à (b4) et les épingles réécrites en T3, rien d'autre ; fichiers restaurés ; traces inchangées ; `cmp` de la DLL ; moteur,
+  convertisseur et données sans diff.
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : un test hors de la liste prédite recomptée au HEAD de départ de la tranche (T0 d'e0k1) bouge ; la carte du test n'a pas de bord franchissable (relever une autre carte ou un champ synthétique, `ContactWorld`) ; un besoin de changer le moteur ; un drapeau de rognage effacé par `SlideAlongWall`.
+- **Arrêts** : un test hors de la liste du T0 d'e0k3 bouge ; plus de 10 tests existants bougent ; la phase A fait bouger un test ; un test de
+  (b1) à (b4) vert avant T3 ; la carte du test n'a pas de bord franchissable (champ synthétique, `ContactWorld`) ; un scénario de l'oracle qui
+  contredit le fait de la comparaison stricte ; un besoin de changer le moteur ; un drapeau de rognage effacé par `SlideAlongWall`.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
-- **Retour arrière** : la phase B se retire seule. La phase A ne change aucun comportement.
+- **Retour arrière** : la phase B se retire seule (le branchement). La phase A ne change aucun comportement.
 
 ---
 
