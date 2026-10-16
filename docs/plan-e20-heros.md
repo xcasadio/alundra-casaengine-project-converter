@@ -4635,11 +4635,12 @@ fraction de pixel.
   Beannoïde, sprite 79 de la carte 14, comme les scénarios `walker-*`) : vers l'est (clé `edge-push-east`) et en diagonale nord-est (clé
   `edge-push-diag`), avec par tick `px`, `py` et `adj_13C` ; plus le cas d'égalité exacte (clé `edge-exact`, un pas qui arrive pile sur la
   borne : `adj_13C` 0).
-- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette, puis la fonction pure ; verts à la fin de T1). Tests directs, accolés deux à
+- ✅ **T1 — Phase A** (tests d'abord, rouges sur un squelette, puis la fonction pure ; verts à la fin de T1). Tests directs, accolés deux à
   deux : (a) pas qui tient (inchangé) accolé à un pas qui dépasse (borné, drapeau) ; (b) les quatre bords avec les décalages du préfab
   (`PosX + ModX ≥ 0`, `PosY + ModY ≥ 0`, bornes `0x4E00000` et `0x3C00000` moins la boîte) ; (c) **égalité exacte** : un pas qui arrive
   exactement sur la borne n'est ni rogné ni signalé, accolé dans la même assertion au pas qui la dépasse d'une unité brute (rogné, signalé),
   sur les deux axes et les deux côtés.
+  Fait (2026-10-16, `65f2087`, `0d6bd62`) : `AlundraScriptedMotion.ClampStepToMapEdge` (fonction pure, rien ne l'appelle) et `AlundraMapEdgeClampTests` (7 cas : (a), (b) sur trois boîtes, (c) sur trois boîtes) ; rouges sur le squelette (7 sur 7), verts ensuite ; suite 4 933 en Release et en Debug (4 926 + 7), `cmp` de la DLL identique, traces inchangées.
 - ⏳ **T2 — Tests de monde**, écrits après T1, **rouges avant T3** (chacun attend un rognage ou un drapeau que la phase A ne produit pas) :
   - (b1) flèche née en X = 1 200 vers l'est sur un champ ouvert : X = 1 233 au tick 6, X = 1 237,0 au tick 7 avec `ForceAdjusted` **le même
     tick** (clé `arrows2-map-edge`), accolée à une flèche née en X = 1 100 qui n'est pas bornée pendant 20 ticks ; **seuls les ticks 1 à 7 sont épinglés** : au tick 8
