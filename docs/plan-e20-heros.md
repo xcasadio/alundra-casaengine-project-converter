@@ -639,6 +639,7 @@ session principale en mode AUTO, réversible, signalé à l'auteur.
 Relecture de la révision 10 : **REVISE**, deux points corrigés (FIX) : E20.e0a4 (naissances par enregistrement dans un tick, qui ont les
 deux mêmes défauts et réutiliseront le drapeau et le résolveur d'e0a5) exige e0a5 ; E20.e0c (le butin et l'objet ramassable, nés par
 l'interface) exige e0a5, et E20.e l'hérite par elle ; la ligne 11 nomme e0a5 pour h4 aussi. Une seconde relecture suit.
+Seconde relecture de la révision 10 : **READY** (2026-10-16).
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -3966,6 +3967,14 @@ périmé de l'animation d'apparition (`TakeZImpulse` sort tôt pour elle et la b
 HEAD hors de la tranche : il est exclu et consigné comme résidu (O-E0A5-6) ; (2) la seconde étape de la preuve de retrait (« phase A
 retirée, phase B conservée ») ne compile pas : elle est supprimée ; la phase A est prouvée par les rouges sur le HEAD de T1, la phase B
 par son retrait seul. Les dépendants nomment aussi E20.e0c (et E20.e par elle).
+**Révision 2 (2026-10-16).** Seconde relecture : **REVISE**, deux blocages ; disposition de la session principale (cap de deux relectures
+automatiques atteint) : **FIX** — (1) à 1 tick par image, `SW1-2` et `SWD2` ne gardent pas le verrou (la première validation a déjà
+baissé `SpawnAnimationActive`) : ce sont de simples cas de régression [V] ; `SWD2` à 2 ticks par image, naissance au premier tick, ne relève
+pas d'O-E0A5-6 (la cible reste l'animation d'apparition, aucun verrou d'impulsion n'est levé) : il est [R] (attendu S+28 ; le HEAD donne
+environ S+26) et c'est lui qui tue le mutant « verrou absent » (qui donnerait S+27) ; O-E0A5-6 ne vise plus que `SW1-2` à 2 ticks par
+image ; (2) le « aucun tick dû » de D-E0A5-1 n'était exercé par aucun test : (a4) gagne une naissance dans le programme natif d'une autre
+entité au dernier tick d'une image, suivie d'une image sans tick (validation avec zéro tick réservé), qui tue le mutant « tick dû posé ».
+Nouvelle époque de relecture : une seule relecture de clôture suit.
 
 **Origine.** La phase A d'E20.f3c s'est arrêtée (T1 ⚠️, `e2c625f`, fourche O-F3-7). Option A retenue par la session principale (mode AUTO, réversible) : cette tranche passe avant f3c. Découverte en lecture seule du 2026-10-16 : trois relevés (binaire, DLL, tests), puis un critique adversarial qui a rejoué les oracles, relu le code et corrigé les relevés. Scripts et sorties : scratchpad de la session, `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20e0a5/` (`bin/`, `dll/`, `tests/`, `critic/`). Aucun changement du moteur, du convertisseur ni des données.
 
@@ -4041,11 +4050,14 @@ l'interface) et E20.e par elle.
   - [R] (a1) La vague (types 27 et d'autres épées par le crochet, quatre directions d'acier) : `ForceResetAnimationFlag` est 0 jusqu'à S+24 et 1 à S+25, à 1, 2 et 3 ticks par image, naissance à chaque position de l'image ; accolé dans la même assertion à la même entité dont le test baisse le drapeau interne avant son premier tick : S+26 (chemin par enregistrement).
   - [R] (a2) Le curseur : `BoxTicks` = `cnt1c` à S, S+1, S+2, S+3 ; une naissance dans le programme natif d'une autre entité : curseur 1 au premier tick d'horloge (S+1). Les quatre directions `0x00`, `0x08`, `0x10`, `0x18` (la direction 0 est le piège de T0 d'e0a3b), pour les sprites 3 et 27.
   - [R] (a3) Tour de boucle : sprite 251, `AnimCompleteCounter` 0 jusqu'à S+3, 1 à S+4, 2 à S+9 ; la flèche (3) : 1 à S+11. À 1 et 2 ticks par image (3 ticks : le résidu de D-E0A5-6).
-  - [R] (a4) Image sans tick entre la naissance et la validation (`OneFrame(0)`) : drapeau à S+25 ; `AnimationSwitchTickOwed` faux.
+  - [R] (a4) Image sans tick entre la naissance et la validation (`OneFrame(0)`) : drapeau à S+25 ; accolé dans le même test au cas qui
+    exerce la validation à **zéro tick réservé** : une entité née dans le programme natif d'une autre entité au **dernier** tick d'une
+    image, puis `OneFrame(0)` : `AnimationSwitchTickOwed` faux et curseur 1 au premier tick d'horloge (rouge sur le HEAD, qui pose le tick
+    dû quand la réserve vaut 0).
   - (a5) Bascules dans la fenêtre, par un crochet de la passe `lists` qui écrit la cible avant l'horloge, chaque drapeau de fin aux clés
     `end_AC`. **À 1 tick par image** : `SW0` [V], `SW1` [R], `SW1-2` (retour) [V], `SWD1` (direction) [R], `SWD2` [V] — les cas [V]
-    gardent le verrou et la direction contre les mutants de la nouvelle règle. **À 2 ticks par image, naissance au premier tick de
-    l'image** : `SW2` [R] ; `SW1-2` et `SWD2` exclus (résidu O-E0A5-6). **À 3 ticks par image** : `SW5` [R]. T1 consigne pour chaque
+    sont des cas de régression (la première validation a déjà fermé la fenêtre). **À 2 ticks par image, naissance au premier tick de
+    l'image** : `SW2` [R], `SWD2` [R] (attendu S+28 ; il garde le verrou de D-E0A5-2) ; `SW1-2` exclu (résidu O-E0A5-6). **À 3 ticks par image** : `SW5` [R]. T1 consigne pour chaque
     case le rouge ou le vert sur le HEAD ; un cas [R] vert sur le HEAD est un arrêt.
   - [V] (a6) Zéro changement : l'entité par enregistrement garde son premier tick d'horloge non compté (test nommé `…KnownDeviationQE0A5_1`) ; `PrefabMode`, TD14, TD15 inchangés ; le son de création une seule fois ; aucune impulsion.
   - [V] (a7) Les deux tests existants sont réécrits par dérivation depuis `cnt1c` : `:191` attend 2 ; `:159` et `:161` seulement si l'implémentation les fait bouger. Aucun autre test existant ne change.
@@ -4059,7 +4071,7 @@ l'interface) et E20.e par elle.
   - [V] (b6) Zéro changement : sans le drapeau, la chronologie reste figée à nul à S (et `HasFrameBox` d'une entité par enregistrement reste faux à la création) ; monde sans assets : pas d'exception, pas de lecture répétée.
   - Code : le résolveur ; `EvaluateFrameBox`.
 - ⏳ **T3 — Intégration.** Suite complète, tests déplacés réécrits par dérivation (liste de T0 et de T2.0). Preuve de suffisance, non commitée : le travail jeté de f3c (`…/scratchpad/e20f3c-exec/wip/`, `tracked.diff`, `AlundraWaveSwordAi.cs`, `AlundraWaveSwordLifeTests.cs`) appliqué dans un arbre jetable sur la tête de e0a5 : (v1), (v2), (v4) verts. ADR. Plan : fermeture d'O-F3-7, correction de la phase A de f3c.
-- ⏳ **T4 — Verifiers frais** (deux, l'un après l'autre). Mutants, au moins 12, tués ou prouvés équivalents : drapeau jamais posé ; drapeau posé sur le chemin par enregistrement (tué par (a6) et (b6)) ; rejeu « moins un » conservé ; curseur qui part de 0 ; curseur incrémenté deux fois ; tick dû posé (tué par (a4)) ; bascule sans abandon des ticks comptés (tué par `SW1`, `SW2`, `SW5`) ; verrou absent (retour compté, tué par `SW1-2` à 1 tick par image) ; changement de direction non vu (tué par `SWD1`) ; clé `Current == Target` (tuée par la direction 0 de (a2)) ; chronologie figée à nul de nouveau (tuée par (b1)) ; résolveur sans le drapeau (tué par (b6)) ; résolveur qui écrit `Animations` (tué par (b3)).
+- ⏳ **T4 — Verifiers frais** (deux, l'un après l'autre). Mutants, au moins 12, tués ou prouvés équivalents : drapeau jamais posé ; drapeau posé sur le chemin par enregistrement (tué par (a6) et (b6)) ; rejeu « moins un » conservé ; curseur qui part de 0 ; curseur incrémenté deux fois ; tick dû posé (tué par le cas « zéro tick réservé » de (a4)) ; bascule sans abandon des ticks comptés (tué par `SW1`, `SW2`, `SW5`) ; verrou absent (tué par `SWD2` à 2 ticks par image, qui donnerait S+27) ; changement de direction non vu (tué par `SWD1`) ; clé `Current == Target` (tuée par la direction 0 de (a2)) ; chronologie figée à nul de nouveau (tuée par (b1)) ; résolveur sans le drapeau (tué par (b6)) ; résolveur qui écrit `Animations` (tué par (b3)).
 
 ##### Acceptation
 
@@ -4085,7 +4097,7 @@ l'interface) et E20.e par elle.
 | O-E0A5-3 | Fin d'animation plus courte que la fenêtre vue à la validation | D-E19-13, accepté |
 | O-E0A5-4 | Direction de création non cardinale : la rangée dépend de l'ancien `+0x98` de la case | E20.f4 à f6 si un tir non cardinal existe |
 | O-E0A5-5 | Boîte du monde à la création des entités par enregistrement (`0x80039F30`) : absente, asymétrique après la phase B | e0a4 ou la tranche de Q-E0A5-1 |
-| O-E0A5-6 | Une bascule qui revient à l'animation d'apparition dans une image de plusieurs ticks (`SW1-2` à 2 ticks par image, naissance au premier tick) : le verrou d'impulsion de l'animation d'apparition n'est pas mis à jour (`TakeZImpulse` sort tôt) et la branche B6 remet la réserve à zéro ; drapeau de fin un tick trop tard. Règle ordinaire du HEAD, pour toute entité | à placer (avec Q-E0A5-1 ou E19.h2) |
+| O-E0A5-6 | Une bascule qui revient à l'animation d'apparition dans une image de plusieurs ticks (seulement `SW1-2` à 2 ticks par image, naissance au premier tick) : le verrou d'impulsion de l'animation d'apparition n'est pas mis à jour (`TakeZImpulse` sort tôt) et la branche B6 remet la réserve à zéro ; drapeau de fin un tick trop tard. Règle ordinaire du HEAD, pour toute entité | à placer (avec Q-E0A5-1 ou E19.h2) |
 
 **Corrections induites** (faites par la session principale à l'insertion, 2026-10-16) : §1.19.3 f3c exige E20.e0a5 et O-F3-7 est
 tranché (option A) ; enveloppe, révision 10 : e0a5 ajoutée aux prérequis des lignes 5 (f3c), 6, 7, 8 (f6b) et 11, et à la ligne 2 ;
@@ -4784,7 +4796,7 @@ fraction de pixel.
   exactement sur la borne n'est ni rogné ni signalé, accolé dans la même assertion au pas qui la dépasse d'une unité brute (rogné, signalé),
   sur les deux axes et les deux côtés.
   Fait (2026-10-16, `65f2087`, `0d6bd62`) : `AlundraScriptedMotion.ClampStepToMapEdge` (fonction pure, rien ne l'appelle) et `AlundraMapEdgeClampTests` (7 cas : (a), (b) sur trois boîtes, (c) sur trois boîtes) ; rouges sur le squelette (7 sur 7), verts ensuite ; suite 4 933 en Release et en Debug (4 926 + 7), `cmp` de la DLL identique, traces inchangées.
-- ⏳ **T2 — Tests de monde**, écrits après T1, **rouges avant T3** (chacun attend un rognage ou un drapeau que la phase A ne produit pas) :
+- ✅ **T2 — Tests de monde**, écrits après T1, **rouges avant T3** (chacun attend un rognage ou un drapeau que la phase A ne produit pas) :
   - (b1) flèche née en X = 1 200 vers l'est sur un champ ouvert : X = 1 233 au tick 6, X = 1 237,0 au tick 7 avec `ForceAdjusted` **le même
     tick** (clé `arrows2-map-edge`), accolée à une flèche née en X = 1 100 qui n'est pas bornée pendant 20 ticks ; **seuls les ticks 1 à 7 sont épinglés** : au tick 8
     l'oracle montre le rebond d'E17 (direction 8, animation 1, `adj_13C` 0), qu'e0k3 ne porte pas (la flèche y garde la direction 24 et
@@ -4795,8 +4807,9 @@ fraction de pixel.
   - (b3) une entité par enregistrement au bord reste inchangée (O-E19-17), accolée dans la même assertion à la flèche marquée bornée de (b1) ;
   - (b4) le héros, poussé vers l'est au-delà de sa propre borne (`ScreenClipX` de sa boîte), dépasse la borne au tick nommé (position
     mesurée au commit de la phase A, dérivée de sa vitesse, et inchangée en phase B), accolé dans la même assertion à la flèche marquée bornée.
-- ⏳ **T3 — Phase B** : le branchement. (b1) à (b4) passent au vert ; suite complète ; chaque test existant qui bouge appartient à la liste
+- ✅ **T3 — Phase B** : le branchement. (b1) à (b4) passent au vert ; suite complète ; chaque test existant qui bouge appartient à la liste
   du T0 d'e0k3 et est réécrit par une dérivation (D-E0K-10).
+  Fait (2026-10-16) : T2, 5 tests de monde (`AlundraMapEdgeWorldTests` : B1, B2 est, B2 diagonale, B3, B4), 5 rouges sur 5 avant T3 (phase A). T3 : `RunOneKinematicTick` borne `FinalForceX/Y` par `ClampStepToMapEdge` avant le mover pour une entité `HasLogicalZ`, puis lève `ForceAdjusted` APRÈS `SlideAlongWall` ; les 5 tests verts ; aucun test existant ne bouge ; suite 4 938 en Release et en Debug, 0 échec ; `cmp` de la DLL identique ; traces inchangées.
 - ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre). Mutants, au moins 9, tués ou prouvés équivalents : bornes permutées,
   drapeau non levé, levé au tick suivant, effacé par `SlideAlongWall`, appliqué au héros (tué par (b4)), appliqué aux entités par
   enregistrement (tué par (b3)), bornes calculées sans les décalages, entité non marquée bornée, comparaison stricte devenue large (tuée par
