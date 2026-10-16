@@ -3975,6 +3975,7 @@ environ S+26) et c'est lui qui tue le mutant « verrou absent » (qui donnerait 
 image ; (2) le « aucun tick dû » de D-E0A5-1 n'était exercé par aucun test : (a4) gagne une naissance dans le programme natif d'une autre
 entité au dernier tick d'une image, suivie d'une image sans tick (validation avec zéro tick réservé), qui tue le mutant « tick dû posé ».
 Nouvelle époque de relecture : une seule relecture de clôture suit.
+Relecture de clôture : **READY** (2026-10-16).
 
 **Origine.** La phase A d'E20.f3c s'est arrêtée (T1 ⚠️, `e2c625f`, fourche O-F3-7). Option A retenue par la session principale (mode AUTO, réversible) : cette tranche passe avant f3c. Découverte en lecture seule du 2026-10-16 : trois relevés (binaire, DLL, tests), puis un critique adversarial qui a rejoué les oracles, relu le code et corrigé les relevés. Scripts et sorties : scratchpad de la session, `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20e0a5/` (`bin/`, `dll/`, `tests/`, `critic/`). Aucun changement du moteur, du convertisseur ni des données.
 
