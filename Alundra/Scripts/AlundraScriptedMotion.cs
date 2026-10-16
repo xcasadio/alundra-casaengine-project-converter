@@ -600,9 +600,10 @@ internal static class AlundraScriptedMotion
     /// bit-for-bit the former <c>AlundraPlayerManager.RunOneTick</c> body, generalized only by which field
     /// supplies the <c>AnimSetsByAnim</c> lookup key (<paramref name="animSetAnimationId"/> - see this
     /// class' own doc for <see cref="TickPlayer"/> vs <see cref="TickScriptedNpc"/>'s own choice). Same V1
-    /// scope as before this extraction: no collision/screen-clip system (<c>ApplyEntityForces</c>'
-    /// NegModX/Y/ScreenClipX/Y clamp is NOT ported), no riding-platform force feed
-    /// (<c>PreviousAdjustedForceX/Y</c> stay 0).
+    /// scope as before this extraction: no riding-platform force feed (<c>PreviousAdjustedForceX/Y</c> stay 0), and the
+    /// <c>ApplyEntityForces</c> NegModX/Y/ScreenClipX/Y clamp of the step is ported only for an entity marked
+    /// <see cref="AlundraEntityScriptProxy.HasLogicalZ"/> (E20.e0k3, <see cref="ClampStepToMapEdge"/>); the hero and the entities born
+    /// from a record keep their unbounded step (O-E19-17, D-E19-25).
     /// </summary>
     private static void RunOneKinematicTick(AlundraEntityScriptProxy entity, uint animSetAnimationId)
     {
@@ -673,6 +674,16 @@ internal static class AlundraScriptedMotion
             entity.FinalForceY += carrier.LastTickDeltaY;
         }
 
+        // E20.e0k3 (D-E0K-7): an entity marked HasLogicalZ has its step bounded to the grid of the map BEFORE the mover, as the forces pass of the binary (0x800366FC-0x800367E0).
+        var edgeAdjusted = false;
+        if (entity.HasLogicalZ)
+        {
+            var clamp = ClampStepToMapEdge(entity, entity.FinalForceX, entity.FinalForceY);
+            entity.FinalForceX = clamp.StepX;
+            entity.FinalForceY = clamp.StepY;
+            edgeAdjusted = clamp.Adjusted;
+        }
+
         var startX = entity.PosX;
         var startY = entity.PosY;
 
@@ -689,6 +700,12 @@ internal static class AlundraScriptedMotion
         {
             entity.PosX += entity.FinalForceX;
             entity.PosY += entity.FinalForceY;
+        }
+
+        // E20.e0k3: the flag of the clamp is raised AFTER SlideAlongWall, which rewrites ForceAdjusted (0 on an axis that progressed); the binary raises +0x13C in the same tick as the clamp.
+        if (edgeAdjusted)
+        {
+            entity.ForceAdjusted = 1;
         }
 
         entity.LastTickDeltaX = entity.PosX - startX;
@@ -713,7 +730,7 @@ internal static class AlundraScriptedMotion
     /// <see cref="AlundraEntityScriptProxy.ScreenClipY"/> = <c>+0xFC</c>/<c>+0x100</c>, set by <see cref="AlundraEntitySpawnFactory.SetEntityDimensions"/>) and moves nothing. Per axis the arrival <c>Pos + step</c> is compared
     /// STRICTLY (the two <c>slt</c> of the binary, <c>0x80036774</c>/<c>0x80036788</c> on X and <c>0x800367AC</c>/<c>0x800367C0</c> on Y): below the low bound it is brought back to it, else above the high bound it is brought back to it,
     /// and the flag is raised (<c>+0x13C</c>, the same tick); an arrival exactly ON a bound is neither bounded nor flagged. The two axes are independent (a diagonal step bounded on X keeps its Y). Phase B calls it before the mover for an
-    /// entity marked <see cref="AlundraEntityScriptProxy.HasLogicalZ"/> only; nothing calls it yet.
+    /// entity marked <see cref="AlundraEntityScriptProxy.HasLogicalZ"/> only (see <see cref="RunOneKinematicTick"/>).
     /// </summary>
     internal static MapEdgeClamp ClampStepToMapEdge(AlundraEntityScriptProxy entity, int stepX, int stepY)
     {
