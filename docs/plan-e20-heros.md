@@ -4527,7 +4527,7 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
   le lecteur `AlundraSpawnIndexOracle.cs` est étendu à `loot` et `rng_out`, sans changer les comparaisons de `SpawnProjectionAsserts.Check`), dans une assertion propre à ce test, **jamais** dans
   `SpawnProjectionAsserts.Check`, partagée avec les tests du noyau d'e0a1 qui ne passent pas par l'assistant du monde ; les tests
   existants réécrits sont nommés dans les résultats de T2.
-- ⏳ **T3 — ADR, plan, verifiers frais** (deux ; mutants du code de la DLL : au moins 12, tous tués — banque inversée, masque `0x7FFF`
+- 🧪 **T3 — ADR, plan, verifiers frais** (ADR-0073, plan et mutants faits ; les deux verifiers frais restent à lancer par la session principale) (deux ; mutants du code de la DLL : au moins 12, tous tués — banque inversée, masque `0x7FFF`
   oublié, `& 0xFF` oublié, priorité du code d'enregistrement, repli sur l'en-tête, test du bit `0x80`, limite `0x62`, décalage de la rangée,
   `>> 28` changé, maillon non suivi, drapeau levé qui tire quand même, `+0x40` non écrit sans enregistrement, tirage placé avant l'abandon
   (tué par (m4)), le héros qui tire (tué par (m5)), assistant appelé deux fois par création).
@@ -4573,6 +4573,18 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
 - **Ombre de la phase A** (`e0b2-shadow.txt`) : 1 135 lignes, 499 clés, 11 938 créations vues, 4 856 pas virtuels. **Liste prédite : 248 tests** = H115 (la seule avec des tirages divergents) + 16 à tirages ambiants (mêmes familles qu'e0b1, justifiés dans le README)
   + 231 qui ne divergent que par la lecture de `SeedAfterTheLoad` d'`ArcRun` juste avant sa seconde re-semence (la valeur est jetée par le `Reset()` suivant). La vague d'épée née en production depuis E20.f3c passe par l'assistant (une création) et ne fait **aucun** pas virtuel
   (en-tête `Contents` 0 : cohérent avec la clé `loot3c` 0 de l'oracle f3).
+
+
+##### Résultats de la phase B de T2 et de T3 (2026-10-16)
+
+- **Commits** : phase B `b5b2c88` (code B, tests (m1) à (m5), comparaisons de D-E0A-3 dans `B2_TheFullPath_...`, icône de T2) ; le commit de T3 (ADR-0073, mutants, tests ajoutés, plan) suit.
+- **Phase B** : l'assistant écrit `ContentsItemId` et `ContentsGameFlag` et tire sur le flux réel (`AlundraRandom.Next`) ; rien d'autre ne change. Un `git diff` d'`AlundraEntitySpawnFactory.cs` depuis le départ : la seule ligne `HeaderContents`.
+- **Comptes** : 5 062 en Release et en Debug à `b5b2c88` (5 046 + 16 nouveaux), zéro échec ; 5 065 à la fin de T3 (+3 tests : `OnlyTheLowByteOfTheHeaderCodeCounts_...`, M6, M7), Release ; Debug rejoué à la fin (voir le rapport).
+- **Prévu contre mesuré** : liste prédite 248 tests ; **aucun test existant ne bouge** (ni dans la liste ni hors d'elle), donc aucune réécriture ni dérivation (D-E0B-8) ; les 248 qui ne bougent pas sont expliqués par groupe dans le README de l'annexe (H115 : 130 tirages au lieu de 114 et plus de ticks, mais ses assertions portent sur la mort des Muruta et la porte ; 16 à tirages ambiants : booléens, positions, re-semence avant lecture ; 231 qui ne lisent que `SeedAfterTheLoad`).
+- **Preuve de retrait** : corps de l'assistant retiré, suite en Release : **6 rouges, exactement** M1, M2, M3, M4, M5 et `B2_TheFullPath_...` ; rien d'autre ; restauré par `git checkout --`.
+- **Ombre de la phase B** (`e0b2-shadow-b.txt`) : `divergent_draws` et `divergent_seed_reads` nuls sur les 1 141 lignes (V = R) ; 31 981 tirages réels dont 233 ambiants.
+- **Mutants du code de la DLL** : 21, tous rouges sauf M19 (équivalent : `Roll` masque deux fois). M04 (`& 0xFF` de l'en-tête) et M13 (`+0x40` non écrit sans enregistrement) ont d'abord survécu et sont tués par deux tests ajoutés en T3 ; le détail est dans le README de l'annexe.
+- **Écarts** : le brief de T3 attendait « tous tués » : M19 est équivalent, argumenté. `AlundraRandomShadow.OnVirtualRoll` reste, inutilisé, dans le code de production (nettoyage laissé à une autre tranche). Les trailers de commit portent « Claude Sonnet 5.5 » (modèle réel).
 
 ---
 

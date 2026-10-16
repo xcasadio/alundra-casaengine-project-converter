@@ -213,4 +213,25 @@ public sealed class AlundraLootRollTests
         Assert.Equal(1, rolled.Draws);
         Assert.Equal(1, calls);
     }
+
+    [Fact]
+    public void OnlyTheLowByteOfTheHeaderCodeCounts_WithAndWithoutARecord()
+    {
+        // The binary reads a byte (+0x1F of the header): 0x182 is 0x82, the code of one draw, in both paths (without a record, and with a record whose own code is 0).
+        var state = new AlundraGameState();
+        var calls = 0;
+        uint Draw()
+        {
+            calls++;
+            return 0;
+        }
+
+        var withoutRecord = AlundraLootRoll.Roll(false, 0, 0, 0x182, state, Draw);
+        var withRecord = AlundraLootRoll.Roll(true, 0, 0x100, 0x182, state, Draw);
+        Assert.Equal(AlundraLootRoll.Roll(false, 0, 0, 0x82, state, Draw), withoutRecord);
+        Assert.Equal(AlundraLootRoll.Roll(true, 0, 0, 0x82, state, Draw), withRecord);
+        Assert.Equal(1, withoutRecord.Draws);
+        Assert.Equal(1, withRecord.Draws);
+        Assert.Equal(4, calls);
+    }
 }

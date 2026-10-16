@@ -86,3 +86,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0070 | The step of an entity born by the sprite-index interface is bounded to the map edge before the mover and flags the same tick | Accepted | 2026-10-16 |
 | ADR-0071 | An entity born by the sprite-index interface counts its first animation tick and reads its frame box before the engine integrates it | Accepted | 2026-10-16 |
 | ADR-0072 | The sword wave is born in production, E10 is handled in line and C61 calls a named stub | Accepted | 2026-10-16 |
+| ADR-0073 | Every creation rolls its loot as its last act, like the binary, on the real shared stream | Accepted | 2026-10-16 |

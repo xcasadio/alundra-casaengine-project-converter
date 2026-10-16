@@ -678,3 +678,39 @@ a copy is in the scratch folder of the run.
 
 **The STOP condition "the load loop of the DLL does not create, at the verified load tile, the same entities as V8" does not occur**: for the 20 pairs the DLL's load creates exactly V8's entities, in V8's slots, with V8's sprite numbers, at the
 tile that `HeroTileAtLoad` reads (M2, first assertion).
+
+## Phase B (T2) and T3 results (2026-10-16)
+
+**Phase B** (`b5b2c88`): the helper `RollLootAtCreation` writes `ContentsItemId` and `ContentsGameFlag` and draws on the real stream (`AlundraRandom.Next`); the virtual roll of phase A is gone from the helper. M1 to M5 are green. The comparisons of D-E0A-3 (`+0x3C`, `+0x40`, the word) are in `AlundraSpawnBySpriteIndexInterfaceTests.B2_TheFullPath_...` only (seed `0x12345678` before each call; `AlundraSpawnIndexOracle` reads `loot` and `rng_out`).
+
+**No existing test moved.** Suite 5 062 in Release and in Debug (5 046 + 16 new), zero failure, no test rewritten, so no derivation (D-E0B-8) was needed. The 248 tests of the predicted list all keep their expectations; reasons by group: `H115_...` (the only one with divergent draws): its assertions are on the death of the four Muruta and the door, never on a drawn number (the shadow shows 130 draws instead of 114 and more ticks to the same end state); the 16 tests with ambient draws: same families as e0b1, they assert booleans, positions or re-seed before reading; the 231 that only read `SeedAfterTheLoad` of `ArcRun` just before its second re-seed: no test but the new ones reads it.
+
+**Shadow of phase B** (`e0b2-shadow-b.txt`): V = R, `divergent_draws` and `divergent_seed_reads` zero on all 1 141 lines (31 981 real draws, 233 ambient as in phase A; `virtual_rolls` is 0, the sink now counts the roll as real draws).
+
+**Removal proof**: the three lines of the body of the helper removed, Release suite: 6 red, exactly `M1` to `M5` and `B2_TheFullPath_...`; nothing else. Restored by `git checkout --`.
+
+**Mutants of the DLL code** (`scratchpad` script `mutants.py`, each applied to the working tree, built in Release without the DLL copy, run on `AlundraLootRoll*` and `AlundraSpawnBySpriteIndexInterfaceTests`, restored): 21 mutants. All red except M19. Two survived at first and were killed by tests added in T3: M04 (`& 0xFF` forgotten on the header code) by `OnlyTheLowByteOfTheHeaderCodeCounts_WithAndWithoutARecord`, M13 (`+0x40` not written without a record) by `M7_WithoutARecord_TheFlagField_IsWrittenZero_OverALeftover` (a leftover in the field). M19 (`& 0xFF` forgotten in `RecordContentsByte`) is EQUIVALENT: `AlundraLootRoll.Roll` masks the record code again; `M6_TheCodeOfTheRecord_KeepsItsLowByteOnly...` documents it.
+
+| Mutant | What | First tests red |
+|---|---|---|
+| M01 | bank inverted | M3, 4 roll tests |
+| M02 | mask `0x7FFF` forgotten | M3, 3 roll tests |
+| M03 | `& 0xFF` forgotten on the record code | record spawner vectors |
+| M04 | `& 0xFF` forgotten on the header code | `OnlyTheLowByte...` (new) |
+| M05 | priority record / header swapped | 3 roll tests |
+| M06 | no fallback on the header | M2, 3 roll tests |
+| M07 | bit `0x80` test changed to `0x40` | 12 tests |
+| M08 | limit `0x62` to `0x63` | choose vectors, 52, 6 000 |
+| M09 | row mask `0x3F` | 8 tests incl. M1, M2, B2 |
+| M10 | `>> 27` for `>> 28` | 11 tests incl. M1 to M5, B2 |
+| M11 | link not followed | 8 tests incl. M1, M2, B2 |
+| M12 | raised flag still rolls | M3, 4 roll tests |
+| M13 | `+0x40` not written without a record | `M7` (new) |
+| M14 | roll placed before the abort point | M4 |
+| M15 | the hero rolls | M2, M5, word after a silent load |
+| M16 | helper twice (sprite-index site) | M1, M4, M5, B2 |
+| M17 | helper twice (record-id site) | M3 |
+| M18 | helper twice (load site) | M2 |
+| M19 | record code not masked at the site | survived: equivalent (see above) |
+| M20 | item id not written | M1, M2, M3, B2 |
+| M21 | real stream not advanced | M1 to M5, B2 |

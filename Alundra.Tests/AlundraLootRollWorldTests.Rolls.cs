@@ -170,4 +170,43 @@ public sealed partial class AlundraLootRollWorldTests
             $"hero item 0 +0x40 0 header 0, word after the load {InitialSeed:X8}; creation item {U(row.GetProperty("item"))} word {U(row.GetProperty("rng_out")):X8}",
             $"{heroText}; creation item {spawned.ContentsItemId} word {(uint)AlundraRandom.RandomSeed:X8}");
     }
+
+    [Fact]
+    public void M6_TheCodeOfTheRecord_KeepsItsLowByteOnly_ThroughTheSiteOfTheCreation()
+    {
+        // The binary reads the byte +0x12 of the record: a Contents of 0x182 on the record is 0x82 (one draw), not "a code of 0x100 or more" (which draws nothing).
+        using var arc = new ArcRun(new ArcSpec("E20e0b2-m6", "The Klark", "Ship Klark (inner)-390", Array.Empty<int>(), 0, 0, 0, 10, RealController: true, Prefabs: true));
+        var records = arc.RealWorld!.Entities.OfType<Entity>().Select(e => e.RootComponent).OfType<TileMapComponent>().Single().TileMapData!.ObjectLayers.Single(l => l.Name == "Entities").Objects;
+        var record = records.Single(r => r.CustomProperties["Index"] == "4");
+        record.CustomProperties["_10"] = "0";
+
+        var observed = new List<string>();
+        foreach (var contents in new[] { 0x82, 0x182 })
+        {
+            record.CustomProperties["Contents"] = contents.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            AlundraRandom.RandomSeed = 0x12345678;
+            var spawned = Context(arc).SpawnEntityByRecordId(arc.Hero, 4)!;
+            observed.Add($"item {spawned.ContentsItemId} word {(uint)AlundraRandom.RandomSeed:X8}");
+            Recycle(arc, spawned);
+        }
+
+        Assert.Equal(observed[0], observed[1]);
+        Assert.NotEqual("item 0 word 12345678", observed[0]); // the 0x82 case really drew.
+    }
+
+    [Fact]
+    public void M7_WithoutARecord_TheFlagField_IsWrittenZero_OverALeftover()
+    {
+        // The binary writes +0x40 = 0 for a creation without a record, whatever the slot held (the dirty-slot vector of the oracle); the roll must not read the leftover as a record flag.
+        using var arc = Arc14("m7");
+        var helper = typeof(AlundraWorldProxy).GetMethod("RollLootAtCreation", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+        var spawned = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, 3, HeroX << 16, HeroY << 16, -1, 0x10)!;
+        spawned.ContentsGameFlag = 0x1234;
+        spawned.ContentsItemId = 99;
+        helper.Invoke(arc.Proxy, new object?[] { spawned, false, 0 });
+        var observed = (spawned.ContentsGameFlag, spawned.ContentsItemId);
+        Recycle(arc, spawned);
+
+        Assert.Equal((0, 0u), observed); // sprite 3 has no loot code (Contents 0): nothing is drawn, the item is 0 and the flag 0.
+    }
 }
