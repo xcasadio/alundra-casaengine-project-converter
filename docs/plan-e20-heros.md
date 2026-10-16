@@ -4884,6 +4884,7 @@ relâchent une charge d'épée au-delà de R+21 dans un monde sont recensés com
 automatiques atteint) : **FIX** — la preuve de retrait ne comptait pas les tests « possibles » réécrits en phase B, qui redeviennent rouges
 quand l'ensemble de production est vidé (par exemple l'arène de la charge, qui tourne 140 ticks avec S = 112) ; l'ensemble rouge attendu
 les inclut, chacun nommé dans les résultats avant que la preuve ne tourne. Nouvelle époque de relecture : une seule relecture de clôture suit.
+Relecture de clôture : **READY** (2026-10-16).
 
 **Prérequis.** E20.f3a ✅, E20.e0a1 à E20.e0a3 ✅, E20.e0b1 ✅, E20.e0k1 ✅ et E20.e0k2 ✅ (la règle du Z logique, D-F3-8). Touche
 `AlundraEventProgramRunner.cs` et `AlundraNativeSpriteRegistry.cs` ; relit ses numéros de ligne au HEAD d'exécution.
