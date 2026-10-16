@@ -1,6 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
-Statut : ⏳ proposé le 2026-10-16, à relire (enveloppe et tranche R0). Démarre après E20.e0a4 (plan E20, §1.16.4).
+Statut : ⏳ proposé le 2026-10-16 ; enveloppe READY ; R0 démarrée puis **en pause le 2026-10-16 sur Q-R-2** (arrêt de T0.1 du plan du
+moteur, D-R-9) ; R1 détaillée et READY, attend R0. Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 ## 0. Décisions de l'auteur
 
@@ -153,7 +154,7 @@ script à chaque tranche ; (5) les renommages imposés : `AlundraPlayerControlle
   (`executor`) ; `plan-verifier` avant chaque tranche ; un verifier frais après chaque tranche, deux pour R0 et R4 (moteur, données).
 - Retour arrière : `git revert` de la tranche ; pour R0 et R4, revert du commit parent et réexport depuis le commit précédent.
 
-## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export ⏳ (révision 4 ; démarrage décidé par l'auteur, D-R-9 ; après E20.e0a4 et la fusion de D-R-8)
+## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export ⚠️ (révision 4 ; démarrage décidé par l'auteur, D-R-9 ; en pause le 2026-10-16 sur Q-R-2)
 
 **Relecture (2026-10-16).** Enveloppe (§0 à §3) : **READY**. R0 : **REVISE**, trois blocages corrigés (FIX, révision 1) : (1) le lieu
 de l'exception de D-R-4 et le chemin de son contexte, sans casser les chargements sans DLL (vérification du convertisseur) ; (2) un seul
@@ -245,6 +246,16 @@ n'est jamais indexée).
 - Validation du moteur (AGENTS.md §6) : les deux `.sln`, `CasaEngine.Tests` construit explicitement et vert, RPGDemo et les démos lancés
   (preuve de démarrage).
 
+**État (2026-10-16) : en pause sur Q-R-2.** Fait : T0 de la partie parent (`be8f2f4`, ci-dessous) ; la branche du moteur
+`chantier/script-types-full-name` créée depuis `main` `781d3527` ; le plan du moteur versé (`b4ed711c`,
+`CasaEngineMonogame/ai-agent/tasks/script-types-full-name-tasks.md`) ; son T0.1, l'inventaire des filets autour d'une création d'objet
+script (`a82118fd` : 13 filets, F1 à F13, avec fichier, ligne et règle ; départ `CasaEngine.Tests` 4 252 / 0 échec). **Arrêt (D-R-9, D8
+du plan du moteur)** : dans l'éditeur, hors session de jeu, aucune frontière ne rattrape une exception de création (`Program.cs` de
+l'éditeur relance tout ; `GameEditor.Update` ne rattrape que pendant une session de jeu) ; un projet ouvert sans DLL construite
+n'enregistre aucune assembly de scripts, et l'aperçu de l'éditeur crée les proxies (`InitializeGameplayOnLoad = true`) : une entité au
+script introuvable, aujourd'hui journalisée et omise (`World.cs:797`), ferait planter l'éditeur. Question Q-R-2 (§11) ; rien d'autre n'est
+fait : aucun code, le pointeur du sous-module n'est pas commité (le moteur est sur `a82118fd`, branche du chantier).
+
 **T0 de la partie parent** ✅ (faite le 2026-10-16 : annexe `docs/plan-restructuration-annexe/r0/`, export de référence au HEAD
 `3f28554` avec `m0`/`m1` identiques sauf `report.json`, 24 104 fichiers ; convertisseur 854 tests, `Alundra.Tests` 5 092 en Release)
 (commit de docs, avant tout code du moteur ou du parent). Annexe `docs/plan-restructuration-annexe/r0/` :
@@ -285,8 +296,162 @@ chemins autorisés qui change ; un test qui change de valeur attendue ; un déma
 **Retour arrière.** Revert du commit parent (pointeur, convertisseur, DLL, tests) et réexport depuis le commit précédent ; la branche du
 moteur reste non fusionnée.
 
-## 5. Questions à l'auteur
+## 5. Tranche R1 — ADR, table des noms, contrôle des noms ⏳ (détaillée le 2026-10-16 ; révision 1 **READY** ; attend la clôture de R0)
 
+**Relecture (2026-10-16).** R1 : **REVISE**, cinq blocages corrigés (FIX, révision 1) : (1) la table donne pour **chaque type** son
+fichier, son namespace et son nom à chaque étape (r2, r3, final), ce qui tranche le cas des types secondaires des fichiers cités par les
+données ; (2) `Plugin.cs` et `InternalsVisibleTo.Tests.cs` sont dans la table et les fichiers de la DLL se recensent par git, sans
+`bin/`, `obj/` ni `artifacts/` ; (3) le contrôle de l'arbre liste tous les écarts, prend une racine en option, et ses preuves couvrent un
+arbre conforme et quatre écarts distincts ; (4) la règle (3) du §2, approuvée, est appliquée et non écartée (voir « Lecture du §2 ») ;
+(5) un propriétaire, des chemins exclusifs et un budget. Seconde relecture (fraîche) de la révision 1 : **READY**.
+
+**But.** La règle et la cible écrites une fois pour toutes, avant tout déplacement : l'ADR du chantier avec D-R-1 à D-R-9, l'arborescence,
+les règles de nommage, la **table complète** par type (ancien fichier et ancien nom → fichier, namespace et nom à chaque étape), qui sert
+aussi de table ancien chemin → nouveau chemin aux annexes figées (D-R-6) ; l'outil qui génère la table et contrôle les noms, versé dans le
+dépôt, et dont R2, R3 et R4 se servent comme preuve mécanique.
+
+**Lecture du §2 (arborescence approuvée, règle (3)).** Une entrée de l'arborescence est un fichier ; « (+ X) » veut dire « X dans le même
+fichier » (`WorldProxy (+ MapEvent)`, `IEventProgramRunner (+ NoOp)`, `EntityScriptProxy (+ .HitPass)`). La règle (3) (« un type principal
+par fichier, les types secondaires publics dans leur propre fichier ») s'applique à tout type secondaire **public** que l'arborescence ne
+garde pas par « (+ X) » ; un type secondaire **interne** reste dans le fichier de son type principal, sauf s'il a sa propre entrée dans
+l'arborescence (`SlotShadow` dans `Probes/`, `PortalScanner` dans `Transitions/`). Le type principal d'un fichier est celui qui porte le
+nom du fichier, sauf `EventProgramRunner.cs` (principal : `IEventProgramRunner`).
+
+**Faits (2026-10-16, prototypes du scratchpad `dll-structure/r1/`, `gen_table.py` et `gen_table2.py`).**
+- 129 fichiers sous `Alundra/Scripts/` (aucun manquant, aucun en trop), plus `Alundra/Plugin.cs` (type `Plugin`, namespace `Alundra`,
+  ne bouge pas) et `Alundra/InternalsVisibleTo.Tests.cs` (aucun type ; devient `Alundra/Properties/InternalsVisibleTo.cs` en R2) ;
+  `Alundra/Screens/` est un dossier vide non suivi, hors table.
+- 219 types de premier niveau, dont 148 changent de nom ; 42 fichiers en déclarent plusieurs ; 76 types secondaires prennent leur propre
+  fichier (74 publics et les 2 internes de l'arborescence ; `NoOpEventProgramRunner` reste avec l'interface ; 13 internes restent avec
+  leur type principal, dont `AlundraMapEvent`) : **205 fichiers** à l'arrivée ; aucun chemin en double à aucune étape, aucun nom en
+  double dans un même namespace (hors la classe partielle `EntityScriptProxy`).
+- Les fichiers cités par les données (les 9 types, 10 fichiers avec `.HitPass`) restent dans `Alundra/Scripts/`, namespace
+  `Alundra.Scripts`, jusqu'à R4. Leurs types secondaires publics (`AlundraPadState`, les view models d'éléments `ChoiceFrameViewModel`,
+  `HudImageViewModel`, etc., qu'aucune donnée ne cite : les `.xaml` ne les nomment qu'en commentaire) sortent dès R2 vers leur dossier
+  final ; l'interne `AlundraMapEvent` reste dans `AlundraWorldProxy.cs`, prend son nom `MapEvent` en R3 dans `Alundra.Scripts`, et son
+  namespace final en R4 avec son fichier.
+- Collisions (`check_names.py` sur `couplings/scan_types.py` : sources du moteur, de MGUI, de NvgSharp, types publics des paquets et de la
+  BCL lus dans leurs XML de documentation) : **aucune** pour les noms finaux ni pour les segments de namespace. Un type au nom d'un
+  segment : `SaveScreen` dans `UI/SaveScreen`, d'où le dossier **`UI/Saving`** (libre ; règle (4) du §2) ; plus aucun cas dans la DLL ;
+  dans les tests, la classe imbriquée `Session` (`Alundra.Tests/UI/TextBoxGpuHarness.cs:262`) porte le nom du segment `Session` :
+  imbriquée, elle ne masque le namespace que dans le corps de sa classe (avertissement de l'outil, pas un échec).
+
+**Tâches.**
+- T1 — L'outil `tools/dll-structure/` (Python, lecture seule sur le dépôt, `python -B`) :
+  - `scan_types.py` : le module de lecture des déclarations (repris de `couplings/scan_types.py`, sans ses sorties) : pour la DLL, les
+    fichiers `.cs` de `git ls-files --cached --others --exclude-standard -- Alundra` hors `bin/`, `obj/`, `artifacts/`, lus dans l'arbre
+    de travail (ou sous la racine `--root`) ; moteur, MGUI et NvgSharp au HEAD de leur sous-module ; paquets et BCL par leurs XML (la liste
+    des paquets et versions est écrite dans le script ; un paquet listé sans XML trouvé est une **erreur**, jamais un silence) ;
+  - `gen_table.py` : la table depuis l'arborescence du §2 et la lecture ci-dessus (dictionnaires écrits dans le script, repris des
+    prototypes), lue à une **révision de base épinglée** dans le script (le HEAD du dépôt au début de R1, après R0 ; la table ne bouge
+    plus quand R2 à R4 déplacent les fichiers) ; sortie versionnée `tools/dll-structure/table.json`, une ligne par type : ancien fichier,
+    ancien nom, accès, principal ou non, scindé ou non, cité par les données ou non, et pour `r2`, `r3`, `final` : fichier, namespace, nom ;
+    plus les deux fichiers sans type de la racine (`Plugin.cs` avec son type ; `InternalsVisibleTo.Tests.cs` → `Properties/InternalsVisibleTo.cs`
+    dès `r2`) ; et `table.md` (lisible, par fichier final) ; rejouée, elle redonne les mêmes octets (`git diff --exit-code`) ; elle échoue
+    si un fichier n'a pas de type principal connu, si deux types scindés visent un même chemin, ou si un nom revient deux fois dans un
+    namespace (hors partielle) ;
+  - `check_names.py --table` : les noms prévus contre le moteur, MGUI, NvgSharp, les paquets et la BCL (collision de type ; segment de
+    namespace qui masquerait un type de même nom) ; un nom de type égal à un segment de namespace de la DLL ; liste **tous** les cas,
+    code de sortie non nul s'il y en a ;
+  - `check_names.py --tree --stage r2|r3|final [--root <dossier>]` : l'arbre contre la table à cette étape, en listant **tous** les écarts :
+    fichier de la table absent à son chemin de l'étape ; type absent sous son nom de l'étape, ou déclaré dans un autre namespace ou un
+    autre fichier ; fichier `.cs` de la DLL hors de la table ; puis les contrôles de collision sur les noms réels ; code de sortie non nul
+    au moindre écart ;
+  - `selftest.py <dossier de travail hors dépôt>` : construit depuis la table des arbres synthétiques (un fichier par chemin de l'étape,
+    `namespace` et déclarations minimales) et vérifie le code de sortie et l'écart signalé de `--tree --stage r2 --root` sur : (a) l'arbre
+    conforme (0, aucun écart) ; (b) un fichier déplacé qui garde `namespace Alundra.Scripts;` (1, « namespace ») ; (c) un type sous son nom
+    de `r3` à l'étape `r2` (1, « nom ») ; (d) un `.cs` en trop (1, « hors table ») ; (e) un fichier manquant (1, « absent ») ; et
+    `--table` sur une copie de la table où un nom final devient `Vector2` (1, « collision ») ;
+  - `README.md` (anglais) : usage, source des fichiers, limites (un paquet sans XML n'est pas contrôlé par le script : la construction
+    reste juge, une ambiguïté y est `CS0104`).
+  Acceptation de T1 : `selftest.py` vert (les six cas) ; `--table` vert ; `--tree --stage r2` sur l'arbre réel d'avant R2 rouge, avec un
+  nombre d'écarts égal au nombre de types et de fichiers qui bougent en R2 (compté dans la table) ; la table rejouée identique.
+- T2 — L'ADR (le prochain numéro libre de `docs/decisions/README.md`, 0075 au 2026-10-16 ; skill `adr`) : contexte (D-R-1 à D-R-9 et la
+  demande de l'auteur), décision (dossiers = namespaces `Alundra.<Domaine>` ; pas de préfixe `Alundra` ; la lecture du §2 ci-dessus pour la
+  règle (3) ; les noms spéciaux `HeroController`, `BgmPlayer`, `GameRandom`, `SfxBank`, `EventProgramRunner` / `IEventProgramRunner` ; les
+  dossiers interdits `World`, `Player`, `Camera`, `Dialogue`, `TextBox`, `Text`, `Debug`, `Math`, `Entity`, et `SaveScreen` ; aucun type au
+  nom d'un segment ; les 9 types cités par les données bougent seuls en R4 avec le second export ; annexes figées, lues par la table),
+  conséquences, renvoi à l'ADR moteur de R0 ; la table (`table.md`) jointe à l'ADR ; l'index des ADR ; la ligne « Decisions: see ADR-NNNN »
+  en tête de ce plan.
+- T3 — Ce plan : §2 corrigé (`UI/SaveScreen/` → `UI/Saving/` ; la lecture de la règle (3) en renvoi à l'ADR), R1 ✅ avec ses résultats.
+
+**Propriétaire, chemins, budget.** Un `executor` (outil à écrire, jugement borné), chemins exclusifs : `tools/dll-structure/**`,
+`docs/decisions/0075-*` et `docs/decisions/README.md`, et dans ce plan les seuls §2 et §5 ; R1 commence après la clôture de R0 (prérequis
+de l'enveloppe) et n'écrit dans le plan qu'alors. Budget : une passe d'exécution, une passe de correction au plus ; un verifier frais à la
+fin. Un commit par tâche.
+
+**Acceptation.** L'acceptation de T1 ; les 131 fichiers d'origine, les 219 types et les 205 fichiers d'arrivée couverts ; l'ADR indexé ;
+§2 et ADR et table disent la même chose (`SlotShadow` dans `Probes`, `Saving`, la règle (3)). Aucun fichier `.cs` touché ; aucune
+construction requise.
+
+**Arrêts.** Une collision ou un type au nom d'un segment que le §2 ne résout pas ; un fichier sans type principal que la lecture du §2 ne
+tranche pas ; une révision de base qui ne contient pas le résultat de R0.
+
+## 6. Tranche R2 — Déplacements et scissions ⏳
+
+**But.** Chaque type dans son fichier, son dossier et son namespace de l'étape `r2` de la table, sans aucun changement de nom de type ni
+de comportement ; les fichiers des types cités par les données restent dans `Alundra/Scripts/` (namespace `Alundra.Scripts`), sans leurs
+types secondaires publics, qui sortent.
+
+**Règles.** `git mv` fichier par fichier (l'historique reste suivi) ; les 76 types scindés coupés par script (déclaration avec ses
+commentaires de documentation et attributs, `using` du fichier d'origine repris) ; la déclaration `namespace` de chaque fichier changée ;
+les `using` de chaque fichier de la DLL, des tests et de `tools/AlundraTestSaves` calculés par script depuis la table, puis la
+construction corrige les restes ; pas de `global using` interne. Le test qui lit des sources par chemin (`AlundraHudPresenterTests.cs:442-460`)
+suit les nouveaux chemins. Les qualifications explicites `Alundra.Scripts.X` (`AlundraWorldProxy.cs:380`, `TextBoxGpuHarness.cs:490,496,501`)
+suivent. Un commit par domaine, chacun construit et vert.
+
+**Acceptation.** `check_names.py --tree --stage r2` vert ; suites complètes en Release et en Debug, même compte, zéro échec ; aucune valeur
+attendue de test modifiée ; `git log --follow` retrouve l'historique d'un échantillon ; `cmp` ; garde des traces ; recette courte de
+l'auteur. **Arrêts** : un test qui change de valeur ; un des 9 types cités déplacé.
+
+## 7. Tranche R3 — Renommages ⏳
+
+**But.** Plus de préfixe : chaque type sous son nom de l'étape `r3` (les 9 types cités gardent le leur jusqu'à R4) ; les fichiers renommés
+comme leurs types (`git mv`).
+
+**Règles.** Renommages par outil (Roslyn ou l'IDE, §3), jamais par remplacement de texte global ; l'outil choisi et prouvé en T0 de la
+tranche ; les littéraux de journal qui portent un nom de classe suivent, et les tests qui les lisent avec eux ; les clés de données
+(`AlundraCells`, `AlundraWallPlacements`, `AlundraFloorPlacements`, `AlundraCompanionJson`) et les noms d'assets ne bougent pas. Les
+propriétés typées par une interface et nommées comme une classe (`WorldProxy`, environ vingt sites, par exemple
+`ScreenFadeDirector => AlundraScreenFadeDirector.Instance`) sont qualifiées par le namespace. `AlundraEventProgramRunner` →
+`EventProgramRunner` et `EventProgramRunner.cs` → `IEventProgramRunner.cs` dans le même commit. Un commit par domaine, chacun construit et vert.
+
+**Acceptation.** Comme R2 avec `--stage r3`, plus : aucun type préfixé hors des 9 de R4 (recherche).
+
+## 8. Tranche R4 — Les 9 types cités par les données ; second export ⏳
+
+**But.** `WorldProxy` (+ `MapEvent`, `Alundra.Maps`), `EntityScriptProxy` (`Alundra.Entities`), `HeroController` (`Alundra.Hero`) et les
+six view models (`Alundra.UI.<écran>`) à leur place et sous leur nom ; le convertisseur écrit les noms complets finaux ; les six
+`design.json` aussi ; le second export prouvé comme le premier (prédiction versée avant le code, allowed-paths, double export).
+
+**Règles.** Même protocole que la partie parent de R0 (annexe `r4/` avant tout code ; un seul commit parent pour le convertisseur, les
+`design.json`, la DLL et les tests ; export en fenêtre calme).
+
+**Acceptation.** Comme R0 (partie parent) ; `check_names.py --tree --stage final` vert ; plus aucun type préfixé ; plus aucun fichier dans
+`Alundra/Scripts/` (le dossier disparaît).
+
+## 9. Tranche R5 — Tests en miroir ⏳
+
+**But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/` et `Support/` ; les classes de test sans préfixe ;
+aucune valeur attendue changée. Le classement de l'inventaire (`report_inventory.md` §7) sert de base, recensé à nouveau en T0.
+
+## 10. Tranche R6 — Documentation vivante ⏳
+
+**But.** `docs/formats/` (liens vers `Alundra/Scripts/*.cs`), `docs/guidelines-runtime-alundra-casaengine.md` (§5.1 : la règle « préfixer
+`Alundra…` » et le nom court), `docs/editeur-couverture-dll.md`, `docs/stick-probe.md:45` ; les scripts de `research/` qui ouvrent des sources
+par chemin ; les annexes figées ne bougent pas (D-R-6).
+
+## 11. Questions à l'auteur
+
+- **Q-R-2** (2026-10-16, ouverte ; bloque R0 donc tout le programme ; O2 du plan du moteur) — Que doit faire **l'éditeur** quand il ouvre
+  un monde ou l'aperçu d'un préfab dont la DLL de scripts n'est pas construite ? Aujourd'hui, une entité au script introuvable est
+  journalisée et omise ; avec la règle de D-R-4 (exception), l'éditeur planterait à l'ouverture. (A) **recommandé** : l'exception sort en jeu
+  et en session de jeu de l'éditeur, mais pas dans l'aperçu de l'éditeur, où l'entité reste journalisée et omise comme aujourd'hui (un
+  drapeau de la politique d'exécution, `ThrowOnScriptTypeResolution`, faux pour l'aperçu ; coût : un champ et un test ; le proxy de
+  monde, le contrôleur et le mode plantent déjà l'éditeur dans ce cas, inchangés). (B) l'éditeur rattrape l'exception à ses points
+  d'entrée (mise à jour hors session, ouverture d'un monde, aperçus) et laisse le monde à moitié chargé : plus de code, plus de points à
+  tenir. (C) l'éditeur refuse d'ouvrir un monde tant que la DLL n'est pas construite : on ne pourrait plus ouvrir un monde pour l'éditer
+  avant de construire ses scripts.
 - **Q-R-1** — **Tranchée le 2026-10-16 (D-R-8)**. Question d'origine : branche : la restructuration touche tous les fichiers. La faire sur une branche créée depuis `chantier/e20-heros` (qui
   contient tout E20, non fusionné dans `main`), ou fusionner d'abord `chantier/e20-heros` dans `main` (votre décision) et partir de `main` ?
   Recommandation : fusionner E20 d'abord, sinon toute reprise d'E20 sur l'ancienne arborescence entrera en conflit.
