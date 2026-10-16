@@ -20,6 +20,10 @@ Statut : ⏳ proposé le 2026-10-16, à relire (enveloppe et tranche R0). Démar
   `Alundra.Scripts.…`, vérifiable en jeu), puis la restructuration, puis un second export pour les classes citées par les données (R4).
 - **D-R-6** (2026-10-16) — Les annexes d'oracles sont figées (preuves copiées avec sommes de contrôle) : leurs scripts ne sont pas corrigés,
   l'ADR du chantier donne la table ancien chemin → nouveau chemin ; les scripts de `research/` sont corrigés.
+- **D-R-7** (2026-10-16) — L'auteur accorde une relecture de clôture de plus pour R0 (après la révision 3).
+- **D-R-8** (2026-10-16, réponse à Q-R-1) — `chantier/e20-heros` est fusionnée dans `main` d'abord (avec les sous-modules : moteur et
+  analyseur, pointeurs vérifiés), puis le chantier part de `main` ; la fusion se fait sur le feu vert explicite de l'auteur, une fois
+  E20.e0a4 close, par une branche d'intégration puis une avance rapide.
 - Règle du moteur (D-R-2), notée aussi en mémoire : « le moteur, quand il crée les objets script, ne doit chercher que dans la DLL ».
 
 ## 1. Faits établis (découverte du 2026-10-16, lecture seule)
@@ -134,12 +138,12 @@ script à chaque tranche ; (5) les renommages imposés : `AlundraPlayerControlle
   F9).
 - Déplacements par `git mv` (l'historique reste suivi) ; renommages par outil (Roslyn ou l'IDE), jamais par remplacement de texte global
   (des clés de données portent le préfixe sans être des types).
-- Branche : à décider par l'auteur (Q-R-1).
+- Branche : depuis `main`, après la fusion d'E20 (D-R-8).
 - Budget : R2 et R3 sont mécaniques (`mech-executor`, une passe par domaine, un commit par domaine) ; R0 et R4 demandent du jugement
   (`executor`) ; `plan-verifier` avant chaque tranche ; un verifier frais après chaque tranche, deux pour R0 et R4 (moteur, données).
 - Retour arrière : `git revert` de la tranche ; pour R0 et R4, revert du commit parent et réexport depuis le commit précédent.
 
-## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export ⏸️ (en pause : la relecture de clôture a rendu REVISE ; correction faite en révision 3 ; une relecture de plus est à accorder par l'auteur)
+## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export ⏳ (révision 3 ; relecture de clôture de plus accordée par l'auteur, D-R-7)
 
 **Relecture (2026-10-16).** Enveloppe (§0 à §3) : **READY**. R0 : **REVISE**, trois blocages corrigés (FIX, révision 1) : (1) le lieu
 de l'exception de D-R-4 et le chemin de son contexte, sans casser les chargements sans DLL (vérification du convertisseur) ; (2) un seul
@@ -259,6 +263,6 @@ moteur reste non fusionnée.
 
 ## 5. Questions à l'auteur
 
-- **Q-R-1** — Branche : la restructuration touche tous les fichiers. La faire sur une branche créée depuis `chantier/e20-heros` (qui
+- **Q-R-1** — **Tranchée le 2026-10-16 (D-R-8)**. Question d'origine : branche : la restructuration touche tous les fichiers. La faire sur une branche créée depuis `chantier/e20-heros` (qui
   contient tout E20, non fusionné dans `main`), ou fusionner d'abord `chantier/e20-heros` dans `main` (votre décision) et partir de `main` ?
   Recommandation : fusionner E20 d'abord, sinon toute reprise d'E20 sur l'ancienne arborescence entrera en conflit.
