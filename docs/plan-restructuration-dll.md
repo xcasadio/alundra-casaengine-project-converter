@@ -143,7 +143,7 @@ script à chaque tranche ; (5) les renommages imposés : `AlundraPlayerControlle
   (`executor`) ; `plan-verifier` avant chaque tranche ; un verifier frais après chaque tranche, deux pour R0 et R4 (moteur, données).
 - Retour arrière : `git revert` de la tranche ; pour R0 et R4, revert du commit parent et réexport depuis le commit précédent.
 
-## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export ⏳ (révision 3 ; relecture de clôture de plus accordée par l'auteur, D-R-7)
+## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export ⏸️ (révision 4 ; en pause : la relecture accordée par D-R-7 a rendu REVISE, correction faite ; décision de l'auteur attendue)
 
 **Relecture (2026-10-16).** Enveloppe (§0 à §3) : **READY**. R0 : **REVISE**, trois blocages corrigés (FIX, révision 1) : (1) le lieu
 de l'exception de D-R-4 et le chemin de son contexte, sans casser les chargements sans DLL (vérification du convertisseur) ; (2) un seul
@@ -160,6 +160,11 @@ de préfab (`:297-304`, `:471-475`) et le pion par défaut (`:380`, `:384`) : l'
 omise. **Révision 3 (2026-10-16)**, conforme à D-R-4 : un type d'exception dédié traverse ce filet par un filtre ; toutes les autres
 exceptions gardent le comportement d'aujourd'hui. Le cap de relecture étant atteint, la tranche est en pause jusqu'à ce que l'auteur
 accorde une relecture de clôture de plus.
+Relecture accordée (D-R-7) : **REVISE**, un blocage : la DLL crée ses entités elle-même (`AlundraEntitySpawnFactory.cs:434-443`,
+`:507-514`, `:588-593` appellent `entity.Initialize()`, où le proxy est créé) sous trois `catch (Exception ex)` qui journalisent et
+omettent l'entité (`AlundraWorldProxy.cs:1093`, `:3401`, `:3531`) ; le proxy existant, l'`Initialize` du moteur ne le recrée plus : sur le
+chemin réel d'Alundra, l'exception de D-R-4 serait avalée. **Révision 4 (2026-10-16)** : la même règle aux trois sites de la DLL, et un
+test du chargement réel par `AlundraWorldProxy`.
 
 **But.** Le moteur crée un objet script depuis une chaîne en ne cherchant que dans l'assembly de gameplay enregistrée, par nom complet
 exact ; les types du moteur se créent par le code ; un nom introuvable, ambigu ou du mauvais genre lève une exception qui dit tout. Le jeu
@@ -243,6 +248,13 @@ doivent concorder).
   `Alundra.Scripts.AlundraPlayerController`) ; leurs tests ; un verrou nouveau sur le nom écrit dans les `.world` ; les commentaires « simple
   name » corrigés.
 - `alundra-project/UI/Screens/*.design.json` : les six `view_model_type` en noms complets.
+- **Les trois filets de création de la DLL** (`AlundraWorldProxy.cs:1093`, la boucle du chargement de carte ; `:3401`,
+  `SpawnEntityByRecordId` ; `:3531`, `SpawnEntityBySpriteIndex`) : chacun reçoit, avant son `catch (Exception ex)`, un `catch` du seul
+  `ScriptTypeResolutionException` qui fait `AbortCreation(entity, added, slot)` puis relance ; toute autre exception garde le journal et
+  l'omission d'aujourd'hui. Tests d'`Alundra.Tests` : le chargement réel d'un monde par `AlundraWorldProxy` dont un enregistrement
+  désigne un préfab au mauvais `script_class_name` lève l'exception, qui nomme le chemin relatif du `.entity` du préfab (rouge contre la
+  DLL d'aujourd'hui : avertissement et entité omise) ; une autre faute à la même création (`CreationFaultHookForTests`) journalise,
+  omet et finit le chargement, comme aujourd'hui.
 - DLL et tests : `nameof(X)` → `typeof(X).FullName!` là où le nom va dans `GameplayProxyClassName` (3 sites de la DLL, 65 lignes de tests) et
   dans les six tests d'écran ; un initialiseur de module d'`Alundra.Tests` enregistre l'assembly de la DLL ; un test garde-fou lit
   `Alundra.gameMode`, un `.entity` et un `.world` réels et compare leurs chaînes à `typeof(X).FullName`.
