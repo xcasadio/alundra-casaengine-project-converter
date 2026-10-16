@@ -615,8 +615,10 @@ internal static class AlundraEntitySpawnFactory
         // AlundraWorldProxy.RunPendingEventTriggers (called later this SAME frame, after any such
         // spawn), exactly like an entity whose pick phase already ran and chose slot A - triggering its
         // Load program immediately, without ever going through PickEventTrigger's own Loaded -> Normal
-        // transition. Explicitly seeding ProgramUnknown here preserves the documented "next frame" spawn
-        // visibility (docs/intro-roadmap.md §0 deviation B) under the new per-entity architecture.
+        // transition. Explicitly seeding ProgramUnknown here keeps the Load program of such a proxy out of the
+        // pending-trigger re-scan of its own pass (docs/intro-roadmap.md §0 deviation B); it runs through the pick of
+        // its own first tick. That first tick is the next frame for an entity of the map load and, since E20.e0a4, the
+        // tick that sees it born (or the next one) for an entity the script opcodes 0x2D, 0x8A and 0x8B made from a record.
         proxy.EventTrigger = ScriptHelper.ProgramUnknown;
     }
 

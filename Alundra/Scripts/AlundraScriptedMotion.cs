@@ -164,8 +164,8 @@ internal static class AlundraScriptedMotion
     /// of whether it carries a controller.</summary>
     internal static void TickScriptedNpc(AlundraEntityScriptProxy entity)
     {
-        // E20.e0a3b (D-E0A-8, ADR-0065): an entity born by the interface of the sprite index whose first animation is not validated yet (CurrentAnimationId still ~0, as the creation leaves it) takes its
-        // animation set from the target: the binary's creation has switched to it already (0x80038AB4). Guarded by the marker, so no entity from a record ever sees this line.
+        // E20.e0a3b (D-E0A-8, ADR-0065): an entity born by the interface of the sprite index (and, since E20.e0a4, by a script opcode from a record) whose first animation is not validated yet (CurrentAnimationId still ~0, as the creation leaves it) takes its
+        // animation set from the target: the binary's creation has switched to it already (0x80038AB4). Guarded by the marker, so no entity of the map load ever sees this line; the entities from a record made by the script opcodes 0x2D, 0x8A and 0x8B do since E20.e0a4.
         RunOneMotionTick(entity, entity.JoinsBirthTick && entity.CurrentAnimationId == ~0u ? entity.TargetAnimationId : entity.CurrentAnimationId);
     }
 

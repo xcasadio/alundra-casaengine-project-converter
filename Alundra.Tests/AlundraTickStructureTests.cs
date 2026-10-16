@@ -365,8 +365,10 @@ public sealed class AlundraTickStructureTests : IDisposable
     }
 
     [Fact]
-    public void AnEntityThatAppearsDuringAFrame_HasItsFirstTickAtTheFirstTickOfTheNextFrame()
+    public void AnEntityWithoutTheBirthTickMarker_ThatAppearsDuringAFrame_HasItsFirstTickAtTheFirstTickOfTheNextFrame()
     {
+        // The rig adds the entity as the map load would: without JoinsBirthTick. An entity a script opcode made from a record (0x2D, 0x8A, 0x8B), or the interface of the sprite index, takes part in the tick that
+        // sees it born instead (E20.e0a3b, E20.e0a4: AlundraBirthTickTests, AlundraRecordBirthTickTests).
         var rig = BuildWarmRig();
         AlundraEntityScriptProxy? newcomer = null;
         var spawnTick = -1;

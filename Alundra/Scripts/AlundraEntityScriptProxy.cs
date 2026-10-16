@@ -1353,10 +1353,11 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     internal bool TookPartInFrame;
 
     /// <summary>
-    /// E20.e0a3b (docs/plan-e20-heros.md section 1.16.3b, D-E0A-5, D-E0A-8, ADR-0065): the entity was born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> and so takes part in the tick that sees it born, before the
-    /// engine integrates it (<see cref="AlundraWorldProxy"/> collects it, the host's collision field stands in for the world's one that does not exist yet, the generic kinematics keys its animation set on the target
-    /// while the animation is not validated). Posed ONLY at the very end of that interface, after the push of the position to the root (so the creation never reads the field by the fallback); never by the
-    /// creation from a record, never cloned.
+    /// E20.e0a3b (docs/plan-e20-heros.md section 1.16.3b, D-E0A-5, D-E0A-8, ADR-0065) and E20.e0a4 (section 1.16.4, D-E0A4-3): the entity was born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, or from a record by
+    /// one of the script opcodes <c>0x2D</c>, <c>0x8A</c> and <c>0x8B</c>, and so takes part in the tick that sees it born, before the engine integrates it (<see cref="AlundraWorldProxy"/> collects it, the host's collision
+    /// field stands in for the world's one that does not exist yet, the generic kinematics keys its animation set on the target while the animation is not validated). Posed LAST: at the very end of the interface, after
+    /// the push of the position to the root, or by the opcode after the position it writes and its own push (so the creation, and the position the opcode writes, never read the field by the fallback). Never by the map
+    /// load, never by <c>SpawnEntityByRecordId</c> itself (it is the opcode that poses it), never for the hero, never cloned.
     /// </summary>
     internal bool JoinsBirthTick;
 
@@ -1364,15 +1365,16 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// E20.e0k2 (docs/plan-e20-heros.md section 1.18.2, D-E0K-1, ADR-0069): the entity keeps its Z in the logic tick (the "logical Z"), as the hero does in the air state: <see cref="PosZ"/> belongs to the
     /// tick, the root only follows it, nothing pulls it back from the root. Posed by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> ONLY, in the marker block of ADR-0065 (the last write of
     /// the creation); never by the creations from a record, never for the hero, never cloned. It is neither <c>EntityRefId == -1</c> (the adopted hero and the recycled entities have it too) nor
-    /// <see cref="JoinsBirthTick"/> (E20.e0a4 may extend that one to the records). Read by the logic tick (<see cref="AlundraScriptedMotion"/>, W1), by the support block and the root pull (W2, W3), by <see cref="PushLogicalPositionToRoot"/> and by the thaw (W4).
+    /// <see cref="JoinsBirthTick"/> (which the script opcodes pose on the entities from a record since E20.e0a4; this one stays for the interface). Read by the logic tick (<see cref="AlundraScriptedMotion"/>, W1), by the support block and the root pull (W2, W3), by <see cref="PushLogicalPositionToRoot"/> and by the thaw (W4).
     /// </summary>
     internal bool HasLogicalZ;
 
     /// <summary>
     /// E20.e0a5 (docs/plan-e20-heros.md section 1.16.5, D-E0A5-1 to D-E0A5-4, ADR-0071): the entity was born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, so the first switch of its creation (the animation 0, made inside
     /// <c>InitializeEntity</c> at <c>0x80039EA8</c>) is a switch of the binary that is already done: the first tick the clock sees it is a COUNTED tick (the box cursor reads 1, the animation advances), not an uncounted switch tick,
-    /// and the end of the frame that validates the switch replays all the ticks reserved. Posed by <see cref="AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex"/> ONLY, before the balance sheet (the first switch of the creation);
-    /// never by the creations from a record, never for the hero, never cloned. It is neither <see cref="JoinsBirthTick"/> (posed last, E20.e0a4 may extend that one) nor <see cref="HasLogicalZ"/>.
+    /// and the end of the frame that validates the switch replays all the ticks reserved. Posed by <see cref="AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex"/> and, since E20.e0a4 phase A (section 1.16.4, D-E0A4-2),
+    /// by <see cref="AlundraWorldProxy.SpawnEntityByRecordId"/> (the creation from a record by a script), in both cases before the balance sheet (the first switch of the creation); never by the map load or the gull
+    /// (D-E20-36), never for the hero, never cloned. It is neither <see cref="JoinsBirthTick"/> (posed last, by the interface and by the script opcodes) nor <see cref="HasLogicalZ"/>.
     /// </summary>
     internal bool SwitchedAtCreation;
 
@@ -1384,7 +1386,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
 
     /// <summary>
     /// E20.e0a3b (D-E0A-5): the collision field the reads of <c>Owner.World.CollisionField</c> of this proxy use: the world's, once the engine integrated the entity; before that, and only for an entity that
-    /// <see cref="JoinsBirthTick"/>, the host's (<see cref="IAlundraScriptHost.CollisionField"/>). An entity from a record keeps the exact read it had (null before its integration).
+    /// <see cref="JoinsBirthTick"/>, the host's (<see cref="IAlundraScriptHost.CollisionField"/>). An entity from a record keeps the exact read it had (null before its integration) unless a script opcode (<c>0x2D</c>, <c>0x8A</c>, <c>0x8B</c>, E20.e0a4) posed the marker on it.
     /// </summary>
     internal ICollisionField? ReadCollisionField()
     {

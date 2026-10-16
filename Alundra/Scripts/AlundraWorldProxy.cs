@@ -2840,7 +2840,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         foreach (var entity in _spawnedEntities)
         {
             // E20.e0a3b (D-E0A-5): an entity born by the interface of the sprite index, not yet integrated by the engine, is in the block of the tick that sees it (in the order of its slot): the one
-            // of MovePlayer, which re-collects, or the next one of the same frame. An entity from a record never carries the marker; one integrated by the engine is a TookPartInFrame entity as before.
+            // of MovePlayer, which re-collects, or the next one of the same frame. An entity of the map load never carries the marker; one made from a record by a script opcode (0x2D, 0x8A, 0x8B) does since E20.e0a4; one integrated by the engine is a TookPartInFrame entity as before.
             if (entity.GameplayProxy is AlundraEntityScriptProxy proxy
                 && !ReferenceEquals(proxy, hero)
                 && (proxy.TookPartInFrame || (proxy.JoinsBirthTick && entity.World == null)))
@@ -3330,9 +3330,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>), with <paramref name="logicEntity"/>'s own backing entity
     /// passed down as the new entity's <c>ParentEntity</c> - exactly like <c>EntityManager.InitializeEntity</c>
     /// does for its <c>parentEntity</c> argument. The spawned entity joins <see cref="_spawnedEntities"/>
-    /// immediately, so it is visible to any further search this same script call issues, and is picked up
-    /// by <see cref="Update"/>'s per-frame passes starting next frame (it enters as
-    /// <see cref="EntityStatus.Loaded"/>, so its own Load program runs then, same as every map-load spawn).
+    /// immediately, so it is visible to any further search this same script call issues. E20.e0a4: the three opcodes pose
+    /// <see cref="AlundraEntityScriptProxy.JoinsBirthTick"/> on it as the last write of the apparition, so it takes part in the tick that sees it born: the tick of the map events that made it,
+    /// the next tick when it was made by the program of another entity (the tick block is collected before the programs run). It enters as <see cref="EntityStatus.Loaded"/>, so its own Load
+    /// program runs in its first tick, same as every map-load spawn; the engine integrates it at the head of the next frame.
     /// Unlike the original (a single global, size-limited entity-slot table with recycling), this always
     /// allocates a brand new CasaEngine <see cref="Entity"/>, which takes the lowest free slot of the table of 64 (E20.e0a2: a full table refuses, the opcode finds no entity); a recycled entity gives its slot back.
     /// </summary>

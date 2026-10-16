@@ -106,7 +106,7 @@ public sealed class AlundraLogicalZStepTests
         recycled.Status = EntityStatus.FlagToDestroy;
         arc.Proxy.RecycleDestroyedEntities();
 
-        // The two criteria that would be wrong are pinned: the hero and the recycled entity have EntityRefId == -1 and no marker; the born entity has JoinsBirthTick and so does no entity from a record.
+        // The two criteria that would be wrong are pinned: the hero and the recycled entity have EntityRefId == -1 and no marker; the born entity has JoinsBirthTick and so does no entity of the map load (the entities that script opcodes made from a record have it since E20.e0a4).
         Assert.Equal((-1, -1), (arc.Hero.EntityRefId, recycled.EntityRefId));
         Assert.True(born.JoinsBirthTick);
         Assert.Equal(
