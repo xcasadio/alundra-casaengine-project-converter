@@ -1,0 +1,12 @@
+diff --git a/Alundra/Scripts/AlundraWorldProxy.cs b/Alundra/Scripts/AlundraWorldProxy.cs
+index 7f12abd..7d45e8b 100644
+--- a/Alundra/Scripts/AlundraWorldProxy.cs
++++ b/Alundra/Scripts/AlundraWorldProxy.cs
+@@ -3382,6 +3382,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
+             if (spawnedProxy != null)
+             {
+                 spawnedProxy.ScriptHost = this;
++                spawnedProxy.SwitchedAtCreation = true; // MEASURE (throwaway)
+                 spawnedProxy.InitializeBalance(BalanceTables, BalanceThreshold); // E20.c1a C1.
+             }
+ 

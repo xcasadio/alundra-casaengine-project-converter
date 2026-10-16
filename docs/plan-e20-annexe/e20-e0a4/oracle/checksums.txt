@@ -1,0 +1,15 @@
+# SHA-1 and MD5 of the oracle files of E20.e0a4 (working-tree bytes: the discovery files are CRLF here, as in the other annexes; core.autocrlf stores LF in the index).
+# The five scripts are byte copies of the files of the discovery of 2026-10-16 (scratchpad disc-e20e0a4/bin; cmp empty at the copy). They import the annexes e20-e0a, e20-e0a5 and e20-e0k from a sub-folder repo/ of their own folder (see README, Run).
+# out/: outputs of two identical runs from two scratch copies (out/manifest.txt = md5 of the other files of out/).
+96a840a7e8d744f57ae17099f812f3b268701a78  rec_tick.py  md5 af5223cb0d3ef2216dc4f955ee04215a
+10514889638b93f121573d060689787d20487893  rec_tick_detail.py  md5 8147cadf2ad7e2f6c45c199ff822daa3
+b9427a71555077ae78733ea0770ffcb18a3c4e01  rec_birth_clock.py  md5 3bb101ab9df53823e076e97fceb46359
+04f6aaccb2271e34392ad19e0d688a60179d5bdd  box_table.py  md5 4c8f0f1a80828d471d2673adfe202719
+59dab9b3f9ee76aadc9e196e74974a67a3b4bd5d  cmp_v6.py  md5 2b676cf1afa229e63869c1ba60286787
+c67b67a06ff20ff183a946d1a73b02b7fe2c00ed  out/box_table.txt  md5 6e79f2dca3c9c5343b769d4cff9593aa
+c98a78fe1304c5445eede695db638fb923cee2fd  out/cmp_v6.txt  md5 fc8961dc184f9ebb5b476a0a32fb3458
+ee865e6d4f1b7ab6beff063bb989a2c84f0f26ec  out/rec_birth_clock.txt  md5 3db104e1fd9caad03007c64c0687397d
+3aefacda42399010e7bc1f1bf039f7e35af685ee  out/rec_tick.txt  md5 cb1227251a92e8852fe7b524d0312555
+dbefe6e455177ed9bf7175267737198a99180b27  out/rec_tick_detail.txt  md5 30060f74762e1055f2b2df5441627f7f
+eed7d00c6c67f0f3385b0b0c7238d6d0ba6d12eb  out/rec_birth_clock.json  md5 7ff72238ea93ab1970896a2e6cc75a36
+f2a9ba738f7ffae87ec33a5f595ddac34c4843e9  out/rec_tick.json  md5 c49310a0ea0c3eddc6995ce1e4cc6147

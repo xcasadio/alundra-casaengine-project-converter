@@ -1,0 +1,43 @@
+diff --git a/Alundra/Scripts/AlundraEventProgramRunner.cs b/Alundra/Scripts/AlundraEventProgramRunner.cs
+index e16302d..7b6a4e2 100644
+--- a/Alundra/Scripts/AlundraEventProgramRunner.cs
++++ b/Alundra/Scripts/AlundraEventProgramRunner.cs
+@@ -2411,6 +2411,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
+                 $"AlundraEventProgramRunner: opcode 0x2D ActivateEntity({v[1]}) - spawn failed (record "
+                 + "disabled/missing, or the spawn path threw) - the original breakpoints here instead.");
+         }
++
++        if (spawned != null) { spawned.JoinsBirthTick = true; } // MEASURE (throwaway)
+     }
+ 
+     /// <summary>Script_138_08A (0x8A SpawnEntityAtPosition, <c>0x80040284</c>) - the same spawn as 0x2D (record v[1],
+@@ -2439,6 +2441,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
+         spawned.PosY = (v[4] + v[5] * 0x100) << 16;
+         spawned.PosZ = (v[6] + v[7] * 0x100) << 16;
+         spawned.PushLogicalPositionToRoot();
++        spawned.JoinsBirthTick = true; // MEASURE (throwaway)
+     }
+ 
+     /// <summary>Script_139_08B (0x8B SpawnEntityNextToEntity) - dynamic spawn by entity-record
+@@ -2474,6 +2477,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
+             // for parity with every other scripted Pos* write site.
+             spawned.PushLogicalPositionToRoot();
+         }
++
++        if (spawned != null) { spawned.JoinsBirthTick = true; } // MEASURE (throwaway)
+     }
+ 
+     /// <summary>Script_46_02E (0x2E DestroyEntity) - destroys every entity matched by
+diff --git a/Alundra/Scripts/AlundraWorldProxy.cs b/Alundra/Scripts/AlundraWorldProxy.cs
+index 7f12abd..13f0921 100644
+--- a/Alundra/Scripts/AlundraWorldProxy.cs
++++ b/Alundra/Scripts/AlundraWorldProxy.cs
+@@ -3382,6 +3382,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
+             if (spawnedProxy != null)
+             {
+                 spawnedProxy.ScriptHost = this;
++                spawnedProxy.SwitchedAtCreation = true; // MEASURE (throwaway)
++                spawnedProxy.AnimFlags = spawnedProxy.AnimSetsByAnim != null && spawnedProxy.AnimSetsByAnim.TryGetValue((int)spawnedProxy.TargetAnimationId, out var firstAnimationSet) ? firstAnimationSet.Acceleration : 0; // MEASURE (throwaway)
+                 spawnedProxy.InitializeBalance(BalanceTables, BalanceThreshold); // E20.c1a C1.
+             }
+ 

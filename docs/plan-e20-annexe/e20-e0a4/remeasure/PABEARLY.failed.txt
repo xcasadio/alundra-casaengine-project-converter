@@ -1,0 +1,92 @@
+COUNTS Failed=7 Passed=5058
+FAILED 7
+- Alundra.Tests.AlundraBirthBoxTests.B6_V_AnEntityBornFromARecord_HasNoBoxAtItsCreation_AndTheHostIsNeverAsked_AndAHostWithoutResourcesIsAskedAtMostOnce - Assert.Equal() Failure: Values differ Expected: Tuple (False, False, False, null, 0, True, False) Actual: Tuple (True, True, True, 0, 1, True, False)
+- Alundra.Tests.AlundraBirthTickTests.TheCreation_NeverReadsTheCollisionFieldOfTheHostByTheFallback_TheBirthTickDoes_AndAnEntityFromARecordNever - Assert.All() Failure: 4 out of 23 items in the collection did not pass. [19]: Item: AlundraEntityScriptProxy { _16c = 0, _17c = 0, Acceleration = 0, AdjustedForceX = 0, AdjustedForceY = 0, ··· } Error: Assert.False() Failure Expected: False Actual: True [20]: Item: AlundraEntityScriptProxy { _16c = 0, _17c = 0, Acceleration = 0, AdjustedForceX = 0, AdjustedForceY = 0, ··· } Error: Assert.False() Failure Expected: False Actual: True [21]: Item: AlundraEntityScriptProxy { _16c = 0, _17c = 0, Acceleration = 0, AdjustedForceX = 0, AdjustedForceY = 0, ··· } Error: Assert.False() Failure Expected: F
+- Alundra.Tests.AlundraCreationSwitchClockTests.A6_V_AnEntityBornFromARecord_KeepsItsFirstClockTickUncounted_KnownDeviationQE0A5_1 - Assert.False() Failure Expected: False Actual: True
+- Alundra.Tests.AlundraHeightTargetSitesTests.TheWaitOfTheBinaryEndsAtTheCallOfTheBinaryAtEveryRealSite(id: "s115_rec19") - Assert.Equal() Failure: Values differ Expected: Tuple (757, 1078, 321, 3145727) Actual: Tuple (755, 1076, 321, 3145727)
+- Alundra.Tests.AlundraHeightTargetSitesTests.TheWaitOfTheBinaryEndsAtTheCallOfTheBinaryAtEveryRealSite(id: "s36c4_rec3") - Assert.Equal() Failure: Values differ Expected: Tuple (166, 326, 160, 11534335) Actual: Tuple (165, 325, 160, 11534335)
+- Alundra.Tests.AlundraInoaDayOneArcTests.A10_TheFirstVisitOnMap165_TheActorsPassTheSceneOnByFlags_ThePlayerGetsTheHandBack - Assert.Equal() Failure: Collections differ ↓ (pos 0) Expected: [597, 598, 599, 600, 601, ···] Actual: [596, 597, 598, 599, 600, ···] ↑ (pos 0)
+- Alundra.Tests.AlundraShipBlockArcTests.A6_TheCameraBlockLandsAndWalksSouth_ThenTheWarpToMap416Departs - Assert.Equal() Failure: Collections differ ↓ (pos 0) Expected: [181, 644, 1333] Actual: [180, 643, 1332] ↑ (pos 0)
+
+==== FULL MESSAGES ====
+
+### Alundra.Tests.AlundraBirthBoxTests.B6_V_AnEntityBornFromARecord_HasNoBoxAtItsCreation_AndTheHostIsNeverAsked_AndAHostWithoutResourcesIsAskedAtMostOnce
+Assert.Equal() Failure: Values differ
+Expected: Tuple (False, False, False, null, 0, True, False)
+Actual:   Tuple (True, True, True, 0, 1, True, False)
+--stack--
+at Alundra.Tests.AlundraBirthBoxTests.B6_V_AnEntityBornFromARecord_HasNoBoxAtItsCreation_AndTheHostIsNeverAsked_AndAHostWithoutResourcesIsAskedAtMostOnce() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\AlundraBirthBoxTests.cs:line 277
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+### Alundra.Tests.AlundraBirthTickTests.TheCreation_NeverReadsTheCollisionFieldOfTheHostByTheFallback_TheBirthTickDoes_AndAnEntityFromARecordNever
+Assert.All() Failure: 4 out of 23 items in the collection did not pass.
+[19]: Item:  AlundraEntityScriptProxy { _16c = 0, _17c = 0, Acceleration = 0, AdjustedForceX = 0, AdjustedForceY = 0, ··· }
+      Error: Assert.False() Failure
+             Expected: False
+             Actual:   True
+[20]: Item:  AlundraEntityScriptProxy { _16c = 0, _17c = 0, Acceleration = 0, AdjustedForceX = 0, AdjustedForceY = 0, ··· }
+      Error: Assert.False() Failure
+             Expected: False
+             Actual:   True
+[21]: Item:  AlundraEntityScriptProxy { _16c = 0, _17c = 0, Acceleration = 0, AdjustedForceX = 0, AdjustedForceY = 0, ··· }
+      Error: Assert.False() Failure
+             Expected: False
+             Actual:   True
+[22]: Item:  AlundraEntityScriptProxy { _16c = 0, _17c = 0, Acceleration = 0, AdjustedForceX = 0, AdjustedForceY = 0, ··· }
+      Error: Assert.False() Failure
+             Expected: False
+             Actual:   True
+--stack--
+at Alundra.Tests.AlundraBirthTickTests.TheCreation_NeverReadsTheCollisionFieldOfTheHostByTheFallback_TheBirthTickDoes_AndAnEntityFromARecordNever() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\AlundraBirthTickTests.cs:line 422
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+### Alundra.Tests.AlundraCreationSwitchClockTests.A6_V_AnEntityBornFromARecord_KeepsItsFirstClockTickUncounted_KnownDeviationQE0A5_1
+Assert.False() Failure
+Expected: False
+Actual:   True
+--stack--
+at Alundra.Tests.AlundraCreationSwitchClockTests.A6_V_AnEntityBornFromARecord_KeepsItsFirstClockTickUncounted_KnownDeviationQE0A5_1() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\AlundraCreationSwitchClockTests.cs:line 456
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+### Alundra.Tests.AlundraHeightTargetSitesTests.TheWaitOfTheBinaryEndsAtTheCallOfTheBinaryAtEveryRealSite(id: "s115_rec19")
+Assert.Equal() Failure: Values differ
+Expected: Tuple (757, 1078, 321, 3145727)
+Actual:   Tuple (755, 1076, 321, 3145727)
+--stack--
+at Alundra.Tests.AlundraHeightTargetSitesTests.TheWaitOfTheBinaryEndsAtTheCallOfTheBinaryAtEveryRealSite(String id) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\AlundraHeightTargetSitesTests.cs:line 148
+   at InvokeStub_AlundraHeightTargetSitesTests.TheWaitOfTheBinaryEndsAtTheCallOfTheBinaryAtEveryRealSite(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+### Alundra.Tests.AlundraHeightTargetSitesTests.TheWaitOfTheBinaryEndsAtTheCallOfTheBinaryAtEveryRealSite(id: "s36c4_rec3")
+Assert.Equal() Failure: Values differ
+Expected: Tuple (166, 326, 160, 11534335)
+Actual:   Tuple (165, 325, 160, 11534335)
+--stack--
+at Alundra.Tests.AlundraHeightTargetSitesTests.TheWaitOfTheBinaryEndsAtTheCallOfTheBinaryAtEveryRealSite(String id) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\AlundraHeightTargetSitesTests.cs:line 148
+   at InvokeStub_AlundraHeightTargetSitesTests.TheWaitOfTheBinaryEndsAtTheCallOfTheBinaryAtEveryRealSite(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+### Alundra.Tests.AlundraInoaDayOneArcTests.A10_TheFirstVisitOnMap165_TheActorsPassTheSceneOnByFlags_ThePlayerGetsTheHandBack
+Assert.Equal() Failure: Collections differ
+           ↓ (pos 0)
+Expected: [597, 598, 599, 600, 601, ···]
+Actual:   [596, 597, 598, 599, 600, ···]
+           ↑ (pos 0)
+--stack--
+at Alundra.Tests.AlundraInoaDayOneArcTests.A10_TheFirstVisitOnMap165_TheActorsPassTheSceneOnByFlags_ThePlayerGetsTheHandBack() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\AlundraInoaDayOneArcTests.cs:line 201
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+### Alundra.Tests.AlundraShipBlockArcTests.A6_TheCameraBlockLandsAndWalksSouth_ThenTheWarpToMap416Departs
+Assert.Equal() Failure: Collections differ
+           ↓ (pos 0)
+Expected: [181, 644, 1333]
+Actual:   [180, 643, 1332]
+           ↑ (pos 0)
+--stack--
+at Alundra.Tests.AlundraShipBlockArcTests.A6_TheCameraBlockLandsAndWalksSouth_ThenTheWarpToMap416Departs() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\AlundraShipBlockArcTests.cs:line 258
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)

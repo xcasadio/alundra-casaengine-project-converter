@@ -1,0 +1,6 @@
+REC-H1-SPR3 vs BT-H1  tick S+0: A turns so far (record) 1, A runs so far (V6) 1
+REC-H1-SPR3 vs BT-H1  tick S+1: A turns so far (record) 2, A runs so far (V6) 2
+REC-H1-SPR3 vs BT-H1: IDENTICAL on (status, trig, +0x1C, +0xA8, update, draw, counter) for the five passes of S and S+1
+REC-H2-SPR3 vs BT-H2  tick S+0: A turns so far (record) 0, A runs so far (V6) 0
+REC-H2-SPR3 vs BT-H2  tick S+1: A turns so far (record) 1, A runs so far (V6) 1
+REC-H2-SPR3 vs BT-H2: IDENTICAL on (status, trig, +0x1C, +0xA8, update, draw, counter) for the five passes of S and S+1
