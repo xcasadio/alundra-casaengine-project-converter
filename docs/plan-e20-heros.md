@@ -4598,6 +4598,11 @@ texte du plan pour tuer des mutants, est gardé.
 d'e0k3 ; une preuve de retrait à l'ensemble rouge fermé ; (b2) a ses valeurs attendues par des clés d'oracle à ajouter (poussée continue,
 cardinale et oblique), « le tick suivant » ne vaut pas pour la flèche qui rebondit ; (b4) devient un cas positif (le héros passe sa borne) ;
 le cas d'égalité exacte est établi dans le binaire et épinglé.
+**Révision 2 (2026-10-16).** Seconde relecture : **REVISE**, un blocage ; disposition de la session principale (cap de deux relectures
+automatiques atteint) : **FIX** — le rebond de la flèche au tick 8 de `arrows2-map-edge` vient de son gestionnaire E17 (`0x8007F420`), non
+porté (E20.f5) : dans e0k3 la flèche garde la direction 24, est bornée de nouveau et lève encore le drapeau au tick 8 ; (b1) n'épingle donc
+que les ticks 1 à 7, et l'épingle du tick 8 (rebond, `adj_13C` 0) passe à E20.f5. Nouvelle époque de relecture : une seule relecture de
+clôture suit.
 
 **Prérequis.** E20.e0k1 ✅, E20.e0k2 ✅ (le marqueur `HasLogicalZ`).
 
@@ -4635,8 +4640,9 @@ fraction de pixel.
   sur les deux axes et les deux côtés.
 - ⏳ **T2 — Tests de monde**, écrits après T1, **rouges avant T3** (chacun attend un rognage ou un drapeau que la phase A ne produit pas) :
   - (b1) flèche née en X = 1 200 vers l'est sur un champ ouvert : X = 1 233 au tick 6, X = 1 237,0 au tick 7 avec `ForceAdjusted` **le même
-    tick** (clé `arrows2-map-edge`), accolée à une flèche née en X = 1 100 qui n'est pas bornée pendant 20 ticks ; au tick 8 la flèche rebondit
-    (statut 3) et `adj_13C` vaut 0 (même clé) : aucun « tick suivant » ne s'applique à elle ;
+    tick** (clé `arrows2-map-edge`), accolée à une flèche née en X = 1 100 qui n'est pas bornée pendant 20 ticks ; **seuls les ticks 1 à 7 sont épinglés** : au tick 8
+    l'oracle montre le rebond d'E17 (direction 8, animation 1, `adj_13C` 0), qu'e0k3 ne porte pas (la flèche y garde la direction 24 et
+    lève encore le drapeau) ; l'épingle du tick 8 est reportée à E20.f5, qui porte E17 ; aucun « tick suivant » ne s'applique à cette flèche ;
   - (b2) poussée continue (clés `edge-push-east` et `edge-push-diag`) : au tick du rognage et au tick suivant, X à la borne et
     `ForceAdjusted` égaux aux clés à chaque tick ; en diagonale, X borné pendant que Y progresse encore, le drapeau levé le même tick et
     **conservé à travers `SlideAlongWall`** (qui le remettrait à 0 sur l'axe qui progresse) ;
