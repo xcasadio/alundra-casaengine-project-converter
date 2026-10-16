@@ -704,6 +704,40 @@ internal static class AlundraScriptedMotion
         entity.TileZ = entity.PosZ >> 20;
     }
 
+    /// <summary>The result of <see cref="ClampStepToMapEdge"/>: the step to take on each axis and whether an edge bounded it.</summary>
+    internal readonly record struct MapEdgeClamp(int StepX, int StepY, bool Adjusted);
+
+    /// <summary>
+    /// E20.e0k3 (docs/plan-e20-heros.md section 1.18.3, D-E0K-7, phase A): the clamp of the step to the grid of the map (52 x 60 cells), ported from the forces pass of the binary (<c>0x800366FC</c>-<c>0x800367E0</c>). Pure: it reads
+    /// the position and the bounds the entity already carries (<see cref="AlundraEntityScriptProxy.NegModX"/>/<see cref="AlundraEntityScriptProxy.NegModY"/> = <c>+0x108</c>/<c>+0x10C</c>, <see cref="AlundraEntityScriptProxy.ScreenClipX"/>/
+    /// <see cref="AlundraEntityScriptProxy.ScreenClipY"/> = <c>+0xFC</c>/<c>+0x100</c>, set by <see cref="AlundraEntitySpawnFactory.SetEntityDimensions"/>) and moves nothing. Per axis the arrival <c>Pos + step</c> is compared
+    /// STRICTLY (the two <c>slt</c> of the binary, <c>0x80036774</c>/<c>0x80036788</c> on X and <c>0x800367AC</c>/<c>0x800367C0</c> on Y): below the low bound it is brought back to it, else above the high bound it is brought back to it,
+    /// and the flag is raised (<c>+0x13C</c>, the same tick); an arrival exactly ON a bound is neither bounded nor flagged. The two axes are independent (a diagonal step bounded on X keeps its Y). Phase B calls it before the mover for an
+    /// entity marked <see cref="AlundraEntityScriptProxy.HasLogicalZ"/> only; nothing calls it yet.
+    /// </summary>
+    internal static MapEdgeClamp ClampStepToMapEdge(AlundraEntityScriptProxy entity, int stepX, int stepY)
+    {
+        var x = ClampAxisToMapEdge(entity.PosX, stepX, entity.NegModX, entity.ScreenClipX);
+        var y = ClampAxisToMapEdge(entity.PosY, stepY, entity.NegModY, entity.ScreenClipY);
+        return new MapEdgeClamp(x.Step, y.Step, x.Bounded || y.Bounded);
+    }
+
+    private static (int Step, bool Bounded) ClampAxisToMapEdge(int position, int step, int low, int high)
+    {
+        var arrival = (long)position + step;
+        if (arrival < low)
+        {
+            return (low - position, true);
+        }
+
+        if (high < arrival)
+        {
+            return (high - position, true);
+        }
+
+        return (step, false);
+    }
+
     /// <summary>
     /// E19.h4 H4-R2/H4-R4 (docs/plan-e19-opcodes.md §1.2n.4), step 1 of the slide along walls: what the binary's <c>ComputeXYPosition</c> (<c>0x80037730</c>) does once no half
     /// step of the tick is accepted. Run right after the controller's first step of the kinematic tick, and only when <c>TargetDirection</c> and the requested displacement
