@@ -216,3 +216,13 @@ Phase B (the box; possible, by reading; remeasured at the start of T2 by the thr
 the first time: `AlundraMapStateWorldTests` K1, K2, K3; `AlundraLogicalZWorldTests` Z1, Z2, Z3 (both), Z5, Z6, Z8, Z10, Z11 and the witness `Companion`; `AlundraWeaponSpawnSeamTests` S1, S2, S3, S4 and S6.
 
 Stops of the slice that watch this list: a test outside the lists moves; more than 10 existing tests move; a pin of an entity born from a record or of the hero moves (the flag leaks).
+
+
+## T2.0 - the throwaway measure of phase B alone on the code of phase A (P-C)
+
+Start: HEAD `71b209d` (phase A committed), clean tree except the two submodules. Phase B written as a throwaway (the resolver `IAlundraScriptHost.ResolveAnimationData` implemented by the world, `AlundraFrameBoxTimeline.ForData`, `EvaluateFrameBox` resolved before the
+integration and never frozen), NO test of phase B yet. Release build with the copy of the DLL neutralised (`CopyGameplayDllToProject` emptied), full suite in Release: **4 988 passed, 0 failed** (the count of the end of phase A). Then `git checkout -- Alundra/Scripts/`
+(the tree is back; the trace files, EOL noise only, passed the guard and were restored).
+
+List `Class.Method - reason` of the existing tests that phase B alone moves: **empty**. None of the possible tests of T0 (K1 to K3, Z1, Z2, Z3, Z5, Z6, Z8, Z10, Z11, `Companion`, S1 to S4, S6) moves: the arrow gets its box, but no existing assertion reads the
+box, the hit pass result or the status of an arrow that this changes in the cases they build (the arrows of these flights hit nothing in their window). So the moved-test budget of phase B is zero: any existing test that moves in T2 is outside the list and is a STOP of the slice.
