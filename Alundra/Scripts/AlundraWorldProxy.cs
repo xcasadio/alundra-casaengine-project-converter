@@ -3415,21 +3415,20 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <summary>
     /// E20.e0b2 (D-E0B-4, D-E0B-6, docs/plan-e20-heros.md section 1.17.2): the loot roll of a creation (<c>0x80032A40</c>, the last action of <c>InitializeEntity</c>), called ONCE per creation as the last statement of the <c>try</c> of each of the
     /// three creation sites, so that a creation that aborted never rolls. <paramref name="hasRecord"/> is whether an entity record made the entity (the map load and <c>0x2D</c>, <c>0x8A</c>, <c>0x8B</c>: yes; the interface: no).
-    /// PHASE A (this commit): only the VIRTUAL roll, <see cref="AlundraLootRoll"/> replayed on the register <c>V</c> of the measuring sink (<see cref="AlundraRandomShadow.OnVirtualRoll"/>); nothing else is written (not
-    /// <see cref="AlundraEntityScriptProxy.ContentsItemId"/>, not <see cref="AlundraEntityScriptProxy.ContentsGameFlag"/>, not the real stream), and without the sink's variable it returns at once and allocates nothing.
+    /// PHASE B (this commit): the helper writes <see cref="AlundraEntityScriptProxy.ContentsItemId"/> and <see cref="AlundraEntityScriptProxy.ContentsGameFlag"/> and advances the REAL stream by the same roll (<see cref="AlundraRandom.Next"/>,
+    /// which the measuring sink sees as real draws, so that its virtual word follows: V = R). The header code comes from <see cref="AlundraEntityScriptProxy.HeaderContents"/>, the record code and flag from the record and the proxy. Nothing falls here (E20.e0c).
     /// </summary>
     private void RollLootAtCreation(AlundraEntityScriptProxy? proxy, bool hasRecord, int recordCode)
     {
-        if (proxy == null || !AlundraRandomShadow.Active)
+        if (proxy == null)
         {
             return;
         }
 
-        VirtualLootRoll(proxy, hasRecord, recordCode);
+        var result = AlundraLootRoll.Roll(hasRecord, proxy.ContentsGameFlag, recordCode, proxy.HeaderContents, GameState, static () => (uint)AlundraRandom.Next());
+        proxy.ContentsItemId = result.ItemId;
+        proxy.ContentsGameFlag = result.GameFlag;
     }
-
-    private void VirtualLootRoll(AlundraEntityScriptProxy proxy, bool hasRecord, int recordCode)
-        => AlundraRandomShadow.OnVirtualRoll(draw => AlundraLootRoll.Roll(hasRecord, proxy.ContentsGameFlag, recordCode, proxy.HeaderContents, GameState, draw).Draws);
 
     /// <summary>
     /// E20.e0a1 (docs/plan-e20-heros.md section 1.16.1, ADR-0063): <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, the apparition of <c>SpawnWarpEntity</c> (<c>0x80039F58</c>) without a record. In the order of the

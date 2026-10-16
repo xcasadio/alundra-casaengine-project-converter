@@ -47,11 +47,19 @@ public sealed class AlundraSpawnBySpriteIndexInterfaceTests
         foreach (var v in vectors)
         {
             var before = arc.Entities.Count;
+            AlundraRandom.RandomSeed = 0x12345678; // the seed the oracle writes before each call (run_e0a.py, SEED).
             var spawned = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, v.IsMapPage, v.Index, v.X << 16, v.Y << 16, v.Z - 1, v.Direction);
+            var wordAfter = (uint)AlundraRandom.RandomSeed;
             Assert.NotNull(spawned);
             Assert.Equal(before + 1, arc.Entities.Count);
             Assert.Same(spawned, arc.Entities[^1]); // last of the list: the list follows the order of the slots (E20.e0a2) and this vector holds the highest slot, the previous ones having been recycled.
             SpawnProjectionAsserts.Check(v.Id, v.P!, spawned!, arc.Proxy.CollisionField, arc.HeroEntity, aux: null, withTerrain: false);
+
+            // E20.e0b2 (D-E0A-3): the loot roll of the creation, compared here and ONLY here (never in SpawnProjectionAsserts.Check, shared with the tests of the core of e0a1 that do not go through the helper of the world):
+            // +0x3C and +0x40 of the oracle and the word after the call, from the seed the oracle writes before each call.
+            Assert.True(
+                (unchecked((int)spawned!.ContentsItemId), spawned.ContentsGameFlag, wordAfter) == (v.P!.Loot[0], v.P.Loot[1], v.RngOut),
+                $"{v.Id}: loot (+0x3C {spawned.ContentsItemId}, +0x40 {spawned.ContentsGameFlag}, word {wordAfter:X8}), oracle ({v.P.Loot[0]}, {v.P.Loot[1]}, {v.RngOut:X8})");
 
             // E20.e0a2 (ADR-0064): 156 apparitions in ONE world exceed the table of 63 slots (the shadow run of phase A counted 112 overflows here), so each vector is destroyed and recycled once checked, as the binary frees
             // the slot of a destroyed entity at the next slot pass; the next vector takes the same lowest free slot, and is still the last of the list.

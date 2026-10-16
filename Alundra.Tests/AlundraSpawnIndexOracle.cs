@@ -16,11 +16,11 @@ namespace Alundra.Tests;
 internal sealed record SpawnProjection(
     int Hp, int HpMax, int Ref, int Id, uint Flags, IReadOnlyList<int> SpriteProgram, IReadOnlyList<int> Program, uint AnimTarget, uint DirTarget,
     int Px, int Py, int Pz, int ModdedX, int ModdedY, int ModdedZ, int ModX, int ModY, int ModZ, int Width, int Height, int Depth,
-    int TileX, int TileY, int Terrain, int Floor, IReadOnlyList<int> Corners, string Root, string Parent, int HasAttack, int AnimFlags);
+    int TileX, int TileY, int Terrain, int Floor, IReadOnlyList<int> Corners, string Root, string Parent, int HasAttack, int AnimFlags, IReadOnlyList<int> Loot);
 
 /// <summary>One vector of the oracle: the call (page, index, X and Y in pixels, Z as the binary's raw 16.16 argument, direction word, parent kind, world) and what the real binary left.</summary>
 internal sealed record SpawnVector(
-    string Id, int Page, int Index, int? Map, string Parent, int X, int Y, int Z, int Direction, string World, int Ret, bool Rolls, IReadOnlyList<int> Sounds, SpawnProjection? P)
+    string Id, int Page, int Index, int? Map, string Parent, int X, int Y, int Z, int Direction, string World, int Ret, bool Rolls, IReadOnlyList<int> Sounds, SpawnProjection? P, uint RngOut)
 {
     internal bool IsMapPage => Page == 1;
 }
@@ -28,7 +28,7 @@ internal sealed record SpawnVector(
 /// <summary>
 /// E20.e0a1 (docs/plan-e20-heros.md section 1.16.1): the reader of the outputs of the apparition oracle (<c>docs/plan-e20-annexe/e20-e0a/oracle/out</c>, found above the test binaries): <c>v1.json</c> (151 global
 /// prefabs), <c>v2.json</c> (244 numbers of the map page), <c>v3.json</c> (geometry), <c>v7.json</c> (the AT9 spawn calls), <c>v4-pairs.txt</c> (the valid indices of the 483 maps). Every number is read as 64-bit; each file is
-/// parsed once. Nothing here computes an expected value: the rows are the expected values.
+/// parsed once. E20.e0b2 reads two more fields: <c>loot</c> of the projection (<c>+0x3C</c>, <c>+0x40</c>) and <c>rng_out</c> of the vector (the word after the call, from the seed <c>0x12345678</c> the oracle writes before each call). Nothing here computes an expected value: the rows are the expected values.
 /// </summary>
 internal static class AlundraSpawnIndexOracle
 {
@@ -89,13 +89,13 @@ internal static class AlundraSpawnIndexOracle
                     U(p.GetProperty("anim_t")), U(p.GetProperty("dir_t")), I(p.GetProperty("px")), I(p.GetProperty("py")), I(p.GetProperty("pz")), I(p.GetProperty("modx")), I(p.GetProperty("mody")), I(p.GetProperty("modz")),
                     I(p.GetProperty("mx")), I(p.GetProperty("my")), I(p.GetProperty("mz")), I(p.GetProperty("w")), I(p.GetProperty("h")), I(p.GetProperty("d")), I(p.GetProperty("tilex")), I(p.GetProperty("tiley")),
                     I(p.GetProperty("terrain")), I(p.GetProperty("floor")), Ints(p.GetProperty("corners")), p.GetProperty("root").GetString()!, p.GetProperty("parent").GetString()!,
-                    I(p.GetProperty("has_attack")), I(p.GetProperty("anim_flags")));
+                    I(p.GetProperty("has_attack")), I(p.GetProperty("anim_flags")), Ints(p.GetProperty("loot")));
             }
 
             vectors.Add(new SpawnVector(
                 v.GetProperty("id").GetString()!, I(v.GetProperty("page")), I(v.GetProperty("index")), v.GetProperty("map").ValueKind == JsonValueKind.Null ? null : I(v.GetProperty("map")),
                 v.GetProperty("parent").GetString()!, I(v.GetProperty("x")), I(v.GetProperty("y")), I(v.GetProperty("z")), I(v.GetProperty("dir")), v.GetProperty("world").GetString()!, I(v.GetProperty("ret")),
-                v.TryGetProperty("rolls", out var rolls) && I(rolls) != 0, Ints(v.GetProperty("sounds")).Where(s => s != 0).ToList(), projection));
+                v.TryGetProperty("rolls", out var rolls) && I(rolls) != 0, Ints(v.GetProperty("sounds")).Where(s => s != 0).ToList(), projection, U(v.GetProperty("rng_out"))));
         }
 
         return vectors;

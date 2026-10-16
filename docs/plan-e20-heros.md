@@ -4519,7 +4519,7 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
   `AlundraLootRollTests` ; `SeedAfterTheLoad` égal à la graine sur un arc d'une carte **sans tirage au chargement** (la critique en compte
   sept, dont la 389), donc vert dans les deux phases ; le test d'inertie de l'assistant sans la variable de l'ombre (il ne vérifie que le
   puits, jamais l'état réel ni les champs du proxy, comme celui d'e0b1).
-- ⏳ **T2 — Phase B** (commit de code B) : l'assistant écrit et avance l'état réel (seul changement) ; (m1) à (m5) passent au vert ; suite
+- ✅ **T2 — Phase B** (commit de code B) : l'assistant écrit et avance l'état réel (seul changement) ; (m1) à (m5) passent au vert ; suite
   complète ; chaque test existant qui bouge appartient à la liste prédite et est réécrit par une dérivation (D-E0B-8) ; les comparaisons
   de `+0x3C`, `+0x40` et du mot (exclues par D-E0A-3) s'ajoutent au **seul** test du chemin complet de la carte 14,
   `AlundraSpawnBySpriteIndexInterfaceTests.B2_TheFullPath_On151NumbersOfTheGlobalPage_…` (graine `0x12345678` posée avant chaque apparition,
