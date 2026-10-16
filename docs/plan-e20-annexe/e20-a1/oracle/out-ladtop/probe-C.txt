@@ -1,0 +1,10 @@
+before tick 42: X 100.0000 Y 327.0000 Z 32.0000 | box offX -10.0000 offY -7.0000 w 21.0000 d 15.0000 -> Y0 320.0000 Y1 335.0000 | H(0,-1px) = 64.0000 (raw 00400000) H(0,0) = 32.0000 | MONT guard PosZ <= H: True
+before tick 43: X 100.0000 Y 327.0000 Z 32.0000 | box offX -10.0000 offY -7.0000 w 21.0000 d 15.0000 -> Y0 320.0000 Y1 335.0000 | H(0,-1px) = 64.0000 (raw 00400000) H(0,0) = 32.0000 | MONT guard PosZ <= H: True
+before tick 44: X 100.0000 Y 327.0000 Z 33.0000 | box offX -10.0000 offY -7.0000 w 21.0000 d 15.0000 -> Y0 320.0000 Y1 335.0000 | H(0,-1px) = 64.0000 (raw 00400000) H(0,0) = 32.0000 | MONT guard PosZ <= H: True
+before tick 72: X 100.0000 Y 327.0000 Z 61.0000 | box offX -10.0000 offY -7.0000 w 21.0000 d 15.0000 -> Y0 320.0000 Y1 335.0000 | H(0,-1px) = 64.0000 (raw 00400000) H(0,0) = 32.0000 | MONT guard PosZ <= H: True
+before tick 73: X 100.0000 Y 327.0000 Z 62.0000 | box offX -10.0000 offY -7.0000 w 21.0000 d 15.0000 -> Y0 320.0000 Y1 335.0000 | H(0,-1px) = 64.0000 (raw 00400000) H(0,0) = 32.0000 | MONT guard PosZ <= H: True
+before tick 74: X 100.0000 Y 327.0000 Z 63.0000 | box offX -10.0000 offY -7.0000 w 21.0000 d 15.0000 -> Y0 320.0000 Y1 335.0000 | H(0,-1px) = 64.0000 (raw 00400000) H(0,0) = 32.0000 | MONT guard PosZ <= H: True
+before tick 75: X 100.0000 Y 327.0000 Z 64.0000 | box offX -10.0000 offY -7.0000 w 21.0000 d 15.0000 -> Y0 320.0000 Y1 335.0000 | H(0,-1px) = 64.0000 (raw 00400000) H(0,0) = 32.0000 | MONT guard PosZ <= H: False
+before tick 76: X 100.0000 Y 327.0000 Z 64.5000 | box offX -10.0000 offY -7.0000 w 21.0000 d 15.0000 -> Y0 320.0000 Y1 335.0000 | H(0,-1px) = 64.0000 (raw 00400000) H(0,0) = 32.0000 | MONT guard PosZ <= H: False
+before tick 77: X 100.0000 Y 326.2344 Z 64.0000 | box offX -10.0000 offY -7.0000 w 21.0000 d 15.0000 -> Y0 319.2344 Y1 334.2344 | H(0,-1px) = 64.0000 (raw 00400000) H(0,0) = 64.0000 | MONT guard PosZ <= H: False
+trace with probes == trace without probes: True
