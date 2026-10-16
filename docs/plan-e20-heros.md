@@ -180,6 +180,8 @@ ADR-0058) :
   vraie passe des effets, mesure le tick de libération des effets 4 et 5 ; un écart du portage se corrige. **Résultat** : aucun écart,
   la DLL est exacte (voir O-F3-6, §1.19).
 - E20.e0b2 (2026-10-16) — l'auteur accorde une relecture de clôture de plus.
+- **D-E20-42** (2026-10-16, réponse à Q-E0A4-1) — « A deux fois » reste un écart documenté pour les naissances par enregistrement en
+  boucle 2 aussi (D-E0A4-5) : le programme de départ de l'acteur tourne une fois, au tick suivant.
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
@@ -4087,7 +4089,7 @@ entité (boucle 2), elle tourne à partir de S+1, dans la même image si l'image
   existants déplacés ⊂ la liste remesurée de T0, chacun réécrit par dérivation de la règle ; preuve de retrait par phase.
 
 **Question à l'auteur.**
-- **Q-E0A4-1** — Quand le script d'un personnage fait apparaître un acteur et qu'aucune case libre ne reste sous la plus haute case
+- **Q-E0A4-1** — **Tranchée le 2026-10-16 (D-E20-42) : on garde l'écart.** Question d'origine : quand le script d'un personnage fait apparaître un acteur et qu'aucune case libre ne reste sous la plus haute case
   occupée (le cas courant), l'original joue deux fois le programme de départ de l'acteur : une fois tout de suite, une fois au tick
   suivant. Le portage le joue une fois, au tick suivant. Ce que ça change à l'écran n'est pas mesuré (le programme est du bytecode propre à
   chaque acteur). Garder l'écart (rien ne change, recommandé jusqu'à ce qu'un acteur en dépende) ou le porter (une mesure d'abord) ?
@@ -4201,7 +4203,7 @@ S = tick de naissance, k = tick − S).
 
 | # | Question | Tranchée par |
 |---|---|---|
-| O-E0A4-1 | « A deux fois » pour les naissances par enregistrement en boucle 2 (D-E0A4-5) | Q-E0A4-1 |
+| O-E0A4-1 | « A deux fois » pour les naissances par enregistrement en boucle 2 (D-E0A4-5) | **gardé le 2026-10-16 (D-E20-42)** ; rouvert si un acteur en dépend |
 | O-E0A4-2 | Les six sites natifs (C[95], C[98], C[102]) hériteront des deux drapeaux quand ils seront portés | E14 |
 | O-E0A4-3 | Coût d'`Acquire` du résolveur à chaque `0x2D` (premier usage massif en production) | mesure à la recette, ou E19 |
 | O-E0A4-4 | Le goéland et les entités du chargement : tick de retard, boîte absente à la création, clé `~0u` après `0x1C` | la tranche du chargement (D-E20-36) |
