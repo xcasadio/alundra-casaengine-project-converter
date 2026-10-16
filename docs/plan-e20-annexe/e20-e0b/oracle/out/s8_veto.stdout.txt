@@ -1,0 +1,7 @@
+code 0xF8 (nibble 13 -> item 81), MpMax 0                      MpMax 0 rolled  81 veto 1 | drop returns 0 sounds [] spawned slots [] | RNG after roll D432A0B9 after drop D432A0B9
+code 0xF8 (nibble 13 -> item 81), MpMax 3                      MpMax 3 rolled  81 veto 0 | drop returns 1 sounds [[0], [84]] spawned slots [1] | RNG after roll D432A0B9 after drop D432A0B9
+code 0x26 direct item 38, MpMax 0                              MpMax 0 rolled  38 veto 1 | drop returns 0 sounds [] spawned slots [] | RNG after roll 12345678 after drop 12345678
+code 0x26 direct item 38, MpMax 3                              MpMax 3 rolled  38 veto 0 | drop returns 1 sounds [[0], [84]] spawned slots [1] | RNG after roll 12345678 after drop 12345678
+code 0x52 direct item 82, MpMax 0                              MpMax 0 rolled  82 veto 1 | drop returns 0 sounds [] spawned slots [] | RNG after roll 12345678 after drop 12345678
+code 0x45 direct item 69 (not vetoed), MpMax 0                 MpMax 0 rolled  69 veto 0 | drop returns 1 sounds [[0], [84]] spawned slots [1] | RNG after roll 12345678 after drop 12345678
+code 0 (nothing), MpMax 3                                      MpMax 3 rolled   0 veto 0 | drop returns 0 sounds [] spawned slots [] | RNG after roll 12345678 after drop 12345678

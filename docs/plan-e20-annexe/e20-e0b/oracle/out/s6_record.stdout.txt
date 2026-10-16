@@ -1,0 +1,13 @@
+rec code 0, flag 0 -> header 0xFC                                                            rng_in 4F1427FB item   0 +0x40=0x0000 draws 1 rng_out 345ED996  model OK
+rec code 0, flag 0 -> header 0xFC (deep)                                                     rng_in 985CF02A item  84 +0x40=0x0000 draws 2 rng_out 7025844C  model OK
+rec code 0x82 overrides header 0xFC                                                          rng_in 4F1427FB item  85 +0x40=0x0000 draws 1 rng_out 345ED996  model OK
+rec code 0x24 direct item, no draw                                                           rng_in 4F1427FB item  36 +0x40=0x0000 draws 0 rng_out 4F1427FB  model OK
+rec Contents 0x0100: low byte 0 -> header 0xFC, high byte ignored                            rng_in 985CF02A item  84 +0x40=0x0000 draws 2 rng_out 7025844C  model OK
+rec Contents 0x0182: high byte ignored, code 0x82                                            rng_in 4F1427FB item  85 +0x40=0x0000 draws 1 rng_out 345ED996  model OK
+flag 5, bit clear (persistent bank): rolled, +0x40 = 5                                       rng_in 4F1427FB item  85 +0x40=0x0005 draws 1 rng_out 345ED996  model OK
+flag 5, bit set (persistent bank): code 0, no draw, +0x40 = 5                                rng_in 4F1427FB item   0 +0x40=0x0005 draws 0 rng_out 4F1427FB  model OK
+flag 0x8005, bit set (temporary bank): code 0, no draw                                       rng_in 4F1427FB item   0 +0x40=0x8005 draws 0 rng_out 4F1427FB  model OK
+flag 0x8005, bit set only in the persistent bank: rolled                                     rng_in 4F1427FB item  85 +0x40=0x8005 draws 1 rng_out 345ED996  model OK
+flag 0x0800 (>= threshold): cleared to 0 and rolled                                          rng_in 4F1427FB item  85 +0x40=0x0000 draws 1 rng_out 345ED996  model OK
+flag 5 bit set, rec code 0 header 0xFC: code 0, no draw (flag kills header code too)         rng_in 985CF02A item   0 +0x40=0x0005 draws 0 rng_out 985CF02A  model OK
+all model_ok: True

@@ -1,0 +1,62 @@
+global numbers 151 map numbers 244
+spawn vectors 183 mismatches with the table model: 0
+page 0 #230 (id68 0x0E6) Contents 0xFF  S0: item  0 draws 1 out B806E07F  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 0 #232 (id68 0x0E8) Contents 0xFF  S0: item  0 draws 1 out B806E07F  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 0 #234 (id68 0x0EA) Contents 0xFF  S0: item  0 draws 1 out B806E07F  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 0 #238 (id68 0x0EE) Contents 0xFF  S0: item  0 draws 1 out B806E07F  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 0 #239 (id68 0x0EF) Contents 0xFF  S0: item  0 draws 1 out B806E07F  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 0 #254 (id68 0x0FE) Contents 0x82  S0: item  0 draws 1 out B806E07F  N3: item 85 draws 1 out 345ED996  N15: item  0 draws 1 out FE39D129
+page 1 # 34 (id68 0x122) Contents 0x82  S0: item  0 draws 1 out B806E07F  N3: item 85 draws 1 out 345ED996  N15: item  0 draws 1 out FE39D129
+page 1 # 35 (id68 0x123) Contents 0x82  S0: item  0 draws 1 out B806E07F  N3: item 85 draws 1 out 345ED996  N15: item  0 draws 1 out FE39D129
+page 1 # 36 (id68 0x124) Contents 0x82  S0: item  0 draws 1 out B806E07F  N3: item 85 draws 1 out 345ED996  N15: item  0 draws 1 out FE39D129
+page 1 # 37 (id68 0x125) Contents 0x82  S0: item  0 draws 1 out B806E07F  N3: item 85 draws 1 out 345ED996  N15: item  0 draws 1 out FE39D129
+page 1 # 38 (id68 0x126) Contents 0xF8  S0: item 72 draws 1 out B806E07F  N3: item 84 draws 1 out 345ED996  N15: item 81 draws 1 out FE39D129
+page 1 # 41 (id68 0x129) Contents 0xF7  S0: item 36 draws 1 out B806E07F  N3: item  0 draws 1 out 345ED996  N15: item 36 draws 1 out FE39D129
+page 1 # 73 (id68 0x149) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 # 79 (id68 0x14F) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 # 82 (id68 0x152) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 # 85 (id68 0x155) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 # 88 (id68 0x158) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 # 91 (id68 0x15B) Contents 0xFB  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 # 94 (id68 0x15E) Contents 0xFB  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #100 (id68 0x164) Contents 0xFB  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #106 (id68 0x16A) Contents 0xFB  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #109 (id68 0x16D) Contents 0xFB  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #115 (id68 0x173) Contents 0xFB  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #118 (id68 0x176) Contents 0xFF  S0: item  0 draws 1 out B806E07F  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #119 (id68 0x177) Contents 0xFF  S0: item  0 draws 1 out B806E07F  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #120 (id68 0x178) Contents 0xFF  S0: item  0 draws 1 out B806E07F  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #121 (id68 0x179) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #126 (id68 0x17E) Contents 0xFF  S0: item  0 draws 1 out B806E07F  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #128 (id68 0x180) Contents 0xFB  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #131 (id68 0x183) Contents 0xFF  S0: item  0 draws 1 out B806E07F  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #133 (id68 0x185) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #134 (id68 0x186) Contents 0xFF  S0: item  0 draws 1 out B806E07F  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #139 (id68 0x18B) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #145 (id68 0x191) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #148 (id68 0x194) Contents 0xFA  S0: item 69 draws 2 out 24D2C78A  N3: item 70 draws 2 out A2EF1F65  N15: item 72 draws 2 out 7025844C
+page 1 #154 (id68 0x19A) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #167 (id68 0x1A7) Contents 0xFB  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #169 (id68 0x1A9) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #172 (id68 0x1AC) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #175 (id68 0x1AF) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #181 (id68 0x1B5) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #184 (id68 0x1B8) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #185 (id68 0x1B9) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #187 (id68 0x1BB) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #193 (id68 0x1C1) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #196 (id68 0x1C4) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #205 (id68 0x1CD) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #211 (id68 0x1D3) Contents 0xFB  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #217 (id68 0x1D9) Contents 0xFB  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #222 (id68 0x1DE) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #240 (id68 0x1F0) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #248 (id68 0x1F8) Contents 0xFC  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #249 (id68 0x1F9) Contents 0xFB  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 1 #252 (id68 0x1FC) Contents 0xFB  S0: item 69 draws 2 out 24D2C78A  N3: item  0 draws 1 out 345ED996  N15: item 84 draws 2 out 7025844C
+page 0 #  3 (id68 0x003) Contents 0x00  S0: item  0 draws 0 out 12345678  N3: item  0 draws 0 out 4F1427FB  N15: item  0 draws 0 out 985CF02A
+page 0 #  4 (id68 0x004) Contents 0x00  S0: item  0 draws 0 out 12345678  N3: item  0 draws 0 out 4F1427FB  N15: item  0 draws 0 out 985CF02A
+page 0 #  7 (id68 0x007) Contents 0x00  S0: item  0 draws 0 out 12345678  N3: item  0 draws 0 out 4F1427FB  N15: item  0 draws 0 out 985CF02A
+page 0 # 11 (id68 0x00B) Contents 0x00  S0: item  0 draws 0 out 12345678  N3: item  0 draws 0 out 4F1427FB  N15: item  0 draws 0 out 985CF02A
+page 1 #136 (id68 0x188) Contents 0x00  S0: item  0 draws 0 out 12345678  N3: item  0 draws 0 out 4F1427FB  N15: item  0 draws 0 out 985CF02A
+page 1 #144 (id68 0x190) Contents 0x00  S0: item  0 draws 0 out 12345678  N3: item  0 draws 0 out 4F1427FB  N15: item  0 draws 0 out 985CF02A

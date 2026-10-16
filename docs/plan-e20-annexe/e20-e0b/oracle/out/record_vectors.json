@@ -1,0 +1,170 @@
+[
+{
+"label": "rec code 0, flag 0 -> header 0xFC",
+"rec_Contents": 0,
+"rec_10": 0,
+"banks": [],
+"rng_in": 1326721019,
+"item": 0,
+"flag40": 0,
+"rng_out": 878631318,
+"draws": 1,
+"model_ok": true
+},
+{
+"label": "rec code 0, flag 0 -> header 0xFC (deep)",
+"rec_Contents": 0,
+"rec_10": 0,
+"banks": [],
+"rng_in": 2556227626,
+"item": 84,
+"flag40": 0,
+"rng_out": 1881506892,
+"draws": 2,
+"model_ok": true
+},
+{
+"label": "rec code 0x82 overrides header 0xFC",
+"rec_Contents": 130,
+"rec_10": 0,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag40": 0,
+"rng_out": 878631318,
+"draws": 1,
+"model_ok": true
+},
+{
+"label": "rec code 0x24 direct item, no draw",
+"rec_Contents": 36,
+"rec_10": 0,
+"banks": [],
+"rng_in": 1326721019,
+"item": 36,
+"flag40": 0,
+"rng_out": 1326721019,
+"draws": 0,
+"model_ok": true
+},
+{
+"label": "rec Contents 0x0100: low byte 0 -> header 0xFC, high byte ignored",
+"rec_Contents": 256,
+"rec_10": 0,
+"banks": [],
+"rng_in": 2556227626,
+"item": 84,
+"flag40": 0,
+"rng_out": 1881506892,
+"draws": 2,
+"model_ok": true
+},
+{
+"label": "rec Contents 0x0182: high byte ignored, code 0x82",
+"rec_Contents": 386,
+"rec_10": 0,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag40": 0,
+"rng_out": 878631318,
+"draws": 1,
+"model_ok": true
+},
+{
+"label": "flag 5, bit clear (persistent bank): rolled, +0x40 = 5",
+"rec_Contents": 130,
+"rec_10": 5,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag40": 5,
+"rng_out": 878631318,
+"draws": 1,
+"model_ok": true
+},
+{
+"label": "flag 5, bit set (persistent bank): code 0, no draw, +0x40 = 5",
+"rec_Contents": 130,
+"rec_10": 5,
+"banks": [
+[
+"0x801eb344",
+0,
+"0x20"
+]
+],
+"rng_in": 1326721019,
+"item": 0,
+"flag40": 5,
+"rng_out": 1326721019,
+"draws": 0,
+"model_ok": true
+},
+{
+"label": "flag 0x8005, bit set (temporary bank): code 0, no draw",
+"rec_Contents": 130,
+"rec_10": 32773,
+"banks": [
+[
+"0x801eba40",
+0,
+"0x20"
+]
+],
+"rng_in": 1326721019,
+"item": 0,
+"flag40": 32773,
+"rng_out": 1326721019,
+"draws": 0,
+"model_ok": true
+},
+{
+"label": "flag 0x8005, bit set only in the persistent bank: rolled",
+"rec_Contents": 130,
+"rec_10": 32773,
+"banks": [
+[
+"0x801eb344",
+0,
+"0x20"
+]
+],
+"rng_in": 1326721019,
+"item": 85,
+"flag40": 32773,
+"rng_out": 878631318,
+"draws": 1,
+"model_ok": true
+},
+{
+"label": "flag 0x0800 (>= threshold): cleared to 0 and rolled",
+"rec_Contents": 130,
+"rec_10": 2048,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag40": 0,
+"rng_out": 878631318,
+"draws": 1,
+"model_ok": true
+},
+{
+"label": "flag 5 bit set, rec code 0 header 0xFC: code 0, no draw (flag kills header code too)",
+"rec_Contents": 0,
+"rec_10": 5,
+"banks": [
+[
+"0x801eb344",
+0,
+"0x20"
+]
+],
+"rng_in": 2556227626,
+"item": 0,
+"flag40": 5,
+"rng_out": 2556227626,
+"draws": 0,
+"model_ok": true
+}
+]

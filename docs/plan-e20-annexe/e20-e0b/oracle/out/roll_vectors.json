@@ -1,0 +1,814 @@
+[
+{
+"label": "R1 record-less header=0x00 nib=None",
+"rec": 0,
+"header_contents": 0,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 305419896,
+"item": 0,
+"flag_out": 0,
+"rng_out": 305419896,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0x01 nib=None",
+"rec": 0,
+"header_contents": 1,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 305419896,
+"item": 1,
+"flag_out": 0,
+"rng_out": 305419896,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0x24 nib=None",
+"rec": 0,
+"header_contents": 36,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 305419896,
+"item": 36,
+"flag_out": 0,
+"rng_out": 305419896,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0x61 nib=None",
+"rec": 0,
+"header_contents": 97,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 305419896,
+"item": 97,
+"flag_out": 0,
+"rng_out": 305419896,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0x62 nib=None",
+"rec": 0,
+"header_contents": 98,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 305419896,
+"item": 0,
+"flag_out": 0,
+"rng_out": 305419896,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0x7F nib=None",
+"rec": 0,
+"header_contents": 127,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 305419896,
+"item": 0,
+"flag_out": 0,
+"rng_out": 305419896,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0x80 nib=3",
+"rec": 0,
+"header_contents": 128,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 1326721019,
+"item": 0,
+"flag_out": 0,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0x80 nib=14",
+"rec": 0,
+"header_contents": 128,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 1589863166,
+"item": 0,
+"flag_out": 0,
+"rng_out": 3854198317,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0x82 nib=3",
+"rec": 0,
+"header_contents": 130,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 0,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0x82 nib=14",
+"rec": 0,
+"header_contents": 130,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 1589863166,
+"item": 0,
+"flag_out": 0,
+"rng_out": 3854198317,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0xFB nib=3",
+"rec": 0,
+"header_contents": 251,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 1326721019,
+"item": 0,
+"flag_out": 0,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0xFB nib=14",
+"rec": 0,
+"header_contents": 251,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 1589863166,
+"item": 84,
+"flag_out": 0,
+"rng_out": 361843904,
+"draws": 2,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0xFC nib=3",
+"rec": 0,
+"header_contents": 252,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 1326721019,
+"item": 0,
+"flag_out": 0,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0xFC nib=14",
+"rec": 0,
+"header_contents": 252,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 1589863166,
+"item": 84,
+"flag_out": 0,
+"rng_out": 361843904,
+"draws": 2,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0xFF nib=3",
+"rec": 0,
+"header_contents": 255,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 1326721019,
+"item": 0,
+"flag_out": 0,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R1 record-less header=0xFF nib=14",
+"rec": 0,
+"header_contents": 255,
+"rec_code": null,
+"flag": null,
+"banks": [],
+"rng_in": 1589863166,
+"item": 69,
+"flag_out": 0,
+"rng_out": 361843904,
+"draws": 2,
+"other_writes": []
+},
+{
+"label": "R2 record flag=0 rec_code=0x00 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 0,
+"flag": 0,
+"banks": [],
+"rng_in": 305419896,
+"item": 0,
+"flag_out": 0,
+"rng_out": 305419896,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R2 record flag=0 rec_code=0x00 header=0x82",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 0,
+"flag": 0,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 0,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R2 record flag=0 rec_code=0x24 header=0x82",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 36,
+"flag": 0,
+"banks": [],
+"rng_in": 1326721019,
+"item": 36,
+"flag_out": 0,
+"rng_out": 1326721019,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R2 record flag=0 rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 0,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 0,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R2 record flag=0 rec_code=0x82 header=0x24",
+"rec": 1,
+"header_contents": 36,
+"rec_code": 130,
+"flag": 0,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 0,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R2 record flag=0 rec_code=0x61 header=0xFF",
+"rec": 1,
+"header_contents": 255,
+"rec_code": 97,
+"flag": 0,
+"banks": [],
+"rng_in": 1326721019,
+"item": 97,
+"flag_out": 0,
+"rng_out": 1326721019,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R2 record flag=0 rec_code=0x62 header=0xFF",
+"rec": 1,
+"header_contents": 255,
+"rec_code": 98,
+"flag": 0,
+"banks": [],
+"rng_in": 1326721019,
+"item": 0,
+"flag_out": 0,
+"rng_out": 1326721019,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0x0001 bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 1,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 1,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0x0005 bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 5,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 5,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0x001F bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 31,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 31,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0x0020 bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 32,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 32,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0x0021 bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 33,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 33,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0x07FF bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 2047,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 2047,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0x0800 bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 2048,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 0,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0x0801 bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 2049,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 0,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0x7FFF bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 32767,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 0,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0x8001 bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 32769,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 32769,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0x801F bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 32799,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 32799,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0x87FF bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 34815,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 34815,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0x8800 bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 34816,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 0,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R3 record flag=0xFFFF bit not set, rec_code=0x82 header=0x00",
+"rec": 1,
+"header_contents": 0,
+"rec_code": 130,
+"flag": 65535,
+"banks": [],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 0,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R4 flag=0x0001 bit SET (right bank), rec_code=0x82",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 130,
+"flag": 1,
+"banks": [
+[
+2149495620,
+0,
+2
+]
+],
+"rng_in": 1326721019,
+"item": 0,
+"flag_out": 1,
+"rng_out": 1326721019,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R4 flag=0x0005 bit SET (right bank), rec_code=0x82",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 130,
+"flag": 5,
+"banks": [
+[
+2149495620,
+0,
+32
+]
+],
+"rng_in": 1326721019,
+"item": 0,
+"flag_out": 5,
+"rng_out": 1326721019,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R4 flag=0x0020 bit SET (right bank), rec_code=0x82",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 130,
+"flag": 32,
+"banks": [
+[
+2149495620,
+1,
+1
+]
+],
+"rng_in": 1326721019,
+"item": 0,
+"flag_out": 32,
+"rng_out": 1326721019,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R4 flag=0x0021 bit SET (right bank), rec_code=0x82",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 130,
+"flag": 33,
+"banks": [
+[
+2149495620,
+1,
+2
+]
+],
+"rng_in": 1326721019,
+"item": 0,
+"flag_out": 33,
+"rng_out": 1326721019,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R4 flag=0x07FF bit SET (right bank), rec_code=0x82",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 130,
+"flag": 2047,
+"banks": [
+[
+2149495620,
+63,
+2147483648
+]
+],
+"rng_in": 1326721019,
+"item": 0,
+"flag_out": 2047,
+"rng_out": 1326721019,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R4 flag=0x8001 bit SET (right bank), rec_code=0x82",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 130,
+"flag": 32769,
+"banks": [
+[
+2149497408,
+0,
+2
+]
+],
+"rng_in": 1326721019,
+"item": 0,
+"flag_out": 32769,
+"rng_out": 1326721019,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R4 flag=0x87FF bit SET (right bank), rec_code=0x82",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 130,
+"flag": 34815,
+"banks": [
+[
+2149497408,
+63,
+2147483648
+]
+],
+"rng_in": 1326721019,
+"item": 0,
+"flag_out": 34815,
+"rng_out": 1326721019,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R4 flag=0x8020 bit SET (right bank), rec_code=0x82",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 130,
+"flag": 32800,
+"banks": [
+[
+2149497408,
+1,
+1
+]
+],
+"rng_in": 1326721019,
+"item": 0,
+"flag_out": 32800,
+"rng_out": 1326721019,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R5 flag=0x0001 bit set in the wrong bank / other bit",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 130,
+"flag": 1,
+"banks": [
+[
+2149497408,
+0,
+2
+]
+],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 1,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R5 flag=0x8001 bit set in the wrong bank / other bit",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 130,
+"flag": 32769,
+"banks": [
+[
+2149495620,
+0,
+2
+]
+],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 32769,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R5 flag=0x8020 bit set in the wrong bank / other bit",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 130,
+"flag": 32800,
+"banks": [
+[
+2149495620,
+1,
+1
+]
+],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 32800,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R5 flag=0x0005 bit set in the wrong bank / other bit",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 130,
+"flag": 5,
+"banks": [
+[
+2149495620,
+0,
+2
+]
+],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 5,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R5 flag=0x0005 bit set in the wrong bank / other bit",
+"rec": 1,
+"header_contents": 130,
+"rec_code": 130,
+"flag": 5,
+"banks": [
+[
+2149495620,
+1,
+32
+]
+],
+"rng_in": 1326721019,
+"item": 85,
+"flag_out": 5,
+"rng_out": 878631318,
+"draws": 1,
+"other_writes": []
+},
+{
+"label": "R6 flag=1 bit SET, rec_code=0, header=0xFC",
+"rec": 1,
+"header_contents": 252,
+"rec_code": 0,
+"flag": 1,
+"banks": [
+[
+2149495620,
+0,
+2
+]
+],
+"rng_in": 2628770991,
+"item": 0,
+"flag_out": 1,
+"rng_out": 2628770991,
+"draws": 0,
+"other_writes": []
+},
+{
+"label": "R6b flag=1 bit not set, rec_code=0, header=0xFC (header used)",
+"rec": 1,
+"header_contents": 252,
+"rec_code": 0,
+"flag": 1,
+"banks": [],
+"rng_in": 2628770991,
+"item": 71,
+"flag_out": 1,
+"rng_out": 3560087737,
+"draws": 2,
+"other_writes": []
+}
+]

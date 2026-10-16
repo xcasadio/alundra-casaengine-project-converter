@@ -1,0 +1,33 @@
+nonzero rows 13 [1, 2, 3, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127]
+row   1 (code 0x81): 24 25 45 46 47 48 4F 50 51 52 53 54 55 56 00 00
+row   2 (code 0x82): 54 54 54 55 55 00 00 00 00 00 00 00 00 00 00 00
+row   3 (code 0x83): 24 24 24 24 24 24 24 24 29 00 00 00 00 00 00 00
+row 118 (code 0xF6): 45 45 45 45 45 46 46 46 46 46 46 46 47 47 47 47
+row 119 (code 0xF7): 00 00 00 00 00 00 00 00 24 24 24 24 24 24 24 24
+row 120 (code 0xF8): 45 45 46 54 54 55 55 56 46 47 47 48 51 51 51 51
+row 121 (code 0xF9): 48 48 48 48 48 48 48 48 48 48 48 48 48 48 48 48
+row 122 (code 0xFA): F6 F6 F6 F6 F6 F6 F6 F6 F6 F6 F6 F6 F9 F9 F9 F9
+row 123 (code 0xFB): 00 00 00 00 00 00 00 00 00 F6 F6 FD FE FE FE FE
+row 124 (code 0xFC): 00 00 00 00 00 00 00 00 00 00 00 F6 F6 FD FE FE
+row 125 (code 0xFD): 45 45 45 45 45 45 45 45 45 46 46 46 46 46 47 47
+row 126 (code 0xFE): 54 54 54 54 54 54 54 54 54 54 54 54 55 55 55 55
+row 127 (code 0xFF): 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FD FE
+rows with chain entries (entry & 0x80): {122: [118, 121], 123: [118, 125, 126], 124: [118, 125, 126], 127: [125, 126]}
+bytes >= 0x62 and < 0x80 inside table (resolve to 0): []
+item props: item -> bytes 4..7 (lifetime flag, sound, f3, f4) for items with nonzero byte4 or in table:
+items reachable from the table (direct): [36, 37, 41, 69, 70, 71, 72, 79, 80, 81, 82, 83, 84, 85, 86]
+  item 36  props C8 9B 02 80 01 34 00 09
+  item 37  props C8 9B 02 80 01 34 00 01
+  item 41  props C8 9B 02 80 01 34 00 01
+  item 69  props C8 9B 02 80 01 35 00 00
+  item 70  props C8 9B 02 80 01 35 00 00
+  item 71  props C8 9B 02 80 01 35 00 00
+  item 72  props C8 9B 02 80 01 35 00 00
+  item 79  props C8 9B 02 80 00 34 00 00
+  item 80  props C8 9B 02 80 00 00 00 00
+  item 81  props C8 9B 02 80 01 36 00 00
+  item 82  props C8 9B 02 80 01 36 00 00
+  item 83  props C8 9B 02 80 00 00 00 00
+  item 84  props C8 9B 02 80 01 34 00 00
+  item 85  props C8 9B 02 80 01 34 00 00
+  item 86  props C8 9B 02 80 01 34 00 00

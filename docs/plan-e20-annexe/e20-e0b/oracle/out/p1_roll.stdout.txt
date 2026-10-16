@@ -1,0 +1,16 @@
+part3 table: machine RAM == executable file bytes: True
+non-zero rows (code 0x80|r): ['0x81', '0x82', '0x83', '0xF6', '0xF7', '0xF8', '0xF9', '0xFA', '0xFB', '0xFC', '0xFD', '0xFE', '0xFF']
+seeds: N3=4F1427FB N14=5EC362FE N15=985CF02A (reports: 4F1427FB 5EC362FE 985CF02A)
+rl hdr 0x82 @N3                                      machine=(85, '0x0', '0x345ed996', 1) model_ok=True matches_report=True
+rl hdr 0xFC @S0                                      machine=(69, '0x0', '0x24d2c78a', 2) model_ok=True matches_report=True
+rl hdr 0xF8 @S0                                      machine=(72, '0x0', '0xb806e07f', 1) model_ok=True matches_report=True
+rl hdr 0xFC @N14                                     machine=(84, '0x0', '0x15914cc0', 2) model_ok=True matches_report=True
+flag1 clear, hdr 0xFC @9CAFDCAF                      machine=(71, '0x1', '0xd432a0b9', 2) model_ok=True matches_report=True
+flag1 SET persistent, hdr 0xFC @9CAFDCAF             machine=(0, '0x1', '0x9cafdcaf', 0) model_ok=True matches_report=True
+flag 0x8001 set in TEMP bank                         machine=(0, '0x8001', '0x4f1427fb', 0) model_ok=True matches_report=True
+flag 0x8001 bit in PERSISTENT only (wrong bank)      machine=(85, '0x8001', '0x345ed996', 1) model_ok=True matches_report=True
+flag 0x0800 -> masked to 0                           machine=(85, '0x0', '0x345ed996', 1) model_ok=True matches_report=True
+flag 0x07FF bit 31 of word 63 set                    machine=(0, '0x7ff', '0x4f1427fb', 0) model_ok=True matches_report=True
+rec code 0x24 direct, hdr 0x82                       machine=(36, '0x0', '0x4f1427fb', 0) model_ok=True matches_report=True
+part2 fuzz: 6000 vectors, 0 mismatches, draws histogram {0: 2105, 1: 3243, 2: 652}
+TOTAL vectors 6011, failures 0

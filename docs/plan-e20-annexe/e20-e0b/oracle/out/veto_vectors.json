@@ -1,0 +1,141 @@
+[
+{
+"label": "code 0xF8 (nibble 13 -> item 81), MpMax 0",
+"header_code": 248,
+"mpmax": 0,
+"rng_in": 3317312762,
+"item_rolled": 81,
+"rng_after_roll": 3560087737,
+"veto_fn": 1,
+"drop_return": 0,
+"drop_sounds": [],
+"spawned_slots": [],
+"rng_after_drop": 3560087737
+},
+{
+"label": "code 0xF8 (nibble 13 -> item 81), MpMax 3",
+"header_code": 248,
+"mpmax": 3,
+"rng_in": 3317312762,
+"item_rolled": 81,
+"rng_after_roll": 3560087737,
+"veto_fn": 0,
+"drop_return": 1,
+"drop_sounds": [
+[
+0
+],
+[
+84
+]
+],
+"spawned_slots": [
+1
+],
+"rng_after_drop": 3560087737,
+"spawned_id68": 111,
+"spawned_B8": 655360,
+"spawned_274": 1,
+"spawned_278": 600,
+"spawned_280": 0,
+"spawned_284": 655360,
+"spawned_flags6C": 2228480
+},
+{
+"label": "code 0x26 direct item 38, MpMax 0",
+"header_code": 38,
+"mpmax": 0,
+"rng_in": 305419896,
+"item_rolled": 38,
+"rng_after_roll": 305419896,
+"veto_fn": 1,
+"drop_return": 0,
+"drop_sounds": [],
+"spawned_slots": [],
+"rng_after_drop": 305419896
+},
+{
+"label": "code 0x26 direct item 38, MpMax 3",
+"header_code": 38,
+"mpmax": 3,
+"rng_in": 305419896,
+"item_rolled": 38,
+"rng_after_roll": 305419896,
+"veto_fn": 0,
+"drop_return": 1,
+"drop_sounds": [
+[
+0
+],
+[
+84
+]
+],
+"spawned_slots": [
+1
+],
+"rng_after_drop": 305419896,
+"spawned_id68": 68,
+"spawned_B8": 655360,
+"spawned_274": 1,
+"spawned_278": 600,
+"spawned_280": 0,
+"spawned_284": 655360,
+"spawned_flags6C": 2294016
+},
+{
+"label": "code 0x52 direct item 82, MpMax 0",
+"header_code": 82,
+"mpmax": 0,
+"rng_in": 305419896,
+"item_rolled": 82,
+"rng_after_roll": 305419896,
+"veto_fn": 1,
+"drop_return": 0,
+"drop_sounds": [],
+"spawned_slots": [],
+"rng_after_drop": 305419896
+},
+{
+"label": "code 0x45 direct item 69 (not vetoed), MpMax 0",
+"header_code": 69,
+"mpmax": 0,
+"rng_in": 305419896,
+"item_rolled": 69,
+"rng_after_roll": 305419896,
+"veto_fn": 0,
+"drop_return": 1,
+"drop_sounds": [
+[
+0
+],
+[
+84
+]
+],
+"spawned_slots": [
+1
+],
+"rng_after_drop": 305419896,
+"spawned_id68": 99,
+"spawned_B8": 655360,
+"spawned_274": 1,
+"spawned_278": 600,
+"spawned_280": 0,
+"spawned_284": 655360,
+"spawned_flags6C": 2228480
+},
+{
+"label": "code 0 (nothing), MpMax 3",
+"header_code": 0,
+"mpmax": 3,
+"rng_in": 305419896,
+"item_rolled": 0,
+"rng_after_roll": 305419896,
+"veto_fn": 0,
+"drop_return": 0,
+"drop_sounds": [],
+"spawned_slots": [],
+"rng_after_drop": 305419896
+}
+]

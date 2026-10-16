@@ -4486,7 +4486,7 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
 
 ##### Tâches
 
-- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code). `oracle/` : `s1_table`, `s2_choose`, `s3_roll`, `s5_spawn`,
+- ✅ **T0 — Prédiction et oracle** (commit de docs, avant tout code). `oracle/` : `s1_table`, `s2_choose`, `s3_roll`, `s5_spawn`,
   `s6_record`, `s8_veto` de la découverte, plus `critique/p1_roll.py` (6 000 vecteurs au hasard, graine `20261015`,
   `roll_fuzz_vectors.json` md5 `087b48f326be28c6eb90763d933d4054`, identique sur deux exécutions) et `critique/p8_loadmap.py` (V8 : boucle
   de chargement réelle), outils copiés octet pour octet avec leurs sommes de contrôle ; sorties : `choose_vectors.json` (2 626),

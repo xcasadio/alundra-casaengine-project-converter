@@ -1,0 +1,24 @@
+map  14 tile (33, 59)  called  25 entities 19 draws 11 final D5F4D64A  [arc without arrival: AdoptPlayerPawn pla]
+map 390 tile (33, 59)  called  16 entities 16 draws 12 final BBE29AC9  [arc without arrival]
+map 392 tile (33, 59)  called  12 entities 12 draws 12 final BBE29AC9  [arc without arrival]
+map 389 tile (33, 59)  called  19 entities 14 draws  0 final B017C93D  [arc without arrival]
+map 391 tile (33, 59)  called   7 entities  6 draws  0 final B017C93D  [arc without arrival]
+map 478 tile (33, 59)  called  22 entities 22 draws  0 final B017C93D  [arc without arrival]
+map 115 tile (3, 7)    called  34 entities  4 draws  3 final E4013D62  [arc with arrival (84, 120) px, z 1 (Leve]
+map 116 tile (3, 20)   called  49 entities 27 draws 15 final 9169E31E  [arc with arrival (84, 328) px, z 0 (Leve]
+map 117 tile (20, 12)  called  32 entities  3 draws  3 final E4013D62  [arc with arrival (500, 192) px, z 1 (Lev]
+map 117 tile (3, 40)   called  32 entities  5 draws  4 final 88CB7281  [arc with arrival (72, 640) px, z 2 (Leve]
+map  44 tile (5, 27)   called  38 entities 21 draws  6 final 21B6529B  [arc with arrival (120, 440) px, z 8 (Lev]
+map 162 tile (30, 26)  called  16 entities 16 draws  0 final B017C93D  [arc with arrival 47972352, 27787264]
+map 165 tile (12, 22)  called  28 entities  4 draws  1 final 35E36190  [arc with arrival 19660800, 23592960]
+map 185 tile (38, 23)  called  11 entities  9 draws  0 final B017C93D  [arc with arrival 60555264, 24641536]
+map 179 tile (17, 7)   called  27 entities  8 draws  1 final 35E36190  [arc with arrival at tile (17, 7), z 1 (d]
+map 176 tile (7, 34)   called  17 entities 13 draws  0 final B017C93D  [arc with arrival 11796480, 36175872, z 1]
+map  10 tile (10, 58)  called 117 entities 14 draws  2 final C81B4C37  [arc with arrival 16515072, 61341696]
+map 135 tile (19, 51)  called  29 entities  6 draws  0 final B017C93D  [arc with arrival 30670848, 54001664, z 1]
+map 178 tile (38, 25)  called  24 entities  7 draws  3 final E4013D62  [arc with arrival 60555264, 26738688]
+map 167 tile (33, 59)  called  27 entities 12 draws  8 final C5BF9705  [NO ArcSpec of the suite names map 167 (i]
+REPRO map  14 tile (8, 6): final D5F4D64A draws 11 entities 19 -> OK
+REPRO map 390 tile (0, 0): final BBE29AC9 draws 12 entities 16 -> OK
+REPRO map 392 tile (0, 0): final BBE29AC9 draws 12 entities 12 -> OK
+reproduction of the critic pairs: PASS

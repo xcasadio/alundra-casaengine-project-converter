@@ -236,3 +236,126 @@ Since nothing moved, no pin needed a derivation (D-E0B-8 applies to the new test
 | M12 callback called twice per tick | CAUGHT, 11 red |
 
 Twelve mutants, no survivor. The two fresh verifiers of T4 (one on the pins: predicted list against measured list) are run by the main session.
+
+---
+
+# E20.e0b2 - the loot roll at creation (T0: prediction and oracle)
+
+Annex of slice E20.e0b2 (`docs/plan-e20-heros.md`, section 1.17 head and 1.17.2, revisions 1 and 2 and the three closing reviews, READY on 2026-10-16). This part is written and committed BEFORE any code of the slice
+(task T0). The e0b1 sections above are unchanged.
+
+## What is proved (e0b2)
+
+The real creation routine of `ALUN_CD.EXE` (France), run on the MIPS machine: `InitializeEntity` ends with `0x80032A40`, which stores the rolled item at `+0x3C` and the game flag at `+0x40`, through
+`ChooseRandomlyAnItem` `0x80032968` (the chain over the table `0x80028E0C`, octet `0x960C` of the file, 2 048 bytes, md5 `7c6b97ac50de72f436a6fbf08ed6bcd7`). The DLL gets the same roll, once per creation, as the last
+statement of the `try` of each of its three creation sites (D-E0B-6), in a pure class `AlundraLootRoll` (D-E0B-4). Nothing falls (the drop, its veto and the pickable object are E20.e0c).
+
+## How to run (from the repository root)
+
+- `python -B docs/plan-e20-annexe/e20-e0b/oracle/run_e0b2.py` runs every probe below in order and writes `oracle/out/` (about 2 min; `--quick` skips the 168-mutant battery, about 30 s). Exit 0 = every check of
+  `out/summary_e0b2.txt` is PASS (25 lines). Two full runs give the same `out/manifest_e0b2.txt` (checked at T0).
+- Needs Python 3 with capstone, the disc EXE named in `oracle/tools/lib.py` and the map JSONs of `data-extracted/data/` (read only). Nothing outside `oracle/out/` is written.
+- The scripts are byte copies of the discovery (`s1_table`, `s2_choose`, `s3_roll`, `s5_spawn`, `s6_record`, `s8_veto`, `s10_mutants`, `xdis`, `e14world`, `hworld`) and of the critic (`p1_roll`, `p5_mutants`, `p8_loadmap`,
+  `cdis`), except for the corrections listed under "Harness corrections"; `v8.py` and `run_e0b2.py` are written for this slice. `oracle/tools/` now holds the whole tool set of `docs/plan-e20-annexe/e20-e0a/oracle/tools`
+  (the 7 files of e0b1 are unchanged); `lib`, `emu`, `machine` and `mips` are also the discovery's. `oracle/checksums.txt` lists the SHA-1 of every file.
+
+## Harness corrections (the two weaknesses of the critic, plan 1.17 note 9)
+
+1. The noise pre-written in `+0x3C` / `+0x40` before each roll was `0xBEEF` / `0xDEAD` (zero high bytes: the mutant `sw $zero, 0x3f($s0)` at `0x80032B00` survived). It is now `0xA5A5A5A5` in `s3_roll.py`,
+   `s10_mutants.py`, `p1_roll.py` and `p5_mutants.py`. The fuzz vectors do not change (`roll_fuzz_vectors.json` keeps the md5 `087b48f326be28c6eb90763d933d4054` of the critic); the mutant is now caught.
+2. No code `>= 0x100` was tried. `s2_choose.py` now sweeps the codes `0..0x1FF`: `choose_vectors.json` keeps the 2 626 vectors of the codes `0..0xFF`, the new `choose_high_vectors.json` holds the 256 vectors of the codes
+   `0x100..0x1FF` (the function returns 0 with no draw, whatever bit `0x80` says); `p5_mutants.py` sweeps `0..0x1FF` too.
+
+## Expected values (the prediction, written before the DLL code)
+
+1. **The roll** (`out/roll_vectors.json` 52, `out/spawn_vectors.json` 183, `out/record_vectors.json` 12, `out/roll_fuzz_vectors.json` 6 000, `out/choose_vectors.json` 2 626, `out/choose_high_vectors.json` 256): with a
+   record, the flag `f = hu[rec + 0x10]` is set to 0 when `(f & 0x7FFF) >= 0x800` and written at `+0x40` even when zero; if it is non-zero and its bit is raised (bank `0x801EBA40` when `f & 0x8000`, else `0x801EB344`,
+   word `(f >> 5) & 0x3FF`, bit `f & 31`) the code is 0 and nothing is drawn; otherwise the code is `rec[0x12]` when non-zero, else `header[0x1F]`. Without a record `+0x40 = 0` and the code is `header[0x1F]`.
+   `ChooseRandomlyAnItem(code)`: `code >= 0x100 -> 0`; `code & 0x80`: one step of the generator, then `code = table[(code & 0x7F) * 16 + (s >> 28)]` and again (at most two draws on this table); else `code < 0x62 ? code : 0`.
+   Draws: 0 (code without bit `0x80`, or flag raised), 1 or 2. The 13 non-zero rows are `0x81..0x83` and `0xF6..0xFF`; no table byte is `0xFF`.
+2. **V8 by the load tile** (below): the entities the load loop creates, in order, with their items, `+0x40`, draws and the final word, for 20 (map, tile) pairs taken from the ArcSpecs of the suite.
+3. **Mutants**: the 13 named mutants of the discovery (12 caught, the 13th is the argued equivalent) and the 168 of the critic (120 caught; the 48 survivors are argued one by one below).
+4. **The DLL (prediction, qualitative; Q-B1 "before and after")**: `ArcRun` re-seeds before the load (constructor, `ResetAll`) AND after `InitializeWithWorld` (T1), so the draws of the load no longer move the arcs; what
+   remains are the draws of the creations made DURING an arc (`0x2D`, `0x8A`, `0x8B` and the interface `SpawnEntityBySpriteIndex`). At most 3 existing tests move in phase B (the critic's static estimate), all inside
+   the predicted list that the shadow run measures in T1. The second re-seed has no effect in phase A: nothing draws during the load today (the word after the load equals the seed). Since E20.f3c the sword
+   wave (sprites 27, 28, 29) is born in production through `SpawnEntityBySpriteIndex`: the f3 oracle gives that newborn no loot draw (`loot3c` 0, `docs/plan-e20-annexe/e20-f3/oracle/out/wave_*.json`) because the
+   header `Contents` of sprites 27 to 29 is 0; the shadow counts these creations (one virtual roll each, zero virtual steps) and the README names them in the predicted list.
+
+## Starting state (T0 measures, 2026-10-16, base commit `b5f0c6a`, quiet window: nothing else built or ran)
+
+| Measure | Value |
+|---|---|
+| `Alundra.Tests` Release | 5 046 passed, 0 failed, 5 m 40 s |
+| `Alundra.Tests` Debug | 5 046 passed, 0 failed, 6 m 01 s |
+| `alundra-project/Alundra.dll` lock | not locked at T0 (every build is nevertheless made with the copy neutralised, the last Debug build excepted) |
+
+## Oracle results (T0)
+
+`run_e0b2.py`: 25 checks, every one PASS (`out/summary_e0b2.txt`); two runs, identical `out/manifest_e0b2.txt`.
+
+| Vectors | Count | Mismatches |
+|---|---|---|
+| `ChooseRandomlyAnItem` on the machine, every path of the decision tree of the codes `0..0xFF` (`choose_vectors.json`) | 2 626 | 0 |
+| the codes `0x100..0x1FF` (`choose_high_vectors.json`) | 256 | 0 |
+| the roll `0x80032A40` called on a hand-built entity (`roll_vectors.json`; no write outside `+0x3C`, `+0x40` and the word) | 52 | 0 |
+| the roll through the REAL `SpawnWarpEntity` (record-less path), 61 numbers x 3 seeds (`spawn_vectors.json`) | 183 | 0 |
+| the roll through the REAL record spawner `0x8003A1B8` (`record_vectors.json`) | 12 | 0 |
+| documented vectors of the critic plus 6 000 random ones with flags, two banks, record and header codes (`roll_fuzz_vectors.json`, graine `20261015`) | 6 011 | 0 |
+
+The table of the machine equals the 2 048 bytes of the executable at `0x960C` (md5 `7c6b97ac50de72f436a6fbf08ed6bcd7`).
+
+**Mutants.** `s10_mutants.py`: 13 one-word mutants (choose: draw range, bit-`0x80` polarity, item limit, a branch target; roll: flag threshold, bank bit, record-code byte, header byte, flag-set polarity; frame:
+multiplier, `a0` polarity, gate polarity, inventory-result polarity), 12 CAUGHT; the 13th (`choose: branch target one word early`) lands on a delay-slot `slti` whose result is overwritten: equivalent.
+`p5_mutants.py` (168 generic one-word mutants of `0x80032968-0x80032A00` and `0x80032A40-0x80032B28`): **120 caught** (the same 120 by the discovery vectors and by the critic's), **48 survivors**, one by one:
+
+| Survivors | Count | Why they are equivalent |
+|---|---|---|
+| `nop` shifted (`sll $zero,$zero,x`, `ssnop`) at `0x800329FC`, `0x80032A54`, `0x80032A5C`, `0x80032A64`, `0x80032A74`, `0x80032A94`, `0x80032AE4`, `0x80032AEC`, `0x80032AF8`, `0x80032B24` | 20 | the destination is `$zero`: no effect |
+| stack frame: `addiu $sp` at `0x80032A40` and `0x80032B1C` (3 each), `sw $s0` at `0x80032A44` and `lw $s0` at `0x80032B18` (3 each) | 12 | only the saved `$s0` / `$sp` of the caller move; the harness reads the entity and the word, never the callee-saved registers after the return |
+| `sra $v1,$a3,0x1f` shift `+-1` at `0x800329D4` | 2 | `$v1` (the high-word sign of a product) is never read |
+| `slti $v0,$a1,0x100` at `0x8003296C` (imm `0x101`) | 2 | only the code `0x100` differs, and `0x100` has bit `0x80` clear and is `>= 0x62`: it returns 0 with no draw either way |
+| `slti $v0,$a1,0x100` at `0x800329E4` (imm `0x101`, `0xff`) | 3 | the tested value is a table byte (`lbu`); no table byte is `0xFF` (checked in `loot_table.json`), so `< 0x100`, `< 0x101` and `< 0xff` all hold |
+| `andi $v0,$v1,0x7fff` -> `0x7ffe` at `0x80032A68` | 2 | bit 0 never decides `>= 0x800` |
+| the rounding to 32 of the bit number: `bgez`/`bltz` at `0x80032AB0`, `addiu` at `0x80032AB8` (3), `sra` at `0x80032ABC` (2), `sll` at `0x80032AC0` (1, `sa+1`) | 7 | `sllv` keeps only the 5 low bits of the shift count and the rounded value is a multiple of 32, so `flag - rounded` is `flag mod 32` in every variant |
+
+Total 20 + 12 + 2 + 2 + 3 + 2 + 7 = 48, the printed list of `out/p5_mutants.stdout.txt`.
+The mutant `sw $zero, 0x3f($s0)` (`0x80032B00`), a survivor of the critic with the old noise, is now CAUGHT.
+
+## V8: the real load loop by the load tile of the hero
+
+The tile that the zone gate of the binary (`0x8003A1F4-0x8003A25C`) reads is the hero's `+0x120 / +0x124`. In the DLL the hero is placed by `AdoptPlayerPawn` BEFORE the loop (it reads
+`PlayerEntity.TileX/Y`): at the centre of the New Game tile `(AlundraGameState.CameraTileX, CameraTileY) = (33, 59)` for an arc WITHOUT arrival, at `((PosX >> 16) / 24, (PosY >> 16) / 16)` of the arrival record for an
+arc WITH an arrival. `ArcRun` writes the tile of its `ArcSpec` (`HeroTileX/Y`) only after `InitializeWithWorld`, so it is irrelevant to the load. `out/v8.json` gives, per pair, the load tile, the records called, the
+entities created in order (record index, slot, sprite number, item, `+0x40`, draws), the draws and the final word, from the seed `0xB017C93D` (= `AlundraRandom.Reset()`, which `ArcRun` applies before the load).
+The table lists, per pair, the creations that roll or carry a flag (`r<record>:s<sprite> -> <item>/f<+0x40>/<draws>d`).
+
+| Map | Load tile | How the DLL test reaches it (arcs of the suite) | Records called | Entities | Draws | Final word | Creations that roll or carry a flag |
+|---|---|---|---|---|---|---|---|
+| 14 | (33, 59) | arc without arrival: AdoptPlayerPawn places the hero on the New Game tile | 25 | 19 | 11 | `D5F4D64A` | r0:s335->0/1d, r1:s335->71/2d, r2:s335->0/1d, r3:s335->0/1d, r4:s335->0/1d, r5:s335->0/1d, r6:s335->71/2d, r13:s30->36/f1720, r16:s254->84/1d, r17:s238->0/1d, r19:s30->83/f1665, r20:s30->79/f1351 |
+| 390 | (33, 59) | arc without arrival | 16 | 16 | 12 | `BBE29AC9` | r4:s292->85/1d, r5:s292->0/1d, r6:s292->0/1d, r7:s292->0/1d, r8:s292->84/1d, r9:s292->84/1d, r10:s292->84/1d, r11:s292->0/1d, r12:s292->0/1d, r13:s292->84/1d, r14:s292->0/1d, r15:s292->0/1d |
+| 392 | (33, 59) | arc without arrival | 12 | 12 | 12 | `BBE29AC9` | r0:s292->85/1d, r1:s292->0/1d, r2:s292->0/1d, r3:s292->0/1d, r4:s292->84/1d, r5:s292->84/1d, r6:s292->84/1d, r7:s292->0/1d, r8:s292->0/1d, r9:s292->84/1d, r10:s292->0/1d, r11:s292->0/1d |
+| 389 | (33, 59) | arc without arrival | 19 | 14 | 0 | `B017C93D` | - |
+| 391 | (33, 59) | arc without arrival | 7 | 6 | 0 | `B017C93D` | - |
+| 478 | (33, 59) | arc without arrival | 22 | 22 | 0 | `B017C93D` | - |
+| 115 | (3, 7) | arc with arrival (84, 120) px, z 1 (LeverArcs.Spec) | 34 | 4 | 3 | `E4013D62` | r29:s292->85/1d, r30:s292->0/1d, r31:s292->0/1d |
+| 116 | (3, 20) | arc with arrival (84, 328) px, z 0 (LeverArcs.Spec) | 49 | 27 | 15 | `9169E31E` | r0:s335->0/1d, r1:s335->71/2d, r9:s292->0/1d, r16:s30->36/f657, r17:s335->0/1d, r20:s290->84/1d, r21:s290->84/1d, r41:s335->71/2d, r42:s335->0/1d, r43:s335->70/2d, r44:s335->0/1d, r45:s292->0/1d, r46:s292->0/1d |
+| 117 | (20, 12) | arc with arrival (500, 192) px, z 1 (LeverArcs.Spec) | 32 | 3 | 3 | `E4013D62` | r15:s335->0/1d, r16:s335->71/2d |
+| 117 | (3, 40) | arc with arrival (72, 640) px, z 2 (LeverArcs.Spec) | 32 | 5 | 4 | `88CB7281` | r5:s335->0/1d, r7:s335->71/2d, r9:s335->0/1d |
+| 44 | (5, 27) | arc with arrival (120, 440) px, z 8 (LeverArcs.Spec) | 38 | 21 | 6 | `21B6529B` | r13:s30->36/f1631, r14:s30->79/f1632, r17:s335->0/1d, r18:s335->71/2d, r19:s335->0/1d, r20:s335->0/1d, r21:s335->0/1d |
+| 162 | (30, 26) | arc with arrival 47972352, 27787264 | 16 | 16 | 0 | `B017C93D` | - |
+| 165 | (12, 22) | arc with arrival 19660800, 23592960 | 28 | 4 | 1 | `35E36190` | r10:s291->85/1d |
+| 185 | (38, 23) | arc with arrival 60555264, 24641536 | 11 | 9 | 0 | `B017C93D` | - |
+| 179 | (17, 7) | arc with arrival at tile (17, 7), z 1 (day3-after-dream and many) | 27 | 8 | 1 | `35E36190` | r5:s291->85/1d |
+| 176 | (7, 34) | arc with arrival 11796480, 36175872, z 10 | 17 | 13 | 0 | `B017C93D` | - |
+| 10 | (10, 58) | arc with arrival 16515072, 61341696 | 117 | 14 | 2 | `C81B4C37` | r99:s254->85/1d, r116:s254->0/1d |
+| 135 | (19, 51) | arc with arrival 30670848, 54001664, z 1 | 29 | 6 | 0 | `B017C93D` | - |
+| 178 | (38, 25) | arc with arrival 60555264, 26738688 | 24 | 7 | 3 | `E4013D62` | r17:s291->85/1d, r18:s291->0/1d, r19:s291->0/1d |
+| 167 | (33, 59) | NO ArcSpec of the suite names map 167 (its only test, RealMap167_OneFullRunnerCallFrom0x5AAt144, loads the program without a world); an ad-hoc ArcSpec without arrival is the DLL way | 27 | 12 | 8 | `C5BF9705` | r19:s292->85/1d, r20:s292->0/1d, r21:s292->0/1d, r22:s292->0/1d, r23:s292->84/1d, r24:s292->84/1d, r25:s292->84/1d, r26:s292->0/1d |
+
+Arcs of the suite per pair (`v8.json`, field `arcs`): see the file. **Map 167** has no ArcSpec in the suite (its only test, `RealMap167_OneFullRunnerCallFrom0x5AAt144_DrawsOnceAndReachesTheWaitAt152`, loads the
+program without a world): the pair is measured at the New Game tile for an ad-hoc `ArcSpec` without arrival (the m2 test of T1 builds it); the plan names map 167 for the arc of the `0x5A` mode 4, whose real
+source is this test. The flag banks are empty in every pair (an `ArcSpec` with `Flags` raises bits and would change the pair: m2 uses `Flags = []`).
+
+**The critic's pairs, re-run only to prove the harness** (`v8.json`, field `reproduction`, no acceptance value for the DLL): 14 at (8, 6) -> `D5F4D64A`, 11 draws, 19 entities; 390 at (0, 0) -> `BBE29AC9`, 12 draws, 16
+entities; 392 at (0, 0) -> `BBE29AC9`, 12 draws, 12 entities. All three reproduce. Note that map 14 at the load tile (33, 59) gives the same entities and the same word as at (8, 6): the window of the
+first records covers both.

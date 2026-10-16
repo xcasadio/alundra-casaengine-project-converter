@@ -1,0 +1,15 @@
+baseline signatures 697ef910ce1c 69a3bad283b7
+choose: draw range 16 -> 15                                    CAUGHT
+choose: 0x80-bit test inverted (beqz -> bnez)                  CAUGHT
+choose: branch target one word early (EQUIVALENT: lands on a delay-slot slti whose result is overwritten) SURVIVED
+choose: item limit 0x62 -> 0x61                                CAUGHT
+roll: flag threshold 0x800 -> 0x400                            CAUGHT
+roll: bank select bit 0x8000 ignored (always persistent)       CAUGHT
+roll: record code byte +0x12 -> +0x13                          CAUGHT
+roll: header Contents byte +0x1F -> +0x1E                      CAUGHT
+roll: flag-set test inverted (bnez -> beqz)                    CAUGHT
+frame: multiplier low bit                                      CAUGHT
+frame: a0 test inverted (beqz -> bnez)                         CAUGHT
+frame: gate test before the inventory trigger inverted         CAUGHT
+frame: DisplayInventory result test inverted                   CAUGHT
+mutants caught: 12 of 13

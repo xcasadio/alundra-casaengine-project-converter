@@ -1,0 +1,52 @@
+mutants 168; caught by the discovery vectors 120; by my vectors 120; by either 120
+caught by mine but NOT by the discovery vectors:
+caught by the discovery vectors but NOT by mine:
+SURVIVORS of both sets (to judge equivalence by hand):
+   8003296C imm^1     slti     $v0, $a1, 0x100        -> slti     $v0, $a1, 0x101
+   8003296C imm+1     slti     $v0, $a1, 0x100        -> slti     $v0, $a1, 0x101
+   800329D4 sa+1      sra      $v1, $a3, 0x1f         -> sra      $v1, $a3, 0
+   800329D4 sa-1      sra      $v1, $a3, 0x1f         -> sra      $v1, $a3, 0x1e
+   800329E4 imm^1     slti     $v0, $a1, 0x100        -> slti     $v0, $a1, 0x101
+   800329E4 imm+1     slti     $v0, $a1, 0x100        -> slti     $v0, $a1, 0x101
+   800329E4 imm-1     slti     $v0, $a1, 0x100        -> slti     $v0, $a1, 0xff
+   800329FC sa+1      nop                             -> ssnop    
+   800329FC sa-1      nop                             -> sll      $zero, $zero, 0x1f
+   80032A40 imm^1     addiu    $sp, $sp, -0x18        -> addiu    $sp, $sp, -0x17
+   80032A40 imm+1     addiu    $sp, $sp, -0x18        -> addiu    $sp, $sp, -0x17
+   80032A40 imm-1     addiu    $sp, $sp, -0x18        -> addiu    $sp, $sp, -0x19
+   80032A44 imm^1     sw       $s0, 0x10($sp)         -> sw       $s0, 0x11($sp)
+   80032A44 imm+1     sw       $s0, 0x10($sp)         -> sw       $s0, 0x11($sp)
+   80032A44 imm-1     sw       $s0, 0x10($sp)         -> sw       $s0, 0xf($sp)
+   80032A54 sa+1      nop                             -> ssnop    
+   80032A54 sa-1      nop                             -> sll      $zero, $zero, 0x1f
+   80032A5C sa+1      nop                             -> ssnop    
+   80032A5C sa-1      nop                             -> sll      $zero, $zero, 0x1f
+   80032A64 sa+1      nop                             -> ssnop    
+   80032A64 sa-1      nop                             -> sll      $zero, $zero, 0x1f
+   80032A68 imm^1     andi     $v0, $v1, 0x7fff       -> andi     $v0, $v1, 0x7ffe
+   80032A68 imm-1     andi     $v0, $v1, 0x7fff       -> andi     $v0, $v1, 0x7ffe
+   80032A74 sa+1      nop                             -> ssnop    
+   80032A74 sa-1      nop                             -> sll      $zero, $zero, 0x1f
+   80032A94 sa+1      nop                             -> ssnop    
+   80032A94 sa-1      nop                             -> sll      $zero, $zero, 0x1f
+   80032AB0 bgez/bltz bgez     $v1, 0x80032abc        -> bltz     $v1, 0x80032abc
+   80032AB8 imm^1     addiu    $v0, $v1, 0x1f         -> addiu    $v0, $v1, 0x1e
+   80032AB8 imm+1     addiu    $v0, $v1, 0x1f         -> addiu    $v0, $v1, 0x20
+   80032AB8 imm-1     addiu    $v0, $v1, 0x1f         -> addiu    $v0, $v1, 0x1e
+   80032ABC sa+1      sra      $v0, $v0, 5            -> sra      $v0, $v0, 6
+   80032ABC sa-1      sra      $v0, $v0, 5            -> sra      $v0, $v0, 4
+   80032AC0 sa+1      sll      $v0, $v0, 5            -> sll      $v0, $v0, 6
+   80032AE4 sa+1      nop                             -> ssnop    
+   80032AE4 sa-1      nop                             -> sll      $zero, $zero, 0x1f
+   80032AEC sa+1      nop                             -> ssnop    
+   80032AEC sa-1      nop                             -> sll      $zero, $zero, 0x1f
+   80032AF8 sa+1      nop                             -> ssnop    
+   80032AF8 sa-1      nop                             -> sll      $zero, $zero, 0x1f
+   80032B18 imm^1     lw       $s0, 0x10($sp)         -> lw       $s0, 0x11($sp)
+   80032B18 imm+1     lw       $s0, 0x10($sp)         -> lw       $s0, 0x11($sp)
+   80032B18 imm-1     lw       $s0, 0x10($sp)         -> lw       $s0, 0xf($sp)
+   80032B1C imm^1     addiu    $sp, $sp, 0x18         -> addiu    $sp, $sp, 0x19
+   80032B1C imm+1     addiu    $sp, $sp, 0x18         -> addiu    $sp, $sp, 0x19
+   80032B1C imm-1     addiu    $sp, $sp, 0x18         -> addiu    $sp, $sp, 0x17
+   80032B24 sa+1      nop                             -> ssnop    
+   80032B24 sa-1      nop                             -> sll      $zero, $zero, 0x1f

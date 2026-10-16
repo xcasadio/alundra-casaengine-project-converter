@@ -1,0 +1,53 @@
+vectors 52 with writes outside the entity (+0x3C/+0x40) and the RNG word: 0
+R1 record-less header=0x00 nib=None                                    rng_in 12345678 item   0 flag_out 0x0000 draws 0 rng_out 12345678
+R1 record-less header=0x01 nib=None                                    rng_in 12345678 item   1 flag_out 0x0000 draws 0 rng_out 12345678
+R1 record-less header=0x24 nib=None                                    rng_in 12345678 item  36 flag_out 0x0000 draws 0 rng_out 12345678
+R1 record-less header=0x61 nib=None                                    rng_in 12345678 item  97 flag_out 0x0000 draws 0 rng_out 12345678
+R1 record-less header=0x62 nib=None                                    rng_in 12345678 item   0 flag_out 0x0000 draws 0 rng_out 12345678
+R1 record-less header=0x7F nib=None                                    rng_in 12345678 item   0 flag_out 0x0000 draws 0 rng_out 12345678
+R1 record-less header=0x80 nib=3                                       rng_in 4F1427FB item   0 flag_out 0x0000 draws 1 rng_out 345ED996
+R1 record-less header=0x80 nib=14                                      rng_in 5EC362FE item   0 flag_out 0x0000 draws 1 rng_out E5BA662D
+R1 record-less header=0x82 nib=3                                       rng_in 4F1427FB item  85 flag_out 0x0000 draws 1 rng_out 345ED996
+R1 record-less header=0x82 nib=14                                      rng_in 5EC362FE item   0 flag_out 0x0000 draws 1 rng_out E5BA662D
+R1 record-less header=0xFB nib=3                                       rng_in 4F1427FB item   0 flag_out 0x0000 draws 1 rng_out 345ED996
+R1 record-less header=0xFB nib=14                                      rng_in 5EC362FE item  84 flag_out 0x0000 draws 2 rng_out 15914CC0
+R1 record-less header=0xFC nib=3                                       rng_in 4F1427FB item   0 flag_out 0x0000 draws 1 rng_out 345ED996
+R1 record-less header=0xFC nib=14                                      rng_in 5EC362FE item  84 flag_out 0x0000 draws 2 rng_out 15914CC0
+R1 record-less header=0xFF nib=3                                       rng_in 4F1427FB item   0 flag_out 0x0000 draws 1 rng_out 345ED996
+R1 record-less header=0xFF nib=14                                      rng_in 5EC362FE item  69 flag_out 0x0000 draws 2 rng_out 15914CC0
+R2 record flag=0 rec_code=0x00 header=0x00                             rng_in 12345678 item   0 flag_out 0x0000 draws 0 rng_out 12345678
+R2 record flag=0 rec_code=0x00 header=0x82                             rng_in 4F1427FB item  85 flag_out 0x0000 draws 1 rng_out 345ED996
+R2 record flag=0 rec_code=0x24 header=0x82                             rng_in 4F1427FB item  36 flag_out 0x0000 draws 0 rng_out 4F1427FB
+R2 record flag=0 rec_code=0x82 header=0x00                             rng_in 4F1427FB item  85 flag_out 0x0000 draws 1 rng_out 345ED996
+R2 record flag=0 rec_code=0x82 header=0x24                             rng_in 4F1427FB item  85 flag_out 0x0000 draws 1 rng_out 345ED996
+R2 record flag=0 rec_code=0x61 header=0xFF                             rng_in 4F1427FB item  97 flag_out 0x0000 draws 0 rng_out 4F1427FB
+R2 record flag=0 rec_code=0x62 header=0xFF                             rng_in 4F1427FB item   0 flag_out 0x0000 draws 0 rng_out 4F1427FB
+R3 record flag=0x0001 bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x0001 draws 1 rng_out 345ED996
+R3 record flag=0x0005 bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x0005 draws 1 rng_out 345ED996
+R3 record flag=0x001F bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x001F draws 1 rng_out 345ED996
+R3 record flag=0x0020 bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x0020 draws 1 rng_out 345ED996
+R3 record flag=0x0021 bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x0021 draws 1 rng_out 345ED996
+R3 record flag=0x07FF bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x07FF draws 1 rng_out 345ED996
+R3 record flag=0x0800 bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x0000 draws 1 rng_out 345ED996
+R3 record flag=0x0801 bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x0000 draws 1 rng_out 345ED996
+R3 record flag=0x7FFF bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x0000 draws 1 rng_out 345ED996
+R3 record flag=0x8001 bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x8001 draws 1 rng_out 345ED996
+R3 record flag=0x801F bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x801F draws 1 rng_out 345ED996
+R3 record flag=0x87FF bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x87FF draws 1 rng_out 345ED996
+R3 record flag=0x8800 bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x0000 draws 1 rng_out 345ED996
+R3 record flag=0xFFFF bit not set, rec_code=0x82 header=0x00           rng_in 4F1427FB item  85 flag_out 0x0000 draws 1 rng_out 345ED996
+R4 flag=0x0001 bit SET (right bank), rec_code=0x82                     rng_in 4F1427FB item   0 flag_out 0x0001 draws 0 rng_out 4F1427FB
+R4 flag=0x0005 bit SET (right bank), rec_code=0x82                     rng_in 4F1427FB item   0 flag_out 0x0005 draws 0 rng_out 4F1427FB
+R4 flag=0x0020 bit SET (right bank), rec_code=0x82                     rng_in 4F1427FB item   0 flag_out 0x0020 draws 0 rng_out 4F1427FB
+R4 flag=0x0021 bit SET (right bank), rec_code=0x82                     rng_in 4F1427FB item   0 flag_out 0x0021 draws 0 rng_out 4F1427FB
+R4 flag=0x07FF bit SET (right bank), rec_code=0x82                     rng_in 4F1427FB item   0 flag_out 0x07FF draws 0 rng_out 4F1427FB
+R4 flag=0x8001 bit SET (right bank), rec_code=0x82                     rng_in 4F1427FB item   0 flag_out 0x8001 draws 0 rng_out 4F1427FB
+R4 flag=0x87FF bit SET (right bank), rec_code=0x82                     rng_in 4F1427FB item   0 flag_out 0x87FF draws 0 rng_out 4F1427FB
+R4 flag=0x8020 bit SET (right bank), rec_code=0x82                     rng_in 4F1427FB item   0 flag_out 0x8020 draws 0 rng_out 4F1427FB
+R5 flag=0x0001 bit set in the wrong bank / other bit                   rng_in 4F1427FB item  85 flag_out 0x0001 draws 1 rng_out 345ED996
+R5 flag=0x8001 bit set in the wrong bank / other bit                   rng_in 4F1427FB item  85 flag_out 0x8001 draws 1 rng_out 345ED996
+R5 flag=0x8020 bit set in the wrong bank / other bit                   rng_in 4F1427FB item  85 flag_out 0x8020 draws 1 rng_out 345ED996
+R5 flag=0x0005 bit set in the wrong bank / other bit                   rng_in 4F1427FB item  85 flag_out 0x0005 draws 1 rng_out 345ED996
+R5 flag=0x0005 bit set in the wrong bank / other bit                   rng_in 4F1427FB item  85 flag_out 0x0005 draws 1 rng_out 345ED996
+R6 flag=1 bit SET, rec_code=0, header=0xFC                             rng_in 9CAFDCAF item   0 flag_out 0x0001 draws 0 rng_out 9CAFDCAF
+R6b flag=1 bit not set, rec_code=0, header=0xFC (header used)          rng_in 9CAFDCAF item  71 flag_out 0x0001 draws 2 rng_out D432A0B9

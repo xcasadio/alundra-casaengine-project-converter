@@ -1,0 +1,25 @@
+PASS s1_table.py exits 0
+PASS s2_choose.py exits 0
+PASS s3_roll.py exits 0
+PASS s5_spawn.py exits 0
+PASS s6_record.py exits 0
+PASS s8_veto.py exits 0
+PASS p1_roll.py exits 0
+PASS v8.py exits 0
+PASS s10_mutants.py exits 0
+PASS p5_mutants.py exits 0
+PASS choose_vectors.json: 2626 vectors (codes 0..255)
+PASS choose_high_vectors.json: 256 vectors (codes 0x100..0x1FF, all item 0 and no draw)
+PASS s2_choose: 0 mismatches over 2882 calls
+PASS roll_vectors.json: 52 vectors, no write outside +0x3C/+0x40/the word (noise 0xA5A5A5A5)
+PASS spawn_vectors.json: 183 vectors, 0 mismatches with the table model
+PASS record_vectors.json: 12 vectors, all model_ok
+PASS roll_fuzz_vectors.json: 6000 vectors
+PASS p1_roll: 6011 vectors (11 documented + 6000 fuzz), 0 failures
+PASS roll_fuzz_vectors.json md5 087b48f326be28c6eb90763d933d4054 (the critic)
+PASS loot table: 2048 bytes, md5 7c6b97ac50de72f436a6fbf08ed6bcd7, equal to the executable bytes at 0x960C
+PASS v8.json: at least 12 (map, tile) pairs, maps 14, 390, 392, 115, 116 and 167 among them
+PASS v8.json: the critic pairs reproduce D5F4D64A (14 at (8, 6)) and BBE29AC9 (390 and 392 at (0, 0))
+PASS s10_mutants: 12 of 13 caught (the 13th is the argued equivalent)
+PASS p5_mutants: 168 mutants, 120 caught by either vector set (48 survivors argued in the README)
+PASS p5_mutants: the sw $zero,0x3f mutant is caught (noise 0xA5A5A5A5)
