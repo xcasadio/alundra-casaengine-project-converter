@@ -241,3 +241,19 @@ on the terrain at the end of the same tick; `ForceAdjusted` is not raised (a sub
 
 **Discrepancy with the plan, to be read by whoever reads the results of E20.e0k2:** the plan's wording of (z9) says the entity facing a terrain 4 px higher is "not posed". The oracle says the full step is refused and the **step is shortened by 4 raw units**, the entity then being on the terrain at the end of the
 tick anyway (by the sub-steps). The observable difference between 3 px and 4 px is the **displacement of tick 1** (full against 4 raw short), not the height at the end of the tick. The test (z9) as written in `Alundra.Tests/AlundraLogicalZWorldTests.cs` pins the keys as they are (see the results of phase A in the plan).
+
+### Addendum to the oracle of the magnet: the descending side (keys `magnet-down-3px` and `magnet-down-4px`), written at the red run of the world tests of E20.e0k2
+
+Why. The red run of the world tests (task T2) showed that the ascending keys above cannot make a world test red before phase B: with the map state of E20.e0k1 the engine already steps up a terrain at most `StepHeight` (3 px, the value of the prefab)
+above the foot and ends the tick on it (a probe of the DLL, throwaway: Beannoid born by the interface, speed 400, `x0` 61 gives displacement 307 200 and `PosZ` = 3 px = the oracle minus one raw unit, exactly the oracle; `x0` 62 gives displacement 262 144 and 3 px, where the oracle gives 307 196 and 4 px,
+which no engine mover reproduces: the engine shortens to a whole pixel). So the magnet of 3 px is not observable on the ascending side. It is on the descending side, where the engine's ground snap (4 px, `GroundSnapDistance`) differs from the binary's window (3 px).
+
+The scenario (`k0_magnet.py`, run with the rest by `run_all.py`): the same Beannoid (anim 7, speed overridden by the harness) walking east from x = 40 down the descending ramp of `k0_walker.py` E2 (cells 0..2 at height byte 4, cells 3..6 height byte 4..1 with slope 2, flat 0 after),
+40 ticks, the two interpreters identical (`out/magnet-down-*.txt` and `.json`, `meta.init.pz` = 4 194 305 = 64 px + 1 raw).
+
+| Key | Speed | What the machine does |
+|---|---|---|
+| `magnet-down-3px` | 320 (3.75 px per tick, the ground drops by 2 to 3 px per tick: inside the window) | `ground_144` = 1 at every one of the 40 ticks (no tick in the air): the magnet poses the entity on the lower terrain at every tick |
+| `magnet-down-4px` | 480 (5.625 px per tick, the ground drops by 3 to 4 px per tick: outside the window) | `ground_144` = 0 at ticks 10 to 24 (15 ticks in the air: the ground drops faster than the fall); `pz` at tick 10 equal to tick 9 (3 866 625), then falling by 32 768, 65 536, 98 304, ... raw per tick (the gravity step accumulating) |
+
+The manifest of `run_all.py` is now 97 files (the 88 of E20.e0k1, the 5 of the first part of this section, 4 new ones; `magnet-summary.txt` has the two new lines), identical on two complete runs.

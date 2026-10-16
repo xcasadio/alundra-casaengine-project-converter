@@ -10,7 +10,7 @@ ec44e4a5899e9b52c6c27f0a3276b7862c0a8adc  census_header.py  NEW  discovery-ident
 cfa95b73169992c542dafa4a3414a7102fd83584  k0_crate.py  NEW  discovery-identical
 785030485577bb8e3cf6bb196f5e5366cf77bbcd  k0_drift.py  NEW  discovery-identical
 d1965a0a63a41a01664b98ccb8137938c16e398f  k0_header.py  NEW  discovery-identical
-96b017c93ecb71635dbfda26f34af35841748d1b  k0_magnet.py  NEW  written at E20.e0k2 T0 (the oracle of the 3 px magnet, keys magnet-3px and magnet-4px)
+513a33bb918d130ef7e719401c60dc41aa431e4e  k0_magnet.py  NEW  written at E20.e0k2 T0 (the oracle of the 3 px magnet, keys magnet-3px and magnet-4px; the descending keys magnet-down-3px and magnet-down-4px added at the red run of the world tests)
 9634666c6fae7c439902495f3989e0dc26c74fb7  k0_masks.py  NEW  discovery-identical
 b5c9e9d94ed2ce2b76fa84163e876289c8f683ae  k0_muruta.py  NEW  discovery-identical
 1d14a972ccc3f72e038bb26cd29a1211c5f7063a  k0_noriders.py  NEW  discovery-identical

@@ -70,7 +70,11 @@ f04e66b375faee18c2c5ab6e3604dde8  crate-wall.txt
 7871bdc94dd80d672bcbd01ff4dd3985  magnet-3px.txt
 65b3f203ebdd5b5b189e92f5164a720f  magnet-4px.json
 a907810101c57988085dfff503aacfa9  magnet-4px.txt
-13c4b8c7b2f01071f1193476bab3a0ef  magnet-summary.txt
+17aee6907572aa0dbc62daf457eae200  magnet-down-3px.json
+c8556effdb66b902b61c0a13e3ebff48  magnet-down-3px.txt
+5ee731aa633f4f930ee7bdf2351d91bf  magnet-down-4px.json
+36f830cebab133261b3e7a21e5715ffc  magnet-down-4px.txt
+e432c62fbe5a9d106121356590ed2392  magnet-summary.txt
 bea4f208e8ab0570ffd4a55c81a5d530  masks-summary.txt
 9139df41c2f799b4e5f5da5b8ccddd5a  muruta-record24.txt
 1fd76e9393d36d5b7e667688ea46a6fe  muruta-record6.txt

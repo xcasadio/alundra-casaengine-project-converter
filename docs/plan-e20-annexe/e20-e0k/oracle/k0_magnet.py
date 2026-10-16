@@ -4,6 +4,14 @@ the animation set overridden by the harness to 400 (4.6875 px per tick, the full
 on the flat ground (T = 0) at x = 61 (key magnet-3px) and x = 62 (key magnet-4px).  The rise of the terrain under the box at the end of tick 1 is 3 px, then 4 px; everything else is the same.
 What the oracle shows (out/magnet-summary.txt): with 3 px the first attempt is accepted whole (displacement 307 200 raw), with 4 px it is not (307 196 raw, the refinement of 0x80037730 stops 4 raw short) and the entity
 ends the tick on the terrain either way (PosZ = T + 1 raw).  Witnesses: walker-ramp-up and walker-ramp-down (k0_walker.py E2/E3).
+The descending side (keys magnet-down-3px and magnet-down-4px, added at the red run of the world tests of E20.e0k2): the same Beannoid walking east DOWN the descending ramp of k0_walker.py E2
+(cells 0..2 at height byte 4, cells 3..6 height byte 4..1 with slope 2, flat 0 after) from x = 40, the walk speed overridden to 320 (3.75 px per tick horizontally, the ground drops by 2 to 3 px per tick, inside the
+window of the magnet: IsOnGround stays 1) and to 480 (5.625 px per tick, the ground drops by 3 to 4 px per tick, outside the window: the entity is in the air at the end of the ticks, IsOnGround 0, then lands at
+the head of the next tick).  Same entity, same ramp as E8 of k0_walker.py, with the per-tick rows saved.
+The descending side (keys magnet-down-3px and magnet-down-4px, added at the red run of the world tests of E20.e0k2): the same Beannoid walking east DOWN the descending ramp of k0_walker.py E2
+(cells 0..2 at height byte 4, cells 3..6 height byte 4..1 with slope 2, flat 0 after) from x = 40, the walk speed overridden to 320 (3.75 px per tick horizontally, the ground drops by 2 to 3 px per tick, inside the
+window of the magnet: IsOnGround stays 1) and to 480 (5.625 px per tick, the ground drops by 3 to 4 px per tick, outside the window: the entity is in the air at the end of the ticks, IsOnGround 0, then lands at
+the head of the next tick).  Same entity, same ramp as E8 of k0_walker.py, with the per-tick rows saved.
 Run: python -B -I k0_magnet.py   (writes out/magnet-*.txt and out/magnet-*.json, prints the summary)"""
 import sys, os
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -16,6 +24,8 @@ from k0_arrows import OUT
 COLS = ['status', 'anim_t', 'anim_c', 'fz_B8', 'fnz_EC', 'fx_C4', 'fnx_E4', 'px', 'pz', 'terr_138', 'floor_134', 'ground_144', 'collz_140', 'adj_13C']
 SPEED = 400          # animation-set speed of the walk (anim 7), harness override: 400 * 768 / 65536 = 4.6875 px per tick = 307 200 raw
 TICKS = 6
+DOWN_TICKS = 40
+DOWN_TICKS = 40
 
 
 def ramp_up(col, row):
@@ -47,6 +57,23 @@ if __name__ == '__main__':
                 name, r['tick'], c['px'] - prev['px'], SPEED * 768, c['pz'] - prev['pz'], (c['pz'] - prev['pz']) / 65536, c['terr_138'], c['pz'] - c['terr_138'], c['ground_144'], c['adj_13C']))
             prev = c
         lines.append('%s: two interpreters differ at: %s' % (name, d))
+    def ramp_down(col, row):
+        if col < 3:
+            return dict(h=4)
+        if col <= 6:
+            return dict(h=4 - (col - 3), slope=2)
+        return None
+
+    for name, speed in (('magnet-down-3px', 320), ('magnet-down-4px', 480)):
+        m, s, init, rows = WK.walker(cells=ramp_down, anim=7, n=DOWN_TICKS, pos=(40, 100), speed_override={7: speed})
+        m2, s2, init2, rows2 = WK.walker(cells=ramp_down, anim=7, n=DOWN_TICKS, pos=(40, 100), speed_override={7: speed}, ticker=interp2.tick2)
+        d = K.same_rows(rows, rows2)
+        txt = K.table(rows, s, COLS, 1, DOWN_TICKS, 1, title='== %s: Beannoid (anim 7, speed %d) from x = 40 down the descending ramp (cells 3..6); interp diff %s\nstart state: %s' % (
+            name, speed, d, ' '.join('%s=%s' % (c, K.fmt(c, init[c])) for c in COLS if c in init)))
+        open(os.path.join(OUT, name + '.txt'), 'w').write(txt + '\n')
+        K.dump_json(os.path.join(OUT, name + '.json'), rows, dict(name=name, slot=s, init=init, speed=speed, x0=40))
+        air = [r['tick'] for r in rows if r['slots'][s]['ground_144'] == 0]
+        lines.append('%s: ticks with IsOnGround = 0: %s ; two interpreters differ at: %s' % (name, air, d))
     txt = '\n'.join(lines)
     open(os.path.join(OUT, 'magnet-summary.txt'), 'w').write(txt + '\n')
     print(txt)

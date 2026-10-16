@@ -1,0 +1,43 @@
+== magnet-down-4px: Beannoid (anim 7, speed 480) from x = 40 down the descending ramp (cells 3..6); interp diff None
+start state: status=2 anim_t=0 anim_c=0 fz_B8=0 fnz_EC=0 fx_C4=0 fnx_E4=0 px=40.0000 pz=64.0000 terr_138=64.0000 floor_134=31.0000 ground_144=1 collz_140=0 adj_13C=0
+tick status anim_t anim_c fz_B8 fnz_EC fx_C4 fnx_E4 px pz terr_138 floor_134 ground_144 collz_140 adj_13C
+t001 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=45.6250 pz=64.0000 terr_138=64.0000 floor_134=64.0000 ground_144=1 collz_140=1 adj_13C=0  | snd(0)
+t002 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=51.2500 pz=64.0000 terr_138=64.0000 floor_134=64.0000 ground_144=1 collz_140=1 adj_13C=0
+t003 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=56.8750 pz=64.0000 terr_138=64.0000 floor_134=64.0000 ground_144=1 collz_140=1 adj_13C=0
+t004 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=62.5000 pz=64.0000 terr_138=64.0000 floor_134=64.0000 ground_144=1 collz_140=1 adj_13C=0
+t005 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=68.1250 pz=64.0000 terr_138=64.0000 floor_134=64.0000 ground_144=1 collz_140=1 adj_13C=0
+t006 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=73.7500 pz=64.0000 terr_138=64.0000 floor_134=64.0000 ground_144=1 collz_140=1 adj_13C=0
+t007 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=79.3750 pz=64.0000 terr_138=64.0000 floor_134=64.0000 ground_144=1 collz_140=1 adj_13C=0
+t008 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=85.0000 pz=62.0000 terr_138=62.0000 floor_134=62.0000 ground_144=1 collz_140=1 adj_13C=0
+t009 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=90.6250 pz=59.0000 terr_138=59.0000 floor_134=59.0000 ground_144=1 collz_140=1 adj_13C=0
+t010 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=96.2500 pz=59.0000 terr_138=55.0000 floor_134=55.0000 ground_144=0 collz_140=1 adj_13C=0
+t011 status=2 anim_t=7 anim_c=7 fz_B8=-32768 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=101.8750 pz=58.5000 terr_138=52.0000 floor_134=52.0000 ground_144=0 collz_140=0 adj_13C=0
+t012 status=2 anim_t=7 anim_c=7 fz_B8=-65536 fnz_EC=-65536 fx_C4=368640 fnx_E4=368640 px=107.5000 pz=57.5000 terr_138=48.0000 floor_134=48.0000 ground_144=0 collz_140=0 adj_13C=0
+t013 status=2 anim_t=7 anim_c=7 fz_B8=-98304 fnz_EC=-98304 fx_C4=368640 fnx_E4=368640 px=113.1250 pz=56.0000 terr_138=44.0000 floor_134=44.0000 ground_144=0 collz_140=0 adj_13C=0
+t014 status=2 anim_t=7 anim_c=7 fz_B8=-131072 fnz_EC=-131072 fx_C4=368640 fnx_E4=368640 px=118.7500 pz=54.0000 terr_138=40.0000 floor_134=40.0000 ground_144=0 collz_140=0 adj_13C=0
+t015 status=2 anim_t=7 anim_c=7 fz_B8=-163840 fnz_EC=-163840 fx_C4=368640 fnx_E4=368640 px=124.3750 pz=51.5000 terr_138=36.0000 floor_134=36.0000 ground_144=0 collz_140=0 adj_13C=0
+t016 status=2 anim_t=7 anim_c=7 fz_B8=-196608 fnz_EC=-196608 fx_C4=368640 fnx_E4=368640 px=130.0000 pz=48.5000 terr_138=32.0000 floor_134=32.0000 ground_144=0 collz_140=0 adj_13C=0
+t017 status=2 anim_t=7 anim_c=7 fz_B8=-229376 fnz_EC=-229376 fx_C4=368640 fnx_E4=368640 px=135.6250 pz=45.0000 terr_138=29.0000 floor_134=29.0000 ground_144=0 collz_140=0 adj_13C=0
+t018 status=2 anim_t=7 anim_c=7 fz_B8=-262144 fnz_EC=-262144 fx_C4=368640 fnx_E4=368640 px=141.2500 pz=41.0000 terr_138=25.0000 floor_134=25.0000 ground_144=0 collz_140=0 adj_13C=0
+t019 status=2 anim_t=7 anim_c=7 fz_B8=-294912 fnz_EC=-294912 fx_C4=368640 fnx_E4=368640 px=146.8750 pz=36.5000 terr_138=22.0000 floor_134=22.0000 ground_144=0 collz_140=0 adj_13C=0
+t020 status=2 anim_t=7 anim_c=7 fz_B8=-327680 fnz_EC=-327680 fx_C4=368640 fnx_E4=368640 px=152.5000 pz=31.5000 terr_138=18.0000 floor_134=18.0000 ground_144=0 collz_140=0 adj_13C=0
+t021 status=2 anim_t=7 anim_c=7 fz_B8=-360448 fnz_EC=-360448 fx_C4=368640 fnx_E4=368640 px=158.1250 pz=26.0000 terr_138=14.0000 floor_134=14.0000 ground_144=0 collz_140=0 adj_13C=0
+t022 status=2 anim_t=7 anim_c=7 fz_B8=-393216 fnz_EC=-393216 fx_C4=368640 fnx_E4=368640 px=163.7500 pz=20.0000 terr_138=10.0000 floor_134=10.0000 ground_144=0 collz_140=0 adj_13C=0
+t023 status=2 anim_t=7 anim_c=7 fz_B8=-425984 fnz_EC=-425984 fx_C4=368640 fnx_E4=368640 px=169.3750 pz=13.5000 terr_138=6.0000 floor_134=6.0000 ground_144=0 collz_140=0 adj_13C=0
+t024 status=2 anim_t=7 anim_c=7 fz_B8=-458752 fnz_EC=-458752 fx_C4=368640 fnx_E4=368640 px=175.0000 pz=6.5000 terr_138=2.0000 floor_134=2.0000 ground_144=0 collz_140=0 adj_13C=0
+t025 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-491520 fx_C4=368640 fnx_E4=368640 px=180.6250 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t026 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=186.2500 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t027 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=191.8750 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t028 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=197.5000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t029 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=203.1250 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t030 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=208.7500 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t031 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=214.3750 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t032 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=220.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t033 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=225.6250 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t034 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=231.2500 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t035 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=236.8750 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t036 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=242.5000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t037 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=248.1250 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t038 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=253.7500 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t039 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=259.3750 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0
+t040 status=2 anim_t=7 anim_c=7 fz_B8=0 fnz_EC=-32768 fx_C4=368640 fnx_E4=368640 px=265.0000 pz=0.0000 terr_138=0.0000 floor_134=0.0000 ground_144=1 collz_140=1 adj_13C=0

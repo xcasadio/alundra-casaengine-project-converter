@@ -4,3 +4,5 @@ magnet-3px: two interpreters differ at: None
 magnet-4px tick 1: displacement 307196 raw (full step 307200), rise of PosZ 262144 raw (4.0000 px), TerrainHeight 262144 raw, PosZ - TerrainHeight 1 raw, IsOnGround 1, ForceAdjusted 0
 magnet-4px tick 2: displacement 307200 raw (full step 307200), rise of PosZ 196608 raw (3.0000 px), TerrainHeight 458752 raw, PosZ - TerrainHeight 1 raw, IsOnGround 1, ForceAdjusted 0
 magnet-4px: two interpreters differ at: None
+magnet-down-3px: ticks with IsOnGround = 0: [] ; two interpreters differ at: None
+magnet-down-4px: ticks with IsOnGround = 0: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24] ; two interpreters differ at: None
