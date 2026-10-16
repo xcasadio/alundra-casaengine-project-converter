@@ -4122,7 +4122,7 @@ S = tick de naissance, k = tick − S).
 
 ##### Tâches
 
-- ⏳ **T0 — Oracle, remesure, sondes** (commit de docs, avant tout code). Annexe `docs/plan-e20-annexe/e20-e0a4/` : les scripts de
+- ✅ **T0 — Oracle, remesure, sondes** (commit de docs, avant tout code). Annexe `docs/plan-e20-annexe/e20-e0a4/` : les scripts de
   l'oracle (`rec_tick.py`, `rec_tick_detail.py`, `rec_birth_clock.py`, `box_table.py`, `cmp_v6.py`) copiés octet pour octet avec leurs
   sommes de contrôle, rejoués deux fois depuis une copie (même manifeste), sorties versées. README : (1) le compte de départ (5 065) ;
   (2) la **remesure au placement exact**, jetable : phase A seule (`SwitchedAtCreation` + `AnimFlags`), phases A et B, la variante A sans
@@ -4133,6 +4133,17 @@ S = tick de naissance, k = tick − S).
   dont l'animation de création a une vitesse non nulle, un site `0x8A` et un site `0x8B` où la position écrite est sous le terrain (sinon
   un programme de test), et la forme d'une naissance par événement de carte et en boucle 2 dans le montage. Arrêt : un test du goéland,
   une épingle du chargement de carte ou du héros dans une liste.
+  **Résultat (2026-10-16, HEAD `0ab44d0`, annexe `docs/plan-e20-annexe/e20-e0a4/`, README).** Oracle rejoué deux fois depuis deux copies, manifeste identique (`rec_tick.json` `c49310a0…`, `rec_birth_clock.json` `7ff72238…`, ceux de
+  la découverte) ; `cmp_v6` : `REC-H1`/`REC-H2` identiques à `BT-H1`/`BT-H2`, `REC-LOAD` à `LOAD27`, `REC-ME` à `WAVE` : aucune ligne ne contredit le modèle. Départ : **5 065** verts (Release, copie neutralisée, 5 min 38 s). Remesure au placement
+  exact : **PA** (phase A seule) 3 rouges : `AlundraBirthBoxTests.B6_V_…` (la boîte, le drapeau et une question à l'hôte apparaissent), `AlundraCreationSwitchClockTests.A6_V_…` (`SwitchedAtCreation` vrai), `AlundraHeightTargetSitesTests…(s115_rec19)`
+  `(756, 1077, …)` au lieu de `(757, 1078, …)` (horloge comptée) ; **PAB** (A + le marqueur posé en dernier par les trois opcodes) 7 rouges : les 3 de PA (`s115_rec19` à `(755, 1076, …)`), `A10_…` (`[596, …]`), `AlundraShipBlockArcTests.A6_…`
+  (`[180, 643, 1332]`), `…(s36c4_rec3)` `(165, 325, …)`, `AlundraBirthTickTests…:422` (« 4 out of 23 ») ; **PANOAF** (A sans `AnimFlags`) : les mêmes 3 que PA, `AnimFlags` ne déplace aucun test existant ; **PABEARLY** (marqueur avant la poussée de
+  `0x8A`/`0x8B`) : les mêmes 7 que PAB (aucun test existant ne voit la position écrite : seul (b4) le tuera). Les quatre tests du goéland, les épingles du chargement de carte et du héros : verts dans les quatre variantes. Les quatre tests d'arcs
+  naissent tous par `0x2D` dans la passe des événements de carte (sonde par la pile d'appel de `CreationFaultHookForTests`, jetable) ; aucune naissance en boucle 2 dans la suite existante. **Listes prédites** : phase A = `B6_V`, `A6_V` (réécrits,
+  D-E0A4-6) et `s115_rec19` ; phase B = `A10`, `A6` (bloc du navire), `s36c4_rec3`, `s115_rec19` (à `(755, 1076, …)`) et l'épingle `AlundraBirthTickTests:422`. Sujets des tests : voir le README, (5) : `AnimFlags` non nuls = l'enregistrement 3 de la
+  carte 36 (sprite 313, octet `0x40`) et un enregistrement de test du sprite 27 (octet 193) ; vitesse de création non nulle = l'enregistrement 1 de la carte 321 (sprite 469, vitesse 160) ; **aucun site réel `0x8A`/`0x8B` sous le terrain n'a été
+  recensé (pas de recensement des 684 sites `0x8A` en T0) : programmes de test** (autorisé par le texte de T0 (5)) ; naissances par événement de carte et en boucle 2 : appel de `SpawnEntityByRecordId` aux passes `mapEvents` et `programs` de
+  `TickTraceForTests` (T2 les remplace par les vrais opcodes dans des programmes de test). Aucun arrêt.
 - ⏳ **T1 — Phase A** (tests d'abord, rouges sur le HEAD, noms versés au plan ; puis le code ; verts à la fin de T1). Fichier
   `AlundraRecordBirthClockTests.cs`. Étiquettes : **[R]** rouge sur le HEAD (prédit) ; **[V]** vert par construction.
   - [R] (a1) La boîte à la création d'une entité née par `0x2D` (sprite 27 par un enregistrement de test, ou un enregistrement réel dont
