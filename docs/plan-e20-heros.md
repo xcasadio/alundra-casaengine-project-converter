@@ -4869,17 +4869,26 @@ zéro échec ; preuve de retrait reproduite ; aucun test existant déplacé). **
 
 #### 1.19.3 E20.f3c — La vague de l'épée (C61, E10) et l'activation des types 27 à 29 ⏳
 
-**Prérequis.** E20.f3a, E20.e0a1 à E20.e0a3 ✅, E20.e0b1 ✅, la règle « Z logique » (D-F3-8) d'E20.e0k (§1.18) ou son repli (Q-F3-1). Touche `AlundraWorldProxy.cs`, `AlundraEventProgramRunner.cs` et `AlundraEntityScriptProxy.cs` : après E20.e0b2 si celle-ci reprend.
+**Mise à jour avant relecture (2026-10-16).** E20.e0k1 et E20.e0k2 sont faites et CONFIRMED (ADR-0068, ADR-0069) : la vague, née par
+l'interface, porte le marqueur `HasLogicalZ` et garde son Z logique ; D-F3-8 est livrée par e0k2 et le repli B tombe. La tâche T3 (la
+règle) est donc sans objet ; la sonde de vie devient un test de la phase A ; le témoin négatif (p5) prend un ensemble de test explicite
+(il reste vrai après f5, qui câblera l'arc) ; l'ordre « compteur, journal, puis appel » de D-F3-3, laissé sans épingle par f3a (P3
+reporté), est épinglé ici ; l'ADR de la tranche note que la dernière phrase de D-F3-7 dans l'ADR-0067 est réfutée (§1.20).
+
+**Prérequis.** E20.f3a ✅, E20.e0a1 à E20.e0a3 ✅, E20.e0b1 ✅, E20.e0k1 ✅ et E20.e0k2 ✅ (la règle du Z logique, D-F3-8). Touche
+`AlundraEventProgramRunner.cs` et `AlundraNativeSpriteRegistry.cs` ; relit ses numéros de ligne au HEAD d'exécution.
 
 **But.** L'épée chargée tire la vague au tick `R + 21` ; elle vit 26 ticks, balaie sa boîte, touche les cibles de classe A, coupe l'herbe en bouchon nommé, et meurt à S+26 avec sa case libre à S+27.
 
-**Périmètre.** `AlundraEventProgramRunner.cs` (E10 en ligne), nouveau fichier `AlundraWaveSwordAi.cs` (C61, bouchon nommé, journal), `AlundraNativeSpriteRegistry.cs` (un appel de plus), `AlundraPlayerManager.cs` (l'ensemble {27, 28, 29}), `AlundraEntityScriptProxy.cs` (la règle du Z logique si repli), `Alundra.Tests/` (support : échantillon de nouveau-né), `docs/plan-e20-annexe/e20-f3/`, ADR.
+**Périmètre.** `AlundraEventProgramRunner.cs` (E10 en ligne), nouveau fichier `AlundraWaveSwordAi.cs` (C61, bouchon nommé, journal), `AlundraNativeSpriteRegistry.cs` (un appel de plus), `AlundraPlayerManager.cs` (l'ensemble {27, 28, 29}), `Alundra.Tests/` (support : échantillon de nouveau-né), `docs/plan-e20-annexe/e20-f3/`, ADR.
 
 **Hors périmètre.** La coupe d'herbe réelle et son butin (E20.e, E20.e0c) ; tout autre type câblé ; A0 ; le déplacement de X et Y (O-F3-2).
 
 **Partage des phases** (seul à faire foi) :
-- **Phase A** (T1 à T3, sans changement de comportement en production) : E10 en ligne ; C61 et son bouchon ; la règle du Z logique (si repli) ; les tests de vie par le **crochet de test** (`WeaponSpawnBirthHookForTests` appelle l'interface au lieu exact du tir, tick de naissance compris). Aucune entité n'est née par l'interface en production (l'ensemble reste vide) : la règle du Z logique, restreinte aux entités nées par l'interface sans gravité, ne touche donc aucune entité de production.
-- **Phase B** (T4) : l'ensemble câblé devient {27, 28, 29}. C'est la seule ligne de comportement de la phase. Les tests de tir de production (crochet nul) sont rouges avant elle.
+- **Phase A** (T1, sans changement de comportement en production) : E10 en ligne ; C61 et son bouchon ; les tests de vie par le **crochet
+  de test** (`WeaponSpawnBirthHookForTests` appelle l'interface au lieu exact du tir, tick de naissance compris). Aucune entité n'est née
+  par l'interface en production (l'ensemble reste vide) ; E10 et C61 n'existent que sur les sprites 27 à 29.
+- **Phase B** (T3) : l'ensemble câblé devient {27, 28, 29}. C'est la seule ligne de comportement de la phase. Les tests de tir de production (crochet nul) sont rouges avant elle.
 
 **Valeurs attendues et leurs clés** (acier, est, relâchement à 96 ; fichiers `wave_<épée>_<direction>.json`, ligne du tick, `slots[1]`). Ticks de l'arène = ticks de l'oracle − 5 ; `pz` du binaire = Z de la DLL + 1 unité brute.
 
@@ -4899,32 +4908,46 @@ zéro échec ; preuve de retrait reproduite ; aucun test existant déplacé). **
 
 ##### Tâches
 
-- ⏳ **T1 — Phase A, E10 et C61** (tests d'abord, rouges sur un squelette, puis le code). `AlundraWaveSwordLifeTests` (monde, nouveau-né née par le crochet) :
+- ⏳ **T1 — Phase A, E10 et C61** (tests d'abord, rouges sur un squelette qui compile, puis le code). `AlundraWaveSwordLifeTests` (monde,
+  nouveau-né née par le crochet ; chaque test attend une destruction ou un appel du bouchon, que le squelette ne produit pas) :
   - (v1) E10 : détruite à S+26, case libre à S+27 (une apparition suivante reprend la même case), aucun effet de bris créé (`BreakEffect` 0) ; **accolé** à `HitArena` (gestionnaires natifs éteints) qui détruit aussi la vague au même tick (D-F3-5) ;
   - (v2) C61 : le bouchon est appelé une fois à chaque tick de S+1 à S+25 (25 appels, clé `wave_grass2` : spy), jamais à S (A tourne) ni après S+25 ; paire : la même vague dans `HitArena` (natifs éteints) n'appelle pas le bouchon (cas négatif de l'interrupteur) ;
-  - (v3) registre : 7 clés (6 + (C, 61)) ; le type 27 a (C, 61) et (E, 10 en ligne), aucun autre ; `AlundraNativeSpriteRegistryTests.cs:51` réécrit par dérivation (6 + 1).
-- ⏳ **T2 — Sonde de vie, rouge avant T3.** (v4) la vague par le crochet, pour les épées 27, 28, 29 × les quatre directions de l'oracle (acier ; démon est ; saint est), à **1, 2 et 3 ticks par image** : pour chaque tick de S à S+27, `Status`, `FrameCounter`, `ForceResetAnimationFlag`, `PosX/PosY`, `PosZ` (clé `pz` − 1), forces, `ForceAdjusted`, `IsOnGround` et la boîte égalent les clés du tableau. Zéro changement et changement dans la même assertion : la position et le sol constants avec le balayage de la boîte. Le tick de mort mesuré **avant** la règle est noté au README (prédit : S+1 à S+3). Si la sonde est verte sans la règle, D-F3-8 tombe : arrêt et rapport.
-- ⏳ **T3 — La règle du Z logique** (D-F3-8), si Q-F3-1 donne le repli B ; sinon T3 est « relire §1.18 » et la sonde de T2 sert d'acceptation d'e0k. Liste prédite des tests qui bougent : ceux qui lisent le Z d'une entité née par l'interface après sa première image (arbres de `AlundraBirthTickTests`) ; mesurée par la suite complète ; chacun réécrit par dérivation. T2 passe au vert aux trois groupements.
-- ⏳ **T4 — Phase B, câblage de production.** Tests écrits d'abord, **rouges avant T4**, crochet nul, dans `HitArena` et dans `ArcRun` (cartes 14, natifs allumés pour le second) :
+  - (v3) registre : 7 clés (6 + (C, 61)) ; le type 27 a (C, 61) et (E, 10 en ligne), aucun autre ; `AlundraNativeSpriteRegistryTests.cs:51` réécrit par dérivation (6 + 1) ;
+  - (v4) la vie entière de la vague par le crochet, pour les épées 27, 28, 29 × les quatre directions de l'oracle (acier ; démon est ; saint est), à **1, 2 et 3 ticks par image** : pour chaque tick de S à S+27, `Status`, `FrameCounter`, `ForceResetAnimationFlag`, `PosX/PosY`, `PosZ` (clé `pz` − 1), forces, `ForceAdjusted`, `IsOnGround` et la boîte égalent les clés du tableau. Zéro changement et changement dans la même assertion : la position et le sol constants avec le balayage de la boîte ; la mort à S+26
+    (E10) dans la même assertion, donc rouge sur le squelette (la vague n'y meurt jamais) ;
+  - (s7) l'ordre de D-F3-3 : un crochet de test qui lit, au moment de son appel, le compteur et le journal du tir : déjà incrémentés et déjà
+    écrits (vert par construction ; il épingle le comportement d'f3a et tue le mutant M5b, ordre déplacé dans les deux branches).
+  Liste prédite des tests existants qui bougent : `AlundraNativeSpriteRegistryTests` (6 → 7), écrite au README avant le code.
+- ~~T3 — La règle du Z logique~~ : sans objet (livrée par E20.e0k2, ADR-0069).
+- ⏳ **T3 — Phase B, câblage de production.** Tests écrits d'abord, **rouges avant le câblage**, crochet nul, dans `HitArena` et dans `ArcRun` (cartes 14, natifs allumés pour le second) :
   - (p1) l'arène de la charge (relâchement à 91, S = 112) : une entité de type 27 fille du héros, aux clés du tableau, à la plus basse case libre mesurée avant le tir ; épées de démon et sainte : types 28 et 29, `atk_pow` 20 et 38 ;
   - (p2) la cible à +56, +68, +80 est touchée par la vague aux ticks S+5, S+7, S+9 (clé `wave_reach_sweep`) ; la cible à +44 l'est par le héros (cas positif et « la vague ne passe pas devant le héros » dans la même assertion) ;
   - (p3) la vague ne touche jamais le héros (`FrameCollisionTickCounter` du héros jamais posé par elle) dans la même exécution où la cible est touchée ;
   - (p4) l'épingle d'arène : 2 contacts avec E10 en ligne ; le mutant « E10 dans le registre » en donne 3 au tick 138 (clé `arena_probe`) ;
-  - (p5) un tir d'arme non câblée (arc du chasseur) : compteur 1, journal 1 appel, **zéro** entité ; accolé au tir de l'épée : une entité ;
+  - (p5) avec un ensemble de test explicite {27, 28, 29} (`WiredWeaponTypesForTests`, pour que le témoin reste vrai quand f5 câblera
+    l'arc) : un tir de l'arc du chasseur donne compteur 1, journal 1 appel, **zéro** entité ; accolé au tir de l'épée : une entité ;
   - (p6) table pleine : 62 entités posées, le tir de la vague ne crée rien et le pointeur est effacé ; une case libre : une entité ;
   - (p7) dégâts : la fonction pure `AlundraDamage.ResolveBalanceTarget` pour (attribut 129, puissance 10, 20, 38) contre la fiche du Beannoïde ; `TouchingEntity` = la vague au tick de la touche (le dégât de bout en bout reste à la recette).
   Puis la ligne de câblage.
-- ⏳ **T5 — ADR, plan, verifiers frais** (deux ; l'un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL, au moins 14, tous tués : E10 absent, E10 sous l'interrupteur natif, C61 absent, C61 aussi au tick S, unité de Z perdue, `IsOnGround` inversé, destruction avec effet, ensemble contenant 3, mapping des directions permuté, ordre de la garde, apparition deux fois, crochet qui ne remplace pas, tolérance du nul, boîte figée au repli.
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux ; l'un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL,
+  au moins 12, tués ou prouvés équivalents par écrit : E10 absent, E10 sous l'interrupteur natif, C61 absent, C61 aussi au tick S,
+  destruction avec effet, ensemble de production contenant 3, mapping des directions permuté, ordre de la garde, apparition deux fois,
+  crochet qui ne remplace pas, tolérance du nul, M5b (compteur et journal après l'appel, tué par (s7)). L'ADR de la tranche (le prochain
+  numéro libre) enregistre D-F3-5, D-F3-6 et la réfutation de la dernière phrase de D-F3-7 (A0 n'est pas à élargir, §1.20).
 
 ##### Acceptation
 
 - Oracle : les sorties de T0 (acier ×4 directions, démon, saint, balayages, `arena_probe`, mutants) ; manifeste identique.
-- DLL : (v1) à (v4), (p1) à (p7) verts ; (v4) rouge avant T3 et (p1) à (p6) rouges avant T4 (nommés) ; la vague vit 26 ticks aux trois groupements ; `Alundra.Tests` en Release **et** en Debug, compte de départ plus les nouveaux, zéro échec ; tests déplacés ⊂ liste prédite (registre : 6 → 7 ; les arbres du Z), chacun justifié par sa dérivation ; l'épingle d'arène reste à 2 ; `cmp` de la DLL ; cinq traces ; moteur, convertisseur et données sans diff.
+- DLL : (v1) à (v4), (s7), (p1) à (p7) verts ; (v1), (v2), (v4) rouges sur le squelette de T1 et (p1) à (p6) rouges avant le câblage
+  (nommés) ; **preuve de retrait** : l'ensemble de production vidé, exactement (p1) à (p6) rouges, rien d'autre ; la vague vit 26 ticks
+  aux trois groupements ; `Alundra.Tests` en Release **et** en Debug, compte de départ plus les nouveaux, zéro échec ; tests déplacés ⊂ liste prédite (registre : 6 → 7), chacun justifié par sa dérivation ; l'épingle d'arène reste à 2 ; `cmp` de la DLL ; cinq traces ; moteur, convertisseur et données sans diff.
 - Recette de l'auteur : sauvegardes `steel-m14`, `demon-m14`, `arsenal-b-m14` (F9). Charger, relâcher, la vague apparaît 20 ticks après et dure 26 ticks. Attendu : elle ne coupe pas l'herbe (Q-F3-2) et touche un Beannoïde à 56 px et plus.
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : la vague vit un nombre de ticks différent selon le groupement ; la sonde est verte sans la règle (D-F3-8 tombe) ; un test hors de la liste prédite bouge ; plus de 10 tests existants bougent ; la vague touche le héros ; l'arène donne 3 contacts avec E10 en ligne ; la règle de §1.18 diffère de D-F3-8 ; un besoin de changer le moteur.
+- **Arrêts** : la vague vit un nombre de ticks différent selon le groupement ; la vague meurt avant S+26 ou se pose (la règle d'e0k2 ne
+  tient pas pour elle : question) ; un test de (v1), (v2), (v4) vert sur le squelette ; un test de (p1) à (p6) vert avant le câblage ; un
+  test hors de la liste prédite bouge ; plus de 10 tests existants bougent ; la vague touche le héros ; l'arène donne 3 contacts avec E10 en ligne ; un besoin de changer le moteur.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B se retire seule (vider l'ensemble) ; la phase A reste inerte en production.
 
