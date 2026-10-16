@@ -3944,7 +3944,7 @@ séparé ; leur mordant est prouvé par les mutations des deux verifiers.
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : `git revert` des commits d'E20.e0a3b (la mesure P-B ne laisse aucun code).
 
-#### 1.16.4 E20.e0a4 — Participation au tick de naissance des apparitions par script (`0x2D`, `0x8A`, `0x8B`) ⏳ (décidée le 2026-10-15, Q-A1 ; détaillée le 2026-10-16, à relire)
+#### 1.16.4 E20.e0a4 — Participation au tick de naissance des apparitions par script (`0x2D`, `0x8A`, `0x8B`) ⏳ (décidée le 2026-10-15, Q-A1 ; détaillée le 2026-10-16, READY)
 
 **Révision 1 (2026-10-16).** Relecture : **REVISE**, trois blocages corrigés (FIX) : (1) la preuve de retrait « par phase » ne tenait
 pas (le retrait de la phase A rend aussi rouges les tests de la phase B) : comme e0a5, la phase A est prouvée par ses rouges sur le HEAD
@@ -3953,6 +3953,7 @@ opcodes, aucune nouvelle signature), si bien que ce retrait compile sans déclar
 plan : (a4) [R] avec une animation de création à `AnimFlags` non nuls, (b5) à 1 tick par image, (b6) [R] sur une entité née par script,
 (b3) [V] (vert sur le code de la phase A, il garde le mutant « marqueur sans `SwitchedAtCreation` »), les bascules de la boucle 2 (a3)
 deviennent des contrôles [C] hors des preuves ; (3) `0x8B` reçoit son cas [R] (b4b), avec et sans cible trouvée, et ses deux mutants.
+Seconde relecture (révision 1, au HEAD `19a3bc4`, après la réponse de l'auteur à Q-E0A4-1) : **READY** (2026-10-16).
 
 **Prérequis.** E20.e0a3b ✅, **E20.e0a5** (même drapeau et même résolveur pour les naissances dans un tick ; la mesure P-B est refaite après elle) ; Q-A1 tranchée le 2026-10-15 (oui, après la mesure P-B) ; ordre : après E20.e0b2 (même fichier). Ne bloque
 aucune autre tranche.
