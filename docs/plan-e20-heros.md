@@ -4497,7 +4497,7 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
 | O-E0B-3 | Fréquence réelle des images de deux ticks ou plus, et première image après une longue pause (jusqu'à 4 ticks) | recette de l'auteur (compteur de l'ombre) |
 | O-E0B-4 | Treize fonctions qui tirent (`0x80032F84`, `0x800330FC`, `0x800333AC`, `0x800335AC`, `0x8003382C`, `0x80033A2C`, `0x80034EC4`, `0x800354D0`, `0x80039188`, `0x80042FDC`, `0x800432A4`, `0x8004392C`, `0x80065204`) ne figuraient pas dans la liste antérieure des sites ; la plupart ne sont pas portées : chacune consommera le flux avancé (`0x80039188` est déjà porté : étincelles de coup) | tranches E20.e, E20.h, E14 |
 
-### 1.18 E20.e0k — Pas vertical et vol des entités autres que le héros : e0k1 (état de la carte), e0k2 (Z logique et pas vertical), e0k3 (bord de la carte), e0k4 (conditionnelle) ⏳ (e0k1 et e0k2 faites et CONFIRMED le 2026-10-16, ADR-0068 et ADR-0069 ; détaillée le 2026-10-15)
+### 1.18 E20.e0k — Pas vertical et vol des entités autres que le héros : e0k1 (état de la carte), e0k2 (Z logique et pas vertical), e0k3 (bord de la carte), e0k4 (conditionnelle) ⏳ (e0k1, e0k2 et e0k3 faites et CONFIRMED le 2026-10-16, ADR-0068 à ADR-0070 ; détaillée le 2026-10-15)
 
 **Réponses de l'auteur.** Aucune à ce jour (2026-10-15, mode AUTO, l'auteur absent). Q-K1 et Q-K2 ont chacune un défaut réversible,
 **appliqué par la session principale jusqu'à la réponse de l'auteur** (option A dans les deux cas : périmètre étroit, aucun élargissement).
@@ -4749,7 +4749,7 @@ texte du plan pour tuer des mutants, est gardé.
 
 ---
 
-#### 1.18.3 E20.e0k3 — Le bord de la carte pour les entités marquées ⏳
+#### 1.18.3 E20.e0k3 — Le bord de la carte pour les entités marquées ✅ (faite et CONFIRMED le 2026-10-16, `e1a1339` à `61b076d`, ADR-0070)
 
 **Révision 1 (2026-10-16).** Relecture : **REVISE**, cinq points corrigés (FIX) : un T0 recompte la liste prédite au HEAD de départ
 d'e0k3 ; une preuve de retrait à l'ensemble rouge fermé ; (b2) a ses valeurs attendues par des clés d'oracle à ajouter (poussée continue,
@@ -4811,10 +4811,20 @@ fraction de pixel.
 - ✅ **T3 — Phase B** : le branchement. (b1) à (b4) passent au vert ; suite complète ; chaque test existant qui bouge appartient à la liste
   du T0 d'e0k3 et est réécrit par une dérivation (D-E0K-10).
   Fait (2026-10-16) : T2, 5 tests de monde (`AlundraMapEdgeWorldTests` : B1, B2 est, B2 diagonale, B3, B4), 5 rouges sur 5 avant T3 (phase A). T3 : `RunOneKinematicTick` borne `FinalForceX/Y` par `ClampStepToMapEdge` avant le mover pour une entité `HasLogicalZ`, puis lève `ForceAdjusted` APRÈS `SlideAlongWall` ; les 5 tests verts ; aucun test existant ne bouge ; suite 4 938 en Release et en Debug, 0 échec ; `cmp` de la DLL identique ; traces inchangées.
-- 🧪 **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre ; ADR-0070, plan et 12 mutants faits, les deux verifiers restent à la session principale). Mutants, au moins 9, tués ou prouvés équivalents : bornes permutées,
+- ✅ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre ; ADR-0070, plan et 12 mutants faits, les deux verifiers restent à la session principale). Mutants, au moins 9, tués ou prouvés équivalents : bornes permutées,
   drapeau non levé, levé au tick suivant, effacé par `SlideAlongWall`, appliqué au héros (tué par (b4)), appliqué aux entités par
   enregistrement (tué par (b3)), bornes calculées sans les décalages, entité non marquée bornée, comparaison stricte devenue large (tuée par
   (c) de T1).
+
+**Vérification (2026-10-16) : CONFIRMED** par deux verifiers frais, l'un après l'autre (rejeu : clés `edge-*` de l'oracle relancées sur une copie,
+identiques ; suites complètes en Release et en Debug, zéro échec ; preuve de retrait : exactement les cas nommés de (b1) à (b4) ; aucun test
+existant déplacé ; adversarial : 12 mutants de l'exécuteur tués et des mutants de plus). **Reportés** : **P3** — aucun test de monde ne pousse
+une entité marquée contre un bord nord ou sud : le mutant qui n'écrit pas `FinalForceY` borné laisse les 12 tests verts (seuls les tests
+directs couvrent Y) ; à épingler par la prochaine tranche qui fait voler une entité vers le nord ou le sud (E20.f5) ; **P4** — le bornage
+s'applique aussi à une entité marquée sans contrôleur (conforme au binaire, aucun test ne distingue les deux) ; le drapeau est levé après
+`SlideAlongWall` au lieu d'y être « conservé » (même effet, ADR-0070) ; le tick nommé de (b4) est dérivé de la vitesse du héros à
+l'exécution, non figé ; le code et les tests de T1 sont dans deux commits ; les lignes T2/T3 du plan de l'exécuteur sont parties dans le
+commit de docs `6c8ad55` de la session principale (garde du plan oubliée, rien perdu).
 
 ##### Acceptation
 
