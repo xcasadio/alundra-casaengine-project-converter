@@ -1,0 +1,28 @@
+# ADR-0071: An entity born by the sprite-index interface counts its first animation tick and reads its frame box before the engine integrates it
+
+- **Status**: Accepted
+- **Date**: 2026-10-16
+- **Source**: this chantier: `docs/plan-e20-heros.md`, section 1.16.5 (E20.e0a5, D-E0A5-1 to D-E0A5-8, "Résultats" of T1 and T2); `InitializeEntity` (`0x80039D04`) of `ALUN_CD.EXE` (France) and its call of `UpdateAnimation` (`0x80038AB4`) at `0x80039EA8`, the switch block `0x80038B18-0x80038BCC`; oracle `docs/plan-e20-annexe/e20-e0a5/oracle/` (rows `WAVE`, `NOSWITCH`, `SW0` to `SWD2`, `SPR251`, `SPR3`, `LOAD27` of `out/birth_clock.json`; 21 facts in `out/checks.txt`) and `docs/plan-e20-annexe/e20-f3/oracle/out/wave_*.json`; ADR-0065 (the tick of the birth), ADR-0068 and ADR-0069 (the map state and the logical Z of the same entities)
+
+## Context
+
+- Two defects of the DLL touched every entity born by `SpawnEntityBySpriteIndex` (the shot of the hero, the items), found when the sword wave of E20.f3c could not match its oracle.
+- The clock: the binary makes the first switch (animation 0) INSIDE the creation, and the first call of the animation pass counts a tick. The DLL leaves `Current = ~Target` (a pending switch, D-E0A-8) until the end of the first frame that integrates the entity, so each tick up to then was an uncounted switch tick and the animation was one tick late for its whole life (end flag of the wave at S+26 instead of S+25, the box moving at S+2, S+4 instead of S+1, S+3).
+- The box: `EvaluateFrameBox` marked its timeline resolved even when the sprite had no animation. Before the integration the sprite has none (its list is built by the engine), and no switch reset the timeline afterwards, so the frame box of the entity stayed null for its whole life.
+- The entities born from a record and the hero have the same one-tick delay (their pins depend on it); widening the rule to them is the author's decision (Q-E0A5-1, open).
+
+## Decision
+
+- **D-E0A5-1 / D-E0A5-2 (clock)**: a flag `SwitchedAtCreation`, set by `CreateEntityFromSpriteIndex` only (before the balance sheet; not cloned; not set on the record path nor for the hero). While the switch of the creation is the current one (flag, appearance flag still up, target = the creation animation, no chain restart, same direction, cursor not reloaded by another switch) each tick the clock sees is a COUNTED tick: reserved as before, the box cursor reads 1, 2, ... (`cnt1c`). The validation at the end of the frame replays ALL the reserved ticks and owes none, even with zero reserved. The first other switch seen in the window drops the counted ticks, then follows the ordinary rule. `Current = Target`, a faked `AnimationDirection` and a change of `AnimFlags` stay forbidden (D-E0A-8).
+- **D-E0A5-3 (box)**: under the flag, while the sprite has no animation, `EvaluateFrameBox` asks the host once per switch for the animation data of the prefab (`IAlundraScriptHost.ResolveAnimationData(animationAssetIds, animationId, direction)`, a default member returning null, implemented explicitly by `AlundraWorldProxy` over `AssetContentManager.Acquire<Animation2dData>`, the pattern of `CollisionField`) and builds the timeline from that data (`AlundraFrameBoxTimeline.ForData`). The sprite's `Animations` list is not touched. A host that answers nothing leaves the timeline unresolved (never frozen at null): the sprite answers after the integration.
+- **D-E0A5-4**: one flag carries the three rules; it is not `JoinsBirthTick` (posed last, and E20.e0a4 may extend that one).
+- **D-E0A5-5**: the record-born entities and the hero keep their delay, pinned by a test named as a known deviation (`...KnownDeviationQE0A5_1`).
+- **D-E0A5-6**: an animation end shorter than the window (from S to the end of the next frame) is seen at the end of the validation frame (the limit D-E19-13 already accepted); the rule is exact when the duration is at least the window (the wave: 26 ticks, the arrow: 12).
+- **D-E0A5-7**: no change of the engine, the converter, the shared record factory or `AlundraScriptedMotion`.
+
+## Consequences
+
+- The wave of the sword (types 27 to 29) raises its end flag at S+25, changes its box at S, S+1, S+3, S+5, S+7, S+9 (36 x 24 x 31), and the loop counters of the sprites 251 and 3 turn at the oracle ticks, at 1, 2 and 3 ticks per frame, wherever in the frame the entity is born (tests `AlundraCreationSwitchClockTests`, `AlundraBirthBoxTests`, values read by key from the oracle). `HasFrameBox` at the creation equals `has_box` of the oracle for the 156 vectors replayed.
+- Two existing tests moved, both about the clock (`BT_M_BornInTheFirstTickOfATwoTickFrame`, `BT_M_BornInMovePlayer`), rewritten by derivation from `cnt1c`; the box moved none. No pin of a record-born entity or of the hero moved. Nothing is born through the interface in production yet, so the change is inert in play until E20.f3 (the shot) and E20.h3 (the items).
+- Known limits: the entities from a record and the hero (Q-E0A5-1); a switch back to the creation animation in a frame of several ticks (O-E0A5-6, an ordinary rule of the HEAD for every entity); the `+0x1C` of a free slot (O-E0A5-2); the non-cardinal creation directions (O-E0A5-4); the world box of record-born entities at creation (O-E0A5-5).
+- Risks: a later change that makes the creation switch not the current one earlier (a new reload of the cursor) or that touches `Animations` before the integration breaks the oracle series; the 16 mutants of the plan (flag, replay, cursor, owed tick, window drop, lock, direction, key, frozen timeline, resolver flag, resolver writing `Animations`, repeated asking, direction of the resolver) each turn a test red.

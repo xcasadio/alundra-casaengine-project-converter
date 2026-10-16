@@ -84,3 +84,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0068 | An entity born by the sprite-index interface takes the map state first; the logical Z, the vertical step and the map edge follow in the next slices | Accepted | 2026-10-16 |
 | ADR-0069 | An entity born by the sprite-index interface keeps its Z in the logic tick and steps vertically before the XY step | Accepted | 2026-10-16 |
 | ADR-0070 | The step of an entity born by the sprite-index interface is bounded to the map edge before the mover and flags the same tick | Accepted | 2026-10-16 |
+| ADR-0071 | An entity born by the sprite-index interface counts its first animation tick and reads its frame box before the engine integrates it | Accepted | 2026-10-16 |
