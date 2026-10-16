@@ -24,6 +24,10 @@ Statut : ⏳ proposé le 2026-10-16, à relire (enveloppe et tranche R0). Démar
 - **D-R-8** (2026-10-16, réponse à Q-R-1) — `chantier/e20-heros` est fusionnée dans `main` d'abord (avec les sous-modules : moteur et
   analyseur, pointeurs vérifiés), puis le chantier part de `main` ; la fusion se fait sur le feu vert explicite de l'auteur, une fois
   E20.e0a4 close, par une branche d'intégration puis une avance rapide.
+- **D-R-9** (2026-10-16) — R0 démarre sur le texte de la révision 4, sans autre relecture du plan : le plan propre du moteur
+  (`CasaEngineMonogame/ai-agent/tasks/`) recense d'abord, dans le code, **tous** les filets qui rattrapent la création d'un objet script
+  (moteur et DLL) et applique la règle de D-R-4 à chacun ; un filet que la règle ne peut pas traverser sans changer un autre comportement
+  est un arrêt et une question.
 - Règle du moteur (D-R-2), notée aussi en mémoire : « le moteur, quand il crée les objets script, ne doit chercher que dans la DLL ».
 
 ## 1. Faits établis (découverte du 2026-10-16, lecture seule)
@@ -143,7 +147,7 @@ script à chaque tranche ; (5) les renommages imposés : `AlundraPlayerControlle
   (`executor`) ; `plan-verifier` avant chaque tranche ; un verifier frais après chaque tranche, deux pour R0 et R4 (moteur, données).
 - Retour arrière : `git revert` de la tranche ; pour R0 et R4, revert du commit parent et réexport depuis le commit précédent.
 
-## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export ⏸️ (révision 4 ; en pause : la relecture accordée par D-R-7 a rendu REVISE, correction faite ; décision de l'auteur attendue)
+## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export ⏳ (révision 4 ; démarrage décidé par l'auteur, D-R-9 ; après E20.e0a4 et la fusion de D-R-8)
 
 **Relecture (2026-10-16).** Enveloppe (§0 à §3) : **READY**. R0 : **REVISE**, trois blocages corrigés (FIX, révision 1) : (1) le lieu
 de l'exception de D-R-4 et le chemin de son contexte, sans casser les chargements sans DLL (vérification du convertisseur) ; (2) un seul
