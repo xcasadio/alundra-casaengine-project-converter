@@ -630,6 +630,12 @@ aussi f6a ; (2) les phrases de §1.20 à §1.22 qui parlaient de tranches indép
 selon l'ordre ferme (f4 propriétaire des éléments communs, f5 de la règle de vitesse ; f6b exige f4 et f5). Nouvelle époque de relecture :
 une seule relecture de clôture suit.
 Relecture de clôture de la révision 9 : **READY** (2026-10-15).
+**Révision 10 (2026-10-16, mode AUTO, après l'arrêt d'E20.f3c ; nouvelle époque de relecture).** La phase A d'f3c s'est arrêtée sur deux
+défauts de la DLL qui touchent toute entité née par l'interface (boîte de frame figée à nul ; horloge d'animation en retard d'un tick :
+le binaire bascule à la création, `0x80039EA8`). Une tranche préalable, E20.e0a5 (§1.16.5), les corrige pour les entités nées par
+l'interface seulement (l'extension aux entités par enregistrement et au héros est Q-E0A5-1, pour l'auteur). Prérequis : f3c, f4, f5,
+f6b, h3 et h4 exigent e0a5 ; e0a5 exige e0a1 à e0a3b ✅, e0k1 et e0k2 ✅. Ordre : e0k3 (en cours), e0a5, f3c, puis la suite. Choix de la
+session principale en mode AUTO, réversible, signalé à l'auteur.
 
 L'auteur a fixé l'ordre de la suite (D-E20-24 : armes, objets, collisions ; les prérequis avant chaque tranche). Une découverte en
 lecture seule l'a préparé : `docs/plan-e20-annexe/e20-armes/` (cinq rapports et trois contre-vérifications : `e0-check.md`,
@@ -680,17 +686,17 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 | # | Tranche | Contenu | Prérequis |
 |---|---|---|---|
 | 1 | E20.e0x (§1.15) | Convertisseur : `BankKey` dans `Data/sprite-records.json` (le `BreakEffect` y est déjà, E14.a1a) et les indices valides par carte (D-E20-33) ; export complet en place, preuve par manifeste et double export ; ADR de format | E14.a1a ✅ |
-| 2 | E20.e0a (§1.16 : e0a1, e0a2, e0a3 ✅ ; e0a4 décidée le 2026-10-15, après E20.e0b2, ne bloque rien) | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
+| 2 | E20.e0a (§1.16 : e0a1, e0a2, e0a3 ✅ ; e0a4 décidée le 2026-10-15, après E20.e0b2, ne bloque rien ; e0a5, §1.16.5 : horloge et boîte du tick de naissance des entités nées par l'interface) | Apparition par indice de sprite (`0x80039F58`) : table des préfabs par page, entité sans enregistrement (`EntityRefId = -1`, parent, racine), cases réutilisées (première libre, plafond 63), participation au tick de naissance | E20.e0x ; E14.a0 ✅ (registre) |
 | 3 | E20.e0b (§1.17 : e0b1, puis e0b2) | e0b1 : générateur avancé une fois par tick (`0x8002BD0C`-`0x8002BD34`) ; e0b2 : tirage du butin à la création (écrit le contenu, rien ne tombe) | E20.e0a1, E20.e0a2 (§1.16) ; e0b1 avant e0b2 (ordre) |
 | 4 | E20.e0k (§1.18 : e0k1, e0k2, e0k3 ; e0k4 conditionnelle) | État de carte des entités nées par l'interface ; leur Z logique et le pas vertical du binaire (gravité `0x100`, impulsion, atterrissage strict, vol à Z constant, aimant, plafond) ; bord de la carte ; butée sur mur et hauteur par le mover existant | e0k1 : E20.e0a1 à E20.e0a3b ✅ ; e0k2 et e0k3 : e0k1 ; e0k4 : e0k2, e0k3 et l'option B de Q-K2 |
-| 5 | E20.f3 (§1.19 : f3a, f3b, f3c) | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | f3a : E20.f1 ✅, E20.e0a1 à E20.e0a3 ✅ ; f3b : le T0 d'E20.f3a (oracle commun), E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅ ; f3c : f3a, E20.e0b1 ✅, E20.e0k1 et E20.e0k2 (la règle du Z logique, D-F3-8) ; f3a et f3b peuvent passer avant E20.e0k |
-| 6 | E20.f4 (§1.20) | Flèche chargée : C94, E1 avec l'effet 8 (l'effet de bris vient d'E14.a1b, D-E20-26) | E20.f3, E20.e0k1 à E20.e0k3, E14.a1b ✅ |
-| 7 | E20.f5 (§1.21) | Flèches : E17 (D-E20-25) ; `ResyncControllerFromFlags` quand E17 change les drapeaux (§1.18, N9) | E20.f4 (interrupteur d'arène, témoins négatifs, annexe commune), E20.f3, E20.e0k1 à E20.e0k3 |
-| 8 | E20.f6 (§1.22 : f6a, f6b) | Boules de feu et de glace : C60, E9 (D-E20-25) ; f6a : les attributs de tuile des entités marquées à gravité ; les trois enregistrements `0x0C` de la carte 309 (sprite 12) émettent des étincelles dès l'enregistrement de C60 (E9 ne tourne jamais pour eux) | f6a : E20.e0k1, E20.e0k2 ; f6b : f6a, E20.f4, E20.f5 (règle de vitesse D-F5-5), E20.f3 (dont f3b), E20.e0b1 (§1.17), E20.e0k1 à E20.e0k3 |
+| 5 | E20.f3 (§1.19 : f3a, f3b, f3c) | Tir : `SpawnWeaponProjectile` branché, un type à la fois, jamais avant son gestionnaire E ; direction du tir par `BoxDirection` (P3 d'E20.f1a) ; vague C61 (coupe d'herbe en bouchon) et E10 ; effets de coup 4 et 5 de la passe de coups (porte `(b & 0xC0) != 0x80`, `0x800395E8`) | f3a : E20.f1 ✅, E20.e0a1 à E20.e0a3 ✅ ; f3b : le T0 d'E20.f3a (oracle commun), E20.c1a ✅, E14.a1b ✅, E20.e0b1 ✅ ; f3c : f3a, E20.e0b1 ✅, E20.e0k1 et E20.e0k2 (la règle du Z logique, D-F3-8), E20.e0a5 ; f3a et f3b peuvent passer avant E20.e0k |
+| 6 | E20.f4 (§1.20) | Flèche chargée : C94, E1 avec l'effet 8 (l'effet de bris vient d'E14.a1b, D-E20-26) | E20.f3, E20.e0a5, E20.e0k1 à E20.e0k3, E14.a1b ✅ |
+| 7 | E20.f5 (§1.21) | Flèches : E17 (D-E20-25) ; `ResyncControllerFromFlags` quand E17 change les drapeaux (§1.18, N9) | E20.f4 (interrupteur d'arène, témoins négatifs, annexe commune), E20.f3, E20.e0a5, E20.e0k1 à E20.e0k3 |
+| 8 | E20.f6 (§1.22 : f6a, f6b) | Boules de feu et de glace : C60, E9 (D-E20-25) ; f6a : les attributs de tuile des entités marquées à gravité ; les trois enregistrements `0x0C` de la carte 309 (sprite 12) émettent des étincelles dès l'enregistrement de C60 (E9 ne tourne jamais pour eux) | f6a : E20.e0k1, E20.e0k2 ; f6b : f6a, E20.f4, E20.f5 (règle de vitesse D-F5-5), E20.f3 (dont f3b), E20.e0a5, E20.e0b1 (§1.17), E20.e0k1 à E20.e0k3 |
 | 9 | E20.h0, E20.h1 | Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a ✅ |
 | 9b | E20.A362 | Le couvercle de la 362 (enregistrement 0, sprite 243, `D[1]` `0x87 [128,3]`) face à la bombe d'Olen (enregistrement 5, sprite 2, lancée par son script `0x8B [128,5,…]`, explosion animation 1, attaque attribut 4 puissance 5) : arc de test seul, comme E20.c1b-2 ; il tranche si le couvercle réagit déjà (probable depuis E20.c1a et E20.c1b-1) ou ce qui manque ; relancé après E20.h3 | E20.c1b-1 ✅ |
 | 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées ; g1 pose le marqueur du Z logique (§1.18, D-E0K-1) sur l'entité soulevée | E20.e0a1 (§1.16), E20.e0k2 ; E14.a1b ✅ et E20.e0b2 (§1.17) pour g2 |
-| 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 (§1.16), E20.e0k2 et E20.f6a (mort des graines et de la bombe dans l'eau profonde) pour h3 ; E20.e0k1 à E20.e0k3 et E20.f6a (types 16, 17, 23) pour h4 |
+| 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 et E20.e0a5 (§1.16), E20.e0k2 et E20.f6a (mort des graines et de la bombe dans l'eau profonde) pour h3 ; E20.e0k1 à E20.e0k3 et E20.f6a (types 16, 17, 23) pour h4 |
 | 12 | E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 (D-E20-27) ; ordre interne fixé au détail (g3 dépend aussi de la géométrie de la barricade de g4 et d'un choix de l'auteur, `order-critic.md`) | E20.g1, E20.g2 |
 
 Les projectiles d'E20.f3, f5 et f6 (E10, E17, E9) appellent aussi `DestroyEntity(e, fx)` : fait par E14.a1b ✅.
@@ -3920,7 +3926,7 @@ séparé ; leur mordant est prouvé par les mutations des deux verifiers.
 **Prérequis.** E20.e0a3b ✅ ; Q-A1 tranchée le 2026-10-15 (oui, après la mesure P-B) ; ordre : après E20.e0b2 (même fichier). Ne bloque
 aucune autre tranche.
 
-**Mesure P-B** (versée par E20.e0a3b, 2026-10-15, base `7b9b096`). Changement jetable, jamais commité : `proxy.JoinsBirthTick = true` à la fin de `AlundraEntitySpawnFactory.ApplyRecord` (donc pour la charge d'une carte
+**Mesure P-B** (versée par E20.e0a3b, 2026-10-15, base `7b9b096` ; **à refaire après E20.e0a5**, qui change l'horloge du tick de naissance). Changement jetable, jamais commité : `proxy.JoinsBirthTick = true` à la fin de `AlundraEntitySpawnFactory.ApplyRecord` (donc pour la charge d'une carte
 et pour `SpawnEntityByRecordId`, c'est-à-dire les opcodes `0x2D`, `0x8A`, `0x8B`), précondition `git status --porcelain` vide sur les fichiers touchés ; construction Release avec la copie de la DLL neutralisée, suite complète
 (4 833 tests) : **8 tests existants rouges** (les 2 autres rouges sont les épingles du marqueur d'e0a3b, attendues). Remise en état par `git checkout --` du seul fichier touché, puis reconstruction Release et Debug du code commité (4 833 verts
 dans les deux). Format `Classe.Méthode — raison observée` :
@@ -3947,6 +3953,124 @@ par e0a3b). Chaque épingle qui bouge est re-dérivée de l'oracle (une appariti
 | O-E0A-2 | Lecteur de `+0x08` : aucun trouvé dans la décompilation ; recherche dans le binaire à faire si E20.g ou E14 en montre un | E20.g, E14 |
 | O-E0A-3 | Coût de `LoadCopy` à chaque apparition (une lecture de disque) | mesure avant E20.f3 |
 | O-E0A-4 | **Tranché le 2026-10-15 (révision 3 d'e0a3b, D-E0A-8)** : plus de `Current = Target` à la création ; `AnimFlags` chargé à la création ; la cinématique lit la cible pour une entité marquée non validée | — |
+
+#### 1.16.5 E20.e0a5 — L'horloge d'animation et la boîte du tick de naissance des entités nées par l'interface ⏳ (détaillée le 2026-10-16)
+
+**Origine.** La phase A d'E20.f3c s'est arrêtée (T1 ⚠️, `e2c625f`, fourche O-F3-7). Option A retenue par la session principale (mode AUTO, réversible) : cette tranche passe avant f3c. Découverte en lecture seule du 2026-10-16 : trois relevés (binaire, DLL, tests), puis un critique adversarial qui a rejoué les oracles, relu le code et corrigé les relevés. Scripts et sorties : scratchpad de la session, `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/disc-e20e0a5/` (`bin/`, `dll/`, `tests/`, `critic/`). Aucun changement du moteur, du convertisseur ni des données.
+
+**Résumé.** Deux défauts de la DLL touchent toute entité née par l'interface (tir du héros, objets). (1) Elle n'a aucune boîte de frame : la chronologie des boîtes est figée à nul au premier calcul, avant que le moteur n'ait construit les animations du sprite. (2) Son horloge d'animation a un tick de retard : le binaire fait la première bascule à la création et compte le premier tick, la DLL le prend pour un tick de bascule non compté. La tranche corrige les deux, pour les entités nées par l'interface seulement. Les entités par enregistrement et le héros ont le même retard d'un tick : l'élargir est une décision de l'auteur (Q-E0A5-1).
+
+**But.** Une entité née par l'interface a, à chaque tick de sa vie, le curseur de boîte, la boîte, le drapeau de fin et le tour de boucle du binaire. La vague de l'épée (types 27 à 29) lève son drapeau de fin à S+25 et sa boîte change à S, S+1, S+3, S+5, S+7, S+9 ; f3c peut reprendre.
+
+**Faits porteurs.** [binaire] lu ou rejoué sur `ALUN_CD.EXE` (France) ; [oracle] exécuté dans la machine MIPS, script et sortie nommés ; [DLL] lu au HEAD `11e94e1` ; [modèle] déduit, non exécuté.
+- [binaire] `InitializeEntity` (`0x80039D04`) appelle `UpdateAnimation` (`0x80038AB4`) en `0x80039EA8`. Aucun branchement de la fonction ne l'évite (`0x80039D34`, `D40`, `D50`, `D6C`, `D78` mènent à ≤ `0x80039D88` ; `0x80039EF4` mène à `0x80039F30`, après). `UpdateAnimation` n'a que deux appelants : `0x80039EA8` et `0x80038E4C` (passe d'animation). `InitializeEntity` en a cinq : `0x800319EC` (héros), `0x8003A014` (`SpawnWarpEntity`), `0x8003A18C` (`SpawnChildEntity`), `0x8003A33C` (enregistrement), `0x8003AC78` (respawn en place). Toute entité fait donc sa première bascule à la création.
+- [binaire] `+0x90 = ~Target` (`0x80039DB0`) force la bascule. Le bloc de bascule (`0x80038B18-0x80038BCC`) charge l'image 0, met `+0xA8` à la durée de l'image 0, `+0xAC` à 0, charge `+0xB4`, `+0xF8`, `+0x1C8` et le son, puis saute le décrément. Ce tick de bascule n'est pas compté. Le premier appel de la passe d'animation qui voit l'entité décrémente : c'est l'appel n°1.
+- [oracle] Le premier appel qui atteint l'entité compte, où qu'elle naisse (`docs/plan-e20-annexe/e20-e0a/oracle/out/v6.json`, clé `delay`) : BT-M1 à M3, 3 à la création puis 2 après le tick 1 ; BT-H1 à H6 et BT-L2, 3 pendant le tick 1 puis 2 après le tick 2 ; BT-L1 et BT-L3, 60 puis 59 au tick 1. Chargement de carte (`0x8003A1B8` avant le tick 1) : appel n°1 au tick 1.
+- [oracle] Vague d'acier vers l'est (`wave_steel_east.json`, `slots[1]`) : `cnt1c` = 1 à S, `reset_AC` = 1 dès S+25, statut 4 à S+26, `hbx − px` = −18 / −6 / +6 / +18 / +30 / +42 px à S / S+1 / S+3 / S+5 / S+7 / S+9. Le mutant « `jal 0x80038AB4` remplacé par un nop » donne le drapeau à S+26, le statut 4 à S+27 et la boîte à S+2, S+4, … : exactement les mesures de l'exécuteur de f3c.
+- [oracle] Un sprite dont l'image 0 dure 1 tick (le 251) montre déjà l'image 1 à S ; son compteur de boucle `+0xB0` vaut 1 à S+4 et 2 à S+9. La flèche (3) : 1 à S+11.
+- [oracle] Bascule dans la fenêtre non validée (animation 1 du sprite 27, 16 ticks) demandée à S+k : le drapeau de fin arrive à S+16+k pour k = 0, 1, 2, 5. Animation 1 à S+1 puis retour à 0 à S+2 : S+28. Changement de direction (adir 3 → 1) à S+1 puis à S+2 : S+27, S+28. La bascule demandée n'est jamais comptée ; les ticks comptés avant elle sont perdus.
+- [binaire] L'impulsion de création `+0xF8` est remise à zéro par le premier appel avant la physique : elle ne s'applique jamais (déjà vrai dans la DLL, R2 de E19.d2c1).
+- [binaire] Il n'y a pas d'objet « chronologie » : la boîte d'un tick est une lecture dans des données statiques. La création calcule déjà la boîte du monde (`0x80039F30`) : `has_box` vaut 1 à la création pour 58 des 151 vecteurs de la page globale et 126 des 244 de la page des cartes (`v1.json`, `v2.json`).
+- [DLL] Défaut (2) : `SpawnEntityBySpriteIndex` (`AlundraWorldProxy.cs:3386-3479`) laisse `Current = ~Target`. Le moteur intègre l'entité en tête de l'image suivante (`World.cs:168`, `:528`). La première validation de `SyncAnimation` a lieu à la fin de cette image (`PublishEntityFrame`, `:3051-3069`). Jusque-là chaque tick est un tick de bascule (`StepAnimationClock`, `AlundraFrameSyncPasses.cs:232-262`) et `SyncAnimation` rejoue « réservés moins un » (`:185-188`). Le sprite a donc un tick de moins que le binaire pendant toute la vie de l'animation.
+- [DLL] Défaut (1) : `EvaluateFrameBox` (`AlundraEntityScriptProxy.HitPass.cs:177-184`) pose `_boxTimelineResolved = true` même quand `sprite.Animations` est vide. À S+1 `NoteSwitchPendingAtTick` (`:128-132`) ne recharge pas (même cible, même direction) ; après la validation il n'y a plus que `NoteAnimationAdvanced`. La chronologie reste nulle toute la vie.
+- [DLL] Les entités par enregistrement ont le même retard (même chemin ; aucune compensation : `SpawnAnimationActive` ne sert qu'à l'impulsion et au son). Pas le défaut (1) : leur premier tick d'horloge est intégré. Le héros aussi (`AdoptPlayerPawn`, `AlundraWorldProxy.cs:2098`) ; `ArcRun` force `Target = 0`, donc ses épingles ne le voient pas.
+- [DLL] Résolution avant intégration possible : `AnimatedSpriteComponent.AnimationAssetIds` est public (`:1006`), `AssetContentManager.Acquire` rend l'instance partagée, `AlundraFrameBoxTimeline.Build` ne lit que `Animation2dData`. Les noms finissent par `_anim{n}_{down|up|left|right}`.
+- [DLL] `AnimationSwitchTicksReserved` est lu par la garde de `RepeatAnimation` (`AlundraEventProgramRunner.cs:2902`).
+- [DLL] Deux tests seulement affirment le modèle erroné de l'horloge d'une entité née par l'interface : `AlundraBirthTickTests` `:159-161` (`ClockRan`) et `:191` (`ClockTicks`). `ProbePa` ne fait que mesurer. Aucun test ne pose `has_box` ou `HasFrameBox` d'une entité née par l'interface.
+- [modèle] `critic/clockmodel.py` et `critic/clockmodel2.py` reproduisent les chiffres du HEAD (drapeau vu à S+27) et donnent S+26 avec la règle de D-E0A5-1, pour 1, 2 et 3 ticks par image, à chaque position de naissance dans l'image, et pour les images sans tick.
+
+**Écarts corrigés entre les relevés.**
+1. *Remise à zéro.* Le relevé de la DLL laisse les bascules « ordinaires » inchangées. Faux dans la fenêtre : sans abandon des ticks comptés, une bascule demandée à S+1 donne S+16 au lieu de S+17. D-E0A5-2.
+2. *Résidu des animations courtes.* « Une animation de 1 tick ou moins » est trop étroit : la borne est la longueur de la fenêtre (D-E0A5-6).
+3. *Un drapeau, pas deux.* `ResolvesBoxFromAssets` et `JoinsBirthTick` sont remplacés par un seul drapeau posé à la création (D-E0A5-4).
+4. *Tests qui bougent.* `:161` n'est pas « certain » : cela dépend du mécanisme. `:191` l'est.
+5. *Clé de la règle.* « Le tick de naissance S » ne couvre pas les naissances dans le programme d'une autre entité (premier appel à S+1). La clé est « la bascule de création est encore la courante ».
+
+**Décisions de la tranche** (ADR à numéroter à l'écriture ; prochain libre 0070 au HEAD `11e94e1`, à relire).
+- **D-E0A5-1 — Règle de l'horloge.** Tant que la bascule de création est la bascule en attente (D-E0A5-2), chaque tick où l'horloge voit l'entité est un tick **compté**. Le curseur de boîte vaut 1 au premier, 2 au suivant (clé `cnt1c`), même pour une entité sans sprite. Le tick est réservé comme aujourd'hui. La validation de `SyncAnimation` rejoue **tous** les ticks réservés, pas tous moins un. La bascule de création ne laisse **aucun tick dû**, même si l'image de validation n'a pas de tick. Les ticks restent dans `AnimationSwitchTicksReserved` (garde de `RepeatAnimation`).
+- **D-E0A5-2 — Fin de la bascule de création.** Elle est la courante tant que : le drapeau est posé, `SpawnAnimationActive` est vrai, la cible vaut `SpawnAnimationId`, aucune relance de chaîne n'est demandée, la direction dérivée est celle du curseur, et le curseur n'a pas été rechargé par une autre bascule. Dès qu'une autre bascule est vue, les ticks comptés de la fenêtre sont **abandonnés** (réserve à zéro), puis la bascule suit la règle ordinaire (son tick n'est pas compté). Une cible revenue à 0 après une autre bascule ne redevient pas la bascule de création.
+- **D-E0A5-3 — Boîte.** Sous le drapeau, la chronologie des boîtes se résout **avant** l'intégration, à partir des données d'animation du préfab, par (animation, direction), à la création (boîte du monde de `0x80039F30`) et à chaque bascule vue avant l'intégration. Elle n'est jamais figée à nul. La liste `Animations` du sprite n'est pas modifiée (épingle PA1). Sans ressources (monde sans gestionnaire d'assets), pas d'exception, pas de lecture répétée à chaque tick, chronologie non figée. Forme du résolveur laissée à l'exécuteur (par exemple membre par défaut d'`IAlundraScriptHost` avec implémentation explicite du monde, motif de `CollisionField`), sans changement de moteur.
+- **D-E0A5-4 — Un drapeau interne.** Provisoirement `SwitchedAtCreation`, non cloné, posé par `CreateEntityFromSpriteIndex` avant `InitializeBalance`. Il porte D-E0A5-1 à D-E0A5-3. Ce n'est pas `JoinsBirthTick` : celui-ci est posé en dernier (ADR-0065), et e0a4 le posera sur des entités par enregistrement. Le même drapeau servira à e0a4 pour ses naissances dans un tick.
+- **D-E0A5-5 — Écart documenté.** Les entités par enregistrement et le héros gardent leur tick de retard, épinglé par un test nommé « écart connu » (comme D-E0A-6). Fermeture : Q-E0A5-1.
+- **D-E0A5-6 — Résidu.** Une fin d'animation plus courte que la fenêtre (ticks de S à la fin de l'image suivante) est vue à la fin de l'image de validation, limite de D-E19-13 déjà acceptée. La règle est exacte si la durée ≥ la longueur de la fenêtre (la vague : 26, la flèche : 12).
+- **D-E0A5-7 — Interdits.** Pas de `Current = Target` (D-E0A-8 reste), pas d'`AnimationDirection` faussé, pas de changement de `AnimFlags`, de `AlundraScriptedMotion`, de la fabrique partagée avec le chemin par enregistrement, ni du moteur.
+- **D-E0A5-8 — Preuve.** Oracle d'abord. Chaque test est lancé rouge sur le HEAD avant le code ; la liste des rouges est versée au plan.
+
+**Questions à l'auteur.**
+- **Q-E0A5-1** — Voulez-vous la même règle (première animation comptée à la création) pour les entités nées d'un enregistrement de carte et pour l'arrivée du héros ? Le binaire le fait. Mais beaucoup d'arcs de test épinglent des numéros d'image après une arrivée ; on ne peut pas les mesurer sans l'exécuter. Recommandation : pas dans cette tranche ; e0a4 pose le même drapeau pour les naissances dans un tick ; une tranche mesurée comme P-B traite le chargement de carte et le héros.
+
+**Prérequis et dépendants.** Prérequis : E20.e0a3b ✅. Indépendante d'E20.e0k3 (l'ordre est libre ; celle qui passe en second recompte sa liste au HEAD de départ). Dépendants : **E20.f3c** (reprend à sa phase A ; O-F3-7 est fermé), E20.f4, E20.f5, E20.f6, E20.h3 (leurs projectiles naissent par l'interface), E20.e0a4 (hérite du drapeau et du résolveur ; sa mesure P-B est à refaire après e0a5).
+
+**Périmètre.** `AlundraEntityScriptProxy.cs` (drapeau), `AlundraEntitySpawnFactory.cs` (`CreateEntityFromSpriteIndex`), `AlundraFrameSyncPasses.cs` (`StepAnimationClock`, `SyncAnimation`), `AlundraEntityScriptProxy.HitPass.cs` (curseur, `EvaluateFrameBox`), `IAlundraScriptHost.cs` et `AlundraWorldProxy.cs` (résolveur), `Alundra.Tests/`, `docs/plan-e20-annexe/e20-e0a5/`, ADR. **Hors périmètre.** Les entités par enregistrement et le héros (Q-E0A5-1) ; E10 et C61 (f3c) ; le branchement du tir ; le compteur `+0x1C` des cases libres (O-E0A5-2) ; les directions de création non cardinales (O-E0A5-4).
+
+**Partage des phases** (seul à faire foi) :
+- **Phase A** (T1, aucun changement en production : rien ne crée d'entité par l'interface) : le drapeau (déclaration et pose), `StepAnimationClock` (tick compté, abandon à la première autre bascule), `SyncAnimation` (rejeu complet, aucun tick dû), le curseur (`HitPass.cs`). Aucune boîte résolue.
+- **Phase B** (T2) : le résolveur (hôte et monde) et `EvaluateFrameBox` (résolution avant l'intégration, jamais figé). Aucune règle d'horloge.
+
+**Valeurs attendues et leurs clés** (S = premier tick de l'entité ; fichiers `wave_<épée>_<direction>.json` de `e20-f3` et `birth_clock.json` de `e20-e0a5`).
+
+| Valeur | Clé | Attendu |
+|---|---|---|
+| Appel n°k, curseur de boîte | `cnt1c` | 1 à S, 2 à S+1, 3 à S+2 |
+| Drapeau de fin de la vague | `reset_AC` | 0 jusqu'à S+24 ; 1 à S+25 |
+| Boîte | `hbx − px`, `hby − py`, `hbz − pz`, `bw`, `bd`, `bh` | change à S, S+1, S+3, S+5, S+7, S+9 ; 36 × 24 × 31 |
+| Tour de boucle, sprite 251 | ligne `SPR251`, `loops_B0` | 1 à S+4, 2 à S+9 |
+| Tour de boucle, flèche 3 | ligne `SPR3`, `loops_B0` | 1 à S+11 |
+| Bascule dans la fenêtre | lignes `SW0`, `SW1`, `SW2`, `SW5`, `SW1-2`, `SWD1`, `SWD2`, `end_AC` | premier 1 à S+16, S+17, S+18, S+21, S+28, S+27, S+28 |
+| Premier tick qui compte, naissance dans un autre programme | V6 `BT-H*`, `delay` | 3 pendant le tick 1, 2 après le tick 2 |
+| Boîte de l'animation 1 avant intégration | ligne `SW0`, `hbx`, `bw..bh` | x 88 ; 23 × 23 × 15 |
+| `has_box` à la création | `p.has_box` de `v1.json`, `v2.json` | par vecteur |
+| Témoin de l'écart (enregistrement) | ligne `LOAD27`, `end_AC` | 1 au tick 26 (appel n°1 au tick 1) ; le DLL : tick 27 |
+
+##### Tâches
+
+- ⏳ **T0 — Liste prédite, oracle** (commit de docs, avant tout code). Au README de l'annexe `docs/plan-e20-annexe/e20-e0a5/` : (1) la liste recomptée au HEAD de départ (recherche puis `--list-tests`) de toutes les méthodes qui créent une entité par l'interface (`SpawnEntityBySpriteIndex`, `CreateEntityFromSpriteIndex`, le crochet), avec son compte. (2) Les tests existants prédits qui bougent. Phase A : certain, `BT_M_BornInTheFirstTickOfATwoTickFrame_…` (`ClockTicks` 1 devient 2) ; possible, `BT_M_BornInMovePlayer_…` (`ClockRan`, selon le mécanisme). Aucun autre. Phase B (possibles, par lecture) : les vols en monde réel qui lancent une flèche ou une boule (K1 à K3, Z1, Z2, Z3, Z5, Z6, Z8, Z10, Z11 et le témoin `Companion`, S1 à S4 et S6 d'`AlundraWeaponSpawnSeamTests`), parce que la flèche devient attaquante. La liste de B est remesurée au début de T2. (3) L'oracle : copie octet pour octet des outils de la machine avec sommes de contrôle, `trace_birth.py` (variable `SWITCH`), `trace_kinds.py`, sortie `out/birth_clock.json` aux lignes de la table ; deux exécutions, même manifeste ; les clés de la vague restent celles d'`e20-f3`. (4) Une sonde d'une ligne : `Acquire` avant l'intégration puis `Acquire` du moteur rendent la même instance.
+- ⏳ **T1 — Phase A** (tests d'abord, rouges sur le HEAD, noms versés au plan ; puis le code ; verts à la fin de T1). Fichier `AlundraCreationSwitchClockTests.cs`. Étiquettes : **[R]** rouge sur le HEAD (prédit) ; **[V]** vert par construction.
+  - [R] (a1) La vague (types 27 et d'autres épées par le crochet, quatre directions d'acier) : `ForceResetAnimationFlag` est 0 jusqu'à S+24 et 1 à S+25, à 1, 2 et 3 ticks par image, naissance à chaque position de l'image ; accolé dans la même assertion à la même entité dont le test baisse le drapeau interne avant son premier tick : S+26 (chemin par enregistrement).
+  - [R] (a2) Le curseur : `BoxTicks` = `cnt1c` à S, S+1, S+2, S+3 ; une naissance dans le programme natif d'une autre entité : curseur 1 au premier tick d'horloge (S+1). Les quatre directions `0x00`, `0x08`, `0x10`, `0x18` (la direction 0 est le piège de T0 d'e0a3b), pour les sprites 3 et 27.
+  - [R] (a3) Tour de boucle : sprite 251, `AnimCompleteCounter` 0 jusqu'à S+3, 1 à S+4, 2 à S+9 ; la flèche (3) : 1 à S+11. À 1 et 2 ticks par image (3 ticks : le résidu de D-E0A5-6).
+  - [R] (a4) Image sans tick entre la naissance et la validation (`OneFrame(0)`) : drapeau à S+25 ; `AnimationSwitchTickOwed` faux.
+  - (a5) Bascules dans la fenêtre, à 1 et 2 ticks par image, par un crochet de la passe `lists` qui écrit la cible avant l'horloge : `SW0` [V], `SW1` [R], `SW2` [R à 2 ticks par image], `SW5` [R à 3 ticks par image], `SW1-2` (retour) [R], `SWD1`, `SWD2` (direction) [R] ; chaque drapeau de fin aux clés `end_AC`.
+  - [V] (a6) Zéro changement : l'entité par enregistrement garde son premier tick d'horloge non compté (test nommé `…KnownDeviationQE0A5_1`) ; `PrefabMode`, TD14, TD15 inchangés ; le son de création une seule fois ; aucune impulsion.
+  - [V] (a7) Les deux tests existants sont réécrits par dérivation depuis `cnt1c` : `:191` attend 2 ; `:159` et `:161` seulement si l'implémentation les fait bouger. Aucun autre test existant ne change.
+  - Code : le drapeau et sa pose ; `StepAnimationClock` ; `SyncAnimation` ; le curseur.
+- ⏳ **T2 — Phase B** (T2.0 : mesure P-C jetable de B seule sur le code de A : arbre propre, copie de la DLL neutralisée, suite complète en Release, remise en état, liste `Classe.Méthode — raison` versée au README. Puis tests rouges, puis code). Fichier `AlundraBirthBoxTests.cs`.
+  - [R] (b1) La boîte de la vague à chaque tick de S à S+27 aux clés `hbx − px`, `hby − py`, `hbz − pz`, `bw`, `bd`, `bh`, pour les quatre directions d'acier, à 1, 2 et 3 ticks par image ; la position et le sol constants dans la même assertion.
+  - [R] (b2) `HasFrameBox` à la création = `p.has_box` pour les vecteurs que B2 de `AlundraSpawnBySpriteIndexInterfaceTests` rejoue ; les vecteurs à 0 restent faux dans la même assertion.
+  - [R] (b3) `Animations.Count == 0` avant l'intégration (PA1) et `HasFrameBox` vrai à S dans la même assertion ; après l'intégration la boîte de S+1 est celle de l'image 1.
+  - [R] (b4) Bascule avant l'intégration (`SW0`) : la boîte de l'animation 1 à S (x 88, 23 × 23 × 15).
+  - [R] (b5) Après la validation, `CursorLogicalTickForTests()` = `sprite.LogicalTick` à chaque fin d'image pendant 30 ticks, à 1, 2 et 3 ticks par image.
+  - [V] (b6) Zéro changement : sans le drapeau, la chronologie reste figée à nul à S (et `HasFrameBox` d'une entité par enregistrement reste faux à la création) ; monde sans assets : pas d'exception, pas de lecture répétée.
+  - Code : le résolveur ; `EvaluateFrameBox`.
+- ⏳ **T3 — Intégration.** Suite complète, tests déplacés réécrits par dérivation (liste de T0 et de T2.0). Preuve de suffisance, non commitée : le travail jeté de f3c (`…/scratchpad/e20f3c-exec/wip/`, `tracked.diff`, `AlundraWaveSwordAi.cs`, `AlundraWaveSwordLifeTests.cs`) appliqué dans un arbre jetable sur la tête de e0a5 : (v1), (v2), (v4) verts. ADR. Plan : fermeture d'O-F3-7, correction de la phase A de f3c.
+- ⏳ **T4 — Verifiers frais** (deux, l'un après l'autre). Mutants, au moins 12, tués ou prouvés équivalents : drapeau jamais posé ; drapeau posé sur le chemin par enregistrement (tué par (a6) et (b6)) ; rejeu « moins un » conservé ; curseur qui part de 0 ; curseur incrémenté deux fois ; tick dû posé (tué par (a4)) ; bascule sans abandon des ticks comptés (tué par `SW1`, `SW2`, `SW5`) ; verrou absent (retour compté, tué par `SW1-2`) ; changement de direction non vu (tué par `SWD1`) ; clé `Current == Target` (tuée par la direction 0 de (a2)) ; chronologie figée à nul de nouveau (tuée par (b1)) ; résolveur sans le drapeau (tué par (b6)) ; résolveur qui écrit `Animations` (tué par (b3)).
+
+##### Acceptation
+
+- Oracle : les lignes de T0 ajoutées ; manifeste identique sur deux exécutions.
+- DLL : T1 et T2 verts ; chaque test [R] rouge avant son code (nommé, avec ses cas) ; `Alundra.Tests` en Release et en Debug, zéro échec ; **tests existants déplacés ⊂ listes de T0 et de T2.0**, chacun réécrit par dérivation ; TD17 (aucune allocation de l'horloge) vert.
+- **Preuve de retrait**, en deux fois. Phase B retirée seule (production remise au commit de la phase A, copie de la DLL neutralisée), suite complète en Release : rouges = exactement les cas [R] de (b1) à (b5) et les épingles réécrites en T2. Puis phase A retirée (la phase B conservée, ses tests du tick S+1 et suivants rouges aussi) : rouges = exactement les cas [R] de (a1) à (a5), (b1) à (b5) et les épingles réécrites en T1. Fichiers restaurés ; traces inchangées ; `cmp` de la DLL ; moteur, convertisseur et données sans diff.
+- Suffisance pour f3c : T3 vert.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : un test hors des listes de T0 ou de T2.0 bouge ; plus de 10 tests existants bougent ; une épingle d'entité par enregistrement ou du héros bouge (le drapeau fuit) ; un vecteur de (b2) dont `has_box` diffère (question, ne pas ajuster le résolveur à la volée) ; une ligne de l'oracle qui contredit le modèle ; la sonde `Acquire` de T0 qui échoue ; `Current = Target` posé ; un besoin de changer le moteur ; un test de phase B vert avant la phase B ; la suffisance de f3c qui échoue (troisième défaut : arrêt et relevé).
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : `git revert` de la phase B, puis de la phase A. Aucune entité n'est créée par l'interface en production : rien ne change en jeu.
+
+##### Points ouverts ajoutés
+
+| # | Question | Tranchée par |
+|---|---|---|
+| O-E0A5-1 | Entités par enregistrement et héros : même retard d'un tick (preuve binaire et DLL) | Q-E0A5-1 |
+| O-E0A5-2 | `+0x1C` périmé d'une entité née dans une case libre sous la plus haute (le binaire ne l'écrit pas à la création) ; la DLL part de 0 ; touche la phase de C94 (`+0x1C & 3`) | T0 d'E20.f4 |
+| O-E0A5-3 | Fin d'animation plus courte que la fenêtre vue à la validation | D-E19-13, accepté |
+| O-E0A5-4 | Direction de création non cardinale : la rangée dépend de l'ancien `+0x98` de la case | E20.f4 à f6 si un tir non cardinal existe |
+| O-E0A5-5 | Boîte du monde à la création des entités par enregistrement (`0x80039F30`) : absente, asymétrique après la phase B | e0a4 ou la tranche de Q-E0A5-1 |
+
+**Corrections induites** (faites par la session principale à l'insertion, 2026-10-16) : §1.19.3 f3c exige E20.e0a5 et O-F3-7 est
+tranché (option A) ; enveloppe, révision 10 : e0a5 ajoutée aux prérequis des lignes 5 (f3c), 6, 7, 8 (f6b) et 11, et à la ligne 2 ;
+§1.16.4 : la mesure P-B d'e0a3b est à refaire après e0a5.
 
 ### 1.17 E20.e0b — Le générateur pseudo-aléatoire : e0b1 (avance par tick), e0b2 (tirage du butin à la création) ⏳ (détaillée le 2026-10-15 ; e0b1 faite et CONFIRMED le 2026-10-15)
 
@@ -4951,7 +5075,7 @@ quand l'ensemble de production est vidé (par exemple l'arène de la charge, qui
 les inclut, chacun nommé dans les résultats avant que la preuve ne tourne. Nouvelle époque de relecture : une seule relecture de clôture suit.
 Relecture de clôture : **READY** (2026-10-16).
 
-**Prérequis.** E20.f3a ✅, E20.e0a1 à E20.e0a3 ✅, E20.e0b1 ✅, E20.e0k1 ✅ et E20.e0k2 ✅ (la règle du Z logique, D-F3-8). Touche
+**Prérequis.** E20.f3a ✅, E20.e0a1 à E20.e0a3 ✅, **E20.e0a5** (horloge et boîte du tick de naissance, O-F3-7 tranché), E20.e0b1 ✅, E20.e0k1 ✅ et E20.e0k2 ✅ (la règle du Z logique, D-F3-8). Touche
 `AlundraEventProgramRunner.cs` et `AlundraNativeSpriteRegistry.cs` ; relit ses numéros de ligne au HEAD d'exécution.
 
 **But.** L'épée chargée tire la vague au tick `R + 21` ; elle vit 26 ticks, balaie sa boîte, touche les cibles de classe A, coupe l'herbe en bouchon nommé, et meurt à S+26 avec sa case libre à S+27.
@@ -5945,7 +6069,7 @@ Le nom `PlatformEntity` de la DLL (et de la décompilation) est trompeur : dans 
 | O-G-9 | Casse d'une pierre ou d'un tonneau (C4) qui touche une cible : inférence non exécutée | le T0 de g2c |
 | O-G-10 | Le genre 2 (jamais dans le corpus) et les trois en-têtes refusés par le spawner d'enregistrement (`AttackCount` 0 et 7) ne sont couverts que par le fuzz direct | le T0 de g2c |
 
-**Corrections induites.** (1) **Proposées, non appliquées le 2026-10-15** (elles iront dans une révision 10 de l'enveloppe, relue, quand g
+**Corrections induites.** (1) **Proposées, non appliquées le 2026-10-15** (elles iront dans une révision ultérieure de l'enveloppe, relue, quand g
 deviendra la tranche suivante) : §1.1, ligne 10 : l'ordre interne g1a, g2a, g2b, g1b ; ligne 11 : h3 exige g1a et g2a ; D-G-14 : retirer
 e0b2 des prérequis de g2. Jusque-là l'enveloppe READY (révision 9) fait foi. (2) `docs/plan-e20-annexe/e20-armes/h-g-deps.md` §3.1 et `order-critic.md` ligne 19 : les cinq corrections des écarts 1 à 4 et 9 (annexes en lecture seule : une note de renvoi dans le plan, pas de modification). (3) §1.18 O-E0K-5 : « Porté `+0x28` et passagers » renvoie à D-G-2, D-G-3 et D-G-12 (fait à l'insertion) ; O-E0K-2 : la révision 9 a déjà
 nommé ses propriétaires (f6a, et le recensement de son T0) ; g2b ne prend rien de plus sans la révision 10. (4) Commentaires périmés à corriger par la tranche qui touche le fichier : `EntityFlags.cs` (`EntityPickupKind`, g1a), `AlundraWorldProxy.cs:2930` et `:3553`.
