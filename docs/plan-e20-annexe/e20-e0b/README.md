@@ -359,3 +359,322 @@ source is this test. The flag banks are empty in every pair (an `ArcSpec` with `
 **The critic's pairs, re-run only to prove the harness** (`v8.json`, field `reproduction`, no acceptance value for the DLL): 14 at (8, 6) -> `D5F4D64A`, 11 draws, 19 entities; 390 at (0, 0) -> `BBE29AC9`, 12 draws, 16
 entities; 392 at (0, 0) -> `BBE29AC9`, 12 draws, 12 entities. All three reproduce. Note that map 14 at the load tile (33, 59) gives the same entities and the same word as at (8, 6): the window of the
 first records covers both.
+
+---
+
+## Phase A (T1): the code, the shadow run, the predicted list
+
+Code commit `4753357` (phase A: `AlundraLootRoll`, `HeaderContents` and its one line of the core, the helper `RollLootAtCreation` at the three creation sites, the virtual roll of the sink, the second re-seed of `ArcRun`,
+`SeedAfterTheLoad` and `HeroTileAtLoad`). Starting count 5 046 (Release and Debug); after phase A **5 057 in Release and 5 057 in Debug, zero failure**: the 11 new tests (`AlundraLootRollTests` 8,
+`AlundraLootRollWorldTests` 3: M0, the word after a quiet load, the inertness of the helper) and nothing else moved. The second re-seed of `ArcRun` is without effect in phase A, as the plan says (no existing test moved).
+`git diff` of `AlundraEntitySpawnFactory.cs`: the single line `proxy.HeaderContents = header.Contents;`.
+
+### The shadow run (`e0b2-shadow.txt`)
+
+`ALUNDRA_RNG_SHADOW_LOG=<file> dotnet test ... -c Release --no-build` on the code commit: 5 057 passed (the inertness tests are no-ops with the sink on), 6 min 18 s; **1135 lines, 499 distinct attributed keys** (constructors and `Dispose`
+included). Totals: 158453 virtual advances (the e0b1 callback, which also writes the real state since its phase B: it never makes V and R diverge), 26960 real draws, **11938 virtual rolls (creations) in 283 keys, 4856 virtual steps**,
+28123 epochs, 114 divergent draws, 481 divergent seed reads, 233 ambient draws. The predicate is at the head of the file.
+
+### Predicted list (rule of e0b1: `divergent_draws + divergent_seed_reads + ambient_draws > 0`)
+
+**248 tests**, in three groups (columns: virtual advances, draws, divergent draws, divergent seed reads, epochs, ambient draws, virtual rolls = creations, virtual steps, first divergent draw):
+
+1. **One test with divergent draws** (its AI draws after creations that the second re-seed of `ArcRun` does not cover, the ones made DURING the arc): `AlundraMurutaHallArcTests.H115_...` (114 divergent draws, first in `AlundraEnemyHelpers.Below`; 6 creations seen, 7 virtual steps,
+   the load's and the arc's together).
+   This is the only existing test where phase B changes a drawn number; it is the one the plan's estimate ("at most 3") expects to move.
+2. **16 tests with ambient draws** (state inherited from the order of the tests), the same families as e0b1: handled below.
+3. **231 tests with only divergent seed reads**: every one is an arc on a map whose load rolls (maps 14, 390, 392, 115, 116, 117, 44, 165, 179, 10, 178, 167...), where `ArcRun` itself reads `RandomSeed` (for `SeedAfterTheLoad`) right before
+   its second `Reset()`: the read is divergent in phase A by construction (the virtual rolls of the load moved V, not R), and the value is thrown away by the `Reset()` that follows. A test cannot move because of it unless it reads
+   `arc.SeedAfterTheLoad` (only the new tests of this slice do). They are kept in the list because the rule says so; they are listed after the first two groups.
+
+The sword wave born in production since E20.f3c (sprites 27, 28, 29, `SpawnEntityBySpriteIndex`, header `Contents` 0, the f3 oracle's `loot3c` 0) is counted: the creation goes through the helper (one virtual roll) and makes **0 virtual
+steps**. Seen in the keys of `AlundraWaveSwordWiringTests` (P1 to P7b), `AlundraWaveSwordLifeTests` (V1, V2, V4), `AlundraWeaponSpawnSeamTests` (S1 to S7) and `AlundraHeroChargeArenaTests`, whose creations beyond the 19 entities of the load of
+map 14 add no step: e.g. P3 and P4, one arc: 24 creations and 11 virtual steps, the 19 entities of the load (11 steps, pair "14 at (33, 59)" of V8) plus 5 creations that step nothing.
+
+| Test | virtual advances | draws | divergent draws | divergent seed reads | epochs | ambient draws | virtual rolls | virtual steps | first divergent draw |
+|---|---|---|---|---|---|---|---|---|---|
+| `AlundraHeroAuraTests.AHeldCharge_RenewsTheAuraEvery97Ticks_AtTheTicks33_130_227_InTheSlotsOfTheOracle_OneAliveAfterEachUpdate` | 0 | 108 | 0 | 0 | 1 | 108 | 0 | 0 | - |
+| `AlundraHeroRunTests.G7_TheSacredSword_CountsTheChargeInEveryStateOfTheRun` | 0 | 42 | 0 | 0 | 0 | 42 | 0 | 0 | - |
+| `AlundraHeroSwimTests.W6_TheOtherWeaponTraces_AreTheOracle` | 0 | 4 | 0 | 0 | 0 | 4 | 0 | 0 | - |
+| `AlundraHeroSwimTests.W6_TheSquareHeld_ChargesOnTheLand_ZeroInTheWater_AndOnTheLandAgain` | 0 | 36 | 0 | 0 | 0 | 36 | 0 | 0 | - |
+| `AlundraMurutaHallArcTests.H115_TheFourMuruta_DieByTheSword_TheDoorOfTheHallOpens_WithAFrameBreakEffectEach` | 374 | 114 | 114 | 1 | 3 | 0 | 6 | 7 | ai:AlundraEnemyHelpers.Below |
+| `AlundraNativeEffectTests.TheVessel_OnTheNewGameStats_Answers1_DoesNotSuspend_RaisesTheLife_PlaysTheSoundBeforeTheEffects_AndCreatesTwelveSlots` | 0 | 8 | 0 | 0 | 0 | 8 | 0 | 0 | - |
+| `AlundraNativeEffectTests.TheVessel_ReadsTheHeroWhereItIsWhenTheScriptRuns_NotWhenTheStageApplies` | 0 | 8 | 0 | 0 | 0 | 8 | 0 | 0 | - |
+| `AlundraNativeEffectTests.WithoutASoundPlayer_TheLifeAndTheEffectsAreDone` | 0 | 8 | 0 | 0 | 0 | 8 | 0 | 0 | - |
+| `AlundraPrefabArcSupportTests.ArcRun_ResetsTheSharedRandomStream_AtConstructionAndAtDispose` | 0 | 4 | 0 | 1 | 3 | 3 | 16 | 12 | - |
+| `AlundraRandomBranchOpcodeTests.IfRandomAtLeast_0x8C_TheComparisonIsGreaterOrEqual` | 0 | 2 | 0 | 0 | 1 | 1 | 0 | 0 | - |
+| `AlundraRandomBranchOpcodeTests.IfRandomAtLeast_0x8C_TheFirstDrawIs53_SoThreshold128GivesZero_AndTheSeedAdvancesOnce` | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | - |
+| `AlundraRandomBranchOpcodeTests.IfRandomAtLeast_0x8C_TwoCallsDrawTwiceFromTheSameStream` | 0 | 2 | 0 | 0 | 0 | 2 | 0 | 0 | - |
+| `AlundraRandomOpcodeTests.SetRandomCardinalDirection_0x0C_FiveDrawsGiveTheBinarysDirections_AndTheSeedAdvancesOnce` | 0 | 5 | 0 | 0 | 0 | 5 | 0 | 0 | - |
+| `AlundraRandomTests.Next_ReproducesTheOriginalsFirstThreeValues_HandComputedFromTheLcg` | 0 | 3 | 0 | 0 | 0 | 3 | 0 | 0 | - |
+| `AlundraRandomTests.Next_ReturnsOnlyTheLow32BitsOfTheWrappedSeed` | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | - |
+| `AlundraRandomTests.Reset_SetsTheSeedBackToTheOriginalConstant` | 0 | 1 | 0 | 0 | 1 | 1 | 0 | 0 | - |
+| `AlundraStoryChainSkippedOpcodesTests.Oracle_AnOpcodeTheRunnerHandlesIsPorted_OneItSkipsOrCannotSizeIsNot` | 0 | 2 | 0 | 0 | 0 | 2 | 0 | 0 | - |
+| `AlundraAbsoluteZWritesTests.Map163_TheCrateOfRecord15_StaysOnTheCrateOfRecord14` | 60 | 0 | 0 | 1 | 3 | 0 | 18 | 8 | - |
+| `AlundraAbsoluteZWritesTests.Map179_TheCrateOfRecord12_StaysOnTheCrateOfRecord11` | 60 | 0 | 0 | 1 | 3 | 0 | 10 | 2 | - |
+| `AlundraAbsoluteZWritesTests.Map390_TheCrateOfRecord6_StaysOnTheCrateOfRecord4` | 60 | 0 | 0 | 1 | 3 | 0 | 16 | 12 | - |
+| `AlundraAbsoluteZWritesTests.Map83_TheFloatingPlatform_EndsItsFirstClimbAtThe33rdCall_At48Pixels` | 34 | 0 | 0 | 1 | 3 | 0 | 15 | 15 | - |
+| `AlundraAnimationImpulseSpawnTests.UJ7_TheHeroArrivingByThe0x53LaunchedDuringTheAnimation2_TakesNoImpulse_AndStaysAtItsHeightFor5Ticks` | 7 | 0 | 0 | 1 | 3 | 0 | 10 | 1 | - |
+| `AlundraAnimationSoundTests.T1_Map178_TheBookOfTheTickProgram728_AsksThePageSound204Once` | 1981 | 0 | 0 | 1 | 3 | 0 | 8 | 3 | - |
+| `AlundraAnimationSoundTests.T1_Map179_TheBookSpawnedLikeBy0x8A_At206_AsksThePageSound204Once_When1A01Switches` | 123 | 0 | 0 | 1 | 3 | 0 | 11 | 1 | - |
+| `AlundraAnimationSoundTests.T1_Map392_0x5B_At64_AsksTheHeroSprintSound13_Once` | 205 | 0 | 0 | 1 | 3 | 0 | 12 | 12 | - |
+| `AlundraAnimationSoundTests.T1_TheHeroArrivingByAdoptPlayerPawnInTheAnimation43_AsksSound10_AndTheFirstSwitchAsksNoSecond` | 2 | 0 | 0 | 1 | 3 | 0 | 10 | 1 | - |
+| `AlundraArcGuardAndSoundHostTests.TReg0_AGreenArcOfTheGuardedSet_ThatMetAnEntity_FailsAtItsDispose` | 1 | 0 | 0 | 1 | 3 | 0 | 10 | 1 | - |
+| `AlundraArcGuardAndSoundHostTests.TReg0_AnArcThatNeverMetAnEntity_DisposesWithoutFailure_AndSoDoesAnArcOutsideTheGuardedSet` | 2 | 0 | 0 | 2 | 6 | 0 | 20 | 2 | - |
+| `AlundraArcGuardAndSoundHostTests.TReg0_WhenTheTestIsAlreadyFailing_TheGuardDoesNotReplaceTheOriginalFailure` | 1 | 0 | 0 | 1 | 3 | 0 | 10 | 1 | - |
+| `AlundraArcInventoryHelpersTests.Equip_ASlotWithNoOwnedItem_ResolvesToNoItem_AndMinusOneUnequips` | 0 | 0 | 0 | 1 | 3 | 0 | 14 | 2 | - |
+| `AlundraArcInventoryHelpersTests.GiveThenEquip_TheHuntersBow_MakesItTheCurrentWeapon_AndTheHeroDrawsIt` | 2 | 0 | 0 | 1 | 3 | 0 | 19 | 2 | - |
+| `AlundraArcInventoryHelpersTests.Give_SeveralItems_GivesOneOfEach_AndAGivenWeaponStaysAtItsMaximumOfOne` | 0 | 0 | 0 | 1 | 3 | 0 | 14 | 2 | - |
+| `AlundraArcInventoryHelpersTests.SetItem_PosesTheCircleItem_AndRefusesAnIdPastTheTable` | 0 | 0 | 0 | 1 | 3 | 0 | 14 | 2 | - |
+| `AlundraArcInventoryHelpersTests.SetMp_AppliesTheCeilingOf4_AndClampsTheMagicToItsMaximum` | 0 | 0 | 0 | 1 | 3 | 0 | 14 | 2 | - |
+| `AlundraBeannoideGrateArcTests.G116_TheTwoBeannoids_DieByTheSword_AndTheGrateOpens_WithAFrameBreakEffectEach` | 312 | 90 | 0 | 1 | 3 | 0 | 27 | 15 | - |
+| `AlundraBergusJumpArcTests.A12_BergusJumpsOnMap179_TheWaitForTheLandingEnds_TheSceneLeavesByThe0x53` | 2276 | 0 | 0 | 1 | 3 | 0 | 10 | 1 | - |
+| `AlundraBirthBoxTests.B1_R_TheBoxOfTheWave_IsTheOneOfTheBinaryAtEveryTick_InTheFourDirectionsOfTheSteelSword` | 363 | 0 | 0 | 13 | 39 | 0 | 312 | 143 | - |
+| `AlundraBirthBoxTests.B2_R_HasFrameBoxAtTheCreation_IsTheHasBoxOfTheOracle_OnTheVectorsOfTheInterfaceTest_AndTheVectorsAtZeroStayFalse` | 0 | 0 | 0 | 1 | 3 | 0 | 175 | 20 | - |
+| `AlundraBirthBoxTests.B3_R_BeforeTheIntegrationTheSpriteHasNoAnimationAndTheEntityHasItsBox_AfterItTheBoxOfSPlus1IsTheImage1_AndWithoutResourcesTheTimelineIsNotFrozenAtNull` | 5 | 0 | 0 | 2 | 6 | 0 | 48 | 22 | - |
+| `AlundraBirthBoxTests.B4_R_ASwitchBeforeTheIntegration_GivesTheBoxOfTheAnimation1AtS_AndAtTheTicksThatFollow` | 10 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraBirthBoxTests.B5_R_AfterTheValidation_TheCursorOfTheBox_IsTheLogicalTickOfTheSprite_AtTheEndOfEveryFrame` | 166 | 0 | 0 | 5 | 15 | 0 | 120 | 55 | - |
+| `AlundraBirthBoxTests.B6_V_AnEntityBornFromARecord_HasNoBoxAtItsCreation_AndTheHostIsNeverAsked_AndAHostWithoutResourcesIsAskedAtMostOnce` | 0 | 0 | 0 | 1 | 3 | 0 | 21 | 12 | - |
+| `AlundraBirthTickProbePaTests.PA1_TheSpriteAskedForItsFirstAnimationBeforeTheIntegration_ThenIntegrated` | 1 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraBirthTickProbePaTests.PA1b_WithCurrentEqualTarget_PosedByHand_TheFirstFrameAfterTheIntegration` | 1 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraBirthTickProbePaTests.PA2_ControllerMoveBeforeTheIntegration_AddsTheDisplacementWithoutATest_AndAfterIt` | 1 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraBirthTickProbePaTests.PA3_TheGenericKinematicsOfTheBirthTick_WithCurrentAsTheInterfaceLeavesIt_MeasuredAfterE0a3b` | 0 | 0 | 0 | 1 | 3 | 0 | 20 | 11 | - |
+| `AlundraBirthTickProbePaTests.PA3_TheGenericKinematicsOfTheBirthTick_WithCurrentEqualTarget_PosedByHand` | 0 | 0 | 0 | 1 | 3 | 0 | 20 | 11 | - |
+| `AlundraBirthTickTests.AnEntityFromARecord_KeysItsKinematicsOnItsCurrentAnimation_NeverOnTheTarget_EvenWithCurrentStillNotValidated` | 0 | 0 | 0 | 1 | 3 | 0 | 20 | 11 | - |
+| `AlundraBirthTickTests.BT_H_BornInTheNativeProgramOfAnotherEntity_InATwoTickFrame_RunsAtTheSecondTick_NotInTheFirst` | 2 | 0 | 0 | 1 | 3 | 0 | 25 | 11 | - |
+| `AlundraBirthTickTests.BT_H_BornInTheNativeProgramOfAnotherEntity_RunsFromTheNextTick_TheGapOfD_E20_34_OneTickFrames` | 2 | 0 | 0 | 1 | 3 | 0 | 25 | 11 | - |
+| `AlundraBirthTickTests.BT_M_BornInMovePlayer_TakesPartInTheTickOfItsBirth_ProgramListsClockPhysics` | 3 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraBirthTickTests.BT_M_BornInTheFirstTickOfATwoTickFrame_ClockAndPhysicsRunTwice_AndANativeBirthIsNotRunTwice` | 3 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraBirthTickTests.DestroyedInTheTickOfItsBirth_InATwoTickFrame_IsRecycledAtTheHeadOfTheNextTick_ItsSlotIsGivenBack_AndTheEngineIntegratesNothingWrong` | 5 | 0 | 0 | 1 | 3 | 0 | 25 | 11 | - |
+| `AlundraBirthTickTests.T0Prime_AnimFlagsAtBirth_ThenTheFirstFrameValidatesThePendingSwitch_InTheFourDirections` | 8 | 0 | 0 | 8 | 24 | 0 | 192 | 88 | - |
+| `AlundraBirthTickTests.TheCreation_NeverReadsTheCollisionFieldOfTheHostByTheFallback_TheBirthTickDoes_AndAnEntityFromARecordNever` | 4 | 0 | 0 | 1 | 3 | 0 | 26 | 12 | - |
+| `AlundraBirthTickTests.TheMarker_IsPosedByTheInterfaceOnly_AndNotCloned` | 0 | 0 | 0 | 1 | 3 | 0 | 20 | 11 | - |
+| `AlundraBirthTickTests.TheSoundOfTheCreation_IsRequestedOnce_WhenTheEntityTakesPartInTheTickOfItsBirth` | 5 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraControllerlessVerticalStepTests.Gate_ARealPrefabWithoutController_HasTheRawMapWordsOfItsMap` | 0 | 0 | 0 | 1 | 6 | 0 | 15 | 8 | - |
+| `AlundraControllerlessVerticalStepTests.Real_Map260_TheArmourOfRecord17_Rises32Pixels_InExactly64Calls` | 69 | 0 | 0 | 1 | 3 | 0 | 13 | 8 | - |
+| `AlundraCreationSwitchClockTests.A1_R_TheWave_RaisesItsEndFlagAtSPlus25_WhateverTheGroupingAndThePositionInTheFrame_AndOneTickLaterWithoutTheFlag` | 1004 | 0 | 0 | 27 | 81 | 0 | 648 | 297 | - |
+| `AlundraCreationSwitchClockTests.A2_R_BornInTheProgramsOfAnotherEntity_TheFirstClockTickIsSPlus1_AndItsCursorIs1` | 32 | 0 | 0 | 4 | 12 | 0 | 96 | 44 | - |
+| `AlundraCreationSwitchClockTests.A2_R_TheCursorOfTheBox_IsTheCnt1cOfTheBinary_FromTheTickOfTheBirth_InTheFourDirections` | 63 | 0 | 0 | 8 | 24 | 0 | 192 | 88 | - |
+| `AlundraCreationSwitchClockTests.A3_R_TheLoopCounter_TurnsAtTheTicksOfTheBinary` | 100 | 27 | 0 | 6 | 18 | 0 | 144 | 66 | - |
+| `AlundraCreationSwitchClockTests.A4_R_AFrameWithoutATickBetweenTheBirthAndTheValidation_DoesNotDelayTheFlag_AndAValidationWithZeroTicksReservedOwesNoTick` | 40 | 0 | 0 | 2 | 6 | 0 | 48 | 22 | - |
+| `AlundraCreationSwitchClockTests.A5_OneTickPerFrame_ASwitchInTheWindow_EndsWhereTheBinaryEndsIt` | 200 | 0 | 0 | 5 | 15 | 0 | 120 | 55 | - |
+| `AlundraCreationSwitchClockTests.A5_R_ThreeTicksPerFrame_BornAtTheFirstTick_ASwitchInTheWindow_EndsWhereTheBinaryEndsIt` | 40 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraCreationSwitchClockTests.A5_R_TwoTicksPerFrame_BornAtTheFirstTick_ASwitchInTheWindow_EndsWhereTheBinaryEndsIt` | 82 | 0 | 0 | 2 | 6 | 0 | 48 | 22 | - |
+| `AlundraCreationSwitchClockTests.A6_V_AnEntityBornFromARecord_KeepsItsFirstClockTickUncounted_KnownDeviationQE0A5_1` | 5 | 0 | 0 | 1 | 3 | 0 | 24 | 13 | - |
+| `AlundraCreationSwitchClockTests.A6_V_TheCreationSoundIsRequestedOnce_AndNoImpulseIsGivenInTheWindowOfTheWave` | 9 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraDay3SceneArcTests.A14_TheVillagersOnMap179_NestusClearsT800AndT801_TheHeroStopsAtSeptimus_AndLeavesFor176` | 754 | 0 | 0 | 1 | 3 | 0 | 10 | 1 | - |
+| `AlundraDay3SceneArcTests.A18_TheHouseOnMap178_TwoPhases_TheTablesSay183_G203IsClearedAndG204Set` | 3193 | 0 | 0 | 1 | 3 | 0 | 10 | 3 | - |
+| `AlundraEnemyGroundTests.ProductionSpawn_OfTheMap14Beannoids_HoldsTheBinarysCreationValuesMinusOne` | 10 | 0 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraEnemyHitReactionTests.HeroAnimationLatch_OfTheContext_DefaultsToZero_AndTheWorldReturnsItsHitPassLatch` | 16 | 0 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraEntityContactArcTests.TA10v_TheVillagersOnMap10_NestusStopsAtMeade_TheSceneReachesItsEnd` | 5100 | 0 | 0 | 1 | 3 | 0 | 36 | 2 | - |
+| `AlundraEntityContactArcTests.TB9_CounterProof_AHeroPlacedInTheSouthHalfOfTheTileParksInTheWayOfSeptimus_TheSceneStalls` | 1400 | 0 | 0 | 1 | 3 | 0 | 28 | 2 | - |
+| `AlundraEntityContactArcTests.TB9_SeptimusAndTheBlockOnMap10_BothStopAtRec41_TheSceneSetsG482` | 3632 | 0 | 0 | 1 | 3 | 0 | 29 | 2 | - |
+| `AlundraEntityContactArcTests.TC61_TheCartRailsOnMap61_TheHeroStopsAtEachBlock_TheSceneSetsG672` | 337 | 0 | 0 | 1 | 3 | 0 | 16 | 6 | - |
+| `AlundraEntityContactArcTests.TH4_TheArrivalOfTheChainOverlapsNoEntity` | 11 | 0 | 0 | 6 | 33 | 0 | 129 | 10 | - |
+| `AlundraEntityContactArcTests.TN3_ThePlatformOfMap346_StopsAtTheIronBallWall_AndStaysThere_WithoutDetour` | 659 | 0 | 0 | 1 | 3 | 0 | 20 | 16 | - |
+| `AlundraEntitySlotV5RowsTests.V5_dirty_AFreeSlotWithLeftovers_IsTakenLowestFirst_AndTheCreationOverwritesWhatItWrites` | 0 | 0 | 0 | 1 | 3 | 0 | 21 | 11 | - |
+| `AlundraEntitySlotV5RowsTests.V5_invalid_full_AnInvalidIndexWithAFullTable_ReturnsNothing_WithTheMessageOfThePage_AndTakesNothing` | 0 | 0 | 0 | 1 | 3 | 0 | 63 | 11 | - |
+| `AlundraEntitySlotV5RowsTests.V5_probes_TheThirteenInvalidIndicesOfTheOracle_ReturnNothing_WithOneMessage_AndTakeNothing` | 0 | 0 | 0 | 1 | 3 | 0 | 19 | 11 | - |
+| `AlundraEntitySlotWorldTests.ADestroyedEntityKeepsItsSlot_UntilTheRecyclingPassOpens_ThenTheSlotIsFree` | 0 | 0 | 0 | 1 | 3 | 0 | 22 | 11 | - |
+| `AlundraEntitySlotWorldTests.AMapLoadWithAFullTable_SkipsTheRecordsThatFindNoSlot_AndLogsEach` | 0 | 0 | 0 | 2 | 6 | 0 | 21 | 14 | - |
+| `AlundraEntitySlotWorldTests.AnApparitionTakesTheLowestFreeSlot_AndTheListFollowsTheOrderOfTheSlots` | 0 | 0 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraEntitySlotWorldTests.AnExceptionAfterTheAddition_AtTheMapLoad_SkipsThatRecordOnly_AndGivesItsSlotBack` | 0 | 0 | 0 | 2 | 6 | 0 | 37 | 21 | - |
+| `AlundraEntitySlotWorldTests.AnExceptionAfterTheAddition_LeavesNothingBehind_NullIsReturned_AndTheSlotIsFree` | 0 | 0 | 0 | 2 | 6 | 0 | 40 | 22 | - |
+| `AlundraEntitySlotWorldTests.AnInvalidIndexWithAFullTable_IsRefusedForTheIndex_NotForTheTable_AsTheBinaryChecksThePageFirst` | 0 | 0 | 0 | 1 | 3 | 0 | 63 | 11 | - |
+| `AlundraEntitySlotWorldTests.ChildEntity_OnTheRecordPath_IsNullForAMapLoadEntity_ThereIsNoParent` | 0 | 0 | 0 | 1 | 3 | 0 | 19 | 11 | - |
+| `AlundraEntitySlotWorldTests.ChildEntity_OnTheRecordPath_IsTheRootOfTheChainOfParents_AsTheBinaryWritesIt` | 0 | 0 | 0 | 1 | 3 | 0 | 22 | 15 | - |
+| `AlundraEntitySlotWorldTests.ChildEntity_ThroughBothPaths_RecordThenInterfaceThenRecord_KeepsTheSameRoot` | 0 | 0 | 0 | 1 | 3 | 0 | 22 | 14 | - |
+| `AlundraEntitySlotWorldTests.TheEntriesWithoutASlot_StayWhereTheyAre_AndTheInsertionSkipsThem` | 0 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraEntitySlotWorldTests.TheHeroHoldsSlot0_TheLoadedEntitiesTakeTheSlotsFrom1InTheOrderOfTheRecords_AndTheTableHoldsThemAll` | 0 | 0 | 0 | 1 | 3 | 0 | 19 | 11 | - |
+| `AlundraEntitySlotWorldTests.TheSixtyFourthApparition_ByRecordId_IsRefused_WithALogLine_AndNothingAdded` | 0 | 0 | 0 | 1 | 3 | 0 | 63 | 12 | - |
+| `AlundraEntitySlotWorldTests.TheSixtyFourthApparition_ThroughTheInterface_IsRefused_WithOneLogLine_AndNothingAdded` | 0 | 0 | 0 | 1 | 3 | 0 | 63 | 11 | - |
+| `AlundraFlailBounceArcTests.AFlailAtTheHammerPost_BouncesFor16Ticks_AndTheRelationsOfTheBinaryHold` | 244 | 36 | 0 | 4 | 12 | 0 | 92 | 100 | - |
+| `AlundraFlailBounceArcTests.AFlailThatTouchesABeannoid40PixelsAway_BouncesAtTheNextTick_For16Ticks_ThenIdle_WithNoForce` | 100 | 18 | 0 | 2 | 6 | 0 | 46 | 22 | - |
+| `AlundraFlailBounceArcTests.AFlailWithNothingInReach_160PixelsAway_NeverTouchesNorBounces_TheSwingEndsOnItsOwn` | 100 | 0 | 0 | 2 | 6 | 0 | 46 | 22 | - |
+| `AlundraFlailBounceArcTests.Map69_Loads_TheHammerPostOfRecord0Stands_AndTheHeroSettlesFreeOnTheGround` | 1 | 0 | 0 | 1 | 3 | 0 | 23 | 25 | - |
+| `AlundraFlailBounceWallProbeTests.FIronNoHit_OnAFlatField_NothingBounces_TheSwingEndsAtTick32` | 50 | 0 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraFlailBounceWallProbeTests.FIronWall1_AWallOfHeight1_BouncesAtTick10` | 50 | 0 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraFlailBounceWallProbeTests.FIronWall2_AWallOfHeight2UnderTheBoxCorner_BouncesTheIronFlailAtTick10_ReturnsToIdleAtTick26` | 50 | 0 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraFlailBounceWallProbeTests.FIronWk40_AWalkabilityBit0x40AtHeight0_BouncesAtTick10` | 50 | 0 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraFlailBounceWallProbeTests.FSteelWall2_TheSteelFlailBouncesTo0x25AtTick10` | 60 | 0 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHeightTargetSitesTests.TheWaitOfTheBinaryEndsAtTheCallOfTheBinaryAtEveryRealSite` | 15547 | 27 | 0 | 19 | 99 | 0 | 491 | 104 | - |
+| `AlundraHeroAttackTests.RealPrefab_TheHeroOfTheExport_SwingsTheBasicSwordOnTheGroundAndInTheAir_AtTheTicksOfTheOracle` | 43 | 0 | 0 | 1 | 3 | 0 | 19 | 2 | - |
+| `AlundraHeroAttackTests.RealPrefab_TheTablesOfTheWorld_AreNotNull_AndASteelEdgePicksItsOwnRecord` | 3 | 0 | 0 | 1 | 3 | 0 | 19 | 2 | - |
+| `AlundraHeroAuraWorldTests.AFrameHoldingTheTicks96And97AfterACreation_ShowsOneFrameWithoutAura_TheNextOneHasIt` | 182 | 46 | 0 | 1 | 4 | 0 | 23 | 11 | - |
+| `AlundraHeroAuraWorldTests.AFrameOfThreeTicks_HoldingTheCreationOfTheAura_GivesTheSameStateAsFramesOfOneTick` | 300 | 0 | 0 | 6 | 24 | 0 | 138 | 66 | - |
+| `AlundraHeroAuraWorldTests.AFrameOfTwoThenThreeTicks_OverTheCounterPassingFrom10To12_GivesTheSameStateAsFramesOfOneTick` | 100 | 0 | 0 | 2 | 8 | 0 | 46 | 22 | - |
+| `AlundraHeroAuraWorldTests.TheAuraQuads_AreSortedStrictlyAfterTheHeroSprite_InTheSameBucket` | 60 | 0 | 0 | 1 | 4 | 0 | 23 | 11 | - |
+| `AlundraHeroAuraWorldTests.TheHeroAnchor_ExposesTheKeyOfTheSortDriver_OnTheTicksOfTheSwingAndOfTheCharge` | 100 | 4 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHeroAuraWorldTests.TheRenewalInFramesOfThreeTicks_WhereASparkTakesTheFreedSlot_StillGivesALiveAura` | 144 | 26 | 0 | 1 | 4 | 0 | 23 | 11 | - |
+| `AlundraHeroChargeArenaTests.TheChargedSwing0x18_OfTheSteelSword_TouchesABeannoidOfMap14` | 150 | 24 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraHeroChargeArenaTests.TheEffectsOfTheCharge_AreCreatedInTheWorldsReservoir_TheBurstAtTheRelease` | 105 | 6 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHeroChargeArenaTests.TheReservoirAfterTheChargeAndTheRelease_DoesNotDependOnTheNumberOfTicksPerFrame` | 424 | 24 | 0 | 4 | 16 | 0 | 92 | 44 | - |
+| `AlundraHeroFallAndPadJumpTests.S6c_TheAdoptionOfANewPawnInTheAir_GivesTheEngineValuesBack` | 5 | 0 | 0 | 1 | 3 | 0 | 10 | 1 | - |
+| `AlundraHeroJumpArcTests.A10J_TheHeroJumpsTheCliffOfMap10_TheWaterSlowsHim_GilesJumpsToo_TheSceneLeavesFor135` | 387 | 0 | 0 | 1 | 3 | 0 | 18 | 2 | - |
+| `AlundraHeroLifeArcTests.ALoadAt4Over12_SurvivesTheFirstTick_AndTwoMapsInARow_KeepTheStats` | 60 | 0 | 0 | 2 | 6 | 0 | 33 | 12 | - |
+| `AlundraHeroLifeArcTests.E3_TheHeroIsCreatedFromTheStats_AndTheStatsSurviveTheFirstTick` | 4 | 0 | 0 | 4 | 12 | 0 | 92 | 44 | - |
+| `AlundraHeroLifeArcTests.TheAdoption_ComputesTheSheetAndTheBootsAtOnce_WithTheNewGameKit` | 0 | 0 | 0 | 1 | 3 | 0 | 19 | 11 | - |
+| `AlundraHeroLifeArcTests.TheAdoption_DoesNotRewriteTheEquippedAccessory_TheFirstTickDoes_AndUsesTheOldId` | 1 | 0 | 0 | 1 | 3 | 0 | 10 | 1 | - |
+| `AlundraHeroRunArenaTests.G7_RunningIntoABeannoid_OnTheRealWorld_IsTheOracle_TheBodyTouchesAtTick60` | 70 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHeroRunArenaTests.G7_TheSweepOfThePressTick_OnTheRealWorld_IsTheOracleUntilTheHurt` | 1366 | 270 | 0 | 17 | 51 | 0 | 391 | 187 | - |
+| `AlundraHeroRunArenaTests.G7_TheTackle_OnTheRealWorld_HitsTheBeannoidAtTick61_ThreeSparks_ComparedUntilTheHurt` | 74 | 18 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHeroSlideTests.ArcsWithoutSlide_AnArcOfTheRealControllerThatSlid_FailsAtItsDispose_ThePinnedArcsPinTheirCount` | 3 | 0 | 0 | 3 | 9 | 0 | 30 | 3 | - |
+| `AlundraHeroSwimArenaTests.TheHeroFallsFromTheBank_Floats_Swims_Bursts_AndStopsAgainstTheBank` | 420 | 0 | 0 | 2 | 6 | 0 | 46 | 22 | - |
+| `AlundraHeroSwimArenaTests.WithoutTheBoots_TheHeroSwimsToo_AnAcceptedDeviation_O_E19_22` | 260 | 0 | 0 | 2 | 6 | 0 | 46 | 22 | - |
+| `AlundraHitEffectWorldTests.W1_AHitOfTheNibble6Or7_AttachesTheEffect4Or5_ToTheHero_ForItsDuration` | 426 | 27 | 0 | 3 | 12 | 0 | 69 | 33 | - |
+| `AlundraHitEffectWorldTests.W2_TheEffectDrawsNoRandomWord` | 284 | 18 | 0 | 2 | 8 | 0 | 46 | 22 | - |
+| `AlundraHitEffectWorldTests.W3_TheSlotExists_InEveryGrouping_AtTheSameHitTick` | 852 | 54 | 0 | 6 | 24 | 0 | 138 | 66 | - |
+| `AlundraHitPassCatchUpTests.ASwitchAskedAfterTheClockOfATick_IsTheSwitchTickOfTheNextOne_TheByteIsLoadedThereBeforeTheHitPass` | 100 | 9 | 0 | 2 | 6 | 0 | 46 | 22 | - |
+| `AlundraHitPassCatchUpTests.ATargetThatEntersAnAnimationWithTheByte0x40_AtTheTickOfTheFirstOverlap_IsNotHit` | 100 | 9 | 0 | 2 | 6 | 0 | 46 | 22 | - |
+| `AlundraHitPassCatchUpTests.ATargetThatLeavesAnAnimationWithTheByte0x40_AtTheTickOfTheFirstOverlap_IsHit` | 50 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassCatchUpTests.H1_WithThreeAndFourTicksPerFrame_IsTheOracleTickByTick` | 150 | 27 | 0 | 3 | 9 | 0 | 69 | 33 | - |
+| `AlundraHitPassCatchUpTests.H1_WithTwoTicksPerFrame_AfterAFrameOfOneTick_IsTheOracleTickByTick` | 50 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassCatchUpTests.H1_WithTwoTicksPerFrame_ThePressOnTheFirstTickOfAFrame_IsTheOracleTickByTick` | 50 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassCatchUpTests.H1near_WithTwoTicksPerFrame_AfterAFrameOfOneTick_IsTheOracleTickByTick` | 50 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassCatchUpTests.H1near_WithTwoTicksPerFrame_ThePressOnTheFirstTickOfAFrame_IsTheOracleTickByTick` | 50 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassCatchUpTests.TheBoxCursor_FollowsTheSpritesLogicalClock_AfterEveryFrame_WhateverTheNumberOfTicks` | 43 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassCatchUpTests.TheHitWrittenAtTickN_IsReadByTheProgramsOfTickNPlus1_AndClearedByTheCounters_InTheSameFrameOfTwoTicks` | 50 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassCatchUpTests.TheSameByte0x40Test_InAFrameOfTwoTicks_StillSeesTheSwitchOfTheTickItself` | 100 | 9 | 0 | 2 | 6 | 0 | 46 | 22 | - |
+| `AlundraHitPassTests.ARealArcOnMap14_TheHeroStrikesTheBeannoidOfRecord0_WhereTheMapPutItOnItsHill_SparksATouchAndTheProgramDAtTheNextTick_NoWound` | 22 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.H1_TheBasicSword_HitsABeannoid40PixelsAwayAtTick5_ThreeSparks_ThenTheCooldown_ThenD` | 50 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.H1_TheThreeSparksOfTheHitExistOnTheReservoir_AtTheCentreOfTheOverlap_Effect9` | 15 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.H1both_TheSwingAndTheBodyOfABeannoid20PixelsAway_HitEachOtherAtTick1_SixSparks` | 50 | 36 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.H1edge_ABeannoid59PixelsAway_IsHitAtTick5_ByTheLastPixelOfTheReach` | 50 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.H1near_TheBoxOfTheFirstFrame_OfTheSwingThatStartsAtThisTick_HitsOnThePressTick_TheLatchIsThe0x10OfTheTick` | 50 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.H2_ABeannoid60PixelsAway_IsNeverHit` | 50 | 0 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.H3_TheHeroWalkingIntoABeannoid_IsTouchedAtTick17_TheCountersClearItAtTick18_TheHeroDoesNotLoseLifeYet` | 55 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.H4a_ASecondSwing_HitsAgain25TicksAfterTheFirstHit_NotBefore` | 70 | 18 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.H4b_ATargetInAnAnimationWithTheByte0x40_IsNeverHit_ByTheBoxThatOverlapsItForSevenTicks` | 50 | 0 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.H5_TwoTargetsInTheReach_AreBothHitAtTheSameTick_TheHeroCountsTwoHits` | 50 | 18 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.H6_AnImmuneTarget_GetsTheCooldownAndSparks_ButNoTouchingEntityAndNoProgramD` | 50 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.H7_TwoAttackersOnOneTarget_OnlyTheFirstOfTheListTouchesIt_TheSecondHitsItWhenTheCooldownIsOver` | 50 | 27 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.H8_TheSwingToTheWest_HitsABeannoid40PixelsAwayAtTick5` | 50 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.TheReachBehindTheHero_Beyond9Pixels_IsOnlyContactedByTheLateFrames_BecauseTheHeroIsNotHurtYet` | 32 | 27 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraHitPassTests.TheReachInX_AtDyZero_IsTheOracleOne_FromMinus9To59Pixels` | 384 | 144 | 0 | 12 | 36 | 0 | 276 | 132 | - |
+| `AlundraHitPassTests.TheReachInY_AtTheEdgesOfTheOracleWindows_IsTheOracleOne` | 480 | 81 | 0 | 15 | 45 | 0 | 345 | 165 | - |
+| `AlundraHitPassTests.WhileTheContactLasts_ABeannoidTouchesTheHero_EveryTwentyFiveTicks_AndHisDamagedCounterStaysAtZero` | 90 | 45 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraInoaAwakeningArcTests.A8_TheAwakeningOnMap163_JessWalksToTheWall_TheHeroTakesBackTheHand` | 2447 | 0 | 0 | 1 | 3 | 0 | 18 | 8 | - |
+| `AlundraInoaDayOneArcTests.A10_TheFirstVisitOnMap165_TheActorsPassTheSceneOnByFlags_ThePlayerGetsTheHandBack` | 1777 | 0 | 0 | 1 | 3 | 0 | 9 | 1 | - |
+| `AlundraInoaDayOneArcTests.A11_SeptimusOnMap164_TheScenePlaysToItsEnd_TheTableAndTheFlagsAreSet` | 2075 | 0 | 0 | 1 | 3 | 0 | 13 | 7 | - |
+| `AlundraLeverArcTests.A_Map115_TheNorthWestLever_TurnsAndOpensTheDoorAtTheTicksOfItsPrograms` | 105 | 9 | 0 | 1 | 3 | 0 | 4 | 3 | - |
+| `AlundraLeverBasculeArcTests.C_Map117_TheBascule_RewritesThePlatformsAtTheTicksOfItsProgram_InFourHits` | 136 | 36 | 0 | 1 | 3 | 0 | 3 | 3 | - |
+| `AlundraLeverBridgeArcTests.B_Map116_TheTwoLeversExtendTheBridge_AndTheSecondHitOnTheLever40RetractsIt` | 143 | 27 | 0 | 1 | 3 | 0 | 27 | 15 | - |
+| `AlundraLeverDoorsArcTests.E_Map44_TheLever7_TurnsTheSixLevers_WalksTheSevenDoors_AndGivesTheHandBack` | 110 | 9 | 0 | 1 | 3 | 0 | 21 | 6 | - |
+| `AlundraLeverDoorsArcTests.E_Map44_WithoutG1633_TheHitOnlyRunsTheTestAndTheEnd_NoLockNoT80` | 48 | 9 | 0 | 1 | 3 | 0 | 21 | 6 | - |
+| `AlundraLeverPillarArcTests.D_Map117_TheLever22_StartsThePillar_AtTheTicksOfItsPrograms` | 107 | 9 | 0 | 1 | 3 | 0 | 5 | 4 | - |
+| `AlundraLeverSmokeTests.Map115_TheNorthWestLeverIsThere_AndTheTwoRecordsThatNeverAppearAreNot` | 6 | 0 | 0 | 1 | 3 | 0 | 4 | 3 | - |
+| `AlundraLeverSmokeTests.Map116_TheTwoLeversAreThere_AndThePlatesAreNot` | 6 | 0 | 0 | 1 | 3 | 0 | 27 | 15 | - |
+| `AlundraLeverSmokeTests.Map117_TheBasculeRoomHasTheBascule_AndNotTheLever22` | 6 | 0 | 0 | 1 | 3 | 0 | 3 | 3 | - |
+| `AlundraLeverSmokeTests.Map117_TheLever22RoomHasTheLeverAndThePillar_AndNotTheBascule` | 6 | 0 | 0 | 1 | 3 | 0 | 5 | 4 | - |
+| `AlundraLeverSmokeTests.Map44_TheSixLeversAreThere_WithG1633` | 6 | 0 | 0 | 1 | 3 | 0 | 21 | 6 | - |
+| `AlundraLoadingMapAirArrivalTests.V1b_AnArrivalHighAboveTheWell_FallsIn0x2D_FromItsFirstFrameInTheAir_ThenIdleAfterTheLanding` | 60 | 0 | 0 | 1 | 3 | 0 | 3 | 1 | - |
+| `AlundraLoadingMapAirArrivalTests.V1c_AnArrivalOnTheGround_KeepsTheArrivalAnimationUntilItsChain_ThenIdle` | 30 | 0 | 0 | 1 | 3 | 0 | 19 | 2 | - |
+| `AlundraLogicalZStepTests.A_TheMarker_IsPosedByTheInterfaceAndByItAlone_NotByTheHero_TheRecordCreations_TheRecycledEntities_NorTheClone` | 0 | 0 | 0 | 1 | 3 | 0 | 20 | 11 | - |
+| `AlundraLogicalZStepTests.B1_TheBall_FollowsTheSeriesOfTheOracleMinusOneRawUnit_LandsAtTheTickOfTheOracle_AndTheSameBallWithoutGravityStaysAtItsHeight` | 0 | 0 | 0 | 1 | 3 | 0 | 21 | 11 | - |
+| `AlundraLogicalZStepTests.B2_TheArrow_KeepsItsZ_IsOnGroundIsZeroWithTheRawUnitAndOneWithout_AndTheBallOnTheSameFloorLandsOnIt` | 0 | 0 | 0 | 1 | 3 | 0 | 22 | 11 | - |
+| `AlundraLogicalZStepTests.B3_TheImpulseOf1024_FollowsTheSeriesOfTheCrateMinusOneRawUnit_AndLandsAtTheTickOfTheOracle_WhereTheSameEntityWithoutImpulseOnlyFalls` | 0 | 0 | 0 | 1 | 3 | 0 | 21 | 11 | - |
+| `AlundraLogicalZStepTests.B4_TheExactGraze_DoesNotLandAtOnce_AndLandsAtTheNextTick_WhereAGrazeOneRawUnitDeeperLandsAtOnce` | 0 | 0 | 0 | 1 | 3 | 0 | 21 | 11 | - |
+| `AlundraLogicalZStepTests.B5_TheCeiling_StopsTheRiseAtTheAbsoluteCeiling_WithTheContactAndTheForceKeptWithoutGravity_ClearedWithIt_AndALowerRiseGoesOn` | 0 | 0 | 0 | 1 | 3 | 0 | 22 | 11 | - |
+| `AlundraLogicalZStepTests.B6_TheMagnet_SnapsAtMostThreePixelsAboveAndThreePixelsPlusOneUnitBelow_OnlyWithGravityForceZeroAndAnAcceptedXyStep` | 0 | 0 | 0 | 1 | 3 | 0 | 20 | 11 | - |
+| `AlundraLogicalZStepTests.B7_TheStopMarker0x8000_ZeroesTheForceWithoutGravity_WhereWithGravityItIsTheImpulseShiftedByEight` | 0 | 0 | 0 | 1 | 3 | 0 | 21 | 11 | - |
+| `AlundraLogicalZStepTests.B8_TheStep_DeclaresTheSentinelAndThePositionTheRootFollows_ThroughAVerticalMoveOnly_AndTheHeroIsLeftAlone` | 0 | 0 | 0 | 1 | 3 | 0 | 20 | 11 | - |
+| `AlundraLogicalZWorldTests.Z10_ATeleportInFlight_KeepsTheMarkedEntityInTheAirAgainstAnEngineUpdateWithoutATick_WhereTheRecordEntityIsSetBackOnTheGround` | 13 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraLogicalZWorldTests.Z11_TheMarkedEntity_KeepsTheTerrainHeightFieldAtItsPosition_TheForceOfTheLandingTick_AndTheLogicalGroundFlagAcrossAnEngineUpdate` | 90 | 0 | 0 | 4 | 12 | 0 | 96 | 44 | - |
+| `AlundraLogicalZWorldTests.Z1_AnArrowBornAtTheHeightOfTheHero_KeepsHeroPlusOneRawUnitAndIsNotOnTheGroundFor30Ticks_WhereTheRecordEntityIsUnchanged` | 120 | 0 | 0 | 3 | 9 | 0 | 72 | 33 | - |
+| `AlundraLogicalZWorldTests.Z2_AnArrowOver16PxIsNotOnTheGroundAtAnyTick_AndAgainst32PxItIsStoppedAtTheTickOfTheOracle` | 180 | 0 | 0 | 3 | 9 | 0 | 72 | 33 | - |
+| `AlundraLogicalZWorldTests.Z3_TheBallAgainstAStepOf32Px_IsStoppedAtTheTickOfTheOracleAndFallsToTheGround_AndOnAStepOf16Px_ItIsPosedOnItAtTheTickOfTheOracle` | 28 | 0 | 0 | 2 | 6 | 0 | 48 | 22 | - |
+| `AlundraLogicalZWorldTests.Z3_TheBall_FollowsTheSeriesOfTheOracleFromTheFirstTick_AndLandsAtTheTickOfTheOracle` | 36 | 0 | 0 | 3 | 9 | 0 | 72 | 33 | - |
+| `AlundraLogicalZWorldTests.Z4_AnImpulseOf1024_LandsAtTheTickOfTheOracleFlatOver16PxAndOver32Px_OnTheSeriesOfTheCrateMinusOneRawUnit` | 65 | 0 | 0 | 3 | 9 | 0 | 72 | 33 | - |
+| `AlundraLogicalZWorldTests.Z5_AFreezeAndAThawInTheAir_LetTheZGoOnOnTheSeriesOfTheOracle_AndNeverAnchorTheEntity_WhereTheRecordEntityIsUnchanged` | 25 | 0 | 0 | 1 | 3 | 0 | 25 | 11 | - |
+| `AlundraLogicalZWorldTests.Z6_TheRootFollowsTheLogicalZToTheRawUnit_AndAnEngineUpdateWithoutATickDoesNotMoveIt` | 26 | 0 | 0 | 3 | 9 | 0 | 72 | 33 | - |
+| `AlundraLogicalZWorldTests.Z7_TheStepHeight_IsZeroInTheAir_TheValueOfThePrefabAtRestWithGravity_AndZeroWithoutGravity` | 14 | 0 | 0 | 1 | 3 | 0 | 25 | 11 | - |
+| `AlundraLogicalZWorldTests.Z8_TheBallAndTheFlushArrow_HaveTheSameStateAtTicks6And12_Whatever1_2Or3TicksPerFrame_AndItIsTheOracles` | 36 | 0 | 0 | 3 | 9 | 0 | 75 | 33 | - |
+| `AlundraLogicalZWorldTests.Z9_TheMagnetOfTheBinary_PosesAWalkerOnTheLowerGroundWithin3Px_AndLeavesItInTheAirBeyond_OnTheSeriesOfTheOracle` | 80 | 0 | 0 | 2 | 6 | 0 | 48 | 24 | - |
+| `AlundraMapEdgeWorldTests.B1_AnArrowBornAtX1200_IsBoundedAtTheTickOfTheOracleWithTheFlagTheSameTick_AndAnArrowBornAtX1100IsNotBoundedFor20Ticks` | 20 | 0 | 0 | 1 | 3 | 0 | 25 | 11 | - |
+| `AlundraMapEdgeWorldTests.B2_AWalkerPushedEast_IsBoundedAtTheTickOfTheOracleAndStaysAtTheBound_WithTheFlagUpAtTheTickAfterToo` | 8 | 0 | 0 | 1 | 3 | 0 | 24 | 12 | - |
+| `AlundraMapEdgeWorldTests.B2_AWalkerPushedNorthEast_IsBoundedOnXWhileYGoesOn_AndTheFlagIsKeptThroughTheSlideAlongTheWall` | 11 | 0 | 0 | 1 | 3 | 0 | 24 | 12 | - |
+| `AlundraMapEdgeWorldTests.B3_ARecordWalkerAtTheEdgeIsNotBounded_WhereTheMarkedArrowIsBounded` | 14 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraMapEdgeWorldTests.B4_TheHeroPushedEast_GoesPastItsOwnBoundAtTheTickItsSpeedGives_WhereTheMarkedArrowIsBounded` | 28 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraMapStateTests.P3_AMarkedEntityWhoseFirstAnimationIsValidated_KeysItsKinematicsOnItsCurrentAnimation_NotOnAnAskedOne` | 3 | 0 | 0 | 1 | 3 | 0 | 27 | 11 | - |
+| `AlundraMapStateWorldTests.K1_AnArrowBornWithTheMap_StopsAtTheWallOfTheMaskAtTheXOfTheOracle_AndTheSameArrowInAFreeCorridorFliesTheWholeDistance` | 120 | 0 | 0 | 2 | 6 | 0 | 48 | 22 | - |
+| `AlundraMapStateWorldTests.K2_ABallBornWithTheMap_FallsAndLandsAtTheTickOfTheOracle_AndTheSameBallWithoutAMapStaysInTheAir` | 32 | 0 | 0 | 2 | 6 | 0 | 48 | 22 | - |
+| `AlundraMapStateWorldTests.K3_OnMap159_TheBallBarelyFalls_WhereOnMap14_ItHasLandedAtTheSameTick` | 22 | 0 | 0 | 2 | 6 | 0 | 48 | 22 | - |
+| `AlundraMapStateWorldTests.K4_TheFieldsOfTheEntityBornByTheInterface_AreTheOnesOfAnEntityOfTheSameSpriteCreatedFromARecord` | 0 | 0 | 0 | 1 | 3 | 0 | 20 | 11 | - |
+| `AlundraPrefabArcSupportTests.ArcRun_HeldDirections_PersistOverFrames_AndOnlyTheFirstFrameIsJustPressed` | 5 | 0 | 0 | 1 | 3 | 0 | 16 | 12 | - |
+| `AlundraPrefabArcSupportTests.TH3b_ArrivalByPortal162_3_OnMap165_TheAdoptionRaisesTheHeroOntoTheGroundOfTheTile` | 10 | 0 | 0 | 1 | 3 | 0 | 9 | 1 | - |
+| `AlundraRandomPerTickTests.TheChargeSparks_DrawBeforeTheAdvanceOfTheirTick_WhateverTheGrouping` | 318 | 18 | 0 | 3 | 12 | 0 | 69 | 33 | - |
+| `AlundraShipArcTests.A0_TheCaptainWalksTheStairs_TheHeroStaysPut_ThenTheControlComesBack` | 126 | 0 | 0 | 1 | 3 | 0 | 16 | 12 | - |
+| `AlundraShipArcTests.A0b_TheHeroInThePushZone_IsWalkedAside_ThenTheCaptainLeavesAndTheControlComesBack` | 160 | 0 | 0 | 1 | 3 | 0 | 16 | 12 | - |
+| `AlundraShipArcTests.A1_TheCabin_TheDialogueCloses_TheHeroSleeps_ThenTheWarpToMap476Departs` | 386 | 0 | 0 | 1 | 3 | 0 | 16 | 12 | - |
+| `AlundraShipArcTests.A1c_TheCabinWithARealController_TheSecondNorthWalkReachesItsContact_ThenTheWarpToMap476Departs` | 387 | 0 | 0 | 1 | 3 | 0 | 16 | 12 | - |
+| `AlundraShipCorridorArcTests.A5_TheHeroTakesTheHand_IsPlacedInTheCorridor_ThenTheDownPushedPortalLeadsToMap391` | 215 | 0 | 0 | 1 | 3 | 0 | 12 | 12 | - |
+| `AlundraShipCorridorArcTests.A5r_HoldingDownInPlace_TheShipRollsTheHeroOnce_ThenTheDownPushedPortalLeadsToMap391` | 238 | 1 | 0 | 1 | 3 | 0 | 12 | 12 | - |
+| `AlundraShotDirectionTests.D1_InTheAir_SquarePlusLeftAtTickP_ShotsAtPPlus1_ToTheWest_At1TickAnd2TicksPerFrame` | 48 | 0 | 0 | 2 | 6 | 0 | 46 | 22 | - |
+| `AlundraShotDirectionTests.D2_InTheAir_SquareAtTickP_LeftOnlyFromTheShotTick_ShotsToTheEast_TheTurnOfTheShotTickIsIgnored` | 24 | 0 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraShotDirectionTests.D3_OnTheGround_SquarePlusADirection_ShotsInThatDirection` | 104 | 0 | 0 | 4 | 12 | 0 | 92 | 44 | - |
+| `AlundraShotDirectionTests.D4_TheBoxDirection_EqualsTheFacingOfTheHeadOfTheTick_AtTheTickOfTheShot` | 408 | 0 | 0 | 12 | 36 | 0 | 276 | 132 | - |
+| `AlundraSpawnBySpriteIndexInterfaceTests.B2_TheFullPath_On151NumbersOfTheGlobalPage_AndTheNumbersOfTheMapPageValidOnMap14_GivesTheProjectionOfTheOracle_AndAppendsToTheWorld` | 0 | 0 | 0 | 1 | 3 | 0 | 175 | 20 | - |
+| `AlundraSpawnBySpriteIndexInterfaceTests.C_TheNullContract_AnInvalidIndexAnAbsentPrefabOrAnUnknownMap_AddsNothing_AndLogsOneLine` | 0 | 0 | 0 | 1 | 3 | 0 | 20 | 11 | - |
+| `AlundraSpawnBySpriteIndexInterfaceTests.D_TheNewEntity_IsNotFoundBy0x2COr0x2EOf0_AndItsTriggerIsMinusOne` | 0 | 0 | 0 | 1 | 3 | 0 | 20 | 11 | - |
+| `AlundraSpawnBySpriteIndexInterfaceTests.E_TheParentAndTheRoot_ThroughTheInterface_FourCases` | 0 | 0 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraSpawnBySpriteIndexInterfaceTests.F_TheEightCallsOfTheAt9Traces_AppearAtTheZOfTheBinaryMinusOneRawUnit_UnlessTheTerrainRaisesThem` | 0 | 0 | 0 | 1 | 3 | 0 | 27 | 11 | - |
+| `AlundraSpawnBySpriteIndexInterfaceTests.F_TheRawUnitOfZ_IsAddedByTheInterface_AHeroZMakesAnEntityOneRawUnitHigher` | 0 | 0 | 0 | 1 | 3 | 0 | 21 | 11 | - |
+| `AlundraSpawnBySpriteIndexInterfaceTests.G_TheSoundOfTheAnimation0_IsRequestedOnceAtTheTickOfTheCall_AndOnlyWhereTheBinaryPlaysOne` | 0 | 0 | 0 | 1 | 3 | 0 | 22 | 11 | - |
+| `AlundraSpawnBySpriteIndexInterfaceTests.H_TheNumber79OfTheMapPage_ByTheInterface_AndTheRecord0OfMap14_ByTheProductionPath_DifferOnlyByTheClosedList` | 0 | 0 | 0 | 1 | 3 | 0 | 20 | 12 | - |
+| `AlundraSpawnBySpriteIndexInterfaceTests.L_TheIndicesOfTheMapPage_AreReadAtTheFirstCallOfTheMapPage_NeverAtTheLoadOfAWorld` | 0 | 0 | 0 | 1 | 3 | 0 | 21 | 12 | - |
+| `AlundraStoredHitBoxTests.TheWorldsTick_StoresTheBoxOfAnEntityWithNoAttack_AfterThePhysics` | 11 | 9 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+| `AlundraTarnMurggArcTests.R32_TheMurggsOfTarnsManor_TheScriptsEnd_TheCorpseOfRecord2IsRecycled_TheControlComesBack` | 308 | 0 | 0 | 1 | 3 | 0 | 24 | 14 | - |
+| `AlundraVisionAndCoastArcTests.A9_WendellOnMap172_TheWaitOnALoopSeesItsTurn_ThePlayerGetsTheHandBack` | 103 | 0 | 0 | 1 | 3 | 0 | 11 | 4 | - |
+| `AlundraWaveSwordLifeTests.V1_E10_DestroysTheWaveAtSPlus26_TheSlotIsFreeAtSPlus27AndTakenAgain_NoBreakEffect_WhateverTheNativeSwitch` | 310 | 28 | 0 | 2 | 6 | 0 | 50 | 22 | - |
+| `AlundraWaveSwordLifeTests.V2_C61_CallsTheNamedStubOnceAtEachTickOfSPlus1ToSPlus25_AndNeverWithTheNativeSwitchOff` | 936 | 86 | 0 | 6 | 18 | 0 | 144 | 66 | - |
+| `AlundraWaveSwordLifeTests.V4_TheWholeLifeOfTheWave_FromSToSPlus27_EqualsTheKeysOfTheOracle_WhateverTheGrouping` | 2808 | 108 | 0 | 18 | 54 | 0 | 432 | 198 | - |
+| `AlundraWaveSwordWiringTests.P1_R_TheChargeOfTheSword_BirthsTheWaveOfItsType_DaughterOfTheHero_AtTheLowestFreeSlot_AndItsLifeEqualsTheKeys` | 620 | 24 | 0 | 4 | 12 | 0 | 96 | 44 | - |
+| `AlundraWaveSwordWiringTests.P2_R_TheWaveTouchesTheTargetsBeyondTheHeroReach_AtSPlus5_7_9_AndTheHeroTheOneInFrontOfHim` | 620 | 69 | 0 | 4 | 12 | 0 | 96 | 44 | - |
+| `AlundraWaveSwordWiringTests.P3_R_TheWaveNeverTouchesTheHero_InTheSameRunWhereTheTargetIsTouchedByTheWave` | 155 | 15 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraWaveSwordWiringTests.P4_R_TheWaveOfProductionExistsInTheChargeArena_DiesAtSPlus26_AndThePinOfTheArenaStaysAtTwoContacts` | 150 | 24 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraWaveSwordWiringTests.P5_R_TheBowShotCreatesNothingUnderTheSetOfTheSwords_TheSwordShotWithTheProductionSetCreatesOneEntity` | 4 | 0 | 0 | 2 | 6 | 0 | 47 | 22 | - |
+| `AlundraWaveSwordWiringTests.P6_R_WithNoFreeSlotTheShotOfTheWaveCreatesNothingAndClearsThePointer_WithExactlyOneFreeSlotItCreatesOneEntity` | 4 | 0 | 0 | 2 | 6 | 0 | 126 | 22 | - |
+| `AlundraWaveSwordWiringTests.P7b_R_TheTouchingEntityOfTheTarget_IsTheWaveOfProduction_AtTheTickOfTheTouch_WithItsAttack` | 155 | 15 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraWeaponSpawnSeamTests.S1_TheEmptySet_CountsAndJournalsTheShotAndCreatesNothing_TheSetWithTheArrow_CreatesOneEntityInTheLowestFreeSlot` | 4 | 0 | 0 | 2 | 6 | 0 | 47 | 22 | - |
+| `AlundraWeaponSpawnSeamTests.S2_WithTheHook_TheHooksEntityIsTheOnlyOne_WithoutTheHook_TheProductionCallMakesOne` | 4 | 0 | 0 | 2 | 6 | 0 | 48 | 22 | - |
+| `AlundraWeaponSpawnSeamTests.S3_OnAMontageHost_TheShotIsCountedAndJournalled_NoInterfaceIsCalled_AndTheSameShotInTheWorldCreatesOne` | 2 | 0 | 0 | 1 | 3 | 0 | 24 | 11 | - |
+| `AlundraWeaponSpawnSeamTests.S4_WithAFullTable_NothingIsCreatedAndThePointerIsCleared_WithOneFreeSlot_OneEntityIsCreated` | 4 | 0 | 0 | 2 | 6 | 0 | 126 | 22 | - |
+| `AlundraWeaponSpawnSeamTests.S6_ADirectionOutsideTheTable_IsClampedToTheNearestEntry_AndANormalDirectionIsUnchanged` | 4 | 0 | 0 | 4 | 12 | 0 | 92 | 44 | - |
+| `AlundraWeaponSpawnSeamTests.S7_TheCounterAndTheJournalAreAlreadyWritten_WhenTheHookIsCalled_AndTheHookIsCalledOnce` | 2 | 0 | 0 | 1 | 3 | 0 | 23 | 11 | - |
+
+### The tests marked `ambient_draws` (T1 handling: written justification, no seed assignment added, so the shadow was not rerun)
+
+Sixteen tests of the list have `ambient_draws > 0`, the same as in the e0b1 run (draws attributed to the test before any epoch of THAT test). None needs an explicit seed assignment, and none can be moved by the loot roll (their `divergent_draws`
+are 0 and they create nothing but `ArcRun_ResetsTheSharedRandomStream_...`, which reads the seed only after the construction):
+
+- **Classes that reset the stream in their constructor** (the constructor has its own key, so its `Reset()` is an epoch of `Class..ctor`, not of the method): `AlundraRandomTests` (3 tests), `AlundraRandomOpcodeTests` (1), `AlundraRandomBranchOpcodeTests` (3),
+  `AlundraNativeEffectTests` (3). Their start state is the initial seed whatever the order of the tests.
+- **Montages of the hero without a world `Update`** (`AlundraHeroSwimTests.W6_...` x2, `AlundraHeroRunTests.G7_TheSacredSword...`, `AlundraHeroAuraTests.AHeldCharge...`): the charge sparks draw their jitter from the inherited state; no assertion reads a spark.
+- **`AlundraStoryChainSkippedOpcodesTests.Oracle_AnOpcodeTheRunnerHandlesIsPorted_...`** (2 ambient draws, a key that was not in the e0b1 list, where `AlundraWeaponLockOpcodesTests.TheWholeProgramB_...` was): the test asks whether opcodes are ported
+  (`IsPorted(...)`), which runs the handlers on a throw-away entity; it asserts booleans only and reads no drawn number.
+- **`AlundraPrefabArcSupportTests.ArcRun_ResetsTheSharedRandomStream_AtConstructionAndAtDispose`**: it builds arcs on map 390 (spec `RandomReset`: the load rolls 12 steps in the binary, 16 creations seen), seeds the stream itself and reads it right after the construction: it reads the word AFTER the second re-seed of `ArcRun`,
+  which is the initial seed in both phases (this is why Q-B1 re-seeds after the load: without it, phase B would fail this test on map 390).
+
+## T1 evidence: red before the code, green after
+
+**`AlundraLootRollTests` (8 tests)**: written first and run on a skeleton that compiles (`Choose` and `Roll` answering 0, the table zero-filled): **7 red, 1 green** (the theory on the 256 codes `0x100..0x1FF` expects item 0 and no draw, which the skeleton
+answers too; it bites on the real code through the mutants of T3 `code >= 0x100` and by the table lookups). With the real class all 8 are green (2 626 + 256 + 52 + 183 + 12 + 6 000 + 11 vectors, 0 mismatch; the table md5 equal).
+
+**The tests of the real world, written after the phase A code, run on it (Release, 2026-10-16):**
+
+| Test | On the phase A code | First difference |
+|---|---|---|
+| `M0_ThePairsOfV8_...` (20 pairs, the tile of each arrival) | green | - |
+| `TheWordAfterTheLoad_IsTheSeed_OnTheMapsWhoseLoadRollsNothing_SevenOfTheTwentyPairs` | green (also green in phase B) | - |
+| `WithoutTheVariableOfTheSink_TheHelperOfTheCreation_...` (inertness) | green (also green in phase B) | - |
+| `M1_TheCreationByTheInterface_OnMap14_...` (9 vectors) | **red** | `0/230 seed 12345678: word 12345678`, expected `B806E07F` (and the item 84 of the seed `985CF02A` is 0) |
+| `M2_TheMapLoad_ByTheLoadTileOfTheHero_...` (20 pairs) | **red at its SECOND assertion** | the first (tile and entities in order with their slots and sprites, 20 pairs) PASSES; the second (items, `+0x40`, word after the load) fails: `#0 map 14` has no item 71 on record 1 |
+| `M3_TheFlagsOfTheRecord_FiveCases_...` | **red** | `R3 ... flag=0x0001 bit not set: item 0`, expected item 85 (the raised cases already agree: item 0, no draw) |
+| `M4_AnAbortedCreation_...` | **red** | `aborted null, word 12345678` agrees; `second item 0 word 12345678`, expected `second item 0 word B806E07F` (one step) |
+| `M5_TheHeroRollsNothing_...` | **red** | the hero part agrees (`item 0 +0x40 0 header 0`, word B017C93D after the load); the creation: word `12345678`, expected `B806E07F` |
+
+No (m1) to (m5) is green before T2. They are kept OUT of the commit of phase A: `AlundraLootRollWorldTests.Rolls.cs` (a partial of the committed class, the rolling tests M1 to M5), uncommitted in the working tree for phase B;
+a copy is in the scratch folder of the run.
+
+**The STOP condition "the load loop of the DLL does not create, at the verified load tile, the same entities as V8" does not occur**: for the 20 pairs the DLL's load creates exactly V8's entities, in V8's slots, with V8's sprite numbers, at the
+tile that `HeroTileAtLoad` reads (M2, first assertion).

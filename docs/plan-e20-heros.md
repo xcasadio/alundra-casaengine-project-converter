@@ -4501,7 +4501,7 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
   d'acceptation pour la DLL. README : ces valeurs, la prédiction qualitative (Q-B1 « avant et après » : les tirages des chargements ne
   déplacent plus les arcs ; restent les tirages des apparitions en cours d'arc, `0x2D`, `0x8A`, `0x8B` et l'interface ; au plus 3 tests
   selon la critique, estimation statique) et les comptes de départ, recomptés au HEAD de départ d'e0b2.
-- 🚧 **T1 — Phase A** (commit de code A, puis commit de docs du relevé), tel que « Partage des phases ». `AlundraLootRollTests` écrits
+- ✅ **T1 — Phase A** (commit de code A, puis commit de docs du relevé), tel que « Partage des phases ». `AlundraLootRollTests` écrits
   d'abord et rouges sur un squelette qui compile, puis **verts à la fin de T1** (la classe est pure et sans appelant d'écriture) : ils
   rejouent **tous** les vecteurs. La suite complète en Release et en Debug ne bouge pas (hors des tests nouveaux). Puis l'ombre, sur ce
   commit (qui contient la seconde re-semence) : en tête de `e0b2-shadow.txt`, le prédicat — un tirage virtuel avance `V` de 0, 1 ou 2 pas
@@ -4557,6 +4557,22 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B se retire seule (l'assistant cesse d'écrire) ; la phase A (classe pure, champ, ligne du noyau, appel de
   l'assistant qui n'écrit que le registre de l'ombre, seconde re-semence d'`ArcRun`) ne change aucun comportement.
+
+##### Résultats de T0 et de la phase A de T1 (2026-10-16)
+
+- **Commits** : T0 `7549acf` (docs : oracle, README) ; phase A `4753357` (code) ; le relevé de l'ombre (docs) vient juste après.
+- **T0** : 25 contrôles PASS (`run_e0b2.py`), manifeste identique sur deux exécutions. Vecteurs : 2 626 choix + 256 codes `0x100..0x1FF` + 52 tirages + 183 par `SpawnWarpEntity` + 12 par l'enregistreur + 6 011 (6 000 tirés au hasard, graine `20261015`,
+  md5 `087b48f3...` celui de la critique) : **0 écart**. Table : 2 048 octets, md5 `7c6b97ac50de72f436a6fbf08ed6bcd7`, égale à l'exécutable à `0x960C`. Mutants : 13 nommés (12 tués, le 13e équivalent) et 168 génériques (**120 tués**, le mutant
+  `sw $zero, 0x3f` est maintenant tué par le bruit `0xA5A5A5A5` ; 48 survivants, tous équivalents, écrits un à un dans le README). V8 par la case de chargement : **20 couples (carte, case)** tirés des `ArcSpec` de la suite (dont 14, 390, 392, 115, 116) ;
+  la carte 167 n'a aucun `ArcSpec` dans la suite (son seul test charge le programme sans monde) : mesurée à la case de Nouvelle Partie, pour un `ArcSpec` ad hoc (écart noté). Les couples de la critique reproduisent `D5F4D64A` et `BBE29AC9`.
+- **Comptes** : départ 5 046 (Release et Debug) ; phase A **5 057 en Release et en Debug, zéro échec** (les 11 tests nouveaux, rien d'autre ne bouge ; la seconde re-semence d'`ArcRun` est sans effet en phase A). `git diff` de `AlundraEntitySpawnFactory.cs` : la seule ligne
+  `HeaderContents`. Cinq traces inchangées.
+- **Tests nouveaux** : `AlundraLootRollTests` (8, rouges sur un squelette sauf la théorie des codes `>= 0x100` que le squelette satisfait aussi, verts ensuite) ; `AlundraLootRollWorldTests` : M0, mot après un chargement muet (7 cartes), inertie de l'assistant (verts en A et en B).
+  (m1) à (m5) sont écrits (fichier `AlundraLootRollWorldTests.Rolls.cs`, non versé), **tous rouges sur la phase A** ; (m2) échoue à sa seconde assertion : la première (la boucle de chargement de la DLL crée les entités de V8, dans les emplacements de V8, à la case de chargement
+  vérifiée, pour les 20 couples) passe, l'arrêt « la boucle de chargement de la DLL ne crée pas les mêmes entités » ne se produit pas.
+- **Ombre de la phase A** (`e0b2-shadow.txt`) : 1 135 lignes, 499 clés, 11 938 créations vues, 4 856 pas virtuels. **Liste prédite : 248 tests** = H115 (la seule avec des tirages divergents) + 16 à tirages ambiants (mêmes familles qu'e0b1, justifiés dans le README)
+  + 231 qui ne divergent que par la lecture de `SeedAfterTheLoad` d'`ArcRun` juste avant sa seconde re-semence (la valeur est jetée par le `Reset()` suivant). La vague d'épée née en production depuis E20.f3c passe par l'assistant (une création) et ne fait **aucun** pas virtuel
+  (en-tête `Contents` 0 : cohérent avec la clé `loot3c` 0 de l'oracle f3).
 
 ---
 
