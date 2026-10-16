@@ -3382,6 +3382,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             if (spawnedProxy != null)
             {
                 spawnedProxy.ScriptHost = this;
+
+                // E20.e0a4 phase A (D-E0A4-1, D-E0A4-2, D-E0A4-4), HERE and not in the core the map load shares (the load, the hero and the gull are not in the slice, D-E20-36), and BEFORE the balance sheet (whose first evaluation
+                // of the box is the first switch of the cursor): the creation by script has made the first switch of the animation 0 (InitializeEntity, 0x80039EA8), exactly as the one by the interface
+                // (AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex, E20.e0a5 and E20.e0a3b): the first clock tick counts and the box exists before the engine integrated the entity; and the byte 0xD of the animation set of
+                // the animation 0 is in AnimFlags from the creation, as the switch loads it.
+                spawnedProxy.SwitchedAtCreation = true;
+                spawnedProxy.AnimFlags = spawnedProxy.AnimSetsByAnim != null && spawnedProxy.AnimSetsByAnim.TryGetValue((int)spawnedProxy.TargetAnimationId, out var firstAnimationSet) ? firstAnimationSet.Acceleration : 0;
                 spawnedProxy.InitializeBalance(BalanceTables, BalanceThreshold); // E20.c1a C1.
             }
 

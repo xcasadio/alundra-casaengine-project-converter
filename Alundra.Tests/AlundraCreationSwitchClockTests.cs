@@ -413,48 +413,37 @@ public sealed class AlundraCreationSwitchClockTests : IDisposable
         => Assert.Equal(BirthClockOracle.FirstEnd(label), FlagWithSwitches(label, 3));
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // [V] (a6) Zero change: an entity born from a record keeps its first clock tick uncounted (the known deviation Q-E0A5-1 and D-E0A5-5: the cursor shows 0, 1, 2 at its first three clock ticks), without the flag;
-    // the creation sound of an entity born by the interface is requested once and no impulse is given in its window.
+    // [V] (a6) Zero change: an entity of the MAP LOAD keeps its first clock tick uncounted (the known deviation Q-E0A5-1 and D-E0A5-5: the cursor shows 0, 1, 2 at its first three clock ticks), without the flag. Since E20.e0a4 (D-E0A4-6)
+    // the pin is on an entity of the load: the entities born from a record by a script carry the rule (AlundraRecordBirthClockTests); the creation sound of an entity born by the interface is requested once and no impulse is given
+    // in its window.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     [Fact]
-    public void A6_V_AnEntityBornFromARecord_KeepsItsFirstClockTickUncounted_KnownDeviationQE0A5_1()
+    public void A6_V_AnEntityOfTheMapLoad_KeepsItsFirstClockTickUncounted_KnownDeviationQE0A5_1()
     {
-        using var run = new Birth("a6-record", 3, 0x18);
-        AlundraEntityScriptProxy? born = null;
+        using var arc = Arc("a6-load");
+        var loaded = arc.Entities.First(e => e.EntityRefId >= 0);
         var cursors = new List<int>();
         var tick = 0;
-        var s = int.MaxValue;
-        var record = run.Arc.Entities.First(e => e.EntityRefId >= 0).EntityRefId;
-        var previous = run.Arc.Proxy.TickTraceForTests;
-        run.Arc.Proxy.TickTraceForTests = pass =>
+        arc.Proxy.TickTraceForTests = pass =>
         {
-            previous?.Invoke(pass);
             if (pass == "pad")
             {
                 tick++;
             }
 
-            if (pass == "programs" && tick == s)
+            if (pass == "hit" && tick <= 3)
             {
-                born = run.Arc.Proxy.SpawnEntityByRecordId(run.Arc.Hero, record);
-            }
-
-            if (pass == "hit" && born != null && tick > s)
-            {
-                cursors.Add(born.BoxTicks);
+                cursors.Add(loaded.BoxTicks);
             }
         };
-        Frame(run.Arc, 1);
-        s = tick + 1;
-        while (tick < s + 3)
+        while (tick < 3)
         {
-            Frame(run.Arc, 1);
+            Frame(arc, 1);
         }
 
-        Assert.NotNull(born);
-        Assert.False(born!.SwitchedAtCreation);
-        Assert.Equal(new[] { 0, 1, 2 }, cursors.Take(3).ToArray());
+        Assert.False(loaded.SwitchedAtCreation);
+        Assert.Equal(new[] { 0, 1, 2 }, cursors.ToArray());
     }
 
     [Fact]

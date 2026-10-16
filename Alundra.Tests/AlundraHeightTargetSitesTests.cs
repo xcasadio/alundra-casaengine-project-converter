@@ -64,7 +64,7 @@ public sealed class AlundraHeightTargetSitesTests
         }
 
         // 115 B[2]: the block of the descent, the hero in the zone, the dialogue button pressed.
-        yield return new Site("s115_rec19", 115, 10, 55, 0, 19, 1, 367, 0x22, 6000, 757, 1078, 321, 3145727) { Dialogue = true }; // E20.a (D-E20-11): 756/1077 -> 757/1078, the dialogue of this site is opened by an entity program: its first pass is at N+1.
+        yield return new Site("s115_rec19", 115, 10, 55, 0, 19, 1, 367, 0x22, 6000, 756, 1077, 321, 3145727) { Dialogue = true }; // E20.a (D-E20-11): 756/1077 -> 757/1078, the dialogue of this site is opened by an entity program: its first pass is at N+1. E20.e0a4 phase A: 757/1078 -> 756/1077, by derivation of the rule (measured by the remeasure of T0, docs/plan-e20-annexe/e20-e0a4): the entity of record 19, born by 0x2D in the map-event pass, now counts the first tick of its animation clock (the binary makes the first switch at the creation, E20.e0a5), which moves by one image the frame where the wait of this site is seen; the number of calls, 321, is the binary's and does not change.
     }
 
     public static IEnumerable<object[]> SiteIds() => AllSites().Select(s => new object[] { s.Id });

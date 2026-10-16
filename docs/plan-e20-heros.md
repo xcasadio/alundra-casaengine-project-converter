@@ -4144,7 +4144,7 @@ S = tick de naissance, k = tick − S).
   carte 36 (sprite 313, octet `0x40`) et un enregistrement de test du sprite 27 (octet 193) ; vitesse de création non nulle = l'enregistrement 1 de la carte 321 (sprite 469, vitesse 160) ; **aucun site réel `0x8A`/`0x8B` sous le terrain n'a été
   recensé (pas de recensement des 684 sites `0x8A` en T0) : programmes de test** (autorisé par le texte de T0 (5)) ; naissances par événement de carte et en boucle 2 : appel de `SpawnEntityByRecordId` aux passes `mapEvents` et `programs` de
   `TickTraceForTests` (T2 les remplace par les vrais opcodes dans des programmes de test). Aucun arrêt.
-- 🚧 **T1 — Phase A** (tests d'abord, rouges sur le HEAD, noms versés au plan ; puis le code ; verts à la fin de T1). Fichier
+- ✅ **T1 — Phase A** (tests d'abord, rouges sur le HEAD, noms versés au plan ; puis le code ; verts à la fin de T1). Fichier
   `AlundraRecordBirthClockTests.cs`. Étiquettes : **[R]** rouge sur le HEAD (prédit) ; **[V]** vert par construction.
   - [R] (a1) La boîte à la création d'une entité née par `0x2D` (sprite 27 par un enregistrement de test, ou un enregistrement réel dont
     `box_table` donne la boîte) : `HasFrameBox` et la boîte égalent `box_table` à la création, avant l'intégration, `Animations` vide.
@@ -4167,6 +4167,12 @@ S = tick de naissance, k = tick − S).
     - (a3) `A3_C_BornInTheProgramsOfAnotherEntity_ASwitchInTheWindow_…` × 7 (`REC-SW0`, `-SW1`, `-SW2`, `-SW5`, `-SW1-2`, `-SWD1`, `-SWD2`) — contrôles [C], **les sept verts** sur le HEAD (relevé sans valeur d'arrêt, hors de toute preuve).
     - (a4) `A4_R_AnimFlagsOfTheCreationAnimation_IsLoadedAtTheCreation_ForTheSprite27AndForTheRealRecord3OfMap36` — **rouge** : attendu `((193, True, False), 64)`, obtenu `((0, False, False), 0)` (`AnimFlags` à 0 pour les deux sujets ; drapeau absent ; le clone sans drapeau est accolé).
     - (a5) `A5_V_TheMapLoadAndTheHero_CarryNeitherTheFlagNorALoadedAnimFlags` — **vert** (zéro changement : aucune entité du chargement ni le héros ne porte le drapeau ni un `AnimFlags` chargé).
+  - **Résultat de T1 (2026-10-16, phase A, commit de code).** Code : dans `SpawnEntityByRecordId` seulement, après `ScriptHost` et avant `InitializeBalance`, `SwitchedAtCreation = true` et `AnimFlags` chargé de l'octet de l'animation de
+    création (comme l'interface), hors du noyau partagé de la fabrique (D-E0A4-1, -2, -4, -7) ; aucun autre fichier de production. Les 11 cas de `AlundraRecordBirthClockTests.cs` sont verts (les rouges (a1), (a2), (a4) tombent, (a3) et (a5)
+    restent verts). Tests existants déplacés, exactement la liste A de T0 : `AlundraHeightTargetSitesTests…(s115_rec19)` réécrit à `(756, 1077, 321, 3145727)` (dérivation de la règle : l'horloge de l'entité née par `0x2D` compte son premier
+    tick ; le nombre d'appels 321 est celui du binaire) ; `AlundraCreationSwitchClockTests.A6_V` et `AlundraBirthBoxTests.B6_V` réécrits (D-E0A4-6) : l'écart connu d'e0a5 est épinglé sur une entité du chargement de carte (curseurs 0, 1, 2,
+    pas de drapeau ; pas de boîte, hôte jamais interrogé), et `B6_V` voit dans la même assertion l'entité née par script (boîte, drapeau, hôte interrogé une fois). Suite entière : **5 076 verts en Release** (copie neutralisée, 5 min 44 s) **et en Debug**
+    (copie neutralisée, 5 min 34 s) = 5 065 + 11 ; aucun test du goéland, aucune épingle du chargement de carte ni du héros n'a bougé ; gardes de traces vides ; la DLL de `alundra-project` (md5 `03eee1b6…`) n'a pas été touchée.
 - ⏳ **T2 — Phase B** (T2.0 : la liste B de T0 relue au HEAD de T2 ; puis tests rouges, puis code). Fichier `AlundraRecordBirthTickTests.cs`.
   - [R] (b1) Naissance par un programme d'événement de carte (`REC-ME`) : à S statut 2, A une fois, `+0x1C` 1, dans les listes, curseur 1,
     physique et coups ; drapeau de fin à S+25 ; à 1, 2 et 3 ticks par image, naissance à chaque position de l'image.

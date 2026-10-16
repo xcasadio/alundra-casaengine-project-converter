@@ -245,17 +245,20 @@ public sealed class AlundraBirthBoxTests : IDisposable
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // [V] (b6) Zero change: an entity born from a record keeps its timeline frozen at null at its creation and has no box (the host is not asked); and a host with no resources is asked at most once, with no exception.
+    // [V] (b6) Zero change: an entity of the MAP LOAD keeps its timeline frozen at null at its creation and has no box (the host is not asked); and a host with no resources is asked at most once, with no exception. Since E20.e0a4
+    // (D-E0A4-6) the pin is on an entity of the load: an entity born from a record by a script carries the rule of the interface (the box exists at the creation, the host is asked once to resolve it); the same entity is seen
+    // in the same assertion.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     [Fact]
-    public void B6_V_AnEntityBornFromARecord_HasNoBoxAtItsCreation_AndTheHostIsNeverAsked_AndAHostWithoutResourcesIsAskedAtMostOnce()
+    public void B6_V_AnEntityOfTheMapLoad_HasNoBoxAtItsCreation_AndTheHostIsNeverAsked_AndAHostWithoutResourcesIsAskedAtMostOnce()
     {
         using var arc = AlundraCreationSwitchClockTests.Arc("b6");
         var asked = 0;
         arc.Proxy.ResolveAnimationDataForTests = () => asked++;
-        var record = arc.Entities.First(e => e.EntityRefId >= 0).EntityRefId;
-        var born = arc.Proxy.SpawnEntityByRecordId(arc.Hero, record)!;
+        var loaded = arc.Entities.First(e => e.EntityRefId >= 0);
+        var record = loaded.EntityRefId;
+        var born = loaded;
         var results = new List<bool>();
         for (var i = 0; i < 3; i++)
         {
@@ -263,6 +266,10 @@ public sealed class AlundraBirthBoxTests : IDisposable
         }
 
         var askedByTheRecord = asked;
+
+        // The same record born by a script (E20.e0a4): the rule of the interface, the host asked once by the creation.
+        var scripted = arc.Proxy.SpawnEntityByRecordId(arc.Hero, record)!;
+        var askedByTheScript = asked - askedByTheRecord;
 
         // The interface's entity, with a host that has no resources: asked at most once, no exception, no box before the integration.
         var viaInterface = ((IEntityWorldContext)arc.Proxy).SpawnEntityBySpriteIndex(arc.Hero, false, 27, 100 << 16, 100 << 16, 0, 0x18)!;
@@ -274,7 +281,9 @@ public sealed class AlundraBirthBoxTests : IDisposable
             viaInterface.EvaluateFrameBox();
         }
 
-        Assert.Equal((false, false, false, null, 0, true, false), (results.Any(r => r), born.HasFrameBox, born.SwitchedAtCreation, born.CursorLogicalTickForTests(), askedByTheRecord, fake.Calls <= 1, viaInterface.HasFrameBox));
+        Assert.Equal(
+            (false, false, false, null, 0, true, false, (true, true, 1)),
+            (results.Any(r => r), born.HasFrameBox, born.SwitchedAtCreation, born.CursorLogicalTickForTests(), askedByTheRecord, fake.Calls <= 1, viaInterface.HasFrameBox, (scripted.HasFrameBox, scripted.SwitchedAtCreation, askedByTheScript)));
     }
 
     /// <summary>A host with no asset manager: it answers nothing to the resolver and counts the questions.</summary>
