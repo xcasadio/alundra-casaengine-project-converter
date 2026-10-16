@@ -1087,6 +1087,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 // E19.h1b1 (D-E19-59, H1b1-R3, closes O-E19-15): no spawn-time support evaluation any more (E4.f used to run one, without
                 // reach). The spawn writes whole pixels now (binary - 1), which rest exactly on the root as a float, so the normal support
                 // of the first tick finds the platform under a rider. The intro harness keeps its own call.
+
+                RollLootAtCreation(spawnedProxy, hasRecord: true, RecordContentsByte(record)); // E20.e0b2 (D-E0B-6): the last statement of the creation.
             }
             catch (Exception ex)
             {
@@ -3393,6 +3395,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // own doc for why this must happen AFTER AddEntity.
             spawnedProxy?.PushLogicalPositionToRoot();
             // E19.h1b1: no spawn-time support evaluation here either - see the map-load spawn loop above.
+            RollLootAtCreation(spawnedProxy, hasRecord: true, RecordContentsByte(record)); // E20.e0b2 (D-E0B-6): the last statement of the creation.
             return spawnedProxy;
         }
         catch (Exception ex)
@@ -3404,6 +3407,29 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             return null;
         }
     }
+
+    /// <summary>The low byte of the <c>Contents</c> of an entity record (the binary reads the byte <c>+0x12</c> of the record), 0 when the record carries none.</summary>
+    private static int RecordContentsByte(TileMapObjectData record)
+        => AlundraEntitySpawnFactory.TryGetRecordInt(record, "Contents", out var contents) ? contents & 0xFF : 0;
+
+    /// <summary>
+    /// E20.e0b2 (D-E0B-4, D-E0B-6, docs/plan-e20-heros.md section 1.17.2): the loot roll of a creation (<c>0x80032A40</c>, the last action of <c>InitializeEntity</c>), called ONCE per creation as the last statement of the <c>try</c> of each of the
+    /// three creation sites, so that a creation that aborted never rolls. <paramref name="hasRecord"/> is whether an entity record made the entity (the map load and <c>0x2D</c>, <c>0x8A</c>, <c>0x8B</c>: yes; the interface: no).
+    /// PHASE A (this commit): only the VIRTUAL roll, <see cref="AlundraLootRoll"/> replayed on the register <c>V</c> of the measuring sink (<see cref="AlundraRandomShadow.OnVirtualRoll"/>); nothing else is written (not
+    /// <see cref="AlundraEntityScriptProxy.ContentsItemId"/>, not <see cref="AlundraEntityScriptProxy.ContentsGameFlag"/>, not the real stream), and without the sink's variable it returns at once and allocates nothing.
+    /// </summary>
+    private void RollLootAtCreation(AlundraEntityScriptProxy? proxy, bool hasRecord, int recordCode)
+    {
+        if (proxy == null || !AlundraRandomShadow.Active)
+        {
+            return;
+        }
+
+        VirtualLootRoll(proxy, hasRecord, recordCode);
+    }
+
+    private void VirtualLootRoll(AlundraEntityScriptProxy proxy, bool hasRecord, int recordCode)
+        => AlundraRandomShadow.OnVirtualRoll(draw => AlundraLootRoll.Roll(hasRecord, proxy.ContentsGameFlag, recordCode, proxy.HeaderContents, GameState, draw).Draws);
 
     /// <summary>
     /// E20.e0a1 (docs/plan-e20-heros.md section 1.16.1, ADR-0063): <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, the apparition of <c>SpawnWarpEntity</c> (<c>0x80039F58</c>) without a record. In the order of the
@@ -3488,6 +3514,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             CreationFaultHookForTests?.Invoke("sprite-index", entity);
             RequestAppearanceSound(spawnedProxy); // E19.t T-R2: at the tick of the call.
             spawnedProxy?.PushLogicalPositionToRoot();
+
+            // E20.e0b2 (D-E0B-6): the loot roll comes right before the marker block below (which cannot fail and stays the last write of the creation, ADR-0065); a creation that aborted never reaches it.
+            RollLootAtCreation(spawnedProxy, hasRecord: false, 0);
 
             // E20.e0a3b (D-E0A-5, ADR-0065): the marker is posed LAST, after the push to the root, so that nothing of the creation reads the collision field of the host by the fallback (the one relief of the creation is the
             // core's, as 0x80039EF0). From here the entity takes part in the tick that sees it born, when this is the tick of MovePlayer (RunEntityBlock re-collects).

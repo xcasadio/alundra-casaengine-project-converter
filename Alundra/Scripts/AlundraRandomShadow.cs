@@ -53,6 +53,8 @@ internal static class AlundraRandomShadow
         internal long DivergentSeedReads;
         internal long Epochs;
         internal long AmbientDraws;
+        internal long VirtualRolls;
+        internal long VirtualRollSteps;
     }
 
     private static string? _currentTest;
@@ -99,6 +101,30 @@ internal static class AlundraRandomShadow
             EventCount++;
             VirtualWord = Step(VirtualWord);
             c.VirtualAdvances++;
+        }
+    }
+
+    /// <summary>
+    /// E20.e0b2 phase A: the virtual loot roll of one creation. <paramref name="roll"/> replays <see cref="AlundraLootRoll"/> with the draw it is given, which steps the virtual word <c>V</c> (never a copy of the real state)
+    /// and returns the steps it made (0, 1 or 2); the real state is not touched. Counted per attributed test as <c>virtual_rolls</c> (creations) and <c>virtual_roll_steps</c>.
+    /// </summary>
+    internal static void OnVirtualRoll(Func<Func<uint>, int> roll)
+    {
+        if (Path == null)
+        {
+            return;
+        }
+
+        lock (Gate)
+        {
+            var c = Attribute(out _);
+            EventCount++;
+            c.VirtualRolls++;
+            c.VirtualRollSteps += roll(() =>
+            {
+                VirtualWord = Step(VirtualWord);
+                return VirtualWord;
+            });
         }
     }
 
@@ -222,6 +248,8 @@ internal static class AlundraRandomShadow
             .Append(" divergent_seed_reads=").Append(c.DivergentSeedReads)
             .Append(" epochs=").Append(c.Epochs)
             .Append(" ambient_draws=").Append(c.AmbientDraws)
+            .Append(" virtual_rolls=").Append(c.VirtualRolls)
+            .Append(" virtual_roll_steps=").Append(c.VirtualRollSteps)
             .Append(Environment.NewLine)
             .ToString();
         File.AppendAllText(Path!, line);

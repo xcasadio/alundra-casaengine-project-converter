@@ -92,6 +92,12 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     public int RelativeWarpOffsetZ;
     public uint ContentsItemId; //3c
     public int ContentsGameFlag;
+
+    /// <summary>
+    /// E20.e0b2 (D-E0B-5, docs/plan-e20-heros.md section 1.17.2): the <c>Contents</c> byte of the sprite header (the binary reads it through the header pointer <c>+0x64</c>, byte <c>+0x1F</c>), the code the loot roll uses when the record
+    /// has none (<see cref="AlundraLootRoll"/>). Written at the creation by <see cref="AlundraEntitySpawnFactory.ApplyHeaderInitialization"/>; 0 when no header resolved and for the hero. Copied by <see cref="Clone"/>.
+    /// </summary>
+    public int HeaderContents;
     //public SiEntityRecord? EntityRecord;
 
     /// <summary>
@@ -2592,6 +2598,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
             RelativeWarpOffsetZ = RelativeWarpOffsetZ,
             ContentsItemId = ContentsItemId,
             ContentsGameFlag = ContentsGameFlag,
+            HeaderContents = HeaderContents,
             EntityRefId = EntityRefId,
             RecordHeight = RecordHeight,
             SpriteTableIndex = SpriteTableIndex,

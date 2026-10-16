@@ -96,6 +96,12 @@ internal sealed class ArcRun : IDisposable
 
     public ArcSpec Spec { get; }
 
+    /// <summary>E20.e0b2 (Q-B1): the word of the shared stream right after <c>InitializeWithWorld</c>, read just before the second re-seed of the constructor (the seed itself when the load rolled nothing).</summary>
+    public ulong SeedAfterTheLoad { get; }
+
+    /// <summary>E20.e0b2: the tile of the hero right after <c>InitializeWithWorld</c>, before the arc writes the tile of its <see cref="ArcSpec"/>: the tile the spawn-zone gate of the load loop read (the New Game tile, or the arrival record's).</summary>
+    public (int X, int Y) HeroTileAtLoad { get; }
+
     public AlundraWorldProxy Proxy { get; }
 
     public AlundraEntityScriptProxy Hero { get; }
@@ -236,6 +242,14 @@ internal sealed class ArcRun : IDisposable
             Proxy = new AlundraWorldProxy();
             beforeInitialize?.Invoke(world);
             Proxy.InitializeWithWorld(world);
+
+            // E20.e0b2 (Q-B1, docs/plan-e20-heros.md section 1.17): the load loop of the world rolls the loot of every creation, so the shared stream is re-seeded AFTER the load as well as before it
+            // (ResetAll, at the head of this constructor): an arc starts from the same word whatever the map rolled while loading. What the test may read is kept first: the tile the hero occupied DURING the load
+            // loop (AdoptPlayerPawn places it before the loop; the tile of the ArcSpec is written below, after the load) and the word of the stream right after the load, just before this second re-seed.
+            HeroTileAtLoad = Proxy.PlayerEntity is { } loadedHero ? (loadedHero.TileX, loadedHero.TileY) : (-1, -1);
+            SeedAfterTheLoad = AlundraRandom.RandomSeed;
+            AlundraRandom.Reset();
+
             typeof(AlundraBackdropStage).GetField("_clearColorApplied", BindingFlags.Instance | BindingFlags.NonPublic)!
                 .SetValue(Proxy._backdropStage, true); // the headless montage has no view for the clear colour.
 

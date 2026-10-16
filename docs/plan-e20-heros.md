@@ -4501,7 +4501,7 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
   d'acceptation pour la DLL. README : ces valeurs, la prédiction qualitative (Q-B1 « avant et après » : les tirages des chargements ne
   déplacent plus les arcs ; restent les tirages des apparitions en cours d'arc, `0x2D`, `0x8A`, `0x8B` et l'interface ; au plus 3 tests
   selon la critique, estimation statique) et les comptes de départ, recomptés au HEAD de départ d'e0b2.
-- ⏳ **T1 — Phase A** (commit de code A, puis commit de docs du relevé), tel que « Partage des phases ». `AlundraLootRollTests` écrits
+- 🚧 **T1 — Phase A** (commit de code A, puis commit de docs du relevé), tel que « Partage des phases ». `AlundraLootRollTests` écrits
   d'abord et rouges sur un squelette qui compile, puis **verts à la fin de T1** (la classe est pure et sans appelant d'écriture) : ils
   rejouent **tous** les vecteurs. La suite complète en Release et en Debug ne bouge pas (hors des tests nouveaux). Puis l'ombre, sur ce
   commit (qui contient la seconde re-semence) : en tête de `e0b2-shadow.txt`, le prédicat — un tirage virtuel avance `V` de 0, 1 ou 2 pas

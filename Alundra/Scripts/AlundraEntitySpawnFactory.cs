@@ -738,6 +738,7 @@ internal static class AlundraEntitySpawnFactory
 
         // E14.a1b (D-E14-9): the break effect of the header, read by DestroyEntity(e, -1).
         proxy.BreakEffect = header.BreakEffect;
+        proxy.HeaderContents = header.Contents;
 
         // E4.b ("Spawn" item, docs/plan-e4-deplacement-scripte.md): cache Controller/RenderProjection the
         // same way AdoptPlayerPawn does for the hero (E3.d) - every prefab with a positive body box now
