@@ -773,29 +773,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         // the binary (inert in production: none of the 6 prefabs without a controller has an animation with one).
         if ((Controller != null || stepsWithoutController) && !immediateAtSpawn)
         {
-            var gravity = (Flags & EntityFlags.Gravity) != 0;
-            if (IsZForceApplied != 0)
-            {
-                var impulse = (IsZForceApplied & 0xFFFF) == 0x8000 && !gravity ? 0 : IsZForceApplied << 8;
-                ForceZ = impulse;
-                FinalForceZ = impulse;
-            }
-            else if (gravity)
-            {
-                var force = ForceZ - (MapGravityRaw << 8);
-                var terminal = MapZViscosityRaw << 8;
-                if (force > terminal)
-                {
-                    force = terminal;
-                }
-                else if (force < -terminal)
-                {
-                    force = -terminal;
-                }
-
-                ForceZ = force;
-                FinalForceZ = force;
-            }
+            ApplyVerticalForceLaw();
         }
 
         // E19.d2c2 F2b: the force of this tick as the binary's passes read it, before the landing below resets it (see TickForceZ). The hero carried by this entity copies it.
@@ -1035,6 +1013,40 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         if (Controller != null)
         {
             Controller.SetExternalVerticalDisplacement(FinalForceZ / 65536f);
+        }
+    }
+
+    /// <summary>
+    /// E20.e0k2 (D-E0K-3, docs/plan-e20-heros.md section 1.18): the force law of an entity that is not the hero, extracted unchanged from <see cref="EvaluateEntitySupport"/> so that the logical step of
+    /// a marked entity (<see cref="HasLogicalZ"/>, <see cref="AlundraScriptedMotion.RunLogicalZPreXyStep"/>) and the support block of the controller share ONE decay site. The binary's law
+    /// (<c>0x80036A84-0x80036BBC</c>): an impulse taken this tick (<see cref="IsZForceApplied"/>) sets the force with no decay, <c>IZF &lt;&lt; 8</c>, or 0 for the stop marker of the iron grids (the 16 low
+    /// bits equal <c>0x8000</c>) on an entity without gravity; without an impulse, an entity with gravity decays its force by <c>MapGravity &lt;&lt; 8</c> and the result is bounded on BOTH sides to
+    /// +-(<c>MapZViscosity</c> &lt;&lt; 8); without gravity and without an impulse the force is left as it is (the flight at constant Z). Writes <see cref="ForceZ"/> and <see cref="FinalForceZ"/> together.
+    /// </summary>
+    internal void ApplyVerticalForceLaw()
+    {
+        var gravity = (Flags & EntityFlags.Gravity) != 0;
+        if (IsZForceApplied != 0)
+        {
+            var impulse = (IsZForceApplied & 0xFFFF) == 0x8000 && !gravity ? 0 : IsZForceApplied << 8;
+            ForceZ = impulse;
+            FinalForceZ = impulse;
+        }
+        else if (gravity)
+        {
+            var force = ForceZ - (MapGravityRaw << 8);
+            var terminal = MapZViscosityRaw << 8;
+            if (force > terminal)
+            {
+                force = terminal;
+            }
+            else if (force < -terminal)
+            {
+                force = -terminal;
+            }
+
+            ForceZ = force;
+            FinalForceZ = force;
         }
     }
 
@@ -1333,6 +1345,14 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// creation from a record, never cloned.
     /// </summary>
     internal bool JoinsBirthTick;
+
+    /// <summary>
+    /// E20.e0k2 (docs/plan-e20-heros.md section 1.18.2, D-E0K-1, ADR-0069): the entity keeps its Z in the logic tick (the "logical Z"), as the hero does in the air state: <see cref="PosZ"/> belongs to the
+    /// tick, the root only follows it, nothing pulls it back from the root. Posed by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> ONLY, in the marker block of ADR-0065 (the last write of
+    /// the creation); never by the creations from a record, never for the hero, never cloned. It is neither <c>EntityRefId == -1</c> (the adopted hero and the recycled entities have it too) nor
+    /// <see cref="JoinsBirthTick"/> (E20.e0a4 may extend that one to the records). Phase A of E20.e0k2: nothing reads it yet.
+    /// </summary>
+    internal bool HasLogicalZ;
 
     /// <summary>
     /// E20.e0a3b (D-E0A-5): the collision field the reads of <c>Owner.World.CollisionField</c> of this proxy use: the world's, once the engine integrated the entity; before that, and only for an entity that

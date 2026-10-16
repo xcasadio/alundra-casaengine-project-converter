@@ -434,6 +434,141 @@ internal static class AlundraScriptedMotion
     }
 
     /// <summary>
+    /// E20.e0k2 (docs/plan-e20-heros.md section 1.18.2, D-E0K-3 to D-E0K-5), the first half of the logical step of an entity that is not the hero: the vertical step the binary takes BEFORE the XY step
+    /// (<c>MoveEntity</c> <c>0x80037E34</c>: <c>ComputeZ</c> <c>0x800375E0</c> then <c>ComputeXY</c> <c>0x80037730</c>), in the DLL's frame (the binary's minus one raw unit, ADR-0026). Phase A: no tick calls it yet, the
+    /// tests do (phase B wires it into <see cref="RunOneMotionTick"/> for an entity marked <see cref="AlundraEntityScriptProxy.HasLogicalZ"/>). Returns false, and changes nothing, for the hero and for an entity without a
+    /// controller or a root (the 12 prefabs without a controller keep <c>StepVerticalWithoutController</c>). The model is the hero's air state (<see cref="RunHeroVerticalTick"/>, which it does not touch):
+    /// <list type="bullet">
+    /// <item><description>Force: the law of the binary, <see cref="AlundraEntityScriptProxy.ApplyVerticalForceLaw"/> (the ONE decay site, shared with the support block of the controller); the force of the tick is kept in
+    /// <see cref="AlundraEntityScriptProxy.TickForceZ"/> before any landing resets it.</description></item>
+    /// <item><description>Step: <c>F &gt; 0</c> rises and stops at the absolute ceiling of 1 920 px (<see cref="EntitySupport.TryFindCeiling"/> without the other entities: the ceilings they form are not ported, O-E0K-6; contact,
+    /// <c>ForceZ</c> to 0 with gravity); otherwise the STRICT test <c>PosZ + ModZ + F &lt; T</c>, <c>T</c> being the terrain under the box at the position before the XY step, computed here (never the stale field), or the top
+    /// of the entity under the box for a subject (the very call of the binary's support, <see cref="EntitySupport.TryFindSupport"/>): landed means <c>PosZ = T - ModZ</c>, <c>ForceZ</c> and the force of the tick to 0 with
+    /// gravity, <see cref="AlundraEntityScriptProxy.CollidedWithEntityZ"/> 1; not landed, <c>PosZ += F</c>. Reaching <c>T</c> exactly is not a landing: the contact comes one tick later.</description></item>
+    /// <item><description>The logical <see cref="AlundraEntityScriptProxy.PosZ"/> is the truth: the root follows by a vertical displacement of the controller (<see cref="AlundraEntityScriptProxy.FollowPosZOnRoot"/>, never a
+    /// teleport), <see cref="AlundraEntityScriptProxy.ZHeldByTick"/> is raised so the horizontal pull does not rewrite it, and the positive latch of the vertical is declared
+    /// (<see cref="AirborneExternalDisplacementSentinel"/>) so the engine never anchors the root to the ground.</description></item>
+    /// </list>
+    /// </summary>
+    internal static bool RunLogicalZPreXyStep(AlundraEntityScriptProxy entity)
+    {
+        var controller = entity.Controller;
+        if (entity.IsPlayer || controller == null || entity.OwnerEntity?.RootComponent == null)
+        {
+            return false;
+        }
+
+        // The force of the tick. Without gravity and without an impulse the law leaves the force as it is (the flight at constant Z), so the force of the tick starts from it.
+        entity.FinalForceZ = entity.ForceZ;
+        entity.ApplyVerticalForceLaw();
+        entity.TickForceZ = entity.FinalForceZ;
+
+        var tickForce = entity.FinalForceZ;
+        var gravity = (entity.Flags & EntityFlags.Gravity) != 0;
+        var terrain = entity.ComputeTerrainHeight();
+
+        // The height to land on is the higher of the terrain and the top of an entity under the box, found by the very call of the binary's support (the seed is the reach of this tick's step, clamped up to the terrain + 1).
+        var landingHeight = terrain;
+        if (tickForce <= 0 && entity.ScriptHost != null && EntitySupport.IsEligibleSubject(entity))
+        {
+            var seed = Math.Max(entity.PosZ + entity.ModZ + tickForce, terrain + 1);
+            if (EntitySupport.TryFindSupport(entity, entity.ScriptHost.Collidables, seed, out _, out var supportTopZ))
+            {
+                landingHeight = supportTopZ;
+            }
+        }
+
+        if (tickForce <= 0 && entity.PosZ + entity.ModZ + tickForce < landingHeight)
+        {
+            entity.PosZ = landingHeight - entity.ModZ;
+            if (gravity)
+            {
+                entity.ForceZ = 0;
+                entity.FinalForceZ = 0;
+            }
+
+            entity.CollidedWithEntityZ = 1;
+        }
+        else if (tickForce > 0 && EntitySupport.TryFindCeiling(entity, Array.Empty<AlundraEntityScriptProxy>(), tickForce, out var ceilingPosZ))
+        {
+            entity.PosZ = ceilingPosZ;
+            if (gravity)
+            {
+                entity.ForceZ = 0;
+                entity.FinalForceZ = 0;
+            }
+
+            entity.CollidedWithEntityZ = 1;
+        }
+        else
+        {
+            entity.PosZ += tickForce;
+        }
+
+        entity.TileZ = entity.PosZ >> 20;
+        entity.ZHeldByTick = true;
+        entity.FollowPosZOnRoot();
+        controller.SetExternalVerticalDisplacement(AirborneExternalDisplacementSentinel);
+        return true;
+    }
+
+    /// <summary>
+    /// E20.e0k2 (D-E0K-4), the second half of the logical step: after the XY step of the tick, the magnet of 3 px (<c>0x80037848</c>, the body of <see cref="SnapHeroAtApex"/>, which stays untouched), then
+    /// <see cref="AlundraEntityScriptProxy.IsOnGround"/> derived from the position after the step, not pulled from the engine: <c>PosZ + ModZ &lt;=</c> the floor (the binary's <c>!(FloorHeight &lt; PosZ)</c>,
+    /// <c>0x800380F8</c>, without its +1; the floor is the higher of the terrain and the top of an entity under the box, <see cref="AlundraEntityScriptProxy.ComputeFloorHeight"/>). Same applicability as
+    /// <see cref="RunLogicalZPreXyStep"/>; phase A: no tick calls it yet.
+    /// </summary>
+    internal static void RunLogicalZPostXyStep(AlundraEntityScriptProxy entity)
+    {
+        if (entity.IsPlayer || entity.Controller == null || entity.OwnerEntity?.RootComponent == null)
+        {
+            return;
+        }
+
+        SnapAtApex(entity);
+        entity.IsOnGround = entity.PosZ + entity.ModZ <= entity.ComputeFloorHeight(entity.ComputeTerrainHeight()) ? 1 : 0;
+    }
+
+    /// <summary>
+    /// The magnet of <see cref="RunLogicalZPostXyStep"/> (binary <c>0x80037848</c>), the same rule as <see cref="SnapHeroAtApex"/> for an entity that is not the hero: with <see cref="EntityFlags.Gravity"/> and
+    /// <c>ForceZ == 0</c>, an XY force (gate 1, <c>0x800377A0</c>) and an accepted step (gate 2, <c>0x80037938</c>, read from <c>LastTickDeltaX/Y</c>), the terrain <c>T'</c> under the box at the position after the step;
+    /// if the entity is at most 3 px above it (<c>PosZ - T' &lt;= 0x30000</c>) or at most 3 px + 1 unit under it (<c>T' - PosZ &lt;= 0x30001</c>, the window of the binary in the DLL's frame),
+    /// <c>PosZ = T'</c> unless an entity occupies the box at <c>T'</c> (the snap is then undone).
+    /// </summary>
+    private static void SnapAtApex(AlundraEntityScriptProxy entity)
+    {
+        if ((entity.Flags & EntityFlags.Gravity) == 0 || entity.ForceZ != 0)
+        {
+            return;
+        }
+
+        if (entity.FinalForceX == 0 && entity.FinalForceY == 0)
+        {
+            return;
+        }
+
+        if (entity.LastTickDeltaX == 0 && entity.LastTickDeltaY == 0)
+        {
+            return;
+        }
+
+        var terrain = entity.ComputeTerrainHeight();
+        if (entity.PosZ == terrain || entity.PosZ - terrain > 0x30000 || terrain - entity.PosZ > 0x30001)
+        {
+            return;
+        }
+
+        if (entity.ScriptHost != null && AlundraEntityCollision.FindEntityCollisionCandidate(entity, entity.PosX, entity.PosY, terrain, entity.ScriptHost.Collidables) != null)
+        {
+            return;
+        }
+
+        entity.PosZ = terrain;
+        entity.TileZ = entity.PosZ >> 20;
+        entity.FollowPosZOnRoot();
+    }
+
+    /// <summary>
     /// Gives the engine the values captured at the entry of the air state (its gravity, <c>MaxFallSpeed</c>, vertical ownership and, E19.d2c2 S6,
     /// <c>StepHeight</c>): the landing, and the adoption of a new pawn while the state is up (<c>AlundraWorldProxy.AdoptPlayerPawn</c>).
     /// </summary>
