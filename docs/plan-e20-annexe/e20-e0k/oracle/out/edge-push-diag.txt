@@ -1,0 +1,17 @@
+== edge-push-diag: Beannoid (anim 7) pushed north-east (direction 20) from (1225, 100) against the east edge; bounds raw: X [655360 ; 81133568] Y [458752 ; 62455808]; interp diff None
+start state: status=2 anim_t=0 anim_c=0 fx_C4=0 fnx_E4=0 px=1225.0000 py=100.0000 pz=0.0000 ground_144=1 adj_13C=0
+tick status anim_t anim_c fx_C4 fnx_E4 px py pz ground_144 adj_13C
+t001 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=86880 px=1226.3257 py=99.1162 pz=0.0000 ground_144=1 adj_13C=0  | snd(0)
+t002 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=86880 px=1227.6514 py=98.2324 pz=0.0000 ground_144=1 adj_13C=0
+t003 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=86880 px=1228.9771 py=97.3486 pz=0.0000 ground_144=1 adj_13C=0
+t004 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=86880 px=1230.3027 py=96.4648 pz=0.0000 ground_144=1 adj_13C=0
+t005 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=86880 px=1231.6284 py=95.5811 pz=0.0000 ground_144=1 adj_13C=0
+t006 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=86880 px=1232.9541 py=94.6973 pz=0.0000 ground_144=1 adj_13C=0
+t007 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=86880 px=1234.2798 py=93.8135 pz=0.0000 ground_144=1 adj_13C=0
+t008 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=86880 px=1235.6055 py=92.9297 pz=0.0000 ground_144=1 adj_13C=0
+t009 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=86880 px=1236.9312 py=92.0459 pz=0.0000 ground_144=1 adj_13C=0
+t010 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=70048 px=1238.0000 py=91.1621 pz=0.0000 ground_144=1 adj_13C=1
+t011 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=0 px=1238.0000 py=90.2783 pz=0.0000 ground_144=1 adj_13C=1
+t012 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=0 px=1238.0000 py=89.3945 pz=0.0000 ground_144=1 adj_13C=1
+t013 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=0 px=1238.0000 py=88.5107 pz=0.0000 ground_144=1 adj_13C=1
+t014 status=2 anim_t=7 anim_c=7 fx_C4=86880 fnx_E4=0 px=1238.0000 py=87.6270 pz=0.0000 ground_144=1 adj_13C=1

@@ -4272,6 +4272,7 @@ que la ligne `HeaderContents`** ; **tout appel du tirage depuis la fabrique ou d
   d'acceptation pour la DLL. README : ces valeurs, la prédiction qualitative (Q-B1 « avant et après » : les tirages des chargements ne
   déplacent plus les arcs ; restent les tirages des apparitions en cours d'arc, `0x2D`, `0x8A`, `0x8B` et l'interface ; au plus 3 tests
   selon la critique, estimation statique) et les comptes de départ (4 852 après e0b1).
+  Fait (2026-10-16, HEAD de départ `11e94e1`) : liste recomptée = 12 classes, 91 méthodes, 110 cas (annexe, `README.md`) ; suite de départ 4 926 en Release ; clés `edge-push-east` (drapeau au tick 7, X = 1 238,0), `edge-push-diag` (tick 10, Y continue) et `edge-exact` (tick 1 pile sur la borne : `adj_13C` 0 ; tick 2 : borné et levé) ; manifeste identique sur deux exécutions (104 fichiers) ; la comparaison stricte est confirmée, aucun arrêt.
 - ⏳ **T1 — Phase A** (commit de code A, puis commit de docs du relevé), tel que « Partage des phases ». `AlundraLootRollTests` écrits
   d'abord et rouges sur un squelette qui compile, puis **verts à la fin de T1** (la classe est pure et sans appelant d'écriture) : ils
   rejouent **tous** les vecteurs. La suite complète en Release et en Debug ne bouge pas (hors des tests nouveaux). Puis l'ombre, sur ce
@@ -4626,7 +4627,7 @@ fraction de pixel.
 
 ##### Tâches
 
-- ⏳ **T0 — Liste prédite et oracle** (commit de docs, avant tout code). Au README de l'annexe : la liste recomptée au HEAD de départ
+- ✅ **T0 — Liste prédite et oracle** (commit de docs, avant tout code). Au README de l'annexe : la liste recomptée au HEAD de départ
   d'e0k3 (même méthode que l'annexe : recherche puis `--list-tests`) de toutes les méthodes qui créent une entité marquée (par
   `SpawnEntityBySpriteIndex` ou `CreateEntityFromSpriteIndex`, les tests d'e0k1 et d'e0k2 et ceux d'f3 compris), avec son compte ; elle
   remplace les listes antérieures pour l'acceptation et les arrêts d'e0k3. À l'oracle (copie du scratchpad, deux exécutions au manifeste

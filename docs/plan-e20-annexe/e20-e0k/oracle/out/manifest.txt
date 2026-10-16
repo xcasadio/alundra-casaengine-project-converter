@@ -65,6 +65,13 @@ a11d3c4b3a1ec14e92fc17d51408eec0  crate-step32.json
 bdc5548680ca044dfc4130173719a45e  crate-wall.json
 f04e66b375faee18c2c5ab6e3604dde8  crate-wall.txt
 455ad27ad8e1041b72b58b53b4d38d38  drift-summary.txt
+f664496a6539218955ccfa6e91eac7e6  edge-exact.json
+35c6674af2d363a1761982d4ccf45a7f  edge-exact.txt
+381248252d8994f388c266ceb415c740  edge-push-diag.json
+46180c74881561733a7e0c21a7c18760  edge-push-diag.txt
+208f00b5e1701185b3a44dba3ef3b15e  edge-push-east.json
+091555ac4acc5258d001554ed25014a5  edge-push-east.txt
+92b6f70137dc1ea34130ee440ce103d8  edge-summary.txt
 2cd8628233066c1af6204ff622e3d8e4  header-summary.txt
 31235453f201ffb4e857fb8ba4384a21  magnet-3px.json
 7871bdc94dd80d672bcbd01ff4dd3985  magnet-3px.txt

@@ -266,3 +266,53 @@ The manifest of `run_all.py` is now 97 files (the 88 of E20.e0k1, the 5 of the f
 - Removal proof (the production files put back to the phase A commit `181954f`, neutralised DLL copy, full suite in Release): exactly 20 red, (z1) to (z10) (18 cases), (z11) and `AlundraMapStateWorldTests.K2`; nothing else. Restored; `git status` back to the working state.
 - 22 real mutants (scripts in the session scratchpad, each restored), all killed; four survived the first pass and were closed by a stronger B6 (the order of the magnet and of the `IsOnGround` derivation, the shared entity's gravity flag left down by an earlier case) and by the world test (z11) (terrain height field, force of the landing tick, logical ground flag across tickless engine updates, thaw of an entity one raw unit above the floor).
 - ADR-0069.
+
+## E20.e0k3 - T0: the predicted list recounted at the starting HEAD `11e94e1`, and the oracle of the east edge
+
+Written before any code of E20.e0k3 (task T0 of subsection 1.18.3 of `docs/plan-e20-heros.md`).
+
+### Counts at the starting HEAD `11e94e1` (after E20.e0k2 and the plan commits of E20.f3c)
+
+`dotnet test Alundra.Tests/Alundra.Tests.csproj -c Release --no-build --blame-hang-timeout 300s`, no filter: **4 926 passed, 0 failed, 0 skipped** (as the plan states; `--list-tests` lists 4 926 cases). Debug: measured at T1 (see the plan results). The four `hero-trace-389-*` files are rewritten with line-ending noise by the suite
+(`git diff --ignore-cr-at-eol --exit-code` on the five traces: empty; the four files restored by `git checkout --`).
+
+### The recounted predicted list of tests that can move (replaces the lists of E20.e0k1 and E20.e0k2 for the acceptance and the stops of E20.e0k3)
+
+Same method as for E20.e0k2 (`rg` over `Alundra.Tests/` for `SpawnEntityBySpriteIndex`, `CreateEntityFromSpriteIndex`, `BySpriteIndex`, `SpawnWarp`, `WiredWeaponTypesForTests`, `WeaponSpawnBirthHookForTests`, `SpawnWeaponProjectile`, `WeaponSpawnCall`, plus `HasLogicalZ`, then read; the cases
+are those of `dotnet test --list-tests`, a theory counting one case per data row). The files found: the nine classes of the list of E20.e0k2 and the two classes of E20.e0k2 (`AlundraLogicalZStepTests`, `AlundraLogicalZWorldTests`). `AlundraHeroAttackTests`, `AlundraHeroChargeTests` and `AlundraShotDirectionTests`
+mention the shot seam but never wire a type (they never reach the interface); `AlundraSpawnIndexOracle.cs` is a data helper. E20.f3 (a and b) added no class: its tests are in `AlundraWeaponSpawnSeamTests` and the shot classes above.
+
+| File (`Alundra.Tests/`) | Class | Methods | Cases |
+|---|---|---|---|
+| `AlundraBirthTickProbePaTests.cs` | `AlundraBirthTickProbePaTests` | 5 | 5 |
+| `AlundraBirthTickTests.cs` | `AlundraBirthTickTests` | 11 (one theory of 8 rows) | 18 |
+| `AlundraEntitySlotV5RowsTests.cs` | `AlundraEntitySlotV5RowsTests` | 3 | 3 |
+| `AlundraEntitySlotWorldTests.cs` | `AlundraEntitySlotWorldTests` | 14 (one theory of 2 rows) | 15 |
+| `AlundraSpawnBySpriteIndexInterfaceTests.cs` | `AlundraSpawnBySpriteIndexInterfaceTests` | 11 | 11 |
+| `AlundraSpawnBySpriteIndexTests.cs` | `AlundraSpawnBySpriteIndexCoreTests` | 12 | 12 |
+| `AlundraWeaponSpawnSeamTests.cs` | `AlundraWeaponSpawnSeamTests` | 6 | 6 |
+| `AlundraMapStateTests.cs` | `AlundraMapStateTests` (3 methods, two theories of 3 rows) and its nested `MarkedEntityPins` (1) | 4 | 8 |
+| `AlundraMapStateWorldTests.cs` | `AlundraMapStateWorldTests` (K1 to K4) | 4 | 4 |
+| `AlundraLogicalZStepTests.cs` | `AlundraLogicalZStepTests` (E20.e0k2) | 9 | 9 |
+| `AlundraLogicalZWorldTests.cs` | `AlundraLogicalZWorldTests` (E20.e0k2, Z1 to Z11) | 12 (theories) | 19 |
+| **Total** | 12 classes | **91** | **110** |
+
+The list of E20.e0k2 had 70 methods and 82 cases; the difference is the two classes of E20.e0k2 (21 methods and 28 cases: 82 + 28 = 110). The names are recomputed with `dotnet test Alundra.Tests/Alundra.Tests.csproj -c Release --no-build --list-tests`. As before, the tests that
+run entities from a record, and the hero's tests, are the whole rest of the suite: they are guarded by "the suite does not move" and by the mutants, not by this list.
+
+### The oracle of the east edge (`k0_edge.py`, keys `edge-push-east`, `edge-push-diag`, `edge-exact`)
+
+Run from a scratch copy of the oracle, twice (`python -B -I run_all.py` after the first run; the driver deletes the prefixed outputs itself, the prefix `edge` added): the two manifests are **identical** (104 files: the 97 of E20.e0k2, unchanged byte for byte against the manifest of the repository, and the 7 new ones:
+`edge-push-east.txt/.json`, `edge-push-diag.txt/.json`, `edge-exact.txt/.json`, `edge-summary.txt`) and `diff -rq` on the two `out/` folders is empty; the log of the new module is `out/log-k0_edge.txt`, both interpreters (`emu.py`/`mips.py` path and `interp2`) give the same rows. `checksums.txt` updated.
+
+The scenario (same entity as the `walker-*` scenarios: the Beannoid of map 14, sprite 79, ClassA, Gravity, 20 x 14 x 8, inert handlers, open field, animation 7 = walk 160 = 1.875 px per tick, direction chosen by the harness at tick 1). The bounds the physics pass computed for that entity (read from RAM, `+0x108`/`+0xFC`/`+0x10C`/`+0x100`,
+also saved in the meta of the json files): X [655 360 ; 81 133 568] (that is -(offX << 16) with offX = -10, and 0x4E00000 - ((offX + sizeX) << 16) = 1 238.0000 px), Y [458 752 ; 62 455 808]. Raw 16.16 integers.
+
+| Key | Start | What the machine does (`out/<key>.json`, `rows[tick - 1].slots[<slot>]`: `px`, `py`, `adj_13C`) |
+|---|---|---|
+| `edge-push-east` | x = 1225, direction 24 (east) | ticks 1 to 6: `px` 80 404 480, 80 527 360, 80 650 240, 80 773 120, 80 896 000, 81 018 880 (+122 880 each), `adj_13C` 0. **Tick 7: `px` 81 133 568 (the bound, step shortened to 114 688), `adj_13C` 1 the same tick.** Ticks 8 to 14: `px` stays 81 133 568, `adj_13C` 1 at every tick (the push continues) |
+| `edge-push-diag` | (1225, 100), direction 20 (north-east) | per tick dx 86 880, dy -57 920 (`py` 6 495 680, 6 437 760, ...). Ticks 1 to 9: `adj_13C` 0, `px` 80 368 480 ... 81 063 520. **Tick 10: `px` 81 133 568 (the bound, dx 70 048), `py` 5 974 400 (Y keeps progressing by the full -57 920), `adj_13C` 1 the same tick.** Ticks 11 to 14: `px` 81 133 568, `py` keeps decreasing by 57 920 each tick, `adj_13C` 1 |
+| `edge-exact` | x = 1235 (the bound minus 3 px), direction 24, walk speed overridden to 256 (exactly 3 px = 196 608 raw per tick) | **tick 1: the step arrives exactly on the bound: `px` 81 133 568, dx 196 608, `adj_13C` 0 (not clamped, not flagged).** Tick 2: over the bound by a whole step: `px` unchanged (clamped), `adj_13C` 1; ticks 3 to 14 the same |
+
+The fact "strict comparison" of the slice (`slt` in `0x80036774` and `0x80036788`) is confirmed by `edge-exact` tick 1: the oracle does **not** contradict it (no stop). The flag is raised the same tick as the clamp in `edge-push-east` (tick 7) and in `edge-push-diag` (tick 10), while Y keeps progressing in the diagonal
+and the flag stays raised at every following tick.

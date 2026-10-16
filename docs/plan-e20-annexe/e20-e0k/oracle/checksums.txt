@@ -11,6 +11,7 @@ cfa95b73169992c542dafa4a3414a7102fd83584  k0_crate.py  NEW  discovery-identical
 785030485577bb8e3cf6bb196f5e5366cf77bbcd  k0_drift.py  NEW  discovery-identical
 d1965a0a63a41a01664b98ccb8137938c16e398f  k0_header.py  NEW  discovery-identical
 513a33bb918d130ef7e719401c60dc41aa431e4e  k0_magnet.py  NEW  written at E20.e0k2 T0 (the oracle of the 3 px magnet, keys magnet-3px and magnet-4px; the descending keys magnet-down-3px and magnet-down-4px added at the red run of the world tests)
+005ab9f10cf6000deb523e88ef07a711c78ffb30  k0_edge.py  NEW  written at E20.e0k3 T0 (the oracle of the east edge, keys edge-push-east, edge-push-diag, edge-exact)
 9634666c6fae7c439902495f3989e0dc26c74fb7  k0_masks.py  NEW  discovery-identical
 b5c9e9d94ed2ce2b76fa84163e876289c8f683ae  k0_muruta.py  NEW  discovery-identical
 1d14a972ccc3f72e038bb26cd29a1211c5f7063a  k0_noriders.py  NEW  discovery-identical
@@ -60,7 +61,7 @@ f035e68d2a96928ceffaeb6de36b9a3dee8bb8c1  oracle/startstate.py  = docs/plan-e20-
 7e8fbd06d659e8beea04f4172388726f8d0f68f5  oracle/sweep.py  = docs/plan-e20-annexe/e20-c1/oracle/tools/sweep.py  discovery-identical
 6f8b900ff420532fc8d04f244c3c32cd26e27e3b  oracle/world.py  = docs/plan-e20-annexe/d1-oracle-moveplayer/tools/world.py  discovery-identical
 0768024d611f455b77e5c5a3661d4dcc0981dc48  residual_stats.py  NEW  discovery-identical
-6ae596a8655db245786262d99e2b24a490785ae9  run_all.py  DIFFERENT from earlier copies of that name (12)  edited at E20.e0k2 T0: k0_magnet.py and the prefix magnet added to the driver
+ada4aa3e25337ee028728c901b9f03d8b18da970  run_all.py  DIFFERENT from earlier copies of that name (12)  edited at E20.e0k3 T0: k0_edge.py and the prefix edge added to the driver (after E20.e0k2: k0_magnet.py and the prefix magnet)
 b2bbf1b20b67530987b70f96543367da35cb550c  scripts/bean.py  NEW  discovery-identical
 2fc9a3678b4c3c5b9567f5544d8bf66f7ac769cd  scripts/census_drift.py  NEW  discovery-identical
 f17460d9316d096c60181a3a4b13f1c42e752c83  scripts/census_info.py  NEW  discovery-identical
