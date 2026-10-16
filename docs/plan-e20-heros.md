@@ -3944,6 +3944,14 @@ séparé ; leur mordant est prouvé par les mutations des deux verifiers.
 
 #### 1.16.4 E20.e0a4 — Participation au tick de naissance des apparitions par script (`0x2D`, `0x8A`, `0x8B`) ⏳ (décidée le 2026-10-15, Q-A1 ; détaillée le 2026-10-16, à relire)
 
+**Révision 1 (2026-10-16).** Relecture : **REVISE**, trois blocages corrigés (FIX) : (1) la preuve de retrait « par phase » ne tenait
+pas (le retrait de la phase A rend aussi rouges les tests de la phase B) : comme e0a5, la phase A est prouvée par ses rouges sur le HEAD
+de T1, versés au plan avant le code, et la phase B par son seul retrait ; la forme de D-E0A4-3 est fixée (le marqueur posé par les trois
+opcodes, aucune nouvelle signature), si bien que ce retrait compile sans déclaration inerte ; (2) chaque cas porte son étiquette dans le
+plan : (a4) [R] avec une animation de création à `AnimFlags` non nuls, (b5) à 1 tick par image, (b6) [R] sur une entité née par script,
+(b3) [V] (vert sur le code de la phase A, il garde le mutant « marqueur sans `SwitchedAtCreation` »), les bascules de la boucle 2 (a3)
+deviennent des contrôles [C] hors des preuves ; (3) `0x8B` reçoit son cas [R] (b4b), avec et sans cible trouvée, et ses deux mutants.
+
 **Prérequis.** E20.e0a3b ✅, **E20.e0a5** (même drapeau et même résolveur pour les naissances dans un tick ; la mesure P-B est refaite après elle) ; Q-A1 tranchée le 2026-10-15 (oui, après la mesure P-B) ; ordre : après E20.e0b2 (même fichier). Ne bloque
 aucune autre tranche.
 
@@ -4054,15 +4062,19 @@ entité (boucle 2), elle tourne à partir de S+1, dans la même image si l'image
    d'appels, 321 et 160, l'est). Les épingles se réécrivent par dérivation de la règle, pas par une valeur de l'oracle.
 
 **Décisions de la tranche** (ADR à numéroter à l'écriture ; prochain libre 0074, à relire).
-- **D-E0A4-1 — Périmètre.** `SpawnEntityByRecordId` seul, donc les trois opcodes et tout gestionnaire natif qui l'appellera plus tard. Ni
+- **D-E0A4-1 — Périmètre.** Les naissances par script : `SpawnEntityByRecordId` (le drapeau d'horloge et `AnimFlags`) et les trois
+  opcodes qui l'appellent (le marqueur de participation, D-E0A4-3) ; un gestionnaire natif qui l'appellera plus tard reçoit le premier et
+  devra poser le second (O-E0A4-2). Ni
   `ApplyRecord`, ni la fabrique, ni la boucle du chargement (`:1061-1091`), ni `AdoptPlayerPawn` (D-E20-36, D-E0A5-7). Pas de `HasLogicalZ`
   (D-E20-37), pas de `_birthSpawnsThisTick` (aucune naissance par script dans `MovePlayer`).
 - **D-E0A4-2 — Deux drapeaux, deux phases.** Phase A : `SwitchedAtCreation = true` après `ScriptHost` et avant `InitializeBalance`
-  (motif de `AlundraEntitySpawnFactory.cs:542-544`). Phase B : `JoinsBirthTick = true`, dernière écriture de la création. L'ordre inverse
-  laisserait la régression de boîte dans un commit.
-- **D-E0A4-3 — `0x8A` et `0x8B` gardent leur poussée inerte.** Pour ces deux opcodes, le marqueur est posé **après** leur
-  `PushLogicalPositionToRoot` (par l'opcode, ou par un paramètre de `SpawnEntityByRecordId` qui laisse la pose à l'appelant : forme laissée à
-  l'exécuteur) : la position écrite n'est pas relevée au sol, comme le binaire. `0x2D` le reçoit en dernier dans `SpawnEntityByRecordId`.
+  (motif de `AlundraEntitySpawnFactory.cs:542-544`), dans `SpawnEntityByRecordId`. Phase B : `JoinsBirthTick = true`, dernière écriture
+  de chaque opcode (D-E0A4-3). L'ordre inverse laisserait la régression de boîte dans un commit.
+- **D-E0A4-3 — Le marqueur est posé par les trois opcodes, en dernier.** `ActivateEntity` (`0x2D`) le pose juste après le retour non nul
+  de `SpawnEntityByRecordId` ; `SpawnEntityAtPosition` (`0x8A`) après sa `PushLogicalPositionToRoot` ; `SpawnEntityNextToEntity` (`0x8B`)
+  après sa poussée quand la recherche trouve une cible, et après la recherche quand elle n'en trouve pas (`spawned` non nul dans les deux
+  cas). La position écrite par `0x8A`/`0x8B` n'est donc pas relevée au sol à la création, comme le binaire. Aucune signature ne change
+  (`IEntityWorldContext.SpawnEntityByRecordId` reste tel quel) ; aucune déclaration inerte n'est nécessaire à la preuve de retrait.
 - **D-E0A4-4 — `AnimFlags` à la création.** Chargé à la création pour ces naissances, comme pour l'interface (la seconde moitié de D-E0A-8),
   en phase A. Si sa variante de T0 déplace un test hors de la liste prédite : arrêt et question.
 - **D-E0A4-5 — « A deux fois » reste un écart documenté** pour ces naissances (D-E20-34, D-E0A-6 étendus) : `EventTrigger` reste −1 ; le
@@ -4084,14 +4096,13 @@ entité (boucle 2), elle tourne à partir de S+1, dans la même image si l'image
 **Prérequis et dépendants.** Prérequis : E20.e0a3b ✅, E20.e0a5 ✅, E20.e0b2 ✅ (même fichier). Ne bloque aucune tranche. La tranche du
 chargement de carte et du héros (D-E20-36, Q-E0A5-1) vient après, avec les quatre tests du goéland.
 
-**Périmètre.** `AlundraWorldProxy.cs` (`SpawnEntityByRecordId`), `AlundraEventProgramRunner.cs` (`0x8A`, `0x8B` : la pose du marqueur
-après leur poussée, D-E0A4-3), le chargement d'`AnimFlags` pour ces naissances (là où l'exécuteur le place, hors du noyau partagé de la
-fabrique), `Alundra.Tests/`, `docs/plan-e20-annexe/e20-e0a4/`, ADR. **Hors périmètre.** Le chargement de carte, le héros, la fabrique
+**Périmètre.** `AlundraWorldProxy.cs` (`SpawnEntityByRecordId` : `SwitchedAtCreation` et `AnimFlags`, hors du noyau partagé de la
+fabrique), `AlundraEventProgramRunner.cs` (`0x2D`, `0x8A`, `0x8B` : la pose du marqueur, D-E0A4-3), `Alundra.Tests/`, `docs/plan-e20-annexe/e20-e0a4/`, ADR. **Hors périmètre.** Le chargement de carte, le héros, la fabrique
 partagée, les six sites natifs (non portés), « A deux fois » (Q-E0A4-1), `+0x1C` périmé (O-E0A5-2).
 
 **Partage des phases** (seul à faire foi) :
 - **Phase A** (T1) : `SwitchedAtCreation` et `AnimFlags` à la création des naissances par script. Rien d'autre.
-- **Phase B** (T2) : `JoinsBirthTick` (0x2D dans `SpawnEntityByRecordId`, en dernier ; 0x8A et 0x8B après leur poussée). Rien d'autre.
+- **Phase B** (T2) : `JoinsBirthTick`, posé par les trois opcodes (D-E0A4-3). Rien d'autre.
 
 **Valeurs attendues et leurs clés** (fichiers de l'annexe `e20-e0a4/oracle/out/` : `rec_tick.json`, `rec_birth_clock.json`, `box_table.txt` ;
 S = tick de naissance, k = tick − S).
@@ -4114,17 +4125,23 @@ S = tick de naissance, k = tick − S).
   (2) la **remesure au placement exact**, jetable : phase A seule (`SwitchedAtCreation` + `AnimFlags`), phases A et B, la variante A sans
   `AnimFlags`, et la variante « marqueur avant la poussée de `0x8A`/`0x8B` » — pour chacune la liste `Classe.Méthode — raison observée` ;
   (3) pour chaque test qui bouge : la passe et l'opcode de la naissance, l'enregistrement, le mécanisme (participation, horloge comptée,
-  boîte, `AnimFlags`) ; (4) la **liste prédite** par phase, tirée de (2), écrite avant le code. Arrêt : un test du goéland, une épingle du
-  chargement de carte ou du héros dans une liste.
+  boîte, `AnimFlags`) ; (4) la **liste prédite** par phase, tirée de (2), écrite avant le code ; (5) les **sujets des tests** : un enregistrement
+  réel né par script dont l'animation de création porte des `AnimFlags` non nuls (sinon le sprite 27 par un enregistrement de test), un
+  dont l'animation de création a une vitesse non nulle, un site `0x8A` et un site `0x8B` où la position écrite est sous le terrain (sinon
+  un programme de test), et la forme d'une naissance par événement de carte et en boucle 2 dans le montage. Arrêt : un test du goéland,
+  une épingle du chargement de carte ou du héros dans une liste.
 - ⏳ **T1 — Phase A** (tests d'abord, rouges sur le HEAD, noms versés au plan ; puis le code ; verts à la fin de T1). Fichier
   `AlundraRecordBirthClockTests.cs`. Étiquettes : **[R]** rouge sur le HEAD (prédit) ; **[V]** vert par construction.
   - [R] (a1) La boîte à la création d'une entité née par `0x2D` (sprite 27 par un enregistrement de test, ou un enregistrement réel dont
     `box_table` donne la boîte) : `HasFrameBox` et la boîte égalent `box_table` à la création, avant l'intégration, `Animations` vide.
   - [R] (a2) Boucle 2 à 1 tick par image : le curseur vaut 1 au premier tick d'horloge (S+1), puis 2, 3 ; le drapeau de fin à S+26
     (`end_AC`) ; accolé dans la même assertion à la même naissance dont le test baisse le drapeau : S+27.
-  - [R] (a3) Bascules dans la fenêtre, boucle 2, à 1 tick par image : `REC-SW*` (les cas que la règle d'e0a5 distingue du HEAD sont [R], les
-    autres [V], étiquetés un à un en T1 sur le HEAD, un [R] vert est un arrêt).
-  - [R ou V selon T0] (a4) `AnimFlags` égal à celui de l'animation de création dès la création.
+  - [C] (a3) Contrôles : bascules dans la fenêtre, boucle 2, à 1 tick par image, `REC-SW0`, `-SW1`, `-SW2`, `-SW5`, `-SW1-2`, `-SWD1`,
+    `-SWD2` (bascule demandée à S+k, k relatif à la naissance S ; premier `end_AC` du tableau) : verts à la fin de T1 ; leur couleur sur le
+    HEAD est relevée sans valeur d'arrêt et ils n'entrent dans aucune preuve (la logique de la fenêtre est celle d'e0a5, déjà gardée par
+    ses tests et ses mutants).
+  - [R] (a4) `AnimFlags` égal à l'octet de l'animation de création dès la création, pour une naissance par script dont l'animation de
+    création porte des `AnimFlags` non nuls (sujet de T0 (5)) : le HEAD donne 0.
   - [V] (a5) Zéro changement : une entité du chargement de carte garde son premier tick d'horloge non compté et aucune boîte à la création
     (A6_V et B6_V réécrits sur elle, D-E0A4-6) ; l'interface et le héros inchangés ; le goéland vert.
   - Existants : A6_V et B6_V (réécrits, D-E0A4-6), `s115_rec19` et les autres de la liste A de T0, réécrits par dérivation.
@@ -4133,22 +4150,30 @@ S = tick de naissance, k = tick − S).
     physique et coups ; drapeau de fin à S+25 ; à 1, 2 et 3 ticks par image, naissance à chaque position de l'image.
   - [R] (b2) Boucle 2 à 2 et 3 ticks par image, naissance au premier tick : premier tick d'horloge à S+1 **dans la même image**, drapeau de
     fin à S+26.
-  - [R] (b3) La boîte d'une naissance par événement de carte existe à S et après l'intégration (l'angle mort de V1).
-  - [R] (b4) `0x8A` : la position écrite n'est pas relevée au sol à la création (D-E0A4-3) ; pendant le tick de naissance le champ de l'hôte
-    est lu (espion du repli) ; accolé au même cas où le test pose le marqueur avant la poussée : Z relevé.
-  - [V] (b5) « A deux fois » (D-E0A4-5) : une naissance en boucle 2 dont le binaire jouerait A deux fois (`REC-H1`) joue A une seule fois, à
-    S+1 ; nommé d'après l'écart.
-  - [V] (b6) La clé cinématique `~0u` d'`AlundraScriptedMotion.cs:169` sur une entité marquée (l'épingle P3 reportée par e0a3b) : vitesse
-    de la cible tant que `Current == ~0` ; épinglé comme comportement de la DLL (pas d'oracle).
+  - [V] (b3) La boîte d'une naissance par événement de carte existe à S et après l'intégration (l'angle mort de V1) : verte sur le code de
+    la phase A, elle tue le mutant « marqueur sans `SwitchedAtCreation` ».
+  - [R] (b4) `0x8A` par un programme d'événement de carte (`REC-ME-8A`), au site de T0 (5) : la position écrite n'est pas relevée au sol
+    à la création ; à S, l'entité tourne et sa boîte est corrigée par la physique (`box_table`) ; pendant le tick de naissance le champ de
+    l'hôte est lu (espion du repli). Rouge sur le code de la phase A (elle ne tourne qu'à l'image suivante).
+  - [R] (b4b) `0x8B` par un programme d'événement de carte, avec une cible trouvée puis sans cible : l'entité tourne à S dans les deux cas ;
+    avec cible, la position écrite n'est pas relevée au sol à la création. Rouge sur le code de la phase A.
+  - [V] (b5) « A deux fois » (D-E0A4-5), à 1 tick par image : une naissance en boucle 2 dont le binaire jouerait A deux fois (`REC-H1`) joue
+    A une seule fois, à S+1 ; nommé d'après l'écart.
+  - [R] (b6) La clé cinématique `~0u` d'`AlundraScriptedMotion.cs:169` (l'épingle P3 reportée par e0a3b) sur une entité née par script,
+    marquée, dont l'animation cible a une vitesse non nulle (sujet de T0 (5)) : à son premier tick de physique elle avance de la vitesse
+    de sa cible (`Current == ~0`) ; le code de la phase A (entité non marquée) lit l'animation `~0`, vitesse nulle.
   - Existants : la liste B de T0 (prédits : `A10`, `A6`, `s36c4_rec3`, `s115_rec19`, `AlundraBirthTickTests:422`), réécrits par dérivation.
-- ⏳ **T3 — Intégration.** Suites complètes ; preuve de retrait par phase (production remise au commit précédent, copie neutralisée :
-  exactement les [R] de la phase et les épingles réécrites de la phase, rouges) ; ADR ; commentaires périmés corrigés (`SwitchedAtCreation`,
+- ⏳ **T3 — Intégration.** Suites complètes ; **preuve de retrait de la phase B** (la production remise au commit de la phase A, copie
+  neutralisée, suite complète en Release : rouges = exactement les [R] de T2 — (b1), (b2), (b4), (b4b), (b6) — et les épingles réécrites
+  en T2, rien d'autre ; aucune déclaration inerte attendue, toute exception listée) ; la phase A est prouvée par les rouges de T1 sur le
+  HEAD, versés au plan avant son code, sans second retrait ; ADR ; commentaires périmés corrigés (`SwitchedAtCreation`,
   `JoinsBirthTick`, `AlundraScriptedMotion.cs:167-168`, la documentation de `SpawnEntityByRecordId` « starting next frame », `ApplyRecord`,
   `AlundraTickStructureTests.cs:367`) ; les tests restés verts mais au nom inexact renommés (`AlundraBirthTickTests:433`, `:490`).
 - ⏳ **T4 — Verifiers frais** (deux, l'un après l'autre). Mutants, au moins 12, tués ou prouvés équivalents : `SwitchedAtCreation` jamais
   posé ; posé après `InitializeBalance` ; posé sur le chemin du chargement ; `JoinsBirthTick` sans `SwitchedAtCreation` (tué par (b3)) ;
   marqueur avant la poussée de `0x8A` (tué par (b4)) ; marqueur posé dans `ApplyRecord` (tué par le goéland ou (a5)) ; marqueur sur le
-  héros ; `EventTrigger` à 0 (« A deux fois » porté, tué par (b5)) ; `AnimFlags` non chargé (si (a4) est [R]) ; `_birthSpawnsThisTick++`
+  héros ; `EventTrigger` à 0 (« A deux fois » porté, tué par (b5)) ; `AnimFlags` non chargé (tué par (a4)) ; marqueur jamais posé par
+  `0x8B` et marqueur posé seulement quand `0x8B` trouve une cible (tués par (b4b)) ; `_birthSpawnsThisTick++`
   (naissance dans les programmes rejoignant son propre tick) ; curseur qui part de 0 ; épingle de l'écart réépinglée sur une entité par
   script.
 
@@ -4156,7 +4181,8 @@ S = tick de naissance, k = tick − S).
 
 - Oracle : les sorties versées, manifeste identique sur deux exécutions.
 - DLL : T1 et T2 verts ; chaque [R] rouge avant son code (nommé, avec ses cas) ; `Alundra.Tests` en Release (copie neutralisée) et en Debug,
-  zéro échec ; tests existants déplacés ⊂ la liste remesurée de T0, chacun réécrit par dérivation ; preuve de retrait par phase ; le goéland
+  zéro échec ; tests existants déplacés ⊂ la liste remesurée de T0, chacun réécrit par dérivation ; les rouges de T1 sur le HEAD versés
+  avant le code ; la preuve de retrait de la phase B (T3) ; le goéland
   et toute épingle du chargement de carte et du héros inchangés ; `cmp` de la DLL Debug ; traces inchangées ; moteur, convertisseur et
   données sans diff.
 - Recette de l'auteur (non bloquante) : nouvelle partie jusqu'au premier livre (163), puis la cinématique d'Inoa du jour 1 (165) : rien ne
