@@ -1,0 +1,9 @@
+hero_hits_bean_nib6_binary           effect 4 : 111 ticks compared, differences: 0 ; first tick absent at end of tick: binary T+41, DLL model T+41
+hero_hits_bean_nib10_binary          effect 4 : 111 ticks compared, differences: 0 ; first tick absent at end of tick: binary T+41, DLL model T+41
+bean_hits_hero_nib6_binary           effect 4 : 111 ticks compared, differences: 0 ; first tick absent at end of tick: binary T+41, DLL model T+41
+hero_hits_bean_nib7_binary           effect 5 : 111 ticks compared, differences: 0 ; first tick absent at end of tick: binary T+96, DLL model T+96
+hero_hits_bean_nib9_binary           effect 5 : 111 ticks compared, differences: 0 ; first tick absent at end of tick: binary T+96, DLL model T+96
+bean_hits_hero_nib7_binary           effect 5 : 111 ticks compared, differences: 0 ; first tick absent at end of tick: binary T+96, DLL model T+96
+hero_hits_bean_nib6_slotpass_first   effect 4 : 111 ticks compared, differences: 83 first=[(0, 'counter', 0, 2), (0, 'frame_ordinal', None, 0), (0, 'frame_ordinal(not yet stepped)', None, 0)] ; first tick absent at end of tick: binary T+42, DLL model T+41
+hero_hits_bean_nib7_slotpass_first   effect 5 : 111 ticks compared, differences: 136 first=[(0, 'counter', 0, 5), (0, 'frame_ordinal', None, 0), (0, 'frame_ordinal(not yet stepped)', None, 0)] ; first tick absent at end of tick: binary T+97, DLL model T+96
+(sparks, effect 9, same stage rank: DLL model first inactive at T+26; binary slots 3,4,5 first free at T+26 in out/*_binary.txt summaries)

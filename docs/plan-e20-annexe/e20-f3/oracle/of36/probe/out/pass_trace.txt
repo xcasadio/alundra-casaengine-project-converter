@@ -1,0 +1,166 @@
+## nibble 6 -> effect 4 (S = 40), hit tick T = 8; slot state after each pass ("-" = no slot of this effect on the target yet)
+tick   7 d=  -1 after slots 0x80038634           : -
+tick   7 d=  -1 after events 0x800386D0          : -
+tick   7 d=  -1 after counters 0x80038998        : -
+tick   7 d=  -1 after lists 0x800384F4           : -
+tick   7 d=  -1 after animation 0x80038E18       : -
+tick   7 d=  -1 after physics 0x80038364         : -
+tick   7 d=  -1 after entity-effects 0x80038E84  : -
+tick   7 d=  -1 after HIT 0x80039300             : -
+tick   7 d=  -1 after SLOT PASS 0x8003C410       : -
+tick   8 d=  +0 after slots 0x80038634           : -
+tick   8 d=  +0 after events 0x800386D0          : -
+tick   8 d=  +0 after counters 0x80038998        : -
+tick   8 d=  +0 after lists 0x800384F4           : -
+tick   8 d=  +0 after animation 0x80038E18       : -
+tick   8 d=  +0 after physics 0x80038364         : -
+tick   8 d=  +0 after entity-effects 0x80038E84  : -
+tick   8 d=  +0 after HIT 0x80039300             : slot 2 status=2 counter=  0 done=0 frame#=None drawn=False
+tick   8 d=  +0 after SLOT PASS 0x8003C410       : slot 2 status=2 counter=  2 done=0 frame#=0 drawn=True
+tick   9 d=  +1 after slots 0x80038634           : slot 2 status=2 counter=  2 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after events 0x800386D0          : slot 2 status=2 counter=  2 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after counters 0x80038998        : slot 2 status=2 counter=  2 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after lists 0x800384F4           : slot 2 status=2 counter=  2 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after animation 0x80038E18       : slot 2 status=2 counter=  2 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after physics 0x80038364         : slot 2 status=2 counter=  2 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after entity-effects 0x80038E84  : slot 2 status=2 counter=  2 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after HIT 0x80039300             : slot 2 status=2 counter=  2 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after SLOT PASS 0x8003C410       : slot 2 status=2 counter=  1 done=0 frame#=0 drawn=True
+tick  10 d=  +2 after slots 0x80038634           : slot 2 status=2 counter=  1 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after events 0x800386D0          : slot 2 status=2 counter=  1 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after counters 0x80038998        : slot 2 status=2 counter=  1 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after lists 0x800384F4           : slot 2 status=2 counter=  1 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after animation 0x80038E18       : slot 2 status=2 counter=  1 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after physics 0x80038364         : slot 2 status=2 counter=  1 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after entity-effects 0x80038E84  : slot 2 status=2 counter=  1 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after HIT 0x80039300             : slot 2 status=2 counter=  1 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after SLOT PASS 0x8003C410       : slot 2 status=2 counter=  2 done=0 frame#=1 drawn=True
+tick  46 d= +38 after slots 0x80038634           : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick  46 d= +38 after events 0x800386D0          : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick  46 d= +38 after counters 0x80038998        : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick  46 d= +38 after lists 0x800384F4           : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick  46 d= +38 after animation 0x80038E18       : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick  46 d= +38 after physics 0x80038364         : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick  46 d= +38 after entity-effects 0x80038E84  : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick  46 d= +38 after HIT 0x80039300             : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick  46 d= +38 after SLOT PASS 0x8003C410       : slot 2 status=2 counter=  2 done=0 frame#=19 drawn=True
+tick  47 d= +39 after slots 0x80038634           : slot 2 status=2 counter=  2 done=0 frame#=19 drawn=False
+tick  47 d= +39 after events 0x800386D0          : slot 2 status=2 counter=  2 done=0 frame#=19 drawn=False
+tick  47 d= +39 after counters 0x80038998        : slot 2 status=2 counter=  2 done=0 frame#=19 drawn=False
+tick  47 d= +39 after lists 0x800384F4           : slot 2 status=2 counter=  2 done=0 frame#=19 drawn=False
+tick  47 d= +39 after animation 0x80038E18       : slot 2 status=2 counter=  2 done=0 frame#=19 drawn=False
+tick  47 d= +39 after physics 0x80038364         : slot 2 status=2 counter=  2 done=0 frame#=19 drawn=False
+tick  47 d= +39 after entity-effects 0x80038E84  : slot 2 status=2 counter=  2 done=0 frame#=19 drawn=False
+tick  47 d= +39 after HIT 0x80039300             : slot 2 status=2 counter=  2 done=0 frame#=19 drawn=False
+tick  47 d= +39 after SLOT PASS 0x8003C410       : slot 2 status=2 counter=  1 done=0 frame#=19 drawn=True
+tick  48 d= +40 after slots 0x80038634           : slot 2 status=2 counter=  1 done=0 frame#=19 drawn=False
+tick  48 d= +40 after events 0x800386D0          : slot 2 status=2 counter=  1 done=0 frame#=19 drawn=False
+tick  48 d= +40 after counters 0x80038998        : slot 2 status=2 counter=  1 done=0 frame#=19 drawn=False
+tick  48 d= +40 after lists 0x800384F4           : slot 2 status=2 counter=  1 done=0 frame#=19 drawn=False
+tick  48 d= +40 after animation 0x80038E18       : slot 2 status=2 counter=  1 done=0 frame#=19 drawn=False
+tick  48 d= +40 after physics 0x80038364         : slot 2 status=2 counter=  1 done=0 frame#=19 drawn=False
+tick  48 d= +40 after entity-effects 0x80038E84  : slot 2 status=2 counter=  1 done=0 frame#=19 drawn=False
+tick  48 d= +40 after HIT 0x80039300             : slot 2 status=2 counter=  1 done=0 frame#=19 drawn=False
+tick  48 d= +40 after SLOT PASS 0x8003C410       : slot 2 status=2 counter=255 done=1 frame#=19 drawn=True
+tick  49 d= +41 after slots 0x80038634           : slot 2 status=2 counter=255 done=1 frame#=19 drawn=False
+tick  49 d= +41 after events 0x800386D0          : slot 2 status=2 counter=255 done=1 frame#=19 drawn=False
+tick  49 d= +41 after counters 0x80038998        : slot 2 status=2 counter=255 done=1 frame#=19 drawn=False
+tick  49 d= +41 after lists 0x800384F4           : slot 2 status=2 counter=255 done=1 frame#=19 drawn=False
+tick  49 d= +41 after animation 0x80038E18       : slot 2 status=2 counter=255 done=1 frame#=19 drawn=False
+tick  49 d= +41 after physics 0x80038364         : slot 2 status=2 counter=255 done=1 frame#=19 drawn=False
+tick  49 d= +41 after entity-effects 0x80038E84  : slot 2 status=2 counter=255 done=1 frame#=19 drawn=False
+tick  49 d= +41 after HIT 0x80039300             : slot 2 status=2 counter=255 done=1 frame#=19 drawn=False
+tick  49 d= +41 after SLOT PASS 0x8003C410       : slot 2 status=0 counter=255 done=1 frame#=19 drawn=False
+tick  50 d= +42 after slots 0x80038634           : slot 2 status=0 counter=255 done=1 frame#=19 drawn=False
+tick  50 d= +42 after events 0x800386D0          : slot 2 status=0 counter=255 done=1 frame#=19 drawn=False
+tick  50 d= +42 after counters 0x80038998        : slot 2 status=0 counter=255 done=1 frame#=19 drawn=False
+tick  50 d= +42 after lists 0x800384F4           : slot 2 status=0 counter=255 done=1 frame#=19 drawn=False
+tick  50 d= +42 after animation 0x80038E18       : slot 2 status=0 counter=255 done=1 frame#=19 drawn=False
+tick  50 d= +42 after physics 0x80038364         : slot 2 status=0 counter=255 done=1 frame#=19 drawn=False
+tick  50 d= +42 after entity-effects 0x80038E84  : slot 2 status=0 counter=255 done=1 frame#=19 drawn=False
+tick  50 d= +42 after HIT 0x80039300             : slot 2 status=0 counter=255 done=1 frame#=19 drawn=False
+tick  50 d= +42 after SLOT PASS 0x8003C410       : slot 2 status=0 counter=255 done=1 frame#=19 drawn=False
+
+## nibble 7 -> effect 5 (S = 95), hit tick T = 8; slot state after each pass ("-" = no slot of this effect on the target yet)
+tick   7 d=  -1 after slots 0x80038634           : -
+tick   7 d=  -1 after events 0x800386D0          : -
+tick   7 d=  -1 after counters 0x80038998        : -
+tick   7 d=  -1 after lists 0x800384F4           : -
+tick   7 d=  -1 after animation 0x80038E18       : -
+tick   7 d=  -1 after physics 0x80038364         : -
+tick   7 d=  -1 after entity-effects 0x80038E84  : -
+tick   7 d=  -1 after HIT 0x80039300             : -
+tick   7 d=  -1 after SLOT PASS 0x8003C410       : -
+tick   8 d=  +0 after slots 0x80038634           : -
+tick   8 d=  +0 after events 0x800386D0          : -
+tick   8 d=  +0 after counters 0x80038998        : -
+tick   8 d=  +0 after lists 0x800384F4           : -
+tick   8 d=  +0 after animation 0x80038E18       : -
+tick   8 d=  +0 after physics 0x80038364         : -
+tick   8 d=  +0 after entity-effects 0x80038E84  : -
+tick   8 d=  +0 after HIT 0x80039300             : slot 2 status=2 counter=  0 done=0 frame#=None drawn=False
+tick   8 d=  +0 after SLOT PASS 0x8003C410       : slot 2 status=2 counter=  5 done=0 frame#=0 drawn=True
+tick   9 d=  +1 after slots 0x80038634           : slot 2 status=2 counter=  5 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after events 0x800386D0          : slot 2 status=2 counter=  5 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after counters 0x80038998        : slot 2 status=2 counter=  5 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after lists 0x800384F4           : slot 2 status=2 counter=  5 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after animation 0x80038E18       : slot 2 status=2 counter=  5 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after physics 0x80038364         : slot 2 status=2 counter=  5 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after entity-effects 0x80038E84  : slot 2 status=2 counter=  5 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after HIT 0x80039300             : slot 2 status=2 counter=  5 done=0 frame#=0 drawn=False
+tick   9 d=  +1 after SLOT PASS 0x8003C410       : slot 2 status=2 counter=  4 done=0 frame#=0 drawn=True
+tick  10 d=  +2 after slots 0x80038634           : slot 2 status=2 counter=  4 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after events 0x800386D0          : slot 2 status=2 counter=  4 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after counters 0x80038998        : slot 2 status=2 counter=  4 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after lists 0x800384F4           : slot 2 status=2 counter=  4 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after animation 0x80038E18       : slot 2 status=2 counter=  4 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after physics 0x80038364         : slot 2 status=2 counter=  4 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after entity-effects 0x80038E84  : slot 2 status=2 counter=  4 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after HIT 0x80039300             : slot 2 status=2 counter=  4 done=0 frame#=0 drawn=False
+tick  10 d=  +2 after SLOT PASS 0x8003C410       : slot 2 status=2 counter=  3 done=0 frame#=0 drawn=True
+tick 101 d= +93 after slots 0x80038634           : slot 2 status=2 counter=  3 done=0 frame#=18 drawn=False
+tick 101 d= +93 after events 0x800386D0          : slot 2 status=2 counter=  3 done=0 frame#=18 drawn=False
+tick 101 d= +93 after counters 0x80038998        : slot 2 status=2 counter=  3 done=0 frame#=18 drawn=False
+tick 101 d= +93 after lists 0x800384F4           : slot 2 status=2 counter=  3 done=0 frame#=18 drawn=False
+tick 101 d= +93 after animation 0x80038E18       : slot 2 status=2 counter=  3 done=0 frame#=18 drawn=False
+tick 101 d= +93 after physics 0x80038364         : slot 2 status=2 counter=  3 done=0 frame#=18 drawn=False
+tick 101 d= +93 after entity-effects 0x80038E84  : slot 2 status=2 counter=  3 done=0 frame#=18 drawn=False
+tick 101 d= +93 after HIT 0x80039300             : slot 2 status=2 counter=  3 done=0 frame#=18 drawn=False
+tick 101 d= +93 after SLOT PASS 0x8003C410       : slot 2 status=2 counter=  2 done=0 frame#=18 drawn=True
+tick 102 d= +94 after slots 0x80038634           : slot 2 status=2 counter=  2 done=0 frame#=18 drawn=False
+tick 102 d= +94 after events 0x800386D0          : slot 2 status=2 counter=  2 done=0 frame#=18 drawn=False
+tick 102 d= +94 after counters 0x80038998        : slot 2 status=2 counter=  2 done=0 frame#=18 drawn=False
+tick 102 d= +94 after lists 0x800384F4           : slot 2 status=2 counter=  2 done=0 frame#=18 drawn=False
+tick 102 d= +94 after animation 0x80038E18       : slot 2 status=2 counter=  2 done=0 frame#=18 drawn=False
+tick 102 d= +94 after physics 0x80038364         : slot 2 status=2 counter=  2 done=0 frame#=18 drawn=False
+tick 102 d= +94 after entity-effects 0x80038E84  : slot 2 status=2 counter=  2 done=0 frame#=18 drawn=False
+tick 102 d= +94 after HIT 0x80039300             : slot 2 status=2 counter=  2 done=0 frame#=18 drawn=False
+tick 102 d= +94 after SLOT PASS 0x8003C410       : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=True
+tick 103 d= +95 after slots 0x80038634           : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick 103 d= +95 after events 0x800386D0          : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick 103 d= +95 after counters 0x80038998        : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick 103 d= +95 after lists 0x800384F4           : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick 103 d= +95 after animation 0x80038E18       : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick 103 d= +95 after physics 0x80038364         : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick 103 d= +95 after entity-effects 0x80038E84  : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick 103 d= +95 after HIT 0x80039300             : slot 2 status=2 counter=  1 done=0 frame#=18 drawn=False
+tick 103 d= +95 after SLOT PASS 0x8003C410       : slot 2 status=2 counter=255 done=1 frame#=18 drawn=True
+tick 104 d= +96 after slots 0x80038634           : slot 2 status=2 counter=255 done=1 frame#=18 drawn=False
+tick 104 d= +96 after events 0x800386D0          : slot 2 status=2 counter=255 done=1 frame#=18 drawn=False
+tick 104 d= +96 after counters 0x80038998        : slot 2 status=2 counter=255 done=1 frame#=18 drawn=False
+tick 104 d= +96 after lists 0x800384F4           : slot 2 status=2 counter=255 done=1 frame#=18 drawn=False
+tick 104 d= +96 after animation 0x80038E18       : slot 2 status=2 counter=255 done=1 frame#=18 drawn=False
+tick 104 d= +96 after physics 0x80038364         : slot 2 status=2 counter=255 done=1 frame#=18 drawn=False
+tick 104 d= +96 after entity-effects 0x80038E84  : slot 2 status=2 counter=255 done=1 frame#=18 drawn=False
+tick 104 d= +96 after HIT 0x80039300             : slot 2 status=2 counter=255 done=1 frame#=18 drawn=False
+tick 104 d= +96 after SLOT PASS 0x8003C410       : slot 2 status=0 counter=255 done=1 frame#=18 drawn=False
+tick 105 d= +97 after slots 0x80038634           : slot 2 status=0 counter=255 done=1 frame#=18 drawn=False
+tick 105 d= +97 after events 0x800386D0          : slot 2 status=0 counter=255 done=1 frame#=18 drawn=False
+tick 105 d= +97 after counters 0x80038998        : slot 2 status=0 counter=255 done=1 frame#=18 drawn=False
+tick 105 d= +97 after lists 0x800384F4           : slot 2 status=0 counter=255 done=1 frame#=18 drawn=False
+tick 105 d= +97 after animation 0x80038E18       : slot 2 status=0 counter=255 done=1 frame#=18 drawn=False
+tick 105 d= +97 after physics 0x80038364         : slot 2 status=0 counter=255 done=1 frame#=18 drawn=False
+tick 105 d= +97 after entity-effects 0x80038E84  : slot 2 status=0 counter=255 done=1 frame#=18 drawn=False
+tick 105 d= +97 after HIT 0x80039300             : slot 2 status=0 counter=255 done=1 frame#=18 drawn=False
+tick 105 d= +97 after SLOT PASS 0x8003C410       : slot 2 status=0 counter=255 done=1 frame#=18 drawn=False
+

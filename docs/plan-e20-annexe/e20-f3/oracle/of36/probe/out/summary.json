@@ -1,0 +1,746 @@
+[
+ {
+  "scenario": "hero_hits_bean",
+  "nibble": 6,
+  "order": "binary",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148695344,
+  "target_c1d0_at_T": 25,
+  "want_effect": 4,
+  "T": 8,
+  "created": {
+   "tick": 8,
+   "slot": 2,
+   "id": 4,
+   "mode": 1,
+   "status": 2,
+   "anchor_is_target": true,
+   "depth_off": 1,
+   "sel": 0,
+   "seq_target": 0
+  },
+  "first_seen_tick": 8,
+  "first_seen_d": 0,
+  "first_absent_tick": 49,
+  "first_absent_d": 41,
+  "drawn_first_d": 0,
+  "drawn_last_d": 40,
+  "drawn_count": 41,
+  "done_flag_first_d": 40,
+  "sparks": {
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "5": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "hero_hits_bean",
+  "nibble": 6,
+  "order": "slotpass_first",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148695344,
+  "target_c1d0_at_T": 25,
+  "want_effect": 4,
+  "T": 8,
+  "created": {
+   "tick": 8,
+   "slot": 2,
+   "id": 4,
+   "mode": 1,
+   "status": 2,
+   "anchor_is_target": true,
+   "depth_off": 1,
+   "sel": 0,
+   "seq_target": 0
+  },
+  "first_seen_tick": 8,
+  "first_seen_d": 0,
+  "first_absent_tick": 50,
+  "first_absent_d": 42,
+  "drawn_first_d": 1,
+  "drawn_last_d": 41,
+  "drawn_count": 41,
+  "done_flag_first_d": 41,
+  "sparks": {
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 27
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 27
+   },
+   "5": {
+    "created_tick": 8,
+    "first_absent_d": 27
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "hero_hits_bean",
+  "nibble": 10,
+  "order": "binary",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148695344,
+  "target_c1d0_at_T": 25,
+  "want_effect": 4,
+  "T": 8,
+  "created": {
+   "tick": 8,
+   "slot": 2,
+   "id": 4,
+   "mode": 1,
+   "status": 2,
+   "anchor_is_target": true,
+   "depth_off": 1,
+   "sel": 0,
+   "seq_target": 0
+  },
+  "first_seen_tick": 8,
+  "first_seen_d": 0,
+  "first_absent_tick": 49,
+  "first_absent_d": 41,
+  "drawn_first_d": 0,
+  "drawn_last_d": 40,
+  "drawn_count": 41,
+  "done_flag_first_d": 40,
+  "sparks": {
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "5": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "hero_hits_bean",
+  "nibble": 7,
+  "order": "binary",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148695344,
+  "target_c1d0_at_T": 25,
+  "want_effect": 5,
+  "T": 8,
+  "created": {
+   "tick": 8,
+   "slot": 2,
+   "id": 5,
+   "mode": 1,
+   "status": 2,
+   "anchor_is_target": true,
+   "depth_off": 1,
+   "sel": 0,
+   "seq_target": 0
+  },
+  "first_seen_tick": 8,
+  "first_seen_d": 0,
+  "first_absent_tick": 104,
+  "first_absent_d": 96,
+  "drawn_first_d": 0,
+  "drawn_last_d": 95,
+  "drawn_count": 96,
+  "done_flag_first_d": 95,
+  "sparks": {
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "5": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "hero_hits_bean",
+  "nibble": 7,
+  "order": "slotpass_first",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148695344,
+  "target_c1d0_at_T": 25,
+  "want_effect": 5,
+  "T": 8,
+  "created": {
+   "tick": 8,
+   "slot": 2,
+   "id": 5,
+   "mode": 1,
+   "status": 2,
+   "anchor_is_target": true,
+   "depth_off": 1,
+   "sel": 0,
+   "seq_target": 0
+  },
+  "first_seen_tick": 8,
+  "first_seen_d": 0,
+  "first_absent_tick": 105,
+  "first_absent_d": 97,
+  "drawn_first_d": 1,
+  "drawn_last_d": 96,
+  "drawn_count": 96,
+  "done_flag_first_d": 96,
+  "sparks": {
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 27
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 27
+   },
+   "5": {
+    "created_tick": 8,
+    "first_absent_d": 27
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "hero_hits_bean",
+  "nibble": 9,
+  "order": "binary",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148695344,
+  "target_c1d0_at_T": 25,
+  "want_effect": 5,
+  "T": 8,
+  "created": {
+   "tick": 8,
+   "slot": 2,
+   "id": 5,
+   "mode": 1,
+   "status": 2,
+   "anchor_is_target": true,
+   "depth_off": 1,
+   "sel": 0,
+   "seq_target": 0
+  },
+  "first_seen_tick": 8,
+  "first_seen_d": 0,
+  "first_absent_tick": 104,
+  "first_absent_d": 96,
+  "drawn_first_d": 0,
+  "drawn_last_d": 95,
+  "drawn_count": 96,
+  "done_flag_first_d": 95,
+  "sparks": {
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "5": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "hero_hits_bean",
+  "nibble": 1,
+  "order": "binary",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148695344,
+  "target_c1d0_at_T": 25,
+  "want_effect": null,
+  "T": 8,
+  "created": null,
+  "sparks": {
+   "2": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "bean_hits_hero",
+  "nibble": 6,
+  "order": "binary",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148696004,
+  "target_c1d0_at_T": 25,
+  "want_effect": 4,
+  "T": 8,
+  "created": {
+   "tick": 8,
+   "slot": 2,
+   "id": 4,
+   "mode": 1,
+   "status": 2,
+   "anchor_is_target": true,
+   "depth_off": 1,
+   "sel": 0,
+   "seq_target": 0
+  },
+  "first_seen_tick": 8,
+  "first_seen_d": 0,
+  "first_absent_tick": 49,
+  "first_absent_d": 41,
+  "drawn_first_d": 0,
+  "drawn_last_d": 40,
+  "drawn_count": 41,
+  "done_flag_first_d": 40,
+  "sparks": {
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "5": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "bean_hits_hero",
+  "nibble": 6,
+  "order": "slotpass_first",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148696004,
+  "target_c1d0_at_T": 25,
+  "want_effect": 4,
+  "T": 8,
+  "created": {
+   "tick": 8,
+   "slot": 2,
+   "id": 4,
+   "mode": 1,
+   "status": 2,
+   "anchor_is_target": true,
+   "depth_off": 1,
+   "sel": 0,
+   "seq_target": 0
+  },
+  "first_seen_tick": 8,
+  "first_seen_d": 0,
+  "first_absent_tick": 50,
+  "first_absent_d": 42,
+  "drawn_first_d": 1,
+  "drawn_last_d": 41,
+  "drawn_count": 41,
+  "done_flag_first_d": 41,
+  "sparks": {
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 27
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 27
+   },
+   "5": {
+    "created_tick": 8,
+    "first_absent_d": 27
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "bean_hits_hero",
+  "nibble": 10,
+  "order": "binary",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148696004,
+  "target_c1d0_at_T": 25,
+  "want_effect": 4,
+  "T": 8,
+  "created": {
+   "tick": 8,
+   "slot": 2,
+   "id": 4,
+   "mode": 1,
+   "status": 2,
+   "anchor_is_target": true,
+   "depth_off": 1,
+   "sel": 0,
+   "seq_target": 0
+  },
+  "first_seen_tick": 8,
+  "first_seen_d": 0,
+  "first_absent_tick": 49,
+  "first_absent_d": 41,
+  "drawn_first_d": 0,
+  "drawn_last_d": 40,
+  "drawn_count": 41,
+  "done_flag_first_d": 40,
+  "sparks": {
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "5": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "bean_hits_hero",
+  "nibble": 7,
+  "order": "binary",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148696004,
+  "target_c1d0_at_T": 25,
+  "want_effect": 5,
+  "T": 8,
+  "created": {
+   "tick": 8,
+   "slot": 2,
+   "id": 5,
+   "mode": 1,
+   "status": 2,
+   "anchor_is_target": true,
+   "depth_off": 1,
+   "sel": 0,
+   "seq_target": 0
+  },
+  "first_seen_tick": 8,
+  "first_seen_d": 0,
+  "first_absent_tick": 104,
+  "first_absent_d": 96,
+  "drawn_first_d": 0,
+  "drawn_last_d": 95,
+  "drawn_count": 96,
+  "done_flag_first_d": 95,
+  "sparks": {
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "5": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "bean_hits_hero",
+  "nibble": 7,
+  "order": "slotpass_first",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148696004,
+  "target_c1d0_at_T": 25,
+  "want_effect": 5,
+  "T": 8,
+  "created": {
+   "tick": 8,
+   "slot": 2,
+   "id": 5,
+   "mode": 1,
+   "status": 2,
+   "anchor_is_target": true,
+   "depth_off": 1,
+   "sel": 0,
+   "seq_target": 0
+  },
+  "first_seen_tick": 8,
+  "first_seen_d": 0,
+  "first_absent_tick": 105,
+  "first_absent_d": 97,
+  "drawn_first_d": 1,
+  "drawn_last_d": 96,
+  "drawn_count": 96,
+  "done_flag_first_d": 96,
+  "sparks": {
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 27
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 27
+   },
+   "5": {
+    "created_tick": 8,
+    "first_absent_d": 27
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "bean_hits_hero",
+  "nibble": 9,
+  "order": "binary",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148696004,
+  "target_c1d0_at_T": 25,
+  "want_effect": 5,
+  "T": 8,
+  "created": {
+   "tick": 8,
+   "slot": 2,
+   "id": 5,
+   "mode": 1,
+   "status": 2,
+   "anchor_is_target": true,
+   "depth_off": 1,
+   "sel": 0,
+   "seq_target": 0
+  },
+  "first_seen_tick": 8,
+  "first_seen_d": 0,
+  "first_absent_tick": 104,
+  "first_absent_d": 96,
+  "drawn_first_d": 0,
+  "drawn_last_d": 95,
+  "drawn_count": 96,
+  "done_flag_first_d": 95,
+  "sparks": {
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "5": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "bean_hits_hero",
+  "nibble": 1,
+  "order": "binary",
+  "response_byte": 16,
+  "hit_registered": true,
+  "target_touching_at_T": 2148696004,
+  "target_c1d0_at_T": 25,
+  "want_effect": null,
+  "T": 8,
+  "created": null,
+  "sparks": {
+   "2": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "hero_hits_bean",
+  "nibble": 6,
+  "order": "binary",
+  "response_byte": 128,
+  "hit_registered": true,
+  "target_touching_at_T": 0,
+  "target_c1d0_at_T": 25,
+  "want_effect": 4,
+  "T": 8,
+  "created": null,
+  "sparks": {
+   "2": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ },
+ {
+  "scenario": "bean_hits_hero",
+  "nibble": 6,
+  "order": "binary",
+  "response_byte": 128,
+  "hit_registered": true,
+  "target_touching_at_T": 0,
+  "target_c1d0_at_T": 25,
+  "want_effect": 4,
+  "T": 8,
+  "created": null,
+  "sparks": {
+   "2": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "3": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   },
+   "4": {
+    "created_tick": 8,
+    "first_absent_d": 26
+   }
+  },
+  "uninit_reads_effect_path": [
+   "8003BB34",
+   "8003BB38",
+   "8003BB3C",
+   "8003BB40",
+   "8003BB44"
+  ]
+ }
+]

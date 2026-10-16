@@ -108,3 +108,16 @@ Possible (a sword charge released past R + 21 in a world; the wave is born there
 - `AlundraRandomPerTickTests.TheChargeSparks_DrawBeforeTheAdvanceOfTheirTick_WhateverTheGrouping` (`HitArena`, steel sword, 96 ticks, release at 91, S = 112): stops before S; not expected to move.
 - `AlundraBeannoideGrateArcTests` and `AlundraMurutaHallArcTests` (`Give(1)`/`Equip(1)`, the item 1, presses of the Square of a few ticks): a press is a swing 0x3F, never a charge; not expected to move.
 No other test asserts the empty production set (`ProductionWiredWeaponTypes` is read only by `AlundraWeaponSpawnSeamTests.S5`); the tests that fire a bow (`AlundraWeaponSpawnSeamTests` S1 to S4, S6, `AlundraShotDirectionTests`, `AlundraBirthTickTests`) use the type 3 or a test set and the hook, which replaces the production call: not expected to move. The measured list (an empirical run with the wiring, throwaway) is compared with this one in the results of the slice.
+
+## O-F3-6 - the release tick of the hit effects 4 and 5, settled on the binary (2026-10-16)
+
+`oracle/of36/` holds, copied byte for byte from the session scratchpad, the probe that settled O-F3-6 and its independent check:
+`probe/` (the harness on this annex's MIPS machine, imported by path from `oracle/tools`, with its summaries in `probe/out/`; the
+per-case traces are not kept, the scripts write them again), `check/` (a second harness written from scratch by another agent, and its
+summary `chk_bin_summary.json`), and the two reports `probe-report.md` and `check-report.md`. The scripts carry the absolute paths of
+the run (`OUT` next to the script); run them only from a scratch copy, with `python -B`.
+
+Result: the binary frees effect 4 at hit + 41 and effect 5 at hit + 96 (the sparks at hit + 26), the same ticks as the DLL. The pass that
+steps the effect slots is `0x8003C410`, called at `0x8002E110` by the frame function `0x8002E058` right after the world tick `0x8003B388`;
+`0x80038E84` (the DLL's `RunActiveEffectsPass`) never steps a slot. The f3b executor's inference (hit + 42 and + 97) does not hold;
+no DLL change.

@@ -1,0 +1,26 @@
+FACT frame function 0x8002E058 (called once by the main loop at 0x8002BC4C: jal 8002E058):
+   8002E100: 0C00F19F  -> 8003C67C   (jal 0x8003C67C map-record entity spawner)
+   8002E108: 0C00ECE2  -> 8003B388   (jal world tick 0x8003B388)
+   8002E110: 0C00F104  -> 8003C410   (jal slot pass 0x8003C410)
+FACT passes inside 0x8003B388 (pause flag [0x800DC4B8] & 0x48 == 0):
+   8003B3A0: jal 80038634
+   8003B3A8: jal 800386D0
+   8003B3B0: jal 80038998
+   8003B3D0: jal 800384F4
+   8003B3D8: jal 80038E18
+   8003B3E0: jal 80038364
+   8003B3E8: jal 80038E84
+   8003B3F0: jal 80039300
+   -> 0x80038E84 (entity effects) at 0x8003B3E8, hit pass 0x80039300 at 0x8003B3F0, then 0x800399B8 (entity list/draw prep, no effect creator inside: see below), return; the slot pass 0x8003C410 follows in 0x8002E058.
+FACT call sites of UpdateEffects: 8002E110
+FACT call sites of AnimateEffect: 8003C480
+FACT call sites of MoveEffect: 8003C488
+FACT call sites of WorldTick: 8002E108
+FACT call sites of EntityEffectsPass: 8003B3E8
+FACT call sites of HitPass: 8003B3F0
+FACT call sites of CreateAttached: 8002F5B4 80039624 80039660 8003A614 8003A734
+FACT call sites of CreateDetached: 80038F48
+FACT call sites of CreateEffect 0x8003BDD8: 70 sites (list in out/disasm is not needed here)
+FACT AnimateEffect 0x8003BBDC is called ONLY from 0x8003C480 (inside the slot pass 0x8003C410); the slot pass is called ONLY from 0x8002E110.
+FACT static stores (lui + sb/sh/sw) into the template 0x8013C608..0x8013C688: none (none = the template is only ever read by 0x8003BB14; INFERENCE: zero BSS)
+FACT hit pass creator calls: 0x80039624 (nibble 6 or 10 -> BE74(0, 4, 0, target, 1, 0, 0, 0)) and 0x80039660 (nibble 7 or 9 -> BE74(0, 5, 0, target, 1, 0, 0, 0)); gate 0x800395E8: (response byte & 0xC0) == 0x80 skips both.

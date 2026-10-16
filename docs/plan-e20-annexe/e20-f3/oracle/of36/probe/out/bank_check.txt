@@ -1,0 +1,3 @@
+effect 4: raw DATAS.BIN table @7312 : 20 frames, end byte 0 (0 = Destroy), sum of delays S = 40 ; frames == map_alundra.json PreloadedAnims: True ; (delay, de-duplicated set) == effects-global.json Frames: True ; first words [34, 42, 50, 58, 73, 88]
+effect 5: raw DATAS.BIN table @7948 : 19 frames, end byte 0 (0 = Destroy), sum of delays S = 95 ; frames == map_alundra.json PreloadedAnims: True ; (delay, de-duplicated set) == effects-global.json Frames: True ; first words [32, 82, 132, 168, 197, 247]
+effect 9: raw DATAS.BIN table @10836 : 7 frames, end byte 0 (0 = Destroy), sum of delays S = 25 ; frames == map_alundra.json PreloadedAnims: True ; (delay, de-duplicated set) == effects-global.json Frames: True ; first words [14, 22, 37, 52, 67, 89]

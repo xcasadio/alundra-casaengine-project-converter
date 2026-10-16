@@ -1,0 +1,81 @@
+effect 4 slot of a nibble-6 hit on the Beannoid (hero attacker), tick T = 8
+-- after 0x8003BE74 (created in the hit pass of tick T), slot 2
+   +0x30 = FFFFFFFF   -1 (a1 == 0)
+   +0x34 = 00000001   MODE (1 = attached to an anchor)
+   +0x38 = 80127FC4   ANCHOR (the target entity)
+   +0x3C = 009C0000   X (anchor +0x114)
+   +0x40 = 00680000   Y (anchor +0x118)
+   +0x44 = 00000001   Z (anchor +0x11C)
+   +0x60 = 00000001   DEPTH OFFSET (1)
+   +0x68 = 00000002   STATUS (2 active, 0 free)
+   +0x6C = FB040100   bytes: +6C selector(0 global) +6D(1) +6E effect id +6F (~id)
+   +0x70 = 0000FF00   bytes: +70 sequence target +71 sequence current (~target until the first step) 
+-- after the slot pass of tick T+0
+   +0x08 = 801550F0   bank pointer (table of the effect, written by the first step)
+   +0x0C = 80155136   frame data pointer (bank + 2*word + 2)
+   +0x10 = 009C0000   display copy of X (0x8003C4A4-0x8003C4B4)
+   +0x14 = 00680000   display copy of Y
+   +0x18 = 00000001   display copy of Z
+   +0x1C = 00000001   display copy of the depth key (+0x64)
+   +0x20 = 0000000C   IDSV byte of the image set (struct +0x14)
+   +0x24 = 00000001   image count byte of the image set (struct +0x18)
+   +0x28 = 0000000B   lookup constant out #1 (0x0B for the global bank)
+   +0x2C = 00000060   lookup constant out #2 (0x60 for the global bank)
+   +0x30 = FFFFFFFF   -1 (a1 == 0)
+   +0x34 = 00000001   MODE (1 = attached to an anchor)
+   +0x38 = 80127FC4   ANCHOR (the target entity)
+   +0x3C = 009C0000   X (anchor +0x114)
+   +0x40 = 00680000   Y (anchor +0x118)
+   +0x44 = 00000001   Z (anchor +0x11C)
+   +0x60 = 00000001   DEPTH OFFSET (1)
+   +0x64 = 00000001   depth key (anchor +0x1BC + 0x60)
+   +0x68 = 00000002   STATUS (2 active, 0 free)
+   +0x6C = 04040000   bytes: +6C selector(0 global) +6D(1) +6E effect id +6F (~id)
+   +0x74 = 801550F7   sequence pointer
+   +0x78 = 801550F4   sequence loop pointer
+   +0x7C = 00000002   bytes: +7C COUNTER, +7D DONE flag
+-- after the slot pass of tick T+40
+   +0x08 = 801550F0   bank pointer (table of the effect, written by the first step)
+   +0x0C = 8015534E   frame data pointer (bank + 2*word + 2)
+   +0x10 = 009C0000   display copy of X (0x8003C4A4-0x8003C4B4)
+   +0x14 = 00680000   display copy of Y
+   +0x18 = 00000001   display copy of Z
+   +0x1C = 00000001   display copy of the depth key (+0x64)
+   +0x24 = 00000002   image count byte of the image set (struct +0x18)
+   +0x28 = 0000000B   lookup constant out #1 (0x0B for the global bank)
+   +0x2C = 00000060   lookup constant out #2 (0x60 for the global bank)
+   +0x30 = FFFFFFFF   -1 (a1 == 0)
+   +0x34 = 00000001   MODE (1 = attached to an anchor)
+   +0x38 = 80127FC4   ANCHOR (the target entity)
+   +0x3C = 009C0000   X (anchor +0x114)
+   +0x40 = 00680000   Y (anchor +0x118)
+   +0x44 = 00000001   Z (anchor +0x11C)
+   +0x60 = 00000001   DEPTH OFFSET (1)
+   +0x64 = 00000001   depth key (anchor +0x1BC + 0x60)
+   +0x68 = 00000002   STATUS (2 active, 0 free)
+   +0x6C = 04040000   bytes: +6C selector(0 global) +6D(1) +6E effect id +6F (~id)
+   +0x74 = 80155130   sequence pointer
+   +0x78 = 801550F4   sequence loop pointer
+   +0x7C = 000001FF   bytes: +7C COUNTER, +7D DONE flag
+-- after the slot pass of tick T+41
+   +0x08 = 801550F0   bank pointer (table of the effect, written by the first step)
+   +0x0C = 8015534E   frame data pointer (bank + 2*word + 2)
+   +0x10 = 009C0000   display copy of X (0x8003C4A4-0x8003C4B4)
+   +0x14 = 00680000   display copy of Y
+   +0x18 = 00000001   display copy of Z
+   +0x1C = 00000001   display copy of the depth key (+0x64)
+   +0x24 = 00000002   image count byte of the image set (struct +0x18)
+   +0x28 = 0000000B   lookup constant out #1 (0x0B for the global bank)
+   +0x2C = 00000060   lookup constant out #2 (0x60 for the global bank)
+   +0x30 = FFFFFFFF   -1 (a1 == 0)
+   +0x34 = 00000001   MODE (1 = attached to an anchor)
+   +0x38 = 80127FC4   ANCHOR (the target entity)
+   +0x3C = 009C0000   X (anchor +0x114)
+   +0x40 = 00680000   Y (anchor +0x118)
+   +0x44 = 00000001   Z (anchor +0x11C)
+   +0x60 = 00000001   DEPTH OFFSET (1)
+   +0x64 = 00000001   depth key (anchor +0x1BC + 0x60)
+   +0x6C = 04040000   bytes: +6C selector(0 global) +6D(1) +6E effect id +6F (~id)
+   +0x74 = 80155130   sequence pointer
+   +0x78 = 801550F4   sequence loop pointer
+   +0x7C = 000001FF   bytes: +7C COUNTER, +7D DONE flag
