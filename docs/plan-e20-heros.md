@@ -4603,6 +4603,7 @@ automatiques atteint) : **FIX** — le rebond de la flèche au tick 8 de `arrows
 porté (E20.f5) : dans e0k3 la flèche garde la direction 24, est bornée de nouveau et lève encore le drapeau au tick 8 ; (b1) n'épingle donc
 que les ticks 1 à 7, et l'épingle du tick 8 (rebond, `adj_13C` 0) passe à E20.f5. Nouvelle époque de relecture : une seule relecture de
 clôture suit.
+Relecture de clôture : **READY** (2026-10-16).
 
 **Prérequis.** E20.e0k1 ✅, E20.e0k2 ✅ (le marqueur `HasLogicalZ`).
 
