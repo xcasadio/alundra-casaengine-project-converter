@@ -639,7 +639,7 @@ sous-module, aucun nom de classe de test (R5). Le jeu et l'éditeur fermés pend
 passe d'exécution, une passe de correction au plus ; un verifier frais à la fin.
 
 **Tâches.**
-- ⚠️ **ARRET T0 (2026-10-17, avant tout travail).** Verification de depart : `CasaEngine.Launcher.exe` (PID 52432, lance sur `Projects/RPGDemo/RPGDemo.json`) tourne, et `alundra-project/Alundra.dll` est verrouillee (PermissionError a l'ouverture en r+b). Arret de la tranche : l'auteur ferme le lanceur, puis T0 reprend.
+- ✅ **Levé le 2026-10-17 : l'auteur a fermé le lanceur ; T0 relancée.** **ARRET T0 (2026-10-17, avant tout travail).** Verification de depart : `CasaEngine.Launcher.exe` (PID 52432, lance sur `Projects/RPGDemo/RPGDemo.json`) tourne, et `alundra-project/Alundra.dll` est verrouillee (PermissionError a l'ouverture en r+b). Arret de la tranche : l'auteur ferme le lanceur, puis T0 reprend.
 - T0 (aucun code de la DLL) : (a) **l'outil de renommage**, `tools/dll-structure/rename-tool/` (une petite console C# en net9.0, hors de la solution,
   `Microsoft.CodeAnalysis.Workspaces.MSBuild` 4.8.0, `Microsoft.CodeAnalysis.CSharp.Workspaces` 4.8.0 et `Microsoft.Build.Locator` 1.7.8,
   restaurés avec le cache local comme seule source : `dotnet restore --source C:/Users/casad/.nuget/packages` ; le localisateur enregistre
