@@ -166,6 +166,17 @@ def first_diff(a, b):
     return i
 
 
+def doc_cref_values(src):
+    """[(start, value)] of the cref attributes inside the DOCUMENTATION comments (`///`, `/**`) only: a plain `//` comment is not a doc comment,
+    Roslyn does not bind its `cref` and the proof leaves it alone, like any other comment."""
+    out = []
+    for a, b, k in src.spans:
+        if k == 'c' and src.text.startswith(('///', '/**'), a):
+            for m in A.CREF_RE.finditer(src.text, a, b):
+                out.append((m.start(1), m.group(1)))
+    return out
+
+
 def walk(ctx, domain, path, bbody, abody, dm, applied, rep):
     info = ctx.info
     src = A.Src(bbody)
@@ -174,7 +185,7 @@ def walk(ctx, domain, path, bbody, abody, dm, applied, rep):
         w = m.group(0)
         if w in dm:
             events.append((m.start(), m.end(), 'code', dm[w], w))
-    for start, val in src.cref_values():
+    for start, val in doc_cref_values(src):
         for m in IDENT_RE.finditer(val):
             if m.group(0) in dm:
                 events.append((start + m.start(), start + m.end(), 'cref', dm[m.group(0)], m.group(0)))
@@ -277,7 +288,7 @@ def end_state(ctx, rep):
         for m in IDENT_RE.finditer(src.masked):
             if m.group(0) in allren:
                 rep.bad('end state: %s:%d: the old name %s remains in code' % (p, line_of(body, m.start()), m.group(0)))
-        for start, val in src.cref_values():
+        for start, val in doc_cref_values(src):
             for m in IDENT_RE.finditer(val):
                 if m.group(0) in allren:
                     rep.bad('end state: %s:%d: the old name %s remains in a cref' % (p, line_of(body, start), m.group(0)))
