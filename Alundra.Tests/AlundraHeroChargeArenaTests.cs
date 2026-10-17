@@ -7,6 +7,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Rng;
 
 namespace Alundra.Tests;
 

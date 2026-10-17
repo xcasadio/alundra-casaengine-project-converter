@@ -3,6 +3,7 @@ using System;
 using Alundra.Maps;
 using Alundra.Events;
 using Alundra.Scripts;
+using Alundra.Rng;
 
 namespace Alundra.Ai.Enemies;
 

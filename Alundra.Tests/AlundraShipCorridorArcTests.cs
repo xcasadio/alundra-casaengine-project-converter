@@ -8,6 +8,7 @@ using static Alundra.Tests.ArcChecks;
 using Alundra.Session;
 using Alundra.Events;
 using Alundra.Hero;
+using Alundra.Rng;
 
 namespace Alundra.Tests;
 

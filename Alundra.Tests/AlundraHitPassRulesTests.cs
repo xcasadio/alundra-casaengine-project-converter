@@ -13,6 +13,7 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Combat;
+using Alundra.Rng;
 
 namespace Alundra.Tests;
 

@@ -31,6 +31,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Combat;
 using Alundra.Items;
+using Alundra.Rng;
 
 namespace Alundra.Scripts;
 

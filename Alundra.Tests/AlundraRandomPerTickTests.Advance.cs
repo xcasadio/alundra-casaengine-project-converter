@@ -8,6 +8,7 @@ using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Rng;
 
 namespace Alundra.Tests;
 

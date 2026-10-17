@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace Alundra.Scripts;
+namespace Alundra.Rng;
 
 /// <summary>
 /// The C library <c>rand()</c> of the original executable (<c>ALUN_CD.EXE</c>, France), at

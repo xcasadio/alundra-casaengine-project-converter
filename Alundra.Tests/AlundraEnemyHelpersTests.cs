@@ -6,6 +6,7 @@ using Alundra.Scripts;
 using Xunit;
 using Alundra.Events;
 using Alundra.Ai;
+using Alundra.Rng;
 
 namespace Alundra.Tests;
 

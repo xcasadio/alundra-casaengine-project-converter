@@ -1,5 +1,7 @@
 #nullable enable
 
+using Alundra.Rng;
+
 namespace Alundra.Scripts;
 
 /// <summary>

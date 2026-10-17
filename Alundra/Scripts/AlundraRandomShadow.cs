@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using Alundra.Entities;
 using Alundra.Items;
+using Alundra.Rng;
 
 namespace Alundra.Scripts;
 

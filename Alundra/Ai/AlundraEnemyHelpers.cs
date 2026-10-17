@@ -6,6 +6,7 @@ using Alundra.Events;
 using Alundra.Ai.Enemies;
 using Alundra.Scripts;
 using Alundra.Combat;
+using Alundra.Rng;
 
 namespace Alundra.Ai;
 

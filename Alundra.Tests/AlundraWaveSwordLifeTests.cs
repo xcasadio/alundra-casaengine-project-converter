@@ -11,6 +11,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Ai.Projectiles;
 using Alundra.Hero;
+using Alundra.Rng;
 
 namespace Alundra.Tests;
 

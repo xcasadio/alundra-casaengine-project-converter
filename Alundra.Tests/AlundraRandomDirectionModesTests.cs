@@ -5,6 +5,7 @@ using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Events;
+using Alundra.Rng;
 
 namespace Alundra.Tests;
 

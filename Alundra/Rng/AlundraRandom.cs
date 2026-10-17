@@ -1,6 +1,8 @@
 #nullable enable
 
-namespace Alundra.Scripts;
+using Alundra.Scripts;
+
+namespace Alundra.Rng;
 
 /// <summary>
 /// The game's shared random stream (D7, docs/plan-e9d-mode-cellulaire.md) - transcribed verbatim from

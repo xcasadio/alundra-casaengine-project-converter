@@ -12,6 +12,7 @@ using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
+using Alundra.Rng;
 
 namespace Alundra.Tests;
 

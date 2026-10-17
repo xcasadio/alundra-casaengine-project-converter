@@ -1,5 +1,5 @@
-using Alundra.Scripts;
 using Xunit;
+using Alundra.Rng;
 
 namespace Alundra.Tests;
 

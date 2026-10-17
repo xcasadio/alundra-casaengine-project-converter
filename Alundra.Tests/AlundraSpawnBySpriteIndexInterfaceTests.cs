@@ -8,6 +8,7 @@ using Xunit;
 using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Events;
+using Alundra.Rng;
 
 namespace Alundra.Tests;
 

@@ -19,6 +19,7 @@ using Alundra.Ai.Objects;
 using Alundra.Ai.Projectiles;
 using Alundra.Hero;
 using Alundra.Combat;
+using Alundra.Rng;
 
 namespace Alundra.Events;
 
