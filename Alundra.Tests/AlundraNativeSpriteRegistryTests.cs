@@ -35,7 +35,7 @@ public sealed class AlundraNativeSpriteRegistryTests : IDisposable
     private static void Reset()
     {
         GameState.Instance.ResetForTests();
-        AlundraSaveBook.Instance.ResetForTests();
+        SaveBook.Instance.ResetForTests();
         AlundraSaveScreenDirector.Instance.ResetForTests();
     }
 
@@ -210,9 +210,9 @@ public sealed class AlundraNativeSpriteRegistryTests : IDisposable
         var runner = NewRunner();
         var calls = 0;
         using var registration = runner.NativeSprites.Register(
-            ScriptHelper.ProgramFInteract, AlundraSaveBook.InteractCode, new[] { AlundraSaveBook.SpriteType }, (_, _, _) => calls++);
+            ScriptHelper.ProgramFInteract, SaveBook.InteractCode, new[] { SaveBook.SpriteType }, (_, _, _) => calls++);
 
-        Entity(AlundraSaveBook.SpriteType, ScriptHelper.ProgramFInteract, AlundraSaveBook.InteractCode).RunPickedEvent(runner);
+        Entity(SaveBook.SpriteType, ScriptHelper.ProgramFInteract, SaveBook.InteractCode).RunPickedEvent(runner);
 
         Assert.Equal(0, calls);
         Assert.Equal(1, runner.SaveBookEventRunCount);

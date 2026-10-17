@@ -27,14 +27,14 @@ namespace Alundra.Tests;
 /// E16.e T2 (docs/plan-e16-etat-partie.md, L4, H1, H2, SE1, SE2, SE7, SE8): the save book, driven through the real
 /// dispatch (<see cref="AlundraEntityScriptProxy.RunPickedEvent"/>) on the REAL dialogue director, with a real
 /// <see cref="AlundraDialoguePresenter"/> over a recording UI view, the real export's <c>Dialogues/Etc.dialogue</c>
-/// and validation rules (K1), and a fake save screen (<see cref="IAlundraSaveBookScreen"/>). Every abandon and the
+/// and validation rules (K1), and a fake save screen (<see cref="ISaveBookScreen"/>). Every abandon and the
 /// normal end are followed by <see cref="AssertReleased"/>: the whole <c>PlayerControlFlags</c> at 0, no box, no
 /// choice, then the hero walks and the inventory opens (SE1).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSaveBookTests : IDisposable
 {
-    private const int Wait = AlundraSaveBook.WaitTicks + 1; // 0x3C counted down to -1: 61 ticks.
+    private const int Wait = SaveBook.WaitTicks + 1; // 0x3C counted down to -1: 61 ticks.
 
     private readonly FakeScreen _screen = new();
     private readonly FakeSaveSlots _slots = new();
@@ -47,14 +47,14 @@ public sealed class AlundraSaveBookTests : IDisposable
     {
         ResetSingletons();
         AlundraEtcStringTable.ResetForTests();
-        AlundraSaveBook.Instance.ResetForTests();
+        SaveBook.Instance.ResetForTests();
 
         AlundraEtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
         AlundraDialogueDirector.Instance.AttachToWorld(new AlundraDialoguePresenter(new RecordingUIViewRuntime()), State);
         AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
         AlundraSaveGameDirector.Instance.SaveSlots = _slots;
-        AlundraSaveBook.Instance.Screen = _screen;
+        SaveBook.Instance.Screen = _screen;
 
         // A New Game state already carries the sword's slot (F10): a capture of it validates.
         State.PlayerStats.WeaponId = 1;
@@ -62,24 +62,24 @@ public sealed class AlundraSaveBookTests : IDisposable
         _hero.TargetAnimationId = 1;
         _context = new FakeContext(_hero, Map389WorldName);
         _runner = new EventProgramRunner(null, State, _context);
-        _book = new AlundraEntityScriptProxy { SpriteType = AlundraSaveBook.SpriteType, Status = EntityStatus.Normal };
+        _book = new AlundraEntityScriptProxy { SpriteType = SaveBook.SpriteType, Status = EntityStatus.Normal };
         _book.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = 254;
-        _book.SpriteProgramIndexes[ScriptHelper.ProgramCTick] = AlundraSaveBook.TickCode;
-        _book.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = AlundraSaveBook.InteractCode;
+        _book.SpriteProgramIndexes[ScriptHelper.ProgramCTick] = SaveBook.TickCode;
+        _book.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = SaveBook.InteractCode;
     }
 
     public void Dispose()
     {
         ResetSingletons();
         AlundraEtcStringTable.ResetForTests();
-        AlundraSaveBook.Instance.ResetForTests();
+        SaveBook.Instance.ResetForTests();
     }
 
     private static GameState State => GameState.Instance;
 
     private static AlundraDialogueDirector Dialogue => AlundraDialogueDirector.Instance;
 
-    private int BookState => AlundraSaveBook.ReadState(_book);
+    private int BookState => SaveBook.ReadState(_book);
 
     private void Interact()
     {
@@ -104,7 +104,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         Interact();
         Tick();
         Tick(Wait);
-        Assert.Equal(AlundraSaveBook.StateAnswer, BookState);
+        Assert.Equal(SaveBook.StateAnswer, BookState);
         Assert.True(Dialogue.IsAwaitingChoice);
     }
 
@@ -112,7 +112,7 @@ public sealed class AlundraSaveBookTests : IDisposable
     /// ticks, the hero walks and the inventory opens.</summary>
     private void AssertReleased()
     {
-        Assert.Equal(AlundraSaveBook.StateIdle, BookState);
+        Assert.Equal(SaveBook.StateIdle, BookState);
         Assert.Equal(0u, State.PlayerControlFlags);
         Assert.False(Dialogue.IsOpen);
         Assert.False(Dialogue.IsAwaitingChoice);
@@ -138,16 +138,16 @@ public sealed class AlundraSaveBookTests : IDisposable
     public void Yes_RunsEveryStateWithTheOriginalWaits_CapturesTheHerosTile_AndStartsTheScreen()
     {
         Interact();
-        Assert.Equal(AlundraSaveBook.StateMessage, BookState);
+        Assert.Equal(SaveBook.StateMessage, BookState);
         Assert.Equal(GameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
         Assert.Equal(0u, _hero.TargetAnimationId);
         Assert.Equal(1, _screen.FlowStarted);
 
         // State 1: the question in a box closable by script only (SetEtcAnimationMode(4)).
         Tick();
-        Assert.Equal(AlundraSaveBook.StateQuestion, BookState);
+        Assert.Equal(SaveBook.StateQuestion, BookState);
         Assert.True(Dialogue.IsOpen);
-        Assert.Equal(AlundraSaveBook.ScriptCloseOnlyMask, Dialogue.CloseMaskForTests);
+        Assert.Equal(SaveBook.ScriptCloseOnlyMask, Dialogue.CloseMaskForTests);
         Assert.Equal("Enregistrer tes progrès?", Dialogue.CurrentLineForTests?.Text);
         Assert.Equal(
             GameState.PlayerControlBits.ControlLocked | GameState.PlayerControlBits.MessageBox,
@@ -155,10 +155,10 @@ public sealed class AlundraSaveBookTests : IDisposable
 
         // State 2: 0x3C counted down to -1.
         Tick(Wait - 1);
-        Assert.Equal(AlundraSaveBook.StateQuestion, BookState);
+        Assert.Equal(SaveBook.StateQuestion, BookState);
         Assert.False(Dialogue.IsAwaitingChoice);
         Tick();
-        Assert.Equal(AlundraSaveBook.StateAnswer, BookState);
+        Assert.Equal(SaveBook.StateAnswer, BookState);
         Assert.True(Dialogue.IsAwaitingChoice);
         Assert.Equal(new[] { "OUI", "NON" }, Dialogue.ChoicesForTests);
 
@@ -166,7 +166,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         // triggers its close at 116 and is released at 134. E19.f3a: the choice box answers 37 ticks after its opener (the Tick 62): the answer is taken at the Tick 99.
         Assert.True(Dialogue.SelectChoiceForTests(0));
         Tick(37);
-        Assert.Equal(AlundraSaveBook.StateCapture, BookState);
+        Assert.Equal(SaveBook.StateCapture, BookState);
         Assert.True(Dialogue.IsOpen);
         Assert.False(Dialogue.IsAwaitingChoice);
         Assert.Equal(
@@ -181,14 +181,14 @@ public sealed class AlundraSaveBookTests : IDisposable
             State.PlayerControlFlags);
         Tick();
         Assert.False(Dialogue.IsOpen);
-        Assert.Equal(AlundraSaveBook.StateCapture, BookState);
+        Assert.Equal(SaveBook.StateCapture, BookState);
         Assert.Equal(GameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
 
         // State 5: 61 ticks after the answer (the Tick 99), then the capture and the screen (the Tick 160).
         Tick(Wait - 1 - 35);
         Assert.Empty(_screen.Started);
         Tick();
-        Assert.Equal(AlundraSaveBook.StateWaitScreen, BookState);
+        Assert.Equal(SaveBook.StateWaitScreen, BookState);
         var save = Assert.Single(_screen.Started);
         Assert.Equal(389, save.InitialMapId);
         Assert.Equal((20, 30, 1), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
@@ -197,7 +197,7 @@ public sealed class AlundraSaveBookTests : IDisposable
 
         // State 6: waits for the screen's end, then the reset.
         Tick(40);
-        Assert.Equal(AlundraSaveBook.StateWaitScreen, BookState);
+        Assert.Equal(SaveBook.StateWaitScreen, BookState);
         Assert.Equal(GameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
         _screen.IsActive = false;
         Tick();
@@ -233,7 +233,7 @@ public sealed class AlundraSaveBookTests : IDisposable
 
         Tick();
 
-        Assert.Equal(AlundraSaveBook.StateIdle, BookState);
+        Assert.Equal(SaveBook.StateIdle, BookState);
         Assert.Equal(serial, Dialogue.OpenSerial);
         Assert.True(Dialogue.IsOpen); // not the book's: left alone.
         Dialogue.NotifyPresenterClosed();
@@ -249,7 +249,7 @@ public sealed class AlundraSaveBookTests : IDisposable
 
         Tick();
 
-        Assert.Equal(AlundraSaveBook.StateIdle, BookState);
+        Assert.Equal(SaveBook.StateIdle, BookState);
         Assert.Equal(serial, Dialogue.OpenSerial);
         Assert.True(Dialogue.IsAwaitingChoice); // not the book's: left alone.
         Dialogue.CancelChoice();
@@ -329,7 +329,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         var serial = Dialogue.OpenSerial;
         Tick();
 
-        Assert.Equal(AlundraSaveBook.StateIdle, BookState);
+        Assert.Equal(SaveBook.StateIdle, BookState);
         Assert.Empty(_screen.Started);
         Assert.Equal(0, _screen.FailuresStarted);
         Assert.Equal(serial, Dialogue.OpenSerial);
@@ -350,22 +350,22 @@ public sealed class AlundraSaveBookTests : IDisposable
         Tick(10);
         var delay = _book.DelayOrAngleOrEntityId;
         Interact();
-        Assert.Equal(AlundraSaveBook.StateQuestion, BookState);
+        Assert.Equal(SaveBook.StateQuestion, BookState);
         Assert.Equal(delay, _book.DelayOrAngleOrEntityId);
 
         Tick(Wait - 10);
-        Assert.Equal(AlundraSaveBook.StateAnswer, BookState);
+        Assert.Equal(SaveBook.StateAnswer, BookState);
         var serial = Dialogue.OpenSerial;
         Interact();
-        Assert.Equal(AlundraSaveBook.StateAnswer, BookState);
+        Assert.Equal(SaveBook.StateAnswer, BookState);
         Assert.Equal(serial, Dialogue.OpenSerial);
         Assert.True(Dialogue.IsAwaitingChoice);
 
         Dialogue.SelectChoiceForTests(0);
         Tick(37 + Wait); // E19.f3a: 37 ticks to the answer, then the 61 of the wait
-        Assert.Equal(AlundraSaveBook.StateWaitScreen, BookState);
+        Assert.Equal(SaveBook.StateWaitScreen, BookState);
         Interact();
-        Assert.Equal(AlundraSaveBook.StateWaitScreen, BookState);
+        Assert.Equal(SaveBook.StateWaitScreen, BookState);
         Assert.Single(_screen.Started);
         Assert.Equal(1, _screen.FlowStarted);
 
@@ -410,7 +410,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         Assert.Equal(1, _screen.FailuresStarted);
         Assert.True(_slots.NothingCalled);
         Assert.Contains(log.Warnings, line => line.Contains("nothing written") && line.Contains("playerStats.hpMax"));
-        Assert.Equal(AlundraSaveBook.StateWaitScreen, BookState);
+        Assert.Equal(SaveBook.StateWaitScreen, BookState);
     }
 
     [Fact]
@@ -458,7 +458,7 @@ public sealed class AlundraSaveBookTests : IDisposable
             _screen.Step(State);
             ticks++;
         }
-        while ((BookState != AlundraSaveBook.StateIdle || _screen.IsActive) && ticks < 500);
+        while ((BookState != SaveBook.StateIdle || _screen.IsActive) && ticks < 500);
 
         Assert.True(ticks < 500);
         Assert.Equal(1, _screen.FailuresStarted);
@@ -471,7 +471,7 @@ public sealed class AlundraSaveBookTests : IDisposable
     [Fact]
     public void State5_NoScreenWired_Abandons()
     {
-        AlundraSaveBook.Instance.Screen = null;
+        SaveBook.Instance.Screen = null;
         RunToTheQuestion();
 
         Dialogue.SelectChoiceForTests(0);
@@ -485,7 +485,7 @@ public sealed class AlundraSaveBookTests : IDisposable
 
     // ---- Fakes ------------------------------------------------------------------------------------------------
 
-    private sealed class FakeScreen : IAlundraSaveBookScreen
+    private sealed class FakeScreen : ISaveBookScreen
     {
         public readonly List<AlundraSaveGame> Started = new();
         public int FailuresStarted;

@@ -40,7 +40,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
         AlundraDialogueDirector.Instance.ResetForTests();
 
         // E16.e T3: slot F now notes the flow to the real save screen - reset both session singletons.
-        AlundraSaveBook.Instance.ResetForTests();
+        SaveBook.Instance.ResetForTests();
         AlundraSaveScreenDirector.Instance.ResetForTests();
     }
 
@@ -112,12 +112,12 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     }
 
     [Theory]
-    [InlineData(ScriptHelper.ProgramFInteract, AlundraSaveBook.InteractCode)]
-    [InlineData(ScriptHelper.ProgramCTick, AlundraSaveBook.TickCode)]
+    [InlineData(ScriptHelper.ProgramFInteract, SaveBook.InteractCode)]
+    [InlineData(ScriptHelper.ProgramCTick, SaveBook.TickCode)]
     public void RunPickedEvent_SaveBookSlot_ReachesTheBook(int slot, int code)
     {
         var runner = new EventProgramRunner(null, GameState.Instance);
-        var book = Entity(AlundraSaveBook.SpriteType, slot, code);
+        var book = Entity(SaveBook.SpriteType, slot, code);
 
         book.RunPickedEvent(runner);
 
@@ -129,10 +129,10 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     /// <summary>J6/L1: slot F code 1 is shared by other entities, whose native AI is not ported - they stay a counted
     /// no-op and never lock the hero.</summary>
     [Theory]
-    [InlineData(30, ScriptHelper.ProgramFInteract, AlundraSaveBook.InteractCode)]
-    [InlineData(30, ScriptHelper.ProgramCTick, AlundraSaveBook.TickCode)]
-    [InlineData(AlundraSaveBook.SpriteType | 0x100, ScriptHelper.ProgramFInteract, AlundraSaveBook.InteractCode)]
-    [InlineData(-1, ScriptHelper.ProgramCTick, AlundraSaveBook.TickCode)]
+    [InlineData(30, ScriptHelper.ProgramFInteract, SaveBook.InteractCode)]
+    [InlineData(30, ScriptHelper.ProgramCTick, SaveBook.TickCode)]
+    [InlineData(SaveBook.SpriteType | 0x100, ScriptHelper.ProgramFInteract, SaveBook.InteractCode)]
+    [InlineData(-1, ScriptHelper.ProgramCTick, SaveBook.TickCode)]
     public void RunPickedEvent_OtherSpriteType_WithABookCode_IsACountedNoOp(int spriteType, int slot, int code)
     {
         var runner = new EventProgramRunner(null, GameState.Instance);
@@ -149,15 +149,15 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     [Theory]
     [InlineData(ScriptHelper.ProgramALoad, 254)]
     [InlineData(ScriptHelper.ProgramFInteract, 255)]
-    [InlineData(ScriptHelper.ProgramFInteract, AlundraSaveBook.TickCode)]
-    [InlineData(ScriptHelper.ProgramCTick, AlundraSaveBook.InteractCode)]
+    [InlineData(ScriptHelper.ProgramFInteract, SaveBook.TickCode)]
+    [InlineData(ScriptHelper.ProgramCTick, SaveBook.InteractCode)]
     [InlineData(ScriptHelper.ProgramCTick, 73)]
-    [InlineData(ScriptHelper.ProgramDTouch, AlundraSaveBook.InteractCode)]
-    [InlineData(ScriptHelper.ProgramEDeactivate, AlundraSaveBook.TickCode)]
+    [InlineData(ScriptHelper.ProgramDTouch, SaveBook.InteractCode)]
+    [InlineData(ScriptHelper.ProgramEDeactivate, SaveBook.TickCode)]
     public void RunPickedEvent_SaveBookType_WithAnotherSlotOrCode_IsACountedNoOp(int slot, int code)
     {
         var runner = new EventProgramRunner(null, GameState.Instance);
-        var book = Entity(AlundraSaveBook.SpriteType, slot, code);
+        var book = Entity(SaveBook.SpriteType, slot, code);
 
         book.RunPickedEvent(runner);
 
@@ -172,7 +172,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     public void RunSpriteEvent_SaveBookSlotCarryingAScriptProgram_IsNotTheBook()
     {
         var runner = new EventProgramRunner(null, GameState.Instance);
-        var book = Entity(AlundraSaveBook.SpriteType, ScriptHelper.ProgramFInteract, AlundraSaveBook.InteractCode);
+        var book = Entity(SaveBook.SpriteType, ScriptHelper.ProgramFInteract, SaveBook.InteractCode);
         book.ProgramIndexes[ScriptHelper.ProgramFInteract] = 0x85;
 
         runner.RunSpriteEvent(book);
@@ -206,8 +206,8 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
         CanPickup = 225,
         FlagsPortraitShadowType = 3,
         ProgramLoad = 254,
-        ProgramTick = AlundraSaveBook.TickCode,
-        ProgramInteract = AlundraSaveBook.InteractCode,
+        ProgramTick = SaveBook.TickCode,
+        ProgramInteract = SaveBook.InteractCode,
         OffsetX = -12,
         OffsetY = -8,
         SizeX = 24,
@@ -255,7 +255,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
         AlundraWorldProxy.ApplyHeroSpriteHeader(proxy, BookHeader());
 
         Assert.Equal(0, proxy.SpriteType);
-        Assert.Equal(AlundraSaveBook.TickCode, proxy.SpriteProgramIndexes[ScriptHelper.ProgramCTick]);
+        Assert.Equal(SaveBook.TickCode, proxy.SpriteProgramIndexes[ScriptHelper.ProgramCTick]);
     }
 
     /// <summary>A spawned save book, end to end through the factory: the dispatch recognises it.</summary>
@@ -278,10 +278,10 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     [Fact]
     public void Clone_CopiesTheSpriteType()
     {
-        var original = new AlundraEntityScriptProxy { SpriteType = AlundraSaveBook.SpriteType };
+        var original = new AlundraEntityScriptProxy { SpriteType = SaveBook.SpriteType };
 
         var clone = (AlundraEntityScriptProxy)original.Clone();
 
-        Assert.Equal(AlundraSaveBook.SpriteType, clone.SpriteType);
+        Assert.Equal(SaveBook.SpriteType, clone.SpriteType);
     }
 }

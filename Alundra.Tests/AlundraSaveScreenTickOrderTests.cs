@@ -36,7 +36,7 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
     {
         ResetSingletons();
         AlundraEtcStringTable.ResetForTests();
-        AlundraSaveBook.Instance.ResetForTests();
+        SaveBook.Instance.ResetForTests();
         AlundraSaveScreenDirector.Instance.ResetForTests();
         var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
         _proxy = new AlundraWorldProxy();
@@ -54,7 +54,7 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
     {
         ResetSingletons();
         AlundraEtcStringTable.ResetForTests();
-        AlundraSaveBook.Instance.ResetForTests();
+        SaveBook.Instance.ResetForTests();
         AlundraSaveScreenDirector.Instance.ResetForTests();
     }
 

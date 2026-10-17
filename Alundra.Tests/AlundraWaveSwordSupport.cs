@@ -158,7 +158,7 @@ internal sealed class WaveRun : IDisposable
 
     /// <summary>The entity of the wave if one exists in the world now: a sprite 27 to 29 whose parent is the hero.</summary>
     internal AlundraEntityScriptProxy? Find()
-        => Arena.Arc.Entities.FirstOrDefault(e => AlundraWaveSwordAi.SpriteTypes.Contains(e.SpriteType) && ReferenceEquals(e.ParentEntity, Arena.Arc.HeroEntity));
+        => Arena.Arc.Entities.FirstOrDefault(e => WaveSwordAi.SpriteTypes.Contains(e.SpriteType) && ReferenceEquals(e.ParentEntity, Arena.Arc.HeroEntity));
 
     /// <summary>
     /// Runs the ticks 1 to <paramref name="lastTick"/> in frames of <paramref name="ticksPerFrame"/> (the Square held to tick 90, released at 91). With <paramref name="useHook"/> the shot is born by the test hook, from the exact place of

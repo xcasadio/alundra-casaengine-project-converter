@@ -14,7 +14,7 @@ using Alundra.Items;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E14.a0b T4 (docs/plan-e14-ia-native.md section 1.2): the skeleton of the hit handlers D1 (Beannoid, animation 5) and D9 (Muruta, animation 2) (<see cref="AlundraEnemyHelpers.HitReaction"/>) against the real code of <c>ALUN_CD.EXE</c> (France)
+/// E14.a0b T4 (docs/plan-e14-ia-native.md section 1.2): the skeleton of the hit handlers D1 (Beannoid, animation 5) and D9 (Muruta, animation 2) (<see cref="EnemyHelpers.HitReaction"/>) against the real code of <c>ALUN_CD.EXE</c> (France)
 /// run in the emulator on 10,000 random states each (<c>out/h1/d1.txt.gz</c>, <c>d9.txt.gz</c>; <c>ComputeNewHp</c> stubbed there, its result the state's <c>killed</c>), and the hero's animation latch on the entity context
 /// (<see cref="IEntityWorldContext.HeroAnimationLatch"/>) that the damage calculation reads.
 /// </summary>
@@ -74,7 +74,7 @@ public sealed class AlundraEnemyHitReactionTests
             var hero = new AlundraEntityScriptProxy { PosX = row.In[2], PosY = row.In[3] };
             var body = Body(row.In[0], row.In[1], killed, (byte)row.In[5], 0x7777, 0x5555);
 
-            AlundraEnemyHelpers.HitReaction(body, animation, new HitContext(hero));
+            EnemyHelpers.HitReaction(body, animation, new HitContext(hero));
 
             // the outputs in the oracle's order: +0x277, +0x88, +0x8C
             Assert.True(row.Out[0] == body.Bytes[3], $"{where}: Bytes[3] is {body.Bytes[3]}");
@@ -91,7 +91,7 @@ public sealed class AlundraEnemyHitReactionTests
     {
         var body = Body(1000, 2000, killed: true, oldByte: 0, oldAnimation: 0, oldDirection: 9);
 
-        AlundraEnemyHelpers.HitReaction(body, 5, new HitContext(null));
+        EnemyHelpers.HitReaction(body, 5, new HitContext(null));
 
         Assert.Equal(1, body.Bytes[3]);
         Assert.Equal(5u, body.TargetAnimationId);
@@ -109,7 +109,7 @@ public sealed class AlundraEnemyHitReactionTests
         {
             var body = new AlundraEntityScriptProxy { BalanceRecord = Sheet(), Hp = 100, TouchingEntity = Attacker(0x81, 1) };
 
-            AlundraEnemyHelpers.HitReaction(body, 5, new HitContext(new AlundraEntityScriptProxy()) { EquipmentRecords = records, HeroAnimationLatch = latch });
+            EnemyHelpers.HitReaction(body, 5, new HitContext(new AlundraEntityScriptProxy()) { EquipmentRecords = records, HeroAnimationLatch = latch });
 
             Assert.Equal(hp, body.Hp);
         }

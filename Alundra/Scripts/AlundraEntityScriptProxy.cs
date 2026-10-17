@@ -136,7 +136,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <see cref="AlundraWorldProxy"/>'s hero adoption) next to <see cref="SpriteProgramIndexes"/>; -1 when no
     /// header resolved (degraded spawn, no native handler can apply). Read by
     /// <see cref="EventProgramRunner.RunSpriteEvent"/> to recognise the save book (type
-    /// <see cref="AlundraSaveBook.SpriteType"/>).
+    /// <see cref="SaveBook.SpriteType"/>).
     /// </summary>
     public int SpriteType = -1;
 

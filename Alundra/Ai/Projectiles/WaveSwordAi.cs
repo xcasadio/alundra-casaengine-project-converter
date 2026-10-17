@@ -11,7 +11,7 @@ namespace Alundra.Ai.Projectiles;
 /// <c>CheckAndTriggerTileEffect</c> (<c>0x8003A7B0</c>) and nothing else; the death of the wave (E10, <c>0x8007F23C</c>, the body of E1) is handled in line by the runner (<see cref="EventProgramRunner.IsInlineDeactivateCode"/>,
 /// D-F3-5). The program A0 of these types only writes <c>AIValues[0]</c>, which no code of the wave reads: it is not registered (D-F3-7, section 1.20).
 /// </summary>
-internal static class AlundraWaveSwordAi
+internal static class WaveSwordAi
 {
     /// <summary>The sprite types of the wave: steel, demon, holy sword.</summary>
     internal static readonly int[] SpriteTypes = { 27, 28, 29 };
@@ -27,7 +27,7 @@ internal static class AlundraWaveSwordAi
     internal static List<AlundraEntityScriptProxy>? StubCallsForTests;
 
     /// <summary>Registers C61 for the types 27 to 29.</summary>
-    internal static void Register(AlundraNativeSpriteRegistry registry)
+    internal static void Register(NativeSpriteRegistry registry)
         => registry.Register(ScriptHelper.ProgramCTick, TickCode, SpriteTypes, (entity, context, state) => Tick(entity));
 
     /// <summary>C61 (<c>0x8007A958</c>), one tick of the wave: the call of the cutting of the grass, a named stub until E20.e.</summary>

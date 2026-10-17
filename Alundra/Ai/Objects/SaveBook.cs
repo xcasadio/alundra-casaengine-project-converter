@@ -15,7 +15,7 @@ namespace Alundra.Ai.Objects;
 /// original's <c>g_globalTransitionState</c> seen from the book (L5). The save screen's director implements it;
 /// the book's tests fake it.
 /// </summary>
-internal interface IAlundraSaveBookScreen
+internal interface ISaveBookScreen
 {
     /// <summary>True while the save screen runs (L5: from state <c>0x2710</c> to the end of <c>0x63</c>) - the book's
     /// state 6 waits for it to turn false, as the original waits for <c>g_globalTransitionState == 0</c>.</summary>
@@ -68,12 +68,12 @@ internal interface IAlundraSaveBookScreen
 /// <para>The book does not reuse opcode <c>0x44</c>'s degraded rule, which takes a missing presenter for a OUI
 /// (<c>AlundraEventProgramRunner.cs:704-710</c>): without a presenter the book abandons.</para>
 /// </summary>
-public sealed class AlundraSaveBook
+public sealed class SaveBook
 {
     /// <summary>The one session instance.</summary>
-    public static readonly AlundraSaveBook Instance = new();
+    public static readonly SaveBook Instance = new();
 
-    private AlundraSaveBook()
+    private SaveBook()
     {
     }
 
@@ -113,17 +113,17 @@ public sealed class AlundraSaveBook
     internal const int StateCapture = 5;
     internal const int StateWaitScreen = 6;
 
-    private const string LogPrefix = "AlundraSaveBook: ";
+    private const string LogPrefix = "SaveBook: ";
 
     /// <summary>
     /// L4/L5: the save screen, as the book sees it - the session's <see cref="AlundraSaveScreenDirector"/> (E16.e T3).
     /// Null makes state 5 abandon (nothing can be shown), logged. Tests pose a fake.
     /// </summary>
-    internal IAlundraSaveBookScreen? Screen { get; set; } = ProductionScreen;
+    internal ISaveBookScreen? Screen { get; set; } = ProductionScreen;
 
     /// <summary>E16.e T5: the production screen, one source for the default and for <see cref="ResetForTests"/> - so
     /// the end-to-end test, which never replaces it, pins the production wiring.</summary>
-    private static IAlundraSaveBookScreen ProductionScreen => AlundraSaveScreenDirector.Instance;
+    private static ISaveBookScreen ProductionScreen => AlundraSaveScreenDirector.Instance;
 
     /// <summary>L4/SE1: <see cref="AlundraDialogueDirector.OpenSerial"/> right after the book's own
     /// <see cref="AlundraDialogueDirector.Open"/>, or null when the book owns no box.</summary>

@@ -49,7 +49,7 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
         AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
         AlundraPlayerManager.WiredWeaponTypesForTests = null;
         AlundraPlayerManager.WeaponSpawnCallsForTests = null;
-        AlundraWaveSwordAi.StubCallsForTests = null;
+        WaveSwordAi.StubCallsForTests = null;
         AlundraNativeEffects.CreatedForTests = null;
         AlundraRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;

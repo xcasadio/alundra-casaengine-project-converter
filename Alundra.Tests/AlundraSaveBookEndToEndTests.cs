@@ -77,7 +77,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
     {
         ResetSingletons();
         AlundraEtcStringTable.ResetForTests();
-        AlundraSaveBook.Instance.ResetForTests();
+        SaveBook.Instance.ResetForTests();
     }
 
     private static GameState State => GameState.Instance;
@@ -200,7 +200,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         // Square ends the screen; the book resets and the hero is released.
         Press(proxy, AlundraPadState.Square);
         FramesUntil(proxy, () => !Screen.IsActive && !Screen.IsBookFlowActive, 200);
-        Assert.Equal(AlundraSaveBook.StateIdle, AlundraSaveBook.ReadState(book));
+        Assert.Equal(SaveBook.StateIdle, SaveBook.ReadState(book));
         Assert.Equal(0u, State.PlayerControlFlags);
 
         // The label of slot2, recomputed from what the service received.
@@ -236,7 +236,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         // The book's record (index 0) has SpriteDirection bit 0x40 clear: the map-load pass skips it, and map 17
         // spawns it from its map program B[1] (opcode 0x8B at code offset 0xFA, SpawnEntityNextToEntity(record 0),
         // behind story flags). It is spawned here by that same production path, SpawnEntityByRecordId.
-        Assert.DoesNotContain(Spawned(proxy), e => e.SpriteType == AlundraSaveBook.SpriteType);
+        Assert.DoesNotContain(Spawned(proxy), e => e.SpriteType == SaveBook.SpriteType);
         var hero = Assert.IsType<AlundraEntityScriptProxy>(heroEntity.GameplayProxy);
         Assert.NotNull(proxy.SpawnEntityByRecordId(hero, 0));
 
@@ -249,9 +249,9 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         // which the headless montage never plays: the hero is put at its end, Idle.
         Assert.Equal(GameState.ResetAnimationId, hero.TargetAnimationId);
         hero.TargetAnimationId = 0;
-        var book = Assert.Single(Spawned(proxy), e => e.SpriteType == AlundraSaveBook.SpriteType);
-        Assert.Equal(AlundraSaveBook.InteractCode, book.SpriteProgramIndexes[ScriptHelper.ProgramFInteract]);
-        Assert.Equal(AlundraSaveBook.TickCode, book.SpriteProgramIndexes[ScriptHelper.ProgramCTick]);
+        var book = Assert.Single(Spawned(proxy), e => e.SpriteType == SaveBook.SpriteType);
+        Assert.Equal(SaveBook.InteractCode, book.SpriteProgramIndexes[ScriptHelper.ProgramFInteract]);
+        Assert.Equal(SaveBook.TickCode, book.SpriteProgramIndexes[ScriptHelper.ProgramCTick]);
 
         // Chapter 1 ("Wendell Succombe") reached, to read it back from the label.
         State.GameFlags[0] |= 1u << 3;

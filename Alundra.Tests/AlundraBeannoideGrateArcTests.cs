@@ -89,8 +89,8 @@ public sealed class AlundraBeannoideGrateArcTests
         var bodies = new[] { arc.EntityByRecord(0)!, arc.EntityByRecord(1)! };
         Assert.NotNull(bodies[0]);
         Assert.NotNull(bodies[1]);
-        Assert.Equal(AlundraBeannoideAi.SpriteType, bodies[0].SpriteType);
-        Assert.Equal(AlundraBeannoideAi.SpriteType, bodies[1].SpriteType);
+        Assert.Equal(BeannoideAi.SpriteType, bodies[0].SpriteType);
+        Assert.Equal(BeannoideAi.SpriteType, bodies[1].SpriteType);
         var others = new[] { 17, 41, 42, 43, 44 };
         Assert.All(others, record => Assert.NotNull(arc.EntityByRecord(record)));
         var store = LeverArcs.Store(arc);

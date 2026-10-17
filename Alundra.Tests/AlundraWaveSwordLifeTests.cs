@@ -51,7 +51,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
     {
         AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
         AlundraPlayerManager.WiredWeaponTypesForTests = null;
-        AlundraWaveSwordAi.StubCallsForTests = null;
+        WaveSwordAi.StubCallsForTests = null;
         AlundraNativeEffects.CreatedForTests = null;
         AlundraRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
@@ -128,7 +128,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
         {
             run.Arena.Arc.Runner.NativeHandlersEnabled = true; // HitArena turns them off (E14.a0, D-E14-5): the positive case needs them ON, only the paired negative case keeps them off.
             var journal = new List<AlundraEntityScriptProxy>();
-            AlundraWaveSwordAi.StubCallsForTests = journal;
+            WaveSwordAi.StubCallsForTests = journal;
             var previous = 0;
             run.Go(ticksPerFrame, useHook: true, afterTick: t =>
             {
@@ -147,7 +147,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
         {
             run.Arena.Arc.Runner.NativeHandlersEnabled = false;
             var journal = new List<AlundraEntityScriptProxy>();
-            AlundraWaveSwordAi.StubCallsForTests = journal;
+            WaveSwordAi.StubCallsForTests = journal;
             run.Go(ticksPerFrame, useHook: true);
             offCalls = journal.Count;
             Assert.NotNull(run.Born); // the wave was there.
@@ -171,13 +171,13 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
         var registry = runner.NativeSprites;
         var catalog = new SpriteRecordCatalog(ProjectRootFinder.Find());
 
-        var headers = AlundraWaveSwordAi.SpriteTypes.Select(type =>
+        var headers = WaveSwordAi.SpriteTypes.Select(type =>
         {
             Assert.True(catalog.TryGetPrefab(false, type, out var prefab), $"the prefab of the type {type}");
             Assert.True(catalog.TryGet(prefab, out var header), $"the header of the type {type}");
             return header;
         }).ToList();
-        var types = AlundraWaveSwordAi.SpriteTypes;
+        var types = WaveSwordAi.SpriteTypes;
 
         Assert.Equal(
             (3 + 3 + 1, true, true, true, false, 0),

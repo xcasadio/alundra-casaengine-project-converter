@@ -382,7 +382,7 @@ internal sealed class ArcRun : IDisposable
         AlundraRandom.Reset();
         ResetSingletons();
         AlundraEtcStringTable.ResetForTests();
-        AlundraSaveBook.Instance.ResetForTests();
+        SaveBook.Instance.ResetForTests();
     }
 
     public IReadOnlyList<AlundraEntityScriptProxy> Entities => ((IEntityWorldContext)Proxy).SpawnedEntities;

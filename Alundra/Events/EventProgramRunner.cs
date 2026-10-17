@@ -34,7 +34,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     public int SpriteEventRunCount { get; private set; }
 
     /// <summary>E16.e L1: how many of the <see cref="SpriteEventRunCount"/> calls were dispatched to the save book
-    /// (<see cref="AlundraSaveBook.TryMatch"/>); every other one stays a counted no-op.</summary>
+    /// (<see cref="SaveBook.TryMatch"/>); every other one stays a counted no-op.</summary>
     public int SaveBookEventRunCount { get; private set; }
 
     /// <summary>E14.a0 (D-E14-1): how many of the <see cref="SpriteEventRunCount"/> calls were dispatched to a native
@@ -47,9 +47,9 @@ public sealed class EventProgramRunner : IEventProgramRunner
     private readonly Dictionary<(int Slot, int Code), int> _nativeHandlerRunCounts = new();
 
     /// <summary>E14.a0 (D-E14-1): the registry of the native sprite handlers by (slot, code) and sprite type. In production it holds the
-    /// Beannoid's A1, C1 and D1 for the type 335 (E14.a1b, <see cref="AlundraBeannoideAi"/>) and the Muruta's A0, C10 and D9 for the type 347 (E14.a1c, <see cref="AlundraMurutaAi"/>). Consulted after
+    /// Beannoid's A1, C1 and D1 for the type 335 (E14.a1b, <see cref="BeannoideAi"/>) and the Muruta's A0, C10 and D9 for the type 347 (E14.a1c, <see cref="MurutaAi"/>). Consulted after
     /// the save book and E0/E1, which stay outside it.</summary>
-    internal AlundraNativeSpriteRegistry NativeSprites { get; } = AlundraNativeSpriteRegistry.CreateForProduction();
+    internal NativeSpriteRegistry NativeSprites { get; } = NativeSpriteRegistry.CreateForProduction();
 
     /// <summary>E14.a0 (D-E14-5): true by default; false turns the registry off, so every native handler of it is a counted
     /// no-op again. Set by the arenas of the hit-pass oracles (E20.c1a, E20.c1b), whose runs expect the Beannoids to stay
@@ -255,10 +255,10 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// <summary>
     /// Port of <c>GameEngine.RunSpriteEvent</c> (GameEngine.cs:2224-2228) and of its table lookup
     /// (<c>g_entityEventFunctionsByType</c>, 0x800C4F34, <c>SpriteEventHandlers.RunSpriteEvent</c>) restricted, by
-    /// E16.e L1 (docs/plan-e16-etat-partie.md), to ONE entity: the save book (<see cref="AlundraSaveBook"/>),
+    /// E16.e L1 (docs/plan-e16-etat-partie.md), to ONE entity: the save book (<see cref="SaveBook"/>),
     /// whose slot F code 1 (<c>Script_FInteract_FUN_8007fc64</c>) and slot C code 72
     /// (<c>AI_ProcessWarpTransitionState</c>, 0x8007B998) are dispatched to it, and only when
-    /// <see cref="AlundraSaveBook.TryMatch"/> holds all together (type 237, a native slot, a book code). Every call
+    /// <see cref="SaveBook.TryMatch"/> holds all together (type 237, a native slot, a book code). Every call
     /// is counted in <see cref="SpriteEventRunCount"/>; every other native handler (the ~120 of E14) stays a
     /// counted no-op, as before E16.e.
     /// </summary>
@@ -266,16 +266,16 @@ public sealed class EventProgramRunner : IEventProgramRunner
     {
         SpriteEventRunCount++;
 
-        if (AlundraSaveBook.TryMatch(entity, out var bookSlot))
+        if (SaveBook.TryMatch(entity, out var bookSlot))
         {
             SaveBookEventRunCount++;
             if (bookSlot == ScriptHelper.ProgramFInteract)
             {
-                AlundraSaveBook.Instance.RunInteract(entity, _worldContext, _gameState);
+                SaveBook.Instance.RunInteract(entity, _worldContext, _gameState);
             }
             else
             {
-                AlundraSaveBook.Instance.RunTick(entity, _worldContext, _gameState);
+                SaveBook.Instance.RunTick(entity, _worldContext, _gameState);
             }
 
             return;
@@ -326,7 +326,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
     /// <summary>E19.d2b / E20.f3a (D-F3-4): the codes of the program E (deactivation) that <see cref="RunSpriteEvent"/> treats in line, outside the registry of the native handlers: 0 and 1 (<c>0x8007ED10</c>, <c>DestroyEntity(e, -1)</c>) and, since E20.f3c (D-F3-5), 10 (<c>0x8007F23C</c>, the same body, found only on the sprites 27 to 29 of the sword wave: one branch for two addresses). The one
     /// definition shared by the runner and by the checker of the wired weapon types (<see cref="AlundraPlayerManager.UnhandledWeaponSpriteCodes"/>).</summary>
-    internal static bool IsInlineDeactivateCode(int code) => (uint)code <= 1u || code == AlundraWaveSwordAi.DeactivateCode;
+    internal static bool IsInlineDeactivateCode(int code) => (uint)code <= 1u || code == WaveSwordAi.DeactivateCode;
 
     /// <summary>Port of EntityEventHandlers.InitializeEventData @ 0x80041ee4 for slot A - see class doc
     /// on the 0x80 bit fallback. Internal for direct unit testing of the A-table &amp; 0x7f resolution.

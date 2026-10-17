@@ -1239,7 +1239,7 @@ public static class AlundraPlayerManager
     /// (slot, code) pairs that are not, in the order of the types and then C before E; a type the catalog does not hold gives (-1, type). Empty means the types may be wired.
     /// </summary>
     internal static System.Collections.Generic.IReadOnlyList<(int Slot, int Code)> UnhandledWeaponSpriteCodes(
-        System.Collections.Generic.IEnumerable<int> types, ISpriteRecordCatalog catalog, AlundraNativeSpriteRegistry registry)
+        System.Collections.Generic.IEnumerable<int> types, ISpriteRecordCatalog catalog, NativeSpriteRegistry registry)
     {
         var unhandled = new System.Collections.Generic.List<(int Slot, int Code)>();
         foreach (var type in types)

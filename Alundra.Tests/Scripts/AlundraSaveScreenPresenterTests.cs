@@ -60,7 +60,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
     {
         ResetSingletons();
         AlundraEtcStringTable.ResetForTests();
-        AlundraSaveBook.Instance.ResetForTests();
+        SaveBook.Instance.ResetForTests();
     }
 
     private static GameState State => GameState.Instance;

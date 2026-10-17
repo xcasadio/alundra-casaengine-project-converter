@@ -11,7 +11,7 @@ using Alundra.Rng;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E14.a0b T3 (docs/plan-e14-ia-native.md section 1.2): the shared helpers of the enemy AI (<see cref="AlundraEnemyHelpers"/>) against the real code of <c>ALUN_CD.EXE</c> (France) run in the emulator on 10,000 random states each
+/// E14.a0b T3 (docs/plan-e14-ia-native.md section 1.2): the shared helpers of the enemy AI (<see cref="EnemyHelpers"/>) against the real code of <c>ALUN_CD.EXE</c> (France) run in the emulator on 10,000 random states each
 /// (<c>docs/plan-e14-annexe/e14a/oracle/out/h1/&lt;helper&gt;.txt.gz</c>): every state, value by value. The expected values are the oracle's, never computed by the code under test.
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
@@ -49,7 +49,7 @@ public sealed class AlundraEnemyHelpersTests
             var hero = new AlundraEntityScriptProxy { TileX = row.In[3], TileY = row.In[4], FloorHeight = row.In[5] };
             Span<int> output = stackalloc int[6];
 
-            AlundraEnemyHelpers.RelativePosition(self, hero, output);
+            EnemyHelpers.RelativePosition(self, hero, output);
 
             AssertWords(row.Out, output, where);
         });
@@ -64,7 +64,7 @@ public sealed class AlundraEnemyHelpersTests
             var hero = new AlundraEntityScriptProxy { TileX = row.In[3], TileY = row.In[4], FloorHeight = row.In[5] };
             Span<int> output = stackalloc int[6];
 
-            AlundraEnemyHelpers.RelativePositionFromPosZ(self, hero, output);
+            EnemyHelpers.RelativePositionFromPosZ(self, hero, output);
 
             AssertWords(row.Out, output, where);
         });
@@ -77,7 +77,7 @@ public sealed class AlundraEnemyHelpersTests
         {
             var rel = row.In.AsSpan(0, 6);
 
-            var result = AlundraEnemyHelpers.TryAttackPlayer2(rel, row.In[6], row.In[7], row.In[8], row.In[9]);
+            var result = EnemyHelpers.TryAttackPlayer2(rel, row.In[6], row.In[7], row.In[8], row.In[9]);
 
             Assert.True(row.Out[0] == (result ? 1 : 0), $"{where}: answered {result}");
         });
@@ -92,7 +92,7 @@ public sealed class AlundraEnemyHelpersTests
             var self = new AlundraEntityScriptProxy { BoxDirection = row.In[0], AnimationDirection = (row.In[0] + 1) & 3 };
             var rel = row.In.AsSpan(1, 6);
 
-            var result = AlundraEnemyHelpers.TryAttackPlayerFront(self, rel, row.In[7], row.In[8], row.In[9]);
+            var result = EnemyHelpers.TryAttackPlayerFront(self, rel, row.In[7], row.In[8], row.In[9]);
 
             Assert.True(row.Out[0] == (result ? 1 : 0), $"{where}: answered {result}");
         });
@@ -107,8 +107,8 @@ public sealed class AlundraEnemyHelpersTests
         var east = new AlundraEntityScriptProxy { BoxDirection = 3, AnimationDirection = 0 };
         var other = new AlundraEntityScriptProxy { BoxDirection = 0, AnimationDirection = 3 };
 
-        Assert.True(AlundraEnemyHelpers.TryAttackPlayerFront(east, rel, 5, 12, 0));
-        Assert.False(AlundraEnemyHelpers.TryAttackPlayerFront(other, rel, 5, 12, 0));
+        Assert.True(EnemyHelpers.TryAttackPlayerFront(east, rel, 5, 12, 0));
+        Assert.False(EnemyHelpers.TryAttackPlayerFront(other, rel, 5, 12, 0));
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public sealed class AlundraEnemyHelpersTests
 
             self.TargetForceX = self.TargetForceY = self.ForceX = self.ForceY = self.ForceStepX = self.ForceStepY = MarkForce;
 
-            var turned = AlundraEnemyHelpers.HandleAnimationDirection(self, (uint)row.In[6], row.In[7]);
+            var turned = EnemyHelpers.HandleAnimationDirection(self, (uint)row.In[6], row.In[7]);
 
             // the outputs in the oracle's order: result, +0x88, +0x8C, then +0xBC +0xC0 +0xC4 +0xC8 +0xD4 +0xD8
             int[] actual = { turned ? 1 : 0, (int)self.TargetAnimationId, (int)self.TargetDirection, self.TargetForceX, self.TargetForceY, self.ForceX, self.ForceY, self.ForceStepX, self.ForceStepY };
@@ -145,7 +145,7 @@ public sealed class AlundraEnemyHelpersTests
                 self.AIValues[1] = MarkHalf;
                 var hero = new AlundraEntityScriptProxy { PosX = row.In[3], PosY = row.In[4] };
 
-                AlundraEnemyHelpers.StartWalk(self, hero, (uint)row.In[5], row.In[6], row.In[7]);
+                EnemyHelpers.StartWalk(self, hero, (uint)row.In[5], row.In[6], row.In[7]);
 
                 // the outputs in the oracle's order: the random word, +0x8C, +0x88, +0x282 (16 bits)
                 int[] actual = { unchecked((int)(uint)AlundraRandom.RandomSeed), (int)self.TargetDirection, (int)self.TargetAnimationId, (ushort)self.AIValues[1] };
@@ -183,7 +183,7 @@ public sealed class AlundraEnemyHelpersTests
         try
         {
             AlundraRandom.RandomSeed = seed;
-            Assert.Equal(expected, AlundraEnemyHelpers.Below(n));
+            Assert.Equal(expected, EnemyHelpers.Below(n));
         }
         finally
         {
@@ -199,9 +199,9 @@ public sealed class AlundraEnemyHelpersTests
         try
         {
             AlundraRandom.RandomSeed = 0xFFFF_FFFF_0000_0000UL;
-            var withHigh = AlundraEnemyHelpers.Below(0x65);
+            var withHigh = EnemyHelpers.Below(0x65);
             AlundraRandom.RandomSeed = 0;
-            Assert.Equal(AlundraEnemyHelpers.Below(0x65), withHigh);
+            Assert.Equal(EnemyHelpers.Below(0x65), withHigh);
         }
         finally
         {
@@ -218,6 +218,6 @@ public sealed class AlundraEnemyHelpersTests
         expected.AddRange(Enumerable.Repeat((byte)0x08, 8));
         expected.AddRange(Enumerable.Repeat((byte)0x10, 8));
         expected.AddRange(Enumerable.Repeat((byte)0x18, 7));
-        Assert.Equal(expected, AlundraEnemyHelpers.QuarterTurnTable);
+        Assert.Equal(expected, EnemyHelpers.QuarterTurnTable);
     }
 }

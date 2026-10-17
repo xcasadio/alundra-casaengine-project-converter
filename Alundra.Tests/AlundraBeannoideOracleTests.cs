@@ -133,7 +133,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
         return _kit = records;
     }
 
-    private static AlundraBalanceRecord Sheet() => AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find()).Select(AlundraBeannoideAi.SpriteType, 0)!;
+    private static AlundraBalanceRecord Sheet() => AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find()).Select(BeannoideAi.SpriteType, 0)!;
 
     private static (Entity Entity, AlundraEntityScriptProxy Proxy) NewHero(IReadOnlyDictionary<string, long> words, long[]? attack)
     {
@@ -162,7 +162,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
     /// <summary>The entity of a call: every field of <paramref name="before"/> the DLL has, the forces as given (or marked), the words nobody touches marked, the registry's keys (type 335, the slot, the code).</summary>
     private static AlundraEntityScriptProxy NewBeannoid(IReadOnlyDictionary<string, long> before, IReadOnlyDictionary<string, long> forceBefore, int letter, Entity heroEntity, int status)
     {
-        var entity = new AlundraEntityScriptProxy { SpriteType = AlundraBeannoideAi.SpriteType, Status = (EntityStatus)status, BreakEffect = 8 };
+        var entity = new AlundraEntityScriptProxy { SpriteType = BeannoideAi.SpriteType, Status = (EntityStatus)status, BreakEffect = 8 };
         foreach (var (name, value) in before)
         {
             if (Fields.TryGetValue(name, out var field))
@@ -184,7 +184,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
         entity.BalanceRecord = Sheet();
         entity.TouchingEntity = before.GetValueOrDefault("touching_224") != 0 ? heroEntity : null;
         entity.ProgramIndexes[letter] = 0;
-        entity.SpriteProgramIndexes[letter] = AlundraBeannoideAi.Code;
+        entity.SpriteProgramIndexes[letter] = BeannoideAi.Code;
         entity.EventTrigger = letter;
         return entity;
     }

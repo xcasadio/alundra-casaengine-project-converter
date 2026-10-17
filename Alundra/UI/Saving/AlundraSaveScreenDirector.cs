@@ -53,7 +53,7 @@ namespace Alundra.UI.Saving;
 /// 0x80, a leaving box goes below 0). Here the tint stays on its target from the duration on.</description></item>
 /// </list>
 /// </summary>
-public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
+public sealed class AlundraSaveScreenDirector : ISaveBookScreen
 {
     /// <summary>The one session instance, built in a nested holder so the class's own static tables
     /// (<see cref="SlotNames"/>, <see cref="RowY"/>), which the constructor reads, are initialized first.</summary>
@@ -381,7 +381,7 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
             LogPrefix + $"a world change cut the save flow (screen state 0x{_state:X}, book flow {(_bookFlowActive ? "running" : "idle")}); "
             + "nothing written, the hero released.");
 
-        AlundraSaveBook.Instance.ForgetFlow();
+        SaveBook.Instance.ForgetFlow();
         ResetFlowState();
     }
 

@@ -98,7 +98,7 @@ public sealed class AlundraMurutaHallArcTests
         var cNativeSince = new Dictionary<int, int>();
         var d9AtTick = new Dictionary<int, int>();
 
-        int D9Count() => arc.Runner.NativeHandlerRunCounts.GetValueOrDefault((D, AlundraMurutaAi.TouchCode));
+        int D9Count() => arc.Runner.NativeHandlerRunCounts.GetValueOrDefault((D, MurutaAi.TouchCode));
 
         arc.OnFrame = () =>
         {

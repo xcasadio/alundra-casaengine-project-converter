@@ -72,7 +72,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     {
         ResetSingletons();
         AlundraEtcStringTable.ResetForTests();
-        AlundraSaveBook.Instance.ResetForTests();
+        SaveBook.Instance.ResetForTests();
         AlundraSaveScreenDirector.Instance.ResetForTests();
     }
 
@@ -796,7 +796,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         book.RunPickedEvent(runner);
         book.EventTrigger = ScriptHelper.ProgramCTick;
         book.RunPickedEvent(runner);
-        Assert.Equal(AlundraSaveBook.StateQuestion, AlundraSaveBook.ReadState(book));
+        Assert.Equal(SaveBook.StateQuestion, SaveBook.ReadState(book));
         Assert.True(Dialogue.IsOpen);
         Assert.True(Director.IsBookFlowActive);
         Assert.NotEqual(0u, State.PlayerControlFlags & GameState.PlayerControlBits.ControlLocked);
@@ -823,7 +823,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         var runner = new EventProgramRunner(null, State, context);
         var book = NewBook();
         State.PlayerStats.WeaponId = 1;
-        Assert.Same(Director, AlundraSaveBook.Instance.Screen);
+        Assert.Same(Director, SaveBook.Instance.Screen);
 
         void BookTick(int count = 1, uint hold = 0)
         {
@@ -838,9 +838,9 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
         book.EventTrigger = ScriptHelper.ProgramFInteract;
         book.RunPickedEvent(runner);
-        BookTick(1 + AlundraSaveBook.WaitTicks + 1);
+        BookTick(1 + SaveBook.WaitTicks + 1);
         Assert.True(Dialogue.SelectChoiceForTests(0)); // the book's own OUI.
-        BookTick(37 + AlundraSaveBook.WaitTicks + 1); // E19.f3a: 37 ticks to the answer, then the 61 of the wait
+        BookTick(37 + SaveBook.WaitTicks + 1); // E19.f3a: 37 ticks to the answer, then the 61 of the wait
         Assert.True(Director.IsActive);
 
         BookTick(TicksToSettledPicker);
@@ -857,12 +857,12 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.Equal((389, 20, 30, 1), (call.Data.InitialMapId, call.Data.CameraTileX, call.Data.CameraTileY, call.Data.CameraTileZ));
 
         BookTick(hold: AlundraPadState.Square);
-        for (var i = 0; i < 100 && (Director.IsActive || AlundraSaveBook.ReadState(book) != AlundraSaveBook.StateIdle); i++)
+        for (var i = 0; i < 100 && (Director.IsActive || SaveBook.ReadState(book) != SaveBook.StateIdle); i++)
         {
             BookTick();
         }
 
-        Assert.Equal(AlundraSaveBook.StateIdle, AlundraSaveBook.ReadState(book));
+        Assert.Equal(SaveBook.StateIdle, SaveBook.ReadState(book));
         Assert.False(Director.IsBookFlowActive);
         Assert.Equal(0u, State.PlayerControlFlags);
     }
@@ -890,9 +890,9 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
         book.EventTrigger = ScriptHelper.ProgramFInteract;
         book.RunPickedEvent(runner);
-        BookTick(1 + AlundraSaveBook.WaitTicks + 1);
+        BookTick(1 + SaveBook.WaitTicks + 1);
         Assert.True(Dialogue.SelectChoiceForTests(0));
-        BookTick(37 + AlundraSaveBook.WaitTicks + 1); // E19.f3a
+        BookTick(37 + SaveBook.WaitTicks + 1); // E19.f3a
         Assert.True(Director.IsActive);
         BookTick(3);
         Assert.Equal((Failed0, Failed1), (Director.MessageLine0.Text, Director.MessageLine1.Text));
@@ -900,7 +900,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         BookTick(hold: AlundraPadState.Square);
         BookTick(60);
 
-        Assert.Equal(AlundraSaveBook.StateIdle, AlundraSaveBook.ReadState(book));
+        Assert.Equal(SaveBook.StateIdle, SaveBook.ReadState(book));
         Assert.False(Director.IsActive);
         Assert.Equal(0u, State.PlayerControlFlags);
         Assert.True(_slots.NothingCalled);
@@ -908,10 +908,10 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
     private static AlundraEntityScriptProxy NewBook()
     {
-        var book = new AlundraEntityScriptProxy { SpriteType = AlundraSaveBook.SpriteType, Status = EntityStatus.Normal };
+        var book = new AlundraEntityScriptProxy { SpriteType = SaveBook.SpriteType, Status = EntityStatus.Normal };
         book.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = 254;
-        book.SpriteProgramIndexes[ScriptHelper.ProgramCTick] = AlundraSaveBook.TickCode;
-        book.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = AlundraSaveBook.InteractCode;
+        book.SpriteProgramIndexes[ScriptHelper.ProgramCTick] = SaveBook.TickCode;
+        book.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = SaveBook.InteractCode;
         return book;
     }
 

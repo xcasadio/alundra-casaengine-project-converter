@@ -153,7 +153,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         return _kit = records;
     }
 
-    private static AlundraBalanceRecord Sheet() => AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find()).Select(AlundraMurutaAi.SpriteType, 0)!;
+    private static AlundraBalanceRecord Sheet() => AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find()).Select(MurutaAi.SpriteType, 0)!;
 
     /// <summary>The hero: position, tile and floor; the frame box FIELD (<paramref name="box"/>) and the current attack (<paramref name="attack"/>, null for a null pointer).</summary>
     private static (Entity Entity, AlundraEntityScriptProxy Proxy) NewHero(IReadOnlyDictionary<string, long> words, long[]? attack, bool box)
@@ -194,7 +194,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
 
     private static AlundraEntityScriptProxy NewMuruta(IReadOnlyDictionary<string, long> before, IReadOnlyDictionary<string, long> forceBefore, int letter, int code, Entity heroEntity, int status)
     {
-        var entity = new AlundraEntityScriptProxy { SpriteType = AlundraMurutaAi.SpriteType, Status = (EntityStatus)status, BreakEffect = 8 };
+        var entity = new AlundraEntityScriptProxy { SpriteType = MurutaAi.SpriteType, Status = (EntityStatus)status, BreakEffect = 8 };
         foreach (var (name, value) in before)
         {
             if (Fields.TryGetValue(name, out var field))
@@ -266,7 +266,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
     }
 
     /// <summary>
-    /// The force words as they were before the call: the <c>before</c> of those the oracle changed. The handlers stop an entity by zeroing the six words together (<see cref="AlundraEnemyHelpers.ZeroForces"/>); the oracle's junk
+    /// The force words as they were before the call: the <c>before</c> of those the oracle changed. The handlers stop an entity by zeroing the six words together (<see cref="EnemyHelpers.ZeroForces"/>); the oracle's junk
     /// can leave one of them at 0 already, which then is not listed as changed - when a changed force word went to 0, the unlisted ones were 0 before (and stay 0). Otherwise they keep the marker (a word nobody writes).
     /// </summary>
     private static Dictionary<string, long> ForcesBefore(IReadOnlyList<HandlerChange> changed)
@@ -289,9 +289,9 @@ public sealed class AlundraMurutaOracleTests : IDisposable
 
     private static (int Letter, int Code) KeyOf(string handler) => handler switch
     {
-        "A0" => (ScriptHelper.ProgramALoad, AlundraMurutaAi.LoadCode),
-        "C10" => (ScriptHelper.ProgramCTick, AlundraMurutaAi.TickCode),
-        "D9" => (ScriptHelper.ProgramDTouch, AlundraMurutaAi.TouchCode),
+        "A0" => (ScriptHelper.ProgramALoad, MurutaAi.LoadCode),
+        "C10" => (ScriptHelper.ProgramCTick, MurutaAi.TickCode),
+        "D9" => (ScriptHelper.ProgramDTouch, MurutaAi.TouchCode),
         _ => throw new InvalidOperationException(handler),
     };
 
@@ -389,7 +389,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         var hero = NewHero(new Dictionary<string, long> { ["posx"] = 0, ["posy"] = 0, ["tilex_120"] = 0, ["tiley_124"] = 0, ["floor_134"] = 1 }, new long[] { 0x81, 1 }, false);
         var context = new OracleContext { PlayerEntity = hero.Proxy, EquipmentRecords = Kit(), HeroAnimationLatch = 16 };
         var runner = new EventProgramRunner(null, new GameState(), context);
-        var entity = NewMuruta(new Dictionary<string, long> { ["hp"] = 3, ["touching_224"] = 1, ["posx"] = 1 << 20, ["posy"] = 0 }, new Dictionary<string, long>(), ScriptHelper.ProgramDTouch, AlundraMurutaAi.TouchCode, hero.Entity, 2);
+        var entity = NewMuruta(new Dictionary<string, long> { ["hp"] = 3, ["touching_224"] = 1, ["posx"] = 1 << 20, ["posy"] = 0 }, new Dictionary<string, long>(), ScriptHelper.ProgramDTouch, MurutaAi.TouchCode, hero.Entity, 2);
 
         entity.RunPickedEvent(runner);
 
@@ -406,9 +406,9 @@ public sealed class AlundraMurutaOracleTests : IDisposable
     [InlineData(-1, 0)]
     public void A0_TakesTheHighHalfOfTheZOfTheBinary_ThatIsThePosZOfTheDllPlusOne(int posZ, int expected)
     {
-        var entity = new AlundraEntityScriptProxy { SpriteType = AlundraMurutaAi.SpriteType, PosZ = posZ };
+        var entity = new AlundraEntityScriptProxy { SpriteType = MurutaAi.SpriteType, PosZ = posZ };
 
-        AlundraMurutaAi.Load(entity);
+        MurutaAi.Load(entity);
 
         Assert.Equal((short)expected, entity.AIValues[0]);
     }

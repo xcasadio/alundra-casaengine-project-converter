@@ -9,18 +9,18 @@ namespace Alundra.Ai.Enemies;
 
 /// <summary>
 /// E14.a1c T1 (docs/plan-e14-ia-native.md section 1.3c, D-E14-1): the native handlers of the Muruta (sprite type 347) - A0 (<c>0x8006174C</c>, slot A, code 0), C10 (<c>0x80068154</c>, slot C, code 10) and D9
-/// (<c>0x8007DE04</c>, slot D, code 9) of the master table <c>0x80098F4C</c> - registered in the registry of the native sprite handlers (<see cref="AlundraNativeSpriteRegistry"/>) for the type 347 only. E1 (its death) is
+/// (<c>0x8007DE04</c>, slot D, code 9) of the master table <c>0x80098F4C</c> - registered in the registry of the native sprite handlers (<see cref="NativeSpriteRegistry"/>) for the type 347 only. E1 (its death) is
 /// <c>DestroyEntity(e, -1)</c> of the host (E14.a1b). They are ported from the real code of <c>ALUN_CD.EXE</c> (France) run in the emulator of the E14.a1 oracle (<c>docs/plan-e14-annexe/e14a/oracle-a1</c>: 4,043 single-call vectors
 /// of C10, 720 of D9, 6 of A0, and the calls of the scenarios MU-*) and compared call by call (<c>AlundraMurutaOracleTests</c>). The fields they read are tied to the DLL's in the table of the plan (section 1.3c): the tile, floor
 /// and corner heights of the entity and of the hero, the direction of the TICK (<see cref="AlundraEntityScriptProxy.BoxDirection"/>, D-E14-6), the hero's frame box (the FIELD <see cref="AlundraEntityScriptProxy.HasFrameBox"/>, never
 /// re-evaluated) and current attack, the generator's word (<see cref="AlundraRandom"/>) and the sound player.
 /// <para>
 /// Not ported: the branch of C10 for the map <c>0x99</c> (the BSS word <c>[0x800DC5A0]</c> read at <c>0x80068164</c>, then the parent entity at <c>+0x0C</c>, <c>0x80068178</c>-<c>0x8006819C</c>): no record of the map 153 places a 347, the branch is
-/// dead for this sprite. Without a hero (<see cref="IEntityWorldContext.PlayerEntity"/> null) C10 does nothing and D9 only applies the damage and the animation (as <see cref="AlundraEnemyHelpers.HitReaction"/>): the binary always has a hero
+/// dead for this sprite. Without a hero (<see cref="IEntityWorldContext.PlayerEntity"/> null) C10 does nothing and D9 only applies the damage and the animation (as <see cref="EnemyHelpers.HitReaction"/>): the binary always has a hero
 /// and the oracle has none of these cases (documented limit). C10 never writes a position.
 /// </para>
 /// </summary>
-internal static class AlundraMurutaAi
+internal static class MurutaAi
 {
     /// <summary>The sprite type of the Muruta (<see cref="AlundraEntityScriptProxy.SpriteType"/>).</summary>
     internal const int SpriteType = 347;
@@ -41,7 +41,7 @@ internal static class AlundraMurutaAi
     private const int ZMax = 0x100000;
 
     /// <summary>Registers A0, C10 and D9 for the type 347.</summary>
-    internal static void Register(AlundraNativeSpriteRegistry registry)
+    internal static void Register(NativeSpriteRegistry registry)
     {
         var types = new[] { SpriteType };
         registry.Register(ScriptHelper.ProgramALoad, LoadCode, types, (entity, context, state) => Load(entity));
@@ -55,12 +55,12 @@ internal static class AlundraMurutaAi
     /// </summary>
     internal static void Load(AlundraEntityScriptProxy entity) => entity.AIValues[0] = unchecked((short)(unchecked(entity.PosZ + 1) >> 16));
 
-    /// <summary>D9 (<c>0x8007DE04</c>): <see cref="AlundraEnemyHelpers.HitReaction"/> with the animation 2.</summary>
-    internal static void Hit(AlundraEntityScriptProxy entity, IEntityWorldContext context) => AlundraEnemyHelpers.HitReaction(entity, 2, context);
+    /// <summary>D9 (<c>0x8007DE04</c>): <see cref="EnemyHelpers.HitReaction"/> with the animation 2.</summary>
+    internal static void Hit(AlundraEntityScriptProxy entity, IEntityWorldContext context) => EnemyHelpers.HitReaction(entity, 2, context);
 
     /// <summary>
     /// C10 (<c>0x80068154</c>), one tick of the Muruta, by its target animation (<c>+0x88</c>; only 0, 5, 9, 10 and 12 have code, the others only run the tail). <c>rel</c> is the relative position to the hero
-    /// (<see cref="AlundraEnemyHelpers.RelativePosition"/>), <c>ai1</c> the 16-bit counter <c>+0x282</c> (<see cref="AlundraEntityScriptProxy.AIValues"/>[1]), <c>b0</c> (<c>+0x274</c>) 0 calm / 1 alerted, <c>b1</c> (<c>+0x275</c>) the calm step.
+    /// (<see cref="EnemyHelpers.RelativePosition"/>), <c>ai1</c> the 16-bit counter <c>+0x282</c> (<see cref="AlundraEntityScriptProxy.AIValues"/>[1]), <c>b0</c> (<c>+0x274</c>) 0 calm / 1 alerted, <c>b1</c> (<c>+0x275</c>) the calm step.
     /// Every path ends in the tail: <c>TargetDirection = (TargetDirection + 2) &amp; 0x1C</c> (<c>0x80068904</c>).
     /// <list type="bullet">
     /// <item><description>0 calm: the hero in the front window (2 tiles wide, 6 deep) alerts it; else the counter counts down; else, with <c>b1</c> 0 only one time in four (a draw below 4 equal to 1), it plays the step <c>b1</c>: 0 to 2 hop
@@ -68,7 +68,7 @@ internal static class AlundraMurutaAi
     /// <item><description>0 alerted: out of the front window and of the back one (<c>BoxDirection ^ 1</c>, 2 by 3) it calms down; the counter counts down; it faces the hero; a hero who strikes (frame box, attack with a non-zero attribute) within 5 tiles
     /// is answered by a lunge (animation 3); else by the distance (3, 5, 7 tiles) a draw picks walk, hop or claw.</description></item>
     /// <item><description>5 (hurt): at the end of the animation, dying (<c>b3</c> set) it takes the animation 6 and the flag <c>0x40</c>, else it is alerted again for 0x1E ticks. 9 and 10: on the ground, animation 0 for 0x14 ticks.
-    /// 12 (walk): the front window alerts it; the counter or a wall stops it; a ledge (<see cref="AlundraEnemyHelpers.HandleAnimationDirection"/>) turns it.</description></item>
+    /// 12 (walk): the front window alerts it; the counter or a wall stops it; a ledge (<see cref="EnemyHelpers.HandleAnimationDirection"/>) turns it.</description></item>
     /// </list>
     /// </summary>
     internal static void Tick(AlundraEntityScriptProxy entity, IEntityWorldContext context)
@@ -79,7 +79,7 @@ internal static class AlundraMurutaAi
         }
 
         Span<int> rel = stackalloc int[6];
-        AlundraEnemyHelpers.RelativePosition(entity, hero, rel);
+        EnemyHelpers.RelativePosition(entity, hero, rel);
 
         switch (entity.TargetAnimationId)
         {
@@ -140,7 +140,7 @@ internal static class AlundraMurutaAi
 
     private static void Calm(AlundraEntityScriptProxy entity, IEntityWorldContext context, AlundraEntityScriptProxy hero, ReadOnlySpan<int> rel)
     {
-        if (AlundraEnemyHelpers.TryAttackPlayerFront(entity, rel, 2, 6, ZMax))
+        if (EnemyHelpers.TryAttackPlayerFront(entity, rel, 2, 6, ZMax))
         {
             entity.Bytes[0] = 1;
             SetCounter(entity, 0);
@@ -154,7 +154,7 @@ internal static class AlundraMurutaAi
             return;
         }
 
-        if (entity.Bytes[1] == 0 && AlundraEnemyHelpers.Below(4) != 1)
+        if (entity.Bytes[1] == 0 && EnemyHelpers.Below(4) != 1)
         {
             return;
         }
@@ -166,7 +166,7 @@ internal static class AlundraMurutaAi
             case 0:
             case 1:
             case 2:
-                if (AlundraEnemyHelpers.Below(4) == 0)
+                if (EnemyHelpers.Below(4) == 0)
                 {
                     context.SoundPlayer?.PlaySfx(ClawSound);
                 }
@@ -177,17 +177,17 @@ internal static class AlundraMurutaAi
 
             case 3:
             {
-                var direction = AlundraEnemyHelpers.CardinalDirections[AlundraEnemyHelpers.Below(4)];
+                var direction = EnemyHelpers.CardinalDirections[EnemyHelpers.Below(4)];
                 SetCounter(entity, 0x14);
-                AlundraEnemyHelpers.ZeroForces(entity);
+                EnemyHelpers.ZeroForces(entity);
                 entity.TargetDirection = direction;
                 break;
             }
 
             case 4:
                 SetCounter(entity, 0x14);
-                AlundraEnemyHelpers.ZeroForces(entity);
-                entity.TargetDirection = AlundraEnemyHelpers.QuarterTurnTable[(int)(entity.TargetDirection & 0x1F)];
+                EnemyHelpers.ZeroForces(entity);
+                entity.TargetDirection = EnemyHelpers.QuarterTurnTable[(int)(entity.TargetDirection & 0x1F)];
                 break;
 
             case 5:
@@ -204,7 +204,7 @@ internal static class AlundraMurutaAi
 
     private static void Alerted(AlundraEntityScriptProxy entity, IEntityWorldContext context, AlundraEntityScriptProxy hero, ReadOnlySpan<int> rel)
     {
-        if (!AlundraEnemyHelpers.TryAttackPlayerFront(entity, rel, 2, 6, ZMax) && !AlundraEnemyHelpers.TryAttackPlayer2(rel, entity.BoxDirection ^ 1, 2, 3, ZMax))
+        if (!EnemyHelpers.TryAttackPlayerFront(entity, rel, 2, 6, ZMax) && !EnemyHelpers.TryAttackPlayer2(rel, entity.BoxDirection ^ 1, 2, 3, ZMax))
         {
             entity.Bytes[1] = 0;
             entity.Bytes[0] = 0;
@@ -224,7 +224,7 @@ internal static class AlundraMurutaAi
         // 0x80068474 (frame box), 0x80068484 (current attack), lbu 0x80068494 (its attribute); the box is the FIELD of the tick.
         if (hero.HasFrameBox && hero.CurrentAttack is { Attribute: not 0 } && rel[0] < 5 && rel[1] < 5)
         {
-            if (AlundraEnemyHelpers.Below(4) == 0)
+            if (EnemyHelpers.Below(4) == 0)
             {
                 context.SoundPlayer?.PlaySfx(ClawSound);
             }
@@ -239,7 +239,7 @@ internal static class AlundraMurutaAi
         var away = (entity.TargetDirection - 0x10) & 0x1F;
         if (rel[0] < 3 && rel[1] < 3)
         {
-            switch (AlundraEnemyHelpers.Below(8))
+            switch (EnemyHelpers.Below(8))
             {
                 case 0:
                     entity.TargetAnimationId = 0xC;
@@ -262,7 +262,7 @@ internal static class AlundraMurutaAi
 
                 case 4:
                 case 5:
-                    if (AlundraEnemyHelpers.Below(4) == 0)
+                    if (EnemyHelpers.Below(4) == 0)
                     {
                         context.SoundPlayer?.PlaySfx(ClawSound);
                     }
@@ -278,7 +278,7 @@ internal static class AlundraMurutaAi
         }
         else if (rel[0] < 5 && rel[1] < 5)
         {
-            if (AlundraEnemyHelpers.Below(5) <= 1)
+            if (EnemyHelpers.Below(5) <= 1)
             {
                 entity.TargetAnimationId = 8;
             }
@@ -290,7 +290,7 @@ internal static class AlundraMurutaAi
         }
         else if (rel[0] < 7 && rel[1] < 7)
         {
-            switch (AlundraEnemyHelpers.Below(8))
+            switch (EnemyHelpers.Below(8))
             {
                 case 0:
                 case 1:
@@ -319,7 +319,7 @@ internal static class AlundraMurutaAi
     /// <summary>State 12 (<c>0x80068800</c>), the walk.</summary>
     private static void Walk(AlundraEntityScriptProxy entity, ReadOnlySpan<int> rel)
     {
-        if (entity.Bytes[0] == 0 && AlundraEnemyHelpers.TryAttackPlayerFront(entity, rel, 2, 6, ZMax))
+        if (entity.Bytes[0] == 0 && EnemyHelpers.TryAttackPlayerFront(entity, rel, 2, 6, ZMax))
         {
             entity.Bytes[0] = 1; // 0x800688D4
             entity.TargetAnimationId = 0;
@@ -332,12 +332,12 @@ internal static class AlundraMurutaAi
         if (counter == 0 || entity.ForceAdjusted != 0)
         {
             entity.TargetAnimationId = 0;
-            AlundraEnemyHelpers.ZeroForces(entity);
+            EnemyHelpers.ZeroForces(entity);
             CooldownExit(entity);
             return;
         }
 
-        if (AlundraEnemyHelpers.HandleAnimationDirection(entity, 0xC, 0x400000))
+        if (EnemyHelpers.HandleAnimationDirection(entity, 0xC, 0x400000))
         {
             entity.TargetAnimationId = 0;
             CooldownExit(entity);
