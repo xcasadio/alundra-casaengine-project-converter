@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using CasaEngine.Framework.SaveGames;
 
-namespace Alundra.Scripts;
+namespace Alundra.SaveGames;
 
 /// <summary>
 /// E16.d K4 (docs/plan-e16-etat-partie.md, D-E16-31): the engine's save-game service as the DLL sees it - the

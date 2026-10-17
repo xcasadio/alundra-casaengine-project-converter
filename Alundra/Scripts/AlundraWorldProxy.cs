@@ -48,6 +48,7 @@ using Alundra.UI.Saving;
 using Alundra.UI.Shared;
 using Alundra.UI.Speech;
 using Alundra.UI.SubInventory;
+using Alundra.SaveGames;
 
 namespace Alundra.Scripts;
 

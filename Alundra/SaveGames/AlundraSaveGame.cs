@@ -7,8 +7,9 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Rendering.Backdrops;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.SaveGames;
 
 /// <summary>
 /// E16.c (docs/plan-e16-etat-partie.md, D-E16-4): Alundra's save-game object - the port of <c>g_saveData</c>

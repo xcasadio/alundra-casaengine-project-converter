@@ -30,6 +30,7 @@ using Alundra.Hero;
 using Alundra.Rendering.Backdrops;
 using Alundra.Dialogues;
 using Alundra.UI.Saving;
+using Alundra.SaveGames;
 
 namespace Alundra.Tests;
 

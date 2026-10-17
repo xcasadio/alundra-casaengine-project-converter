@@ -6,6 +6,7 @@ using Alundra.Events;
 using Alundra.Scripts;
 using Alundra.Dialogues;
 using Alundra.UI.Saving;
+using Alundra.SaveGames;
 
 namespace Alundra.Ai.Objects;
 

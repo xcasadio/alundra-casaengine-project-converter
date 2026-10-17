@@ -23,6 +23,7 @@ using Alundra.UI.Inventory;
 using Alundra.UI.Saving;
 using Alundra.UI.Speech;
 using Alundra.UI.SubInventory;
+using Alundra.SaveGames;
 
 namespace Alundra.Tests;
 

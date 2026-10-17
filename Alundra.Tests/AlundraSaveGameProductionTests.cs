@@ -19,6 +19,7 @@ using Alundra.UI.Hud;
 using Alundra.UI.Inventory;
 using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
+using Alundra.SaveGames;
 
 namespace Alundra.Tests;
 

@@ -17,8 +17,9 @@ using Alundra.UI.Hud;
 using Alundra.UI.Inventory;
 using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.SaveGames;
 
 /// <summary>
 /// E16.d K1 (docs/plan-e16-etat-partie.md): the SESSION-scoped director of the save-game recipe keys - same

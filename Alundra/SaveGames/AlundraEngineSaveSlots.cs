@@ -5,7 +5,7 @@ using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.SaveGames;
 
-namespace Alundra.Scripts;
+namespace Alundra.SaveGames;
 
 /// <summary>
 /// E16.d K4 (docs/plan-e16-etat-partie.md): the production <see cref="IAlundraSaveSlots"/>, delegating to the

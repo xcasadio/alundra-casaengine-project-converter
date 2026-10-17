@@ -20,6 +20,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.UI.Hud;
+using Alundra.SaveGames;
 
 namespace Alundra.Tests;
 

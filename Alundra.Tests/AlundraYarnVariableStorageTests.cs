@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Compiler.Dialogue;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Dialogue.Assets;
@@ -15,6 +14,7 @@ using Yarn;
 using Alundra.Session;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
+using Alundra.SaveGames;
 
 namespace Alundra.Tests;
 

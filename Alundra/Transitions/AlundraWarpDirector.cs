@@ -8,6 +8,7 @@ using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Scripts;
 using Alundra.Dialogues;
+using Alundra.SaveGames;
 
 namespace Alundra.Transitions;
 

@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using Xunit;
 using static Alundra.Tests.SaveGameDirectorTestSupport;
 using Alundra.Session;
+using Alundra.SaveGames;
 
 namespace Alundra.Tests;
 

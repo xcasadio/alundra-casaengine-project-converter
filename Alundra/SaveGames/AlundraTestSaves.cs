@@ -5,7 +5,7 @@ using System.Globalization;
 using Alundra.Session;
 using Alundra.Hero;
 
-namespace Alundra.Scripts;
+namespace Alundra.SaveGames;
 
 /// <summary>
 /// E19.d2a S1 (docs/plan-e19-opcodes.md section 1.2h.1, D-E19-33): the presets of the test saves - a new game

@@ -3,7 +3,7 @@ using System;
 using Alundra.Maps;
 using Alundra.Items;
 
-namespace Alundra.Scripts;
+namespace Alundra.SaveGames;
 
 /// <summary>
 /// E16.c C1 (docs/plan-e16-etat-partie.md): what <see cref="AlundraSaveGame.TryValidate"/> consults to bound a

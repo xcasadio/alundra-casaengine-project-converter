@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using Microsoft.Xna.Framework.Input;
 using Xunit;
@@ -11,6 +10,7 @@ using static Alundra.Tests.SaveGameDirectorTestSupport;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Transitions;
+using Alundra.SaveGames;
 
 namespace Alundra.Tests;
 

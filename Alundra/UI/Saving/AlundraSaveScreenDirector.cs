@@ -10,6 +10,7 @@ using Alundra.Dialogues;
 using Alundra.Scripts;
 using Alundra.UI.Hud;
 using Alundra.UI.Inventory;
+using Alundra.SaveGames;
 
 namespace Alundra.UI.Saving;
 
