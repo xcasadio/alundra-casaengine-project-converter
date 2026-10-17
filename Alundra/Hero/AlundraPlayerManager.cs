@@ -8,6 +8,7 @@ using Alundra.Events;
 using Alundra.Ai;
 using Alundra.Scripts;
 using Alundra.Combat;
+using Alundra.Items;
 
 namespace Alundra.Hero;
 

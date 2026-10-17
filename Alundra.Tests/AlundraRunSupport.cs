@@ -11,6 +11,7 @@ using CasaEngine.Framework.Assets.Animations;
 using Xunit;
 using Alundra.Entities;
 using Alundra.Hero;
+using Alundra.Items;
 
 namespace Alundra.Tests;
 

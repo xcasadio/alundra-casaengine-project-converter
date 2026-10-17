@@ -3,6 +3,7 @@ using System;
 using CasaEngine.Engine.Environment;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Items;
 
 namespace Alundra.Scripts;
 

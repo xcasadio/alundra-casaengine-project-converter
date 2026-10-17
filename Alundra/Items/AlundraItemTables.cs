@@ -6,8 +6,9 @@ using System.Text.Json;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using Alundra.Entities;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Items;
 
 /// <summary>
 /// The three item tables the converter republishes raw under <c>Data/</c> (docs/plan-e13c-icones-hud.md,

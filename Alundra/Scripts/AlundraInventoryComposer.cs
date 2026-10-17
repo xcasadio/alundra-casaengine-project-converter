@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Alundra.Hero;
+using Alundra.Items;
 
 namespace Alundra.Scripts;
 

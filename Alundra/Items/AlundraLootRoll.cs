@@ -1,8 +1,9 @@
 #nullable enable
 using System;
 using Alundra.Session;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Items;
 
 /// <summary>
 /// E20.e0b2 (docs/plan-e20-heros.md section 1.17.2, D-E0B-4, docs/plan-e20-annexe/e20-e0b/README.md): the loot roll of a creation, pure. It is the roll the binary makes as the last action of

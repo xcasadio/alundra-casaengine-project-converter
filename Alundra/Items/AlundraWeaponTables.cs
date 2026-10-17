@@ -2,7 +2,7 @@
 using Alundra.Entities;
 using Alundra.Hero;
 
-namespace Alundra.Scripts;
+namespace Alundra.Items;
 
 /// <summary>
 /// E20.b B1 (docs/plan-e20-heros.md section 1.4, D-E20-7): the three weapon tables of <c>ALUN_CD.EXE</c> (France), copied byte for byte as data, each with its address, like

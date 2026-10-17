@@ -11,6 +11,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Combat;
+using Alundra.Items;
 
 namespace Alundra.Tests;
 

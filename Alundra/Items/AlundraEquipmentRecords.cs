@@ -3,8 +3,9 @@ using System;
 using Alundra.Maps;
 using Alundra.Hero;
 using Alundra.Combat;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Items;
 
 /// <summary>
 /// The three equipment balance records of the binary (E20.c1b K2, docs/plan-e20-heros.md section 1.6): the pointers at <c>0x80146E00</c> (armour), <c>0x80146E08</c> (weapon) and <c>0x80146E10</c> (accessory), each with

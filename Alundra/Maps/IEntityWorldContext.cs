@@ -5,6 +5,7 @@ using Alundra.Scripts;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Combat;
+using Alundra.Items;
 
 namespace Alundra.Maps;
 

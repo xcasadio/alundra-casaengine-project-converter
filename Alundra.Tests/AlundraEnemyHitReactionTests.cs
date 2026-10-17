@@ -9,6 +9,7 @@ using Xunit;
 using Alundra.Maps;
 using Alundra.Ai;
 using Alundra.Combat;
+using Alundra.Items;
 
 namespace Alundra.Tests;
 

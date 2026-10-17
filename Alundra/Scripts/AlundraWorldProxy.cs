@@ -30,6 +30,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Combat;
+using Alundra.Items;
 
 namespace Alundra.Scripts;
 

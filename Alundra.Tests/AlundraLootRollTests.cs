@@ -5,10 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.Json;
-using Alundra.Scripts;
 using Xunit;
 using static Alundra.Tests.AlundraLootOracle;
 using Alundra.Session;
+using Alundra.Items;
 
 namespace Alundra.Tests;
 

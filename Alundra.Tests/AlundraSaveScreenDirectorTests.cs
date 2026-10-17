@@ -16,6 +16,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Ai.Objects;
 using Alundra.Hero;
+using Alundra.Items;
 
 namespace Alundra.Tests;
 

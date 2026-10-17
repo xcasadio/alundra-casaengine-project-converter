@@ -5,6 +5,7 @@ using CasaEngine.Framework.SaveGames;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Items;
 
 namespace Alundra.Scripts;
 

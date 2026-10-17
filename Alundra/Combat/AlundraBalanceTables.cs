@@ -6,7 +6,7 @@ using System.Text.Json;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Assets.TileMap;
-using Alundra.Scripts;
+using Alundra.Items;
 
 namespace Alundra.Combat;
 

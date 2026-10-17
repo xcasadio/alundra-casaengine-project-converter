@@ -14,6 +14,7 @@ using Alundra.Ai;
 using Alundra.Ai.Enemies;
 using Alundra.Hero;
 using Alundra.Combat;
+using Alundra.Items;
 
 namespace Alundra.Tests;
 

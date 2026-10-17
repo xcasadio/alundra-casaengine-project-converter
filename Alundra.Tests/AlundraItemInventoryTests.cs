@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Items;
 
 namespace Alundra.Tests;
 

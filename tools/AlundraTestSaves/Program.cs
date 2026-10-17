@@ -4,6 +4,7 @@ using Alundra.Scripts;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.SaveGames;
+using Alundra.Items;
 
 namespace AlundraTestSavesTool;
 
