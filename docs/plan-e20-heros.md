@@ -6838,12 +6838,15 @@ toucher au moteur ; plus de 10 tests existants bougent ; un nom refusé par `che
 **Retour arrière.** La phase C se retire seule (la ligne de `DestroyEntity`) ; la phase B se retire seule (les deux inscriptions et le
 rafraîchissement) ; la phase A ne change aucun comportement.
 
-### 1.27 E20.e — L'herbe coupée : `CheckAndTriggerTileEffect` ⏳ (détaillée le 2026-10-18, révision 1 ; exécutable après E20.e0c et la fin du chantier de restructuration)
+### 1.27 E20.e — L'herbe coupée : `CheckAndTriggerTileEffect` ⏳ (détaillée le 2026-10-18, révision 2 ; exécutable après E20.e0c et la fin du chantier de restructuration)
 
 **Relecture (2026-10-18).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) l'oracle `wave_grass` d'E20.f3 a été calculé sur un champ
 synthétique (toutes les cases en herbe, hauteur 0, `wave_grass.py:2`), pas sur la vraie carte 14 : (w1) et (w2) se comparent maintenant à un
 oracle que T0 (g) calcule sur les vraies cases de la 14 et le même état de départ ; `wave_grass` ne sert plus qu'au rejeu de T0 (a) ;
-(2) le chemin de l'octet 9 jusqu'au port est nommé et ses fichiers sont dans le périmètre.
+(2) le chemin de l'octet 9 jusqu'au port est nommé et ses fichiers sont dans le périmètre. Seconde relecture : REVISE, un blocage (la vague
+C61 est un natif, éteint dans le banc `HitArena` : (w2) ne pouvait pas passer, et rallumer les natifs réveillait les Beannoïdes de la carte) :
+FIX en révision 2 (le banc vidé des autres entités, natifs allumés, une sonde du générateur en T0) ; nouvelle époque, une seule relecture de
+clôture.
 
 **Provenance.** Lecture du binaire du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-e/`, `report.md` et `check.md`, au HEAD
 `9502f75`) ; état de la DLL et des tests rejoué au HEAD `978608d` (`docs/plan-e20-annexe/e20-e/state-978608d/` : 60 citations traduites,
@@ -6950,17 +6953,21 @@ l'overlay (mesuré, non optimisé).
   recette sur la carte 14 : un pixel du héros, sa direction, un buisson (pile visible) à portée de l'épée de base, et une direction de vague
   qui traverse au moins deux buissons ; (g) **l'oracle des tests de monde**, versé dans `docs/plan-e20-annexe/e20-e/oracle/` : un script sur
   le modèle de `wave_grass.py` (les outils `pworld` d'E20.f3 copiés), avec la fonction de cases lue dans les **vraies cases de la carte 14**
-  (`data-extracted/data/map_14.json`, `Map.MapTiles` : marchabilité, hauteur, pile), le héros seul à la place de (f), les autres entités
-  absentes ou inertes (comme les natifs éteints du banc `HitArena`), le générateur posé à une valeur `s0` en tête du tick de la frappe ;
+  (`data-extracted/data/map_14.json`, `Map.MapTiles` : marchabilité, hauteur, pile), le héros seul à la place de (f), **aucune autre entité** (le banc de la DLL
+  les retire, ci-dessous), le générateur posé à une valeur `s0` en tête du tick de la frappe ;
   deux scénarios, le coup d'épée de base et la vague de (f) ; sorties `cut_m14.txt` et `.json` : pour chaque coupe, le tick, la case,
-  la position et le Z de l'effet, le son, l'état du générateur après la coupe ; plus la liste des ticks sans coupe.
+  la position et le Z de l'effet, le son, l'état du générateur après la coupe ; plus la liste des ticks sans coupe ; (g2) **sonde du générateur** dans le banc de T2
+  (vidé, natifs allumés) : un coup d'épée en l'air loin de toute herbe, l'état du générateur tick par tick égal à celui de l'oracle dans la
+  même situation (seule l'avance d'un pas par tick, ADR-0066) ; un écart est un arrêt (quelque chose d'autre tire).
 - ⏳ **T1 — Phase A** (tests d'abord) : (c1) la coupe du magasin : bit, pile, sol et hauteur gardés, une seule reconstruction de l'overlay
   par image, collision et grille de navigation inchangées, une case coupée qui ne se recoupe pas, chaque cas accolé à son contraire ; (c2)
   `TileEffect` contre les vecteurs : les quatre coins et leur ordre, les bornes, la bande de Z aux trois valeurs de bord, la position non
   bornée, l'octet 9 et son repli, l'ordre coupe, effet, butin, son, un tirage ou deux par case coupée, la table d'effets pleine qui n'arrête
   ni le butin ni le son ; (c3) sans boîte, rien ; sans `IEntityWorldContext`, rien, accolé au monde réel qui coupe.
-- ⏳ **T2 — Tests de monde, rouges avant T3** (le monde réel de la carte 14 du banc `HitArena`, sans cible, ses natifs éteints ; le héros à
-  la place de T0 (f) ; le générateur posé à `s0` en tête du tick de la frappe, comme l'oracle T0 (g)) : (w1) le coup d'épée : chaque coupe de
+- ⏳ **T2 — Tests de monde, rouges avant T3** (le monde réel de la carte 14 du banc `HitArena`, sans cible ; **les autres entités de la carte
+  retirées** avant le scénario, chacune par `Status = FlagToDestroy` puis `WorldProxy.RecycleDestroyedEntities()`, l'aide de
+  `AlundraLootRollWorldTests.Recycle` (`:74-78`), qui ne passe pas par `DestroyEntity` : ni butin ni effet ; **les natifs allumés**
+  (`Runner.NativeHandlersEnabled = true`, comme `AlundraWaveSwordLifeTests.V2`, `:128` : C61 en est un) ; le héros à la place de T0 (f) ; le générateur posé à `s0` en tête du tick de la frappe, comme l'oracle T0 (g)) : (w1) le coup d'épée : chaque coupe de
   `cut_m14` à son tick, sa case, la position et le Z de l'effet 2, le son 31, l'état du générateur après elle ; aucune coupe aux autres
   ticks ; (w2) la vague de (f) : les coupes de `cut_m14`, tick par tick, de même ; (w3) une frappe à côté d'un buisson ne coupe rien ; (w4)
   un état hors des 15 ne coupe pas, à la même place ; (w5) l'herbe repousse à la rentrée dans la carte.
@@ -6976,7 +6983,7 @@ suite en Release (copie neutralisée) et en Debug, zéro échec ; tests déplac�
 aucune case coupable) ; `cmp` de la DLL ; moteur, convertisseur et données sans diff ; recette de l'auteur : la sauvegarde `herbe-m14`,
 couper un buisson à l'épée puis avec la vague, voir le buisson disparaître, l'effet, parfois un objet, l'entendre.
 
-**Arrêts.** Q-E6 contredit la règle inférée sans règle de remplacement établie ; un test hors de la liste prédite bouge ; un besoin de toucher
+**Arrêts.** Q-E6 contredit la règle inférée sans règle de remplacement établie ; la sonde T0 (g2) diffère de l'oracle ; un test hors de la liste prédite bouge ; un besoin de toucher
 au moteur ; plus de 10 tests existants bougent ; un nom refusé par `check_names.py`.
 
 **Budget.** Un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
