@@ -297,7 +297,7 @@ def end_state(ctx, rep):
     for o, n in info.r2_to_r3.items():
         if not os.path.isfile(os.path.join(REPO, n)):
             rep.bad('end state: %s is missing' % n)
-        if os.path.isfile(os.path.join(REPO, o)) and o != n:
+        if os.path.isfile(os.path.join(REPO, o)) and o != n and o not in info.r2_to_r3.values():
             rep.bad('end state: %s still exists' % o)
 
 

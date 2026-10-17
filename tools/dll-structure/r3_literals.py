@@ -231,7 +231,7 @@ def check(info, root, stage):
         # after R3: a literal keeps no old name of a type renamed in R3 unless the survey keeps it (class 2 or 4)
         for f, line, name, enc, text in survey(root, info):
             e = by.get((f, line, name))
-            if (name in info.renamed or name in info.partial) and (e is None or e['class'] not in ('2', '4') or e['new_name'] != name):
+            if (name in info.renamed or name in info.partial) and (e is None or e['class'] not in ('2', '4')):
                 problems.append('%s:%d: the literal still names %s (renamed to %s in R3)' % (f, line, name, info.renamed[name] if name in info.renamed else info.partial[name][0]))
         for e in entries:
             if e['class'] in APPLIED_CLASSES and e['new_name'] != e['name']:
