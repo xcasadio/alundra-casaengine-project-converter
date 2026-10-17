@@ -716,7 +716,7 @@ ligne d'attribution (la ligne vient du harnais des exécuteurs ; rien n'est pous
 dérivées du nom des classes de test (par exemple les dossiers temporaires `"AlundraSoundPlayerTests_"`) suivent les classes de test en R5 ;
 `prove_r3.py` corrigé une fois en cours de tranche (`b98b6f8`, faux positifs), sans effet sur la vérification indépendante.
 
-## 8. Tranche R4 — Les 9 types cités par les données ; second export ⏳ (détaillée le 2026-10-17 ; révision 2, relecture de clôture **READY**)
+## 8. Tranche R4 — Les 9 types cités par les données ; second export 🧪 (faite le 2026-10-17, `1ecb199` et `15804ae` ; révision 2, relecture de clôture **READY** ; restent les deux verifiers frais et la recette de l'auteur)
 
 **Relecture (2026-10-17).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) les outils de R2 et R3 ne savent pas traiter les
 types cités (leur table s'arrête à l'étape `r3`, où ces types n'ont pas bougé ; `apply_r2.py` indexe les anciens noms ; l'outil de
@@ -778,10 +778,10 @@ et leurs tests, `alundra-project/UI/Screens/*.design.json`, l'export (`alundra-p
   `r3-literals.tsv` qui nomment un type cité, chacune avec sa classe de R4 et sa valeur cible exacte : (1) et (1b) renommées vers le nom
   final ; (4) gardées, dont **la prose de harnais écrite dans une trace versionnée** (`HeroTraceHarnessTests.cs:80,84,87`) ; (5) arrêt et
   question. Un commit d'outil pour (b) et (c), un commit de docs pour (a).
-- T1 — `git mv` des 10 fichiers cités vers leur chemin final, sans changer un octet (ils gardent `namespace Alundra.Scripts` : la solution se
+- T1 ✅ — `git mv` des 10 fichiers cités vers leur chemin final, sans changer un octet (ils gardent `namespace Alundra.Scripts` : la solution se
   construit telle quelle), construction, `prove_r4.py --kind move` (les 10 fichiers appariés `r3` → `final` par la table, chacun
   renommé à 100 %, aucun autre fichier changé), commit `refactor(dll): move the data-cited files into their folders (R4, git mv only)`.
-- T2 — **un seul commit** qui garde tout vert, dans cet ordre : (1) l'outil de renommage en mode `--rename` sur les 9 paires explicites
+- T2 ✅ — **un seul commit** qui garde tout vert, dans cet ordre : (1) l'outil de renommage en mode `--rename` sur les 9 paires explicites
   (`AlundraEntityScriptProxy` une seule fois pour ses deux parties), quand la solution compile encore sous `Alundra.Scripts` (sa
   vérification sémantique comprise) ; (2) `apply_r4.py` : la ligne `namespace` des 10 fichiers, les `using`, les qualifications ; (3) les
   littéraux (1) et (1b) du relevé de R4 ; (4) les trois littéraux du convertisseur et leurs tests ; (5) les six `design.json` ;
@@ -792,7 +792,7 @@ et leurs tests, `alundra-project/UI/Screens/*.design.json`, l'export (`alundra-p
   T2 (chaque entrée (1)/(1b) du relevé appliquée, chaque entrée (4) intacte) ; commit
   `refactor(dll): the data-cited types at their final place and name; second export (R4)`. Une erreur ne se corrige que par une règle
   des outils de T0 (commit d'outil, rejeu de T2 depuis l'état de T1) : sinon arrêt.
-- T3 — Clôture : `check_names.py --tree --stage final` **vert (sortie 0)** ; aucun type déclaré dans `Alundra/` dont le nom commence par
+- T3 ✅ — Clôture : `check_names.py --tree --stage final` **vert (sortie 0)** ; aucun type déclaré dans `Alundra/` dont le nom commence par
   `Alundra` ou `IAlundra` ; `Alundra/Scripts/` n'existe plus ; `rg -uu` sur `alundra-project/` : aucun `Alundra.Scripts.` dans
   `script_class_name`, `player_controller_class`, `view_model_type` ; `git log --follow` sur les 10 fichiers ; ce plan (§8 et résultats).
 
@@ -816,6 +816,25 @@ lignes `using Alundra.Scripts;`. Preuves sur une copie jetable (clone local de l
 la DLL ne porte plus `Alundra.Scripts`) et `prove_r4.py --kind code` sort 0 ; huit mutations refusées (une valeur de test, une ligne de corps, un `using`
 injustifié, le namespace d'un fichier déplacé, un préfixe de journal non renommé, la prose gardée renommée, un `design.json` changé au-delà de la clé,
 une ligne du convertisseur changée au-delà du nom complet) ; la copie restaurée sort 0.
+
+**Résultats de T1 et T2 ✅ (2026-10-17).** T1 (`1ecb199`) : `apply_r4.py move`, 10 fichiers déplacés sans changer un octet, construction Release 0 erreur,
+`prove_r4.py --kind move --index` OK. T2 (`15804ae`, un seul commit) : l'outil de renommage sur les 9 paires (316 fichiers, 2 924 références, 254 015 identifiants,
+0 qualification ajoutée), `fix` (316 fichiers), `literals` (48 littéraux dans 6 fichiers), noms complets du convertisseur et de ses tests, six `design.json`
+(`view_model_type` seul). `prove_r4.py --kind code --index` OK (2 116 occurrences de code, 843 `cref`, 4 qualifications, 48 littéraux réécrits et 3 gardés,
+183 `using` ajoutés, 306 retirés). Convertisseur 854 réussis. Export 1 en fenêtre calme : exit 0, `Verification: PASSED (20139 loaded, 2477 existence-checked)` ;
+`m2` contre `m1` : 886 fichiers changés (879 sorties, 6 `design.json`, `report.json`), 0 ajouté, 0 retiré, 0 hors ensemble autorisé, les 885 SHA-1 égaux à la
+prédiction, `AssetInfos.json` inchangé. Export 2 : seul `report.json` diffère (`Errors` 0). `Alundra.Tests` Release (copie neutralisée) **5 097** réussis,
+Debug **5 097** réussis, `cmp` de la DLL égal, garde des traces sans écart.
+
+**Résultats de T3 ✅ (2026-10-17).** `check_names.py --tree --stage final` : sortie 0 (207 fichiers, 220 types de premier niveau, 0 constat, 1 avertissement :
+le type imbriqué `Session` de `Alundra.Tests/UI/TextBoxGpuHarness.cs:265` porte le nom d'un segment de namespace, il ne le masque que dans sa classe). Aucun
+type déclaré dans `Alundra/` ne commence par `Alundra` ni `IAlundra`. `Alundra/Scripts/` : aucun fichier suivi, et le dossier vide laissé sur disque est supprimé.
+`rg -uu` sur `alundra-project/` : aucun `Alundra.Scripts` (ni dans `script_class_name`, `player_controller_class`, `view_model_type`, ni ailleurs hors binaires).
+`git log --follow` sur les 10 fichiers : l'historique remonte jusqu'à leur création (de 5 à 202 commits chacun), les renommages sont suivis. Restes de texte,
+non traités (commentaires, hors des 9 types ou hors périmètre de la preuve) : `Alundra.Tests/AlundraScriptNamesInTheDataTests.cs:21` (doc XML qui cite
+encore `Alundra.Scripts.AlundraEntityScriptProxy`), commentaires du convertisseur (`WorldWriter.cs:141,376`, `SpriteWriter.cs:64,92,322,420`,
+`PlayerSetupWriter.cs:59`, `NavigationWriter.cs:23`, `MusicIndexCatalogReader.cs:17`) : à décider avec R6 (documentation). Le nom du fichier de test
+`AlundraScriptNamesInTheDataTests` relève de R5.
 
 **Acceptation.** Les preuves de T2 et T3 ; l'annexe de T0 à un commit antérieur au premier commit de code ; aucune valeur attendue de test
 modifiée hors des noms complets écrits par le convertisseur et des littéraux (1b) prévus ; recette de l'auteur : nouvelle partie, les
