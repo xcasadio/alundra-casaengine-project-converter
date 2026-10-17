@@ -88,3 +88,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0072 | The sword wave is born in production, E10 is handled in line and C61 calls a named stub | Accepted | 2026-10-16 |
 | ADR-0073 | Every creation rolls its loot as its last act, like the binary, on the real shared stream | Accepted | 2026-10-16 |
 | ADR-0074 | An entity made from a record by a script opcode takes part in the tick that sees it born and makes its first animation switch at its creation | Accepted | 2026-10-16 |
+| ADR-0075 | The Alundra gameplay DLL is restructured: one folder, one namespace, no `Alundra` prefix in type names | Accepted | 2026-10-16 |

@@ -2,6 +2,8 @@
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; R1 détaillée et READY, en cours. Démarre après E20.e0a4 (plan E20, §1.16.4).
 
+Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
+
 ## 0. Décisions de l'auteur
 
 - **D-R-1** (2026-10-16) — La DLL est restructurée : un dossier = un namespace `Alundra.<Domaine>`, en anglais ; plus de préfixe `Alundra`
