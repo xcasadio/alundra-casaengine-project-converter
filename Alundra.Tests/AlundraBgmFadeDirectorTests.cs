@@ -9,6 +9,7 @@ using Xunit;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Events;
+using Alundra.Audio;
 
 namespace Alundra.Tests;
 

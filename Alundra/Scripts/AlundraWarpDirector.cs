@@ -5,6 +5,7 @@ using CasaEngine.Framework.Application;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Audio;
 
 namespace Alundra.Scripts;
 

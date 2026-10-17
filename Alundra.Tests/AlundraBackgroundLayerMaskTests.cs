@@ -15,6 +15,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Rendering.Backdrops;
+using Alundra.Audio;
 
 namespace Alundra.Tests;
 

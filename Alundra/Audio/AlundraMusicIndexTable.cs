@@ -6,48 +6,7 @@ using System.Text.Json;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 
-namespace Alundra.Scripts;
-
-/// <summary>What <see cref="AlundraMusicIndexTable.ResolvePlaybackDirective(int)"/> says to do with the
-/// currently owned music voice - the CONSUMER-side half of docs/plan-e11c-musique.md's D-C-2 (the
-/// exported table is raw; interpreting it is this type's job), straight off fact 1.1's own filter
-/// order (<c>SoundManager.cs</c> <c>LoadMapSoundsCore</c>, lines 5168/5173/5183/5186). Deliberately
-/// does NOT cover the "same index as currently playing" guard (fact 1.1's second row) - that
-/// comparison needs SESSION state (the previously resolved index) this pure table has no business
-/// holding (D-C-6); <see cref="AlundraMusicPlayer"/> applies it itself, against the RAW value below,
-/// before ever calling this method.</summary>
-public enum MusicPlaybackDirectiveKind
-{
-    /// <summary>Raw value 0 - total short-circuit, the original never even looks at what is currently
-    /// playing (fact 1.1, <c>SoundManager.cs:5168</c>).</summary>
-    NoOp,
-
-    /// <summary>Raw value 45 (0x2D) - stop whatever is playing, load nothing new
-    /// (<c>SoundManager.cs:5183</c>).</summary>
-    Stop,
-
-    /// <summary>Play <see cref="MusicPlaybackDirective.PlayIndex"/> - either the raw value itself, or 1
-    /// when the raw value was -1 (<c>LoadMapSequenceCore:532-535</c> remaps it).</summary>
-    Play,
-}
-
-/// <summary>One resolved outcome of <see cref="AlundraMusicIndexTable.ResolvePlaybackDirective(int)"/>
-/// - see <see cref="MusicPlaybackDirectiveKind"/> for what each case means.</summary>
-public readonly struct MusicPlaybackDirective
-{
-    public MusicPlaybackDirectiveKind Kind { get; }
-    public int PlayIndex { get; }
-
-    private MusicPlaybackDirective(MusicPlaybackDirectiveKind kind, int playIndex)
-    {
-        Kind = kind;
-        PlayIndex = playIndex;
-    }
-
-    public static readonly MusicPlaybackDirective NoOp = new(MusicPlaybackDirectiveKind.NoOp, 0);
-    public static readonly MusicPlaybackDirective Stop = new(MusicPlaybackDirectiveKind.Stop, 0);
-    public static MusicPlaybackDirective Play(int index) => new(MusicPlaybackDirectiveKind.Play, index);
-}
+namespace Alundra.Audio;
 
 /// <summary>
 /// Loads <c>Maps/music-index.json</c> once (from <see cref="EngineEnvironment.ProjectPath"/>, the same

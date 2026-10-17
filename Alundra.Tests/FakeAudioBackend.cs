@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using CasaEngine.Framework.Audio;
-using Alundra.Scripts;
+using Alundra.Audio;
 
 namespace Alundra.Tests;
 

@@ -1,7 +1,7 @@
 #nullable enable
 
 using Alundra.Rng;
-using Alundra.Scripts;
+using Alundra.Audio;
 
 namespace Alundra.Rendering.Effects;
 

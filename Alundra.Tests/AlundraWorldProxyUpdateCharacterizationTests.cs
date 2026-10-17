@@ -16,6 +16,7 @@ using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Events;
 using Alundra.Cameras;
+using Alundra.Audio;
 
 namespace Alundra.Tests;
 

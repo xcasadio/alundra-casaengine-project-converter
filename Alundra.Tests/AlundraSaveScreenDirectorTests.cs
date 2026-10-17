@@ -17,6 +17,7 @@ using Alundra.Events;
 using Alundra.Ai.Objects;
 using Alundra.Hero;
 using Alundra.Items;
+using Alundra.Audio;
 
 namespace Alundra.Tests;
 

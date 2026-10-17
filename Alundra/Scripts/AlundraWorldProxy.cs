@@ -37,6 +37,7 @@ using Alundra.Cells;
 using Alundra.Cameras;
 using Alundra.Rendering.Backdrops;
 using Alundra.Rendering.Effects;
+using Alundra.Audio;
 
 namespace Alundra.Scripts;
 
@@ -711,7 +712,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     public string? WorldName => _world?.Name;
 
     /// <summary>
-    /// Seam over <c>Sounds/sfx-manifest.json</c> lookups (see <see cref="Alundra.Scripts.AlundraSoundBank"/>'s
+    /// Seam over <c>Sounds/sfx-manifest.json</c> lookups (see <see cref="Alundra.Audio.AlundraSoundBank"/>'s
     /// class doc), read once and reused by <see cref="SoundPlayer"/> for every sfx it resolves. Internal,
     /// not injected through the constructor - same reasoning as <see cref="SpriteRecordCatalog"/> above.
     ///

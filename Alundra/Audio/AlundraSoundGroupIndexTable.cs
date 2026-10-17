@@ -5,8 +5,9 @@ using System.IO;
 using System.Text.Json;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Audio;
 
 /// <summary>
 /// Loads <c>Maps/sound-group-index.json</c> once (from <see cref="EngineEnvironment.ProjectPath"/>, the

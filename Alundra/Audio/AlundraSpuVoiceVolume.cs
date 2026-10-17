@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace Alundra.Scripts;
+namespace Alundra.Audio;
 
 /// <summary>
 /// Pure, stateless port of the original's key-on SPU volume computation
@@ -89,9 +89,9 @@ public static class AlundraSpuVoiceVolume
     /// </summary>
     /// <param name="leftMix">Opcode 0xAB/0xBF's own left mix operand, 0..0x7f.</param>
     /// <param name="rightMix">Opcode 0xAB/0xBF's own right mix operand, 0..0x7f.</param>
-    /// <param name="programVolume">The resolved record's own program volume (<see cref="Alundra.Scripts.SfxResolution.ProgramVolume"/>), 0..0x7f.</param>
-    /// <param name="toneVolume">The tone's own volume (<see cref="Alundra.Scripts.SfxToneRecord.Volume"/>), 0..0x7f.</param>
-    /// <param name="tonePan">The tone's own pan (<see cref="Alundra.Scripts.SfxToneRecord.Pan"/>), 0..0x7f.</param>
+    /// <param name="programVolume">The resolved record's own program volume (<see cref="Alundra.Audio.SfxResolution.ProgramVolume"/>), 0..0x7f.</param>
+    /// <param name="toneVolume">The tone's own volume (<see cref="Alundra.Audio.SfxToneRecord.Volume"/>), 0..0x7f.</param>
+    /// <param name="tonePan">The tone's own pan (<see cref="Alundra.Audio.SfxToneRecord.Pan"/>), 0..0x7f.</param>
     /// <returns>The left and right SPU volumes.</returns>
     public static (int Left, int Right) ComputeRemix(
         int leftMix, int rightMix, int programVolume, int toneVolume, int tonePan)

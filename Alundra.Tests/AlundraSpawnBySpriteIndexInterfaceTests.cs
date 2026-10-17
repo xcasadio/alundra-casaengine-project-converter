@@ -9,6 +9,7 @@ using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Rng;
+using Alundra.Audio;
 
 namespace Alundra.Tests;
 

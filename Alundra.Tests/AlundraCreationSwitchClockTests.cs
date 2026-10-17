@@ -11,6 +11,7 @@ using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Hero;
 using Alundra.Items;
+using Alundra.Audio;
 
 namespace Alundra.Tests;
 

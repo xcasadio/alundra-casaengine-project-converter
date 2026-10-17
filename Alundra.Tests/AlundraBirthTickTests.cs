@@ -16,6 +16,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Physics;
+using Alundra.Audio;
 
 namespace Alundra.Tests;
 

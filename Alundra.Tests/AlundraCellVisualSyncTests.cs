@@ -23,6 +23,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Physics;
 using Alundra.Cells;
+using Alundra.Audio;
 
 namespace Alundra.Tests;
 

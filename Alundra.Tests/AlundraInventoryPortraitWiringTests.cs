@@ -12,6 +12,7 @@ using Alundra.Entities;
 using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Cameras;
+using Alundra.Audio;
 
 namespace Alundra.Tests;
 

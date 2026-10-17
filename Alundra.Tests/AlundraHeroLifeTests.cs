@@ -12,6 +12,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Combat;
 using Alundra.Items;
+using Alundra.Audio;
 
 namespace Alundra.Tests;
 
