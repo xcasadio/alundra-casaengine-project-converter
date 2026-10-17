@@ -13,8 +13,8 @@ using Alundra.SaveGames;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E16.c T4 (docs/plan-e16-etat-partie.md, C3, C4, D-E16-32, SC2, SC6): <see cref="AlundraSaveGame.TryValidate"/>,
-/// <see cref="AlundraSaveGameRules"/> and <see cref="MapSizeReader"/> on a temporary project folder (under
+/// E16.c T4 (docs/plan-e16-etat-partie.md, C3, C4, D-E16-32, SC2, SC6): <see cref="SaveGame.TryValidate"/>,
+/// <see cref="SaveGameRules"/> and <see cref="MapSizeReader"/> on a temporary project folder (under
 /// <see cref="Path.GetTempPath"/>, deleted by <see cref="Dispose"/>) holding a <c>world-index.json</c> and test
 /// <c>.tileMap</c> files, a test item table and an injected catalog predicate. Each domain row is checked at its
 /// minimum and maximum (accepted), then one past each end (refused, the message naming the field). The tests on
@@ -47,7 +47,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
     private readonly string _projectPath;
     private readonly Dictionary<int, string> _worldPaths = new();
     private readonly ItemTables _itemTables;
-    private readonly AlundraSaveGameRules _rules;
+    private readonly SaveGameRules _rules;
 
     public AlundraSaveGameValidationTests()
     {
@@ -79,7 +79,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
         File.WriteAllText(Path.Combine(_projectPath, "Maps", "world-index.json"), JsonSerializer.Serialize(index));
 
         _itemTables = LoadItemTables(TestItemProperties());
-        _rules = new AlundraSaveGameRules(_projectPath, IsInCatalog, _itemTables);
+        _rules = new SaveGameRules(_projectPath, IsInCatalog, _itemTables);
     }
 
     public void Dispose()
@@ -136,9 +136,9 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
 
     /// <summary>A valid save on the fixture's map 389: identity map table (the New Game's, F1), tile (33, 59, 0),
     /// the New Game stats with 2 max MP, no item.</summary>
-    private static AlundraSaveGame ValidSave()
+    private static SaveGame ValidSave()
     {
-        var save = new AlundraSaveGame
+        var save = new SaveGame
         {
             InitialMapId = Map389,
             CameraTileX = 33,
@@ -159,7 +159,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
         return save;
     }
 
-    private static void Set(AlundraSaveGame save, string field, long value)
+    private static void Set(SaveGame save, string field, long value)
     {
         switch (field)
         {
@@ -181,7 +181,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
         }
     }
 
-    private void AssertAccepted(AlundraSaveGame save)
+    private void AssertAccepted(SaveGame save)
     {
         var valid = save.TryValidate(_rules, out var error);
 
@@ -189,7 +189,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
         Assert.Equal(string.Empty, error);
     }
 
-    private void AssertRefused(AlundraSaveGame save, string expectedPrefix)
+    private void AssertRefused(SaveGame save, string expectedPrefix)
     {
         var valid = save.TryValidate(_rules, out var error);
 
@@ -356,11 +356,11 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
     public void TileCaps_KeepTheSpawnArithmeticInsideAnInt()
     {
         // AlundraWorldProxy's spawn: (tile * TileWidth + TileWidth / 2) << 16, TileWidth 24, TileHeight 16.
-        Assert.True((AlundraSaveGame.MaxCameraTileX * 24L + 12) << 16 <= int.MaxValue);
-        Assert.True(((AlundraSaveGame.MaxCameraTileX + 1) * 24L + 12) << 16 > int.MaxValue);
-        Assert.True((AlundraSaveGame.MaxCameraTileY * 16L + 8) << 16 <= int.MaxValue);
-        Assert.True(((AlundraSaveGame.MaxCameraTileY + 1) * 16L + 8) << 16 > int.MaxValue);
-        Assert.True((long)AlundraSaveGame.MaxCameraTileZ << 20 <= int.MaxValue);
+        Assert.True((SaveGame.MaxCameraTileX * 24L + 12) << 16 <= int.MaxValue);
+        Assert.True(((SaveGame.MaxCameraTileX + 1) * 24L + 12) << 16 > int.MaxValue);
+        Assert.True((SaveGame.MaxCameraTileY * 16L + 8) << 16 <= int.MaxValue);
+        Assert.True(((SaveGame.MaxCameraTileY + 1) * 16L + 8) << 16 > int.MaxValue);
+        Assert.True((long)SaveGame.MaxCameraTileZ << 20 <= int.MaxValue);
     }
 
     // ---- Map table (C3, F1) ----------------------------------------------------------------------------
@@ -438,7 +438,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
     [Fact]
     public void CatalogPredicateThatThrows_IsARefusal()
     {
-        var rules = new AlundraSaveGameRules(_projectPath, _ => throw new InvalidOperationException("catalog down"), _itemTables);
+        var rules = new SaveGameRules(_projectPath, _ => throw new InvalidOperationException("catalog down"), _itemTables);
 
         var valid = ValidSave().TryValidate(rules, out var error);
 
@@ -451,7 +451,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
     public void CatalogPredicate_GetsTheWorldIndexPath_AndIsNotAskedForAnAbsentKey()
     {
         var asked = new List<string>();
-        var rules = new AlundraSaveGameRules(_projectPath, path => { asked.Add(path); return true; }, _itemTables);
+        var rules = new SaveGameRules(_projectPath, path => { asked.Add(path); return true; }, _itemTables);
 
         var absent = ValidSave();
         absent.InitialMapId = 9999;
@@ -469,7 +469,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
         Directory.CreateDirectory(emptyProject);
         try
         {
-            var rules = new AlundraSaveGameRules(emptyProject, _ => true, _itemTables);
+            var rules = new SaveGameRules(emptyProject, _ => true, _itemTables);
 
             Assert.False(ValidSave().TryValidate(rules, out var error));
             Assert.StartsWith("initialMapId = 389, not a key", error);
@@ -583,7 +583,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
     public void DegradedItemTable_RefusesEveryNonZeroCounter()
     {
         var degraded = LoadItemTables(null); // no items-properties.json: every ceiling is 0 (F11).
-        var rules = new AlundraSaveGameRules(_projectPath, IsInCatalog, degraded);
+        var rules = new SaveGameRules(_projectPath, IsInCatalog, degraded);
         Assert.All(degraded.ItemsProperties, value => Assert.Equal((ushort)0, value));
 
         Assert.True(ValidSave().TryValidate(rules, out var error), error); // all counters zero.

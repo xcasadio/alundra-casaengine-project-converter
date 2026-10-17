@@ -52,8 +52,8 @@ public sealed class AlundraSaveBookTests : IDisposable
         EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
         DialogueDirector.Instance.AttachToWorld(new DialoguePresenter(new RecordingUIViewRuntime()), State);
-        AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
-        AlundraSaveGameDirector.Instance.SaveSlots = _slots;
+        SaveGameDirector.Instance.RulesFactoryForTests = RealRules;
+        SaveGameDirector.Instance.SaveSlots = _slots;
         SaveBook.Instance.Screen = _screen;
 
         // A New Game state already carries the sword's slot (F10): a capture of it validates.
@@ -416,7 +416,7 @@ public sealed class AlundraSaveBookTests : IDisposable
     [Fact]
     public void State5_RulesFactoryThrows_StartsTheFailureMessage()
     {
-        AlundraSaveGameDirector.Instance.RulesFactoryForTests = () => throw new InvalidOperationException("boom");
+        SaveGameDirector.Instance.RulesFactoryForTests = () => throw new InvalidOperationException("boom");
         RunToTheQuestion();
 
         Dialogue.SelectChoiceForTests(0);
@@ -487,7 +487,7 @@ public sealed class AlundraSaveBookTests : IDisposable
 
     private sealed class FakeScreen : ISaveBookScreen
     {
-        public readonly List<AlundraSaveGame> Started = new();
+        public readonly List<SaveGame> Started = new();
         public int FailuresStarted;
         public int FlowStarted;
         public int FlowEnded;
@@ -497,7 +497,7 @@ public sealed class AlundraSaveBookTests : IDisposable
 
         public bool IsActive { get; set; }
 
-        public bool Start(AlundraSaveGame save)
+        public bool Start(SaveGame save)
         {
             Started.Add(save);
             if (RefuseStart)

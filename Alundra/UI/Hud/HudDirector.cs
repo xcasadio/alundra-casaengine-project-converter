@@ -262,7 +262,7 @@ public sealed class HudDirector
 
     /// <summary>
     /// E16.d K8, step 3 (docs/plan-e16-etat-partie.md, SC1): the jauge's half of loading a save, run on the
-    /// arrival map right after <see cref="AlundraSaveGame.ApplyTo"/>, with the stats that were just loaded
+    /// arrival map right after <see cref="SaveGame.ApplyTo"/>, with the stats that were just loaded
     /// (passed in: the jauge may have no state attached yet). The displayed values (HP, HP max, MP, MP max,
     /// money) take the loaded values at once, the four catch-up sub-steps go back to 0, the coin icon to frame
     /// 0 and not rolling, and every magic-pip frame to 0: the whole content of <see cref="ResetForTests"/> but

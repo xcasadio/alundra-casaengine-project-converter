@@ -275,7 +275,7 @@ public sealed class WarpDirector
         // E16.d K8 (docs/plan-e16-etat-partie.md): a departure that never reaches its arrival leaves no load
         // pending to be applied later at some other arrival. This director depends on the save-game
         // director, never the reverse.
-        AlundraSaveGameDirector.Instance.AbandonPendingLoad("its departure was aborted before any arrival");
+        SaveGameDirector.Instance.AbandonPendingLoad("its departure was aborted before any arrival");
 
         if (_gravitySuspendedPlayer != null)
         {

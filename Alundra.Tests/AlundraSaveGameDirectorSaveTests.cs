@@ -28,7 +28,7 @@ public sealed class AlundraSaveGameDirectorSaveTests : IDisposable
     public AlundraSaveGameDirectorSaveTests()
     {
         ResetSingletons();
-        AlundraSaveGameDirector.RecipeKeysEnabledOverrideForTests = true;
+        SaveGameDirector.RecipeKeysEnabledOverrideForTests = true;
         Director.KeyHeldProviderForTests = _keys.IsHeld;
         Director.SaveSlots = _slots;
         Director.RulesFactoryForTests = RealRules;
@@ -42,7 +42,7 @@ public sealed class AlundraSaveGameDirectorSaveTests : IDisposable
         ResetSingletons();
     }
 
-    private static AlundraSaveGameDirector Director => AlundraSaveGameDirector.Instance;
+    private static SaveGameDirector Director => SaveGameDirector.Instance;
 
     private static GameState State => GameState.Instance;
 
@@ -99,8 +99,8 @@ public sealed class AlundraSaveGameDirectorSaveTests : IDisposable
     // ---- Success (K6 steps 2 to 4, C5) ----------------------------------------------------------------------
 
     [Theory]
-    [InlineData(Keys.F5, AlundraSaveGameDirector.BinarySlotName, SaveGameFormat.Binary)]
-    [InlineData(Keys.F6, AlundraSaveGameDirector.JsonSlotName, SaveGameFormat.Json)]
+    [InlineData(Keys.F5, SaveGameDirector.BinarySlotName, SaveGameFormat.Binary)]
+    [InlineData(Keys.F6, SaveGameDirector.JsonSlotName, SaveGameFormat.Json)]
     public void Save_HeroAtAKnownTileOfMap389_WritesThatMapAndTile_WithItsMetadata(Keys key, string slot, SaveGameFormat format)
     {
         State.AddFlag(860, 1u << (0x5c & 0x1f));

@@ -31,11 +31,11 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
         ResetSingletons();
     }
 
-    private static AlundraSaveGameDirector Director => AlundraSaveGameDirector.Instance;
+    private static SaveGameDirector Director => SaveGameDirector.Instance;
 
     private static (HeldKeys Keys, FakeSaveSlots Slots) Arm(bool enabled)
     {
-        AlundraSaveGameDirector.RecipeKeysEnabledOverrideForTests = enabled;
+        SaveGameDirector.RecipeKeysEnabledOverrideForTests = enabled;
         var keyboard = new HeldKeys();
         var slots = new FakeSaveSlots();
         Director.KeyHeldProviderForTests = keyboard.IsHeld;
@@ -94,13 +94,13 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
     [Fact]
     public void Switch_Default_WithoutForcing_IsOnInDebug_AndOffInRelease()
     {
-        AlundraSaveGameDirector.RecipeKeysEnabledOverrideForTests = null;
+        SaveGameDirector.RecipeKeysEnabledOverrideForTests = null;
 #if DEBUG
-        Assert.True(AlundraSaveGameDirector.RecipeKeysEnabledByBuild);
-        Assert.True(AlundraSaveGameDirector.RecipeKeysEnabled);
+        Assert.True(SaveGameDirector.RecipeKeysEnabledByBuild);
+        Assert.True(SaveGameDirector.RecipeKeysEnabled);
 #else
-        Assert.False(AlundraSaveGameDirector.RecipeKeysEnabledByBuild);
-        Assert.False(AlundraSaveGameDirector.RecipeKeysEnabled);
+        Assert.False(SaveGameDirector.RecipeKeysEnabledByBuild);
+        Assert.False(SaveGameDirector.RecipeKeysEnabled);
 #endif
     }
 
@@ -170,7 +170,7 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
         Frame(hero);
 
         var call = Assert.Single(slots.SaveCalls);
-        Assert.Equal(AlundraSaveGameDirector.BinarySlotName, call.Slot);
+        Assert.Equal(SaveGameDirector.BinarySlotName, call.Slot);
         Assert.Equal(SaveGameFormat.Binary, call.Format);
         Assert.Equal(0, slots.ListCalls);
     }
@@ -182,7 +182,7 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
     [Fact]
     public void MostRecent_DifferentTimes_TakesTheLatest()
     {
-        var chosen = AlundraSaveGameDirector.SelectMostRecent(new List<AlundraSlotEntry>
+        var chosen = SaveGameDirector.SelectMostRecent(new List<SlotEntry>
         {
             new("zeta", true, T0),
             new("alpha", true, T0.AddSeconds(5)),
@@ -195,7 +195,7 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
     [Fact]
     public void MostRecent_EqualTimes_TakesTheGreatestNameInOrdinalOrder()
     {
-        var chosen = AlundraSaveGameDirector.SelectMostRecent(new List<AlundraSlotEntry>
+        var chosen = SaveGameDirector.SelectMostRecent(new List<SlotEntry>
         {
             new("debug-binary", true, T0),
             new("debug-json", true, T0),
@@ -208,7 +208,7 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
     [Fact]
     public void MostRecent_SkipsUnknownTimes_AndUnreadableSlots()
     {
-        var chosen = AlundraSaveGameDirector.SelectMostRecent(new List<AlundraSlotEntry>
+        var chosen = SaveGameDirector.SelectMostRecent(new List<SlotEntry>
         {
             new("no-time", true, null),
             new("unreadable", false, T0.AddHours(1)),
@@ -221,9 +221,9 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
     [Fact]
     public void MostRecent_NoSlot_OrNoCandidate_IsNull()
     {
-        Assert.Null(AlundraSaveGameDirector.SelectMostRecent(new List<AlundraSlotEntry>()));
-        Assert.Null(AlundraSaveGameDirector.SelectMostRecent(null));
-        Assert.Null(AlundraSaveGameDirector.SelectMostRecent(new List<AlundraSlotEntry>
+        Assert.Null(SaveGameDirector.SelectMostRecent(new List<SlotEntry>()));
+        Assert.Null(SaveGameDirector.SelectMostRecent(null));
+        Assert.Null(SaveGameDirector.SelectMostRecent(new List<SlotEntry>
         {
             new("no-time", true, null),
             new("unreadable", false, T0),
@@ -234,8 +234,8 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
     public void F9_WithNoReadableSlot_IsRefused_WithoutLoading()
     {
         var (keyboard, slots) = Arm(enabled: true);
-        slots.Slots.Add(new AlundraSlotEntry("unreadable", false, T0));
-        slots.Slots.Add(new AlundraSlotEntry("no-time", true, null));
+        slots.Slots.Add(new SlotEntry("unreadable", false, T0));
+        slots.Slots.Add(new SlotEntry("no-time", true, null));
         using var log = LogCapture.Install();
 
         keyboard.Held.Add(Keys.F9);
@@ -251,7 +251,7 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
     public void AServiceThatThrowsAtEveryCall_BehindTheAdapter_RefusesF5F6AndF9_WithoutException_StateIdentical()
     {
         var (keyboard, _) = Arm(enabled: true);
-        Director.SaveSlots = new AlundraEngineSaveSlots(() => throw new InvalidOperationException("simulated service failure"));
+        Director.SaveSlots = new EngineSaveSlots(() => throw new InvalidOperationException("simulated service failure"));
         var hero = HeroAt();
         var state = GameState.Instance;
         state.PlayerStats.WeaponId = 1; // a capture of this state validates, so F5/F6 do reach the service.
@@ -276,7 +276,7 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
     [Fact]
     public void Adapter_OverAThrowingService_ReturnsIoErrorOrAnEmptyList_ForEachCall()
     {
-        var adapter = new AlundraEngineSaveSlots(() => throw new ArgumentException("bad slot"));
+        var adapter = new EngineSaveSlots(() => throw new ArgumentException("bad slot"));
         using var log = LogCapture.Install();
 
         var save = adapter.Save("debug-json", ValidSave(), SaveGameFormat.Json, new Dictionary<string, string>());

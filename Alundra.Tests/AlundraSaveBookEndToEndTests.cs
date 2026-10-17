@@ -209,7 +209,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         FramesUntil(proxy, () => Screen.IsPickerActive, 300);
         Assert.Equal(("", ""), Screen.SlotLabel(0));
         Assert.Equal(
-            ("Wendell Succombe", AlundraSaveGame.BuildSummary(call.Data.HpMax, call.Data.GameTime)),
+            ("Wendell Succombe", SaveGame.BuildSummary(call.Data.HpMax, call.Data.GameTime)),
             Screen.SlotLabel(1));
         Assert.StartsWith("  HP 10", Screen.SlotLabel(1).Line1);
     }
@@ -228,8 +228,8 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         // service from the test (K1, D-E16-31).
         EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
-        AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
-        AlundraSaveGameDirector.Instance.SaveSlots = _slots;
+        SaveGameDirector.Instance.RulesFactoryForTests = RealRules;
+        SaveGameDirector.Instance.SaveSlots = _slots;
         Assert.True(DialogueDirector.Instance.HasPresenter);
 
         // The book of map 17, spawned from the export, with the save book's native handlers (L1).
@@ -401,32 +401,32 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
 
     /// <summary>A fake service that gives back what it received for a slot (NotFound before), recording every
     /// call.</summary>
-    private sealed class EchoSlots : IAlundraSaveSlots
+    private sealed class EchoSlots : ISaveSlots
     {
-        private readonly Dictionary<string, AlundraSaveGame> _stored = new();
-        public readonly List<(string Slot, AlundraSaveGame Data, SaveGameFormat Format)> SaveCalls = new();
+        private readonly Dictionary<string, SaveGame> _stored = new();
+        public readonly List<(string Slot, SaveGame Data, SaveGameFormat Format)> SaveCalls = new();
         public readonly List<string> LoadCalls = new();
 
-        public AlundraSaveOutcome Save(string slot, AlundraSaveGame data, SaveGameFormat format, IReadOnlyDictionary<string, string> metadata)
+        public SaveOutcome Save(string slot, SaveGame data, SaveGameFormat format, IReadOnlyDictionary<string, string> metadata)
         {
             SaveCalls.Add((slot, data, format));
             _stored[slot] = data;
-            return new AlundraSaveOutcome(SaveGameSaveStatus.Saved, string.Empty);
+            return new SaveOutcome(SaveGameSaveStatus.Saved, string.Empty);
         }
 
-        public AlundraLoadOutcome TryLoad(string slot, out AlundraSaveGame? data)
+        public LoadOutcome TryLoad(string slot, out SaveGame? data)
         {
             LoadCalls.Add(slot);
             if (_stored.TryGetValue(slot, out var stored))
             {
                 data = stored;
-                return new AlundraLoadOutcome(SaveGameLoadStatus.Loaded, string.Empty);
+                return new LoadOutcome(SaveGameLoadStatus.Loaded, string.Empty);
             }
 
             data = null;
-            return new AlundraLoadOutcome(SaveGameLoadStatus.NotFound, string.Empty);
+            return new LoadOutcome(SaveGameLoadStatus.NotFound, string.Empty);
         }
 
-        public IReadOnlyList<AlundraSlotEntry> ListSlots() => Array.Empty<AlundraSlotEntry>();
+        public IReadOnlyList<SlotEntry> ListSlots() => Array.Empty<SlotEntry>();
     }
 }

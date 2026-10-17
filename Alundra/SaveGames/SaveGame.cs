@@ -35,7 +35,7 @@ namespace Alundra.SaveGames;
 /// object is validated (C4) before <see cref="ApplyTo"/>. <see cref="Capture"/> and
 /// <see cref="TryCaptureFromWorld"/> do not validate either; E16.d writes a capture only after it validates.</para>
 /// </summary>
-public sealed class AlundraSaveGame : ISaveGameData
+public sealed class SaveGame : ISaveGameData
 {
     /// <summary>C2: the only data version so far.</summary>
     internal const int DataVersion1 = 1;
@@ -200,11 +200,11 @@ public sealed class AlundraSaveGame : ISaveGameData
     /// <see cref="InitialMapId"/> and <see cref="CameraTileX"/>/<see cref="CameraTileY"/>/<see cref="CameraTileZ"/>
     /// from the arguments. Does not validate. Production goes through <see cref="TryCaptureFromWorld"/>.
     /// </summary>
-    public static AlundraSaveGame Capture(GameState state, int currentMapId, int tileX, int tileY, int tileZ)
+    public static SaveGame Capture(GameState state, int currentMapId, int tileX, int tileY, int tileZ)
     {
         ArgumentNullException.ThrowIfNull(state);
 
-        var save = new AlundraSaveGame
+        var save = new SaveGame
         {
             GameTime = state.GameTime,
             InitialMapId = currentMapId,
@@ -247,7 +247,7 @@ public sealed class AlundraSaveGame : ISaveGameData
         GameState state,
         string worldName,
         AlundraEntityScriptProxy? player,
-        out AlundraSaveGame? save)
+        out SaveGame? save)
     {
         ArgumentNullException.ThrowIfNull(state);
 
@@ -291,7 +291,7 @@ public sealed class AlundraSaveGame : ISaveGameData
     /// </list>
     /// <c>gameFlags</c> has no domain, and <c>deathRetryCount</c>'s domain, 0..255, is its type's (D-E16-22).
     /// </summary>
-    public bool TryValidate(AlundraSaveGameRules rules, out string error)
+    public bool TryValidate(SaveGameRules rules, out string error)
     {
         ArgumentNullException.ThrowIfNull(rules);
 
@@ -299,7 +299,7 @@ public sealed class AlundraSaveGame : ISaveGameData
         return error.Length == 0;
     }
 
-    private string? FindFirstInvalidField(AlundraSaveGameRules rules)
+    private string? FindFirstInvalidField(SaveGameRules rules)
     {
         if (LoadedDataVersion != DataVersion1)
         {
@@ -366,7 +366,7 @@ public sealed class AlundraSaveGame : ISaveGameData
 
     /// <summary>C3/C4/D-E16-32: <c>initialMapId</c> - a key, in the catalog, with a readable size of at least
     /// 1 x 1. Null when valid, with the map's size.</summary>
-    private string? CheckInitialMap(AlundraSaveGameRules rules, out int width, out int height)
+    private string? CheckInitialMap(SaveGameRules rules, out int width, out int height)
     {
         width = 0;
         height = 0;

@@ -6,7 +6,7 @@ using Alundra.Items;
 namespace Alundra.SaveGames;
 
 /// <summary>
-/// E16.c C1 (docs/plan-e16-etat-partie.md): what <see cref="AlundraSaveGame.TryValidate"/> consults to bound a
+/// E16.c C1 (docs/plan-e16-etat-partie.md): what <see cref="SaveGame.TryValidate"/> consults to bound a
 /// save's values (C3, C4) - all of it project data, none of it read from the save:
 /// <list type="bullet">
 /// <item><description>the map table, <c>Maps/world-index.json</c> of <see cref="ProjectPath"/>
@@ -21,14 +21,14 @@ namespace Alundra.SaveGames;
 /// that inventory validates against the table that filled it.</description></item>
 /// </list>
 /// </summary>
-public sealed class AlundraSaveGameRules
+public sealed class SaveGameRules
 {
     /// <param name="projectPath">The project folder: <c>Maps/world-index.json</c> and the maps' <c>.tileMap</c>
     /// files are read under it.</param>
     /// <param name="isWorldInCatalog">True when the world at a <c>world-index.json</c> value is in the asset
     /// catalog. An exception it throws becomes a refusal (C4).</param>
     /// <param name="itemTables">The item table the counters are bounded by.</param>
-    public AlundraSaveGameRules(string projectPath, Func<string, bool> isWorldInCatalog, ItemTables itemTables)
+    public SaveGameRules(string projectPath, Func<string, bool> isWorldInCatalog, ItemTables itemTables)
     {
         ArgumentNullException.ThrowIfNull(projectPath);
         ArgumentNullException.ThrowIfNull(isWorldInCatalog);

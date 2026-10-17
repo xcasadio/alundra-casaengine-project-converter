@@ -9,7 +9,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// E16.c T2 (docs/plan-e16-etat-partie.md, C7, F6 to F8): the chapter walk
 /// (<see cref="ChapterFlags.GetFirstEnabledFlagIndex"/>, port of 0x800813B0) and the slot summary
-/// (<see cref="AlundraSaveGame.BuildSummary"/>, port of <c>UpdateMenuStatusText</c>'s text). The expected
+/// (<see cref="SaveGame.BuildSummary"/>, port of <c>UpdateMenuStatusText</c>'s text). The expected
 /// summary is computed here, independently, from F6's formulas.
 /// </summary>
 public sealed class AlundraChapterFlagsTests
@@ -155,7 +155,7 @@ public sealed class AlundraChapterFlagsTests
     [InlineData(GameState.GameTimeMax)]
     public void BuildSummary_Time_MatchesF6(uint gameTime)
     {
-        var summary = AlundraSaveGame.BuildSummary(10, gameTime);
+        var summary = SaveGame.BuildSummary(10, gameTime);
 
         Assert.Equal(30, summary.Length);
         Assert.Equal(ExpectedSummary(10, gameTime), summary);
@@ -167,7 +167,7 @@ public sealed class AlundraChapterFlagsTests
     [InlineData((short)50)]
     public void BuildSummary_Hp_MatchesF6(short hpMax)
     {
-        var summary = AlundraSaveGame.BuildSummary(hpMax, 0);
+        var summary = SaveGame.BuildSummary(hpMax, 0);
 
         Assert.Equal(ExpectedSummary(hpMax, 0), summary);
     }
@@ -183,7 +183,7 @@ public sealed class AlundraChapterFlagsTests
     [InlineData(GameState.GameTimeMax, "  HP 10       TIME 99:59:59   ")]
     public void BuildSummary_Time_ReadsAsSixtiethsOfASecond(uint gameTime, string expected)
     {
-        Assert.Equal(expected, AlundraSaveGame.BuildSummary(10, gameTime));
+        Assert.Equal(expected, SaveGame.BuildSummary(10, gameTime));
     }
 
     [Theory]
@@ -191,7 +191,7 @@ public sealed class AlundraChapterFlagsTests
     [InlineData((short)50, "  HP 50       TIME 00:00:00   ")]
     public void BuildSummary_Hp_Literal(short hpMax, string expected)
     {
-        Assert.Equal(expected, AlundraSaveGame.BuildSummary(hpMax, 0));
+        Assert.Equal(expected, SaveGame.BuildSummary(hpMax, 0));
     }
 
     [Theory]
@@ -201,7 +201,7 @@ public sealed class AlundraChapterFlagsTests
     [InlineData(short.MaxValue)]
     public void BuildSummary_HpOutsideTwoDigits_DoesNotThrow_AndStaysWellFormed(short hpMax)
     {
-        var summary = AlundraSaveGame.BuildSummary(hpMax, uint.MaxValue);
+        var summary = SaveGame.BuildSummary(hpMax, uint.MaxValue);
 
         Assert.Equal(30, summary.Length);
         Assert.DoesNotContain(summary, char.IsSurrogate);

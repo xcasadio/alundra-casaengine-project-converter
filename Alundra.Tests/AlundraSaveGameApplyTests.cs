@@ -50,11 +50,11 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
     {
         ResetSingletons();
         _root = FindProjectRoot();
-        AlundraSaveGameDirector.RecipeKeysEnabledOverrideForTests = true;
+        SaveGameDirector.RecipeKeysEnabledOverrideForTests = true;
         Director.KeyHeldProviderForTests = _keys.IsHeld;
         Director.SaveSlots = _slots;
         Director.RulesFactoryForTests = RealRules;
-        _slots.Slots.Add(new AlundraSlotEntry("debug-json", true, T0));
+        _slots.Slots.Add(new SlotEntry("debug-json", true, T0));
 
         _gameManager = BuildGameManager();
         WarpDirector.Instance.AttachToWorld(_gameManager, null, _root);
@@ -65,12 +65,12 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         ResetSingletons();
     }
 
-    private static AlundraSaveGameDirector Director => AlundraSaveGameDirector.Instance;
+    private static SaveGameDirector Director => SaveGameDirector.Instance;
 
     private static GameState State => GameState.Instance;
 
     /// <summary>A save carrying something in every field, valid against the real export.</summary>
-    private static AlundraSaveGame RichSave()
+    private static SaveGame RichSave()
     {
         var save = ValidSave(tileX: 33, tileY: 59, tileZ: 0);
         save.GameFlags[0] = 0x8000_0001;
@@ -94,7 +94,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
     }
 
     /// <summary>F9, from a hero at the New Game tile: the load becomes pending and its departure is armed.</summary>
-    private void ArmLoad(AlundraSaveGame save)
+    private void ArmLoad(SaveGame save)
     {
         _slots.LoadedSave = save;
         _keys.Held.Clear();
@@ -105,7 +105,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         Assert.True(Director.HasPendingLoad);
     }
 
-    private static void AssertStateIsTheSave(AlundraSaveGame save)
+    private static void AssertStateIsTheSave(SaveGame save)
     {
         Assert.Equal(save.GameFlags, State.GameFlags.Take(64));
         Assert.All(State.GameFlags.Skip(64), word => Assert.Equal(0u, word));
@@ -270,7 +270,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
 
     /// <summary>SD5: Start pressed during the load's fade does not open the inventory - since the SD5 fix
     /// (D-E13D-38, merged into main before E16) its trigger refuses while a warp transition runs, and the load's
-    /// departure is one; after <see cref="AlundraSaveGameDirector.ApplyPendingLoad"/> both inventories are still
+    /// departure is one; after <see cref="SaveGameDirector.ApplyPendingLoad"/> both inventories are still
     /// at rest, <c>PlayerControlFlags</c> is 0, and N ticks run without an exception.</summary>
     [Fact]
     public void StartPressedDuringTheLoadsFade_DoesNotOpenTheInventory_AndTheApplicationLeavesItAtRest()

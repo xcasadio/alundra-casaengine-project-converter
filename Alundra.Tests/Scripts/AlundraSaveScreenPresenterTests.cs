@@ -47,8 +47,8 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
         _dialoguePresenter = new DialoguePresenter(_uiView);
         DialogueDirector.Instance.AttachToWorld(_dialoguePresenter, State);
-        AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
-        AlundraSaveGameDirector.Instance.SaveSlots = _slots;
+        SaveGameDirector.Instance.RulesFactoryForTests = RealRules;
+        SaveGameDirector.Instance.SaveSlots = _slots;
         Director.AttachToWorld(State, null);
         _presenter = new SaveScreenPresenter(Director, _viewModel, _screen, _uiView);
         _choicePresenter = new ChoicePresenter(DialogueDirector.Instance, new AlundraChoiceViewModel(), _choiceScreen, _uiView); // E19.f3b: on the same view

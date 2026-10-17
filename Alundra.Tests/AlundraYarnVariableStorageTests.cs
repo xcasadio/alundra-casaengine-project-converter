@@ -416,7 +416,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
             ===
             """));
 
-        var save = AlundraSaveGame.Capture(gameState, currentMapId: 1, tileX: 0, tileY: 0, tileZ: 0);
+        var save = SaveGame.Capture(gameState, currentMapId: 1, tileX: 0, tileY: 0, tileZ: 0);
         var restored = new GameState();
         save.ApplyTo(restored);
 

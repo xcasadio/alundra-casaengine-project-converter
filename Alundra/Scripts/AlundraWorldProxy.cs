@@ -948,7 +948,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
             // E16.d K8/SD9: a load pending on this departure can never be applied here - drop it now, so it is
             // not applied later at some other arrival.
-            AlundraSaveGameDirector.Instance.AbandonPendingLoad($"world '{world.Name}' has no '{TileMapEntityName}' entity");
+            SaveGameDirector.Instance.AbandonPendingLoad($"world '{world.Name}' has no '{TileMapEntityName}' entity");
             return;
         }
 
@@ -957,7 +957,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         if (tileMapData == null)
         {
             Logs.WriteWarning($"AlundraWorldProxy: entity '{TileMapEntityName}' has no loaded TileMapData in world '{world.Name}'; no entity spawned.");
-            AlundraSaveGameDirector.Instance.AbandonPendingLoad($"world '{world.Name}' has no loaded tile map"); // E16.d SD9.
+            SaveGameDirector.Instance.AbandonPendingLoad($"world '{world.Name}' has no loaded tile map"); // E16.d SD9.
             return;
         }
 
@@ -976,7 +976,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // where the entities' load programs and the map events are the first readers of the loaded flags and
         // stats. The installs below only re-attach state, and AdoptPlayerPawn places the hero from the warp
         // arrival the load departed with. No-op without a pending load.
-        AlundraSaveGameDirector.Instance.ApplyPendingLoad(
+        SaveGameDirector.Instance.ApplyPendingLoad(
             GameState,
             world.Name != null && BackdropLoader.TryParseMapIndex(world.Name, out var arrivalMapId) ? arrivalMapId : null);
 
@@ -2436,7 +2436,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // BEFORE gameplayBlocked is computed below (SD3): a load armed by F9 posts the warp gate at once, so
         // this frame's "dedans" passes (map events, scripted 0x53) are already frozen and cannot overwrite the
         // load's departure or open a box. A no-op, reading no key, unless Alundra.dll is compiled in Debug.
-        AlundraSaveGameDirector.Instance.UpdateRecipeKeys(_world?.Game?.InputComponent?.KeyboardManager, GameState, _world?.Name, PlayerEntity);
+        SaveGameDirector.Instance.UpdateRecipeKeys(_world?.Game?.InputComponent?.KeyboardManager, GameState, _world?.Name, PlayerEntity);
 
         // Bug fix (AlundraLogicClock's own class doc): this world's ONE shared logic clock. Reads the SAME
         // cached value every spawned entity's own Update already advanced/read this frame (this proxy's

@@ -126,8 +126,8 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
             TileZ = GameState.CameraTileZ,
         };
 
-        Assert.True(AlundraSaveGame.TryCaptureFromWorld(state, Map389WorldName, hero, out var save));
-        var rules = new AlundraSaveGameRules(root, _ => true, tables);
+        Assert.True(SaveGame.TryCaptureFromWorld(state, Map389WorldName, hero, out var save));
+        var rules = new SaveGameRules(root, _ => true, tables);
 
         Assert.True(save!.TryValidate(rules, out var error), error);
         Assert.Equal(1, save.LoadedDataVersion);
@@ -137,9 +137,9 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
 
     // ---- Bounds, then the jauge and the inventories (SC5) --------------------------------------------------
 
-    private static AlundraSaveGame BoundsSave(ItemTables tables, bool atMaximum)
+    private static SaveGame BoundsSave(ItemTables tables, bool atMaximum)
     {
-        var save = new AlundraSaveGame { InitialMapId = 389 };
+        var save = new SaveGame { InitialMapId = 389 };
         for (var i = 0; i < save.MapIdToInternalMapIndexTable.Length; i++)
         {
             save.MapIdToInternalMapIndexTable[i] = (ushort)i;
@@ -154,16 +154,16 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         save.GameTime = GameState.GameTimeMax;
         save.CameraTileX = 51;
         save.CameraTileY = 59;
-        save.CameraTileZ = AlundraSaveGame.MaxCameraTileZ;
-        save.HpMax = AlundraSaveGame.MaxHpMax;
-        save.Hp = AlundraSaveGame.MaxHpMax;
-        save.MpMax = AlundraSaveGame.MaxMpMax;
-        save.Mp = AlundraSaveGame.MaxMpMax;
-        save.Money = AlundraSaveGame.MaxMoney;
-        save.WeaponId = AlundraSaveGame.MaxWeaponId;
+        save.CameraTileZ = SaveGame.MaxCameraTileZ;
+        save.HpMax = SaveGame.MaxHpMax;
+        save.Hp = SaveGame.MaxHpMax;
+        save.MpMax = SaveGame.MaxMpMax;
+        save.Mp = SaveGame.MaxMpMax;
+        save.Money = SaveGame.MaxMoney;
+        save.WeaponId = SaveGame.MaxWeaponId;
         save.ItemId = PlayerManager.ItemsCount - 1;
-        save.FalconTemp = AlundraSaveGame.MaxFalcon;
-        save.Falcon = AlundraSaveGame.MaxFalcon;
+        save.FalconTemp = SaveGame.MaxFalcon;
+        save.Falcon = SaveGame.MaxFalcon;
         save.DeathRetryCount = byte.MaxValue;
         for (var id = 0; id < PlayerManager.ItemsCount; id++)
         {
@@ -219,7 +219,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
     {
         var root = FindProjectRoot();
         var tables = new ItemTables(root);
-        var rules = new AlundraSaveGameRules(root, _ => true, tables);
+        var rules = new SaveGameRules(root, _ => true, tables);
         var save = BoundsSave(tables, atMaximum);
         Assert.True(save.TryValidate(rules, out var error), error);
 

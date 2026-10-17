@@ -45,8 +45,8 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
         EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
         DialogueDirector.Instance.AttachToWorld(new DialoguePresenter(_uiView), _proxy.GameState);
-        AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
-        AlundraSaveGameDirector.Instance.SaveSlots = _slots;
+        SaveGameDirector.Instance.RulesFactoryForTests = RealRules;
+        SaveGameDirector.Instance.SaveSlots = _slots;
         SaveScreenDirector.Instance.AttachToWorld(_proxy.GameState, null);
     }
 

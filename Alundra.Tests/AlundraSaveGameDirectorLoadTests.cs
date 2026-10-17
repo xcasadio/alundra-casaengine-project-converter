@@ -42,12 +42,12 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
     {
         ResetSingletons();
         _root = FindProjectRoot();
-        AlundraSaveGameDirector.RecipeKeysEnabledOverrideForTests = true;
+        SaveGameDirector.RecipeKeysEnabledOverrideForTests = true;
         Director.KeyHeldProviderForTests = _keys.IsHeld;
         Director.SaveSlots = _slots;
         Director.RulesFactoryForTests = RealRules;
 
-        _slots.Slots.Add(new AlundraSlotEntry("debug-json", true, T0));
+        _slots.Slots.Add(new SlotEntry("debug-json", true, T0));
         _slots.LoadedSave = ValidSave(tileX: 20, tileY: 30, tileZ: 1);
 
         _gameManager = BuildGameManager();
@@ -59,7 +59,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
         ResetSingletons();
     }
 
-    private static AlundraSaveGameDirector Director => AlundraSaveGameDirector.Instance;
+    private static SaveGameDirector Director => SaveGameDirector.Instance;
 
     private static GameState State => GameState.Instance;
 
@@ -143,7 +143,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
     public void NoReadableSlot_IsRefused_WithoutLoading()
     {
         _slots.Slots.Clear();
-        _slots.Slots.Add(new AlundraSlotEntry("broken", false, T0));
+        _slots.Slots.Add(new SlotEntry("broken", false, T0));
         var before = StateSnapshot.Take(State);
 
         PressF9(HeroAt());

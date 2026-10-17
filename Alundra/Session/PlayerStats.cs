@@ -14,7 +14,7 @@ namespace Alundra.Session;
 /// the HUD's weapon and accessory boxes (docs/plan-e13c-icones-hud.md). <see cref="FalconTemp"/> and
 /// <see cref="Falcon"/> followed with E13.d (shown by the inventory); the falcon text command of E15
 /// (<see cref="TextProgress"/>) is their only writer, and all nine fields are saved by
-/// <see cref="AlundraSaveGame"/> (E16.c, docs/decisions/0012-alundra-save-game-content-and-validation.md).
+/// <see cref="SaveGame"/> (E16.c, docs/decisions/0012-alundra-save-game-content-and-validation.md).
 ///
 /// <para><b>One instance, not two.</b> The original allocates a single <c>PlayerStats</c> object and
 /// ALIASES it onto two globals - <c>g_saveData.PlayerStats = new PlayerStats()</c> immediately followed

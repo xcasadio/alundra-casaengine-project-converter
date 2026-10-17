@@ -389,7 +389,7 @@ public sealed class GameState
     /// <summary>
     /// E16.d K8, step 1 (docs/plan-e16-etat-partie.md, D-E16-19, SC7): the session half of loading a save -
     /// run by <c>AlundraSaveGameDirector.ApplyPendingLoad</c> on the arrival map, right after
-    /// <see cref="InstallForMapEntry"/> and BEFORE <see cref="AlundraSaveGame.ApplyTo"/>. It puts back what a
+    /// <see cref="InstallForMapEntry"/> and BEFORE <see cref="SaveGame.ApplyTo"/>. It puts back what a
     /// fresh process would hold for the fields the save does NOT carry, so nothing of the session in progress
     /// leaks into the loaded game - the original only loads from a fresh process (<c>LOADER.EXE</c>) or after
     /// death ("Retry"), never from the middle of a session (§0.2):
@@ -405,7 +405,7 @@ public sealed class GameState
     /// (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>).</description></item>
     /// </list>
     /// Nothing the save carries is touched here (flags, map table, item counters, stats, game time, death
-    /// retries): <see cref="AlundraSaveGame.ApplyTo"/> writes them next. <see cref="TemporaryFlags"/> is already
+    /// retries): <see cref="SaveGame.ApplyTo"/> writes them next. <see cref="TemporaryFlags"/> is already
     /// cleared by <see cref="InstallForMapEntry"/>.
     /// </summary>
     internal void ResetSessionForLoad()

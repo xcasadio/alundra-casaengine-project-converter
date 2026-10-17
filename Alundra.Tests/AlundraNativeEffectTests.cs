@@ -535,7 +535,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
             Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = HeroAt(0, 0, 0) }, gameState, VesselProgram);
 
             Assert.Equal((50, 50), ((int)gameState.PlayerStats.Hp, (int)gameState.PlayerStats.HpMax));
-            var save = AlundraSaveGame.Capture(gameState, 389, 33, 59, 0);
+            var save = SaveGame.Capture(gameState, 389, 33, 59, 0);
             Assert.True(save.TryValidate(SaveGameDirectorTestSupport.RealRules(), out var error), error);
         }
     }

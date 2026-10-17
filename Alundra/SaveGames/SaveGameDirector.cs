@@ -43,11 +43,11 @@ namespace Alundra.SaveGames;
 /// is one log line (<see cref="Logs.WriteWarning"/> for a refusal, <see cref="Logs.WriteInfo"/> for a success).
 /// These keys only serve the recipe; the player's own save screen is E16.e.</para>
 /// </summary>
-public sealed class AlundraSaveGameDirector
+public sealed class SaveGameDirector
 {
-    public static readonly AlundraSaveGameDirector Instance = new();
+    public static readonly SaveGameDirector Instance = new();
 
-    private AlundraSaveGameDirector()
+    private SaveGameDirector()
     {
     }
 
@@ -61,7 +61,7 @@ public sealed class AlundraSaveGameDirector
     internal const Keys SaveJsonKey = Keys.F6;
     internal const Keys LoadKey = Keys.F9;
 
-    private const string LogPrefix = "AlundraSaveGameDirector: ";
+    private const string LogPrefix = "SaveGameDirector: ";
 
     // The New Game position formula's tile size (AlundraWorldProxy.AdoptPlayerPawn, :1563-1565).
     private const int TileWidth = 24;
@@ -117,14 +117,14 @@ public sealed class AlundraSaveGameDirector
     /// catalog is empty, so every validation would refuse <c>initialMapId</c> without this seam. It replaces the
     /// rules only, never the validation itself; reachable only by code already in the process (SD14, SD15).
     /// </summary>
-    internal Func<AlundraSaveGameRules>? RulesFactoryForTests;
+    internal Func<SaveGameRules>? RulesFactoryForTests;
 
-    /// <summary>K4: the save-game service behind the DLL's interface - <see cref="AlundraEngineSaveSlots"/> over
+    /// <summary>K4: the save-game service behind the DLL's interface - <see cref="EngineSaveSlots"/> over
     /// the engine's service in production; tests assign a fake (D-E16-31) and never reach the real folder.</summary>
-    internal IAlundraSaveSlots SaveSlots { get; set; } = new AlundraEngineSaveSlots();
+    internal ISaveSlots SaveSlots { get; set; } = new EngineSaveSlots();
 
     /// <summary>K7 step 6: the validated save a departure is carrying to its arrival map, or null.</summary>
-    private AlundraSaveGame? _pendingLoad;
+    private SaveGame? _pendingLoad;
 
     /// <summary>True while a load is pending (K7 step 6 to K8).</summary>
     public bool HasPendingLoad => _pendingLoad != null;
@@ -204,7 +204,7 @@ public sealed class AlundraSaveGameDirector
         }
 
         // K6 step 2: the capture contract of E16.c C5 - the current world's name and the hero.
-        if (!AlundraSaveGame.TryCaptureFromWorld(state, worldName ?? string.Empty, player, out var save) || save == null)
+        if (!SaveGame.TryCaptureFromWorld(state, worldName ?? string.Empty, player, out var save) || save == null)
         {
             Refuse(key, $"nothing captured: no hero, or world '{worldName}' carries no map id.");
             return;
@@ -369,7 +369,7 @@ public sealed class AlundraSaveGameDirector
     /// nothing.</description></item>
     /// <item><description>Otherwise, in this order and without throwing (the array lengths are fixed on both
     /// sides, E16.c C6): <see cref="GameState.ResetSessionForLoad"/> (step 1); the save's
-    /// <see cref="AlundraSaveGame.ApplyTo"/> (step 2: flags, map table, item counters, stats, death retries,
+    /// <see cref="SaveGame.ApplyTo"/> (step 2: flags, map table, item counters, stats, death retries,
     /// game time, which resumes from there); <see cref="HudDirector.ResetDisplayForLoad"/> with the stats
     /// just loaded (step 3, SC1); and the <c>ResetSessionForLoad</c> of both inventory directors, the
     /// post-process and the portrait (step 4, SD5).</description></item>
@@ -429,20 +429,20 @@ public sealed class AlundraSaveGameDirector
 
     /// <summary>
     /// K5: the slot F9 loads - among the readable slots whose write time is known, the one with the greatest
-    /// <see cref="AlundraSlotEntry.LastWriteTimeUtc"/>; on a tie, the greatest name in ordinal order. Null when
+    /// <see cref="SlotEntry.LastWriteTimeUtc"/>; on a tie, the greatest name in ordinal order. Null when
     /// there is none. Limits accepted for a recipe key (SD11, ADR-0013): a time in the future always wins;
     /// "readable" only means the header opened, so a most recent but damaged slot blocks F9 without falling back
     /// to the previous one; the engine's listing reads each slot whole (1 MiB at most). The player's own choice
     /// of a slot is E16.e.
     /// </summary>
-    internal static AlundraSlotEntry? SelectMostRecent(IReadOnlyList<AlundraSlotEntry>? slots)
+    internal static SlotEntry? SelectMostRecent(IReadOnlyList<SlotEntry>? slots)
     {
         if (slots == null)
         {
             return null;
         }
 
-        AlundraSlotEntry? best = null;
+        SlotEntry? best = null;
         foreach (var slot in slots)
         {
             if (!slot.IsReadable || slot.LastWriteTimeUtc == null || slot.Name == null)
@@ -548,7 +548,7 @@ public sealed class AlundraSaveGameDirector
     /// exception out of a key. E16.e L3 (docs/plan-e16-etat-partie.md): internal and shared - the save book's
     /// capture (<see cref="SaveBook"/>, state 5) and the save screen's labels use this same guarded
     /// factory, <see cref="RulesFactoryForTests"/> included.</summary>
-    internal bool TryCreateRules(out AlundraSaveGameRules? rules, out string error)
+    internal bool TryCreateRules(out SaveGameRules? rules, out string error)
     {
         rules = null;
         error = string.Empty;
@@ -561,7 +561,7 @@ public sealed class AlundraSaveGameDirector
             else
             {
                 var projectPath = EngineEnvironment.ProjectPath;
-                rules = new AlundraSaveGameRules(
+                rules = new SaveGameRules(
                     projectPath,
                     path => AssetCatalog.GetByFileName(path) != null,
                     ItemTables.GetOrCreate(projectPath));
@@ -597,7 +597,7 @@ public sealed class AlundraSaveGameDirector
         _loadKeyWasHeld = false;
         _pendingLoad = null;
         RulesFactoryForTests = null;
-        SaveSlots = new AlundraEngineSaveSlots();
+        SaveSlots = new EngineSaveSlots();
         RecipeKeysEnabledOverrideForTests = null;
     }
 }

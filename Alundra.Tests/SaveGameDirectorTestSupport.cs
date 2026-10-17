@@ -56,7 +56,7 @@ public enum SaveGameBlocker
 
 /// <summary>
 /// E16.d (docs/plan-e16-etat-partie.md, T2 to T5): shared plumbing of the save-game director's tests - a fake
-/// <see cref="IAlundraSaveSlots"/> that records every call and answers what the test poses (D-E16-31: no test
+/// <see cref="ISaveSlots"/> that records every call and answers what the test poses (D-E16-31: no test
 /// ever reaches the real save folder), the real export's validation rules (K1: a catalog predicate that answers
 /// yes, the export's own item tables), a log capture, a key-held provider, and a snapshot of the live state for
 /// the "state identical" assertions.
@@ -90,10 +90,10 @@ internal static class SaveGameDirectorTestSupport
 
     /// <summary>K1/T3: the rules the director's tests inject - the real export folder, a catalog predicate that
     /// answers yes (the test process' asset catalog is empty), and the export's own item tables.</summary>
-    internal static AlundraSaveGameRules RealRules()
+    internal static SaveGameRules RealRules()
     {
         var root = FindProjectRoot();
-        return new AlundraSaveGameRules(root, _ => true, new ItemTables(root));
+        return new SaveGameRules(root, _ => true, new ItemTables(root));
     }
 
     /// <summary>A hero on the ground at a tile of map 389 (the New Game tile by default).</summary>
@@ -102,9 +102,9 @@ internal static class SaveGameDirectorTestSupport
 
     /// <summary>A save that validates against <see cref="RealRules"/>: the New Game identity table, map 389 at
     /// the given tile, flags and stats as posed by the caller.</summary>
-    internal static AlundraSaveGame ValidSave(int tileX = 33, int tileY = 59, int tileZ = 0)
+    internal static SaveGame ValidSave(int tileX = 33, int tileY = 59, int tileZ = 0)
     {
-        var save = new AlundraSaveGame { InitialMapId = 389, CameraTileX = tileX, CameraTileY = tileY, CameraTileZ = tileZ };
+        var save = new SaveGame { InitialMapId = 389, CameraTileX = tileX, CameraTileY = tileY, CameraTileZ = tileZ };
         for (var i = 0; i < save.MapIdToInternalMapIndexTable.Length; i++)
         {
             save.MapIdToInternalMapIndexTable[i] = (ushort)i;
@@ -119,8 +119,8 @@ internal static class SaveGameDirectorTestSupport
     /// <summary>Resets every session singleton the director's tests touch.</summary>
     internal static void ResetSingletons()
     {
-        AlundraSaveGameDirector.Instance.ResetForTests();
-        AlundraSaveGameDirector.RecipeKeysEnabledOverrideForTests = null;
+        SaveGameDirector.Instance.ResetForTests();
+        SaveGameDirector.RecipeKeysEnabledOverrideForTests = null;
         SaveScreenDirector.Instance.ResetForTests();
         InventoryDirector.Instance.ResetForTests();
         SubInventoryDirector.Instance.ResetForTests();
@@ -334,32 +334,32 @@ internal static class SaveGameDirectorTestSupport
     /// is <see cref="SaveGameLoadStatus.Loaded"/>, unless <see cref="ReturnObjectOnFailure"/>), and
     /// <see cref="ListSlots"/> answers <see cref="Slots"/>.
     /// </summary>
-    internal sealed class FakeSaveSlots : IAlundraSaveSlots
+    internal sealed class FakeSaveSlots : ISaveSlots
     {
-        public readonly List<(string Slot, AlundraSaveGame Data, SaveGameFormat Format, IReadOnlyDictionary<string, string> Metadata)> SaveCalls = new();
+        public readonly List<(string Slot, SaveGame Data, SaveGameFormat Format, IReadOnlyDictionary<string, string> Metadata)> SaveCalls = new();
         public readonly List<string> LoadCalls = new();
         public int ListCalls;
 
         public SaveGameSaveStatus SaveStatus = SaveGameSaveStatus.Saved;
         public SaveGameLoadStatus LoadStatus = SaveGameLoadStatus.Loaded;
-        public AlundraSaveGame? LoadedSave;
+        public SaveGame? LoadedSave;
         public bool ReturnObjectOnFailure;
-        public List<AlundraSlotEntry> Slots = new();
+        public List<SlotEntry> Slots = new();
 
-        public AlundraSaveOutcome Save(string slot, AlundraSaveGame data, SaveGameFormat format, IReadOnlyDictionary<string, string> metadata)
+        public SaveOutcome Save(string slot, SaveGame data, SaveGameFormat format, IReadOnlyDictionary<string, string> metadata)
         {
             SaveCalls.Add((slot, data, format, metadata));
-            return new AlundraSaveOutcome(SaveStatus, SaveStatus == SaveGameSaveStatus.Saved ? string.Empty : $"fake {SaveStatus}");
+            return new SaveOutcome(SaveStatus, SaveStatus == SaveGameSaveStatus.Saved ? string.Empty : $"fake {SaveStatus}");
         }
 
-        public AlundraLoadOutcome TryLoad(string slot, out AlundraSaveGame? data)
+        public LoadOutcome TryLoad(string slot, out SaveGame? data)
         {
             LoadCalls.Add(slot);
             data = LoadStatus == SaveGameLoadStatus.Loaded || ReturnObjectOnFailure ? LoadedSave : null;
-            return new AlundraLoadOutcome(LoadStatus, LoadStatus == SaveGameLoadStatus.Loaded ? string.Empty : $"fake {LoadStatus}");
+            return new LoadOutcome(LoadStatus, LoadStatus == SaveGameLoadStatus.Loaded ? string.Empty : $"fake {LoadStatus}");
         }
 
-        public IReadOnlyList<AlundraSlotEntry> ListSlots()
+        public IReadOnlyList<SlotEntry> ListSlots()
         {
             ListCalls++;
             return Slots;
@@ -448,7 +448,7 @@ internal static class SaveGameDirectorTestSupport
                 WarpDirector.Instance.IsTransitionInProgress,
                 WarpDirector.Instance.HasPendingArrival,
                 ScreenFadeDirector.Instance.IsSettled,
-                AlundraSaveGameDirector.Instance.HasPendingLoad);
+                SaveGameDirector.Instance.HasPendingLoad);
         }
 
         /// <summary>Only the game state's own fields - what a pending load must leave untouched until the

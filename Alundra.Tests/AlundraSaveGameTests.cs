@@ -87,7 +87,7 @@ public sealed class AlundraSaveGameTests
     {
         var source = BuildPopulatedState();
 
-        var save = AlundraSaveGame.Capture(source, 389, 33, 59, 0);
+        var save = SaveGame.Capture(source, 389, 33, 59, 0);
         var target = new GameState();
         save.ApplyTo(target);
 
@@ -97,7 +97,7 @@ public sealed class AlundraSaveGameTests
     [Fact]
     public void Capture_SetsTheMapAndTileFromItsArguments()
     {
-        var save = AlundraSaveGame.Capture(new GameState(), 390, 12, 34, 5);
+        var save = SaveGame.Capture(new GameState(), 390, 12, 34, 5);
 
         Assert.Equal(390, save.InitialMapId);
         Assert.Equal(12, save.CameraTileX);
@@ -110,7 +110,7 @@ public sealed class AlundraSaveGameTests
     {
         var state = BuildPopulatedState();
 
-        var save = AlundraSaveGame.Capture(state, 389, 33, 59, 0);
+        var save = SaveGame.Capture(state, 389, 33, 59, 0);
 
         Assert.Equal(state.GameFlags.Take(64), save.GameFlags);
         Assert.Equal(state.MapIdToInternalMapIndexTable, save.MapIdToInternalMapIndexTable);
@@ -132,7 +132,7 @@ public sealed class AlundraSaveGameTests
     [Fact]
     public void ApplyTo_ClearsTheGameFlagWordsAt64AndAbove()
     {
-        var save = AlundraSaveGame.Capture(BuildPopulatedState(), 389, 33, 59, 0);
+        var save = SaveGame.Capture(BuildPopulatedState(), 389, 33, 59, 0);
         var target = new GameState();
         target.GameFlags[64] = 0x1;
         target.GameFlags[500] = 0xFFFF0000;
@@ -146,7 +146,7 @@ public sealed class AlundraSaveGameTests
     [Fact]
     public void ApplyTo_ReplacesTheTargetsSavedWords_EvenWhereTheSaveIsZero()
     {
-        var save = AlundraSaveGame.Capture(new GameState(), 389, 33, 59, 0); // all 64 words zero.
+        var save = SaveGame.Capture(new GameState(), 389, 33, 59, 0); // all 64 words zero.
         var target = new GameState();
         target.GameFlags[0] = 0xFFFFFFFF;
         target.GameFlags[63] = 0x1234;
@@ -159,7 +159,7 @@ public sealed class AlundraSaveGameTests
     [Fact]
     public void ApplyTo_LeavesTemporaryFlagsTextCategoryGameVariablesAndControlFlagsAlone()
     {
-        var save = AlundraSaveGame.Capture(new GameState(), 389, 33, 59, 0);
+        var save = SaveGame.Capture(new GameState(), 389, 33, 59, 0);
         var target = BuildPopulatedState();
         var temporaryBefore = target.TemporaryFlags.ToArray();
         var gameVariablesBefore = target.GameVariables.ToArray();
@@ -175,7 +175,7 @@ public sealed class AlundraSaveGameTests
     [Fact]
     public void ApplyTo_DropsTheUnsavedFractionOfTheGameTime()
     {
-        var save = AlundraSaveGame.Capture(new GameState { GameTime = 100 }, 389, 33, 59, 0);
+        var save = SaveGame.Capture(new GameState { GameTime = 100 }, 389, 33, 59, 0);
         var target = new GameState();
         target.AdvanceGameTime(0.75f / 60f); // three quarters of a unit pending in the target.
 
@@ -188,7 +188,7 @@ public sealed class AlundraSaveGameTests
     [Fact]
     public void ApplyTo_SharesNoArrayWithTheObject()
     {
-        var save = AlundraSaveGame.Capture(BuildPopulatedState(), 389, 33, 59, 0);
+        var save = SaveGame.Capture(BuildPopulatedState(), 389, 33, 59, 0);
         var target = new GameState();
         save.ApplyTo(target);
         var snapshot = new GameState();
@@ -205,7 +205,7 @@ public sealed class AlundraSaveGameTests
     public void Capture_SharesNoArrayWithTheState()
     {
         var state = BuildPopulatedState();
-        var save = AlundraSaveGame.Capture(state, 389, 33, 59, 0);
+        var save = SaveGame.Capture(state, 389, 33, 59, 0);
         var flagsBefore = save.GameFlags.ToArray();
         var tableBefore = save.MapIdToInternalMapIndexTable.ToArray();
         var itemsBefore = save.NumberOfItems.ToArray();
@@ -240,7 +240,7 @@ public sealed class AlundraSaveGameTests
     [Fact]
     public void PublicFields_AreExactlyTheSavedOnes()
     {
-        var names = typeof(AlundraSaveGame)
+        var names = typeof(SaveGame)
             .GetFields(BindingFlags.Instance | BindingFlags.Public)
             .Select(f => f.Name)
             .OrderBy(n => n, StringComparer.Ordinal)
@@ -263,7 +263,7 @@ public sealed class AlundraSaveGameTests
     [InlineData("PlayerControlFlags")]
     public void HasNoMemberForTheUnsavedState(string name)
     {
-        var members = typeof(AlundraSaveGame).GetMembers(
+        var members = typeof(SaveGame).GetMembers(
             BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
         Assert.DoesNotContain(members, m => string.Equals(m.Name, name, StringComparison.OrdinalIgnoreCase));
@@ -272,17 +272,17 @@ public sealed class AlundraSaveGameTests
     [Fact]
     public void LoadedDataVersion_IsAPropertyNotAField()
     {
-        var property = typeof(AlundraSaveGame).GetProperty(nameof(AlundraSaveGame.LoadedDataVersion));
+        var property = typeof(SaveGame).GetProperty(nameof(SaveGame.LoadedDataVersion));
 
         Assert.NotNull(property);
-        Assert.Null(typeof(AlundraSaveGame).GetField(
-            nameof(AlundraSaveGame.LoadedDataVersion), BindingFlags.Instance | BindingFlags.Public));
+        Assert.Null(typeof(SaveGame).GetField(
+            nameof(SaveGame.LoadedDataVersion), BindingFlags.Instance | BindingFlags.Public));
     }
 
     [Fact]
     public void NewObject_HasItsThreeReadonlyArraysAtTheirLengths_AndVersion1()
     {
-        var save = new AlundraSaveGame();
+        var save = new SaveGame();
 
         Assert.NotNull(save.GameFlags);
         Assert.NotNull(save.MapIdToInternalMapIndexTable);
@@ -293,7 +293,7 @@ public sealed class AlundraSaveGameTests
 
         foreach (var name in new[] { "GameFlags", "MapIdToInternalMapIndexTable", "NumberOfItems" })
         {
-            var field = typeof(AlundraSaveGame).GetField(name, BindingFlags.Instance | BindingFlags.Public);
+            var field = typeof(SaveGame).GetField(name, BindingFlags.Instance | BindingFlags.Public);
             Assert.NotNull(field);
             Assert.True(field!.IsInitOnly, name + " must be readonly");
         }
@@ -310,7 +310,7 @@ public sealed class AlundraSaveGameTests
         var state = BuildPopulatedState();
         var hero = new AlundraEntityScriptProxy { TileX = 33, TileY = 59, TileZ = 2 };
 
-        var captured = AlundraSaveGame.TryCaptureFromWorld(state, Map389WorldName, hero, out var save);
+        var captured = SaveGame.TryCaptureFromWorld(state, Map389WorldName, hero, out var save);
 
         Assert.True(captured);
         Assert.NotNull(save);
@@ -332,7 +332,7 @@ public sealed class AlundraSaveGameTests
     {
         var hero = new AlundraEntityScriptProxy { TileX = 33, TileY = 59, TileZ = 0 };
 
-        var captured = AlundraSaveGame.TryCaptureFromWorld(new GameState(), worldName, hero, out var save);
+        var captured = SaveGame.TryCaptureFromWorld(new GameState(), worldName, hero, out var save);
 
         Assert.False(captured);
         Assert.Null(save);
@@ -343,7 +343,7 @@ public sealed class AlundraSaveGameTests
     {
         var hero = new AlundraEntityScriptProxy();
 
-        var captured = AlundraSaveGame.TryCaptureFromWorld(new GameState(), null!, hero, out var save);
+        var captured = SaveGame.TryCaptureFromWorld(new GameState(), null!, hero, out var save);
 
         Assert.False(captured);
         Assert.Null(save);
@@ -352,7 +352,7 @@ public sealed class AlundraSaveGameTests
     [Fact]
     public void TryCaptureFromWorld_NoHero_ReturnsFalseWithoutThrowing()
     {
-        var captured = AlundraSaveGame.TryCaptureFromWorld(new GameState(), Map389WorldName, null, out var save);
+        var captured = SaveGame.TryCaptureFromWorld(new GameState(), Map389WorldName, null, out var save);
 
         Assert.False(captured);
         Assert.Null(save);
@@ -373,14 +373,14 @@ public sealed class AlundraSaveGameTests
         state.PlayerStats.Hp = 5; // the summary shows the MAX HP (F7), not the current one.
         state.GameTime = 3600;
 
-        var save = AlundraSaveGame.Capture(state, 389, 33, 59, 0);
+        var save = SaveGame.Capture(state, 389, 33, 59, 0);
         var metadata = save.BuildMetadata();
 
         Assert.Equal(2, metadata.Count);
         Assert.Equal(
             ChapterFlags.FormatChapter(ChapterFlags.GetFirstEnabledFlagIndex(save.GameFlags)),
             metadata["chapter"]);
-        Assert.Equal(AlundraSaveGame.BuildSummary(save.HpMax, save.GameTime), metadata["summary"]);
+        Assert.Equal(SaveGame.BuildSummary(save.HpMax, save.GameTime), metadata["summary"]);
         Assert.Equal("0003", metadata["chapter"]);
         Assert.Equal("  HP 20       TIME 00:01:00   ", metadata["summary"]);
     }
@@ -388,7 +388,7 @@ public sealed class AlundraSaveGameTests
     [Fact]
     public void BuildMetadata_IsComputedFromTheObject_NotFromALiveState()
     {
-        var save = new AlundraSaveGame { HpMax = 50, GameTime = GameState.GameTimeMax };
+        var save = new SaveGame { HpMax = 50, GameTime = GameState.GameTimeMax };
         foreach (var id in ChapterFlags.FlagIds)
         {
             save.GameFlags[id >> 5] |= 1u << (id & 0x1F);

@@ -10,29 +10,29 @@ namespace Alundra.SaveGames;
 /// <summary>
 /// E19.d2a S1 (docs/plan-e19-opcodes.md section 1.2h.1, D-E19-33): the presets of the test saves - a new game
 /// plus the few flags, map-table entries and item counters that a map of the story chain reads - and the
-/// builder that turns one into an <see cref="AlundraSaveGame"/>.
+/// builder that turns one into an <see cref="SaveGame"/>.
 ///
 /// <para>Pure and without any global state or disk access: the builder starts from a fresh
 /// <see cref="GameState"/> (flags at 0, identity map table), runs the new game's own
 /// <see cref="PlayerManager.InitializeNewGameStats"/> and
 /// <see cref="PlayerManager.InitializeNewGameInventory"/> with the item tables of the rules, applies the
-/// preset, captures with <see cref="AlundraSaveGame.Capture"/> and validates with the real
-/// <see cref="AlundraSaveGameRules"/>. A refusal is a <c>false</c> with a message, never an exception.</para>
+/// preset, captures with <see cref="SaveGame.Capture"/> and validates with the real
+/// <see cref="SaveGameRules"/>. A refusal is a <c>false</c> with a message, never an exception.</para>
 ///
 /// <para>A save never carries the temporary flags (id &gt;= 0x8000) and keeps only the first
-/// <see cref="AlundraSaveGame.GameFlagWordCount"/> words of the persistent bank, so a flag id of 2048 and above
-/// would be lost silently by <see cref="AlundraSaveGame.Capture"/>: both are refused up front.</para>
+/// <see cref="SaveGame.GameFlagWordCount"/> words of the persistent bank, so a flag id of 2048 and above
+/// would be lost silently by <see cref="SaveGame.Capture"/>: both are refused up front.</para>
 ///
 /// <para>The slot of each preset is fixed, <c>test-&lt;name&gt;</c>, and follows the slot-name rule of the
 /// engine's ADR-0044 (1 to 32 characters among <c>a-z0-9_-</c>), which the engine keeps internal.</para>
 /// </summary>
-public static class AlundraTestSaves
+public static class TestSaves
 {
     /// <summary>The first id of the temporary flag bank (<c>g_temporaryFlags</c>), never saved.</summary>
     private const uint TemporaryFlagBit = 0x8000;
 
     /// <summary>The first persistent flag id a save cannot hold: 64 words of 32 bits.</summary>
-    private const uint FirstUnsavedFlag = AlundraSaveGame.GameFlagWordCount * 32;
+    private const uint FirstUnsavedFlag = SaveGame.GameFlagWordCount * 32;
 
     /// <summary>
     /// One test save: where the hero arrives and what differs from a new game. The seven last fields are optional (E20.f0 T3, docs/plan-e20-heros.md section 1.8): a
@@ -151,7 +151,7 @@ public static class AlundraTestSaves
     }
 
     /// <summary>Builds the save of a preset by name; <c>false</c> with a message on an unknown name or any refusal.</summary>
-    public static bool TryBuild(string name, AlundraSaveGameRules rules, out AlundraSaveGame? save, out string error)
+    public static bool TryBuild(string name, SaveGameRules rules, out SaveGame? save, out string error)
     {
         if (!TryFind(name, out var preset))
         {
@@ -164,7 +164,7 @@ public static class AlundraTestSaves
     }
 
     /// <summary>Builds the save of a preset: the new game, the preset, the capture, the real validation.</summary>
-    public static bool TryBuild(Preset preset, AlundraSaveGameRules rules, out AlundraSaveGame? save, out string error)
+    public static bool TryBuild(Preset preset, SaveGameRules rules, out SaveGame? save, out string error)
     {
         ArgumentNullException.ThrowIfNull(preset);
         ArgumentNullException.ThrowIfNull(rules);
@@ -236,7 +236,7 @@ public static class AlundraTestSaves
             PlayerManager.SetCurrentItemId(state, (uint)item);
         }
 
-        var captured = AlundraSaveGame.Capture(state, preset.MapId, preset.TileX, preset.TileY, preset.TileZ);
+        var captured = SaveGame.Capture(state, preset.MapId, preset.TileX, preset.TileY, preset.TileZ);
         if (!captured.TryValidate(rules, out var validationError))
         {
             error = Format($"preset '{preset.Name}' refused by the save-game rules: {validationError}");
@@ -270,24 +270,24 @@ public static class AlundraTestSaves
 
         foreach (var (index, _) in preset.MapTableEntries)
         {
-            if (index < 0 || index >= AlundraSaveGame.MapIndexTableLength)
+            if (index < 0 || index >= SaveGame.MapIndexTableLength)
             {
-                return Format($"preset '{preset.Name}': map table index {index} is outside 0..{AlundraSaveGame.MapIndexTableLength - 1}");
+                return Format($"preset '{preset.Name}': map table index {index} is outside 0..{SaveGame.MapIndexTableLength - 1}");
             }
         }
 
         foreach (var (index, _) in preset.ItemCounts)
         {
-            if (index < 0 || index >= AlundraSaveGame.NumberOfItemsLength)
+            if (index < 0 || index >= SaveGame.NumberOfItemsLength)
             {
-                return Format($"preset '{preset.Name}': item counter index {index} is outside 0..{AlundraSaveGame.NumberOfItemsLength - 1}");
+                return Format($"preset '{preset.Name}': item counter index {index} is outside 0..{SaveGame.NumberOfItemsLength - 1}");
             }
         }
 
         return CheckStats(preset);
     }
 
-    /// <summary>The optional stat fields against the domains of the save (<see cref="AlundraSaveGame"/>): a setter would clamp a value outside them silently.</summary>
+    /// <summary>The optional stat fields against the domains of the save (<see cref="SaveGame"/>): a setter would clamp a value outside them silently.</summary>
     private static string CheckStats(Preset preset)
     {
         var newGame = new GameState();
@@ -295,9 +295,9 @@ public static class AlundraTestSaves
         var hpMax = preset.HpMax ?? newGame.PlayerStats.HpMax;
         var mpMax = preset.MpMax ?? newGame.PlayerStats.MpMax;
 
-        if (preset.HpMax is { } declaredHpMax && (declaredHpMax < 0 || declaredHpMax > AlundraSaveGame.MaxHpMax))
+        if (preset.HpMax is { } declaredHpMax && (declaredHpMax < 0 || declaredHpMax > SaveGame.MaxHpMax))
         {
-            return Format($"preset '{preset.Name}': hpMax {declaredHpMax} is outside 0..{AlundraSaveGame.MaxHpMax}");
+            return Format($"preset '{preset.Name}': hpMax {declaredHpMax} is outside 0..{SaveGame.MaxHpMax}");
         }
 
         if (preset.Hp is { } hp && (hp < 0 || hp > hpMax))
@@ -305,9 +305,9 @@ public static class AlundraTestSaves
             return Format($"preset '{preset.Name}': hp {hp} is outside 0..{hpMax} (the maximum)");
         }
 
-        if (preset.MpMax is { } declaredMpMax && (declaredMpMax < 0 || declaredMpMax > AlundraSaveGame.MaxMpMax))
+        if (preset.MpMax is { } declaredMpMax && (declaredMpMax < 0 || declaredMpMax > SaveGame.MaxMpMax))
         {
-            return Format($"preset '{preset.Name}': mpMax {declaredMpMax} is outside 0..{AlundraSaveGame.MaxMpMax}");
+            return Format($"preset '{preset.Name}': mpMax {declaredMpMax} is outside 0..{SaveGame.MaxMpMax}");
         }
 
         if (preset.Mp is { } mp && (mp < 0 || mp > mpMax))
@@ -315,14 +315,14 @@ public static class AlundraTestSaves
             return Format($"preset '{preset.Name}': mp {mp} is outside 0..{mpMax} (the maximum)");
         }
 
-        if (preset.Money is { } money && (money < 0 || money > AlundraSaveGame.MaxMoney))
+        if (preset.Money is { } money && (money < 0 || money > SaveGame.MaxMoney))
         {
-            return Format($"preset '{preset.Name}': money {money} is outside 0..{AlundraSaveGame.MaxMoney}");
+            return Format($"preset '{preset.Name}': money {money} is outside 0..{SaveGame.MaxMoney}");
         }
 
-        if (preset.Weapon is { } weapon && weapon != -1 && (weapon < 1 || weapon > AlundraSaveGame.MaxWeaponId))
+        if (preset.Weapon is { } weapon && weapon != -1 && (weapon < 1 || weapon > SaveGame.MaxWeaponId))
         {
-            return Format($"preset '{preset.Name}': weapon {weapon} is outside -1 or 1..{AlundraSaveGame.MaxWeaponId}");
+            return Format($"preset '{preset.Name}': weapon {weapon} is outside -1 or 1..{SaveGame.MaxWeaponId}");
         }
 
         if (preset.Item is { } item && (item < 0 || item >= PlayerManager.ItemsCount))

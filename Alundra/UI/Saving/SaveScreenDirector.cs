@@ -26,7 +26,7 @@ namespace Alundra.UI.Saving;
 /// <para><b>States (L2).</b> Kept, in the original's order: <c>0x2710</c> (message ETC <c>0x87</c> « Examen de la
 /// Carte Mémoire . . . »), the waits <c>0x2711</c> and <c>0x3f4</c> (which closes that message), <c>0x0C</c> (the
 /// four labels, then the picker, headings ETC <c>0x83</c>/<c>0x84</c>), <c>0x3f8</c> (message <c>0xA5</c>),
-/// <c>0x10</c> (the write, ADAPTED: <see cref="IAlundraSaveSlots.Save"/> of the captured object to <c>slot{n}</c>, in
+/// <c>0x10</c> (the write, ADAPTED: <see cref="ISaveSlots.Save"/> of the captured object to <c>slot{n}</c>, in
 /// binary), <c>0x3fe</c> then <c>0x16</c> (message <c>0xB1</c>), <c>0x3fd</c> then <c>0x15</c> (failure message
 /// <c>0xAF</c>/<c>0xB0</c>), and the common end chain <c>0x3f5</c> (waits for Square), <c>0x0D</c>, <c>0x3f6</c>,
 /// <c>0x0E</c> (the gauge put back before it hides), <c>0x44B</c>, <c>0x63</c>. The NON path is <c>0x3f8</c> →
@@ -36,10 +36,10 @@ namespace Alundra.UI.Saving;
 /// keep the original's lengths (<c>AdvanceFadeOldCheck</c>, 0x13 and 0x0B): they are timers, not fades.</para>
 ///
 /// <para><b>Labels (L3, D-E16-36).</b> Once per opening, at the entry of <c>0x0C</c> and never during the picker
-/// (SE9): <see cref="IAlundraSaveSlots.TryLoad"/> then <see cref="AlundraSaveGame.TryValidate"/> of <c>slot1</c> to
-/// <c>slot4</c>, with the guarded rules factory of E16.d (<see cref="AlundraSaveGameDirector.TryCreateRules"/>). A
+/// (SE9): <see cref="ISaveSlots.TryLoad"/> then <see cref="SaveGame.TryValidate"/> of <c>slot1</c> to
+/// <c>slot4</c>, with the guarded rules factory of E16.d (<see cref="SaveGameDirector.TryCreateRules"/>). A
 /// valid slot shows, recomputed, the chapter's name (ETC text <see cref="ChapterFlags.GetFirstEnabledFlagIndex"/>)
-/// on line 1 and <see cref="AlundraSaveGame.BuildSummary"/> on line 2, the order of the binary (O-E16-18,
+/// on line 1 and <see cref="SaveGame.BuildSummary"/> on line 2, the order of the binary (O-E16-18,
 /// 0x80060128-0x80060134, 0x80058D74-0x80058DC4). Any other case shows what the binary shows for an empty block of
 /// the file: two empty lines in a box still drawn (<see cref="EmptySlotLine"/>). The file's metadata is never read;
 /// the loaded objects live only in that computation (SE4).</para>
@@ -241,7 +241,7 @@ public sealed class SaveScreenDirector : ISaveBookScreen
     private int _fadeSubstate;
     private bool _menuOpenPosted;
     private bool _bookFlowActive;
-    private AlundraSaveGame? _capturedSave;
+    private SaveGame? _capturedSave;
 
     private Transition _transition;
     private bool _messageWasEmpty;
@@ -386,7 +386,7 @@ public sealed class SaveScreenDirector : ISaveBookScreen
     }
 
     /// <inheritdoc/>
-    public bool Start(AlundraSaveGame save)
+    public bool Start(SaveGame save)
     {
         ArgumentNullException.ThrowIfNull(save);
         if (IsActive)
@@ -681,7 +681,7 @@ public sealed class SaveScreenDirector : ISaveBookScreen
         var slot = SlotNames[_pickResult];
         try
         {
-            var outcome = AlundraSaveGameDirector.Instance.SaveSlots.Save(slot, save, SaveGameFormat.Binary, save.BuildMetadata());
+            var outcome = SaveGameDirector.Instance.SaveSlots.Save(slot, save, SaveGameFormat.Binary, save.BuildMetadata());
             if (outcome.Status == SaveGameSaveStatus.Saved)
             {
                 Logs.WriteInfo(LogPrefix + $"saved map {save.InitialMapId} to slot '{slot}' (binary).");
@@ -735,10 +735,10 @@ public sealed class SaveScreenDirector : ISaveBookScreen
             _labelLine1[i] = EmptySlotLine;
         }
 
-        AlundraSaveGameRules? rules;
+        SaveGameRules? rules;
         try
         {
-            if (!AlundraSaveGameDirector.Instance.TryCreateRules(out rules, out var rulesError) || rules == null)
+            if (!SaveGameDirector.Instance.TryCreateRules(out rules, out var rulesError) || rules == null)
             {
                 Logs.WriteWarning(LogPrefix + $"no validation rules, every slot shows as empty: {rulesError}");
                 return;
@@ -754,7 +754,7 @@ public sealed class SaveScreenDirector : ISaveBookScreen
         {
             try
             {
-                var outcome = AlundraSaveGameDirector.Instance.SaveSlots.TryLoad(SlotNames[i], out var loaded);
+                var outcome = SaveGameDirector.Instance.SaveSlots.TryLoad(SlotNames[i], out var loaded);
                 if (outcome.Status != SaveGameLoadStatus.Loaded || loaded == null)
                 {
                     continue;
@@ -767,7 +767,7 @@ public sealed class SaveScreenDirector : ISaveBookScreen
 
                 var chapter = ChapterFlags.GetFirstEnabledFlagIndex(loaded.GameFlags);
                 _labelLine0[i] = Bound(ResolveEtc(chapter));
-                _labelLine1[i] = Bound(AlundraSaveGame.BuildSummary(loaded.HpMax, loaded.GameTime));
+                _labelLine1[i] = Bound(SaveGame.BuildSummary(loaded.HpMax, loaded.GameTime));
             }
             catch (Exception ex)
             {

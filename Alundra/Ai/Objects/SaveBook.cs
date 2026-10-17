@@ -23,7 +23,7 @@ internal interface ISaveBookScreen
 
     /// <summary>Starts the save screen with the validated capture <paramref name="save"/>; false, without starting
     /// anything, while <see cref="IsActive"/> (SE7).</summary>
-    bool Start(AlundraSaveGame save);
+    bool Start(SaveGame save);
 
     /// <summary>Starts the save screen straight on the failure message <c>0x15</c> and the common end chain, writing
     /// nothing (SE8); false, without starting anything, while <see cref="IsActive"/>.</summary>
@@ -361,16 +361,16 @@ public sealed class SaveBook
         WriteState(book, StateWaitScreen);
     }
 
-    private static string? CaptureAndValidate(IEntityWorldContext context, GameState state, out AlundraSaveGame? save)
+    private static string? CaptureAndValidate(IEntityWorldContext context, GameState state, out SaveGame? save)
     {
         save = null;
         var worldName = context.WorldName;
-        if (!AlundraSaveGame.TryCaptureFromWorld(state, worldName ?? string.Empty, context.PlayerEntity, out save) || save == null)
+        if (!SaveGame.TryCaptureFromWorld(state, worldName ?? string.Empty, context.PlayerEntity, out save) || save == null)
         {
             return $"nothing captured: no hero, or world '{worldName}' carries no map id.";
         }
 
-        if (!AlundraSaveGameDirector.Instance.TryCreateRules(out var rules, out var rulesError))
+        if (!SaveGameDirector.Instance.TryCreateRules(out var rules, out var rulesError))
         {
             save = null;
             return $"no validation rules: {rulesError}";

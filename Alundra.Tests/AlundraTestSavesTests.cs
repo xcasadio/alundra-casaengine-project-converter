@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E19.d2a S1 (docs/plan-e19-opcodes.md section 1.2h.1, D-E19-33): the test-save presets of
-/// <see cref="AlundraTestSaves"/>. Expected values are written by hand from the plan's table, never read from
+/// <see cref="TestSaves"/>. Expected values are written by hand from the plan's table, never read from
 /// the preset: new game plus the preset, nothing else.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
@@ -77,9 +77,9 @@ public sealed class AlundraTestSavesTests : IDisposable
 
     private static Expected For(string name) => name == Day3.Name ? Day3 : Day4;
 
-    private static AlundraSaveGame Build(string name)
+    private static SaveGame Build(string name)
     {
-        Assert.True(AlundraTestSaves.TryBuild(name, RealRules(), out var save, out var error), error);
+        Assert.True(TestSaves.TryBuild(name, RealRules(), out var save, out var error), error);
         Assert.NotNull(save);
         return save!;
     }
@@ -87,7 +87,7 @@ public sealed class AlundraTestSavesTests : IDisposable
     [Fact]
     public void TheNinePresets_AreListed_InTheOrderOfTheTable()
     {
-        Assert.Equal(AllPresetNames, AlundraTestSaves.Presets.Select(p => p.Name));
+        Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
     }
 
     [Theory]
@@ -101,7 +101,7 @@ public sealed class AlundraTestSavesTests : IDisposable
         var newGame = new GameState();
         PlayerManager.InitializeNewGameStats(newGame);
         PlayerManager.InitializeNewGameInventory(newGame, rules.ItemTables);
-        var reference = AlundraSaveGame.Capture(newGame, expected.MapId, expected.TileX, expected.TileY, expected.TileZ);
+        var reference = SaveGame.Capture(newGame, expected.MapId, expected.TileX, expected.TileY, expected.TileZ);
         foreach (var (word, value) in expected.Flags)
         {
             reference.GameFlags[word] |= value;
@@ -182,7 +182,7 @@ public sealed class AlundraTestSavesTests : IDisposable
         Assert.Equal(Serialize(a), Serialize(b));
     }
 
-    private static byte[] Serialize(AlundraSaveGame save)
+    private static byte[] Serialize(SaveGame save)
     {
         // The slot's own metadata plus every field, through the public arrays and fields.
         using var stream = new System.IO.MemoryStream();
@@ -225,7 +225,7 @@ public sealed class AlundraTestSavesTests : IDisposable
     [MemberData(nameof(EveryPresetName))]
     public void TheSlotOfAPreset_IsTestDashItsName_AndFollowsTheSlotNameRule(string name)
     {
-        Assert.True(AlundraTestSaves.TryFind(name, out var preset));
+        Assert.True(TestSaves.TryFind(name, out var preset));
 
         Assert.Equal("test-" + name, preset!.Slot);
         Assert.Matches(SlotNameRule, preset.Slot);
@@ -234,15 +234,15 @@ public sealed class AlundraTestSavesTests : IDisposable
     [Fact]
     public void AnUnknownName_IsRefused_WithAMessage_AndNoException()
     {
-        var ok = AlundraTestSaves.TryBuild("day9-nowhere", RealRules(), out var save, out var error);
+        var ok = TestSaves.TryBuild("day9-nowhere", RealRules(), out var save, out var error);
 
         Assert.False(ok);
         Assert.Null(save);
         Assert.Contains("day9-nowhere", error);
-        Assert.False(AlundraTestSaves.TryFind("day9-nowhere", out _));
+        Assert.False(TestSaves.TryFind("day9-nowhere", out _));
     }
 
-    private static AlundraTestSaves.Preset Custom(uint[]? set = null, uint[]? clear = null, int mapId = 179, int tileX = 17, int tileY = 7, int tileZ = 1)
+    private static TestSaves.Preset Custom(uint[]? set = null, uint[]? clear = null, int mapId = 179, int tileX = 17, int tileY = 7, int tileZ = 1)
         => new(
             "custom", "test-custom", mapId, tileX, tileY, tileZ,
             set ?? [], clear ?? [], [], []);
@@ -253,7 +253,7 @@ public sealed class AlundraTestSavesTests : IDisposable
     [InlineData(0xFFFFu)]
     public void ATemporaryFlag_IsRefused_BecauseASaveNeverCarriesIt(uint flag)
     {
-        var ok = AlundraTestSaves.TryBuild(Custom(set: [flag]), RealRules(), out var save, out var error);
+        var ok = TestSaves.TryBuild(Custom(set: [flag]), RealRules(), out var save, out var error);
 
         Assert.False(ok);
         Assert.Null(save);
@@ -266,7 +266,7 @@ public sealed class AlundraTestSavesTests : IDisposable
     [InlineData(0x7FFFu)]
     public void APersistentFlagBeyondTheSavedWords_IsRefused_InsteadOfBeingLostSilently(uint flag)
     {
-        var ok = AlundraTestSaves.TryBuild(Custom(set: [flag]), RealRules(), out var save, out var error);
+        var ok = TestSaves.TryBuild(Custom(set: [flag]), RealRules(), out var save, out var error);
 
         Assert.False(ok);
         Assert.Null(save);
@@ -276,7 +276,7 @@ public sealed class AlundraTestSavesTests : IDisposable
     [Fact]
     public void AClearedFlagOutOfRange_IsRefusedToo()
     {
-        Assert.False(AlundraTestSaves.TryBuild(Custom(clear: [2048u]), RealRules(), out _, out var error));
+        Assert.False(TestSaves.TryBuild(Custom(clear: [2048u]), RealRules(), out _, out var error));
         Assert.Contains("2048", error);
     }
 
@@ -284,7 +284,7 @@ public sealed class AlundraTestSavesTests : IDisposable
     public void ASaveTheRulesRefuse_IsRefused_WithTheRulesMessage()
     {
         // Map 99999 is no key of world-index.json.
-        var ok = AlundraTestSaves.TryBuild(Custom(mapId: 99999), RealRules(), out var save, out var error);
+        var ok = TestSaves.TryBuild(Custom(mapId: 99999), RealRules(), out var save, out var error);
 
         Assert.False(ok);
         Assert.Null(save);
@@ -295,7 +295,7 @@ public sealed class AlundraTestSavesTests : IDisposable
     public void AFlagAtTheEdgeOfTheSavedWords_IsAccepted()
     {
         // Flag 2047 is the last bit of word 63, the last saved word.
-        var ok = AlundraTestSaves.TryBuild(Custom(set: [2047u]), RealRules(), out var save, out var error);
+        var ok = TestSaves.TryBuild(Custom(set: [2047u]), RealRules(), out var save, out var error);
 
         Assert.True(ok, error);
         Assert.Equal(0x80000000u, save!.GameFlags[63]);
@@ -307,9 +307,9 @@ public sealed class AlundraTestSavesTests : IDisposable
     public void APresetThatSetsThenClearsAFlag_EndsWithItCleared_AndTheOthersPosed()
     {
         // G203 is 0 in a new game, so clearing it alone proves nothing: set it and another, clear the first.
-        var preset = new AlundraTestSaves.Preset("custom", "test-custom", 179, 17, 7, 1, [203u, 5u], [203u], [], []);
+        var preset = new TestSaves.Preset("custom", "test-custom", 179, 17, 7, 1, [203u, 5u], [203u], [], []);
 
-        Assert.True(AlundraTestSaves.TryBuild(preset, RealRules(), out var save, out var error), error);
+        Assert.True(TestSaves.TryBuild(preset, RealRules(), out var save, out var error), error);
 
         Assert.Equal(0u, save!.GameFlags[6]); // G203 (word 6 bit 11): set then cleared.
         Assert.Equal(1u << 5, save.GameFlags[0]); // G5: only set.
@@ -318,9 +318,9 @@ public sealed class AlundraTestSavesTests : IDisposable
     [Fact]
     public void AnItemCounter_IsWrittenToItsIndex_AndNothingElseMoves()
     {
-        var preset = new AlundraTestSaves.Preset("custom", "test-custom", 179, 17, 7, 1, [], [], [], [(5, (short)1)]); // the rules cap each object (0..1 for the object 5).
+        var preset = new TestSaves.Preset("custom", "test-custom", 179, 17, 7, 1, [], [], [], [(5, (short)1)]); // the rules cap each object (0..1 for the object 5).
 
-        Assert.True(AlundraTestSaves.TryBuild(preset, RealRules(), out var save, out var error), error);
+        Assert.True(TestSaves.TryBuild(preset, RealRules(), out var save, out var error), error);
 
         for (var i = 0; i < 256; i++)
         {
@@ -333,9 +333,9 @@ public sealed class AlundraTestSavesTests : IDisposable
     [InlineData(500)]
     public void AMapTableIndexOutsideItsTable_IsRefused(int index)
     {
-        var preset = new AlundraTestSaves.Preset("custom", "test-custom", 179, 17, 7, 1, [], [], [(index, (ushort)1)], []);
+        var preset = new TestSaves.Preset("custom", "test-custom", 179, 17, 7, 1, [], [], [(index, (ushort)1)], []);
 
-        Assert.False(AlundraTestSaves.TryBuild(preset, RealRules(), out var save, out var error));
+        Assert.False(TestSaves.TryBuild(preset, RealRules(), out var save, out var error));
 
         Assert.Null(save);
         Assert.Contains("map table index " + index, error);
@@ -346,9 +346,9 @@ public sealed class AlundraTestSavesTests : IDisposable
     [InlineData(256)]
     public void AnItemCounterIndexOutsideItsTable_IsRefused(int index)
     {
-        var preset = new AlundraTestSaves.Preset("custom", "test-custom", 179, 17, 7, 1, [], [], [], [(index, (short)1)]);
+        var preset = new TestSaves.Preset("custom", "test-custom", 179, 17, 7, 1, [], [], [], [(index, (short)1)]);
 
-        Assert.False(AlundraTestSaves.TryBuild(preset, RealRules(), out var save, out var error));
+        Assert.False(TestSaves.TryBuild(preset, RealRules(), out var save, out var error));
 
         Assert.Null(save);
         Assert.Contains("item counter index " + index, error);
@@ -481,11 +481,11 @@ public sealed class AlundraTestSavesTests : IDisposable
     [Fact]
     public void TheOptionalFields_AreAppliedThroughTheSetters_AfterTheKit_AndTheEdgesAreAccepted()
     {
-        var preset = new AlundraTestSaves.Preset(
+        var preset = new TestSaves.Preset(
             "custom", "test-custom", 14, 8, 6, 0, [], [], [], [(5, (short)1)],
             Weapon: -1, Item: 36, Hp: 50, HpMax: 50, Mp: 4, MpMax: 4, Money: 9999);
 
-        Assert.True(AlundraTestSaves.TryBuild(preset, RealRules(), out var save, out var error), error);
+        Assert.True(TestSaves.TryBuild(preset, RealRules(), out var save, out var error), error);
 
         Assert.Equal(
             ((short)50, (short)50, (short)4, (short)4, (short)9999, (short)-1, (short)36),
@@ -496,16 +496,16 @@ public sealed class AlundraTestSavesTests : IDisposable
     [Fact]
     public void WithoutTheOptionalFields_ThePresetKeepsTheNewGamesValues()
     {
-        var preset = new AlundraTestSaves.Preset("custom", "test-custom", 14, 8, 6, 0, [], [], [], []);
+        var preset = new TestSaves.Preset("custom", "test-custom", 14, 8, 6, 0, [], [], [], []);
 
-        Assert.True(AlundraTestSaves.TryBuild(preset, RealRules(), out var save, out var error), error);
+        Assert.True(TestSaves.TryBuild(preset, RealRules(), out var save, out var error), error);
 
         Assert.Equal(
             ((short)10, (short)10, (short)0, (short)0, (short)0, (short)1, (short)0),
             (save!.Hp, save.HpMax, save.Mp, save.MpMax, save.Money, save.WeaponId, save.ItemId));
     }
 
-    private static AlundraTestSaves.Preset WithFields(
+    private static TestSaves.Preset WithFields(
         int? weapon = null, int? item = null, int? hp = null, int? hpMax = null, int? mp = null, int? mpMax = null, int? money = null)
         => new("custom", "test-custom", 14, 8, 6, 0, [], [], [], [], weapon, item, hp, hpMax, mp, mpMax, money);
 
@@ -535,7 +535,7 @@ public sealed class AlundraTestSavesTests : IDisposable
     public void AnOptionalFieldOutsideItsDomain_IsRefusedByCheckPreset_NotClamped(
         string field, int? weapon, int? item, int? hp, int? hpMax, int? mp, int? mpMax, int? money)
     {
-        var ok = AlundraTestSaves.TryBuild(WithFields(weapon, item, hp, hpMax, mp, mpMax, money), RealRules(), out var save, out var error);
+        var ok = TestSaves.TryBuild(WithFields(weapon, item, hp, hpMax, mp, mpMax, money), RealRules(), out var save, out var error);
 
         Assert.False(ok);
         Assert.Null(save);
@@ -552,12 +552,12 @@ public sealed class AlundraTestSavesTests : IDisposable
         var expected = For(name);
         var keys = new HeldKeys();
         var slots = new FakeSaveSlots();
-        var director = AlundraSaveGameDirector.Instance;
-        AlundraSaveGameDirector.RecipeKeysEnabledOverrideForTests = true;
+        var director = SaveGameDirector.Instance;
+        SaveGameDirector.RecipeKeysEnabledOverrideForTests = true;
         director.KeyHeldProviderForTests = keys.IsHeld;
         director.SaveSlots = slots;
         director.RulesFactoryForTests = RealRules;
-        slots.Slots.Add(new AlundraSlotEntry("test-" + name, true, T0));
+        slots.Slots.Add(new SlotEntry("test-" + name, true, T0));
         WarpDirector.Instance.AttachToWorld(BuildGameManager(), null, FindProjectRoot());
 
         var state = GameState.Instance;

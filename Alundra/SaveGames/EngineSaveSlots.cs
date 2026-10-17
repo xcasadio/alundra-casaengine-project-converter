@@ -8,7 +8,7 @@ using CasaEngine.Framework.SaveGames;
 namespace Alundra.SaveGames;
 
 /// <summary>
-/// E16.d K4 (docs/plan-e16-etat-partie.md): the production <see cref="IAlundraSaveSlots"/>, delegating to the
+/// E16.d K4 (docs/plan-e16-etat-partie.md): the production <see cref="ISaveSlots"/>, delegating to the
 /// engine's one public service, <see cref="GameSettings.SaveGames"/> (engine ADR-0044: slots under
 /// <c>LocalApplicationData/&lt;ProjectName&gt;/SaveGames</c>), and copying its results into the DLL's types.
 /// <para><b>Never throws (SD6).</b> The service reports file and file-system problems as results, but throws
@@ -19,12 +19,12 @@ namespace Alundra.SaveGames;
 /// <see cref="SaveGameLoadStatus.IoError"/> or an empty list: an environment problem never crashes the game from a
 /// recipe key.</para>
 /// </summary>
-internal sealed class AlundraEngineSaveSlots : IAlundraSaveSlots
+internal sealed class EngineSaveSlots : ISaveSlots
 {
     private readonly Func<SaveGameService> _service;
 
     /// <summary>The production adapter, over <see cref="GameSettings.SaveGames"/>.</summary>
-    public AlundraEngineSaveSlots()
+    public EngineSaveSlots()
         : this(() => GameSettings.SaveGames)
     {
     }
@@ -32,60 +32,60 @@ internal sealed class AlundraEngineSaveSlots : IAlundraSaveSlots
     /// <summary>An adapter over the service <paramref name="service"/> returns, read at each call - tests pass a
     /// function that throws, to prove every call absorbs an exception of the service (SD6), without ever
     /// reaching the real save folder (D-E16-31).</summary>
-    internal AlundraEngineSaveSlots(Func<SaveGameService> service)
+    internal EngineSaveSlots(Func<SaveGameService> service)
     {
         ArgumentNullException.ThrowIfNull(service);
         _service = service;
     }
 
-    public AlundraSaveOutcome Save(string slot, AlundraSaveGame data, SaveGameFormat format, IReadOnlyDictionary<string, string> metadata)
+    public SaveOutcome Save(string slot, SaveGame data, SaveGameFormat format, IReadOnlyDictionary<string, string> metadata)
     {
         try
         {
             var result = _service().Save(slot, data, format, metadata);
-            return new AlundraSaveOutcome(result.Status, result.Message);
+            return new SaveOutcome(result.Status, result.Message);
         }
         catch (Exception ex)
         {
             var message = Describe("save", slot, ex);
             Logs.WriteError(message);
-            return new AlundraSaveOutcome(SaveGameSaveStatus.IoError, message);
+            return new SaveOutcome(SaveGameSaveStatus.IoError, message);
         }
     }
 
-    public AlundraLoadOutcome TryLoad(string slot, out AlundraSaveGame? data)
+    public LoadOutcome TryLoad(string slot, out SaveGame? data)
     {
         data = null;
         try
         {
-            var result = _service().TryLoad<AlundraSaveGame>(slot, out var loaded);
+            var result = _service().TryLoad<SaveGame>(slot, out var loaded);
             if (result.Status == SaveGameLoadStatus.Loaded)
             {
                 data = loaded;
             }
 
-            return new AlundraLoadOutcome(result.Status, result.Message);
+            return new LoadOutcome(result.Status, result.Message);
         }
         catch (Exception ex)
         {
             var message = Describe("load", slot, ex);
             Logs.WriteError(message);
             data = null;
-            return new AlundraLoadOutcome(SaveGameLoadStatus.IoError, message);
+            return new LoadOutcome(SaveGameLoadStatus.IoError, message);
         }
     }
 
-    public IReadOnlyList<AlundraSlotEntry> ListSlots()
+    public IReadOnlyList<SlotEntry> ListSlots()
     {
         try
         {
             var slots = _service().ListSlots();
-            var entries = new List<AlundraSlotEntry>(slots.Count);
+            var entries = new List<SlotEntry>(slots.Count);
             foreach (var slot in slots)
             {
                 if (slot != null)
                 {
-                    entries.Add(new AlundraSlotEntry(slot.Name, slot.IsReadable, slot.LastWriteTimeUtc));
+                    entries.Add(new SlotEntry(slot.Name, slot.IsReadable, slot.LastWriteTimeUtc));
                 }
             }
 
@@ -94,13 +94,13 @@ internal sealed class AlundraEngineSaveSlots : IAlundraSaveSlots
         catch (Exception ex)
         {
             Logs.WriteError(Describe("list", null, ex));
-            return Array.Empty<AlundraSlotEntry>();
+            return Array.Empty<SlotEntry>();
         }
     }
 
     private static string Describe(string operation, string? slot, Exception ex)
     {
         var target = slot == null ? "the save slots" : $"slot '{slot}'";
-        return $"AlundraEngineSaveSlots: {operation} of {target} failed in the save-game service ({ex.GetType().Name}: {ex.Message}).";
+        return $"EngineSaveSlots: {operation} of {target} failed in the save-game service ({ex.GetType().Name}: {ex.Message}).";
     }
 }

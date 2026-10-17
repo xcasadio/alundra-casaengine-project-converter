@@ -31,7 +31,7 @@ namespace Alundra.Tests;
 /// E16.e T3 (docs/plan-e16-etat-partie.md, L2, L3, L5, J3, J4, SE3, SE4, SE5, SE9): the save screen's director
 /// without MGUI, on the REAL dialogue director (a real <see cref="DialoguePresenter"/> over a recording UI
 /// view, whose choice the test picks), the real export's <c>Dialogues/Etc.dialogue</c> and validation rules (K1), and
-/// a fake save service behind <see cref="AlundraSaveGameDirector.SaveSlots"/> (D-E16-31: the real save folder is
+/// a fake save service behind <see cref="SaveGameDirector.SaveSlots"/> (D-E16-31: the real save folder is
 /// never reached).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
@@ -61,8 +61,8 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
         _presenter = new DialoguePresenter(_uiView);
         Dialogue.AttachToWorld(_presenter, State);
-        AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
-        AlundraSaveGameDirector.Instance.SaveSlots = _slots;
+        SaveGameDirector.Instance.RulesFactoryForTests = RealRules;
+        SaveGameDirector.Instance.SaveSlots = _slots;
         Director.AttachToWorld(State, _sound);
     }
 
@@ -123,7 +123,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         return visited;
     }
 
-    private AlundraSaveGame StartAndOpenPicker(AlundraSaveGame? save = null)
+    private SaveGame StartAndOpenPicker(SaveGame? save = null)
     {
         save ??= ValidSave();
         Assert.True(Director.Start(save));
@@ -342,7 +342,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     {
         for (var i = 1; i <= 4; i++)
         {
-            AlundraSaveGame? save = ValidSave();
+            SaveGame? save = ValidSave();
             var status = SaveGameLoadStatus.Loaded;
             switch (hostile)
             {
@@ -387,7 +387,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     public void Labels_ARulesFactoryThatThrows_GivesEmptyLabels_WithoutException_NorWrite()
     {
         _slots.Answers["slot1"] = (SaveGameLoadStatus.Loaded, ValidSave());
-        AlundraSaveGameDirector.Instance.RulesFactoryForTests = () => throw new InvalidOperationException("no rules");
+        SaveGameDirector.Instance.RulesFactoryForTests = () => throw new InvalidOperationException("no rules");
 
         StartAndOpenPicker();
 
@@ -403,7 +403,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     public void Labels_AServiceThatThrowsBehindTheAdapter_GivesEmptyLabels_WithoutException_NorWrite()
     {
         var calls = 0;
-        AlundraSaveGameDirector.Instance.SaveSlots = new AlundraEngineSaveSlots(() =>
+        SaveGameDirector.Instance.SaveSlots = new EngineSaveSlots(() =>
         {
             calls++;
             throw new IOException("disk gone");
@@ -697,7 +697,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     public void AServiceThatThrowsBehindTheAdapterOnSave_ShowsTheFailureMessage_WithoutException()
     {
         StartAndOpenPicker();
-        AlundraSaveGameDirector.Instance.SaveSlots = new AlundraEngineSaveSlots(() => throw new IOException("disk gone"));
+        SaveGameDirector.Instance.SaveSlots = new EngineSaveSlots(() => throw new IOException("disk gone"));
         AnswerAndClose(0);
 
         TickUntilState(SaveScreenDirector.StateWaitSquare);
@@ -918,10 +918,10 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     // ---- Doubles -----------------------------------------------------------------------------------------------
 
     /// <summary>A fake service answering per slot (NotFound by default), recording every call.</summary>
-    internal sealed class SlotsBySlot : IAlundraSaveSlots
+    internal sealed class SlotsBySlot : ISaveSlots
     {
-        public readonly Dictionary<string, (SaveGameLoadStatus Status, AlundraSaveGame? Save)> Answers = new();
-        public readonly List<(string Slot, AlundraSaveGame Data, SaveGameFormat Format, IReadOnlyDictionary<string, string> Metadata)> SaveCalls = new();
+        public readonly Dictionary<string, (SaveGameLoadStatus Status, SaveGame? Save)> Answers = new();
+        public readonly List<(string Slot, SaveGame Data, SaveGameFormat Format, IReadOnlyDictionary<string, string> Metadata)> SaveCalls = new();
         public readonly List<string> LoadCalls = new();
         public int ListCalls;
         public SaveGameSaveStatus SaveStatus = SaveGameSaveStatus.Saved;
@@ -930,7 +930,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
         public bool NothingCalled => SaveCalls.Count == 0 && LoadCalls.Count == 0 && ListCalls == 0;
 
-        public AlundraSaveOutcome Save(string slot, AlundraSaveGame data, SaveGameFormat format, IReadOnlyDictionary<string, string> metadata)
+        public SaveOutcome Save(string slot, SaveGame data, SaveGameFormat format, IReadOnlyDictionary<string, string> metadata)
         {
             if (ThrowOnSave)
             {
@@ -938,10 +938,10 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
             }
 
             SaveCalls.Add((slot, data, format, metadata));
-            return new AlundraSaveOutcome(SaveStatus, string.Empty);
+            return new SaveOutcome(SaveStatus, string.Empty);
         }
 
-        public AlundraLoadOutcome TryLoad(string slot, out AlundraSaveGame? data)
+        public LoadOutcome TryLoad(string slot, out SaveGame? data)
         {
             LoadCalls.Add(slot);
             if (ThrowOnLoad)
@@ -951,13 +951,13 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
             var (status, save) = Answers.TryGetValue(slot, out var answer) ? answer : (SaveGameLoadStatus.NotFound, null);
             data = save; // hostile: an object even with a failure status.
-            return new AlundraLoadOutcome(status, string.Empty);
+            return new LoadOutcome(status, string.Empty);
         }
 
-        public IReadOnlyList<AlundraSlotEntry> ListSlots()
+        public IReadOnlyList<SlotEntry> ListSlots()
         {
             ListCalls++;
-            return Array.Empty<AlundraSlotEntry>();
+            return Array.Empty<SlotEntry>();
         }
     }
 

@@ -10,7 +10,7 @@ namespace AlundraTestSavesTool;
 
 /// <summary>
 /// E19.d2a S2 (docs/plan-e19-opcodes.md section 1.2h.1, D-E19-33): writes a preset test save (see
-/// <see cref="AlundraTestSaves"/>) into the game's save folder, where F9 of the Debug DLL loads it.
+/// <see cref="TestSaves"/>) into the game's save folder, where F9 of the Debug DLL loads it.
 /// <code>AlundraTestSaves &lt;AlundraGame.json&gt; &lt;preset&gt; [--dry-run]</code>
 /// <c>--dry-run</c> prints what would be written and writes nothing. Exit code 0 on success, 2 on a usage error,
 /// 1 on any refusal (unknown preset, unreadable project, a project name the engine would refuse, item tables not loaded, validation, write) and on any
@@ -64,7 +64,7 @@ internal static class Program
         if (positional.Count != 2)
         {
             error.WriteLine(Usage);
-            error.WriteLine("presets: " + string.Join(", ", AlundraTestSaves.Presets.Select(p => p.Name)));
+            error.WriteLine("presets: " + string.Join(", ", TestSaves.Presets.Select(p => p.Name)));
             return 2;
         }
 
@@ -123,19 +123,19 @@ internal static class Program
         }
 
         // 4. The rules: the on-disk equivalent of the production asset catalog.
-        var rules = new AlundraSaveGameRules(
+        var rules = new SaveGameRules(
             projectDirectory,
             path => File.Exists(Path.Combine(projectDirectory, path)),
             tables);
 
         // 5. The save.
-        if (!AlundraTestSaves.TryFind(presetName, out var preset))
+        if (!TestSaves.TryFind(presetName, out var preset))
         {
-            error.WriteLine($"unknown preset '{presetName}'. presets: " + string.Join(", ", AlundraTestSaves.Presets.Select(p => p.Name)));
+            error.WriteLine($"unknown preset '{presetName}'. presets: " + string.Join(", ", TestSaves.Presets.Select(p => p.Name)));
             return 1;
         }
 
-        if (!AlundraTestSaves.TryBuild(preset!, rules, out var save, out var buildError))
+        if (!TestSaves.TryBuild(preset!, rules, out var save, out var buildError))
         {
             error.WriteLine(buildError);
             return 1;
@@ -201,7 +201,7 @@ internal static class Program
         return null;
     }
 
-    private static void Describe(TextWriter output, AlundraTestSaves.Preset preset, AlundraSaveGame save, string slotPath)
+    private static void Describe(TextWriter output, TestSaves.Preset preset, SaveGame save, string slotPath)
     {
         output.WriteLine($"preset: {preset.Name}");
         output.WriteLine($"map: {save.InitialMapId}, tile ({save.CameraTileX}, {save.CameraTileY}), z {save.CameraTileZ}");
@@ -218,7 +218,7 @@ internal static class Program
         output.WriteLine($"file: {slotPath}");
     }
 
-    private static string FormatFlags(IReadOnlyList<uint> flags, AlundraSaveGame save)
+    private static string FormatFlags(IReadOnlyList<uint> flags, SaveGame save)
     {
         if (flags.Count == 0)
         {
