@@ -196,7 +196,7 @@ def walk(ctx, domain, path, bbody, abody, dm, applied, rep):
         line = line_of(bbody, a)
         for m in info.name_rx.finditer(bbody, a, b):
             w = m.group(1)
-            if w not in info.renamed:
+            if w not in info.renamed and w not in info.partial:
                 continue
             e = ctx.entries.get((canon, line, w))
             if e is None:

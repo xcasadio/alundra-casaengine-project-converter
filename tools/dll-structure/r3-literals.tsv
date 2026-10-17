@@ -1,6 +1,7 @@
 file	line	name	new_name	class	domain	text	note
 Alundra.Tests/AlundraEffectBankLoaderTests.cs	61	AlundraEffectBankLoader	EffectBankLoader	1	Rendering	"\"AlundraEffectBankLoader\""	log prefix written by AlundraEffectBankLoader, read by this test
 Alundra.Tests/AlundraEffectOpcodeTests.cs	627	AlundraEffectReservoir	EffectReservoir	1	Rendering	"\"AlundraEffectReservoir\""	log prefix written by AlundraEffectReservoir, read by this test
+Alundra.Tests/AlundraEffectReservoirTests.cs	342	AlundraEffect	Effect	1	Rendering	"\"AlundraEffect\""	start of the log prefix AlundraEffectReservoir / AlundraEffectStage, read by this test
 Alundra.Tests/AlundraEffectStageWiringTests.cs	207	AlundraEffectStage	EffectStage	1	Rendering	"\"AlundraEffectStage\""	log prefix written by AlundraEffectStage, read by this test
 Alundra.Tests/AlundraEffectStageWiringTests.cs	220	AlundraEffectStage	EffectStage	1	Rendering	"\"AlundraEffectStage\""	log prefix written by AlundraEffectStage, read by this test
 Alundra.Tests/AlundraFloorHeightTests.cs	317	EntitySupport	EntitySupport	1b		"\"hero and record 1 footprints should overlap on X, per EntitySupport's own asymmetric rule.\""	type not renamed
