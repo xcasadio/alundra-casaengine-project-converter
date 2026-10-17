@@ -1,0 +1,18 @@
+placement sites (0x64/0x8A) examined on maps with liftables: 601
+XY overlaps with a liftable footprint: 16
+  map 52 slot A[37] @520 0x8a sel=38 at (612,120,48) overlaps rec39 in XY; Z overlap with operand Z: True
+  map 52 slot A[37] @528 0x8a sel=38 at (732,120,48) overlaps rec40 in XY; Z overlap with operand Z: True
+  map 52 slot A[37] @536 0x8a sel=38 at (756,120,48) overlaps rec41 in XY; Z overlap with operand Z: True
+  map 92 slot B[1] @430 0x8a sel=15 at (756,168,240) overlaps rec46 in XY; Z overlap with operand Z: False
+  map 92 slot B[1] @438 0x8a sel=15 at (804,168,240) overlaps rec45 in XY; Z overlap with operand Z: False
+  map 92 slot B[1] @446 0x8a sel=15 at (852,168,240) overlaps rec44 in XY; Z overlap with operand Z: False
+  map 92 slot B[1] @454 0x8a sel=15 at (900,168,240) overlaps rec43 in XY; Z overlap with operand Z: False
+  map 159 slot B[4] @614 0x8a sel=13 at (924,184,0) overlaps rec3 in XY; Z overlap with operand Z: False
+  map 159 slot B[4] @633 0x8a sel=13 at (1164,184,0) overlaps rec4 in XY; Z overlap with operand Z: False
+  map 159 slot B[4] @652 0x8a sel=13 at (1116,600,0) overlaps rec10 in XY; Z overlap with operand Z: False
+  map 159 slot B[4] @675 0x8a sel=13 at (924,184,0) overlaps rec3 in XY; Z overlap with operand Z: False
+  map 159 slot B[4] @694 0x8a sel=13 at (1164,184,0) overlaps rec4 in XY; Z overlap with operand Z: False
+  map 159 slot B[4] @713 0x8a sel=13 at (1116,600,0) overlaps rec10 in XY; Z overlap with operand Z: False
+  map 159 slot B[10] @1396 0x8a sel=17 at (924,184,0) overlaps rec3 in XY; Z overlap with operand Z: False
+  map 159 slot B[10] @1406 0x8a sel=17 at (1164,184,0) overlaps rec4 in XY; Z overlap with operand Z: False
+  map 159 slot B[10] @1416 0x8a sel=17 at (1116,600,0) overlaps rec10 in XY; Z overlap with operand Z: False

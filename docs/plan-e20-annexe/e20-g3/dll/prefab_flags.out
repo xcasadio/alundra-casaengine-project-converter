@@ -1,0 +1,15 @@
+0 b8fd1216-399a-5f93-a7f9-c6f26b2a6800 Flags=0x83A180 Collidable kind=0 size 20 14 32
+1 cc739ef8-77e1-558d-9893-4a24b619c321 Flags=0x3A180 Collidable kind=0 size 20 14 32
+2 a0126f92-916e-5b61-a6e6-831c04a7a1dd Flags=0x3A180 Collidable kind=0 size 20 14 32
+27 5f01fd3f-14b8-51b8-a12b-a90d63010b5c Flags=0x3A180 Collidable kind=0 size 20 14 32
+28 ae3acc59-274f-59a8-96ef-90e347fd1ddd Flags=0x3A180 Collidable kind=0 size 20 14 32
+29 5dd57408-7d4d-5adc-90d5-fb2492d3276f Flags=0x83A180 Collidable kind=0 size 20 14 32
+36 8f467c6f-c0cf-5acb-a6a0-f0a78fb9408f Flags=0x3323E4 Collidable kind=1 size 21 15 16
+alundra_0 192c2eeb-bdda-5bb4-92d6-39a4ae298307 Flags=0x3118C Collidable kind=0 size 21 15 32
+alundra_27 fe012677-fee9-5d1c-a689-7e1545d09a56 Flags=0x205C not-collidable kind=0 size 21 14 8
+alundra_28 8bb6af75-cdb5-501c-8a53-3eb6bf6e9146 Flags=0x205C not-collidable kind=0 size 21 14 8
+alundra_29 325ac946-f368-5bde-84a9-78f3473411ce Flags=0x205C not-collidable kind=0 size 21 14 8
+alundra_36 7da68e4a-1106-53b1-8a97-c5f3675c3ebf Flags=0x200180 Collidable kind=0 size 24 16 16
+alundra_1 0feebedb-7f84-56ed-994e-ab53aa0934e5 Flags=0x332380 Collidable kind=1 size 21 15 16
+alundra_2 4d0c2294-87b6-50da-99ca-d789281cc580 Flags=0x13234E not-collidable kind=1 size 21 15 16
+alundra_234 79dcc5fa-c5be-5691-a500-48b2db66130e Flags=0x3427E4 Collidable kind=3 size 46 34 34

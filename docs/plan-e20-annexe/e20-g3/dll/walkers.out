@@ -1,0 +1,23 @@
+== map 390: 12 liftables
+  map program B[1] walks=[('1F', 496, 80), ('1F', 507, 32), ('1E', 540, 80)]
+  map program B[2] walks=[('1E', 638, 80), ('1E', 648, 48), ('1E', 658, 80), ('1E', 668, 32)]
+== map 392: 12 liftables
+  map program B[1] walks=[('1F', 68, 48)]
+== map 163: 8 liftables
+  map program B[1] walks=[('0B', 143, 96), ('0B', 157, 16), ('0B', 190, 64)]
+== map 164: 17 liftables
+  rec  1 Septimus (cherch at (1092,120,16) C[2] walks=[('0B', 386, 24)] sumR=24 nearestLiftableGap=195
+== map 165: 8 liftables
+  rec  1 Meade (père des  at (60,424,0) C[5] walks=[('0B', 1017, 160)] sumR=160 nearestLiftableGap=225
+  rec  3 Nestus (frère ca at (108,424,0) C[4] walks=[('0B', 953, 208)] sumR=208 nearestLiftableGap=225
+  rec  5 Bloc transparent at (132,424,0) C[1] walks=[('0B', 684, 96), ('0B', 690, 120), ('0B', 696, 78)] sumR=294 nearestLiftableGap=225
+  map program B[2] walks=[('0B', 304, 52), ('0B', 310, 118), ('0B', 316, 102)]
+  map program B[4] walks=[('0B', 501, 52), ('0B', 507, 118), ('0B', 513, 102)]
+  map program B[6] walks=[('0B', 623, 52), ('0B', 629, 118), ('0B', 635, 102)]
+== map 172: 8 liftables
+== map 178: 17 liftables
+  rec 15 Septimus (cherch at (972,344,16) C[6] walks=[('0B', 526, 24), ('0B', 668, 22), ('0B', 697, 48), ('0B', 703, 160)] sumR=254 nearestLiftableGap=75
+  map program B[1] walks=[('0B', 111, 80), ('0B', 117, 24)]
+== map 179: 8 liftables
+  map program B[1] walks=[('0B', 114, 32), ('0B', 120, 132), ('0B', 126, 128), ('0B', 166, 36), ('0B', 189, 24), ('0B', 214, 32)]
+  map program B[3] walks=[('0B', 511, 48), ('0B', 518, 24), ('0B', 524, 32), ('0B', 558, 24)]

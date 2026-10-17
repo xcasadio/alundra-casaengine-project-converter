@@ -1,0 +1,109 @@
+== map 115 : 34 records, 13 liftable
+  rec0          coll=1 flags=0x032080 Statue poussable (関閚ement) pos=(84,72,z16) box X[74,94) Y[66,80) Z[16,48)  gap=40
+  rec2          coll=0 flags=0x032001 Interrupteur (levier)        pos=(60,120,z24) box X[48,72) Y[112,128) Z[24,40)  gap=12
+  rec3   LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(396,136,z0) box X[386,407) Y[129,144) Z[0,16)  gap=302
+  rec4   LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(564,120,z0) box X[554,575) Y[113,128) Z[0,16)  gap=470
+  rec5   LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(588,120,z0) box X[578,599) Y[113,128) Z[0,16)  gap=494
+  rec17  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(612,136,z0) box X[602,623) Y[129,144) Z[0,16)  gap=518
+  rec18  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(876,168,z0) box X[866,887) Y[161,176) Z[0,16)  gap=782
+  rec20  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(876,184,z0) box X[866,887) Y[177,192) Z[0,16)  gap=782
+  rec23  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(756,616,z16) box X[746,767) Y[609,624) Z[16,32)  gap=662
+  rec28  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(780,616,z16) box X[770,791) Y[609,624) Z[16,32)  gap=686
+  rec29  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(180,120,z16) box X[170,191) Y[113,128) Z[16,32)  gap=86
+  rec30  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(156,120,z16) box X[146,167) Y[113,128) Z[16,32)  gap=62
+  rec31  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(180,120,z32) box X[170,191) Y[113,128) Z[32,48)  gap=86
+  rec32  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(252,568,z64) box X[242,263) Y[561,576) Z[64,80)  gap=441
+  rec33  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(276,568,z64) box X[266,287) Y[561,576) Z[64,80)  gap=441
+Traceback (most recent call last):
+  File "C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\disc-e20g3\critic-complet\c2_lift_on_maps.py", line 38, in <module>
+    print('  rec%-3d %s coll=%d flags=0x%06X %-28s pos=(%d,%d,z%d) box X[%d,%d) Y[%d,%d) Z[%d,%d)%s' % (
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r['idx'], tag, r['collidable'], r['flags'], r['name'][:28], r['x'], r['y'], r['z'], x0, x1, y0, y1,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r['z'] + r['offz'], r['z'] + r['offz'] + r['sz'], '' if gap is None else '  gap=%.0f' % gap))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python314\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u25c6' in position 38: character maps to <undefined>
+== map 115 : 34 records, 13 liftable
+  rec3   LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(396,136,z0) box X[386,407) Y[129,144) Z[0,16)  gap=728
+  rec4   LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(564,120,z0) box X[554,575) Y[113,128) Z[0,16)  gap=744
+  rec5   LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(588,120,z0) box X[578,599) Y[113,128) Z[0,16)  gap=744
+  rec17  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(612,136,z0) box X[602,623) Y[129,144) Z[0,16)  gap=728
+  rec18  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(876,168,z0) box X[866,887) Y[161,176) Z[0,16)  gap=696
+  rec19         coll=1 flags=0x006080 Bloc transparent (1󪻒)     pos=(252,824,z48) box X[240,264) Y[816,832) Z[48,80)  gap=40
+  rec20  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(876,184,z0) box X[866,887) Y[177,192) Z[0,16)  gap=680
+  rec23  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(756,616,z16) box X[746,767) Y[609,624) Z[16,32)  gap=494
+== map 116 : 49 records, 9 liftable
+  rec5   LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(144,696,z0) box X[134,155) Y[689,704) Z[0,16)  gap=361
+  rec9   LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(396,264,z160) box X[386,407) Y[257,272) Z[160,176)  gap=302
+  rec15  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(144,824,z0) box X[134,155) Y[817,832) Z[0,16)  gap=489
+  rec19  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(264,696,z0) box X[254,275) Y[689,704) Z[0,16)  gap=361
+  rec20  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(1092,808,z32) box X[1082,1103) Y[801,816) Z[32,48)  gap=998
+  rec21  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(1116,808,z32) box X[1106,1127) Y[801,816) Z[32,48)  gap=1022
+  rec23  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(264,824,z0) box X[254,275) Y[817,832) Z[0,16)  gap=489
+  rec45  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(420,264,z160) box X[410,431) Y[257,272) Z[160,176)  gap=326
+  rec46  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(444,264,z160) box X[434,455) Y[257,272) Z[160,176)  gap=350
+Traceback (most recent call last):
+  File "C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\disc-e20g3\critic-complet\c2_lift_on_maps.py", line 38, in <module>
+    print('  rec%-3d %s coll=%d flags=0x%06X %-28s pos=(%d,%d,z%d) box X[%d,%d) Y[%d,%d) Z[%d,%d)%s' % (
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r['idx'], tag, r['collidable'], r['flags'], r['name'][:28], r['x'], r['y'], r['z'], x0, x1, y0, y1,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r['z'] + r['offz'], r['z'] + r['offz'] + r['sz'], '' if gap is None else '  gap=%.0f' % gap))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python314\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u25c6' in position 38: character maps to <undefined>
+== map 116 : 49 records, 9 liftable
+== map 116 : 49 records, 9 liftable
+  rec5   LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(144,696,z0) box X[134,155) Y[689,704) Z[0,16)  gap=711
+  rec9   LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(396,264,z160) box X[386,407) Y[257,272) Z[160,176)  gap=459
+  rec15  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(144,824,z0) box X[134,155) Y[817,832) Z[0,16)  gap=711
+  rec19  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(264,696,z0) box X[254,275) Y[689,704) Z[0,16)  gap=591
+  rec20  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(1092,808,z32) box X[1082,1103) Y[801,816) Z[32,48)  gap=377
+  rec21  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(1116,808,z32) box X[1106,1127) Y[801,816) Z[32,48)  gap=377
+  rec23  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(264,824,z0) box X[254,275) Y[817,832) Z[0,16)  gap=591
+  rec39         coll=0 flags=0x032001 Interrupteur (levier)        pos=(864,424,z128) box X[852,876) Y[416,432) Z[128,144)  gap=0
+  rec45  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(420,264,z160) box X[410,431) Y[257,272) Z[160,176)  gap=435
+  rec46  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(444,264,z160) box X[434,455) Y[257,272) Z[160,176)  gap=411
+== map 116 : 49 records, 9 liftable
+  rec5   LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(144,696,z0) box X[134,155) Y[689,704) Z[0,16)  gap=951
+  rec9   LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(396,264,z160) box X[386,407) Y[257,272) Z[160,176)  gap=699
+  rec15  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(144,824,z0) box X[134,155) Y[817,832) Z[0,16)  gap=951
+  rec19  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(264,696,z0) box X[254,275) Y[689,704) Z[0,16)  gap=831
+  rec20  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(1092,808,z32) box X[1082,1103) Y[801,816) Z[32,48)  gap=377
+  rec21  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(1116,808,z32) box X[1106,1127) Y[801,816) Z[32,48)  gap=377
+  rec23  LIFT k1 coll=1 flags=0x3323E4 Tonneau g閚閞ique            pos=(264,824,z0) box X[254,275) Y[817,832) Z[0,16)  gap=831
+  rec40         coll=0 flags=0x032001 Interrupteur (levier)        pos=(1104,424,z128) box X[1092,1116) Y[416,432) Z[128,144)  gap=0
+  rec45  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(420,264,z160) box X[410,431) Y[257,272) Z[160,176)  gap=675
+  rec46  LIFT k1 coll=1 flags=0x3323E4 Caisse en bois g閚閞ique     pos=(444,264,z160) box X[434,455) Y[257,272) Z[160,176)  gap=651
+Traceback (most recent call last):
+  File "C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\disc-e20g3\critic-complet\c2_lift_on_maps.py", line 38, in <module>
+    print('  rec%-3d %s coll=%d flags=0x%06X %-28s pos=(%d,%d,z%d) box X[%d,%d) Y[%d,%d) Z[%d,%d)%s' % (
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r['idx'], tag, r['collidable'], r['flags'], r['name'][:28], r['x'], r['y'], r['z'], x0, x1, y0, y1,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r['z'] + r['offz'], r['z'] + r['offz'] + r['sz'], '' if gap is None else '  gap=%.0f' % gap))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python314\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u25c6' in position 38: character maps to <undefined>
+== map 117 : 32 records, 2 liftable
+  rec0          coll=1 flags=0x032081 Interrupteur (bascule)       pos=(528,192,z16) box X[516,540) Y[184,200) Z[16,32)  gap=16
+Traceback (most recent call last):
+  File "C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\disc-e20g3\critic-complet\c2_lift_on_maps.py", line 38, in <module>
+    print('  rec%-3d %s coll=%d flags=0x%06X %-28s pos=(%d,%d,z%d) box X[%d,%d) Y[%d,%d) Z[%d,%d)%s' % (
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r['idx'], tag, r['collidable'], r['flags'], r['name'][:28], r['x'], r['y'], r['z'], x0, x1, y0, y1,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r['z'] + r['offz'], r['z'] + r['offz'] + r['sz'], '' if gap is None else '  gap=%.0f' % gap))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python314\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u25c6' in position 38: character maps to <undefined>
+== map 117 : 32 records, 2 liftable

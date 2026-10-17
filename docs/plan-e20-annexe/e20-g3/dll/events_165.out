@@ -1,0 +1,146 @@
+== map 165: Codes=2428
+ -- slot B[1] @96..236
+    @129: 0x2D spawnRec rec=0
+    @131: 0x2D spawnRec rec=1
+    @133: 0x2D spawnRec rec=2
+    @135: 0x2D spawnRec rec=3
+    @137: 0x2D spawnRec rec=5
+    @140: 0x64 setpos sel=0 x=456 y=120 z=24
+    @148: 0x64 setpos sel=1 x=180 y=248 z=16
+    @156: 0x64 setpos sel=2 x=420 y=104 z=16
+    @164: 0x64 setpos sel=3 x=396 y=136 z=16
+    @172: 0x64 setpos sel=5 x=300 y=428 z=82
+    @187: 0x2D spawnRec rec=6
+    @189: 0x2D spawnRec rec=7
+    @191: 0x2D spawnRec rec=8
+    @193: 0x2D spawnRec rec=9
+    @196: 0x64 setpos sel=6 x=456 y=120 z=24
+    @204: 0x64 setpos sel=7 x=444 y=160 z=16
+    @212: 0x64 setpos sel=8 x=420 y=104 z=16
+    @220: 0x64 setpos sel=9 x=396 y=136 z=16
+ -- slot B[2] @236..364
+    @302: 0x09 dir= [16]
+    @304: 0x0B walk0B anim=1 r=52px
+    @308: 0x09 dir= [24]
+    @310: 0x0B walk0B anim=1 r=118px
+    @314: 0x09 dir= [16]
+    @316: 0x0B walk0B anim=1 r=102px
+    @331: 0x5A walkanim5A [3, 0]
+ -- slot B[4] @448..536
+    @499: 0x09 dir= [16]
+    @501: 0x0B walk0B anim=1 r=52px
+    @505: 0x09 dir= [24]
+    @507: 0x0B walk0B anim=1 r=118px
+    @511: 0x09 dir= [16]
+    @513: 0x0B walk0B anim=1 r=102px
+ -- slot B[6] @612..648
+    @621: 0x09 dir= [16]
+    @623: 0x0B walk0B anim=1 r=52px
+    @627: 0x09 dir= [24]
+    @629: 0x0B walk0B anim=1 r=118px
+    @633: 0x09 dir= [16]
+    @635: 0x0B walk0B anim=1 r=102px
+ -- slot C[1] @648..740
+    @682: 0x09 dir= [16]
+    @684: 0x0B walk0B anim=3 r=96px
+    @688: 0x09 dir= [24]
+    @690: 0x0B walk0B anim=3 r=120px
+    @694: 0x09 dir= [16]
+    @696: 0x0B walk0B anim=3 r=78px
+ -- slot C[3] @804..880
+    @825: 0x09 dir= [24]
+ -- slot C[4] @880..984
+    @907: 0x27 face []
+    @915: 0x09 dir= [24]
+    @928: 0x09 dir= [24]
+    @932: 0x24 waitAdj []
+    @939: 0x09 dir= [0]
+    @943: 0x24 waitAdj []
+    @951: 0x09 dir= [16]
+    @953: 0x0B walk0B anim=9 r=208px
+    @959: 0x09 dir= [24]
+ -- slot C[5] @984..1068
+    @1005: 0x64 setpos sel=128 x=444 y=328 z=16
+    @1015: 0x09 dir= [16]
+    @1017: 0x0B walk0B anim=9 r=160px
+    @1045: 0x27 face []
+    @1056: 0x09 dir= [16]
+ -- slot C[7] @1108..1144
+    @1123: 0x27 face []
+    @1134: 0x09 dir= [16]
+ -- slot C[9] @1180..1212
+    @1192: 0x27 face []
+    @1204: 0x09 dir= [24]
+ -- slot C[10] @1212..1288
+    @1262: 0x27 face []
+ -- slot C[11] @1288..1356
+    @1305: 0x09 dir= [24]
+    @1318: 0x27 face []
+    @1339: 0x09 dir= [0]
+    @1343: 0x09 dir= [24]
+ -- slot C[12] @1356..1452
+    @1395: 0x24 waitAdj []
+    @1416: 0x27 face []
+    @1437: 0x09 dir= [0]
+    @1441: 0x09 dir= [24]
+ -- slot C[13] @1452..1588
+    @1474: 0x27 face []
+    @1524: 0x09 dir= [24]
+    @1528: 0x09 dir= [16]
+    @1550: 0x09 dir= [24]
+    @1554: 0x09 dir= [16]
+    @1560: 0x24 waitAdj []
+ -- slot C[14] @1588..1684
+    @1600: 0x27 face []
+ -- slot C[15] @1684..1728
+    @1695: 0x27 face []
+    @1716: 0x09 dir= [0]
+    @1720: 0x09 dir= [24]
+ -- slot C[16] @1728..1776
+    @1739: 0x27 face []
+    @1760: 0x09 dir= [0]
+    @1764: 0x09 dir= [24]
+ -- slot C[17] @1776..1828
+    @1788: 0x27 face []
+    @1805: 0x09 dir= [8]
+    @1809: 0x09 dir= [16]
+ -- slot C[18] @1828..1864
+    @1847: 0x27 face []
+ -- slot C[19] @1864..1972
+    @1868: 0x0B walk0B anim=1 r=64px
+    @1881: 0x09 dir= [0]
+    @1883: 0x0B walk0B anim=1 r=16px
+    @1887: 0x09 dir= [24]
+    @1892: 0x0B walk0B anim=1 r=144px
+    @1896: 0x09 dir= [16]
+    @1898: 0x24 waitAdj []
+    @1901: 0x09 dir= [24]
+    @1950: 0x27 face []
+ -- slot C[20] @1972..2064
+    @1989: 0x09 dir= [8]
+    @2002: 0x27 face []
+ -- slot C[21] @2064..2236
+    @2081: 0x27 face []
+    @2169: 0x0B walk0B anim=9 r=64px
+    @2173: 0x09 dir= [24]
+    @2175: 0x0B walk0B anim=9 r=240px
+    @2179: 0x09 dir= [16]
+    @2181: 0x0B walk0B anim=9 r=64px
+    @2188: 0x5A walkanim5A [129, 8]
+    @2193: 0x5A walkanim5A [129, 0]
+    @2202: 0x09 dir= [24]
+    @2206: 0x09 dir= [0]
+    @2208: 0x0B walk0B anim=9 r=64px
+    @2212: 0x09 dir= [8]
+    @2214: 0x0B walk0B anim=9 r=240px
+    @2218: 0x09 dir= [16]
+    @2222: 0x24 waitAdj []
+    @2225: 0x09 dir= [0]
+ -- slot C[22] @2236..2284
+    @2248: 0x27 face []
+    @2271: 0x09 dir= [8]
+    @2275: 0x09 dir= [16]
+ -- slot C[23] @2284..2316
+    @2296: 0x27 face []
+ -- slot C[24] @2316..2392
+    @2367: 0x27 face []

@@ -1,0 +1,651 @@
+== map 3: 2 liftables
+== map 4: 3 liftables
+== map 7: 1 liftables
+== map 11: 1 liftables
+  rec 38 Bergus (frère aî at (372,536,160) C[2] walks=[('1E', 353, 48)] sumR=48 nearestLiftableGap=590
+== map 21: 3 liftables
+  map program B[13] walks=[('1E', 1224, 24)]
+== map 22: 7 liftables
+  map program B[4] walks=[('1E', 459, 24)]
+== map 23: 2 liftables
+  rec  0 Trappe d’escalie at (816,144,32) C[5] walks=[('1E', 794, 64)] sumR=64 nearestLiftableGap=521
+  rec  1 Trappe d’escalie at (720,144,32) C[3] walks=[('1E', 745, 64)] sumR=64 nearestLiftableGap=521
+  rec  2 Trappe d’escalie at (624,144,32) C[1] walks=[('1E', 698, 64)] sumR=64 nearestLiftableGap=521
+  rec  9 Plateforme flott at (144,864,24) C[9] walks=[('1E', 845, 160)] sumR=160 nearestLiftableGap=279
+  rec 11 Plateforme flott at (912,752,24) C[10] walks=[('1E', 871, 72), ('1E', 876, 128), ('1E', 881, 168), ('1E', 886, 96), ('1E', 891, 96), ('1E', 896, 32), ('1E', 901, 192)] sumR=784 nearestLiftableGap=159
+  rec 12 Bloc à pousser/a at (768,832,32) C[11] walks=[('1E', 929, 48)] sumR=48 nearestLiftableGap=137
+== map 24: 10 liftables
+  rec 21 Plateforme flott at (144,208,16) C[22] walks=[('1E', 890, 256)] sumR=256 nearestLiftableGap=39
+  rec 22 Plateforme flott at (72,688,24) C[22] walks=[('1E', 890, 256)] sumR=256 nearestLiftableGap=473
+  rec 23 Plateforme flott at (144,640,24) C[22] walks=[('1E', 890, 256)] sumR=256 nearestLiftableGap=425
+  map program B[1] walks=[('1F', 232, 50)]
+  map program B[3] walks=[('1F', 442, 50)]
+== map 27: 15 liftables
+  rec 24 Plateforme flott at (336,128,24) C[6] walks=[('1E', 930, 96), ('1E', 937, 192)] sumR=288 nearestLiftableGap=303
+== map 28: 1 liftables
+== map 29: 15 liftables
+  rec  7 Plateforme flott at (96,912,56) C[8] walks=[('1E', 539, 64)] sumR=64 nearestLiftableGap=139
+== map 30: 8 liftables
+  rec  4 Boule de fer (gr at (156,200,16) C[5] walks=[('1E', 1061, 60), ('1E', 1071, 60)] sumR=120 nearestLiftableGap=97
+  rec  5 Boule de fer (pe at (156,200,16) C[6] walks=[('1E', 1097, 36), ('1E', 1107, 36)] sumR=72 nearestLiftableGap=97
+  rec  6 Boule de fer (pe at (156,200,16) C[7] walks=[('1E', 1133, 12), ('1E', 1143, 12)] sumR=24 nearestLiftableGap=97
+  rec  7 Boule de fer (gr at (228,280,16) C[8] walks=[('1E', 1177, 60), ('1E', 1187, 60)] sumR=120 nearestLiftableGap=177
+  rec  8 Boule de fer (pe at (228,280,16) C[9] walks=[('1E', 1213, 36), ('1E', 1223, 36)] sumR=72 nearestLiftableGap=177
+  rec  9 Boule de fer (pe at (228,280,16) C[10] walks=[('1E', 1249, 12), ('1E', 1259, 12)] sumR=24 nearestLiftableGap=177
+  rec 10 Boule de fer (gr at (156,360,16) C[11] walks=[('1E', 1293, 60), ('1E', 1303, 60)] sumR=120 nearestLiftableGap=257
+  rec 11 Boule de fer (pe at (156,360,16) C[12] walks=[('1E', 1329, 36), ('1E', 1339, 36)] sumR=72 nearestLiftableGap=257
+  rec 12 Boule de fer (pe at (156,360,16) C[13] walks=[('1E', 1365, 12), ('1E', 1375, 12)] sumR=24 nearestLiftableGap=257
+== map 31: 2 liftables
+== map 32: 11 liftables
+== map 33: 9 liftables
+  map program B[1] walks=[('1E', 64, 96)]
+== map 38: 4 liftables
+  map program B[1] walks=[('1E', 97, 36)]
+== map 39: 1 liftables
+== map 43: 2 liftables
+== map 52: 4 liftables
+  rec  2 Plateforme flott at (180,224,32) C[2] walks=[('0B', 1164, 120)] sumR=120 nearestLiftableGap=387
+  rec  3 Plateforme flott at (228,280,32) C[3] walks=[('0B', 1172, 96)] sumR=96 nearestLiftableGap=339
+  rec  4 Plateforme flott at (276,360,32) C[4] walks=[('0B', 1180, 64)] sumR=64 nearestLiftableGap=291
+  rec  5 Plateforme flott at (132,352,32) C[5] walks=[('0B', 1188, 120)] sumR=120 nearestLiftableGap=435
+  rec  6 Plateforme flott at (396,424,32) C[6] walks=[('0B', 1196, 64)] sumR=64 nearestLiftableGap=289
+  rec  7 Plateforme flott at (228,520,32) C[7] walks=[('0B', 1204, 80)] sumR=80 nearestLiftableGap=385
+  rec  8 Plateforme flott at (180,664,32) C[8] walks=[('0B', 1212, 32)] sumR=32 nearestLiftableGap=529
+  rec  9 Plateforme flott at (252,680,32) C[9] walks=[('0B', 1220, 48)] sumR=48 nearestLiftableGap=545
+  rec 10 Plateforme flott at (228,696,32) C[10] walks=[('0B', 1228, 96)] sumR=96 nearestLiftableGap=561
+  rec 11 Plateforme flott at (300,696,32) C[11] walks=[('0B', 1236, 64)] sumR=64 nearestLiftableGap=561
+  rec 12 Plateforme flott at (156,712,32) C[12] walks=[('0B', 1244, 32)] sumR=32 nearestLiftableGap=577
+  rec 13 Plateforme flott at (276,728,32) C[13] walks=[('0B', 1252, 48)] sumR=48 nearestLiftableGap=593
+  rec 19 Boule de fer (pe at (276,568,48) C[19] walks=[('0B', 1288, 48)] sumR=48 nearestLiftableGap=433
+  rec 23 Boule de fer (pe at (324,600,48) C[19] walks=[('0B', 1288, 48)] sumR=48 nearestLiftableGap=465
+  rec 36 Meia (pour YM08) at (708,664,48) C[36] walks=[('1F', 1563, 48), ('0B', 1576, 96), ('0B', 1600, 16), ('0B', 1607, 36), ('0B', 1614, 72)] sumR=268 nearestLiftableGap=529
+== map 53: 1 liftables
+  rec 15 Boule de fer (pe at (852,248,176) C[15] walks=[('0B', 1228, 48)] sumR=48 nearestLiftableGap=339
+  rec 16 Boule de fer (pe at (876,296,176) C[15] walks=[('0B', 1228, 48)] sumR=48 nearestLiftableGap=363
+  rec 17 Boule de fer (pe at (900,248,160) C[15] walks=[('0B', 1228, 48)] sumR=48 nearestLiftableGap=387
+  rec 18 Boule de fer (pe at (924,296,160) C[15] walks=[('0B', 1228, 48)] sumR=48 nearestLiftableGap=411
+  rec 21 Boule de fer (gr at (1104,256,240) C[21] walks=[('0B', 1251, 32)] sumR=32 nearestLiftableGap=591
+== map 57: 2 liftables
+== map 61: 5 liftables
+  rec 21 ◆Muruta (griffes at (972,632,32) C[22] walks=[('1E', 1381, 24), ('1E', 1386, 16), ('1E', 1410, 16), ('1E', 1415, 24), ('1E', 1439, 24), ('1E', 1444, 16), ('1E', 1468, 16), ('1E', 1473, 24)] sumR=160 nearestLiftableGap=257
+  rec 22 ◆Muruta (griffes at (996,648,32) C[23] walks=[('1E', 1517, 16), ('1E', 1522, 24), ('1E', 1546, 24), ('1E', 1551, 16), ('1E', 1575, 16), ('1E', 1580, 24), ('1E', 1604, 24), ('1E', 1609, 16)] sumR=160 nearestLiftableGap=241
+  rec 23 ◆Muruta (griffes at (972,664,32) C[24] walks=[('1E', 1653, 24), ('1E', 1658, 16), ('1E', 1682, 16), ('1E', 1687, 24), ('1E', 1711, 24), ('1E', 1716, 16), ('1E', 1740, 16), ('1E', 1745, 24)] sumR=160 nearestLiftableGap=225
+  rec 24 ◆Muruta (griffes at (948,648,32) C[25] walks=[('1E', 1789, 16), ('1E', 1794, 24), ('1E', 1818, 24), ('1E', 1823, 16), ('1E', 1847, 16), ('1E', 1852, 24), ('1E', 1876, 24), ('1E', 1881, 16)] sumR=160 nearestLiftableGap=241
+  map program B[2] walks=[('1E', 444, 80)]
+  map program B[3] walks=[('1E', 665, 96), ('1E', 670, 24)]
+  map program B[5] walks=[('1E', 862, 32)]
+  map program B[6] walks=[('1E', 937, 128), ('1E', 943, 16), ('1E', 980, 64), ('1E', 998, 16), ('1E', 1019, 64), ('1E', 1024, 24), ('1E', 1038, 32), ('1E', 1043, 24), ('1E', 1048, 64), ('1E', 1053, 72)]
+  map program B[7] walks=[('1E', 1149, 64), ('1E', 1157, 32)]
+== map 63: 3 liftables
+  map program B[3] walks=[('1E', 579, 64), ('1E', 587, 32), ('1E', 654, 48), ('1E', 677, 32), ('1E', 682, 24), ('1E', 690, 48)]
+  map program B[4] walks=[('1E', 775, 32)]
+  map program B[5] walks=[('1E', 855, 48), ('1E', 860, 24)]
+== map 64: 4 liftables
+  map program B[1] walks=[('1E', 284, 48)]
+  map program B[3] walks=[('1E', 609, 32)]
+  map program B[4] walks=[('1E', 650, 32), ('1E', 658, 32)]
+== map 66: 3 liftables
+  map program B[1] walks=[('1E', 383, 88), ('1E', 388, 24), ('1E', 393, 56), ('1E', 398, 22), ('1E', 403, 152), ('1E', 408, 22), ('1E', 413, 24), ('1E', 418, 22)]
+  map program B[2] walks=[('1E', 467, 48), ('1E', 518, 208), ('1E', 531, 152), ('1E', 536, 24), ('1E', 541, 24), ('1E', 546, 24), ('1E', 551, 152), ('1E', 556, 24), ('1E', 561, 56), ('1E', 566, 24)]
+  map program B[3] walks=[('1E', 608, 72), ('1E', 613, 24), ('1E', 618, 184), ('1E', 623, 24), ('1E', 628, 56), ('1E', 633, 24), ('1E', 638, 48), ('1E', 643, 72), ('1E', 648, 144), ('1E', 658, 32)]
+  map program B[4] walks=[('1E', 716, 30), ('1E', 723, 144), ('1E', 728, 72), ('1E', 733, 40), ('1E', 738, 24), ('1E', 743, 56), ('1E', 748, 24), ('1E', 753, 184), ('1E', 758, 24)]
+== map 67: 17 liftables
+  rec 29 Rocher roulant ( at (552,656,304) C[30] walks=[('1E', 918, 144), ('1E', 938, 144)] sumR=288 nearestLiftableGap=41
+== map 69: 7 liftables
+  rec 25 Plateforme flott at (1032,832,24) C[26] walks=[('1E', 306, 144), ('1E', 311, 64)] sumR=208 nearestLiftableGap=543
+  rec 26 Plateforme flott at (1176,720,48) C[26] walks=[('1E', 306, 144), ('1E', 311, 64)] sumR=208 nearestLiftableGap=687
+== map 70: 12 liftables
+== map 71: 9 liftables
+== map 72: 15 liftables
+  rec  2 Plateforme flott at (576,240,64) C[3] walks=[('1E', 250, 96)] sumR=96 nearestLiftableGap=159
+== map 73: 36 liftables
+== map 74: 8 liftables
+  rec 26 Plateforme flott at (504,896,64) C[27] walks=[('1E', 822, 192)] sumR=192 nearestLiftableGap=399
+  rec 27 Boule de fer (gr at (1008,896,64) C[28] walks=[('1E', 830, 264)] sumR=264 nearestLiftableGap=377
+== map 75: 13 liftables
+  rec 59 Boule de fer (pe at (828,856,32) C[60] walks=[('1E', 790, 64)] sumR=64 nearestLiftableGap=171
+  rec 60 Boule de fer (pe at (900,920,32) C[60] walks=[('1E', 790, 64)] sumR=64 nearestLiftableGap=99
+  rec 61 Boule de fer (pe at (924,856,32) C[60] walks=[('1E', 790, 64)] sumR=64 nearestLiftableGap=75
+  rec 62 Boule de fer (pe at (996,920,32) C[63] walks=[('1E', 798, 64)] sumR=64 nearestLiftableGap=27
+== map 77: 4 liftables
+  rec 23 Plateforme flott at (792,680,80) C[23] walks=[('1E', 1984, 144)] sumR=144 nearestLiftableGap=327
+== map 78: 9 liftables
+  rec 14 ◆Mimming (faux)  at (636,136,32) C[14] walks=[('0B', 1455, 24), ('0B', 1461, 112), ('0B', 1467, 48), ('0B', 1473, 16)] sumR=200 nearestLiftableGap=577
+  rec 15 ◆Mimming (faux)  at (660,136,32) C[15] walks=[('0B', 1511, 48), ('0B', 1517, 112), ('0B', 1523, 24)] sumR=184 nearestLiftableGap=577
+  rec 16 ◆Mimming (faux)  at (684,136,32) C[16] walks=[('0B', 1563, 48), ('0B', 1569, 112), ('0B', 1575, 24)] sumR=184 nearestLiftableGap=577
+  rec 17 ◆Mimming (faux)  at (708,136,32) C[17] walks=[('0B', 1615, 24), ('0B', 1621, 112), ('0B', 1627, 48), ('0B', 1633, 16)] sumR=200 nearestLiftableGap=577
+== map 79: 6 liftables
+  rec 12 Flotteur d’eau / at (588,168,32) C[12] walks=[('0B', 356, 120)] sumR=120 nearestLiftableGap=49
+  rec 13 Flotteur d’eau / at (708,296,32) C[13] walks=[('0B', 364, 120)] sumR=120 nearestLiftableGap=49
+  rec 26 Boule de fer (gr at (1032,480,320) C[26] walks=[('1F', 408, 256)] sumR=256 nearestLiftableGap=113
+  rec 27 Boule de fer (gr at (1176,576,288) C[26] walks=[('1F', 408, 256)] sumR=256 nearestLiftableGap=209
+== map 80: 7 liftables
+  rec  7 Plateforme flott at (372,344,8) C[7] walks=[('0B', 1522, 16), ('0B', 1528, 96), ('0B', 1534, 112), ('0B', 1540, 240), ('0B', 1546, 128), ('0B', 1552, 144)] sumR=736 nearestLiftableGap=561
+  rec  8 Plateforme flott at (420,392,40) C[8] walks=[('0B', 1562, 80), ('0B', 1568, 72), ('0B', 1574, 112), ('0B', 1580, 96), ('0B', 1586, 192), ('0B', 1592, 168)] sumR=720 nearestLiftableGap=513
+  rec  9 Plateforme flott at (348,712,24) C[9] walks=[('0B', 1602, 24), ('0B', 1608, 48), ('0B', 1614, 24), ('0B', 1620, 80), ('0B', 1626, 24), ('0B', 1632, 16), ('0B', 1638, 24), ('0B', 1644, 128), ('0B', 1650, 144), ('0B', 1656, 192), ('0B', 1662, 48), ('0B', 1668, 80)] sumR=832 nearestLiftableGap=193
+== map 81: 4 liftables
+  rec 67 Flamme           at (1020,184,16) C[67] walks=[('1F', 1485, 999)] sumR=999 nearestLiftableGap=411
+  rec 68 Flamme           at (1020,248,16) C[67] walks=[('1F', 1485, 999)] sumR=999 nearestLiftableGap=411
+  rec 69 Flamme           at (1044,312,16) C[67] walks=[('1F', 1485, 999)] sumR=999 nearestLiftableGap=435
+  rec 70 Flamme           at (1044,392,16) C[67] walks=[('1F', 1485, 999)] sumR=999 nearestLiftableGap=435
+== map 82: 5 liftables
+  rec 36 Flamme           at (996,136,32) C[36] walks=[('1F', 1778, 999)] sumR=999 nearestLiftableGap=593
+  rec 37 Flamme           at (900,232,32) C[36] walks=[('1F', 1778, 999)] sumR=999 nearestLiftableGap=497
+  rec 38 Flamme           at (1092,232,32) C[36] walks=[('1F', 1778, 999)] sumR=999 nearestLiftableGap=497
+== map 83: 16 liftables
+  rec 73 Flotteur d’eau / at (84,600,16) C[73] walks=[('1F', 1488, 8), ('1F', 1496, 8)] sumR=16 nearestLiftableGap=747
+  rec 74 Flotteur d’eau / at (180,672,16) C[73] walks=[('1F', 1488, 8), ('1F', 1496, 8)] sumR=16 nearestLiftableGap=651
+  rec 75 Flotteur d’eau / at (108,696,16) C[73] walks=[('1F', 1488, 8), ('1F', 1496, 8)] sumR=16 nearestLiftableGap=723
+== map 84: 3 liftables
+  rec 18 Plateforme flott at (204,648,32) C[18] walks=[('0B', 2286, 130), ('0B', 2292, 96), ('0B', 2298, 130), ('0B', 2304, 96)] sumR=452 nearestLiftableGap=963
+  rec 19 Plateforme flott at (228,744,24) C[19] walks=[('0B', 2314, 112), ('0B', 2320, 120), ('0B', 2326, 112), ('0B', 2332, 120)] sumR=464 nearestLiftableGap=939
+  rec 36 ◆Homme-lézard (é at (1044,648,0) C[36] walks=[('1E', 2530, 64)] sumR=64 nearestLiftableGap=123
+  rec 37 ◆Homme-lézard (p at (1020,632,0) C[37] walks=[('1E', 2564, 48), ('1E', 2571, 24)] sumR=72 nearestLiftableGap=147
+  rec 38 ◆Homme-lézard (p at (1068,632,0) C[38] walks=[('1E', 2606, 48), ('1E', 2613, 24)] sumR=72 nearestLiftableGap=99
+  rec 39 ◆Homme-lézard (é at (996,616,0) C[39] walks=[('1E', 2648, 32), ('1E', 2655, 48)] sumR=80 nearestLiftableGap=171
+  rec 40 ◆Homme-lézard (é at (1092,616,0) C[40] walks=[('1E', 2694, 32), ('1E', 2701, 48)] sumR=80 nearestLiftableGap=81
+  rec 41 ◆Homme-lézard (é at (1044,616,0) C[41] walks=[('1E', 2740, 32)] sumR=32 nearestLiftableGap=123
+  rec 42 ◆Homme-lézard (é at (972,600,0) C[42] walks=[('1E', 2782, 16), ('1E', 2789, 72)] sumR=88 nearestLiftableGap=195
+  rec 43 ◆Homme-lézard (p at (1116,600,0) C[43] walks=[('1E', 2832, 16), ('1E', 2839, 72)] sumR=88 nearestLiftableGap=65
+  rec 44 ◆Homme-lézard (p at (1020,600,0) C[44] walks=[('1E', 2886, 16), ('1E', 2893, 24)] sumR=40 nearestLiftableGap=147
+  rec 45 ◆Homme-lézard (é at (1068,600,0) C[45] walks=[('1E', 2940, 16), ('1E', 2947, 24)] sumR=40 nearestLiftableGap=99
+== map 86: 11 liftables
+  rec  4 Plateforme flott at (456,480,72) C[5] walks=[('1E', 402, 72), ('1E', 407, 80)] sumR=152 nearestLiftableGap=121
+  rec 41 Boule de fer (pe at (816,872,32) C[42] walks=[('1E', 870, 64)] sumR=64 nearestLiftableGap=207
+  rec 42 Boule de fer (pe at (1008,872,32) C[42] walks=[('1E', 870, 64)] sumR=64 nearestLiftableGap=399
+  rec 43 Boule de fer (pe at (1056,936,32) C[42] walks=[('1E', 870, 64)] sumR=64 nearestLiftableGap=447
+== map 87: 9 liftables
+  rec 18 Plateforme flott at (840,304,40) C[19] walks=[('1E', 594, 128)] sumR=128 nearestLiftableGap=105
+  rec 19 Plateforme flott at (984,320,40) C[20] walks=[('1E', 602, 112)] sumR=112 nearestLiftableGap=105
+== map 88: 5 liftables
+  rec  3 Boule de fer (gr at (216,752,32) C[4] walks=[('1E', 522, 144), ('1E', 527, 144)] sumR=288 nearestLiftableGap=89
+  rec  4 Boule de fer (gr at (72,752,32) C[5] walks=[('1E', 538, 144), ('1E', 543, 144)] sumR=288 nearestLiftableGap=89
+  rec  5 Boule de fer (gr at (72,832,32) C[6] walks=[('1E', 554, 64), ('1E', 559, 144), ('1E', 564, 144)] sumR=352 nearestLiftableGap=15
+  rec  6 Boule de fer (gr at (72,896,32) C[7] walks=[('1E', 578, 144), ('1E', 583, 144)] sumR=288 nearestLiftableGap=15
+  rec  7 Boule de fer (gr at (216,864,32) C[8] walks=[('1E', 594, 112), ('1E', 599, 144), ('1E', 604, 144)] sumR=400 nearestLiftableGap=87
+== map 89: 9 liftables
+== map 90: 8 liftables
+== map 91: 6 liftables
+== map 92: 16 liftables
+  rec 47 Plateforme flott at (960,304,72) C[48] walks=[('1E', 1091, 96), ('1E', 1096, 96)] sumR=192 nearestLiftableGap=121
+== map 93: 5 liftables
+== map 94: 16 liftables
+  rec 10 Boule de fer (gr at (108,656,32) C[21] walks=[('1E', 672, 64), ('1E', 680, 128), ('1E', 688, 64)] sumR=256 nearestLiftableGap=27
+  rec 14 Boule de fer (gr at (108,496,32) C[22] walks=[('1E', 700, 64), ('1E', 705, 128), ('1E', 710, 64)] sumR=256 nearestLiftableGap=73
+  rec 20 Boule de fer (gr at (108,336,32) C[21] walks=[('1E', 672, 64), ('1E', 680, 128), ('1E', 688, 64)] sumR=256 nearestLiftableGap=105
+  rec 21 Boule de fer (gr at (108,176,32) C[22] walks=[('1E', 700, 64), ('1E', 705, 128), ('1E', 710, 64)] sumR=256 nearestLiftableGap=27
+== map 100: 1 liftables
+  rec  0 Bloc à pousser/a at (480,448,32) C[1] walks=[('1E', 439, 48), ('1E', 464, 32)] sumR=80 nearestLiftableGap=457
+  rec  1 Bloc à pousser/a at (480,192,32) C[2] walks=[('1E', 503, 48), ('1E', 528, 32)] sumR=80 nearestLiftableGap=713
+  rec  2 Bloc à pousser/a at (720,336,32) C[3] walks=[('1E', 567, 48), ('1E', 592, 32)] sumR=80 nearestLiftableGap=569
+  rec  3 Bloc à pousser/a at (744,480,32) C[4] walks=[('1E', 626, 48)] sumR=48 nearestLiftableGap=425
+  rec  4 Bloc à pousser/a at (840,304,32) C[5] walks=[('1E', 667, 48), ('1E', 692, 32)] sumR=80 nearestLiftableGap=601
+== map 103: 4 liftables
+== map 105: 3 liftables
+  rec  0 Boule de fer (gr at (1104,368,16) C[1] walks=[('1E', 499, 48)] sumR=48 nearestLiftableGap=169
+  rec  1 Boule de fer (gr at (960,544,16) C[2] walks=[('1E', 541, 72)] sumR=72 nearestLiftableGap=345
+  rec 22 ◆P-Zoldia Niv.1  at (1080,824,16) C[23] walks=[('1F', 934, 32)] sumR=32 nearestLiftableGap=625
+  rec 23 ◆P-Zoldia Niv.1  at (1152,824,16) C[24] walks=[('1F', 970, 32)] sumR=32 nearestLiftableGap=625
+== map 106: 5 liftables
+  map program B[3] walks=[('1E', 402, 144), ('1E', 499, 144)]
+== map 107: 2 liftables
+== map 108: 2 liftables
+== map 113: 2 liftables
+== map 114: 1 liftables
+  rec  5 Plateforme flott at (72,848,40) C[6] walks=[('1E', 261, 144)] sumR=144 nearestLiftableGap=1047
+  rec  7 Plateforme flott at (1176,160,40) C[6] walks=[('1E', 261, 144)] sumR=144 nearestLiftableGap=585
+== map 115: 13 liftables
+  rec  0 Statue poussable at (84,72,16) C[2] walks=[('1E', 1218, 24), ('1E', 1235, 24)] sumR=48 nearestLiftableGap=51
+  rec  1 Statue poussable at (180,72,16) C[3] walks=[('1E', 1258, 24), ('1E', 1275, 24)] sumR=48 nearestLiftableGap=33
+  map program B[2] walks=[('1E', 201, 112)]
+  map program B[9] walks=[('1F', 1140, 48)]
+== map 116: 9 liftables
+== map 117: 2 liftables
+  rec  6 Boule de fer (pe at (1116,584,32) C[14] walks=[('1E', 946, 64), ('1E', 953, 72)] sumR=136 nearestLiftableGap=891
+  rec  8 Boule de fer (pe at (1116,744,32) C[16] walks=[('1E', 986, 64), ('1E', 993, 72)] sumR=136 nearestLiftableGap=891
+  rec 13 Boule de fer (pe at (876,648,32) C[9] walks=[('1E', 858, 64), ('1E', 865, 72)] sumR=136 nearestLiftableGap=651
+  rec 14 Boule de fer (pe at (924,760,32) C[7] walks=[('1E', 818, 64), ('1E', 825, 72)] sumR=136 nearestLiftableGap=699
+  rec 21 Déclencheur clé  at (36,56,0) C[22] walks=[('0B', 1082, 80)] sumR=80 nearestLiftableGap=33
+  map program B[1] walks=[('0B', 240, 40), ('0B', 254, 40)]
+== map 122: 1 liftables
+== map 123: 3 liftables
+  map program B[1] walks=[('1E', 105, 48)]
+== map 124: 10 liftables
+  rec 12 Boule de fer (gr at (264,528,96) C[13] walks=[('1E', 198, 144)] sumR=144 nearestLiftableGap=87
+== map 125: 6 liftables
+== map 127: 2 liftables
+== map 128: 5 liftables
+  rec 24 Boule de fer (pe at (108,792,48) C[25] walks=[('1E', 578, 120), ('1E', 583, 80)] sumR=200 nearestLiftableGap=147
+  rec 25 Boule de fer (pe at (420,792,48) C[26] walks=[('1E', 594, 120), ('1E', 599, 80)] sumR=200 nearestLiftableGap=113
+  rec 26 Boule de fer (pe at (204,904,48) C[25] walks=[('1E', 578, 120), ('1E', 583, 80)] sumR=200 nearestLiftableGap=225
+  rec 42 Boule de fer (pe at (132,296,48) C[43] walks=[('1E', 610, 96)] sumR=96 nearestLiftableGap=353
+  rec 43 Boule de fer (pe at (228,264,48) C[43] walks=[('1E', 610, 96)] sumR=96 nearestLiftableGap=385
+  rec 44 Boule de fer (pe at (396,248,48) C[43] walks=[('1E', 610, 96)] sumR=96 nearestLiftableGap=401
+  rec 45 Boule de fer (pe at (300,280,48) C[43] walks=[('1E', 610, 96)] sumR=96 nearestLiftableGap=369
+  rec 46 Boule de fer (pe at (396,312,48) C[43] walks=[('1E', 610, 96)] sumR=96 nearestLiftableGap=337
+== map 140: 8 liftables
+  rec 36 Plateforme flott at (396,416,48) C[36] walks=[('1E', 1972, 64), ('1E', 1979, 144), ('1E', 1986, 64), ('1E', 1993, 144)] sumR=416 nearestLiftableGap=49
+  rec 37 Plateforme flott at (312,336,48) C[37] walks=[('1E', 2004, 64), ('1E', 2011, 144), ('1E', 2018, 64), ('1E', 2025, 144)] sumR=416 nearestLiftableGap=3
+  map program B[2] walks=[('1E', 646, 32), ('1E', 653, 36), ('1E', 668, 32), ('1E', 675, 12)]
+  map program B[4] walks=[('1E', 1331, 16), ('1E', 1340, 16), ('1E', 1349, 24), ('1E', 1358, 24)]
+== map 143: 1 liftables
+  rec  9 Bloc transparent at (564,552,32) C[9] walks=[('1F', 672, 128), ('0B', 679, 48), ('0B', 687, 56), ('0B', 695, 8)] sumR=240 nearestLiftableGap=257
+== map 147: 8 liftables
+  rec  0 Maître des clés  at (132,136,32) C[1] walks=[('1E', 727, 160)] sumR=160 nearestLiftableGap=51
+  rec  4 Bergus (frère aî at (600,664,0) C[5] walks=[('1E', 1168, 32), ('1E', 1177, 24), ('1F', 1217, 24)] sumR=80 nearestLiftableGap=303
+  map program B[1] walks=[('1E', 128, 48)]
+== map 148: 4 liftables
+  rec  3 Boule de fer (gr at (912,736,48) C[4] walks=[('1F', 888, 144), ('1E', 899, 144)] sumR=288 nearestLiftableGap=41
+  rec  4 Boule de fer (gr at (672,736,48) C[5] walks=[('1F', 927, 144), ('1E', 938, 144)] sumR=288 nearestLiftableGap=207
+  rec  5 Boule de fer (gr at (792,848,48) C[6] walks=[('1F', 968, 128), ('1E', 979, 128)] sumR=256 nearestLiftableGap=87
+  rec 16 Boule de fer (gr at (336,800,80) C[17] walks=[('1E', 1130, 96), ('1E', 1135, 144)] sumR=240 nearestLiftableGap=393
+  rec 17 Boule de fer (gr at (384,592,80) C[18] walks=[('1F', 1160, 192), ('1E', 1171, 192)] sumR=384 nearestLiftableGap=255
+  rec 26 Maître des clés  at (588,808,80) C[27] walks=[('1E', 1247, 48), ('1E', 1328, 240)] sumR=288 nearestLiftableGap=291
+  rec 28 Plateforme flott at (528,176,80) C[29] walks=[('1E', 1416, 32)] sumR=32 nearestLiftableGap=201
+== map 149: 7 liftables
+  rec 12 Boule de fer (gr at (768,736,80) C[13] walks=[('1E', 938, 96), ('1E', 943, 144)] sumR=240 nearestLiftableGap=423
+  rec 13 Plateforme flott at (528,544,120) C[14] walks=[('1E', 957, 256)] sumR=256 nearestLiftableGap=183
+  rec 15 Boule de fer (gr at (912,832,80) C[13] walks=[('1E', 938, 96), ('1E', 943, 144)] sumR=240 nearestLiftableGap=567
+== map 151: 4 liftables
+  rec  1 Boule de fer (gr at (672,448,80) C[2] walks=[('1E', 674, 240)] sumR=240 nearestLiftableGap=255
+  rec  2 Boule de fer (gr at (912,480,80) C[2] walks=[('1E', 674, 240)] sumR=240 nearestLiftableGap=495
+  rec  3 Boule de fer (gr at (672,512,80) C[2] walks=[('1E', 674, 240)] sumR=240 nearestLiftableGap=255
+  rec  4 Boule de fer (gr at (912,544,80) C[2] walks=[('1E', 674, 240)] sumR=240 nearestLiftableGap=495
+  rec  5 Boule de fer (gr at (672,576,80) C[2] walks=[('1E', 674, 240)] sumR=240 nearestLiftableGap=255
+  rec 21 Plateforme flott at (792,816,72) C[22] walks=[('1E', 742, 128)] sumR=128 nearestLiftableGap=375
+  rec 26 Boule de fer (gr at (480,656,80) C[27] walks=[('1E', 766, 144), ('1E', 771, 96)] sumR=240 nearestLiftableGap=63
+  rec 27 Boule de fer (gr at (576,800,80) C[27] walks=[('1E', 766, 144), ('1E', 771, 96)] sumR=240 nearestLiftableGap=159
+== map 152: 4 liftables
+  rec  0 Boule de fer (gr at (144,880,112) C[1] walks=[('1E', 636, 128), ('1E', 647, 128)] sumR=256 nearestLiftableGap=697
+  rec 12 Statue poussable at (660,712,80) C[13] walks=[('1E', 832, 16)] sumR=16 nearestLiftableGap=497
+  rec 22 Plateforme flott at (528,208,0) C[23] walks=[('1E', 1144, 24)] sumR=24 nearestLiftableGap=111
+  rec 23 Plateforme flott at (528,432,0) C[24] walks=[('1E', 1235, 32)] sumR=32 nearestLiftableGap=249
+== map 154: 11 liftables
+  rec  7 ◆Muruta (griffes at (84,600,64) C[8] walks=[('1E', 1088, 64), ('1E', 1093, 48), ('1E', 1098, 128), ('1E', 1103, 336), ('1E', 1125, 240)] sumR=816 nearestLiftableGap=3
+  rec 11 ◆Muruta (griffes at (132,600,64) C[12] walks=[('1E', 1415, 64), ('1E', 1420, 48), ('1E', 1425, 128), ('1E', 1430, 408), ('1E', 1470, 240)] sumR=888 nearestLiftableGap=1
+  rec 12 ◆Muruta (griffes at (180,728,64) C[13] walks=[('1E', 1495, 24), ('1E', 1500, 48), ('1E', 1505, 312), ('1E', 1527, 240)] sumR=624 nearestLiftableGap=97
+  rec 13 ◆Muruta (griffes at (84,728,64) C[14] walks=[('1E', 1547, 24), ('1E', 1552, 72), ('1E', 1557, 396), ('1E', 1582, 240)] sumR=732 nearestLiftableGap=97
+  rec 22 Plateforme flott at (912,656,0) C[23] walks=[('1E', 1719, 24)] sumR=24 nearestLiftableGap=183
+  map program B[1] walks=[('1E', 359, 32)]
+  map program B[2] walks=[('1E', 523, 64), ('1E', 528, 48), ('1E', 533, 128), ('1E', 538, 372), ('1E', 543, 48), ('1E', 547, 48)]
+  map program B[4] walks=[('1E', 640, 72), ('1E', 767, 48), ('1E', 787, 120)]
+  map program B[5] walks=[('1E', 854, 64), ('1E', 859, 120), ('1E', 867, 48), ('1E', 907, 32)]
+== map 155: 3 liftables
+== map 158: 9 liftables
+  map program B[2] walks=[('0B', 399, 80)]
+== map 159: 10 liftables
+== map 163: 8 liftables
+  map program B[1] walks=[('0B', 143, 96), ('0B', 157, 16), ('0B', 190, 64)]
+== map 164: 17 liftables
+  rec  1 Septimus (cherch at (1092,120,16) C[2] walks=[('0B', 386, 24)] sumR=24 nearestLiftableGap=195
+== map 165: 8 liftables
+  rec  1 Meade (père des  at (60,424,0) C[5] walks=[('0B', 1017, 160)] sumR=160 nearestLiftableGap=225
+  rec  3 Nestus (frère ca at (108,424,0) C[4] walks=[('0B', 953, 208)] sumR=208 nearestLiftableGap=225
+  rec  5 Bloc transparent at (132,424,0) C[1] walks=[('0B', 684, 96), ('0B', 690, 120), ('0B', 696, 78)] sumR=294 nearestLiftableGap=225
+  map program B[2] walks=[('0B', 304, 52), ('0B', 310, 118), ('0B', 316, 102)]
+  map program B[4] walks=[('0B', 501, 52), ('0B', 507, 118), ('0B', 513, 102)]
+  map program B[6] walks=[('0B', 623, 52), ('0B', 629, 118), ('0B', 635, 102)]
+== map 166: 6 liftables
+== map 167: 23 liftables
+== map 168: 15 liftables
+== map 170: 8 liftables
+== map 171: 17 liftables
+== map 172: 8 liftables
+== map 173: 6 liftables
+== map 174: 23 liftables
+  rec  3 Myra (vieille fe at (348,248,16) C[4] walks=[('0B', 260, 96)] sumR=96 nearestLiftableGap=219
+  map program B[1] walks=[('0B', 58, 128)]
+== map 175: 15 liftables
+== map 177: 8 liftables
+== map 178: 17 liftables
+  rec 15 Septimus (cherch at (972,344,16) C[6] walks=[('0B', 526, 24), ('0B', 668, 22), ('0B', 697, 48), ('0B', 703, 160)] sumR=254 nearestLiftableGap=75
+  map program B[1] walks=[('0B', 111, 80), ('0B', 117, 24)]
+== map 179: 8 liftables
+  map program B[1] walks=[('0B', 114, 32), ('0B', 120, 132), ('0B', 126, 128), ('0B', 166, 36), ('0B', 189, 24), ('0B', 214, 32)]
+  map program B[3] walks=[('0B', 511, 48), ('0B', 518, 24), ('0B', 524, 32), ('0B', 558, 24)]
+== map 180: 6 liftables
+== map 181: 23 liftables
+  rec  3 Myra (vieille fe at (348,248,16) C[4] walks=[('0B', 264, 96)] sumR=96 nearestLiftableGap=219
+  map program B[1] walks=[('0B', 58, 128)]
+== map 182: 15 liftables
+== map 184: 8 liftables
+== map 187: 8 liftables
+== map 188: 17 liftables
+== map 189: 8 liftables
+== map 190: 6 liftables
+== map 191: 23 liftables
+== map 192: 15 liftables
+== map 194: 8 liftables
+== map 195: 17 liftables
+== map 196: 6 liftables
+  rec  1 Bonaire (homme e at (192,664,16) C[2] walks=[('0B', 519, 36)] sumR=36 nearestLiftableGap=321
+  rec  2 Meade (père des  at (108,696,16) C[3] walks=[('0B', 716, 72)] sumR=72 nearestLiftableGap=353
+  rec  5 Lutas (gros bonh at (156,872,16) C[6] walks=[('0B', 1046, 160)] sumR=160 nearestLiftableGap=529
+  rec  6 Lutas (gros bonh at (156,712,16) C[7] walks=[('0B', 1161, 32)] sumR=32 nearestLiftableGap=369
+  rec  7 Septimus (cherch at (108,872,16) C[8] walks=[('0B', 1206, 128), ('0B', 1212, 72), ('0B', 1218, 16)] sumR=216 nearestLiftableGap=529
+  map program B[4] walks=[('0B', 265, 22)]
+== map 197: 23 liftables
+  rec  4 Fein (femme du g at (1092,144,0) C[5] walks=[('0B', 635, 72), ('0B', 641, 104), ('0B', 647, 168), ('0B', 656, 32), ('0B', 693, 48)] sumR=424 nearestLiftableGap=243
+  map program B[1] walks=[('0B', 116, 24)]
+== map 199: 8 liftables
+  rec  0 Jess (armurier)  at (132,152,16) C[1] walks=[('1E', 948, 16), ('1E', 955, 24), ('1E', 973, 96)] sumR=136 nearestLiftableGap=225
+  map program B[1] walks=[('0B', 765, 48)]
+  map program B[2] walks=[('0B', 835, 12)]
+== map 200: 17 liftables
+== map 201: 8 liftables
+== map 202: 6 liftables
+== map 203: 23 liftables
+== map 204: 15 liftables
+== map 206: 8 liftables
+== map 207: 16 liftables
+== map 208: 8 liftables
+== map 209: 6 liftables
+== map 210: 23 liftables
+== map 211: 15 liftables
+== map 213: 8 liftables
+== map 214: 17 liftables
+== map 215: 8 liftables
+== map 216: 6 liftables
+== map 217: 23 liftables
+  rec  1 Meia             at (924,136,32) C[2] walks=[('0B', 334, 16), ('0B', 343, 48), ('0B', 352, 80), ('0B', 361, 48), ('0B', 382, 24), ('0B', 391, 96), ('0B', 400, 120)] sumR=432 nearestLiftableGap=177
+  rec  4 Beaumont (chef d at (960,192,32) C[5] walks=[('0B', 488, 16)] sumR=16 nearestLiftableGap=121
+  rec  5 Septimus (cherch at (1092,152,0) C[6] walks=[('0B', 522, 1), ('0B', 532, 104), ('0B', 541, 68), ('0B', 563, 24)] sumR=197 nearestLiftableGap=243
+  map program B[1] walks=[('0B', 77, 24)]
+== map 218: 15 liftables
+== map 220: 8 liftables
+  rec  0 Jess (armurier)  at (204,136,16) C[1] walks=[('0B', 168, 120), ('0B', 177, 48), ('0B', 192, 48), ('0B', 201, 120)] sumR=336 nearestLiftableGap=241
+  map program B[1] walks=[('1F', 53, 80)]
+  map program B[2] walks=[('0B', 86, 18)]
+== map 221: 17 liftables
+  rec  2 Septimus (cherch at (1116,280,16) C[1] walks=[('0B', 150, 64), ('0B', 156, 48), ('0B', 168, 48), ('0B', 174, 64), ('1F', 293, 144), ('0B', 298, 48)] sumR=416 nearestLiftableGap=219
+  map program B[1] walks=[('0B', 37, 8)]
+== map 222: 8 liftables
+== map 223: 6 liftables
+== map 224: 23 liftables
+== map 225: 15 liftables
+== map 227: 8 liftables
+  map program B[1] walks=[('0B', 98, 48)]
+  map program B[2] walks=[('1F', 133, 80), ('0B', 143, 120), ('0B', 151, 48), ('0B', 164, 48), ('0B', 172, 120)]
+== map 228: 17 liftables
+  map program B[1] walks=[('0B', 54, 48), ('0B', 67, 144), ('0B', 80, 144), ('0B', 86, 48)]
+== map 229: 15 liftables
+  rec  4 Bloc transparent at (156,696,64) C[1] walks=[('0B', 486, 64), ('0B', 495, 32)] sumR=96 nearestLiftableGap=75
+  map program B[1] walks=[('0B', 119, 144), ('0B', 180, 16)]
+== map 231: 8 liftables
+  rec  0 Jess (armurier)  at (132,152,16) C[1] walks=[('0B', 526, 8), ('0B', 533, 24), ('0B', 555, 96)] sumR=128 nearestLiftableGap=225
+  map program B[1] walks=[('0B', 134, 48), ('0B', 145, 72), ('0B', 151, 48), ('0B', 157, 60), ('0B', 163, 24), ('0B', 185, 24), ('0B', 191, 60), ('0B', 197, 48), ('0B', 203, 72)]
+  map program B[2] walks=[('0B', 310, 48)]
+  map program B[3] walks=[('0B', 367, 7), ('0B', 374, 32)]
+== map 232: 11 liftables
+== map 233: 8 liftables
+== map 234: 6 liftables
+== map 235: 23 liftables
+== map 236: 15 liftables
+== map 238: 8 liftables
+== map 239: 13 liftables
+== map 240: 8 liftables
+  rec  1 Kisha (petite sœ at (132,688,16) C[1] walks=[('1F', 351, 8), ('1F', 414, 16)] sumR=24 nearestLiftableGap=51
+  rec  2 Beaumont (chef d at (120,768,16) C[3] walks=[('0B', 603, 24)] sumR=24 nearestLiftableGap=89
+  rec  3 Septimus (cherch at (192,744,16) C[4] walks=[('0B', 688, 16), ('0B', 694, 48)] sumR=64 nearestLiftableGap=65
+  map program B[2] walks=[('1F', 157, 16), ('0B', 250, 72), ('0B', 256, 32)]
+== map 242: 8 liftables
+  map program B[1] walks=[('1F', 77, 160), ('0B', 82, 48), ('0B', 91, 64), ('0B', 104, 64), ('0B', 110, 48), ('0B', 116, 64)]
+== map 243: 13 liftables
+== map 244: 8 liftables
+== map 245: 6 liftables
+== map 246: 23 liftables
+== map 247: 15 liftables
+== map 249: 8 liftables
+  map program B[1] walks=[('0B', 118, 48)]
+  map program B[2] walks=[('0B', 239, 228), ('0B', 245, 32), ('0B', 255, 16), ('0B', 311, 80), ('0B', 324, 144), ('0B', 332, 48)]
+== map 250: 8 liftables
+== map 251: 15 liftables
+== map 253: 8 liftables
+  rec  0 Jess (armurier)  at (204,136,16) C[1] walks=[('1F', 204, 120), ('1E', 232, 120)] sumR=240 nearestLiftableGap=241
+  rec  2 Lutas (gros bonh at (204,168,16) C[3] walks=[('1E', 288, 64), ('1E', 293, 72)] sumR=136 nearestLiftableGap=209
+  map program B[2] walks=[('0B', 158, 48)]
+== map 254: 11 liftables
+== map 255: 8 liftables
+== map 256: 6 liftables
+== map 257: 23 liftables
+== map 258: 6 liftables
+== map 260: 8 liftables
+  rec  2 Meia             at (924,296,32) C[3] walks=[('1F', 661, 128), ('1E', 710, 128)] sumR=256 nearestLiftableGap=385
+  map program B[1] walks=[('1F', 158, 48)]
+  map program B[2] walks=[('1F', 218, 16), ('1E', 250, 16), ('1E', 255, 48), ('1E', 262, 152), ('1E', 299, 80), ('1E', 326, 48), ('1E', 331, 32)]
+  map program B[3] walks=[('1E', 409, 64)]
+== map 261: 11 liftables
+== map 262: 8 liftables
+== map 263: 6 liftables
+== map 264: 23 liftables
+== map 265: 15 liftables
+== map 267: 8 liftables
+  map program B[1] walks=[('0B', 94, 48)]
+== map 268: 13 liftables
+== map 269: 8 liftables
+== map 270: 23 liftables
+  map program B[2] walks=[('1E', 198, 24), ('1E', 203, 32), ('1E', 234, 36), ('1E', 269, 24), ('1E', 293, 64), ('1E', 299, 120), ('1E', 305, 64)]
+== map 272: 8 liftables
+== map 273: 13 liftables
+== map 276: 8 liftables
+  map program B[1] walks=[('0B', 102, 48)]
+== map 277: 13 liftables
+== map 278: 8 liftables
+== map 279: 6 liftables
+== map 280: 23 liftables
+== map 281: 15 liftables
+== map 283: 8 liftables
+== map 284: 13 liftables
+== map 285: 8 liftables
+== map 286: 6 liftables
+== map 287: 23 liftables
+== map 288: 15 liftables
+== map 290: 8 liftables
+  rec  0 Meia             at (876,328,32) C[1] walks=[('1E', 155, 48), ('1E', 160, 48), ('1F', 165, 128), ('1F', 217, 128), ('1E', 222, 48), ('1F', 227, 32)] sumR=432 nearestLiftableGap=353
+  map program B[1] walks=[('1E', 125, 48)]
+== map 291: 13 liftables
+== map 292: 8 liftables
+  rec  0 Meade (père des  at (300,200,16) C[1] walks=[('1E', 372, 128)] sumR=128 nearestLiftableGap=147
+  rec  3 Meia             at (1164,216,32) C[4] walks=[('1E', 513, 24)] sumR=24 nearestLiftableGap=219
+  rec 10 Septimus (cherch at (852,168,32) C[11] walks=[('1E', 678, 144), ('1E', 683, 144), ('1E', 688, 96), ('1E', 693, 96), ('1E', 709, 24)] sumR=504 nearestLiftableGap=81
+  map program B[1] walks=[('1E', 159, 16)]
+== map 294: 8 liftables
+== map 295: 13 liftables
+  rec  1 Bergus (frère aî at (324,280,16) C[2] walks=[('1E', 371, 112)] sumR=112 nearestLiftableGap=129
+  rec  2 Rumi (mère des j at (324,168,16) C[3] walks=[('1E', 383, 96), ('1E', 399, 24), ('1E', 404, 48), ('1E', 422, 32), ('1E', 428, 112)] sumR=312 nearestLiftableGap=75
+== map 296: 6 liftables
+== map 298: 8 liftables
+  map program B[1] walks=[('0B', 182, 48)]
+== map 299: 13 liftables
+== map 300: 6 liftables
+== map 302: 8 liftables
+== map 307: 4 liftables
+== map 329: 4 liftables
+  rec  6 ◆Muruta (griffes at (516,856,16) C[7] walks=[('1E', 1168, 60)] sumR=60 nearestLiftableGap=561
+  rec  7 ◆Muruta (griffes at (540,856,16) C[7] walks=[('1E', 1168, 60)] sumR=60 nearestLiftableGap=561
+  rec  8 ◆Muruta (griffes at (564,856,16) C[9] walks=[('1E', 1204, 60)] sumR=60 nearestLiftableGap=561
+  rec  9 ◆Muruta (griffes at (588,856,16) C[9] walks=[('1E', 1204, 60)] sumR=60 nearestLiftableGap=561
+  map program B[2] walks=[('1E', 277, 32), ('1E', 333, 48)]
+  map program B[4] walks=[('1E', 956, 32), ('1F', 961, 7)]
+  map program B[5] walks=[('1E', 1012, 208), ('1E', 1020, 32)]
+== map 332: 6 liftables
+== map 339: 7 liftables
+== map 341: 1 liftables
+  rec 10 Boule de fer (pe at (996,616,144) C[11] walks=[('1E', 824, 120), ('1E', 829, 16), ('1E', 834, 120), ('1E', 839, 16)] sumR=272 nearestLiftableGap=771
+  rec 11 Boule de fer (pe at (1116,632,224) C[12] walks=[('1E', 884, 120), ('1E', 889, 16), ('1E', 894, 120), ('1E', 899, 16)] sumR=272 nearestLiftableGap=891
+  rec 14 Boule de fer (pe at (1020,584,336) C[15] walks=[('1E', 1068, 120), ('1E', 1073, 16), ('1E', 1078, 120), ('1E', 1083, 16)] sumR=272 nearestLiftableGap=795
+  rec 15 Boule de fer (pe at (1140,600,256) C[16] walks=[('1E', 1128, 120), ('1E', 1133, 16), ('1E', 1138, 120), ('1E', 1143, 16)] sumR=272 nearestLiftableGap=915
+== map 343: 4 liftables
+  rec 21 Plateforme flott at (240,624,64) C[22] walks=[('1E', 1798, 144), ('1E', 1803, 96)] sumR=240 nearestLiftableGap=39
+  rec 22 Plateforme flott at (96,624,64) C[23] walks=[('1E', 1814, 96), ('1E', 1819, 144)] sumR=240 nearestLiftableGap=183
+  rec 23 Plateforme flott at (96,720,64) C[22] walks=[('1E', 1798, 144), ('1E', 1803, 96)] sumR=240 nearestLiftableGap=183
+  rec 24 Plateforme flott at (240,720,64) C[23] walks=[('1E', 1814, 96), ('1E', 1819, 144)] sumR=240 nearestLiftableGap=89
+== map 344: 4 liftables
+  rec 67 Bloc transparent at (1116,632,48) C[68] walks=[('1E', 2942, 128), ('1E', 2979, 48)] sumR=176 nearestLiftableGap=449
+== map 346: 1 liftables
+  rec  5 Trappe d’escalie at (180,696,48) C[6] walks=[('1E', 863, 14), ('1E', 882, 14)] sumR=28 nearestLiftableGap=99
+  rec  6 Trappe d’escalie at (204,696,48) C[7] walks=[('1E', 903, 14), ('1E', 922, 14)] sumR=28 nearestLiftableGap=81
+  rec  7 Trappe d’escalie at (96,752,16) C[8] walks=[('1E', 943, 144), ('1E', 948, 192), ('1E', 953, 143)] sumR=479 nearestLiftableGap=183
+  rec 28 Plateforme flott at (288,304,56) C[29] walks=[('1E', 1038, 64)] sumR=64 nearestLiftableGap=473
+  rec 29 Plateforme flott at (96,304,56) C[29] walks=[('1E', 1038, 64)] sumR=64 nearestLiftableGap=473
+  rec 30 Plateforme flott at (96,336,56) C[31] walks=[('1E', 1054, 192)] sumR=192 nearestLiftableGap=441
+  rec 32 Trappe d’escalie at (180,152,48) C[33] walks=[('1E', 1127, 14), ('1E', 1146, 14)] sumR=28 nearestLiftableGap=625
+  rec 33 Trappe d’escalie at (204,152,48) C[34] walks=[('1E', 1167, 14), ('1E', 1186, 14)] sumR=28 nearestLiftableGap=625
+== map 351: 8 liftables
+  rec 19 Statue poussable at (588,696,80) C[20] walks=[('1F', 550, 16), ('1F', 563, 24)] sumR=40 nearestLiftableGap=363
+== map 352: 9 liftables
+  rec  8 Statue poussable at (204,808,32) C[9] walks=[('1E', 1000, 24)] sumR=24 nearestLiftableGap=123
+== map 358: 8 liftables
+  rec  2 Jess (armurier)  at (912,280,32) C[2] walks=[('0B', 362, 64), ('0B', 384, 32)] sumR=96 nearestLiftableGap=401
+  map program B[1] walks=[('0B', 142, 72)]
+== map 359: 17 liftables
+  rec  0 Septimus (cherch at (1116,280,16) C[1] walks=[('0B', 90, 24), ('1F', 99, 48), ('0B', 105, 136), ('0B', 128, 24), ('1F', 137, 24), ('1F', 147, 128)] sumR=384 nearestLiftableGap=219
+  map program B[1] walks=[('1F', 29, 71), ('1F', 57, 128)]
+== map 360: 15 liftables
+  rec  0 Septimus (cherch at (144,872,16) C[1] walks=[('0B', 79, 160), ('0B', 97, 128), ('0B', 103, 96), ('1F', 111, 64)] sumR=448 nearestLiftableGap=209
+  map program B[1] walks=[('0B', 48, 48), ('0B', 54, 72), ('0B', 60, 114)]
+== map 361: 13 liftables
+  rec  2 Yuri (marchand d at (468,312,16) C[3] walks=[('1E', 475, 16), ('1E', 480, 48), ('1E', 485, 80), ('1E', 490, 120)] sumR=264 nearestLiftableGap=161
+  rec  3 Naomi (épouse co at (492,328,16) C[4] walks=[('1E', 503, 72), ('1E', 508, 112), ('1E', 513, 96)] sumR=280 nearestLiftableGap=177
+  rec  4 Fein (femme du g at (516,328,16) C[5] walks=[('1E', 531, 96), ('1E', 536, 64), ('1E', 542, 64), ('1E', 560, 144)] sumR=368 nearestLiftableGap=177
+  rec  5 Lutas (gros bonh at (540,312,16) C[6] walks=[('1E', 575, 16), ('1E', 580, 120), ('1E', 585, 96), ('1E', 601, 32), ('1E', 606, 96)] sumR=360 nearestLiftableGap=161
+  rec  8 Kisha (petite sœ at (540,232,16) C[9] walks=[('1E', 623, 32), ('1F', 628, 96), ('1F', 642, 144)] sumR=272 nearestLiftableGap=81
+  rec 10 Ronan (prêtre)   at (324,312,16) C[11] walks=[('1E', 655, 96), ('1E', 660, 144), ('1E', 665, 16), ('1E', 681, 32), ('1E', 686, 144)] sumR=432 nearestLiftableGap=161
+== map 362: 1 liftables
+  rec  4 Olen (mineur)    at (204,120,32) C[4] walks=[('0B', 549, 16), ('0B', 594, 72)] sumR=88 nearestLiftableGap=171
+  rec  6 ◆Muruta (griffes at (204,40,16) C[6] walks=[('0B', 656, 32)] sumR=32 nearestLiftableGap=171
+  rec  7 ◆Muruta (griffes at (228,40,16) C[7] walks=[('0B', 674, 32)] sumR=32 nearestLiftableGap=147
+  rec  8 ◆Muruta (griffes at (252,40,16) C[8] walks=[('0B', 694, 32)] sumR=32 nearestLiftableGap=123
+  rec  9 ◆Muruta (griffes at (276,40,16) C[9] walks=[('0B', 712, 8)] sumR=8 nearestLiftableGap=99
+  map program B[3] walks=[('0B', 149, 48)]
+== map 365: 8 liftables
+  rec  0 Jess (armurier)  at (108,168,16) C[1] walks=[('0B', 268, 24), ('0B', 279, 24), ('0B', 327, 36), ('0B', 333, 96)] sumR=180 nearestLiftableGap=209
+  map program B[1] walks=[('0B', 92, 64), ('0B', 98, 72), ('0B', 107, 48)]
+== map 370: 15 liftables
+== map 372: 8 liftables
+  rec  0 Jess (armurier)  at (204,136,16) C[1] walks=[('0B', 216, 24), ('0B', 225, 48), ('0B', 244, 36), ('0B', 250, 80), ('0B', 256, 36), ('0B', 262, 16)] sumR=240 nearestLiftableGap=241
+  map program B[1] walks=[('0B', 50, 32)]
+== map 373: 17 liftables
+== map 374: 8 liftables
+== map 375: 6 liftables
+== map 376: 23 liftables
+== map 377: 11 liftables
+== map 380: 4 liftables
+== map 383: 17 liftables
+  rec 16 ◆Muruta (griffes at (444,392,32) C[17] walks=[('1E', 1216, 56)] sumR=56 nearestLiftableGap=99
+  rec 18 ◆Muruta (griffes at (660,392,32) C[19] walks=[('1E', 1253, 48), ('1E', 1258, 240), ('1E', 1263, 64)] sumR=352 nearestLiftableGap=209
+  rec 19 ◆Muruta (griffes at (660,392,32) C[20] walks=[('1E', 1301, 48), ('1E', 1306, 240), ('1E', 1311, 32)] sumR=320 nearestLiftableGap=209
+  rec 20 ◆Muruta (griffes at (660,392,32) C[21] walks=[('1E', 1349, 48), ('1E', 1354, 240)] sumR=288 nearestLiftableGap=209
+  rec 21 ◆Muruta (griffes at (660,392,32) C[22] walks=[('1E', 1393, 48), ('1E', 1398, 96), ('1E', 1403, 64)] sumR=208 nearestLiftableGap=209
+  rec 22 ◆Muruta (griffes at (660,392,32) C[23] walks=[('1E', 1441, 48), ('1E', 1446, 192)] sumR=240 nearestLiftableGap=209
+  rec 23 ◆Muruta (griffes at (660,392,32) C[24] walks=[('1E', 1485, 48), ('1E', 1490, 96), ('1E', 1495, 32)] sumR=176 nearestLiftableGap=209
+  rec 24 ◆Muruta (griffes at (660,392,32) C[25] walks=[('1E', 1533, 48), ('1E', 1538, 144)] sumR=192 nearestLiftableGap=209
+  rec 25 ◆Muruta (griffes at (660,392,32) C[26] walks=[('1E', 1577, 144)] sumR=144 nearestLiftableGap=209
+  rec 61 ◆Muruta (arc) Ni at (348,216,32) C[62] walks=[('1F', 1661, 168)] sumR=168 nearestLiftableGap=49
+  map program B[2] walks=[('1E', 404, 16)]
+  map program B[4] walks=[('1E', 502, 112)]
+== map 386: 12 liftables
+  rec 11 ◆Muruta (arc) Ni at (756,456,32) C[12] walks=[('1E', 677, 24), ('1E', 684, 16), ('1E', 711, 16), ('1E', 740, 24), ('1E', 747, 24), ('1E', 774, 24)] sumR=128 nearestLiftableGap=81
+  rec 12 ◆Muruta (arc) Ni at (708,504,32) C[13] walks=[('1E', 842, 24), ('1E', 847, 16), ('1E', 854, 16), ('1E', 881, 16), ('1E', 910, 16), ('1E', 915, 24), ('1E', 922, 24), ('1E', 949, 24)] sumR=160 nearestLiftableGap=113
+  map program B[2] walks=[('1E', 252, 64)]
+  map program B[3] walks=[('1E', 426, 48)]
+  map program B[4] walks=[('1E', 566, 48)]
+== map 387: 23 liftables
+== map 390: 12 liftables
+  map program B[1] walks=[('1F', 496, 80), ('1F', 507, 32), ('1E', 540, 80)]
+  map program B[2] walks=[('1E', 638, 80), ('1E', 648, 48), ('1E', 658, 80), ('1E', 668, 32)]
+== map 392: 12 liftables
+  map program B[1] walks=[('1F', 68, 48)]
+== map 399: 2 liftables
+  map program B[1] walks=[('1E', 94, 48), ('1E', 211, 32), ('1E', 226, 156)]
+== map 400: 8 liftables
+== map 404: 2 liftables
+== map 409: 5 liftables
+  rec 36 Flamme           at (996,136,32) C[36] walks=[('1F', 1778, 999)] sumR=999 nearestLiftableGap=593
+  rec 37 Flamme           at (900,232,32) C[36] walks=[('1F', 1778, 999)] sumR=999 nearestLiftableGap=497
+  rec 38 Flamme           at (1092,232,32) C[36] walks=[('1F', 1778, 999)] sumR=999 nearestLiftableGap=497
+== map 410: 16 liftables
+  rec 73 Flotteur d’eau / at (84,600,16) C[73] walks=[('1F', 1488, 8), ('1F', 1496, 8)] sumR=16 nearestLiftableGap=747
+  rec 74 Flotteur d’eau / at (180,672,16) C[73] walks=[('1F', 1488, 8), ('1F', 1496, 8)] sumR=16 nearestLiftableGap=651
+  rec 75 Flotteur d’eau / at (108,696,16) C[73] walks=[('1F', 1488, 8), ('1F', 1496, 8)] sumR=16 nearestLiftableGap=723
+== map 411: 3 liftables
+  rec 18 Plateforme flott at (204,648,32) C[18] walks=[('0B', 2286, 130), ('0B', 2292, 96), ('0B', 2298, 130), ('0B', 2304, 96)] sumR=452 nearestLiftableGap=963
+  rec 19 Plateforme flott at (228,744,24) C[19] walks=[('0B', 2314, 112), ('0B', 2320, 120), ('0B', 2326, 112), ('0B', 2332, 120)] sumR=464 nearestLiftableGap=939
+  rec 36 ◆Homme-lézard (é at (1044,648,0) C[36] walks=[('1E', 2530, 64)] sumR=64 nearestLiftableGap=123
+  rec 37 ◆Homme-lézard (p at (1020,632,0) C[37] walks=[('1E', 2564, 48), ('1E', 2571, 24)] sumR=72 nearestLiftableGap=147
+  rec 38 ◆Homme-lézard (p at (1068,632,0) C[38] walks=[('1E', 2606, 48), ('1E', 2613, 24)] sumR=72 nearestLiftableGap=99
+  rec 39 ◆Homme-lézard (é at (996,616,0) C[39] walks=[('1E', 2648, 32), ('1E', 2655, 48)] sumR=80 nearestLiftableGap=171
+  rec 40 ◆Homme-lézard (é at (1092,616,0) C[40] walks=[('1E', 2694, 32), ('1E', 2701, 48)] sumR=80 nearestLiftableGap=81
+  rec 41 ◆Homme-lézard (é at (1044,616,0) C[41] walks=[('1E', 2740, 32)] sumR=32 nearestLiftableGap=123
+  rec 42 ◆Homme-lézard (é at (972,600,0) C[42] walks=[('1E', 2782, 16), ('1E', 2789, 72)] sumR=88 nearestLiftableGap=195
+  rec 43 ◆Homme-lézard (p at (1116,600,0) C[43] walks=[('1E', 2832, 16), ('1E', 2839, 72)] sumR=88 nearestLiftableGap=65
+  rec 44 ◆Homme-lézard (p at (1020,600,0) C[44] walks=[('1E', 2886, 16), ('1E', 2893, 24)] sumR=40 nearestLiftableGap=147
+  rec 45 ◆Homme-lézard (é at (1068,600,0) C[45] walks=[('1E', 2940, 16), ('1E', 2947, 24)] sumR=40 nearestLiftableGap=99
+== map 421: 3 liftables
+  rec  8 Mini-Nilude (D12 at (156,704,64) C[8] walks=[('1F', 1504, 48)] sumR=48 nearestLiftableGap=795
+  rec  9 Mini-Nilude (D12 at (228,704,64) C[8] walks=[('1F', 1504, 48)] sumR=48 nearestLiftableGap=723
+  rec 10 Mini-Nilude (D12 at (156,800,64) C[8] walks=[('1F', 1504, 48)] sumR=48 nearestLiftableGap=795
+  rec 11 Mini-Nilude (D12 at (228,800,64) C[8] walks=[('1F', 1504, 48)] sumR=48 nearestLiftableGap=723
+  rec 12 Mini-Nilude (D12 at (420,688,64) C[8] walks=[('1F', 1504, 48)] sumR=48 nearestLiftableGap=531
+  rec 14 Mini-Nilude (D12 at (1056,672,16) C[14] walks=[('1F', 1592, 48)] sumR=48 nearestLiftableGap=457
+  rec 15 Mini-Nilude (D12 at (1080,752,16) C[14] walks=[('1F', 1592, 48)] sumR=48 nearestLiftableGap=537
+  rec 16 Mini-Nilude (D12 at (1080,672,16) C[14] walks=[('1F', 1592, 48)] sumR=48 nearestLiftableGap=457
+  rec 17 Mini-Nilude (D12 at (1080,848,16) C[17] walks=[('1F', 1640, 48)] sumR=48 nearestLiftableGap=633
+  rec 18 Mini-Nilude (D12 at (1008,896,16) C[14] walks=[('1F', 1592, 48)] sumR=48 nearestLiftableGap=681
+  map program B[2] walks=[('1F', 584, 48)]
+== map 423: 5 liftables
+  rec  1 ◆Mimming (faux)  at (1116,688,64) C[1] walks=[('1F', 339, 120), ('1F', 637, 12), ('1F', 643, 48), ('1F', 659, 12), ('1F', 665, 80)] sumR=272 nearestLiftableGap=233
+  rec 11 Plateforme flott at (996,368,48) C[11] walks=[('1E', 890, 128)] sumR=128 nearestLiftableGap=57
+  rec 25 Mini-Nilude (D12 at (324,480,32) C[25] walks=[('1F', 997, 48), ('1F', 1017, 48)] sumR=96 nearestLiftableGap=531
+  rec 26 Mini-Nilude (D12 at (420,480,32) C[26] walks=[('1F', 1068, 48), ('1F', 1088, 48)] sumR=96 nearestLiftableGap=435
+== map 424: 1 liftables
+  rec  3 Mini-Nilude (D12 at (912,448,16) C[3] walks=[('1E', 727, 24)] sumR=24 nearestLiftableGap=329
+  rec  4 Mini-Nilude (D12 at (1008,448,16) C[4] walks=[('1E', 775, 24)] sumR=24 nearestLiftableGap=329
+  rec  5 Mini-Nilude (D12 at (1104,448,16) C[5] walks=[('1E', 811, 24)] sumR=24 nearestLiftableGap=329
+  rec  6 Mini-Nilude (D12 at (768,448,16) C[6] walks=[('1E', 849, 24)] sumR=24 nearestLiftableGap=329
+  rec  8 ◆Mimming (faux)  at (708,472,16) C[8] walks=[('1F', 868, 128), ('1F', 884, 128)] sumR=256 nearestLiftableGap=353
+  rec  9 Mini-Nilude (D12 at (888,160,16) C[9] walks=[('1E', 925, 24), ('1E', 945, 24)] sumR=48 nearestLiftableGap=123
+  rec 10 Mini-Nilude (D12 at (984,160,16) C[9] walks=[('1E', 925, 24), ('1E', 945, 24)] sumR=48 nearestLiftableGap=41
+  rec 11 Mini-Nilude (D12 at (1080,160,16) C[9] walks=[('1E', 925, 24), ('1E', 945, 24)] sumR=48 nearestLiftableGap=41
+  rec 12 ◆Mimming (faux)  at (936,184,16) C[12] walks=[('1F', 986, 16), ('1F', 992, 48), ('1F', 999, 256)] sumR=320 nearestLiftableGap=75
+  rec 13 ◆Mimming (faux)  at (1032,184,16) C[13] walks=[('1F', 1015, 16), ('1F', 1021, 48), ('1F', 1028, 256)] sumR=320 nearestLiftableGap=65
+  rec 15 Mini-Nilude (D12 at (300,704,240) C[15] walks=[('1E', 1068, 36), ('1E', 1091, 36)] sumR=72 nearestLiftableGap=711
+  rec 16 Mini-Nilude (D12 at (156,848,16) C[16] walks=[('1E', 1137, 24), ('1E', 1157, 24)] sumR=48 nearestLiftableGap=855
+  rec 17 Mini-Nilude (D12 at (408,848,16) C[17] walks=[('1E', 1201, 24), ('1E', 1221, 24)] sumR=48 nearestLiftableGap=729
+  rec 21 Flamme           at (432,792,208) C[21] walks=[('1E', 1439, 16), ('1E', 1449, 60), ('1E', 1456, 64), ('1E', 1463, 120), ('1E', 1470, 16), ('1E', 1480, 96), ('1E', 1487, 64), ('1E', 1494, 144), ('1E', 1501, 16), ('1E', 1511, 64)] sumR=660 nearestLiftableGap=673
+  rec 22 ◆Mimming (faux)  at (396,776,208) C[22] walks=[('1E', 1577, 36), ('1E', 1593, 36), ('1E', 1606, 16)] sumR=88 nearestLiftableGap=657
+== map 425: 2 liftables
+  rec  4 Plateforme flott at (792,464,32) C[4] walks=[('1E', 146, 192)] sumR=192 nearestLiftableGap=111
+  rec 12 Mini-Nilude (D12 at (816,176,32) C[12] walks=[('1F', 428, 23), ('1F', 448, 23)] sumR=46 nearestLiftableGap=273
+  rec 13 Mini-Nilude (D12 at (864,160,32) C[12] walks=[('1F', 428, 23), ('1F', 448, 23)] sumR=46 nearestLiftableGap=289
+  rec 14 Mini-Nilude (D12 at (864,128,32) C[12] walks=[('1F', 428, 23), ('1F', 448, 23)] sumR=46 nearestLiftableGap=321
+  rec 15 Mini-Nilude (D12 at (912,144,32) C[12] walks=[('1F', 428, 23), ('1F', 448, 23)] sumR=46 nearestLiftableGap=305
+  rec 16 Mini-Nilude (D12 at (936,176,32) C[12] walks=[('1F', 428, 23), ('1F', 448, 23)] sumR=46 nearestLiftableGap=273
+== map 426: 6 liftables
+  rec  5 Boule de fer (gr at (96,176,80) C[5] walks=[('1E', 1426, 112)] sumR=112 nearestLiftableGap=963
+  rec  6 Boule de fer (gr at (264,192,80) C[5] walks=[('1E', 1426, 112)] sumR=112 nearestLiftableGap=795
+  rec 13 Mini-Nilude (D12 at (168,336,16) C[13] walks=[('1E', 1509, 48)] sumR=48 nearestLiftableGap=891
+  rec 14 Interrupteur pou at (108,824,16) C[14] walks=[('1E', 1580, 80)] sumR=80 nearestLiftableGap=951
+  rec 15 Interrupteur pou at (156,824,16) C[15] walks=[('1E', 1648, 80)] sumR=80 nearestLiftableGap=903
+  rec 16 Interrupteur pou at (204,824,16) C[16] walks=[('1E', 1716, 80)] sumR=80 nearestLiftableGap=855
+  rec 17 Interrupteur pou at (252,824,16) C[17] walks=[('1E', 1781, 80)] sumR=80 nearestLiftableGap=807
+  rec 18 ◆Mimming (faux)  at (168,616,16) C[18] walks=[('1E', 1831, 112), ('1E', 1852, 60)] sumR=172 nearestLiftableGap=891
+  rec 20 ◆Mimming (faux)  at (168,552,16) C[20] walks=[('1E', 1900, 16), ('1E', 1905, 112), ('1E', 1934, 96)] sumR=224 nearestLiftableGap=891
+  rec 28 ◆Mimming (faux)  at (924,192,80) C[28] walks=[('1F', 2240, 64), ('1F', 2267, 128)] sumR=192 nearestLiftableGap=135
+  map program B[2] walks=[('1F', 372, 24), ('1F', 379, 48), ('1F', 416, 24)]
+  map program B[3] walks=[('1F', 529, 48)]
+  map program B[4] walks=[('1E', 668, 32)]
+== map 429: 2 liftables
+== map 430: 2 liftables
+== map 441: 4 liftables
+  rec  3 Plateforme flott at (1080,704,40) C[5] walks=[('0B', 527, 80)] sumR=80 nearestLiftableGap=255
+  rec  6 Plateforme flott at (816,800,40) C[8] walks=[('0B', 647, 80)] sumR=80 nearestLiftableGap=25
+  rec 13 Plateforme flott at (468,816,32) C[15] walks=[('0B', 788, 36)] sumR=36 nearestLiftableGap=27
+== map 442: 6 liftables
+== map 443: 4 liftables
+== map 444: 3 liftables
+== map 445: 9 liftables
+  rec  3 Plateforme flott at (168,624,72) C[3] walks=[('1F', 245, 16), ('1F', 266, 16)] sumR=32 nearestLiftableGap=135
+== map 447: 3 liftables
+== map 448: 7 liftables
+== map 473: 1 liftables

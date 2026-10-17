@@ -1,0 +1,13 @@
+== map 115: 13 liftables
+  rec  0 Statue poussable at (84,72,16) C[2] walks=[('1E', 1218, 24), ('1E', 1235, 24)] sumR=48 nearestLiftableGap=51
+  rec  1 Statue poussable at (180,72,16) C[3] walks=[('1E', 1258, 24), ('1E', 1275, 24)] sumR=48 nearestLiftableGap=33
+  map program B[2] walks=[('1E', 201, 112)]
+  map program B[9] walks=[('1F', 1140, 48)]
+== map 116: 9 liftables
+== map 117: 2 liftables
+  rec  6 Boule de fer (pe at (1116,584,32) C[14] walks=[('1E', 946, 64), ('1E', 953, 72)] sumR=136 nearestLiftableGap=891
+  rec  8 Boule de fer (pe at (1116,744,32) C[16] walks=[('1E', 986, 64), ('1E', 993, 72)] sumR=136 nearestLiftableGap=891
+  rec 13 Boule de fer (pe at (876,648,32) C[9] walks=[('1E', 858, 64), ('1E', 865, 72)] sumR=136 nearestLiftableGap=651
+  rec 14 Boule de fer (pe at (924,760,32) C[7] walks=[('1E', 818, 64), ('1E', 825, 72)] sumR=136 nearestLiftableGap=699
+  rec 21 Déclencheur clé  at (36,56,0) C[22] walks=[('0B', 1082, 80)] sumR=80 nearestLiftableGap=33
+  map program B[1] walks=[('0B', 240, 40), ('0B', 254, 40)]

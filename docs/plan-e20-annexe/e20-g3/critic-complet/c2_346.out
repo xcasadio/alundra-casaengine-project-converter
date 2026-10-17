@@ -1,0 +1,5 @@
+== map 346 : 42 records, 1 liftable
+  rec7          coll=1 flags=0x052080 Trappe d’escalier (grande)   pos=(96,752,z16) box X[72,120) Y[736,768) Z[16,48)  gap=12
+  rec10         coll=1 flags=0x0061C1 Mur à boule de fer (112) – a pos=(84,824,z32) box X[72,96) Y[816,832) Z[32,64)  gap=36
+  rec11         coll=1 flags=0x0061C1 Mur à boule de fer (112) – a pos=(108,824,z32) box X[96,120) Y[816,832) Z[32,64)  gap=36
+  rec25  LIFT k1 coll=1 flags=0x3323E4 Cruche générique             pos=(300,792,z176) box X[290,311) Y[785,800) Z[176,192)  gap=194

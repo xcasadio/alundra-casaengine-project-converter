@@ -1,0 +1,42 @@
+maps with liftables: 242 ; records 2251
+== maps with liftables named by a world-name string "-NNN\"" in a test file
+     3 (  2 liftables) Overworld 0,2-3                                    : AlundraEntityContactArcTests.cs
+     7 (  1 liftables) Overworld 1,2-7                                    : AlundraAnimationImpulseSpawnTests.cs, AlundraSaveGameValidationTests.cs
+    24 ( 10 liftables) Lars' Crypt-24                                     : AlundraHeroLifeTests.cs, AlundraHeroRunTests.cs
+    27 ( 15 liftables) Ancient Shrine-27                                  : AlundraEventProgramRunnerTests.cs
+    28 (  1 liftables) Ancient Shrine-28                                  : AlundraEventProgramRunnerTests.cs
+    30 (  8 liftables) Ancient Shrine-30                                  : AlundraHeroLifeTests.cs, AlundraHeroRunTests.cs
+    61 (  5 liftables) Coal Mine (First Entrance)-61                      : AlundraEntityContactArcTests.cs
+    69 (  7 liftables) Coastal Cave-69                                    : AlundraFlailBounceArcTests.cs
+    80 (  7 liftables) Lizardman's Lair-80                                : AlundraHeroLifeTests.cs
+    83 ( 16 liftables) Lizardman's Lair-83                                : AlundraAbsoluteZWritesTests.cs
+   100 (  1 liftables) Giles Nightmare-100                                : AlundraSaveGameValidationTests.cs
+   103 (  4 liftables) Giles Nightmare-103                                : AlundraSaveGameValidationTests.cs
+   105 (  3 liftables) Giles Nightmare-105                                : AlundraSaveGameValidationTests.cs
+   106 (  5 liftables) Giles Nightmare-106                                : AlundraSaveGameValidationTests.cs
+   107 (  2 liftables) Giles Nightmare-107                                : AlundraSaveGameValidationTests.cs
+   108 (  2 liftables) Nestus' Dream (Boss)-108                           : AlundraSaveGameValidationTests.cs
+   113 (  2 liftables) Nestus' Dream-113                                  : AlundraSaveGameValidationTests.cs
+   115 ( 13 liftables) Tarn's Manor-115                                   : AlundraEnemyGroundTests.cs, AlundraLeverArcSupport.cs
+   116 (  9 liftables) Tarn's Manor-116                                   : AlundraEnemyGroundTests.cs, AlundraLeverArcSupport.cs
+   117 (  2 liftables) Tarn's Manor (unused broken)-117                   : AlundraLeverArcSupport.cs
+   140 (  8 liftables) Cave-140                                           : AlundraEventProgramRunnerTests.cs
+   159 ( 10 liftables) Fairy cave (underwater)-159                        : BackdropStageDefinitionTests.cs
+   163 (  8 liftables) Inoa (inner)-163                                   : AlundraAbsoluteZWritesTests.cs, AlundraInoaAwakeningArcTests.cs
+   164 ( 17 liftables) Inoa (inner)-164                                   : AlundraEventProgramRunnerTests.cs, AlundraInoaDayOneArcTests.cs
+   165 (  8 liftables) Inoa (inner)-165                                   : AlundraEntityContactArcTests.cs, AlundraInoaDayOneArcTests.cs, AlundraPrefabArcSupportTests.cs
+   167 ( 23 liftables) Inoa (inner)-167                                   : AlundraRandomDirectionModesTests.cs
+   172 (  8 liftables) Inoa (inner)-172                                   : AlundraVisionAndCoastArcTests.cs
+   178 ( 17 liftables) Inoa (inner)-178                                   : AlundraAnimationSoundTests.cs, AlundraDay3SceneArcTests.cs, AlundraEntityContactArcTests.cs
+   179 (  8 liftables) Inoa (inner)-179                                   : AlundraAbsoluteZWritesTests.cs, AlundraAnimationImpulseSpawnTests.cs, AlundraAnimationSoundTests.cs, AlundraArcGuardAndSoundHostTests.cs, AlundraBergusJumpArcTests.cs, AlundraDay3SceneArcTests.cs, AlundraEntityContactArcTests.cs, AlundraHeroFallAndPadJumpTests.cs, AlundraHeroLifeTests.cs, AlundraHeroSlideTests.cs
+   184 (  8 liftables) Inoa (inner)-184                                   : AlundraMusicPlayerTests.cs
+   224 ( 23 liftables) Inoa (inner)-224                                   : IntroTraceHarnessTests.cs
+   260 (  8 liftables) Inoa (inner)-260                                   : AlundraControllerlessVerticalStepTests.cs
+   346 (  1 liftables) Lake Shrine (inner)-346                            : AlundraEntityContactArcTests.cs
+   390 ( 12 liftables) Ship Klark (inner)-390                             : AlundraAbsoluteZWritesTests.cs, AlundraCabinWalkTests.cs, AlundraLootRollWorldTests.Rolls.cs, AlundraMusicPlayerTests.cs, AlundraPrefabArcSupportTests.cs, AlundraSaveGameDirectorKeysTests.cs, AlundraShipArcTests.cs, AlundraWarpArrivalTests.cs
+   392 ( 12 liftables) Ship Klark (night, inner, break)-392               : AlundraAnimationSoundTests.cs, AlundraShipCorridorArcTests.cs
+   411 (  3 liftables) Lizardman's Lair (Boss)-411                        : AlundraEventProgramRunnerTests.cs
+   445 (  9 liftables) Torla (inner)-445                                  : AlundraWorldProxyEventPassTests.cs
+== loose hits only (integer literal next to a map keyword), to be read by hand
+    52 (  4 liftables) Elenes Nightmare-52                                : AlundraMapEdgeWorldTests.cs
+   128 (  5 liftables) Inoa (inner)-128                                   : AlundraLogicalZStepTests.cs, AlundraLogicalZWorldTests.cs, AlundraMapEdgeWorldTests.cs, AlundraMapStateTests.cs, AlundraMapStateWorldTests.cs

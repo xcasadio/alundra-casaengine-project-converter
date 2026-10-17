@@ -1,0 +1,36 @@
+maps with an exported tileMap: 483
+entity records total: 9741  liftable (kind!=0): 2251  liftable AND collidable: 2250
+maps with >=1 liftable: 242
+
+CHAIN MAPS (30)  map: liftable records / of which Collidable / kinds / names
+  389: 0 / 0 / kinds={} / {}
+  390: 12 / 12 / kinds={1: 12} / {'Caisse en bois générique': 12}
+  476: 0 / 0 / kinds={} / {}
+  478: 0 / 0 / kinds={} / {}
+  392: 12 / 12 / kinds={1: 12} / {'Caisse en bois générique': 12}
+  391: 0 / 0 / kinds={} / {}
+  416: 0 / 0 / kinds={} / {}
+  163: 8 / 8 / kinds={1: 8} / {'Cruche générique': 4, 'Caisse en bois générique': 4}
+  162: 0 / 0 / kinds={} / {}
+  165: 8 / 8 / kinds={1: 8} / {'Cruche générique': 2, 'Caisse en bois générique': 6}
+  164: 17 / 17 / kinds={1: 17} / {'Cruche générique': 8, 'Caisse en bois générique': 9}
+  172: 8 / 8 / kinds={1: 8} / {'Cruche générique': 2, 'Caisse en bois générique': 6}
+  169: 0 / 0 / kinds={} / {}
+  170: 8 / 8 / kinds={1: 8} / {'Cruche générique': 4, 'Caisse en bois générique': 4}
+  171: 17 / 17 / kinds={1: 17} / {'Cruche générique': 8, 'Caisse en bois générique': 9}
+  173: 6 / 6 / kinds={1: 6} / {'Cruche générique': 4, 'Cruche n°2': 2}
+  174: 23 / 23 / kinds={1: 23} / {'Caisse en bois générique': 20, 'Cruche générique': 3}
+  175: 15 / 15 / kinds={1: 15} / {'Cruche générique': 9, 'Caisse en bois générique': 6}
+  10: 0 / 0 / kinds={} / {}
+  179: 8 / 8 / kinds={1: 8} / {'Cruche générique': 2, 'Caisse en bois générique': 6}
+  176: 0 / 0 / kinds={} / {}
+  177: 8 / 8 / kinds={1: 8} / {'Cruche générique': 4, 'Caisse en bois générique': 4}
+  178: 17 / 17 / kinds={1: 17} / {'Cruche générique': 8, 'Caisse en bois générique': 9}
+  180: 6 / 6 / kinds={1: 6} / {'Cruche générique': 4, 'Cruche n°2': 2}
+  181: 23 / 23 / kinds={1: 23} / {'Caisse en bois générique': 20, 'Cruche générique': 3}
+  182: 15 / 15 / kinds={1: 15} / {'Cruche générique': 9, 'Caisse en bois générique': 6}
+  135: 0 / 0 / kinds={} / {}
+  183: 0 / 0 / kinds={} / {}
+  184: 8 / 8 / kinds={1: 8} / {'Cruche générique': 4, 'Caisse en bois générique': 4}
+  185: 0 / 0 / kinds={} / {}
+  TOTAL chain: 219 liftable records (219 collidable) on 18 maps

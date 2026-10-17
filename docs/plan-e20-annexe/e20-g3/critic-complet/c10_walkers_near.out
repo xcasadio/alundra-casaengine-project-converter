@@ -1,0 +1,116 @@
+maps scanned: 242 ; record walkers within reach of a liftable (sumR + 24 > gap): 115
+  map 23 rec11 Plateforme flott           at (912, 752, 24) C[10] sumR=784 gap=159
+  map 24 rec21 Plateforme flott           at (144, 208, 16) C[22] sumR=256 gap=39
+  map 27 rec24 Plateforme flott           at (336, 128, 24) C[6] sumR=288 gap=303
+  map 30 rec4 Boule de fer (gr           at (156, 200, 16) C[5] sumR=120 gap=97
+  map 67 rec29 Rocher roulant (           at (552, 656, 304) C[30] sumR=288 gap=41
+  map 75 rec61 Boule de fer (pe           at (924, 856, 32) C[60] sumR=64 gap=75
+  map 75 rec62 Boule de fer (pe           at (996, 920, 32) C[63] sumR=64 gap=27
+  map 79 rec12 Flotteur d’eau /           at (588, 168, 32) C[12] sumR=120 gap=49
+  map 79 rec13 Flotteur d’eau /           at (708, 296, 32) C[13] sumR=120 gap=49
+  map 79 rec26 Boule de fer (gr           at (1032, 480, 320) C[26] sumR=256 gap=113
+  map 79 rec27 Boule de fer (gr           at (1176, 576, 288) C[26] sumR=256 gap=209
+  map 80 rec7 Plateforme flott           at (372, 344, 8) C[7] sumR=736 gap=561
+  map 80 rec8 Plateforme flott           at (420, 392, 40) C[8] sumR=720 gap=513
+  map 80 rec9 Plateforme flott           at (348, 712, 24) C[9] sumR=832 gap=193
+  map 81 rec67 Flamme                     at (1020, 184, 16) C[67] sumR=999 gap=411
+  map 81 rec68 Flamme                     at (1020, 248, 16) C[67] sumR=999 gap=411
+  map 81 rec69 Flamme                     at (1044, 312, 16) C[67] sumR=999 gap=435
+  map 81 rec70 Flamme                     at (1044, 392, 16) C[67] sumR=999 gap=435
+  map 82 rec36 Flamme                     at (996, 136, 32) C[36] sumR=999 gap=593
+  map 82 rec37 Flamme                     at (900, 232, 32) C[36] sumR=999 gap=497
+  map 82 rec38 Flamme                     at (1092, 232, 32) C[36] sumR=999 gap=497
+  map 84 rec40 ◆Homme-lézard (é           at (1092, 616, 0) C[40] sumR=80 gap=81
+  map 84 rec43 ◆Homme-lézard (p           at (1116, 600, 0) C[43] sumR=88 gap=65
+  map 86 rec4 Plateforme flott           at (456, 480, 72) C[5] sumR=152 gap=121
+  map 87 rec18 Plateforme flott           at (840, 304, 40) C[19] sumR=128 gap=105
+  map 87 rec19 Plateforme flott           at (984, 320, 40) C[20] sumR=112 gap=105
+  map 88 rec3 Boule de fer (gr           at (216, 752, 32) C[4] sumR=288 gap=89
+  map 88 rec4 Boule de fer (gr           at (72, 752, 32) C[5] sumR=288 gap=89
+  map 88 rec5 Boule de fer (gr           at (72, 832, 32) C[6] sumR=352 gap=15
+  map 88 rec6 Boule de fer (gr           at (72, 896, 32) C[7] sumR=288 gap=15
+  map 88 rec7 Boule de fer (gr           at (216, 864, 32) C[8] sumR=400 gap=87
+  map 92 rec47 Plateforme flott           at (960, 304, 72) C[48] sumR=192 gap=121
+  map 94 rec10 Boule de fer (gr           at (108, 656, 32) C[21] sumR=256 gap=27
+  map 94 rec14 Boule de fer (gr           at (108, 496, 32) C[22] sumR=256 gap=73
+  map 94 rec20 Boule de fer (gr           at (108, 336, 32) C[21] sumR=256 gap=105
+  map 94 rec21 Boule de fer (gr           at (108, 176, 32) C[22] sumR=256 gap=27
+  map 115 rec0 Statue poussable           at (84, 72, 16) C[2] sumR=48 gap=51
+  map 115 rec1 Statue poussable           at (180, 72, 16) C[3] sumR=48 gap=33
+  map 117 rec21 Déclencheur clé            at (36, 56, 0) C[22] sumR=80 gap=33
+  map 124 rec12 Boule de fer (gr           at (264, 528, 96) C[13] sumR=144 gap=87
+  map 128 rec24 Boule de fer (pe           at (108, 792, 48) C[25] sumR=200 gap=147
+  map 128 rec25 Boule de fer (pe           at (420, 792, 48) C[26] sumR=200 gap=113
+  map 140 rec36 Plateforme flott           at (396, 416, 48) C[36] sumR=416 gap=49
+  map 140 rec37 Plateforme flott           at (312, 336, 48) C[37] sumR=416 gap=3
+  map 143 rec9 Bloc transparent           at (564, 552, 32) C[9] sumR=240 gap=257
+  map 147 rec0 Maître des clés            at (132, 136, 32) C[1] sumR=160 gap=51
+  map 148 rec3 Boule de fer (gr           at (912, 736, 48) C[4] sumR=288 gap=41
+  map 148 rec4 Boule de fer (gr           at (672, 736, 48) C[5] sumR=288 gap=207
+  map 148 rec5 Boule de fer (gr           at (792, 848, 48) C[6] sumR=256 gap=87
+  map 148 rec17 Boule de fer (gr           at (384, 592, 80) C[18] sumR=384 gap=255
+  map 148 rec26 Maître des clés            at (588, 808, 80) C[27] sumR=288 gap=291
+  map 149 rec13 Plateforme flott           at (528, 544, 120) C[14] sumR=256 gap=183
+  map 151 rec1 Boule de fer (gr           at (672, 448, 80) C[2] sumR=240 gap=255
+  map 151 rec3 Boule de fer (gr           at (672, 512, 80) C[2] sumR=240 gap=255
+  map 151 rec5 Boule de fer (gr           at (672, 576, 80) C[2] sumR=240 gap=255
+  map 151 rec26 Boule de fer (gr           at (480, 656, 80) C[27] sumR=240 gap=63
+  map 151 rec27 Boule de fer (gr           at (576, 800, 80) C[27] sumR=240 gap=159
+  map 154 rec7 ◆Muruta (griffes           at (84, 600, 64) C[8] sumR=816 gap=3
+  map 154 rec11 ◆Muruta (griffes           at (132, 600, 64) C[12] sumR=888 gap=1
+  map 154 rec12 ◆Muruta (griffes           at (180, 728, 64) C[13] sumR=624 gap=97
+  map 154 rec13 ◆Muruta (griffes           at (84, 728, 64) C[14] sumR=732 gap=97
+  map 165 rec3 Nestus (frère ca           at (108, 424, 0) C[4] sumR=208 gap=225
+  map 165 rec5 Bloc transparent           at (132, 424, 0) C[1] sumR=294 gap=225
+  map 178 rec15 Septimus (cherch           at (972, 344, 16) C[6] sumR=254 gap=75
+  map 197 rec4 Fein (femme du g           at (1092, 144, 0) C[5] sumR=424 gap=243
+  map 217 rec1 Meia                       at (924, 136, 32) C[2] sumR=432 gap=177
+  map 220 rec0 Jess (armurier)            at (204, 136, 16) C[1] sumR=336 gap=241
+  map 221 rec2 Septimus (cherch           at (1116, 280, 16) C[1] sumR=416 gap=219
+  map 229 rec4 Bloc transparent           at (156, 696, 64) C[1] sumR=96 gap=75
+  map 240 rec3 Septimus (cherch           at (192, 744, 16) C[4] sumR=64 gap=65
+  map 253 rec0 Jess (armurier)            at (204, 136, 16) C[1] sumR=240 gap=241
+  map 290 rec0 Meia                       at (876, 328, 32) C[1] sumR=432 gap=353
+  map 292 rec0 Meade (père des            at (300, 200, 16) C[1] sumR=128 gap=147
+  map 292 rec10 Septimus (cherch           at (852, 168, 32) C[11] sumR=504 gap=81
+  map 295 rec1 Bergus (frère aî           at (324, 280, 16) C[2] sumR=112 gap=129
+  map 295 rec2 Rumi (mère des j           at (324, 168, 16) C[3] sumR=312 gap=75
+  map 343 rec21 Plateforme flott           at (240, 624, 64) C[22] sumR=240 gap=39
+  map 343 rec22 Plateforme flott           at (96, 624, 64) C[23] sumR=240 gap=183
+  map 343 rec23 Plateforme flott           at (96, 720, 64) C[22] sumR=240 gap=183
+  map 343 rec24 Plateforme flott           at (240, 720, 64) C[23] sumR=240 gap=89
+  map 346 rec7 Trappe d’escalie           at (96, 752, 16) C[8] sumR=479 gap=183
+  map 359 rec0 Septimus (cherch           at (1116, 280, 16) C[1] sumR=384 gap=219
+  map 360 rec0 Septimus (cherch           at (144, 872, 16) C[1] sumR=448 gap=209
+  map 361 rec2 Yuri (marchand d           at (468, 312, 16) C[3] sumR=264 gap=161
+  map 361 rec3 Naomi (épouse co           at (492, 328, 16) C[4] sumR=280 gap=177
+  map 361 rec4 Fein (femme du g           at (516, 328, 16) C[5] sumR=368 gap=177
+  map 361 rec5 Lutas (gros bonh           at (540, 312, 16) C[6] sumR=360 gap=161
+  map 361 rec8 Kisha (petite sœ           at (540, 232, 16) C[9] sumR=272 gap=81
+  map 361 rec10 Ronan (prêtre)             at (324, 312, 16) C[11] sumR=432 gap=161
+  map 372 rec0 Jess (armurier)            at (204, 136, 16) C[1] sumR=240 gap=241
+  map 383 rec18 ◆Muruta (griffes           at (660, 392, 32) C[19] sumR=352 gap=209
+  map 383 rec19 ◆Muruta (griffes           at (660, 392, 32) C[20] sumR=320 gap=209
+  map 383 rec20 ◆Muruta (griffes           at (660, 392, 32) C[21] sumR=288 gap=209
+  map 383 rec21 ◆Muruta (griffes           at (660, 392, 32) C[22] sumR=208 gap=209
+  map 383 rec22 ◆Muruta (griffes           at (660, 392, 32) C[23] sumR=240 gap=209
+  map 383 rec24 ◆Muruta (griffes           at (660, 392, 32) C[25] sumR=192 gap=209
+  map 383 rec61 ◆Muruta (arc) Ni           at (348, 216, 32) C[62] sumR=168 gap=49
+  map 386 rec11 ◆Muruta (arc) Ni           at (756, 456, 32) C[12] sumR=128 gap=81
+  map 386 rec12 ◆Muruta (arc) Ni           at (708, 504, 32) C[13] sumR=160 gap=113
+  map 409 rec36 Flamme                     at (996, 136, 32) C[36] sumR=999 gap=593
+  map 409 rec37 Flamme                     at (900, 232, 32) C[36] sumR=999 gap=497
+  map 409 rec38 Flamme                     at (1092, 232, 32) C[36] sumR=999 gap=497
+  map 411 rec40 ◆Homme-lézard (é           at (1092, 616, 0) C[40] sumR=80 gap=81
+  map 411 rec43 ◆Homme-lézard (p           at (1116, 600, 0) C[43] sumR=88 gap=65
+  map 423 rec1 ◆Mimming (faux)            at (1116, 688, 64) C[1] sumR=272 gap=233
+  map 423 rec11 Plateforme flott           at (996, 368, 48) C[11] sumR=128 gap=57
+  map 424 rec10 Mini-Nilude (D12           at (984, 160, 16) C[9] sumR=48 gap=41
+  map 424 rec11 Mini-Nilude (D12           at (1080, 160, 16) C[9] sumR=48 gap=41
+  map 424 rec12 ◆Mimming (faux)            at (936, 184, 16) C[12] sumR=320 gap=75
+  map 424 rec13 ◆Mimming (faux)            at (1032, 184, 16) C[13] sumR=320 gap=65
+  map 424 rec21 Flamme                     at (432, 792, 208) C[21] sumR=660 gap=673
+  map 425 rec4 Plateforme flott           at (792, 464, 32) C[4] sumR=192 gap=111
+  map 426 rec28 ◆Mimming (faux)            at (924, 192, 80) C[28] sumR=192 gap=135
+  map 441 rec6 Plateforme flott           at (816, 800, 40) C[8] sumR=80 gap=25
+  map 441 rec13 Plateforme flott           at (468, 816, 32) C[15] sumR=36 gap=27

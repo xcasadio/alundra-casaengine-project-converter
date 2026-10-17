@@ -1,0 +1,38 @@
+== map 390: Codes=808
+ -- slot A[2] @428..440
+    @433: 0x2E destroy [128]
+ -- slot A[3] @440..452
+    @445: 0x2E destroy [128]
+ -- slot B[1] @452..552
+    @492: 0x5B walkanim5B [129, 1, 67]
+    @496: 0x1F walk1F d=80px
+    @499: 0x5B walkanim5B [2, 6, 67]
+    @503: 0x5B walkanim5B [129, 1, 64]
+    @507: 0x1F walk1F d=32px
+    @510: 0x5B walkanim5B [129, 0, 65]
+    @518: 0x5B walkanim5B [2, 6, 67]
+    @534: 0x43 logic= [2]
+    @536: 0x5B walkanim5B [2, 6, 65]
+    @540: 0x1E walk1E d=80px
+    @543: 0x42 logic=hero []
+    @545: 0x2E destroy [2]
+ -- slot B[2] @552..712
+    @634: 0x5B walkanim5B [129, 1, 65]
+    @638: 0x1E walk1E d=80px
+    @644: 0x5B walkanim5B [129, 1, 66]
+    @648: 0x1E walk1E d=48px
+    @654: 0x5B walkanim5B [129, 1, 65]
+    @658: 0x1E walk1E d=80px
+    @664: 0x5B walkanim5B [129, 1, 66]
+    @668: 0x1E walk1E d=32px
+    @672: 0x5B walkanim5B [129, 0, 64]
+    @688: 0x53 warp [220, 1, 0, 0, 3, 4, 73]
+    @698: 0x53 warp [156, 1, 19, 57, 3, 4, 73]
+ -- slot F[1] @752..772
+    @757: 0x27 face []
+    @765: 0x27 face []
+ -- slot F[2] @772..780
+    @772: 0x27 face []
+ -- slot F[100] @788..808
+    @793: 0x27 face []
+    @801: 0x27 face []

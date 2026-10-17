@@ -1,0 +1,83 @@
+liftable records: 2251
+  script-only (0x40 clear)   73
+  spawned at load            2178
+chain maps:
+  390 {'spawned at load': 12}
+  392 {'spawned at load': 12}
+  163 {'spawned at load': 8}
+  165 {'spawned at load': 8}
+  164 {'spawned at load': 17}
+  172 {'spawned at load': 8}
+  170 {'spawned at load': 8}
+  171 {'spawned at load': 17}
+  173 {'spawned at load': 6}
+  174 {'spawned at load': 23}
+  175 {'spawned at load': 15}
+  179 {'spawned at load': 8}
+  177 {'spawned at load': 8}
+  178 {'spawned at load': 17}
+  180 {'spawned at load': 6}
+  181 {'spawned at load': 23}
+  182 {'spawned at load': 15}
+  184 {'spawned at load': 8}
+script-only liftables (first 60):
+  map 3 rec12 Pierre très lourde SpriteDirection=0
+  map 22 rec34 Pierre générique SpriteDirection=128
+  map 27 rec45 Objet eau (transportable) SpriteDirection=128
+  map 27 rec46 Objet soleil (transportable) SpriteDirection=128
+  map 27 rec47 Objet lune (transportable) SpriteDirection=128
+  map 27 rec48 Objet étoile (transportable) SpriteDirection=128
+  map 28 rec6 Tonneau générique SpriteDirection=128
+  map 30 rec14 Tonneau générique SpriteDirection=128
+  map 30 rec16 Tonneau générique SpriteDirection=128
+  map 32 rec8 Tonneau générique SpriteDirection=128
+  map 33 rec19 Cruche générique SpriteDirection=128
+  map 33 rec20 Cruche générique SpriteDirection=128
+  map 38 rec12 Tonneau générique SpriteDirection=128
+  map 43 rec6 Tonneau générique SpriteDirection=128
+  map 43 rec9 Tonneau générique SpriteDirection=128
+  map 52 rec38 Pierre générique SpriteDirection=128
+  map 52 rec39 Pierre générique SpriteDirection=128
+  map 52 rec40 Pierre générique SpriteDirection=128
+  map 52 rec41 Pierre générique SpriteDirection=128
+  map 70 rec15 Tronc (transportable), petite boule de fer SpriteDirection=128
+  map 70 rec16 Tronc (transportable), petite boule de fer SpriteDirection=128
+  map 77 rec35 Caisse en bois générique SpriteDirection=128
+  map 81 rec0 Pierre générique SpriteDirection=128
+  map 83 rec77 Cruche générique SpriteDirection=128
+  map 83 rec78 Cruche générique SpriteDirection=128
+  map 83 rec79 Cruche générique SpriteDirection=128
+  map 83 rec80 Cruche générique SpriteDirection=128
+  map 83 rec81 Cruche générique SpriteDirection=128
+  map 87 rec54 Torche SpriteDirection=128
+  map 87 rec55 Torche SpriteDirection=128
+  map 87 rec56 Torche SpriteDirection=128
+  map 89 rec1 Cruche générique SpriteDirection=128
+  map 90 rec4 Torche SpriteDirection=128
+  map 90 rec11 Tonneau générique SpriteDirection=128
+  map 92 rec68 Torche SpriteDirection=128
+  map 94 rec16 Torche SpriteDirection=128
+  map 94 rec17 Torche SpriteDirection=128
+  map 94 rec18 Torche SpriteDirection=128
+  map 94 rec19 Torche SpriteDirection=128
+  map 100 rec8 Cruche générique SpriteDirection=128
+  map 103 rec5 Cruche générique SpriteDirection=128
+  map 103 rec6 Cruche générique SpriteDirection=128
+  map 103 rec22 Bloc de glace transportable SpriteDirection=128
+  map 108 rec4 Cruche générique SpriteDirection=128
+  map 140 rec29 Tronc (transportable), petite boule de fer SpriteDirection=128
+  map 151 rec11 Tonneau générique SpriteDirection=128
+  map 151 rec14 Tonneau générique SpriteDirection=128
+  map 307 rec9 Pierre générique SpriteDirection=128
+  map 339 rec3 Tonneau générique SpriteDirection=128
+  map 343 rec45 Cruche générique SpriteDirection=128
+  map 346 rec25 Cruche générique SpriteDirection=128
+  map 362 rec5 Bombe SpriteDirection=1
+  map 386 rec26 Cruche générique SpriteDirection=128
+  map 386 rec27 Cruche générique SpriteDirection=128
+  map 386 rec28 Cruche générique SpriteDirection=128
+  map 386 rec29 Cruche générique SpriteDirection=128
+  map 386 rec30 Cruche générique SpriteDirection=128
+  map 386 rec31 Cruche générique SpriteDirection=128
+  map 410 rec77 Cruche générique SpriteDirection=128
+  map 410 rec78 Cruche générique SpriteDirection=128

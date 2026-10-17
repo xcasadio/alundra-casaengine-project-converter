@@ -1,0 +1,8 @@
+WEST start (600, y), floor, 12 crates: y -> support at tick 1, rec5 landings k/12 [tj], other crates stood on, ended past the column k/12
+  y 294.5000000 : start support None ; on rec5  0/12 [] ; other supports [] ; past  0/12
+  y 294.9999847 : start support None ; on rec5  0/12 [] ; other supports [] ; past  0/12
+  y 295.0000000 : start support None ; on rec5 12/12 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] ; other supports [] ; past 12/12
+  y 296.0000000 : start support None ; on rec5 12/12 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] ; other supports [] ; past 12/12
+  y 297.0000000 : start support None ; on rec5 12/12 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] ; other supports [] ; past 12/12
+  y 297.0000153 : start support None ; on rec5  0/12 [] ; other supports [] ; past  0/12
+  y 298.0000000 : start support None ; on rec5  0/12 [] ; other supports [] ; past  0/12

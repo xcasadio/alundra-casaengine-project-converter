@@ -1,0 +1,4 @@
+liftable-liftable overlapping pairs (ordered, both directions counted): 0
+liftable overlapped by a collidable NON-liftable record at spawn (static Z = Height*8): 2
+  map 70: rec13 'Coffre au tr\xe9sor' (996,840,64) overlaps liftable rec47 (996,840,64) progs(C)=0
+  map 429: rec24 'Plateforme flottante (pet (324,536,56) overlaps liftable rec27 (324,536,56) progs(C)=153

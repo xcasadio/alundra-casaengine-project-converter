@@ -1,0 +1,7 @@
+map 11: data-extracted [27] ; export 
+map 231: data-extracted [3] ; export 
+map 3: data-extracted [12, 14] ; export 
+map 362: data-extracted [5] ; export 
+map 4: data-extracted [1, 5, 16] ; export 
+map 7: data-extracted [5] ; export 
+total data-extracted (map-local headers only): 2244 ; export census: 2251 ; records with a non-local header: 1647

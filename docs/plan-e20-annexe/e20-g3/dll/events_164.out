@@ -1,0 +1,36 @@
+== map 164: Codes=616
+ -- slot B[1] @68..96
+    @86: 0x8B spawnRel sel=129 rec=4 [139, 129, 4, 96, 0, 16, 0, 0, 0]
+ -- slot B[2] @96..220
+    @119: 0x5A walkanim5A [128, 8]
+    @124: 0x5A walkanim5A [128, 0]
+    @148: 0x5A walkanim5A [128, 0]
+    @153: 0x5A walkanim5A [128, 8]
+    @177: 0x5A walkanim5A [128, 8]
+    @182: 0x5A walkanim5A [128, 16]
+    @206: 0x5A walkanim5A [128, 16]
+    @211: 0x5A walkanim5A [128, 24]
+ -- slot C[2] @240..448
+    @260: 0x27 face []
+    @333: 0x5B walkanim5B [129, 0, 24]
+    @337: 0x09 dir= [0]
+    @341: 0x24 waitAdj []
+    @342: 0x09 dir= [8]
+    @346: 0x24 waitAdj []
+    @364: 0x08 dir+= [24]
+    @368: 0x08 dir+= [24]
+    @386: 0x0B walk0B anim=1 r=24px
+    @408: 0x08 dir+= [8]
+    @412: 0x08 dir+= [8]
+ -- slot C[4] @456..484
+    @470: 0x27 face []
+ -- slot C[5] @484..512
+    @498: 0x27 face []
+ -- slot C[6] @512..536
+    @520: 0x27 face []
+ -- slot C[7] @536..576
+    @544: 0x27 face []
+ -- slot F[2] @580..588
+    @583: 0x2D spawnRec rec=5
+ -- slot F[4] @592..600
+    @595: 0x2D spawnRec rec=4

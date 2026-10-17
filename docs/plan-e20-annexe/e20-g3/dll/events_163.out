@@ -1,0 +1,39 @@
+== map 163: Codes=780
+ -- slot A[2] @48..56
+    @48: 0x62 setflags [128, 128, 3]
+ -- slot B[1] @60..216
+    @67: 0x2D spawnRec rec=0
+    @73: 0x64 setpos sel=129 x=960 y=152 z=36
+    @84: 0x09 dir= [0]
+    @115: 0x43 logic= [0]
+    @141: 0x09 dir= [0]
+    @143: 0x0B walk0B anim=1 r=96px
+    @151: 0x09 dir= [8]
+    @155: 0x09 dir= [16]
+    @157: 0x0B walk0B anim=1 r=16px
+    @175: 0x09 dir= [24]
+    @179: 0x09 dir= [0]
+    @183: 0x24 waitAdj []
+    @184: 0x42 logic=hero []
+    @185: 0x2E destroy [0]
+    @188: 0x09 dir= [8]
+    @190: 0x0B walk0B anim=1 r=64px
+    @196: 0x09 dir= [0]
+ -- slot B[2] @216..332
+    @261: 0x64 setpos sel=3 x=248 y=632 z=160
+ -- slot B[3] @332..448
+    @377: 0x64 setpos sel=4 x=296 y=632 z=160
+ -- slot B[4] @448..564
+    @493: 0x64 setpos sel=5 x=344 y=664 z=160
+ -- slot C[3] @568..724
+    @594: 0x27 face []
+    @598: 0x5A walkanim5A [129, 16]
+    @634: 0x27 face []
+    @638: 0x5A walkanim5A [129, 8]
+    @659: 0x27 face []
+    @663: 0x5A walkanim5A [129, 16]
+    @684: 0x27 face []
+ -- slot C[4] @724..736
+    @724: 0x62 setflags [128, 128, 3]
+ -- slot F[2] @752..760
+    @752: 0x27 face []

@@ -6529,7 +6529,7 @@ Le nom `PlatformEntity` de la DLL (et de la décompilation) est trompeur : dans 
 
 ---
 
-#### 1.24.4 E20.g1b — Soulever (l'activation) ⏳
+#### 1.24.4 E20.g1b — Soulever (l'activation) ⏳ (**à réécrire avant son exécution** : D-G-7 et la phase B sont caducs depuis D-E20-39 ; g1b vient après g3 ; voir §1.28, « Conséquences pour §1.24.4 »)
 
 **Prérequis.** g1a, g2a, g2b (ordre de D-G-1 ; si l'enveloppe maintient e0b2 pour g2, g1b passe après g1a et avant g2a, sans le lancer), E20.e0k2, le T0 commun. **À relire à l'exécution** : `MoveControllerAndPullPosition` après e0k2 et f3 à f6, l'ensemble de test d'f3a (modèle), l'état des préréglages.
 
@@ -6991,6 +6991,201 @@ au moteur ; plus de 10 tests existants bougent ; un nom refusé par `check_names
 
 **Retour arrière.** La phase B se retire seule (les deux appels) ; la phase A ne change aucun comportement.
 
+### 1.28 E20.g3 — Les soulevables redeviennent solides ⏳ (détaillée le 2026-10-18, à relire ; exécutable après g1a, g2a, g2b et la fin du chantier de restructuration)
+
+**Provenance.** Découverte en lecture seule de la nuit du 17 au 18 octobre (`docs/plan-e20-annexe/e20-g3/`) : une lecture du binaire (`bin/`),
+une lecture de la DLL et des tests (`dll/`), puis trois critiques indépendantes, une re-dérivation du binaire (`critic/`), une réconciliation
+règle par règle avec la DLL (`critic-recon/`) et une critique de complétude (`critic-complet/`) ; leurs corrections font foi sur les deux
+lectures. Aucune source de la DLL n'a changé entre `c84fd72` et `b6a2f92`.
+
+**But.** Comme l'original : les caisses et les jarres (et les autres soulevables collisionnables) arrêtent Alundra et les PNJ
+collisionnables ; le contact qui en résulte est celui que le soulèvement (g1b) lira. Fin de l'écart D-E19-28 et D-E19-46 (ADR-0021,
+ADR-0022) ; D-E20-27 et D-E20-39.
+
+**Faits (binaire, FAIT sauf mention ; `bin/report.md`, corrigé par `critic/report.md`).**
+- **Aucune règle propre aux soulevables.** Le test d'entité contre entité est `FindEntityCollisionCandidate` `0x80036F34`, appelé par le seul
+  déplacement XY `0x80037730` ; il n'écarte que le sujet lui-même, prend **le premier** collidable de la liste qui recouvre la boîte d'essai
+  (bords semi-ouverts) et ne lit aucun drapeau du candidat. La liste des collidables (`0x800384F4`, ordre des cases, slots 0 à
+  `[0x80134360]`) prend une entité si `+0x6C & 0x80` (Collidable), si l'octet d'animation `+0xB4 & 0x80` est nul et si `+0x28 == 0` (non
+  portée) ; **aucun test de statut, de genre de ramassage, de classe ni d'état du héros**. Le sujet passe la même porte (plus une exception
+  du héros pendant une transition d'écran). Le test d'entité passe **avant** le terrain ; après un refus par une entité, aucun glissement ;
+  aucune règle de sortie d'un chevauchement (enfoncé de plus d'un pas, le héros y reste). Preuves : 39 657 appels par fonction contre des
+  modèles, 0 écart, 100 % des instructions ; 526 mutants, 438 tués, les survivants classés.
+- **Le contact `héros.+0x130`** est la valeur de retour du déplacement XY (`0x80037F08`), lue au tick suivant par `PlayerTryAction`
+  (`0x8002EF08`) et `CheckEntityInteraction` (`0x8002E918`). Au sol, c'est l'entité qui a refusé le pas complet du tick ; il vaut 0 si le
+  premier pas complet est accepté, **même s'il finit exactement affleurant**, et 0 sans force (`critic/` R1, 160 sur 160). D'une pile vue du
+  sol : la caisse du bas ; debout sur une caisse : la caisse du haut voisine (bord plat en Z).
+- **La libération** (lancer) : C23 (caisse, jarre, herbe, glace, rocher tortue, pierre très lourde) et C70 (torche) effacent `0x80` ; C4
+  (pierre, tonneau, tronc, quatre objets) ne l'efface que si `+0x24 == -1` et `+0x80 == 2` ; C73 (haricots) le garde ; E2 ne le rétablit
+  jamais. Une caisse lancée ne bloque donc plus rien.
+- **Une entité détruite** reste dans la liste des collidables jusqu'à la fin de la physique du tick (le statut n'y est pas lu) : la DLL la
+  retire tout de suite (`Alundra/Physics/EntitySupport.cs:53-55`, le filtre `FlagToDestroy` de D-E19-29, dont la prémisse « comme dans le
+  binaire » est réfutée).
+- **L'octet d'animation** est lu deux fois par tick : la liste avant l'horloge (valeur du tick précédent), la porte du sujet après (valeur du
+  tick). Les animations 32 à 36 et 39 du héros ont le bit `0x80` (le héros sort de la liste pendant elles).
+- 17 en-têtes soulevables : 16 de genre 1, 1 de genre 3 (« Pierre très lourde », Gant requis) ; la bombe n'est pas collisionnable.
+
+**Faits (DLL au HEAD, `dll/report.md` et `critic-recon/report.md`).**
+- **Un seul site de production porte l'écart** : `Alundra/Physics/MovementObstacleProbe.cs:48-51` passe `EntityFlags.PickupKindMask` en
+  drapeaux écartés à `EntityCollision.FindEntityCollisionCandidate` (`Alundra/Physics/EntityCollision.cs:37-39`, `:53`). La liste
+  (`EntitySupport.BuildCollidables`, `:45-61`) garde déjà les soulevables ; l'appui sur un dessus, le plafond, le passager et le calage à
+  l'apex les comptent déjà (on saute déjà sur une caisse). Rien dans le convertisseur ni dans l'export n'encode l'écart.
+- **Règle par règle** : la porte (`IsEligibleSubject`, `EntitySupport.cs:73-76` : Collidable, `AnimFlags & 0x80`, `PlatformEntity == null`,
+  `PlatformEntity` étant le `+0x28`) et l'ordre de la liste (`_spawnedEntities` dans l'ordre des cases, `WorldProxy.cs:216-232`) sont ceux
+  du binaire ; le contact (`XCollisionEntity`, seul écrivain `Alundra/Entities/EntityScriptProxy.cs:2424-2431`, `H2Obstacle ??
+  H1Obstacle`) est le premier candidat de la liste, remis à 0 sans force (`CharacterControllerComponent.cs:443-450`), lu par le `MovePlayer`
+  du tick suivant ; l'entité passe avant le terrain et interdit le glissement (`ScriptedMotion.cs:819`). **Écarts** : le filtre
+  `FlagToDestroy` (un tick) ; `AnimFlags` écrit en fin d'image (`Alundra/Maps/Loop/FrameSyncPasses.cs:154-161`, un tick ou plus de retard ;
+  l'équivalent exact existe : `HitAnimByte`, `EntityScriptProxy.HitPass.cs:29-30`) ; la division du pas axe par axe du contrôleur
+  (`CharacterControllerComponent.cs:1170-1197`) contre la division conjointe du binaire : **en poussant en diagonale contre une caisse,
+  l'original s'arrête net, le portage glisse le long** (l'écart déjà accepté par O-E19-28 et D-E19-58, que g3 rend visible sur 2 250
+  placements) ; `PlatformEntity` n'est encore jamais écrit (g1a le pose par `PutInHands`).
+- **Portée** : 2 251 soulevables dans l'export, 2 250 collisionnables, dont 248 placements hors de la chaîne qui ne sont pas des C23 (C4 :
+  76 tonneaux, 56 troncs, 27 pierres, 32 objets ; C70 : 57 torches), soulevables seulement avec g2c ; les 7 pierres très lourdes de la carte 4
+  coupent des chemins jusqu'au Gant, comme l'original. 73 soulevables ne naissent qu'au script. Sur la chaîne : 18 cartes, 219 soulevables,
+  tous nés au chargement ; d'après un modèle grossier par cases (`critic-complet/`, INFÉRENCE), **seule la 392 exige de franchir une caisse**
+  (E20.g4) ; sur 173/180, 174/181, 175/182, de petites poches vides se ferment.
+- **Tests** : rouge certain, `AlundraMovementObstacleProbeTests.TRLift_ACrateOnThePathDoesNotBlock_AnIronBallWallDoes` ; verts mais à
+  retoucher : `TR1_SkippedCandidateFlags_…` (l'API du masque), la ligne redondante de `AlundraEntityContactArcTests.TH4_…` (`:485`), le
+  miroir de la sonde dans `AlundraDialogueOpcodesProductionTests` (`:383-388`), la doc des arcs A5/A5r (`AlundraShipCorridorArcTests.cs:22-23`),
+  la doc de `AlundraMovementObstacleProbeTests` ; inchangés par lecture (les arrivées de la chaîne ne recouvrent aucun soulevable, les arcs
+  A1c, A5, A5r, A8, A9, A10, A11, A12, A14, A18, TH4, UJ-7, S6c ne croisent aucune empreinte ; A115 et G116 tranchés sans exécution) ;
+  **à mesurer** : les marches des PNJ d'A10, A11, A14, A18 et H115 (écarts statiques de 65 px ou plus).
+
+**Défauts réversibles retenus en mode autonome (à confirmer par l'auteur, §2).** Q-G3-a : **tous** les soulevables collisionnables
+deviennent solides (fidèle aux collisions ; les tonneaux, troncs, pierres, torches et objets du sanctuaire ne se soulèvent qu'avec g2c ; sur
+la carte 4, les grosses pierres bloquent jusqu'au Gant comme l'original). Q-G3-b : g3 et g1b fusionnés **ensemble** (entre les deux, les
+caisses seraient des murs que l'on ne peut que sauter). Q-G3-d : la poussée en diagonale garde l'écart de D-E19-58 (le portage glisse le long
+d'une caisse). Choix de conception de la session principale (réversibles, consignés dans l'ADR) : le paramètre `skippedCandidateFlags`
+**retiré** avec ses trois usages de test (une API sans appelant) ; le filtre `FlagToDestroy` et le moment de l'octet d'animation **gardés et
+consignés** (deux écarts d'un tick, préexistants, qui ne touchent pas que les soulevables : une tranche à part, O-G3-1 et O-G3-2) ; le
+commentaire de D-E19-29 (`EntitySupport.cs:53-54`) corrigé pour dire que c'est un écart.
+
+**Prérequis** (affine la ligne 12 de l'enveloppe, qui reste READY : g3 après g1a, g2a et g2b ; g1b après g3). g1a (`PutInHands` pose
+`PlatformEntity`, `+0x28` : une caisse portée sort de la liste), g2a et g2b (une caisse lancée
+s'efface de la liste et se brise) ; la fin du chantier de restructuration et la garde des fichiers neufs (Q-R-7). g1b vient **après** g3 (le
+seul contact possible est `XCollisionEntity`, que le masque vide de tout soulevable ; D-E20-39 : pas de détecteur provisoire).
+
+**Périmètre.** `MovementObstacleProbe.cs` (la ligne 51 et sa doc `:13`, `:23-24`, `:27`), `EntityCollision.cs` (le paramètre et sa doc
+`:32-39`, `:53`), `EntitySupport.cs` (les commentaires `:36`, `:53-54`, `:68-70`), `WorldProxy.cs` (le commentaire `:2994-2995`, « recomputes the carrier once per frame », alors que `UpdateRidingEntities` le fait par tick) ; les tests ;
+l'annexe ; un ADR qui remplace D-E19-28 et D-E19-46 (ADR-0021 et ADR-0022 en partie, `Superseded`). Aucun code du moteur, du convertisseur,
+des données.
+
+**Hors périmètre.** Le soulèvement (g1b) ; le franchissement de la 392 (g4) ; le portage de la division conjointe (Q-G3-d) ; les deux écarts
+d'un tick (O-G3-1, O-G3-2) ; C4, C70, C73 (g2c) ; la chute de la caisse du dessus d'une pile (Q-G3-c, avec g4b).
+
+**Tâches.**
+- ⏳ **T0 — Annexe, oracle, sondes** (aucun commit de code) : (a) les scripts de `bin/` et `critic/` rejoués depuis une copie (avec la copie
+  de `e20-g1a/work/` en `g1a/`), sorties identiques à leurs manifestes ; (b) **sondes de la DLL sur une copie de travail où seule la ligne 51
+  change, jamais commitée** (une mesure, comme les preuves de retrait), avec les 12 enregistrements de la 392 : P-G3-1 l'arrêt du héros à
+  x = 657,000 (face est) et 615,000 (face ouest) en y = 296, le contact rec5 ; P-G3-2 le contact d'une pile vue du sol (la caisse du bas) et
+  depuis le dessus de rec5 (rec10) ; P-G3-3 le cas affleurant (pas complet accepté, contact nul ; Carré au tick suivant : épée), contre
+  `critic/out/w4_contact.txt` et `w7_return.txt` ; P-G3-4 la sortie d'un chevauchement (0,5 à 1,2 px, 1,3 à 2,0 px, 5 et 10 px) contre
+  `bin/out/a1_overlap.txt` ; P-G3-5 un PNJ collisionnable réel arrêté par une caisse, un Beannoïde (non collisionnable) qui la traverse,
+  contre `bin/out/a1_scen*` ; P-G3-6 la poussée en diagonale (l'écart Q-G3-d, mesuré) ; P-G3-7 la suite entière : la liste des tests rouges
+  avec la seule ligne changée, comparée à la liste prédite ci-dessus ; (c) les arcs « à mesurer » relancés sur la même copie (A10, A11,
+  A14, A18, H115) ; (d) la liste prédite finale des tests qui bougeront.
+- ⏳ **T1 — Le code** (tests d'abord, rouges avant la ligne) : (s1) une caisse arrête le héros (valeurs de P-G3-1), accolée au mur à boule de
+  fer (inchangé) : remplace `TRLift` ; (s2) le contact d'une pile, du sol et du dessus (P-G3-2) ; (s3) le cas affleurant (P-G3-3) ; (s4) un
+  PNJ collisionnable arrêté, un Beannoïde qui passe (P-G3-5) ; (s5) une caisse portée (posée par `PutInHands`) et une caisse lancée (`0x80`
+  effacé) ne bloquent pas, accolées à la caisse posée qui bloque ; (s6) la sortie d'un chevauchement : égale au binaire, ou l'écart mesuré en
+  P-G3-4 épinglé par un test nommé d'après lui (arrêt si l'écart dépasse un pas). Puis la ligne 51, le paramètre retiré et ses trois usages
+  réécrits (TR1 supprimé avec l'API qu'il teste, la ligne `:485` de TH4 supprimée, le miroir de `AlundraDialogueOpcodesProductionTests`
+  aligné sur la sonde), les textes corrigés.
+- ⏳ **T2 — Arcs** : la suite entière ; les arcs gardés par `ArcsWithoutEntityContact` (A1c, A5, A5r, A8, A9, A10) restent verts ; les arcs
+  de T0 (c) verts ou réécrits par dérivation (liste de T0 (d)) ; les traces de la 389 inchangées (aucun soulevable).
+- ⏳ **T3 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles). Mutants, au moins 10, tous tués : masque gardé
+  pour le genre 1 seul ; genre 3 écarté ; caisse portée gardée dans la liste ; caisse lancée gardée ; contact non nul sur un pas affleurant
+  accepté ; contact le plus proche au lieu du premier de la liste ; glissement permis après un contact d'entité ; terrain testé avant
+  l'entité ; un PNJ collisionnable qui traverse ; le Beannoïde arrêté.
+
+**Acceptation.** Les sorties de T0 (a) identiques ; P-G3-1 à P-G3-5 égales au binaire (ou l'écart P-G3-4 épinglé) ; (s1) à (s6) rouges avant
+la ligne (nommés), verts après ; suite en Release (copie neutralisée) **et** en Debug, zéro échec ; tests déplacés ⊂ liste prédite de T0 (d),
+chacun réécrit par dérivation ; traces inchangées ; `cmp` de la DLL ; moteur, convertisseur et données sans diff ; recette de l'auteur,
+après la fusion avec g1b (Q-G3-b) : une caisse et une jarre arrêtent Alundra sur la 392 et sur la 14, un villageois s'y arrête aussi.
+
+**Arrêts.** Une sonde contredit le binaire hors des écarts consignés ; un test hors de la liste prédite bouge ; une arrivée de portail de la
+chaîne recouvre un soulevable ; un besoin de toucher au moteur ; plus de 10 tests existants bougent.
+
+**Budget.** Un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** La tranche se retire par `git revert` (la ligne 51 et les tests) ; l'ADR passe en `Superseded` s'il le faut.
+
+**Conséquences pour §1.24.4 (g1b).** D-G-7 (`LiftContactEntity`, `requiredCandidateFlags`, les témoins k1 à k4 et les preuves de retrait qui
+les citent, O-G-1) est caduc depuis D-E20-39 : g1b se réduit à l'activation (le déclencheur de `PlayerTryAction` sur `XCollisionEntity`), vient
+après g3, et sera réécrite avant son exécution. Faits à y reprendre : le soulèvement exige le contact du **tick précédent** et un front de Carré
+(un Carré le tick de l'affleurement donne l'épée ; 0 sur 79 contre 78 sur 79 un tick plus tard, `critic/out/w4_contact.txt`) ; il est possible
+**depuis les états de saut** (`0x80031E98`, vers l'état `0x0B` : à z ≥ 80 c'est la caisse du haut qui se soulève, `critic/out/w5_airlift.txt`) ;
+une entité dont `+0x12C` désigne le héros se soulève sans bouton (`0x8002EE18`-`0x8002EE34`, la boucle des supports).
+
+### 1.29 E20.g4 — La barricade de la carte 392 : g4a (le saut) et g4b (soulever et lancer) ⏳ (g4a détaillée le 2026-10-18, à relire ; g4b esquissée)
+
+**Faits (binaire et données, `bin/report.md` §A3, corrigé par `critic/` R3 à R5 et `critic-complet/` Réfuté 1).**
+- La salle est (arrivée du héros, posé par B1 en (720, 216, 64)) et la salle ouest (portail 0 en (22, 23)) ne communiquent que par une porte de
+  3 rangées (colonnes 27-28, rangées 18 à 20 : x 648 à 696, y 288 à 336), fermée par une colonne de caisses en x = 636 : rec4 + rec8 (y 280),
+  **rec5 seule** (y 296, 16 px, la seule caisse basse), rec6 + rec10 (y 312), rec7 + rec11 (y 328). rec9, isolée en (576, 288), est dans la
+  salle ouest et **arrête le héros à x = 597** : les tests et la recette chargent les **12** enregistrements.
+- **Le saut** : le héros passe au-dessus de rec5 (z 80 à 91,5, sous le haut des piles, 96) si et seulement si sa position Y est dans
+  **[295,0 ; 297,0]** (2,0 px continus, bornes comprises ; mesuré à l'unité 16.16 des deux côtés dans la vraie carte, `critic/out/w1_window.txt`,
+  `w6_westedge.txt`) ; pose sur rec5 18 ticks après la Croix, z = 80. Depuis l'est, Croix avec le héros entre x = 694,4 et 657,0.
+- **Le mur nord de la porte** : en entrant par l'est avec Gauche seul depuis y0 dans [286 ; 295], le héros finit à `PosY = 295 + ((y0 − 295)
+  mod 0,5)`, dans [295 ; 295,4375] (145 départs sur 145, `critic/out/w3_door.txt`) ; en tenant Haut dans la porte, il se cale à 295,000 puis
+  glisse vers l'est. Collé à la face x = 657, Haut tenu : y = 295,0 au tick 11, puis le contact devient rec5 (`critic-recon/out/c1_oblique.txt`,
+  cas C).
+- **Le roulis du navire** : le programme B1 de la 392 sonde toutes les 16 images si une direction est tenue (`0x2F`), puis, au sol, verrouille
+  le contrôle et pousse le héros dans une direction cardinale tirée au hasard pendant quelques ticks (`critic-complet/`, `c5_392_B1.out` ;
+  A5r le mesure dans la DLL, `AlundraShipCorridorArcTests.cs:184-242`). Chaque roulis déplace Y de plus de 2 px : **seule la route qui se cale
+  au mur nord de la porte est reproductible en jeu** (INFÉRENCE tirée du code et de la mesure d'A5r ; l'oracle MIPS n'exécute pas B1).
+- **Soulever** rec5 (genre 1, sans Gant) puis la lancer ouvre le passage avec la même fenêtre ; lever la caisse du bas d'une pile fait tomber
+  celle du haut de 16 px en 8 ticks (rang 1 ordinaire) ; la caisse du haut se soulève aussi depuis le dessus de rec5, et en plein saut à z ≥ 80
+  (`critic/` R4). D'ouest en est, depuis le dessus de rec9, le héros traverse par les piles.
+- O-E20-5 est tranché par le binaire : **les deux routes existent** ; ce que le jeu « attend » n'est écrit nulle part (INFÉRENCE seulement).
+
+**Faits (DLL).** Le calage au mur nord est le même mécanisme que le binaire selon le code (boîte du héros 21 × 15 posée comme le binaire,
+coins lointains en bord semi-ouvert, table du glissement nord portée, `ScriptedMotion.cs:871-873` ; `critic-recon/` 4c), non exécuté. Les arcs
+A5 et A5r **téléportent** le héros devant le portail (`PlaceHero(540, 360, 64)`, D-E19-23) : ils ne voient pas la barricade. `ArcRun` a les
+crochets d'un pilote réactif (`OnInstruction`, `OnFrame`, `Alundra.Tests/AlundraArcSupport.cs:136`, `:140`) et réinitialise le générateur
+après le chargement (`GameRandom.Reset()`, `:255-261`) : un arc est déterministe. Aucune sauvegarde de recette n'existe sur la 392.
+
+**Défauts (à confirmer, §2).** Q-G4-a : les **deux** routes couvertes, sans code propre à la 392 (elles sortent de la règle de solidité de g3
+et du soulèvement de g1b) : g4a avec g3, g4b avec g1b. Q-G3-c (la chute de la caisse du dessus) : l'écart documenté jusqu'à E19.h2, mesuré
+en g4b.
+
+#### 1.29.1 E20.g4a — La barricade par le saut ⏳
+
+**Prérequis.** g3 (sur la même branche ; fusion avec g3 et g1b, Q-G3-b).
+
+**Périmètre.** `Alundra/SaveGames/TestSaves.cs` (un préréglage `barricade-m392` : carte 392, case (29, 13), z 4, drapeau G1641, repris de
+l'`ArcSpec` d'A5, `AlundraShipCorridorArcTests.cs:32-33` ; B1 replace le héros en (720, 216) à l'entrée ; la liste exacte des préréglages de
+`AlundraTestSavesTests` s'allonge d'un, dans l'ordre de la table) ; `docs/test-saves.md` ; un pilote réactif de test dans `Alundra.Tests/`
+(sur les crochets d'`ArcRun`) ; les arcs. Aucun code de la DLL hors du préréglage.
+
+**Tâches.**
+- ⏳ **T0** : (a) le pilote et ses règles, écrites avant les arcs : il lit l'état avant chaque image (position, sol, compte des images depuis le
+  dernier `0x11 @124` de B1), ne tient aucune direction à l'image d'un sondage `0x2F` (ou se cale au mur, où le roulis ne sort pas de la
+  fenêtre), saute quand le héros est au sol et calé ; (b) une mesure sur la DLL, après g3 : le calage au mur nord (Gauche seul depuis y0 de
+  286 à 295, la loi `295 + ((y0 − 295) mod 0,5)` ; Haut tenu, 295,000) contre `critic/out/w3_door.txt` ; un écart est un arrêt.
+- ⏳ **T1 — Arcs** (sous B1, les 12 enregistrements, à 1, 2 et 3 ticks par image) : (a1) le calage au mur nord (les valeurs de T0 (b)) ; (a2)
+  la route du saut de bout en bout : depuis l'arrivée de B1, se caler, sauter sur rec5, descendre à l'ouest, contourner rec9, atteindre le
+  portail 0 (`HasPendingArrival`, la cellule (22, 23)) ; (a3) une entrée en cardinal à y0 > 297,0 : le saut se refuse (le héros reste à
+  l'est de la colonne), accolée à (a2) ; (a4) l'arc A5 inchangé (le téléport) et sa doc corrigée ; les nouveaux arcs hors de
+  `ArcsWithoutEntityContact` (ils touchent des caisses).
+- ⏳ **T2 — Plan, verifier frais.**
+
+**Acceptation.** (a1) à (a3) verts sous B1, à 1, 2 et 3 ticks par image ; la suite verte ; recette de l'auteur avec `barricade-m392` : se caler
+contre le haut de la porte, sauter sur la caisse basse, rejoindre le portail.
+
+**Arrêts.** T0 (b) contredit le binaire ; le pilote doit lire autre chose que l'état du jeu (aucune valeur écrite par le test pendant l'arc) ;
+un besoin de toucher au moteur.
+
+#### 1.29.2 E20.g4b — La barricade en soulevant (esquisse, détaillée avec g1b) ⏳
+
+Prérequis : g1b (réécrite), g2a, g2b. Arcs sous B1 : (b1) se caler, pousser contre rec5 jusqu'au contact, Carré au tick suivant, porter,
+lancer vers l'ouest (la caisse se brise, `bin/out/a3_r3b.txt`), passer ; (b2) lever rec6 : rec10 tombe (la loi du binaire, 8 ticks, ou l'écart
+de Q-G3-c mesuré et épinglé) ; (b3) lever rec10 depuis le dessus de rec5 ; (b4) lever en plein saut à y = 298 si g1b porte le soulèvement
+depuis les états de saut ; (b5) Haut le long de la face x = 657 : y = 295, contact rec5, Carré soulève (`critic-recon/` cas C). Le mode 1 de
+`UpdatePlayerCarriedEntity` sous le verrou du roulis (5 ou 6 ticks : un 6ᵉ fait descendre l'objet de 2 px) est à mesurer.
+
 ## 2. Points ouverts
 
 | Point | Question | Où elle se tranche |
@@ -6999,7 +7194,7 @@ au moteur ; plus de 10 tests existants bougent ; un nom refusé par `check_names
 | O-E20-2 | **Tranché le 2026-10-09 (D-E20-15).** La règle exacte de l'arrondi du stick (D-E20-8). Proposition de D8 : seulement au départ et à la reprise de la course, quand clavier et croix ne donnent aucune direction et que le stick donne une diagonale, prendre l'axe dominant du stick ; à moins de ε de 45° (ε = 1/16, à régler par une mesure du stick en E20.d), garder l'axe du regard actuel | — |
 | O-E20-3 | **Tranché le 2026-10-09 (D-E20-17).** Le butin et l'objet ramassable (`0x80032968`, `0x80032B90`, `0x80032C7C`, gestionnaire C255) servent aussi aux ennemis. D9 propose une tranche dédiée avant E20.e, qui porte aussi `SpawnWarpEntity` (102 appelants, partagé avec E14) | — |
 | O-E20-4 | **Tranché le 2026-10-09 (D-E20-18).** Les gestionnaires natifs des projectiles du héros. D9 propose de partager : E20.f porte l'apparition et les gestionnaires propres au héros (vague de l'épée C61, flèches chargées C94 ; la bombe E12 en E20.h) ; ceux que des ennemis partagent peut-être (flèches E17, glace C60, feu C54) vont à E14 | — |
-| O-E20-5 | La barricade de la 392 : l'original la franchit-il en soulevant ou en grimpant ? | E20.g |
+| O-E20-5 | La barricade de la 392 : l'original la franchit-il en soulevant ou en grimpant ? **Tranché par le binaire le 2026-10-18** (`docs/plan-e20-annexe/e20-g3/`) : les deux (sauter sur la seule caisse basse dans une fenêtre de 2,0 px en Y, ou la soulever et la lancer) ; la route couverte : Q-G4-a | E20.g4 (§1.29) |
 | O-E20-6 | Une fois E18 faite, D-E20-5 tombe ; le prérequis SC8 d'E18 (PV ≥ 1 au chargement) reste à trancher | E18 |
 | O-E20-7 | **Tranché le 2026-10-09 (D-E20-11).** Ordre événements de carte / entités : le corriger dans E20.a (ordre du binaire : pad, événements de carte, entités ; mesure préalable des épingles qui bougent), ou le garder comme écart documenté | — |
 | O-E20-8 | **Tranché le 2026-10-09 (D-E20-12).** Structure du tick : boucle de ticks pilotée par le monde dans la DLL (proposition de D7), ou pas fixe de 1/50 s du moteur (migration M3, différée par l'auteur le 2026-08-26) | — |
@@ -7037,6 +7232,13 @@ au moteur ; plus de 10 tests existants bougent ; un nom refusé par `check_names
 | Q-E3 | (2026-10-18) L'effet de coupe vient de l'octet 9 de l'en-tête de carte (exporté sous le nom trompeur `BalanceLevel`, il vaut 2 sur les 483 cartes) : le lire, avec repli sur 2, ou figer l'effet 2 ? Défaut retenu : le lire | l'auteur |
 | Q-E4 | (2026-10-18) 100 cases coupables n'ont pas de buisson visible (une douzaine de cartes) : garder le binaire (la coupe y est invisible, mais l'effet, l'objet et le son ont lieu) ? Défaut retenu : oui | l'auteur |
 | Q-E5 | (2026-10-18) L'herbe repousse à chaque entrée dans la carte (le binaire ne garde rien) : est-ce voulu ? Défaut retenu : oui | l'auteur |
+| Q-G3-a | (2026-10-18) Après E20.g3, les tonneaux, troncs, pierres, torches et les quatre objets du sanctuaire (248 placements, hors de l'histoire actuelle) arrêtent Alundra comme des caisses, mais ne se soulèvent qu'avec g2c ; sur la carte 4, les grosses pierres bloquent des chemins jusqu'au Gant, comme l'original. (A, défaut retenu) tous solides, sans code de plus ; (B) les laisser traversables jusqu'à g2c (un nouvel écart, des tests écrits deux fois) ; (C) faire g2c avant g3 (un T0 qui décode C4 d'abord) | l'auteur |
+| Q-G3-b | (2026-10-18) Entre g3 et g1b, les caisses seraient des murs que l'on ne peut que sauter (sur le navire, il faudrait se caler contre le haut de la porte et sauter sur la seule caisse basse, malgré le roulis). (A, défaut retenu) g3 et g1b fusionnés ensemble ; (B) fusionner g3 d'abord (la recette ne montre que le blocage) | l'auteur |
+| Q-G3-c | (2026-10-18) Quand on soulève la caisse du bas d'une pile, l'original fait tomber celle du dessus de 16 px en 8 images ; le portage garde l'ancienne règle de chute des objets de carte jusqu'à E19.h2 (la chute peut durer autrement, ou se faire d'un coup). (A, défaut retenu) écart documenté jusqu'à E19.h2, mesuré en g4b ; (B) donner tout de suite la loi du binaire à la caisse qui perd son appui (un nouveau site du marqueur de Z logique) ; (C) attendre E19.h2 pour le critère « pile » | l'auteur |
+| Q-G3-d | (2026-10-18) En poussant en diagonale contre une caisse, l'original s'arrête net ; le portage glisse le long de la caisse (l'écart déjà accepté pour les contacts, O-E19-28 et D-E19-58, que g3 rend visible sur 2 250 caisses et jarres). (A, défaut retenu) garder l'écart ; (B) porter la division conjointe du pas (le contrôleur du moteur, un plan et un ADR du moteur) | l'auteur |
+| Q-G4-a | (2026-10-18) Sur le navire (392), l'original laisse passer la barricade de caisses de deux façons : sauter sur la seule caisse basse (en se calant contre le haut de la porte), ou la soulever et la lancer. (A, défaut retenu) les deux, couvertes par deux arcs et la recette, sans code propre à la 392 ; (B) une seule | l'auteur |
+| O-G3-1 | (2026-10-18) Une entité détruite reste un obstacle jusqu'à la fin de la physique de son tick dans le binaire ; la DLL la retire tout de suite (le filtre `FlagToDestroy`, D-E19-29, dont la prémisse est réfutée) : un tick, toutes les entités | une tranche à part |
+| O-G3-2 | (2026-10-18) L'octet d'animation (`+0xB4`) est lu par la liste avant l'horloge et par la porte du sujet après dans le binaire ; la DLL lit `AnimFlags`, écrit en fin d'image (un tick ou plus) ; l'équivalent exact existe (`HitAnimByte`) | une tranche à part |
 | Q-H4-1 | (2026-10-17) Les pistes XA lancées par les sorts : les jouer (décodage du `.bin`, O-E19-36) ou un bouchon journalisé comme `0xB9` ? | l'auteur |
 | Q-H4-2 | (2026-10-17) Défauts avérés de l'original (la règle : un bug avéré se corrige) : le dernier emplacement utilisé n'est jamais visé par les sorts ; la première frappe du vent 1 est perdue (7 frappes au lieu de 8) ; le guidage de C63 tourne dans le sens numérique et non par le plus court ; le tri de la requête est instable. Corriger lesquels ? | l'auteur |
 | Q-H4-3 | (2026-10-17) Qui porte la poussée `+0xCC/+0xD0` (orbes d'eau, tornade) : E20.e0k, E14, ou une tranche nouvelle avant l'eau et le vent 2 ? | l'auteur |

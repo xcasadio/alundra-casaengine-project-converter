@@ -1,0 +1,18 @@
+map 390: liftables=12 starts=4 Rmax(program sum)=240px loopingProgram=True minGap=76 at ('rec1', (804, 280), 8) -> maybe
+map 392: liftables=12 starts=1 Rmax(program sum)=48px loopingProgram=False minGap=63 at ('0x64@50 sel129', (720, 216), 1) -> maybe
+map 163: liftables=8 starts=14 Rmax(program sum)=176px loopingProgram=True minGap=225 at ('rec3', (252, 632), 10) -> cannot
+map 165: liftables=8 starts=30 Rmax(program sum)=672px loopingProgram=True minGap=33 at ('rec27', (252, 712), 13) -> maybe
+map 164: liftables=17 starts=11 Rmax(program sum)=24px loopingProgram=False minGap=28 at ('rec9', (1068, 712), 24) -> maybe
+map 172: liftables=8 starts=21 Rmax(program sum)=672px loopingProgram=True minGap=33 at ('rec27', (252, 712), 1) -> maybe
+map 179: liftables=8 starts=29 Rmax(program sum)=672px loopingProgram=True minGap=33 at ('rec3', (252, 712), 10) -> maybe
+map 178: liftables=17 starts=7 Rmax(program sum)=254px loopingProgram=True minGap=27 at ('rec0', (492, 136), 7) -> maybe
+map 170: liftables=8 starts=3 Rmax(program sum)=256px loopingProgram=False minGap=242 at ('rec3', (204, 136), 2) -> maybe
+map 171: liftables=17 starts=4 Rmax(program sum)=256px loopingProgram=False minGap=3 at ('rec0', (468, 136), 6) -> maybe
+map 173: liftables=6 starts=5 Rmax(program sum)=256px loopingProgram=False minGap=76 at ('rec1', (204, 248), 5) -> maybe
+map 174: liftables=23 starts=4 Rmax(program sum)=256px loopingProgram=False minGap=97 at ('rec2', (204, 216), 5) -> maybe
+map 175: liftables=15 starts=2 Rmax(program sum)=256px loopingProgram=False minGap=52 at ('rec0', (228, 248), 5) -> maybe
+map 177: liftables=8 starts=3 Rmax(program sum)=0px loopingProgram=False minGap=242 at ('rec0', (204, 136), 3) -> cannot
+map 180: liftables=6 starts=5 Rmax(program sum)=0px loopingProgram=False minGap=76 at ('rec0', (204, 232), 5) -> cannot
+map 181: liftables=23 starts=4 Rmax(program sum)=256px loopingProgram=False minGap=81 at ('rec1', (276, 760), 10) -> maybe
+map 182: liftables=15 starts=2 Rmax(program sum)=0px loopingProgram=False minGap=52 at ('rec0', (228, 248), 5) -> cannot
+map 184: liftables=8 starts=3 Rmax(program sum)=0px loopingProgram=False minGap=242 at ('rec0', (204, 136), 3) -> cannot

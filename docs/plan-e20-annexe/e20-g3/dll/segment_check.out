@@ -1,0 +1,18 @@
+A5 part 1        map 392: swept x[710,779) y[209,224) min XY gap to a liftable = 63 (rec1) :: B1 0x64@50 then 0x1F@68 48 px east
+A5r roll         map 392: swept x[760,787) y[209,257) min XY gap to a liftable = 113.39999999999998 (rec1) :: roll after 0x11@104 to the end of frame 225
+A5/A5r final     map 392: swept x[530,551) y[353,388) min XY gap to a liftable = 57 (rec9) :: PlaceHero(540,360,64) then Down to the portal (22,23)
+A1c cabin        map 390: swept x[978,1079) y[208,384) min XY gap to a liftable = 67 (rec5) :: B2 walks 80 N, 48 W, 80 N, 32 W from tile (44,23)
+A0b push zone    map 390: swept x[914,935) y[673,800) min XY gap to a liftable = 369 (rec11) :: bare arc: hero tile (38,49) then B1 0x1F 80+32 (no controller: probe not consulted)
+A8 hero          map 163: swept x[886,971) y[145,160) min XY gap to a liftable = 529 (rec12) :: hero (960,152) walks 64 px west (0x0B r=64 @190)
+A8 Jess          map 163: swept x[914,935) y[129,305) min XY gap to a liftable = 384 (rec12) :: Jess (924,136) walks south to the wall at y 297
+A9 hero idle     map 172: swept x[866,887) y[289,304) min XY gap to a liftable = 27 (rec2) :: tile (36,18): hero does not move
+A10 hero idle    map 165: swept x[290,311) y[353,368) min XY gap to a liftable = 193 (rec10) :: arrival (300,360)
+A10 hero B[2]    map 165: swept x[290,429) y[199,368) min XY gap to a liftable = 147 (rec10) :: hero (300,360): 52 N, 118 E, 102 N (0x09 dir 16/24/16 then 0x0B @304/@310/@316)
+A10 rec5 C[1]    map 165: swept x[290,431) y[247,436) min XY gap to a liftable = 147 (rec10) :: rec5 from (300,428): 96 N, 120 E, 78 N
+A11 hero         map 164: swept x[986,1007) y[113,128) min XY gap to a liftable = 129 (rec21) :: PlaceHero(996,120,16)
+A11 Septimus     map 164: swept x[1007,1103) y[113,144) min XY gap to a liftable = 120 (rec23) :: rec1 from (1092,120): S, W (to the hero), E 24
+A12/A14 arrival  map 179: swept x[410,431) y[113,128) min XY gap to a liftable = 267 (rec5) :: arrival (420,120,16)
+A14 hero walk    map 179: swept x[410,431) y[113,340) min XY gap to a liftable = 267 (rec5) :: hero from (420,120) south to (420,332) (0x24@564)
+A18 hero         map 178: swept x[914,959) y[225,416) min XY gap to a liftable = 27 (rec18) :: arrival (924,408) then PlaceHero(948,232,16)
+A18 Septimus     map 178: swept x[916,985) y[337,512) min XY gap to a liftable = 65 (rec17) :: rec15 from (972,344): W 24, W 22, E 48, S 160
+T-C61 cart       map  61: swept x[242,599) y[641,800) min XY gap to a liftable = 195 (rec15) :: hero (588,648) towards blocks rec32-35 (x 252..588)

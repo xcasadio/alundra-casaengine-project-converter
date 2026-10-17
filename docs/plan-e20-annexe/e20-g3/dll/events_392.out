@@ -1,0 +1,12 @@
+== map 392: Codes=232
+ -- slot B[1] @20..132
+    @50: 0x64 setpos sel=129 x=720 y=216 z=64
+    @58: 0x5B walkanim5B [129, 13, 64]
+    @64: 0x5B walkanim5B [129, 3, 67]
+    @68: 0x1F walk1F d=48px
+    @72: 0x5B walkanim5B [129, 0, 64]
+    @78: 0x5B walkanim5B [129, 0, 66]
+    @84: 0x5B walkanim5B [129, 0, 67]
+    @90: 0x5B walkanim5B [129, 0, 65]
+    @100: 0x5B walkanim5B [129, 0, 64]
+    @120: 0x08 dir+= [2]
