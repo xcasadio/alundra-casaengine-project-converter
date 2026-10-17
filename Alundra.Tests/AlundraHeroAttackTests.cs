@@ -14,6 +14,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Physics;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

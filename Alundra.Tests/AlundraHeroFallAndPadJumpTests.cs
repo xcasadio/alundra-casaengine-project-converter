@@ -12,6 +12,7 @@ using Alundra.Session;
 using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Physics;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

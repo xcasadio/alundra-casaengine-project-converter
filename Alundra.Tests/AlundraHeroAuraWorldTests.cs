@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Rendering.EffectQuads;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
@@ -11,6 +10,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Rng;
 using Alundra.Rendering.Effects;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

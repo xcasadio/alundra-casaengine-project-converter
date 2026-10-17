@@ -12,6 +12,7 @@ using Alundra.Entities;
 using Alundra.Cameras;
 using Alundra.Rendering.Backdrops;
 using Alundra.Audio;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

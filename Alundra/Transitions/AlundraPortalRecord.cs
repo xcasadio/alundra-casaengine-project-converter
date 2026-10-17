@@ -1,8 +1,9 @@
 ﻿#nullable enable
 
 using Alundra.Entities;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Transitions;
 
 /// <summary>
 /// T3 (docs/plan-transitions-carte.md §1.1, §3 T3): one portal record parsed from the "Portals"

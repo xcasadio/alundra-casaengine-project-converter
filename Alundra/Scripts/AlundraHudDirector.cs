@@ -1,6 +1,7 @@
 #nullable enable
 
 using Alundra.Session;
+using Alundra.Transitions;
 
 namespace Alundra.Scripts;
 

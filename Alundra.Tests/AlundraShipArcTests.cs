@@ -6,6 +6,7 @@ using CasaEngine.Engine.Environment;
 using Xunit;
 using Alundra.Entities;
 using Alundra.Events;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

@@ -13,6 +13,7 @@ using Alundra.Items;
 using Alundra.Physics;
 using Alundra.Rendering.Effects;
 using Alundra.Audio;
+using Alundra.Transitions;
 
 namespace Alundra.Maps;
 

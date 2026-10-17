@@ -10,6 +10,7 @@ using Xunit;
 using static Alundra.Tests.SaveGameDirectorTestSupport;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

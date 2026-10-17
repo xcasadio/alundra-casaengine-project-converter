@@ -4,6 +4,7 @@ using CasaEngine.Framework.Audio.Mixing;
 using Alundra.Maps;
 using Alundra.Events;
 using Alundra.Scripts;
+using Alundra.Transitions;
 
 namespace Alundra.Audio;
 

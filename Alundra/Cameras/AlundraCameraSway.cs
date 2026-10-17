@@ -1,5 +1,6 @@
 #nullable enable
 using Alundra.Scripts;
+using Alundra.Transitions;
 
 namespace Alundra.Cameras;
 

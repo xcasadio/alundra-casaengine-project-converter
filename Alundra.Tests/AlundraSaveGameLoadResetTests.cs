@@ -4,6 +4,7 @@ using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

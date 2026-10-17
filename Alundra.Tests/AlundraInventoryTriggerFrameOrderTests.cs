@@ -7,6 +7,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Audio;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

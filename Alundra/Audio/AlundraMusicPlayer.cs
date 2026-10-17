@@ -10,6 +10,7 @@ using CasaEngine.Framework.Audio;
 using CasaEngine.Framework.Audio.Mixing;
 using CasaEngine.Framework.Audio.Streaming;
 using Alundra.Scripts;
+using Alundra.Transitions;
 
 namespace Alundra.Audio;
 

@@ -25,6 +25,7 @@ using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Cameras;
 using Alundra.Audio;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

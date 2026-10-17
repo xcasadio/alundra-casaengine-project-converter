@@ -8,6 +8,7 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Events;
 using Alundra.Audio;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

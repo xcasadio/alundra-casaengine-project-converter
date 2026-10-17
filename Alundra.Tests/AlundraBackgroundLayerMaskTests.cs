@@ -16,6 +16,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Rendering.Backdrops;
 using Alundra.Audio;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

@@ -11,6 +11,7 @@ using Alundra.Session;
 using Alundra.Ai.Objects;
 using Alundra.Items;
 using Alundra.Audio;
+using Alundra.Transitions;
 
 namespace Alundra.Scripts;
 

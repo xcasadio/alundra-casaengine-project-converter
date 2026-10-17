@@ -2,13 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Xunit.Abstractions;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Rng;
 using Alundra.Rendering.Effects;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

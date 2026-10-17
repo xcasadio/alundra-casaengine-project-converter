@@ -7,6 +7,7 @@ using Xunit;
 using static Alundra.Tests.ArcChecks;
 using Alundra.Events;
 using Alundra.Cameras;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

@@ -24,6 +24,7 @@ using Alundra.Entities;
 using Alundra.Physics;
 using Alundra.Cells;
 using Alundra.Audio;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

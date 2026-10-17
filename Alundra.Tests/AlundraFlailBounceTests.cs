@@ -10,6 +10,7 @@ using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Physics;
 using Alundra.Cells;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

@@ -22,6 +22,7 @@ using Alundra.Combat;
 using Alundra.Rng;
 using Alundra.Physics;
 using Alundra.Rendering.Effects;
+using Alundra.Transitions;
 
 namespace Alundra.Events;
 

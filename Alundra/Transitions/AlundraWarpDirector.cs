@@ -6,8 +6,9 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Audio;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Transitions;
 
 /// <summary>
 /// T4 (docs/plan-transitions-carte.md §1.2.c/§1.2.e/§3, D-T-2): SESSION-scoped singleton - same

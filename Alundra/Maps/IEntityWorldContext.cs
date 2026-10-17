@@ -10,6 +10,7 @@ using Alundra.Cells;
 using Alundra.Cameras;
 using Alundra.Rendering.Effects;
 using Alundra.Audio;
+using Alundra.Transitions;
 
 namespace Alundra.Maps;
 

@@ -22,6 +22,7 @@ using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Physics;
 using Alundra.Rendering.Effects;
+using Alundra.Transitions;
 
 namespace Alundra.Scripts;
 

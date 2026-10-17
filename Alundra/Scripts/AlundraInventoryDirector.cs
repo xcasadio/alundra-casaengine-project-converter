@@ -6,6 +6,7 @@ using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Physics;
 using Alundra.Audio;
+using Alundra.Transitions;
 
 namespace Alundra.Scripts;
 

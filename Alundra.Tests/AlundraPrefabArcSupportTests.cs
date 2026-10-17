@@ -5,12 +5,12 @@ using CasaEngine.Engine.Geometry;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
-using Alundra.Scripts;
 using Xunit;
 using Xunit.Abstractions;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Rng;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 

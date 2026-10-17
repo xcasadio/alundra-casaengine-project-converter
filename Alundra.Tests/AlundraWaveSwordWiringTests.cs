@@ -13,6 +13,7 @@ using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Rng;
 using Alundra.Rendering.Effects;
+using Alundra.Transitions;
 
 namespace Alundra.Tests;
 
