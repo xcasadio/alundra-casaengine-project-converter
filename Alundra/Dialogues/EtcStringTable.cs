@@ -40,7 +40,7 @@ namespace Alundra.Dialogues;
 /// `docs/formats/dialogues-yarn.md`), read as <c>line:{node}_p0</c> through
 /// <see cref="DialogueAsset.TryGetLineText"/>, expanded and parsed by <see cref="YarnLineTextParser"/>
 /// (no substitutions expected on any ETC line) and turned into <c>font3</c> text by
-/// <see cref="AlundraDialogueCapturePresenter.ToFont3Text"/> - the SAME glyph/<c>[br/]</c> conversion
+/// <see cref="DialogueCapturePresenter.ToFont3Text"/> - the SAME glyph/<c>[br/]</c> conversion
 /// T5's dialogue capture presenter already applies to dialogue-box lines, kept as the one
 /// implementation. An index with no node (the converter only emits one for a non-null ETC entry) gives
 /// what a null <c>global-strings.json</c> entry gave before this port: <see langword="true"/> and an
@@ -51,7 +51,7 @@ namespace Alundra.Dialogues;
 /// <c>font3</c> text is kept in <see cref="_parsedTextCache"/> the first time it is read, so
 /// <see cref="YarnLineTextParser"/> parses it only once per session, never once per tick.
 /// </summary>
-public static class AlundraEtcStringTable
+public static class EtcStringTable
 {
     private const string EtcCatalogName = "dialogue_etc";
 
@@ -114,7 +114,7 @@ public static class AlundraEtcStringTable
     /// <summary>
     /// E16.e L6 (docs/plan-e16-etat-partie.md): the compiled <c>dialogue_etc</c> asset this table loaded
     /// (<see cref="EnsureLoaded"/>) or was given (<see cref="SetEtcDialogueAssetForTests"/>), or null when none
-    /// is loaded - what the save book hands <see cref="AlundraDialogueDirector.Open"/> to show ETC <c>0x40</c>
+    /// is loaded - what the save book hands <see cref="DialogueDirector.Open"/> to show ETC <c>0x40</c>
     /// through the ordinary box (node <c>Etc_0064</c>), as the original's <c>InitializeDialogMessage</c> does
     /// (<c>AI_ProcessWarpTransitionState</c>, 0x8007B998, state 1).
     /// </summary>
@@ -195,7 +195,7 @@ public static class AlundraEtcStringTable
 
         var expanded = YarnLineTextParser.ExpandSubstitutions(rawText, Array.Empty<string>());
         var line = YarnLineTextParser.Parse(expanded);
-        var font3Text = AlundraDialogueCapturePresenter.ToFont3Text(line);
+        var font3Text = DialogueCapturePresenter.ToFont3Text(line);
 
         _parsedTextCache[lineId] = font3Text;
         text = font3Text;
@@ -211,7 +211,7 @@ public static class AlundraEtcStringTable
 
         _loggedFailureOnce = true;
         Logs.WriteWarning(
-            $"AlundraEtcStringTable: could not resolve an ETC text ({reason}) - OUI/NON and every item "
+            $"EtcStringTable: could not resolve an ETC text ({reason}) - OUI/NON and every item "
             + "name/description fall back to their own caller's degraded mode.");
     }
 

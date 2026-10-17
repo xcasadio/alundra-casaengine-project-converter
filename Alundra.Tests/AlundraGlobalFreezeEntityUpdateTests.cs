@@ -46,9 +46,9 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 
-    public AlundraGlobalFreezeEntityUpdateTests() => AlundraDialogueDirector.Instance.ResetForTests();
+    public AlundraGlobalFreezeEntityUpdateTests() => DialogueDirector.Instance.ResetForTests();
 
-    public void Dispose() => AlundraDialogueDirector.Instance.ResetForTests();
+    public void Dispose() => DialogueDirector.Instance.ResetForTests();
 
     private static string FindProjectRoot()
     {
@@ -92,7 +92,7 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
         try
         {
             var sim = new HeadlessIntroSimulation(projectRoot, WorldName, document, installDialogueDirector: true);
-            var director = AlundraDialogueDirector.Instance;
+            var director = DialogueDirector.Instance;
 
             AlundraEntityScriptProxy? sailorEleven = null;
             AlundraEntityScriptProxy? sailorThirteen = null;
@@ -108,8 +108,8 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
             {
                 if (s.Frame == 1)
                 {
-                    AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), s.GameState);
-                    AlundraDialogueDirector.Instance.InstallForMapEntry();
+                    DialogueDirector.Instance.AttachToWorld(new DialogueService(), s.GameState);
+                    DialogueDirector.Instance.InstallForMapEntry();
 
                     sailorEleven = s.SpawnedEntities.Single(
                         e => (e.ProgramIndexes[ScriptHelper.ProgramCTick] & 0x7f) == 11);

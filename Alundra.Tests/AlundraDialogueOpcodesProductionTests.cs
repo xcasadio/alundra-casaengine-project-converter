@@ -42,14 +42,14 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
 
     public AlundraDialogueOpcodesProductionTests()
     {
-        AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraEtcStringTable.ResetForTests(); // E15.c T6: the OUI/NON flow injects the real ETC asset.
+        DialogueDirector.Instance.ResetForTests();
+        EtcStringTable.ResetForTests(); // E15.c T6: the OUI/NON flow injects the real ETC asset.
     }
 
     public void Dispose()
     {
-        AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraEtcStringTable.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
+        EtcStringTable.ResetForTests();
     }
 
     private static string FindProjectRoot()
@@ -82,7 +82,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
         Assert.NotNull(document);
 
         // E15.c T6: OUI/NON now come from the real exported dialogue_etc asset, injected directly.
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(
+        EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(projectRoot, "Dialogues", "Etc.dialogue")));
 
         var previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
@@ -91,7 +91,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
         {
             var sim = new HeadlessIntroSimulation(projectRoot, WorldName, document!, installDialogueDirector: true);
 
-            var director = AlundraDialogueDirector.Instance;
+            var director = DialogueDirector.Instance;
             var serialAtStart = director.OpenSerial;
             var button = new DialogueHarnessButton();
             var reachedOpen = false;
@@ -109,8 +109,8 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                 // seeding is load-bearing).
                 if (s.Frame == 1)
                 {
-                    AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), s.GameState);
-                    AlundraDialogueDirector.Instance.InstallForMapEntry();
+                    DialogueDirector.Instance.AttachToWorld(new DialogueService(), s.GameState);
+                    DialogueDirector.Instance.InstallForMapEntry();
                     SeedFlag(s.GameState, IntroCompletionFlag);
                     SeedFlag(s.GameState, InteractArmedFlag);
                 }
@@ -206,7 +206,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
         try
         {
             var sim = new HeadlessIntroSimulation(projectRoot, WorldName, document, installDialogueDirector: true);
-            var director = AlundraDialogueDirector.Instance;
+            var director = DialogueDirector.Instance;
 
             AlundraEntityScriptProxy? sailorThirteen = null;
             var openedWithMenuOpen = false;
@@ -222,8 +222,8 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
             {
                 if (s.Frame == 1)
                 {
-                    AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), s.GameState);
-                    AlundraDialogueDirector.Instance.InstallForMapEntry();
+                    DialogueDirector.Instance.AttachToWorld(new DialogueService(), s.GameState);
+                    DialogueDirector.Instance.InstallForMapEntry();
                 }
 
                 if (s.Frame == 2)
@@ -301,7 +301,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
         try
         {
             var sim = new HeadlessIntroSimulation(projectRoot, WorldName, document!, installDialogueDirector: true);
-            var director = AlundraDialogueDirector.Instance;
+            var director = DialogueDirector.Instance;
 
             AlundraEntityScriptProxy? sailor = null;
             var openedAfterPress = false;
@@ -330,8 +330,8 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
 
                 if (s.Frame == 1)
                 {
-                    AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), s.GameState);
-                    AlundraDialogueDirector.Instance.InstallForMapEntry();
+                    DialogueDirector.Instance.AttachToWorld(new DialogueService(), s.GameState);
+                    DialogueDirector.Instance.InstallForMapEntry();
 
                     // "The intro is over": flag 860 is the intro-completion flag the golden pins at
                     // frame 1704 - seeding it keeps the map program from running the intro (whose very
@@ -445,7 +445,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
         try
         {
             var sim = new HeadlessIntroSimulation(projectRoot, WorldName, document!, installDialogueDirector: true);
-            var director = AlundraDialogueDirector.Instance;
+            var director = DialogueDirector.Instance;
 
             sim.RunFramesForTest(200, s =>
             {
@@ -454,8 +454,8 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                 // open - this is the exact negative case the plan calls out as load-bearing.
                 if (s.Frame == 1)
                 {
-                    AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), s.GameState);
-                    AlundraDialogueDirector.Instance.InstallForMapEntry();
+                    DialogueDirector.Instance.AttachToWorld(new DialogueService(), s.GameState);
+                    DialogueDirector.Instance.InstallForMapEntry();
                     SeedFlag(s.GameState, InteractArmedFlag);
                 }
             });

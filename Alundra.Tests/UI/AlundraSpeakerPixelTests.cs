@@ -31,7 +31,7 @@ namespace Alundra.Tests.UI;
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSpeakerPixelTests : IDisposable
 {
-    private static readonly AlundraDialogueDirector Director = AlundraDialogueDirector.Instance;
+    private static readonly DialogueDirector Director = DialogueDirector.Instance;
 
     private const string JessPortraitId = "56f5809a-a47b-564e-b7f7-a66be1f98b04";
     private const string MimingPortraitId = "bf75c68e-424f-57c9-8f6a-535f33d769d7";
@@ -52,11 +52,11 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
     private static void Reset()
     {
         Director.ResetForTests();
-        Director.Box.DrawsPreShiftRowsAtScrollEnd = AlundraDialogueBox.ScrollEndDrawsPreShiftRows;
+        Director.Box.DrawsPreShiftRowsAtScrollEnd = DialogueBox.ScrollEndDrawsPreShiftRows;
         Director.AdvanceProviderForTests = null;
-        AlundraDialogueCapturePresenter.ResetForTests();
-        AlundraFont3Advances.ResetForTests();
-        AlundraEtcStringTable.ResetForTests();
+        DialogueCapturePresenter.ResetForTests();
+        Font3Advances.ResetForTests();
+        EtcStringTable.ResetForTests();
     }
 
     // ---- the scenes of the annex ----------------------------------------------------------------------------------------------------------------

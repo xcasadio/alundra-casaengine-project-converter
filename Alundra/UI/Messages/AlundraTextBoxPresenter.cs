@@ -7,21 +7,21 @@ using Alundra.Scripts;
 namespace Alundra.UI.Messages;
 
 /// <summary>
-/// E19.f2b1c F2B1C-R4 (docs/plan-e19-opcodes.md): reads the drawn state of the dialogue box after a pass (<see cref="AlundraDialogueDirector.Box"/>) and, since E19.f4c2, of the
-/// speaker's name box and portrait (<see cref="AlundraDialogueDirector.NameBox"/>, <see cref="AlundraDialogueDirector.Portrait"/>), and writes it
+/// E19.f2b1c F2B1C-R4 (docs/plan-e19-opcodes.md): reads the drawn state of the dialogue box after a pass (<see cref="DialogueDirector.Box"/>) and, since E19.f4c2, of the
+/// speaker's name box and portrait (<see cref="DialogueDirector.NameBox"/>, <see cref="DialogueDirector.Portrait"/>), and writes it
 /// into the screen's <see cref="AlundraTextBoxViewModel"/>, which <c>TextBoxScreen.xaml</c> binds - one <see cref="Tick"/> right after each pass of the box, from
 /// <see cref="AlundraWorldProxy.Update(float)"/>.
 /// </summary>
 public sealed class AlundraTextBoxPresenter
 {
-    private readonly AlundraDialogueDirector _director;
+    private readonly DialogueDirector _director;
     private readonly AlundraTextBoxViewModel _viewModel;
     private readonly IUIScreen _screen;
     private readonly IUIViewRuntime? _uiView;
     private bool _pushed;
 
     public AlundraTextBoxPresenter(
-        AlundraDialogueDirector director,
+        DialogueDirector director,
         AlundraTextBoxViewModel viewModel,
         IUIScreen screen,
         IUIViewRuntime? uiView)
@@ -69,8 +69,8 @@ public sealed class AlundraTextBoxPresenter
         }
     }
 
-    /// <summary>The speaker first (its two view models), then the box: one <see cref="AlundraTextBoxViewModel.Apply(AlundraDialogueBox, bool)"/> per tick.</summary>
-    private void Write(AlundraDialogueBox box, bool speakerDrawn)
+    /// <summary>The speaker first (its two view models), then the box: one <see cref="AlundraTextBoxViewModel.Apply(DialogueBox, bool)"/> per tick.</summary>
+    private void Write(DialogueBox box, bool speakerDrawn)
     {
         _viewModel.NameBox.Apply(_director.NameBox);
         _viewModel.Portrait.ApplyDialogue(_director.Portrait, _director.PortraitSource);

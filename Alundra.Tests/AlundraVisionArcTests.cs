@@ -119,8 +119,8 @@ public sealed class AlundraVisionArcTests
 
             if (Array.IndexOf(boxPcs, t.Pc) >= 0 && t.Opcode is 0xC4 or 0x5C && !Boxes.ContainsKey(t.Pc))
             {
-                Boxes[t.Pc] = t.Kind is EventTraceKind.Implemented or EventTraceKind.Degraded && AlundraDialogueDirector.Instance.IsOpen
-                    ? new BoxSample(t.Opcode, (uint)AlundraDialogueDirector.Instance.OpenSerial, AlundraDialogueDirector.Instance.CurrentLineForTests?.Text ?? string.Empty)
+                Boxes[t.Pc] = t.Kind is EventTraceKind.Implemented or EventTraceKind.Degraded && DialogueDirector.Instance.IsOpen
+                    ? new BoxSample(t.Opcode, (uint)DialogueDirector.Instance.OpenSerial, DialogueDirector.Instance.CurrentLineForTests?.Text ?? string.Empty)
                     : null;
             }
 
@@ -204,7 +204,7 @@ public sealed class AlundraVisionArcTests
     {
         using var arc = new ArcRun(A2Spec);
         Assert.Equal(256u, ArcRun.State.GameFlags[51]);
-        var serialAtStart = AlundraDialogueDirector.Instance.OpenSerial;
+        var serialAtStart = DialogueDirector.Instance.OpenSerial;
 
         var samples = new Samples();
         var boxPcs = new[] { 622, 632, 739 };
@@ -241,12 +241,12 @@ public sealed class AlundraVisionArcTests
         Assert.True(samples.CameraFollowsBlockAt71, "the camera does not follow the block after 0x67 @71");
 
         // Three boxes, closed by the script (the arc never presses a button).
-        Assert.Equal(3u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
+        Assert.Equal(3u, (uint)DialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
         AssertBox(samples, 622, 0xC4, "Est-ce que");
         // The whole text of node M476_S102 (15 characters, its glyph included); the first box carries "tu" and a glyph after it.
         AssertBox(samples, 632, 0xC4, "Tu\u0012 m'entends ?", notFragment: "Est-ce que");
         AssertBox(samples, 739, 0xC4, "Je suis connu sous le nom de Lars");
-        Assert.False(AlundraDialogueDirector.Instance.IsOpen);
+        Assert.False(DialogueDirector.Instance.IsOpen);
 
         // The block's parent is the hero (the logic entity of B1).
         Assert.Same(arc.HeroEntity, arc.EntityByRecord(1)!.ParentEntity);
@@ -278,7 +278,7 @@ public sealed class AlundraVisionArcTests
         var prefabs = spec.Prefabs;
         using var arc = new ArcRun(spec);
         Assert.Equal(512u, ArcRun.State.GameFlags[51]);
-        var serialAtStart = AlundraDialogueDirector.Instance.OpenSerial;
+        var serialAtStart = DialogueDirector.Instance.OpenSerial;
 
         var samples = new Samples();
         var boxPcs = new[] { 786, 810, 820, 832, 842, 854, 873, 974 };
@@ -328,7 +328,7 @@ public sealed class AlundraVisionArcTests
         Assert.Equal((792 << 16, 176 << 16, 48 << 16), samples.RancuneAtSpawn!.Value);
 
         // Eight boxes, closed by the script.
-        Assert.Equal(8u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
+        Assert.Equal(8u, (uint)DialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
         AssertBox(samples, 786, 0xC4, "Au nord d'Inoa");
         AssertBox(samples, 810, 0x5C, "Tu me fais rire");
         AssertBox(samples, 820, 0xC4, "Dis-moi, Melzas");
@@ -337,7 +337,7 @@ public sealed class AlundraVisionArcTests
         AssertBox(samples, 854, 0x5C, "Je ne suis pas cruel");
         AssertBox(samples, 873, 0xC4, "Mon temps dans ce monde");
         AssertBox(samples, 974, 0x5C, "Ha, ha, ha");
-        Assert.False(AlundraDialogueDirector.Instance.IsOpen);
+        Assert.False(DialogueDirector.Instance.IsOpen);
 
         // Parents: the block's is the hero, Rancune's is the block (0x43 [0x80] leaves the block as the logic entity of B5).
         var blockProxy = arc.EntityByRecord(1)!;

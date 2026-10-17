@@ -38,7 +38,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         AlundraInventoryPostProcess.Instance.ResetForTests();
         AlundraInventoryPortrait.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();
     }

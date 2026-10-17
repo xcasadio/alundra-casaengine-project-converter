@@ -29,7 +29,7 @@ namespace Alundra.Dialogues.Yarn;
 /// servir pour aucun drapeau (contrat item 8 ; E16.f T1 a mesuré que ni l'un ni l'autre n'intervient sur
 /// un dialogue sans variable/fonction Yarn interne).
 /// </summary>
-public sealed class AlundraYarnVariableStorage : IVariableStorage
+public sealed class YarnVariableStorage : IVariableStorage
 {
     private const string FlagPrefix = "$flag_";
     private const string TemporaryFlagPrefix = "$tmp_flag_";
@@ -39,7 +39,7 @@ public sealed class AlundraYarnVariableStorage : IVariableStorage
     private readonly GameState _gameState;
     private readonly HashSet<string> _loggedRefusedNames = new(StringComparer.Ordinal);
 
-    public AlundraYarnVariableStorage(GameState gameState)
+    public YarnVariableStorage(GameState gameState)
     {
         ArgumentNullException.ThrowIfNull(gameState);
 
@@ -112,7 +112,7 @@ public sealed class AlundraYarnVariableStorage : IVariableStorage
     /// (entrée de carte, nouvelle partie, chargement, D-E16-6) - cet appel ne les touche jamais, mais est
     /// journalisé (E16.f T1 a mesuré qu'un dialogue sans <c>visited()</c> ne l'appelle jamais).</summary>
     public void Clear()
-        => Logs.WriteWarning("AlundraYarnVariableStorage: Clear() ignored - flag bank lifetime stays with GameState (D-E16-6).");
+        => Logs.WriteWarning("YarnVariableStorage: Clear() ignored - flag bank lifetime stays with GameState (D-E16-6).");
 
     /// <summary>Découpe <c>$flag_n</c>/<c>$tmp_flag_n</c> (D-E16-16) : <paramref name="n"/> doit être un
     /// décimal de 0 à <see cref="MaxFlagId"/> sans zéro de tête (D-E16-25), sinon le nom entier est
@@ -184,7 +184,7 @@ public sealed class AlundraYarnVariableStorage : IVariableStorage
     {
         if (_loggedRefusedNames.Add(variableName))
         {
-            Logs.WriteWarning($"AlundraYarnVariableStorage: refused Yarn variable '{variableName}' (D-E16-18).");
+            Logs.WriteWarning($"YarnVariableStorage: refused Yarn variable '{variableName}' (D-E16-18).");
         }
     }
 }

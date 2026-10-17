@@ -187,7 +187,7 @@ public sealed class AlundraInoaAwakeningArcTests
     public void A8_TheAwakeningOnMap163_JessWalksToTheWall_TheHeroTakesBackTheHand()
     {
         using var arc = new ArcRun(A8Spec);
-        var serialAtStart = AlundraDialogueDirector.Instance.OpenSerial;
+        var serialAtStart = DialogueDirector.Instance.OpenSerial;
         var samples = new Samples();
         arc.OnInstruction = t => samples.Take(arc, t);
         arc.OnFrame = () => samples.TakeFrame(arc);
@@ -211,8 +211,8 @@ public sealed class AlundraInoaAwakeningArcTests
         Assert.True(IsSet(1662), "G1662");
         Assert.False(IsSet(200), "G200");
         Assert.Equal(0u, ArcRun.State.PlayerControlFlags);
-        Assert.Equal(5u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
-        Assert.False(AlundraDialogueDirector.Instance.IsOpen);
+        Assert.Equal(5u, (uint)DialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
+        Assert.False(DialogueDirector.Instance.IsOpen);
 
         // The book: record 7, present from frame 0.
         var book = arc.EntityByRecord(7);

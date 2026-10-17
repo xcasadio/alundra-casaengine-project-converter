@@ -37,7 +37,7 @@ namespace Alundra.Tests;
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraTextBoxWiringTests : IDisposable
 {
-    private static readonly AlundraDialogueDirector Director = AlundraDialogueDirector.Instance;
+    private static readonly DialogueDirector Director = DialogueDirector.Instance;
 
     public AlundraTextBoxWiringTests()
     {
@@ -52,10 +52,10 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
     private static void Reset()
     {
         Director.ResetForTests();
-        Director.Box.DrawsPreShiftRowsAtScrollEnd = AlundraDialogueBox.ScrollEndDrawsPreShiftRows; // a test of the variant leaves the box's flag on
+        Director.Box.DrawsPreShiftRowsAtScrollEnd = DialogueBox.ScrollEndDrawsPreShiftRows; // a test of the variant leaves the box's flag on
         Director.AdvanceProviderForTests = null;
-        AlundraDialogueCapturePresenter.ResetForTests();
-        AlundraFont3Advances.ResetForTests();
+        DialogueCapturePresenter.ResetForTests();
+        Font3Advances.ResetForTests();
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();
     }

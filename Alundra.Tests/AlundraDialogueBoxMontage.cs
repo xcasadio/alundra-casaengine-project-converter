@@ -123,7 +123,7 @@ internal sealed class DialogueBoxMontage : IDisposable
 
     public DialogueBoxMontage()
     {
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -152,17 +152,17 @@ internal sealed class DialogueBoxMontage : IDisposable
         Proxy.BuildMapEvents(layer);
         Proxy.EventProgramRunner = new ScriptedRunner(this);
 
-        Sounds = new PassStampedSoundPlayer(() => Frame, () => AlundraDialogueDirector.Instance.PassCountForTests);
-        Presenter = new PrefixRecordingPresenter(() => AlundraDialogueDirector.Instance.PassCountForTests);
-        AlundraDialogueDirector.Instance.AttachToWorld(Presenter, State, Sounds);
-        AlundraDialogueDirector.Instance.InstallForMapEntry();
+        Sounds = new PassStampedSoundPlayer(() => Frame, () => DialogueDirector.Instance.PassCountForTests);
+        Presenter = new PrefixRecordingPresenter(() => DialogueDirector.Instance.PassCountForTests);
+        DialogueDirector.Instance.AttachToWorld(Presenter, State, Sounds);
+        DialogueDirector.Instance.InstallForMapEntry();
     }
 
     public AlundraWorldProxy Proxy { get; }
 
     public GameState State => Proxy.GameState;
 
-    public AlundraDialogueDirector Director => AlundraDialogueDirector.Instance;
+    public DialogueDirector Director => DialogueDirector.Instance;
 
     public PassStampedSoundPlayer Sounds { get; }
 
@@ -219,7 +219,7 @@ internal sealed class DialogueBoxMontage : IDisposable
 
     public void Dispose()
     {
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();

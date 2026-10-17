@@ -14,7 +14,7 @@ namespace Alundra.Dialogues;
 /// on every glyph of the corpus the two agree (docs/plan-e19-f2b1-annexe/s025-notes.md, summary 2). A missing or unreadable file gives an empty table - every width 0, every x 32 - and one warning
 /// per project path. Same shape as <see cref="SfxBank"/>: a session cache keyed by the path of the project.
 /// </summary>
-internal sealed class AlundraFont3Advances
+internal sealed class Font3Advances
 {
     private const string RelativeDirectory = "UI";
     private const string FileName = "font3.fnt";
@@ -22,14 +22,14 @@ internal sealed class AlundraFont3Advances
     private readonly Dictionary<int, int> _advanceByCodePoint = new();
 
     /// <summary>Reads <c>UI/font3.fnt</c> under <paramref name="projectPath"/>.</summary>
-    public AlundraFont3Advances(string projectPath)
+    public Font3Advances(string projectPath)
     {
         var filePath = Path.Combine(projectPath, RelativeDirectory, FileName);
         try
         {
             if (!File.Exists(filePath))
             {
-                Logs.WriteWarning($"AlundraFont3Advances: '{filePath}' not found; every centred line of the dialogue box gets width 0 and x 32 (degraded mode).");
+                Logs.WriteWarning($"Font3Advances: '{filePath}' not found; every centred line of the dialogue box gets width 0 and x 32 (degraded mode).");
                 return;
             }
 
@@ -62,7 +62,7 @@ internal sealed class AlundraFont3Advances
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Logs.WriteWarning($"AlundraFont3Advances: failed to read '{filePath}' ({ex.Message}); every centred line of the dialogue box gets width 0 and x 32 (degraded mode).");
+            Logs.WriteWarning($"Font3Advances: failed to read '{filePath}' ({ex.Message}); every centred line of the dialogue box gets width 0 and x 32 (degraded mode).");
             _advanceByCodePoint.Clear();
         }
     }
@@ -70,14 +70,14 @@ internal sealed class AlundraFont3Advances
     /// <summary>The advance of the glyph shown as <paramref name="display"/>; 0 for a code point the file does not describe.</summary>
     public int Advance(char display) => _advanceByCodePoint.TryGetValue(display, out var advance) ? advance : 0;
 
-    private static readonly Dictionary<string, AlundraFont3Advances> SessionCacheByProjectPath = new();
+    private static readonly Dictionary<string, Font3Advances> SessionCacheByProjectPath = new();
 
     /// <summary>The cached table of <paramref name="projectPath"/>, read on the first request.</summary>
-    public static AlundraFont3Advances GetOrCreate(string projectPath)
+    public static Font3Advances GetOrCreate(string projectPath)
     {
         if (!SessionCacheByProjectPath.TryGetValue(projectPath, out var table))
         {
-            table = new AlundraFont3Advances(projectPath);
+            table = new Font3Advances(projectPath);
             SessionCacheByProjectPath[projectPath] = table;
         }
 

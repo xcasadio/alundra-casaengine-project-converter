@@ -45,7 +45,7 @@ public sealed class AlundraChoiceViewModel : ViewModelBase
     /// Writes the drawn state of <paramref name="choice"/> after its last pass: nothing shows while the box drew nothing (the init pass, the close pass that writes the result, no
     /// box); else the frame at the pass's x, each label's text (cut at 6 characters by the box) at its x, and the cursor sprite (image 0 to 3) at its x.
     /// </summary>
-    internal void Apply(AlundraChoiceBox choice)
+    internal void Apply(ChoiceBox choice)
     {
         ArgumentNullException.ThrowIfNull(choice);
         AppliedCount++;

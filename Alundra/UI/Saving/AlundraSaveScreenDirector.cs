@@ -365,7 +365,7 @@ public sealed class AlundraSaveScreenDirector : ISaveBookScreen
 
         if (_questionOpened)
         {
-            AlundraDialogueDirector.Instance.CloseStandaloneChoice();
+            DialogueDirector.Instance.CloseStandaloneChoice();
         }
 
         if (_gameState != null)
@@ -779,7 +779,7 @@ public sealed class AlundraSaveScreenDirector : ISaveBookScreen
     }
 
     private static string ResolveEtc(int etcIndex)
-        => AlundraEtcStringTable.TryResolveText(etcIndex, out var text) ? text ?? string.Empty : string.Empty;
+        => EtcStringTable.TryResolveText(etcIndex, out var text) ? text ?? string.Empty : string.Empty;
 
     private static string Bound(string text) => text.Length <= MaxLineLength ? text : text.Substring(0, MaxLineLength);
 
@@ -995,8 +995,8 @@ public sealed class AlundraSaveScreenDirector : ISaveBookScreen
 
     /// <summary>
     /// 0x800594E0-0x80059548: Cross freezes the entry (SE5), shows ETC <c>0x84</c> and asks OUI/NON (<c>0x4A</c>/
-    /// <c>0x4B</c>) through <see cref="AlundraDialogueDirector.OpenChoice"/> (L5): the dialogue screen shows it over
-    /// this one and owns its keys. Without a presenter (<see cref="AlundraDialogueDirector.OpenChoice"/> would wait
+    /// <c>0x4B</c>) through <see cref="DialogueDirector.OpenChoice"/> (L5): the dialogue screen shows it over
+    /// this one and owns its keys. Without a presenter (<see cref="DialogueDirector.OpenChoice"/> would wait
     /// forever), or when the labels do not resolve, no choice opens and the answer is NON, logged.
     /// </summary>
     private void AskQuestion()
@@ -1006,7 +1006,7 @@ public sealed class AlundraSaveScreenDirector : ISaveBookScreen
         _pickerFlags = PickerQuestion;
         _answer = null;
 
-        var dialogue = AlundraDialogueDirector.Instance;
+        var dialogue = DialogueDirector.Instance;
         if (!dialogue.HasPresenter)
         {
             Logs.WriteWarning(LogPrefix + "no dialogue presenter to ask OUI/NON; the answer is NON, nothing written.");
@@ -1028,7 +1028,7 @@ public sealed class AlundraSaveScreenDirector : ISaveBookScreen
     }
 
     /// <summary>The answer: 1 (first choice) is OUI, 0 NON, as <c>g_asyncOperationResult</c> 1 and 2. The choice is
-    /// closed as soon as it is taken (<see cref="AlundraDialogueDirector.CloseStandaloneChoice"/>). A choice another
+    /// closed as soon as it is taken (<see cref="DialogueDirector.CloseStandaloneChoice"/>). A choice another
     /// caller cleared (no result, nothing waiting) is NON.</summary>
     private bool PollAnswer()
     {
@@ -1043,7 +1043,7 @@ public sealed class AlundraSaveScreenDirector : ISaveBookScreen
             return true;
         }
 
-        var dialogue = AlundraDialogueDirector.Instance;
+        var dialogue = DialogueDirector.Instance;
         var result = dialogue.TakeChoiceResult();
         if (result == null && dialogue.IsAwaitingChoice)
         {

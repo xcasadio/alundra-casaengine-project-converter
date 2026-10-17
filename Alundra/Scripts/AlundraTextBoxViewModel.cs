@@ -46,7 +46,7 @@ public sealed class AlundraTextBoxViewModel : ViewModelBase
 
     public TextBoxCursorViewModel Cursor { get; } = new();
 
-    /// <summary>E19.f4c2: the speaker's name box (written by <see cref="AlundraTextBoxPresenter"/> from <see cref="AlundraDialogueDirector.NameBox"/>).</summary>
+    /// <summary>E19.f4c2: the speaker's name box (written by <see cref="AlundraTextBoxPresenter"/> from <see cref="DialogueDirector.NameBox"/>).</summary>
     public TextBoxNameViewModel NameBox { get; } = new();
 
     /// <summary>E19.f4c2: the speaker's portrait, the inventories' view model of it (written by the presenter with <see cref="InventoryPortraitViewModel.ApplyDialogue"/>).</summary>
@@ -68,14 +68,14 @@ public sealed class AlundraTextBoxViewModel : ViewModelBase
     /// Writes the drawn state of <paramref name="box"/> after its last pass: nothing shows while the box is not drawn; else the frame at the box's Y, the clip of the pass,
     /// each row's text at <c>RowX - 32</c> and <c>Y + 5 + 16 i - RowOffset - ClipTop</c> (relative to the clip canvas), and the cursor when its image is posed.
     /// </summary>
-    internal void Apply(AlundraDialogueBox box) => Apply(box, false);
+    internal void Apply(DialogueBox box) => Apply(box, false);
 
     /// <summary>
-    /// E19.f4c2 F4C2-R3: <see cref="Apply(AlundraDialogueBox)"/> for a screen that also shows the speaker. <paramref name="speakerDrawn"/>: the name box or the portrait drew this pass.
+    /// E19.f4c2 F4C2-R3: <see cref="Apply(DialogueBox)"/> for a screen that also shows the speaker. <paramref name="speakerDrawn"/>: the name box or the portrait drew this pass.
     /// The root shows while the box or the speaker is drawn; while only the speaker is (the second speaker of two in a row draws before its box does, and a portrait left at rest has no
     /// box), the frame, the clip with its rows and the cursor fold.
     /// </summary>
-    internal void Apply(AlundraDialogueBox box, bool speakerDrawn)
+    internal void Apply(DialogueBox box, bool speakerDrawn)
     {
         ArgumentNullException.ThrowIfNull(box);
         AppliedCount++;

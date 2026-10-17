@@ -8,7 +8,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E15.c T5 (docs/plan-e15-yarn.md, contract item 4): unit coverage of
-/// <see cref="AlundraDialogueCapturePresenter.ToFont3Text"/> itself, built directly from a
+/// <see cref="DialogueCapturePresenter.ToFont3Text"/> itself, built directly from a
 /// <see cref="DialogueLine"/> with hand-placed <see cref="DialogueMarkupAttribute"/> entries - never
 /// through a compiled Yarn asset (<see cref="AlundraDialogueYarnRenderingTests"/> covers the
 /// end-to-end glyph/br rendering through the real director).
@@ -25,7 +25,7 @@ public sealed class AlundraDialogueCapturePresenterTests
     /// The real corpus shape of M135_S090_p3: "Mais[slow/][glyph id=18/][slow/][glyph id=18/][slow/]il"
     /// plus a later "[br/]" - TWO glyphs and a br share ONE position (right after "Mais", the "slow"
     /// markers carry zero width and are ignored here), and another glyph sits at a LATER position. Since
-    /// <see cref="AlundraDialogueCapturePresenter.ToFont3Text"/> inserts from the END of the attribute
+    /// <see cref="DialogueCapturePresenter.ToFont3Text"/> inserts from the END of the attribute
     /// list backwards, every insertion at a smaller position must still land BEFORE the text that comes
     /// after it, and same-position insertions must keep their OWN source (attribute-list) order rather
     /// than being reversed by the end-first walk.
@@ -45,7 +45,7 @@ public sealed class AlundraDialogueCapturePresenterTests
         };
         var line = new DialogueLine(text, string.Empty, attributes);
 
-        var result = AlundraDialogueCapturePresenter.ToFont3Text(line);
+        var result = DialogueCapturePresenter.ToFont3Text(line);
 
         // Position 4 gets, in source order: glyph 18, glyph 18, then '\n' - all still before "il". Position
         // 6 is the end of "il" (text length is 6), so glyph(6, 20) appends after "il" entirely.
@@ -69,7 +69,7 @@ public sealed class AlundraDialogueCapturePresenterTests
         };
         var line = new DialogueLine(text, string.Empty, attributes);
 
-        var result = AlundraDialogueCapturePresenter.ToFont3Text(line);
+        var result = DialogueCapturePresenter.ToFont3Text(line);
 
         Assert.Equal("Mais" + (char)18 + (char)18 + "il su\nite", result);
     }

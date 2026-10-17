@@ -13,11 +13,11 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E15.c T5 (docs/plan-e15-yarn.md): shared helper that compiles a tiny Yarn asset for tests exercising
-/// <see cref="AlundraDialogueDirector"/>'s open/close/paging mechanics, which no longer take raw text
+/// <see cref="DialogueDirector"/>'s open/close/paging mechanics, which no longer take raw text
 /// directly (contract item 2) - same compiler and function declarations the DLL registers in production
-/// (<see cref="AlundraYarnBindings.CreateDeclarations"/>, same pattern as
+/// (<see cref="YarnBindings.CreateDeclarations"/>, same pattern as
 /// <c>AlundraYarnBindingsTests.CompileAsset</c>). Every page is tagged with an explicit
-/// <c>#line:{node}_p{k}</c> id, because <see cref="AlundraDialogueDirector"/> counts pages by that exact
+/// <c>#line:{node}_p{k}</c> id, because <see cref="DialogueDirector"/> counts pages by that exact
 /// convention (docs/plan-e15-yarn.md, E15.c contract item 2) - Yarn's own auto-generated line ids would
 /// not match it.
 /// </summary>
@@ -49,7 +49,7 @@ internal static class DialogueTestAssets
         }
 
         var source = $"title: {node}\n---\n{lines}===\n";
-        var result = compiler.CompileString(source, name + ".yarn", AlundraYarnBindings.CreateDeclarations());
+        var result = compiler.CompileString(source, name + ".yarn", YarnBindings.CreateDeclarations());
         Assert.True(result.Success, string.Join(Environment.NewLine, result.Diagnostics.Select(d => d.Message)));
         return DialogueAsset.FromCompiledProgram(name, node, result.ProgramBytes, result.LineTexts);
     }
@@ -58,7 +58,7 @@ internal static class DialogueTestAssets
     /// with one node <c>Etc_{index:0000}</c> per entry of <paramref name="entries"/> - the converter's own
     /// node-naming convention (`docs/formats/dialogues-yarn.md`) - each holding one page of its (escaped)
     /// text. An ETC offset with no entry here has no node at all, matching the converter's own contract
-    /// (only non-null ETC entries get a node) - <see cref="AlundraEtcStringTable"/> then resolves it like
+    /// (only non-null ETC entries get a node) - <see cref="EtcStringTable"/> then resolves it like
     /// an empty entry. No entries at all returns a valid, node-less asset (nothing to compile).</summary>
     public static DialogueAsset BuildEtc(params (int Index, string Text)[] entries)
     {
@@ -94,7 +94,7 @@ internal static class DialogueTestAssets
             source.Append("===\n");
         }
 
-        var result = compiler.CompileString(source.ToString(), name + ".yarn", AlundraYarnBindings.CreateDeclarations());
+        var result = compiler.CompileString(source.ToString(), name + ".yarn", YarnBindings.CreateDeclarations());
         Assert.True(result.Success, string.Join(Environment.NewLine, result.Diagnostics.Select(d => d.Message)));
         return DialogueAsset.FromCompiledProgram(name, nodes[0].Node, result.ProgramBytes, result.LineTexts);
     }

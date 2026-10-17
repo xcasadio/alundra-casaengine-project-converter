@@ -28,7 +28,7 @@ namespace Alundra.Tests.UI;
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraTextBoxPixelTests : IDisposable
 {
-    private static readonly AlundraDialogueDirector Director = AlundraDialogueDirector.Instance;
+    private static readonly DialogueDirector Director = DialogueDirector.Instance;
     private const string Br = "[br trimwhitespace=false/]";
 
     private static readonly (int R, int G, int B) Ink = (41, 49, 16);
@@ -48,10 +48,10 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
     private static void Reset()
     {
         Director.ResetForTests();
-        Director.Box.DrawsPreShiftRowsAtScrollEnd = AlundraDialogueBox.ScrollEndDrawsPreShiftRows; // a test of the variant leaves the box's flag on
+        Director.Box.DrawsPreShiftRowsAtScrollEnd = DialogueBox.ScrollEndDrawsPreShiftRows; // a test of the variant leaves the box's flag on
         Director.AdvanceProviderForTests = null;
-        AlundraDialogueCapturePresenter.ResetForTests();
-        AlundraFont3Advances.ResetForTests();
+        DialogueCapturePresenter.ResetForTests();
+        Font3Advances.ResetForTests();
     }
 
     // ---- driving the real box ----------------------------------------------------------------------------------------------------
@@ -262,7 +262,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
     public void TheScrollEndingPass_ShowsTheRowsAfterTheShift_AsTheVersionedImage_AtX1AndX2()
     {
         DriveScroll(100);
-        Assert.False(AlundraDialogueBox.ScrollEndDrawsPreShiftRows);
+        Assert.False(DialogueBox.ScrollEndDrawsPreShiftRows);
         AssertTheImage(
             "scroll_ending_visible",
             (33, 172, FrameBeige, "the band of the old top row is wiped before the ordering table is drawn (D-E19-83): the frame colour"),

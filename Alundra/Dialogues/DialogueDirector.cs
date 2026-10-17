@@ -36,30 +36,30 @@ namespace Alundra.Dialogues;
 /// map-entry reset in the install preamble").
 /// <para/>
 /// E19.f2a (docs/plan-e19-opcodes.md section 1.2j.3, F2-R1 to F2-R6, ADR-0029): the box is the binary's, to the tick. The director owns an
-/// <see cref="AlundraDialogueBox"/> (the machine: slides, typing steps, lines and scroll, cursor, voices, close and release) and feeds it the
+/// <see cref="DialogueBox"/> (the machine: slides, typing steps, lines and scroll, cursor, voices, close and release) and feeds it the
 /// pages the Yarn runner delivers, cut into steps from their text and markers; the world proxy runs <see cref="Pass"/> once per logic tick
 /// BEFORE the scripts of that tick. The box is drawn by the text box screen (E19.f2b1c, <see cref="AlundraTextBoxPresenter"/> reads the box after each pass), the choice box by the choice screen
 /// (E19.f3b, <see cref="AlundraChoicePresenter"/> reads it after the same pass); the engine's presenter no longer draws anything for a choice. The text flags of a page are set at their glyph, not at the display of the page.
 /// </summary>
-public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundraDialogueBoxHost
+public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
 {
     /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares.</summary>
-    public static readonly AlundraDialogueDirector Instance = new();
+    public static readonly DialogueDirector Instance = new();
 
     private const int DefaultCloseMask = 3; // §1.2 - bit0 (auto-timer) | bit1 (button), the original's default g_etcAnimationMode.
     private const uint SquareBit = PadState.Square; // §1.2/D-E12-4: bit 0x80.
 
-    private AlundraDialogueDirector()
+    private DialogueDirector()
     {
-        _box = new AlundraDialogueBox(this);
+        _box = new DialogueBox(this);
         _advanceDelegate = AdvanceOf;
         _nameTextDelegate = NameTextOf;
     }
 
-    private readonly AlundraDialogueBox _box;
+    private readonly DialogueBox _box;
 
     // E19.f4b: the speaker's name box and portrait (the binary's slot 12 and portrait block), run by every pass of the director right after the text box's and the choice's.
-    private readonly AlundraDialogueNameBox _nameBox = new();
+    private readonly DialogueNameBox _nameBox = new();
     private readonly AlundraInventoryPortrait _portrait = new();
     private AlundraEntityScriptProxy? _portraitSpeaker;
     private DialoguePortraitRef? _portraitSource;
@@ -80,7 +80,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     // actually changes (a new world/map - InstallForMapEntry resets open/page state right after anyway);
     // a same-game-state re-point (TryWireDialoguePresenterOnce's "presenter appears later this frame")
     // just re-points the capture presenter's own WorldPresenter, keeping any dialogue already running.
-    private AlundraDialogueCapturePresenter? _capturePresenter;
+    private DialogueCapturePresenter? _capturePresenter;
     private YarnDialogueRunner? _runner;
     private GameState? _boundGameState;
 
@@ -96,8 +96,8 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     private bool _awaitingChoice;
 
     // E19.f3a (F3A-R1/R2): the binary's choice box (slot 3), run by every pass of the director right after the text box's. The engine's window is no longer used for a choice.
-    private readonly AlundraChoiceBox _choice = new();
-    private AlundraChoiceAnswerPlan? _choicePlan;
+    private readonly ChoiceBox _choice = new();
+    private ChoiceAnswerPlan? _choicePlan;
 
     // The pad of the previous call of Tick, as the choice box reads it (the seam of the hosts without a world proxy; the proxy hands the words of its own ticks to Pass).
     private readonly TickPad _seamPad = new();
@@ -117,10 +117,10 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     public int OpenSerial { get; private set; }
 
     /// <summary>The box the world draws: its state is read by the view (E19.f2b) and by the tests; only this director writes it.</summary>
-    internal AlundraDialogueBox Box => _box;
+    internal DialogueBox Box => _box;
 
     /// <summary>E19.f4b: the name box of the speaker (logic only; the view is E19.f4c): its state is read by the view and by the tests, only this director writes it.</summary>
-    internal AlundraDialogueNameBox NameBox => _nameBox;
+    internal DialogueNameBox NameBox => _nameBox;
 
     /// <summary>E19.f4b: the dialogue's own instance of the portrait machine (rest (8, 172 - h)); the inventories' is <see cref="AlundraInventoryPortrait.Instance"/>, never touched here.</summary>
     internal AlundraInventoryPortrait Portrait => _portrait;
@@ -139,7 +139,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     internal Func<(int X, int Y)>? ScrollSource { get; set; }
 
     /// <summary>E19.f3b: the choice box (OUI / NON) the world draws: its state is read by the choice presenter (<see cref="AlundraChoicePresenter"/>) and by the tests; only this director writes it.</summary>
-    internal AlundraChoiceBox ChoiceBox => _choice;
+    internal ChoiceBox ChoiceBox => _choice;
 
     /// <summary>Test-only seam (F2B1B-R1): the advance of a glyph, in place of the production reader of <c>UI/font3.fnt</c>; set and put back by the test (<c>try</c>/<c>finally</c>).</summary>
     internal Func<char, int>? AdvanceProviderForTests { get; set; }
@@ -180,9 +180,9 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         // First attach, or a genuinely different game state (a new world/map) - InstallForMapEntry runs
         // right after this from the same install call and resets open/page state anyway, so there is no
         // Yarn state worth preserving across this rebuild.
-        _capturePresenter = new AlundraDialogueCapturePresenter(presenter) { LineSink = OnPageShown };
-        _runner = new YarnDialogueRunner(_capturePresenter) { VariableStorage = new AlundraYarnVariableStorage(gameState) };
-        new AlundraYarnBindings(gameState).Register(_runner);
+        _capturePresenter = new DialogueCapturePresenter(presenter) { LineSink = OnPageShown };
+        _runner = new YarnDialogueRunner(_capturePresenter) { VariableStorage = new YarnVariableStorage(gameState) };
+        new YarnBindings(gameState).Register(_runner);
         _boundGameState = gameState;
     }
 
@@ -292,7 +292,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     /// cursor): keeps the page as the director's current line and appends its steps to the box (F2-R3).</summary>
     private void OnPageShown(DialogueLine line)
     {
-        _pageLine = new DialogueLine(AlundraDialogueCapturePresenter.ToFont3Text(line));
+        _pageLine = new DialogueLine(DialogueCapturePresenter.ToFont3Text(line));
         _pagesDelivered++;
         _box.AppendPage(Tokenize(line), hasFollowingPage: _pagesDelivered < _pageCount);
     }
@@ -414,7 +414,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
             else if (_warnedPortraitSpriteTypes.Add(speaker.SpriteType))
             {
                 Logs.WriteWarning(
-                    $"AlundraDialogueDirector: a speaker of sprite type {speaker.SpriteType} has the portrait flag but no DialoguePortrait field (an export made before E19.f4a?); "
+                    $"DialogueDirector: a speaker of sprite type {speaker.SpriteType} has the portrait flag but no DialoguePortrait field (an export made before E19.f4a?); "
                     + "its dialogues show no portrait (logged once per sprite type).");
             }
         }
@@ -429,8 +429,8 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         return AlundraInventoryPortrait.ComputeHeadPoint(speaker.PosX, speaker.PosY, speaker.PosZ, scroll.Item1, scroll.Item2);
     }
 
-    /// <summary>The ETC text of a name (<see cref="AlundraEtcStringTable.TryResolveText"/>), or null when no ETC is loaded; an empty or absent entry gives the empty string, which the name box refuses.</summary>
-    private static string? NameTextOf(int etcIndex) => AlundraEtcStringTable.TryResolveText(etcIndex, out var text) ? text : null;
+    /// <summary>The ETC text of a name (<see cref="EtcStringTable.TryResolveText"/>), or null when no ETC is loaded; an empty or absent entry gives the empty string, which the name box refuses.</summary>
+    private static string? NameTextOf(int etcIndex) => EtcStringTable.TryResolveText(etcIndex, out var text) ? text : null;
 
     /// <summary>The name box, the portrait and the speaker back to the state of a map entry (the binary resets them once, in the UI initialisation at the start; the DLL where it resets the box).</summary>
     private void ResetSpeakerSatellites()
@@ -498,27 +498,27 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
 
     // ---- IAlundraDialogueBoxHost
 
-    void IAlundraDialogueBoxHost.FlagReached(int flag)
+    void IDialogueBoxHost.FlagReached(int flag)
     {
         if (_gameState != null)
         {
-            AlundraYarnBindings.SetTextFlag(_gameState, (uint)flag);
+            YarnBindings.SetTextFlag(_gameState, (uint)flag);
         }
     }
 
-    void IAlundraDialogueBoxHost.PlaySound(int sfxId) => _soundPlayer?.PlaySfx(sfxId);
+    void IDialogueBoxHost.PlaySound(int sfxId) => _soundPlayer?.PlaySfx(sfxId);
 
-    int IAlundraDialogueBoxHost.Advance(char display) => AdvanceOf(display);
+    int IDialogueBoxHost.Advance(char display) => AdvanceOf(display);
 
     private int AdvanceOf(char display)
     {
         var provider = AdvanceProviderForTests;
         return provider != null
             ? provider(display)
-            : AlundraFont3Advances.GetOrCreate(CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath).Advance(display);
+            : Font3Advances.GetOrCreate(CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath).Advance(display);
     }
 
-    void IAlundraDialogueBoxHost.CloseTriggered()
+    void IDialogueBoxHost.CloseTriggered()
     {
         // 0x80045EF8-0x80045F08: the name box's closer, then the dialogue portrait's return to where its speaker is NOW (the speaker whose start was accepted).
         _nameBox.Close();
@@ -529,7 +529,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         }
     }
 
-    void IAlundraDialogueBoxHost.PageTurned()
+    void IDialogueBoxHost.PageTurned()
     {
         _pageIndex++;
 
@@ -537,7 +537,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         _runner?.Continue();
     }
 
-    void IAlundraDialogueBoxHost.Released()
+    void IDialogueBoxHost.Released()
     {
         _pageCount = 0;
         _pagesDelivered = 0;
@@ -688,7 +688,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     internal IReadOnlyList<string> ChoicesForTests => _choice.IsActive ? _choice.Labels : Array.Empty<string>();
 
     /// <summary>The choice box (logic), for the tests and, later, its screen (E19.f3b).</summary>
-    internal AlundraChoiceBox ChoiceBoxForTests => _choice;
+    internal ChoiceBox ChoiceBoxForTests => _choice;
 
     /// <summary>
     /// Test-only (E19.f3a, F3A-R4): the player answers the open choice - by the pad. Arms the presses (Left or Right until option <paramref name="index"/> is
@@ -704,7 +704,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
 
         if (_choice.IsActive)
         {
-            _choicePlan ??= new AlundraChoiceAnswerPlan(index);
+            _choicePlan ??= new ChoiceAnswerPlan(index);
         }
 
         return true;

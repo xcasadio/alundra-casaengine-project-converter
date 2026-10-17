@@ -53,7 +53,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         AlundraInventoryPostProcess.Instance.ResetForTests();
         AlundraInventoryPortrait.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();

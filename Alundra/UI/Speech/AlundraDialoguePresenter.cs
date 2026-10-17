@@ -20,7 +20,7 @@ namespace Alundra.UI.Speech;
 /// generic mechanism (<see cref="DialogueService"/> + <see cref="DialogueScreen"/>, D-E12-5) and pushes/
 /// removes that screen on the ACTIVE UI view (<see cref="CasaEngine.Framework.Application.GameManager.ViewManager"/>'s
 /// own <c>GetActiveUIView()</c> - the SAME route <c>UIOverlayDemo</c> itself uses) the moment a dialogue
-/// opens/closes, so <see cref="AlundraDialogueDirector"/> never has to know anything about
+/// opens/closes, so <see cref="DialogueDirector"/> never has to know anything about
 /// <see cref="IUIViewRuntime"/> at all - it only ever sees the generic <see cref="IDialoguePresenter"/>
 /// surface.
 ///
@@ -35,7 +35,7 @@ namespace Alundra.UI.Speech;
 /// Constructed and wired ENTIRELY inside <see cref="AlundraWorldProxy.InstallDialogueSystems"/> (no
 /// separable call site, the M16 lesson every install method in this DLL already follows) - never held
 /// directly by <see cref="EventProgramRunner"/>, which only ever sees it through the generic
-/// <see cref="IDialoguePresenter"/> reference <see cref="AlundraDialogueDirector"/> was attached to.
+/// <see cref="IDialoguePresenter"/> reference <see cref="DialogueDirector"/> was attached to.
 /// </summary>
 public sealed class AlundraDialoguePresenter : IDialoguePresenter, IDisposable
 {
@@ -185,11 +185,11 @@ public sealed class AlundraDialoguePresenter : IDialoguePresenter, IDisposable
 
     /// <summary>The MGUI window's own close control (a title-bar X - the "Close" button itself is now
     /// opted out of, see the constructor). Not part of Alundra's own control scheme: the interact button
-    /// drives every real close, through <see cref="AlundraDialogueDirector"/>. The wiring is SYMMETRIC on
+    /// drives every real close, through <see cref="DialogueDirector"/>. The wiring is SYMMETRIC on
     /// purpose - it closes the LOGICAL box too, not just this presenter. Closing only the presenter is
     /// exactly the defect reported in play: the window vanished while the director still held the box
     /// open with MenuOpen posted, so NPCs stayed frozen and the player stayed uncontrollable until the
     /// interact button was pressed as well. The director's own re-entry guard makes the resulting
     /// director -> presenter -> director path terminate.</summary>
-    private void RequestClose() => AlundraDialogueDirector.Instance.NotifyPresenterClosed();
+    private void RequestClose() => DialogueDirector.Instance.NotifyPresenterClosed();
 }

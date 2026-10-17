@@ -61,8 +61,8 @@ internal interface ISaveBookScreen
 /// <item><description>SE7: slot F restarts the original's book at state 1 even in the middle of a flow; here it is
 /// ignored unless the book is at rest (state 0).</description></item>
 /// <item><description>SE1: no path leaves the hero locked, a box of the book open, or a choice of the book
-/// waiting - the abandon and the reset close the box the book owns (<see cref="AlundraDialogueDirector.OpenSerial"/>
-/// unchanged since its <see cref="AlundraDialogueDirector.Open"/>), cancel its choice, and clear
+/// waiting - the abandon and the reset close the box the book owns (<see cref="DialogueDirector.OpenSerial"/>
+/// unchanged since its <see cref="DialogueDirector.Open"/>), cancel its choice, and clear
 /// <c>ControlLocked</c>.</description></item>
 /// </list>
 /// <para>The book does not reuse opcode <c>0x44</c>'s degraded rule, which takes a missing presenter for a OUI
@@ -125,11 +125,11 @@ public sealed class SaveBook
     /// the end-to-end test, which never replaces it, pins the production wiring.</summary>
     private static ISaveBookScreen ProductionScreen => AlundraSaveScreenDirector.Instance;
 
-    /// <summary>L4/SE1: <see cref="AlundraDialogueDirector.OpenSerial"/> right after the book's own
-    /// <see cref="AlundraDialogueDirector.Open"/>, or null when the book owns no box.</summary>
+    /// <summary>L4/SE1: <see cref="DialogueDirector.OpenSerial"/> right after the book's own
+    /// <see cref="DialogueDirector.Open"/>, or null when the book owns no box.</summary>
     private int? _ownedOpenSerial;
 
-    /// <summary>L4/SE1: true from the book's <see cref="AlundraDialogueDirector.OpenChoice"/> until its answer is
+    /// <summary>L4/SE1: true from the book's <see cref="DialogueDirector.OpenChoice"/> until its answer is
     /// taken - the choice to cancel on an abandon.</summary>
     private bool _choiceOpened;
 
@@ -202,7 +202,7 @@ public sealed class SaveBook
     /// </summary>
     internal void RunTick(AlundraEntityScriptProxy book, IEntityWorldContext context, GameState state)
     {
-        var dialogue = AlundraDialogueDirector.Instance;
+        var dialogue = DialogueDirector.Instance;
 
         switch (ReadState(book))
         {
@@ -237,7 +237,7 @@ public sealed class SaveBook
     /// <summary>State 1 (0x8007B9E4): the question text in a box closable by script only, then a 61-tick wait. SE2:
     /// abandon, opening nothing, without a presenter, while a box is open or a choice waits (the equivalent of the
     /// original's <c>0x80045004</c> test), or when ETC <c>0x40</c> does not resolve.</summary>
-    private void RunMessage(AlundraEntityScriptProxy book, GameState state, AlundraDialogueDirector dialogue)
+    private void RunMessage(AlundraEntityScriptProxy book, GameState state, DialogueDirector dialogue)
     {
         if (!dialogue.HasPresenter)
         {
@@ -251,8 +251,8 @@ public sealed class SaveBook
             return;
         }
 
-        var asset = AlundraEtcStringTable.EtcDialogueAsset;
-        if (asset == null || !AlundraEtcStringTable.TryResolveText(QuestionEtcIndex, out _))
+        var asset = EtcStringTable.EtcDialogueAsset;
+        if (asset == null || !EtcStringTable.TryResolveText(QuestionEtcIndex, out _))
         {
             Reset(book, state, dialogue, $"ETC 0x{QuestionEtcIndex:X2} does not resolve");
             return;
@@ -268,7 +268,7 @@ public sealed class SaveBook
     /// <summary>State 2 (0x8007BA18): after the wait, OUI/NON. SE2/H2: without a presenter, or when ETC
     /// <c>0x41</c>/<c>0x42</c> do not resolve - the only observable failures of the question - abandon instead of the
     /// original's park in state 3.</summary>
-    private void RunQuestion(AlundraEntityScriptProxy book, GameState state, AlundraDialogueDirector dialogue)
+    private void RunQuestion(AlundraEntityScriptProxy book, GameState state, DialogueDirector dialogue)
     {
         book.DelayOrAngleOrEntityId--;
         if (book.DelayOrAngleOrEntityId != -1)
@@ -282,8 +282,8 @@ public sealed class SaveBook
             return;
         }
 
-        if (!AlundraEtcStringTable.TryResolveText(YesEtcIndex, out var yes)
-            || !AlundraEtcStringTable.TryResolveText(NoEtcIndex, out var no))
+        if (!EtcStringTable.TryResolveText(YesEtcIndex, out var yes)
+            || !EtcStringTable.TryResolveText(NoEtcIndex, out var no))
         {
             Reset(book, state, dialogue, $"ETC 0x{YesEtcIndex:X2}/0x{NoEtcIndex:X2} do not resolve");
             return;
@@ -296,8 +296,8 @@ public sealed class SaveBook
 
     /// <summary>State 4 (0x8007BA80): the answer. The box of the book is closed first (<c>TryActivateTextHoldState</c>,
     /// <c>FunctionTypeC.cs:6893</c>, SE1); NON abandons, OUI waits 61 ticks. SE2: a choice another
-    /// <see cref="AlundraDialogueDirector.Open"/> cleared (no result, nothing waiting) abandons.</summary>
-    private void RunAnswer(AlundraEntityScriptProxy book, GameState state, AlundraDialogueDirector dialogue)
+    /// <see cref="DialogueDirector.Open"/> cleared (no result, nothing waiting) abandons.</summary>
+    private void RunAnswer(AlundraEntityScriptProxy book, GameState state, DialogueDirector dialogue)
     {
         var answer = dialogue.TakeChoiceResult();
         if (answer == null)
@@ -327,7 +327,7 @@ public sealed class SaveBook
     /// hero's map and tile, then the validation of the capture (E16.c C5). SE4/SE8: without rules, or a capture that
     /// does not validate, the screen starts on its failure message and nothing is written; SE7: a screen already
     /// active abandons.</summary>
-    private void RunCapture(AlundraEntityScriptProxy book, IEntityWorldContext context, GameState state, AlundraDialogueDirector dialogue)
+    private void RunCapture(AlundraEntityScriptProxy book, IEntityWorldContext context, GameState state, DialogueDirector dialogue)
     {
         book.DelayOrAngleOrEntityId--;
         if (book.DelayOrAngleOrEntityId != -1)
@@ -385,10 +385,10 @@ public sealed class SaveBook
         return null;
     }
 
-    /// <summary>SE1: closes the box the book opened, only while <see cref="AlundraDialogueDirector.OpenSerial"/> is
-    /// still the one it remembered - otherwise another <see cref="AlundraDialogueDirector.Open"/> replaced it, and the
+    /// <summary>SE1: closes the box the book opened, only while <see cref="DialogueDirector.OpenSerial"/> is
+    /// still the one it remembered - otherwise another <see cref="DialogueDirector.Open"/> replaced it, and the
     /// box on screen is not the book's.</summary>
-    private void CloseOwnedBox(AlundraDialogueDirector dialogue)
+    private void CloseOwnedBox(DialogueDirector dialogue)
     {
         if (_ownedOpenSerial is { } serial && serial == dialogue.OpenSerial && dialogue.IsOpen)
         {
@@ -403,7 +403,7 @@ public sealed class SaveBook
     /// box the book owns, cancel the choice it opened, clear <c>ControlLocked</c>, state 0, and end the flow at the
     /// screen. <paramref name="reason"/> is logged when not null.
     /// </summary>
-    private void Reset(AlundraEntityScriptProxy book, GameState state, AlundraDialogueDirector dialogue, string? reason)
+    private void Reset(AlundraEntityScriptProxy book, GameState state, DialogueDirector dialogue, string? reason)
     {
         if (reason != null)
         {
@@ -425,7 +425,7 @@ public sealed class SaveBook
     }
 
     /// <summary>SE3: forgets the box and the choice of a flow cut by a world change - the new world's dialogue
-    /// director already dropped both (<see cref="AlundraDialogueDirector.InstallForMapEntry"/>).</summary>
+    /// director already dropped both (<see cref="DialogueDirector.InstallForMapEntry"/>).</summary>
     internal void ForgetFlow()
     {
         _ownedOpenSerial = null;

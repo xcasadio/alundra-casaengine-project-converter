@@ -127,7 +127,7 @@ internal static class SaveGameDirectorTestSupport
         AlundraInventoryPostProcess.Instance.ResetForTests();
         AlundraInventoryPortrait.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();
         ScreenFadeDirector.Instance.ResetForTests();
@@ -153,8 +153,8 @@ internal static class SaveGameDirectorTestSupport
                 return (hero, "not on the ground");
             case SaveGameBlocker.DialogueOpen:
                 // A control mode other than 0 or 1 leaves PlayerControlFlags untouched (G7).
-                AlundraDialogueDirector.Instance.Open(null, null, controlMode: 5);
-                Assert.True(AlundraDialogueDirector.Instance.IsOpen);
+                DialogueDirector.Instance.Open(null, null, controlMode: 5);
+                Assert.True(DialogueDirector.Instance.IsOpen);
                 return (hero, "dialogue box is open");
             case SaveGameBlocker.InventoryOpen:
             case SaveGameBlocker.SubInventoryOpen:

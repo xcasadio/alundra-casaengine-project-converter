@@ -21,19 +21,19 @@ namespace Alundra.Tests;
 /// <summary>
 /// E19.b T1 (docs/plan-e19-opcodes.md §1.2d, D-E19-5): <c>0xC4</c> (dialogue with a speaker search, 6 bytes) and the
 /// first direct test of <c>0x5C</c> (the same box with the name, 4 bytes), on synthetic bytecode and the real
-/// session-scoped <see cref="AlundraDialogueDirector"/> (the pattern of <see cref="AlundraDialogueOpcodeDispatchTests"/>),
+/// session-scoped <see cref="DialogueDirector"/> (the pattern of <see cref="AlundraDialogueOpcodeDispatchTests"/>),
 /// then the corpus of the real export: the 31 sites of 11 maps, each opening a node that exists.
 /// </summary>
 public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
 {
     public AlundraDialogueSpeakerOpcodeTests()
     {
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
     {
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
     }
 
     /// <summary>The text id of the box under test (bit 0x80: the map's node <c>M1_S002</c>, "TARGET").</summary>
@@ -70,7 +70,7 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
             + "title: M1_S002\n---\n<<flag 999>>\nTARGET #line:M1_S002_p0\n===\n"
             + "title: M1_S003\n---\nDECOY-V2 #line:M1_S003_p0\n===\n"
             + "title: M1_S004\n---\nDECOY-V1 #line:M1_S004_p0\n===\n";
-        var result = compiler.CompileString(source, "MapAsset.yarn", AlundraYarnBindings.CreateDeclarations());
+        var result = compiler.CompileString(source, "MapAsset.yarn", YarnBindings.CreateDeclarations());
         Assert.True(result.Success, string.Join(Environment.NewLine, result.Diagnostics.Select(d => d.Message)));
         return DialogueAsset.FromCompiledProgram("MapAsset", "M1_S001", result.ProgramBytes, result.LineTexts);
     }
@@ -84,15 +84,15 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
-        public IAlundraDialogueDirector? DialogueDirector { get; set; }
+        public IDialogueDirector? DialogueDirector { get; set; }
     }
 
     private static (EventProgramRunner Runner, GameState GameState, FakeContext Context) NewRealMontage(int[] codes)
     {
         var gameState = new GameState();
-        AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), gameState);
-        AlundraDialogueDirector.Instance.InstallForMapEntry();
-        var context = new FakeContext { DialogueDirector = AlundraDialogueDirector.Instance };
+        DialogueDirector.Instance.AttachToWorld(new DialogueService(), gameState);
+        DialogueDirector.Instance.InstallForMapEntry();
+        var context = new FakeContext { DialogueDirector = DialogueDirector.Instance };
         var runner = new EventProgramRunner(NewDocument(codes), gameState, context) { MapDialogueAsset = MapAsset() };
         return (runner, gameState, context);
     }
@@ -112,8 +112,8 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
 
         runner.RunOneScriptCall(new AlundraEntityScriptProxy(), state);
 
-        Assert.True(AlundraDialogueDirector.Instance.IsOpen);
-        Assert.Equal("TARGET", AlundraDialogueDirector.Instance.CurrentLineForTests?.Text);
+        Assert.True(DialogueDirector.Instance.IsOpen);
+        Assert.Equal("TARGET", DialogueDirector.Instance.CurrentLineForTests?.Text);
         Assert.Equal(size, state.CodeIndex); // advanced by the instruction's size, then 0xFF ended the call.
         Assert.Equal(7, state.Result);
         Assert.Equal(EventTraceKind.Implemented, kind);
@@ -125,16 +125,16 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
     {
         var codes = Codes(opcode, mode: 1);
         var (runner, _, _) = NewRealMontage(codes);
-        AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("First", "FIRST"), "Start", controlMode: 1);
-        var serial = AlundraDialogueDirector.Instance.OpenSerial;
+        DialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("First", "FIRST"), "Start", controlMode: 1);
+        var serial = DialogueDirector.Instance.OpenSerial;
         var state = NewState(codes);
 
         runner.RunOneScriptCall(new AlundraEntityScriptProxy(), state);
 
         Assert.Equal(0, state.CodeIndex); // returned 0: suspended AT the instruction, size never applied.
         Assert.NotEqual(size, state.CodeIndex);
-        Assert.Equal(serial, AlundraDialogueDirector.Instance.OpenSerial);
-        Assert.Equal("FIRST", AlundraDialogueDirector.Instance.CurrentLineForTests?.Text);
+        Assert.Equal(serial, DialogueDirector.Instance.OpenSerial);
+        Assert.Equal("FIRST", DialogueDirector.Instance.CurrentLineForTests?.Text);
         Assert.Equal(7, state.Result);
     }
 

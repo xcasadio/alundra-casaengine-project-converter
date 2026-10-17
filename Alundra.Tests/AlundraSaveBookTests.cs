@@ -46,12 +46,12 @@ public sealed class AlundraSaveBookTests : IDisposable
     public AlundraSaveBookTests()
     {
         ResetSingletons();
-        AlundraEtcStringTable.ResetForTests();
+        EtcStringTable.ResetForTests();
         SaveBook.Instance.ResetForTests();
 
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(
+        EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
-        AlundraDialogueDirector.Instance.AttachToWorld(new AlundraDialoguePresenter(new RecordingUIViewRuntime()), State);
+        DialogueDirector.Instance.AttachToWorld(new AlundraDialoguePresenter(new RecordingUIViewRuntime()), State);
         AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
         AlundraSaveGameDirector.Instance.SaveSlots = _slots;
         SaveBook.Instance.Screen = _screen;
@@ -71,13 +71,13 @@ public sealed class AlundraSaveBookTests : IDisposable
     public void Dispose()
     {
         ResetSingletons();
-        AlundraEtcStringTable.ResetForTests();
+        EtcStringTable.ResetForTests();
         SaveBook.Instance.ResetForTests();
     }
 
     private static GameState State => GameState.Instance;
 
-    private static AlundraDialogueDirector Dialogue => AlundraDialogueDirector.Instance;
+    private static DialogueDirector Dialogue => DialogueDirector.Instance;
 
     private int BookState => SaveBook.ReadState(_book);
 
@@ -273,7 +273,7 @@ public sealed class AlundraSaveBookTests : IDisposable
     [Fact]
     public void State1_QuestionTextUnresolved_Abandons()
     {
-        AlundraEtcStringTable.ResetForTests(); // no dialogue_etc asset at all.
+        EtcStringTable.ResetForTests(); // no dialogue_etc asset at all.
         Interact();
 
         Tick();
@@ -309,7 +309,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         Tick();
         Assert.True(Dialogue.IsOpen);
 
-        AlundraEtcStringTable.ResetForTests(); // 0x41/0x42 no longer resolve.
+        EtcStringTable.ResetForTests(); // 0x41/0x42 no longer resolve.
         Tick(Wait);
 
         Assert.NotEqual(3, BookState);

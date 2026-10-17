@@ -18,20 +18,20 @@ using Alundra.Dialogues.Yarn;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E15.c T4 (docs/plan-e15-yarn.md): covers <see cref="AlundraYarnBindings"/> - the two commands and
+/// E15.c T4 (docs/plan-e15-yarn.md): covers <see cref="YarnBindings"/> - the two commands and
 /// seven functions of the E15.b function contract registered on a real <see cref="YarnDialogueRunner"/>,
 /// against real Yarn scripts compiled by <see cref="YarnDialogueCompiler"/> (same pattern as
 /// <c>CasaEngine.Tests.Dialogue.YarnDialogueRunnerTests</c>). Item names come through the DLL's own
-/// <see cref="AlundraEtcStringTable"/>, on a <c>dialogue_etc</c>-shaped asset built with
+/// <see cref="EtcStringTable"/>, on a <c>dialogue_etc</c>-shaped asset built with
 /// <see cref="DialogueTestAssets.BuildEtc"/> and injected through
-/// <see cref="AlundraEtcStringTable.SetEtcDialogueAssetForTests"/> (E15.c T6 migration off this class' own
+/// <see cref="EtcStringTable.SetEtcDialogueAssetForTests"/> (E15.c T6 migration off this class' own
 /// former JSON fixture writer) - never a raw-file reader of this test's own.
 /// </summary>
 public sealed class AlundraYarnBindingsTests : IDisposable
 {
-    public AlundraYarnBindingsTests() => AlundraEtcStringTable.ResetForTests();
+    public AlundraYarnBindingsTests() => EtcStringTable.ResetForTests();
 
-    public void Dispose() => AlundraEtcStringTable.ResetForTests();
+    public void Dispose() => EtcStringTable.ResetForTests();
 
     // -----------------------------------------------------------------------------------------
     // Fixtures
@@ -41,19 +41,19 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     /// needs (T6 migration off the old JSON etc-index/global-strings pair).</summary>
     private static void SetItemNameFixture(params (int ItemId, string Name)[] items)
     {
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc(
+        EtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc(
             items.Select(item => (item.ItemId + 0x200, item.Name)).ToArray()));
     }
 
     private static DialogueAsset CompileAsset(string name, string source, global::Yarn.Library? functionDeclarations = null)
     {
         var compiler = new YarnDialogueCompiler();
-        YarnDialogueCompilationResult result = compiler.CompileString(source, name + ".yarn", functionDeclarations ?? AlundraYarnBindings.CreateDeclarations());
+        YarnDialogueCompilationResult result = compiler.CompileString(source, name + ".yarn", functionDeclarations ?? YarnBindings.CreateDeclarations());
         Assert.True(result.Success, string.Join(Environment.NewLine, result.Diagnostics.Select(d => d.Message)));
         return DialogueAsset.FromCompiledProgram(name, "Start", result.ProgramBytes, result.LineTexts);
     }
 
-    private static (YarnDialogueRunner Runner, FakeDialoguePresenter Presenter) NewRunner(AlundraYarnBindings bindings)
+    private static (YarnDialogueRunner Runner, FakeDialoguePresenter Presenter) NewRunner(YarnBindings bindings)
     {
         var presenter = new FakeDialoguePresenter();
         var runner = new YarnDialogueRunner(presenter);
@@ -72,7 +72,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     public void FlagCommand_SetsTheRightBitInTemporaryFlags(int n)
     {
         var gameState = new GameState();
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, _) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("FlagCommand", $$"""
             title: Start
@@ -100,7 +100,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         gameState.PlayerStats.Falcon = 5;
         gameState.PlayerStats.FalconTemp = 3;
         gameState.GameFlags[0x2c] = 0x2000000; // selects category 1 (§5.7)
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, _) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("FalconUpdate", """
             title: Start
@@ -129,7 +129,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         var gameState = new GameState();
         gameState.PlayerStats.Falcon = 2;
         gameState.PlayerStats.FalconTemp = 7;
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("FalconTemp", """
             title: Start
@@ -152,7 +152,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         // construction time - so a change made to the game state AFTER the bindings are built, but
         // before falcon_update ever runs, must still be the value falcon_update's own snapshot picks up.
         var gameState = new GameState();
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         gameState.PlayerStats.Falcon = 2;
         gameState.PlayerStats.FalconTemp = 7;
         var (runner, presenter) = NewRunner(bindings);
@@ -179,7 +179,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"), (0x35, "Bouclier"));
         var gameState = new GameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
         gameState.GameFlags[0x2c] = 0x2000000; // first falcon_update moves to category 1 (item 0x33)
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("CategoryItemNameBeforeTwice", """
             title: Start
@@ -206,7 +206,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         var gameState = new GameState();
         gameState.PlayerStats.Falcon = 2;
         gameState.PlayerStats.FalconTemp = 3;
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("Falcon", """
             title: Start
@@ -227,7 +227,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
         var gameState = new GameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
         gameState.GameFlags[0x2c] = 0x2000000; // moves to category 1 (reward item 0x33) on update
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("CategoryItemNameBefore", """
             title: Start
@@ -248,7 +248,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
         var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x2000000; // moves to category 1 (reward item 0x33) on update
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("CategoryItemName", """
             title: Start
@@ -268,7 +268,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     {
         var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x2000000; // category 1 -> threshold 20 (§5.7)
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("CategoryThreshold", """
             title: Start
@@ -289,7 +289,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         var gameState = new GameState();
         gameState.PlayerStats.Falcon = 5;
         gameState.GameFlags[0x2c] = 0x2000000; // category 1 -> threshold 20
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("CategoryRemaining", """
             title: Start
@@ -314,7 +314,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         gameState.GameVariables[0] = 11;
         gameState.GameVariables[1] = 22;
         gameState.GameVariables[2] = 33;
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("GameVar", $$"""
             title: Start
@@ -332,7 +332,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     public void GameVar_OutOfRange_ReturnsZeroAndLogsOnce()
     {
         var gameState = new GameState();
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("GameVarOutOfRange", """
             title: Start
@@ -362,7 +362,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
         var gameState = new GameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
         gameState.GameFlags[0x2c] = 0x2000000; // the update this page triggers moves to category 1
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("M134_S016", """
             title: Start
@@ -386,7 +386,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
         var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x2000000; // moves to category 1: threshold 20, item 0x33
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("M134_S019", """
             title: Start
@@ -414,7 +414,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     public void UnknownCommand_IsLoggedOnceAndDoesNotThrow()
     {
         var gameState = new GameState();
-        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var bindings = new YarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("UnknownCommand", """
             title: Start

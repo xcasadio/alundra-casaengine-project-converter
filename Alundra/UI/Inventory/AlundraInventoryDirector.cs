@@ -19,7 +19,7 @@ namespace Alundra.UI.Inventory;
 /// <summary>
 /// E13.d D4 (docs/plan-e13d-inventaire.md, D-E13D-1/D-E13D-6): a pure, tick-driven port of the
 /// original's main inventory (<c>MainInventoryManager</c>) - the DIRECTOR half of the director/
-/// presenter/screen split D-E13D-6 chose (same shape as <see cref="AlundraDialogueDirector"/> and
+/// presenter/screen split D-E13D-6 chose (same shape as <see cref="DialogueDirector"/> and
 /// <see cref="AlundraHudDirector"/>). No MGUI dependency at all: every piece of state D5's screen will
 /// need to draw is exposed as plain, read-only properties.
 ///
@@ -141,7 +141,7 @@ public sealed class AlundraInventoryDirector
     private ISoundPlayer? _soundPlayer;
 
     /// <summary>Re-points this session-scoped instance, same "re-point without touching state" contract
-    /// as <see cref="AlundraHudDirector.AttachToWorld"/>/<see cref="AlundraDialogueDirector.AttachToWorld"/>.
+    /// as <see cref="AlundraHudDirector.AttachToWorld"/>/<see cref="DialogueDirector.AttachToWorld"/>.
     /// Every argument null is tolerated (no live session yet) - <see cref="Tick"/> then degrades to a
     /// no-op, same shape as every other missing-system seam in this DLL.</summary>
     public void AttachToWorld(GameState? gameState, ItemTables? itemTables, ISoundPlayer? soundPlayer)
@@ -506,7 +506,7 @@ public sealed class AlundraInventoryDirector
         // MainInventoryManager.cs:447-452 - CheckSpecialWarpCondition(0): callback slot 0 is the dialogue
         // box (GameEngine.cs:1590-1593 reads g_callbackTable[0].Flags & 1, posed by SetTransitionType(0)
         // whenever a dialogue opens) - ported as "a dialogue box is open".
-        if (AlundraDialogueDirector.Instance.IsOpen)
+        if (DialogueDirector.Instance.IsOpen)
         {
             return false;
         }
@@ -1052,7 +1052,7 @@ public sealed class AlundraInventoryDirector
         {
             EquippedWeaponName = BlankName; // corrected defect, see this method's own doc.
         }
-        else if (AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, (int)currentWeaponItem, out var weaponName))
+        else if (EtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, (int)currentWeaponItem, out var weaponName))
         {
             EquippedWeaponName = weaponName;
         }
@@ -1062,7 +1062,7 @@ public sealed class AlundraInventoryDirector
         {
             EquippedItemName = BlankName; // :1774-1777
         }
-        else if (AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, (int)currentItemId, out var itemName))
+        else if (EtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, (int)currentItemId, out var itemName))
         {
             EquippedItemName = itemName;
         }

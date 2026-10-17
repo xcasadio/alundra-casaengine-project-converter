@@ -171,7 +171,7 @@ public sealed class AlundraShipBlockArcTests
     public void A6_TheCameraBlockLandsAndWalksSouth_ThenTheWarpToMap416Departs()
     {
         using var arc = new ArcRun(A6Spec);
-        var serialAtStart = AlundraDialogueDirector.Instance.OpenSerial;
+        var serialAtStart = DialogueDirector.Instance.OpenSerial;
         var samples = new Samples();
         arc.OnInstruction = t => samples.Take(arc, t);
         arc.OnFrame = () => samples.TakeFrame(arc);
@@ -264,8 +264,8 @@ public sealed class AlundraShipBlockArcTests
         Assert.Equal(new[] { 180, 643, 1332 }, new[] { 295, 306, 327 }.Select(pc => FrameOf(arc, B, pc)).ToArray());
         Assert.Equal(new[] { 592, 1203, 1800 }, FramesOf(arc, B, 739, 0x51)); // the same pace after the opening: one image earlier too.
         Assert.Equal(new[] { 412, 560, 468 }, new[] { 180, 643, 1332 }.Zip(FramesOf(arc, B, 739, 0x51), (open, close) => close - open).ToArray());
-        Assert.Equal(3u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
-        Assert.False(AlundraDialogueDirector.Instance.IsOpen);
+        Assert.Equal(3u, (uint)DialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
+        Assert.False(DialogueDirector.Instance.IsOpen);
 
         // 0x5E: the sailors' lifts, read after the instruction.
         AssertFrame(arc, B, 321, 1301);

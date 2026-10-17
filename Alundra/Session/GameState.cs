@@ -31,7 +31,7 @@ public sealed class GameState
 {
     /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-T-3,
     /// docs/plan-transitions-carte.md) - same shape as <see cref="BgmPlayer.Instance"/>/
-    /// <see cref="ScreenFadeDirector.Instance"/>/<see cref="AlundraDialogueDirector.Instance"/>.
+    /// <see cref="ScreenFadeDirector.Instance"/>/<see cref="DialogueDirector.Instance"/>.
     /// Unlike those three, this class KEEPS its public parameterless constructor (two test harnesses -
     /// <see cref="AlundraEventProgramRunnerTests"/> and <see cref="IntroTraceHarnessTests"/> among others -
     /// build their own private instance directly, never through this session carrier) - so <see cref="Instance"/>
@@ -219,9 +219,9 @@ public sealed class GameState
     /// E15.c T3 (docs/plan-e15-yarn.md §5.7, T2): port of <c>g_textCategoryIndex</c> @ 0x80149CD8. The
     /// original places this in the BSS, zeroed once at boot by the entry point (0x8008b538) and never
     /// again - not by New Game, not by loading a save, since it is NOT part of <c>g_saveData</c>
-    /// (0x801EB2E8-0x801EBA40). It is written only by <see cref="AlundraTextProgress.UpdatePlayerProgressState"/>
+    /// (0x801EB2E8-0x801EBA40). It is written only by <see cref="TextProgress.UpdatePlayerProgressState"/>
     /// and read only by the <c>\X2</c>/<c>\X3</c>/<c>\X4</c>/<c>\X5</c> text codes (via
-    /// <see cref="AlundraTextProgress"/>'s functions), so this field is process-lifetime state like the
+    /// <see cref="TextProgress"/>'s functions), so this field is process-lifetime state like the
     /// rest of this class' construction-time defaults - no New Game path resets it (nor does the binary).
     /// The one production reset is a save load: <see cref="ResetSessionForLoad"/> zeroes it, as a fresh
     /// process would (D-E16-19, docs/plan-e16-etat-partie.md E16.d); the in-process "Retry" reload of

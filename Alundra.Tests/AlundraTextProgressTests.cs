@@ -5,7 +5,7 @@ using Alundra.Dialogues;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Covers <see cref="AlundraTextProgress"/> - the falcon/text-progress state ported from
+/// Covers <see cref="TextProgress"/> - the falcon/text-progress state ported from
 /// <c>UpdateNumberOfFalcon</c> (0x8004e738) and <c>UpdatePlayerProgressState</c> (0x8004754c), per the
 /// binary facts of docs/plan-e15-yarn.md §5.7 (T2, 2026-09-28), authoritative over the decompilation.
 /// Each test cites the exact §5.7 fact it checks. Instances are built directly (never through
@@ -42,7 +42,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void CategoryThresholds_MatchTheBinaryTable()
     {
-        Assert.Equal(new[] { 15, 20, 25, 30, 35, 40, 45, 50 }, AlundraTextProgress.CategoryThresholds);
+        Assert.Equal(new[] { 15, 20, 25, 30, 35, 40, 45, 50 }, TextProgress.CategoryThresholds);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class AlundraTextProgressTests
     {
         Assert.Equal(
             new[] { 0x53, 0x33, 0x53, 0x35, 0x53, 0x37, 0x53, 0x07 },
-            AlundraTextProgress.RewardItemByCategory);
+            TextProgress.RewardItemByCategory);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ public class AlundraTextProgressTests
         gameState.PlayerStats.Falcon = 5;
         gameState.PlayerStats.FalconTemp = 7;
 
-        AlundraTextProgress.UpdateNumberOfFalcon(gameState);
+        TextProgress.UpdateNumberOfFalcon(gameState);
 
         Assert.Equal(12, gameState.PlayerStats.Falcon);
     }
@@ -76,7 +76,7 @@ public class AlundraTextProgressTests
         gameState.PlayerStats.Falcon = 5;
         gameState.PlayerStats.FalconTemp = 7;
 
-        AlundraTextProgress.UpdateNumberOfFalcon(gameState);
+        TextProgress.UpdateNumberOfFalcon(gameState);
 
         Assert.Equal(0, gameState.PlayerStats.FalconTemp);
     }
@@ -89,7 +89,7 @@ public class AlundraTextProgressTests
         gameState.PlayerStats.Falcon = 0x33;
         gameState.PlayerStats.FalconTemp = 0;
 
-        AlundraTextProgress.UpdateNumberOfFalcon(gameState);
+        TextProgress.UpdateNumberOfFalcon(gameState);
 
         Assert.Equal(0x32, gameState.PlayerStats.Falcon);
     }
@@ -102,7 +102,7 @@ public class AlundraTextProgressTests
         gameState.PlayerStats.Falcon = 0x32;
         gameState.PlayerStats.FalconTemp = 0;
 
-        AlundraTextProgress.UpdateNumberOfFalcon(gameState);
+        TextProgress.UpdateNumberOfFalcon(gameState);
 
         Assert.Equal(0x32, gameState.PlayerStats.Falcon);
     }
@@ -116,7 +116,7 @@ public class AlundraTextProgressTests
         gameState.PlayerStats.Falcon = short.MaxValue;
         gameState.PlayerStats.FalconTemp = 2;
 
-        AlundraTextProgress.UpdateNumberOfFalcon(gameState);
+        TextProgress.UpdateNumberOfFalcon(gameState);
 
         // short.MaxValue + 2 wraps to short.MinValue + 1, which the clamp (> 0x32) does not touch.
         Assert.Equal(unchecked((short)(short.MaxValue + 2)), gameState.PlayerStats.Falcon);
@@ -129,7 +129,7 @@ public class AlundraTextProgressTests
         var gameState = new GameState();
         gameState.GameFlags[0x2d] = 0xffffffff;
 
-        AlundraTextProgress.UpdateNumberOfFalcon(gameState);
+        TextProgress.UpdateNumberOfFalcon(gameState);
 
         Assert.Equal(0xfffffbffu, gameState.GameFlags[0x2d]);
     }
@@ -149,7 +149,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2c] = 0x80000000;
         gameState.PlayerStats.Falcon = 0;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(7, gameState.TextCategoryIndex);
         Assert.Equal(0x100u, gameState.GameFlags[0x2d] & 0x1feu);
@@ -163,7 +163,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2c] = 0x80000000 | 0x40000000 | 0x2000000;
         gameState.PlayerStats.Falcon = 0;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(7, gameState.TextCategoryIndex);
     }
@@ -175,7 +175,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2c] = 0x40000000;
         gameState.PlayerStats.Falcon = 0;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(6, gameState.TextCategoryIndex);
         Assert.Equal(0x80u, gameState.GameFlags[0x2d] & 0x1feu);
@@ -188,7 +188,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2c] = 0x20000000;
         gameState.PlayerStats.Falcon = 0;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(5, gameState.TextCategoryIndex);
         Assert.Equal(0x40u, gameState.GameFlags[0x2d] & 0x1feu);
@@ -201,7 +201,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2c] = 0x10000000;
         gameState.PlayerStats.Falcon = 0;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(4, gameState.TextCategoryIndex);
         Assert.Equal(0x20u, gameState.GameFlags[0x2d] & 0x1feu);
@@ -214,7 +214,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2c] = 0x8000000;
         gameState.PlayerStats.Falcon = 0;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(3, gameState.TextCategoryIndex);
         Assert.Equal(0x10u, gameState.GameFlags[0x2d] & 0x1feu);
@@ -227,7 +227,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2c] = 0x4000000;
         gameState.PlayerStats.Falcon = 0;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(2, gameState.TextCategoryIndex);
         Assert.Equal(0x08u, gameState.GameFlags[0x2d] & 0x1feu);
@@ -240,7 +240,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2c] = 0x2000000;
         gameState.PlayerStats.Falcon = 0;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(1, gameState.TextCategoryIndex);
         Assert.Equal(0x04u, gameState.GameFlags[0x2d] & 0x1feu);
@@ -253,7 +253,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2c] = 0;
         gameState.PlayerStats.Falcon = 0;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(0, gameState.TextCategoryIndex);
         Assert.Equal(0x02u, gameState.GameFlags[0x2d] & 0x1feu);
@@ -272,7 +272,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2d] = 0x400 | 0x1 | 0x200; // outside the 0x1fe mask
         gameState.PlayerStats.Falcon = 100; // above every threshold -> sets 0x800 too
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(0x400u, gameState.GameFlags[0x2d] & 0x400u);
         Assert.Equal(0x1u, gameState.GameFlags[0x2d] & 0x1u);
@@ -287,7 +287,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2c] = 0; // now selects category 0 (bit 0x2)
         gameState.PlayerStats.Falcon = 0;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(0x02u, gameState.GameFlags[0x2d] & 0x1feu);
     }
@@ -304,7 +304,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2c] = 0;
         gameState.PlayerStats.Falcon = 15;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(0x800u, gameState.GameFlags[0x2d] & 0x800u);
     }
@@ -317,7 +317,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2d] = 0x800; // pre-set, must be cleared
         gameState.PlayerStats.Falcon = 14;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(0u, gameState.GameFlags[0x2d] & 0x800u);
     }
@@ -343,7 +343,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2c] = 0x40000000 | 0x2000000;
         gameState.PlayerStats.Falcon = 0;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(6, gameState.TextCategoryIndex);
         Assert.Equal(0x80u, gameState.GameFlags[0x2d] & 0x1feu);
@@ -359,7 +359,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2c] = 0x2000000; // category 1, bit 0x04
         gameState.PlayerStats.Falcon = 0;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(0x04u, gameState.GameFlags[0x2d] & 0x1feu);
     }
@@ -374,7 +374,7 @@ public class AlundraTextProgressTests
         gameState.GameFlags[0x2d] = 0x800; // pre-set, must be cleared
         gameState.PlayerStats.Falcon = -1;
 
-        AlundraTextProgress.UpdatePlayerProgressState(gameState);
+        TextProgress.UpdatePlayerProgressState(gameState);
 
         Assert.Equal(0u, gameState.GameFlags[0x2d] & 0x800u);
     }

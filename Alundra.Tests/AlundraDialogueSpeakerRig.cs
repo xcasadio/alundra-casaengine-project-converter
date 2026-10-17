@@ -32,9 +32,9 @@ internal sealed class SpeakerSoundRecorder : ISoundPlayer
 
 /// <summary>
 /// E19.f4b (docs/plan-e19-opcodes.md, F4B-1, "T1, contrat fermé"): the montage at the level of the DIRECTOR, in the binary's order - the real session-scoped
-/// <see cref="AlundraDialogueDirector"/> over a presenter and a game state, the real <see cref="EventProgramRunner"/> on synthetic bytecode (<c>0x0D</c>,
+/// <see cref="DialogueDirector"/> over a presenter and a game state, the real <see cref="EventProgramRunner"/> on synthetic bytecode (<c>0x0D</c>,
 /// <c>0x5C</c>, <c>0xC4</c>) over a context whose <see cref="IEntityWorldContext.SpawnedEntities"/> the test sets, the names from an ETC asset of the 60 names of the
-/// binary, the advances of the glyphs from the oracle of the text box, the scroll of the camera from <see cref="AlundraDialogueDirector.ScrollSource"/>. The text ids
+/// binary, the advances of the glyphs from the oracle of the text box, the scroll of the camera from <see cref="DialogueDirector.ScrollSource"/>. The text ids
 /// <c>0x81</c> and <c>0x82</c> are the pages "AB" and "CD" of the map-1 asset.
 /// </summary>
 internal sealed class SpeakerRig : IDisposable
@@ -53,7 +53,7 @@ internal sealed class SpeakerRig : IDisposable
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
-        public IAlundraDialogueDirector? DialogueDirector { get; set; }
+        public IDialogueDirector? DialogueDirector { get; set; }
     }
 
     private static readonly IReadOnlyDictionary<int, (string Name, int Width)> NamesOfTheBinary = SpeakerAnnex.Names();
@@ -61,11 +61,11 @@ internal sealed class SpeakerRig : IDisposable
     public SpeakerRig(bool attachPresenter = true, bool loadEtc = true)
     {
         Director.ResetForTests();
-        AlundraDialogueCapturePresenter.ResetForTests();
-        AlundraEtcStringTable.ResetForTests();
+        DialogueCapturePresenter.ResetForTests();
+        EtcStringTable.ResetForTests();
         if (loadEtc)
         {
-            AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc(NamesOfTheBinary.Select(n => (n.Key, n.Value.Name)).ToArray()));
+            EtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc(NamesOfTheBinary.Select(n => (n.Key, n.Value.Name)).ToArray()));
         }
 
         Director.AdvanceProviderForTests = Advance;
@@ -78,7 +78,7 @@ internal sealed class SpeakerRig : IDisposable
 
     public static int Advance(char c) => AlundraTextBoxOracle.GlyphWidth(OraclePages.ByteOf(c));
 
-    public AlundraDialogueDirector Director => AlundraDialogueDirector.Instance;
+    public DialogueDirector Director => DialogueDirector.Instance;
 
     public GameState GameState { get; } = new();
 
@@ -121,7 +121,7 @@ internal sealed class SpeakerRig : IDisposable
             Status = EntityStatus.Normal,
         };
 
-    /// <summary>One call of the interpreter for <paramref name="owner"/> on a fresh state: true when the box opened (<see cref="AlundraDialogueDirector.OpenSerial"/> grew), false for "retry (0)".</summary>
+    /// <summary>One call of the interpreter for <paramref name="owner"/> on a fresh state: true when the box opened (<see cref="DialogueDirector.OpenSerial"/> grew), false for "retry (0)".</summary>
     public bool Run(AlundraEntityScriptProxy owner, int[] codes)
     {
         var state = new EventProgramState { Codes = Document(codes).CodesAsBytes(), Result = 7 };
@@ -153,7 +153,7 @@ internal sealed class SpeakerRig : IDisposable
     {
         Director.AdvanceProviderForTests = null;
         Director.ResetForTests();
-        AlundraDialogueCapturePresenter.ResetForTests();
-        AlundraEtcStringTable.ResetForTests();
+        DialogueCapturePresenter.ResetForTests();
+        EtcStringTable.ResetForTests();
     }
 }

@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 /// value tables of the annex (<c>docs/plan-e19-f4-annexe/values.json</c> S1 to S7, <c>values-s8-72.json</c>, <c>values-s9-moving.json</c>; the model of
 /// <c>model/f4_model.py</c> validated against the real binary code). Iteration f of the montage is image f of a table (n0 = 3): the test moves the world (S9 only),
 /// runs <c>director.Pass(true, true)</c> (the pad of the model: held and just pressed at every frame), reads the draws of the name and of the portrait, the sound 7
-/// (<c>close-trigger</c>) and the fall of <see cref="AlundraDialogueDirector.IsOpen"/> (<c>DialogClosed</c>), then, from f = 3, runs the opcode of the pending dialogue
+/// (<c>close-trigger</c>) and the fall of <see cref="DialogueDirector.IsOpen"/> (<c>DialogClosed</c>), then, from f = 3, runs the opcode of the pending dialogue
 /// on a fresh state through the real interpreter ("opened" when the box opened, else "retry (0)"), then reads the phase of the box. Compared: the phase (it pins the image
 /// mapping), the name (drawn or not, x of its frame and of its text), the portrait (drawn or not, x, y, w, h, rgb, phase) and the events as a set per image; excluded:
 /// the clip of the name (not ported, without effect), the position of the box (the column of E19.f2a) and <c>typing-done</c> (internal to the box, also E19.f2a).
@@ -114,12 +114,12 @@ public sealed class AlundraDialogueSpeakerContractTests
             }
             else
             {
-                if (tn.GetProperty("frame")[0].GetInt32() != row.Name.FrameX || tn.GetProperty("frame")[1].GetInt32() != AlundraDialogueNameBox.FrameY)
+                if (tn.GetProperty("frame")[0].GetInt32() != row.Name.FrameX || tn.GetProperty("frame")[1].GetInt32() != DialogueNameBox.FrameY)
                 {
                     diffs.Add($"{where}: name frame x {row.Name.FrameX}, table {tn.GetProperty("frame")[0]},{tn.GetProperty("frame")[1]}");
                 }
 
-                if (tn.GetProperty("text")[0].GetInt32() != row.Name.TextX || tn.GetProperty("text")[1].GetInt32() != AlundraDialogueNameBox.TextY)
+                if (tn.GetProperty("text")[0].GetInt32() != row.Name.TextX || tn.GetProperty("text")[1].GetInt32() != DialogueNameBox.TextY)
                 {
                     diffs.Add($"{where}: name text x {row.Name.TextX}, table {tn.GetProperty("text")[0]},{tn.GetProperty("text")[1]}");
                 }
@@ -167,8 +167,8 @@ public sealed class AlundraDialogueSpeakerContractTests
     [Fact]
     public void TheConstantsOfTheName_AreTheBinarys()
     {
-        Assert.Equal(140, AlundraDialogueNameBox.FrameY);
-        Assert.Equal(148, AlundraDialogueNameBox.TextY);
+        Assert.Equal(140, DialogueNameBox.FrameY);
+        Assert.Equal(148, DialogueNameBox.TextY);
     }
 
     [Fact]

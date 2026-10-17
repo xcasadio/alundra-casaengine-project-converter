@@ -76,7 +76,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
     private static void ResetAll()
     {
         ResetSingletons();
-        AlundraEtcStringTable.ResetForTests();
+        EtcStringTable.ResetForTests();
         SaveBook.Instance.ResetForTests();
     }
 
@@ -172,9 +172,9 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
             + $"animation {hero.TargetAnimationId}, button needed: {needsButton})");
 
         // The book's question, then its OUI.
-        FramesUntil(proxy, () => AlundraDialogueDirector.Instance.IsAwaitingChoice, 200);
-        Assert.Equal(new[] { "OUI", "NON" }, AlundraDialogueDirector.Instance.ChoicesForTests);
-        Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(0));
+        FramesUntil(proxy, () => DialogueDirector.Instance.IsAwaitingChoice, 200);
+        Assert.Equal(new[] { "OUI", "NON" }, DialogueDirector.Instance.ChoicesForTests);
+        Assert.True(DialogueDirector.Instance.SelectChoiceForTests(0));
 
         // The capture, then the screen and its picker.
         FramesUntil(proxy, () => Screen.IsPickerActive && Screen.State == AlundraSaveScreenDirector.StatePickWait, 300);
@@ -187,8 +187,8 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         Assert.Equal(1, Screen.Selection);
         Press(proxy, PadState.Cross);
         Frames(proxy, 1); // D-E19-99: the screen reads the pad of the tick before (the binary's slot 10 reads the sample of the previous frame): the question opens one frame after the press.
-        Assert.True(AlundraDialogueDirector.Instance.IsAwaitingChoice);
-        Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(0));
+        Assert.True(DialogueDirector.Instance.IsAwaitingChoice);
+        Assert.True(DialogueDirector.Instance.SelectChoiceForTests(0));
 
         FramesUntil(proxy, () => Screen.State == AlundraSaveScreenDirector.StateWaitSquare, 400);
         var call = Assert.Single(_slots.SaveCalls);
@@ -226,11 +226,11 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
 
         // The headless game has no asset manager: the ETC texts come from the export on disk, the rules and the
         // service from the test (K1, D-E16-31).
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(
+        EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
         AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
         AlundraSaveGameDirector.Instance.SaveSlots = _slots;
-        Assert.True(AlundraDialogueDirector.Instance.HasPresenter);
+        Assert.True(DialogueDirector.Instance.HasPresenter);
 
         // The book of map 17, spawned from the export, with the save book's native handlers (L1).
         // The book's record (index 0) has SpriteDirection bit 0x40 clear: the map-load pass skips it, and map 17

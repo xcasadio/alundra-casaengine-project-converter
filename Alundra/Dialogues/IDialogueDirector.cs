@@ -20,7 +20,7 @@ using Alundra.Scripts;
 namespace Alundra.Dialogues;
 
 /// <summary>
-/// Opcode-facing seam over <see cref="AlundraDialogueDirector"/> (docs/plan-e12-dialogues.md, slice
+/// Opcode-facing seam over <see cref="DialogueDirector"/> (docs/plan-e12-dialogues.md, slice
 /// E12.a, D-E12-5: "the moteur is MECHANISM, the DLL is POLICY" - the engine's own
 /// <see cref="IDialoguePresenter"/> knows nothing about the close-mode mask, numeric control-code flags,
 /// paging on <c>\A</c>, or <see cref="GameState.PlayerControlFlags"/>; all of that lives here).
@@ -29,10 +29,10 @@ namespace Alundra.Dialogues;
 /// <see cref="IEntityWorldContext.ScreenFadeDirector"/>), so every EXISTING implementer keeps compiling
 /// unmodified, degrading to null (skip-by-size, once-logged) exactly like that seam.
 /// </summary>
-public interface IAlundraDialogueDirector
+public interface IDialogueDirector
 {
     /// <summary>True once a real <see cref="IDialoguePresenter"/> has been attached
-    /// (<see cref="AlundraDialogueDirector.AttachToWorld"/>) - the actual real/degraded switch every
+    /// (<see cref="DialogueDirector.AttachToWorld"/>) - the actual real/degraded switch every
     /// opcode case in <see cref="EventProgramRunner.Dispatch"/> tests (NOT whether this interface
     /// member itself is null - see that interface member's own doc).</summary>
     bool HasPresenter { get; }
@@ -90,11 +90,11 @@ public interface IAlundraDialogueDirector
     /// <summary>One pass of the box for a host that has no world proxy to run it (the unit tests): the pass takes the square button of the PREVIOUS
     /// call - the binary's box reads the pad sampled during the previous frame - then this call records the square of
     /// <see cref="GameState.LastPadState"/> (<c>ButtonsHold</c>, the rising edge being taken against the previous call). The world proxy
-    /// does not call this: it calls <see cref="AlundraDialogueDirector.Pass"/> itself, on the square of its own pad pass (F2-R1).</summary>
+    /// does not call this: it calls <see cref="DialogueDirector.Pass"/> itself, on the square of its own pad pass (F2-R1).</summary>
     void Tick();
 
     /// <summary>Opcode 0x44's own first-entry half: opens a generic choice list (labels already resolved
-    /// by the caller - <see cref="AlundraEtcStringTable"/> for the OUI/NON pair, D-E12-6) through the
+    /// by the caller - <see cref="EtcStringTable"/> for the OUI/NON pair, D-E12-6) through the
     /// attached presenter and starts waiting for <see cref="TakeChoiceResult"/> to report a selection.</summary>
     void OpenChoice(IReadOnlyList<string> labels);
 

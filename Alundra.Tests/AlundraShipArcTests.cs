@@ -145,10 +145,10 @@ public sealed class AlundraShipArcTests
         Assert.Null(arc.EntityByRecord(2));
         Assert.NotEqual(EntityStatus.FlagToDestroy, captain2.Status);
 
-        arc.RunUntil(() => AlundraDialogueDirector.Instance.IsOpen, "the dialogue of B3 opens (0x0D @724)");
+        arc.RunUntil(() => DialogueDirector.Instance.IsOpen, "the dialogue of B3 opens (0x0D @724)");
         Assert.True(arc.Has(BProgram, 724, 0x0D));
         arc.CloseDialogueWithTheButton("the dialogue of B3 closes with the button");
-        Assert.False(AlundraDialogueDirector.Instance.IsOpen);
+        Assert.False(DialogueDirector.Instance.IsOpen);
 
         arc.RunUntil(() => arc.Has(BProgram, 688, 0x53), "B2 executes 0x53 @688 towards map 476");
 
@@ -201,7 +201,7 @@ public sealed class AlundraShipArcTests
         using var arc = new ArcRun(new ArcSpec("A1c", Zone, Map390, flags, 44, 23, 4, 900, RealController: true));
         Assert.Equal(228u, ArcRun.State.GameFlags[27]);
 
-        arc.RunUntil(() => AlundraDialogueDirector.Instance.IsOpen, "the dialogue of B3 opens (0x0D @724)");
+        arc.RunUntil(() => DialogueDirector.Instance.IsOpen, "the dialogue of B3 opens (0x0D @724)");
         Assert.True(arc.Has(BProgram, 724, 0x0D));
         arc.CloseDialogueWithTheButton("the dialogue of B3 closes with the button");
 

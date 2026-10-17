@@ -15,7 +15,7 @@ namespace Alundra.Dialogues;
 /// <see cref="GameState.GameFlags"/>, <see cref="PlayerStats.Falcon"/>/
 /// <see cref="PlayerStats.FalconTemp"/>).
 /// </summary>
-public static class AlundraTextProgress
+public static class TextProgress
 {
     /// <summary>
     /// <c>g_categoryThresholdTable</c> @ 0x8009A834 (docs/plan-e15-yarn.md §5.7): initialized data,

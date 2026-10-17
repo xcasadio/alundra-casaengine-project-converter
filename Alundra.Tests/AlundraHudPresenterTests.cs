@@ -46,7 +46,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
     public AlundraHudPresenterTests()
     {
         AlundraHudDirector.Instance.ResetForTests();
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
@@ -56,7 +56,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
     public void Dispose()
     {
         AlundraHudDirector.Instance.ResetForTests();
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
@@ -377,7 +377,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         proxy.InitializeWithWorld(world); // "TestWorld" has no tileMap entity - early-returns before the
                                            // real install, same seam AlundraHudDirectorTests documents.
 
-        AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), proxy.GameState);
+        DialogueDirector.Instance.AttachToWorld(new DialogueService(), proxy.GameState);
         AlundraHudDirector.Instance.AttachToWorld(proxy.GameState);
         proxy.AttachHudPresenterForTests(view);
         return proxy;
@@ -388,7 +388,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
     {
         var view = new RecordingHudView(pixelScale: 3);
         var proxy = BuildProxyWithHudPresenterAttached(view);
-        var dialogue = AlundraDialogueDirector.Instance;
+        var dialogue = DialogueDirector.Instance;
 
         proxy.GameState.AddFlag(ScriptOpenRequestFlag, ScriptOpenRequestMask); // arm the HUD open.
 

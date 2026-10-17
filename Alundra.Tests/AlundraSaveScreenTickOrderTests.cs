@@ -35,16 +35,16 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
     public AlundraSaveScreenTickOrderTests()
     {
         ResetSingletons();
-        AlundraEtcStringTable.ResetForTests();
+        EtcStringTable.ResetForTests();
         SaveBook.Instance.ResetForTests();
         AlundraSaveScreenDirector.Instance.ResetForTests();
         var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
         _proxy = new AlundraWorldProxy();
         _proxy.InitializeWithWorld(world);
         _proxy.PlayerEntity = new AlundraEntityScriptProxy();
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(
+        EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
-        AlundraDialogueDirector.Instance.AttachToWorld(new AlundraDialoguePresenter(_uiView), _proxy.GameState);
+        DialogueDirector.Instance.AttachToWorld(new AlundraDialoguePresenter(_uiView), _proxy.GameState);
         AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
         AlundraSaveGameDirector.Instance.SaveSlots = _slots;
         AlundraSaveScreenDirector.Instance.AttachToWorld(_proxy.GameState, null);
@@ -53,14 +53,14 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
     public void Dispose()
     {
         ResetSingletons();
-        AlundraEtcStringTable.ResetForTests();
+        EtcStringTable.ResetForTests();
         SaveBook.Instance.ResetForTests();
         AlundraSaveScreenDirector.Instance.ResetForTests();
     }
 
     private static AlundraSaveScreenDirector Director => AlundraSaveScreenDirector.Instance;
 
-    private static AlundraDialogueDirector Dialogue => AlundraDialogueDirector.Instance;
+    private static DialogueDirector Dialogue => DialogueDirector.Instance;
 
     /// <summary>One frame of <paramref name="ticks"/> logic ticks holding <paramref name="hold"/>.</summary>
     private void Frame(int ticks, uint hold = 0)

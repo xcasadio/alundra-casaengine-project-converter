@@ -50,7 +50,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     private static void ResetSingletons()
     {
         AlundraHudDirector.Instance.ResetForTests();
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();

@@ -17,7 +17,7 @@ namespace Alundra.Tests;
 /// the window's own control made the box vanish but left the world frozen - NPCs immobile and Alundra
 /// uncontrollable - until the interact button was pressed as well.
 ///
-/// Cause: the link was asymmetric. <see cref="AlundraDialogueDirector"/> told the presenter when it
+/// Cause: the link was asymmetric. <see cref="DialogueDirector"/> told the presenter when it
 /// closed, but a presenter closing on its own told nobody, so the director kept the box open with its
 /// MenuOpen flag posted - and MenuOpen is exactly what T2 freezes the entity pass behind.
 ///
@@ -29,13 +29,13 @@ public sealed class AlundraDialogueOutOfBandCloseTests : IDisposable
 {
     public AlundraDialogueOutOfBandCloseTests()
     {
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
     }
 
     public void Dispose()
     {
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
     }
 
@@ -52,12 +52,12 @@ public sealed class AlundraDialogueOutOfBandCloseTests : IDisposable
     {
         var presenter = new AlundraDialoguePresenter(new RecordingUIViewRuntime());
         var state = new GameState();
-        AlundraDialogueDirector.Instance.AttachToWorld(presenter, state);
+        DialogueDirector.Instance.AttachToWorld(presenter, state);
 
         // controlMode 0 is the "world closes" box: it posts MenuOpen, which T2 freezes the entity pass
         // behind (AlundraDialogueDirector.SetControlFlags).
-        AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Bonjour", "Bonjour."), "Start", controlMode: 0);
-        Assert.True(AlundraDialogueDirector.Instance.IsOpen);
+        DialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Bonjour", "Bonjour."), "Start", controlMode: 0);
+        Assert.True(DialogueDirector.Instance.IsOpen);
         Assert.NotEqual(0u, state.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask);
 
         // The window's own close control fires - the exact production wiring, not a mirror.
@@ -66,7 +66,7 @@ public sealed class AlundraDialogueOutOfBandCloseTests : IDisposable
         Assert.NotNull(requestClose);
         requestClose!.Invoke(presenter, null);
 
-        Assert.False(AlundraDialogueDirector.Instance.IsOpen);
+        Assert.False(DialogueDirector.Instance.IsOpen);
         Assert.Equal(0u, state.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask);
     }
 

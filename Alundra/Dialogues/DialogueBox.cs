@@ -40,7 +40,7 @@ internal enum DialogueTokenKind
 internal readonly record struct DialogueToken(DialogueTokenKind Kind, int Value = 0, char Display = '\0');
 
 /// <summary>What the box does in the world, which it cannot do itself.</summary>
-internal interface IAlundraDialogueBoxHost
+internal interface IDialogueBoxHost
 {
     /// <summary>The step reached the code of the flag <paramref name="flag"/>.</summary>
     void FlagReached(int flag);
@@ -48,7 +48,7 @@ internal interface IAlundraDialogueBoxHost
     /// <summary>The box asks a sound effect (6 at the opening, 7 at the start of the close, 79 + voice while typing).</summary>
     void PlaySound(int sfxId);
 
-    /// <summary>The cursor was released: the page that follows is wanted (appended with <see cref="AlundraDialogueBox.AppendPage"/>).</summary>
+    /// <summary>The cursor was released: the page that follows is wanted (appended with <see cref="DialogueBox.AppendPage"/>).</summary>
     void PageTurned();
 
     /// <summary>The slide of the exit ended: the box is released.</summary>
@@ -77,7 +77,7 @@ internal interface IAlundraDialogueBoxHost
 /// <c>0x4C</c> clears the <c>0x4D</c> in waiting) and D-E19-63 (the release of a cursor sets the bit that starts a scroll at once only when that
 /// release arms the scroll of the third line).
 /// </summary>
-internal sealed class AlundraDialogueBox
+internal sealed class DialogueBox
 {
     internal const int SlideInOrOut = 3;
     internal const int Active = 4;
@@ -99,7 +99,7 @@ internal sealed class AlundraDialogueBox
     private const int FrameWidthPx = 36 * 8;
     private const int RowTextX = 32;
 
-    private readonly IAlundraDialogueBoxHost _host;
+    private readonly IDialogueBoxHost _host;
     private readonly List<DialogueToken> _tokens = new();
     private int _next;
 
@@ -140,7 +140,7 @@ internal sealed class AlundraDialogueBox
     private readonly int[] _rowWidth = new int[3];
     private bool _scrollPass;
 
-    public AlundraDialogueBox(IAlundraDialogueBoxHost host)
+    public DialogueBox(IDialogueBoxHost host)
     {
         _host = host;
     }

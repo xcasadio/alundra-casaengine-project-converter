@@ -17,13 +17,13 @@ namespace Alundra.Dialogues.Yarn;
 /// <see cref="YarnDialogueRunner"/> the two commands and seven functions of the E15.b function
 /// contract, so pages emitted with <c>&lt;&lt;flag n&gt;&gt;</c>, <c>&lt;&lt;falcon_update&gt;&gt;</c>
 /// and the seven <c>{...}</c> reads compiled by the converter run against this DLL's own
-/// <see cref="GameState"/>/<see cref="AlundraTextProgress"/> port instead of the placeholder
+/// <see cref="GameState"/>/<see cref="TextProgress"/> port instead of the placeholder
 /// implementations the converter's own <c>AlundraYarnFunctions</c> class registers for its compile-time
 /// checks (that class lives in the converter project, which this DLL cannot reference - the names and
 /// delegate types below MUST stay identical to it; a mismatch would compile a Yarn script the DLL then
 /// fails to run, or vice versa).
 /// </summary>
-public sealed class AlundraYarnBindings
+public sealed class YarnBindings
 {
     // -----------------------------------------------------------------------------------------
     // Names and delegate shapes of the E15.b function contract (docs/plan-e15-yarn.md, E15.b
@@ -45,8 +45,8 @@ public sealed class AlundraYarnBindings
     public const string FlagMarkerName = "flag";
 
     /// <summary><c>falcon_update</c>: keeps the state it is about to replace (ADR-0007), then runs
-    /// <see cref="AlundraTextProgress.UpdateNumberOfFalcon"/> and
-    /// <see cref="AlundraTextProgress.UpdatePlayerProgressState"/>.</summary>
+    /// <see cref="TextProgress.UpdateNumberOfFalcon"/> and
+    /// <see cref="TextProgress.UpdatePlayerProgressState"/>.</summary>
     public const string FalconUpdateCommandName = "falcon_update";
 
     /// <summary><c>\X0</c> opening a page: the temporary falcon count kept before <c>falcon_update</c>.</summary>
@@ -90,14 +90,14 @@ public sealed class AlundraYarnBindings
     private int _keptFalconTemp;
     private int _keptCategoryIndex;
 
-    public AlundraYarnBindings(GameState gameState)
+    public YarnBindings(GameState gameState)
         : this(gameState, EngineEnvironment.ProjectPath)
     {
     }
 
     /// <summary>Overload tests use to point item-name resolution at a fixture project directory instead
     /// of <see cref="EngineEnvironment.ProjectPath"/> (same pattern as <see cref="ItemTables"/>).</summary>
-    public AlundraYarnBindings(GameState gameState, string projectPath)
+    public YarnBindings(GameState gameState, string projectPath)
     {
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(projectPath);
@@ -119,9 +119,9 @@ public sealed class AlundraYarnBindings
         runner.RegisterFunction(FalconFunctionName, (Func<float>)(() => _gameState.PlayerStats.Falcon));
         runner.RegisterFunction(CategoryItemNameBeforeFunctionName, (Func<string>)(() => ResolveCategoryItemName(_keptCategoryIndex)));
         runner.RegisterFunction(CategoryItemNameFunctionName, (Func<string>)(() => ResolveCategoryItemName(_gameState.TextCategoryIndex)));
-        runner.RegisterFunction(CategoryThresholdFunctionName, (Func<float>)(() => AlundraTextProgress.CategoryThresholds[_gameState.TextCategoryIndex]));
+        runner.RegisterFunction(CategoryThresholdFunctionName, (Func<float>)(() => TextProgress.CategoryThresholds[_gameState.TextCategoryIndex]));
         runner.RegisterFunction(CategoryRemainingFunctionName, (Func<float>)(() =>
-            AlundraTextProgress.CategoryThresholds[_gameState.TextCategoryIndex] - _gameState.PlayerStats.Falcon));
+            TextProgress.CategoryThresholds[_gameState.TextCategoryIndex] - _gameState.PlayerStats.Falcon));
         runner.RegisterFunction(GameVarFunctionName, (Func<float, float>)(n => ResolveGameVar((int)n)));
 
         runner.UnhandledCommand += OnUnhandledCommand;
@@ -199,23 +199,23 @@ public sealed class AlundraYarnBindings
         _keptFalconTemp = _gameState.PlayerStats.FalconTemp;
         _keptCategoryIndex = _gameState.TextCategoryIndex;
 
-        AlundraTextProgress.UpdateNumberOfFalcon(_gameState);
-        AlundraTextProgress.UpdatePlayerProgressState(_gameState);
+        TextProgress.UpdateNumberOfFalcon(_gameState);
+        TextProgress.UpdatePlayerProgressState(_gameState);
     }
 
     /// <summary>ADR-0007/§5.7: the item name for a category index, through
-    /// <see cref="AlundraTextProgress.RewardItemByCategory"/> and the DLL's existing item-name API
+    /// <see cref="TextProgress.RewardItemByCategory"/> and the DLL's existing item-name API
     /// (never a raw-file reader of its own) - reward item id -&gt; ETC entry <c>0x200 + id</c>.</summary>
     private string ResolveCategoryItemName(int categoryIndex)
     {
-        if (categoryIndex < 0 || categoryIndex >= AlundraTextProgress.RewardItemByCategory.Length)
+        if (categoryIndex < 0 || categoryIndex >= TextProgress.RewardItemByCategory.Length)
         {
             LogMissingItemNameOnce($"category index {categoryIndex} out of range");
             return string.Empty;
         }
 
-        var rewardItemId = AlundraTextProgress.RewardItemByCategory[categoryIndex];
-        if (!AlundraEtcStringTable.TryResolveItemName(_projectPath, rewardItemId, out var name))
+        var rewardItemId = TextProgress.RewardItemByCategory[categoryIndex];
+        if (!EtcStringTable.TryResolveItemName(_projectPath, rewardItemId, out var name))
         {
             LogMissingItemNameOnce($"no name for reward item 0x{rewardItemId:X}");
             return string.Empty;
@@ -241,7 +241,7 @@ public sealed class AlundraYarnBindings
     {
         if (_loggedUnhandledCommandNames.Add(e.Name))
         {
-            Logs.WriteWarning($"AlundraYarnBindings: no handler registered for Yarn command '{e.Name}'.");
+            Logs.WriteWarning($"YarnBindings: no handler registered for Yarn command '{e.Name}'.");
         }
     }
 
@@ -253,7 +253,7 @@ public sealed class AlundraYarnBindings
         }
 
         _loggedInvalidFlagArgumentOnce = true;
-        Logs.WriteWarning($"AlundraYarnBindings: 'flag' command received a non-numeric argument '{argument}'.");
+        Logs.WriteWarning($"YarnBindings: 'flag' command received a non-numeric argument '{argument}'.");
     }
 
     private void LogMissingItemNameOnce(string reason)
@@ -264,7 +264,7 @@ public sealed class AlundraYarnBindings
         }
 
         _loggedMissingItemNameOnce = true;
-        Logs.WriteWarning($"AlundraYarnBindings: could not resolve a category reward item name ({reason}).");
+        Logs.WriteWarning($"YarnBindings: could not resolve a category reward item name ({reason}).");
     }
 
     private void LogGameVarOutOfRangeOnce(int index)
@@ -275,6 +275,6 @@ public sealed class AlundraYarnBindings
         }
 
         _loggedGameVarOutOfRangeOnce = true;
-        Logs.WriteWarning($"AlundraYarnBindings: 'game_var({index})' is out of range of GameVariables.");
+        Logs.WriteWarning($"YarnBindings: 'game_var({index})' is out of range of GameVariables.");
     }
 }

@@ -157,7 +157,7 @@ public sealed class AlundraShipCorridorArcTests
     public void A5_TheHeroTakesTheHand_IsPlacedInTheCorridor_ThenTheDownPushedPortalLeadsToMap391()
     {
         using var arc = new ArcRun(Spec("A5"));
-        var serialAtStart = AlundraDialogueDirector.Instance.OpenSerial;
+        var serialAtStart = DialogueDirector.Instance.OpenSerial;
         var samples = new Samples();
 
         // 1. Part 1, then part 2: the end signal is the departure (the arrival record of the warp director), never an instruction.
@@ -177,7 +177,7 @@ public sealed class AlundraShipCorridorArcTests
         AssertTheDepartureToMap391();
         Assert.False(arc.Has(B, 107, 0x2F), "0x2F @107 ran before the departure");
         Assert.All(samples.ResultsAt133, r => Assert.Equal(0, r));
-        Assert.Equal(0u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
+        Assert.Equal(0u, (uint)DialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
         Assert.False(arc.Trace.Any(t => t.Opcode == 0x53));
         AssertNoUnexpectedError(arc);
     }

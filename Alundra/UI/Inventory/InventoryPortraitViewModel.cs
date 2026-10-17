@@ -102,8 +102,8 @@ public sealed class InventoryPortraitViewModel : ViewModelBase
     private const int DialogueRestY = 116;
 
     /// <summary>
-    /// E19.f4c2 (F4C2-R2): writes what the dialogue's portrait machine drew this pass (<paramref name="portrait"/>, <see cref="AlundraDialogueDirector.Portrait"/>) for the image of
-    /// <paramref name="source"/> (the speaker's portrait as the opening locked it, <see cref="AlundraDialogueDirector.PortraitSource"/>). Nothing drawn this pass, or no source, collapses
+    /// E19.f4c2 (F4C2-R2): writes what the dialogue's portrait machine drew this pass (<paramref name="portrait"/>, <see cref="DialogueDirector.Portrait"/>) for the image of
+    /// <paramref name="source"/> (the speaker's portrait as the opening locked it, <see cref="DialogueDirector.PortraitSource"/>). Nothing drawn this pass, or no source, collapses
     /// the element. Else the translation is the quad's top-left minus (8, 116) - the image sits at (8, 116) in the XAML, so a 48 x 72 portrait (rest (8, 100)) has a translation of -16 at rest -
     /// the scale is the drawn size over the image's own size (48 x its height), the brightness is Rgb / 128, and a pass of 0 x 0 stays visible at the scale 0, exactly the original's 0 x 0 quad
     /// (no visibility change in flight, as the inventories).

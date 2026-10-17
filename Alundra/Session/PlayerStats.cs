@@ -13,7 +13,7 @@ namespace Alundra.Session;
 /// <see cref="Money"/>), then <see cref="WeaponId"/> and <see cref="ItemId"/>, which E13.c S3 added for
 /// the HUD's weapon and accessory boxes (docs/plan-e13c-icones-hud.md). <see cref="FalconTemp"/> and
 /// <see cref="Falcon"/> followed with E13.d (shown by the inventory); the falcon text command of E15
-/// (<see cref="AlundraTextProgress"/>) is their only writer, and all nine fields are saved by
+/// (<see cref="TextProgress"/>) is their only writer, and all nine fields are saved by
 /// <see cref="AlundraSaveGame"/> (E16.c, docs/decisions/0012-alundra-save-game-content-and-validation.md).
 ///
 /// <para><b>One instance, not two.</b> The original allocates a single <c>PlayerStats</c> object and
@@ -73,7 +73,7 @@ public sealed class PlayerStats
     /// the falcon-key count <c>DisplayAmountOfMoneyFalconKeys</c> shows next to the regular key count
     /// (MainInventoryManager.cs:1555-1587, <c>GetNumberOfFalcon()</c>). 0 at New Game; since E15 the
     /// falcon text command folds <see cref="FalconTemp"/> into it and caps it at 50
-    /// (<see cref="AlundraTextProgress"/>), and a loaded save restores it (E16.c).</summary>
+    /// (<see cref="TextProgress"/>), and a loaded save restores it (E16.c).</summary>
     public short Falcon;
 
     /// <summary>E13.d D4: port of <c>PlayerStats.FalconTemp</c> - the original adds this to

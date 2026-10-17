@@ -20,7 +20,7 @@ namespace Alundra.Tests.UI;
 
 /// <summary>
 /// E19.f3b F3B-1 (docs/plan-e19-opcodes.md, F3B-R1 to R3): the pixels of the choice screen on a real GPU. The real <see cref="AlundraChoiceScreen"/> (its versioned XAML, its view
-/// model written by <see cref="AlundraChoiceViewModel.Apply"/> from the real <see cref="AlundraChoiceBox"/> at the pass of each scenario of
+/// model written by <see cref="AlundraChoiceViewModel.Apply"/> from the real <see cref="ChoiceBox"/> at the pass of each scenario of
 /// <c>docs/plan-e19-f3-annexe/values.json</c>) is drawn by an <c>MGDesktop</c> into a render target, read back, and compared texel for texel with the 19 images of
 /// <c>docs/plan-e19-f3-annexe/view/pixels/</c> (composed by the independent <c>view/compositor/ref.py</c> from the exported PNGs and the binary's tables, not rerun here) and
 /// with the points of <c>view/points.md</c>, at x1 and x2; over the text box screen (its window first, the choice above it) at rest and with a full first row, with the control of the
@@ -54,7 +54,7 @@ public sealed class AlundraChoicePixelTests
     // ---- driving the real machine ----------------------------------------------------------------------------------------------------
 
     /// <summary>The real box after <paramref name="pass"/> passes of scenario <paramref name="index"/> of <c>values.json</c> (0 = V1, 1 = V2, 5 = V6), the pad words listed there.</summary>
-    private static AlundraChoiceBox BoxAt(int index, int pass)
+    private static ChoiceBox BoxAt(int index, int pass)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(ViewDirectory(), "values.json")));
         var scenario = document.RootElement.GetProperty("bare").EnumerateArray().ElementAt(index);
@@ -64,7 +64,7 @@ public sealed class AlundraChoicePixelTests
             raw[int.Parse(entry.Name.Substring(2), CultureInfo.InvariantCulture)] = Convert.ToUInt32(entry.Value.GetString(), 16);
         }
 
-        var box = new AlundraChoiceBox();
+        var box = new ChoiceBox();
         box.SeedCursorTickForTests(scenario.GetProperty("anim0").GetInt32());
         var pad = new TickPad();
         for (var t = 0; t <= pass; t++)
@@ -110,7 +110,7 @@ public sealed class AlundraChoicePixelTests
     /// <summary>Builds the real screen(s) on a fresh desktop at integer scale <paramref name="k"/>, writes the view model(s) from <paramref name="box"/>, draws and reads back.
     /// With an <paramref name="underlay"/> the text box window is added to the desktop first and the choice above it (the order of the presenters, F3B-R3), or the other way round
     /// when <paramref name="choiceFirst"/> (the control).</summary>
-    private static Color[] Draw(int k, AlundraChoiceBox box, string? underlay = null, bool choiceFirst = false, int ox = 0, int oy = 0)
+    private static Color[] Draw(int k, ChoiceBox box, string? underlay = null, bool choiceFirst = false, int ox = 0, int oy = 0)
     {
         return Invoke(() =>
         {
@@ -228,7 +228,7 @@ public sealed class AlundraChoicePixelTests
     }
 
     /// <summary>Draws the box as it stands at x1 (and x2 when the image has one), compares each with its versioned image, then runs <paramref name="sectionOfPoints"/> at each scale.</summary>
-    private static void AssertTheImage(string imageName, AlundraChoiceBox box, string? underlay = null, string? sectionOfPoints = null, bool hasX2 = true)
+    private static void AssertTheImage(string imageName, ChoiceBox box, string? underlay = null, string? sectionOfPoints = null, bool hasX2 = true)
     {
         foreach (var k in hasX2 ? new[] { 1, 2 } : new[] { 1 })
         {

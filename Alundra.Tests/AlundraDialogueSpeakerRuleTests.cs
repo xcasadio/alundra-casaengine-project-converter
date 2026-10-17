@@ -158,7 +158,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
         using var rig = new SpeakerRig();
         var speaker = SpeakerRig.Speaker(0x104, portrait: false);
         Assert.True(rig.Run(speaker, SpeakerRig.Codes0D(SpeakerRig.TextAb)));
-        AlundraEtcStringTable.ResetForTests(); // from now on any lookup of the ETC logs a warning
+        EtcStringTable.ResetForTests(); // from now on any lookup of the ETC logs a warning
         using var log = SaveGameDirectorTestSupport.LogCapture.Install();
 
         for (var tick = 0; tick < 5; tick++)
@@ -319,7 +319,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
     [Fact]
     public void TheProxyInstallsTheScrollSource_OfItsCamera_AndItSurvivesAnAttachment()
     {
-        var director = AlundraDialogueDirector.Instance;
+        var director = DialogueDirector.Instance;
         director.ResetForTests();
         try
         {
@@ -352,7 +352,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
 
     // ---- the close trigger of the box ---------------------------------------------------------------------------------------------
 
-    private sealed class RecordingHost : IAlundraDialogueBoxHost
+    private sealed class RecordingHost : IDialogueBoxHost
     {
         public List<string> Events { get; } = new();
 
@@ -369,7 +369,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
         public void CloseTriggered() => Events.Add("close");
     }
 
-    private static void RunABox(AlundraDialogueBox box)
+    private static void RunABox(DialogueBox box)
     {
         box.Open();
         box.AppendPage(new[] { new DialogueToken(DialogueTokenKind.Character, 0, 'A'), new DialogueToken(DialogueTokenKind.Character, 0, 'B') }, hasFollowingPage: false);
@@ -383,7 +383,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
     public void CloseTriggered_IsCalledRightAfterSound7_OncePerClose_NeverAtOpenOrReset()
     {
         var host = new RecordingHost();
-        var box = new AlundraDialogueBox(host);
+        var box = new DialogueBox(host);
 
         box.Open();
         Assert.DoesNotContain("close", host.Events);
@@ -416,7 +416,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
 
         var passes = rig.PassUntilCloseTrigger();
         Assert.True(passes > 0);
-        Assert.Equal(AlundraDialogueNameBox.FlagClosing | AlundraDialogueNameBox.FlagOpen, rig.Director.NameBox.Flags);
+        Assert.Equal(DialogueNameBox.FlagClosing | DialogueNameBox.FlagOpen, rig.Director.NameBox.Flags);
         Assert.Equal(AlundraPortraitPhase.Out, rig.Director.Portrait.Phase);
         Assert.Equal((64, 8, 116), (rig.Director.NameBox.Drawn!.FrameX, rig.Director.Portrait.X, rig.Director.Portrait.Y)); // the first closing passes are at the rest
     }
@@ -483,7 +483,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
             // the warnings emitted are forgotten: the same sprite type warns again
             rig.Director.AttachToWorld(new CasaEngine.Framework.Dialogue.Runtime.DialogueService(), rig.GameState, rig.Sound);
             rig.Director.InstallForMapEntry();
-            AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc((0x104, "Jess")));
+            EtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc((0x104, "Jess")));
             rig.Director.AdvanceProviderForTests = SpeakerRig.Advance;
             Assert.True(rig.Run(speaker, SpeakerRig.Codes0D(SpeakerRig.TextAb)));
             Assert.Equal(2, log.Warnings.Count(w => w.Contains("DialoguePortrait", StringComparison.Ordinal)));
@@ -516,11 +516,11 @@ public sealed class AlundraDialogueSpeakerRuleTests
     [Fact]
     public void TheProductionAdvancesOfFont3_GiveTheSixtyWidthsOfTheBinary()
     {
-        var advances = new AlundraFont3Advances(FindProjectRoot());
+        var advances = new Font3Advances(FindProjectRoot());
         var mismatches = new List<string>();
         foreach (var (id, (name, width)) in SpeakerAnnex.Names())
         {
-            var box = new AlundraDialogueNameBox();
+            var box = new DialogueNameBox();
             Assert.True(box.TryOpen(id, _ => name, advances.Advance), $"name 0x{id:x} {name}");
             if (box.TextWidth != width)
             {

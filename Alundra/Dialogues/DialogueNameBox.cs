@@ -4,7 +4,7 @@ using Alundra.UI.Messages;
 
 namespace Alundra.Dialogues;
 
-/// <summary>What one drawn pass of the name box shows (E19.f4b: the logic; the view is E19.f4c2, <see cref="TextBoxNameViewModel"/>). Positions are screen pixels; the frame is at <see cref="AlundraDialogueNameBox.FrameY"/>, the text at <see cref="AlundraDialogueNameBox.TextY"/>.</summary>
+/// <summary>What one drawn pass of the name box shows (E19.f4b: the logic; the view is E19.f4c2, <see cref="TextBoxNameViewModel"/>). Positions are screen pixels; the frame is at <see cref="DialogueNameBox.FrameY"/>, the text at <see cref="DialogueNameBox.TextY"/>.</summary>
 internal sealed record NameBoxDrawnState(int FrameX, int TextX);
 
 /// <summary>
@@ -16,7 +16,7 @@ internal sealed record NameBoxDrawnState(int FrameX, int TextX);
 /// restarts the slide; the release comes on the 18th closing pass (T + 17), which draws nothing. The text is centred in the 112 px frame with the font3 advances of its glyphs.
 /// The binary's clip of the text (<c>DR_AREA</c>) is not ported: it never cuts a real name (60 names x 30 positions, none cut, margin 12 px).
 /// </summary>
-internal sealed class AlundraDialogueNameBox
+internal sealed class DialogueNameBox
 {
     public const int SlideFromX = 320;
     public const int RestX = 64;

@@ -43,15 +43,15 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
     public AlundraSaveScreenPresenterTests()
     {
         ResetAll();
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(
+        EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
         _dialoguePresenter = new AlundraDialoguePresenter(_uiView);
-        AlundraDialogueDirector.Instance.AttachToWorld(_dialoguePresenter, State);
+        DialogueDirector.Instance.AttachToWorld(_dialoguePresenter, State);
         AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
         AlundraSaveGameDirector.Instance.SaveSlots = _slots;
         Director.AttachToWorld(State, null);
         _presenter = new AlundraSaveScreenPresenter(Director, _viewModel, _screen, _uiView);
-        _choicePresenter = new AlundraChoicePresenter(AlundraDialogueDirector.Instance, new AlundraChoiceViewModel(), _choiceScreen, _uiView); // E19.f3b: on the same view
+        _choicePresenter = new AlundraChoicePresenter(DialogueDirector.Instance, new AlundraChoiceViewModel(), _choiceScreen, _uiView); // E19.f3b: on the same view
     }
 
     public void Dispose() => ResetAll();
@@ -59,7 +59,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
     private static void ResetAll()
     {
         ResetSingletons();
-        AlundraEtcStringTable.ResetForTests();
+        EtcStringTable.ResetForTests();
         SaveBook.Instance.ResetForTests();
     }
 
@@ -72,7 +72,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         for (var i = 0; i < count; i++)
         {
             State.TickPad.Update(hold);
-            AlundraDialogueDirector.Instance.Tick(); // E19.f3c (D-E19-93): the pass of the dialogue director (its choice box) first, the order of the world proxy
+            DialogueDirector.Instance.Tick(); // E19.f3c (D-E19-93): the pass of the dialogue director (its choice box) first, the order of the world proxy
             _choicePresenter.Tick(); // E19.f3b: right after the pass, as the choice screen is pushed above the save screen's
             Director.Tick();
             _presenter.Tick();
@@ -160,9 +160,9 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         Assert.Empty(_uiView.Removed);
         Assert.Equal(AlundraSaveScreen.ScreenLayer, _screen.Layer);
 
-        Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(1));
+        Assert.True(DialogueDirector.Instance.SelectChoiceForTests(1));
         var taken = 0;
-        while (AlundraDialogueDirector.Instance.IsAwaitingChoice && taken < 150)
+        while (DialogueDirector.Instance.IsAwaitingChoice && taken < 150)
         {
             Tick();
             taken++;

@@ -30,14 +30,14 @@ namespace Alundra.Tests;
 /// call site - the harness's own mirror tick in <c>HeadlessIntroSimulation.RunFramesForTest</c> cannot
 /// stand in for it (the green-and-inert family: fade trigger, audio install, backdrop textures,
 /// presenter install - this repo's most repeated trap). The last two are the closing verifier's F3/F4:
-/// the <see cref="AlundraDialogueDirector.InstallForMapEntry"/> reset really runs on install, and
-/// <see cref="AlundraDialogueDirector.AttachToWorld"/> really does NOT reset.
+/// the <see cref="DialogueDirector.InstallForMapEntry"/> reset really runs on install, and
+/// <see cref="DialogueDirector.AttachToWorld"/> really does NOT reset.
 /// </summary>
 public sealed class AlundraDialogueFramePassTests : IDisposable
 {
     public AlundraDialogueFramePassTests()
     {
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         // Same seam note as AlundraWorldProxyUpdateCharacterizationTests: inert here (world.Game is
         // always null below), set explicitly anyway rather than relying on the env-var-backed static.
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
@@ -53,7 +53,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
 
     public void Dispose()
     {
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
 
         // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
@@ -79,7 +79,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         var proxy = new AlundraWorldProxy();
         proxy.InitializeWithWorld(world);
 
-        AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), proxy.GameState);
+        DialogueDirector.Instance.AttachToWorld(new DialogueService(), proxy.GameState);
         return proxy;
     }
 
@@ -87,7 +87,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
     public void Update_RunsTheDialoguePass_ButtonClosesABoxNoScriptIsWatching()
     {
         var proxy = BuildProxyWithAttachedDirector();
-        var director = AlundraDialogueDirector.Instance;
+        var director = DialogueDirector.Instance;
 
         // The sailor-13 shape: controlMode 0 -> MenuOpen posed, and NO script left running to pump 0x39.
         director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
@@ -133,7 +133,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
     public void Update_RunsTheDialoguePassOncePerLogicTick_NotOncePerFrame()
     {
         var proxy = BuildProxyWithAttachedDirector();
-        var director = AlundraDialogueDirector.Instance;
+        var director = DialogueDirector.Instance;
 
         director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 1);
         Assert.True(director.IsOpen);
@@ -167,7 +167,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         // rule) - deleting that one line used to leave every suite green. This drives the real install
         // method (world.Game null -> presenter null branch, the reset must run regardless).
         var proxy = new AlundraWorldProxy();
-        var director = AlundraDialogueDirector.Instance;
+        var director = DialogueDirector.Instance;
         director.AttachToWorld(new DialogueService(), proxy.GameState);
 
         director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
@@ -190,7 +190,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         // what it just opened and nothing needs to swallow it any more; the box closes on a press its pass sees once the typing is done (the pass 48: the
         // text "bonjour" ends at 47), is released 18 passes later (66), and the auto-timer, armed at the end of the typing, still closes it alone at 425.
         var gameState = new GameState();
-        var director = AlundraDialogueDirector.Instance;
+        var director = DialogueDirector.Instance;
         director.AttachToWorld(new DialogueService(), gameState);
 
         director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
@@ -225,7 +225,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         // too. The AttachToWorld/InstallForMapEntry split is the session-singleton contract shared with
         // AlundraMusicPlayer/AlundraScreenFadeDirector: re-point WITHOUT resetting.
         var gameState = new GameState();
-        var director = AlundraDialogueDirector.Instance;
+        var director = DialogueDirector.Instance;
         director.AttachToWorld(new DialogueService(), gameState);
 
         director.Open(DialogueTestAssets.Build("TwoPage", "Start", "page un", "page deux"), "Start", controlMode: 1);

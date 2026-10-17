@@ -9,8 +9,8 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E15.c T6 (docs/plan-e15-yarn.md, contract items 5/6): unit coverage of
-/// <see cref="AlundraEtcStringTable"/> itself, against a <c>dialogue_etc</c>-shaped asset injected
-/// through <see cref="AlundraEtcStringTable.SetEtcDialogueAssetForTests"/> - never a raw-file reader.
+/// <see cref="EtcStringTable"/> itself, against a <c>dialogue_etc</c>-shaped asset injected
+/// through <see cref="EtcStringTable.SetEtcDialogueAssetForTests"/> - never a raw-file reader.
 /// Integration-level coverage (through the real inventory/sub-inventory directors and the real OUI/NON
 /// dispatch) lives in <see cref="AlundraInventoryDirectorTests"/>, <see cref="AlundraSubInventoryDirectorTests"/>,
 /// <see cref="AlundraDialogueOpcodeDispatchTests"/> and <see cref="AlundraDialogueOpcodesProductionTests"/>.
@@ -19,18 +19,18 @@ namespace Alundra.Tests;
 /// </summary>
 public sealed class AlundraEtcStringTableTests : IDisposable
 {
-    public AlundraEtcStringTableTests() => AlundraEtcStringTable.ResetForTests();
+    public AlundraEtcStringTableTests() => EtcStringTable.ResetForTests();
 
-    public void Dispose() => AlundraEtcStringTable.ResetForTests();
+    public void Dispose() => EtcStringTable.ResetForTests();
 
     [Fact]
     public void TryResolveYesNo_ReadsEtc0067AndEtc0068()
     {
         // D-E12-6/§5: 0x44's own OUI/NON pair sits at ETC ids 0x43/0x44 - node naming is the ETC index in
         // decimal, four digits (docs/formats/dialogues-yarn.md).
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc((0x43, "OUI"), (0x44, "NON")));
+        EtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc((0x43, "OUI"), (0x44, "NON")));
 
-        Assert.True(AlundraEtcStringTable.TryResolveYesNo(EngineEnvironment.ProjectPath, out var yesLabel, out var noLabel));
+        Assert.True(EtcStringTable.TryResolveYesNo(EngineEnvironment.ProjectPath, out var yesLabel, out var noLabel));
         Assert.Equal("OUI", yesLabel);
         Assert.Equal("NON", noLabel);
     }
@@ -38,24 +38,24 @@ public sealed class AlundraEtcStringTableTests : IDisposable
     [Fact]
     public void TryResolveItemName_ReadsTheNamedNode()
     {
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc((5 + 0x200, "Dague")));
+        EtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc((5 + 0x200, "Dague")));
 
-        Assert.True(AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, 5, out var name));
+        Assert.True(EtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, 5, out var name));
         Assert.Equal("Dague", name);
     }
 
     [Fact]
     public void TryResolveItemDescriptionLine0_ReadsTheNamedNode()
     {
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc((5 + 0x280, "Une lame courte.")));
+        EtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc((5 + 0x280, "Une lame courte.")));
 
-        Assert.True(AlundraEtcStringTable.TryResolveItemDescriptionLine0(EngineEnvironment.ProjectPath, 5, out var line));
+        Assert.True(EtcStringTable.TryResolveItemDescriptionLine0(EngineEnvironment.ProjectPath, 5, out var line));
         Assert.Equal("Une lame courte.", line);
     }
 
     /// <summary>Contract item 5/D-E15-6: the raw byte <c>0x1A</c> of an object description becomes
     /// <c>[glyph id=26/]</c> at export, which this table renders as <c>font3</c> character 26 (□) - the
-    /// same conversion T5's <see cref="AlundraDialogueCapturePresenter.ToFont3Text"/> applies to a
+    /// same conversion T5's <see cref="DialogueCapturePresenter.ToFont3Text"/> applies to a
     /// dialogue-box line, shared rather than reimplemented.</summary>
     [Fact]
     public void TryResolveItemDescriptionLine1_GlyphMarker_RendersAsFont3Character26()
@@ -63,9 +63,9 @@ public sealed class AlundraEtcStringTableTests : IDisposable
         // itemId 7's description-line-1 offset (7 + 0x300 = 775) - built with BuildMultiNode (not
         // BuildEtc) since the marker's brackets must reach the compiler unescaped.
         var asset = DialogueTestAssets.BuildMultiNode("Etc", ("Etc_0775", new[] { "Cd[glyph id=26/]Ef" }));
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(asset);
+        EtcStringTable.SetEtcDialogueAssetForTests(asset);
 
-        Assert.True(AlundraEtcStringTable.TryResolveItemDescriptionLine1(EngineEnvironment.ProjectPath, 7, out var line));
+        Assert.True(EtcStringTable.TryResolveItemDescriptionLine1(EngineEnvironment.ProjectPath, 7, out var line));
         Assert.Equal("Cd" + (char)26 + "Ef", line);
     }
 
@@ -75,9 +75,9 @@ public sealed class AlundraEtcStringTableTests : IDisposable
     [Fact]
     public void TryResolveItemName_IndexWithoutNode_ResolvesToAnEmptyStringNotAFailure()
     {
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc());
+        EtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc());
 
-        Assert.True(AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, 9, out var name));
+        Assert.True(EtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, 9, out var name));
         Assert.Equal(string.Empty, name);
     }
 
@@ -88,24 +88,24 @@ public sealed class AlundraEtcStringTableTests : IDisposable
     [Fact]
     public void TryResolveItemName_IndexOutOfRange_ReturnsFalse()
     {
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc());
+        EtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc());
 
         // itemId -600 -> ETC index -600 + 0x200 (512) = -88 (negative).
-        Assert.False(AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, -600, out var negative));
+        Assert.False(EtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, -600, out var negative));
         Assert.Equal(string.Empty, negative);
 
         // itemId 600 -> ETC index 600 + 0x200 (512) = 1112, past the last valid index (1023).
-        Assert.False(AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, 600, out var pastEnd));
+        Assert.False(EtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, 600, out var pastEnd));
         Assert.Equal(string.Empty, pastEnd);
     }
 
-    /// <summary>No asset loaded at all (neither <see cref="AlundraEtcStringTable.EnsureLoaded"/> nor test
+    /// <summary>No asset loaded at all (neither <see cref="EtcStringTable.EnsureLoaded"/> nor test
     /// injection ran) is the one real failure - every <c>TryResolve*</c> call returns
     /// <see langword="false"/>, same degraded shape as a missing project file gave before the port.</summary>
     [Fact]
     public void TryResolveItemName_NoAssetLoaded_ReturnsFalse()
     {
-        Assert.False(AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, 5, out var name));
+        Assert.False(EtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, 5, out var name));
         Assert.Equal(string.Empty, name);
     }
 
@@ -117,14 +117,14 @@ public sealed class AlundraEtcStringTableTests : IDisposable
     public void TryResolveItemName_SecondRead_ComesFromTheCache_NotAFreshParse()
     {
         var asset = DialogueTestAssets.BuildEtc((7 + 0x200, "Ab")); // 7 + 0x200 = 519 -> node Etc_0519.
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(asset);
+        EtcStringTable.SetEtcDialogueAssetForTests(asset);
 
-        Assert.True(AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, 7, out var first));
+        Assert.True(EtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, 7, out var first));
         Assert.Equal("Ab", first);
 
         asset.LineTexts["line:Etc_0519_p0"] = "Zz";
 
-        Assert.True(AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, 7, out var second));
+        Assert.True(EtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, 7, out var second));
         Assert.Equal("Ab", second);
     }
 }

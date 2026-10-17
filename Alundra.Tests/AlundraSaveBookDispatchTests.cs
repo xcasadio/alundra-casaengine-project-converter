@@ -17,7 +17,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E16.e T1 (docs/plan-e16-etat-partie.md, L1, L6, SE6): the generic ETC text access
-/// (<see cref="AlundraEtcStringTable.TryResolveText"/>, on the real export's <c>Dialogues/Etc.dialogue</c>), and
+/// (<see cref="EtcStringTable.TryResolveText"/>, on the real export's <c>Dialogues/Etc.dialogue</c>), and
 /// the dispatch of <see cref="EventProgramRunner.RunSpriteEvent"/> to the save book - only for sprite type
 /// 237, a native slot, and (F, 1) or (C, 72) - with the sprite type retained by both spawn paths.
 /// </summary>
@@ -35,9 +35,9 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
 
     private static void Reset()
     {
-        AlundraEtcStringTable.ResetForTests();
+        EtcStringTable.ResetForTests();
         GameState.Instance.ResetForTests();
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
 
         // E16.e T3: slot F now notes the flow to the real save screen - reset both session singletons.
         SaveBook.Instance.ResetForTests();
@@ -46,7 +46,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
 
     private static void LoadRealEtc()
     {
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(
+        EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(SaveGameDirectorTestSupport.FindProjectRoot(), "Dialogues", "Etc.dialogue")));
     }
 
@@ -62,7 +62,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     {
         LoadRealEtc();
 
-        Assert.True(AlundraEtcStringTable.TryResolveText(etcIndex, out var text));
+        Assert.True(EtcStringTable.TryResolveText(etcIndex, out var text));
         Assert.Equal(expected, text);
     }
 
@@ -73,7 +73,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     {
         LoadRealEtc();
 
-        Assert.True(AlundraEtcStringTable.TryResolveText(0x88, out var text));
+        Assert.True(EtcStringTable.TryResolveText(0x88, out var text));
         Assert.Equal(string.Empty, text);
     }
 
@@ -84,19 +84,19 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     {
         LoadRealEtc();
 
-        Assert.False(AlundraEtcStringTable.TryResolveText(etcIndex, out var text));
+        Assert.False(EtcStringTable.TryResolveText(etcIndex, out var text));
         Assert.Equal(string.Empty, text);
     }
 
     [Fact]
     public void EtcDialogueAsset_IsTheLoadedAsset()
     {
-        Assert.Null(AlundraEtcStringTable.EtcDialogueAsset);
+        Assert.Null(EtcStringTable.EtcDialogueAsset);
 
         LoadRealEtc();
 
-        Assert.NotNull(AlundraEtcStringTable.EtcDialogueAsset);
-        Assert.True(AlundraEtcStringTable.EtcDialogueAsset!.LineTexts.ContainsKey("line:Etc_0064_p0"));
+        Assert.NotNull(EtcStringTable.EtcDialogueAsset);
+        Assert.True(EtcStringTable.EtcDialogueAsset!.LineTexts.ContainsKey("line:Etc_0064_p0"));
     }
 
     // ---- L1: the dispatch ------------------------------------------------------------------------------

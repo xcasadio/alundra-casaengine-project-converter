@@ -18,7 +18,7 @@ namespace Alundra.UI.Hud;
 /// ran once per its own 50 Hz main-loop frame.
 ///
 /// <para><b>This director knows nothing about MGUI, <c>IUIScreen</c>, or any presenter</b> - unlike
-/// <see cref="AlundraDialogueDirector"/> it has no view seam at all: it exposes a plain, readable state
+/// <see cref="DialogueDirector"/> it has no view seam at all: it exposes a plain, readable state
 /// (<see cref="IsDrawn"/>, <see cref="Phase"/>, <see cref="Y"/>, the rolled values, the animation
 /// indices, <see cref="FrameCounter"/>) that E13's C2/C3 slices will read from a non-modal MGUI screen.
 /// This split exists so the jauge keeps rolling/rattraping while a modal dialogue box is open -
@@ -26,7 +26,7 @@ namespace Alundra.UI.Hud;
 /// update on every screen BELOW the modal one, and the original's own jauge never freezes for a
 /// conversation (docs/plan-e13-hud.md, C1's own "Pourquoi un directeur et pas l'écran").</para>
 ///
-/// <para>SESSION-scoped singleton, same shape as <see cref="AlundraDialogueDirector"/>/
+/// <para>SESSION-scoped singleton, same shape as <see cref="DialogueDirector"/>/
 /// <see cref="ScreenFadeDirector"/>: <see cref="AttachToWorld"/> re-points this session's
 /// <see cref="GameState"/> reference WITHOUT touching any animated state;
 /// <see cref="InstallForMapEntry"/> is the separate map-entry call, which arms the appearance when the persistent
@@ -195,7 +195,7 @@ public sealed class AlundraHudDirector
 
     /// <summary>Re-points this session-scoped instance at the current world's own
     /// <see cref="GameState"/> - same "re-point without touching state" contract as
-    /// <see cref="AlundraDialogueDirector.AttachToWorld"/>/<see cref="ScreenFadeDirector.AttachToWorld"/>.
+    /// <see cref="DialogueDirector.AttachToWorld"/>/<see cref="ScreenFadeDirector.AttachToWorld"/>.
     /// <paramref name="gameState"/> null is tolerated (no live session yet) - <see cref="Tick"/> then
     /// degrades to a no-op (<see cref="RunTriggerMachine"/>'s own null guard), same shape as every other
     /// missing-system seam in this DLL.</summary>

@@ -102,7 +102,7 @@ public sealed class AlundraInoaDayOneArcTests
         Assert.Equal(new[] { endFrame }, FramesOf(arc, B, 597, 0x05).ToArray()); // G1659 in the same call.
         Assert.True(IsSet(1659), "G1659");
         Assert.Equal(0u, ArcRun.State.PlayerControlFlags);
-        Assert.False(AlundraDialogueDirector.Instance.IsOpen);
+        Assert.False(DialogueDirector.Instance.IsOpen);
         AssertNoUnexpectedError(arc);
     }
 
@@ -225,7 +225,7 @@ public sealed class AlundraInoaDayOneArcTests
         Assert.Equal(new[] { endFrame }, FramesOf(arc, B, 351, 0x05).ToArray()); // G3 in the same image.
         Assert.True(IsSet(3), "G3");
         Assert.Equal(0u, ArcRun.State.PlayerControlFlags);
-        Assert.False(AlundraDialogueDirector.Instance.IsOpen, "a box is still open at the end");
+        Assert.False(DialogueDirector.Instance.IsOpen, "a box is still open at the end");
 
         // First call of B[1]: 0x3B @106 returns 1 (0x00 @121 closes the call, the program goes on at @116 and not at @232),
         // 0x69 @122 is reached at the second call, the 0x64 writes at the third.
@@ -423,7 +423,7 @@ public sealed class AlundraInoaDayOneArcTests
         Assert.False(IsSet(201), "G201");
         Assert.Equal((ushort)169, ArcRun.State.MapIdToInternalMapIndexTable[162]);
         Assert.Equal(0u, ArcRun.State.PlayerControlFlags);
-        Assert.False(AlundraDialogueDirector.Instance.IsOpen);
+        Assert.False(DialogueDirector.Instance.IsOpen);
         Assert.True(IsTemporarySet(3), "T3");
         // E20.e0a2 (ADR-0064): record 4, spawned by the 0x8B @95 after record 0 (slot 1) was destroyed, takes the LOWEST free slot, 1, and so walks BEFORE Septimus (slot 2) in the passes, as in
         // the binary's flat array: its C[3] (@448, which waits for T3) runs before C[2] sets T3 in the tick, so it leaves the wait one tick later and deactivates at the next tick (frame 2072).

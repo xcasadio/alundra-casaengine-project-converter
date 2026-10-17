@@ -17,7 +17,7 @@ internal sealed class DialogueHarnessButton
     private bool _heldAtThePreviousFrame;
 
     /// <summary>The pad to write for this frame (hold only, no just-pressed: the box reads the hold of the frame before and derives its own edge).</summary>
-    public uint HoldForThisFrame(AlundraDialogueDirector director)
+    public uint HoldForThisFrame(DialogueDirector director)
     {
         var hold = director.IsOpen && !(director.Box.IsWaitingForPress && _heldAtThePreviousFrame);
         _heldAtThePreviousFrame = hold;
@@ -26,18 +26,18 @@ internal sealed class DialogueHarnessButton
 }
 
 /// <summary>
-/// E19.f2a F2A-3: drives the passes of the dialogue box of a test that has no world proxy (<see cref="AlundraDialogueDirector.Tick"/>), counting them from
+/// E19.f2a F2A-3: drives the passes of the dialogue box of a test that has no world proxy (<see cref="DialogueDirector.Tick"/>), counting them from
 /// the opening of the box (the opening is pass 0, the first pass of the box is pass 1). The square button follows the plan's rule of the tests: the
 /// hold written before the call of pass p is recorded by that call and read by the box at pass p + 1, so "a press seen at pass k" is a hold written
 /// before pass k - 1 and gone before pass k (docs/plan-e19-f2a-valeurs.md, A.1).
 /// </summary>
 internal sealed class DialogueBoxPassDriver
 {
-    private readonly AlundraDialogueDirector _director;
+    private readonly DialogueDirector _director;
     private readonly GameState _gameState;
     private readonly HashSet<int> _holdBefore = new();
 
-    public DialogueBoxPassDriver(AlundraDialogueDirector director, GameState gameState)
+    public DialogueBoxPassDriver(DialogueDirector director, GameState gameState)
     {
         _director = director;
         _gameState = gameState;

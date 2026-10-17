@@ -242,10 +242,10 @@ public sealed class AlundraDay3SceneArcTests
                 Assert.Fail(arc.StuckMessage(signal));
             }
 
-            if (AlundraDialogueDirector.Instance.IsAwaitingChoice)
+            if (DialogueDirector.Instance.IsAwaitingChoice)
             {
                 choiceFrames++;
-                Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(0));
+                Assert.True(DialogueDirector.Instance.SelectChoiceForTests(0));
             }
 
             arc.OneFrameWithTheDialogueButton();

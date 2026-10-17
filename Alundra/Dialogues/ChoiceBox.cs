@@ -18,7 +18,7 @@ internal sealed record ChoiceDrawnState(
 /// The labels are the font3 characters of the dialogue asset: the binary's own <c>{c</c> and <c>}c</c> escape pairs, which its first update rewrites, have no
 /// counterpart here (no label of the corpus carries one).
 /// </summary>
-internal sealed class AlundraChoiceBox
+internal sealed class ChoiceBox
 {
     internal enum Stage { Closed, Init, SlideIn, Active, SlideOut }
 
@@ -247,9 +247,9 @@ internal sealed class AlundraChoiceBox
 /// E19.f3a (F3A-R4): the presses of a player answering the open choice, for the hook of the tests (<c>SelectChoiceForTests</c>): Left or Right until the wanted option is
 /// selected, then Cross, one press per pass, from the first interactive pass that follows the arming. The words it yields replace the pad of the tick before.
 /// </summary>
-internal sealed class AlundraChoiceAnswerPlan
+internal sealed class ChoiceAnswerPlan
 {
-    public AlundraChoiceAnswerPlan(int index) => Index = index;
+    public ChoiceAnswerPlan(int index) => Index = index;
 
     public int Index { get; }
 

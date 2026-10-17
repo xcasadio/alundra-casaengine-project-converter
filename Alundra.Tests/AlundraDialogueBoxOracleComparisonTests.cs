@@ -104,7 +104,7 @@ public sealed class AlundraDialogueBoxOracleComparisonTests
         };
     }
 
-    private static void Apply(AlundraDialogueDirector director, string op, int arg)
+    private static void Apply(DialogueDirector director, string op, int arg)
     {
         switch (op)
         {

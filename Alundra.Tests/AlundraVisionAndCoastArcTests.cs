@@ -143,7 +143,7 @@ public sealed class AlundraVisionAndCoastArcTests
     public void A3_TheVisionOnMap478_TheBlockRises_T20ToT60Fall_ThenTheWarpBackToMap476Departs()
     {
         using var arc = new ArcRun(A3Spec);
-        var serialAtStart = AlundraDialogueDirector.Instance.OpenSerial;
+        var serialAtStart = DialogueDirector.Instance.OpenSerial;
         var samples = new A3Samples();
         arc.OnInstruction = t => samples.Take(arc, t);
 
@@ -245,8 +245,8 @@ public sealed class AlundraVisionAndCoastArcTests
             lapStarts.Zip(lapStarts.Skip(1), (first, next) => next - first).ToList());
 
         // The end: no box, the hero still locked.
-        Assert.Equal(0u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
-        Assert.False(AlundraDialogueDirector.Instance.IsOpen);
+        Assert.Equal(0u, (uint)DialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
+        Assert.False(DialogueDirector.Instance.IsOpen);
         Assert.Equal(GameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
         AssertNoUnexpectedError(arc);
     }
@@ -347,7 +347,7 @@ public sealed class AlundraVisionAndCoastArcTests
     public void A7_TheCoastOnMap416_TheBlockWalksNorth_JessAppearsAndWalks_ThenTheWarpToMap163Departs()
     {
         using var arc = new ArcRun(A7Spec);
-        var serialAtStart = AlundraDialogueDirector.Instance.OpenSerial;
+        var serialAtStart = DialogueDirector.Instance.OpenSerial;
         var samples = new A7Samples();
         arc.OnInstruction = t => samples.Take(arc, t);
 
@@ -413,8 +413,8 @@ public sealed class AlundraVisionAndCoastArcTests
         Assert.Equal((66846720, 49774592), samples.BlockAt53);
 
         // The end: no box, the hero still locked.
-        Assert.Equal(0u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
-        Assert.False(AlundraDialogueDirector.Instance.IsOpen);
+        Assert.Equal(0u, (uint)DialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
+        Assert.False(DialogueDirector.Instance.IsOpen);
         Assert.Equal(GameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
         AssertNoUnexpectedError(arc);
     }
@@ -472,7 +472,7 @@ public sealed class AlundraVisionAndCoastArcTests
     public void A9_WendellOnMap172_TheWaitOnALoopSeesItsTurn_ThePlayerGetsTheHandBack()
     {
         using var arc = new ArcRun(A9Spec);
-        var serialAtStart = AlundraDialogueDirector.Instance.OpenSerial;
+        var serialAtStart = DialogueDirector.Instance.OpenSerial;
         var samples = new A9Samples();
         arc.OnInstruction = t => samples.Take(arc, t);
 
@@ -519,7 +519,7 @@ public sealed class AlundraVisionAndCoastArcTests
         // The end: the hand is back, T0 is clear, one box opened.
         Assert.Equal(0u, ArcRun.State.PlayerControlFlags);
         Assert.Equal(0u, ArcRun.State.GetFlag(0x8000) & 1u);
-        Assert.Equal(1u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
+        Assert.Equal(1u, (uint)DialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
         AssertNoUnexpectedError(arc);
     }
 }

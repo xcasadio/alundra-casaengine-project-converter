@@ -85,7 +85,7 @@ internal sealed class AlundraInventoryTextReveal
         // Main :970-986 / sub :533-549 - states 1..0x10: reveal the name one character at a time.
         if ((uint)(cursor - 1) < 0x10)
         {
-            AlundraEtcStringTable.TryResolveItemName(projectPath, item, out var name);
+            EtcStringTable.TryResolveItemName(projectPath, item, out var name);
 
             if (cursor - 1 >= name.Length)
             {
@@ -121,7 +121,7 @@ internal sealed class AlundraInventoryTextReveal
         // Main :1008-1024 / sub :573-589 - states 0x4e..0x8d: reveal the first description line.
         if ((uint)(cursor - 0x4e) < 0x40)
         {
-            AlundraEtcStringTable.TryResolveItemDescriptionLine0(projectPath, item, out var firstLine);
+            EtcStringTable.TryResolveItemDescriptionLine0(projectPath, item, out var firstLine);
 
             if (cursor - 0x4e >= firstLine.Length)
             {
@@ -151,7 +151,7 @@ internal sealed class AlundraInventoryTextReveal
         // c - 0x8f (main 0x80056274; the sub's executable reads c - 0x90, a defect corrected, D-E13D-30).
         if ((uint)(cursor - 0x8f) < 0x40)
         {
-            AlundraEtcStringTable.TryResolveItemDescriptionLine1(projectPath, item, out var secondLine);
+            EtcStringTable.TryResolveItemDescriptionLine1(projectPath, item, out var secondLine);
 
             if (cursor - 0x8f >= secondLine.Length)
             {

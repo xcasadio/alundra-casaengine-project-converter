@@ -38,12 +38,12 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         AlundraSubInventoryDirector.Instance.ResetForTests();
         AlundraInventoryPostProcess.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
         WarpDirector.Instance.ResetForTests();
-        AlundraEtcStringTable.ResetForTests(); // E15.c T6: this class' own SetEtcFixture leaves an injected asset behind.
+        EtcStringTable.ResetForTests(); // E15.c T6: this class' own SetEtcFixture leaves an injected asset behind.
         _previousProjectPath = EngineEnvironment.ProjectPath;
     }
 
@@ -53,12 +53,12 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         AlundraSubInventoryDirector.Instance.ResetForTests();
         AlundraInventoryPostProcess.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
         WarpDirector.Instance.ResetForTests();
-        AlundraEtcStringTable.ResetForTests(); // E15.c T6: same reason as the constructor.
+        EtcStringTable.ResetForTests(); // E15.c T6: same reason as the constructor.
         EngineEnvironment.ProjectPath = _previousProjectPath!;
     }
 
@@ -77,11 +77,11 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
 
     /// <summary>E15.c T6 (docs/plan-e15-yarn.md, contract items 5/6): same migration as
     /// <see cref="AlundraInventoryDirectorTests"/>'s own <c>SetEtcFixture</c> - a <c>dialogue_etc</c>-shaped
-    /// asset injected through <see cref="AlundraEtcStringTable.SetEtcDialogueAssetForTests"/>, replacing the
+    /// asset injected through <see cref="EtcStringTable.SetEtcDialogueAssetForTests"/>, replacing the
     /// old <c>Dialogues/etc-index.json</c>/<c>global-strings.json</c> pair this class used to write.</summary>
     private static void SetEtcFixture(int itemId, string name, string desc0, string desc1)
     {
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc(
+        EtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc(
             (itemId + 0x200, name),
             (itemId + 0x280, desc0),
             (itemId + 0x300, desc1)));
@@ -641,7 +641,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     [Fact]
     public void NewGame_ArmorAndBootsNames_AreTheRealExportedStrings()
     {
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(LoadRealEtcDialogueAsset(FindAlundraProjectPath()));
+        EtcStringTable.SetEtcDialogueAssetForTests(LoadRealEtcDialogueAsset(FindAlundraProjectPath()));
         var tables = ItemTablesFixture.LoadReal();
         var state = NewGameState(tables);
         AttachAll(state, tables, null);

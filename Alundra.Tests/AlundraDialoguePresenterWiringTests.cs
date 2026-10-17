@@ -144,7 +144,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
     [Fact]
     public void InstallDialogueSystems_WithAnActiveUiView_WiresAPresenterThatPushesOnOpenChoice()
     {
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         try
         {
             var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
@@ -178,17 +178,17 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
             var proxy = new AlundraWorldProxy();
             proxy.InstallDialogueSystems(world);
 
-            Assert.True(AlundraDialogueDirector.Instance.HasPresenter,
+            Assert.True(DialogueDirector.Instance.HasPresenter,
                 "the real install path must construct and attach the UI presenter when an active UI view exists.");
 
-            AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", 1);
+            DialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", 1);
             Assert.Empty(recorder.Pushed); // E19.f2b1c: the box is drawn by the text box screen, the engine's window is the choices'
-            AlundraDialogueDirector.Instance.OpenChoice(new[] { "OUI", "NON" });
+            DialogueDirector.Instance.OpenChoice(new[] { "OUI", "NON" });
             Assert.Empty(recorder.Pushed); // E19.f3a: the choice box is the director's own: nothing is pushed on the engine's view
         }
         finally
         {
-            AlundraDialogueDirector.Instance.ResetForTests();
+            DialogueDirector.Instance.ResetForTests();
         }
     }
 
@@ -206,7 +206,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
     [Fact]
     public void Update_WiresThePresenter_OnceTheViewAppearsAfterWorldInit()
     {
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
         try
         {
@@ -236,13 +236,13 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
             proxy.InstallDialogueSystems(world); // "TestWorld" has no tileMap, so InitializeWithWorld
                                                  // early-returns before the real install - drive it
                                                  // explicitly in the same empty-ViewManager state.
-            Assert.False(AlundraDialogueDirector.Instance.HasPresenter,
+            Assert.False(DialogueDirector.Instance.HasPresenter,
                 "montage error: no view exists yet, the eager install cannot have wired a presenter.");
 
             // Even a frame BEFORE the view exists must not wedge the retry (the clear-color shape:
             // guard only set on success - a one-shot lookup would make this miss permanent).
             proxy.Update(1f / 50f);
-            Assert.False(AlundraDialogueDirector.Instance.HasPresenter);
+            Assert.False(DialogueDirector.Instance.HasPresenter);
 
             // Phase 2 - BootstrapViews' equivalent: the view (with its UI runtime) appears.
             var recorder = new RecordingUIViewRuntime();
@@ -257,16 +257,16 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
             // Phase 3 - the next real Update wires the presenter and dialogue becomes visible.
             proxy.Update(1f / 50f);
 
-            Assert.True(AlundraDialogueDirector.Instance.HasPresenter,
+            Assert.True(DialogueDirector.Instance.HasPresenter,
                 "Update's per-frame retry must wire the presenter once the bootstrapped view exists.");
 
-            AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", 1);
-            AlundraDialogueDirector.Instance.OpenChoice(new[] { "OUI", "NON" });
+            DialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", 1);
+            DialogueDirector.Instance.OpenChoice(new[] { "OUI", "NON" });
             Assert.Empty(recorder.Pushed); // E19.f3a: the choice box is the director's own: nothing is pushed on the engine's view
         }
         finally
         {
-            AlundraDialogueDirector.Instance.ResetForTests();
+            DialogueDirector.Instance.ResetForTests();
             AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         }
     }

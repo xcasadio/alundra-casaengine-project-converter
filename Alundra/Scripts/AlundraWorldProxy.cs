@@ -711,13 +711,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// This session's dialogue-flow seam (E12.a, docs/plan-e12-dialogues.md) - the SESSION-scoped
-    /// <see cref="AlundraDialogueDirector.Instance"/> (D-C-6/D-E10-6 lesson, see that class's own doc),
+    /// <see cref="DialogueDirector.Instance"/> (D-C-6/D-E10-6 lesson, see that class's own doc),
     /// NOT a per-world instance. Always non-null: unlike <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>,
     /// attaching with a null presenter (no active UI view for this world) is itself a tolerated, tested
-    /// state - <see cref="IAlundraDialogueDirector.HasPresenter"/> is what actually gates real vs degraded
+    /// state - <see cref="IDialogueDirector.HasPresenter"/> is what actually gates real vs degraded
     /// dispatch (see that member's own doc). Installed by <see cref="InstallDialogueSystems"/>.
     /// </summary>
-    public IAlundraDialogueDirector DialogueDirector => AlundraDialogueDirector.Instance;
+    public IDialogueDirector DialogueDirector => Dialogues.DialogueDirector.Instance;
 
     /// <summary>E16.e L4: this world's name (<see cref="IEntityWorldContext.WorldName"/>), read at use time - the
     /// save book's state 5 captures the map from its "-{id}" suffix.</summary>
@@ -907,7 +907,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // (idempotent across world reloads, same shape as AlundraPlayerController's own
         // EnsureInputMappingsRegistered) - OUI/NON and the inventory's item names/descriptions read it
         // through AlundraEtcStringTable for the rest of the session.
-        AlundraEtcStringTable.EnsureLoaded(world.Game?.AssetContentManager);
+        EtcStringTable.EnsureLoaded(world.Game?.AssetContentManager);
 
         // Scrolling background layers (see AlundraBackdropStage's class doc) - same degraded-mode shape as
         // the event-program document above: a world with no companion file (most of them - Scroll
@@ -1500,12 +1500,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E12.a (docs/plan-e12-dialogues.md, item ③bis/④): installs the dialogue-flow seam - re-points the
-    /// SESSION-scoped <see cref="AlundraDialogueDirector.Instance"/> at an <see cref="AlundraDialoguePresenter"/>
+    /// SESSION-scoped <see cref="DialogueDirector.Instance"/> at an <see cref="AlundraDialoguePresenter"/>
     /// wired to this world's own ACTIVE UI view (<c>world.Game.GameManager.ViewManager.GetActiveUIView()</c>
     /// - the SAME route the engine's own <c>UIOverlayDemo</c> uses), THEN resets this map entry's dialogue
-    /// state (<see cref="AlundraDialogueDirector.InstallForMapEntry"/>). No active UI view (no <c>Game</c>,
+    /// state (<see cref="DialogueDirector.InstallForMapEntry"/>). No active UI view (no <c>Game</c>,
     /// or the active render view has none) -&gt; the presenter stays null, same tolerated degraded shape as
-    /// every other missing-system seam in this DLL (<see cref="IAlundraDialogueDirector.HasPresenter"/> is
+    /// every other missing-system seam in this DLL (<see cref="IDialogueDirector.HasPresenter"/> is
     /// what <see cref="EventProgramRunner.Dispatch"/> actually tests). Called from
     /// <see cref="InitializeWithWorld"/> - the ONLY call site (M16 lesson, same precedent as
     /// <see cref="InstallScreenFadeSystems"/>/<see cref="InstallAudioSystems"/>) - and extracted as its own
@@ -1531,12 +1531,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _dialoguePresenter = presenter;
         _dialoguePresenterWired = presenter != null;
 
-        AlundraDialogueDirector.Instance.AttachToWorld(presenter, GameState, SoundPlayer);
-        AlundraDialogueDirector.Instance.InstallForMapEntry();
+        Dialogues.DialogueDirector.Instance.AttachToWorld(presenter, GameState, SoundPlayer);
+        Dialogues.DialogueDirector.Instance.InstallForMapEntry();
 
         // E19.f4b (F4B-R4): the portrait of a speaker flies from and to its head point, which needs the scroll of the camera in the original's pixels, read at the opening and at the return
         // (the same conversion as the inventory portrait's head point, UpdateInventoryPortraitHeadPoint). Kept by every later AttachToWorld; the director never reaches the world itself.
-        AlundraDialogueDirector.Instance.ScrollSource = () => CameraMath.ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero);
+        Dialogues.DialogueDirector.Instance.ScrollSource = () => CameraMath.ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero);
     }
 
     /// <summary>
@@ -1548,8 +1548,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// success branch) - and deliberately NOT <c>ResolveDebugCameraOnce</c>'s one-shot-at-first-try
     /// shape, whose first-frame miss is permanent (the exact trap here, since the view's availability
     /// frame is bootstrap-dependent). On success this RE-POINTS the session director via
-    /// <see cref="AlundraDialogueDirector.AttachToWorld"/> - which by contract touches no open/mask/
-    /// page/choice state - and never calls <see cref="AlundraDialogueDirector.InstallForMapEntry"/>
+    /// <see cref="DialogueDirector.AttachToWorld"/> - which by contract touches no open/mask/
+    /// page/choice state - and never calls <see cref="DialogueDirector.InstallForMapEntry"/>
     /// again (the map-entry reset already ran at install; nothing can have opened meanwhile, every
     /// dialogue opcode degrades while <c>HasPresenter</c> is false).
     /// </summary>
@@ -1568,7 +1568,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
         _dialoguePresenter?.Dispose();
         _dialoguePresenter = new AlundraDialoguePresenter(uiView, _world?.Game?.UIFonts, _world?.Game?.AssetContentManager);
-        AlundraDialogueDirector.Instance.AttachToWorld(_dialoguePresenter, GameState, SoundPlayer);
+        Dialogues.DialogueDirector.Instance.AttachToWorld(_dialoguePresenter, GameState, SoundPlayer);
         _dialoguePresenterWired = true;
         Logs.WriteInfo("AlundraWorldProxy: dialogue presenter wired to the active UI view (post-bootstrap retry).");
     }
@@ -1764,7 +1764,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         {
             var textBoxScreen = new AlundraTextBoxScreen(assetContentManager, fonts);
             _textBoxScreen = textBoxScreen;
-            _textBoxPresenter = new AlundraTextBoxPresenter(AlundraDialogueDirector.Instance, textBoxScreen.ViewModel, textBoxScreen, uiView);
+            _textBoxPresenter = new AlundraTextBoxPresenter(Dialogues.DialogueDirector.Instance, textBoxScreen.ViewModel, textBoxScreen, uiView);
             Logs.WriteInfo("AlundraWorldProxy: text box screen wired to the active UI view (post-bootstrap retry).");
         }
         catch (Exception ex)
@@ -1798,7 +1798,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         {
             var choiceScreen = new AlundraChoiceScreen(assetContentManager, fonts);
             _choiceScreen = choiceScreen;
-            _choicePresenter = new AlundraChoicePresenter(AlundraDialogueDirector.Instance, choiceScreen.ViewModel, choiceScreen, uiView);
+            _choicePresenter = new AlundraChoicePresenter(Dialogues.DialogueDirector.Instance, choiceScreen.ViewModel, choiceScreen, uiView);
             Logs.WriteInfo("AlundraWorldProxy: choice screen wired to the active UI view (post-bootstrap retry).");
         }
         catch (Exception ex)
@@ -1807,11 +1807,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         }
     }
 
-    /// <summary>Test-only seam: attaches an <see cref="AlundraChoicePresenter"/> over the session's <see cref="AlundraDialogueDirector.Instance"/>, against any view model, screen and
+    /// <summary>Test-only seam: attaches an <see cref="AlundraChoicePresenter"/> over the session's <see cref="DialogueDirector.Instance"/>, against any view model, screen and
     /// UI view - the shape of <see cref="AttachTextBoxPresenterForTests"/>.</summary>
     internal void AttachChoicePresenterForTests(AlundraChoiceViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
-        _choicePresenter = new AlundraChoicePresenter(AlundraDialogueDirector.Instance, viewModel, screen, uiView);
+        _choicePresenter = new AlundraChoicePresenter(Dialogues.DialogueDirector.Instance, viewModel, screen, uiView);
     }
 
     /// <summary>Test-only seam: the choice screen this proxy holds (built by <see cref="TryWireChoiceScreenOnce"/> or attached by a test), null once <see cref="OnEndPlay"/> gave it back.</summary>
@@ -1831,11 +1831,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _saveScreenPresenter = new AlundraSaveScreenPresenter(AlundraSaveScreenDirector.Instance, viewModel, screen, uiView);
     }
 
-    /// <summary>Test-only seam: attaches an <see cref="AlundraTextBoxPresenter"/> over the session's <see cref="AlundraDialogueDirector.Instance"/>, against any view
+    /// <summary>Test-only seam: attaches an <see cref="AlundraTextBoxPresenter"/> over the session's <see cref="DialogueDirector.Instance"/>, against any view
     /// model, screen and UI view - the shape of <see cref="AttachSaveScreenPresenterForTests"/>.</summary>
     internal void AttachTextBoxPresenterForTests(AlundraTextBoxViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
-        _textBoxPresenter = new AlundraTextBoxPresenter(AlundraDialogueDirector.Instance, viewModel, screen, uiView);
+        _textBoxPresenter = new AlundraTextBoxPresenter(Dialogues.DialogueDirector.Instance, viewModel, screen, uiView);
     }
 
     /// <summary>Test-only seam: the text box screen this proxy holds (built by <see cref="TryWireTextBoxScreenOnce"/> or attached by a test), null once <see cref="OnEndPlay"/> gave it back.</summary>
@@ -2533,7 +2533,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             // E19.f3a F3A-R3: the pass of the director also runs the choice box (slot 3, right after the text box's), on the pad words of the tick before, like the Square.
             var (choicePressed, choiceInterval) = tick == 0 ? _choicePadOfLastTick : _choicePadOfTick[tick - 1];
             TickTraceForTests?.Invoke("box");
-            AlundraDialogueDirector.Instance.Pass(squareHeld, squarePressed, choicePressed, choiceInterval);
+            Dialogues.DialogueDirector.Instance.Pass(squareHeld, squarePressed, choicePressed, choiceInterval);
 
             // E19.f2b1c F2B1C-R4: the text box screen reads what the pass just drew, before the gate is read and before the map-events pass below (the pass runs whether the
             // hero exists and the gate is open or not), and once per pass: a frame of several ticks draws only its last pass, but each pass is applied in order.

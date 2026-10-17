@@ -35,7 +35,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
         AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
@@ -48,7 +48,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
         AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();

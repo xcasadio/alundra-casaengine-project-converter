@@ -457,12 +457,12 @@ public sealed class AlundraSubInventoryDirector
         ArmTweensForOpen();
 
         var armorId = ResolveEquippedSlot(7);
-        ArmorName = armorId.HasValue && AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, armorId.Value, out var armorName)
+        ArmorName = armorId.HasValue && EtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, armorId.Value, out var armorName)
             ? armorName
             : null;
 
         var bootsId = ResolveEquippedSlot(9);
-        BootsName = bootsId.HasValue && AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, bootsId.Value, out var bootsName)
+        BootsName = bootsId.HasValue && EtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, bootsId.Value, out var bootsName)
             ? bootsName
             : null;
 

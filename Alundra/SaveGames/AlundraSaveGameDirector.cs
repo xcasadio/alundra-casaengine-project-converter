@@ -490,7 +490,7 @@ public sealed class AlundraSaveGameDirector
 
     /// <summary>
     /// K6 step 1 and K7 step 1: what both keys refuse, each tested on its own (G7) - a dialogue box open
-    /// (<see cref="AlundraDialogueDirector.IsOpen"/>: a box with a control mode other than 0 or 1 leaves
+    /// (<see cref="DialogueDirector.IsOpen"/>: a box with a control mode other than 0 or 1 leaves
     /// <see cref="GameState.PlayerControlFlags"/> untouched); the main or the sub-inventory active; the
     /// inventory post-process not idle, or the portrait not <see cref="AlundraInventoryPortrait.StateIdle"/>
     /// (<see cref="AlundraInventoryPortrait.StateAtRest"/> is the portrait shown DURING a menu, SD12); a warp
@@ -500,7 +500,7 @@ public sealed class AlundraSaveGameDirector
     /// </summary>
     private static string? FindSessionBlocker(GameState state)
     {
-        if (AlundraDialogueDirector.Instance.IsOpen)
+        if (DialogueDirector.Instance.IsOpen)
         {
             return "a dialogue box is open.";
         }

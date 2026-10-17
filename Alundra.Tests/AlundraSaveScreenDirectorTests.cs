@@ -57,7 +57,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     public AlundraSaveScreenDirectorTests()
     {
         ResetAll();
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(
+        EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
         _presenter = new AlundraDialoguePresenter(_uiView);
         Dialogue.AttachToWorld(_presenter, State);
@@ -71,14 +71,14 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     private static void ResetAll()
     {
         ResetSingletons();
-        AlundraEtcStringTable.ResetForTests();
+        EtcStringTable.ResetForTests();
         SaveBook.Instance.ResetForTests();
         AlundraSaveScreenDirector.Instance.ResetForTests();
     }
 
     private static GameState State => GameState.Instance;
 
-    private static AlundraDialogueDirector Dialogue => AlundraDialogueDirector.Instance;
+    private static DialogueDirector Dialogue => DialogueDirector.Instance;
 
     private static AlundraSaveScreenDirector Director => AlundraSaveScreenDirector.Instance;
 

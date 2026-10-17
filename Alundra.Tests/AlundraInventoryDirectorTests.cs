@@ -38,7 +38,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
@@ -46,7 +46,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         ScreenFadeDirector.Instance.ResetForTests(); // SD5: the warp departure tests arm the outgoing fade...
         BgmPlayer.Instance.ResetForTests();        // ...record a departure request on the music player...
         BgmFadeDirector.Instance.ResetForTests();    // ...which may arm the BGM fade at the frame close.
-        AlundraEtcStringTable.ResetForTests(); // E15.c T6: this class' own SetEtcFixture leaves an injected asset behind.
+        EtcStringTable.ResetForTests(); // E15.c T6: this class' own SetEtcFixture leaves an injected asset behind.
         _previousProjectPath = EngineEnvironment.ProjectPath;
     }
 
@@ -56,7 +56,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
@@ -64,7 +64,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         ScreenFadeDirector.Instance.ResetForTests(); // SD5: same reason as the constructor.
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests();
-        AlundraEtcStringTable.ResetForTests(); // E15.c T6: same reason as the constructor.
+        EtcStringTable.ResetForTests(); // E15.c T6: same reason as the constructor.
         EngineEnvironment.ProjectPath = _previousProjectPath!;
     }
 
@@ -85,10 +85,10 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     /// asset resolving item <paramref name="itemId"/>'s name and two description lines - migrated off the
     /// pre-Yarn JSON fixture (this class used to write <c>Dialogues/etc-index.json</c>/
     /// <c>global-strings.json</c>) onto <see cref="DialogueTestAssets.BuildEtc"/> and
-    /// <see cref="AlundraEtcStringTable.SetEtcDialogueAssetForTests"/>, the table's own test entry point.</summary>
+    /// <see cref="EtcStringTable.SetEtcDialogueAssetForTests"/>, the table's own test entry point.</summary>
     private static void SetEtcFixture(int itemId, string name, string desc0, string desc1)
     {
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc(
+        EtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc(
             (itemId + 0x200, name),
             (itemId + 0x280, desc0),
             (itemId + 0x300, desc1)));
@@ -321,9 +321,9 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     {
         var state = NewState();
         var director = NewDirector(state);
-        AlundraDialogueDirector.Instance.AttachToWorld(null, state); // no view needed - IsOpen flips regardless (Open's own doc).
-        AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Hello", "hello"), "Start", 0);
-        Assert.True(AlundraDialogueDirector.Instance.IsOpen);
+        DialogueDirector.Instance.AttachToWorld(null, state); // no view needed - IsOpen flips regardless (Open's own doc).
+        DialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Hello", "hello"), "Start", 0);
+        Assert.True(DialogueDirector.Instance.IsOpen);
 
         Tick(state, director, PadState.Start);
 
@@ -845,14 +845,14 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     /// <summary>
     /// Closing verifier's F1 (P1, reproduced on the real export), migrated to Yarn (E15.c T6): an ETC
     /// offset with no text has no node at all in the compiled asset - the base dagger's second description
-    /// line among them - and <see cref="AlundraEtcStringTable"/> reads that the same way it read a JSON
+    /// line among them - and <see cref="EtcStringTable"/> reads that the same way it read a JSON
     /// <see langword="null"/> before the port (MainInventoryManager.cs:972/:1010/:1041, "?? string.Empty").
     /// The reveal must run through to 0xcf without throwing, the empty lines staying empty.
     /// </summary>
     [Fact]
     public void TextReveal_DescriptionOffsetsWithoutNode_ReadAsEmpty_RunToTheEndWithoutThrowing()
     {
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc((0x24 + 0x200, "Ab")));
+        EtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc((0x24 + 0x200, "Ab")));
         var state = NewState();
         var director = NewDirector(state);
         OpenAndSettle(state, director);
@@ -874,9 +874,9 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     [Fact]
     public void EtcStringTable_IndexWithoutNode_ResolvesToAnEmptyString()
     {
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc());
+        EtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc());
 
-        Assert.True(AlundraEtcStringTable.TryResolveItemDescriptionLine1(EngineEnvironment.ProjectPath, 7, out var line));
+        Assert.True(EtcStringTable.TryResolveItemDescriptionLine1(EngineEnvironment.ProjectPath, 7, out var line));
         Assert.Equal(string.Empty, line);
     }
 

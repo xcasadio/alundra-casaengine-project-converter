@@ -15,7 +15,7 @@ namespace Alundra.Transitions;
 /// <summary>
 /// T4 (docs/plan-transitions-carte.md §1.2.c/§1.2.e/§3, D-T-2): SESSION-scoped singleton - same
 /// contract shape as <see cref="BgmPlayer"/>/<see cref="ScreenFadeDirector"/>/
-/// <see cref="AlundraDialogueDirector"/> (<c>Instance</c>, <see cref="AttachToWorld"/>,
+/// <see cref="DialogueDirector"/> (<c>Instance</c>, <see cref="AttachToWorld"/>,
 /// <see cref="InstallForMapEntry"/>, <see cref="ResetForTests"/>) - port of <c>PlayerManager.HandleWarpTransition</c>
 /// (<c>PlayerManager.cs:3488-3541</c>) plus the map-entry preamble that ENDS it
 /// (<c>GameEngine.cs:302</c>, §1.2.e/D-T-15). Reason it must be session-scoped, not per-world (D-T-2):

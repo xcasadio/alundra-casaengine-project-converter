@@ -14,7 +14,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// E16.f (docs/plan-e16-etat-partie.md, acceptance "corpus", 2026-09-28 plan review, P2): proves that
 /// none of the 485 exported <c>.dialogue</c> files under <c>alundra-project/</c> ever consults
-/// <see cref="AlundraYarnVariableStorage"/> - it declares no variable's initial value and no node's
+/// <see cref="YarnVariableStorage"/> - it declares no variable's initial value and no node's
 /// bytecode ever reads or writes a variable (Yarn's own or a flag one). No existing test plays the whole
 /// corpus, and the engine's own runner does not advance choices by itself
 /// (<c>YarnDialogueRunner.cs:169-171</c>), so this test inspects each COMPILED <c>Yarn.Program</c>
@@ -65,7 +65,7 @@ public sealed class AlundraYarnVariableCorpusTests
     /// DLL does at runtime (<see cref="DialogueTestAssets.LoadFromDisk"/>'s own loader); if the asset
     /// carries no compiled program (D-E16-... none observed in the corpus, but the plan asks for the
     /// fallback anyway), the neighbour <c>.yarn</c> source is recompiled with the same declarations the
-    /// DLL registers in production (<see cref="AlundraYarnBindings.CreateDeclarations"/>), exactly like
+    /// DLL registers in production (<see cref="YarnBindings.CreateDeclarations"/>), exactly like
     /// <see cref="DialogueTestAssets.BuildRaw"/> does for a synthetic fixture.</summary>
     private static Program LoadCompiledProgram(string dialoguePath)
     {
@@ -79,7 +79,7 @@ public sealed class AlundraYarnVariableCorpusTests
         Assert.True(File.Exists(yarnPath), $"AlundraYarnVariableCorpusTests: '{dialoguePath}' has no compiled program and no neighbour '{yarnPath}' to recompile.");
 
         var compiler = new YarnDialogueCompiler();
-        var result = compiler.CompileFile(yarnPath, AlundraYarnBindings.CreateDeclarations());
+        var result = compiler.CompileFile(yarnPath, YarnBindings.CreateDeclarations());
         Assert.True(result.Success, $"AlundraYarnVariableCorpusTests: recompiling '{yarnPath}' failed: " + string.Join(Environment.NewLine, result.Diagnostics.Select(d => d.Message)));
         return Program.Parser.ParseFrom(result.ProgramBytes);
     }

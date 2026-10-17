@@ -272,8 +272,8 @@ internal sealed class ArcRun : IDisposable
             var mapFolder = Path.Combine(root, "Maps", spec.Zone, spec.WorldName);
             Runner.MapDialogueAsset = DialogueTestAssets.LoadFromDisk(Path.Combine(mapFolder, "dialogues", spec.WorldName + ".dialogue"));
             Runner.SharedDialogueAsset = DialogueTestAssets.LoadFromDisk(Path.Combine(root, "Dialogues", "Shared.dialogue"));
-            AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.LoadFromDisk(Path.Combine(root, "Dialogues", "Etc.dialogue")));
-            Assert.True(AlundraDialogueDirector.Instance.HasPresenter);
+            EtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.LoadFromDisk(Path.Combine(root, "Dialogues", "Etc.dialogue")));
+            Assert.True(DialogueDirector.Instance.HasPresenter);
 
             HeroEntity = heroEntity;
             Hero = Assert.IsType<AlundraEntityScriptProxy>(heroEntity.GameplayProxy);
@@ -381,7 +381,7 @@ internal sealed class ArcRun : IDisposable
         // E19.d (TH2): the shared random stream of the arcs starts from its seed (in game its position depends on the draws made before).
         GameRandom.Reset();
         ResetSingletons();
-        AlundraEtcStringTable.ResetForTests();
+        EtcStringTable.ResetForTests();
         SaveBook.Instance.ResetForTests();
     }
 
@@ -512,13 +512,13 @@ internal sealed class ArcRun : IDisposable
     {
         RunUntil(() =>
         {
-            if (!AlundraDialogueDirector.Instance.IsOpen)
+            if (!DialogueDirector.Instance.IsOpen)
             {
                 return true;
             }
 
             Press(PadState.Square);
-            return !AlundraDialogueDirector.Instance.IsOpen;
+            return !DialogueDirector.Instance.IsOpen;
         }, signal);
     }
 
@@ -553,7 +553,7 @@ internal sealed class ArcRun : IDisposable
     /// as it is after the frame; <see cref="LetGoOfTheDialogueButton"/> lets go of it when the loop ends.</summary>
     public void OneFrameWithTheDialogueButton()
     {
-        var director = AlundraDialogueDirector.Instance;
+        var director = DialogueDirector.Instance;
         _dialogueHold = director.IsOpen && !(director.Box.IsWaitingForPress && _dialogueHoldPreviousFrame);
         OneFrame();
     }

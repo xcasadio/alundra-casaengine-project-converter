@@ -25,18 +25,18 @@ namespace Alundra.Tests;
 /// </summary>
 public sealed class AlundraDialogueFlagMarkerTests : IDisposable
 {
-    private static readonly AlundraDialogueDirector Director = AlundraDialogueDirector.Instance;
+    private static readonly DialogueDirector Director = DialogueDirector.Instance;
 
     public AlundraDialogueFlagMarkerTests()
     {
         Director.ResetForTests();
-        AlundraDialogueCapturePresenter.ResetForTests();
+        DialogueCapturePresenter.ResetForTests();
     }
 
     public void Dispose()
     {
         Director.ResetForTests();
-        AlundraDialogueCapturePresenter.ResetForTests();
+        DialogueCapturePresenter.ResetForTests();
     }
 
     private static string Flag(int id) => $"[flag id={id} trimwhitespace=false/]";
@@ -68,7 +68,7 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
-        public IAlundraDialogueDirector? DialogueDirector { get; set; }
+        public IDialogueDirector? DialogueDirector { get; set; }
     }
 
     /// <summary>World presenter that snapshots, at the instant it is handed a line, what the game state
@@ -247,9 +247,9 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
         var gameState = new GameState();
         gameState.PlayerStats.FalconTemp = 4;
         var world = new SnapshotPresenter(() => $"flag100={IsSet(gameState, 100)};falcon={gameState.PlayerStats.Falcon}");
-        var capture = new AlundraDialogueCapturePresenter(world);
+        var capture = new DialogueCapturePresenter(world);
         var runner = new YarnDialogueRunner(capture);
-        new AlundraYarnBindings(gameState).Register(runner);
+        new YarnBindings(gameState).Register(runner);
 
         var asset = DialogueTestAssets.BuildRaw(
             "Order", "Start", "<<falcon_update>>\nRamène-moi {falcon()} faucons." + Flag(100) + Yield);
@@ -265,7 +265,7 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
     public void ACapturePresenterBuiltWithoutAGameState_SetsNoFlagAndDoesNotThrow()
     {
         var world = new SnapshotPresenter(() => string.Empty);
-        var capture = new AlundraDialogueCapturePresenter(world);
+        var capture = new DialogueCapturePresenter(world);
         var line = new DialogueLine(
             "x",
             string.Empty,

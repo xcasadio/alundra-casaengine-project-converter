@@ -14,7 +14,7 @@ using Alundra.Dialogues;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E19.f3a F3A-1: the machine of the choice box (<see cref="AlundraChoiceBox"/>), the port of <c>ChoiceBox</c> of <c>docs/plan-e19-f3-annexe/model/choice_model.py</c>
+/// E19.f3a F3A-1: the machine of the choice box (<see cref="ChoiceBox"/>), the port of <c>ChoiceBox</c> of <c>docs/plan-e19-f3-annexe/model/choice_model.py</c>
 /// (slot 3 of the binary's callback table, opener 0x80050BA8), against the values V1 to V7 of <c>docs/plan-e19-f3-annexe/values.json</c> (the model run on
 /// the pad words listed there): per pass, the update function, whether it drew, the sounds, the close, the x of the frame, of the labels and of the cursor, the cursor
 /// image, the selection, then the pass at which the result word is written and its value.
@@ -46,12 +46,12 @@ public sealed class AlundraChoiceBoxMachineTests
 
     public static IEnumerable<object[]> ScenarioIndexes() => Enumerable.Range(0, 7).Select(i => new object[] { i });
 
-    private static string PhaseName(AlundraChoiceBox.Stage stage) => stage switch
+    private static string PhaseName(ChoiceBox.Stage stage) => stage switch
     {
-        AlundraChoiceBox.Stage.Init => "init",
-        AlundraChoiceBox.Stage.SlideIn => "in",
-        AlundraChoiceBox.Stage.Active => "active",
-        AlundraChoiceBox.Stage.SlideOut => "out",
+        ChoiceBox.Stage.Init => "init",
+        ChoiceBox.Stage.SlideIn => "in",
+        ChoiceBox.Stage.Active => "active",
+        ChoiceBox.Stage.SlideOut => "out",
         _ => "closed",
     };
 
@@ -70,7 +70,7 @@ public sealed class AlundraChoiceBoxMachineTests
         }
 
         var table = scenario.GetProperty("table").EnumerateArray().ToArray();
-        var box = new AlundraChoiceBox();
+        var box = new ChoiceBox();
         box.SeedCursorTickForTests(scenario.GetProperty("anim0").GetInt32());
         var pad = new TickPad();
         var closedAt = -1;
@@ -100,7 +100,7 @@ public sealed class AlundraChoiceBoxMachineTests
             if (box.Drawn is { } drawn)
             {
                 Assert.True(row.GetProperty("frame_x").GetInt32() == drawn.FrameX, $"{where}: frame x");
-                Assert.True(AlundraChoiceBox.FrameY == drawn.FrameY, $"{where}: frame y");
+                Assert.True(ChoiceBox.FrameY == drawn.FrameY, $"{where}: frame y");
                 Assert.True(row.GetProperty("label0_x").GetInt32() == drawn.Label0X, $"{where}: label 0 x");
                 Assert.True(row.GetProperty("label1_x").GetInt32() == drawn.Label1X, $"{where}: label 1 x");
                 Assert.True(row.GetProperty("cursor_x").GetInt32() == drawn.CursorX, $"{where}: cursor x");
@@ -127,7 +127,7 @@ public sealed class AlundraChoiceBoxMachineTests
     [Fact]
     public void TheLabelsAreCutAtSixCharacters_AndTheCursorSitsOnTheSelectedLabel()
     {
-        var box = new AlundraChoiceBox();
+        var box = new ChoiceBox();
         box.Open("ABCDEFGH", "IJKLMNOP");
         Assert.Equal(new[] { "ABCDEF", "IJKLMN" }, box.Labels);
 
@@ -139,7 +139,7 @@ public sealed class AlundraChoiceBoxMachineTests
     [Fact]
     public void TheOpener_DoesNotResetTheCursorCounter_AndTheCounterWrapsAt40()
     {
-        var box = new AlundraChoiceBox();
+        var box = new ChoiceBox();
         box.SeedCursorTickForTests(38);
         box.Open("OUI", "NON");
         box.Pass(0, 0); // init: nothing drawn, the counter is not touched
@@ -158,7 +158,7 @@ public sealed class AlundraChoiceBoxMachineTests
     [Fact]
     public void ACrossSeenBeforeTheFirstInteractivePass_IsLost()
     {
-        var box = new AlundraChoiceBox();
+        var box = new ChoiceBox();
         box.Open("OUI", "NON");
         for (var t = 1; t <= 18; t++)
         {
@@ -166,19 +166,19 @@ public sealed class AlundraChoiceBoxMachineTests
             Assert.False(box.ClosedThisPass);
         }
 
-        Assert.Equal(AlundraChoiceBox.Stage.Active, box.CurrentStage);
+        Assert.Equal(ChoiceBox.Stage.Active, box.CurrentStage);
         for (var t = 19; t <= 60; t++)
         {
             box.Pass(0, 0);
         }
 
-        Assert.Equal(AlundraChoiceBox.Stage.Active, box.CurrentStage); // still waiting for an answer
+        Assert.Equal(ChoiceBox.Stage.Active, box.CurrentStage); // still waiting for an answer
         Assert.Equal(0, box.ResultWord);
     }
 }
 
 /// <summary>
-/// E19.f3a F3A-1: the choice box at the director (<see cref="AlundraDialogueDirector"/>): the opener, the hook of the tests, the answer 37 (OUI) or 38 (NON) passes
+/// E19.f3a F3A-1: the choice box at the director (<see cref="DialogueDirector"/>): the opener, the hook of the tests, the answer 37 (OUI) or 38 (NON) passes
 /// after the opener, the cancels, and the real pad through the world proxy (<see cref="DialogueBoxMontage"/>, five sequences).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
@@ -189,15 +189,15 @@ public sealed class AlundraChoiceBoxDirectorTests : IDisposable
 
     public AlundraChoiceBoxDirectorTests()
     {
-        AlundraDialogueDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
         _sounds = new PassStampedSoundPlayer(() => 0, () => Director.PassCountForTests);
         Director.AttachToWorld(new DialogueService(), _state, _sounds);
         Director.InstallForMapEntry();
     }
 
-    public void Dispose() => AlundraDialogueDirector.Instance.ResetForTests();
+    public void Dispose() => DialogueDirector.Instance.ResetForTests();
 
-    private static AlundraDialogueDirector Director => AlundraDialogueDirector.Instance;
+    private static DialogueDirector Director => DialogueDirector.Instance;
 
     private static readonly string[] OuiNon = { "OUI", "NON" };
 
@@ -334,7 +334,7 @@ public sealed class AlundraChoiceBoxDirectorTests : IDisposable
         for (var n = 9; n <= 45; n++)
         {
             Director.Tick();
-            Assert.Equal(AlundraChoiceBox.Stage.Closed, Director.ChoiceBoxForTests.CurrentStage);
+            Assert.Equal(ChoiceBox.Stage.Closed, Director.ChoiceBoxForTests.CurrentStage);
             Assert.Null(Director.ChoiceBoxForTests.Drawn);
             Assert.Null(Director.TakeChoiceResult());
             Assert.Empty(Director.ChoicesForTests);
@@ -353,7 +353,7 @@ public sealed class AlundraChoiceBoxDirectorTests : IDisposable
         }
 
         Assert.Empty(_sounds.Played);
-        Assert.Equal(AlundraChoiceBox.Stage.Closed, Director.ChoiceBoxForTests.CurrentStage);
+        Assert.Equal(ChoiceBox.Stage.Closed, Director.ChoiceBoxForTests.CurrentStage);
         Assert.Null(Director.TakeChoiceResult());
         Assert.False(Director.IsAwaitingChoice);
     }
@@ -373,7 +373,7 @@ public sealed class AlundraChoiceBoxDirectorTests : IDisposable
         for (var n = 11; n <= 60; n++)
         {
             Director.Tick();
-            Assert.Equal(AlundraChoiceBox.Stage.Closed, Director.ChoiceBoxForTests.CurrentStage);
+            Assert.Equal(ChoiceBox.Stage.Closed, Director.ChoiceBoxForTests.CurrentStage);
             Assert.Null(Director.TakeChoiceResult());
         }
 
@@ -400,7 +400,7 @@ public sealed class AlundraChoiceBoxDirectorTests : IDisposable
         for (var n = 13; n <= 60; n++)
         {
             Director.Tick();
-            Assert.Equal(AlundraChoiceBox.Stage.Closed, Director.ChoiceBoxForTests.CurrentStage);
+            Assert.Equal(ChoiceBox.Stage.Closed, Director.ChoiceBoxForTests.CurrentStage);
             Assert.Null(Director.TakeChoiceResult());
         }
 
@@ -423,7 +423,7 @@ public sealed class AlundraChoiceBoxDirectorTests : IDisposable
         for (var n = 11; n <= 60; n++)
         {
             Director.Tick();
-            Assert.Equal(AlundraChoiceBox.Stage.Closed, Director.ChoiceBoxForTests.CurrentStage);
+            Assert.Equal(ChoiceBox.Stage.Closed, Director.ChoiceBoxForTests.CurrentStage);
             Assert.Null(Director.TakeChoiceResult());
         }
 

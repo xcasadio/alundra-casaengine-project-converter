@@ -1061,7 +1061,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
                 if (!choiceDirector.IsAwaitingChoice)
                 {
-                    if (!AlundraEtcStringTable.TryResolveYesNo(EngineEnvironment.ProjectPath, out var yesLabel, out var noLabel))
+                    if (!EtcStringTable.TryResolveYesNo(EngineEnvironment.ProjectPath, out var yesLabel, out var noLabel))
                     {
                         state.Result = 1;
                         LogDegradedOpcodeOnce(0x44, "WaitDialogChoice", "dialogue_etc data");
@@ -2109,8 +2109,8 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// Shared "open" half of opcodes 0x0D, 0x5C and 0xC4 (E12.a, docs/plan-e12-dialogues.md; E15.c
     /// docs/plan-e15-yarn.md contract items 1/2/8; 0xC4 since E19.b): resolves <paramref name="textIdParam"/> to a Yarn
     /// asset/node (see <see cref="ResolveDialogNode"/>), then either opens the real dialogue through
-    /// <see cref="AlundraDialogueDirector"/> (Dispatch's own reentrancy guard - T2 - already ran BEFORE
-    /// this is called, via <see cref="IAlundraDialogueDirector.IsOpen"/>) or degrades: item 8 plays the
+    /// <see cref="DialogueDirector"/> (Dispatch's own reentrancy guard - T2 - already ran BEFORE
+    /// this is called, via <see cref="IDialogueDirector.IsOpen"/>) or degrades: item 8 plays the
     /// resolved node HEADLESS to its end on a runner carrying the same commands/functions, so every
     /// page's flag (and falcon_update) still runs in page order (D-E12-4's own P0 correction - "le mode
     /// dégradé pose AUSSI les drapeaux numériques", or a later <c>0x36</c> waiting on one of them would
@@ -2161,7 +2161,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// runner's own document never resolved a map id); bit clear -&gt; <see cref="SharedDialogueAsset"/>'s
     /// node <c>Shared_S{textId:000}</c> (null only when the export has no shared asset). A resolved
     /// (asset, node) pair may still name a node the asset does not have (an empty original slot,
-    /// D-E15-10) - <see cref="AlundraDialogueDirector.Open"/> and <see cref="PlayNodeHeadlessToEnd"/> both
+    /// D-E15-10) - <see cref="DialogueDirector.Open"/> and <see cref="PlayNodeHeadlessToEnd"/> both
     /// degrade to nothing/an empty box for that case, exactly like a null asset here.
     /// </summary>
     private (DialogueAsset? Asset, string? Node) ResolveDialogNode(int textIdParam)
@@ -2186,7 +2186,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// E15.c T5 (docs/plan-e15-yarn.md, contract item 8): plays <paramref name="node"/> of
     /// <paramref name="asset"/> to its end on a throwaway <see cref="YarnDialogueRunner"/> built on a
     /// no-op presenter, with the same commands/functions the real dialogue director registers
-    /// (<see cref="AlundraYarnBindings"/>) - so every page's <c>flag</c> (and <c>falcon_update</c>) still
+    /// (<see cref="YarnBindings"/>) - so every page's <c>flag</c> (and <c>falcon_update</c>) still
     /// runs, in page order, exactly as a box shown then immediately closed would. A no-op when
     /// <paramref name="node"/> does not exist on <paramref name="asset"/> (an empty original slot,
     /// D-E15-10).
@@ -2194,7 +2194,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     private void PlayNodeHeadlessToEnd(DialogueAsset asset, string node)
     {
         var runner = new YarnDialogueRunner(new NullDialoguePresenter(_gameState));
-        new AlundraYarnBindings(_gameState).Register(runner);
+        new YarnBindings(_gameState).Register(runner);
 
         if (!runner.Start(asset, node))
         {
@@ -2228,7 +2228,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
         public bool ShowLine(DialogueLine line)
         {
-            AlundraYarnBindings.ApplyFlagMarkers(_gameState, line);
+            YarnBindings.ApplyFlagMarkers(_gameState, line);
             return true;
         }
 

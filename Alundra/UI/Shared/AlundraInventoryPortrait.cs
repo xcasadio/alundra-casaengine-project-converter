@@ -6,7 +6,7 @@ namespace Alundra.UI.Shared;
 /// The original's single "character portrait" quad (docs/plan-portrait-inventaire.md, PI7): a port of the block at <c>0x80180070</c> driven by
 /// <c>0x80057b64..0x800581fc</c> of the France executable, as the inventories use it (entry point <c>0x80057c18</c>: rest (248, 104), 48x56) and, since E19.f4b
 /// (docs/plan-e19-opcodes.md, F4B-R3), as the dialogue uses it (entry point <c>0x80057c84</c>: rest (8, 172 - h), 48 x h), through a SECOND instance
-/// (<see cref="AlundraDialogueDirector"/>'s own: the binary's shared block is crossed between the inventory and the dialogue only in cases that cannot be reached).
+/// (<see cref="DialogueDirector"/>'s own: the binary's shared block is crossed between the inventory and the dialogue only in cases that cannot be reached).
 ///
 /// <para>States (the original's own values): 0 idle (nothing drawn); 5 opening (flies from Alundra's head to the rest
 /// position while growing); 4 at rest (48x56 at (248, 104) for as long as a menu is open); 2 returning (flies back to

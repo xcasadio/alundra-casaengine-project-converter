@@ -22,18 +22,18 @@ namespace Alundra.Tests;
 /// </summary>
 public sealed class AlundraDialogueYarnRenderingTests : IDisposable
 {
-    private static readonly AlundraDialogueDirector Director = AlundraDialogueDirector.Instance;
+    private static readonly DialogueDirector Director = DialogueDirector.Instance;
 
     public AlundraDialogueYarnRenderingTests()
     {
         Director.ResetForTests();
-        AlundraDialogueCapturePresenter.ResetForTests();
+        DialogueCapturePresenter.ResetForTests();
     }
 
     public void Dispose()
     {
         Director.ResetForTests();
-        AlundraDialogueCapturePresenter.ResetForTests();
+        DialogueCapturePresenter.ResetForTests();
     }
 
     private static EventProgramDocument NewDocument(params int[] codes)
@@ -55,7 +55,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
-        public IAlundraDialogueDirector? DialogueDirector { get; set; }
+        public IDialogueDirector? DialogueDirector { get; set; }
     }
 
     private static void AttachRealDialogueContext(GameState gameState)

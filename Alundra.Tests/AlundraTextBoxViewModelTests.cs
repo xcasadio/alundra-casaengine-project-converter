@@ -31,7 +31,7 @@ namespace Alundra.Tests;
 /// </summary>
 public sealed class AlundraTextBoxViewModelTests : IDisposable
 {
-    private static readonly AlundraDialogueDirector Director = AlundraDialogueDirector.Instance;
+    private static readonly DialogueDirector Director = DialogueDirector.Instance;
     private const string Br = "[br trimwhitespace=false/]";
 
     private static readonly string[] CursorNames = { "wind_150", "wind_173", "wind_201", "wind_228" };
@@ -49,10 +49,10 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
     private static void Reset()
     {
         Director.ResetForTests();
-        Director.Box.DrawsPreShiftRowsAtScrollEnd = AlundraDialogueBox.ScrollEndDrawsPreShiftRows; // a test of the variant leaves the box's flag on
+        Director.Box.DrawsPreShiftRowsAtScrollEnd = DialogueBox.ScrollEndDrawsPreShiftRows; // a test of the variant leaves the box's flag on
         Director.AdvanceProviderForTests = null;
-        AlundraDialogueCapturePresenter.ResetForTests();
-        AlundraFont3Advances.ResetForTests();
+        DialogueCapturePresenter.ResetForTests();
+        Font3Advances.ResetForTests();
     }
 
     // ---- the tables (a reduced reader of the annex CSV: the columns the rule reads) --------------------------------------------
@@ -252,7 +252,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
         }
         finally
         {
-            Director.Box.DrawsPreShiftRowsAtScrollEnd = AlundraDialogueBox.ScrollEndDrawsPreShiftRows;
+            Director.Box.DrawsPreShiftRowsAtScrollEnd = DialogueBox.ScrollEndDrawsPreShiftRows;
         }
     }
 
@@ -739,7 +739,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
     [Fact]
     public void TheNameViewModel_WritesTheFrameTheTextAndTheName_AndCollapsesWhenNothingIsDrawn()
     {
-        var box = new AlundraDialogueNameBox();
+        var box = new DialogueNameBox();
         var vm = new TextBoxNameViewModel();
         var notifications = new List<string?>();
         vm.PropertyChanged += (_, e) => notifications.Add(e.PropertyName);
@@ -769,7 +769,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
     [Fact]
     public void TheNameBox_KeepsTheTextOfItsOpening_WhateverTheEtcBecomes()
     {
-        var box = new AlundraDialogueNameBox();
+        var box = new DialogueNameBox();
         var text = "Jess";
         Assert.True(box.TryOpen(0x104, _ => text, _ => 7));
         text = "Someone else";

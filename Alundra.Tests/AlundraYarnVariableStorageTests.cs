@@ -20,20 +20,20 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E16.f T2 (docs/plan-e16-etat-partie.md, contrat 1 à 10 ; ADR-0010 ; ADR-0011) : acceptation
-/// d'<see cref="AlundraYarnVariableStorage"/> sur un vrai <see cref="YarnDialogueRunner"/>/
+/// d'<see cref="YarnVariableStorage"/> sur un vrai <see cref="YarnDialogueRunner"/>/
 /// <see cref="global::Yarn.Dialogue"/>, avec des scripts compilés par
-/// <see cref="AlundraYarnBindings.CreateDeclarations"/> (même compilateur que la production).
+/// <see cref="YarnBindings.CreateDeclarations"/> (même compilateur que la production).
 /// </summary>
 public sealed class AlundraYarnVariableStorageTests : IDisposable
 {
-    public AlundraYarnVariableStorageTests() => AlundraDialogueDirector.Instance.ResetForTests();
+    public AlundraYarnVariableStorageTests() => DialogueDirector.Instance.ResetForTests();
 
-    public void Dispose() => AlundraDialogueDirector.Instance.ResetForTests();
+    public void Dispose() => DialogueDirector.Instance.ResetForTests();
 
     private static DialogueAsset CompileAsset(string name, string source)
     {
         var compiler = new YarnDialogueCompiler();
-        YarnDialogueCompilationResult result = compiler.CompileString(source, name + ".yarn", AlundraYarnBindings.CreateDeclarations());
+        YarnDialogueCompilationResult result = compiler.CompileString(source, name + ".yarn", YarnBindings.CreateDeclarations());
         Assert.True(result.Success, string.Join(Environment.NewLine, result.Diagnostics.Select(d => d.Message)));
         return DialogueAsset.FromCompiledProgram(name, "Start", result.ProgramBytes, result.LineTexts);
     }
@@ -41,7 +41,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     private static (YarnDialogueRunner Runner, FakeDialoguePresenter Presenter) NewRunner(GameState gameState)
     {
         var presenter = new FakeDialoguePresenter();
-        var runner = new YarnDialogueRunner(presenter) { VariableStorage = new AlundraYarnVariableStorage(gameState) };
+        var runner = new YarnDialogueRunner(presenter) { VariableStorage = new YarnVariableStorage(gameState) };
         return (runner, presenter);
     }
 
@@ -294,7 +294,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     public void RefusedName_Read_IsFalseAndLogsOnce(string name)
     {
         var gameState = new GameState();
-        var storage = new AlundraYarnVariableStorage(gameState);
+        var storage = new YarnVariableStorage(gameState);
         using var logger = CapturingWarningLogger.Install();
 
         var ok = storage.TryGetValue<IConvertible>(name, out var value);
@@ -312,7 +312,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [InlineData("$foo")]
     public void GetVariableKind_RefusedName_IsUnknown(string name)
     {
-        var storage = new AlundraYarnVariableStorage(new GameState());
+        var storage = new YarnVariableStorage(new GameState());
 
         Assert.Equal(VariableKind.Unknown, storage.GetVariableKind(name));
     }
@@ -322,7 +322,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [InlineData("$tmp_flag_2047")]
     public void GetVariableKind_ValidFlagName_IsStored(string name)
     {
-        var storage = new AlundraYarnVariableStorage(new GameState());
+        var storage = new YarnVariableStorage(new GameState());
 
         Assert.Equal(VariableKind.Stored, storage.GetVariableKind(name));
     }
@@ -338,7 +338,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
         SeedBanks(gameState);
         var gameFlagsSnapshot = (uint[])gameState.GameFlags.Clone();
         var temporaryFlagsSnapshot = (uint[])gameState.TemporaryFlags.Clone();
-        var storage = new AlundraYarnVariableStorage(gameState);
+        var storage = new YarnVariableStorage(gameState);
 
         storage.Clear();
 
@@ -354,10 +354,10 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     public void Director_CreatedRunner_UsesThisStorage()
     {
         var gameState = new GameState();
-        AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), gameState);
-        AlundraDialogueDirector.Instance.InstallForMapEntry();
+        DialogueDirector.Instance.AttachToWorld(new DialogueService(), gameState);
+        DialogueDirector.Instance.InstallForMapEntry();
 
-        AlundraDialogueDirector.Instance.Open(CompileAsset("DirectorFlag", """
+        DialogueDirector.Instance.Open(CompileAsset("DirectorFlag", """
             title: Start
             ---
             <<set $flag_9 to true>>

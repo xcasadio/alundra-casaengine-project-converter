@@ -8,7 +8,7 @@ namespace Alundra.UI.Messages;
 
 /// <summary>
 /// E19.f4c2 F4C2-R2: the speaker's name box as the XAML binds it - the baked 112 x 32 frame at <c>(Left, 140)</c> and the name (font3) at <c>(TextLeft, 148)</c>, which slide together with
-/// the box's own slide. <see cref="Apply"/> writes what the last pass of <see cref="AlundraDialogueNameBox"/> drew.
+/// the box's own slide. <see cref="Apply"/> writes what the last pass of <see cref="DialogueNameBox"/> drew.
 /// </summary>
 public sealed class TextBoxNameViewModel : ViewModelBase
 {
@@ -70,7 +70,7 @@ public sealed class TextBoxNameViewModel : ViewModelBase
     }
 
     /// <summary>Nothing drawn by the last pass (closed, or the release pass) collapses the name; else the frame's x, the text's x and the text locked at the opening, visible.</summary>
-    internal void Apply(AlundraDialogueNameBox box)
+    internal void Apply(DialogueNameBox box)
     {
         ArgumentNullException.ThrowIfNull(box);
         if (box.Drawn is not { } drawn)

@@ -609,7 +609,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             if (_installDialogueDirector)
             {
                 _dialoguePadMirror.Update(_gameState.LastPadState.ButtonsHold);
-                AlundraDialogueDirector.Instance.Pass(
+                Dialogues.DialogueDirector.Instance.Pass(
                     (_dialoguePadMirror.ButtonsHold & PadState.Square) != 0,
                     (_dialoguePadMirror.ButtonsJustPressed & PadState.Square) != 0);
             }
@@ -1161,12 +1161,12 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// opcodes 0x0D/0x39/0x44/0x50/0x51/0x5C through the REAL <see cref="EventProgramRunner.Dispatch"/>
     /// via each entity's own <see cref="AlundraEntityScriptProxy.Update"/> -&gt; pick -&gt; run (the real
     /// slot-C path, NOT <see cref="AlundraWorldProxy.RunPendingEventTriggers"/>'s own D3 catch-up),
-    /// exactly like production, backed by the SAME session-scoped <see cref="AlundraDialogueDirector.Instance"/>
+    /// exactly like production, backed by the SAME session-scoped <see cref="DialogueDirector.Instance"/>
     /// <see cref="AlundraWorldProxy.InstallDialogueSystems"/> installs. <see cref="_installDialogueDirector"/>
     /// gates only THIS property's returned value (default false - see that field's own doc on why, unlike
     /// every other <c>_install*</c> flag here).
     /// </summary>
-    public IAlundraDialogueDirector? DialogueDirector => _installDialogueDirector ? AlundraDialogueDirector.Instance : null;
+    public IDialogueDirector? DialogueDirector => _installDialogueDirector ? Dialogues.DialogueDirector.Instance : null;
 
     /// <summary>Fake <see cref="ISoundPlayer"/> implementation (T1, docs/plan-e11-audio.md):
     /// records the request instead of actually playing anything - no live AudioService in this
@@ -1444,7 +1444,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// <summary>
     /// E12.a retrait (docs/plan-e12-dialogues.md, item ⑦): 0x39/0x44/0x51 are REMOVED - all three are now
     /// genuinely <c>Implemented</c>/<c>Degraded</c> opcodes (AlundraEventProgramRunner.Dispatch cases
-    /// 0x39/0x44/0x51, backed by <see cref="AlundraDialogueDirector"/>) rather than <c>UnknownSkipped</c>,
+    /// 0x39/0x44/0x51, backed by <see cref="Dialogues.DialogueDirector"/>) rather than <c>UnknownSkipped</c>,
     /// so this forcing set - which only ever applies to <c>UnknownSkipped</c> dispatches - self-neutralized
     /// for them the moment their real case landed (§1.6: "retirer les entrées du set est un nettoyage, pas
     /// un ré-étalonnage"). By DEFAULT this harness's own <see cref="HeadlessIntroSimulation.DialogueDirector"/>
@@ -1454,7 +1454,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// BEHAVIOURALLY IDENTICAL to the old forced-optimistic skip (Result=1 for 0x44, size-only advance
     /// for 0x39/0x51/0x0D/0x50/0x5C either way) - see each opcode's own dispatch doc. Only
     /// <c>AlundraDialogueOpcodesProductionTests</c> (E12.a's own T1) opts into a REAL, session-scoped
-    /// <see cref="AlundraDialogueDirector"/> (<c>installDialogueDirector: true</c>), since that singleton
+    /// <see cref="Dialogues.DialogueDirector"/> (<c>installDialogueDirector: true</c>), since that singleton
     /// must not leak into every OTHER pre-existing test built on this same harness.
     /// </summary>
     private static readonly HashSet<int> OptimisticPredicateOpcodes = new()

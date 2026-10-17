@@ -10,10 +10,10 @@ using Alundra.UI.Shared;
 
 namespace Alundra.Tests;
 
-/// <summary>The DLL's two machines (<see cref="AlundraDialogueNameBox"/>, <see cref="AlundraInventoryPortrait"/> as the dialogue's instance) behind the interface of the raw sequences.</summary>
+/// <summary>The DLL's two machines (<see cref="DialogueNameBox"/>, <see cref="AlundraInventoryPortrait"/> as the dialogue's instance) behind the interface of the raw sequences.</summary>
 internal sealed class DllSpeakerMachines : ISpeakerMachines
 {
-    private readonly AlundraDialogueNameBox _name = new();
+    private readonly DialogueNameBox _name = new();
     private readonly AlundraInventoryPortrait _portrait = new();
     private readonly Func<int, string?> _resolve;
 
@@ -144,7 +144,7 @@ public sealed class AlundraDialogueSpeakerMachineTests
     {
         foreach (var (id, (name, width)) in Names)
         {
-            var box = new AlundraDialogueNameBox();
+            var box = new DialogueNameBox();
             Assert.True(box.TryOpen(id, i => i == id ? name : null, SpeakerRig.Advance), $"name 0x{id:x} {name}");
             Assert.True(width == box.TextWidth, $"name 0x{id:x} {name}: width {box.TextWidth}, binary {width}");
         }
@@ -170,7 +170,7 @@ public sealed class AlundraDialogueSpeakerMachineTests
     public void ANameBoxAlreadyOpen_RefusesBeforeAskingTheEtc(int flags)
     {
         var resolver = new CountingResolver();
-        var box = new AlundraDialogueNameBox();
+        var box = new DialogueNameBox();
         Assert.True(box.TryOpen(0x104, resolver.Resolve, SpeakerRig.Advance));
         if (flags == 4)
         {
@@ -200,7 +200,7 @@ public sealed class AlundraDialogueSpeakerMachineTests
     public void AnIdOutOfTheRange_RefusesBeforeAskingTheEtc(int id)
     {
         var resolver = new CountingResolver();
-        var box = new AlundraDialogueNameBox();
+        var box = new DialogueNameBox();
 
         Assert.False(box.TryOpen(id, resolver.Resolve, SpeakerRig.Advance));
         Assert.Equal(0, resolver.Calls);
@@ -213,7 +213,7 @@ public sealed class AlundraDialogueSpeakerMachineTests
     public void AnEmptyOrAbsentText_IsRefused_AfterOneEtcLookup(int id)
     {
         var resolver = new CountingResolver();
-        var box = new AlundraDialogueNameBox();
+        var box = new DialogueNameBox();
 
         Assert.False(box.TryOpen(id, resolver.Resolve, SpeakerRig.Advance));
         Assert.Equal(1, resolver.Calls);
@@ -224,7 +224,7 @@ public sealed class AlundraDialogueSpeakerMachineTests
     [Fact]
     public void TheNameBox_ClosingDuringTheSlideIn_LeavesFromTheCurrentX_AndIsReleasedAfterSeventeenPasses()
     {
-        var box = new AlundraDialogueNameBox();
+        var box = new DialogueNameBox();
         Assert.True(box.TryOpen(0x104, _ => "Jess", SpeakerRig.Advance));
         for (var pass = 1; pass <= 4; pass++)
         {
@@ -233,7 +233,7 @@ public sealed class AlundraDialogueSpeakerMachineTests
 
         Assert.Equal(269, box.Drawn!.FrameX); // pass 4: 320 + trunc(-256 * 3 / 15)
         box.Close();
-        Assert.Equal(AlundraDialogueNameBox.FlagClosing | AlundraDialogueNameBox.FlagOpen, box.Flags);
+        Assert.Equal(DialogueNameBox.FlagClosing | DialogueNameBox.FlagOpen, box.Flags);
 
         box.Pass();
         Assert.Equal(269, box.Drawn!.FrameX); // closing pass 0: from where it is

@@ -11,12 +11,12 @@ namespace Alundra.Dialogues.Yarn;
 
 /// <summary>
 /// E15.c T5 (docs/plan-e15-yarn.md, E15.c contract items 2/4; ADR-0008): the presenter
-/// <see cref="AlundraDialogueDirector"/>'s own <c>YarnDialogueRunner</c> is built on - never the world's
+/// <see cref="DialogueDirector"/>'s own <c>YarnDialogueRunner</c> is built on - never the world's
 /// own presenter (<see cref="AlundraDialoguePresenter"/>). The runner calls <see cref="ShowLine"/>/
 /// <see cref="Close"/> on THIS presenter itself (<c>YarnDialogueRunner.Start</c> calls <c>Stop</c> first,
 /// which closes whatever presenter it was built on - engine <c>YarnDialogueRunner.cs:130-138</c>,
 /// <c>:163-167</c>), while the world's own presenter is reattached on every
-/// <see cref="AlundraDialogueDirector.AttachToWorld"/>: this capture presenter and the runner it backs
+/// <see cref="DialogueDirector.AttachToWorld"/>: this capture presenter and the runner it backs
 /// persist across such a re-point (<see cref="WorldPresenter"/> is the only thing that changes), so an
 /// open dialogue's Yarn state survives it exactly as the raw-text page state used to.
 /// <para/>
@@ -33,12 +33,12 @@ namespace Alundra.Dialogues.Yarn;
 /// <see cref="WorldPresenter"/>, and the runner's closes (a <c>Stop</c> or the end of the dialogue) are swallowed: the director owns the lifetime
 /// of the presenter. No flag is set here any more.
 /// </summary>
-public sealed class AlundraDialogueCapturePresenter : IDialoguePresenter
+public sealed class DialogueCapturePresenter : IDialoguePresenter
 {
     private static bool _loggedSpeakerOnce;
 
     /// <param name="worldPresenter">Where every transformed line is forwarded (unless a <see cref="LineSink"/> takes it).</param>
-    public AlundraDialogueCapturePresenter(IDialoguePresenter worldPresenter)
+    public DialogueCapturePresenter(IDialoguePresenter worldPresenter)
     {
         ArgumentNullException.ThrowIfNull(worldPresenter);
         WorldPresenter = worldPresenter;
@@ -49,7 +49,7 @@ public sealed class AlundraDialogueCapturePresenter : IDialoguePresenter
     public Action<DialogueLine>? LineSink { get; set; }
 
     /// <summary>The presenter every transformed line/choice/close is forwarded to - re-pointed by
-    /// <see cref="AlundraDialogueDirector.AttachToWorld"/> without rebuilding this instance or the
+    /// <see cref="DialogueDirector.AttachToWorld"/> without rebuilding this instance or the
     /// <c>YarnDialogueRunner</c> it backs, so a dialogue already running keeps its Yarn state.</summary>
     public IDialoguePresenter WorldPresenter { get; set; }
 
@@ -73,7 +73,7 @@ public sealed class AlundraDialogueCapturePresenter : IDialoguePresenter
         {
             _loggedSpeakerOnce = true;
             Logs.WriteWarning(
-                $"AlundraDialogueCapturePresenter: a Yarn line carried a non-empty Speaker "
+                $"DialogueCapturePresenter: a Yarn line carried a non-empty Speaker "
                 + $"('{line.Speaker}') - E15.b's corpus proof found none; shown without a speaker prefix.");
         }
 
