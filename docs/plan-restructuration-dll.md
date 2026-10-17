@@ -1,6 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
-Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; R1 détaillée et READY, en cours. Démarre après E20.e0a4 (plan E20, §1.16.4).
+Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; R2 détaillée, à relire. Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -354,7 +355,7 @@ chemins autorisés qui change ; un test qui change de valeur attendue ; un déma
 **Retour arrière.** Revert du commit parent (pointeur, convertisseur, DLL, tests) et réexport depuis le commit précédent ; la branche du
 moteur reste non fusionnée.
 
-## 5. Tranche R1 — ADR, table des noms, contrôle des noms ✅ (faite le 2026-10-17 ; verifier frais à passer ; détaillée le 2026-10-16, révision 1 **READY**, R0 close le 2026-10-17)
+## 5. Tranche R1 — ADR, table des noms, contrôle des noms ✅ (faite et CONFIRMED le 2026-10-17, `1c5b741` à `e188a58`, ADR-0075 ; détaillée le 2026-10-16, révision 1 **READY**)
 
 **Relecture (2026-10-16).** R1 : **REVISE**, cinq blocages corrigés (FIX, révision 1) : (1) la table donne pour **chaque type** son
 fichier, son namespace et son nom à chaque étape (r2, r3, final), ce qui tranche le cas des types secondaires des fichiers cités par les
@@ -460,22 +461,76 @@ tranche pas ; une révision de base qui ne contient pas le résultat de R0.
 - Table rejouée : `git diff --exit-code -- tools/dll-structure` vide. ADR-0075 écrit et indexé ; §2 et ADR et table concordent (`Probes/SlotShadow`, `UI/Saving`, règle (3)).
 - Restent : un verifier frais (budget de la tranche) ; la ligne « Statut » en tête et la ligne R1 du §3 disent encore « en cours » / ⏳ (hors des chemins de R1, à mettre à jour par la clôture).
 
-## 6. Tranche R2 — Déplacements et scissions ⏳
+**Vérification de R1 (2026-10-17) : CONFIRMED** par un verifier frais (rejeu de la table au bit près ; couverture recomptée par un lecteur
+indépendant : 131 fichiers, 219 types, 76 scindés, 205 fichiers d'arrivée ; règles d'étape ; chaque contrôle de `check_names.py` déclenché à
+la main ; `--tree --stage r2` sur l'arbre réel : 524 écarts, ensembles comparés un à un ; `selftest.py` rejoué et ses six cas tués par des
+mutations de l'outil ; l'ADR et le plan ; le périmètre du diff). Aucun constat P0 à P2. Reportés : **P3** la liste `PACKAGES` de l'outil
+n'a pas 8 paquets avec XML que la DLL tire (Autofac, Cyotek.Drawing.BitmapFont, FontStashSharp.Rasterizers.StbTrueTypeSharp,
+Google.Protobuf, MonoGame.Extended.Content.Pipeline, SharpGLTF.Runtime, System.Memory, System.ValueTuple) ni StbImageSharp et
+StbTrueTypeSharp (sans XML) : **repris en T0 de R2** ; P3 le selftest ne garde pas tous les contrôles (segment, masquage, `[fichier]`,
+paquet sans XML), qui marchent à la main ; P4 deux fichiers non scindés vers un même chemin ne sont pas refusés par `gen_table` (aucun cas
+réel) ; P4 des types imbriqués des XML comptés comme de premier niveau (conservateur).
 
-**But.** Chaque type dans son fichier, son dossier et son namespace de l'étape `r2` de la table, sans aucun changement de nom de type ni
-de comportement ; les fichiers des types cités par les données restent dans `Alundra/Scripts/` (namespace `Alundra.Scripts`), sans leurs
-types secondaires publics, qui sortent.
+## 6. Tranche R2 — Déplacements et scissions ⏳ (détaillée le 2026-10-17, à relire)
 
-**Règles.** `git mv` fichier par fichier (l'historique reste suivi) ; les 76 types scindés coupés par script (déclaration avec ses
-commentaires de documentation et attributs, `using` du fichier d'origine repris) ; la déclaration `namespace` de chaque fichier changée ;
-les `using` de chaque fichier de la DLL, des tests et de `tools/AlundraTestSaves` calculés par script depuis la table, puis la
-construction corrige les restes ; pas de `global using` interne. Le test qui lit des sources par chemin (`AlundraHudPresenterTests.cs:442-460`)
-suit les nouveaux chemins. Les qualifications explicites `Alundra.Scripts.X` (`AlundraWorldProxy.cs:380`, `TextBoxGpuHarness.cs:490,496,501`)
-suivent. Un commit par domaine, chacun construit et vert.
+**But.** Chaque type de la DLL dans le fichier, le dossier et le namespace de l'étape `r2` de `tools/dll-structure/table.json`, **sans aucun
+changement de nom de type ni de comportement** ; les fichiers des 9 types cités par les données restent dans `Alundra/Scripts/` (namespace
+`Alundra.Scripts`), leurs types secondaires publics sortent vers leur dossier final (`AlundraPadState` → `Hero/`, les view models d'éléments
+→ `UI/<écran>/`) ; `AlundraMapEvent` reste dans `AlundraWorldProxy.cs`.
 
-**Acceptation.** `check_names.py --tree --stage r2` vert ; suites complètes en Release et en Debug, même compte, zéro échec ; aucune valeur
-attendue de test modifiée ; `git log --follow` retrouve l'historique d'un échantillon ; `cmp` ; garde des traces ; recette courte de
-l'auteur. **Arrêts** : un test qui change de valeur ; un des 9 types cités déplacé.
+**Faits (2026-10-17, HEAD `e188a58`).** La table : 131 fichiers d'origine → 205 fichiers à l'étape `r2` (76 types scindés) ; 11 fichiers ne
+bougent pas (les 10 fichiers cités et `Plugin.cs`) ; `--tree --stage r2` sur l'arbre d'aujourd'hui : 524 écarts (196 absents, 120 hors
+table, 208 types hors place). `Alundra.csproj` n'a aucune liste `Compile` (le SDK prend tous les `.cs`) : un déplacement ne touche pas le
+projet. Références à suivre : 316 fichiers de `Alundra.Tests` et `tools/` portent `using Alundra.Scripts;` ; les qualifications et `cref`
+`Alundra.Scripts.<T>` d'un type qui bouge (par exemple `AlundraWorldProxy.cs:370,375,380,699`, `AlundraSpuVoiceVolume.cs:92-94`,
+`TextBoxGpuHarness.cs:472,490,496,501`, `AlundraLogicClockTests.cs:9`, `AlundraWorldProxyLogicClockTests.cs:12,26`,
+`AlundraYarnVariableStorageProbeTests.cs:19`) ; le seul test qui lit des sources par chemin : `AlundraHudPresenterTests.cs:442,443,460`
+(`AlundraHudPresenter.cs`, `AlundraHudScreen.cs`, `AlundraHudDirector.cs`, tous trois vers `UI/Hud/`). Le convertisseur ne référence pas la
+DLL : ses littéraux `Alundra.Scripts.*` nomment les types cités, qui ne bougent pas avant R4 ; ses commentaires qui citent un type qui bouge
+(`MusicIndexCatalogReader.cs:17`, `NavigationWriter.cs:23`, `SpriteWriter.cs:92`) suivent en R6 avec la documentation.
+
+**Propriétaire, chemins, budget.** Un `executor` (le script de déplacement s'écrit une fois, avec jugement ; l'application est ensuite
+mécanique, un commit par domaine). Chemins : `Alundra/**` (hors `bin/`, `obj/`), `Alundra.Tests/**`, `tools/AlundraTestSaves/**`,
+`tools/dll-structure/` (T0 seulement), ce plan (§6). Aucun export, aucune donnée, aucun fichier du convertisseur, aucun sous-module. Le
+jeu et l'éditeur fermés pendant toute la tranche (les constructions Debug copient la DLL dans `alundra-project/`). Budget : une passe
+d'exécution, une passe de correction au plus ; un verifier frais à la fin.
+
+**Tâches.**
+- T0 (aucun code de la DLL) : (a) compléter `PACKAGES` de `tools/dll-structure/scan_types.py` avec les paquets que la DLL tire
+  (`Alundra/obj/project.assets.json`), et `PACKAGES_WITHOUT_XML` avec StbImageSharp et StbTrueTypeSharp ; `check_names.py --table` vert ;
+  `gen_table.py` rejoué identique (la révision de base épinglée ne change pas) ; un commit ; (b) le script de l'étape, versé dans
+  `tools/dll-structure/apply_r2.py` : pour un domaine donné, `git mv` des fichiers du domaine vers leur chemin `r2` ; la coupe des types
+  scindés dont la cible est dans ce domaine (la déclaration avec ses commentaires de documentation, ses attributs et sa ligne vide de tête,
+  copiée **à l'octet** dans un fichier neuf à son nom, avec l'en-tête du fichier d'origine : ses `using`, sa directive `#nullable` s'il en a
+  une, et le `namespace` de l'étape ; retirée du fichier d'origine) ; la ligne `namespace` des fichiers déplacés ; puis, pour **tous** les
+  fichiers `.cs` de la DLL, des tests et de `tools/AlundraTestSaves`, les `using` recalculés : les namespaces des types de la table que le
+  fichier nomme (code sans commentaires ni chaînes), sauf le sien, ajoutés après les `using` existants dans l'ordre alphabétique ;
+  `using Alundra.Scripts;` gardé tant qu'un type cité y est nommé, retiré sinon ; les `Alundra.Scripts.<T>` d'un type qui bouge réécrits
+  en `Alundra.<Domaine>.<T>` (code et `cref`) ; les trois chemins de `AlundraHudPresenterTests` réécrits ; pas de `global using` interne.
+  Le script refuse de tourner si l'arbre n'est pas propre hors des chemins de la tranche. (c) Une preuve versée avec le script,
+  `tools/dll-structure/prove_r2.py` : pour chaque type scindé, son bloc dans le fichier neuf égale au bit près le bloc retiré de l'origine ;
+  chaque ligne changée d'un fichier de `Alundra.Tests` ou de `tools/AlundraTestSaves` est une ligne `using`, `namespace`, une qualification
+  réécrite par la règle ci-dessus ou un des trois chemins ; chaque ligne changée d'un fichier de la DLL est de même nature (plus les blocs
+  scindés). (d) Les comptes de départ : `Alundra.Tests` en Release (copie neutralisée) et en Debug.
+- T1 à T20 — un commit par domaine, dans l'ordre du §2 : `Maps` (avec `Loop/`), `Session`, `Entities` (avec `Spawning/`), `Events`, `Ai`
+  (avec ses sous-dossiers), `Hero`, `Combat`, `Items`, `Rng`, `Physics`, `Cells`, `Cameras`, `Rendering`, `Audio`, `Transitions`,
+  `Dialogues` (avec `Yarn/`), `UI` (tous ses écrans et `Shared/`), `SaveGames`, `Probes`, puis `Properties/InternalsVisibleTo.cs`. Pour
+  chacun : `apply_r2.py <domaine>`, puis construction Release (copie neutralisée) ; une erreur restante ne se corrige que par un `using` ou
+  une qualification (rien d'autre : sinon arrêt) ; `prove_r2.py` vert ; `Alundra.Tests` Release vert, même compte qu'en T0 ;
+  `check_names.py --tree --stage r2` : les écarts restants ne portent que sur les domaines pas encore déplacés ; commit
+  `refactor(dll): move the <domaine> domain into Alundra.<Domaine> (R2)`, par chemins (fichiers déplacés compris).
+- T21 — Clôture : `check_names.py --tree --stage r2` **vert (sortie 0)** ; `Alundra.Tests` Release (copie neutralisée) et Debug (normal),
+  même compte qu'en T0, zéro échec ; `cmp` de la DLL Debug ; garde des traces ; `git log --follow` retrouve l'historique de cinq fichiers
+  déplacés pris au hasard ; `prove_r2.py` sur tout le diff de la tranche ; ce plan (§6 ✅ et résultats).
+
+**Acceptation.** Les preuves de T21 ; aucune valeur attendue de test modifiée (`prove_r2.py`) ; aucun type renommé ; les 10 fichiers cités
+toujours dans `Alundra/Scripts/` sous `Alundra.Scripts` ; recette courte de l'auteur (nouvelle partie jusqu'au premier écran jouable, F5,
+F6, F9).
+
+**Arrêts.** Un test qui change de valeur ou de compte ; une erreur de construction qui demande plus qu'un `using` ou une qualification ;
+un des 9 types cités déplacé ou renommé ; `prove_r2.py` rouge ; un processus du jeu ou de l'éditeur pendant une construction Debug.
+
+**Retour arrière.** `git revert` des commits de la tranche, dans l'ordre inverse (aucune donnée ni export touchés).
 
 ## 7. Tranche R3 — Renommages ⏳
 
