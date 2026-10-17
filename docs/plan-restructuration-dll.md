@@ -760,7 +760,7 @@ et leurs tests, `alundra-project/UI/Screens/*.design.json`, l'export (`alundra-p
 **deux verifiers frais** (rejeu, adversarial), comme R0.
 
 **Tâches.**
-- T0 (aucun code de la DLL, avant tout code) : (a) l'annexe `docs/plan-restructuration-annexe/r4/` : copies de `predict_names.py`,
+- T0 ✅ (aucun code de la DLL, avant tout code) : (a) l'annexe `docs/plan-restructuration-annexe/r4/` : copies de `predict_names.py`,
   `manifest.py`, `diff_manifests.py` de l'annexe `r0/`, avec leurs sommes ; la prédiction pour les noms finaux (les neuf paires
   ancien → nouveau tirées de `table.json` : `entity=`, `world=`, `controller=` et six `vm=`) : la liste des chemins autorisés, le SHA-1
   prédit et la taille de chaque fichier changé, le delta d'octets par clé (le script le calcule), `AssetInfos.json` inchangé, nombre de
@@ -795,6 +795,27 @@ et leurs tests, `alundra-project/UI/Screens/*.design.json`, l'export (`alundra-p
 - T3 — Clôture : `check_names.py --tree --stage final` **vert (sortie 0)** ; aucun type déclaré dans `Alundra/` dont le nom commence par
   `Alundra` ou `IAlundra` ; `Alundra/Scripts/` n'existe plus ; `rg -uu` sur `alundra-project/` : aucun `Alundra.Scripts.` dans
   `script_class_name`, `player_controller_class`, `view_model_type` ; `git log --follow` sur les 10 fichiers ; ce plan (§8 et résultats).
+
+**Résultats de T0 ✅ (2026-10-17).** (a) Annexe `docs/plan-restructuration-annexe/r4/` (commit `6032da0`, avant tout code) : les trois scripts
+copiés de `r0/` (mêmes sommes) ; prédiction pour les noms finaux : 886 chemins autorisés (879 sorties du convertisseur, 6 `design.json`,
+`report.json`), 885 SHA-1 prédits, `PROBLEMS: 0` ; deltas d'octets -2 370 (entités, 395 x -6), -4 830 (mondes, 483 x -10), -12 (`.gameMode`),
+soit -7 212 sur les sorties du convertisseur, et -22 sur les six `design.json` ; 24 104 fichiers, `AssetInfos.json` inchangé. Comptes de départ :
+`Alundra.Tests` **5 097** en Release (copie neutralisée) et **5 097** en Debug (`cmp` de la DLL égal), convertisseur **854** ; garde des traces
+sans écart. Export de référence au HEAD `7ce82c2` en fenêtre calme : `m0` (`01e37b68...`) puis `m1` (`fe367de0...`), seul `report.json` diffère,
+`Verification: PASSED (20139 loaded, 2477 existence-checked)`, `OutputFileCount` 24 107. (b)-(c) Outillage (commit `5c61743`) :
+`tools/dll-structure/apply_r4.py` (sous-commandes `move`, `fix`, `literals`, `literals-gen`, `literals-check`), `prove_r4.py`
+(`--kind move|code|end`, `--commit REV` ou `--index` pour le répertoire indexé) et `r4-literals.tsv` (51 entrées : 40 de classe 1, 8 de classe 1b,
+3 de classe 4 gardées, `HeroTraceHarnessTests.cs:80,84,87` ; les cinq entrées d'`IntroTraceHarnessTests` sont de classe 1b : leur texte va dans le
+registre de l'harnais, jamais dans `docs/intro-trace-389.txt`, ce que la garde des traces contrôle). Choix de l'outil : un littéral se retrouve
+par son texte, non par sa ligne (les lignes `using` de l'étape (2) déplacent les lignes) ; `fix` ne calcule les `using` que pour les 10 types qui
+changent de namespace (les `using` des autres types ne bougent pas) ; la preuve lit les numéros de ligne du relevé sur le fichier d'avant sans ses
+lignes `using Alundra.Scripts;`. Preuves sur une copie jetable (clone local de la branche, références du moteur rendues absolues, hors dépôt) : le mode
+`move` vert sur un `git mv` pur des 10 fichiers ; un octet changé dans un fichier déplacé, ou un autre fichier modifié, refusés ; T2 rejoué
+(l'outil de renommage sur les neuf paires : 316 fichiers, 2 924 références et 254 015 identifiants vérifiés, 0 qualification ajoutée ; `fix` ; `literals` :
+48 littéraux dans 6 fichiers ; les noms complets du convertisseur et des `design.json`) : la copie **compile** (Alundra.Tests et AlundraTestSaves, 0 erreur,
+la DLL ne porte plus `Alundra.Scripts`) et `prove_r4.py --kind code` sort 0 ; huit mutations refusées (une valeur de test, une ligne de corps, un `using`
+injustifié, le namespace d'un fichier déplacé, un préfixe de journal non renommé, la prose gardée renommée, un `design.json` changé au-delà de la clé,
+une ligne du convertisseur changée au-delà du nom complet) ; la copie restaurée sort 0.
 
 **Acceptation.** Les preuves de T2 et T3 ; l'annexe de T0 à un commit antérieur au premier commit de code ; aucune valeur attendue de test
 modifiée hors des noms complets écrits par le convertisseur et des littéraux (1b) prévus ; recette de l'auteur : nouvelle partie, les
