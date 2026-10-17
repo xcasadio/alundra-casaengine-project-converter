@@ -121,14 +121,14 @@ public sealed class AlundraSaveBookTests : IDisposable
         Assert.Equal(0u, State.PlayerControlFlags);
 
         _hero.TargetAnimationId = 0;
-        var right = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
-        AlundraPlayerManager.MovePlayer(_hero, in right, State, host: null);
+        var right = new PadState { ButtonsHold = PadState.Right };
+        PlayerManager.MovePlayer(_hero, in right, State, host: null);
         Assert.Equal(1u, _hero.TargetAnimationId); // Moving.
 
         var tables = new AlundraItemTables(FindProjectRoot());
         AlundraInventoryDirector.Instance.AttachToWorld(State, tables, null);
         AlundraSubInventoryDirector.Instance.AttachToWorld(State, tables, null);
-        InventoryTick(AlundraPadState.Start);
+        InventoryTick(PadState.Start);
         Assert.True(AlundraInventoryDirector.Instance.IsActive);
     }
 

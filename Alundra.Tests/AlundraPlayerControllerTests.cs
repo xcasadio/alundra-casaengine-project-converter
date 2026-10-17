@@ -160,10 +160,10 @@ public class AlundraPlayerControllerTests
         var state = AlundraPlayerController.ComputePadState(manager, _ => new ButtonState { IsKeyPressed = true });
 
         Assert.Equal(
-            AlundraPadState.Up | AlundraPadState.Down | AlundraPadState.Left | AlundraPadState.Right
-            | AlundraPadState.Cross | AlundraPadState.Square | AlundraPadState.Circle | AlundraPadState.Triangle
-            | AlundraPadState.Start
-            | AlundraPadState.L1 | AlundraPadState.L2 | AlundraPadState.R1 | AlundraPadState.R2 | AlundraPadState.Select,
+            PadState.Up | PadState.Down | PadState.Left | PadState.Right
+            | PadState.Cross | PadState.Square | PadState.Circle | PadState.Triangle
+            | PadState.Start
+            | PadState.L1 | PadState.L2 | PadState.R1 | PadState.R2 | PadState.Select,
             state.ButtonsHold);
     }
 
@@ -204,7 +204,7 @@ public class AlundraPlayerControllerTests
             manager, name => new ButtonState { IsKeyPressed = name.EndsWith("Stick", StringComparison.Ordinal) });
 
         Assert.Equal(
-            AlundraPadState.Up | AlundraPadState.Down | AlundraPadState.Left | AlundraPadState.Right,
+            PadState.Up | PadState.Down | PadState.Left | PadState.Right,
             state.ButtonsHold);
     }
 
@@ -223,9 +223,9 @@ public class AlundraPlayerControllerTests
         var both = AlundraPlayerController.ComputePadState(
             manager, name => new ButtonState { IsKeyPressed = name is "MoveLeft" or "MoveLeftStick" });
 
-        Assert.Equal(AlundraPadState.Left, stickOnly.ButtonsHold);
-        Assert.Equal(AlundraPadState.Left, dPadOnly.ButtonsHold);
-        Assert.Equal(AlundraPadState.Left, both.ButtonsHold);
+        Assert.Equal(PadState.Left, stickOnly.ButtonsHold);
+        Assert.Equal(PadState.Left, dPadOnly.ButtonsHold);
+        Assert.Equal(PadState.Left, both.ButtonsHold);
     }
 
     [Fact]
@@ -245,7 +245,7 @@ public class AlundraPlayerControllerTests
                 return new ButtonState { IsKeyPressed = true };
             });
 
-            Assert.Equal(AlundraPadState.Right | AlundraPadState.Cross, state.ButtonsHold);
+            Assert.Equal(PadState.Right | PadState.Cross, state.ButtonsHold);
         });
 
         Assert.Null(exception);
@@ -262,7 +262,7 @@ public class AlundraPlayerControllerTests
             manager, _ => new ButtonState { IsKeyPressed = false, IsKeyJustPressed = true });
 
         Assert.Equal(0u, state.ButtonsHold);
-        Assert.Equal(AlundraPadState.Square, state.ButtonsJustPressed);
+        Assert.Equal(PadState.Square, state.ButtonsJustPressed);
     }
 
     [Fact]

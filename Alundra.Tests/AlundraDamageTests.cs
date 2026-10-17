@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E20.c1b K1, K2 and K5 (docs/plan-e20-heros.md section 1.6): the damage functions of the binary (<see cref="AlundraDamage"/>), the three equipment records (<see cref="AlundraEquipmentRecords"/>, filled by
-/// <see cref="AlundraPlayerManager.FillEquipmentRecords"/> as steps 2 to 5 of <c>UpdateItemEffectState</c>) and their selection without the sprite remapping, against the oracle
+/// <see cref="PlayerManager.FillEquipmentRecords"/> as steps 2 to 5 of <c>UpdateItemEffectState</c>) and their selection without the sprite remapping, against the oracle
 /// <c>docs/plan-e20-annexe/e20-c1b/oracle/out/</c> (<c>K1.json</c>, <c>K2.json</c>: the real code of <c>ALUN_CD.EXE</c> (France), twelve inventories built by the real new-game code) and the HP cases of the D2 oracle
 /// (<c>docs/plan-e20-annexe/d2-oracle-coups/out/cases.txt</c>, cases 3 and 4 and the extra x8): the expected values below are the oracle's, never computed by the code under test.
 /// </summary>
@@ -129,11 +129,11 @@ public sealed class AlundraDamageTests
         var state = StateOf(inventory.GetProperty("pre"));
         var records = new AlundraEquipmentRecords();
 
-        AlundraPlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
+        PlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
         AssertRecordsEqual(inventory.GetProperty("records"), records, name + " (first tick)");
         Assert.Equal(inventory.GetProperty("post").GetProperty("stats").GetProperty("item_id").GetInt32(), state.PlayerStats.ItemId); // the accessory step rewrites ItemId, as 0x8004E0F8 does.
 
-        AlundraPlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
+        PlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
         var second = inventory.GetProperty("second");
         Assert.Equal(second.GetProperty("item_id").GetInt32(), state.PlayerStats.ItemId);
         var secondWords = second.GetProperty("record_words").EnumerateArray().Select(w => w[1].GetInt32()).ToArray();
@@ -150,11 +150,11 @@ public sealed class AlundraDamageTests
         var state = StateOf(inventory.GetProperty("pre"));
         var records = new AlundraEquipmentRecords();
 
-        AlundraPlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
+        PlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
         Assert.Equal(51, records.ItemIdOf(AlundraEquipmentRecords.Accessory)); // the OLD id (0x33), as 0x8004E0F8 returns it.
         Assert.Equal(52, state.PlayerStats.ItemId); // rewritten with the best of the slot (0x34).
 
-        AlundraPlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
+        PlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
         Assert.Equal(52, records.ItemIdOf(AlundraEquipmentRecords.Accessory));
     }
 
@@ -310,10 +310,10 @@ public sealed class AlundraDamageTests
         var inventory = Load("K1.json").GetProperty(name);
         var state = StateOf(inventory.GetProperty("pre"));
         var records = new AlundraEquipmentRecords();
-        AlundraPlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
+        PlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
 
         // The swing the weapon gives (E20.b), then the hero's own attack record for that animation: the state the oracle's hit pass left (steel and holy swing with 0x3F and 0x49, so their power counts twice).
-        var weaponRecord = AlundraWeaponTables.RecordIndexOfItem(AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, ItemTables()));
+        var weaponRecord = AlundraWeaponTables.RecordIndexOfItem(PlayerManager.GetItemIdFromCurrentWeapon(state, ItemTables()));
         var animation = AlundraWeaponTables.RecordByte(AlundraWeaponTables.AnimationAddress(weaponRecord, false));
         Assert.Equal(meta.GetProperty("hero_anim").GetInt32(), (int)animation);
         var attack = BalanceTables().Select(0, 0)!.AttackForAnimation(animation)!;

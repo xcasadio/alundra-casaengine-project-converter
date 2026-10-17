@@ -92,7 +92,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <summary>
     /// E20.c2a (docs/plan-e20-heros.md section 1.12): true for a hero whose <see cref="Hp"/> and <see cref="HpMax"/> were pulled from the player's stats right after <see cref="InitializeBalance"/>
     /// (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>, binary <c>0x800319F8-0x80031A08</c>). Only such a hero carries the life as the binary does (the entity is the truth, the stats a mirror written at the
-    /// end of every <see cref="AlundraPlayerManager.MovePlayer"/>); the bare proxies of the unit tests never pulled and keep a life of 0 that must not be mirrored over the stats they set up. Not cloned: a clone is not a hero.
+    /// end of every <see cref="PlayerManager.MovePlayer"/>); the bare proxies of the unit tests never pulled and keep a life of 0 that must not be mirrored over the stats they set up. Not cloned: a clone is not a hero.
     /// </summary>
     internal bool LifePulledFromStats;
     public int FrameCounter;//1c
@@ -399,7 +399,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <summary>
     /// Engine-only, not part of the original struct: incremented once every time this entity's own motion
     /// sub-step runs (<see cref="AlundraScriptedMotion"/>'s shared per-tick helper, both the
-    /// <see cref="AlundraPlayerManager.Tick"/> and <see cref="AlundraScriptedMotion.TickScriptedNpc"/>
+    /// <see cref="PlayerManager.Tick"/> and <see cref="AlundraScriptedMotion.TickScriptedNpc"/>
     /// callers) - never read by any gameplay code. Exists solely so the ONE-CLOCK invariant this class'
     /// own fix establishes (this entity's own script pass count, motion sub-step count, and
     /// <see cref="EvaluateEntitySupport"/> step count can never diverge again - see
@@ -425,7 +425,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     public int _17c;
     public uint CombinedVramFlagsOR;
 
-    /// <summary>E20.b B1: the weapon record of the equipped weapon (<see cref="AlundraWeaponTables"/>), the binary's <c>0x8012710C</c>. Posed at the head of every <see cref="AlundraPlayerManager.MovePlayer"/>
+    /// <summary>E20.b B1: the weapon record of the equipped weapon (<see cref="AlundraWeaponTables"/>), the binary's <c>0x8012710C</c>. Posed at the head of every <see cref="PlayerManager.MovePlayer"/>
     /// (<c>0x80031B8C</c>), read by <c>PlayerTryAttack</c>; 0 (the basic sword's record) until then. Hero only.</summary>
     internal int CurrentWeaponRecord;
 
@@ -1179,7 +1179,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// Engine-only, not part of the original struct (same as <see cref="IdsvByAnimDirection"/>): this
     /// entity's per-anim walk-speed/acceleration lookup (E2), resolved once at spawn from its
     /// <c>SpriteRecordCatalog</c> entry (see <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> - only the
-    /// player pawn uses this today, <see cref="AlundraPlayerManager"/>'s own kinematic tick). Null when the
+    /// player pawn uses this today, <see cref="PlayerManager"/>'s own kinematic tick). Null when the
     /// entity's header carried no <c>AnimSets</c> entries (degraded catalog, older export, or a non-player
     /// entity nothing has wired this up for yet) - callers treat that as "0 speed/acceleration for every
     /// anim", same shape as <see cref="IdsvByAnimDirection"/>'s own null case.
@@ -1551,9 +1551,9 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     }
 
     /// <summary>E20.a A4: the pad of the tick of this hero in the self-driven mode (a driven world uses <see cref="GameState.TickPad"/>, which it advances itself).</summary>
-    internal readonly AlundraTickPad SelfDrivenTickPad = new();
+    internal readonly TickPad SelfDrivenTickPad = new();
 
-    private readonly AlundraPadState[] _selfDrivenPadOfTick = new AlundraPadState[16];
+    private readonly PadState[] _selfDrivenPadOfTick = new PadState[16];
 
     /// <summary>E20.a A4: advances <see cref="SelfDrivenTickPad"/> once per logic tick of this frame from the hold state <see cref="Update"/> published, and keeps each tick's pad for
     /// <see cref="RunSelfDrivenTicks"/>.</summary>
@@ -1562,7 +1562,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         for (var tick = 0; tick < ticks && tick < _selfDrivenPadOfTick.Length; tick++)
         {
             SelfDrivenTickPad.Update(ScriptHost!.GameState.LastPadState.ButtonsHold);
-            _selfDrivenPadOfTick[tick] = AlundraPadState.FromTickPad(SelfDrivenTickPad, in ScriptHost.GameState.LastPadState); // E20.d2a S1: the frame's stick sample rides in the pad of the tick.
+            _selfDrivenPadOfTick[tick] = PadState.FromTickPad(SelfDrivenTickPad, in ScriptHost.GameState.LastPadState); // E20.d2a S1: the frame's stick sample rides in the pad of the tick.
         }
     }
 
@@ -1591,7 +1591,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <summary>
     /// E20.a A2: the physics half of one logic tick of this entity (the binary's <c>0x80038364</c>).
     /// <list type="bullet">
-    /// <item><description>The hero: <see cref="AlundraPlayerManager.Tick"/> (the kinematic integration), then the probes <see cref="RunHeroProbes"/> inside the tick, as the binary's
+    /// <item><description>The hero: <see cref="PlayerManager.Tick"/> (the kinematic integration), then the probes <see cref="RunHeroProbes"/> inside the tick, as the binary's
     /// <c>UpdateTileAttributes</c> ends each physics pass (E19.d2c1 R7: the water, ice and x160 rules read the VRAM flags at the next tick). Nothing without a controller.</description></item>
     /// <item><description>Another entity: E4.b scripted mover (port of <c>PhysicsEngine.UpdateEntityPhysics</c>, restricted to the flat-ground half already ported for the hero), keyed off
     /// <see cref="CurrentAnimationId"/> as the last SyncAnimation left it (D-E19-13: the animation a script asks for is applied to the sprite at the end of the frame, so the motion of the
@@ -1617,7 +1617,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         {
             if (ScriptHost!.PlayerController != null)
             {
-                AlundraPlayerManager.Tick(this, 1);
+                PlayerManager.Tick(this, 1);
                 RunHeroProbes();
             }
 
@@ -1648,13 +1648,13 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
 
     /// <summary>E20.d2a test-only seam: sees the pad of each tick handed to <see cref="MovePlayerOnTickPad"/> (before the controller check). Per thread; null in production.</summary>
     [ThreadStatic]
-    internal static Action<AlundraPadState>? PadOfTickSeenForTests;
+    internal static Action<PadState>? PadOfTickSeenForTests;
 
     /// <summary>
-    /// E20.a A4: the hero's <c>MovePlayer</c> (<c>0x80031B50</c>), once per logic tick, on <paramref name="pad"/>, the pad of that tick (<see cref="AlundraPadState.FromTickPad"/>:
+    /// E20.a A4: the hero's <c>MovePlayer</c> (<c>0x80031B50</c>), once per logic tick, on <paramref name="pad"/>, the pad of that tick (<see cref="PadState.FromTickPad"/>:
     /// hold, rising edge and release of the tick, D-E20-2). A no-op without a controller possessing the pawn.
     /// </summary>
-    internal void MovePlayerOnTickPad(in AlundraPadState pad)
+    internal void MovePlayerOnTickPad(in PadState pad)
     {
         PadOfTickSeenForTests?.Invoke(pad);
         var host = ScriptHost;
@@ -1663,7 +1663,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
             return;
         }
 
-        AlundraPlayerManager.MovePlayer(this, in pad, host.GameState, host);
+        PlayerManager.MovePlayer(this, in pad, host.GameState, host);
     }
 
     /// <summary>
@@ -1913,7 +1913,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <c>PhysicsEngine.UpdateTileAttributes</c>'s gravity branch (PhysicsEngine.cs:1740-1820) - the
     /// four-corner qualification rule that feeds the ladder/water slope switch in
     /// <c>PlayerManager.MovePlayer</c> (that switch is NOT ported yet - see
-    /// <see cref="AlundraPlayerManager"/>'s own class doc; this method only ALIMENTS the field, nothing
+    /// <see cref="PlayerManager"/>'s own class doc; this method only ALIMENTS the field, nothing
     /// reads it yet besides the pre-existing <c>DestroyOnSlidingSlope</c>/<c>Slope_18c == 4</c> check -
     /// see the restriction paragraph below). Samples the SAME four corners as
     /// <see cref="ComputeTerrainHeight"/> (identical <see cref="PosX"/>/<see cref="PosY"/>/
@@ -2396,7 +2396,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <see cref="Update"/>. <paramref name="deltaXPixels"/>/<paramref name="deltaYPixels"/> are the
     /// sub-step's <c>ΔPosX</c>/<c>ΔPosY</c> (16.16) already converted to float pixels INCLUDING their
     /// fraction (<c>Δ / 65536f</c>, not the original's own truncated <c>Δ &gt;&gt; 16</c>) - see
-    /// <see cref="AlundraPlayerManager.RunOneTick"/>'s own call site. An axis <c>Move</c> blocks leaves
+    /// <see cref="PlayerManager.RunOneTick"/>'s own call site. An axis <c>Move</c> blocks leaves
     /// <see cref="ForceX"/>/<see cref="ForceY"/> untouched by design (no per-axis correction - accepted
     /// deviation, documented on the same plan section); a blocked axis advances to the contact on the cell
     /// field (E19.a2, ADR-0045 of the engine: the hero stops against the wall, no longer one step short of

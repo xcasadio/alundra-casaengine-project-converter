@@ -47,7 +47,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     public static readonly AlundraDialogueDirector Instance = new();
 
     private const int DefaultCloseMask = 3; // §1.2 - bit0 (auto-timer) | bit1 (button), the original's default g_etcAnimationMode.
-    private const uint SquareBit = AlundraPadState.Square; // §1.2/D-E12-4: bit 0x80.
+    private const uint SquareBit = PadState.Square; // §1.2/D-E12-4: bit 0x80.
 
     private AlundraDialogueDirector()
     {
@@ -100,7 +100,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     private AlundraChoiceAnswerPlan? _choicePlan;
 
     // The pad of the previous call of Tick, as the choice box reads it (the seam of the hosts without a world proxy; the proxy hands the words of its own ticks to Pass).
-    private readonly AlundraTickPad _seamPad = new();
+    private readonly TickPad _seamPad = new();
     private uint _seamChoicePressed;
     private uint _seamChoiceInterval;
 

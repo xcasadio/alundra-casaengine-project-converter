@@ -20,7 +20,7 @@ namespace Alundra.Tests;
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraHeroChargeArenaTests : IDisposable
 {
-    private const uint Square = AlundraPadState.Square;
+    private const uint Square = PadState.Square;
     private const int SteelEdge = 2;
     private const int SwordSlot = 1;
 

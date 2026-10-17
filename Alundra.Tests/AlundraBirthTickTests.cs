@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E20.e0a3b (docs/plan-e20-heros.md section 1.16.3b, revision 3, D-E0A-5, D-E0A-8, D-E20-34, ADR-0065): an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> in <c>MovePlayer</c> (the place of the shot, by the test
-/// seam <see cref="AlundraPlayerManager.WeaponSpawnBirthHookForTests"/>) takes part in the tick that sees it born, as the rows <c>BT-M1</c> to <c>BT-M3</c> of the oracle V6 (<c>docs/plan-e20-annexe/e20-e0a/oracle/out/v6.json</c>);
+/// seam <see cref="PlayerManager.WeaponSpawnBirthHookForTests"/>) takes part in the tick that sees it born, as the rows <c>BT-M1</c> to <c>BT-M3</c> of the oracle V6 (<c>docs/plan-e20-annexe/e20-e0a/oracle/out/v6.json</c>);
 /// one born in the native program of another entity runs from the next tick (the gap of <c>BT-H1</c>, <c>BT-H4</c>, <c>BT-H6</c>, D-E20-34); the entities from a record are untouched by the interface (E20.e0a4 gave the marker to the opcodes
 /// <c>0x2D</c>, <c>0x8A</c> and <c>0x8B</c> too, see <see cref="AlundraRecordBirthTickTests"/>; the map load and the direct call of <c>SpawnEntityByRecordId</c> never pose it). The real world
 /// of map 14 (<see cref="ArcRun"/>, real prefabs), the passes of the tick named by <see cref="AlundraWorldProxy.TickTraceForTests"/> (the state seen at the head of a pass is the state after the pass before it).
@@ -38,10 +38,10 @@ public sealed class AlundraBirthTickTests : IDisposable
     public AlundraBirthTickTests(ITestOutputHelper output)
     {
         _output = output;
-        AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
+        PlayerManager.WeaponSpawnBirthHookForTests = null;
     }
 
-    public void Dispose() => AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
+    public void Dispose() => PlayerManager.WeaponSpawnBirthHookForTests = null;
 
     private static ArcRun Arc(string name) => new(new ArcSpec("E20e0a3b-" + name, "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true));
 
@@ -70,7 +70,7 @@ public sealed class AlundraBirthTickTests : IDisposable
             Arc = arc;
             SpriteIndex = spriteIndex;
             WrapRunner(arc, e => { if (e.SpriteType == spriteIndex) { ARuns++; } });
-            AlundraPlayerManager.WeaponSpawnBirthHookForTests = (hero, call) =>
+            PlayerManager.WeaponSpawnBirthHookForTests = (hero, call) =>
             {
                 HookCalls++;
                 Born = Context(arc).SpawnEntityBySpriteIndex(hero, false, SpriteIndex, call.X, call.Y, call.Z, Direction);

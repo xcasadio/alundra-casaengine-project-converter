@@ -37,7 +37,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
     private readonly ulong _previousSeed = AlundraRandom.RandomSeed;
 
-    private const uint Square = AlundraPadState.Square;
+    private const uint Square = PadState.Square;
 
     public AlundraHeroChargeTests()
     {
@@ -48,7 +48,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
     public void Dispose()
     {
         AlundraNativeEffects.CreatedForTests = null;
-        AlundraPlayerManager.WeaponSpawnCallsForTests = null;
+        PlayerManager.WeaponSpawnCallsForTests = null;
         AlundraRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
@@ -136,9 +136,9 @@ public sealed class AlundraHeroChargeTests : IDisposable
         rig.Host.SoundPlayer = sounds;
         var tables = Tables();
         rig.Host.ItemTables = tables;
-        AlundraPlayerManager.InitializeNewGameInventory(rig.Host.GameState, tables);
+        PlayerManager.InitializeNewGameInventory(rig.Host.GameState, tables);
         rig.Host.GameState.NumberOfItems[item * 2 + 1] = 1;
-        AlundraPlayerManager.SetPlayerWeaponId(rig.Host.GameState, tables, tables.ItemsProperties[item * 5]);
+        PlayerManager.SetPlayerWeaponId(rig.Host.GameState, tables, tables.ItemsProperties[item * 5]);
 
         var stage = new AlundraEffectStage();
         stage.Load(EffectGolden.BankOf(Root, 163));
@@ -186,8 +186,8 @@ public sealed class AlundraHeroChargeTests : IDisposable
     {
         var diffs = new List<string>();
         var hero = m.Hero;
-        var spawns = new List<AlundraPlayerManager.WeaponSpawnCall>();
-        AlundraPlayerManager.WeaponSpawnCallsForTests = spawns;
+        var spawns = new List<PlayerManager.WeaponSpawnCall>();
+        PlayerManager.WeaponSpawnCallsForTests = spawns;
         foreach (var row in rows.TakeWhile(r => r.Tick <= lastTick))
         {
             spawns.Clear();
@@ -215,7 +215,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
             }
 
             // The aura (E20.f1b): created at the tick the oracle creates it, in the slot, mode, anchor, offsets and position the oracle read; alive exactly while the oracle's handle is non-null.
-            var oracleAuras = row.Calls.Where(c => c.Effect == AlundraPlayerManager.AuraEffect && c.Created).ToList();
+            var oracleAuras = row.Calls.Where(c => c.Effect == PlayerManager.AuraEffect && c.Created).ToList();
             Check("aura_created", m.AuraCreatedThisTick is null ? 0 : 1, oracleAuras.Count);
             if (m.AuraCreatedThisTick is { } aura && oracleAuras.Count == 1)
             {
@@ -339,7 +339,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
         Assert.Equal(0, m.AuraReleases);
         Assert.NotNull(hero.AuraSlot);
 
-        var chargeSoundTicks = soundsAt.Where(p => p.Value.Contains(AlundraPlayerManager.ChargeSfx)).Select(p => p.Key).OrderBy(t => t).ToArray();
+        var chargeSoundTicks = soundsAt.Where(p => p.Value.Contains(PlayerManager.ChargeSfx)).Select(p => p.Key).OrderBy(t => t).ToArray();
         Assert.Equal(Enumerable.Range(0, 13).Select(i => 33 + 4 * i).ToArray(), chargeSoundTicks); // 33, 37, ... 81.
 
         var sparkTicks = effectsAt.Where(p => p.Value.Count > 0).Select(p => p.Key).OrderBy(t => t).ToArray();
@@ -428,9 +428,9 @@ public sealed class AlundraHeroChargeTests : IDisposable
         using var seed = new SeedScope();
         var m = Start(2);
         var hero = m.Hero;
-        var spawns = new List<AlundraPlayerManager.WeaponSpawnCall>();
-        AlundraPlayerManager.WeaponSpawnCallsForTests = spawns;
-        var spawnTicks = new List<(int Tick, AlundraPlayerManager.WeaponSpawnCall Call)>();
+        var spawns = new List<PlayerManager.WeaponSpawnCall>();
+        PlayerManager.WeaponSpawnCallsForTests = spawns;
+        var spawnTicks = new List<(int Tick, PlayerManager.WeaponSpawnCall Call)>();
         foreach (var row in rows)
         {
             spawns.Clear();
@@ -467,7 +467,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
         // The shot: one call in the whole probe, at tick 112, with the arguments of the binary (the oracle's Z of 1 is the DLL's 0).
         var shot = Assert.Single(spawnTicks);
         Assert.Equal(112, shot.Tick);
-        Assert.Equal(new AlundraPlayerManager.WeaponSpawnCall(27, 6553600, 6553600, 0, 0x18), shot.Call);
+        Assert.Equal(new PlayerManager.WeaponSpawnCall(27, 6553600, 6553600, 0, 0x18), shot.Call);
     }
 
     /// <summary>C10-crusher at tick 101: the hold spark and then the burst on the release tick: 17 creations in the oracle's order; sounds 43, 36 (the animation set of 0x19), then the spark's 428 (the order rule).</summary>
@@ -538,9 +538,9 @@ public sealed class AlundraHeroChargeTests : IDisposable
         hero.IsOnGround = onGround;
         m.Sounds.Requests.Clear();
         m.Created.Clear();
-        var pad = new AlundraPadState { ButtonsReleased = Square };
+        var pad = new PadState { ButtonsReleased = Square };
 
-        AlundraPlayerManager.MovePlayer(hero, in pad, m.Rig.Host.GameState, m.Rig.Host);
+        PlayerManager.MovePlayer(hero, in pad, m.Rig.Host.GameState, m.Rig.Host);
         m.Stage.RunFrame(1, new[] { false });
 
         Assert.Equal(succeeds ? 0x18u : AirStillAnimation, hero.TargetAnimationId);
@@ -642,9 +642,9 @@ public sealed class AlundraHeroChargeTests : IDisposable
         hero.WeaponChargeTimer = 37;
         hero.WeaponRecordPointer = 0x80028CF6;
         hero.BlockedByEntity = new CasaEngine.Framework.Scene.Entities.Entity { Name = "blocker" };
-        var pad = new AlundraPadState { ButtonsHold = Square };
+        var pad = new PadState { ButtonsHold = Square };
 
-        AlundraPlayerManager.MovePlayer(hero, in pad, m.Rig.Host.GameState, m.Rig.Host);
+        PlayerManager.MovePlayer(hero, in pad, m.Rig.Host.GameState, m.Rig.Host);
 
         Assert.Equal(0, hero.WeaponChargeTimer);
         Assert.Equal(0u, hero.WeaponRecordPointer);
@@ -658,25 +658,25 @@ public sealed class AlundraHeroChargeTests : IDisposable
         var hero = m.Hero;
         hero.WeaponChargeTimer = 37;
         hero.WeaponRecordPointer = 0x80028CF6;
-        var aura = m.Stage.CreateAttachedNow(false, AlundraPlayerManager.AuraEffect, 0, hero, AlundraPlayerManager.AuraDepthOffset, 0, 0, AlundraPlayerManager.AuraOffsetZ)!;
+        var aura = m.Stage.CreateAttachedNow(false, PlayerManager.AuraEffect, 0, hero, PlayerManager.AuraDepthOffset, 0, 0, PlayerManager.AuraOffsetZ)!;
         hero.AuraSlot = aura;
         hero.AuraGeneration = aura.Generation;
         hero.TargetAnimationId = 0x2D; // a state the skeleton of CreatePlayerAnimationEffects(1) reacts to (the landing stub), so that the call is observable.
         hero.IsOnGround = 1;
         m.Rig.Host.GameState.PlayerControlFlags = GameState.PlayerControlBits.ControlLocked;
         var calls = new List<(int Mode, string Stub, uint State)>();
-        AlundraPlayerAnimationEffects.StubCallsForTests = calls;
-        var pad = new AlundraPadState { ButtonsHold = Square };
+        PlayerAnimationEffects.StubCallsForTests = calls;
+        var pad = new PadState { ButtonsHold = Square };
         try
         {
-            AlundraPlayerManager.MovePlayer(hero, in pad, m.Rig.Host.GameState, m.Rig.Host);
+            PlayerManager.MovePlayer(hero, in pad, m.Rig.Host.GameState, m.Rig.Host);
         }
         finally
         {
-            AlundraPlayerAnimationEffects.StubCallsForTests = null;
+            PlayerAnimationEffects.StubCallsForTests = null;
         }
 
-        Assert.Contains(AlundraPlayerAnimationEffects.LandingStubName, calls.Select(c => c.Stub)); // the function was called (mode 1) before the clears.
+        Assert.Contains(PlayerAnimationEffects.LandingStubName, calls.Select(c => c.Stub)); // the function was called (mode 1) before the clears.
         Assert.All(calls, c => Assert.Equal(1, c.Mode));
         Assert.Equal(0, hero.WeaponChargeTimer);
         Assert.Equal(0u, hero.WeaponRecordPointer);
@@ -708,8 +708,8 @@ public sealed class AlundraHeroChargeTests : IDisposable
         using var seed = new SeedScope();
         var m = Start(6);
         var hero = m.Hero;
-        var spawns = new List<AlundraPlayerManager.WeaponSpawnCall>();
-        AlundraPlayerManager.WeaponSpawnCallsForTests = spawns;
+        var spawns = new List<PlayerManager.WeaponSpawnCall>();
+        PlayerManager.WeaponSpawnCallsForTests = spawns;
         foreach (var row in rows.TakeWhile(r => r.Tick <= 92))
         {
             m.Tick(row.Hold, row.RngBefore);

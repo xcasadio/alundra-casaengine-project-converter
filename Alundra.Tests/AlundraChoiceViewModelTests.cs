@@ -70,7 +70,7 @@ public sealed class AlundraChoiceViewModelTests
         box.SeedCursorTickForTests(scenario.GetProperty("anim0").GetInt32());
         var viewModel = new AlundraChoiceViewModel();
         var events = Watch(viewModel);
-        var pad = new AlundraTickPad();
+        var pad = new TickPad();
         for (var t = 0; t < table.Length; t++)
         {
             pad.Update(raw.GetValueOrDefault(t));

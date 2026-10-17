@@ -50,9 +50,9 @@ internal static class AnimationTables
     /// <summary>
     /// StaticVariables.g_directionByButtons (StaticVariables.cs:99-103, address comment 0x80022c6c): maps
     /// the 4-bit directional pad mask (<c>ButtonsHold &gt;&gt; 0xc</c>, bit 0=Up, 1=Right, 2=Down, 3=Left -
-    /// see <see cref="AlundraPadState"/>'s own doc) to the packed direction value
+    /// see <see cref="PadState"/>'s own doc) to the packed direction value
     /// <see cref="AlundraEntityScriptProxy.TargetDirection"/> stores. <c>0xFFFFFFFF</c> marks an invalid
-    /// combination (e.g. Up+Down held together) - <see cref="AlundraPlayerManager.MovePlayer"/> falls back
+    /// combination (e.g. Up+Down held together) - <see cref="PlayerManager.MovePlayer"/> falls back
     /// to the entity's current <c>TargetDirection</c> in that case, exactly like
     /// <c>PlayerManager.cs:199-205</c>.
     /// </summary>
@@ -65,7 +65,7 @@ internal static class AnimationTables
     /// <summary>
     /// StaticVariables.g_offsetXList (StaticVariables.cs:476-483, address comment 0x80023654): 32 signed
     /// 16-bit per-direction X speed multipliers (16.16-fixed-point-free, pre-multiplied by
-    /// <c>AnimationSet.Speed</c> - see <see cref="AlundraPlayerManager"/>'s own kinematic tick), indexed by
+    /// <c>AnimationSet.Speed</c> - see <see cref="PlayerManager"/>'s own kinematic tick), indexed by
     /// the packed direction value (<see cref="DirectionByButtons"/>'s own output domain).
     /// </summary>
     public static readonly short[] OffsetXList =

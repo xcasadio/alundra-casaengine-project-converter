@@ -28,9 +28,9 @@ public sealed class AlundraHeroSlideTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
-    private const uint Up = AlundraPadState.Up;
-    private const uint Right = AlundraPadState.Right;
-    private const uint Left = AlundraPadState.Left;
+    private const uint Up = PadState.Up;
+    private const uint Right = PadState.Right;
+    private const uint Left = PadState.Left;
     private const int North = 16;
     private const int West = 8;
     private const int NorthEast = 20;
@@ -168,7 +168,7 @@ public sealed class AlundraHeroSlideTests : IDisposable
     // before the first run; the binary agrees except the known residue of its halving on positive directions, O-E19-28 b: the tests pin the DLL, stage 1, D-E19-58)
     // -----------------------------------------------------------------------------------------
 
-    private const uint Down = AlundraPadState.Down;
+    private const uint Down = PadState.Down;
 
     [Fact]
     public void TSL7_SouthAgainstTheCornerOfOneCell_TheHeroSlidesEastAlongItAndGoesOnSouth()

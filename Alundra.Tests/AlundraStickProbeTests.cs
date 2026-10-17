@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 /// </summary>
 public sealed class AlundraStickProbeTests : IDisposable
 {
-    private const uint DirBits = AlundraPadState.Up | AlundraPadState.Right | AlundraPadState.Down | AlundraPadState.Left;
+    private const uint DirBits = PadState.Up | PadState.Right | PadState.Down | PadState.Left;
 
     public AlundraStickProbeTests()
     {
@@ -82,9 +82,9 @@ public sealed class AlundraStickProbeTests : IDisposable
     {
         var s = AlundraPlayerController.ComputePadState(Manager(), FakeStick(0.7071f, 0.7071f));
 
-        Assert.Equal(AlundraPadState.Up | AlundraPadState.Right, s.StickBitsHold);
+        Assert.Equal(PadState.Up | PadState.Right, s.StickBitsHold);
         Assert.Equal(0u, s.DigitalDirectionBitsHold);
-        Assert.Equal(AlundraPadState.Up | AlundraPadState.Right, s.ButtonsHold);
+        Assert.Equal(PadState.Up | PadState.Right, s.ButtonsHold);
         Assert.Equal(0.7071f, s.StickX, 4);
         Assert.Equal(0.7071f, s.StickY, 4);
         Assert.Equal(Math.Abs(s.StickX), Math.Abs(s.StickY), 4);
@@ -107,8 +107,8 @@ public sealed class AlundraStickProbeTests : IDisposable
     {
         var s = AlundraPlayerController.ComputePadState(Manager(), FakeStick(-0.6f, -0.8f));
 
-        Assert.Equal(AlundraPadState.Left | AlundraPadState.Down, s.StickBitsHold);
-        Assert.Equal(AlundraPadState.Left | AlundraPadState.Down, s.ButtonsHold);
+        Assert.Equal(PadState.Left | PadState.Down, s.StickBitsHold);
+        Assert.Equal(PadState.Left | PadState.Down, s.ButtonsHold);
         Assert.Equal(-0.6f, s.StickX, 4);
         Assert.Equal(-0.8f, s.StickY, 4);
     }
@@ -120,7 +120,7 @@ public sealed class AlundraStickProbeTests : IDisposable
 
         Assert.Equal(1f, s.StickX); // MoveRightStick.Value alone: the half-axis difference (1 - (-1)) would give 2.
         Assert.Equal(0f, s.StickY);
-        Assert.Equal(AlundraPadState.Right, s.StickBitsHold);
+        Assert.Equal(PadState.Right, s.StickBitsHold);
     }
 
     [Fact]
@@ -137,9 +137,9 @@ public sealed class AlundraStickProbeTests : IDisposable
     {
         var s = AlundraPlayerController.ComputePadState(Manager(), FakeStick(0f, 0f, "MoveUp", "MoveRight", "Sprint"));
 
-        Assert.Equal(AlundraPadState.Up | AlundraPadState.Right, s.DigitalDirectionBitsHold);
+        Assert.Equal(PadState.Up | PadState.Right, s.DigitalDirectionBitsHold);
         Assert.Equal(0u, s.StickBitsHold);
-        Assert.Equal(AlundraPadState.Up | AlundraPadState.Right | AlundraPadState.Triangle, s.ButtonsHold);
+        Assert.Equal(PadState.Up | PadState.Right | PadState.Triangle, s.ButtonsHold);
         Assert.Equal(0f, s.StickX);
         Assert.Equal(0f, s.StickY);
     }
@@ -149,15 +149,15 @@ public sealed class AlundraStickProbeTests : IDisposable
     {
         var s = AlundraPlayerController.ComputePadState(Manager(), FakeStick(-1f, 0f, "MoveUp"));
 
-        Assert.Equal(AlundraPadState.Up, s.DigitalDirectionBitsHold);
-        Assert.Equal(AlundraPadState.Left, s.StickBitsHold);
-        Assert.Equal(AlundraPadState.Up | AlundraPadState.Left, s.ButtonsHold);
+        Assert.Equal(PadState.Up, s.DigitalDirectionBitsHold);
+        Assert.Equal(PadState.Left, s.StickBitsHold);
+        Assert.Equal(PadState.Up | PadState.Left, s.ButtonsHold);
     }
 
     [Fact]
     public void AnInitializerThatDoesNotKnowTheNewFields_KeepsTheirMeaning_ZeroByDefault()
     {
-        var s = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
+        var s = new PadState { ButtonsHold = PadState.Right };
 
         Assert.Equal(0u, s.DigitalDirectionBitsHold);
         Assert.Equal(0u, s.StickBitsHold);
@@ -172,21 +172,21 @@ public sealed class AlundraStickProbeTests : IDisposable
     [Fact]
     public void FromTickPad_CopiesTheFramesSample_AndTheTickPadItselfIsUnchanged()
     {
-        var tickPad = new AlundraTickPad();
-        tickPad.Update(AlundraPadState.Right | AlundraPadState.Triangle);
-        var sample = new AlundraPadState { ButtonsHold = AlundraPadState.Up, DigitalDirectionBitsHold = AlundraPadState.Up, StickBitsHold = AlundraPadState.Left, StickX = -0.9f, StickY = 0.2f };
+        var tickPad = new TickPad();
+        tickPad.Update(PadState.Right | PadState.Triangle);
+        var sample = new PadState { ButtonsHold = PadState.Up, DigitalDirectionBitsHold = PadState.Up, StickBitsHold = PadState.Left, StickX = -0.9f, StickY = 0.2f };
 
-        var pad = AlundraPadState.FromTickPad(tickPad, in sample);
+        var pad = PadState.FromTickPad(tickPad, in sample);
 
         Assert.Equal(tickPad.ButtonsHold, pad.ButtonsHold); // the hold of the tick pad, not the sample's.
         Assert.Equal(tickPad.ButtonsJustPressed, pad.ButtonsJustPressed);
         Assert.Equal(tickPad.ButtonsReleased, pad.ButtonsReleased);
-        Assert.Equal(AlundraPadState.Up, pad.DigitalDirectionBitsHold);
-        Assert.Equal(AlundraPadState.Left, pad.StickBitsHold);
+        Assert.Equal(PadState.Up, pad.DigitalDirectionBitsHold);
+        Assert.Equal(PadState.Left, pad.StickBitsHold);
         Assert.Equal(-0.9f, pad.StickX);
         Assert.Equal(0.2f, pad.StickY);
 
-        var bare = AlundraPadState.FromTickPad(tickPad);
+        var bare = PadState.FromTickPad(tickPad);
         Assert.Equal(0u, bare.StickBitsHold);
         Assert.Equal(0f, bare.StickX);
     }
@@ -196,22 +196,22 @@ public sealed class AlundraStickProbeTests : IDisposable
     {
         var montage = RunMontage.Start(RunOracleTrace.Load("g1/R1-T+R"));
         var controller = montage.Rig.Host.PlayerController!;
-        var seen = new List<AlundraPadState>();
+        var seen = new List<PadState>();
         AlundraEntityScriptProxy.PadOfTickSeenForTests = seen.Add;
-        controller.PadStateProviderForTests = () => new AlundraPadState
+        controller.PadStateProviderForTests = () => new PadState
         {
-            ButtonsHold = AlundraPadState.Right, StickBitsHold = AlundraPadState.Right, StickX = 0.8f, StickY = -0.25f,
+            ButtonsHold = PadState.Right, StickBitsHold = PadState.Right, StickX = 0.8f, StickY = -0.25f,
         };
 
-        montage.Rig.Step(AlundraPadState.Right, elapsed: 0.02f);
-        montage.Rig.Step(AlundraPadState.Right, elapsed: 0.04f); // a frame of two ticks: both carry the sample.
+        montage.Rig.Step(PadState.Right, elapsed: 0.02f);
+        montage.Rig.Step(PadState.Right, elapsed: 0.04f); // a frame of two ticks: both carry the sample.
 
         Assert.Equal(3, seen.Count);
         Assert.All(seen, p =>
         {
             Assert.Equal(0.8f, p.StickX);
             Assert.Equal(-0.25f, p.StickY);
-            Assert.Equal(AlundraPadState.Right, p.StickBitsHold);
+            Assert.Equal(PadState.Right, p.StickBitsHold);
         });
     }
 
@@ -228,8 +228,8 @@ public sealed class AlundraStickProbeTests : IDisposable
         Thread.CurrentThread.CurrentCulture = new CultureInfo("fr-FR");
         try
         {
-            AlundraStickProbe.LogFrame(new AlundraPadState { StickX = 0.7071f, StickY = 0.7071f, StickBitsHold = AlundraPadState.Up | AlundraPadState.Right });
-            AlundraStickProbe.LogFrame(new AlundraPadState { StickX = -0.6f, StickY = -0.8f, DigitalDirectionBitsHold = AlundraPadState.Left, StickBitsHold = AlundraPadState.Left | AlundraPadState.Down });
+            AlundraStickProbe.LogFrame(new PadState { StickX = 0.7071f, StickY = 0.7071f, StickBitsHold = PadState.Up | PadState.Right });
+            AlundraStickProbe.LogFrame(new PadState { StickX = -0.6f, StickY = -0.8f, DigitalDirectionBitsHold = PadState.Left, StickBitsHold = PadState.Left | PadState.Down });
             AlundraStickProbe.LogStartTableRead(0x29, 0x2);
             AlundraStickProbe.LogStartTableRead(0x2A, 0xA);
         }
@@ -248,7 +248,7 @@ public sealed class AlundraStickProbeTests : IDisposable
     {
         var lines = new List<string>();
         AlundraStickProbe.SetForTests(false, lines.Add);
-        AlundraStickProbe.LogFrame(new AlundraPadState { StickX = 1f });
+        AlundraStickProbe.LogFrame(new PadState { StickX = 1f });
         AlundraStickProbe.LogStartTableRead(0x29, 2);
 
         var montage = RunMontage.Start(RunOracleTrace.Load("g1/R1-T+R"));

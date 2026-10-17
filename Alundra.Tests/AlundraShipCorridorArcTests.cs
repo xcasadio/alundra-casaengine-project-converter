@@ -164,7 +164,7 @@ public sealed class AlundraShipCorridorArcTests
         RunPart1(arc, samples);
         Assert.Equal(205, arc.Frame);
         arc.PlaceHero(540, 360, 64);
-        arc.HoldDirections(AlundraPadState.Down);
+        arc.HoldDirections(PadState.Down);
         arc.RunUntil(() => AlundraWarpDirector.Instance.HasPendingArrival, "the portal (22, 23) of map 392 departs towards map 391");
 
         // 2. Nothing skipped (0x8E @20 is executed, once).
@@ -192,7 +192,7 @@ public sealed class AlundraShipCorridorArcTests
         Assert.Equal(205, arc.Frame);
 
         // From frame 205 Down is held in place; the roll plays at its first poll.
-        arc.HoldDirections(AlundraPadState.Down);
+        arc.HoldDirections(PadState.Down);
         var flagsAtTheEndOfFrame = new Dictionary<int, uint>();
         var heroAtTheEndOfFrame = new Dictionary<int, (int X, int Y)>();
         arc.OnFrame = () =>
@@ -210,7 +210,7 @@ public sealed class AlundraShipCorridorArcTests
         arc.OneFrame();
         Assert.Equal(228, arc.Frame);
         arc.PlaceHero(540, 360, 64);
-        arc.HoldDirections(AlundraPadState.Down);
+        arc.HoldDirections(PadState.Down);
         arc.RunUntil(() => AlundraWarpDirector.Instance.HasPendingArrival, "the portal (22, 23) of map 392 departs towards map 391");
 
         AssertNothingSkippedOrExceeded(arc);

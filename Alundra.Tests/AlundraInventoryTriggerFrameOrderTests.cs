@@ -100,23 +100,23 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
     public void MapEvents_AreFrozenOnTheBinaryTicks_AroundAnInventoryOpenedAndClosed()
     {
         // binary: RunMapEvents skipped in Update(P+1..P+37) (MenuOpen posed by the slot-6 setup in RS(P+1), cleared by the close completion in RS(P+38)).
-        Assert.Equal("1..37", SkippedRuns(new() { [0] = AlundraPadState.Start, [19] = AlundraPadState.Start }, 45));
+        Assert.Equal("1..37", SkippedRuns(new() { [0] = PadState.Start, [19] = PadState.Start }, 45));
     }
 
     [Fact]
     public void MapEvents_AreFrozenOnTheBinaryTicks_ThroughTheSubInventoryAndBack()
     {
         // binary: P+1..P+74 (L1 at P+19, sub-inventory closed by Start at P+56); P+1..P+112 (L1 back to the main at P+56, closed at P+94).
-        Assert.Equal("1..74", SkippedRuns(new() { [0] = AlundraPadState.Start, [19] = AlundraPadState.L1, [56] = AlundraPadState.Start }, 90));
+        Assert.Equal("1..74", SkippedRuns(new() { [0] = PadState.Start, [19] = PadState.L1, [56] = PadState.Start }, 90));
         Reset();
-        Assert.Equal("1..112", SkippedRuns(new() { [0] = AlundraPadState.Start, [19] = AlundraPadState.L1, [56] = AlundraPadState.L1, [94] = AlundraPadState.Start }, 130));
+        Assert.Equal("1..112", SkippedRuns(new() { [0] = PadState.Start, [19] = PadState.L1, [56] = PadState.L1, [94] = PadState.Start }, 130));
     }
 
     [Fact]
     public void EffectAndPendingTriggerGates_FollowTheMapEvents_NotTheInventoryOfTheSameTick()
     {
         using var m = Build();
-        m.PadForFrame = f => f - P == 0 || f - P == 19 ? AlundraPadState.Start : 0u;
+        m.PadForFrame = f => f - P == 0 || f - P == 19 ? PadState.Start : 0u;
         var effect = new List<bool>();
         var pending = new List<bool>();
         for (var f = 0; f <= P + 40; f++)
@@ -140,7 +140,7 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
         const int S = 46, R = 65;
         using var m = Build();
         m.Director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: controlMode);
-        m.PadForFrame = f => f == S ? AlundraPadState.Square : f == R ? AlundraPadState.Start : 0u;
+        m.PadForFrame = f => f == S ? PadState.Square : f == R ? PadState.Start : 0u;
         m.RunFrames(R);
         Assert.True(m.Director.IsOpen);
         m.RunFrame(); // frame R: the pass releases the box, then the trigger reads the Start of this tick
@@ -165,7 +165,7 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
                 opened = true;
             }
         };
-        m.PadForFrame = f => f == P ? AlundraPadState.Start : 0u;
+        m.PadForFrame = f => f == P ? PadState.Start : 0u;
         m.RunFrames(P + 1);
         Assert.True(m.Director.IsOpen);
         Assert.Equal(expectedFlags, m.State.PlayerControlFlags);
@@ -191,7 +191,7 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
                 started = true;
             }
         };
-        m.PadForFrame = f => f == P ? AlundraPadState.Start : 0u;
+        m.PadForFrame = f => f == P ? PadState.Start : 0u;
         m.RunFrames(P + 1);
         Assert.True(started);
         Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);

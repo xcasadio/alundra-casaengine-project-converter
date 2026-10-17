@@ -281,7 +281,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         ArmLoad(RichSave());
         Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
 
-        InventoryTick(AlundraPadState.Start);
+        InventoryTick(PadState.Start);
         InventoryTicks(10);
         Assert.False(AlundraInventoryDirector.Instance.IsActive);
         Assert.Equal(0u, State.PlayerControlFlags);
@@ -300,7 +300,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         {
             for (var tick = 0; tick < 120; tick++)
             {
-                InventoryTick(tick % 30 == 0 ? AlundraPadState.Start : 0u);
+                InventoryTick(tick % 30 == 0 ? PadState.Start : 0u);
                 AlundraHudDirector.Instance.Tick();
             }
         });

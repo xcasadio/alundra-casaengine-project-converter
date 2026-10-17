@@ -44,7 +44,7 @@ public sealed class AlundraHudPresenter
     private readonly Func<(Guid? Weapon, Guid? Accessory)> _equipmentSource;
 
     /// <param name="equipmentSource">E13.c S3: what the two equipment boxes show, asked once per drawn tick -
-    /// in production <see cref="AlundraPlayerManager.ResolveHudEquipmentIcons"/> over the session state. Omitted,
+    /// in production <see cref="PlayerManager.ResolveHudEquipmentIcons"/> over the session state. Omitted,
     /// both boxes stay empty, which is what every presenter built before S3 showed.</param>
     public AlundraHudPresenter(
         AlundraHudDirector director,

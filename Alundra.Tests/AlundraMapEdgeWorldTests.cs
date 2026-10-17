@@ -288,7 +288,7 @@ public sealed class AlundraMapEdgeWorldTests
         arc.PlaceHero(start, 300, 0);
         var arrow = Born(arc, Arrow, false, 1200, 16 << 16);
         var bound = arc.Hero.ScreenClipX;
-        arc.HoldDirections(AlundraPadState.Right);
+        arc.HoldDirections(PadState.Right);
         var heroX = new List<int>();
         var heroAdjusted = new List<int>();
         var arrowX = new List<int>();

@@ -21,7 +21,7 @@ namespace Alundra.Tests;
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraFlailBounceWallProbeTests : IDisposable
 {
-    private const uint Square = AlundraPadState.Square;
+    private const uint Square = PadState.Square;
     private const int IronFlail = 9;
     private const int SteelFlail = 10;
     private const int FlailSlot = 3;

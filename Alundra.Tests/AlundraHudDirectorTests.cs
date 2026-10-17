@@ -253,7 +253,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
         var director = ArmedOpening(state);
         TickMany(director, 18); // Displayed(1), FrameCounter == 18, Hp == HpMax == 10 (New-Game default).
 
-        AlundraPlayerManager.SetPlayerHp(state, 5); // true Hp drops well below the displayed value.
+        PlayerManager.SetPlayerHp(state, 5); // true Hp drops well below the displayed value.
 
         TickMany(director, 8);
         Assert.Equal(9, director.Hp); // exactly one point lost.
@@ -270,7 +270,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
         TickMany(director, 18); // Displayed(1), FrameCounter == 18, Money settled at 0 == 0 (no roll).
         Assert.Equal(0, director.CoinIconFrame);
 
-        AlundraPlayerManager.SetMoney(state, 1000); // far above the displayed 0 - keeps rolling throughout.
+        PlayerManager.SetMoney(state, 1000); // far above the displayed 0 - keeps rolling throughout.
 
         TickMany(director, 5); // FrameCounter 19..23 - no multiple of 6 in that range.
         Assert.Equal(0, director.CoinIconFrame);
@@ -303,7 +303,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
         TickMany(director, 18);
         Assert.False(director.IsMoneyRolling); // nothing to roll: 0 == 0.
 
-        AlundraPlayerManager.SetMoney(state, 25);
+        PlayerManager.SetMoney(state, 25);
         director.Tick();
         Assert.True(director.IsMoneyRolling);
 
@@ -330,7 +330,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     {
         var state = new GameState();
         var director = ArmedOpening(state);
-        AlundraPlayerManager.SetMoney(state, 5); // small target, settles within the 18-tick opening.
+        PlayerManager.SetMoney(state, 5); // small target, settles within the 18-tick opening.
         TickMany(director, 18);
 
         Assert.Equal(5, director.Money);
@@ -386,7 +386,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     {
         var state = new GameState();
         var director = ArmedOpening(state);
-        AlundraPlayerManager.SetMoney(state, 25);
+        PlayerManager.SetMoney(state, 25);
 
         var progression = new int[9];
         for (var i = 0; i < progression.Length; i++)
@@ -412,14 +412,14 @@ public sealed class AlundraHudDirectorTests : IDisposable
     {
         var state = new GameState();
         var director = ArmedOpening(state);
-        AlundraPlayerManager.SetMoney(state, 2163); // C0's own debug value set, well above the New-Game 0.
+        PlayerManager.SetMoney(state, 2163); // C0's own debug value set, well above the New-Game 0.
         TickMany(director, 18); // Displayed(1); money is still rolling upward, far from settled.
         var afterOpening = director.Money;
         Assert.True(afterOpening > 0 && afterOpening < 2163);
 
         // Now drop the true target back down hard - the roll must turn around and count DOWN,
         // +-10 then +-1, the same shape mirrored (HudManager.cs:438-458).
-        AlundraPlayerManager.SetMoney(state, 0);
+        PlayerManager.SetMoney(state, 0);
         var previous = afterOpening;
         var sawStepOfTen = false;
         var sawStepOfOne = false;

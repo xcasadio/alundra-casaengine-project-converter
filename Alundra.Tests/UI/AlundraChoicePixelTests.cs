@@ -66,7 +66,7 @@ public sealed class AlundraChoicePixelTests
 
         var box = new AlundraChoiceBox();
         box.SeedCursorTickForTests(scenario.GetProperty("anim0").GetInt32());
-        var pad = new AlundraTickPad();
+        var pad = new TickPad();
         for (var t = 0; t <= pass; t++)
         {
             pad.Update(raw.GetValueOrDefault(t));

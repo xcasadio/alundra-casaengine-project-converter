@@ -26,7 +26,7 @@ public readonly struct AnimSetEntry
     public int Anim { get; init; }
 
     /// <summary>Walk speed, pre-multiplied by <see cref="AnimationTables.OffsetXList"/>/<see cref="AnimationTables.OffsetYList"/>
-    /// in <see cref="AlundraPlayerManager"/>'s kinematic tick (<c>PhysicsEngine.UpdateEntityPhysics</c>,
+    /// in <see cref="PlayerManager"/>'s kinematic tick (<c>PhysicsEngine.UpdateEntityPhysics</c>,
     /// PhysicsEngine.cs:1593-1594).</summary>
     public int Speed { get; init; }
 

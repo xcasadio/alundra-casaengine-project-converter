@@ -11,21 +11,21 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E20.i T4 (docs/plan-e20-heros.md section 1.14): the branches of the swim that the traces of the oracle cannot reach or that a bare hero shows best, on a bare hero (no controller: the air predicate reads
-/// <see cref="AlundraEntityScriptProxy.HeroAirborne"/>), one <see cref="AlundraPlayerManager.MovePlayer"/> call per case, in the order of the binary's handlers (<c>0x80032674</c>, <c>0x80032658</c>, <c>0x80032680</c>,
+/// <see cref="AlundraEntityScriptProxy.HeroAirborne"/>), one <see cref="PlayerManager.MovePlayer"/> call per case, in the order of the binary's handlers (<c>0x80032674</c>, <c>0x80032658</c>, <c>0x80032680</c>,
 /// <c>0x80032690</c>, <c>0x800326FC</c>, <c>0x80032758</c>, the land exits <c>0x80031DD0</c> and <c>0x80031DB4</c>). The 240 traces of the group W8 (80 states, three pads, three ticks) are replayed state by state: the state
 /// the oracle holds at the end of tick t-1 is posed, one <c>MovePlayer</c> runs with the pad of tick t, and what it writes (the target animation, the direction) is the oracle's of tick t.
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
 public sealed class AlundraHeroSwimBranchTests : IDisposable
 {
-    private const uint Triangle = AlundraPadState.Triangle;
-    private const uint Square = AlundraPadState.Square;
-    private const uint Cross = AlundraPadState.Cross;
-    private const uint Circle = AlundraPadState.Circle;
-    private const uint Up = AlundraPadState.Up;
-    private const uint Right = AlundraPadState.Right;
-    private const uint Down = AlundraPadState.Down;
-    private const uint Left = AlundraPadState.Left;
+    private const uint Triangle = PadState.Triangle;
+    private const uint Square = PadState.Square;
+    private const uint Cross = PadState.Cross;
+    private const uint Circle = PadState.Circle;
+    private const uint Up = PadState.Up;
+    private const uint Right = PadState.Right;
+    private const uint Down = PadState.Down;
+    private const uint Left = PadState.Left;
 
     private const uint Idle = 0;
     private const uint Moving = 1;
@@ -36,7 +36,7 @@ public sealed class AlundraHeroSwimBranchTests : IDisposable
     private const uint SwimHurt = 0x3A;
     private const uint SwimHurtEnd = 0x3B;
 
-    public void Dispose() => AlundraPlayerManager.TryUseItemResultForTests = null;
+    public void Dispose() => PlayerManager.TryUseItemResultForTests = null;
 
     private static AlundraEntityScriptProxy Hero(uint animation, uint direction = 0x18, bool air = false, int slope = 4)
     {
@@ -47,8 +47,8 @@ public sealed class AlundraHeroSwimBranchTests : IDisposable
 
     private static void Move(AlundraEntityScriptProxy hero, uint hold, uint pressed = 0)
     {
-        var pad = new AlundraPadState { ButtonsHold = hold, ButtonsJustPressed = pressed };
-        AlundraPlayerManager.MovePlayer(hero, in pad, new GameState(), host: null);
+        var pad = new PadState { ButtonsHold = hold, ButtonsJustPressed = pressed };
+        PlayerManager.MovePlayer(hero, in pad, new GameState(), host: null);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ public sealed class AlundraHeroSwimBranchTests : IDisposable
     [InlineData(Float)]
     public void Steer_TheDirectionOfThePadIsWrittenBeforeTheItemDriver_EvenWhenTheDriverAnswers0(uint state)
     {
-        AlundraPlayerManager.TryUseItemResultForTests = 0;
+        PlayerManager.TryUseItemResultForTests = 0;
         var hero = Hero(state, direction: 0x18);
 
         Move(hero, Left | Triangle, pressed: Triangle);
@@ -271,7 +271,7 @@ public sealed class AlundraHeroSwimBranchTests : IDisposable
         Assert.Equal(Float, done.TargetAnimationId);
         Assert.Equal(0x18u, done.TargetDirection);
 
-        AlundraPlayerManager.TryUseItemResultForTests = 0;
+        PlayerManager.TryUseItemResultForTests = 0;
         var driver = Hero(SwimHurtEnd, direction: 0x08);
         driver.ForceResetAnimationFlag = 1;
         Move(driver, 0);

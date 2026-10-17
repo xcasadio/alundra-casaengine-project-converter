@@ -27,11 +27,11 @@ namespace Alundra.Session;
 ///
 /// <para>Fields are plain data, unclamped by construction - exactly like the original struct, whose own
 /// clamps live in <c>PlayerManager</c>'s setters, not in <c>PlayerStats</c> itself. The bound-enforcing
-/// setters are ported onto <see cref="AlundraPlayerManager"/> for the same reason (docs/plan-e13-hud.md
-/// C0's own note: "l'emplacement des setters est ton choix local" - kept beside <see cref="AlundraPlayerManager"/>
+/// setters are ported onto <see cref="PlayerManager"/> for the same reason (docs/plan-e13-hud.md
+/// C0's own note: "l'emplacement des setters est ton choix local" - kept beside <see cref="PlayerManager"/>
 /// because that is where the original's own <c>SetPlayerHp</c>/<c>SetPlayerHpMax</c>/<c>SetPlayerMp</c>/
 /// <c>SetPlayerMpMax</c>/<c>SetMoney</c> live, PlayerManager.cs:1671-1830, and because
-/// <see cref="AlundraPlayerManager"/> already takes an explicit <see cref="GameState"/> parameter
+/// <see cref="PlayerManager"/> already takes an explicit <see cref="GameState"/> parameter
 /// on every other method in this port, the same shape these setters need).</para>
 /// </summary>
 public sealed class PlayerStats
@@ -53,19 +53,19 @@ public sealed class PlayerStats
     public short Money;
 
     /// <summary>The equipped weapon, as a 1-based weapon slot (1 is the sword's slot, up to 6); -1 means none,
-    /// the value <see cref="AlundraPlayerManager.SetPlayerWeaponId"/> stores for no weapon, and it rejects 0
+    /// the value <see cref="PlayerManager.SetPlayerWeaponId"/> stores for no weapon, and it rejects 0
     /// (ALUN_CD.EXE 0x8004e484, plan E13.d SI9.b) - 0 is only the constructed default, which resolves to no
     /// weapon too. Port of <c>PlayerStats.WeaponId</c> (PlayerStats.cs:9, a <c>short</c>). Constructed at 0, the
     /// value <c>new PlayerStats()</c> gives it; the New Game then sets 1 through
-    /// <see cref="AlundraPlayerManager.SetPlayerWeaponId"/> (GameInitializer.cs:410), called by
-    /// <see cref="AlundraPlayerManager.InitializeNewGameInventory"/>. Not baked in as 1 like <see cref="Hp"/>
+    /// <see cref="PlayerManager.SetPlayerWeaponId"/> (GameInitializer.cs:410), called by
+    /// <see cref="PlayerManager.InitializeNewGameInventory"/>. Not baked in as 1 like <see cref="Hp"/>
     /// is baked in as 10: the weapon is only meaningful once the item counters exist, which the same
     /// New Game step fills.</summary>
     public short WeaponId;
 
     /// <summary>The equipped accessory, as an item id. Port of <c>PlayerStats.ItemId</c> (PlayerStats.cs:10,
     /// a <c>short</c>). Constructed at 0 and never set by the New Game - so the HUD's accessory box stays
-    /// empty, as in the original (<see cref="AlundraPlayerManager.SetItemIdFromCurrentItemId"/> finds no
+    /// empty, as in the original (<see cref="PlayerManager.SetItemIdFromCurrentItemId"/> finds no
     /// count for item 0).</summary>
     public short ItemId;
 

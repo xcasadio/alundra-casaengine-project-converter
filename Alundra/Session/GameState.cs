@@ -107,13 +107,13 @@ public sealed class GameState
     /// docs/intro-roadmap.md §1.4: nothing explicitly zeroes it at boot, it is simply BSS-zero; E1's own
     /// port starts every world the same way, since only a New Game flow is covered so far). Read by
     /// <see cref="AlundraWorldProxy.RunMapEventsPass"/>'s <see cref="PlayerControlBits.GameplayBlockedMask"/>
-    /// gate and by <see cref="AlundraPlayerManager.MovePlayer"/>'s <see cref="PlayerControlBits.InputBlockedMask"/>
+    /// gate and by <see cref="PlayerManager.MovePlayer"/>'s <see cref="PlayerControlBits.InputBlockedMask"/>
     /// gate; written by event opcodes 0x10/0x11 (E4.c, <see cref="EventProgramRunner"/>'s own
     /// <c>ControlLocked</c> bridge). E6 is closed (docs/plan-conversion-totale.md §4 E6) and its
     /// decision E6-1 DECLINES the engine bridge onto <c>PlayerInput.IsInputEnable</c>/
     /// <c>CharacterControlMode</c>: the original has no global input switch - it tests this mask at each
     /// consumer site - and cutting input upstream would silently defeat
-    /// <see cref="AlundraPlayerManager.DebugIgnoreControlLockEnvVar"/>, since
+    /// <see cref="PlayerManager.DebugIgnoreControlLockEnvVar"/>, since
     /// <c>AlundraPlayerController.BuildPadState</c> already reads through <c>PlayerInput</c>.</summary>
     public uint PlayerControlFlags;
 
@@ -132,24 +132,24 @@ public sealed class GameState
     /// <summary>
     /// D-E7-8 seam (docs/plan-e7-mutation-tuiles.md, slice E7.c): last pad snapshot published by
     /// <see cref="AlundraEntityScriptProxy.Update"/>'s own player branch, just before it calls
-    /// <see cref="AlundraPlayerManager.MovePlayer"/> - the fidelity pendant of the original's global
+    /// <see cref="PlayerManager.MovePlayer"/> - the fidelity pendant of the original's global
     /// <c>g_padState1</c> (read by <c>Script_47_02F</c>/<see cref="EventProgramRunner"/>'s own case
     /// 0x2F). Chosen over widening <see cref="IEntityWorldContext"/> or the runner's own constructor:
     /// this class is the one seam <see cref="AlundraEntityScriptProxy"/> (the writer) and
     /// <see cref="EventProgramRunner"/> (the reader) already BOTH hold a reference to, so no other
-    /// signature needs to change. Defaults to an all-zero <see cref="AlundraPadState"/> (nothing held) -
+    /// signature needs to change. Defaults to an all-zero <see cref="PadState"/> (nothing held) -
     /// the same safe no-op a 0x2F dispatched before this world's first player Update would see the
     /// original's own zero-initialized pad global read as.
     /// </summary>
-    public AlundraPadState LastPadState;
+    public PadState LastPadState;
 
     /// <summary>E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-9): the same pad advanced once per LOGIC
-    /// tick, with the original's press edges and key repeat - see <see cref="AlundraTickPad"/>'s own doc.
+    /// tick, with the original's press edges and key repeat - see <see cref="Hero.TickPad"/>'s own doc.
     /// Fed from <see cref="LastPadState"/> at the head of every logic tick of <see cref="AlundraWorldProxy.Update"/>'s
     /// pass loop (E19.u U-R1, ADR-0050); read by the per-tick consumers that need the original's frame-exact edges:
     /// the inventory reads the current tick's, while the dialogue pass (Square), the choice box and the save screen
     /// get the words of the tick before, which the proxy captures tick by tick (D-E19-99).</summary>
-    public readonly AlundraTickPad TickPad = new();
+    public readonly TickPad TickPad = new();
 
     /// <summary>
     /// T3 (docs/plan-transitions-carte.md, point 5): port of the original's <c>g_isWarpDisabled</c>
@@ -189,7 +189,7 @@ public sealed class GameState
     /// <c>g_saveData.PlayerStats</c> - a SINGLE aliased object in the original (GameInitializer.cs:444-445),
     /// so a single field here, never a separate "save" and "current" pair. See
     /// <see cref="Session.PlayerStats"/>'s own doc for why the object lives here and its setters live on
-    /// <see cref="AlundraPlayerManager"/>.
+    /// <see cref="PlayerManager"/>.
     /// </summary>
     public readonly PlayerStats PlayerStats = new();
 
@@ -199,12 +199,12 @@ public sealed class GameState
     /// <c>[itemId * 2 + 1]</c> everywhere (PlayerManager.cs:4342, :4388, :4677-4683); the even slot of each
     /// pair is only ever zeroed. "Owned" means a count above zero - there is no separate bit. All zero at
     /// construction, like the original after <c>InitializePlayerStatsAndItems</c> (GameInitializer.cs:469-479);
-    /// the New Game then fills it through <see cref="AlundraPlayerManager.InitializeNewGameInventory"/>.
+    /// the New Game then fills it through <see cref="PlayerManager.InitializeNewGameInventory"/>.
     /// </summary>
     public readonly short[] NumberOfItems = new short[256];
 
     /// <summary>
-    /// E13.c S3: once-only session latch for <see cref="AlundraPlayerManager.InitializeNewGameInventory"/>,
+    /// E13.c S3: once-only session latch for <see cref="PlayerManager.InitializeNewGameInventory"/>,
     /// run by <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> at the map entry it recognizes as a New Game.
     /// A belt-and-suspenders latch: the real gate is "no pending warp arrival", which a session satisfies
     /// once; this latch keeps the unlock loop from running twice even if something ever produced a second

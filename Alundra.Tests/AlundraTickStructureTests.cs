@@ -81,7 +81,7 @@ public sealed class AlundraTickStructureTests : IDisposable
         public readonly RecordingRunner Runner = new();
         public readonly List<string> Trace = new();
         public uint Hold;
-        public AlundraPadState? Sample; // E20.d2a: when set, the whole frame sample the controller publishes (stick included); otherwise a pad of Hold alone.
+        public PadState? Sample; // E20.d2a: when set, the whole frame sample the controller publishes (stick included); otherwise a pad of Hold alone.
         public int Tick = -1;
         public Action<string>? OnPass;
         private readonly List<Entity> _spawned;
@@ -94,7 +94,7 @@ public sealed class AlundraTickStructureTests : IDisposable
             Proxy.EventProgramRunner = Runner;
             Runner.CurrentTick = () => Tick;
 
-            var controller = new AlundraPlayerController { PadStateProviderForTests = () => Sample ?? new AlundraPadState { ButtonsHold = Hold } };
+            var controller = new AlundraPlayerController { PadStateProviderForTests = () => Sample ?? new PadState { ButtonsHold = Hold } };
             typeof(AlundraWorldProxy).GetField("_playerController", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Proxy, controller);
             _spawned = (List<Entity>)typeof(AlundraWorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(Proxy)!;
 
@@ -172,10 +172,10 @@ public sealed class AlundraTickStructureTests : IDisposable
         var rig = BuildWarmRig();
         foreach (var (dt, expectedTicks) in new[] { (OneTick, 1), (NoTick, 0), (TwoTicks, 2), (OneTick, 1), (TwoTicks, 2) })
         {
-            var before = AlundraPlayerManager.MovePlayerCallCountForTests;
+            var before = PlayerManager.MovePlayerCallCountForTests;
             var passes = rig.Frame(dt);
             Assert.Equal(expectedTicks, Rig.TicksOf(passes));
-            Assert.Equal(expectedTicks, AlundraPlayerManager.MovePlayerCallCountForTests - before);
+            Assert.Equal(expectedTicks, PlayerManager.MovePlayerCallCountForTests - before);
         }
     }
 
@@ -184,11 +184,11 @@ public sealed class AlundraTickStructureTests : IDisposable
     public void TheEntityBlock_HandsTheFramesStickSampleToMovePlayer_AtEachTick()
     {
         var rig = BuildWarmRig();
-        var seen = new List<AlundraPadState>();
+        var seen = new List<PadState>();
         AlundraEntityScriptProxy.PadOfTickSeenForTests = seen.Add;
         try
         {
-            rig.Sample = new AlundraPadState { ButtonsHold = AlundraPadState.Right, StickBitsHold = AlundraPadState.Right, DigitalDirectionBitsHold = 0, StickX = 0.9f, StickY = 0.3f };
+            rig.Sample = new PadState { ButtonsHold = PadState.Right, StickBitsHold = PadState.Right, DigitalDirectionBitsHold = 0, StickX = 0.9f, StickY = 0.3f };
             rig.Frame(TwoTicks);
         }
         finally
@@ -201,8 +201,8 @@ public sealed class AlundraTickStructureTests : IDisposable
         {
             Assert.Equal(0.9f, p.StickX);
             Assert.Equal(0.3f, p.StickY);
-            Assert.Equal(AlundraPadState.Right, p.StickBitsHold);
-            Assert.Equal(AlundraPadState.Right, p.ButtonsHold);
+            Assert.Equal(PadState.Right, p.StickBitsHold);
+            Assert.Equal(PadState.Right, p.ButtonsHold);
         });
     }
 
@@ -218,13 +218,13 @@ public sealed class AlundraTickStructureTests : IDisposable
         var slope = rig.Hero.Slope_18c;
         var floor = rig.Hero.FloorHeight;
         var vram = rig.Hero.CombinedVramFlagsOR;
-        var calls = AlundraPlayerManager.MovePlayerCallCountForTests;
+        var calls = PlayerManager.MovePlayerCallCountForTests;
 
-        rig.Hold = AlundraPadState.Right; // the player pushes right, but no tick runs on this frame: MovePlayer must not see it.
+        rig.Hold = PadState.Right; // the player pushes right, but no tick runs on this frame: MovePlayer must not see it.
         var passes = rig.Frame(NoTick);
 
         Assert.Equal(0, Rig.TicksOf(passes));
-        Assert.Equal(calls, AlundraPlayerManager.MovePlayerCallCountForTests);
+        Assert.Equal(calls, PlayerManager.MovePlayerCallCountForTests);
         Assert.Equal(animation, rig.Hero.TargetAnimationId);
         Assert.Equal(direction, rig.Hero.TargetDirection);
         Assert.Equal(flags, rig.Hero.Flags);
@@ -341,7 +341,7 @@ public sealed class AlundraTickStructureTests : IDisposable
                 entity.TargetAnimationId = (uint)(100 + counter);
             }
         };
-        rig.Hold = AlundraPadState.Right;
+        rig.Hold = PadState.Right;
         var heroStartX = rig.Hero.PosX;
 
         // The walk from rest to the east: the first tick moves 79872 (half the step of the animation 1), the following ones 159744. One tick: 79872; two ticks: 319488 each; one tick: 159744.

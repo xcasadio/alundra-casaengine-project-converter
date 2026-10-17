@@ -103,7 +103,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         Tick(100);
         Assert.Empty(_uiView.Removed); // the failure message waits for Square.
 
-        Tick(hold: AlundraPadState.Square);
+        Tick(hold: PadState.Square);
         TickUntilIdle();
         Assert.Equal(new IUIScreen[] { _screen }, _uiView.Removed);
         Assert.False(_presenter.IsPushedForTests);
@@ -138,7 +138,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         Assert.Equal(string.Empty, _viewModel.Record2Line0.Text); // slot2 is empty: an empty box.
         Assert.Equal(Visibility.Visible, _viewModel.RecordBox2.Visibility);
 
-        Tick(hold: AlundraPadState.Down);
+        Tick(hold: PadState.Down);
         Tick(17);
         Assert.Equal((16, 0), (_viewModel.RecordBox1.Left, _viewModel.RecordBox1.Top));
         Assert.Equal(new Color(128, 128, 128, 255), _viewModel.RecordBox1.TextureColor);
@@ -155,7 +155,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         Tick(60);
         Assert.Equal(new IUIScreen[] { _screen }, _uiView.Pushed);
 
-        Tick(hold: AlundraPadState.Cross);
+        Tick(hold: PadState.Cross);
         Assert.Equal(new IUIScreen[] { _screen }, _uiView.Pushed); // E19.f3a: the engine's dialogue screen is gone: only the save screen is on the view
         Assert.Empty(_uiView.Removed);
         Assert.Equal(AlundraSaveScreen.ScreenLayer, _screen.Layer);
@@ -193,7 +193,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         worldProxy.AttachSaveScreenPresenterForTests(new AlundraSaveScreenViewModel(), screen, uiView);
 
         Assert.True(Director.Start(ValidSave()));
-        worldProxy.GameState.LastPadState = new AlundraPadState();
+        worldProxy.GameState.LastPadState = new PadState();
         worldProxy.Update(0.02f);
 
         Assert.Equal(AlundraSaveScreenDirector.StateExamineWait, Director.State);

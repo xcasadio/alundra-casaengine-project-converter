@@ -133,7 +133,7 @@ internal static class GameplayFreeze
                 return AlundraScriptedMotion.AirborneExternalDisplacementSentinel;
             }
 
-            return proxy.TargetAnimationId is AlundraPlayerManager.ClimbingAnimationId or AlundraPlayerManager.ClimbStillAnimationId
+            return proxy.TargetAnimationId is PlayerManager.ClimbingAnimationId or PlayerManager.ClimbStillAnimationId
                 ? AlundraScriptedMotion.ClimbingExternalDisplacementSentinel
                 : 0f;
         }

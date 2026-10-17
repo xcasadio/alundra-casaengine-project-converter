@@ -339,8 +339,8 @@ public sealed class AlundraNativeEffectTests : IDisposable
     private static void LockedTick(AlundraEntityScriptProxy hero, GameState state)
     {
         state.PlayerControlFlags |= GameState.PlayerControlBits.ControlLocked;
-        var pad = default(AlundraPadState);
-        AlundraPlayerManager.MovePlayer(hero, in pad, state, host: null);
+        var pad = default(PadState);
+        PlayerManager.MovePlayer(hero, in pad, state, host: null);
     }
 
     // E20.c2a T3: the rows P are re-pinned "after the end of MovePlayer": the vessel writes the hero ENTITY (ADR-0056, binary 0x800333D0-0x800333E4); the stats are the mirror written by the

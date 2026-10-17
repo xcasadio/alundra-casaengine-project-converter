@@ -175,7 +175,7 @@ public sealed class AlundraFlailBounceArcTests : IDisposable
         };
 
         recording = true;
-        arc.Press(AlundraPadState.Square); // one frame of one tick, Square pressed at tick 1.
+        arc.Press(PadState.Square); // one frame of one tick, Square pressed at tick 1.
         for (var i = 1; i < ticks; i++)
         {
             arc.OneFrame();

@@ -203,20 +203,20 @@ public sealed class AlundraPrefabArcSupportTests
         var spec = new ArcSpec("HeldDirections", "The Klark", "Ship Klark (inner)-390", System.Array.Empty<int>(), 0, 0, 0, 100);
         using var arc = new ArcRun(spec);
 
-        arc.HoldDirections(AlundraPadState.Down);
+        arc.HoldDirections(PadState.Down);
         arc.OneFrame();
         Assert.Equal((0x4000u, 0x4000u), (ArcRun.State.LastPadState.ButtonsHold, ArcRun.State.LastPadState.ButtonsJustPressed));
         arc.OneFrame();
         Assert.Equal((0x4000u, 0u), (ArcRun.State.LastPadState.ButtonsHold, ArcRun.State.LastPadState.ButtonsJustPressed));
 
-        arc.Press(AlundraPadState.Square);
+        arc.Press(PadState.Square);
         Assert.Equal((0x4080u, 0x0080u), (ArcRun.State.LastPadState.ButtonsHold, ArcRun.State.LastPadState.ButtonsJustPressed));
 
         arc.ReleaseDirections();
         arc.OneFrame();
         Assert.Equal((0u, 0u), (ArcRun.State.LastPadState.ButtonsHold, ArcRun.State.LastPadState.ButtonsJustPressed));
 
-        arc.HoldDirections(AlundraPadState.Down);
+        arc.HoldDirections(PadState.Down);
         arc.OneFrame();
         Assert.Equal(0x4000u, ArcRun.State.LastPadState.ButtonsJustPressed);
     }

@@ -724,13 +724,13 @@ public sealed class AlundraHeroRunTests : IDisposable
         var m = RunMontage.Start(RunOracleTrace.Load("g1/R1-T+UR"));
         for (var frame = 1; frame <= 14; frame++)
         {
-            m.Tick(AlundraPadState.Triangle | AlundraPadState.Up | AlundraPadState.Right, 2);
+            m.Tick(PadState.Triangle | PadState.Up | PadState.Right, 2);
         }
 
         Assert.Equal(Prepare, m.Hero.TargetAnimationId);
         Assert.Equal(3, m.Hero.AnimationDirection);
 
-        m.Tick(AlundraPadState.Triangle | AlundraPadState.Up, 2);
+        m.Tick(PadState.Triangle | PadState.Up, 2);
 
         Assert.Equal(Sprint, m.Hero.TargetAnimationId);
         Assert.Equal(0x10u, m.Hero.TargetDirection);
@@ -738,7 +738,7 @@ public sealed class AlundraHeroRunTests : IDisposable
 
         for (var frame = 0; frame < 10; frame++)
         {
-            m.Tick(AlundraPadState.Triangle | AlundraPadState.Up, 2);
+            m.Tick(PadState.Triangle | PadState.Up, 2);
             Assert.Equal(Sprint, m.Hero.TargetAnimationId);
         }
 

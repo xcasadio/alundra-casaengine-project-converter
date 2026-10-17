@@ -369,7 +369,7 @@ public sealed class AlundraInoaDayOneArcTests
         arc.OneFrame();
         arc.OneFrame();
         ((IScriptHost)arc.Proxy).ActiveCollisionEntity = arc.EntityByRecord(1);
-        arc.Press(AlundraPadState.Square);
+        arc.Press(PadState.Square);
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => IsTemporarySet(2), "T2 set by C[2] @289");
         arc.PlaceHero(996, 120, 16);
         Assert.Equal((41, 7, 1), (arc.Hero.TileX, arc.Hero.TileY, arc.Hero.TileZ));

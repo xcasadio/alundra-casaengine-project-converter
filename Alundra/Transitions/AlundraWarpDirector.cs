@@ -279,7 +279,7 @@ public sealed class AlundraWarpDirector
 
         if (_gravitySuspendedPlayer != null)
         {
-            AlundraPlayerManager.RestoreGravityAfterAbortedWarpDeparture(_gravitySuspendedPlayer, _gravityBeforeDeparture);
+            PlayerManager.RestoreGravityAfterAbortedWarpDeparture(_gravitySuspendedPlayer, _gravityBeforeDeparture);
             _gravitySuspendedPlayer = null;
         }
     }
@@ -310,7 +310,7 @@ public sealed class AlundraWarpDirector
     /// Port of <c>PlayerManager.HandleWarpTransition</c> (<c>PlayerManager.cs:3488-3541</c>, §1.2.c) -
     /// called from <see cref="AlundraWorldProxy"/>'s own <see cref="IScriptHost.OnPortalTriggerDetected"/>
     /// override, i.e. from INSIDE <paramref name="player"/>'s own <see cref="AlundraEntityScriptProxy.Update"/>
-    /// this same frame (<see cref="AlundraPlayerManager.MovePlayer"/>'s own call site) - so
+    /// this same frame (<see cref="PlayerManager.MovePlayer"/>'s own call site) - so
     /// <see cref="IsTransitionInProgress"/> is already true by the time this SAME frame's
     /// <see cref="AlundraWorldProxy.Update"/> reads its own gate, freezing map events/pending triggers
     /// starting this very frame, not one frame late.
@@ -532,7 +532,7 @@ public sealed class AlundraWarpDirector
         // engine-driven gravity for the duration of the departure - see
         // AlundraPlayerManager.SuspendGravityForWarpDeparture's own doc for why this, not an engine
         // change, closes the gap.
-        var previousGravity = AlundraPlayerManager.SuspendGravityForWarpDeparture(player);
+        var previousGravity = PlayerManager.SuspendGravityForWarpDeparture(player);
         if (previousGravity != null)
         {
             _gravitySuspendedPlayer = player;

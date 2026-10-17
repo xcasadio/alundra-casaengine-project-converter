@@ -115,7 +115,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
     }
 
     // E20.a A1: the hero reads the pad of the tick, whose edge is derived from the hold state: a press is a hold with its edge.
-    private static AlundraPadState SquarePress() => new() { ButtonsHold = AlundraPadState.Square, ButtonsJustPressed = AlundraPadState.Square };
+    private static PadState SquarePress() => new() { ButtonsHold = PadState.Square, ButtonsJustPressed = PadState.Square };
 
     // -----------------------------------------------------------------------------------------
     // P-a - the contact at its production site (mutations №2 and №7). E19.d2b B4 (T-REG-E12D-2, D-E19-29): the overlap pass of the end of
@@ -151,7 +151,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
         var pad = new PadHold();
         var host = new ContactHost(playerController: new AlundraPlayerController
         {
-            PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = pad.Buttons, ButtonsJustPressed = pad.Buttons },
+            PadStateProviderForTests = () => new PadState { ButtonsHold = pad.Buttons, ButtonsJustPressed = pad.Buttons },
         });
         var world = ContactWorld.BuildWorld(new FlatGroundField { GroundZ = 48f }, new AlundraMovementObstacleProbe(host));
         var hero = ContactWorld.AddEntity(world, host, "Hero", 100, 100, 48, -10, -7, 0, 21, 15, 32, isPlayer: true);
@@ -174,7 +174,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
         Assert.Null(rig.Hero.XCollisionEntity);
 
         // Right held: free ticks first, then the sailor from the tick the controller shortens the step.
-        rig.Pad.Buttons = AlundraPadState.Right;
+        rig.Pad.Buttons = PadState.Right;
         var ticks = 0;
         while (rig.Hero.XCollisionEntity == null && ticks < 40)
         {
@@ -195,14 +195,14 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
         Assert.Null(rig.Hero.XCollisionEntity);
 
         // Pushing again, the contact is back (detection follows the move); stepping away clears it.
-        rig.Pad.Buttons = AlundraPadState.Right;
+        rig.Pad.Buttons = PadState.Right;
         for (var tick = 0; tick < 12 && rig.Hero.XCollisionEntity == null; tick++)
         {
             rig.Tick();
         }
 
         Assert.Same(rig.Sailor, rig.Hero.XCollisionEntity);
-        rig.Pad.Buttons = AlundraPadState.Left;
+        rig.Pad.Buttons = PadState.Left;
         for (var tick = 0; tick < 12; tick++)
         {
             rig.Tick();
@@ -218,7 +218,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
 
         // The original freezes its whole entity pipeline - physics included - behind GameplayBlockedMask (EntityManager.cs:377): with a MenuOpen box up,
         // the contact must keep its pre-open value, not refresh (D-E12D-5). No step is taken, so it keeps it by construction.
-        rig.Pad.Buttons = AlundraPadState.Right;
+        rig.Pad.Buttons = PadState.Right;
         for (var tick = 0; tick < 40 && rig.Hero.XCollisionEntity == null; tick++)
         {
             rig.Tick();

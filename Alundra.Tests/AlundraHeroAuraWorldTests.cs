@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraHeroAuraWorldTests : IDisposable
 {
-    private const uint Square = AlundraPadState.Square;
+    private const uint Square = PadState.Square;
 
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
     private readonly ulong _previousSeed = AlundraRandom.RandomSeed;
@@ -52,7 +52,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
 
     private static List<AlundraEffectSlot> Auras(HitArena arena)
         => arena.Arc.Proxy.EffectStage!.Reservoir.ActiveSlots
-            .Where(s => s.TargetEffect == AlundraPlayerManager.AuraEffect && !s.TargetMapTable && ReferenceEquals(s.Anchor, arena.Hero) && s.Mode == 1).ToList();
+            .Where(s => s.TargetEffect == PlayerManager.AuraEffect && !s.TargetMapTable && ReferenceEquals(s.Anchor, arena.Hero) && s.Mode == 1).ToList();
 
     /// <summary>
     /// The anchor of the REAL hero of the world, at the oracle's pixel (100, 100) facing east, steel sword, Square held from the tick 1: on every tick of the swing and of the charge (ticks 1 to 90, the oracle's sprites: IDSV 4 during the
@@ -193,7 +193,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
 
         var aura = arena.Hero.AuraSlot!;
         Assert.True(aura.Active);
-        Assert.Equal((AlundraPlayerManager.AuraEffect, false, 1), (aura.TargetEffect, aura.TargetMapTable, aura.Mode));
+        Assert.Equal((PlayerManager.AuraEffect, false, 1), (aura.TargetEffect, aura.TargetMapTable, aura.Mode));
         Assert.Same(arena.Hero, aura.Anchor);
         Assert.Equal(aura.Generation, arena.Hero.AuraGeneration);
         Assert.Single(Auras(arena));

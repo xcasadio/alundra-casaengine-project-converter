@@ -19,8 +19,8 @@ namespace Alundra.Tests;
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraHeroSwimArenaTests : IDisposable
 {
-    private const uint Triangle = AlundraPadState.Triangle;
-    private const uint Down = AlundraPadState.Down;
+    private const uint Triangle = PadState.Triangle;
+    private const uint Down = PadState.Down;
     private const int BootsLevel2Item = 0x1B;
 
     /// <summary>The shore at tile (40, 48): the centre of the tile in pixels, height 1 (16 pixels).</summary>

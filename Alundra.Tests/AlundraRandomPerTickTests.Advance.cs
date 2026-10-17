@@ -21,7 +21,7 @@ namespace Alundra.Tests;
 /// </summary>
 public sealed partial class AlundraRandomPerTickTests
 {
-    private const uint Square = AlundraPadState.Square;
+    private const uint Square = PadState.Square;
 
     // ---------------------------------------------------------------------------------------------------------------------
     // (a) the six words of the advance (0x8002BD0C-0x8002BD34, the oracle's advance_words.json)

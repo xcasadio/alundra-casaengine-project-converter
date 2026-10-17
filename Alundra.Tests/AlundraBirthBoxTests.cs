@@ -31,10 +31,10 @@ public sealed class AlundraBirthBoxTests : IDisposable
     public AlundraBirthBoxTests(ITestOutputHelper output)
     {
         _output = output;
-        AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
+        PlayerManager.WeaponSpawnBirthHookForTests = null;
     }
 
-    public void Dispose() => AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
+    public void Dispose() => PlayerManager.WeaponSpawnBirthHookForTests = null;
 
     /// <summary>The box of the binary at one tick: the offset of the stored box from the entity (<c>hbx - px</c>, <c>hby - py</c>, <c>hbz - pz</c>) and its sizes (<c>bw</c>, <c>bd</c>, <c>bh</c>, the raw <c>(n &lt;&lt; 16) - 1</c>).</summary>
     private readonly record struct BoxRow(long Dx, long Dy, long Dz, long W, long D, long H);

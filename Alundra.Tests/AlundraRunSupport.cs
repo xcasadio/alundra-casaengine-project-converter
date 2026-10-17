@@ -245,14 +245,14 @@ internal sealed class RunMontage
 
         var tables = Tables();
         rig.Host.ItemTables = tables;
-        AlundraPlayerManager.InitializeNewGameInventory(rig.Host.GameState, tables);
+        PlayerManager.InitializeNewGameInventory(rig.Host.GameState, tables);
         switch (trace.Inventory)
         {
             case "kit":
                 break;
             case "holy":
                 rig.Host.GameState.NumberOfItems[4 * 2 + 1] = 1;
-                AlundraPlayerManager.SetPlayerWeaponId(rig.Host.GameState, tables, tables.ItemsProperties[4 * 5]);
+                PlayerManager.SetPlayerWeaponId(rig.Host.GameState, tables, tables.ItemsProperties[4 * 5]);
                 break;
             case "b1a":
                 rig.Host.GameState.NumberOfItems[0x1A * 2 + 1] = 1;
@@ -265,7 +265,7 @@ internal sealed class RunMontage
                 break;
             case "holy_b1b": // E20.i: the sacred sword and the boots 0x1B together
                 rig.Host.GameState.NumberOfItems[4 * 2 + 1] = 1;
-                AlundraPlayerManager.SetPlayerWeaponId(rig.Host.GameState, tables, tables.ItemsProperties[4 * 5]);
+                PlayerManager.SetPlayerWeaponId(rig.Host.GameState, tables, tables.ItemsProperties[4 * 5]);
                 rig.Host.GameState.NumberOfItems[0x1B * 2 + 1] = 1;
                 break;
             default:

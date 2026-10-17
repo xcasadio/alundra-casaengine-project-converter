@@ -157,7 +157,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                     Assert.Contains("CINQUIEME", director.CurrentLineForTests?.Text ?? "");
                 }
 
-                s.GameState.LastPadState = new AlundraPadState { ButtonsHold = button.HoldForThisFrame(director) };
+                s.GameState.LastPadState = new PadState { ButtonsHold = button.HoldForThisFrame(director) };
             });
 
             Assert.True(reachedOpen, "the dialogue never opened - the 860/0x800C entry guard was not crossed.");
@@ -263,7 +263,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                     reopenedAfterClose = director.IsOpen;
                 }
 
-                s.GameState.LastPadState = new AlundraPadState { ButtonsHold = button.HoldForThisFrame(director) };
+                s.GameState.LastPadState = new PadState { ButtonsHold = button.HoldForThisFrame(director) };
             });
 
             Assert.True(openedWithMenuOpen, "sailor 13's F(Interact) program did not open the box with MenuOpen posed.");
@@ -369,13 +369,13 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                 }
 
                 var pad = pressThisFrame
-                    ? new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square }
-                    : new AlundraPadState { ButtonsHold = button.HoldForThisFrame(director) };
+                    ? new PadState { ButtonsJustPressed = PadState.Square }
+                    : new PadState { ButtonsHold = button.HoldForThisFrame(director) };
                 s.GameState.LastPadState = pad; // the production player branch publishes it likewise.
 
                 // Mirror 1 - the player branch's MovePlayer call (production site pinned by
                 // AlundraInteractionPassTests P-b), consuming LAST frame's contact.
-                AlundraPlayerManager.MovePlayer(player!, in pad, s.GameState, s);
+                PlayerManager.MovePlayer(player!, in pad, s.GameState, s);
 
                 // Mirror 2 - the contact of the hero's step, feeding NEXT frame's MovePlayer. E19.d2b B4 (D-E19-29): in
                 // production this contact is the entity that shortened or cancelled the hero's controller step

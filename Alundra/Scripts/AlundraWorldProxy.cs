@@ -105,7 +105,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// Name of the debug-only environment variable that gates whether the right stick may drive
     /// <see cref="AlundraCameraDirector.UpdateDebugCameraPan"/>'s DEBUG offset (and its R3/right-stick-click reset) at all.
     /// ENABLED BY DEFAULT - user decision, 2026-08-24 - deliberately the opposite convention of
-    /// <see cref="AlundraPlayerManager.DebugIgnoreControlLockEnvVar"/> ("never active by default"):
+    /// <see cref="PlayerManager.DebugIgnoreControlLockEnvVar"/> ("never active by default"):
     /// that flag bypasses a real gameplay gate, so it must be opted into explicitly, whereas this one
     /// only gates an always-optional debug convenience layered on top of whatever the camera is already
     /// doing (see <see cref="_debugCameraBase"/>) - leaving it on by default costs nothing and saves
@@ -120,7 +120,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     private static readonly bool DebugCameraPanEnabledFromEnvironment = ReadDebugCameraPanEnabledFromEnvironment();
 
     /// <summary>Test-only seam over <see cref="DebugCameraPanEnabledFromEnvironment"/> - same rationale as
-    /// <see cref="AlundraPlayerManager"/>'s own <c>_debugIgnoreControlLockOverrideForTests</c> seam: a
+    /// <see cref="PlayerManager"/>'s own <c>_debugIgnoreControlLockOverrideForTests</c> seam: a
     /// shared xunit host cannot guarantee this type's static field has not already been forced to
     /// initialize before a test sets the real environment variable. Never read or written by production
     /// code paths.</summary>
@@ -441,7 +441,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     int IScriptHost.BalanceThreshold => BalanceThreshold;
 
     /// <summary>
-    /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): the three equipment records (<c>0x80146E00-0x80146E14</c>), one set per world. The hero's tick fills them (<see cref="AlundraPlayerManager"/>, <c>UpdateItemEffectState</c>
+    /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): the three equipment records (<c>0x80146E00-0x80146E14</c>), one set per world. The hero's tick fills them (<see cref="PlayerManager"/>, <c>UpdateItemEffectState</c>
     /// steps 2 to 5); they are emptied when the map is loaded (<c>InitializeItems</c> <c>0x80044520</c>), here with the threshold.
     /// </summary>
     internal AlundraEquipmentRecords EquipmentRecords = new();
@@ -1868,10 +1868,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>E13.c S3: the equipment source handed to the production presenter - the port of the two
     /// lookups <c>HudManager.DisplayHudWeaponAndItem</c> makes every frame, over this proxy's own session
-    /// state and item tables (<see cref="AlundraPlayerManager.ResolveHudEquipmentIcons"/>).</summary>
+    /// state and item tables (<see cref="PlayerManager.ResolveHudEquipmentIcons"/>).</summary>
     private (Guid? Weapon, Guid? Accessory) ResolveHudEquipmentIcons()
     {
-        return AlundraPlayerManager.ResolveHudEquipmentIcons(GameState, ItemTables);
+        return PlayerManager.ResolveHudEquipmentIcons(GameState, ItemTables);
     }
 
     /// <summary>
@@ -2058,7 +2058,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// id, the warp timer/effect resets
     /// (<c>g_playerWarpTimer</c>, <c>g_isWarpDisabled</c>, <c>g_playerWarpEffect</c>,
     /// <c>g_playerEffectTransitionCooldown</c>, <c>ResetWarpLockTimer</c>) - none of these have any
-    /// observable effect on E2's own ported <see cref="AlundraPlayerManager.MovePlayer"/> subset. No
+    /// observable effect on E2's own ported <see cref="PlayerManager.MovePlayer"/> subset. No
     /// camera-follow yet (E5).
     ///
     /// <b>T5 (docs/plan-transitions-carte.md §3 T5, D-T-4)</b>: the New Game constants quoted above are
@@ -2133,7 +2133,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         if (arrivalRecord == null && !GameState.NewGameInventoryInitialized)
         {
             GameState.NewGameInventoryInitialized = true;
-            AlundraPlayerManager.InitializeNewGameInventory(GameState, ItemTables);
+            PlayerManager.InitializeNewGameInventory(GameState, ItemTables);
         }
 
         proxy.PosX = arrivalRecord?.PosX ?? (GameState.CameraTileX * TileWidth + TileWidth / 2) << 16;
@@ -2212,7 +2212,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // not touch, so a hit before the first END reads the previous map's sheet, never an empty one. The side effects of the fill are undone: the rewrite of the equipped accessory (0x8004E0F8) belongs to the
         // first tick (the equipment records of the first tick use the OLD id, K1 rings2), and the records themselves are emptied again as the map load (0x80044520) leaves them.
         var equippedAccessory = GameState.PlayerStats.ItemId;
-        AlundraPlayerManager.RefreshEquipmentAndSheet(proxy, GameState, this);
+        PlayerManager.RefreshEquipmentAndSheet(proxy, GameState, this);
         GameState.PlayerStats.ItemId = equippedAccessory;
         EquipmentRecords.Clear();
 
@@ -2525,7 +2525,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         {
             TickTraceForTests?.Invoke("pad");
             GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
-            _squareOfTick.Add(((GameState.TickPad.ButtonsHold & AlundraPadState.Square) != 0, (GameState.TickPad.ButtonsJustPressed & AlundraPadState.Square) != 0));
+            _squareOfTick.Add(((GameState.TickPad.ButtonsHold & PadState.Square) != 0, (GameState.TickPad.ButtonsJustPressed & PadState.Square) != 0));
             _choicePadOfTick.Add((GameState.TickPad.ButtonsJustPressed, GameState.TickPad.ButtonsJustPressedByInterval));
 
             _effectStage.BeginSource(tick, 0); // E19.g G3b (G3B-R3): the effect operations the map events of this tick emit are marked with it (rank 0).
@@ -2924,7 +2924,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         TickTraceForTests?.Invoke("movePlayer");
         if (hero is { TookPartInFrame: true })
         {
-            hero.MovePlayerOnTickPad(AlundraPadState.FromTickPad(GameState.TickPad, in GameState.LastPadState));
+            hero.MovePlayerOnTickPad(PadState.FromTickPad(GameState.TickPad, in GameState.LastPadState));
         }
 
         // E20.e0a3b (D-E0A-5, D-E20-34): an entity MovePlayer made (a shot, an item) is born in the pass of the hero, which comes first, and runs in this very tick: its program, the lists, the clock and the physics.

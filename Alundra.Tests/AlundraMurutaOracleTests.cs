@@ -147,9 +147,9 @@ public sealed class AlundraMurutaOracleTests : IDisposable
 
         var state = new GameState();
         var items = AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
-        AlundraPlayerManager.InitializeNewGameInventory(state, items);
+        PlayerManager.InitializeNewGameInventory(state, items);
         var records = new AlundraEquipmentRecords();
-        AlundraPlayerManager.FillEquipmentRecords(state, items, AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find()), 0, records);
+        PlayerManager.FillEquipmentRecords(state, items, AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find()), 0, records);
         return _kit = records;
     }
 

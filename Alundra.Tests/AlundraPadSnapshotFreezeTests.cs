@@ -66,7 +66,7 @@ public sealed class AlundraPadSnapshotFreezeTests : IDisposable
         var field = LoadMap389Field(LoadMap389TileMapData(projectRoot));
         var world = HeroWorldFixture.BuildWorld(field);
 
-        var pad = new AlundraPadState();
+        var pad = new PadState();
         var controller = new AlundraPlayerController { PadStateProviderForTests = () => pad };
         var host = new PadScriptHost { PlayerController = controller };
         HeroWorldFixture.BuildHeroPawn(world, new CharacterControllerSettings(), new Vector3(804f, 952f, 0f), host);
@@ -76,10 +76,10 @@ public sealed class AlundraPadSnapshotFreezeTests : IDisposable
 
         // The player now presses the interact button - the press that must advance and eventually close
         // the box. It reaches the game state ONLY if the snapshot is published outside the freeze.
-        pad = new AlundraPadState { ButtonsHold = AlundraPadState.Cross, ButtonsJustPressed = AlundraPadState.Cross };
+        pad = new PadState { ButtonsHold = PadState.Cross, ButtonsJustPressed = PadState.Cross };
         world.Update(0.02f);
 
-        Assert.Equal(AlundraPadState.Cross, host.GameState.LastPadState.ButtonsJustPressed);
+        Assert.Equal(PadState.Cross, host.GameState.LastPadState.ButtonsJustPressed);
     }
 
     [Fact]
@@ -94,16 +94,16 @@ public sealed class AlundraPadSnapshotFreezeTests : IDisposable
         var field = LoadMap389Field(LoadMap389TileMapData(projectRoot));
         var world = HeroWorldFixture.BuildWorld(field);
 
-        var pad = new AlundraPadState();
+        var pad = new PadState();
         var controller = new AlundraPlayerController { PadStateProviderForTests = () => pad };
         var host = new PadScriptHost { PlayerController = controller };
         HeroWorldFixture.BuildHeroPawn(world, new CharacterControllerSettings(), new Vector3(804f, 952f, 0f), host);
 
-        pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up, ButtonsJustPressed = AlundraPadState.Up };
+        pad = new PadState { ButtonsHold = PadState.Up, ButtonsJustPressed = PadState.Up };
         world.Update(0.02f);
 
         // Unchanged behaviour on the open path - the snapshot was already published here before T2.
-        Assert.Equal(AlundraPadState.Up, host.GameState.LastPadState.ButtonsJustPressed);
+        Assert.Equal(PadState.Up, host.GameState.LastPadState.ButtonsJustPressed);
     }
 
     private sealed class PadScriptHost : IScriptHost

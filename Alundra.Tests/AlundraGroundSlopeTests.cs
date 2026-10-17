@@ -92,7 +92,7 @@ public class AlundraGroundSlopeTests
     /// <see cref="AlundraEntityScriptProxy.Height"/> set below (F4 fix - was <c>ModX=ModY=0</c>,
     /// <c>Width=21&lt;&lt;16</c>, <c>Height=15&lt;&lt;16</c>, a 1px-per-axis-larger footprint than any real
     /// player entity ever carries). <see cref="AlundraEntityScriptProxy.Flags"/> defaults to carrying
-    /// <see cref="EntityFlags.Gravity"/> - the gate <see cref="AlundraPlayerManager.MovePlayer"/> itself
+    /// <see cref="EntityFlags.Gravity"/> - the gate <see cref="PlayerManager.MovePlayer"/> itself
     /// unconditionally sets every frame in the free branch (PlayerManager.cs:59-60) before this method
     /// would ever run for a real player - individual tests clear it to cover the no-gravity case.
     /// </summary>
@@ -380,7 +380,7 @@ public class AlundraGroundSlopeTests
 
     /// <summary>Minimal real-<see cref="AlundraPlayerController"/> script host for the production
     /// call-site test below - <see cref="PlayerController"/> is a REAL controller (its own
-    /// <c>BuildPadState</c> is what <see cref="AlundraPlayerManager.MovePlayer"/> actually calls), unlike
+    /// <c>BuildPadState</c> is what <see cref="PlayerManager.MovePlayer"/> actually calls), unlike
     /// every other test in this file's own <see cref="NoOpScriptHost"/> (<c>PlayerController =&gt; null</c>,
     /// which makes the whole <c>IsPlayer</c> branch in <see cref="AlundraEntityScriptProxy.Update"/> a
     /// no-op and is exactly why those tests never reach <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>
@@ -435,7 +435,7 @@ public class AlundraGroundSlopeTests
         var groundHeightPx = cellHeightUnits * CellHeightPx;
 
         var world = HeroWorldFixture.BuildWorld(field);
-        var controller = new AlundraPlayerController { PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = 0, ButtonsJustPressed = 0 } };
+        var controller = new AlundraPlayerController { PadStateProviderForTests = () => new PadState { ButtonsHold = 0, ButtonsJustPressed = 0 } };
         var host = new PlayerScriptHost { PlayerController = controller };
 
         var settings = new CharacterControllerSettings();

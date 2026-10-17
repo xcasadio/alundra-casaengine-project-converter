@@ -2862,7 +2862,7 @@ public class AlundraEventProgramRunnerTests
         var document = NewDocument(0x2F, 0, 16, 0, 0xFF);
         // E20.a A1: 0x2F modes 0 and 1 read the pad of the TICK (AlundraGameState.TickPad), not the snapshot of the rendered frame.
         var gameState = new GameState();
-        gameState.TickPad.Update(AlundraPadState.Up);
+        gameState.TickPad.Update(PadState.Up);
         var runner = NewRunner(document, gameState: gameState);
         var entity = NewEntity();
 
@@ -2878,7 +2878,7 @@ public class AlundraEventProgramRunnerTests
     {
         var document = NewDocument(0x2F, 0, 16, 0, 0xFF);
         var gameState = new GameState();
-        gameState.TickPad.Update(AlundraPadState.Down);
+        gameState.TickPad.Update(PadState.Down);
         var runner = NewRunner(document, gameState: gameState);
         var entity = NewEntity();
 
@@ -2894,7 +2894,7 @@ public class AlundraEventProgramRunnerTests
         var document = NewDocument(0x2F, 0, 16, 1, 0xFF); // v3=1 -> ButtonsJustPressed
         // E20.a A1: the edge of the tick pad (the pad went from nothing to Up on this tick); a held Up on a later tick has none.
         var gameState = new GameState();
-        gameState.TickPad.Update(AlundraPadState.Up);
+        gameState.TickPad.Update(PadState.Up);
         var runner = NewRunner(document, gameState: gameState);
         var entity = NewEntity();
 
@@ -2903,7 +2903,7 @@ public class AlundraEventProgramRunnerTests
 
         Assert.Equal(1, state.Result);
 
-        gameState.TickPad.Update(AlundraPadState.Up);
+        gameState.TickPad.Update(PadState.Up);
         var stateHeld = new EventProgramState { Codes = document.CodesAsBytes() };
         runner.RunOneScriptCall(entity, stateHeld);
         Assert.Equal(0, stateHeld.Result);
@@ -2919,7 +2919,7 @@ public class AlundraEventProgramRunnerTests
         // NEITHER (the degraded path) proves this.
         var gameState = new GameState
         {
-            LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Up, ButtonsJustPressed = AlundraPadState.Up },
+            LastPadState = new PadState { ButtonsHold = PadState.Up, ButtonsJustPressed = PadState.Up },
         };
         var runner = NewRunner(document, gameState: gameState);
         var entity = NewEntity();
@@ -2990,7 +2990,7 @@ public class AlundraEventProgramRunnerTests
     [Fact]
     public void PadSeam_ProductionSite_PlayerUpdate_PublishesLastPadStateBeforeMovePlayer_And0x2FReadsIt()
     {
-        var controller = new AlundraPlayerController { PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = AlundraPadState.Up } };
+        var controller = new AlundraPlayerController { PadStateProviderForTests = () => new PadState { ButtonsHold = PadState.Up } };
         var host = new PadSeamScriptHost { PlayerController = controller };
 
         var player = new AlundraEntityScriptProxy { IsPlayer = true, ScriptHost = host };

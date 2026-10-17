@@ -23,8 +23,8 @@ public sealed class AlundraHeroApexAndCeilingTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
-    private const uint Cross = AlundraPadState.Cross;
-    private const uint Right = AlundraPadState.Right;
+    private const uint Cross = PadState.Cross;
+    private const uint Right = PadState.Right;
     private const int East = 24;
 
     public AlundraHeroApexAndCeilingTests()
@@ -292,7 +292,7 @@ public sealed class AlundraHeroApexAndCeilingTests : IDisposable
     /// <summary>The control of the gates: a walking jump (east, then north) under the same kind of box (laid from x = 100) does snap at tick 1: the gates are open when the binary snaps.</summary>
     [Theory]
     [InlineData(East, 159744, 0, Right)]
-    [InlineData(16, 0, -106496, AlundraPadState.Up)]
+    [InlineData(16, 0, -106496, PadState.Up)]
     public void UH_GATE_XY_Control_AWalkingJumpUnderTheSameBox_SnapsAtTick1(int direction, int forceX, int forceY, uint pad)
     {
         var rig = WalkingJumpRig(1280, 0, 120.25f, (world, host) => AddBox(world, host, "Roof", 100, 90, 34, 80, 40, 32));

@@ -11,7 +11,7 @@ namespace Alundra.Probes;
 /// at each launch), the stick sample of every rendered frame and, at each read of the run's start table, the nibble it uses. Nothing is journalled otherwise, and nothing about the hero's behaviour depends on it: the run
 /// keeps the OR of the keyboard, d-pad and stick bits (E20.d2b decides the rule from the author's measure).
 /// <para>Lines: <c>StickProbe x y D S</c> once per frame (x, y signed, invariant culture, 4 decimals, x positive to the right and y positive upward; D = digital direction bits, S = stick direction bits, hex of the
-/// <see cref="AlundraPadState"/> bits: Up 1000, Right 2000, Down 4000, Left 8000), and <c>StickProbe start S N</c> at each read of the table (S = the state, 29 for the start in 0x29, 2A for the resume in 0x2A from the
+/// <see cref="PadState"/> bits: Up 1000, Right 2000, Down 4000, Left 8000), and <c>StickProbe start S N</c> at each read of the table (S = the state, 29 for the start in 0x29, 2A for the resume in 0x2A from the
 /// eleventh tick on; N = the direction nibble, <c>ButtonsHold &gt;&gt; 12</c>, the OR, in hex).</para>
 /// </summary>
 internal static class AlundraStickProbe
@@ -50,7 +50,7 @@ internal static class AlundraStickProbe
     }
 
     /// <summary>The per-frame line, when the probe is active.</summary>
-    internal static void LogFrame(in AlundraPadState sample)
+    internal static void LogFrame(in PadState sample)
     {
         if (!IsActive)
         {

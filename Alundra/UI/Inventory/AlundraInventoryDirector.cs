@@ -423,7 +423,7 @@ public sealed class AlundraInventoryDirector
         // GameEngine.cs:1572 - (StaticVariables.g_padState1.ButtonsJustPressed & PadState.OpenInventory) != 0.
         // NOT ByInterval - a straight edge, read from the per-tick pad D1 built (AlundraTickPad), never
         // AlundraGameState.LastPadState (plan §1.3, D0.10 - the inventory needs the tick-exact edge).
-        if ((state.TickPad.ButtonsJustPressed & (AlundraPadState.Start | AlundraPadState.L2 | AlundraPadState.R2)) == 0)
+        if ((state.TickPad.ButtonsJustPressed & (PadState.Start | PadState.L2 | PadState.R2)) == 0)
         {
             return false;
         }
@@ -453,7 +453,7 @@ public sealed class AlundraInventoryDirector
         }
 
         // GameEngine.cs:1574 - (StaticVariables.g_padState1.ButtonsHold & PadState.Select) == 0.
-        if ((state.TickPad.ButtonsHold & AlundraPadState.Select) != 0)
+        if ((state.TickPad.ButtonsHold & PadState.Select) != 0)
         {
             return false;
         }
@@ -652,7 +652,7 @@ public sealed class AlundraInventoryDirector
     {
         var pad = state.TickPad;
 
-        if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Down) != 0)
+        if ((pad.ButtonsJustPressedByInterval & PadState.Down) != 0)
         {
             var slot = SelectedSlotId + 6;
             var wrapped = SelectedSlotId - 0x12;
@@ -661,7 +661,7 @@ public sealed class AlundraInventoryDirector
             _textReveal.Restart();
         }
 
-        if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Up) != 0)
+        if ((pad.ButtonsJustPressedByInterval & PadState.Up) != 0)
         {
             var slot = SelectedSlotId - 6;
             SelectedSlotId = slot < 0 ? SelectedSlotId + 0x12 : slot;
@@ -669,7 +669,7 @@ public sealed class AlundraInventoryDirector
             _textReveal.Restart();
         }
 
-        if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Right) != 0)
+        if ((pad.ButtonsJustPressedByInterval & PadState.Right) != 0)
         {
             var slot = SelectedSlotId + 1;
             SelectedSlotId = slot == slot / 6 * 6 ? SelectedSlotId - 5 : slot;
@@ -677,7 +677,7 @@ public sealed class AlundraInventoryDirector
             _textReveal.Restart();
         }
 
-        if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Left) != 0)
+        if ((pad.ButtonsJustPressedByInterval & PadState.Left) != 0)
         {
             var slot = SelectedSlotId - 1;
             SelectedSlotId = SelectedSlotId == SelectedSlotId / 6 * 6 ? SelectedSlotId + 5 : slot;
@@ -685,7 +685,7 @@ public sealed class AlundraInventoryDirector
             _textReveal.Restart();
         }
 
-        if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Cross) != 0)
+        if ((pad.ButtonsJustPressedByInterval & PadState.Cross) != 0)
         {
             if (SelectedSlotId < 6)
             {
@@ -702,7 +702,7 @@ public sealed class AlundraInventoryDirector
         // sub-inventory), not the decompilation's PadState.OpenInventory = 0x803 (PadState.cs:22), which
         // lost Triangle. The OPENING trigger does test 0x803 (0x8002bcac): Triangle closes, never opens
         // (docs/plan-e13d-sous-inventaire.md §1.1, D-E13D-29).
-        if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.Start | AlundraPadState.Triangle | AlundraPadState.L2 | AlundraPadState.R2)) != 0)
+        if ((pad.ButtonsJustPressedByInterval & (PadState.Start | PadState.Triangle | PadState.L2 | PadState.R2)) != 0)
         {
             RunCloseSetup(state);
             AlundraInventoryPortrait.Instance.ReturnToHead(); // 0x80056938, between the slide-out and the gauge.
@@ -713,7 +713,7 @@ public sealed class AlundraInventoryDirector
         // WITHOUT InitializeHudPositionBeforeHide (the gauge stays hidden, plan §1.1) - MenuOpen re-armed
         // and AlundraInventoryPostProcess.State = 1 instead: AlundraInventoryPostProcess.Run opens the
         // sub-inventory once this closing slide settles (this class' own IsCallbackArmed).
-        if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.L1 | AlundraPadState.R1)) != 0)
+        if ((pad.ButtonsJustPressedByInterval & (PadState.L1 | PadState.R1)) != 0)
         {
             RunCloseSetup(state);
             state.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
@@ -816,8 +816,8 @@ public sealed class AlundraInventoryDirector
 
     /// <summary>Port of <c>FUN_8005795c</c> (<c>MainInventoryManager.cs:1618-1747</c>) - equips a weapon
     /// slot (grid columns 0..4) or the sword-class item slot (column 5). Ported using
-    /// <see cref="AlundraPlayerManager.GetItemIdFromSlotId"/> directly for the five weapon-slot lookups
-    /// (NOT <see cref="AlundraPlayerManager.GetWeaponIdBySlotId"/>: that helper's own case order is a
+    /// <see cref="PlayerManager.GetItemIdFromSlotId"/> directly for the five weapon-slot lookups
+    /// (NOT <see cref="PlayerManager.GetWeaponIdBySlotId"/>: that helper's own case order is a
     /// DIFFERENT, sequential 0-&gt;1,1-&gt;2,... mapping built for <c>GetItemIdFromCurrentWeapon</c>, not
     /// for this switch, whose own case order is 1,3,2,4,5 - <c>GetWeaponIdFromSlot1/3/2/4/5</c>,
     /// :1627/1640/1661/1682/1702).
@@ -834,7 +834,7 @@ public sealed class AlundraInventoryDirector
             return;
         }
 
-        var currentWeaponItem = AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, _itemTables);
+        var currentWeaponItem = PlayerManager.GetItemIdFromCurrentWeapon(state, _itemTables);
         uint slotWeaponItem;
         ushort weaponIdToSet;
         bool alreadyEquipped;
@@ -843,34 +843,34 @@ public sealed class AlundraInventoryDirector
         switch (SelectedSlotId)
         {
             case 0: // :1624-1638 - GetWeaponIdFromSlot1 = GetItemIdFromSlotId(1).
-                slotWeaponItem = AlundraPlayerManager.GetItemIdFromSlotId(state, _itemTables, 1);
+                slotWeaponItem = PlayerManager.GetItemIdFromSlotId(state, _itemTables, 1);
                 weaponIdToSet = 1;
                 alreadyEquipped = currentWeaponItem == slotWeaponItem;
-                valid = slotWeaponItem != AlundraPlayerManager.NoItem;
+                valid = slotWeaponItem != PlayerManager.NoItem;
                 break;
             case 1: // :1639-1657 - GetWeaponIdFromSlot3.
-                slotWeaponItem = AlundraPlayerManager.GetItemIdFromSlotId(state, _itemTables, 3);
+                slotWeaponItem = PlayerManager.GetItemIdFromSlotId(state, _itemTables, 3);
                 weaponIdToSet = 3;
                 alreadyEquipped = currentWeaponItem == slotWeaponItem;
-                valid = slotWeaponItem != AlundraPlayerManager.NoItem;
+                valid = slotWeaponItem != PlayerManager.NoItem;
                 break;
             case 2: // :1660-1679 - GetWeaponIdFromSlot2.
-                slotWeaponItem = AlundraPlayerManager.GetItemIdFromSlotId(state, _itemTables, 2);
+                slotWeaponItem = PlayerManager.GetItemIdFromSlotId(state, _itemTables, 2);
                 weaponIdToSet = 2;
                 alreadyEquipped = currentWeaponItem == slotWeaponItem;
-                valid = slotWeaponItem != AlundraPlayerManager.NoItem;
+                valid = slotWeaponItem != PlayerManager.NoItem;
                 break;
             case 3: // :1681-1699 - GetWeaponIdFromSlot4.
-                slotWeaponItem = AlundraPlayerManager.GetItemIdFromSlotId(state, _itemTables, 4);
+                slotWeaponItem = PlayerManager.GetItemIdFromSlotId(state, _itemTables, 4);
                 weaponIdToSet = 4;
                 alreadyEquipped = currentWeaponItem == slotWeaponItem;
-                valid = slotWeaponItem != AlundraPlayerManager.NoItem;
+                valid = slotWeaponItem != PlayerManager.NoItem;
                 break;
             case 4: // :1701-1718 - GetWeaponIdFromSlot5.
-                slotWeaponItem = AlundraPlayerManager.GetItemIdFromSlotId(state, _itemTables, 5);
+                slotWeaponItem = PlayerManager.GetItemIdFromSlotId(state, _itemTables, 5);
                 weaponIdToSet = 5;
                 alreadyEquipped = currentWeaponItem == slotWeaponItem;
-                valid = slotWeaponItem != AlundraPlayerManager.NoItem;
+                valid = slotWeaponItem != PlayerManager.NoItem;
                 break;
             case 5: // :1721-1739 - the sword-class item slot: g_ItemIdBySlotIndex[5] = 7, owned check
                      // via GetNumberOfItem, weapon id to set is the literal 6.
@@ -878,10 +878,10 @@ public sealed class AlundraInventoryDirector
                 slotWeaponItem = (uint)fixedItemId;
                 weaponIdToSet = 6;
                 alreadyEquipped = currentWeaponItem == slotWeaponItem;
-                valid = AlundraPlayerManager.GetNumberOfItem(state, fixedItemId) != 0;
+                valid = PlayerManager.GetNumberOfItem(state, fixedItemId) != 0;
                 break;
             default:
-                slotWeaponItem = AlundraPlayerManager.NoItem;
+                slotWeaponItem = PlayerManager.NoItem;
                 weaponIdToSet = 0;
                 alreadyEquipped = false;
                 valid = false;
@@ -902,7 +902,7 @@ public sealed class AlundraInventoryDirector
             return;
         }
 
-        AlundraPlayerManager.SetPlayerWeaponId(state, _itemTables, weaponIdToSet);
+        PlayerManager.SetPlayerWeaponId(state, _itemTables, weaponIdToSet);
         _soundPlayer?.PlaySfx(2);
         RunDisplayIconNames(state);
     }
@@ -951,15 +951,15 @@ public sealed class AlundraInventoryDirector
         if (slotItemId == -1)
         {
             // :1810-1811 - the slot accessor already resolves to an item id, no second indirection.
-            var value = AlundraPlayerManager.GetItemIdFromSlotId(state, _itemTables, (uint)SlotIdByInventorySlotIndex[SelectedSlotId]);
+            var value = PlayerManager.GetItemIdFromSlotId(state, _itemTables, (uint)SlotIdByInventorySlotIndex[SelectedSlotId]);
 
-            if (value == AlundraPlayerManager.NoItem)
+            if (value == PlayerManager.NoItem)
             {
                 _soundPlayer?.PlaySfx(3);
                 return; // :1818 - no DisplayIconNames/FUN_8005ac90 on this early path either.
             }
 
-            var currentItemId = AlundraPlayerManager.SetItemIdFromCurrentItemId(state, _itemTables);
+            var currentItemId = PlayerManager.SetItemIdFromCurrentItemId(state, _itemTables);
             if (currentItemId == value)
             {
                 return;
@@ -969,13 +969,13 @@ public sealed class AlundraInventoryDirector
         }
         else
         {
-            if (AlundraPlayerManager.GetNumberOfItem(state, slotItemId) == 0)
+            if (PlayerManager.GetNumberOfItem(state, slotItemId) == 0)
             {
                 _soundPlayer?.PlaySfx(3);
                 return;
             }
 
-            var currentItemId = AlundraPlayerManager.SetItemIdFromCurrentItemId(state, _itemTables);
+            var currentItemId = PlayerManager.SetItemIdFromCurrentItemId(state, _itemTables);
             if (currentItemId == slotItemId)
             {
                 return;
@@ -984,7 +984,7 @@ public sealed class AlundraInventoryDirector
             resolvedItemId = (uint)slotItemId;
         }
 
-        AlundraPlayerManager.SetCurrentItemId(state, resolvedItemId);
+        PlayerManager.SetCurrentItemId(state, resolvedItemId);
         _soundPlayer?.PlaySfx(2);
 
         RunDisplayIconNames(state);
@@ -997,7 +997,7 @@ public sealed class AlundraInventoryDirector
     /// on either of them) - what item, if any, grid slot <paramref name="slotIndex"/> (0..23) currently
     /// shows: null for an empty slot (<c>g_ItemIdBySlotIndex</c> == 0) or an unowned one
     /// (<c>GetNumberOfItem</c> == 0 for a fixed id, or the resolved slot id is
-    /// <see cref="AlundraPlayerManager.NoItem"/>), otherwise the resolved item id. D5's composer uses
+    /// <see cref="PlayerManager.NoItem"/>), otherwise the resolved item id. D5's composer uses
     /// this to draw the 24 grid icons and to find which slot currently holds the equipped weapon/item
     /// (for the two selection frames), exactly the same resolution <c>DisplayWeaponAndItemIcons</c>
     /// (<c>MainInventoryManager.cs:1267-1457</c>) performs inline, per slot, every frame.</summary>
@@ -1017,11 +1017,11 @@ public sealed class AlundraInventoryDirector
 
         if (fixedId == -1)
         {
-            var value = AlundraPlayerManager.GetItemIdFromSlotId(_gameState, _itemTables, (uint)SlotIdByInventorySlotIndex[slotIndex]);
-            return value == AlundraPlayerManager.NoItem ? null : (int)value;
+            var value = PlayerManager.GetItemIdFromSlotId(_gameState, _itemTables, (uint)SlotIdByInventorySlotIndex[slotIndex]);
+            return value == PlayerManager.NoItem ? null : (int)value;
         }
 
-        return AlundraPlayerManager.GetNumberOfItem(_gameState, fixedId) == 0 ? null : fixedId;
+        return PlayerManager.GetNumberOfItem(_gameState, fixedId) == 0 ? null : fixedId;
     }
 
     /// <summary>Port of <c>FUN_8005ac90</c> (<c>MainInventoryManager.cs:1858-1898</c>) - the CD read
@@ -1047,8 +1047,8 @@ public sealed class AlundraInventoryDirector
             return;
         }
 
-        var currentWeaponItem = AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, _itemTables);
-        if (currentWeaponItem == AlundraPlayerManager.NoItem)
+        var currentWeaponItem = PlayerManager.GetItemIdFromCurrentWeapon(state, _itemTables);
+        if (currentWeaponItem == PlayerManager.NoItem)
         {
             EquippedWeaponName = BlankName; // corrected defect, see this method's own doc.
         }
@@ -1057,8 +1057,8 @@ public sealed class AlundraInventoryDirector
             EquippedWeaponName = weaponName;
         }
 
-        var currentItemId = AlundraPlayerManager.SetItemIdFromCurrentItemId(state, _itemTables);
-        if (currentItemId == AlundraPlayerManager.NoItem)
+        var currentItemId = PlayerManager.SetItemIdFromCurrentItemId(state, _itemTables);
+        if (currentItemId == PlayerManager.NoItem)
         {
             EquippedItemName = BlankName; // :1774-1777
         }
@@ -1092,10 +1092,10 @@ public sealed class AlundraInventoryDirector
 
         if (slotItemId == -1)
         {
-            var value = AlundraPlayerManager.GetItemIdFromSlotId(state, _itemTables, (uint)SlotIdByInventorySlotIndex[SelectedSlotId]);
-            return value == AlundraPlayerManager.NoItem ? null : (int)value;
+            var value = PlayerManager.GetItemIdFromSlotId(state, _itemTables, (uint)SlotIdByInventorySlotIndex[SelectedSlotId]);
+            return value == PlayerManager.NoItem ? null : (int)value;
         }
 
-        return AlundraPlayerManager.GetNumberOfItem(state, slotItemId) == 0 ? null : slotItemId;
+        return PlayerManager.GetNumberOfItem(state, slotItemId) == 0 ? null : slotItemId;
     }
 }

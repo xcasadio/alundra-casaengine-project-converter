@@ -70,7 +70,7 @@ internal static class BirthClockOracle
 /// <summary>
 /// E20.e0a5 phase A (T1): the animation clock of an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> counts its first tick (the binary makes the first switch at the creation and counts the first call of the animation
 /// pass), at 1, 2 and 3 ticks per frame and wherever in the frame the entity is born. The real world of map 14 (<see cref="ArcRun"/>, real prefabs), the birth by the test seam of <c>MovePlayer</c>
-/// (<see cref="AlundraPlayerManager.WeaponSpawnBirthHookForTests"/>) or, for "born in the native program of another entity", by a call of the interface from the programs pass. Labels: [R] red on the HEAD (predicted), [V] green by construction.
+/// (<see cref="PlayerManager.WeaponSpawnBirthHookForTests"/>) or, for "born in the native program of another entity", by a call of the interface from the programs pass. Labels: [R] red on the HEAD (predicted), [V] green by construction.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraCreationSwitchClockTests : IDisposable
@@ -80,10 +80,10 @@ public sealed class AlundraCreationSwitchClockTests : IDisposable
     public AlundraCreationSwitchClockTests(ITestOutputHelper output)
     {
         _output = output;
-        AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
+        PlayerManager.WeaponSpawnBirthHookForTests = null;
     }
 
-    public void Dispose() => AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
+    public void Dispose() => PlayerManager.WeaponSpawnBirthHookForTests = null;
 
     internal static ArcRun Arc(string name) => new(new ArcSpec("E20e0a5-" + name, "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true));
 
@@ -118,7 +118,7 @@ public sealed class AlundraCreationSwitchClockTests : IDisposable
             Direction = direction;
             Native = native;
             LowerFlag = lowerFlag;
-            AlundraPlayerManager.WeaponSpawnBirthHookForTests = (hero, call) =>
+            PlayerManager.WeaponSpawnBirthHookForTests = (hero, call) =>
             {
                 Born = Spawn(hero, call.X, call.Y, call.Z);
             };
@@ -209,7 +209,7 @@ public sealed class AlundraCreationSwitchClockTests : IDisposable
 
         public void Dispose()
         {
-            AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
+            PlayerManager.WeaponSpawnBirthHookForTests = null;
             Arc.Dispose();
         }
     }

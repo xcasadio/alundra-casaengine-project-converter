@@ -235,7 +235,7 @@ public class SpriteRecordCatalogTests : IDisposable
     /// converter output, self-skipping when <c>alundra-project/</c> is not present in this checkout
     /// (same pattern as <c>IntroTraceHarnessTests</c>) - verifies the exact Speed/Acceleration values
     /// quoted in <c>docs/plan-conversion-totale.md</c> §4 E2 (anim 1 "Moving" -&gt; 208/1, anim 54
-    /// "LoadingMap" -&gt; 0/64), which <see cref="AlundraPlayerManager"/>'s kinematic tick depends on.
+    /// "LoadingMap" -&gt; 0/64), which <see cref="PlayerManager"/>'s kinematic tick depends on.
     /// </summary>
     [Fact]
     public void TryGet_RealHeroExport_Anim1SpeedIs208Acceleration1()

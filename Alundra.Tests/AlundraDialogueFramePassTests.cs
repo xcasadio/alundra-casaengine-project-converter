@@ -100,7 +100,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         Assert.True(director.IsOpen);
 
         // A press written before the Update 2 is read by the pass 3, while the box still slides in (the slide does not read the pad): nothing changes.
-        proxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Square };
+        proxy.GameState.LastPadState = new PadState { ButtonsHold = PadState.Square };
         proxy.Update(1f / 50f);
         proxy.GameState.LastPadState = default;
         for (var update = 3; update <= 46; update++)
@@ -113,7 +113,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         // The text "bonjour" is typed from the pass 19 to the pass 43 and ends at 47. The square held before the Update 47 and released before the Update
         // 48 is a press the box sees at the pass 48: the box triggers its close at 48 (Update's own pass is the only driver here: no 0x39, no harness
         // mirror), slides out, and is released 18 passes later - open after the Update 65, released at the Update 66, lifting MenuOpen.
-        proxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Square };
+        proxy.GameState.LastPadState = new PadState { ButtonsHold = PadState.Square };
         proxy.Update(1f / 50f); // 47
         proxy.GameState.LastPadState = default;
         for (var update = 48; update <= 65; update++)
@@ -208,7 +208,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
 
         // And the timer half: the same opening, then NO button ever again - the 360-pass auto-close (mask bit0), armed at the end of the typing (47), triggers at
         // 407 and releases at 425: open after 424 passes, closed at the 425th.
-        gameState.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Square };
+        gameState.LastPadState = new PadState { ButtonsHold = PadState.Square };
         director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
         gameState.LastPadState = default;
         var timerPasses = new DialogueBoxPassDriver(director, gameState);

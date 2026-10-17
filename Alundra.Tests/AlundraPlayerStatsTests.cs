@@ -7,7 +7,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// E13 C0 acceptance (docs/plan-e13-hud.md, tranche "C0 - DLL : l'état joueur"): each bound of §1.5, on
 /// both sides, transcribed from <c>PlayerManager.cs</c>'s own <c>SetPlayerHpMax</c>/<c>SetPlayerHp</c>/
-/// <c>SetPlayerMpMax</c>/<c>SetPlayerMp</c>/<c>SetMoney</c> - see <see cref="AlundraPlayerManager"/>'s
+/// <c>SetPlayerMpMax</c>/<c>SetPlayerMp</c>/<c>SetMoney</c> - see <see cref="PlayerManager"/>'s
 /// own doc for the exact line ranges each setter ports. Uses fresh <c>new AlundraGameState()</c>
 /// instances throughout (same convention as <see cref="AlundraPlayerManagerTests"/>), not the shared
 /// <see cref="GameState.Instance"/> singleton, so no reset-for-tests seam is needed here.
@@ -28,7 +28,7 @@ public class AlundraPlayerStatsTests
     {
         var state = new GameState();
 
-        var result = AlundraPlayerManager.SetPlayerHpMax(state, hpMax);
+        var result = PlayerManager.SetPlayerHpMax(state, hpMax);
 
         Assert.Equal(expected, result);
         Assert.Equal(expected, state.PlayerStats.HpMax);
@@ -43,9 +43,9 @@ public class AlundraPlayerStatsTests
     public void SetPlayerHp_NegativeAmount_ClampsToZero()
     {
         var state = new GameState();
-        AlundraPlayerManager.SetPlayerHpMax(state, 20);
+        PlayerManager.SetPlayerHpMax(state, 20);
 
-        var result = AlundraPlayerManager.SetPlayerHp(state, -1);
+        var result = PlayerManager.SetPlayerHp(state, -1);
 
         Assert.Equal(0, result);
         Assert.Equal(0, state.PlayerStats.Hp);
@@ -55,9 +55,9 @@ public class AlundraPlayerStatsTests
     public void SetPlayerHp_AboveCurrentHpMax_ClampsToHpMax()
     {
         var state = new GameState();
-        AlundraPlayerManager.SetPlayerHpMax(state, 20);
+        PlayerManager.SetPlayerHpMax(state, 20);
 
-        var result = AlundraPlayerManager.SetPlayerHp(state, 21);
+        var result = PlayerManager.SetPlayerHp(state, 21);
 
         Assert.Equal(20, result);
         Assert.Equal(20, state.PlayerStats.Hp);
@@ -67,9 +67,9 @@ public class AlundraPlayerStatsTests
     public void SetPlayerHp_WithinBounds_PassesThroughUnclamped()
     {
         var state = new GameState();
-        AlundraPlayerManager.SetPlayerHpMax(state, 20);
+        PlayerManager.SetPlayerHpMax(state, 20);
 
-        var result = AlundraPlayerManager.SetPlayerHp(state, 15);
+        var result = PlayerManager.SetPlayerHp(state, 15);
 
         Assert.Equal(15, result);
         Assert.Equal(15, state.PlayerStats.Hp);
@@ -89,7 +89,7 @@ public class AlundraPlayerStatsTests
     {
         var state = new GameState();
 
-        var result = AlundraPlayerManager.SetPlayerMpMax(state, mpMax);
+        var result = PlayerManager.SetPlayerMpMax(state, mpMax);
 
         Assert.Equal(expected, result);
         Assert.Equal(expected, state.PlayerStats.MpMax);
@@ -103,9 +103,9 @@ public class AlundraPlayerStatsTests
     public void SetPlayerMp_NegativeAmount_ClampsToZero()
     {
         var state = new GameState();
-        AlundraPlayerManager.SetPlayerMpMax(state, 3);
+        PlayerManager.SetPlayerMpMax(state, 3);
 
-        var result = AlundraPlayerManager.SetPlayerMp(state, -1);
+        var result = PlayerManager.SetPlayerMp(state, -1);
 
         Assert.Equal(0, result);
         Assert.Equal(0, state.PlayerStats.Mp);
@@ -115,9 +115,9 @@ public class AlundraPlayerStatsTests
     public void SetPlayerMp_AboveCurrentMpMax_ClampsToMpMax()
     {
         var state = new GameState();
-        AlundraPlayerManager.SetPlayerMpMax(state, 3);
+        PlayerManager.SetPlayerMpMax(state, 3);
 
-        var result = AlundraPlayerManager.SetPlayerMp(state, 4);
+        var result = PlayerManager.SetPlayerMp(state, 4);
 
         Assert.Equal(3, result);
         Assert.Equal(3, state.PlayerStats.Mp);
@@ -127,9 +127,9 @@ public class AlundraPlayerStatsTests
     public void SetPlayerMp_WithinBounds_PassesThroughUnclamped()
     {
         var state = new GameState();
-        AlundraPlayerManager.SetPlayerMpMax(state, 3);
+        PlayerManager.SetPlayerMpMax(state, 3);
 
-        var result = AlundraPlayerManager.SetPlayerMp(state, 2);
+        var result = PlayerManager.SetPlayerMp(state, 2);
 
         Assert.Equal(2, result);
         Assert.Equal(2, state.PlayerStats.Mp);
@@ -149,7 +149,7 @@ public class AlundraPlayerStatsTests
     {
         var state = new GameState();
 
-        var result = AlundraPlayerManager.SetMoney(state, (short)amount);
+        var result = PlayerManager.SetMoney(state, (short)amount);
 
         Assert.Equal(expected, result);
         Assert.Equal(expected, state.PlayerStats.Money);
@@ -165,7 +165,7 @@ public class AlundraPlayerStatsTests
         var state = new GameState();
 
         var firstRead = state.PlayerStats;
-        AlundraPlayerManager.SetPlayerHp(state, 7);
+        PlayerManager.SetPlayerHp(state, 7);
         var secondRead = state.PlayerStats;
 
         // Same reference both times: there is no second "save" object that could drift from what a
@@ -195,13 +195,13 @@ public class AlundraPlayerStatsTests
     public void InitializeNewGameStats_ResetsAnAlreadyMutatedInstanceToNewGameDefaults()
     {
         var state = new GameState();
-        AlundraPlayerManager.SetPlayerHpMax(state, 45);
-        AlundraPlayerManager.SetPlayerHp(state, 38);
-        AlundraPlayerManager.SetPlayerMpMax(state, 3);
-        AlundraPlayerManager.SetPlayerMp(state, 2);
-        AlundraPlayerManager.SetMoney(state, 2163);
+        PlayerManager.SetPlayerHpMax(state, 45);
+        PlayerManager.SetPlayerHp(state, 38);
+        PlayerManager.SetPlayerMpMax(state, 3);
+        PlayerManager.SetPlayerMp(state, 2);
+        PlayerManager.SetMoney(state, 2163);
 
-        AlundraPlayerManager.InitializeNewGameStats(state);
+        PlayerManager.InitializeNewGameStats(state);
 
         Assert.Equal(10, state.PlayerStats.Hp);
         Assert.Equal(10, state.PlayerStats.HpMax);

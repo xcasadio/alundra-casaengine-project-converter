@@ -77,7 +77,7 @@ public sealed class AlundraLoadingMapAirArrivalTests
         hero.IsOnGround = 0;
         Assert.Equal(1048576, hero.ComputeTerrainHeight());
 
-        AlundraPlayerManager.MovePlayer(hero, default, new GameState(), host: null);
+        PlayerManager.MovePlayer(hero, default, new GameState(), host: null);
 
         Assert.Equal(LoadingMap, hero.TargetAnimationId);
     }
@@ -92,7 +92,7 @@ public sealed class AlundraLoadingMapAirArrivalTests
         hero.PosZ = 2097152;
         hero.IsOnGround = 0;
 
-        AlundraPlayerManager.MovePlayer(hero, default, new GameState(), host: null);
+        PlayerManager.MovePlayer(hero, default, new GameState(), host: null);
 
         Assert.Equal(AirStill, hero.TargetAnimationId);
     }

@@ -29,9 +29,9 @@ public sealed class AlundraFlailBounceTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
-    private const uint Square = AlundraPadState.Square;
-    private const uint Cross = AlundraPadState.Cross;
-    private const uint Right = AlundraPadState.Right;
+    private const uint Square = PadState.Square;
+    private const uint Cross = PadState.Cross;
+    private const uint Right = PadState.Right;
 
     private const int IronFlail = 9;
     private const int SteelFlail = 10;
@@ -52,7 +52,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
     public void Dispose()
     {
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraPlayerAnimationEffects.StubCallsForTests = null;
+        PlayerAnimationEffects.StubCallsForTests = null;
         GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
@@ -92,7 +92,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         hero.HitCounter = 1;
         hero.HasFrameBox = false; // a hit needs no box.
 
-        AlundraPlayerAnimationEffects.Create(hero, AlundraPlayerAnimationEffects.FreeMode);
+        PlayerAnimationEffects.Create(hero, PlayerAnimationEffects.FreeMode);
 
         Assert.Equal(expected, hero.TargetAnimationId);
         Assert.Equal(0, hero.ForceX);
@@ -122,7 +122,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         hero.HitCounter = 1;
         hero.ForceZ = -5;
 
-        AlundraPlayerAnimationEffects.Create(hero, AlundraPlayerAnimationEffects.FreeMode);
+        PlayerAnimationEffects.Create(hero, PlayerAnimationEffects.FreeMode);
 
         Assert.Equal(state, hero.TargetAnimationId);
     }
@@ -135,7 +135,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         hero.IsOnGround = 1;
         hero.HitCounter = 1;
 
-        AlundraPlayerAnimationEffects.Create(hero, AlundraPlayerAnimationEffects.LockedMode);
+        PlayerAnimationEffects.Create(hero, PlayerAnimationEffects.LockedMode);
 
         Assert.Equal(0x12u, hero.TargetAnimationId);
     }
@@ -148,7 +148,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         hero.IsOnGround = 1;
         PoseBox(hero, frameBox: false);
 
-        AlundraPlayerAnimationEffects.Create(hero, AlundraPlayerAnimationEffects.FreeMode);
+        PlayerAnimationEffects.Create(hero, PlayerAnimationEffects.FreeMode);
 
         Assert.Equal(0x12u, hero.TargetAnimationId);
     }
@@ -166,7 +166,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         hero.IsOnGround = 1;
         PoseBox(hero);
 
-        AlundraPlayerAnimationEffects.Create(hero, AlundraPlayerAnimationEffects.FreeMode);
+        PlayerAnimationEffects.Create(hero, PlayerAnimationEffects.FreeMode);
 
         Assert.Equal(0x08u, hero.TargetAnimationId);
     }
@@ -184,7 +184,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         hero.IsOnGround = 1;
         PoseBox(hero);
 
-        AlundraPlayerAnimationEffects.Create(hero, AlundraPlayerAnimationEffects.FreeMode);
+        PlayerAnimationEffects.Create(hero, PlayerAnimationEffects.FreeMode);
 
         Assert.Equal(0x16u, hero.TargetAnimationId);
     }
@@ -197,7 +197,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         hero.IsOnGround = 0;
         PoseBox(hero);
 
-        AlundraPlayerAnimationEffects.Create(hero, AlundraPlayerAnimationEffects.FreeMode);
+        PlayerAnimationEffects.Create(hero, PlayerAnimationEffects.FreeMode);
 
         Assert.Equal(0x26u, hero.TargetAnimationId);
     }
@@ -218,7 +218,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         hero.IsOnGround = 1;
         PoseBox(hero);
 
-        AlundraPlayerAnimationEffects.Create(hero, AlundraPlayerAnimationEffects.FreeMode);
+        PlayerAnimationEffects.Create(hero, PlayerAnimationEffects.FreeMode);
 
         Assert.Equal(wall ? 0x25u : 0x40u, hero.TargetAnimationId);
     }
@@ -236,7 +236,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         hero.IsOnGround = 1;
         PoseBox(hero, z: dllHitBoxZ);
 
-        AlundraPlayerAnimationEffects.Create(hero, AlundraPlayerAnimationEffects.FreeMode);
+        PlayerAnimationEffects.Create(hero, PlayerAnimationEffects.FreeMode);
 
         Assert.Equal(wall ? 0x08u : 0x12u, hero.TargetAnimationId);
     }
@@ -245,22 +245,22 @@ public sealed class AlundraFlailBounceTests : IDisposable
     public void TheCellIsReadWithTheBinarysIndexing_ColumnPixelOver24_RowYShifted20_ClampedTo0x33And0x3B()
     {
         // pixel / 24 clamped to 0x33 (51), (Y >> 20) clamped to 0x3B (59), and 0 below.
-        Assert.Equal(0, AlundraPlayerAnimationEffects.BinaryColumn(0));
-        Assert.Equal(0, AlundraPlayerAnimationEffects.BinaryColumn(23));
-        Assert.Equal(1, AlundraPlayerAnimationEffects.BinaryColumn(24));
-        Assert.Equal(4, AlundraPlayerAnimationEffects.BinaryColumn(107));
-        Assert.Equal(5, AlundraPlayerAnimationEffects.BinaryColumn(129));
-        Assert.Equal(51, AlundraPlayerAnimationEffects.BinaryColumn(51 * 24 + 23));
-        Assert.Equal(0x33, AlundraPlayerAnimationEffects.BinaryColumn(52 * 24));
-        Assert.Equal(0x33, AlundraPlayerAnimationEffects.BinaryColumn(5000));
-        Assert.Equal(0, AlundraPlayerAnimationEffects.BinaryColumn(-1));
-        Assert.Equal(0, AlundraPlayerAnimationEffects.BinaryRow(0));
-        Assert.Equal(5, AlundraPlayerAnimationEffects.BinaryRow(94 << 16 >> 20));
-        Assert.Equal(6, AlundraPlayerAnimationEffects.BinaryRow((105 << 16) >> 20));
-        Assert.Equal(0x3B, AlundraPlayerAnimationEffects.BinaryRow(59));
-        Assert.Equal(0x3B, AlundraPlayerAnimationEffects.BinaryRow(60));
-        Assert.Equal(0x3B, AlundraPlayerAnimationEffects.BinaryRow(1000));
-        Assert.Equal(0, AlundraPlayerAnimationEffects.BinaryRow(-3));
+        Assert.Equal(0, PlayerAnimationEffects.BinaryColumn(0));
+        Assert.Equal(0, PlayerAnimationEffects.BinaryColumn(23));
+        Assert.Equal(1, PlayerAnimationEffects.BinaryColumn(24));
+        Assert.Equal(4, PlayerAnimationEffects.BinaryColumn(107));
+        Assert.Equal(5, PlayerAnimationEffects.BinaryColumn(129));
+        Assert.Equal(51, PlayerAnimationEffects.BinaryColumn(51 * 24 + 23));
+        Assert.Equal(0x33, PlayerAnimationEffects.BinaryColumn(52 * 24));
+        Assert.Equal(0x33, PlayerAnimationEffects.BinaryColumn(5000));
+        Assert.Equal(0, PlayerAnimationEffects.BinaryColumn(-1));
+        Assert.Equal(0, PlayerAnimationEffects.BinaryRow(0));
+        Assert.Equal(5, PlayerAnimationEffects.BinaryRow(94 << 16 >> 20));
+        Assert.Equal(6, PlayerAnimationEffects.BinaryRow((105 << 16) >> 20));
+        Assert.Equal(0x3B, PlayerAnimationEffects.BinaryRow(59));
+        Assert.Equal(0x3B, PlayerAnimationEffects.BinaryRow(60));
+        Assert.Equal(0x3B, PlayerAnimationEffects.BinaryRow(1000));
+        Assert.Equal(0, PlayerAnimationEffects.BinaryRow(-3));
     }
 
     [Fact]
@@ -271,14 +271,14 @@ public sealed class AlundraFlailBounceTests : IDisposable
         east.TargetAnimationId = 0x12;
         east.IsOnGround = 1;
         PoseBox(east, x: 3000 << 16, y: 2000 << 16);
-        AlundraPlayerAnimationEffects.Create(east, AlundraPlayerAnimationEffects.FreeMode);
+        PlayerAnimationEffects.Create(east, PlayerAnimationEffects.FreeMode);
         Assert.Equal(0x08u, east.TargetAnimationId);
 
         var origin = HeroOn(Field((c, r) => c == 0 && r == 0 ? (0x40, 0) : (0, 0)));
         origin.TargetAnimationId = 0x12;
         origin.IsOnGround = 1;
         PoseBox(origin, x: -50 << 16, y: -50 << 16);
-        AlundraPlayerAnimationEffects.Create(origin, AlundraPlayerAnimationEffects.FreeMode);
+        PlayerAnimationEffects.Create(origin, PlayerAnimationEffects.FreeMode);
         Assert.Equal(0x08u, origin.TargetAnimationId);
     }
 
@@ -291,7 +291,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         hero.IsOnGround = 1;
         PoseBox(hero, x: 45 * 24 << 16);
 
-        AlundraPlayerAnimationEffects.Create(hero, AlundraPlayerAnimationEffects.FreeMode);
+        PlayerAnimationEffects.Create(hero, PlayerAnimationEffects.FreeMode);
 
         Assert.Equal(0x12u, hero.TargetAnimationId);
     }
@@ -339,9 +339,9 @@ public sealed class AlundraFlailBounceTests : IDisposable
         hero.ForceY = forceY;
         hero.ForceZ = forceZ;
         var calls = new List<(int, string, uint)>();
-        AlundraPlayerAnimationEffects.StubCallsForTests = calls;
-        AlundraPlayerAnimationEffects.Create(hero, mode);
-        AlundraPlayerAnimationEffects.StubCallsForTests = null;
+        PlayerAnimationEffects.StubCallsForTests = calls;
+        PlayerAnimationEffects.Create(hero, mode);
+        PlayerAnimationEffects.StubCallsForTests = null;
         return calls;
     }
 
@@ -352,7 +352,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
     {
         var hero = HeroOn();
 
-        Assert.Equal(new[] { AlundraPlayerAnimationEffects.LowHpAlarmStubName }, Names(Call(hero, 0, 0x00)));
+        Assert.Equal(new[] { PlayerAnimationEffects.LowHpAlarmStubName }, Names(Call(hero, 0, 0x00)));
         Assert.Empty(Call(hero, 1, 0x00));
     }
 
@@ -378,7 +378,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
 
         var calls = Call(hero, 0, state, onGround: 0);
 
-        Assert.Contains(AlundraPlayerAnimationEffects.GrassCutStubName, Names(calls));
+        Assert.Contains(PlayerAnimationEffects.GrassCutStubName, Names(calls));
     }
 
     [Theory]
@@ -398,7 +398,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
     {
         var hero = HeroOn();
 
-        Assert.DoesNotContain(AlundraPlayerAnimationEffects.GrassCutStubName, Names(Call(hero, 0, state, onGround: 0)));
+        Assert.DoesNotContain(PlayerAnimationEffects.GrassCutStubName, Names(Call(hero, 0, state, onGround: 0)));
     }
 
     [Fact]
@@ -406,8 +406,8 @@ public sealed class AlundraFlailBounceTests : IDisposable
     {
         var hero = HeroOn();
 
-        Assert.Contains(AlundraPlayerAnimationEffects.RunStepStubName, Names(Call(hero, 0, 0x29, onGround: 1)));
-        Assert.DoesNotContain(AlundraPlayerAnimationEffects.RunStepStubName, Names(Call(hero, 0, 0x01, onGround: 1)));
+        Assert.Contains(PlayerAnimationEffects.RunStepStubName, Names(Call(hero, 0, 0x29, onGround: 1)));
+        Assert.DoesNotContain(PlayerAnimationEffects.RunStepStubName, Names(Call(hero, 0, 0x01, onGround: 1)));
     }
 
     [Theory]
@@ -423,10 +423,10 @@ public sealed class AlundraFlailBounceTests : IDisposable
     {
         var hero = HeroOn();
 
-        Assert.DoesNotContain(AlundraPlayerAnimationEffects.WalkStepStubName, Names(Call(hero, 0, state)));
-        Assert.Contains(AlundraPlayerAnimationEffects.WalkStepStubName, Names(Call(hero, 0, state, forceX: 159744)));
-        Assert.Contains(AlundraPlayerAnimationEffects.WalkStepStubName, Names(Call(hero, 0, state, forceY: -1)));
-        Assert.Contains(AlundraPlayerAnimationEffects.WalkStepStubName, Names(Call(hero, 1, state, forceX: 1))); // the locked mode runs the same dispatches.
+        Assert.DoesNotContain(PlayerAnimationEffects.WalkStepStubName, Names(Call(hero, 0, state)));
+        Assert.Contains(PlayerAnimationEffects.WalkStepStubName, Names(Call(hero, 0, state, forceX: 159744)));
+        Assert.Contains(PlayerAnimationEffects.WalkStepStubName, Names(Call(hero, 0, state, forceY: -1)));
+        Assert.Contains(PlayerAnimationEffects.WalkStepStubName, Names(Call(hero, 1, state, forceX: 1))); // the locked mode runs the same dispatches.
     }
 
     [Theory]
@@ -441,7 +441,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
     {
         var hero = HeroOn();
 
-        Assert.DoesNotContain(AlundraPlayerAnimationEffects.WalkStepStubName, Names(Call(hero, 0, state, forceX: 159744, forceY: 10)));
+        Assert.DoesNotContain(PlayerAnimationEffects.WalkStepStubName, Names(Call(hero, 0, state, forceX: 159744, forceY: 10)));
     }
 
     public static IEnumerable<object[]> LandingStates() =>
@@ -453,10 +453,10 @@ public sealed class AlundraFlailBounceTests : IDisposable
     {
         var hero = HeroOn();
 
-        Assert.Contains(AlundraPlayerAnimationEffects.LandingStubName, Names(Call(hero, 0, state, onGround: 1, forceZ: 0)));
-        Assert.Contains(AlundraPlayerAnimationEffects.LandingStubName, Names(Call(hero, 0, state, onGround: 1, forceZ: -327680)));
-        Assert.DoesNotContain(AlundraPlayerAnimationEffects.LandingStubName, Names(Call(hero, 0, state, onGround: 0, forceZ: -327680)));
-        Assert.DoesNotContain(AlundraPlayerAnimationEffects.LandingStubName, Names(Call(hero, 0, state, onGround: 1, forceZ: 1)));
+        Assert.Contains(PlayerAnimationEffects.LandingStubName, Names(Call(hero, 0, state, onGround: 1, forceZ: 0)));
+        Assert.Contains(PlayerAnimationEffects.LandingStubName, Names(Call(hero, 0, state, onGround: 1, forceZ: -327680)));
+        Assert.DoesNotContain(PlayerAnimationEffects.LandingStubName, Names(Call(hero, 0, state, onGround: 0, forceZ: -327680)));
+        Assert.DoesNotContain(PlayerAnimationEffects.LandingStubName, Names(Call(hero, 0, state, onGround: 1, forceZ: 1)));
     }
 
     [Theory]
@@ -473,7 +473,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
     {
         var hero = HeroOn();
 
-        Assert.DoesNotContain(AlundraPlayerAnimationEffects.LandingStubName, Names(Call(hero, 0, state, onGround: 1, forceZ: 0)));
+        Assert.DoesNotContain(PlayerAnimationEffects.LandingStubName, Names(Call(hero, 0, state, onGround: 1, forceZ: 0)));
     }
 
     [Fact]
@@ -482,18 +482,18 @@ public sealed class AlundraFlailBounceTests : IDisposable
         var hero = HeroOn();
 
         // Mode 1 checks the latch (0x80030214); mode 0 does not (0x80030210).
-        Assert.Contains(AlundraPlayerAnimationEffects.LandingStubName, Names(Call(hero, 1, 0x2D)));
+        Assert.Contains(PlayerAnimationEffects.LandingStubName, Names(Call(hero, 1, 0x2D)));
         Assert.Equal(1, hero.LandingLatch);
-        Assert.DoesNotContain(AlundraPlayerAnimationEffects.LandingStubName, Names(Call(hero, 1, 0x2D)));
-        Assert.Contains(AlundraPlayerAnimationEffects.LandingStubName, Names(Call(hero, 0, 0x2D)));
-        Assert.DoesNotContain(AlundraPlayerAnimationEffects.LandingStubName, Names(Call(hero, 1, 0x2D)));
+        Assert.DoesNotContain(PlayerAnimationEffects.LandingStubName, Names(Call(hero, 1, 0x2D)));
+        Assert.Contains(PlayerAnimationEffects.LandingStubName, Names(Call(hero, 0, 0x2D)));
+        Assert.DoesNotContain(PlayerAnimationEffects.LandingStubName, Names(Call(hero, 1, 0x2D)));
 
         // A state outside the landing table clears it (0x800303D0); a landing state in the air does not.
         Call(hero, 1, 0x2D, onGround: 0);
         Assert.Equal(1, hero.LandingLatch);
         Call(hero, 1, 0x00);
         Assert.Equal(0, hero.LandingLatch);
-        Assert.Contains(AlundraPlayerAnimationEffects.LandingStubName, Names(Call(hero, 1, 0x2D)));
+        Assert.Contains(PlayerAnimationEffects.LandingStubName, Names(Call(hero, 1, 0x2D)));
         Call(hero, 0, 0x4C); // beyond the table (state - 2 >= 0x4A): cleared as well.
         Assert.Equal(0, hero.LandingLatch);
     }
@@ -505,12 +505,12 @@ public sealed class AlundraFlailBounceTests : IDisposable
 
         // 0x16 is in the first table (grass cut) and the landing table; with a force, the second table does not hold it: the walk stub is absent.
         var air = Call(hero, 0, 0x16, onGround: 1, forceX: 5);
-        Assert.Equal(new[] { AlundraPlayerAnimationEffects.GrassCutStubName, AlundraPlayerAnimationEffects.LandingStubName, AlundraPlayerAnimationEffects.LowHpAlarmStubName }, Names(air));
+        Assert.Equal(new[] { PlayerAnimationEffects.GrassCutStubName, PlayerAnimationEffects.LandingStubName, PlayerAnimationEffects.LowHpAlarmStubName }, Names(air));
         Assert.All(air, c => Assert.Equal(0x16u, c.State));
 
         // 0x2A is in the second table only (and 0x4B in the first and the landing tables).
-        Assert.Equal(new[] { AlundraPlayerAnimationEffects.WalkStepStubName, AlundraPlayerAnimationEffects.LowHpAlarmStubName }, Names(Call(hero, 0, 0x2A, forceX: 5)));
-        Assert.Equal(new[] { AlundraPlayerAnimationEffects.GrassCutStubName, AlundraPlayerAnimationEffects.LandingStubName }, Names(Call(hero, 1, 0x4B)));
+        Assert.Equal(new[] { PlayerAnimationEffects.WalkStepStubName, PlayerAnimationEffects.LowHpAlarmStubName }, Names(Call(hero, 0, 0x2A, forceX: 5)));
+        Assert.Equal(new[] { PlayerAnimationEffects.GrassCutStubName, PlayerAnimationEffects.LandingStubName }, Names(Call(hero, 1, 0x4B)));
     }
 
     // -----------------------------------------------------------------------------------------
@@ -522,13 +522,13 @@ public sealed class AlundraFlailBounceTests : IDisposable
     {
         var rig = JumpHeroRig.Build(freePad: true);
         var calls = new List<(int, string, uint)>();
-        AlundraPlayerAnimationEffects.StubCallsForTests = calls;
+        PlayerAnimationEffects.StubCallsForTests = calls;
 
         rig.Step();
         rig.Step();
         rig.Step();
 
-        Assert.Equal(3, calls.Count(c => c.Item2 == AlundraPlayerAnimationEffects.LowHpAlarmStubName)); // the alarm is mode 0 only: one call per tick.
+        Assert.Equal(3, calls.Count(c => c.Item2 == PlayerAnimationEffects.LowHpAlarmStubName)); // the alarm is mode 0 only: one call per tick.
         Assert.All(calls, c => Assert.Equal(0, c.Item1));
     }
 
@@ -539,13 +539,13 @@ public sealed class AlundraFlailBounceTests : IDisposable
         rig.Hero.TargetAnimationId = 0x2D;
         rig.Hero.IsOnGround = 1;
         var calls = new List<(int Mode, string Stub, uint State)>();
-        AlundraPlayerAnimationEffects.StubCallsForTests = calls;
+        PlayerAnimationEffects.StubCallsForTests = calls;
 
         rig.Step();
 
         Assert.NotEmpty(calls);
         Assert.All(calls, c => Assert.Equal(1, c.Mode));
-        Assert.DoesNotContain(AlundraPlayerAnimationEffects.LowHpAlarmStubName, Names(calls));
+        Assert.DoesNotContain(PlayerAnimationEffects.LowHpAlarmStubName, Names(calls));
     }
 
     [Fact]
@@ -573,9 +573,9 @@ public sealed class AlundraFlailBounceTests : IDisposable
     {
         var tables = Tables();
         host.ItemTables = tables;
-        AlundraPlayerManager.InitializeNewGameInventory(host.GameState, tables);
+        PlayerManager.InitializeNewGameInventory(host.GameState, tables);
         host.GameState.NumberOfItems[item * 2 + 1] = 1;
-        AlundraPlayerManager.SetPlayerWeaponId(host.GameState, tables, tables.ItemsProperties[item * 5]);
+        PlayerManager.SetPlayerWeaponId(host.GameState, tables, tables.ItemsProperties[item * 5]);
     }
 
     /// <summary>Where a probe starts: the position of the hero, his animation and forces (the machine's row 0, <c>pre</c> of <c>attack.run</c>) and the counter <c>+0x1C</c> of that row.</summary>
@@ -624,14 +624,14 @@ public sealed class AlundraFlailBounceTests : IDisposable
         {
             sounds.Requests.Clear();
             var calls = new List<(int, string, uint)>();
-            AlundraPlayerAnimationEffects.StubCallsForTests = calls;
+            PlayerAnimationEffects.StubCallsForTests = calls;
             if (row.Tick == pokeTick)
             {
                 hero.HitCounter = 1;
             }
 
             rig.Step(row.Hold);
-            AlundraPlayerAnimationEffects.StubCallsForTests = null;
+            PlayerAnimationEffects.StubCallsForTests = null;
             hero.HitCounter = 0; // the counters pass of the world (0x80038998), absent from the montage.
             hero.FrameCounter++;
             stubsByTick[row.Tick] = calls.Select(c => c.Item2).ToList();
@@ -681,10 +681,10 @@ public sealed class AlundraFlailBounceTests : IDisposable
         Assert.Equal(landingTicks, fromTheFunction.Where(c => c.Kind == "effect" && c.Id == 7).Select(c => c.Tick).Distinct().OrderBy(t => t).ToArray());
         Assert.Equal(stepTicks, fromTheFunction.Where(c => c.Kind == "sound" && c.Id == 0).Select(c => c.Tick).Distinct().OrderBy(t => t).ToArray());
 
-        Assert.Equal(landingTicks, result.StubsByTick.Where(p => p.Value.Contains(AlundraPlayerAnimationEffects.LandingStubName)).Select(p => p.Key).OrderBy(t => t).ToArray());
+        Assert.Equal(landingTicks, result.StubsByTick.Where(p => p.Value.Contains(PlayerAnimationEffects.LandingStubName)).Select(p => p.Key).OrderBy(t => t).ToArray());
         foreach (var tick in stepTicks)
         {
-            Assert.Contains(AlundraPlayerAnimationEffects.WalkStepStubName, result.StubsByTick[tick]);
+            Assert.Contains(PlayerAnimationEffects.WalkStepStubName, result.StubsByTick[tick]);
         }
     }
 
@@ -743,7 +743,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         AssertEqualToOracle(result);
         // The step sound(0) of tick 30 is the function's (return address 0x8002FE60); the sound(0) of ticks 22 and 23 are the switches of the animation (0x80038BD0), not the function's.
         AssertStubsAtTheTicksOfTheOracle("F-iron-walk", result, landingTicks: Array.Empty<int>(), stepTicks: new[] { 30 });
-        Assert.DoesNotContain(AlundraPlayerAnimationEffects.WalkStepStubName, result.StubsByTick[23]);
+        Assert.DoesNotContain(PlayerAnimationEffects.WalkStepStubName, result.StubsByTick[23]);
         var rows = FlailProbe.Load("F-iron-walk");
         Assert.Equal(79872, rows[0].ForceX);
         Assert.All(rows.Skip(1).Take(21), r => Assert.Equal(0, r.ForceX)); // no force through the bounce: ticks 2 to 22.
@@ -760,7 +760,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         {
             var stateAtTheHead = tick == 1 ? 0u : rows[tick - 2].AnimTarget;
             var expected = stateAtTheHead is 0x12 or 0x16 or 0x40 or 0x42;
-            Assert.True(expected == result.StubsByTick[tick].Contains(AlundraPlayerAnimationEffects.GrassCutStubName), $"tick {tick}, state at the head 0x{stateAtTheHead:X2}");
+            Assert.True(expected == result.StubsByTick[tick].Contains(PlayerAnimationEffects.GrassCutStubName), $"tick {tick}, state at the head 0x{stateAtTheHead:X2}");
         }
     }
 }

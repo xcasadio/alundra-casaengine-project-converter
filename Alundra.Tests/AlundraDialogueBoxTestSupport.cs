@@ -21,7 +21,7 @@ internal sealed class DialogueHarnessButton
     {
         var hold = director.IsOpen && !(director.Box.IsWaitingForPress && _heldAtThePreviousFrame);
         _heldAtThePreviousFrame = hold;
-        return hold ? AlundraPadState.Square : 0;
+        return hold ? PadState.Square : 0;
     }
 }
 
@@ -62,7 +62,7 @@ internal sealed class DialogueBoxPassDriver
     public void Advance()
     {
         Pass++;
-        _gameState.LastPadState = new AlundraPadState { ButtonsHold = _holdBefore.Contains(Pass) ? AlundraPadState.Square : 0 };
+        _gameState.LastPadState = new PadState { ButtonsHold = _holdBefore.Contains(Pass) ? PadState.Square : 0 };
         _director.Tick();
     }
 

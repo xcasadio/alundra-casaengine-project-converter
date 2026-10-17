@@ -124,7 +124,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
     {
         var state = new GameState();
         var director = ArmedOpening(state);
-        AlundraPlayerManager.SetMoney(state, 1000);
+        PlayerManager.SetMoney(state, 1000);
         var view = new RecordingHudView(1);
         var presenter = new AlundraHudPresenter(director, view);
 
@@ -193,9 +193,9 @@ public sealed class AlundraHudPresenterTests : IDisposable
     {
         var state = new GameState();
         var director = ArmedOpening(state);
-        AlundraPlayerManager.SetPlayerMpMax(state, 4); // instant at ArmAppearance - HpMax/MpMax jump immediately.
-        AlundraPlayerManager.SetPlayerMp(state, 4); // catches up 1 point / 8 active ticks (C1, already proven).
-        AlundraPlayerManager.SetMoney(state, 1000); // keeps the coin roll going for the whole 40 ticks.
+        PlayerManager.SetPlayerMpMax(state, 4); // instant at ArmAppearance - HpMax/MpMax jump immediately.
+        PlayerManager.SetPlayerMp(state, 4); // catches up 1 point / 8 active ticks (C1, already proven).
+        PlayerManager.SetMoney(state, 1000); // keeps the coin roll going for the whole 40 ticks.
 
         var view = new RecordingHudView(pixelScale: 1);
         var presenter = new AlundraHudPresenter(director, view);
@@ -241,8 +241,8 @@ public sealed class AlundraHudPresenterTests : IDisposable
     {
         var state = new GameState();
         var director = ArmedOpening(state);
-        AlundraPlayerManager.SetPlayerMpMax(state, 3);
-        AlundraPlayerManager.SetPlayerMp(state, 3);
+        PlayerManager.SetPlayerMpMax(state, 3);
+        PlayerManager.SetPlayerMp(state, 3);
         var view = new RecordingHudView(pixelScale: 1);
         var presenter = new AlundraHudPresenter(director, view);
 
@@ -266,8 +266,8 @@ public sealed class AlundraHudPresenterTests : IDisposable
         // The MP-max item (PlayerManager.IncreaseMpMaxAndCreateEffect, 0x8003382c): the max grows by one, then the MP
         // is refilled to it. The displayed MP already equals the displayed max, so only the max catch-up runs, and
         // its first sub-step turns the preview on.
-        AlundraPlayerManager.SetPlayerMpMax(state, 4);
-        AlundraPlayerManager.SetPlayerMp(state, 4);
+        PlayerManager.SetPlayerMpMax(state, 4);
+        PlayerManager.SetPlayerMp(state, 4);
         for (var i = 0; i < 4 && !director.MpDisplayPreviewIncrement; i++)
         {
             Step();

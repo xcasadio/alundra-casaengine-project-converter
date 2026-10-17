@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E20.f3c phase A (docs/plan-e20-heros.md section 1.19.3, T1; D-F3-5, D-F3-6): the life of the sword wave (the sprite types 27, 28, 29 of the global page) born by the TEST HOOK
-/// (<see cref="AlundraPlayerManager.WeaponSpawnBirthHookForTests"/>, which calls <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> from the exact place of <c>MovePlayer</c> where the shot of the hero leaves, the tick of
+/// (<see cref="PlayerManager.WeaponSpawnBirthHookForTests"/>, which calls <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> from the exact place of <c>MovePlayer</c> where the shot of the hero leaves, the tick of
 /// the birth included) in the real world of map 14 (<see cref="HitArena"/>), against the oracle of <c>docs/plan-e20-annexe/e20-f3/oracle/out</c> read by key (<see cref="WaveOracle"/>; the arena releases at tick 91, the oracle at 96).
 /// Nothing is born in production in this phase (the set of wired types stays empty). (v1) E10 destroys the wave at S+26; (v2) C61 calls the named stub at S+1 to S+25; (v3) the registry and the header; (v4) the whole life
 /// of the wave, at 1, 2 and 3 ticks per frame, for the three swords.
@@ -49,8 +49,8 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
 
     private void Reset()
     {
-        AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
-        AlundraPlayerManager.WiredWeaponTypesForTests = null;
+        PlayerManager.WeaponSpawnBirthHookForTests = null;
+        PlayerManager.WiredWeaponTypesForTests = null;
         WaveSwordAi.StubCallsForTests = null;
         AlundraNativeEffects.CreatedForTests = null;
         AlundraRandom.RandomSeed = _previousSeed;
@@ -186,7 +186,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
              headers.All(h => h.ProgramTick == 61 && h.ProgramDeactivate == 10),
              headers.All(h => h.ProgramLoad == 0 && h.ProgramTouch == 0 && h.ProgramInteract == 0),
              registry.TryGet(ScriptHelper.ProgramCTick, 61, 26, out _) || registry.TryGet(ScriptHelper.ProgramCTick, 61, 30, out _) || registry.TryGet(ScriptHelper.ProgramEDeactivate, 10, 27, out _), // (C, 61) for the wave only; E10 is in line, not in the registry.
-             AlundraPlayerManager.UnhandledWeaponSpriteCodes(types, catalog, registry).Count));
+             PlayerManager.UnhandledWeaponSpriteCodes(types, catalog, registry).Count));
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------

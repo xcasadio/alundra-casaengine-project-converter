@@ -103,7 +103,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
             hero.PosZ = book.PosZ;
             hero.PushLogicalPositionToRoot();
 
-            _hold = AlundraPadState.Square; // the button alone, no direction: nothing is pushed.
+            _hold = PadState.Square; // the button alone, no direction: nothing is pushed.
             for (var i = 0; i < 20; i++)
             {
                 OneFrame(proxy);
@@ -124,7 +124,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         var uiView = new AlundraSaveBookTests.RecordingUIViewRuntime();
         var world = BuildRealMap17World(uiView);
         var (heroEntity, controller) = AddHeroPawn(world);
-        controller.PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = _hold, ButtonsJustPressed = _hold };
+        controller.PadStateProviderForTests = () => new PadState { ButtonsHold = _hold, ButtonsJustPressed = _hold };
 
         // The sprite record catalog is resolved when the proxy is built, from the project path: the export's.
         var previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
@@ -152,7 +152,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         hero.PushLogicalPositionToRoot();
         for (var i = 0; i < 80 && hero.XCollisionEntity == null; i++)
         {
-            _hold = AlundraPadState.Up;
+            _hold = PadState.Up;
             OneFrame(proxy);
         }
 
@@ -162,7 +162,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         var needsButton = (book.Flags & EntityFlags.InteractRequiresButton) != 0;
         for (var i = 0; i < 10 && !Screen.IsBookFlowActive; i++)
         {
-            _hold = AlundraPadState.Up | (needsButton && i % 2 == 1 ? AlundraPadState.Square : 0u);
+            _hold = PadState.Up | (needsButton && i % 2 == 1 ? PadState.Square : 0u);
             OneFrame(proxy);
         }
 
@@ -182,10 +182,10 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         Assert.Equal(new[] { "slot1", "slot2", "slot3", "slot4" }, _slots.LoadCalls);
 
         // Down to slot2, Cross, OUI.
-        Press(proxy, AlundraPadState.Down);
+        Press(proxy, PadState.Down);
         Frames(proxy, 20);
         Assert.Equal(1, Screen.Selection);
-        Press(proxy, AlundraPadState.Cross);
+        Press(proxy, PadState.Cross);
         Frames(proxy, 1); // D-E19-99: the screen reads the pad of the tick before (the binary's slot 10 reads the sample of the previous frame): the question opens one frame after the press.
         Assert.True(AlundraDialogueDirector.Instance.IsAwaitingChoice);
         Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(0));
@@ -198,7 +198,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         Assert.Equal((hero.TileX, hero.TileY), (call.Data.CameraTileX, call.Data.CameraTileY));
 
         // Square ends the screen; the book resets and the hero is released.
-        Press(proxy, AlundraPadState.Square);
+        Press(proxy, PadState.Square);
         FramesUntil(proxy, () => !Screen.IsActive && !Screen.IsBookFlowActive, 200);
         Assert.Equal(SaveBook.StateIdle, SaveBook.ReadState(book));
         Assert.Equal(0u, State.PlayerControlFlags);

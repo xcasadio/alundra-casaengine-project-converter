@@ -13,11 +13,11 @@ namespace Alundra.Physics;
 
 /// <summary>
 /// Shared fixed-step (50 Hz, matching the original PSX build's own physics tick rate) kinematic mover -
-/// extracted from <see cref="AlundraPlayerManager"/>'s own E2 hero tick (<c>RunOneTick</c>/<c>IncrementForce</c>,
+/// extracted from <see cref="PlayerManager"/>'s own E2 hero tick (<c>RunOneTick</c>/<c>IncrementForce</c>,
 /// PhysicsEngine.cs:1445-1446/1490-1491/1551-1598) so E4.b's scripted-NPC mover
 /// (<see cref="AlundraEntityScriptProxy.Update"/>'s own <c>!IsPlayer</c> branch) can reuse the exact same
 /// generic pieces - <see cref="IncrementForce"/> and <see cref="AnimationTables"/>' own offset tables -
-/// without duplicating them, and WITHOUT changing the hero's own behaviour: <see cref="AlundraPlayerManager.Tick"/>
+/// without duplicating them, and WITHOUT changing the hero's own behaviour: <see cref="PlayerManager.Tick"/>
 /// now simply calls <see cref="TickPlayer"/>, running the same body <c>RunOneTick</c> used to run inline,
 /// once per logic tick.
 ///
@@ -59,7 +59,7 @@ internal static class AlundraScriptedMotion
     internal const float FixedTickSeconds = 1f / 50f;
 
     /// <summary>Caps the catch-up run at this many 50 Hz steps per engine frame - see
-    /// <see cref="AlundraPlayerManager"/>'s own (former) doc on this same constant for the full rationale
+    /// <see cref="PlayerManager"/>'s own (former) doc on this same constant for the full rationale
     /// (documented fixed-step deviation, docs/plan-conversion-totale.md §4 E2).</summary>
     internal const int MaxTicksPerFrame = 4;
 
@@ -85,7 +85,7 @@ internal static class AlundraScriptedMotion
     /// COUNT is owned entirely by the caller now (this class' own doc, ONE-CLOCK fix): it is always the
     /// same <c>ticksThisFrame</c> the shared <see cref="LogicClock"/> already handed the script
     /// pass this same frame, never a separately-accumulated value. Called from
-    /// <see cref="AlundraPlayerManager.Tick"/>.</summary>
+    /// <see cref="PlayerManager.Tick"/>.</summary>
     internal static void TickPlayer(AlundraEntityScriptProxy player, int ticks)
     {
         for (var i = 0; i < ticks; i++)
@@ -150,7 +150,7 @@ internal static class AlundraScriptedMotion
             // physics at all while climbing). The REAL per-tick displacement/direction is still exactly
             // player.ForceZ, applied unchanged by MoveVerticalAndPullPosition just above - only the
             // separate airborne-signal latch uses this fixed value.
-            if (player.TargetAnimationId is AlundraPlayerManager.ClimbingAnimationId or AlundraPlayerManager.ClimbStillAnimationId)
+            if (player.TargetAnimationId is PlayerManager.ClimbingAnimationId or PlayerManager.ClimbStillAnimationId)
             {
                 player.MoveVerticalAndPullPosition(player.ForceZ / 65536f, wasSupportedEnteringThisTick: false);
                 player.Controller?.SetExternalVerticalDisplacement(ClimbingExternalDisplacementSentinel);
@@ -925,17 +925,17 @@ internal static class AlundraScriptedMotion
     }
 
     /// <summary>
-    /// E19.d2c1 R7: the boots level of the hero, 3, 2 or 1 when the object <c>0x1C</c>, <c>0x1B</c> or <c>0x1A</c> is owned (<see cref="AlundraPlayerManager.GetNumberOfItem"/>,
+    /// E19.d2c1 R7: the boots level of the hero, 3, 2 or 1 when the object <c>0x1C</c>, <c>0x1B</c> or <c>0x1A</c> is owned (<see cref="PlayerManager.GetNumberOfItem"/>,
     /// <c>NumberOfItems[id * 2 + 1]</c>), else 0; 0 too without a script host (a bare proxy), without exception.
     /// </summary>
     private static int BootsLevel(AlundraEntityScriptProxy hero)
     {
         var state = hero.ScriptHost?.GameState;
-        return state == null ? 0 : AlundraPlayerManager.BootsLevelOf(state); // E20.c2a T2: the step 1 of UpdateItemEffectState, shared.
+        return state == null ? 0 : PlayerManager.BootsLevelOf(state); // E20.c2a T2: the step 1 of UpdateItemEffectState, shared.
     }
 
     /// <summary>Bit-for-bit port of <c>PhysicsEngine.IncrementForce</c> (PhysicsEngine.cs:1551-1576,
-    /// address 0x800367e4) - moved here verbatim from <see cref="AlundraPlayerManager"/>.</summary>
+    /// address 0x800367e4) - moved here verbatim from <see cref="PlayerManager"/>.</summary>
     internal static int IncrementForce(int force, int targetForce, int step)
     {
         if (targetForce != force)

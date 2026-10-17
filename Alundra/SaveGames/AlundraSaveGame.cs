@@ -283,10 +283,10 @@ public sealed class AlundraSaveGame : ISaveGameData
     /// keys);</description></item>
     /// <item><description><c>playerStats</c>: <c>hpMax</c> 0..50 then <c>hp</c> 0..<c>hpMax</c>, <c>mpMax</c>
     /// 0..4 then <c>mp</c> 0..<c>mpMax</c>, <c>money</c> 0..9999, <c>weaponId</c> -1 or 1..6, <c>itemId</c>
-    /// 0..98 (<see cref="AlundraPlayerManager.ItemsCount"/>), <c>falconTemp</c> and <c>falcon</c>
+    /// 0..98 (<see cref="PlayerManager.ItemsCount"/>), <c>falconTemp</c> and <c>falcon</c>
     /// 0..50;</description></item>
     /// <item><description><c>numberOfItems</c>, the last field checked: at <c>id * 2 + 1</c> for an item id below
-    /// <see cref="AlundraPlayerManager.ItemsCount"/>, 0..<c>ItemsProperties[id * 5 + 3]</c>; every even index and
+    /// <see cref="PlayerManager.ItemsCount"/>, 0..<c>ItemsProperties[id * 5 + 3]</c>; every even index and
     /// every index from 198 up, 0.</description></item>
     /// </list>
     /// <c>gameFlags</c> has no domain, and <c>deathRetryCount</c>'s domain, 0..255, is its type's (D-E16-22).
@@ -351,7 +351,7 @@ public sealed class AlundraSaveGame : ISaveGameData
         for (var i = 0; i < NumberOfItems.Length; i++)
         {
             var itemId = (i - 1) / 2;
-            var max = i % 2 == 1 && itemId < AlundraPlayerManager.ItemsCount
+            var max = i % 2 == 1 && itemId < PlayerManager.ItemsCount
                 ? itemsProperties[itemId * AlundraItemTables.ItemColumnCount + MaxCountColumn]
                 : 0;
 
@@ -438,9 +438,9 @@ public sealed class AlundraSaveGame : ISaveGameData
             return Format($"playerStats.weaponId = {WeaponId}, outside -1 or 1..{MaxWeaponId}");
         }
 
-        if (ItemId < 0 || ItemId >= AlundraPlayerManager.ItemsCount)
+        if (ItemId < 0 || ItemId >= PlayerManager.ItemsCount)
         {
-            return OutsideRange("playerStats.itemId", ItemId, 0, AlundraPlayerManager.ItemsCount - 1);
+            return OutsideRange("playerStats.itemId", ItemId, 0, PlayerManager.ItemsCount - 1);
         }
 
         if (FalconTemp < 0 || FalconTemp > MaxFalcon)
@@ -535,7 +535,7 @@ public sealed class AlundraSaveGame : ISaveGameData
     /// <c>GameEngine.cs:2724</c> reads it. The HP is the max HP: the original reads the hero's
     /// <c>g_entitySlots[0].HpMax</c>, which it keeps equal to <c>g_playerStats.HpMax</c>; this DLL has only the
     /// latter (F7). A max HP outside 0..99 (refused by the validation, and clamped to 0..50 by
-    /// <see cref="AlundraPlayerManager.SetPlayerHpMax"/>) gives non-digit characters, as in the original, and
+    /// <see cref="PlayerManager.SetPlayerHpMax"/>) gives non-digit characters, as in the original, and
     /// never throws.
     /// </summary>
     public static string BuildSummary(short hpMax, uint gameTime)

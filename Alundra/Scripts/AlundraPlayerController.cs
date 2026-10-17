@@ -25,7 +25,7 @@ namespace Alundra.Scripts;
 /// there and does not try to. Instead <see cref="AlundraWorldProxy.InitializeWithWorld"/> (which DOES have
 /// the world) drives input-mapping registration once via <see cref="EnsureInputMappingsRegistered"/>, and
 /// each frame <see cref="AlundraEntityScriptProxy.Update"/>'s own player branch pulls a fresh
-/// <see cref="AlundraPadState"/> from this controller via <see cref="BuildPadState"/> - see that class's
+/// <see cref="PadState"/> from this controller via <see cref="BuildPadState"/> - see that class's
 /// own doc for why nothing in the base engine ever calls <see cref="Controller"/>/<see cref="PlayerController"/>'s
 /// own <c>Update</c> automatically (there is none to call).
 /// </summary>
@@ -36,42 +36,42 @@ public sealed class AlundraPlayerController : PlayerController
 
     /// <summary>
     /// Action name (from <c>Data/Alundra.buttonsMapping</c>'s own actions, converter E2-A and E13.d D1) -&gt; the
-    /// original PSX pad bit it feeds (see <see cref="AlundraPadState"/>'s own doc and
+    /// original PSX pad bit it feeds (see <see cref="PadState"/>'s own doc and
     /// <c>Alundra/Scripts/PlayerManager.cs:413/549/964/1904/430</c>, quoted by the converter's own E2-A
     /// note in <c>docs/plan-conversion-totale.md</c> §4 for the PSX-&gt;pad mapping this mirrors).
     /// </summary>
-    private const uint DirectionMask = AlundraPadState.Up | AlundraPadState.Right | AlundraPadState.Down | AlundraPadState.Left;
+    private const uint DirectionMask = PadState.Up | PadState.Right | PadState.Down | PadState.Left;
 
     private static readonly (string Action, uint Bit)[] ActionBits =
     {
-        ("MoveUp", AlundraPadState.Up),
-        ("MoveDown", AlundraPadState.Down),
-        ("MoveLeft", AlundraPadState.Left),
-        ("MoveRight", AlundraPadState.Right),
+        ("MoveUp", PadState.Up),
+        ("MoveDown", PadState.Down),
+        ("MoveLeft", PadState.Left),
+        ("MoveRight", PadState.Right),
         // Left stick, onto the SAME four PSX bits as the D-pad above (user report, 2026-08-26: the
         // stick moved nothing). The converter emits these as four separate AnalogInput mappings because
         // an InputMapping is either digital or analog, never both, so the stick cannot ride along on the
         // D-pad's own entries - see PlayerSetupWriter.BuildLeftStickBinding. ComputePadState ORs every
         // action's bit into one ButtonsHold, so the ported game logic sees a single PSX pad and cannot
         // tell which device produced a direction; holding both simply agrees with itself.
-        ("MoveUpStick", AlundraPadState.Up),
-        ("MoveDownStick", AlundraPadState.Down),
-        ("MoveLeftStick", AlundraPadState.Left),
-        ("MoveRightStick", AlundraPadState.Right),
-        ("Jump", AlundraPadState.Cross),
-        ("Attack", AlundraPadState.Square),
-        ("UseItem", AlundraPadState.Circle),
-        ("Sprint", AlundraPadState.Triangle),
-        ("Menu", AlundraPadState.Start),
+        ("MoveUpStick", PadState.Up),
+        ("MoveDownStick", PadState.Down),
+        ("MoveLeftStick", PadState.Left),
+        ("MoveRightStick", PadState.Right),
+        ("Jump", PadState.Cross),
+        ("Attack", PadState.Square),
+        ("UseItem", PadState.Circle),
+        ("Sprint", PadState.Triangle),
+        ("Menu", PadState.Start),
         // E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-11): the shoulder buttons and Select, bound by
         // the converter to U/Y/I/O/P and LeftShoulder/LeftTrigger/RightShoulder/RightTrigger/Back. Start,
         // L2 or R2 opens the main inventory (GameEngine.cs:1567-1576, PadState.OpenInventory), L1/R1
         // switch to the sub-inventory once it is open.
-        ("L1", AlundraPadState.L1),
-        ("L2", AlundraPadState.L2),
-        ("R1", AlundraPadState.R1),
-        ("R2", AlundraPadState.R2),
-        ("Select", AlundraPadState.Select),
+        ("L1", PadState.L1),
+        ("L2", PadState.L2),
+        ("R1", PadState.R1),
+        ("R2", PadState.R2),
+        ("Select", PadState.Select),
     };
 
     /// <summary>
@@ -166,16 +166,16 @@ public sealed class AlundraPlayerController : PlayerController
     /// <see cref="CasaEngineGame"/>/<see cref="Framework.Input.PlayerInput"/> to script a pad through, and
     /// <see cref="AlundraPlayerController"/> is <c>sealed</c> (not fakeable via a test double implementing
     /// <see cref="PlayerController"/>). Instance-scoped field, default <c>null</c> - strictly no effect in
-    /// production, same idiom as <see cref="AlundraPlayerManager.SetDebugIgnoreControlLockOverrideForTests"/>.
+    /// production, same idiom as <see cref="PlayerManager.SetDebugIgnoreControlLockOverrideForTests"/>.
     /// Never read or written by any production code path.
     /// </summary>
-    internal Func<AlundraPadState>? PadStateProviderForTests;
+    internal Func<PadState>? PadStateProviderForTests;
 
     /// <summary>
-    /// Builds this frame's <see cref="AlundraPadState"/> by OR-ing in each mapped action's bit
+    /// Builds this frame's <see cref="PadState"/> by OR-ing in each mapped action's bit
     /// (<see cref="ActionBits"/>) whenever <see cref="PlayerController.Input"/>'s
     /// <see cref="PlayerInput.GetButtonState"/> reports it held/just-pressed. Returns the zero state
-    /// (nothing held - a safe no-op input for <see cref="AlundraPlayerManager.MovePlayer"/>) when
+    /// (nothing held - a safe no-op input for <see cref="PlayerManager.MovePlayer"/>) when
     /// <see cref="PlayerController.Input"/> has not been wired yet (<c>World.CreateLocalPlayerController</c>
     /// sets it right after <see cref="Controller.Possess"/>, so this only matters for a controller
     /// constructed outside that path, e.g. a unit test), or when this controller's <see cref="Controller.Pawn"/>
@@ -184,7 +184,7 @@ public sealed class AlundraPlayerController : PlayerController
     /// skipped WITHOUT throwing (a plain <see cref="InputMappingManager.Contains"/> check, not a
     /// try/catch - this runs every frame) - see <see cref="ComputePadState"/> for the pure, testable core.
     /// </summary>
-    public AlundraPadState BuildPadState()
+    public PadState BuildPadState()
     {
         if (PadStateProviderForTests != null)
         {
@@ -214,7 +214,7 @@ public sealed class AlundraPlayerController : PlayerController
     /// <paramref name="inputMappingManager"/> is skipped entirely (never calls
     /// <paramref name="getButtonState"/> for it) - no exception is ever thrown by this method.
     /// </summary>
-    internal static AlundraPadState ComputePadState(
+    internal static PadState ComputePadState(
         InputMappingManager inputMappingManager, Func<string, ButtonState> getButtonState)
     {
         uint hold = 0;
@@ -265,7 +265,7 @@ public sealed class AlundraPlayerController : PlayerController
             }
         }
 
-        return new AlundraPadState
+        return new PadState
         {
             ButtonsHold = hold,
             ButtonsJustPressed = justPressed,

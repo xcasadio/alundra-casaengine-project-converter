@@ -142,8 +142,8 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
     }
 
     [Theory]
-    [InlineData(AlundraPlayerManager.ClimbingAnimationId, AlundraScriptedMotion.ClimbingExternalDisplacementSentinel)]
-    [InlineData(AlundraPlayerManager.ClimbStillAnimationId, AlundraScriptedMotion.ClimbingExternalDisplacementSentinel)]
+    [InlineData(PlayerManager.ClimbingAnimationId, AlundraScriptedMotion.ClimbingExternalDisplacementSentinel)]
+    [InlineData(PlayerManager.ClimbStillAnimationId, AlundraScriptedMotion.ClimbingExternalDisplacementSentinel)]
     [InlineData(0u, 0f)]
     public void Thaw_Hero_DeclaresTheClimbingSentinelAgain_OnlyWhileClimbing(uint animationId, float expectedLatch)
     {

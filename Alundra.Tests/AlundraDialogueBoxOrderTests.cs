@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 /// </summary>
 public sealed class AlundraDialogueBoxOrderTests
 {
-    private const uint Square = AlundraPadState.Square;
+    private const uint Square = PadState.Square;
 
     private static DialogueAsset Bonjour(string name = "Bonjour") => DialogueTestAssets.SinglePage(name, "bonjour");
 

@@ -117,8 +117,8 @@ public sealed class AlundraHeroLifeTests
         state.PlayerStats.WeaponId = 1;
         var item = inventory.GetProperty("item");
         state.PlayerStats.ItemId = (short)(item.ValueKind == JsonValueKind.Number ? item.GetInt32() : 0);
-        AlundraPlayerManager.SetPlayerHpMax(state, hpMax);
-        AlundraPlayerManager.SetPlayerHp(state, (short)hp);
+        PlayerManager.SetPlayerHpMax(state, hpMax);
+        PlayerManager.SetPlayerHp(state, (short)hp);
 
         // What AdoptPlayerPawn does (PullHeroLifeFromStats), on a bare proxy that carries the hero's own balance record (+0x1C4).
         var hero = new AlundraEntityScriptProxy
@@ -147,11 +147,11 @@ public sealed class AlundraHeroLifeTests
         var oracle = RunNamed("G.json", run);
         var meta = oracle.GetProperty("meta");
         var m = BuildMontage(meta.GetProperty("inventory"), 10, 10);
-        var pad = default(AlundraPadState);
+        var pad = default(PadState);
 
         for (var tick = 1; tick <= 3; tick++)
         {
-            AlundraPlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
+            PlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
 
             Assert.Equal(Column(oracle, "g", "boots", tick), m.Records.BootsLevel);
             var sheet = m.Records.HeroSheet;
@@ -206,8 +206,8 @@ public sealed class AlundraHeroLifeTests
             }
 
             var before = m.Hero.Hp;
-            var pad = new AlundraPadState { ButtonsHold = holds.GetValueOrDefault(tick) };
-            AlundraPlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
+            var pad = new PadState { ButtonsHold = holds.GetValueOrDefault(tick) };
+            PlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
 
             Assert.Equal(Column(oracle, "hero", "hp", tick), m.Hero.Hp);
             Assert.Equal(Column(oracle, "hero", "hpmax_18", tick), m.Hero.HpMax);
@@ -250,7 +250,7 @@ public sealed class AlundraHeroLifeTests
         var hpMax = spec.TryGetProperty("hpmax", out var hpMaxValue) ? hpMaxValue.GetInt32() : 10;
         var events = spec.GetProperty("events").EnumerateObject().ToDictionary(p => int.Parse(p.Name), p => p.Value.Clone());
         var m = BuildMontage(KitInventory, hp, hpMax);
-        var pad = default(AlundraPadState);
+        var pad = default(PadState);
 
         for (var tick = 1; tick <= spec.GetProperty("n").GetInt32(); tick++)
         {
@@ -261,13 +261,13 @@ public sealed class AlundraHeroLifeTests
                     switch (ev[0].GetString())
                     {
                         case "stats_hp":
-                            AlundraPlayerManager.SetPlayerHp(m.State, (short)ev[1].GetInt32());
+                            PlayerManager.SetPlayerHp(m.State, (short)ev[1].GetInt32());
                             break;
                         case "stats_hpmax":
-                            AlundraPlayerManager.SetPlayerHpMax(m.State, ev[1].GetInt32());
+                            PlayerManager.SetPlayerHpMax(m.State, ev[1].GetInt32());
                             break;
                         case "vessel":
-                            AlundraPlayerManager.IncreaseHpMaxAndFill(m.State, m.Hero);
+                            PlayerManager.IncreaseHpMaxAndFill(m.State, m.Hero);
                             break;
                         default:
                             throw new InvalidOperationException("event " + ev[0].GetString());
@@ -275,7 +275,7 @@ public sealed class AlundraHeroLifeTests
                 }
             }
 
-            AlundraPlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
+            PlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
 
             Assert.Equal(Column(oracle, "hero", "hp", tick), m.Hero.Hp);
             Assert.Equal(Column(oracle, "hero", "hpmax_18", tick), m.Hero.HpMax);
@@ -299,10 +299,10 @@ public sealed class AlundraHeroLifeTests
         var flags = oracle.GetProperty("spec").GetProperty("flags_value").GetUInt32();
         var m = BuildMontage(KitInventory, 10, 10);
         m.State.PlayerControlFlags = flags;
-        AlundraPlayerManager.SetPlayerHp(m.State, 6); // the poke of the D1 scenario, before tick 1.
-        var pad = default(AlundraPadState);
+        PlayerManager.SetPlayerHp(m.State, 6); // the poke of the D1 scenario, before tick 1.
+        var pad = default(PadState);
 
-        AlundraPlayerManager.MovePlayer(m.Hero, in pad, m.State, host: null);
+        PlayerManager.MovePlayer(m.Hero, in pad, m.State, host: null);
 
         Assert.Equal(10, Column(oracle, "g", "stats_hp", 1)); // the binary: the poked 6 is back to the entity's 10 after tick 1, locked or not.
         Assert.Equal(Column(oracle, "g", "stats_hp", 1), (int)m.State.PlayerStats.Hp);
@@ -332,8 +332,8 @@ public sealed class AlundraHeroLifeTests
                 break;
         }
 
-        var pad = default(AlundraPadState);
-        AlundraPlayerManager.MovePlayer(hero, in pad, state, host: null);
+        var pad = default(PadState);
+        PlayerManager.MovePlayer(hero, in pad, state, host: null);
     }
 
     [Theory]
@@ -405,7 +405,7 @@ public sealed class AlundraHeroLifeTests
     [InlineData(0x08, 0x40, 0x10, 0x08)] // ancient.
     public void CombineResponse_FollowsTheDisassembly(int armour, int weapon, int accessory, int expected)
     {
-        Assert.Equal(expected, AlundraPlayerManager.CombineResponse(armour, weapon, accessory));
+        Assert.Equal(expected, PlayerManager.CombineResponse(armour, weapon, accessory));
     }
 
     [Theory]
@@ -419,35 +419,35 @@ public sealed class AlundraHeroLifeTests
         Array.Clear(state.NumberOfItems);
         state.NumberOfItems[item * 2 + 1] = 1;
 
-        Assert.Equal(expected, AlundraPlayerManager.BootsLevelOf(state));
+        Assert.Equal(expected, PlayerManager.BootsLevelOf(state));
 
         state.NumberOfItems[0x1A * 2 + 1] = 1; // 0x1A with any other keeps the higher one.
-        Assert.Equal(Math.Max(expected, 1), AlundraPlayerManager.BootsLevelOf(state));
+        Assert.Equal(Math.Max(expected, 1), PlayerManager.BootsLevelOf(state));
     }
 
     [Fact]
     public void TheHeroSheet_IsOneReusableRecord_RewrittenInPlace_AndRebuiltOnlyWhenTheCopiedRecordChanges()
     {
         var m = BuildMontage(KitInventory, 10, 10);
-        var pad = default(AlundraPadState);
-        AlundraPlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
+        var pad = default(PadState);
+        PlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
         var first = m.Records.HeroSheet;
         Assert.NotNull(first);
         Assert.All(first!.DamageResponses, b => Assert.Equal(0x10, b));
 
-        AlundraPlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
+        PlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
         Assert.Same(first, m.Records.HeroSheet); // the same object, tick after tick.
 
         // A charm (0x36: response 6 is 0x80, the rest 0x0F) over the same armour: the same record, its bytes rewritten.
         m.State.NumberOfItems[0x36 * 2 + 1] = 1;
         m.State.PlayerStats.ItemId = 0x36;
-        AlundraPlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
+        PlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
         Assert.Same(first, m.Records.HeroSheet);
         Assert.Equal(new byte[] { 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x80, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F }, first.DamageResponses.ToArray()); // oracle G-charm.
 
         // Another armour (leather 0x12): another source record, so another sheet object, with the leather's 0x0C (and the charm's combination: 0x0C + (0x0F - 0x10)... flagged 0x80 wins on response 6).
         m.State.NumberOfItems[0x12 * 2 + 1] = 1;
-        AlundraPlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
+        PlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
         Assert.NotSame(first, m.Records.HeroSheet);
         Assert.Equal(0x80, m.Records.HeroSheet!.DamageResponses[5]);
         Assert.Equal(0x0C - 1, m.Records.HeroSheet.DamageResponses[0]); // 0x0C + (0x0F - 0x10).
@@ -458,14 +458,14 @@ public sealed class AlundraHeroLifeTests
     {
         var noArmour = JsonDocument.Parse("{\"owned\":[1,25],\"item\":null}").RootElement.Clone();
         var m = BuildMontage(noArmour, 10, 10);
-        var pad = default(AlundraPadState);
+        var pad = default(PadState);
 
-        AlundraPlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
+        PlayerManager.EndOfMovePlayer(m.Hero, in pad, m.State, m.Host);
 
         Assert.All(m.Records.HeroSheet!.DamageResponses, b => Assert.Equal(0, b)); // oracle G-noarmour: record 0 of the balance table, all responses 0.
 
         var bare = new AlundraEquipmentRecords();
-        AlundraPlayerManager.ComputeHeroSheet(new AlundraEntityScriptProxy(), bare); // no armour and no record of its own: nothing to copy.
+        PlayerManager.ComputeHeroSheet(new AlundraEntityScriptProxy(), bare); // no armour and no record of its own: nothing to copy.
         Assert.Null(bare.HeroSheet);
     }
 
@@ -507,8 +507,8 @@ public sealed class AlundraHeroLifeTests
 
     private static void Regenerate(AlundraEntityScriptProxy hero, GameState state, AlundraEquipmentRecords? records, uint hold = 0)
     {
-        var pad = new AlundraPadState { ButtonsHold = hold };
-        AlundraPlayerManager.RegenerateLife(hero, in pad, state, records);
+        var pad = new PadState { ButtonsHold = hold };
+        PlayerManager.RegenerateLife(hero, in pad, state, records);
     }
 
     [Fact]
@@ -574,9 +574,9 @@ public sealed class AlundraHeroLifeTests
         Regenerate(frozen, state, records);
         Assert.Equal(0, state.RegenerationCounters[0]);
 
-        Regenerate(new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 }, state, records, hold: AlundraPadState.L2); // any button of the halfword, the D-pad included.
+        Regenerate(new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 }, state, records, hold: PadState.L2); // any button of the halfword, the D-pad included.
         Assert.Equal(0, state.RegenerationCounters[0]);
-        Regenerate(new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 }, state, records, hold: AlundraPadState.Up);
+        Regenerate(new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 }, state, records, hold: PadState.Up);
         Assert.Equal(0, state.RegenerationCounters[0]);
 
         Regenerate(new AlundraEntityScriptProxy { Hp = 0, HpMax = 10 }, state, records); // Hp == 0: the regeneration stops (D-E20-20).
@@ -680,7 +680,7 @@ public sealed class AlundraHeroLifeTests
             }
 
             var before = sound.Played.Count;
-            AlundraPlayerAnimationEffects.Create(hero, locked ? AlundraPlayerAnimationEffects.LockedMode : AlundraPlayerAnimationEffects.FreeMode);
+            PlayerAnimationEffects.Create(hero, locked ? PlayerAnimationEffects.LockedMode : PlayerAnimationEffects.FreeMode);
             at.AddRange(sound.Played.Skip(before).Where(id => id == 0x190).Select(_ => tick));
         }
 
@@ -707,7 +707,7 @@ public sealed class AlundraHeroLifeTests
     {
         var hero = new AlundraEntityScriptProxy { Hp = 1, HpMax = 10 };
 
-        AlundraPlayerAnimationEffects.Create(hero, AlundraPlayerAnimationEffects.FreeMode); // the bare proxy of a montage: no session state, nothing to count, nothing thrown.
+        PlayerAnimationEffects.Create(hero, PlayerAnimationEffects.FreeMode); // the bare proxy of a montage: no session state, nothing to count, nothing thrown.
 
         Assert.Equal(1, hero.Hp);
     }
@@ -718,13 +718,13 @@ public sealed class AlundraHeroLifeTests
         var sound = new RecordingSound();
         var host = new ContactHost { SoundPlayer = sound };
         var first = new AlundraEntityScriptProxy { ScriptHost = host, Hp = 2, HpMax = 12, LifePulledFromStats = true };
-        AlundraPlayerAnimationEffects.Create(first, AlundraPlayerAnimationEffects.FreeMode); // tick 1: the sound, the counter 0x2D.
-        Assert.Equal(AlundraPlayerAnimationEffects.LowHpAlarmReload, host.GameState.LowHpAlarmCounter);
+        PlayerAnimationEffects.Create(first, PlayerAnimationEffects.FreeMode); // tick 1: the sound, the counter 0x2D.
+        Assert.Equal(PlayerAnimationEffects.LowHpAlarmReload, host.GameState.LowHpAlarmCounter);
 
         var second = new AlundraEntityScriptProxy { ScriptHost = host, Hp = 2, HpMax = 12, LifePulledFromStats = true }; // the hero of the next map: the global is not reset by a map load.
-        AlundraPlayerAnimationEffects.Create(second, AlundraPlayerAnimationEffects.FreeMode);
+        PlayerAnimationEffects.Create(second, PlayerAnimationEffects.FreeMode);
 
-        Assert.Equal(AlundraPlayerAnimationEffects.LowHpAlarmReload - 1, host.GameState.LowHpAlarmCounter);
+        Assert.Equal(PlayerAnimationEffects.LowHpAlarmReload - 1, host.GameState.LowHpAlarmCounter);
         Assert.Single(sound.Played, id => id == 0x190);
     }
 }
@@ -757,8 +757,8 @@ public sealed class AlundraHeroLifeArcTests
         using var arc = new ArcRun(Map14(run), _ =>
         {
             // The oracle's order: the real SetPlayerHpMax, then SetPlayerHp.
-            AlundraPlayerManager.SetPlayerHpMax(ArcRun.State, spec.GetProperty("hpmax").GetInt32());
-            AlundraPlayerManager.SetPlayerHp(ArcRun.State, (short)spec.GetProperty("hp").GetInt32());
+            PlayerManager.SetPlayerHpMax(ArcRun.State, spec.GetProperty("hpmax").GetInt32());
+            PlayerManager.SetPlayerHp(ArcRun.State, (short)spec.GetProperty("hp").GetInt32());
         });
 
         Assert.Equal((spawn.GetProperty("entity_hp").GetInt32(), spawn.GetProperty("entity_hpmax").GetInt32()), (arc.Hero.Hp, arc.Hero.HpMax));
@@ -779,8 +779,8 @@ public sealed class AlundraHeroLifeArcTests
         short hpMax;
         using (var first = new ArcRun(Map14("two-maps-1"), _ =>
         {
-            AlundraPlayerManager.SetPlayerHpMax(ArcRun.State, 12);
-            AlundraPlayerManager.SetPlayerHp(ArcRun.State, 4);
+            PlayerManager.SetPlayerHpMax(ArcRun.State, 12);
+            PlayerManager.SetPlayerHp(ArcRun.State, 4);
         }))
         {
             Assert.Equal((4, 12), (first.Hero.Hp, first.Hero.HpMax));
@@ -797,8 +797,8 @@ public sealed class AlundraHeroLifeArcTests
         // what is tested is the adoption of the second world and its ticks.
         using var second = new ArcRun(Inoa179("two-maps-2"), _ =>
         {
-            AlundraPlayerManager.SetPlayerHpMax(ArcRun.State, hpMax);
-            AlundraPlayerManager.SetPlayerHp(ArcRun.State, hp);
+            PlayerManager.SetPlayerHpMax(ArcRun.State, hpMax);
+            PlayerManager.SetPlayerHp(ArcRun.State, hp);
         });
         Assert.Equal((4, 12), (second.Hero.Hp, second.Hero.HpMax));
         for (var frame = 0; frame < 30; frame++)

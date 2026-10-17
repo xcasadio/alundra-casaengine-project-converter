@@ -10,7 +10,7 @@ using Alundra.Physics;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Covers <see cref="AlundraPlayerManager"/>'s ported subset of <c>PlayerManager.MovePlayer</c> and its
+/// Covers <see cref="PlayerManager"/>'s ported subset of <c>PlayerManager.MovePlayer</c> and its
 /// own kinematic tick - see that class' own doc for the exact ported/not-ported line ranges.
 /// </summary>
 public class AlundraPlayerManagerTests
@@ -51,9 +51,9 @@ public class AlundraPlayerManagerTests
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0x18 };
         // ButtonsHold nibble 0 (no direction bits, other bits irrelevant to the >>0xc read) - actually we
         // need an INVALID combination: nibble 5 = Up+Down (0x1000|0x4000 -> nibble 0b0101 = 5) -> 0xFFFFFFFF.
-        var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up | AlundraPadState.Down };
+        var pad = new PadState { ButtonsHold = PadState.Up | PadState.Down };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
+        PlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
 
         // buttonsHold (nibble) != 0 here (Up+Down both held), so TargetAnimationId becomes Moving, but the
         // invalid combination means TargetDirection falls back to whatever it already was (0x18).
@@ -69,7 +69,7 @@ public class AlundraPlayerManagerTests
     {
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
 
-        AlundraPlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
+        PlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
 
         Assert.Equal(0u, player.TargetAnimationId);
     }
@@ -78,9 +78,9 @@ public class AlundraPlayerManagerTests
     public void MovePlayer_IdleWithRightHeld_BecomesMovingFacingRight()
     {
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
-        var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
+        var pad = new PadState { ButtonsHold = PadState.Right };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
+        PlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
 
         Assert.Equal(1u, player.TargetAnimationId); // Moving
         Assert.Equal(0x18u, player.TargetDirection); // g_directionByButtons[Right>>0xc = 2] = 0x18
@@ -91,7 +91,7 @@ public class AlundraPlayerManagerTests
     {
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 1, TargetDirection = 0x18 };
 
-        AlundraPlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
+        PlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
 
         Assert.Equal(0u, player.TargetAnimationId);
         Assert.Equal(0x18u, player.TargetDirection); // direction held (dir falls back to current)
@@ -103,14 +103,14 @@ public class AlundraPlayerManagerTests
         // E19.d2c2 S1: 0x2D (in the air, no direction) IS a ported case now: on the ground (a bare proxy is never in the air) with Right held it goes back to
         // Moving, like the binary's tail. A case that is still not ported stays untouched.
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x2D /* air, still */, TargetDirection = 0 };
-        var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
+        var pad = new PadState { ButtonsHold = PadState.Right };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
+        PlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
 
         Assert.Equal(1u, player.TargetAnimationId);
 
         var unported = new AlundraEntityScriptProxy { TargetAnimationId = 0x20 /* not one of the ported cases */, TargetDirection = 0 };
-        AlundraPlayerManager.MovePlayer(unported, in pad, NewUnlockedState(), host: null);
+        PlayerManager.MovePlayer(unported, in pad, NewUnlockedState(), host: null);
         Assert.Equal(0x20u, unported.TargetAnimationId);
     }
 
@@ -122,10 +122,10 @@ public class AlundraPlayerManagerTests
     public void MovePlayer_InputBlocked_DoesNotChangeAnimationOrDirection()
     {
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
-        var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
+        var pad = new PadState { ButtonsHold = PadState.Right };
         var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, state, host: null);
+        PlayerManager.MovePlayer(player, in pad, state, host: null);
 
         Assert.Equal(0u, player.TargetAnimationId);
         Assert.Equal(0u, player.TargetDirection);
@@ -140,9 +140,9 @@ public class AlundraPlayerManagerTests
             TargetDirection = 0,
             BlockedByEntity = new CasaEngine.Framework.Scene.Entities.Entity(),
         };
-        var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
+        var pad = new PadState { ButtonsHold = PadState.Right };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
+        PlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
 
         Assert.Equal(0u, player.TargetAnimationId);
         Assert.Equal(0u, player.TargetDirection);
@@ -153,7 +153,7 @@ public class AlundraPlayerManagerTests
     {
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0, Flags = 0 };
 
-        AlundraPlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
+        PlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
 
         Assert.Equal(EntityFlags.Gravity, player.Flags & EntityFlags.Gravity);
     }
@@ -171,9 +171,9 @@ public class AlundraPlayerManagerTests
         // IsOnGround stub = 1 (AlundraWorldProxy.AdoptPlayerPawn's own documented stub until E3):
         // the original's "break" branch - stays LoadingMap.
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 1 };
-        var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
+        var pad = new PadState { ButtonsHold = PadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
+        PlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
 
         Assert.Equal(0x36u, player.TargetAnimationId);
     }
@@ -185,7 +185,7 @@ public class AlundraPlayerManagerTests
         // predicate of the common tail (ApplyGroundOrAirTail, which reads the same word at 0x80031EBC).
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, HeroAirborne = true };
 
-        AlundraPlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
+        PlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
 
         Assert.Equal(0x2Du, player.TargetAnimationId);
     }
@@ -196,9 +196,9 @@ public class AlundraPlayerManagerTests
         // E19.v V-R1: after 0x2D the binary leaves the switch, so the jump states' case (the stick's direction, 0x2C with a
         // direction held) does not run in the same call.
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, HeroAirborne = true };
-        var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
+        var pad = new PadState { ButtonsHold = PadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
+        PlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
 
         Assert.Equal(0x2Du, player.TargetAnimationId);
         Assert.Equal(0u, player.TargetDirection);
@@ -210,7 +210,7 @@ public class AlundraPlayerManagerTests
         // E19.v V-R2: without a controller the air predicate is HeroAirborne, not the IsOnGround a bare proxy leaves at 0.
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 0, HeroAirborne = false };
 
-        AlundraPlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
+        PlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
 
         Assert.Equal(0x36u, player.TargetAnimationId);
     }
@@ -221,7 +221,7 @@ public class AlundraPlayerManagerTests
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 1 };
         var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 
-        AlundraPlayerManager.MovePlayer(player, in NoInput, state, host: null);
+        PlayerManager.MovePlayer(player, in NoInput, state, host: null);
 
         Assert.Equal(0x36u, player.TargetAnimationId); // locked branch returns before the LoadingMap case ever runs.
     }
@@ -245,24 +245,24 @@ public class AlundraPlayerManagerTests
 
         // Tick 1: TargetForceX = g_offsetXList[0x18] * 208 = 768 * 208 = 159744;
         // ForceStepX = |159744-0| >> 1 = 79872; ForceX = IncrementForce(0, 159744, 79872) = 79872.
-        AlundraPlayerManager.Tick(player, 1);
+        PlayerManager.Tick(player, 1);
         Assert.Equal(79872, player.ForceX);
         Assert.Equal(0, player.ForceY); // g_offsetYList[0x18] = 0 (due east has no Y component)
         Assert.Equal(79872, player.PosX);
 
         // Tick 2: Speed/Direction/Acceleration unchanged -> no recompute; ForceX = IncrementForce(79872,
         // 159744, 79872) = 159744.
-        AlundraPlayerManager.Tick(player, 1);
+        PlayerManager.Tick(player, 1);
         Assert.Equal(159744, player.ForceX);
         Assert.Equal(79872 + 159744, player.PosX);
 
         // Tick 3: force already equals target -> steady state, ForceX unchanged at 159744.
-        AlundraPlayerManager.Tick(player, 1);
+        PlayerManager.Tick(player, 1);
         Assert.Equal(159744, player.ForceX);
         Assert.Equal(79872 + 159744 + 159744, player.PosX);
     }
 
-    /// <summary>ONE-CLOCK fix (see <see cref="AlundraScriptedMotion"/>'s own class doc): <see cref="AlundraPlayerManager.Tick"/>
+    /// <summary>ONE-CLOCK fix (see <see cref="AlundraScriptedMotion"/>'s own class doc): <see cref="PlayerManager.Tick"/>
     /// no longer owns a sub-step elapsed-time accumulator itself - production now derives its own tick
     /// count from the SAME shared <see cref="LogicClock"/> the script pass reads. This test's own
     /// driver is adapted to match (a local clock feeding elapsed time in, ticks out) so the expected
@@ -279,13 +279,13 @@ public class AlundraPlayerManagerTests
         var clock = new LogicClock();
 
         // A small slice of elapsed time - not enough to run any 50 Hz (0.02s) step yet.
-        AlundraPlayerManager.Tick(player, clock.TicksThisFrame(0.005f));
+        PlayerManager.Tick(player, clock.TicksThisFrame(0.005f));
         clock.CloseFrame();
         Assert.Equal(0, player.PosX);
 
         // Enough more arrives that the accumulator now clearly exceeds one 50 Hz step (0.005 + 0.02 =
         // 0.025s, comfortably past the 0.02s threshold regardless of float rounding) - runs exactly once.
-        AlundraPlayerManager.Tick(player, clock.TicksThisFrame(0.02f));
+        PlayerManager.Tick(player, clock.TicksThisFrame(0.02f));
         clock.CloseFrame();
         Assert.Equal(79872, player.PosX);
     }
@@ -304,7 +304,7 @@ public class AlundraPlayerManagerTests
         var clock = new LogicClock();
 
         // 1 full second (50 ticks worth) in one go - capped at 4 ticks for this single frame.
-        AlundraPlayerManager.Tick(player, clock.TicksThisFrame(1f));
+        PlayerManager.Tick(player, clock.TicksThisFrame(1f));
         clock.CloseFrame();
 
         // Ticks: 79872, +159744=239616, +159744(steady)=399360... wait force reaches target after tick 2
@@ -318,13 +318,13 @@ public class AlundraPlayerManagerTests
     {
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0x18, AnimSetsByAnim = null };
 
-        AlundraPlayerManager.Tick(player, 1);
+        PlayerManager.Tick(player, 1);
 
         Assert.Equal(0, player.PosX);
         Assert.Equal(0, player.ForceX);
     }
 
-    private static readonly AlundraPadState NoInput = default;
+    private static readonly PadState NoInput = default;
 
     // -----------------------------------------------------------------------------------------
     // Decision E4-3 debug flag (docs/plan-e4-deplacement-scripte.md): ALUNDRA_DEBUG_IGNORE_CONTROL_LOCK
@@ -337,14 +337,14 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void MovePlayer_ControlLocked_DebugFlagInactive_StillBlocked()
     {
-        AlundraPlayerManager.SetDebugIgnoreControlLockOverrideForTests(false);
+        PlayerManager.SetDebugIgnoreControlLockOverrideForTests(false);
         try
         {
             var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
-            var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
+            var pad = new PadState { ButtonsHold = PadState.Right };
             var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 
-            AlundraPlayerManager.MovePlayer(player, in pad, state, host: null);
+            PlayerManager.MovePlayer(player, in pad, state, host: null);
 
             // Flag inactive -> the InputBlockedMask gate still applies -> untouched, same as the
             // pre-existing MovePlayer_InputBlocked_DoesNotChangeAnimationOrDirection test above.
@@ -353,21 +353,21 @@ public class AlundraPlayerManagerTests
         }
         finally
         {
-            AlundraPlayerManager.SetDebugIgnoreControlLockOverrideForTests(null);
+            PlayerManager.SetDebugIgnoreControlLockOverrideForTests(null);
         }
     }
 
     [Fact]
     public void MovePlayer_ControlLocked_DebugFlagActive_ReadsThePad()
     {
-        AlundraPlayerManager.SetDebugIgnoreControlLockOverrideForTests(true);
+        PlayerManager.SetDebugIgnoreControlLockOverrideForTests(true);
         try
         {
             var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
-            var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
+            var pad = new PadState { ButtonsHold = PadState.Right };
             var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 
-            AlundraPlayerManager.MovePlayer(player, in pad, state, host: null);
+            PlayerManager.MovePlayer(player, in pad, state, host: null);
 
             // Flag active -> the InputBlockedMask gate is skipped even with ControlLocked set -> the pad
             // is read normally (Right held -> Moving, TargetDirection = g_directionByButtons[Right] = 0x18).
@@ -376,7 +376,7 @@ public class AlundraPlayerManagerTests
         }
         finally
         {
-            AlundraPlayerManager.SetDebugIgnoreControlLockOverrideForTests(null);
+            PlayerManager.SetDebugIgnoreControlLockOverrideForTests(null);
         }
     }
 }

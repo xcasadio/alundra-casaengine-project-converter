@@ -162,11 +162,11 @@ internal static class SaveGameDirectorTestSupport
                 var tables = ItemTablesFixture.LoadReal();
                 AlundraInventoryDirector.Instance.AttachToWorld(GameState.Instance, tables, null);
                 AlundraSubInventoryDirector.Instance.AttachToWorld(GameState.Instance, tables, null);
-                InventoryTick(AlundraPadState.Start);
+                InventoryTick(PadState.Start);
                 InventoryTicks(20);
                 if (blocker == SaveGameBlocker.SubInventoryOpen)
                 {
-                    InventoryTick(AlundraPadState.R1);
+                    InventoryTick(PadState.R1);
                     InventoryTicks(40);
                     Assert.True(AlundraSubInventoryDirector.Instance.IsActive);
                     Assert.False(AlundraInventoryDirector.Instance.IsActive);

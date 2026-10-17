@@ -38,17 +38,17 @@ public sealed class AlundraArcInventoryHelpersTests
         var tables = ((IScriptHost)arc.Proxy).ItemTables!;
         WaitUntilTheHeroIsFree(arc);
         Assert.Equal(0, ArcRun.State.NumberOfItems[11]); // nothing owned before.
-        Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(ArcRun.State, tables));
+        Assert.Equal(PlayerManager.NoItem, PlayerManager.GetItemIdFromCurrentWeapon(ArcRun.State, tables));
 
         arc.Give(5);
         arc.Equip(2);
 
         Assert.Equal(1, ArcRun.State.NumberOfItems[11]);
         Assert.Equal((short)2, ArcRun.State.PlayerStats.WeaponId);
-        Assert.Equal(5u, AlundraPlayerManager.GetItemIdFromCurrentWeapon(ArcRun.State, tables));
+        Assert.Equal(5u, PlayerManager.GetItemIdFromCurrentWeapon(ArcRun.State, tables));
 
         // The tick reads the equipped item: Square draws the bow (animation 0x13 of the oracle's Hunter's Bow).
-        arc.Press(AlundraPadState.Square);
+        arc.Press(PadState.Square);
         Assert.Equal(0x13u, arc.Hero.TargetAnimationId);
     }
 
@@ -75,7 +75,7 @@ public sealed class AlundraArcInventoryHelpersTests
         arc.Equip(4);
 
         Assert.Equal((short)4, ArcRun.State.PlayerStats.WeaponId);
-        Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(ArcRun.State, tables));
+        Assert.Equal(PlayerManager.NoItem, PlayerManager.GetItemIdFromCurrentWeapon(ArcRun.State, tables));
 
         arc.Equip(-1);
 

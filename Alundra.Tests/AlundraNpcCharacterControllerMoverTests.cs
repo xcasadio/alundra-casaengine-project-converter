@@ -42,7 +42,7 @@ namespace Alundra.Tests;
 /// mirrors, per docs/plan-e4-deplacement-scripte.md E4.b's own acceptance note), IsPlayer=false so the
 /// scripted mover (<see cref="AlundraScriptedMotion.TickScriptedNpc"/>, wired from
 /// <see cref="AlundraEntityScriptProxy.Update"/>'s own <c>!IsPlayer</c> branch) drives it instead of
-/// <see cref="AlundraPlayerManager"/>. Self-skips every [Fact] when <c>alundra-project/</c> is not present
+/// <see cref="PlayerManager"/>. Self-skips every [Fact] when <c>alundra-project/</c> is not present
 /// in this checkout (same convention as <see cref="AlundraCharacterControllerAdoptionTests"/>).
 /// </summary>
 public class AlundraNpcCharacterControllerMoverTests

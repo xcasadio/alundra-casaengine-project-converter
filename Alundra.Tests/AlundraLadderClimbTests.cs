@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// Covers E4 (docs/plan-echelles-chiffrage.md É4): the case-6 ladder entry gate and the Climbing(0x0E)/
-/// ClimbStill(0x35) state machine in <see cref="AlundraPlayerManager.MovePlayer"/>, plus the per-tick
+/// ClimbStill(0x35) state machine in <see cref="PlayerManager.MovePlayer"/>, plus the per-tick
 /// vertical step <see cref="AlundraScriptedMotion.TickPlayer"/> now applies while climbing - against the
 /// REAL map 389 ("Ship Klark (beginning)") ladder cell (18, 36). Same fixture/self-skip pattern as
 /// <see cref="AlundraGroundSlopeTests"/>/<see cref="AlundraFloorHeightTests"/>/<see cref="AlundraTileHeightAtOffsetTests"/>
@@ -180,9 +180,9 @@ public class AlundraLadderClimbTests
     /// <see cref="CharacterControllerSettings.MaxFallSpeed"/> AND <see cref="AlundraEntityScriptProxy.MapGravity"/>/
     /// <see cref="AlundraEntityScriptProxy.MapMaxFallSpeed"/> are pre-set to the SAME map-389 values
     /// (standing in for what AlundraWorldProxy.AdoptPlayerPawn's own E4 fix now does at real adoption
-    /// time) - the RESERVE <see cref="AlundraPlayerManager.RestoreGravityAfterClimb"/> reads from.</summary>
+    /// time) - the RESERVE <see cref="PlayerManager.RestoreGravityAfterClimb"/> reads from.</summary>
     private static (World World, Entity Entity, AlundraEntityScriptProxy Proxy, AlundraPlayerController Controller) BuildLadderHero(
-        Func<AlundraPadState> padProvider)
+        Func<PadState> padProvider)
     {
         var projectRoot = FindProjectRoot();
         Assert.NotNull(projectRoot);
@@ -253,7 +253,7 @@ public class AlundraLadderClimbTests
     [Fact]
     public void ProductionCallSite_HoldingUpIntoLadder_EntersClimbing_MovesUpOnePixelPerTick()
     {
-        if (!TrySetUp(out var world, out var entity, out var proxy, out _, AlundraPadState.Up))
+        if (!TrySetUp(out var world, out var entity, out var proxy, out _, PadState.Up))
         {
             return;
         }
@@ -268,7 +268,7 @@ public class AlundraLadderClimbTests
         {
             world.Update(1f / 50f);
 
-            Assert.Equal(AlundraPlayerManager.ClimbingAnimationId, proxy.TargetAnimationId);
+            Assert.Equal(PlayerManager.ClimbingAnimationId, proxy.TargetAnimationId);
             Assert.Equal(startPosZ + frame * 0x10000, proxy.PosZ); // +1px, cumulative, every single frame.
         }
 
@@ -299,7 +299,7 @@ public class AlundraLadderClimbTests
     [Fact]
     public void ProductionCallSite_AlreadyClimbing_HoldingDown_MovesDownOnePixelPerTick()
     {
-        if (!TrySetUp(out var world, out var entity, out var proxy, out _, AlundraPadState.Down))
+        if (!TrySetUp(out var world, out var entity, out var proxy, out _, PadState.Down))
         {
             return;
         }
@@ -307,13 +307,13 @@ public class AlundraLadderClimbTests
         // Start already elevated 5px above the ladder's own ground height (well clear of FloorHeight+1),
         // already in the Climbing animation (as if a previous frame had climbed up this far).
         SetElevatedPosZ(entity, proxy, LadderGroundHeightPx * 65536 + 5 * 0x10000);
-        proxy.TargetAnimationId = AlundraPlayerManager.ClimbingAnimationId;
+        proxy.TargetAnimationId = PlayerManager.ClimbingAnimationId;
 
         var startPosZ = proxy.PosZ;
 
         world.Update(1f / 50f);
 
-        Assert.Equal(AlundraPlayerManager.ClimbingAnimationId, proxy.TargetAnimationId);
+        Assert.Equal(PlayerManager.ClimbingAnimationId, proxy.TargetAnimationId);
         Assert.Equal(startPosZ - 0x10000, proxy.PosZ); // -1px this one tick.
     }
 
@@ -331,7 +331,7 @@ public class AlundraLadderClimbTests
         }
 
         SetElevatedPosZ(entity, proxy, LadderGroundHeightPx * 65536 + 3 * 0x10000);
-        proxy.TargetAnimationId = AlundraPlayerManager.ClimbingAnimationId;
+        proxy.TargetAnimationId = PlayerManager.ClimbingAnimationId;
 
         // Simulates a REAL preceding climbing frame's own SuspendGravityForClimb/TickPlayer declarations
         // (verifier F1/F2 fix), consistent with this test's own "as if a previous frame had climbed up
@@ -352,7 +352,7 @@ public class AlundraLadderClimbTests
 
         world.Update(1f / 50f);
 
-        Assert.Equal(AlundraPlayerManager.ClimbStillAnimationId, proxy.TargetAnimationId);
+        Assert.Equal(PlayerManager.ClimbStillAnimationId, proxy.TargetAnimationId);
         Assert.Equal(startPosZ, proxy.PosZ); // frozen - no vertical step while ClimbStill.
         Assert.Equal(0, proxy.ForceZ);
     }
@@ -379,11 +379,11 @@ public class AlundraLadderClimbTests
 
         var host = (PlayerScriptHost)proxy.ScriptHost!;
         SetElevatedPosZ(entity, proxy, LadderGroundHeightPx * 65536 + 3 * 0x10000);
-        proxy.TargetAnimationId = AlundraPlayerManager.ClimbingAnimationId;
+        proxy.TargetAnimationId = PlayerManager.ClimbingAnimationId;
         proxy.Controller!.IsVerticalOwnedExternally = true;
         proxy.Controller!.SetExternalVerticalDisplacement(1f);
         world.Update(1f / 50f);
-        Assert.Equal(AlundraPlayerManager.ClimbStillAnimationId, proxy.TargetAnimationId);
+        Assert.Equal(PlayerManager.ClimbStillAnimationId, proxy.TargetAnimationId);
         var heldRootZ = entity.RootComponent!.LocalTransform.Position.Z;
 
         host.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
@@ -398,7 +398,7 @@ public class AlundraLadderClimbTests
         world.Update(1f / 50f);
 
         Assert.Equal(heldRootZ, entity.RootComponent!.LocalTransform.Position.Z);
-        Assert.Equal(AlundraPlayerManager.ClimbStillAnimationId, proxy.TargetAnimationId);
+        Assert.Equal(PlayerManager.ClimbStillAnimationId, proxy.TargetAnimationId);
     }
 
     /// <summary>
@@ -469,13 +469,13 @@ public class AlundraLadderClimbTests
     [Fact]
     public void ProductionCallSite_LateralInputWhileClimbing_ExitsToIdle()
     {
-        if (!TrySetUp(out var world, out var entity, out var proxy, out _, AlundraPadState.Right))
+        if (!TrySetUp(out var world, out var entity, out var proxy, out _, PadState.Right))
         {
             return;
         }
 
         SetElevatedPosZ(entity, proxy, LadderGroundHeightPx * 65536 + 3 * 0x10000);
-        proxy.TargetAnimationId = AlundraPlayerManager.ClimbingAnimationId;
+        proxy.TargetAnimationId = PlayerManager.ClimbingAnimationId;
 
         world.Update(1f / 50f);
 
@@ -490,7 +490,7 @@ public class AlundraLadderClimbTests
     [Fact]
     public void ProductionCallSite_GravitySuspendedWhileClimbing_RestoredOnLateralExit()
     {
-        if (!TrySetUp(out var world, out var entity, out var proxy, out var controller, AlundraPadState.Up))
+        if (!TrySetUp(out var world, out var entity, out var proxy, out var controller, PadState.Up))
         {
             return;
         }
@@ -501,12 +501,12 @@ public class AlundraLadderClimbTests
 
         // DURING: entering climbing (holding Up into the wall) suspends both to exactly 0.
         world.Update(1f / 50f);
-        Assert.Equal(AlundraPlayerManager.ClimbingAnimationId, proxy.TargetAnimationId);
+        Assert.Equal(PlayerManager.ClimbingAnimationId, proxy.TargetAnimationId);
         Assert.Equal(0f, proxy.Controller!.Settings.Gravity);
         Assert.Equal(0f, proxy.Controller!.Settings.MaxFallSpeed);
 
         // AFTER: a lateral input exits to Idle and restores both to the map's own real value.
-        controller.PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = AlundraPadState.Right };
+        controller.PadStateProviderForTests = () => new PadState { ButtonsHold = PadState.Right };
         world.Update(1f / 50f);
 
         Assert.Equal(0u, proxy.TargetAnimationId);
@@ -523,7 +523,7 @@ public class AlundraLadderClimbTests
     [Fact]
     public void ProductionCallSite_DescendingReachesBottom_ExitsToIdle_GravityRestored()
     {
-        if (!TrySetUp(out var world, out var entity, out var proxy, out _, AlundraPadState.Down))
+        if (!TrySetUp(out var world, out var entity, out var proxy, out _, PadState.Down))
         {
             return;
         }
@@ -532,7 +532,7 @@ public class AlundraLadderClimbTests
         // "at rest" case MovePlayer's own LESSON 1 re-derivation comment establishes), exactly the
         // bottom-of-descent guard failure.
         SetElevatedPosZ(entity, proxy, LadderGroundHeightPx * 65536);
-        proxy.TargetAnimationId = AlundraPlayerManager.ClimbingAnimationId;
+        proxy.TargetAnimationId = PlayerManager.ClimbingAnimationId;
         // Simulate a real preceding climbing/descending frame's own declarations - see the ClimbStill
         // freeze test's own doc above for why a bare TargetAnimationId assignment alone is not enough
         // (CasaEngine's own per-frame order runs CharacterControllerComponent.UpdateGround BEFORE this
@@ -562,7 +562,7 @@ public class AlundraLadderClimbTests
     [Fact]
     public void ProductionCallSite_AscendingReachesTop_ExitsToIdle_GravityRestored()
     {
-        if (!TrySetUp(out var world, out var entity, out var proxy, out _, AlundraPadState.Up))
+        if (!TrySetUp(out var world, out var entity, out var proxy, out _, PadState.Up))
         {
             return;
         }
@@ -570,7 +570,7 @@ public class AlundraLadderClimbTests
         // Above the ladder cell's own north-neighbor ceiling height (576px, NorthNeighborHeightPx) -
         // PosZ <= tileHeightAbove is false here, exactly the top-of-ascent guard failure.
         SetElevatedPosZ(entity, proxy, (NorthNeighborHeightPx + 1) * 65536);
-        proxy.TargetAnimationId = AlundraPlayerManager.ClimbingAnimationId;
+        proxy.TargetAnimationId = PlayerManager.ClimbingAnimationId;
         proxy.Controller!.IsVerticalOwnedExternally = true;
         proxy.Controller!.SetExternalVerticalDisplacement(1f);
         proxy.Controller!.Settings.Gravity = 0f;
@@ -600,20 +600,20 @@ public class AlundraLadderClimbTests
     {
         var player = MakeQualifyingIdlePlayer();
         player.Slope_18c = 0; // broken: not on a ladder cell.
-        var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
+        var pad = new PadState { ButtonsHold = PadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
+        PlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
 
-        Assert.NotEqual(AlundraPlayerManager.ClimbingAnimationId, player.TargetAnimationId);
+        Assert.NotEqual(PlayerManager.ClimbingAnimationId, player.TargetAnimationId);
     }
 
     [Fact]
     public void CaseSixGate_NoPadHeld_DoesNotEnterClimbing()
     {
         var player = MakeQualifyingIdlePlayer();
-        var pad = default(AlundraPadState); // broken: buttonsHold == 0.
+        var pad = default(PadState); // broken: buttonsHold == 0.
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
+        PlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
 
         // CORRECTED (verifier F4): `Assert.NotEqual(ClimbingAnimationId, ...)` is inert against a mutant
         // that removes this conjunct from the gate - a broken gate here still leaves TargetAnimationId at
@@ -628,9 +628,9 @@ public class AlundraLadderClimbTests
     public void CaseSixGate_DirectionNotUp_DoesNotEnterClimbing()
     {
         var player = MakeQualifyingIdlePlayer();
-        var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right }; // broken: dir == 0x18, not 0x10.
+        var pad = new PadState { ButtonsHold = PadState.Right }; // broken: dir == 0x18, not 0x10.
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
+        PlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
 
         // CORRECTED (verifier F4): same inert-NotEqual problem as CaseSixGate_NoPadHeld above. The gate
         // correctly does NOT fire (dir == 0x18, not 0x10), so TargetAnimationId falls through to the
@@ -643,11 +643,11 @@ public class AlundraLadderClimbTests
     {
         var player = MakeQualifyingIdlePlayer();
         player.TargetDirection = 0x18; // broken: not already facing up.
-        var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
+        var pad = new PadState { ButtonsHold = PadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
+        PlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
 
-        Assert.NotEqual(AlundraPlayerManager.ClimbingAnimationId, player.TargetAnimationId);
+        Assert.NotEqual(PlayerManager.ClimbingAnimationId, player.TargetAnimationId);
     }
 
     [Fact]
@@ -655,11 +655,11 @@ public class AlundraLadderClimbTests
     {
         var player = MakeQualifyingIdlePlayer();
         player.ForceAdjusted = 0; // broken: no collision this tick (never walked into the wall).
-        var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
+        var pad = new PadState { ButtonsHold = PadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
+        PlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
 
-        Assert.NotEqual(AlundraPlayerManager.ClimbingAnimationId, player.TargetAnimationId);
+        Assert.NotEqual(PlayerManager.ClimbingAnimationId, player.TargetAnimationId);
     }
 
     [Fact]
@@ -667,11 +667,11 @@ public class AlundraLadderClimbTests
     {
         var player = MakeQualifyingIdlePlayer();
         player.CarriedEntity = new CasaEngine.Framework.Scene.Entities.Entity(); // broken: carrying something.
-        var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
+        var pad = new PadState { ButtonsHold = PadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
+        PlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
 
-        Assert.NotEqual(AlundraPlayerManager.ClimbingAnimationId, player.TargetAnimationId);
+        Assert.NotEqual(PlayerManager.ClimbingAnimationId, player.TargetAnimationId);
     }
 
     /// <summary>Otherwise-qualifying setup for the case-6 gate (all five conditions hold) - a controller-
@@ -692,11 +692,11 @@ public class AlundraLadderClimbTests
     /// <c>alundra-project/</c> is not present in this checkout, same convention as every sibling slice.</summary>
     private static bool TrySetUp(
         out World world, out Entity entity, out AlundraEntityScriptProxy proxy, out AlundraPlayerController controller, uint padHeld)
-        => TrySetUp(out world, out entity, out proxy, out controller, () => new AlundraPadState { ButtonsHold = padHeld });
+        => TrySetUp(out world, out entity, out proxy, out controller, () => new PadState { ButtonsHold = padHeld });
 
     private static bool TrySetUp(
         out World world, out Entity entity, out AlundraEntityScriptProxy proxy, out AlundraPlayerController controller,
-        Func<AlundraPadState> padProvider)
+        Func<PadState> padProvider)
     {
         var projectRoot = FindProjectRoot();
         if (projectRoot == null)

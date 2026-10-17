@@ -109,7 +109,7 @@ internal static class AlundraWeaponTables
 
     /// <summary>
     /// The weapon record of an item, as <c>MovePlayer</c> resolves it at its head (<c>0x80031B70-0x80031B8C</c>: <c>byte[0x80028C14 + itemId]</c>). <paramref name="itemId"/> is the answer of
-    /// <see cref="AlundraPlayerManager.GetItemIdFromCurrentWeapon"/>: <see cref="AlundraPlayerManager.NoItem"/> (-1) reads the byte before the table (<c>0x80028C13</c>, zero) and gives record 0.
+    /// <see cref="PlayerManager.GetItemIdFromCurrentWeapon"/>: <see cref="PlayerManager.NoItem"/> (-1) reads the byte before the table (<c>0x80028C13</c>, zero) and gives record 0.
     /// </summary>
     public static int RecordIndexOfItem(uint itemId) => itemId < (uint)ItemToRecord.Length ? ItemToRecord[itemId] : 0;
 

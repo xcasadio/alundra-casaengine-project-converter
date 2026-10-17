@@ -184,7 +184,7 @@ internal sealed class DialogueBoxMontage : IDisposable
     public void RunFrame(float seconds = 0.02f)
     {
         // The pad of the frame is decided at its start, before any script (the helper of the arcs reads the director there), and read by the proxy's update.
-        State.LastPadState = new AlundraPadState { ButtonsHold = PadForFrame?.Invoke(Frame) ?? 0 };
+        State.LastPadState = new PadState { ButtonsHold = PadForFrame?.Invoke(Frame) ?? 0 };
         if ((State.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) == 0)
         {
             EntityScript?.Invoke(Frame);

@@ -10,7 +10,7 @@ namespace Alundra.Items;
 /// <summary>
 /// The three equipment balance records of the binary (E20.c1b K2, docs/plan-e20-heros.md section 1.6): the pointers at <c>0x80146E00</c> (armour), <c>0x80146E08</c> (weapon) and <c>0x80146E10</c> (accessory), each with
 /// the item word that follows it (<c>item id + 0x1E</c>, 0 for none). They are cleared at every map load (<c>InitializeItems</c> <c>0x80044520</c>), filled at every normal tick of the hero by
-/// <see cref="AlundraPlayerManager"/> (<c>UpdateItemEffectState</c> <c>0x800307E8</c>, steps 2 to 5) and read only by the damage calculation (<see cref="AlundraDamage"/>, <c>0x8004464C</c>) and by the step 6 of
+/// <see cref="PlayerManager"/> (<c>UpdateItemEffectState</c> <c>0x800307E8</c>, steps 2 to 5) and read only by the damage calculation (<see cref="AlundraDamage"/>, <c>0x8004464C</c>) and by the step 6 of
 /// <c>UpdateItemEffectState</c> (E20.c2). One instance per world, reached through <see cref="IScriptHost.EquipmentRecords"/> and <see cref="IEntityWorldContext.EquipmentRecords"/>.
 /// </summary>
 public sealed class AlundraEquipmentRecords
@@ -60,7 +60,7 @@ public sealed class AlundraEquipmentRecords
 
     /// <summary>
     /// E20.c2a T2: the boots level of the hero (<c>[0x80127000]</c>), written by step 1 of <c>UpdateItemEffectState</c> (3, 2 or 1 for the objects <c>0x1C</c>, <c>0x1B</c>, <c>0x1A</c>, else 0). The binary caches it
-    /// at the end of every tick; the physics of the DLL (<see cref="AlundraScriptedMotion"/>) recompute it on demand through <see cref="AlundraPlayerManager.BootsLevelOf"/>, the same function, so the value read there
+    /// at the end of every tick; the physics of the DLL (<see cref="AlundraScriptedMotion"/>) recompute it on demand through <see cref="PlayerManager.BootsLevelOf"/>, the same function, so the value read there
     /// is the cached one of this tick at the latest (the one-tick lag of the binary is immaterial).
     /// </summary>
     public int BootsLevel { get; internal set; }

@@ -136,7 +136,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     /// is taken 37 (OUI) or 38 (NON) ticks after the Cross (E19.f3a, the choice box of the binary), the picker ends 18 ticks after it.</summary>
     private void AnswerAndClose(int choice)
     {
-        Press(AlundraPadState.Cross);
+        Press(PadState.Cross);
         Assert.True(Director.IsQuestionPending);
         Assert.True(Dialogue.IsAwaitingChoice);
         Assert.True(Dialogue.SelectChoiceForTests(choice));
@@ -204,7 +204,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.Equal(GameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
 
         // Square closes the message; the end chain; MenuOpen cleared at 0x63.
-        Press(AlundraPadState.Square);
+        Press(PadState.Square);
         TickUntilState(AlundraSaveScreenDirector.StateIdle);
         Assert.False(Director.IsActive);
         Assert.Equal(0u, State.PlayerControlFlags);
@@ -268,7 +268,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Tick(200);
         Assert.Equal(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
 
-        Press(AlundraPadState.Square);
+        Press(PadState.Square);
         TickUntilState(AlundraSaveScreenDirector.StateIdle);
         Assert.Equal(0u, State.PlayerControlFlags);
         Assert.True(_slots.NothingCalled);
@@ -312,11 +312,11 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         StartAndOpenPicker();
         Assert.Equal(new[] { "slot1", "slot2", "slot3", "slot4" }, _slots.LoadCalls);
 
-        Press(AlundraPadState.Down);
+        Press(PadState.Down);
         Tick(20);
-        Press(AlundraPadState.Down);
+        Press(PadState.Down);
         Tick(20);
-        Press(AlundraPadState.Up);
+        Press(PadState.Up);
         Tick(20);
         AnswerAndClose(0);
         TickUntilState(AlundraSaveScreenDirector.StateWaitSquare);
@@ -474,7 +474,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     {
         StartAndOpenPicker();
 
-        Press(AlundraPadState.Down);
+        Press(PadState.Down);
         // The arming tick steps each slide once: every record at its source.
         Assert.Equal(new[] { (16, 0), (16, 64), (16, 128), (16, 240) }, Enumerable.Range(0, 4).Select(Director.RecordPosition));
         Assert.Equal(1, Director.Selection);
@@ -491,10 +491,10 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     public void Carousel_Up_AfterDown_PutsTheOpeningLayoutBack()
     {
         StartAndOpenPicker();
-        Press(AlundraPadState.Down);
+        Press(PadState.Down);
         Tick(17);
 
-        Press(AlundraPadState.Up);
+        Press(PadState.Up);
         Tick(17);
 
         Assert.Equal(0, Director.Selection);
@@ -509,13 +509,13 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     {
         StartAndOpenPicker();
 
-        Press(AlundraPadState.Up);
+        Press(PadState.Up);
         Tick(20);
         Assert.Equal(0, Director.Selection);
 
         for (var i = 0; i < 5; i++)
         {
-            Press(AlundraPadState.Down);
+            Press(PadState.Down);
             Tick(20);
         }
 
@@ -527,11 +527,11 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     {
         StartAndOpenPicker();
 
-        Tick(hold: AlundraPadState.Down);
+        Tick(hold: PadState.Down);
         Assert.Equal(1, Director.Selection);
-        Tick(20, hold: AlundraPadState.Down); // 20 held ticks of silence (MaxNbFrameHeld)...
+        Tick(20, hold: PadState.Down); // 20 held ticks of silence (MaxNbFrameHeld)...
         Assert.Equal(1, Director.Selection);
-        Tick(hold: AlundraPadState.Down); // ...then the held button every tick (RepeatInterval 0).
+        Tick(hold: PadState.Down); // ...then the held button every tick (RepeatInterval 0).
         Assert.Equal(2, Director.Selection);
     }
 
@@ -539,7 +539,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     public void Carousel_Closing_ThreeRowsLeaveUpwards_TintsFallToZero_ResultOnlyAtTheMessageBoxsEnd()
     {
         StartAndOpenPicker();
-        Press(AlundraPadState.Cross);
+        Press(PadState.Cross);
         Assert.Equal(QuestionHeading, Director.MessageLine0.Text);
         Assert.True(Dialogue.SelectChoiceForTests(0));
 
@@ -579,12 +579,12 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     {
         StartAndOpenPicker();
 
-        Press(AlundraPadState.Cross);
+        Press(PadState.Cross);
         Assert.Equal(new[] { "OUI", "NON" }, Dialogue.ChoicesForTests);
         Assert.False(Dialogue.IsOpen); // E19.f3a: the engine's window is not pushed any more
 
         // Its own keys are ignored while the question waits.
-        Press(AlundraPadState.Down);
+        Press(PadState.Down);
         Assert.Equal(0, Director.Selection);
 
         Assert.True(Dialogue.SelectChoiceForTests(1));
@@ -609,18 +609,18 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     public void DownDuringTheQuestion_ThenOui_WritesTheFrozenSlot_Once()
     {
         StartAndOpenPicker();
-        Press(AlundraPadState.Down);
+        Press(PadState.Down);
         Tick(17);
         Assert.Equal(1, Director.Selection);
 
-        Press(AlundraPadState.Cross);
-        Press(AlundraPadState.Down);
-        Tick(25, hold: AlundraPadState.Down);
+        Press(PadState.Cross);
+        Press(PadState.Down);
+        Tick(25, hold: PadState.Down);
         Assert.True(Dialogue.SelectChoiceForTests(0));
         var taken = 0;
         while (Director.IsQuestionPending && taken < 150)
         {
-            Tick(hold: AlundraPadState.Down);
+            Tick(hold: PadState.Down);
             taken++;
         }
 
@@ -638,7 +638,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         using var logs = LogCapture.Install();
 
         StartAndOpenPicker();
-        Press(AlundraPadState.Cross);
+        Press(PadState.Cross);
         Assert.False(Dialogue.IsAwaitingChoice);
 
         TickUntilState(AlundraSaveScreenDirector.StateIdle);
@@ -738,16 +738,16 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
         // J9: even with the flags cleared by hand, the save screen alone keeps the inventory shut.
         State.PlayerControlFlags = 0;
-        InventoryTick(AlundraPadState.Start);
+        InventoryTick(PadState.Start);
         Assert.False(AlundraInventoryDirector.Instance.IsActive);
         State.PlayerControlFlags = GameState.PlayerControlBits.MenuOpen;
 
-        Press(AlundraPadState.Square);
+        Press(PadState.Square);
         TickUntilState(AlundraSaveScreenDirector.StateIdle);
         Assert.False(Director.IsActive);
 
         InventoryTick(0);
-        InventoryTick(AlundraPadState.Start);
+        InventoryTick(PadState.Start);
         Assert.True(AlundraInventoryDirector.Instance.IsActive);
     }
 
@@ -761,7 +761,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Director.NoteBookFlowStarted();
         State.PlayerControlFlags |= GameState.PlayerControlBits.ControlLocked;
         StartAndOpenPicker();
-        Press(AlundraPadState.Cross);
+        Press(PadState.Cross);
         Assert.True(Dialogue.IsAwaitingChoice);
 
         // The new world's install, in InitializeWithWorld's order: the dialogue systems, then the save screen.
@@ -845,7 +845,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
         BookTick(TicksToSettledPicker);
         Assert.True(Director.IsPickerActive);
-        BookTick(hold: AlundraPadState.Cross);
+        BookTick(hold: PadState.Cross);
         Assert.True(Dialogue.SelectChoiceForTests(0)); // the screen's OUI.
         for (var i = 0; i < 400 && Director.State != AlundraSaveScreenDirector.StateWaitSquare; i++)
         {
@@ -856,7 +856,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.Equal("slot1", call.Slot);
         Assert.Equal((389, 20, 30, 1), (call.Data.InitialMapId, call.Data.CameraTileX, call.Data.CameraTileY, call.Data.CameraTileZ));
 
-        BookTick(hold: AlundraPadState.Square);
+        BookTick(hold: PadState.Square);
         for (var i = 0; i < 100 && (Director.IsActive || SaveBook.ReadState(book) != SaveBook.StateIdle); i++)
         {
             BookTick();
@@ -897,7 +897,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         BookTick(3);
         Assert.Equal((Failed0, Failed1), (Director.MessageLine0.Text, Director.MessageLine1.Text));
 
-        BookTick(hold: AlundraPadState.Square);
+        BookTick(hold: PadState.Square);
         BookTick(60);
 
         Assert.Equal(SaveBook.StateIdle, SaveBook.ReadState(book));

@@ -30,8 +30,8 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
-    private const uint Cross = AlundraPadState.Cross;
-    private const uint Right = AlundraPadState.Right;
+    private const uint Cross = PadState.Cross;
+    private const uint Right = PadState.Right;
     private const int East = 24;
 
     private static readonly int[] JumpHeights =
@@ -534,7 +534,7 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
         for (var tick = 1; tick <= 12; tick++)
         {
             headY.Add(hero.PosY);
-            rig.Step(AlundraPadState.Up, 0);
+            rig.Step(PadState.Up, 0);
             var label = $"tick {tick}";
             if (tick < 12)
             {

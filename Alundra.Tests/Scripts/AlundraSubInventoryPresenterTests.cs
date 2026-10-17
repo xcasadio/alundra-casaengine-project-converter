@@ -170,7 +170,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
 
         Assert.Empty(uiView.Removed);
 
-        Tick(state, director, presenter, AlundraPadState.Start); // Start/Triangle/L2/R2 -> close setup.
+        Tick(state, director, presenter, PadState.Start); // Start/Triangle/L2/R2 -> close setup.
         for (var i = 0; i < 20 && director.IsActive; i++)
         {
             Tick(state, director, presenter, 0); // drive the closing slide to completion.
@@ -238,7 +238,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
         // (another 18), well inside 40.
         const int SettleTicks = 40;
 
-        OneTick(AlundraPadState.Start); // open the main inventory.
+        OneTick(PadState.Start); // open the main inventory.
         for (var i = 0; i < SettleTicks; i++)
         {
             OneTick(0); // settle the main's opening slide.
@@ -246,7 +246,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
 
         Assert.True(mainPresenter.IsPushedForTests);
 
-        OneTick(AlundraPadState.R1); // main -> sub.
+        OneTick(PadState.R1); // main -> sub.
         for (var i = 0; i < SettleTicks; i++)
         {
             OneTick(0);
@@ -255,7 +255,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
         Assert.True(subPresenter.IsPushedForTests);
         Assert.False(mainPresenter.IsPushedForTests);
 
-        OneTick(AlundraPadState.R1); // sub -> main.
+        OneTick(PadState.R1); // sub -> main.
         for (var i = 0; i < SettleTicks; i++)
         {
             OneTick(0);
@@ -278,7 +278,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
         worldProxy.PlayerEntity = new AlundraEntityScriptProxy();
 
         var tables = ItemTablesFixture.LoadReal();
-        AlundraPlayerManager.InitializeNewGameInventory(worldProxy.GameState, tables);
+        PlayerManager.InitializeNewGameInventory(worldProxy.GameState, tables);
         AlundraInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
         AlundraSubInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
 
@@ -289,18 +289,18 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
 
         void Frame(uint hold)
         {
-            worldProxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = hold };
+            worldProxy.GameState.LastPadState = new PadState { ButtonsHold = hold };
             worldProxy.Update(0.02f);
         }
 
-        Frame(AlundraPadState.Start);
+        Frame(PadState.Start);
         for (var i = 0; i < 20; i++)
         {
             Frame(0);
         }
 
         Assert.True(AlundraInventoryDirector.Instance.IsActive);
-        Frame(AlundraPadState.R1);
+        Frame(PadState.R1);
         for (var i = 0; i < 40 && !AlundraSubInventoryDirector.Instance.IsDrawn; i++)
         {
             Frame(0);

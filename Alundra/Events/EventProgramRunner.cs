@@ -325,7 +325,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>E19.d2b / E20.f3a (D-F3-4): the codes of the program E (deactivation) that <see cref="RunSpriteEvent"/> treats in line, outside the registry of the native handlers: 0 and 1 (<c>0x8007ED10</c>, <c>DestroyEntity(e, -1)</c>) and, since E20.f3c (D-F3-5), 10 (<c>0x8007F23C</c>, the same body, found only on the sprites 27 to 29 of the sword wave: one branch for two addresses). The one
-    /// definition shared by the runner and by the checker of the wired weapon types (<see cref="AlundraPlayerManager.UnhandledWeaponSpriteCodes"/>).</summary>
+    /// definition shared by the runner and by the checker of the wired weapon types (<see cref="PlayerManager.UnhandledWeaponSpriteCodes"/>).</summary>
     internal static bool IsInlineDeactivateCode(int code) => (uint)code <= 1u || code == WaveSwordAi.DeactivateCode;
 
     /// <summary>Port of EntityEventHandlers.InitializeEventData @ 0x80041ee4 for slot A - see class doc
@@ -643,7 +643,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
                        // degraded, the bit is still posed.
                 if (_worldContext.ItemTables is { } weaponTables)
                 {
-                    AlundraPlayerManager.SetPlayerWeaponId(_gameState, weaponTables, v[1] + 1);
+                    PlayerManager.SetPlayerWeaponId(_gameState, weaponTables, v[1] + 1);
                 }
                 else
                 {
@@ -655,12 +655,12 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
             case 0xBC: // Increase player HpMax - Script_188_0BC @ 0x80041C00 (E20.c2a T3), PER THE BINARY: the hero entity's HpMax (+0x18) += the operand byte v1, capped at 0x32; the life is not touched.
                        // Written on the entity (the stats follow at the end of the next MovePlayer); the stats take it directly only without a hero that carries its life. Size 2, Result untouched.
-                AlundraPlayerManager.IncreaseHpMax(_gameState, _worldContext.PlayerEntity, v[1]);
+                PlayerManager.IncreaseHpMax(_gameState, _worldContext.PlayerEntity, v[1]);
                 return 2;
 
             case 0xC3: // Restore and init HP and MP - Script_195_0C3 @ 0x80041D6C (E20.c2a T3), PER THE BINARY: hero Hp (+0x14) = HpMax (+0x18); SetPlayerMp(GetPlayerMpMax()); then InitializeHpAndMp
                        // (0x8004B730), which snaps the four displayed counters of the HUD to the stats' maxima. Size 1, Result untouched.
-                AlundraPlayerManager.RestoreLifeAndMagic(_gameState, _worldContext.PlayerEntity);
+                PlayerManager.RestoreLifeAndMagic(_gameState, _worldContext.PlayerEntity);
                 return 1;
 
             case 0xC1: // Clear the scripted weapon lock - Script_193_0C1 @ 0x80041D18 (E20.f0 T1): PlayerControlFlags &= ~0x80. Size 1.
@@ -1515,16 +1515,16 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
             case 0x83: // If number of item >= value - Script_131_083 @ 0x8003FEC8 (E19.l2): Result = GetNumberOfItem(v1) >= v2.
                        // Size 3.
-                state.Result = AlundraPlayerManager.GetNumberOfItem(_gameState, v[1]) >= v[2] ? 1 : 0;
+                state.Result = PlayerManager.GetNumberOfItem(_gameState, v[1]) >= v[2] ? 1 : 0;
                 return 3;
 
             case 0x84: // Use item - Script_132_084 @ 0x8003FF34 (E19.l2): UseItem(v1); Result = 0 when the count was already 0
                        // (-1), else 1 - an invalid id answers 1 too, as the binary does. Size 2.
-                state.Result = AlundraPlayerManager.UseItem(_gameState, v[1]) == -1 ? 0 : 1;
+                state.Result = PlayerManager.UseItem(_gameState, v[1]) == -1 ? 0 : 1;
                 return 2;
 
             case 0x98: // Add money - Script_152_098 @ 0x80040A58 (E19.l2): AddMoney(v1 | v2 << 8), Result untouched. Size 3.
-                AlundraPlayerManager.AddMoney(_gameState, v[1] | v[2] << 8);
+                PlayerManager.AddMoney(_gameState, v[1] | v[2] << 8);
                 return 3;
 
             case 0x99: // Try spend money - Script_153_099 @ 0x80040A8C (E19.l2): price = v1 | v2 << 8 (unsigned 16 bits);
@@ -1537,7 +1537,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
                 }
                 else
                 {
-                    AlundraPlayerManager.AddMoney(_gameState, -price);
+                    PlayerManager.AddMoney(_gameState, -price);
                     state.Result = 1;
                 }
 
@@ -3109,7 +3109,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
             case 0x46:
             case 0x47:
             case 0x48:
-                AlundraPlayerManager.AddMoney(_gameState, id switch { 0x45 => 1, 0x46 => 5, 0x47 => 10, _ => 30 });
+                PlayerManager.AddMoney(_gameState, id switch { 0x45 => 1, 0x46 => 5, 0x47 => 10, _ => 30 });
                 return true;
 
             case 0x4F:
@@ -3135,8 +3135,8 @@ public sealed class EventProgramRunner : IEventProgramRunner
             return false;
         }
 
-        var before = AlundraPlayerManager.GetNumberOfItem(_gameState, id);
-        return before < AlundraPlayerManager.AddOneItemIfUnlocked(_gameState, tables, id);
+        var before = PlayerManager.GetNumberOfItem(_gameState, id);
+        return before < PlayerManager.AddOneItemIfUnlocked(_gameState, tables, id);
     }
 
     /// <summary>
@@ -3146,7 +3146,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// </summary>
     private void UseLifeVessel()
     {
-        AlundraPlayerManager.IncreaseHpMaxAndFill(_gameState, _worldContext.PlayerEntity);
+        PlayerManager.IncreaseHpMaxAndFill(_gameState, _worldContext.PlayerEntity);
         _worldContext.SoundPlayer?.PlaySfx(AlundraNativeEffects.LifeVesselSfx);
 
         if (_worldContext.EffectStage is { } stage && _worldContext.PlayerEntity is { } hero)
@@ -3238,7 +3238,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// <summary>
     /// Degraded fallback for opcode 0x2F's two unported pad snapshots (D-E7-9, docs/plan-e7-mutation-
     /// tuiles.md, slice E7.c): mode 2 (ButtonsReleased) and every other value (the original's own default
-    /// arm, ButtonsJustPressedByInterval) have no field behind them on <see cref="AlundraPadState"/> -
+    /// arm, ButtonsJustPressedByInterval) have no field behind them on <see cref="PadState"/> -
     /// this degrades (Result = 0, once-logged warning) rather than throwing, since this runs on the
     /// production dispatch path and every real map-389 0x2F site is mode 0 (unreached in practice).
     /// </summary>
@@ -3250,7 +3250,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
         {
             Logs.WriteWarning(
                 $"EventProgramRunner: opcode 0x2F (CheckPadButtons) snapshot mode {mode} "
-                + "(ButtonsReleased/ButtonsJustPressedByInterval) is not backed by AlundraPadState - "
+                + "(ButtonsReleased/ButtonsJustPressedByInterval) is not backed by PadState - "
                 + "degraded no-op (Result = 0).");
         }
     }

@@ -147,29 +147,29 @@ internal sealed class ArcRun : IDisposable
         => ((IScriptHost)Proxy).ItemTables
            ?? throw new InvalidOperationException($"Arc '{Spec.Name}': the world has no item tables (the inventory helpers need an arc with Prefabs).");
 
-    /// <summary>E20.f0 T4: gives one of each item through the real giver (<see cref="AlundraPlayerManager.AddOneItemIfUnlocked"/>, the one of the item opcode 0x82), so a weapon is
+    /// <summary>E20.f0 T4: gives one of each item through the real giver (<see cref="PlayerManager.AddOneItemIfUnlocked"/>, the one of the item opcode 0x82), so a weapon is
     /// owned at its maximum count of one. An arc with an arrival starts with an empty inventory (the new-game kit only runs without one).</summary>
     public void Give(params int[] items)
     {
         var tables = InventoryTables;
         foreach (var item in items)
         {
-            AlundraPlayerManager.AddOneItemIfUnlocked(State, tables, item);
+            PlayerManager.AddOneItemIfUnlocked(State, tables, item);
         }
     }
 
-    /// <summary>E20.f0 T4: equips the weapon SLOT (1 to 6, or -1 for none) through <see cref="AlundraPlayerManager.SetPlayerWeaponId"/>; the item it resolves to is the best one owned in that slot.</summary>
-    public void Equip(int slot) => AlundraPlayerManager.SetPlayerWeaponId(State, InventoryTables, slot);
+    /// <summary>E20.f0 T4: equips the weapon SLOT (1 to 6, or -1 for none) through <see cref="PlayerManager.SetPlayerWeaponId"/>; the item it resolves to is the best one owned in that slot.</summary>
+    public void Equip(int slot) => PlayerManager.SetPlayerWeaponId(State, InventoryTables, slot);
 
     /// <summary>E20.f0 T4: the magic maximum then the magic, through the real setters (so the ceiling 4 and the clamp of the magic to its maximum apply).</summary>
     public void SetMp(int max, int mp)
     {
-        AlundraPlayerManager.SetPlayerMpMax(State, (short)max);
-        AlundraPlayerManager.SetPlayerMp(State, (short)mp);
+        PlayerManager.SetPlayerMpMax(State, (short)max);
+        PlayerManager.SetPlayerMp(State, (short)mp);
     }
 
-    /// <summary>E20.f0 T4: the Circle item, through <see cref="AlundraPlayerManager.SetCurrentItemId"/>.</summary>
-    public void SetItem(int item) => AlundraPlayerManager.SetCurrentItemId(State, (uint)item);
+    /// <summary>E20.f0 T4: the Circle item, through <see cref="PlayerManager.SetCurrentItemId"/>.</summary>
+    public void SetItem(int item) => PlayerManager.SetCurrentItemId(State, (uint)item);
 
     /// <param name="spec">What the arc loads and runs.</param>
     /// <param name="beforeInitialize">E19.t: called on the world right before <c>InitializeWithWorld</c> (the montage of the map-load tests: a game with audio, a record edited).</param>
@@ -231,10 +231,10 @@ internal sealed class ArcRun : IDisposable
             }
 
             var controller = world.PlayerControllers.OfType<AlundraPlayerController>().Single();
-            controller.PadStateProviderForTests = () => new AlundraPadState
+            controller.PadStateProviderForTests = () => new PadState
             {
-                ButtonsHold = _hold | _held | (_dialogueHold ? AlundraPadState.Square : 0),
-                ButtonsJustPressed = _hold | (_held & ~_heldPreviousFrame) | (_dialogueHold && !_dialogueHoldPreviousFrame ? AlundraPadState.Square : 0),
+                ButtonsHold = _hold | _held | (_dialogueHold ? PadState.Square : 0),
+                ButtonsJustPressed = _hold | (_held & ~_heldPreviousFrame) | (_dialogueHold && !_dialogueHoldPreviousFrame ? PadState.Square : 0),
             };
 
             if (spec.Arrival is { } arrival)
@@ -517,7 +517,7 @@ internal sealed class ArcRun : IDisposable
                 return true;
             }
 
-            Press(AlundraPadState.Square);
+            Press(PadState.Square);
             return !AlundraDialogueDirector.Instance.IsOpen;
         }, signal);
     }

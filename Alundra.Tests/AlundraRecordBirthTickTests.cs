@@ -49,10 +49,10 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
 
     public AlundraRecordBirthTickTests()
     {
-        AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
+        PlayerManager.WeaponSpawnBirthHookForTests = null;
     }
 
-    public void Dispose() => AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
+    public void Dispose() => PlayerManager.WeaponSpawnBirthHookForTests = null;
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // The real opcodes, through the real runner of the world, the hero being the entity that runs the program.

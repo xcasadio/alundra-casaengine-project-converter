@@ -93,18 +93,18 @@ public sealed class AlundraHeroRunTablesTests
     {
         var hero = new AlundraEntityScriptProxy { AnimationDirection = facing, TargetDirection = direction };
 
-        Assert.Equal(expected, AlundraPlayerManager.TickFacing(hero));
+        Assert.Equal(expected, PlayerManager.TickFacing(hero));
         Assert.Equal(facing, hero.AnimationDirection);
     }
 
     [Fact]
     public void T1f_TheNamesOfTheRunStates_AreTheOnesOfTheBinary()
     {
-        Assert.Equal(0x03u, AlundraPlayerManager.SprintAnimationId);
-        Assert.Equal(0x04u, AlundraPlayerManager.TackleAnimationId);
-        Assert.Equal(0x29u, AlundraPlayerManager.PrepareSprintAnimationId);
-        Assert.Equal(0x2Au, AlundraPlayerManager.StopSprintAnimationId);
-        Assert.Equal(0x3Eu, AlundraPlayerManager.SprintBounceAnimationId);
-        Assert.Equal(0x1Cu, AlundraPlayerManager.HurtBounceAnimationId);
+        Assert.Equal(0x03u, PlayerManager.SprintAnimationId);
+        Assert.Equal(0x04u, PlayerManager.TackleAnimationId);
+        Assert.Equal(0x29u, PlayerManager.PrepareSprintAnimationId);
+        Assert.Equal(0x2Au, PlayerManager.StopSprintAnimationId);
+        Assert.Equal(0x3Eu, PlayerManager.SprintBounceAnimationId);
+        Assert.Equal(0x1Cu, PlayerManager.HurtBounceAnimationId);
     }
 }

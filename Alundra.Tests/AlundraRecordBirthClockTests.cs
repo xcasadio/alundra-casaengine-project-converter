@@ -66,10 +66,10 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
 
     public AlundraRecordBirthClockTests()
     {
-        AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
+        PlayerManager.WeaponSpawnBirthHookForTests = null;
     }
 
-    public void Dispose() => AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
+    public void Dispose() => PlayerManager.WeaponSpawnBirthHookForTests = null;
 
     /// <summary>Adds to the record table of <paramref name="arc"/> a record of the global sprite <paramref name="sprite"/> at the place of the oracle (132, 88, 16 px), facing <paramref name="spriteDirection"/> (3: the direction word 0x18).</summary>
     internal static void RegisterRecord(ArcRun arc, int id, int sprite, int spriteDirection = 3)

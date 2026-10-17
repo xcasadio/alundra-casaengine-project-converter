@@ -99,8 +99,8 @@ public sealed class AlundraTestSavesTests : IDisposable
 
         // The new game, built the way the game builds it.
         var newGame = new GameState();
-        AlundraPlayerManager.InitializeNewGameStats(newGame);
-        AlundraPlayerManager.InitializeNewGameInventory(newGame, rules.ItemTables);
+        PlayerManager.InitializeNewGameStats(newGame);
+        PlayerManager.InitializeNewGameInventory(newGame, rules.ItemTables);
         var reference = AlundraSaveGame.Capture(newGame, expected.MapId, expected.TileX, expected.TileY, expected.TileZ);
         foreach (var (word, value) in expected.Flags)
         {
@@ -444,7 +444,7 @@ public sealed class AlundraTestSavesTests : IDisposable
 
         Build(name).ApplyTo(reloaded); // the state a load puts in place: the aller-retour of the save.
 
-        Assert.Equal(row.CurrentItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(reloaded, rules.ItemTables));
+        Assert.Equal(row.CurrentItem, PlayerManager.GetItemIdFromCurrentWeapon(reloaded, rules.ItemTables));
         Assert.Equal(((short)4, (short)10, (short)4, (short)4), (reloaded.PlayerStats.Hp, reloaded.PlayerStats.HpMax, reloaded.PlayerStats.Mp, reloaded.PlayerStats.MpMax));
         Assert.Equal((short)row.Slot, reloaded.PlayerStats.WeaponId);
         Assert.Equal(9, reloaded.NumberOfItems[73]); // the herbs.
@@ -472,8 +472,8 @@ public sealed class AlundraTestSavesTests : IDisposable
             Build(name).ApplyTo(state);
             for (var slot = 1; slot <= 6; slot++)
             {
-                AlundraPlayerManager.SetPlayerWeaponId(state, rules.ItemTables, slot);
-                Assert.Equal(items[slot - 1], AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, rules.ItemTables));
+                PlayerManager.SetPlayerWeaponId(state, rules.ItemTables, slot);
+                Assert.Equal(items[slot - 1], PlayerManager.GetItemIdFromCurrentWeapon(state, rules.ItemTables));
             }
         }
     }

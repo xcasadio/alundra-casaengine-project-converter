@@ -23,7 +23,7 @@ namespace Alundra.Hero;
 /// assignment, 0 (GameInitializer.cs:169, measured by D0.4): after the first edge, a held state stays
 /// silent for <see cref="MaxNbFrameHeld"/> ticks, then repeats on EVERY tick until it changes.</para>
 /// </summary>
-public sealed class AlundraTickPad
+public sealed class TickPad
 {
     /// <summary><c>PadState.MaxNbFrameHeld</c>, 20 (PadState.cs:25).</summary>
     public const uint MaxNbFrameHeld = 20;

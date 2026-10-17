@@ -88,7 +88,7 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
 
     private static void Press(AlundraWorldProxy worldProxy, uint buttons)
     {
-        worldProxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = buttons };
+        worldProxy.GameState.LastPadState = new PadState { ButtonsHold = buttons };
         worldProxy.Update(0.02f);
         worldProxy.GameState.LastPadState = default;
     }
@@ -107,7 +107,7 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
         var worldProxy = NewWorld();
         var head = ExpectedHead(worldProxy);
 
-        Press(worldProxy, AlundraPadState.Start); // tick T: trigger (Update half), then the first step (render half).
+        Press(worldProxy, PadState.Start); // tick T: trigger (Update half), then the first step (render half).
         Assert.True(AlundraInventoryDirector.Instance.IsActive);
         Assert.Equal(AlundraInventoryPortrait.StateOpening, Portrait.State);
         Assert.Equal((head.X, head.Y, 0, 0), (Portrait.X, Portrait.Y, Portrait.DrawnWidth, Portrait.DrawnHeight));
@@ -132,11 +132,11 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
     public void Close_ReturnStepsInItsOwnTick_AndEndsBeforeTheScreenIsRemoved()
     {
         var worldProxy = NewWorld();
-        Press(worldProxy, AlundraPadState.Start);
+        Press(worldProxy, PadState.Start);
         Ticks(worldProxy, 18); // the 18-call opening slide, then input is accepted
         Assert.Equal(AlundraInventoryPortrait.StateAtRest, Portrait.State);
 
-        Press(worldProxy, AlundraPadState.Start); // tick M: close (render half), the return's first step in M.
+        Press(worldProxy, PadState.Start); // tick M: close (render half), the return's first step in M.
         Assert.Equal(AlundraInventoryPortrait.StateReturning, Portrait.State);
         Assert.Equal((248, 104, 48, 56), (Portrait.X, Portrait.Y, Portrait.DrawnWidth, Portrait.DrawnHeight));
 
@@ -153,10 +153,10 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
     {
         var worldProxy = NewWorld();
         var head = ExpectedHead(worldProxy);
-        Press(worldProxy, AlundraPadState.Start);
+        Press(worldProxy, PadState.Start);
         Ticks(worldProxy, 18);
 
-        Press(worldProxy, AlundraPadState.L1); // tick M: the main inventory's return.
+        Press(worldProxy, PadState.L1); // tick M: the main inventory's return.
         Assert.Equal(AlundraInventoryPortrait.StateReturning, Portrait.State);
 
         var ticksAfterReturn = 0;
@@ -180,9 +180,9 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
     {
         var worldProxy = NewWorld();
         var head = ExpectedHead(worldProxy);
-        Press(worldProxy, AlundraPadState.Start);
+        Press(worldProxy, PadState.Start);
         Ticks(worldProxy, 18);
-        Press(worldProxy, AlundraPadState.L1);
+        Press(worldProxy, PadState.L1);
         for (var i = 0; i < 60 && !AlundraSubInventoryDirector.Instance.IsActive; i++)
         {
             Ticks(worldProxy, 1);
@@ -192,7 +192,7 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
         Assert.Equal(AlundraInventoryPortrait.StateAtRest, Portrait.State);
         Assert.False(AlundraInventoryDirector.Instance.IsActive);
 
-        Press(worldProxy, AlundraPadState.L1); // the sub-inventory's return, in its own tick.
+        Press(worldProxy, PadState.L1); // the sub-inventory's return, in its own tick.
         Assert.Equal(AlundraInventoryPortrait.StateReturning, Portrait.State);
         Assert.Equal(48, Portrait.DrawnWidth);
 
@@ -253,7 +253,7 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
         var presenter = new AlundraInventoryPresenter(
             AlundraInventoryDirector.Instance, worldProxy.GameState, TablesWithPortrait(portraitId), viewModel, new FakeScreen(), null);
 
-        Press(worldProxy, AlundraPadState.Start);
+        Press(worldProxy, PadState.Start);
         presenter.Tick();
         Ticks(worldProxy, 1); // call 2: 3x3
         presenter.Tick();
@@ -385,7 +385,7 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
         var presenter = new AlundraInventoryPresenter(
             AlundraInventoryDirector.Instance, worldProxy.GameState, TablesWithPortrait(null), viewModel, new FakeScreen(), null);
 
-        Press(worldProxy, AlundraPadState.Start);
+        Press(worldProxy, PadState.Start);
         Ticks(worldProxy, 15);
         presenter.Tick();
 

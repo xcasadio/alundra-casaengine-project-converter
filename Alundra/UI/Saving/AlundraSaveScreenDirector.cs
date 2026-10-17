@@ -564,7 +564,7 @@ public sealed class AlundraSaveScreenDirector : ISaveBookScreen
                     _fadeSubstate = 1;
                 }
 
-                if ((_padPressed & AlundraPadState.Square) != 0)
+                if ((_padPressed & PadState.Square) != 0)
                 {
                     RequestMessageClose();
                     _fadeSubstate = 1;
@@ -976,18 +976,18 @@ public sealed class AlundraSaveScreenDirector : ISaveBookScreen
     {
         var pad = _padInterval;
 
-        if ((pad & AlundraPadState.Cross) != 0)
+        if ((pad & PadState.Cross) != 0)
         {
             AskQuestion();
             return;
         }
 
-        if ((pad & AlundraPadState.Down) != 0 && _records[(_ring + 3) & 3].Drawn)
+        if ((pad & PadState.Down) != 0 && _records[(_ring + 3) & 3].Drawn)
         {
             ScrollDown();
         }
 
-        if ((pad & AlundraPadState.Up) != 0 && _selection != 0)
+        if ((pad & PadState.Up) != 0 && _selection != 0)
         {
             ScrollUp();
         }

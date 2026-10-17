@@ -41,9 +41,9 @@ internal sealed class AlundraChoiceBox
     public const int SfxFirst = 2;
     public const int SfxSecond = 3;
 
-    private const uint PadCross = AlundraPadState.Cross;
-    private const uint PadLeft = AlundraPadState.Left;
-    private const uint PadRight = AlundraPadState.Right;
+    private const uint PadCross = PadState.Cross;
+    private const uint PadLeft = PadState.Left;
+    private const uint PadRight = PadState.Right;
 
     private readonly List<int> _sounds = new();
     private string[] _labels = { string.Empty, string.Empty };
@@ -253,7 +253,7 @@ internal sealed class AlundraChoiceAnswerPlan
 
     public int Index { get; }
 
-    public AlundraTickPad Pad { get; } = new();
+    public TickPad Pad { get; } = new();
 
     public bool CrossSent { get; private set; }
 
@@ -267,10 +267,10 @@ internal sealed class AlundraChoiceAnswerPlan
 
         if (selection != Index)
         {
-            return Index > selection ? AlundraPadState.Right : AlundraPadState.Left;
+            return Index > selection ? PadState.Right : PadState.Left;
         }
 
         CrossSent = true;
-        return AlundraPadState.Cross;
+        return PadState.Cross;
     }
 }

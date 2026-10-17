@@ -17,7 +17,7 @@ namespace Alundra.UI.Inventory;
 /// <c>DisplayInventoryTexts</c>/<c>DisplayInventoryDescription</c> (<c>:929-1154</c>, <c>:1097-1134</c>).
 /// No MGUI type appears anywhere in this file (same "pure function of plain data" shape as
 /// <see cref="AlundraHudComposer"/>) - every input is either a director-exposed value or a value the
-/// caller (D5's presenter) already resolved through <see cref="AlundraPlayerManager"/>/
+/// caller (D5's presenter) already resolved through <see cref="PlayerManager"/>/
 /// <see cref="AlundraItemTables"/>, themselves plain C#, no MGUI.
 ///
 /// <b>D-E13D-10 (icons centred, not pixel-exact)</b>: every grid icon reuses
@@ -69,12 +69,12 @@ public static class AlundraInventoryComposer
     /// <param name="slotIconAssetIds">24 entries, the icon asset id for each slot with a resolved item
     /// (<see cref="AlundraItemTables.TryGetIconAssetId"/>'s own result) - null where the item has no
     /// portrait, or the slot itself has none.</param>
-    /// <param name="currentWeaponItemId">The equipped weapon's item id (<see cref="AlundraPlayerManager.GetItemIdFromCurrentWeapon"/>),
+    /// <param name="currentWeaponItemId">The equipped weapon's item id (<see cref="PlayerManager.GetItemIdFromCurrentWeapon"/>),
     /// or null when nothing is equipped/resolvable - used only to find which of slots 0-5 shows the
     /// weapon selection frame.</param>
-    /// <param name="currentItemId">The equipped accessory's item id (<see cref="AlundraPlayerManager.SetItemIdFromCurrentItemId"/>),
+    /// <param name="currentItemId">The equipped accessory's item id (<see cref="PlayerManager.SetItemIdFromCurrentItemId"/>),
     /// or null - used only to find which of slots 6-23 shows the item selection frame.</param>
-    /// <param name="herbOwnedCount">The herb slot's owned count (<see cref="AlundraPlayerManager.GetNumberOfItem"/>
+    /// <param name="herbOwnedCount">The herb slot's owned count (<see cref="PlayerManager.GetNumberOfItem"/>
     /// for item <c>0x24</c>) - 0 hides the count digit, matching the original's own <c>numOfItem != 0</c> guard.</param>
     public static InventoryDisplayModel Compose(
         bool isDrawn,

@@ -9,21 +9,21 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E20.d1 T4 (docs/plan-e20-heros.md section 1.13): the branches of the states of the run that the oracle's traces cannot reach, on a bare hero (no controller: the air predicate reads
-/// <see cref="AlundraEntityScriptProxy.HeroAirborne"/>), one <see cref="AlundraPlayerManager.MovePlayer"/> call per case, in the order of the binary's handlers (<c>0x80031F54</c> the preparation, <c>0x80031FF4</c> the run,
-/// <c>0x80032118</c> the slide, <c>0x80032558</c> the bounce, the common tail <c>0x80031EA8</c>). The answer 0 of the item driver (<see cref="AlundraPlayerManager.TryUseItemResultForTests"/>) is the one thing the
+/// <see cref="AlundraEntityScriptProxy.HeroAirborne"/>), one <see cref="PlayerManager.MovePlayer"/> call per case, in the order of the binary's handlers (<c>0x80031F54</c> the preparation, <c>0x80031FF4</c> the run,
+/// <c>0x80032118</c> the slide, <c>0x80032558</c> the bounce, the common tail <c>0x80031EA8</c>). The answer 0 of the item driver (<see cref="PlayerManager.TryUseItemResultForTests"/>) is the one thing the
 /// stubs of E20.a cannot give. The lines of the plan's "facts" section are the expectations.
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
 public sealed class AlundraHeroRunStatesTests : IDisposable
 {
-    private const uint Triangle = AlundraPadState.Triangle;
-    private const uint Square = AlundraPadState.Square;
-    private const uint Cross = AlundraPadState.Cross;
-    private const uint Circle = AlundraPadState.Circle;
-    private const uint Up = AlundraPadState.Up;
-    private const uint Right = AlundraPadState.Right;
-    private const uint Down = AlundraPadState.Down;
-    private const uint Left = AlundraPadState.Left;
+    private const uint Triangle = PadState.Triangle;
+    private const uint Square = PadState.Square;
+    private const uint Cross = PadState.Cross;
+    private const uint Circle = PadState.Circle;
+    private const uint Up = PadState.Up;
+    private const uint Right = PadState.Right;
+    private const uint Down = PadState.Down;
+    private const uint Left = PadState.Left;
 
     private const uint Idle = 0;
     private const uint Moving = 1;
@@ -35,7 +35,7 @@ public sealed class AlundraHeroRunStatesTests : IDisposable
     private const uint Bounce = 0x3E;
     private const uint HurtBounce = 0x1C;
 
-    public void Dispose() => AlundraPlayerManager.TryUseItemResultForTests = null;
+    public void Dispose() => PlayerManager.TryUseItemResultForTests = null;
 
     private static AlundraEntityScriptProxy Hero(uint animation, uint direction = 0x18, int facing = 3, bool air = false)
     {
@@ -46,8 +46,8 @@ public sealed class AlundraHeroRunStatesTests : IDisposable
 
     private static void Move(AlundraEntityScriptProxy hero, uint hold, uint pressed = 0, uint released = 0)
     {
-        var pad = new AlundraPadState { ButtonsHold = hold, ButtonsJustPressed = pressed, ButtonsReleased = released };
-        AlundraPlayerManager.MovePlayer(hero, in pad, new GameState(), host: null);
+        var pad = new PadState { ButtonsHold = hold, ButtonsJustPressed = pressed, ButtonsReleased = released };
+        PlayerManager.MovePlayer(hero, in pad, new GameState(), host: null);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ public sealed class AlundraHeroRunStatesTests : IDisposable
     [Fact]
     public void Prepare_TryUseItemAtZero_EndsTheTick_NothingIsWritten()
     {
-        AlundraPlayerManager.TryUseItemResultForTests = 0;
+        PlayerManager.TryUseItemResultForTests = 0;
         var hero = Hero(Prepare, direction: 0x10);
         hero.AnimCompleteCounter = 1;
 
@@ -199,7 +199,7 @@ public sealed class AlundraHeroRunStatesTests : IDisposable
     [Fact]
     public void Sprint_DoesNotCallTryUseItem_TheCircleAtZeroDoesNotStopIt()
     {
-        AlundraPlayerManager.TryUseItemResultForTests = 0;
+        PlayerManager.TryUseItemResultForTests = 0;
         var hero = Hero(Sprint);
 
         Move(hero, Triangle | Right);
@@ -333,7 +333,7 @@ public sealed class AlundraHeroRunStatesTests : IDisposable
     [Fact]
     public void Stop_TryUseItemAtZero_EndsTheTick_TheCounterIsNotTouched()
     {
-        AlundraPlayerManager.TryUseItemResultForTests = 0;
+        PlayerManager.TryUseItemResultForTests = 0;
         var hero = Hero(Stop);
         hero.StopSprintCounter = 5;
 
@@ -435,7 +435,7 @@ public sealed class AlundraHeroRunStatesTests : IDisposable
     [InlineData(HurtBounce)]
     public void Bounce_TryUseItemAtZero_FlipsTheDirection_AndEndsTheTick(uint state)
     {
-        AlundraPlayerManager.TryUseItemResultForTests = 0;
+        PlayerManager.TryUseItemResultForTests = 0;
         var hero = Hero(state, direction: 0x08);
         hero.ForceResetAnimationFlag = 1;
 

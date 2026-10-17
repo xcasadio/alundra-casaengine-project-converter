@@ -72,7 +72,7 @@ public sealed class AlundraChoiceBoxMachineTests
         var table = scenario.GetProperty("table").EnumerateArray().ToArray();
         var box = new AlundraChoiceBox();
         box.SeedCursorTickForTests(scenario.GetProperty("anim0").GetInt32());
-        var pad = new AlundraTickPad();
+        var pad = new TickPad();
         var closedAt = -1;
 
         for (var t = 0; t < table.Length; t++)
@@ -162,7 +162,7 @@ public sealed class AlundraChoiceBoxMachineTests
         box.Open("OUI", "NON");
         for (var t = 1; t <= 18; t++)
         {
-            box.Pass(AlundraPadState.Cross, 0); // N+1 to N+18: the init pass and the slide-in do not read the pad
+            box.Pass(PadState.Cross, 0); // N+1 to N+18: the init pass and the slide-in do not read the pad
             Assert.False(box.ClosedThisPass);
         }
 
@@ -309,9 +309,9 @@ public sealed class AlundraChoiceBoxDirectorTests : IDisposable
             Director.Tick();
         }
 
-        _state.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Cross };
+        _state.LastPadState = new PadState { ButtonsHold = PadState.Cross };
         Director.Tick(); // the pass 19 does not see the Cross yet: the seam reads the pad after the pass
-        _state.LastPadState = new AlundraPadState { ButtonsHold = 0 };
+        _state.LastPadState = new PadState { ButtonsHold = 0 };
         Assert.Null(Director.TakeChoiceResult());
 
         Assert.Equal(19, TicksUntilTaken(out var result)); // the pass 20 sees the Cross: written at 20 + 18 = 38
@@ -492,10 +492,10 @@ public sealed class AlundraChoiceBoxDirectorTests : IDisposable
         var holds = new Dictionary<int, uint>();
         for (var f = 36; f <= 44; f++)
         {
-            holds[f] = AlundraPadState.Right;
+            holds[f] = PadState.Right;
         }
 
-        holds[60] = AlundraPadState.Cross;
+        holds[60] = PadState.Cross;
         var a = RunThroughTheProxy(holds);
         Assert.Equal((50, 1), (a.ClosedAt, a.Result));
         Assert.Equal(new[] { (32, 5), (32, 2) }, a.Sounds);
@@ -504,16 +504,16 @@ public sealed class AlundraChoiceBoxDirectorTests : IDisposable
         holds = new Dictionary<int, uint>();
         for (var f = 40; f <= 58; f++)
         {
-            holds[f] = AlundraPadState.Cross;
+            holds[f] = PadState.Cross;
         }
 
-        holds[62] = AlundraPadState.Cross;
+        holds[62] = PadState.Cross;
         var b = RunThroughTheProxy(holds);
         Assert.Equal((52, 1), (b.ClosedAt, b.Result));
         Assert.Equal(new[] { (34, 5), (34, 2) }, b.Sounds);
 
         // c: Cross at the frame 47 only: seen by the pass N+19, the first interactive one: OUI at N+37
-        var c = RunThroughTheProxy(new Dictionary<int, uint> { [47] = AlundraPadState.Cross });
+        var c = RunThroughTheProxy(new Dictionary<int, uint> { [47] = PadState.Cross });
         Assert.Equal((37, 1), (c.ClosedAt, c.Result));
         Assert.Equal(new[] { (19, 5), (19, 2) }, c.Sounds);
 
@@ -521,16 +521,16 @@ public sealed class AlundraChoiceBoxDirectorTests : IDisposable
         holds = new Dictionary<int, uint>();
         for (var f = 36; f <= 80; f++)
         {
-            holds[f] = AlundraPadState.Right;
+            holds[f] = PadState.Right;
         }
 
-        holds[90] = AlundraPadState.Cross;
+        holds[90] = PadState.Cross;
         var d = RunThroughTheProxy(holds);
         Assert.Equal((80, 0), (d.ClosedAt, d.Result));
         Assert.Equal(new[] { (29, 1), (62, 5), (62, 3) }, d.Sounds);
 
         // e: Cross at the frame 46 only: one pass too early (N+18, still sliding in): lost, the choice waits for ever
-        var e = RunThroughTheProxy(new Dictionary<int, uint> { [46] = AlundraPadState.Cross }, frames: 200);
+        var e = RunThroughTheProxy(new Dictionary<int, uint> { [46] = PadState.Cross }, frames: 200);
         Assert.Equal(-1, e.ClosedAt);
         Assert.Empty(e.Sounds);
     }

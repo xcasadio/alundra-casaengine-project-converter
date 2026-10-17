@@ -100,7 +100,7 @@ public sealed class AlundraWeaponLockOpcodesTests
         var (state, first) = Run(gameState, RealTables, document.Codes[327], document.Codes[328]);
 
         Assert.Equal((short)1, gameState.PlayerStats.WeaponId);
-        Assert.Equal(1u, AlundraPlayerManager.GetItemIdFromCurrentWeapon(gameState, RealTables));
+        Assert.Equal(1u, PlayerManager.GetItemIdFromCurrentWeapon(gameState, RealTables));
         Assert.Equal(0x80u, gameState.PlayerControlFlags);
         Assert.Equal(ResultBefore, state.Result);
         Assert.Equal((0xC0, 2), (first.Opcode, first.Size));
@@ -115,7 +115,7 @@ public sealed class AlundraWeaponLockOpcodesTests
         var (state, first) = Run(gameState, RealTables, document.Codes[198], document.Codes[199]);
 
         Assert.Equal((short)2, gameState.PlayerStats.WeaponId);
-        Assert.Equal(5u, AlundraPlayerManager.GetItemIdFromCurrentWeapon(gameState, RealTables));
+        Assert.Equal(5u, PlayerManager.GetItemIdFromCurrentWeapon(gameState, RealTables));
         Assert.Equal(0x80u, gameState.PlayerControlFlags);
         Assert.Equal(ResultBefore, state.Result);
         Assert.Equal((0xC0, 2), (first.Opcode, first.Size));
@@ -164,7 +164,7 @@ public sealed class AlundraWeaponLockOpcodesTests
         var (state, first) = Run(gameState, RealTables, 0xC0, 5);
 
         Assert.Equal((short)6, gameState.PlayerStats.WeaponId);
-        Assert.Equal(7u, AlundraPlayerManager.GetItemIdFromCurrentWeapon(gameState, RealTables));
+        Assert.Equal(7u, PlayerManager.GetItemIdFromCurrentWeapon(gameState, RealTables));
         Assert.Equal(0x84u, gameState.PlayerControlFlags);
         Assert.Equal(ResultBefore, state.Result);
         Assert.Equal(2, first.Size);

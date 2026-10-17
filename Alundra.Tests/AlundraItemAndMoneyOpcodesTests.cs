@@ -110,12 +110,12 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     {
         var gameState = StateWithMoney(9990);
 
-        Assert.Equal(9999, AlundraPlayerManager.AddMoney(gameState, 65535));
+        Assert.Equal(9999, PlayerManager.AddMoney(gameState, 65535));
         Assert.Equal(9999, gameState.PlayerStats.Money);
 
         gameState.PlayerStats.Money = 5;
-        Assert.Equal(15, AlundraPlayerManager.AddMoney(gameState, 10));
-        Assert.Equal(0, AlundraPlayerManager.AddMoney(gameState, -100));
+        Assert.Equal(15, PlayerManager.AddMoney(gameState, 10));
+        Assert.Equal(0, PlayerManager.AddMoney(gameState, -100));
     }
 
     [Fact]
@@ -124,10 +124,10 @@ public sealed class AlundraItemAndMoneyOpcodesTests
         var gameState = new GameState();
         gameState.NumberOfItems[88 * 2 + 1] = 2;
 
-        Assert.Equal(0, AlundraPlayerManager.UseItem(gameState, 99));
-        Assert.Equal(0, AlundraPlayerManager.UseItem(gameState, -1));
-        Assert.Equal(-1, AlundraPlayerManager.UseItem(gameState, 5));
-        Assert.Equal(1, AlundraPlayerManager.UseItem(gameState, 88));
+        Assert.Equal(0, PlayerManager.UseItem(gameState, 99));
+        Assert.Equal(0, PlayerManager.UseItem(gameState, -1));
+        Assert.Equal(-1, PlayerManager.UseItem(gameState, 5));
+        Assert.Equal(1, PlayerManager.UseItem(gameState, 88));
         Assert.Equal(1, Count(gameState, 88));
     }
 
@@ -205,7 +205,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
             Directory.Delete(projectPath, recursive: true);
         }
 
-        Assert.Equal(1, AlundraPlayerManager.AddOneItemIfUnlocked(new GameState(), tables, 0)); // the montage discriminates: the default branch would give it.
+        Assert.Equal(1, PlayerManager.AddOneItemIfUnlocked(new GameState(), tables, 0)); // the montage discriminates: the default branch would give it.
 
         var gameState = new GameState();
         var state = Run(new[] { 0x82, 0, 0x1A, 9, 0xFF }, gameState, new Context { Tables = tables });

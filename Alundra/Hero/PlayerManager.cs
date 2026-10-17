@@ -87,7 +87,7 @@ namespace Alundra.Hero;
 /// PlayerManager.cs:947-950, ported by E20.c2a on every exit (<see cref="EndOfMovePlayer"/>).</description></item>
 /// </list>
 /// </summary>
-public static class AlundraPlayerManager
+public static class PlayerManager
 {
     /// <summary>PlayerAnimation.Idle = 0x00 (alundra-datas-analyser .../Gameplay/PlayerAnimation.cs:5).</summary>
     private const uint IdleAnimationId = 0x00;
@@ -147,7 +147,7 @@ public static class AlundraPlayerManager
     internal const uint SwimHurtEndAnimationId = 0x3B;
 
     /// <summary>The buttons that start the burst of the swim, <c>pressed &amp; 0xD0</c> (<c>0x800326D0</c>): the Triangle (0x10), the Cross (0x40) and the Square (0x80); the Circle (0x20) is the item button.</summary>
-    internal const uint SwimDiveButtons = AlundraPadState.Triangle | AlundraPadState.Cross | AlundraPadState.Square;
+    internal const uint SwimDiveButtons = PadState.Triangle | PadState.Cross | PadState.Square;
 
     /// <summary>The six kinds of handler the swim table <c>0x80022E7C</c> gives to the 80 states (E20.i T1); the address of each handler is in the summary of its member.</summary>
     internal enum SwimHandler : byte
@@ -256,7 +256,7 @@ public static class AlundraPlayerManager
         if (active)
         {
             CasaEngine.Core.Logging.Logs.WriteWarning(
-                $"AlundraPlayerManager: {DebugIgnoreControlLockEnvVar}=1 - MovePlayer's InputBlockedMask "
+                $"PlayerManager: {DebugIgnoreControlLockEnvVar}=1 - MovePlayer's InputBlockedMask "
                 + "gate is disabled (debug-only, never active by default).");
         }
 
@@ -280,7 +280,7 @@ public static class AlundraPlayerManager
     /// position change is <see cref="Tick"/>, called separately (mirrors the original's own split between
     /// <c>PlayerManager.MovePlayer</c> and <c>PhysicsEngine.UpdateEntitiesPhysics</c>).
     /// </summary>
-    public static void MovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, GameState state, IScriptHost? host)
+    public static void MovePlayer(AlundraEntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host)
     {
         MovePlayerCallCountForTests++;
 
@@ -335,7 +335,7 @@ public static class AlundraPlayerManager
         // g_playerControlFlags carries any of ControlLocked/MessageBox/ForcedSequence.
         if (!DebugIgnoreControlLock && (state.PlayerControlFlags & GameState.PlayerControlBits.InputBlockedMask) != 0)
         {
-            AlundraPlayerAnimationEffects.Create(player, AlundraPlayerAnimationEffects.LockedMode);
+            PlayerAnimationEffects.Create(player, PlayerAnimationEffects.LockedMode);
 
             // E20.f1a, binary 0x80031BE8-0x80031BF8, right after CreatePlayerAnimationEffects(1) (0x80031BDC): the locked branch clears the charge timer (0x80031BEC) and the pending-spawn pointer (0x80031BF8), so a
             // charge or a shot pending when a lock begins fires nothing at the unlock. The aura's handle is left as it is: the binary does not touch it here (a stale handle is recreated or released by the aura code with its generation number, E20.f1b).
@@ -348,7 +348,7 @@ public static class AlundraPlayerManager
         // PlayerManager.cs:59-60 (free branch header), binary 0x80031C38. E20.f2: CreatePlayerAnimationEffects(0) comes right after the gravity flag (0x80031C3C) and before the entry of the damage
         // (0x80031C44, E20.c2) and the second call of the item driver (0x80031CC4): the flail bounce is real, the steps, the landing, the grass cut and the low-life alarm are named stubs.
         player.Flags |= EntityFlags.Gravity;
-        AlundraPlayerAnimationEffects.Create(player, AlundraPlayerAnimationEffects.FreeMode);
+        PlayerAnimationEffects.Create(player, PlayerAnimationEffects.FreeMode);
 
         // E20.a A4 (D-E20-14): the second call of the item driver, once per normal tick before the pad is read (binary 0x80031CC4). Stub until E20.c2.
         UpdateItemUseDriver(player);
@@ -632,7 +632,7 @@ public static class AlundraPlayerManager
     /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>): the bare heroes of the unit tests keep the default life of 0, which would otherwise be written over the stats the test set up. This guard is the one
     /// documented deviation of the epilogue.
     /// </summary>
-    internal static void EndOfMovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, GameState state, IScriptHost? host)
+    internal static void EndOfMovePlayer(AlundraEntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host)
     {
         UpdateItemEffectState(player, in pad, state, host);
 
@@ -653,7 +653,7 @@ public static class AlundraPlayerManager
     /// weapon effects, the weapon steps, <c>PlayerTryAttack</c> or <c>PlayerTryAction</c>; the caller ends the tick. It reads no boots level: the wall of the deep water (O-E19-22) and the currents (O-E20-16) are not ported,
     /// so a hero without the swim boots swims where the original stops him; the splash, the wake and the ripple of the dive (the shadow pass <c>0x80038E84</c> and <c>CreatePlayerAnimationEffects</c>) are E20.e's.
     /// </summary>
-    private static void SwimTick(AlundraEntityScriptProxy player, in AlundraPadState pad, GameState state, IScriptHost? host, uint nibble, uint dir)
+    private static void SwimTick(AlundraEntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host, uint nibble, uint dir)
     {
         player.WeaponChargeTimer = 0;
         player.WeaponRecordPointer = 0;
@@ -695,7 +695,7 @@ public static class AlundraPlayerManager
     /// <c>TryUseItem</c> at 0 ends the tick; <c>CheckEntityInteraction</c> 2 gives 0x1D, another non-zero value ends the tick; then an edge of the Triangle, the Cross or the Square (<see cref="SwimDiveButtons"/>) starts the
     /// burst (0x28), else any bit of the direction nibble (even a contradictory pair) swims (0x0F), else the hero floats (0x1D).
     /// </summary>
-    private static void SwimSteerTick(AlundraEntityScriptProxy player, in AlundraPadState pad, GameState state, IScriptHost? host, uint nibble, uint dir)
+    private static void SwimSteerTick(AlundraEntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host, uint nibble, uint dir)
     {
         player.TargetDirection = dir;
         if (TryUseItem(player, in pad) == 0)
@@ -722,7 +722,7 @@ public static class AlundraPlayerManager
     /// E20.i T2: the end of the hurt in deep water, state 0x3B (<c>0x800326FC</c>). <c>TryUseItem</c> at 0 turns the direction (+ 0x10) and ends the tick; otherwise the hero stays in 0x3B until the animation sets
     /// <c>+0xAC</c> (<see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/>, the hold of its last frame), then floats (0x1D) and turns back (+ 0x10). Nothing enters 0x3A or 0x3B yet: the hurt block of E20.c2b does.
     /// </summary>
-    private static void SwimHurtEndTick(AlundraEntityScriptProxy player, in AlundraPadState pad)
+    private static void SwimHurtEndTick(AlundraEntityScriptProxy player, in PadState pad)
     {
         if (TryUseItem(player, in pad) == 0)
         {
@@ -752,7 +752,7 @@ public static class AlundraPlayerManager
     /// in the air, 0x2D; Triangle released, Idle; the counter of animation ends (<c>+0xB0</c>, zeroed by the Triangle entry and counted by the loop of the animation) still 0 (the first 25 ticks), the tick ends;
     /// else the dash table: -1 ends the tick, otherwise the direction takes its value and the run (0x03) starts.
     /// </summary>
-    private static void PrepareSprintTick(AlundraEntityScriptProxy player, in AlundraPadState pad, uint nibble, uint dir)
+    private static void PrepareSprintTick(AlundraEntityScriptProxy player, in PadState pad, uint nibble, uint dir)
     {
         if (TryUseItem(player, in pad) == 0 || PlayerTryAction(player, in pad) != 0 || PlayerTryAttack(player, in pad) != 0)
         {
@@ -767,7 +767,7 @@ public static class AlundraPlayerManager
             return;
         }
 
-        if ((pad.ButtonsHold & AlundraPadState.Triangle) == 0)
+        if ((pad.ButtonsHold & PadState.Triangle) == 0)
         {
             player.TargetAnimationId = IdleAnimationId;
             return;
@@ -796,7 +796,7 @@ public static class AlundraPlayerManager
     /// (<see cref="AnimationTables.SprintConeRows"/>): the slide with the counter at 0; a Square, a Cross or a Circle held (<c>hold &amp; 0xE0</c>): the tackle (0x04). The direction of the hero is never written here
     /// except by the bounce.
     /// </summary>
-    private static void SprintTick(AlundraEntityScriptProxy player, in AlundraPadState pad, uint nibble, uint dir, int tickFacing)
+    private static void SprintTick(AlundraEntityScriptProxy player, in PadState pad, uint nibble, uint dir, int tickFacing)
     {
         if (PlayerTryAction(player, in pad) != 0)
         {
@@ -831,14 +831,14 @@ public static class AlundraPlayerManager
             return;
         }
 
-        if ((pad.ButtonsHold & AlundraPadState.Triangle) == 0 || !IsInSprintCone(dir, tickFacing))
+        if ((pad.ButtonsHold & PadState.Triangle) == 0 || !IsInSprintCone(dir, tickFacing))
         {
             player.TargetAnimationId = StopSprintAnimationId;
             player.StopSprintCounter = 0;
             return;
         }
 
-        if ((pad.ButtonsHold & (AlundraPadState.Circle | AlundraPadState.Cross | AlundraPadState.Square)) != 0)
+        if ((pad.ButtonsHold & (PadState.Circle | PadState.Cross | PadState.Square)) != 0)
         {
             player.TargetAnimationId = TackleAnimationId;
         }
@@ -857,7 +857,7 @@ public static class AlundraPlayerManager
     /// (<see cref="AlundraEntityScriptProxy.StopSprintCounter"/>) at 0: the tick ends; the mover curtailed the slide, or Triangle released: the counter goes to 0; else it counts up. Below 11 a direction bit on the pad clears
     /// it (a press too early is lost); from 11 on the dash table decides: -1 ends the tick and keeps the counter, otherwise the direction takes its value and the run (0x03) resumes with the force of the slide.
     /// </summary>
-    private static void StopSprintTick(AlundraEntityScriptProxy player, in AlundraPadState pad, uint nibble)
+    private static void StopSprintTick(AlundraEntityScriptProxy player, in PadState pad, uint nibble)
     {
         if (TryUseItem(player, in pad) == 0 || PlayerTryAction(player, in pad) != 0)
         {
@@ -875,7 +875,7 @@ public static class AlundraPlayerManager
             return;
         }
 
-        if (player.ForceAdjusted != 0 || (pad.ButtonsHold & AlundraPadState.Triangle) == 0)
+        if (player.ForceAdjusted != 0 || (pad.ButtonsHold & PadState.Triangle) == 0)
         {
             player.StopSprintCounter = 0;
             return;
@@ -911,7 +911,7 @@ public static class AlundraPlayerManager
     /// last frame (<see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/>, the binary's <c>+0xAC</c>, raised by the Hold end); then the direction flips (+ 0x10, the hero faces the way he came from) and the state
     /// is Idle on the ground, Moving (1) in the air.
     /// </summary>
-    private static void BounceTick(AlundraEntityScriptProxy player, in AlundraPadState pad)
+    private static void BounceTick(AlundraEntityScriptProxy player, in PadState pad)
     {
         if (TryUseItem(player, in pad) == 0)
         {
@@ -930,7 +930,7 @@ public static class AlundraPlayerManager
 
     /// <summary>E20.a A4 stub of <c>TryUseItem</c> (<c>0x8002ED64</c>): non-zero means "carry on this tick". The binary returns 1 whenever the Circle button has no rising edge
     /// (<c>0x8002EDA8</c>); a stub returning 0 would end the tick and kill every attack, jump and run (critique C10). The use of an item (the Circle) is E20.h.</summary>
-    private static int TryUseItem(AlundraEntityScriptProxy player, in AlundraPadState pad) => TryUseItemResultForTests ?? 1;
+    private static int TryUseItem(AlundraEntityScriptProxy player, in PadState pad) => TryUseItemResultForTests ?? 1;
 
     /// <summary>E20.d1 T4 test seam, per thread: the answer of the stub of <see cref="TryUseItem"/> (null: 1, "carry on"). The branches of the run that the binary takes when the item driver answers 0 (<c>0x80031F5C</c>,
     /// <c>0x80032120</c>, <c>0x80032560</c>) are unreachable while the stub answers 1; the tests of those branches pose 0 here.</summary>
@@ -938,7 +938,7 @@ public static class AlundraPlayerManager
     internal static int? TryUseItemResultForTests;
 
     /// <summary>E20.a A4 stub of <c>PlayerTryAction</c> (<c>0x8002EEAC</c>): 0 means "no action, carry on" (<c>0x8002EFC8</c>: nothing carried and nothing to lift). Lifting, carrying and throwing are E20.g.</summary>
-    private static int PlayerTryAction(AlundraEntityScriptProxy player, in AlundraPadState pad) => 0;
+    private static int PlayerTryAction(AlundraEntityScriptProxy player, in PadState pad) => 0;
 
     /// <summary>The bit of <see cref="AlundraEntityScriptProxy.CombinedVramFlagsOR"/> (a ground property of 0x20 under a corner of the footprint) on which the Square does not strike (<c>0x8002EB24</c>).</summary>
     private const uint NoAttackVramFlag = 0x2000;
@@ -959,19 +959,19 @@ public static class AlundraPlayerManager
     /// itself (E19.t).</description></item>
     /// </list>
     /// </summary>
-    private static int PlayerTryAttack(AlundraEntityScriptProxy player, in AlundraPadState pad)
+    private static int PlayerTryAttack(AlundraEntityScriptProxy player, in PadState pad)
     {
         if ((player.CombinedVramFlagsOR & NoAttackVramFlag) != 0)
         {
             return 0;
         }
 
-        if ((pad.ButtonsReleased & AlundraPadState.Square) != 0)
+        if ((pad.ButtonsReleased & PadState.Square) != 0)
         {
             return ReleaseChargedAttack(player);
         }
 
-        if ((pad.ButtonsJustPressed & AlundraPadState.Square) == 0)
+        if ((pad.ButtonsJustPressed & PadState.Square) == 0)
         {
             return 0;
         }
@@ -1052,9 +1052,9 @@ public static class AlundraPlayerManager
     /// </list>
     /// The stage is the host's (<see cref="IScriptHost.EffectStage"/>); a host without one creates no effect, and the sounds that do not depend on a creation still play.
     /// </summary>
-    internal static void UpdatePlayerWeaponEffect(AlundraEntityScriptProxy player, in AlundraPadState pad, IScriptHost? host)
+    internal static void UpdatePlayerWeaponEffect(AlundraEntityScriptProxy player, in PadState pad, IScriptHost? host)
     {
-        if (((pad.ButtonsHold | pad.ButtonsReleased) & AlundraPadState.Square) != 0
+        if (((pad.ButtonsHold | pad.ButtonsReleased) & PadState.Square) != 0
             && AlundraWeaponTables.RecordByte(AlundraWeaponTables.RecordsAddress + (uint)(AlundraWeaponTables.RecordSize * player.CurrentWeaponRecord)) != 0
             && AlundraWeaponTables.AnimationCountsCharge(player.TargetAnimationId))
         {
@@ -1297,7 +1297,7 @@ public static class AlundraPlayerManager
     /// </list>
     /// A host without the seam, tables or records does steps 1, 6 and 2-5 nothing (a bare test montage); the regeneration then finds no record and only keeps its counters at 0.
     /// </summary>
-    internal static void UpdateItemEffectState(AlundraEntityScriptProxy player, in AlundraPadState pad, GameState state, IScriptHost? host)
+    internal static void UpdateItemEffectState(AlundraEntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host)
     {
         RefreshEquipmentAndSheet(player, state, host);
         RegenerateLife(player, in pad, state, host?.EquipmentRecords);
@@ -1418,7 +1418,7 @@ public static class AlundraPlayerManager
     /// other than 0, the counter grows by one and, when it passes the byte 2, goes back to 0 and the life gains 1 (so a period of byte 2 + 1 ticks; a record without a byte 2 zeroes its counter); the life is then
     /// capped at the maximum.
     /// </summary>
-    internal static void RegenerateLife(AlundraEntityScriptProxy hero, in AlundraPadState pad, GameState state, AlundraEquipmentRecords? records)
+    internal static void RegenerateLife(AlundraEntityScriptProxy hero, in PadState pad, GameState state, AlundraEquipmentRecords? records)
     {
         var counters = state.RegenerationCounters;
         if ((state.PlayerControlFlags & RegenerationClosedFlags) != 0
@@ -1517,7 +1517,7 @@ public static class AlundraPlayerManager
     /// a held Triangle (E20.d1) starts the preparation of the run; otherwise Moving or Idle. <c>TryUseItem</c> and <c>PlayerTryAction</c> are the stubs of E20.a (the use of an item and lifting are not ported yet). The
     /// <c>LoadingMap</c> case reads the same predicate (E19.v, <see cref="IsHeroInTheAir"/>).
     /// </summary>
-    private static void ApplyGroundOrAirTail(AlundraEntityScriptProxy player, in AlundraPadState pad, uint buttonsHold)
+    private static void ApplyGroundOrAirTail(AlundraEntityScriptProxy player, in PadState pad, uint buttonsHold)
     {
         // E20.a A4, binary 0x80031EA8: PlayerTryAttack first (non-zero ends the tick, so the Square wins over the Cross); <see cref="PlayerTryAttack"/> starts the swing of the equipped weapon (E20.b).
         if (PlayerTryAttack(player, in pad) != 0)
@@ -1532,7 +1532,7 @@ public static class AlundraPlayerManager
             return;
         }
 
-        if ((pad.ButtonsJustPressed & AlundraPadState.Cross) != 0)
+        if ((pad.ButtonsJustPressed & PadState.Cross) != 0)
         {
             if ((player.CombinedVramFlagsOR & NoJumpVramFlag) != 0)
             {
@@ -1545,7 +1545,7 @@ public static class AlundraPlayerManager
 
         // E20.d1 T2, binary 0x80031F14-0x80031F30: a HELD Triangle (not an edge) starts the preparation of the run, with the counter of animation ends at 0 (the preparation lasts until the first loop of its animation
         // turns that counter). Not on deep water, which never reaches this tail (the swim branch of MovePlayer ends the tick before).
-        if ((pad.ButtonsHold & AlundraPadState.Triangle) != 0)
+        if ((pad.ButtonsHold & PadState.Triangle) != 0)
         {
             player.TargetAnimationId = PrepareSprintAnimationId;
             player.AnimCompleteCounter = 0;
@@ -1748,7 +1748,7 @@ public static class AlundraPlayerManager
     /// false; this method's own repeated check just carries the same gate one level deeper, narrowly,
     /// the way D-E12D-5 chose - not because the port lacked one.
     /// </summary>
-    internal static int CheckEntityInteraction(AlundraEntityScriptProxy player, in AlundraPadState pad, GameState state, IScriptHost? host)
+    internal static int CheckEntityInteraction(AlundraEntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host)
     {
         if (host == null)
         {
@@ -1823,7 +1823,7 @@ public static class AlundraPlayerManager
                 res = 1;
                 host.ActiveCollisionEntity = collidedEntity;
             }
-            else if ((pad.ButtonsJustPressed & AlundraPadState.Square) == 0)
+            else if ((pad.ButtonsJustPressed & PadState.Square) == 0)
             {
                 res = 0;
             }
@@ -2130,7 +2130,7 @@ public static class AlundraPlayerManager
     {
         if (slotId >= 0x20)
         {
-            CasaEngine.Core.Logging.Logs.WriteWarning($"AlundraPlayerManager: invalid slotId {slotId}.");
+            CasaEngine.Core.Logging.Logs.WriteWarning($"PlayerManager: invalid slotId {slotId}.");
             return NoItem;
         }
 
@@ -2201,7 +2201,7 @@ public static class AlundraPlayerManager
     {
         if ((int)itemId < 0 || itemId >= ItemsCount)
         {
-            CasaEngine.Core.Logging.Logs.WriteWarning($"AlundraPlayerManager: invalid itemId {itemId} for SetCurrentItemId.");
+            CasaEngine.Core.Logging.Logs.WriteWarning($"PlayerManager: invalid itemId {itemId} for SetCurrentItemId.");
             return;
         }
 
@@ -2240,7 +2240,7 @@ public static class AlundraPlayerManager
     {
         if (itemId < 0 || itemId >= ItemsCount)
         {
-            CasaEngine.Core.Logging.Logs.WriteWarning($"AlundraPlayerManager: invalid itemId {itemId} in AddOneItemIfUnlocked.");
+            CasaEngine.Core.Logging.Logs.WriteWarning($"PlayerManager: invalid itemId {itemId} in AddOneItemIfUnlocked.");
             return 0;
         }
 
@@ -2265,7 +2265,7 @@ public static class AlundraPlayerManager
     {
         if (itemId < 0 || itemId >= ItemsCount)
         {
-            CasaEngine.Core.Logging.Logs.WriteWarning($"AlundraPlayerManager: invalid itemId {itemId} in UseItem.");
+            CasaEngine.Core.Logging.Logs.WriteWarning($"PlayerManager: invalid itemId {itemId} in UseItem.");
             return 0;
         }
 

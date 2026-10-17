@@ -117,7 +117,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         var root = FindProjectRoot();
         var tables = new AlundraItemTables(root);
         var state = new GameState();
-        AlundraPlayerManager.InitializeNewGameInventory(state, tables);
+        PlayerManager.InitializeNewGameInventory(state, tables);
         Assert.Contains(state.NumberOfItems, count => count != 0); // the New Game inventory is really there.
         var hero = new AlundraEntityScriptProxy
         {
@@ -161,11 +161,11 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         save.Mp = AlundraSaveGame.MaxMpMax;
         save.Money = AlundraSaveGame.MaxMoney;
         save.WeaponId = AlundraSaveGame.MaxWeaponId;
-        save.ItemId = AlundraPlayerManager.ItemsCount - 1;
+        save.ItemId = PlayerManager.ItemsCount - 1;
         save.FalconTemp = AlundraSaveGame.MaxFalcon;
         save.Falcon = AlundraSaveGame.MaxFalcon;
         save.DeathRetryCount = byte.MaxValue;
-        for (var id = 0; id < AlundraPlayerManager.ItemsCount; id++)
+        for (var id = 0; id < PlayerManager.ItemsCount; id++)
         {
             save.NumberOfItems[id * 2 + 1] = (short)tables.ItemsProperties[id * AlundraItemTables.ItemColumnCount + 3];
         }
@@ -230,7 +230,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         var hud = AlundraHudDirector.Instance;
         hud.AttachToWorld(state);
         var hudView = new AlundraHudViewModel();
-        var hudPresenter = new AlundraHudPresenter(hud, hudView, () => AlundraPlayerManager.ResolveHudEquipmentIcons(state, tables));
+        var hudPresenter = new AlundraHudPresenter(hud, hudView, () => PlayerManager.ResolveHudEquipmentIcons(state, tables));
         state.AddFlag(AlundraHudDirector.ScriptOpenRequestFlag, AlundraHudDirector.ScriptOpenRequestMask);
 
         var settled = false;
@@ -275,7 +275,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
 
         const int SettleTicks = 40; // AlundraSubInventoryPresenterTests: close slide + handoff + opening slide.
 
-        OneTick(AlundraPadState.Start);
+        OneTick(PadState.Start);
         for (var i = 0; i < SettleTicks; i++)
         {
             OneTick(0);
@@ -286,7 +286,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         var mainRenders = mainView.AppliedModelCount;
         Assert.True(mainRenders > 0);
 
-        OneTick(AlundraPadState.R1);
+        OneTick(PadState.R1);
         for (var i = 0; i < SettleTicks; i++)
         {
             OneTick(0);
@@ -296,7 +296,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         Assert.True(subPresenter.IsPushedForTests);
         Assert.True(subView.AppliedModelCount > 0);
 
-        OneTick(AlundraPadState.R1);
+        OneTick(PadState.R1);
         for (var i = 0; i < SettleTicks; i++)
         {
             OneTick(0);

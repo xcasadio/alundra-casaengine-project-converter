@@ -16,10 +16,10 @@ namespace Alundra.Transitions;
 /// retail build path this port targets, not ported).
 ///
 /// DETECTION ONLY (T3's whole scope, per the ticket): <see cref="TryGetTrigger"/> is pure - it reads
-/// <see cref="AlundraEntityScriptProxy"/>/<see cref="AlundraPadState"/>/<see cref="GameState"/>/the
+/// <see cref="AlundraEntityScriptProxy"/>/<see cref="PadState"/>/<see cref="GameState"/>/the
 /// portal list and writes nothing, starts no fade, requests no world change, and never calls
 /// <c>HandleWarpTransition</c>. It is the seam T4's <c>AlundraWarpDirector</c> will consume (via
-/// <see cref="AlundraPlayerManager.MovePlayer"/>'s own call site, wired through
+/// <see cref="PlayerManager.MovePlayer"/>'s own call site, wired through
 /// <see cref="IScriptHost.OnPortalTriggerDetected"/> - see that member's own doc) - "exposé par
 /// une couture que T4 remplira".
 /// </summary>
@@ -36,8 +36,8 @@ internal static class AlundraPortalTrigger
     /// <summary>
     /// Port of <c>StaticVariables.SHORT_ARRAY_80022776</c> (address 0x80022776, <c>StaticVariables.cs:530</c>):
     /// <c>[0x4000, 0x1000, 0x8000, 0x2000]</c>, indexed by <see cref="AlundraPortalRecord.RequiredFacingDirection"/>
-    /// (domain 0..3), gives the <see cref="AlundraPadState.ButtonsHold"/> mask that must be held for the
-    /// warp to trigger. The four values already equal this port's own <see cref="AlundraPadState"/>
+    /// (domain 0..3), gives the <see cref="PadState.ButtonsHold"/> mask that must be held for the
+    /// warp to trigger. The four values already equal this port's own <see cref="PadState"/>
     /// Down/Up/Left/Right masks (0x4000/0x1000/0x8000/0x2000, <c>AlundraPlayerController.cs:28-31</c>) -
     /// same literal PSX button-bit layout, not a coincidence, so no separate remapping table is needed.
     /// </summary>
@@ -57,7 +57,7 @@ internal static class AlundraPortalTrigger
     /// </summary>
     internal static (AlundraPortalRecord Portal, uint ArrivalDirectionId)? TryGetTrigger(
         AlundraEntityScriptProxy player,
-        in AlundraPadState pad,
+        in PadState pad,
         GameState state,
         IReadOnlyList<AlundraPortalRecord> portals)
     {

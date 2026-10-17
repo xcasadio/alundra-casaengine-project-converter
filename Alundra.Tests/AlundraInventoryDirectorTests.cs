@@ -163,7 +163,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     /// input-accepting state.</summary>
     private static void OpenAndSettle(GameState state, AlundraInventoryDirector director)
     {
-        Tick(state, director, AlundraPadState.Start); // trigger + DisplayInventory + FUN_80054f1c, same tick.
+        Tick(state, director, PadState.Start); // trigger + DisplayInventory + FUN_80054f1c, same tick.
         for (var i = 0; i < 18; i++)
         {
             Tick(state, director, 0); // 15 interpolating calls + 2 snap calls + 1 completion-detecting call.
@@ -197,10 +197,10 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         // ButtonsJustPressed is only an EDGE - simulate "already held before this test starts" by
         // priming ButtonsHold first, THEN ticking with the same mask (no change -> no edge).
-        state.TickPad.Update(AlundraPadState.Start);
+        state.TickPad.Update(PadState.Start);
         Assert.False(director.IsActive);
 
-        Tick(state, director, AlundraPadState.Start); // same mask again - no edge, ButtonsJustPressed == 0.
+        Tick(state, director, PadState.Start); // same mask again - no edge, ButtonsJustPressed == 0.
 
         Assert.False(director.IsActive);
     }
@@ -212,7 +212,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         state.PlayerControlFlags = GameState.PlayerControlBits.ControlLocked;
         var director = NewDirector(state);
 
-        Tick(state, director, AlundraPadState.Start);
+        Tick(state, director, PadState.Start);
 
         Assert.False(director.IsActive);
     }
@@ -226,14 +226,14 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         state.PlayerControlFlags = GameState.PlayerControlBits.ForcedWeapon;
         var director = NewDirector(state);
 
-        Tick(state, director, AlundraPadState.Start);
+        Tick(state, director, PadState.Start);
 
         Assert.False(director.IsActive);
         Assert.Equal(0x80u, state.PlayerControlFlags);
 
         Tick(state, director, 0);
         state.PlayerControlFlags = 0;
-        Tick(state, director, AlundraPadState.Start);
+        Tick(state, director, PadState.Start);
 
         Assert.True(director.IsActive);
     }
@@ -245,7 +245,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var director = NewDirector(state);
         var player = new AlundraEntityScriptProxy { BlockedByEntity = new CasaEngine.Framework.Scene.Entities.Entity() };
 
-        state.TickPad.Update(AlundraPadState.Start);
+        state.TickPad.Update(PadState.Start);
         director.Tick(player);
 
         Assert.False(director.IsActive);
@@ -263,15 +263,15 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         for (var tick = 1; tick <= 8; tick++)
         {
-            Tick(state, director, tick % 2 == 1 ? AlundraPadState.Start : 0u); // a fresh Start edge every other tick.
+            Tick(state, director, tick % 2 == 1 ? PadState.Start : 0u); // a fresh Start edge every other tick.
             Assert.False(director.IsActive, $"tick {tick}");
         }
 
-        Tick(state, director, AlundraPadState.Start); // tick 9: a fresh edge, 0.02 s of delay still left.
+        Tick(state, director, PadState.Start); // tick 9: a fresh edge, 0.02 s of delay still left.
         Assert.False(director.IsActive);
         Assert.True(AlundraWarpDirector.Instance.IsWarpDelayRunning);
 
-        Tick(state, director, AlundraPadState.Start | AlundraPadState.L2); // tick 10: a fresh L2 edge, delay over.
+        Tick(state, director, PadState.Start | PadState.L2); // tick 10: a fresh L2 edge, delay over.
         Assert.False(AlundraWarpDirector.Instance.IsWarpDelayRunning);
         Assert.True(director.IsActive);
     }
@@ -298,7 +298,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
         Assert.Equal(0u, state.PlayerControlFlags); // the warp poses no control-flag bit (D-T-6).
 
-        Tick(state, director, AlundraPadState.Start, player);
+        Tick(state, director, PadState.Start, player);
 
         Assert.False(director.IsActive);
         Assert.Equal(0u, director.ForbiddenWarpFlag);
@@ -311,7 +311,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var state = NewState();
         var director = NewDirector(state);
 
-        Tick(state, director, AlundraPadState.Start | AlundraPadState.Select);
+        Tick(state, director, PadState.Start | PadState.Select);
 
         Assert.False(director.IsActive);
     }
@@ -325,7 +325,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Hello", "hello"), "Start", 0);
         Assert.True(AlundraDialogueDirector.Instance.IsOpen);
 
-        Tick(state, director, AlundraPadState.Start);
+        Tick(state, director, PadState.Start);
 
         Assert.False(director.IsActive);
     }
@@ -343,7 +343,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         // Setup tick: DisplayInventory (HUD ArmDisappearance + sound 4) then FUN_80054f1c (flag 5, MenuOpen,
         // boxes armed but NOT yet moved from wherever they were - construction default is already origin).
-        Tick(state, director, AlundraPadState.Start);
+        Tick(state, director, PadState.Start);
 
         Assert.Equal(new[] { 4 }, sound.Requests);
         Assert.Equal(5u, director.ForbiddenWarpFlag);
@@ -362,7 +362,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         // 17 more calls (18 total slide calls): 14 more interpolating + 2 snap + the completion-detecting call.
         for (var i = 0; i < 17; i++)
         {
-            Tick(state, director, AlundraPadState.Down);
+            Tick(state, director, PadState.Down);
         }
 
         Assert.Equal(0, director.SelectedSlotId);
@@ -375,7 +375,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         // Now settled: input is read again - release then a FRESH press (Down was already held
         // throughout the slide above, so its own edge was already consumed while sliding, ignored).
         Tick(state, director, 0);
-        Tick(state, director, AlundraPadState.Down);
+        Tick(state, director, PadState.Down);
         Assert.Equal(6, director.SelectedSlotId);
     }
 
@@ -394,12 +394,12 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         // Reach row 3 (slot 18, column 0) by three Down presses (needs three separate press EDGES).
         for (var i = 0; i < 3; i++)
         {
-            Tick(state, director, AlundraPadState.Down);
+            Tick(state, director, PadState.Down);
             Tick(state, director, 0); // release, so the next press is a fresh edge.
         }
         Assert.Equal(18, director.SelectedSlotId);
 
-        Tick(state, director, AlundraPadState.Down); // wraps 18+6=24 > 0x17 -> 18-0x12=0.
+        Tick(state, director, PadState.Down); // wraps 18+6=24 > 0x17 -> 18-0x12=0.
         Assert.Equal(0, director.SelectedSlotId);
         Assert.Contains(1, sound.Requests);
     }
@@ -411,7 +411,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var director = NewDirector(state);
         OpenAndSettle(state, director);
 
-        Tick(state, director, AlundraPadState.Up); // 0-6 = -6 < 0 -> 0+0x12=18.
+        Tick(state, director, PadState.Up); // 0-6 = -6 < 0 -> 0+0x12=18.
 
         Assert.Equal(18, director.SelectedSlotId);
     }
@@ -425,12 +425,12 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         for (var i = 0; i < 5; i++)
         {
-            Tick(state, director, AlundraPadState.Right);
+            Tick(state, director, PadState.Right);
             Tick(state, director, 0);
         }
         Assert.Equal(5, director.SelectedSlotId);
 
-        Tick(state, director, AlundraPadState.Right); // 5+1=6, 6==6/6*6 -> 5-5=0.
+        Tick(state, director, PadState.Right); // 5+1=6, 6==6/6*6 -> 5-5=0.
         Assert.Equal(0, director.SelectedSlotId);
     }
 
@@ -441,7 +441,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var director = NewDirector(state);
         OpenAndSettle(state, director);
 
-        Tick(state, director, AlundraPadState.Left); // 0 == 0/6*6 -> 0+5=5.
+        Tick(state, director, PadState.Left); // 0 == 0/6*6 -> 0+5=5.
 
         Assert.Equal(5, director.SelectedSlotId);
     }
@@ -453,14 +453,14 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         SetEtcFixture(0x24, "Herb", "d0", "d1");
         var director = NewDirector(state);
         OpenAndSettle(state, director);
-        Tick(state, director, AlundraPadState.Down); // select slot 6 (fixed item 0x24, owned below).
+        Tick(state, director, PadState.Down); // select slot 6 (fixed item 0x24, owned below).
         Tick(state, director, 0);
 
         state.NumberOfItems[0x24 * 2 + 1] = 1; // own it, so the text machine actually advances.
         Tick(state, director, 0); // state 0 -> 1.
         Assert.Equal(1, director.TextRevealState);
 
-        Tick(state, director, AlundraPadState.Right); // moves off slot 6 and back is irrelevant - only the reset matters.
+        Tick(state, director, PadState.Right); // moves off slot 6 and back is irrelevant - only the reset matters.
         Assert.Equal(0, director.TextRevealState);
     }
 
@@ -471,7 +471,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var director = NewDirector(state);
         OpenAndSettle(state, director);
 
-        Tick(state, director, AlundraPadState.Down); // edge - one move.
+        Tick(state, director, PadState.Down); // edge - one move.
         Assert.Equal(6, director.SelectedSlotId);
 
         // AlundraTickPad.Update: the edge tick above took the "ButtonsHold == 0 before" branch (does not
@@ -480,14 +480,14 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         // NumberOfFrameHold == MaxNbFrameHeld and repeats.
         for (var i = 0; i < 20; i++)
         {
-            Tick(state, director, AlundraPadState.Down); // held - silent for MaxNbFrameHeld (20) ticks total.
+            Tick(state, director, PadState.Down); // held - silent for MaxNbFrameHeld (20) ticks total.
         }
         Assert.Equal(6, director.SelectedSlotId);
 
-        Tick(state, director, AlundraPadState.Down); // 21st held tick - RepeatInterval == 0 -> repeats now.
+        Tick(state, director, PadState.Down); // 21st held tick - RepeatInterval == 0 -> repeats now.
         Assert.Equal(12, director.SelectedSlotId);
 
-        Tick(state, director, AlundraPadState.Down); // RepeatInterval == 0 -> repeats every tick after that too.
+        Tick(state, director, PadState.Down); // RepeatInterval == 0 -> repeats every tick after that too.
         Assert.Equal(18, director.SelectedSlotId);
     }
 
@@ -505,7 +505,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         OpenAndSettle(state, director);
 
         state.NumberOfItems[4 * 2 + 1] = 1; // own item 4 - the highest-priority owned match for slot 1.
-        Tick(state, director, AlundraPadState.Cross); // grid slot 0 -> weapon slot 1.
+        Tick(state, director, PadState.Cross); // grid slot 0 -> weapon slot 1.
 
         Assert.Contains(2, sound.Requests);
         Assert.Equal(1, state.PlayerStats.WeaponId);
@@ -521,10 +521,10 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         OpenAndSettle(state, director);
 
         state.NumberOfItems[4 * 2 + 1] = 1;
-        AlundraPlayerManager.SetPlayerWeaponId(state, tables, 1); // already equipped through this same slot.
+        PlayerManager.SetPlayerWeaponId(state, tables, 1); // already equipped through this same slot.
         sound.Requests.Clear();
 
-        Tick(state, director, AlundraPadState.Cross);
+        Tick(state, director, PadState.Cross);
 
         Assert.Empty(sound.Requests);
     }
@@ -541,12 +541,12 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         // Equip slot 0 first (item 4, real), so a real weapon is current; the case with no weapon resolving,
         // where the original stays silent, is EquipWeapon_EmptySlot_NoWeaponResolving_PlaysSound3.
         state.NumberOfItems[4 * 2 + 1] = 1;
-        Tick(state, director, AlundraPadState.Cross); // grid slot 0 -> weapon slot 1, equips item 4.
+        Tick(state, director, PadState.Cross); // grid slot 0 -> weapon slot 1, equips item 4.
         sound.Requests.Clear();
 
-        Tick(state, director, AlundraPadState.Right); // grid slot 1 -> weapon slot 3 (empty in the fixture).
+        Tick(state, director, PadState.Right); // grid slot 1 -> weapon slot 3 (empty in the fixture).
         Tick(state, director, 0);
-        Tick(state, director, AlundraPadState.Cross);
+        Tick(state, director, PadState.Cross);
 
         Assert.Contains(3, sound.Requests);
         Assert.DoesNotContain(2, sound.Requests);
@@ -584,13 +584,13 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var tables = ItemTablesFixture.LoadReal();
         var director = NewDirector(state, tables, sound);
         OpenAndSettle(state, director);
-        Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, tables));
+        Assert.Equal(PlayerManager.NoItem, PlayerManager.GetItemIdFromCurrentWeapon(state, tables));
         sound.Requests.Clear();
 
-        Tick(state, director, AlundraPadState.Right); // grid slot 1 -> weapon slot 3 (empty in the fixture).
+        Tick(state, director, PadState.Right); // grid slot 1 -> weapon slot 3 (empty in the fixture).
         Tick(state, director, 0);
         sound.Requests.Clear();
-        Tick(state, director, AlundraPadState.Cross);
+        Tick(state, director, PadState.Cross);
 
         Assert.Equal(new[] { 3 }, sound.Requests);
         Assert.Equal(0, state.PlayerStats.WeaponId); // nothing equipped.
@@ -606,14 +606,14 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var tables = ItemTablesFixture.LoadReal();
         var director = NewDirector(state, tables);
         state.NumberOfItems[4 * 2 + 1] = 1;
-        AlundraPlayerManager.SetPlayerWeaponId(state, tables, 1); // weapon slot 1 resolves to item 4.
+        PlayerManager.SetPlayerWeaponId(state, tables, 1); // weapon slot 1 resolves to item 4.
         OpenAndSettle(state, director); // DisplayInventory -> DisplayIconNames.
         Assert.Equal("Epee", director.EquippedWeaponName);
 
         state.NumberOfItems[4 * 2 + 1] = 0; // the weapon no longer resolves.
-        Tick(state, director, AlundraPadState.Right); // grid slot 1 -> weapon slot 3 (empty).
+        Tick(state, director, PadState.Right); // grid slot 1 -> weapon slot 3 (empty).
         Tick(state, director, 0);
-        Tick(state, director, AlundraPadState.Cross); // sound 3, then DisplayIconNames.
+        Tick(state, director, PadState.Cross); // sound 3, then DisplayIconNames.
 
         Assert.Equal("       ", director.EquippedWeaponName);
     }
@@ -631,9 +631,9 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         OpenAndSettle(state, director);
         state.NumberOfItems[0x24 * 2 + 1] = 1; // slot 6 = item 0x24 (herbs).
 
-        Tick(state, director, AlundraPadState.Down); // grid slot 6.
+        Tick(state, director, PadState.Down); // grid slot 6.
         Tick(state, director, 0);
-        Tick(state, director, AlundraPadState.Cross);
+        Tick(state, director, PadState.Cross);
 
         Assert.Contains(2, sound.Requests);
         Assert.Equal(0x24, state.PlayerStats.ItemId);
@@ -648,11 +648,11 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         OpenAndSettle(state, director);
         // slot 7 = item 0x29, count left at 0 (unowned).
 
-        Tick(state, director, AlundraPadState.Down);
+        Tick(state, director, PadState.Down);
         Tick(state, director, 0);
-        Tick(state, director, AlundraPadState.Right);
+        Tick(state, director, PadState.Right);
         Tick(state, director, 0);
-        Tick(state, director, AlundraPadState.Cross);
+        Tick(state, director, PadState.Cross);
 
         Assert.Contains(3, sound.Requests);
         Assert.DoesNotContain(2, sound.Requests);
@@ -668,10 +668,10 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         state.NumberOfItems[0x24 * 2 + 1] = 1;
         state.PlayerStats.ItemId = 0x24; // already equipped.
 
-        Tick(state, director, AlundraPadState.Down);
+        Tick(state, director, PadState.Down);
         Tick(state, director, 0);
         sound.Requests.Clear(); // drop the navigation's own sound 1.
-        Tick(state, director, AlundraPadState.Cross);
+        Tick(state, director, PadState.Cross);
 
         Assert.Empty(sound.Requests);
     }
@@ -689,7 +689,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         OpenAndSettle(state, director);
         Assert.Equal((8, 16), director.BoxPosition(0));
 
-        Tick(state, director, AlundraPadState.Start); // Start/L2/R2 while settled -> RunCloseSetup.
+        Tick(state, director, PadState.Start); // Start/L2/R2 while settled -> RunCloseSetup.
 
         Assert.Contains(5, sound.Requests);
         Assert.Equal(3u, director.ForbiddenWarpFlag); // bit0 (residual) | bit1 (SlideCloseBit).
@@ -723,7 +723,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         OpenAndSettle(state, director);
         sound.Requests.Clear();
 
-        Tick(state, director, AlundraPadState.Triangle);
+        Tick(state, director, PadState.Triangle);
 
         Assert.Equal(new[] { 5 }, sound.Requests);
         Assert.Equal(3u, director.ForbiddenWarpFlag); // bit0 (residual) | bit1 (SlideCloseBit).
@@ -746,7 +746,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var state = NewState();
         var director = NewDirector(state);
 
-        Tick(state, director, AlundraPadState.Triangle);
+        Tick(state, director, PadState.Triangle);
 
         Assert.False(director.IsActive);
         Assert.Equal(0u, director.ForbiddenWarpFlag);
@@ -761,7 +761,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         OpenAndSettle(state, director);
 
         // Latch NOT set - InitializeHudPositionBeforeHide must be a no-op (HudManager.cs:42-57's own guard).
-        Tick(state, director, AlundraPadState.Start);
+        Tick(state, director, PadState.Start);
         Assert.Equal(AlundraHudDirector.HudPhase.Idle, AlundraHudDirector.Instance.Phase);
         for (var i = 0; i < 18; i++) // let the close slide finish (clears MenuOpen) before re-opening.
         {
@@ -774,7 +774,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         OpenAndSettle(state, director2);
         state.AddFlag(1662, 0x40000000); // the persistent latch - see AlundraHudDirector's own doc.
 
-        Tick(state, director2, AlundraPadState.Start);
+        Tick(state, director2, PadState.Start);
 
         Assert.Equal(AlundraHudDirector.HudPhase.Opening, AlundraHudDirector.Instance.Phase);
     }
@@ -790,7 +790,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         OpenAndSettle(state, director);
         sound.Requests.Clear(); // drop the opening's own sound 4.
 
-        Tick(state, director, AlundraPadState.R1);
+        Tick(state, director, PadState.R1);
 
         Assert.Equal(new[] { 5 }, sound.Requests); // FUN_800556dc's own sound - the close slide is armed.
         Assert.Equal(3u, director.ForbiddenWarpFlag); // bit0 (residual) | bit1 (SlideCloseBit).
@@ -810,7 +810,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var director = NewDirector(state);
         OpenAndSettle(state, director);
         state.NumberOfItems[0x24 * 2 + 1] = 1;
-        Tick(state, director, AlundraPadState.Down); // select slot 6 (item 0x24) - the tail this
+        Tick(state, director, PadState.Down); // select slot 6 (item 0x24) - the tail this
         Tick(state, director, 0);                    // same tick, and the release tick, already run
                                                        // the state-0 setup AND the first char's reveal
                                                        // (its own countdown starts at 0 - commits with
@@ -857,7 +857,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var director = NewDirector(state);
         OpenAndSettle(state, director);
         state.NumberOfItems[0x24 * 2 + 1] = 1;
-        Tick(state, director, AlundraPadState.Down); // slot 6, item 0x24
+        Tick(state, director, PadState.Down); // slot 6, item 0x24
 
         var exception = Record.Exception(() =>
             TickUntil(state, director, () => director.TextRevealState == 0xcf, maxTicks: 600));
@@ -895,7 +895,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var director = NewDirector(state);
         OpenAndSettle(state, director);
         state.NumberOfItems[0x24 * 2 + 1] = 1;
-        Tick(state, director, AlundraPadState.Down); // slot 6, item 0x24 (owned)
+        Tick(state, director, PadState.Down); // slot 6, item 0x24 (owned)
         Tick(state, director, 0);
 
         // Name phase: line 0 is the name, line 1 nothing.
@@ -920,14 +920,14 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         Assert.Equal("Ef", director.DrawnDescriptionLine1);
 
         // Right to slot 7 (item 0x29, not owned): nothing drawn, although the prefixes keep "Cd"/"Ef".
-        Tick(state, director, AlundraPadState.Right);
+        Tick(state, director, PadState.Right);
         Tick(state, director, 0);
         Assert.Equal(7, director.SelectedSlotId);
         Assert.Equal(string.Empty, director.DrawnDescriptionLine0);
         Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
 
         // Back on the herbs: the name again on line 0, and still nothing on line 1.
-        Tick(state, director, AlundraPadState.Left);
+        Tick(state, director, PadState.Left);
         Tick(state, director, 0);
         Tick(state, director, 0);
         Assert.Equal(6, director.SelectedSlotId);
@@ -956,7 +956,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         // Open, through the real world proxy's loop of the passes (the pad pass at the head of the tick, the inventory block at its end; Start held for exactly one 1-tick
         // frame gives one edge), then settle the 18-call slide the same way.
-        worldProxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Start };
+        worldProxy.GameState.LastPadState = new PadState { ButtonsHold = PadState.Start };
         worldProxy.Update(0.02f);
         worldProxy.GameState.LastPadState = default;
         for (var i = 0; i < 18; i++)
@@ -968,7 +968,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         // One rendered frame, two logic ticks, Down held throughout - must move the cursor exactly once
         // (D-E13D-9's own "un appui donne exactement un front" even across a multi-tick frame).
-        worldProxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Down };
+        worldProxy.GameState.LastPadState = new PadState { ButtonsHold = PadState.Down };
         worldProxy.Update(0.04f);
 
         Assert.Equal(slotBefore + 6, AlundraInventoryDirector.Instance.SelectedSlotId);
@@ -1017,7 +1017,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         {
             // A fresh Start edge every other frame, published the way AlundraEntityScriptProxy.Update keeps
             // publishing the pad during the fade.
-            worldProxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = frame % 2 == 1 ? AlundraPadState.Start : 0u };
+            worldProxy.GameState.LastPadState = new PadState { ButtonsHold = frame % 2 == 1 ? PadState.Start : 0u };
             worldProxy.Update(0.02f);
 
             Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress, $"frame {frame}: the montage left the transition");
@@ -1034,7 +1034,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
             worldProxy.Update(0.02f);
         }
 
-        worldProxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Start };
+        worldProxy.GameState.LastPadState = new PadState { ButtonsHold = PadState.Start };
         worldProxy.Update(0.02f);
         Assert.True(AlundraInventoryDirector.Instance.IsActive);
     }

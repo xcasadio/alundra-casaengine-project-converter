@@ -123,7 +123,7 @@ internal static class ItemTablesFixture
 
 /// <summary>
 /// E13.c S3 (docs/plan-e13c-icones-hud.md): the item counters, the equipped weapon and the HUD's two
-/// equipment boxes, ported line by line into <see cref="AlundraPlayerManager"/> - the plan's own acceptance:
+/// equipment boxes, ported line by line into <see cref="PlayerManager"/> - the plan's own acceptance:
 /// the setter rule, the chain weapon to item to icon at the New Game (1 to 1 to 31), the no-weapon sentinel,
 /// the empty accessory box.
 /// </summary>
@@ -132,7 +132,7 @@ public class AlundraItemInventoryTests
     private static GameState NewGameState(AlundraItemTables tables)
     {
         var state = new GameState();
-        AlundraPlayerManager.InitializeNewGameInventory(state, tables);
+        PlayerManager.InitializeNewGameInventory(state, tables);
         return state;
     }
 
@@ -145,10 +145,10 @@ public class AlundraItemInventoryTests
     {
         var state = NewGameState(ItemTablesFixture.LoadReal());
 
-        for (var itemId = 0; itemId < AlundraPlayerManager.ItemsCount; itemId++)
+        for (var itemId = 0; itemId < PlayerManager.ItemsCount; itemId++)
         {
             var expected = itemId is 1 or 17 or 25 ? 1 : 0;
-            Assert.Equal(expected, AlundraPlayerManager.GetNumberOfItem(state, itemId));
+            Assert.Equal(expected, PlayerManager.GetNumberOfItem(state, itemId));
         }
     }
 
@@ -160,14 +160,14 @@ public class AlundraItemInventoryTests
 
         // The plan's own chain, link by link.
         Assert.Equal(1, state.PlayerStats.WeaponId);
-        var itemId = AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, tables);
+        var itemId = PlayerManager.GetItemIdFromCurrentWeapon(state, tables);
         Assert.Equal(1u, itemId);
-        Assert.Equal(31, AlundraPlayerManager.GetItemTextureIdByItemId(tables, (int)itemId));
+        Assert.Equal(31, PlayerManager.GetItemTextureIdByItemId(tables, (int)itemId));
         Assert.True(tables.TryGetIconAssetId((int)itemId, out var assetId));
         Assert.Equal(ItemTablesFixture.SwordIconAssetId, assetId);
 
         // And what the HUD is handed for it.
-        var (weapon, _) = AlundraPlayerManager.ResolveHudEquipmentIcons(state, tables);
+        var (weapon, _) = PlayerManager.ResolveHudEquipmentIcons(state, tables);
         Assert.Equal(ItemTablesFixture.SwordIconAssetId, weapon);
     }
 
@@ -178,10 +178,10 @@ public class AlundraItemInventoryTests
         var state = NewGameState(tables);
 
         // ItemId is 0 and item 0 is not owned: the original's own sentinel, no write (D-E13C-7).
-        Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.SetItemIdFromCurrentItemId(state, tables));
+        Assert.Equal(PlayerManager.NoItem, PlayerManager.SetItemIdFromCurrentItemId(state, tables));
         Assert.Equal(0, state.PlayerStats.ItemId);
 
-        var (_, accessory) = AlundraPlayerManager.ResolveHudEquipmentIcons(state, tables);
+        var (_, accessory) = PlayerManager.ResolveHudEquipmentIcons(state, tables);
         Assert.Null(accessory);
         Assert.Equal(0, state.PlayerStats.ItemId);
     }
@@ -198,8 +198,8 @@ public class AlundraItemInventoryTests
             var state = NewGameState(tables);
 
             Assert.Equal(1, state.PlayerStats.WeaponId);
-            Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, tables));
-            var (weapon, accessory) = AlundraPlayerManager.ResolveHudEquipmentIcons(state, tables);
+            Assert.Equal(PlayerManager.NoItem, PlayerManager.GetItemIdFromCurrentWeapon(state, tables));
+            var (weapon, accessory) = PlayerManager.ResolveHudEquipmentIcons(state, tables);
             Assert.Null(weapon);
             Assert.Null(accessory);
         }
@@ -222,7 +222,7 @@ public class AlundraItemInventoryTests
         var tables = ItemTablesFixture.LoadReal();
         var state = new GameState();
 
-        AlundraPlayerManager.SetPlayerWeaponId(state, tables, (ushort)weaponId);
+        PlayerManager.SetPlayerWeaponId(state, tables, (ushort)weaponId);
 
         Assert.Equal((short)weaponId, state.PlayerStats.WeaponId);
     }
@@ -236,7 +236,7 @@ public class AlundraItemInventoryTests
         var state = new GameState();
         state.PlayerStats.WeaponId = 3;
 
-        AlundraPlayerManager.SetPlayerWeaponId(state, tables, 0);
+        PlayerManager.SetPlayerWeaponId(state, tables, 0);
 
         Assert.Equal(3, state.PlayerStats.WeaponId);
     }
@@ -249,10 +249,10 @@ public class AlundraItemInventoryTests
         var state = new GameState();
         state.PlayerStats.WeaponId = 3;
 
-        AlundraPlayerManager.SetPlayerWeaponId(state, tables, -1);
+        PlayerManager.SetPlayerWeaponId(state, tables, -1);
 
         Assert.Equal(-1, state.PlayerStats.WeaponId);
-        Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, tables));
+        Assert.Equal(PlayerManager.NoItem, PlayerManager.GetItemIdFromCurrentWeapon(state, tables));
     }
 
     [Theory]
@@ -265,7 +265,7 @@ public class AlundraItemInventoryTests
         var state = new GameState();
         state.PlayerStats.WeaponId = 3;
 
-        AlundraPlayerManager.SetPlayerWeaponId(state, tables, (ushort)weaponId);
+        PlayerManager.SetPlayerWeaponId(state, tables, (ushort)weaponId);
 
         Assert.Equal(3, state.PlayerStats.WeaponId);
     }
@@ -281,8 +281,8 @@ public class AlundraItemInventoryTests
         var state = new GameState(); // nothing owned, no New Game run
         state.PlayerStats.WeaponId = 1;
 
-        Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, tables));
-        Assert.Null(AlundraPlayerManager.ResolveHudEquipmentIcons(state, tables).Weapon);
+        Assert.Equal(PlayerManager.NoItem, PlayerManager.GetItemIdFromCurrentWeapon(state, tables));
+        Assert.Null(PlayerManager.ResolveHudEquipmentIcons(state, tables).Weapon);
     }
 
     [Fact]
@@ -293,7 +293,7 @@ public class AlundraItemInventoryTests
         var state = NewGameState(tables);
         state.PlayerStats.WeaponId = 0;
 
-        Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, tables));
+        Assert.Equal(PlayerManager.NoItem, PlayerManager.GetItemIdFromCurrentWeapon(state, tables));
     }
 
     [Fact]
@@ -306,10 +306,10 @@ public class AlundraItemInventoryTests
         state.NumberOfItems[1 * 2 + 1] = 1;
         state.NumberOfItems[3 * 2 + 1] = 1;
 
-        Assert.Equal(3u, AlundraPlayerManager.GetItemIdFromSlotId(state, tables, 1));
+        Assert.Equal(3u, PlayerManager.GetItemIdFromSlotId(state, tables, 1));
 
         state.NumberOfItems[4 * 2 + 1] = 1;
-        Assert.Equal(4u, AlundraPlayerManager.GetItemIdFromSlotId(state, tables, 1));
+        Assert.Equal(4u, PlayerManager.GetItemIdFromSlotId(state, tables, 1));
     }
 
     [Fact]
@@ -325,7 +325,7 @@ public class AlundraItemInventoryTests
             state.NumberOfItems[2 * 2 + 1] = 1;
             state.NumberOfItems[4 * 2 + 1] = 1; // higher priority, never looked at
 
-            Assert.Equal(2u, AlundraPlayerManager.GetItemIdFromSlotId(state, tables, 1));
+            Assert.Equal(2u, PlayerManager.GetItemIdFromSlotId(state, tables, 1));
         }
         finally
         {
@@ -346,7 +346,7 @@ public class AlundraItemInventoryTests
             state.NumberOfItems[1 * 2 + 1] = 1;
             state.NumberOfItems[3 * 2 + 1] = 1;
 
-            Assert.Equal(1u, AlundraPlayerManager.GetItemIdFromSlotId(state, tables, 1));
+            Assert.Equal(1u, PlayerManager.GetItemIdFromSlotId(state, tables, 1));
         }
         finally
         {
@@ -359,7 +359,7 @@ public class AlundraItemInventoryTests
     {
         var tables = ItemTablesFixture.LoadReal();
 
-        Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromSlotId(new GameState(), tables, 0x20));
+        Assert.Equal(PlayerManager.NoItem, PlayerManager.GetItemIdFromSlotId(new GameState(), tables, 0x20));
     }
 
     // -------------------------------------------------------------------------------------------------
@@ -372,10 +372,10 @@ public class AlundraItemInventoryTests
         var tables = ItemTablesFixture.LoadReal();
         var state = new GameState();
 
-        Assert.Equal(1, AlundraPlayerManager.AddOneItemIfUnlocked(state, tables, 17)); // max count 1
+        Assert.Equal(1, PlayerManager.AddOneItemIfUnlocked(state, tables, 17)); // max count 1
         // The binary (0x8004E58C/0x8004E5B0) returns the count at the maximum; the decompilation returned the item id (17).
-        Assert.Equal(1, AlundraPlayerManager.AddOneItemIfUnlocked(state, tables, 17));
-        Assert.Equal(1, AlundraPlayerManager.GetNumberOfItem(state, 17));
+        Assert.Equal(1, PlayerManager.AddOneItemIfUnlocked(state, tables, 17));
+        Assert.Equal(1, PlayerManager.GetNumberOfItem(state, 17));
     }
 
     [Theory]
@@ -383,7 +383,7 @@ public class AlundraItemInventoryTests
     [InlineData(99)]
     public void GetNumberOfItem_OutOfRange_IsZero(int itemId)
     {
-        Assert.Equal(0, AlundraPlayerManager.GetNumberOfItem(new GameState(), itemId));
+        Assert.Equal(0, PlayerManager.GetNumberOfItem(new GameState(), itemId));
     }
 
     [Fact]
@@ -397,7 +397,7 @@ public class AlundraItemInventoryTests
         state.NumberOfItems[4 * 2 + 1] = 1;
         state.PlayerStats.ItemId = 1;
 
-        Assert.Equal(1u, AlundraPlayerManager.SetItemIdFromCurrentItemId(state, tables));
+        Assert.Equal(1u, PlayerManager.SetItemIdFromCurrentItemId(state, tables));
         Assert.Equal(4, state.PlayerStats.ItemId);
     }
 
@@ -408,7 +408,7 @@ public class AlundraItemInventoryTests
         var state = NewGameState(tables);
         state.PlayerStats.ItemId = 17; // owned by the New Game, and given an icon by the fixture
 
-        var (weapon, accessory) = AlundraPlayerManager.ResolveHudEquipmentIcons(state, tables);
+        var (weapon, accessory) = PlayerManager.ResolveHudEquipmentIcons(state, tables);
 
         Assert.Equal(ItemTablesFixture.SwordIconAssetId, weapon);
         Assert.Equal(ItemTablesFixture.Item17IconAssetId, accessory);

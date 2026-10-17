@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 /// </summary>
 public sealed class AlundraHeroAuraTests : IDisposable
 {
-    private const uint Square = AlundraPadState.Square;
+    private const uint Square = PadState.Square;
 
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
     private readonly ulong _previousSeed = AlundraRandom.RandomSeed;
@@ -44,7 +44,7 @@ public sealed class AlundraHeroAuraTests : IDisposable
 
     /// <summary>The auras alive in the reservoir: effect 3 of the global table anchored to the hero.</summary>
     private static List<AlundraEffectSlot> Auras(Montage m)
-        => m.Stage.Reservoir.ActiveSlots.Where(s => s.TargetEffect == AlundraPlayerManager.AuraEffect && !s.TargetMapTable && ReferenceEquals(s.Anchor, m.Hero) && s.Mode == 1).ToList();
+        => m.Stage.Reservoir.ActiveSlots.Where(s => s.TargetEffect == PlayerManager.AuraEffect && !s.TargetMapTable && ReferenceEquals(s.Anchor, m.Hero) && s.Mode == 1).ToList();
 
     /// <summary>Holds the Square for <paramref name="ticks"/> ticks of one tick per frame; <paramref name="beforeTick"/> is told the tick (1-based) before it runs. Returns the (tick, slot) of every creation of the aura.</summary>
     private static List<(int Tick, int Slot)> Hold(Montage m, int ticks, Action<int>? beforeTick = null, Action<int>? afterTick = null)

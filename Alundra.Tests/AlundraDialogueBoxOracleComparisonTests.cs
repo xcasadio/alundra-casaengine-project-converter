@@ -175,7 +175,7 @@ public sealed class AlundraDialogueBoxOracleComparisonTests
                 held.TryGetValue(frame - 1, out var previous);
                 var hold = montage.Director.IsOpen && !(montage.Director.Box.IsWaitingForPress && previous);
                 held[frame] = hold;
-                return hold ? AlundraPadState.Square : 0u;
+                return hold ? PadState.Square : 0u;
             };
         }
         var script = DllScript(montage, box);

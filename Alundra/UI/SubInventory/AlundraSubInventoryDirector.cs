@@ -262,7 +262,7 @@ public sealed class AlundraSubInventoryDirector
     /// <summary>Port of <c>FUN_80052dd8</c>'s own owned-guard - whether armory position <paramref
     /// name="index"/> (0..6, Rubis..Diamant) is owned and therefore drawn.</summary>
     public bool ArmoryOwned(int index) =>
-        _gameState != null && AlundraPlayerManager.GetNumberOfItem(_gameState, ArmoryItemIds[index]) != 0;
+        _gameState != null && PlayerManager.GetNumberOfItem(_gameState, ArmoryItemIds[index]) != 0;
 
     // =====================================================================================
     // Armor / boots (FUN_80052f24 at open - names; FUN_80052fb4/FUN_80053144 every tick - icons)
@@ -270,7 +270,7 @@ public sealed class AlundraSubInventoryDirector
 
     /// <summary>Port of <c>FUN_80052f24(0)</c>'s own resolved name - computed ONCE, at
     /// <see cref="OpenFromPostProcess"/> (plan §1.3), null when <c>GetItemIdFromSlotId(7)</c> resolves to
-    /// <see cref="AlundraPlayerManager.NoItem"/> (nothing is drawn on that path either, in the original).</summary>
+    /// <see cref="PlayerManager.NoItem"/> (nothing is drawn on that path either, in the original).</summary>
     public string? ArmorName { get; private set; }
 
     /// <summary>Same as <see cref="ArmorName"/>, slot 9 (<c>FUN_80052f24(1)</c>).</summary>
@@ -291,8 +291,8 @@ public sealed class AlundraSubInventoryDirector
             return null;
         }
 
-        var resolved = AlundraPlayerManager.GetItemIdFromSlotId(_gameState, _itemTables, slotId);
-        return resolved == AlundraPlayerManager.NoItem ? null : (int)resolved;
+        var resolved = PlayerManager.GetItemIdFromSlotId(_gameState, _itemTables, slotId);
+        return resolved == PlayerManager.NoItem ? null : (int)resolved;
     }
 
     // =====================================================================================
@@ -342,7 +342,7 @@ public sealed class AlundraSubInventoryDirector
         for (var id = startIndex; id < AlundraItemTables.ItemRowCount; id++)
         {
             if (_itemTables.ItemsProperties[id * AlundraItemTables.ItemColumnCount] == wantedSlot
-                && AlundraPlayerManager.GetNumberOfItem(_gameState, id) > 0)
+                && PlayerManager.GetNumberOfItem(_gameState, id) > 0)
             {
                 return id;
             }
@@ -385,7 +385,7 @@ public sealed class AlundraSubInventoryDirector
 
         if (value >= 0)
         {
-            if (_gameState == null || AlundraPlayerManager.GetNumberOfItem(_gameState, value) == 0)
+            if (_gameState == null || PlayerManager.GetNumberOfItem(_gameState, value) == 0)
             {
                 return false;
             }
@@ -402,9 +402,9 @@ public sealed class AlundraSubInventoryDirector
             }
 
             var slotId = value == -1 ? 7u : 9u;
-            var resolved = AlundraPlayerManager.GetItemIdFromSlotId(_gameState, _itemTables, slotId);
+            var resolved = PlayerManager.GetItemIdFromSlotId(_gameState, _itemTables, slotId);
 
-            if (resolved == AlundraPlayerManager.NoItem)
+            if (resolved == PlayerManager.NoItem)
             {
                 return false;
             }
@@ -509,28 +509,28 @@ public sealed class AlundraSubInventoryDirector
     {
         var pad = _gameState!.TickPad;
 
-        if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Right) != 0)
+        if ((pad.ButtonsJustPressedByInterval & PadState.Right) != 0)
         {
             SelectedPosition = NavRight[SelectedPosition];
             _textReveal.Restart();
             _soundPlayer?.PlaySfx(1);
         }
 
-        if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Left) != 0)
+        if ((pad.ButtonsJustPressedByInterval & PadState.Left) != 0)
         {
             SelectedPosition = NavLeft[SelectedPosition];
             _textReveal.Restart();
             _soundPlayer?.PlaySfx(1);
         }
 
-        if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Up) != 0)
+        if ((pad.ButtonsJustPressedByInterval & PadState.Up) != 0)
         {
             SelectedPosition = NavUp[SelectedPosition];
             _textReveal.Restart();
             _soundPlayer?.PlaySfx(1);
         }
 
-        if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Down) != 0)
+        if ((pad.ButtonsJustPressedByInterval & PadState.Down) != 0)
         {
             SelectedPosition = NavDown[SelectedPosition];
             _textReveal.Restart();
@@ -539,7 +539,7 @@ public sealed class AlundraSubInventoryDirector
 
         // :364-369 - Start/Triangle/L2/R2 (mask 0x813, the executable's own - plan §1.1/D-E13D-29, same
         // mask AlundraInventoryDirector.RunInput uses): close, hand the gauge back.
-        if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.Start | AlundraPadState.Triangle | AlundraPadState.L2 | AlundraPadState.R2)) != 0)
+        if ((pad.ButtonsJustPressedByInterval & (PadState.Start | PadState.Triangle | PadState.L2 | PadState.R2)) != 0)
         {
             RunCloseSetup();
             AlundraInventoryPortrait.Instance.ReturnToHead(); // 0x80053648, between the slide-out and the gauge.
@@ -547,7 +547,7 @@ public sealed class AlundraSubInventoryDirector
         }
 
         // :371-377 - L1/R1: close, hand control back to the MAIN inventory through the post-process.
-        if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.L1 | AlundraPadState.R1)) != 0)
+        if ((pad.ButtonsJustPressedByInterval & (PadState.L1 | PadState.R1)) != 0)
         {
             RunCloseSetup();
             _gameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;

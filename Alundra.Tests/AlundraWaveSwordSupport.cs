@@ -138,7 +138,7 @@ internal static class WaveOracle
 /// <summary>What one run of the wave in the arena leaves: the line of the wave at every tick from <see cref="WaveOracle.FirstTick"/> to <see cref="WaveOracle.LastTick"/>, the entity once seen, the table of slots.</summary>
 internal sealed class WaveRun : IDisposable
 {
-    private const uint Square = AlundraPadState.Square;
+    private const uint Square = PadState.Square;
 
     internal readonly HitArena Arena;
     internal readonly Dictionary<int, string> Lines = new();
@@ -168,7 +168,7 @@ internal sealed class WaveRun : IDisposable
     {
         if (useHook)
         {
-            AlundraPlayerManager.WeaponSpawnBirthHookForTests = (hero, call) =>
+            PlayerManager.WeaponSpawnBirthHookForTests = (hero, call) =>
                 ((IEntityWorldContext)Arena.Arc.Proxy).SpawnEntityBySpriteIndex(hero, false, call.Type, call.X, call.Y, call.Z, call.Direction);
         }
 

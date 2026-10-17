@@ -127,7 +127,7 @@ public interface IScriptHost
     IAlundraSoundPlayer? SoundPlayer => null;
 
     /// <summary>
-    /// E20.b B1 (docs/plan-e20-heros.md section 1.4): this world's item tables, which <see cref="AlundraPlayerManager.MovePlayer"/> reads at its head to resolve the equipped weapon
+    /// E20.b B1 (docs/plan-e20-heros.md section 1.4): this world's item tables, which <see cref="PlayerManager.MovePlayer"/> reads at its head to resolve the equipped weapon
     /// (<c>GetItemIdFromCurrentWeapon</c>, then the weapon record of <see cref="AlundraWeaponTables"/>). A default interface member, null like <see cref="SoundPlayer"/>, so no other host needs to
     /// change: without tables the hero has no weapon, which the binary reads as record 0 (the basic sword's). <see cref="AlundraWorldProxy"/> returns its own tables; a rig may set some.
     /// </summary>
@@ -143,13 +143,13 @@ public interface IScriptHost
     int BalanceThreshold => 0;
 
     /// <summary>
-    /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): this world's three equipment records (<c>0x80146E00-0x80146E14</c>), which the hero's <see cref="AlundraPlayerManager.MovePlayer"/> fills at every tick
+    /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): this world's three equipment records (<c>0x80146E00-0x80146E14</c>), which the hero's <see cref="PlayerManager.MovePlayer"/> fills at every tick
     /// (<c>UpdateItemEffectState</c> steps 2 to 5). A default interface member, null like <see cref="BalanceTables"/>: a host without the seam keeps no equipment.
     /// </summary>
     AlundraEquipmentRecords? EquipmentRecords => null;
 
     /// <summary>
-    /// E20.f1a (docs/plan-e20-heros.md section 1.9): this world's effect stage, on which the hero's <see cref="AlundraPlayerManager.MovePlayer"/> queues the hold spark and the burst of the charged attack
+    /// E20.f1a (docs/plan-e20-heros.md section 1.9): this world's effect stage, on which the hero's <see cref="PlayerManager.MovePlayer"/> queues the hold spark and the burst of the charged attack
     /// (<see cref="AlundraEffectStage.Emit"/>, applied by <see cref="AlundraEffectStage.RunFrame"/> at the tick of the emission, ADR-0046). A default interface member, null like <see cref="SoundPlayer"/>:
     /// a host without a stage creates no effect. <see cref="AlundraWorldProxy"/> returns its own stage (the same property implements <see cref="IEntityWorldContext.EffectStage"/>).
     /// </summary>
@@ -157,7 +157,7 @@ public interface IScriptHost
 
     /// <summary>
     /// T3's own seam for T4 (docs/plan-transitions-carte.md §3: "le prédicat ... exposé par une couture
-    /// que T4 remplira"). Called by <see cref="AlundraPlayerManager.MovePlayer"/>, at most once per
+    /// que T4 remplira"). Called by <see cref="PlayerManager.MovePlayer"/>, at most once per
     /// call, exactly when <see cref="AlundraPortalTrigger.TryGetTrigger"/> returns non-null - the moment
     /// the original's <c>CheckAndExecuteWarp</c> would have called <c>HandleWarpTransition</c>. Default
     /// no-op here: T3 DETECTS, it does not ACT (no fade, no <c>SetWorldToLoad</c> request) - see

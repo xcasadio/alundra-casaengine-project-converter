@@ -117,7 +117,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
     {
         var (state, director, presenter, view, screen, uiView) = NewFixture();
 
-        Tick(state, director, presenter, AlundraPadState.Start); // trigger + setup, same tick.
+        Tick(state, director, presenter, PadState.Start); // trigger + setup, same tick.
 
         Assert.True(director.IsActive);
         Assert.False(director.IsDrawn);
@@ -130,7 +130,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
     {
         var (state, director, presenter, view, screen, uiView) = NewFixture();
 
-        Tick(state, director, presenter, AlundraPadState.Start); // setup tick - no push/render.
+        Tick(state, director, presenter, PadState.Start); // setup tick - no push/render.
         Tick(state, director, presenter, 0); // first RunPerFrame tick - IsDrawn now true.
 
         Assert.True(director.IsDrawn);
@@ -146,7 +146,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
     {
         var (state, director, presenter, view, screen, uiView) = NewFixture();
 
-        Tick(state, director, presenter, AlundraPadState.Start);
+        Tick(state, director, presenter, PadState.Start);
         for (var i = 0; i < 10; i++)
         {
             Tick(state, director, presenter, 0);
@@ -161,7 +161,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
     {
         var (state, director, presenter, view, screen, uiView) = NewFixture();
 
-        Tick(state, director, presenter, AlundraPadState.Start); // open, setup tick.
+        Tick(state, director, presenter, PadState.Start); // open, setup tick.
         for (var i = 0; i < 18; i++)
         {
             Tick(state, director, presenter, 0); // settle the opening slide.
@@ -169,7 +169,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
 
         Assert.Empty(uiView.Removed);
 
-        Tick(state, director, presenter, AlundraPadState.Start); // Start/L2/R2 while settled -> close setup.
+        Tick(state, director, presenter, PadState.Start); // Start/L2/R2 while settled -> close setup.
         for (var i = 0; i < 18 && director.IsActive; i++)
         {
             Tick(state, director, presenter, 0); // drive the closing slide to completion.
@@ -212,7 +212,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
         worldProxy.PlayerEntity = new AlundraEntityScriptProxy();
 
         var tables = ItemTablesFixture.LoadReal();
-        AlundraPlayerManager.InitializeNewGameInventory(worldProxy.GameState, tables);
+        PlayerManager.InitializeNewGameInventory(worldProxy.GameState, tables);
         AlundraInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
         AlundraSubInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null); // the loop ticks it too.
 
@@ -223,11 +223,11 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
 
         void Frame(uint hold)
         {
-            worldProxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = hold };
+            worldProxy.GameState.LastPadState = new PadState { ButtonsHold = hold };
             worldProxy.Update(0.02f);
         }
 
-        Frame(AlundraPadState.Start);
+        Frame(PadState.Start);
         for (var i = 0; i < 20 && !AlundraInventoryDirector.Instance.IsDrawn; i++)
         {
             Frame(0);

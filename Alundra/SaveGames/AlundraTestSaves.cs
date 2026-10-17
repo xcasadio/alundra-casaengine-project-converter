@@ -14,8 +14,8 @@ namespace Alundra.SaveGames;
 ///
 /// <para>Pure and without any global state or disk access: the builder starts from a fresh
 /// <see cref="GameState"/> (flags at 0, identity map table), runs the new game's own
-/// <see cref="AlundraPlayerManager.InitializeNewGameStats"/> and
-/// <see cref="AlundraPlayerManager.InitializeNewGameInventory"/> with the item tables of the rules, applies the
+/// <see cref="PlayerManager.InitializeNewGameStats"/> and
+/// <see cref="PlayerManager.InitializeNewGameInventory"/> with the item tables of the rules, applies the
 /// preset, captures with <see cref="AlundraSaveGame.Capture"/> and validates with the real
 /// <see cref="AlundraSaveGameRules"/>. A refusal is a <c>false</c> with a message, never an exception.</para>
 ///
@@ -37,9 +37,9 @@ public static class AlundraTestSaves
     /// <summary>
     /// One test save: where the hero arrives and what differs from a new game. The seven last fields are optional (E20.f0 T3, docs/plan-e20-heros.md section 1.8): a
     /// <c>null</c> keeps the new game's value, otherwise the value goes through the DLL's own setter after the new-game kit and the item counters
-    /// (<see cref="AlundraPlayerManager.SetPlayerHpMax"/>, <see cref="AlundraPlayerManager.SetPlayerHp"/>, <see cref="AlundraPlayerManager.SetPlayerMpMax"/>,
-    /// <see cref="AlundraPlayerManager.SetPlayerMp"/>, <see cref="AlundraPlayerManager.SetMoney"/>, <see cref="AlundraPlayerManager.SetPlayerWeaponId"/>,
-    /// <see cref="AlundraPlayerManager.SetCurrentItemId"/>), and <see cref="CheckPreset"/> refuses a value outside the save's domains instead of letting a setter clamp it.
+    /// (<see cref="PlayerManager.SetPlayerHpMax"/>, <see cref="PlayerManager.SetPlayerHp"/>, <see cref="PlayerManager.SetPlayerMpMax"/>,
+    /// <see cref="PlayerManager.SetPlayerMp"/>, <see cref="PlayerManager.SetMoney"/>, <see cref="PlayerManager.SetPlayerWeaponId"/>,
+    /// <see cref="PlayerManager.SetCurrentItemId"/>), and <see cref="CheckPreset"/> refuses a value outside the save's domains instead of letting a setter clamp it.
     /// <c>Weapon</c> is the equipped weapon SLOT (-1 or 1 to 6), <c>Item</c> the Circle item.
     /// </summary>
     public sealed record Preset(
@@ -177,8 +177,8 @@ public static class AlundraTestSaves
         }
 
         var state = new GameState();
-        AlundraPlayerManager.InitializeNewGameStats(state);
-        AlundraPlayerManager.InitializeNewGameInventory(state, rules.ItemTables);
+        PlayerManager.InitializeNewGameStats(state);
+        PlayerManager.InitializeNewGameInventory(state, rules.ItemTables);
 
         foreach (var flag in preset.FlagsToSet)
         {
@@ -203,37 +203,37 @@ public static class AlundraTestSaves
         // E20.f0 T3: the optional fields, through the setters of the DLL (maxima before the values they bound, the weapon after the counters it resolves).
         if (preset.HpMax is { } hpMax)
         {
-            AlundraPlayerManager.SetPlayerHpMax(state, hpMax);
+            PlayerManager.SetPlayerHpMax(state, hpMax);
         }
 
         if (preset.Hp is { } hp)
         {
-            AlundraPlayerManager.SetPlayerHp(state, (short)hp);
+            PlayerManager.SetPlayerHp(state, (short)hp);
         }
 
         if (preset.MpMax is { } mpMax)
         {
-            AlundraPlayerManager.SetPlayerMpMax(state, (short)mpMax);
+            PlayerManager.SetPlayerMpMax(state, (short)mpMax);
         }
 
         if (preset.Mp is { } mp)
         {
-            AlundraPlayerManager.SetPlayerMp(state, (short)mp);
+            PlayerManager.SetPlayerMp(state, (short)mp);
         }
 
         if (preset.Money is { } money)
         {
-            AlundraPlayerManager.SetMoney(state, (short)money);
+            PlayerManager.SetMoney(state, (short)money);
         }
 
         if (preset.Weapon is { } weapon)
         {
-            AlundraPlayerManager.SetPlayerWeaponId(state, rules.ItemTables, weapon);
+            PlayerManager.SetPlayerWeaponId(state, rules.ItemTables, weapon);
         }
 
         if (preset.Item is { } item)
         {
-            AlundraPlayerManager.SetCurrentItemId(state, (uint)item);
+            PlayerManager.SetCurrentItemId(state, (uint)item);
         }
 
         var captured = AlundraSaveGame.Capture(state, preset.MapId, preset.TileX, preset.TileY, preset.TileZ);
@@ -291,7 +291,7 @@ public static class AlundraTestSaves
     private static string CheckStats(Preset preset)
     {
         var newGame = new GameState();
-        AlundraPlayerManager.InitializeNewGameStats(newGame);
+        PlayerManager.InitializeNewGameStats(newGame);
         var hpMax = preset.HpMax ?? newGame.PlayerStats.HpMax;
         var mpMax = preset.MpMax ?? newGame.PlayerStats.MpMax;
 
@@ -325,9 +325,9 @@ public static class AlundraTestSaves
             return Format($"preset '{preset.Name}': weapon {weapon} is outside -1 or 1..{AlundraSaveGame.MaxWeaponId}");
         }
 
-        if (preset.Item is { } item && (item < 0 || item >= AlundraPlayerManager.ItemsCount))
+        if (preset.Item is { } item && (item < 0 || item >= PlayerManager.ItemsCount))
         {
-            return Format($"preset '{preset.Name}': item {item} is outside 0..{AlundraPlayerManager.ItemsCount - 1}");
+            return Format($"preset '{preset.Name}': item {item} is outside 0..{PlayerManager.ItemsCount - 1}");
         }
 
         return string.Empty;

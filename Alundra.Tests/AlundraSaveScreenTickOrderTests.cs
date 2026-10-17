@@ -65,7 +65,7 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
     /// <summary>One frame of <paramref name="ticks"/> logic ticks holding <paramref name="hold"/>.</summary>
     private void Frame(int ticks, uint hold = 0)
     {
-        _proxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = hold };
+        _proxy.GameState.LastPadState = new PadState { ButtonsHold = hold };
         _proxy.Update(0.02f * ticks);
     }
 
@@ -85,7 +85,7 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
     private int FramesToTheAnswer(int ticksPerFrame, int armAfterTicks, int choice)
     {
         StartAndSettlePicker();
-        Frame(1, AlundraPadState.Cross);
+        Frame(1, PadState.Cross);
         Assert.False(Director.IsQuestionPending); // the screen reads the pad of the tick before: the Cross is read by the next tick
         Frame(1); // the opener
         Assert.True(Director.IsQuestionPending);
@@ -131,7 +131,7 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
     public void TwoTickFrame_CrossHeldFromItsFirstTick_StillOpensTheQuestion()
     {
         StartAndSettlePicker();
-        Frame(2, AlundraPadState.Cross);
+        Frame(2, PadState.Cross);
         Assert.True(Director.IsQuestionPending);
         Assert.True(Dialogue.IsAwaitingChoice);
     }
@@ -150,10 +150,10 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
         }
 
         Assert.Equal(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
-        Frame(ticksPerFrame, AlundraPadState.Square);
+        Frame(ticksPerFrame, PadState.Square);
         for (var i = 0; i < 400 && Director.State == AlundraSaveScreenDirector.StateWaitSquare; i++)
         {
-            Frame(1, AlundraPadState.Square);
+            Frame(1, PadState.Square);
         }
 
         Assert.NotEqual(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
@@ -168,7 +168,7 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
     public void TheCross_IsReadByTheScreenOneTickAfterItsPress(int ticksPerFrame, bool openedInTheCrossFrame)
     {
         StartAndSettlePicker();
-        Frame(ticksPerFrame, AlundraPadState.Cross);
+        Frame(ticksPerFrame, PadState.Cross);
         Assert.Equal(openedInTheCrossFrame, Director.IsQuestionPending);
         Frame(1);
         Assert.True(Director.IsQuestionPending);
@@ -187,15 +187,15 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
             uint hold = 0;
             if (tick == 0)
             {
-                hold = AlundraPadState.Cross;
+                hold = PadState.Cross;
             }
             else if (tick == q)
             {
-                hold = non ? AlundraPadState.Right : AlundraPadState.Cross;
+                hold = non ? PadState.Right : PadState.Cross;
             }
             else if (non && tick == q + 1)
             {
-                hold = AlundraPadState.Cross;
+                hold = PadState.Cross;
             }
 
             Frame(1, hold);
@@ -248,7 +248,7 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
             Frame(1);
         }
 
-        Frame(ticksPerFrame, AlundraPadState.Square);
+        Frame(ticksPerFrame, PadState.Square);
         Assert.Equal(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
         var frames = 0;
         while (Director.State == AlundraSaveScreenDirector.StateWaitSquare && frames < 80)
@@ -269,7 +269,7 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
     {
         StartAndSettlePicker();
         Assert.Equal(0, Director.Selection);
-        Frame(ticksPerFrame, AlundraPadState.Down);
+        Frame(ticksPerFrame, PadState.Down);
         Assert.Equal(selectionAfterThePressFrame, Director.Selection);
         Frame(ticksPerFrame);
         Assert.Equal(1, Director.Selection);

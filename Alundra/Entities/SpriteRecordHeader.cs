@@ -70,7 +70,7 @@ public readonly struct SpriteRecordHeader
     /// once here (not per-frame) from <c>Data/sprite-records.json</c>'s <c>"AnimSets"</c> array (converter
     /// E2-A - see <c>SpriteBankReader.ReadAnimSetHeader</c>), keyed by each entry's own <c>Anim</c> index
     /// (not array position - the source only carries one element per AnimSet the bank's converter run
-    /// actually converted, so indexes can be sparse). Used by <see cref="AlundraPlayerManager"/>'s
+    /// actually converted, so indexes can be sparse). Used by <see cref="PlayerManager"/>'s
     /// kinematic tick to resolve <c>AnimationSet.Speed</c>/<c>Acceleration</c> for the player's current
     /// <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> (hero anim 1 "Moving" -&gt; Speed 208,
     /// Acceleration 1; anim 54 "LoadingMap" -&gt; Speed 0, Acceleration 64 - verified on the real export).

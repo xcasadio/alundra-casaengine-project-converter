@@ -12,7 +12,7 @@ namespace Alundra.Tests;
 /// with Hunter's Bow (item 5, slot 2). The binary passes <c>[0x80023644 + 4 * (+0x98)]</c> (<c>0x8002F7F8</c>) where <c>+0x98</c> is the direction index <c>UpdateAnimation</c> wrote at the end of the PREVIOUS tick: a turn asked
 /// on the tick of the press counts, a turn asked on the tick of the shot or during the swing is ignored. The keys are those of the oracle of E20.f3a T0 (<c>docs/plan-e20-annexe/e20-f3/oracle/out/directions.json</c>, cases
 /// <c>dirtest_air_cross_t1_square_left_t8</c> (d1), <c>dir_extra_air_square_t8_left_only_from_t9</c> (d2), the four <c>ground</c> cases (d3)). The shot is read in the journal of
-/// <see cref="AlundraPlayerManager.WeaponSpawnCallsForTests"/> (<c>Direction</c>); no entity is born (the wired set is empty).
+/// <see cref="PlayerManager.WeaponSpawnCallsForTests"/> (<c>Direction</c>); no entity is born (the wired set is empty).
 /// <para>
 /// A frame of several ticks holds the pad of its FIRST tick for all its ticks (the arena's pad, which the DLL turns into the edges of each tick): in (d1) at two ticks per frame the press tick P (Square + Left) and the shot tick P+1
 /// are in the same frame, so Square is still held at the shot tick (the oracle releases it): the binary does not read the Square again on that tick, and the test asserts the shot all the same.
@@ -21,12 +21,12 @@ namespace Alundra.Tests;
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraShotDirectionTests : IDisposable
 {
-    private const uint Square = AlundraPadState.Square;
-    private const uint Cross = AlundraPadState.Cross;
-    private const uint Left = AlundraPadState.Left;
-    private const uint Right = AlundraPadState.Right;
-    private const uint Up = AlundraPadState.Up;
-    private const uint Down = AlundraPadState.Down;
+    private const uint Square = PadState.Square;
+    private const uint Cross = PadState.Cross;
+    private const uint Left = PadState.Left;
+    private const uint Right = PadState.Right;
+    private const uint Up = PadState.Up;
+    private const uint Down = PadState.Down;
     private const int HuntersBow = 5;
     private const int BowSlot = 2;
 
@@ -36,13 +36,13 @@ public sealed class AlundraShotDirectionTests : IDisposable
 
     private static void Reset()
     {
-        AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
-        AlundraPlayerManager.WeaponSpawnCallsForTests = null;
-        AlundraPlayerManager.WiredWeaponTypesForTests = null;
+        PlayerManager.WeaponSpawnBirthHookForTests = null;
+        PlayerManager.WeaponSpawnCallsForTests = null;
+        PlayerManager.WiredWeaponTypesForTests = null;
     }
 
-    /// <summary>One shot as the seam saw it: the tick of the scenario, the arguments of the call, and the two readings of the facing (the box cursor's direction at the shot and <see cref="AlundraPlayerManager.TickFacing"/> at the head of that tick).</summary>
-    private sealed record Shot(int Tick, AlundraPlayerManager.WeaponSpawnCall Call, int BoxDirection, int HeadTickFacing);
+    /// <summary>One shot as the seam saw it: the tick of the scenario, the arguments of the call, and the two readings of the facing (the box cursor's direction at the shot and <see cref="PlayerManager.TickFacing"/> at the head of that tick).</summary>
+    private sealed record Shot(int Tick, PlayerManager.WeaponSpawnCall Call, int BoxDirection, int HeadTickFacing);
 
     /// <summary>
     /// Runs a scenario on a fresh arena: the pad word of tick <c>t</c> is <paramref name="holdAt"/>(t); the ticks are grouped into the frames of <paramref name="frameSizes"/> (a frame holds the pad of its first tick), then one tick per frame,
@@ -59,11 +59,11 @@ public sealed class AlundraShotDirectionTests : IDisposable
         arena.BeforeTick = t =>
         {
             tick = t;
-            headFacing = AlundraPlayerManager.TickFacing(arena.Hero);
+            headFacing = PlayerManager.TickFacing(arena.Hero);
         };
-        AlundraPlayerManager.WeaponSpawnBirthHookForTests = (hero, call) => shots.Add(new Shot(tick, call, hero.BoxDirection, headFacing));
-        var journal = new List<AlundraPlayerManager.WeaponSpawnCall>();
-        AlundraPlayerManager.WeaponSpawnCallsForTests = journal;
+        PlayerManager.WeaponSpawnBirthHookForTests = (hero, call) => shots.Add(new Shot(tick, call, hero.BoxDirection, headFacing));
+        var journal = new List<PlayerManager.WeaponSpawnCall>();
+        PlayerManager.WeaponSpawnCallsForTests = journal;
 
         arena.Begin();
         var next = 1;

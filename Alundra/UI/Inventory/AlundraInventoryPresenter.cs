@@ -12,7 +12,7 @@ namespace Alundra.UI.Inventory;
 
 /// <summary>
 /// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-6): reads <see cref="AlundraInventoryDirector"/>'s own
-/// already-ticked state plus the item/stat lookups it does not own (<see cref="AlundraPlayerManager"/>,
+/// already-ticked state plus the item/stat lookups it does not own (<see cref="PlayerManager"/>,
 /// <see cref="AlundraItemTables"/>, <see cref="PlayerStats"/>), composes an
 /// <see cref="InventoryDisplayModel"/> through the pure <see cref="AlundraInventoryComposer"/>, and writes
 /// it into the screen's <see cref="AlundraInventoryViewModel"/> (parent ADR-0002), which the screen's XAML binds -
@@ -135,17 +135,17 @@ public sealed class AlundraInventoryPresenter
             }
         }
 
-        var currentWeaponItem = AlundraPlayerManager.GetItemIdFromCurrentWeapon(_gameState, _itemTables);
-        int? currentWeaponItemId = currentWeaponItem == AlundraPlayerManager.NoItem ? null : (int)currentWeaponItem;
+        var currentWeaponItem = PlayerManager.GetItemIdFromCurrentWeapon(_gameState, _itemTables);
+        int? currentWeaponItemId = currentWeaponItem == PlayerManager.NoItem ? null : (int)currentWeaponItem;
 
         // MainInventoryManager.cs:1420 (SetItemIdFromCurrentItemId) - has a side effect
         // (AlundraPlayerManager.SetItemIdFromCurrentItemId's own doc), same "only while drawn" guard
         // AlundraHudPresenter.Tick already applies to its own equipment-icon lookup for the same reason.
-        var currentItem = AlundraPlayerManager.SetItemIdFromCurrentItemId(_gameState, _itemTables);
-        int? currentItemId = currentItem == AlundraPlayerManager.NoItem ? null : (int)currentItem;
+        var currentItem = PlayerManager.SetItemIdFromCurrentItemId(_gameState, _itemTables);
+        int? currentItemId = currentItem == PlayerManager.NoItem ? null : (int)currentItem;
 
-        var herbCount = AlundraPlayerManager.GetNumberOfItem(_gameState, HerbItemId);
-        var keyCount = AlundraPlayerManager.GetNumberOfItem(_gameState, KeyItemId);
+        var herbCount = PlayerManager.GetNumberOfItem(_gameState, HerbItemId);
+        var keyCount = PlayerManager.GetNumberOfItem(_gameState, KeyItemId);
         var falconTotal = _gameState.PlayerStats.Falcon + _gameState.PlayerStats.FalconTemp;
 
         return AlundraInventoryComposer.Compose(

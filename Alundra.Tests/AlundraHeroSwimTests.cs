@@ -46,7 +46,7 @@ public sealed class AlundraHeroSwimTests : IDisposable
     public void Dispose()
     {
         AlundraNativeEffects.CreatedForTests = null;
-        AlundraPlayerManager.TryUseItemResultForTests = null;
+        PlayerManager.TryUseItemResultForTests = null;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -682,7 +682,7 @@ public sealed class AlundraHeroSwimTests : IDisposable
         var m = RunMontage.Start(RunOracleTrace.Load("w3/W3-T-swim"));
         for (var frame = 0; frame < 3; frame++)
         {
-            m.Tick(AlundraPadState.Right, 2);
+            m.Tick(PadState.Right, 2);
         }
 
         Assert.Equal(Swim, m.Hero.TargetAnimationId);
@@ -690,7 +690,7 @@ public sealed class AlundraHeroSwimTests : IDisposable
         var dives = 0;
         for (var frame = 0; frame < 24; frame++)
         {
-            m.Tick(AlundraPadState.Right | (frame == 0 ? AlundraPadState.Triangle : 0u), 2);
+            m.Tick(PadState.Right | (frame == 0 ? PadState.Triangle : 0u), 2);
             if (m.Sounds.Requests.Contains(21))
             {
                 dives++;

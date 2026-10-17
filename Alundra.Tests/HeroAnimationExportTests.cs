@@ -12,7 +12,7 @@ namespace Alundra.Tests;
 /// E2 acceptance check: the hero bank's converted animation assets (<c>Entities/Alundra/</c>,
 /// <c>bankalundra_0_anim{N}_{direction}.anim2d</c> - converter naming, see
 /// <see cref="FrameSyncPasses.TrySelectAnimationByNameSuffix"/>'s own doc) must cover every (anim,
-/// direction) pair <see cref="AlundraPlayerManager"/>'s ported Idle(0)/Moving(1)/LoadingMap(54) cases can
+/// direction) pair <see cref="PlayerManager"/>'s ported Idle(0)/Moving(1)/LoadingMap(54) cases can
 /// ever select, for all 4 directions (<see cref="AnimationTables.DirectionNames"/>) - otherwise
 /// <c>SyncAnimation</c> would silently fail to find an animation and the pawn would freeze visually while
 /// still moving logically. Self-skips when <c>alundra-project/</c> is not present in this checkout (same
@@ -62,7 +62,7 @@ public class HeroAnimationExportTests
     /// Direction-value -&gt; suffix sanity check (deviation the E2 CONTEXT specifically calls out): a
     /// freshly spawned pawn (AnimationDirection defaults to 0/"down") turning to face TargetDirection
     /// 0x10 (up, per <see cref="AnimationTables.CardinalDirectionTable"/>) must resolve to the "up" file
-    /// suffix, and TargetDirection 0x18 (east/right, the direction <see cref="AlundraPlayerManager.MovePlayer"/>'s
+    /// suffix, and TargetDirection 0x18 (east/right, the direction <see cref="PlayerManager.MovePlayer"/>'s
     /// own East scenario uses) must resolve to "right" - both via the SAME
     /// <see cref="FrameSyncPasses.TryResolveAnimationTarget"/>/<see cref="FrameSyncPasses.TrySelectAnimationByNameSuffix"/>
     /// chain <c>SyncAnimation</c> drives every frame, and both files must actually exist in the real

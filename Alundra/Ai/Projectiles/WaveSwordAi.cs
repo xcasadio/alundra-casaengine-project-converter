@@ -22,7 +22,7 @@ internal static class WaveSwordAi
     /// <summary>The program code of E10 in slot E (handled in line by the runner).</summary>
     internal const int DeactivateCode = 10;
 
-    /// <summary>Test seam, per thread: when non-null, every call of the named stub <see cref="CheckAndTriggerTileEffect"/> appends the entity it was called for (the motif of <see cref="AlundraPlayerAnimationEffects.StubCallsForTests"/>).</summary>
+    /// <summary>Test seam, per thread: when non-null, every call of the named stub <see cref="CheckAndTriggerTileEffect"/> appends the entity it was called for (the motif of <see cref="PlayerAnimationEffects.StubCallsForTests"/>).</summary>
     [System.ThreadStatic]
     internal static List<AlundraEntityScriptProxy>? StubCallsForTests;
 

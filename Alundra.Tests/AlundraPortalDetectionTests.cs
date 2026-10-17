@@ -27,7 +27,7 @@ namespace Alundra.Tests;
 /// (<see cref="AlundraWorldProxy.BuildPortals"/>, §1.1), the slot scan
 /// (<see cref="AlundraPortalScanner.FindPortalAtTile"/>, §1.2.b), and the trigger predicate
 /// (<see cref="AlundraPortalTrigger.TryGetTrigger"/>, §1.2.a), including its exact
-/// <see cref="AlundraPlayerManager.MovePlayer"/> call site. No transition is ever started here - see
+/// <see cref="PlayerManager.MovePlayer"/> call site. No transition is ever started here - see
 /// <see cref="AlundraPortalTrigger"/>'s own class doc.
 /// </summary>
 public class AlundraPortalDetectionTests : IDisposable
@@ -137,7 +137,7 @@ public class AlundraPortalDetectionTests : IDisposable
         var portals = new List<AlundraPortalRecord> { Portal(0, 1, 1, 1, 1, destMapId: 390, arrivalDirectionIndex: 2) };
         var player = Player(tileX: 1, tileY: 1, combinedVramFlagsAnd: 0x4, animationDirection: 3);
         var state = new GameState { PlayerControlFlags = 0xFFFFFFFF };
-        var pad = new AlundraPadState { ButtonsHold = 0 };
+        var pad = new PadState { ButtonsHold = 0 };
 
         var trigger = AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals);
 
@@ -152,7 +152,7 @@ public class AlundraPortalDetectionTests : IDisposable
         var portals = new List<AlundraPortalRecord> { Portal(0, 9, 9, 9, 9, destMapId: 390) };
         var player = Player(tileX: 1, tileY: 1, combinedVramFlagsAnd: 0x4, animationDirection: 0);
         var state = new GameState();
-        var pad = new AlundraPadState();
+        var pad = new PadState();
 
         Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
     }
@@ -165,7 +165,7 @@ public class AlundraPortalDetectionTests : IDisposable
         var portals = new List<AlundraPortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, arrivalDirectionIndex: 1, requiredFacing: 1) };
         var player = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0x8000, animationDirection: 1);
         var state = new GameState { PlayerControlFlags = 0 };
-        var pad = new AlundraPadState { ButtonsHold = 0x1000 };
+        var pad = new PadState { ButtonsHold = 0x1000 };
 
         var trigger = AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals);
 
@@ -179,7 +179,7 @@ public class AlundraPortalDetectionTests : IDisposable
         var portals = new List<AlundraPortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
         var player = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0, animationDirection: 1);
         var state = new GameState();
-        var pad = new AlundraPadState { ButtonsHold = 0x1000 };
+        var pad = new PadState { ButtonsHold = 0x1000 };
 
         Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
     }
@@ -192,7 +192,7 @@ public class AlundraPortalDetectionTests : IDisposable
         var portals = new List<AlundraPortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
         var player = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0x8000, animationDirection: 1);
         var state = new GameState { PlayerControlFlags = 1 };
-        var pad = new AlundraPadState { ButtonsHold = 0x1000 };
+        var pad = new PadState { ButtonsHold = 0x1000 };
 
         Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
     }
@@ -205,7 +205,7 @@ public class AlundraPortalDetectionTests : IDisposable
         var portals = new List<AlundraPortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
         var player = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0x8000, animationDirection: 1);
         var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ForcedWeapon };
-        var pad = new AlundraPadState { ButtonsHold = 0x1000 };
+        var pad = new PadState { ButtonsHold = 0x1000 };
 
         Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
 
@@ -220,7 +220,7 @@ public class AlundraPortalDetectionTests : IDisposable
         var portals = new List<AlundraPortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
         var player = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0x8000, animationDirection: 1);
         var state = new GameState();
-        var pad = new AlundraPadState { ButtonsHold = 0 };
+        var pad = new PadState { ButtonsHold = 0 };
 
         Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
     }
@@ -235,7 +235,7 @@ public class AlundraPortalDetectionTests : IDisposable
         var portals = new List<AlundraPortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
         var player = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0x8000, animationDirection: 2, targetDirection: 1);
         var state = new GameState();
-        var pad = new AlundraPadState { ButtonsHold = 0x1000 };
+        var pad = new PadState { ButtonsHold = 0x1000 };
 
         Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
 
@@ -257,7 +257,7 @@ public class AlundraPortalDetectionTests : IDisposable
             Portal(1, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1), // portal-floor-eligible tile.
         };
         var state = new GameState { IsWarpDisabled = true };
-        var pad = new AlundraPadState { ButtonsHold = 0x1000 };
+        var pad = new PadState { ButtonsHold = 0x1000 };
 
         var holePlayer = Player(tileX: 1, tileY: 1, combinedVramFlagsAnd: 0x4, animationDirection: 0);
         Assert.Null(AlundraPortalTrigger.TryGetTrigger(holePlayer, in pad, state, portals));
@@ -392,7 +392,7 @@ public class AlundraPortalDetectionTests : IDisposable
 
         var portals = BuildMap389PortalZero();
         var state = new GameState();
-        var pad = new AlundraPadState { ButtonsHold = 0x1000 }; // RequiredFacingDirection 1 -> Up.
+        var pad = new PadState { ButtonsHold = 0x1000 }; // RequiredFacingDirection 1 -> Up.
         proxy.AnimationDirection = 1; // matches portal 0's RequiredFacingDirection.
 
         var trigger = AlundraPortalTrigger.TryGetTrigger(proxy, in pad, state, portals);
@@ -440,7 +440,7 @@ public class AlundraPortalDetectionTests : IDisposable
 
         var portals = BuildMap389PortalZero();
         var state = new GameState();
-        var pad = new AlundraPadState { ButtonsHold = 0x1000 };
+        var pad = new PadState { ButtonsHold = 0x1000 };
         proxy.AnimationDirection = 1;
 
         Assert.Null(AlundraPortalTrigger.TryGetTrigger(proxy, in pad, state, portals));
@@ -630,9 +630,9 @@ public class AlundraPortalDetectionTests : IDisposable
             CombinedVramFlagsAND = 0x4, // hole bit.
             AnimationDirection = 0,
         };
-        var pad = new AlundraPadState();
+        var pad = new PadState();
 
-        AlundraPlayerManager.MovePlayer(player, in pad, state, host);
+        PlayerManager.MovePlayer(player, in pad, state, host);
 
         var fired = Assert.Single(host.Triggered);
         Assert.Equal(390, fired.Portal.DestMapId);
@@ -654,9 +654,9 @@ public class AlundraPortalDetectionTests : IDisposable
             CombinedVramFlagsAND = 0x8000,
             AnimationDirection = 0,
         };
-        var pad = new AlundraPadState { ButtonsHold = 0x4000 };
+        var pad = new PadState { ButtonsHold = 0x4000 };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, state, host);
+        PlayerManager.MovePlayer(player, in pad, state, host);
 
         Assert.Empty(host.Triggered);
     }
@@ -675,8 +675,8 @@ public class AlundraPortalDetectionTests : IDisposable
             CombinedVramFlagsAND = 0x4,
         };
         var state = new GameState();
-        var pad = new AlundraPadState();
+        var pad = new PadState();
 
-        AlundraPlayerManager.MovePlayer(player, in pad, state, host: null);
+        PlayerManager.MovePlayer(player, in pad, state, host: null);
     }
 }

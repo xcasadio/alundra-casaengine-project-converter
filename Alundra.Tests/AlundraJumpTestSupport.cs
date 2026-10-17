@@ -222,7 +222,7 @@ internal sealed class HeroPad
 
     public uint Pressed;
 
-    public AlundraPadState State => new() { ButtonsHold = Hold, ButtonsJustPressed = Pressed };
+    public PadState State => new() { ButtonsHold = Hold, ButtonsJustPressed = Pressed };
 }
 
 /// <summary>

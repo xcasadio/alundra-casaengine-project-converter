@@ -46,9 +46,9 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
 
     private void Reset()
     {
-        AlundraPlayerManager.WeaponSpawnBirthHookForTests = null;
-        AlundraPlayerManager.WiredWeaponTypesForTests = null;
-        AlundraPlayerManager.WeaponSpawnCallsForTests = null;
+        PlayerManager.WeaponSpawnBirthHookForTests = null;
+        PlayerManager.WiredWeaponTypesForTests = null;
+        PlayerManager.WeaponSpawnCallsForTests = null;
         WaveSwordAi.StubCallsForTests = null;
         AlundraNativeEffects.CreatedForTests = null;
         AlundraRandom.RandomSeed = _previousSeed;
@@ -249,21 +249,21 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
         int bowBorn;
         using (var arc = Arc("p5-bow"))
         {
-            AlundraPlayerManager.WiredWeaponTypesForTests = new HashSet<int> { 27, 28, 29 };
+            PlayerManager.WiredWeaponTypesForTests = new HashSet<int> { 27, 28, 29 };
             arc.OneFrame();
             var before = arc.Entities.ToList();
-            var counter = AlundraPlayerManager.WeaponSpawnCallCountForTests;
-            var journal = new List<AlundraPlayerManager.WeaponSpawnCall>();
-            AlundraPlayerManager.WeaponSpawnCallsForTests = journal;
+            var counter = PlayerManager.WeaponSpawnCallCountForTests;
+            var journal = new List<PlayerManager.WeaponSpawnCall>();
+            PlayerManager.WeaponSpawnCallsForTests = journal;
             ArmBow(arc.Hero);
             arc.OneFrame();
-            AlundraPlayerManager.WeaponSpawnCallsForTests = null;
-            bowCounter = AlundraPlayerManager.WeaponSpawnCallCountForTests - counter;
+            PlayerManager.WeaponSpawnCallsForTests = null;
+            bowCounter = PlayerManager.WeaponSpawnCallCountForTests - counter;
             bowJournal = journal.Count(c => c.Type == Arrow);
             bowBorn = arc.Entities.Count(e => !before.Contains(e));
         }
 
-        AlundraPlayerManager.WiredWeaponTypesForTests = null;
+        PlayerManager.WiredWeaponTypesForTests = null;
         int swordCounter;
         int swordBornType;
         int swordBorn;
@@ -271,10 +271,10 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
         {
             arc.OneFrame();
             var before = arc.Entities.ToList();
-            var counter = AlundraPlayerManager.WeaponSpawnCallCountForTests;
+            var counter = PlayerManager.WeaponSpawnCallCountForTests;
             ArmSteelSword(arc.Hero);
             arc.OneFrame();
-            swordCounter = AlundraPlayerManager.WeaponSpawnCallCountForTests - counter;
+            swordCounter = PlayerManager.WeaponSpawnCallCountForTests - counter;
             var born = arc.Entities.Where(e => !before.Contains(e)).ToList();
             swordBorn = born.Count;
             swordBornType = born.Count == 1 ? born[0].SpriteType : -1;
@@ -302,10 +302,10 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
             FillSlots(arc, free: 0);
             var held = arc.Proxy.SlotTable.HeldCount;
             var before = arc.Entities.ToList();
-            var counter = AlundraPlayerManager.WeaponSpawnCallCountForTests;
+            var counter = PlayerManager.WeaponSpawnCallCountForTests;
             ArmSteelSword(arc.Hero);
             arc.OneFrame();
-            full = (held, AlundraPlayerManager.WeaponSpawnCallCountForTests - counter, arc.Entities.Count(e => !before.Contains(e)), arc.Hero.WeaponRecordPointer);
+            full = (held, PlayerManager.WeaponSpawnCallCountForTests - counter, arc.Entities.Count(e => !before.Contains(e)), arc.Hero.WeaponRecordPointer);
         }
 
         (int HeldBefore, int Counter, int Born, uint Pointer, int Type) one;
@@ -315,11 +315,11 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
             FillSlots(arc, free: 1);
             var held = arc.Proxy.SlotTable.HeldCount;
             var before = arc.Entities.ToList();
-            var counter = AlundraPlayerManager.WeaponSpawnCallCountForTests;
+            var counter = PlayerManager.WeaponSpawnCallCountForTests;
             ArmSteelSword(arc.Hero);
             arc.OneFrame();
             var born = arc.Entities.Where(e => !before.Contains(e)).ToList();
-            one = (held, AlundraPlayerManager.WeaponSpawnCallCountForTests - counter, born.Count, arc.Hero.WeaponRecordPointer, born.Count == 1 ? born[0].SpriteType : -1);
+            one = (held, PlayerManager.WeaponSpawnCallCountForTests - counter, born.Count, arc.Hero.WeaponRecordPointer, born.Count == 1 ? born[0].SpriteType : -1);
         }
 
         Assert.Equal(

@@ -52,8 +52,8 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
 
         // Session fields, all away from their start-of-session value.
         state.PlayerControlFlags = GameState.PlayerControlBits.ControlLocked | GameState.PlayerControlBits.MenuOpen;
-        state.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Start };
-        state.TickPad.Update(AlundraPadState.Start);
+        state.LastPadState = new PadState { ButtonsHold = PadState.Start };
+        state.TickPad.Update(PadState.Start);
         Assert.NotEqual(0u, state.TickPad.ButtonsHold);
         state.InteractLatchEntity = new AlundraEntityScriptProxy();
         state.InteractLatchFacing = 1;
@@ -262,14 +262,14 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
     {
         var tables = ItemTablesFixture.LoadReal();
         var state = new GameState();
-        AlundraPlayerManager.InitializeNewGameInventory(state, tables);
+        PlayerManager.InitializeNewGameInventory(state, tables);
         var main = AlundraInventoryDirector.Instance;
         var sub = AlundraSubInventoryDirector.Instance;
         main.AttachToWorld(state, tables, null);
         sub.AttachToWorld(state, tables, null);
 
         // The main inventory open and settled, portrait at rest.
-        InventoryTick(state, AlundraPadState.Start);
+        InventoryTick(state, PadState.Start);
         InventoryTicks(state, 20);
         Assert.True(main.IsDrawn);
         Assert.NotEqual(AlundraInventoryPortrait.StateIdle, AlundraInventoryPortrait.Instance.State);
@@ -289,11 +289,11 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         // sub-inventory (both degrade to no-ops without their attached state and tables).
         state.PlayerControlFlags = 0;
         InventoryTick(state, 0);
-        InventoryTick(state, AlundraPadState.Start);
+        InventoryTick(state, PadState.Start);
         InventoryTicks(state, 20);
         Assert.True(main.IsDrawn);
 
-        InventoryTick(state, AlundraPadState.R1);
+        InventoryTick(state, PadState.R1);
         InventoryTicks(state, 40);
         Assert.True(sub.IsDrawn);
 
@@ -305,9 +305,9 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
 
         state.PlayerControlFlags = 0;
         InventoryTick(state, 0);
-        InventoryTick(state, AlundraPadState.Start);
+        InventoryTick(state, PadState.Start);
         InventoryTicks(state, 20);
-        InventoryTick(state, AlundraPadState.R1);
+        InventoryTick(state, PadState.R1);
         InventoryTicks(state, 40);
         Assert.True(sub.IsDrawn);
     }

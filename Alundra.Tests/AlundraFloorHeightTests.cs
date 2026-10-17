@@ -181,7 +181,7 @@ public class AlundraFloorHeightTests
         var groundHeightPx = cellHeightUnits * CellHeightPx;
 
         var world = HeroWorldFixture.BuildWorld(field);
-        var controller = new AlundraPlayerController { PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = 0, ButtonsJustPressed = 0 } };
+        var controller = new AlundraPlayerController { PadStateProviderForTests = () => new PadState { ButtonsHold = 0, ButtonsJustPressed = 0 } };
         var host = new PlayerScriptHost { PlayerController = controller };
 
         var settings = new CharacterControllerSettings();
@@ -280,7 +280,7 @@ public class AlundraFloorHeightTests
         var heroStartZPx = (candidateTop >> 16) + 8;
 
         var world = HeroWorldFixture.BuildWorld(field);
-        var controller = new AlundraPlayerController { PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = 0, ButtonsJustPressed = 0 } };
+        var controller = new AlundraPlayerController { PadStateProviderForTests = () => new PadState { ButtonsHold = 0, ButtonsJustPressed = 0 } };
         var host = new PlayerScriptHost { PlayerController = controller };
         host.Collidables.Add(platformProxy);
 
@@ -326,7 +326,7 @@ public class AlundraFloorHeightTests
         // terrain-only branch must answer the DIFFERENT terrainHeightPx value above, proving the
         // assertion above genuinely exercises EntitySupport.TryFindSupport rather than passing through
         // the terrain branch alone (as the record-2 pose this test replaced silently did).
-        var controlHost = new PlayerScriptHost { PlayerController = new AlundraPlayerController { PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = 0, ButtonsJustPressed = 0 } } };
+        var controlHost = new PlayerScriptHost { PlayerController = new AlundraPlayerController { PadStateProviderForTests = () => new PadState { ButtonsHold = 0, ButtonsJustPressed = 0 } } };
         Assert.Empty(controlHost.Collidables);
         var controlWorld = HeroWorldFixture.BuildWorld(field);
         var (_, controlProxy) = HeroWorldFixture.BuildHeroPawn(

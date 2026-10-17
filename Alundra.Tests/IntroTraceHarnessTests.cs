@@ -438,8 +438,8 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     private readonly bool _installDialogueDirector;
 
     /// <summary>E19.f2a (F2-R1): the harness's mirror of the world proxy's pad pass for the dialogue box - the square button as it was at the previous frame, with its
-    /// rising edge, derived from <c>LastPadState.ButtonsHold</c> the way <see cref="AlundraTickPad"/> derives it in production.</summary>
-    private readonly AlundraTickPad _dialoguePadMirror = new();
+    /// rising edge, derived from <c>LastPadState.ButtonsHold</c> the way <see cref="TickPad"/> derives it in production.</summary>
+    private readonly TickPad _dialoguePadMirror = new();
 
     // Includes the player (index 0) - mirrors AlundraWorldProxy's own _spawnedEntities, which also holds
     // the player (SpawnPlayerEntity adds it before any record) - see IEntityWorldContext.SpawnedEntities's
@@ -610,8 +610,8 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             {
                 _dialoguePadMirror.Update(_gameState.LastPadState.ButtonsHold);
                 AlundraDialogueDirector.Instance.Pass(
-                    (_dialoguePadMirror.ButtonsHold & AlundraPadState.Square) != 0,
-                    (_dialoguePadMirror.ButtonsJustPressed & AlundraPadState.Square) != 0);
+                    (_dialoguePadMirror.ButtonsHold & PadState.Square) != 0,
+                    (_dialoguePadMirror.ButtonsJustPressed & PadState.Square) != 0);
             }
 
             afterEachFrame?.Invoke(this);

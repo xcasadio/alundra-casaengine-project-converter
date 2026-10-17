@@ -23,7 +23,7 @@ namespace Alundra.Hero;
 /// the walk cycle (<see cref="PlayerRunStepEffects"/>, <see cref="PlayerWalkStepEffects"/>, whose own phase gates on <c>+0x1C</c> and the slope tables are inside the stub), the landing sound and dust
 /// (<see cref="PlayerLandingEffects"/>) and the grass cut (<see cref="PlayerGrassCut"/>), all four for E20.e; the alarm of the low life (<see cref="PlayerLowHpAlarm"/>) is ported for real by E20.c2a T4, with the life of the hero entity.
 /// </summary>
-internal static class AlundraPlayerAnimationEffects
+internal static class PlayerAnimationEffects
 {
     /// <summary>The mode of the free branch (<c>0x80031C3C</c>): the whole function, alarm and flail bounce included.</summary>
     internal const int FreeMode = 0;

@@ -26,10 +26,10 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
-    private const uint Cross = AlundraPadState.Cross;
-    private const uint Right = AlundraPadState.Right;
-    private const uint Left = AlundraPadState.Left;
-    private const uint Down = AlundraPadState.Down;
+    private const uint Cross = PadState.Cross;
+    private const uint Right = PadState.Right;
+    private const uint Left = PadState.Left;
+    private const uint Down = PadState.Down;
     private const int East = 24;
 
     private static readonly int[] JumpHeights =
@@ -724,8 +724,8 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         var entryFrame = 0;
         for (var frame = 1; frame <= 40 && entryFrame == 0; frame++)
         {
-            rig.Step(AlundraPadState.Up | (frame == 1 ? Cross : 0), frame == 1 ? Cross : 0);
-            if (hero.TargetAnimationId == AlundraPlayerManager.ClimbingAnimationId)
+            rig.Step(PadState.Up | (frame == 1 ? Cross : 0), frame == 1 ? Cross : 0);
+            if (hero.TargetAnimationId == PlayerManager.ClimbingAnimationId)
             {
                 entryFrame = frame;
             }
@@ -741,8 +741,8 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
 
         for (var frame = 0; frame < 3; frame++)
         {
-            rig.Step(AlundraPadState.Up, 0);
-            Assert.Equal(AlundraPlayerManager.ClimbingAnimationId, hero.TargetAnimationId);
+            rig.Step(PadState.Up, 0);
+            Assert.Equal(PlayerManager.ClimbingAnimationId, hero.TargetAnimationId);
             Assert.False(hero.HeroAirborne);
             Assert.True(rig.Controller.IsVerticalOwnedExternally);
         }

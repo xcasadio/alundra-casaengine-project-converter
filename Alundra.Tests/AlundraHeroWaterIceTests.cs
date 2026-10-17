@@ -194,7 +194,7 @@ public class AlundraHeroWaterIceTests
         var forces = new List<int>();
         for (var i = 0; i < 2; i++)
         {
-            AlundraPlayerManager.Tick(hero, 1);
+            PlayerManager.Tick(hero, 1);
             forces.Add(hero.ForceX);
         }
 

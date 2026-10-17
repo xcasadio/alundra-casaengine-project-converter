@@ -142,7 +142,7 @@ public sealed class AlundraSubInventoryPresenter
             ? bootsAsset
             : null;
 
-        var keyCount = AlundraPlayerManager.GetNumberOfItem(_gameState, KeyItemId);
+        var keyCount = PlayerManager.GetNumberOfItem(_gameState, KeyItemId);
         var falconTotal = _gameState.PlayerStats.Falcon + _gameState.PlayerStats.FalconTemp;
 
         return AlundraSubInventoryComposer.Compose(

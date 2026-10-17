@@ -32,10 +32,10 @@ public sealed class AlundraHeroAttackTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
-    private const uint Square = AlundraPadState.Square;
-    private const uint Cross = AlundraPadState.Cross;
-    private const uint Right = AlundraPadState.Right;
-    private const uint Up = AlundraPadState.Up;
+    private const uint Square = PadState.Square;
+    private const uint Cross = PadState.Cross;
+    private const uint Right = PadState.Right;
+    private const uint Up = PadState.Up;
     private const int LandingSound = 11;
 
     public AlundraHeroAttackTests()
@@ -62,16 +62,16 @@ public sealed class AlundraHeroAttackTests : IDisposable
     {
         var tables = Tables();
         host.ItemTables = tables;
-        AlundraPlayerManager.InitializeNewGameInventory(host.GameState, tables);
+        PlayerManager.InitializeNewGameInventory(host.GameState, tables);
         if (item is { } id)
         {
             host.GameState.NumberOfItems[id * 2 + 1] = 1;
-            AlundraPlayerManager.SetPlayerWeaponId(host.GameState, tables, tables.ItemsProperties[id * 5]);
+            PlayerManager.SetPlayerWeaponId(host.GameState, tables, tables.ItemsProperties[id * 5]);
         }
 
         if (noWeapon)
         {
-            AlundraPlayerManager.SetPlayerWeaponId(host.GameState, tables, -1);
+            PlayerManager.SetPlayerWeaponId(host.GameState, tables, -1);
         }
     }
 
@@ -126,7 +126,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
         foreach (var row in trace.Rows.TakeWhile(r => r.Tick <= lastTick))
         {
             sounds.Requests.Clear();
-            var spawnsBefore = AlundraPlayerManager.WeaponSpawnCallCountForTests;
+            var spawnsBefore = PlayerManager.WeaponSpawnCallCountForTests;
             before?.Invoke(row.Tick);
             rig.Step(row.Hold);
 
@@ -154,7 +154,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
             Check("on_ground", hero.IsOnGround, onGroundLagTicks.Contains(row.Tick) ? previous.OnGround : row.OnGround);
             Check("rec_ptr", hero.WeaponRecordPointer, row.RecPtr);
             Check("rec_cnt", hero.WeaponStepCounter, row.RecCnt);
-            Check("spawns", AlundraPlayerManager.WeaponSpawnCallCountForTests - spawnsBefore, row.Spawns);
+            Check("spawns", PlayerManager.WeaponSpawnCallCountForTests - spawnsBefore, row.Spawns);
             // The landing sound 11 (and its dust, the effect 0x8003BDD8) is asked by the binary's landing code, which the DLL has as a named stub (E20.f2: AlundraPlayerAnimationEffects.PlayerLandingEffects, E20.e fills it): outside E20.b.
             var dllSounds = string.Join(",", sounds.Requests.Where(s => s != LandingSound).OrderBy(s => s));
             var oracleSounds = string.Join(",", row.Sounds.Where(s => s != LandingSound).OrderBy(s => s));
@@ -404,7 +404,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
         Assert.Equal(0x3F, AlundraWeaponTables.RecordByte(AlundraWeaponTables.AnimationAddress(1, air: false)));
         Assert.Equal(0x41, AlundraWeaponTables.RecordByte(AlundraWeaponTables.AnimationAddress(1, air: true)));
         Assert.Equal(new[] { 0, 0, 1, 2, 3, 8, 9, 10, 11, 6, 7, 0, 0, 0, 5, 0, 4, 0 }, Enumerable.Range(0, 18).Select(i => AlundraWeaponTables.RecordIndexOfItem((uint)i)).ToArray());
-        Assert.Equal(0, AlundraWeaponTables.RecordIndexOfItem(AlundraPlayerManager.NoItem));
+        Assert.Equal(0, AlundraWeaponTables.RecordIndexOfItem(PlayerManager.NoItem));
         Assert.Equal(0, AlundraWeaponTables.RecordIndexOfItem(99));
         Assert.True(AlundraWeaponTables.AnimationSpawnsAfterDelay(0x13) && AlundraWeaponTables.AnimationSpawnsAfterDelay(0x18) && !AlundraWeaponTables.AnimationSpawnsAfterDelay(0x10));
         Assert.True(AlundraWeaponTables.AnimationCountsCharge(0x2D) && AlundraWeaponTables.AnimationCountsCharge(0) && !AlundraWeaponTables.AnimationCountsCharge(0x10));
@@ -448,7 +448,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
         WaitUntilTheHeroIsFree(arc);
         arc.OneFrame();
         sounds.Requests.Clear();
-        AlundraPlayerManager.InitializeNewGameInventory(GameState.Instance, ((IScriptHost)arc.Proxy).ItemTables!);
+        PlayerManager.InitializeNewGameInventory(GameState.Instance, ((IScriptHost)arc.Proxy).ItemTables!);
 
         // On the ground: the press at S asks the sound 29 at S, the swing 0x10 runs ticks S to S+20, Idle at S+21 (tick 22 of AT1).
         var swing = new List<uint>();
@@ -509,10 +509,10 @@ public sealed class AlundraHeroAttackTests : IDisposable
 
         // The Steel Edge (item 2, slot 1, rank above the basic sword's) owned and equipped: the record 1, the swing 0x3F, the pointer at the record's own address.
         var state = GameState.Instance;
-        AlundraPlayerManager.InitializeNewGameInventory(state, tables!);
+        PlayerManager.InitializeNewGameInventory(state, tables!);
         state.NumberOfItems[2 * 2 + 1] = 1;
-        AlundraPlayerManager.SetPlayerWeaponId(state, tables!, 1);
-        Assert.Equal(2u, AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, tables!));
+        PlayerManager.SetPlayerWeaponId(state, tables!, 1);
+        Assert.Equal(2u, PlayerManager.GetItemIdFromCurrentWeapon(state, tables!));
         arc.Press(Square);
         Assert.Equal(1, hero.CurrentWeaponRecord);
         Assert.Equal(0x3Fu, hero.TargetAnimationId);
@@ -537,7 +537,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
 
         rig.Hero.ForceAdjusted = 1;
         rig.Step(Up);
-        Assert.Equal(AlundraPlayerManager.ClimbingAnimationId, rig.Hero.TargetAnimationId);
+        Assert.Equal(PlayerManager.ClimbingAnimationId, rig.Hero.TargetAnimationId);
 
         // The control: no ladder, the same inputs, the swing goes on.
         var (control, _) = Start(AttackOracleTrace.Load("AT1"));
@@ -594,8 +594,8 @@ public sealed class AlundraHeroAttackTests : IDisposable
         Assert.Equal(0x10u, hero.TargetAnimationId);
 
         sounds.Requests.Clear();
-        var released = new AlundraPadState();
-        var pressed = new AlundraPadState { ButtonsHold = Square, ButtonsJustPressed = Square };
+        var released = new PadState();
+        var pressed = new PadState { ButtonsHold = Square, ButtonsJustPressed = Square };
         hero.MovePlayerOnTickPad(in released); // tick 22: still the swing (the press of tick 22 would be lost).
         hero.TickAnimationClock();
         hero.TickPhysics();
@@ -621,8 +621,8 @@ public sealed class AlundraHeroAttackTests : IDisposable
             rig.Step(tick == 1 ? Square : 0);
         }
 
-        var released = new AlundraPadState();
-        var pressed = new AlundraPadState { ButtonsHold = Square, ButtonsJustPressed = Square };
+        var released = new PadState();
+        var pressed = new PadState { ButtonsHold = Square, ButtonsJustPressed = Square };
         hero.MovePlayerOnTickPad(in released);
         hero.TickAnimationClock();
         hero.TickPhysics();

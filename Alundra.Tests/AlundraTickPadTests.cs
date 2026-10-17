@@ -6,7 +6,7 @@ using Alundra.Hero;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-8, D-E13D-9): <see cref="AlundraTickPad"/>, the port of
+/// E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-8, D-E13D-9): <see cref="TickPad"/>, the port of
 /// <c>PadManager.UpdatePad</c> (PadManager.cs:27-74) advanced once per logic tick. The expected sequences
 /// come from tracing the original function by hand with its own constants, <c>MaxNbFrameHeld</c> = 20
 /// (PadState.cs:25) and <c>RepeatInterval</c> = 0 (GameInitializer.cs:169): an edge on the tick of the
@@ -14,10 +14,10 @@ namespace Alundra.Tests;
 /// </summary>
 public class AlundraTickPadTests
 {
-    private const uint Right = AlundraPadState.Right;
-    private const uint Cross = AlundraPadState.Cross;
+    private const uint Right = PadState.Right;
+    private const uint Cross = PadState.Cross;
 
-    private static List<uint> RunTicks(AlundraTickPad pad, uint hold, int ticks)
+    private static List<uint> RunTicks(TickPad pad, uint hold, int ticks)
     {
         var edges = new List<uint>(ticks);
         for (var i = 0; i < ticks; i++)
@@ -32,16 +32,16 @@ public class AlundraTickPadTests
     [Fact]
     public void Constants_AreTheOriginals()
     {
-        var pad = new AlundraTickPad();
+        var pad = new TickPad();
 
-        Assert.Equal(20u, AlundraTickPad.MaxNbFrameHeld);
+        Assert.Equal(20u, TickPad.MaxNbFrameHeld);
         Assert.Equal(0u, pad.RepeatInterval);
     }
 
     [Fact]
     public void HeldButton_EdgeOnThePressTick_TwentySilentTicks_ThenAnEdgeEveryTick()
     {
-        var pad = new AlundraTickPad();
+        var pad = new TickPad();
 
         var edges = RunTicks(pad, Right, 30);
 
@@ -53,7 +53,7 @@ public class AlundraTickPadTests
     [Fact]
     public void PressEdge_IsReportedOnlyOnThePressTick()
     {
-        var pad = new AlundraTickPad();
+        var pad = new TickPad();
 
         pad.Update(Right);
         Assert.Equal(Right, pad.ButtonsJustPressed);
@@ -65,7 +65,7 @@ public class AlundraTickPadTests
     [Fact]
     public void Release_ReportsTheReleasedButton_AndGivesNoEdge()
     {
-        var pad = new AlundraTickPad();
+        var pad = new TickPad();
         RunTicks(pad, Right, 25);
 
         pad.Update(0);
@@ -80,7 +80,7 @@ public class AlundraTickPadTests
     [Fact]
     public void ChangeOfState_RestartsTheDelay_AndReportsOnlyTheNewButton()
     {
-        var pad = new AlundraTickPad();
+        var pad = new TickPad();
         RunTicks(pad, Right, 25); // already repeating
 
         var edges = RunTicks(pad, Right | Cross, 22);
@@ -95,7 +95,7 @@ public class AlundraTickPadTests
     [Fact]
     public void NothingHeld_NeverReportsAnything()
     {
-        var pad = new AlundraTickPad();
+        var pad = new TickPad();
 
         var edges = RunTicks(pad, 0, 40);
 
@@ -117,7 +117,7 @@ public class AlundraTickPadTests
     public void HeldPress_GivesTheSameEdgesPerTick_WhateverTheTicksPerFrame(int[] ticksPattern)
     {
         const int totalTicks = 30;
-        var pad = new AlundraTickPad();
+        var pad = new TickPad();
         var edges = new List<uint>();
 
         for (var frame = 0; edges.Count < totalTicks; frame++)
@@ -138,7 +138,7 @@ public class AlundraTickPadTests
     [Fact]
     public void PressSampledOnAZeroTickFrame_IsNotLost_WhileItIsStillHeldAtTheNextTick()
     {
-        var pad = new AlundraTickPad();
+        var pad = new TickPad();
         var edges = new List<uint>();
 
         // Frame 1: nothing held, one tick. Frame 2: the press is sampled, but the frame carries no tick.
@@ -158,7 +158,7 @@ public class AlundraTickPadTests
     [Fact]
     public void Reset_ReturnsToTheZeroInitialisedState()
     {
-        var pad = new AlundraTickPad();
+        var pad = new TickPad();
         RunTicks(pad, Right, 25);
 
         pad.Reset();

@@ -117,7 +117,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     private static GameState NewGameState(AlundraItemTables tables)
     {
         var state = new GameState();
-        AlundraPlayerManager.InitializeNewGameInventory(state, tables);
+        PlayerManager.InitializeNewGameInventory(state, tables);
         return state;
     }
 
@@ -151,7 +151,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     /// shape as <see cref="AlundraInventoryDirectorTests"/>'s own <c>OpenAndSettle</c>.</summary>
     private static void OpenMainAndSettle(GameState state)
     {
-        Tick(state, AlundraPadState.Start);
+        Tick(state, PadState.Start);
         for (var i = 0; i < 18; i++)
         {
             Tick(state, 0);
@@ -195,7 +195,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
 
         // Open the main inventory first (Start), settle its opening slide, exactly like D6's own flow; the gauge
         // hides (InitializeHudPosition at the opening).
-        RecordAndTick(AlundraPadState.Start);
+        RecordAndTick(PadState.Start);
         for (var i = 0; i < 18; i++)
         {
             RecordAndTick(0);
@@ -214,7 +214,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
 
         // T0 (main -> sub): R1 read, close armed, sound 5, post-process state 1. The gauge is NOT
         // recalled (plan §1.1 - no InitializeHudPositionBeforeHide on this branch).
-        RecordAndTick(AlundraPadState.R1);
+        RecordAndTick(PadState.R1);
         Assert.Equal(new[] { 5 }, sound.Requests);
         Assert.Equal(1, AlundraInventoryPostProcess.Instance.State);
         Assert.Equal(hudPhaseBeforeSwitch, AlundraHudDirector.Instance.Phase);
@@ -252,7 +252,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
 
         // Sub -> main: L1. Close armed, sound 5, post-process state 2.
         sound.Requests.Clear();
-        RecordAndTick(AlundraPadState.L1);
+        RecordAndTick(PadState.L1);
         Assert.Equal(new[] { 5 }, sound.Requests);
         Assert.Equal(2, AlundraInventoryPostProcess.Instance.State);
         sound.Requests.Clear();
@@ -299,7 +299,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         }
         Assert.True((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0);
 
-        Tick(state, AlundraPadState.Start);
+        Tick(state, PadState.Start);
         Assert.True((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0); // still, mid-slide.
 
         // The final close recalls the gauge (InitializeHudPositionBeforeHide, latch set) - the one call the switch
@@ -334,7 +334,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     {
         var moves = new (uint Button, int[] Table)[]
         {
-            (AlundraPadState.Right, NavRight), (AlundraPadState.Left, NavLeft), (AlundraPadState.Up, NavUp), (AlundraPadState.Down, NavDown),
+            (PadState.Right, NavRight), (PadState.Left, NavLeft), (PadState.Up, NavUp), (PadState.Down, NavDown),
         };
         var previous = new Dictionary<int, (int Position, uint Button)> { [from] = (-1, 0) };
         var queue = new Queue<int>();
@@ -423,10 +423,10 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
             Tick(state, 0); // release.
         }
 
-        AssertMove(AlundraPadState.Right, NavRight);
-        AssertMove(AlundraPadState.Left, NavLeft);
-        AssertMove(AlundraPadState.Up, NavUp);
-        AssertMove(AlundraPadState.Down, NavDown);
+        AssertMove(PadState.Right, NavRight);
+        AssertMove(PadState.Left, NavLeft);
+        AssertMove(PadState.Up, NavUp);
+        AssertMove(PadState.Down, NavDown);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -473,7 +473,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
             {
                 Assert.True(ids[i] != -1,
                     $"key item position {i} is empty: ids [{string.Join(",", ids)}], state {AlundraSubInventoryDirector.Instance.State}, "
-                    + $"count(33) {AlundraPlayerManager.GetNumberOfItem(state, 33)}, slot(33) {tables.ItemsProperties[33 * AlundraItemTables.ItemColumnCount]}");
+                    + $"count(33) {PlayerManager.GetNumberOfItem(state, 33)}, slot(33) {tables.ItemsProperties[33 * AlundraItemTables.ItemColumnCount]}");
                 filled.Add(ids[i]);
             }
             else
@@ -540,7 +540,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         // Walk to position 7 (armor/boots icons).
         while (AlundraSubInventoryDirector.Instance.SelectedPosition != 7)
         {
-            Tick(state, AlundraPadState.Right);
+            Tick(state, PadState.Right);
             Tick(state, 0);
         }
 
@@ -720,7 +720,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         AlundraInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, worldProxy.SoundPlayer);
         AlundraSubInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, worldProxy.SoundPlayer);
 
-        worldProxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Start };
+        worldProxy.GameState.LastPadState = new PadState { ButtonsHold = PadState.Start };
         worldProxy.Update(0.02f);
         worldProxy.GameState.LastPadState = default;
         for (var i = 0; i < 18; i++)
@@ -729,7 +729,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         }
         Assert.True(AlundraInventoryDirector.Instance.IsActive);
 
-        worldProxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.R1 };
+        worldProxy.GameState.LastPadState = new PadState { ButtonsHold = PadState.R1 };
         worldProxy.Update(0.02f);
         worldProxy.GameState.LastPadState = default;
 

@@ -186,7 +186,7 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
                         (s.GameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) == 0;
                 }
 
-                s.GameState.LastPadState = new AlundraPadState { ButtonsHold = button.HoldForThisFrame(director) };
+                s.GameState.LastPadState = new PadState { ButtonsHold = button.HoldForThisFrame(director) };
             });
 
             Assert.True(frozenHeld, "the NPC's pose, program pick and animation must all stay frozen while MenuOpen is posed.");

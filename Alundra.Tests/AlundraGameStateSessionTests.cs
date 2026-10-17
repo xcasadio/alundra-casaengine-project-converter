@@ -105,7 +105,7 @@ public sealed class AlundraGameStateSessionTests : IDisposable
         var state = GameState.Instance;
 
         // "World 1"'s last published pad snapshot (AlundraEntityScriptProxy.Update's own player branch).
-        var pad = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
+        var pad = new PadState { ButtonsJustPressed = PadState.Square };
         state.LastPadState = pad;
 
         state.InstallForMapEntry(); // "World 2"'s own map-entry install, before its first player Update.

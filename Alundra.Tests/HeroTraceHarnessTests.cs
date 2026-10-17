@@ -443,7 +443,7 @@ public class HeroTraceHarnessTests
         }
 
         uint pad = 0;
-        AlundraPadState PadProvider() => new() { ButtonsHold = pad, ButtonsJustPressed = 0 };
+        PadState PadProvider() => new() { ButtonsHold = pad, ButtonsJustPressed = 0 };
         controller.PadStateProviderForTests = PadProvider;
 
         var lines = new List<TraceLine>();
@@ -483,8 +483,8 @@ public class HeroTraceHarnessTests
             }
 
             pad = scenario == Scenario.Spawn && frame >= repositionFrameIndex
-                ? AlundraPadState.Right
-                : AlundraPadState.Left;
+                ? PadState.Right
+                : PadState.Left;
 
             world.Update(dt);
 

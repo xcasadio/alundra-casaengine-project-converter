@@ -19,10 +19,10 @@ namespace Alundra.Tests;
 /// </summary>
 public sealed class AlundraHeroJumpStatesTests
 {
-    private const uint Cross = AlundraPadState.Cross;
-    private const uint Square = AlundraPadState.Square;
-    private const uint Right = AlundraPadState.Right;
-    private const uint Left = AlundraPadState.Left;
+    private const uint Cross = PadState.Cross;
+    private const uint Square = PadState.Square;
+    private const uint Right = PadState.Right;
+    private const uint Left = PadState.Left;
 
     private const uint Idle = 0;
     private const uint Moving = 1;
@@ -41,10 +41,10 @@ public sealed class AlundraHeroJumpStatesTests
     private static AlundraEntityScriptProxy Hero(uint animation, int onGround = 1, uint direction = 0)
         => new() { TargetAnimationId = animation, TargetDirection = direction, IsOnGround = onGround };
 
-    private static AlundraPadState Pad(uint hold = 0, uint pressed = 0) => new() { ButtonsHold = hold, ButtonsJustPressed = pressed };
+    private static PadState Pad(uint hold = 0, uint pressed = 0) => new() { ButtonsHold = hold, ButtonsJustPressed = pressed };
 
-    private static void Move(AlundraEntityScriptProxy hero, AlundraPadState pad, GameState? state = null, IScriptHost? host = null)
-        => AlundraPlayerManager.MovePlayer(hero, in pad, state ?? new GameState(), host);
+    private static void Move(AlundraEntityScriptProxy hero, PadState pad, GameState? state = null, IScriptHost? host = null)
+        => PlayerManager.MovePlayer(hero, in pad, state ?? new GameState(), host);
 
     // -----------------------------------------------------------------------------------------
     // SJ-1 - MovePlayer alone, on the ground, without controller.
@@ -144,7 +144,7 @@ public sealed class AlundraHeroJumpStatesTests
         Move(hero, Pad(Cross, Cross), locked);
         Assert.Equal(Idle, hero.TargetAnimationId);
 
-        AlundraPlayerManager.SetDebugIgnoreControlLockOverrideForTests(true);
+        PlayerManager.SetDebugIgnoreControlLockOverrideForTests(true);
         try
         {
             var debug = Hero(Idle);
@@ -153,7 +153,7 @@ public sealed class AlundraHeroJumpStatesTests
         }
         finally
         {
-            AlundraPlayerManager.SetDebugIgnoreControlLockOverrideForTests(null);
+            PlayerManager.SetDebugIgnoreControlLockOverrideForTests(null);
         }
     }
 
@@ -222,7 +222,7 @@ public sealed class AlundraHeroJumpStatesTests
         // zeroes the counter of animation ends (+0xB0), and keeps the direction (no direction on the pad: the current one).
         var triangle = Hero(start, direction: 0x08);
         triangle.AnimCompleteCounter = 3;
-        Move(triangle, Pad(AlundraPadState.Triangle));
+        Move(triangle, Pad(PadState.Triangle));
         Assert.Equal(0x29u, triangle.TargetAnimationId);
         Assert.Equal(0, triangle.AnimCompleteCounter);
         Assert.Equal(0x08u, triangle.TargetDirection);
