@@ -27,7 +27,7 @@ public class AlundraEventProgramRunnerLogicEntityTests
     };
 
     private static AlundraEventProgramRunner NewRunner(EventProgramDocument document, IEntityWorldContext? world = null)
-        => new(document, new AlundraGameState(), world);
+        => new(document, new GameState(), world);
 
     /// <summary>A world with a settable list of spawned entities and a player - just what the searches read.</summary>
     private sealed class FakeWorld : IEntityWorldContext

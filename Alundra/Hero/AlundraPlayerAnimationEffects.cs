@@ -226,7 +226,7 @@ internal static class AlundraPlayerAnimationEffects
     /// <summary>
     /// The alarm of the low life, <c>0x800303DC-0x80030430</c> (E20.c2a T4; mode 0 only, the call is made from <see cref="Create"/> after the dispatches). Read again in the binary: the life of the HERO ENTITY
     /// (<c>0x80127D30 +0x14</c>, <see cref="AlundraEntityScriptProxy.Hp"/>) must not be 0 (<c>beqz</c>, <c>0x800303EC</c>) and the maximum (<c>+0x18</c>) must not be below five times the life
-    /// (<c>sll 2; addu</c>, <c>slt</c>, <c>0x800303F0-0x80030400</c>, signed 32-bit). When both hold, the counter <c>[0x80098F2C]</c> (<see cref="AlundraGameState.LowHpAlarmCounter"/>; the address
+    /// (<c>sll 2; addu</c>, <c>slt</c>, <c>0x800303F0-0x80030400</c>, signed 32-bit). When both hold, the counter <c>[0x80098F2C]</c> (<see cref="GameState.LowHpAlarmCounter"/>; the address
     /// <c>0x800A8F2C</c> of the plan is a slip: <c>lui 0x800A</c> with <c>-0x70D4</c> is <c>0x80098F2C</c>) is decremented and stored (<c>0x80030414-0x8003041C</c>); when the new value is -1 the sound
     /// <see cref="LowHpAlarmSfx"/> plays and the counter is reloaded with <see cref="LowHpAlarmReload"/> (<c>0x80030420-0x8003042C</c>), so the sound repeats every 46 ticks. Otherwise (life 0, or the life above a fifth of the
     /// maximum) nothing is read or written: the counter keeps its value and resumes where it was. The counter is a global that starts at 0 and nothing else writes (a scan of the image finds three

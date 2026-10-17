@@ -476,7 +476,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
         Assert.Equal(2, service.QuadCount);
 
         EmptyTheService(service);
-        proxy.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.MenuOpen | AlundraGameState.PlayerControlBits.Unused40;
+        proxy.GameState.PlayerControlFlags = GameState.PlayerControlBits.MenuOpen | GameState.PlayerControlBits.Unused40;
         proxy.Update(0.02f);
         proxy.GameState.PlayerControlFlags = 0;
 

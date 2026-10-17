@@ -43,8 +43,8 @@ public sealed class AlundraHeroJumpStatesTests
 
     private static AlundraPadState Pad(uint hold = 0, uint pressed = 0) => new() { ButtonsHold = hold, ButtonsJustPressed = pressed };
 
-    private static void Move(AlundraEntityScriptProxy hero, AlundraPadState pad, AlundraGameState? state = null, IScriptHost? host = null)
-        => AlundraPlayerManager.MovePlayer(hero, in pad, state ?? new AlundraGameState(), host);
+    private static void Move(AlundraEntityScriptProxy hero, AlundraPadState pad, GameState? state = null, IScriptHost? host = null)
+        => AlundraPlayerManager.MovePlayer(hero, in pad, state ?? new GameState(), host);
 
     // -----------------------------------------------------------------------------------------
     // SJ-1 - MovePlayer alone, on the ground, without controller.
@@ -139,7 +139,7 @@ public sealed class AlundraHeroJumpStatesTests
     [Fact]
     public void SJ1f_AControlLockedHero_DoesNotJump_UnlessTheDebugSwitchIsOn()
     {
-        var locked = new AlundraGameState { PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked };
+        var locked = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
         var hero = Hero(Idle);
         Move(hero, Pad(Cross, Cross), locked);
         Assert.Equal(Idle, hero.TargetAnimationId);
@@ -273,7 +273,7 @@ public sealed class AlundraHeroJumpStatesTests
     public void SJ8a_TheCrossWhileAMenuIsOpen_DoesNotJump_AndTheEdgeIsNotKept()
     {
         var rig = FreeRig();
-        rig.Host.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.MenuOpen;
+        rig.Host.GameState.PlayerControlFlags = GameState.PlayerControlBits.MenuOpen;
         rig.Step(Cross, Cross);
         Assert.Equal(Idle, rig.Hero.CurrentAnimationId);
         Assert.Equal(0, rig.Hero.PosZ);
@@ -294,7 +294,7 @@ public sealed class AlundraHeroJumpStatesTests
     public void SJ8b_TheCrossDuringAMessageBox_DoesNotJump_TheCrossAfterItDoes()
     {
         var rig = FreeRig();
-        rig.Host.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.MessageBox;
+        rig.Host.GameState.PlayerControlFlags = GameState.PlayerControlBits.MessageBox;
         rig.Step(Cross, Cross);
         Assert.Equal(Idle, rig.Hero.CurrentAnimationId);
         Assert.Equal(0, rig.Hero.PosZ);
@@ -405,7 +405,7 @@ public sealed class AlundraHeroJumpStatesTests
     public void AScriptedJumpReleasedInTheAir_ComesBackToTheGroundAnimation_OnceTheHeroTouchesTheGround()
     {
         var rig = FreeRig();
-        rig.Host.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked;
+        rig.Host.GameState.PlayerControlFlags = GameState.PlayerControlBits.ControlLocked;
         rig.Hero.TargetAnimationId = 43;
         for (var frame = 1; frame <= 5; frame++)
         {

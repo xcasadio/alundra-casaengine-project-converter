@@ -56,7 +56,7 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         Director.AdvanceProviderForTests = null;
         AlundraDialogueCapturePresenter.ResetForTests();
         AlundraFont3Advances.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -82,7 +82,7 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         public readonly FakeTextBoxScreen Screen = new();
         public readonly AlundraTextBoxViewModel ViewModel = new();
         public readonly AlundraTextBoxPresenter Presenter;
-        public readonly AlundraGameState State = new();
+        public readonly GameState State = new();
 
         public Rig(IDialoguePresenter? presenter = null)
         {
@@ -262,7 +262,7 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
 
         public ChoiceRig()
         {
-            Director.AttachToWorld(new DialogueService(), new AlundraGameState());
+            Director.AttachToWorld(new DialogueService(), new GameState());
             Director.InstallForMapEntry();
             Presenter = new AlundraChoicePresenter(Director, ViewModel, Screen, UiView);
         }

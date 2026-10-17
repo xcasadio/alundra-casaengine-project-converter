@@ -110,7 +110,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
     private readonly EventProgramDocument? _document;
     private readonly byte[]? _codes;
-    private readonly AlundraGameState _gameState;
+    private readonly GameState _gameState;
     private readonly IEntityWorldContext _worldContext;
 
     private readonly HashSet<int> _loggedUnknownOpcodes = new();
@@ -140,7 +140,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// <summary>E20.c1b K4 test seam: the state shared by the programs A, D, E and F (the binary's <c>0x8013D9E8</c>, whose <see cref="EventProgramState.Result"/> is <c>0x8013DA14</c>).</summary>
     internal EventProgramState SharedProgramStateForTests => _slotAScratchState;
 
-    public AlundraEventProgramRunner(EventProgramDocument? document, AlundraGameState gameState, IEntityWorldContext? worldContext = null)
+    public AlundraEventProgramRunner(EventProgramDocument? document, GameState gameState, IEntityWorldContext? worldContext = null)
     {
         _document = document;
         _codes = document?.CodesAsBytes();
@@ -629,11 +629,11 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // gate reads it, at the same site the original tests it (PlayerManager.cs:38).
                        // E6 decision E6-1 deliberately declines an engine-level input cut - see
                        // AlundraGameState.PlayerControlFlags' own doc.
-                _gameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ControlLocked;
+                _gameState.PlayerControlFlags |= GameState.PlayerControlBits.ControlLocked;
                 return 1;
 
             case 0x11: // Player gain control - Script_17_011 (EntityEventHandlers.cs:686-690).
-                _gameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.ControlLocked;
+                _gameState.PlayerControlFlags &= ~GameState.PlayerControlBits.ControlLocked;
                 return 1;
 
             case 0xC0: // Set equipped weapon - Script_192_0C0 @ 0x80041CDC (E20.f0 T1), PER THE BINARY: SetPlayerWeaponId(v1 + 1) (0x8004E484, the operand is a byte so
@@ -650,7 +650,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                     LogDegradedOpcodeOnce(0xC0, "SetEquippedWeapon", "item tables");
                 }
 
-                _gameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ForcedWeapon;
+                _gameState.PlayerControlFlags |= GameState.PlayerControlBits.ForcedWeapon;
                 return 2;
 
             case 0xBC: // Increase player HpMax - Script_188_0BC @ 0x80041C00 (E20.c2a T3), PER THE BINARY: the hero entity's HpMax (+0x18) += the operand byte v1, capped at 0x32; the life is not touched.
@@ -664,7 +664,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return 1;
 
             case 0xC1: // Clear the scripted weapon lock - Script_193_0C1 @ 0x80041D18 (E20.f0 T1): PlayerControlFlags &= ~0x80. Size 1.
-                _gameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.ForcedWeapon;
+                _gameState.PlayerControlFlags &= ~GameState.PlayerControlBits.ForcedWeapon;
                 return 1;
 
             case 0x16: // High gravity - Script_22_016
@@ -2213,9 +2213,9 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// <c>flag</c> markers of each line are set at its display), never what it would have displayed.</summary>
     private sealed class NullDialoguePresenter : IDialoguePresenter
     {
-        private readonly AlundraGameState _gameState;
+        private readonly GameState _gameState;
 
-        public NullDialoguePresenter(AlundraGameState gameState) => _gameState = gameState;
+        public NullDialoguePresenter(GameState gameState) => _gameState = gameState;
 
         public DialogueRuntimeState State => DialogueRuntimeState.Closed;
         public DialogueLine CurrentLine => DialogueLine.Empty;
@@ -3342,7 +3342,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     private readonly HashSet<int> _loggedOutOfRangeMapIndexes = new();
 
     /// <summary>Script_SetSaveMapIdToInternalMapIndex_038 (0x38) - see the 0x38 case's own doc on
-    /// <see cref="Dispatch"/>. <see cref="AlundraGameState.MapIdToInternalMapIndexTable"/> is sized 500
+    /// <see cref="Dispatch"/>. <see cref="GameState.MapIdToInternalMapIndexTable"/> is sized 500
     /// (the original's own <c>ushort[500]</c>, SaveData.cs:18) but the packed index <c>v2&lt;&lt;8|v1</c>
     /// spans a full byte pair (0..65535) - out of range on real map-389 data (indices observed stay under
     /// 60), guarded here (logged once per offending index) rather than trusting every possible operand

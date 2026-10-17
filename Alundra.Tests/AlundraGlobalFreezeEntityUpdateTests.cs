@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 /// T2 (docs/plan-transitions-carte.md §1.5/§3, "Gel global du monde") - ORACLE 1 (headless), on the
 /// REAL map 389 export, driven by the same production call site and montage as
 /// <see cref="AlundraDialogueOpcodesProductionTests"/> (a real sailor's own F(Interact) program opens a
-/// box with <see cref="AlundraGameState.PlayerControlBits.MenuOpen"/> posed - the SailorThirteen mono-line
+/// box with <see cref="GameState.PlayerControlBits.MenuOpen"/> posed - the SailorThirteen mono-line
 /// program precedent, cheap and deterministic, unlike the full 1704-frame flag chain SailorTwelve needs).
 ///
 /// No assertion on the player, the camera or rendering anywhere in this file - <c>HeadlessIntroSimulation</c>
@@ -124,7 +124,7 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
                     // with MenuOpen posed by REAL bytes, not a synthetic Open() call.
                     s.Runner.RunScript(sailorThirteen!, ScriptHelper.ProgramFInteract);
                     Assert.True(director.IsOpen);
-                    Assert.NotEqual(0u, s.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+                    Assert.NotEqual(0u, s.GameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
 
                     // Seed a deterministic, script-independent walk (AlundraScriptedMotion.cs:233-241's own
                     // Controller-null branch: PosX/PosY += FinalForceX/Y every tick once Force is already
@@ -183,7 +183,7 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
                 if (s.Frame is >= 40 and < 230 && !closedOnButton && !director.IsOpen)
                 {
                     closedOnButton =
-                        (s.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) == 0;
+                        (s.GameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) == 0;
                 }
 
                 s.GameState.LastPadState = new AlundraPadState { ButtonsHold = button.HoldForThisFrame(director) };
@@ -205,7 +205,7 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
     /// <see cref="AlundraEntityScriptProxy.Controller"/> - the only shape <see cref="FrameSyncPasses.SyncTransform"/>
     /// actually writes to (AlundraFrameSyncPasses.cs:168-183: it is a no-op whenever a controller owns the
     /// root) - must keep publishing the entity's CURRENT logical position every frame, even while
-    /// <see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/> is posed. Deliberately headless
+    /// <see cref="GameState.PlayerControlBits.GameplayBlockedMask"/> is posed. Deliberately headless
     /// and minimal (no <see cref="HeadlessIntroSimulation"/>, no map data needed for this specific
     /// mutation) - still <see cref="AlundraEntityScriptProxy.Update"/> at its real call site, so still
     /// squarely ORACLE 1: no player/camera/render assertion, real production code only.
@@ -245,7 +245,7 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
         // wrote a new pose the instant MenuOpen got posed"). SyncTransform is "dehors" (§1.5): it must
         // still republish the CURRENT PosX/Y/Z, unconditionally of the gate, even though every OTHER pass
         // this same Update call would otherwise drive is frozen.
-        host.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        host.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
         proxy.PosX = 500 << 16;
         proxy.PosY = 700 << 16;
         proxy.Update(1f / 50f);
@@ -270,7 +270,7 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
     {
         public IEventProgramRunner Runner { get; } = new NoOpEventProgramRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public System.Collections.Generic.IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; }
             = System.Array.Empty<AlundraEntityScriptProxy>();

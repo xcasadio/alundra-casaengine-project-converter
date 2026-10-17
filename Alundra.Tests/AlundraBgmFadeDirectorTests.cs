@@ -330,7 +330,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
             EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = codes,
         };
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), context);
+        var runner = new AlundraEventProgramRunner(document, new GameState(), context);
         var entity = new AlundraEntityScriptProxy();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
@@ -494,7 +494,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
             EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = codes,
         };
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), context);
+        var runner = new AlundraEventProgramRunner(document, new GameState(), context);
         entity = new AlundraEntityScriptProxy();
         state = new EventProgramState { Codes = document.CodesAsBytes() };
         return runner;

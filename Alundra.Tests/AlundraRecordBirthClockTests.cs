@@ -302,7 +302,7 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
             var worldDir = Directory.GetDirectories(Path.Combine(root, "Maps")).SelectMany(Directory.GetDirectories)
                 .First(d => Path.GetFileName(d).EndsWith("-36", StringComparison.Ordinal));
             using var arc = new ArcRun(new ArcSpec("E20e0a4-a4-36", Path.GetFileName(Path.GetDirectoryName(worldDir)!), Path.GetFileName(worldDir), Array.Empty<int>(), 8, 6, 1, 100, RealController: true, Prefabs: true,
-                Arrival: new ArcArrival((8 * 24 + 12) << 16, (6 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0)));
+                Arrival: new ArcArrival((8 * 24 + 12) << 16, (6 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0)));
             var born = Op2D(arc, 3);
             Assert.NotNull(born);
             Assert.Equal(313, born!.SpriteType);

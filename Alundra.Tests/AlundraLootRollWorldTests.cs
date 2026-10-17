@@ -63,7 +63,7 @@ public sealed partial class AlundraLootRollWorldTests : IDisposable
         [18] = Arrival(60555264, 26738688, 0, 16),                                                         // 178, TH4-A18
     };
 
-    private static ArcArrival Arrival(int x, int y, int z, uint direction) => new(x, y, z, AlundraGameState.ResetAnimationId, direction);
+    private static ArcArrival Arrival(int x, int y, int z, uint direction) => new(x, y, z, GameState.ResetAnimationId, direction);
 
     private static ArcSpec PairSpec(int index, LoadPair pair)
         => new($"E20e0b2-V8-{index}-{pair.Map}", pair.Zone, pair.World, Array.Empty<int>(), 0, 0, 0, 10, RealController: true, Prefabs: true, Arrival: Arrivals.GetValueOrDefault(index));
@@ -92,7 +92,7 @@ public sealed partial class AlundraLootRollWorldTests : IDisposable
         for (var i = 0; i < pairs.Count; i++)
         {
             // The tile that the load loop reads: the New Game tile without arrival, else the arrival record's ((PosX >> 16) / 24, (PosY >> 16) / 16, AdoptPlayerPawn).
-            var (x, y) = Arrivals.TryGetValue(i, out var a) ? ((a.PosX >> 16) / 24, (a.PosY >> 16) / 16) : (AlundraGameState.CameraTileX, AlundraGameState.CameraTileY);
+            var (x, y) = Arrivals.TryGetValue(i, out var a) ? ((a.PosX >> 16) / 24, (a.PosY >> 16) / 16) : (GameState.CameraTileX, GameState.CameraTileY);
             Assert.True(pairs[i].TileX == x && pairs[i].TileY == y, $"pair {i} (map {pairs[i].Map}): oracle tile ({pairs[i].TileX}, {pairs[i].TileY}), the arc's ({x}, {y})");
         }
     }

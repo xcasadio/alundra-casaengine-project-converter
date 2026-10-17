@@ -29,7 +29,7 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
     public AlundraGameplayFreezeTests()
     {
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -38,7 +38,7 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
     public void Dispose()
     {
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -221,13 +221,13 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
         worldProxy.Update(0.02f);
         Assert.False(proxy.FreezeState.IsFrozen);
 
-        worldProxy.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        worldProxy.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
         worldProxy.Update(0.02f);
         Assert.True(proxy.FreezeState.IsFrozen);
         Assert.Equal(CharacterControlMode.Disabled, controller.ControlMode);
         Assert.True(sprite.IsPlaybackPaused);
 
-        worldProxy.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+        worldProxy.GameState.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
         worldProxy.Update(0.02f);
         Assert.False(proxy.FreezeState.IsFrozen);
         Assert.Equal(CharacterControlMode.Player, controller.ControlMode);

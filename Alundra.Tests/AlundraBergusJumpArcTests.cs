@@ -23,7 +23,7 @@ public sealed class AlundraBergusJumpArcTests
     private static ArcSpec A12Spec => new(
         "A12", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 2734,
         RealController: true, Prefabs: true,
-        Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0));
+        Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0));
 
     /// <summary>The state of Bergus (the entity of the record) at the end of every frame, from the first frame the program is seen.</summary>
     private sealed record Sample(int Frame, int PosZ, int ForceZ, int IsOnGround, int CollidedWithEntityZ, int IsZForceApplied);

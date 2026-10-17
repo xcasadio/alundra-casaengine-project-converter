@@ -51,7 +51,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
 
     public AlundraSaveGameValidationTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
 
         _projectPath = Path.Combine(Path.GetTempPath(), "AlundraSaveGameValidationTests_" + Guid.NewGuid());
         Directory.CreateDirectory(_projectPath);
@@ -84,7 +84,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
 
     public void Dispose()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
 
         if (Directory.Exists(_projectPath))
         {
@@ -209,7 +209,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
 
     [Theory]
     [InlineData("gameTime", 0L)]
-    [InlineData("gameTime", (long)AlundraGameState.GameTimeMax)]
+    [InlineData("gameTime", (long)GameState.GameTimeMax)]
     [InlineData("cameraTileX", 0L)]
     [InlineData("cameraTileX", 51L)]
     [InlineData("cameraTileY", 0L)]
@@ -248,7 +248,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
     // ---- ... and one past each end refused, naming the field ------------------------------------------
 
     [Theory]
-    [InlineData("gameTime", (long)AlundraGameState.GameTimeMax + 1)]
+    [InlineData("gameTime", (long)GameState.GameTimeMax + 1)]
     [InlineData("gameTime", (long)uint.MaxValue)]
     [InlineData("cameraTileX", 52L)]
     [InlineData("cameraTileX", -1L)]
@@ -599,7 +599,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
     [Fact]
     public void InvalidLastCheckedField_IsRefused_AndTheLiveStateIsUnchanged()
     {
-        var live = AlundraGameState.Instance;
+        var live = GameState.Instance;
         live.GameFlags[3] = 0xABCD;
         live.GameFlags[700] = 0x1;
         live.TemporaryFlags[2] = 0x55;
@@ -608,7 +608,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
         live.PlayerStats.Hp = 7;
         live.PlayerStats.Money = 1234;
         live.PlayerStats.Falcon = 3;
-        live.PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked;
+        live.PlayerControlFlags = GameState.PlayerControlBits.ControlLocked;
         live.GameTime = 4242;
         live.DeathRetryCount = 2;
         var before = Snapshot(live);
@@ -646,7 +646,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
 
     /// <summary>Every array, the nine stats, the control flags, the game time and the retry counter, as one
     /// comparable string.</summary>
-    private static string Snapshot(AlundraGameState state)
+    private static string Snapshot(GameState state)
     {
         var stats = state.PlayerStats;
         return string.Join(

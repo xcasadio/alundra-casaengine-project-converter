@@ -40,7 +40,7 @@ public sealed class AlundraHeroRunTests : IDisposable
 
     public AlundraHeroRunTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -48,7 +48,7 @@ public sealed class AlundraHeroRunTests : IDisposable
     {
         AlundraNativeEffects.CreatedForTests = null;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 

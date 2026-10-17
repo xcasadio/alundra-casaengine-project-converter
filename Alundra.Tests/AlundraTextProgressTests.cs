@@ -9,7 +9,7 @@ namespace Alundra.Tests;
 /// <c>UpdateNumberOfFalcon</c> (0x8004e738) and <c>UpdatePlayerProgressState</c> (0x8004754c), per the
 /// binary facts of docs/plan-e15-yarn.md §5.7 (T2, 2026-09-28), authoritative over the decompilation.
 /// Each test cites the exact §5.7 fact it checks. Instances are built directly (never through
-/// <see cref="AlundraGameState.Instance"/>), same pattern as <c>AlundraPlayerManagerTests</c>, so tests
+/// <see cref="GameState.Instance"/>), same pattern as <c>AlundraPlayerManagerTests</c>, so tests
 /// never leak state into each other.
 /// </summary>
 public class AlundraTextProgressTests
@@ -21,7 +21,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void TextCategoryIndex_InitialValue_IsZero()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
 
         Assert.Equal(0, gameState.TextCategoryIndex);
     }
@@ -29,7 +29,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void GameVariables_InitialValues_AreAllZero()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
 
         Assert.Equal(new[] { 0, 0, 0, 0 }, gameState.GameVariables);
     }
@@ -60,7 +60,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void UpdateNumberOfFalcon_SumsFromTwoPositives()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.Falcon = 5;
         gameState.PlayerStats.FalconTemp = 7;
 
@@ -72,7 +72,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void UpdateNumberOfFalcon_ResetsFalconTempToZero()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.Falcon = 5;
         gameState.PlayerStats.FalconTemp = 7;
 
@@ -85,7 +85,7 @@ public class AlundraTextProgressTests
     public void UpdateNumberOfFalcon_CapsAtHexThirtyTwo()
     {
         // 0x33 (=51) -> clamped to 0x32 (=50): "0x33 -> 0x32" (§5.7, plafond 0x32 si Falcon >= 0x33).
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.Falcon = 0x33;
         gameState.PlayerStats.FalconTemp = 0;
 
@@ -98,7 +98,7 @@ public class AlundraTextProgressTests
     public void UpdateNumberOfFalcon_ExactlyHexThirtyTwo_StaysUnclamped()
     {
         // "0x32 stays" (§5.7): the clamp is `> 0x32`, never touching exactly 0x32.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.Falcon = 0x32;
         gameState.PlayerStats.FalconTemp = 0;
 
@@ -112,7 +112,7 @@ public class AlundraTextProgressTests
     {
         // §5.7: "Falcon += FalconTemp sur 16 bits" - a short sum that overflows wraps like the
         // original's lhu/addu/sh, before the 0x32 clamp is even reached in the source order.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.Falcon = short.MaxValue;
         gameState.PlayerStats.FalconTemp = 2;
 
@@ -126,7 +126,7 @@ public class AlundraTextProgressTests
     public void UpdateNumberOfFalcon_Clears0x400BitOfFlags0x2d()
     {
         // §5.7: "GameFlags[0x2d] &= 0xfffffbff" unconditionally.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2d] = 0xffffffff;
 
         AlundraTextProgress.UpdateNumberOfFalcon(gameState);
@@ -145,7 +145,7 @@ public class AlundraTextProgressTests
         // §5.7: "le premier test est le bit de signe de GameFlags[0x2c] (bgez @ 0x800475a8)" - the
         // decompilation's `GameFlags[0x2c] < 0` on a uint is always false and makes category 7
         // unreachable; §5.7 overrides it: the binary tests bit 31 directly.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x80000000;
         gameState.PlayerStats.Falcon = 0;
 
@@ -159,7 +159,7 @@ public class AlundraTextProgressTests
     public void UpdatePlayerProgressState_SignBitWithLowerBits_SignBitWins()
     {
         // §5.7: the sign-bit test runs first, so it wins over every lower category bit also set.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x80000000 | 0x40000000 | 0x2000000;
         gameState.PlayerStats.Falcon = 0;
 
@@ -171,7 +171,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void UpdatePlayerProgressState_Bit0x40000000_SelectsCategorySixAndBit0x80()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x40000000;
         gameState.PlayerStats.Falcon = 0;
 
@@ -184,7 +184,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void UpdatePlayerProgressState_Bit0x20000000_SelectsCategoryFiveAndBit0x40()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x20000000;
         gameState.PlayerStats.Falcon = 0;
 
@@ -197,7 +197,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void UpdatePlayerProgressState_Bit0x10000000_SelectsCategoryFourAndBit0x20()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x10000000;
         gameState.PlayerStats.Falcon = 0;
 
@@ -210,7 +210,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void UpdatePlayerProgressState_Bit0x8000000_SelectsCategoryThreeAndBit0x10()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x8000000;
         gameState.PlayerStats.Falcon = 0;
 
@@ -223,7 +223,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void UpdatePlayerProgressState_Bit0x4000000_SelectsCategoryTwoAndBit0x08()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x4000000;
         gameState.PlayerStats.Falcon = 0;
 
@@ -236,7 +236,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void UpdatePlayerProgressState_Bit0x2000000_SelectsCategoryOneAndBit0x04()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x2000000;
         gameState.PlayerStats.Falcon = 0;
 
@@ -249,7 +249,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void UpdatePlayerProgressState_NoBitSet_SelectsCategoryZeroAndBit0x02()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0;
         gameState.PlayerStats.Falcon = 0;
 
@@ -267,7 +267,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void UpdatePlayerProgressState_MaskKeepsBitsOutside0x1FE()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0; // category 0, bit 0x2
         gameState.GameFlags[0x2d] = 0x400 | 0x1 | 0x200; // outside the 0x1fe mask
         gameState.PlayerStats.Falcon = 100; // above every threshold -> sets 0x800 too
@@ -282,7 +282,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void UpdatePlayerProgressState_ClearsThePreviousCategoryBit()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2d] = 0x100; // stale category-7 bit from a previous call
         gameState.GameFlags[0x2c] = 0; // now selects category 0 (bit 0x2)
         gameState.PlayerStats.Falcon = 0;
@@ -300,7 +300,7 @@ public class AlundraTextProgressTests
     public void UpdatePlayerProgressState_FalconEqualsThreshold_SetsBit0x800()
     {
         // Category 0's threshold is 15 (§5.7). Equal is NOT strictly below -> 0x800 set.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0;
         gameState.PlayerStats.Falcon = 15;
 
@@ -312,7 +312,7 @@ public class AlundraTextProgressTests
     [Fact]
     public void UpdatePlayerProgressState_FalconOneBelowThreshold_Clears0x800()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0;
         gameState.GameFlags[0x2d] = 0x800; // pre-set, must be cleared
         gameState.PlayerStats.Falcon = 14;
@@ -339,7 +339,7 @@ public class AlundraTextProgressTests
     {
         // §5.7: the branches are tested from the highest bit down, so 0x40000000 (category 6) must win
         // over 0x2000000 (category 1) also being set.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x40000000 | 0x2000000;
         gameState.PlayerStats.Falcon = 0;
 
@@ -354,7 +354,7 @@ public class AlundraTextProgressTests
     {
         // §5.7: the mask keeps everything outside 0x1fe, but every bit INSIDE it (0x1fe) is replaced by
         // exactly the one new category bit - none of the other seven should survive even if pre-set.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2d] = 0x1fe;
         gameState.GameFlags[0x2c] = 0x2000000; // category 1, bit 0x04
         gameState.PlayerStats.Falcon = 0;
@@ -369,7 +369,7 @@ public class AlundraTextProgressTests
     {
         // §5.7: the threshold comparison is signed - Falcon = -1 (short, sign-extended to int) must
         // compare below every positive threshold, not as a huge unsigned value that would set the bit.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0; // category 0, threshold 15
         gameState.GameFlags[0x2d] = 0x800; // pre-set, must be cleared
         gameState.PlayerStats.Falcon = -1;

@@ -25,7 +25,7 @@ namespace Alundra.Tests;
 /// <see cref="AlundraSubInventoryDirector"/>, <see cref="AlundraInventoryDirector"/> and
 /// <see cref="AlundraInventoryPostProcess"/> together, the way <see cref="AlundraInventoryDirectorTests"/>
 /// drives the main inventory alone - a tick is <c>state.TickPad.Update(hold)</c> then each director's own
-/// <c>Tick</c>, THEN the post-process (plan §1.2's own clock), isolated <see cref="AlundraGameState"/>
+/// <c>Tick</c>, THEN the post-process (plan §1.2's own clock), isolated <see cref="GameState"/>
 /// instances for every test but the last (which drives the real <see cref="AlundraWorldProxy"/>).
 /// </summary>
 public sealed class AlundraSubInventoryDirectorTests : IDisposable
@@ -39,7 +39,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         AlundraInventoryPostProcess.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -54,7 +54,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         AlundraInventoryPostProcess.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -114,14 +114,14 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     private static DialogueAsset LoadRealEtcDialogueAsset(string projectPath)
         => DialogueTestAssets.LoadFromDisk(Path.Combine(projectPath, "Dialogues", "Etc.dialogue"));
 
-    private static AlundraGameState NewGameState(AlundraItemTables tables)
+    private static GameState NewGameState(AlundraItemTables tables)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         AlundraPlayerManager.InitializeNewGameInventory(state, tables);
         return state;
     }
 
-    private static void AttachAll(AlundraGameState state, AlundraItemTables tables, IAlundraSoundPlayer? sound)
+    private static void AttachAll(GameState state, AlundraItemTables tables, IAlundraSoundPlayer? sound)
     {
         AlundraInventoryDirector.Instance.AttachToWorld(state, tables, sound);
         AlundraSubInventoryDirector.Instance.AttachToWorld(state, tables, sound);
@@ -129,7 +129,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
 
     /// <summary>One logic tick, both directors then the post-process - <see cref="AlundraWorldProxy"/>'s
     /// inventory block order, at the end of each tick of its loop of the passes (E13.d SI3, E19.u).</summary>
-    private static void Tick(AlundraGameState state, uint hold)
+    private static void Tick(GameState state, uint hold)
     {
         state.TickPad.Update(hold);
         AlundraInventoryDirector.Instance.Tick(null);
@@ -137,7 +137,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         AlundraInventoryPostProcess.Instance.Run();
     }
 
-    private static void TickUntil(AlundraGameState state, Func<bool> predicate, int maxTicks = 60)
+    private static void TickUntil(GameState state, Func<bool> predicate, int maxTicks = 60)
     {
         for (var i = 0; i < maxTicks && !predicate(); i++)
         {
@@ -149,7 +149,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
 
     /// <summary>Opens the MAIN inventory (one trigger tick) and settles its 18-call opening slide - same
     /// shape as <see cref="AlundraInventoryDirectorTests"/>'s own <c>OpenAndSettle</c>.</summary>
-    private static void OpenMainAndSettle(AlundraGameState state)
+    private static void OpenMainAndSettle(GameState state)
     {
         Tick(state, AlundraPadState.Start);
         for (var i = 0; i < 18; i++)
@@ -189,7 +189,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         {
             Tick(state, hold);
             AlundraHudDirector.Instance.Tick();
-            menuOpenEveryTick.Add((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+            menuOpenEveryTick.Add((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0);
             hudPhaseEveryTick.Add(AlundraHudDirector.Instance.Phase);
         }
 
@@ -297,10 +297,10 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         {
             Tick(state, 0);
         }
-        Assert.True((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+        Assert.True((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0);
 
         Tick(state, AlundraPadState.Start);
-        Assert.True((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0); // still, mid-slide.
+        Assert.True((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0); // still, mid-slide.
 
         // The final close recalls the gauge (InitializeHudPositionBeforeHide, latch set) - the one call the switch
         // itself never makes.
@@ -316,7 +316,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         }
 
         Assert.False(AlundraInventoryDirector.Instance.IsActive);
-        Assert.False((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+        Assert.False((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -362,7 +362,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         return path;
     }
 
-    private void OpenSubInventoryDirectly(AlundraGameState state)
+    private void OpenSubInventoryDirectly(GameState state)
     {
         // Bypasses the main inventory's own switch (already covered above) - opens the sub-inventory the
         // same way the post-process does, for tests whose own subject is the sub-inventory alone.
@@ -439,7 +439,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     // Gives one of each item outright (the count lives at NumberOfItems[id * 2 + 1], the same field the tests
     // of AlundraItemInventoryTests write): AddOneItemIfUnlocked would refuse every key item, none of them
     // carries the new-game unlock bit.
-    private static void Own(AlundraGameState state, AlundraItemTables tables, params int[] itemIds)
+    private static void Own(GameState state, AlundraItemTables tables, params int[] itemIds)
     {
         _ = tables;
         foreach (var itemId in itemIds)
@@ -682,7 +682,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         }
 
         Assert.False(AlundraSubInventoryDirector.Instance.IsActive);
-        Assert.False((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+        Assert.False((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0);
     }
 
     [Theory]
@@ -701,7 +701,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
 
         Assert.Equal(new[] { 5 }, sound.Requests);
         Assert.Equal(2, AlundraInventoryPostProcess.Instance.State);
-        Assert.True((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+        Assert.True((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0);
     }
 
     // -----------------------------------------------------------------------------------------

@@ -25,7 +25,7 @@ public class AlundraZWaitOpcodesTests
 
     private static (AlundraEventProgramRunner Runner, System.Collections.Generic.List<EventTraceRecord> Trace) NewRunner(EventProgramDocument document)
     {
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), null);
+        var runner = new AlundraEventProgramRunner(document, new GameState(), null);
         var trace = new System.Collections.Generic.List<EventTraceRecord>();
         runner.TraceSink = trace.Add;
         return (runner, trace);

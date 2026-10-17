@@ -346,7 +346,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
         finally
         {
             director.ResetForTests();
-            AlundraGameState.Instance.ResetForTests();
+            GameState.Instance.ResetForTests();
         }
     }
 

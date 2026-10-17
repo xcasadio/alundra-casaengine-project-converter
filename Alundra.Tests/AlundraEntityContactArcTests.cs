@@ -41,7 +41,7 @@ public sealed class AlundraEntityContactArcTests
     private static ArcSpec A19Spec => new(
         "T-A19", "Inoa", "Inoa (inner)-185", new[] { 204, 120, 121, 122, 123 }, 0, 0, 0, 4031, // E19.f2a: 1700 before; the simulated end is 3359 (annex V-123)
         RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(60555264, 24641536, 0, AlundraGameState.ResetAnimationId, 16));
+        Arrival: new ArcArrival(60555264, 24641536, 0, GameState.ResetAnimationId, 16));
 
     /// <summary>
     /// T-A19 (G204, G120 to G123): the hero arrives by portal 183.6 and is placed at (132, 296, 16), the tile (5, 18) of the zone of B[1]. B[1]
@@ -376,7 +376,7 @@ public sealed class AlundraEntityContactArcTests
 
     private static ArcSpec N3Spec => new(
         "TN-3", "Lake Shrine", "Lake Shrine (inner)-346", Array.Empty<int>(), 0, 0, 0, 1200, RealController: true, Prefabs: true,
-        Arrival: new ArcArrival((6 * 24 + 12) << 16, (50 * 16 + 8) << 16, 2 << 20, AlundraGameState.ResetAnimationId, 16));
+        Arrival: new ArcArrival((6 * 24 + 12) << 16, (50 * 16 + 8) << 16, 2 << 20, GameState.ResetAnimationId, 16));
 
     /// <summary>
     /// TN-3 (G1022 off): the hero arrives in the zone (tiles x 0 to 15, y 40 to 59), which spawns the platform (record 7, the large staircase trap). Its C program
@@ -429,32 +429,32 @@ public sealed class AlundraEntityContactArcTests
     private static ArcSpec ArrivalSpec(string name) => name switch
     {
         "A20" => new ArcSpec("TH4-A20", "Inoa", "Inoa-162", Array.Empty<int>(), 0, 0, 0, 10, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival(47972352, 27787264, 0, AlundraGameState.ResetAnimationId, 0)),
+            Arrival: new ArcArrival(47972352, 27787264, 0, GameState.ResetAnimationId, 0)),
         "A10" => new ArcSpec("TH4-A10", "Inoa", "Inoa (inner)-165", Array.Empty<int>(), 0, 0, 0, 10, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival(19660800, 23592960, 0, AlundraGameState.ResetAnimationId, 16)),
+            Arrival: new ArcArrival(19660800, 23592960, 0, GameState.ResetAnimationId, 16)),
         "T-A19" => new ArcSpec("TH4-A19", "Inoa", "Inoa (inner)-185", new[] { 204, 120, 121, 122, 123 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival(60555264, 24641536, 0, AlundraGameState.ResetAnimationId, 16)),
+            Arrival: new ArcArrival(60555264, 24641536, 0, GameState.ResetAnimationId, 16)),
 
         // The preset day3-after-dream (docs/test-saves.md): map 179, tile (17, 7), z 1, flags G203, G1651 and G1660.
         "day3-after-dream" => new ArcSpec("TH4-day3-after-dream", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0)),
+            Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0)),
 
         // E19.e E4: the other arrivals of the day 3 chain. The first five are the `0x53` of the previous arc (the direction is the operand's), the sixth
         // the portal 135.0 and the seventh the portal 176.7 (a portal's direction is the hero's when he walks in: not a plan value, the box does not rotate).
         "A13" => new ArcSpec("TH4-A13", "Inoa", "Inoa-176", new[] { 203, 1651, 1652, 1660 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival(11796480, 36175872, 10485760, AlundraGameState.ResetAnimationId, 24)),
+            Arrival: new ArcArrival(11796480, 36175872, 10485760, GameState.ResetAnimationId, 24)),
         "A14" => new ArcSpec("TH4-A14", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1652, 1653, 1660 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival(27525120, 7864320, 1048576, AlundraGameState.ResetAnimationId, 0)),
+            Arrival: new ArcArrival(27525120, 7864320, 1048576, GameState.ResetAnimationId, 0)),
         "A15" => new ArcSpec("TH4-A15", "Inoa", "Inoa-176", new[] { 203, 1651, 1652, 1653, 1654, 1660 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival(8650752, 35127296, 10485760, AlundraGameState.ResetAnimationId, 0)),
+            Arrival: new ArcArrival(8650752, 35127296, 10485760, GameState.ResetAnimationId, 0)),
         "A10J" => new ArcSpec("TH4-A10J", "Overworld", "Overworld 2,1-10", new[] { 1654, 203 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival(16515072, 61341696, 0, AlundraGameState.ResetAnimationId, 16)),
+            Arrival: new ArcArrival(16515072, 61341696, 0, GameState.ResetAnimationId, 16)),
         "A17" => new ArcSpec("TH4-A17", "Church", "Church-135", new[] { 203, 1654 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival(30670848, 54001664, 1048576, AlundraGameState.ResetAnimationId, 16)),
+            Arrival: new ArcArrival(30670848, 54001664, 1048576, GameState.ResetAnimationId, 16)),
         "135-to-10" => new ArcSpec("TH4-135-to-10", "Overworld", "Overworld 2,1-10", new[] { 203, 1654, 1655, 14 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival(47972352, 50855936, 0, AlundraGameState.ResetAnimationId, 0)),
+            Arrival: new ArcArrival(47972352, 50855936, 0, GameState.ResetAnimationId, 0)),
         "A18" => new ArcSpec("TH4-A18", "Inoa", "Inoa (inner)-178", new[] { 203, 1654, 1655 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival(60555264, 26738688, 0, AlundraGameState.ResetAnimationId, 16)),
+            Arrival: new ArcArrival(60555264, 26738688, 0, GameState.ResetAnimationId, 16)),
         _ => throw new ArgumentOutOfRangeException(nameof(name)),
     };
 
@@ -492,7 +492,7 @@ public sealed class AlundraEntityContactArcTests
 
     private static ArcSpec C61Spec => new(
         "T-C61", "Coal Mine", "Coal Mine (First Entrance)-61", new[] { 784 }, 0, 0, 0, 700, RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(588 << 16, 648 << 16, 2 << 20, AlundraGameState.ResetAnimationId, 0));
+        Arrival: new ArcArrival(588 << 16, 648 << 16, 2 << 20, GameState.ResetAnimationId, 0));
 
     /// <summary>
     /// T-C61 (G784 set, G670 off): the hero arrives by portal 61.1 at (588, 648). B[6] (program @872) walks him between the blocks rec32 to rec35

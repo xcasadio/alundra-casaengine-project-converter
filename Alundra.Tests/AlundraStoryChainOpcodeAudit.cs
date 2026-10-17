@@ -98,7 +98,7 @@ internal static class AlundraStoryChainOpcodeAudit
         codes[0] = op;
         codes[size] = 0xFF;
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new int[6], Codes = codes };
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState());
+        var runner = new AlundraEventProgramRunner(document, new GameState());
         EventTraceRecord? first = null;
         runner.TraceSink = record =>
         {

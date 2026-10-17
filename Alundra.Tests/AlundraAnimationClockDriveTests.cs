@@ -84,7 +84,7 @@ public sealed class AlundraAnimationClockDriveTests
         public int Ticks = 1;
         public IEventProgramRunner Runner { get; set; } = null!;
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
 
@@ -539,7 +539,7 @@ public sealed class AlundraAnimationClockDriveTests
         {
             if (frame == S + 10)
             {
-                drive.Host.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+                drive.Host.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
             }
 
             if (frame >= S + 11 && frame <= S + 20)
@@ -549,7 +549,7 @@ public sealed class AlundraAnimationClockDriveTests
 
             if (frame == S + 20)
             {
-                drive.Host.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+                drive.Host.GameState.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
             }
         });
 

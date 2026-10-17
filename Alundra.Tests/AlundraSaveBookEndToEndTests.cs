@@ -80,7 +80,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         AlundraSaveBook.Instance.ResetForTests();
     }
 
-    private static AlundraGameState State => AlundraGameState.Instance;
+    private static GameState State => GameState.Instance;
 
     private static AlundraSaveScreenDirector Screen => AlundraSaveScreenDirector.Instance;
 
@@ -247,7 +247,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
 
         // The map-entry animation (0x36) ends through the animation chain (anim 54 -> 0, OnAnimationFinished),
         // which the headless montage never plays: the hero is put at its end, Idle.
-        Assert.Equal(AlundraGameState.ResetAnimationId, hero.TargetAnimationId);
+        Assert.Equal(GameState.ResetAnimationId, hero.TargetAnimationId);
         hero.TargetAnimationId = 0;
         var book = Assert.Single(Spawned(proxy), e => e.SpriteType == AlundraSaveBook.SpriteType);
         Assert.Equal(AlundraSaveBook.InteractCode, book.SpriteProgramIndexes[ScriptHelper.ProgramFInteract]);

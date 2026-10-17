@@ -210,7 +210,7 @@ public sealed class AlundraTextBoxDrawnStateTests : IDisposable
 
     private static void OpenTheBox(DialogueAsset asset, string node = "Start")
     {
-        Director.AttachToWorld(new DialogueService(), new AlundraGameState());
+        Director.AttachToWorld(new DialogueService(), new GameState());
         Director.InstallForMapEntry();
         Director.Open(asset, node, controlMode: 1);
     }

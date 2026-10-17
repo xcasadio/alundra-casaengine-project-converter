@@ -30,14 +30,14 @@ public sealed class AlundraHeroRunArenaTests : IDisposable
 
     public AlundraHeroRunArenaTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
     {
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 

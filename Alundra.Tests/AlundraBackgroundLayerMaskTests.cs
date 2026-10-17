@@ -33,7 +33,7 @@ public sealed class AlundraBackgroundLayerMaskTests : IDisposable
     {
         // D-T-14 (docs/plan-transitions-carte.md): this class constructs an AlundraWorldProxy, so it resets the session carriers in its constructor (the
         // isolation-carrying element) and in Dispose (hygiene).
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -41,7 +41,7 @@ public sealed class AlundraBackgroundLayerMaskTests : IDisposable
 
     public void Dispose()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -92,7 +92,7 @@ public sealed class AlundraBackgroundLayerMaskTests : IDisposable
             Codes = codes,
         };
         state = new EventProgramState { Codes = document.CodesAsBytes() };
-        return new AlundraEventProgramRunner(document, new AlundraGameState(), context);
+        return new AlundraEventProgramRunner(document, new GameState(), context);
     }
 
     private static (EventTraceKind? Kind, int CodeIndex) RunOne(IEntityWorldContext context, params int[] codes)

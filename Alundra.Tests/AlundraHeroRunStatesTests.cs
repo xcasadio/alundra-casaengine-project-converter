@@ -47,7 +47,7 @@ public sealed class AlundraHeroRunStatesTests : IDisposable
     private static void Move(AlundraEntityScriptProxy hero, uint hold, uint pressed = 0, uint released = 0)
     {
         var pad = new AlundraPadState { ButtonsHold = hold, ButtonsJustPressed = pressed, ButtonsReleased = released };
-        AlundraPlayerManager.MovePlayer(hero, in pad, new AlundraGameState(), host: null);
+        AlundraPlayerManager.MovePlayer(hero, in pad, new GameState(), host: null);
     }
 
     // -----------------------------------------------------------------------------------------

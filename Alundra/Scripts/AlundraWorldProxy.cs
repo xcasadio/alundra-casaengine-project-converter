@@ -329,19 +329,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>
     /// Backing store for <see cref="EventProgramRunner"/> when it is a real <see cref="AlundraEventProgramRunner"/>
     /// (see <see cref="InitializeWithWorld"/>) - kept as its own field (rather than only living inside the
-    /// runner's constructor call) so <see cref="Update"/> can read <see cref="AlundraGameState.PlayerControlFlags"/>
+    /// runner's constructor call) so <see cref="Update"/> can read <see cref="GameState.PlayerControlFlags"/>
     /// for <see cref="RunMapEventsPass"/>'s own gate, mirroring how the original reads the SAME global
     /// (<c>g_playerControlFlags</c>) from both <c>RunMapEvents</c> and the opcode handlers alike.
     ///
     /// D-T-3 (docs/plan-transitions-carte.md, slice T1): this is no longer a field initializer - it is
-    /// this SESSION's own carrier (<see cref="AlundraGameState.Instance"/>), same shape as
+    /// this SESSION's own carrier (<see cref="GameState.Instance"/>), same shape as
     /// <see cref="DialogueDirector"/>/<see cref="AlundraMusicPlayer.Instance"/>/<see cref="AlundraScreenFadeDirector.Instance"/>
     /// below - so game flags, control flags, the last pad snapshot and the interact latch's own numeric
     /// fields all survive a map change instead of being lost with the old, per-world instance (§1.4.c).
-    /// <see cref="AlundraGameState.InstallForMapEntry"/> applies this session's own map-entry disposition
+    /// <see cref="GameState.InstallForMapEntry"/> applies this session's own map-entry disposition
     /// (D-T-13), called from <see cref="InitializeWithWorld"/>.
     /// </summary>
-    internal AlundraGameState GameState => AlundraGameState.Instance;
+    internal GameState GameState => GameState.Instance;
 
     /// <summary>
     /// The New Game hero entity, spawned once in <see cref="InitializeWithWorld"/> BEFORE every "Entities"
@@ -766,10 +766,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <c>continue</c> paths included); read by <see cref="AlundraEffectStage.RunFrame"/>.</summary>
     private readonly List<bool> _effectFrozenOfTick = new();
 
-    private bool EffectGateOfThisTick() => (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0;
+    private bool EffectGateOfThisTick() => (GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0;
 
     /// <summary>The gate of the map events, the entities and the pending triggers: <c>PlayerControlFlags &amp; GameplayBlockedMask</c>, or a warp transition in progress (T4, D-T-6).</summary>
-    private bool GameplayGateNow() => (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
+    private bool GameplayGateNow() => (GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0
         || AlundraWarpDirector.Instance.IsTransitionInProgress;
 
     /// <summary>Test-only seam (E19.u, docs/plan-e19-u-annexe/): the effect gate of each logic tick of the last <see cref="Update"/> (see <see cref="_effectFrozenOfTick"/>).</summary>
@@ -1430,8 +1430,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <see cref="AlundraInventoryDirector.Instance"/> at this world's own <see cref="GameState"/>,
     /// <see cref="ItemTables"/> and <see cref="SoundPlayer"/> - same "AttachToWorld re-points, no
     /// separate map-entry reset" shape as <see cref="AlundraHudDirector"/> (this director has no
-    /// map-entry state either: <see cref="AlundraGameState.PlayerControlFlags"/>/<c>MenuOpen</c> already
-    /// survives a map change like every other <see cref="AlundraGameState"/> field, and the inventory
+    /// map-entry state either: <see cref="GameState.PlayerControlFlags"/>/<c>MenuOpen</c> already
+    /// survives a map change like every other <see cref="Session.GameState"/> field, and the inventory
     /// itself is never open across a map transition: MenuOpen, cleared only with the closing slide's end, blocks
     /// the portal test and freezes the event programs, so no warp starts while it is open, and the trigger
     /// refuses while
@@ -2034,9 +2034,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// same fields the old <c>SpawnPlayerEntity</c> set, a V1 port of <c>ResetEntityState</c>
     /// (GameEngine.cs:648-670), called BEFORE any "Entities" record is spawned (their own spawn-zone gate
     /// reads the player's tile): spawn position (New Game tile (33,59), tile-centre 16.16 fixed-point -
-    /// GameInitializer.cs's New Game branch via <see cref="AlundraGameState"/>'s own New Game constants),
-    /// <c>TargetAnimationId</c>/<c>TargetDirection</c> = <see cref="AlundraGameState.ResetAnimationId"/>/
-    /// <see cref="AlundraGameState.ResetDirectionId"/> (54/"LoadingMap", 0/down), <c>Status = Normal</c>
+    /// GameInitializer.cs's New Game branch via <see cref="Session.GameState"/>'s own New Game constants),
+    /// <c>TargetAnimationId</c>/<c>TargetDirection</c> = <see cref="GameState.ResetAnimationId"/>/
+    /// <see cref="GameState.ResetDirectionId"/> (54/"LoadingMap", 0/down), <c>Status = Normal</c>
     /// (NOT <c>Loaded</c> - GameEngine.cs:661: the hero has no Load program, unlike every record-spawned
     /// entity), <c>Flags</c>/<c>SpriteProgramIndexes</c>/<c>AnimSetsByAnim</c> from the hero's own
     /// sprite-records.json header when the catalog has one for it.
@@ -2136,8 +2136,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             AlundraPlayerManager.InitializeNewGameInventory(GameState, ItemTables);
         }
 
-        proxy.PosX = arrivalRecord?.PosX ?? (AlundraGameState.CameraTileX * TileWidth + TileWidth / 2) << 16;
-        proxy.PosY = arrivalRecord?.PosY ?? (AlundraGameState.CameraTileY * TileHeight + TileHeight / 2) << 16;
+        proxy.PosX = arrivalRecord?.PosX ?? (GameState.CameraTileX * TileWidth + TileWidth / 2) << 16;
+        proxy.PosY = arrivalRecord?.PosY ?? (GameState.CameraTileY * TileHeight + TileHeight / 2) << 16;
         proxy.PosZ = arrivalRecord?.PosZ ?? 0;
         // E3.d: raises PosZ onto the actual cell height under the spawn tile before anything else reads it
         // - port of EntityManager.cs:127-136's own spawn-time ground clamp (see
@@ -2152,8 +2152,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         proxy.TileY = (proxy.PosY >> 16) / TileHeight;
         proxy.TileZ = proxy.PosZ >> 20;
 
-        proxy.TargetAnimationId = arrivalRecord?.AnimationId ?? AlundraGameState.ResetAnimationId;
-        proxy.TargetDirection = arrivalRecord?.DirectionId ?? AlundraGameState.ResetDirectionId;
+        proxy.TargetAnimationId = arrivalRecord?.AnimationId ?? GameState.ResetAnimationId;
+        proxy.TargetDirection = arrivalRecord?.DirectionId ?? GameState.ResetDirectionId;
         // EntityManager.cs:85-88 - bit-complemented so the very first per-frame animation sync always fires.
         proxy.CurrentAnimationId = ~proxy.TargetAnimationId;
         proxy.CurrentDirection = ~proxy.TargetDirection;
@@ -2467,7 +2467,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // freezes the SAME "dedans" passes, at this SAME site, without ever posing a control-flag bit
         // (the original's own AdvanceWarpTransitionFrame short-circuits its whole entity pipeline
         // instead of testing a flag at all - see that class' own doc).
-        var gameplayBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
+        var gameplayBlocked = (GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0
             || AlundraWarpDirector.Instance.IsTransitionInProgress;
 
         // E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-9): the pad the inventory reads, advanced once
@@ -2798,7 +2798,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // because the engine updates controllers and sprites BEFORE the gameplay proxies and MenuOpen
         // changes during them: the next engine update already sees the new state. See
         // AlundraGameplayFreeze's own doc.
-        var worldFrozen = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0;
+        var worldFrozen = (GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0;
         foreach (var spawnedEntity in _spawnedEntities)
         {
             if (spawnedEntity.GameplayProxy is AlundraEntityScriptProxy spawnedProxy)
@@ -3163,7 +3163,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         AlundraEntityScriptProxy player, IReadOnlyList<MapEvent> mapEvents, IEventProgramRunner runner,
         uint playerControlFlags)
     {
-        if ((playerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0)
+        if ((playerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0)
         {
             return;
         }
@@ -3264,7 +3264,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// </summary>
     internal void RecycleDestroyedEntities()
     {
-        if ((GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0)
+        if ((GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0)
         {
             return;
         }
@@ -3615,7 +3615,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     void IScriptHost.DestroyEntity(AlundraEntityScriptProxy entity, int effectId) => DestroyEntity(entity, effectId);
 
-    AlundraGameState IScriptHost.GameState => GameState;
+    GameState IScriptHost.GameState => GameState;
 
     AlundraPlayerController? IScriptHost.PlayerController => _playerController;
 

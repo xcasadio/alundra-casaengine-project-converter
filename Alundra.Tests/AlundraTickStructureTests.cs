@@ -45,7 +45,7 @@ public sealed class AlundraTickStructureTests : IDisposable
 
     private static void ResetGlobals()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -250,7 +250,7 @@ public sealed class AlundraTickStructureTests : IDisposable
     public void ADrivenWorldWithAClosedGate_RunsOnlyTheListsOfTheEntityBlock()
     {
         var rig = BuildWarmRig();
-        rig.Proxy.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.MenuOpen;
+        rig.Proxy.GameState.PlayerControlFlags = GameState.PlayerControlBits.MenuOpen;
 
         var passes = rig.Frame(TwoTicks);
 

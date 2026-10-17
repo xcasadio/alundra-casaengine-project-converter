@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// oracle itself pins at frame 1704 - is ON; without it the program jumps to 1433 and nothing opens
 /// (negative case below). <c>0x800C</c> (posed by the sailor's own F(Interact) program,
 /// <c>0x05 FlagOn 0x800C</c>) is what the following <c>0x36</c> waits on - both are SEEDED directly on
-/// this harness's own <see cref="AlundraGameState"/>, standing in for "the intro just finished AND the
+/// this harness's own <see cref="GameState"/>, standing in for "the intro just finished AND the
 /// player just interacted" without needing to actually simulate 1704 frames of intro first.
 /// </summary>
 public class AlundraDialogueOpcodesProductionTests : IDisposable
@@ -71,7 +71,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
             + $"'{AppContext.BaseDirectory}' - these tests need the real converter export of map 389.");
     }
 
-    private static void SeedFlag(AlundraGameState gameState, uint flag)
+    private static void SeedFlag(GameState gameState, uint flag)
         => gameState.AddFlag(flag, 1u << (int)(flag & 0x1f));
 
     [Fact]
@@ -236,7 +236,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                     s.Runner.RunScript(sailorThirteen, ScriptHelper.ProgramFInteract);
 
                     openedWithMenuOpen = director.IsOpen
-                        && (s.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0;
+                        && (s.GameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0;
                 }
 
                 // Frames 3..38: the program is long over (0xFF), no 0x39 anywhere, no button - only the
@@ -252,7 +252,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                 if (s.Frame is >= 40 and < 230 && !closedOnButton && !director.IsOpen)
                 {
                     closedOnButton =
-                        (s.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) == 0;
+                        (s.GameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) == 0;
                 }
 
                 // And the world is NOT wedged: the same interaction works again (pre-fix, the stale
@@ -323,8 +323,8 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                 // from letting a full intro play out - this montage clears the input locks each frame
                 // instead (MessageBox/MenuOpen are deliberately NOT touched: OUR dialogue poses those,
                 // and the D-E12D-5 gate must see them).
-                s.GameState.PlayerControlFlags &= ~(AlundraGameState.PlayerControlBits.ControlLocked
-                    | AlundraGameState.PlayerControlBits.ForcedSequence);
+                s.GameState.PlayerControlFlags &= ~(GameState.PlayerControlBits.ControlLocked
+                    | GameState.PlayerControlBits.ForcedSequence);
 
                 var pressThisFrame = false;
 
@@ -383,7 +383,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                 // AlundraInteractionPassTests P-a). This harness has no controller, so the report is the one the controller would get from the
                 // production probe for the hero kept ON sailor 13: the same rule, at the hero's own position, with the soulevables skipped
                 // (AlundraMovementObstacleProbe.TryFindObstacle). Gated like production (D-E12D-5: no step is taken behind the mask).
-                if ((s.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) == 0)
+                if ((s.GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) == 0)
                 {
                     player!.XCollisionEntity = AlundraEntityCollision.FindEntityCollisionCandidate(
                         player, player.PosX, player.PosY, player.PosZ, s.Collidables, EntityFlags.PickupKindMask);
@@ -398,7 +398,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                     // sailor 13's text is multi-page, so a missing swallow (D-E12D-6) shows up here as
                     // a skipped first page rather than a closed box.
                     openedAfterPress = director.IsOpen
-                        && (s.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0
+                        && (s.GameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0
                         && director.PageIndexForTests == 0;
                 }
 
@@ -411,7 +411,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                 if (s.Frame is >= 41 and < 240 && !closedOnLaterPresses && !director.IsOpen)
                 {
                     closedOnLaterPresses =
-                        (s.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) == 0;
+                        (s.GameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) == 0;
                 }
 
                 // Frames 234..298: still overlapping the sailor, contact live again, but NO press -

@@ -136,7 +136,7 @@ public sealed class AlundraInventoryDirector
 
     private bool _hasRunPerFrameSinceSetup;
 
-    private AlundraGameState? _gameState;
+    private GameState? _gameState;
     private AlundraItemTables? _itemTables;
     private IAlundraSoundPlayer? _soundPlayer;
 
@@ -144,7 +144,7 @@ public sealed class AlundraInventoryDirector
     /// as <see cref="AlundraHudDirector.AttachToWorld"/>/<see cref="AlundraDialogueDirector.AttachToWorld"/>.
     /// Every argument null is tolerated (no live session yet) - <see cref="Tick"/> then degrades to a
     /// no-op, same shape as every other missing-system seam in this DLL.</summary>
-    public void AttachToWorld(AlundraGameState? gameState, AlundraItemTables? itemTables, IAlundraSoundPlayer? soundPlayer)
+    public void AttachToWorld(GameState? gameState, AlundraItemTables? itemTables, IAlundraSoundPlayer? soundPlayer)
     {
         _gameState = gameState;
         _itemTables = itemTables;
@@ -401,7 +401,7 @@ public sealed class AlundraInventoryDirector
     /// <summary>Port of the trigger (<c>GameEngine.cs:1567-1576</c>) - see this class' own doc for the
     /// two guards with no port equivalent, each declared absent/always-0 right where it is tested, and for
     /// the warp-transition guard this port adds.</summary>
-    private static bool TryTrigger(AlundraGameState state, AlundraEntityScriptProxy? player)
+    private static bool TryTrigger(GameState state, AlundraEntityScriptProxy? player)
     {
         // GameEngine.cs:1568 - StaticVariables.g_playerControlFlags == 0.
         if (state.PlayerControlFlags != 0)
@@ -478,7 +478,7 @@ public sealed class AlundraInventoryDirector
     /// immediately by <c>FUN_80054f1c</c> (<c>:503-776</c>) - see this class' own doc for why both run on
     /// the same tick as the trigger. The ORDINARY trigger path (<see cref="Tick"/>'s idle branch): the HEAD
     /// and the SETUP always run together, unchanged since before E13.d SI3.</summary>
-    private void RunDisplayInventory(AlundraGameState state)
+    private void RunDisplayInventory(GameState state)
     {
         if (RunDisplayInventoryHead(state))
         {
@@ -492,7 +492,7 @@ public sealed class AlundraInventoryDirector
     /// <see cref="RunDisplayInventory"/> (the ordinary trigger path) on the SAME tick as the setup. Returns
     /// false when a guard stopped it - the inventory already running, or a dialogue open - and the caller
     /// must not run the setup either, on either path.</summary>
-    private bool RunDisplayInventoryHead(AlundraGameState state)
+    private bool RunDisplayInventoryHead(GameState state)
     {
         // MainInventoryManager.cs:445 - g_forbiddenWarpFlag == 0, tested first on every entry (0x80055574,
         // bnez 0x8005557c: return 1, nothing done). Guaranteed on the trigger path (Tick's Idle branch), but
@@ -559,7 +559,7 @@ public sealed class AlundraInventoryDirector
 
     /// <summary>Port of <c>FUN_80054f1c</c> (<c>MainInventoryManager.cs:503-776</c>) - the setup half only
     /// (arms <see cref="ForbiddenWarpFlag"/>, the text reset, <c>MenuOpen</c> and the seven box tweens).</summary>
-    private void RunDisplayInventorySetup(AlundraGameState state)
+    private void RunDisplayInventorySetup(GameState state)
     {
         // :505 - g_forbiddenWarpFlag = 5 (bits 0 + 2 - SetupBit | SlideOpenBit).
         ForbiddenWarpFlag = SetupBit | SlideOpenBit;
@@ -573,7 +573,7 @@ public sealed class AlundraInventoryDirector
         _textReveal.Reset();
 
         // :507 - g_playerControlFlags |= MenuOpen.
-        state.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        state.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
 
         // :508-773 - arm the seven boxes' TextToDisplay entries for the 15-tick opening slide (this
         // class' own doc: boxes 0/1 slide in from the left, 2/3/4/5 from the right, 6 from below).
@@ -615,7 +615,7 @@ public sealed class AlundraInventoryDirector
     }
 
     /// <summary>Port of <c>FUN_80056598</c> (<c>MainInventoryManager.cs:779-923</c>).</summary>
-    private void RunPerFrame(AlundraGameState state)
+    private void RunPerFrame(GameState state)
     {
         // D5 addition (this class' own IsDrawn doc): from this call on, this open's boxes/cursor/text are
         // drawn - set unconditionally on entry, every call, cheap and idempotent.
@@ -648,7 +648,7 @@ public sealed class AlundraInventoryDirector
     }
 
     /// <summary>Port of the pad-input half of <c>FUN_80056598</c> (<c>:785-859</c>).</summary>
-    private void RunInput(AlundraGameState state)
+    private void RunInput(GameState state)
     {
         var pad = state.TickPad;
 
@@ -716,7 +716,7 @@ public sealed class AlundraInventoryDirector
         if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.L1 | AlundraPadState.R1)) != 0)
         {
             RunCloseSetup(state);
-            state.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+            state.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
             AlundraInventoryPortrait.Instance.ReturnToHead(); // 0x80056974, before the post-process state (0x80056984).
             AlundraInventoryPostProcess.Instance.State = 1;
         }
@@ -727,7 +727,7 @@ public sealed class AlundraInventoryDirector
     /// :914-920 vs :863-869 - only the LAST call's return value, the money box's, gates completion,
     /// exactly like the original). Returns false when the close-completion branch already ran (the
     /// caller must skip the tail, matching the original's own early <c>return</c> at :902).</summary>
-    private bool RunBoxSlide(AlundraGameState state)
+    private bool RunBoxSlide(GameState state)
     {
         AdvanceBoxTween(ref _boxes[BoxWeapon], ref _tweens[BoxWeapon]);
         AdvanceBoxTween(ref _boxes[BoxItem], ref _tweens[BoxItem]);
@@ -762,7 +762,7 @@ public sealed class AlundraInventoryDirector
             // (E13.d SI3, D-E13D-21/22 - replaces the former _pendingSubInventoryTransition hook).
             if ((AlundraInventoryPostProcess.Instance.State & 1) == 0)
             {
-                state.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+                state.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
             }
 
             // :901 - FUN_80047cb0(callbackInfo) cleanup: nothing to port (no callback table here).
@@ -775,7 +775,7 @@ public sealed class AlundraInventoryDirector
     /// <summary>Port of <c>FUN_800556dc</c> (<c>MainInventoryManager.cs:1901-2158</c>) - arms the
     /// seven-box reverse slide. Box origins/sizes are the SAME table <see cref="RunDisplayInventory"/>
     /// uses (D3.a/D3.b's own fixed layout); only the tween's source/target swap ends.</summary>
-    private void RunCloseSetup(AlundraGameState state)
+    private void RunCloseSetup(GameState state)
     {
         // :1903 - g_forbiddenWarpFlag |= 2.
         ForbiddenWarpFlag |= SlideCloseBit;
@@ -827,7 +827,7 @@ public sealed class AlundraInventoryDirector
     /// (-1 == -1) and stays silent instead of sounding the error. Validity is tested first here, the order
     /// FUN_80057854 already uses for items (0x800578b8, then 0x800578c8); the equipped weapon never resolves to
     /// -1, so its own silent path is unchanged.</para></summary>
-    private void RunEquipWeapon(AlundraGameState state)
+    private void RunEquipWeapon(GameState state)
     {
         if (_itemTables == null)
         {
@@ -930,7 +930,7 @@ public sealed class AlundraInventoryDirector
     /// <summary>Port of <c>FUN_80057854</c> (<c>MainInventoryManager.cs:1795-1855</c>) - equips an item
     /// slot (grid rows 1-3, columns 0-5, minus the sword-class slot already handled by
     /// <see cref="RunEquipWeapon"/>).</summary>
-    private void RunEquipItem(AlundraGameState state)
+    private void RunEquipItem(GameState state)
     {
         if (_itemTables == null)
         {
@@ -1040,7 +1040,7 @@ public sealed class AlundraInventoryDirector
     /// executable skips the whole weapon block (0x80055c9c) and leaves glyph row 0 as it was - the previous
     /// weapon's name, or text another screen built there (0x80059538) - while the item gets its seven-space
     /// blank (0x80026850). The weapon gets the same blank here.</para></summary>
-    private void RunDisplayIconNames(AlundraGameState state)
+    private void RunDisplayIconNames(GameState state)
     {
         if (_itemTables == null)
         {
@@ -1071,12 +1071,12 @@ public sealed class AlundraInventoryDirector
     /// <summary>Port of <c>DisplayInventoryTexts</c> (<c>MainInventoryManager.cs:929-1064</c>) - the text
     /// reveal, ticked once per active frame (see <see cref="RunPerFrame"/>'s own tail), on the item the selected
     /// slot describes.</summary>
-    private void RunDisplayInventoryTexts(AlundraGameState state) => _textReveal.Tick(ResolveDescribedItem(state));
+    private void RunDisplayInventoryTexts(GameState state) => _textReveal.Tick(ResolveDescribedItem(state));
 
     /// <summary><c>DisplayInventoryTexts</c>' own item resolution (<c>:936-951</c>, 0x80056010-0x80056058): the
     /// slot's fixed item if owned, or the item its slot id resolves to; null for an empty or unowned slot, which
     /// draws nothing and freezes the reveal.</summary>
-    private int? ResolveDescribedItem(AlundraGameState state)
+    private int? ResolveDescribedItem(GameState state)
     {
         if (_itemTables == null)
         {

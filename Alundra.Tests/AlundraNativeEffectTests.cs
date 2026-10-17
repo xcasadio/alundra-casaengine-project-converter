@@ -51,7 +51,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     {
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -140,7 +140,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
 
     private static AlundraEntityScriptProxy HeroAt(int x, int y, int z) => new() { PosX = x, PosY = y, PosZ = z };
 
-    private static EventProgramState Exec(Host host, AlundraGameState gameState, int[] code, List<EventTraceRecord>? trace = null)
+    private static EventProgramState Exec(Host host, GameState gameState, int[] code, List<EventTraceRecord>? trace = null)
     {
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new int[6], Codes = code };
         var runner = new AlundraEventProgramRunner(document, gameState, host);
@@ -162,7 +162,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
         public Scenario Scenario { get; }
         public AlundraEffectStage Stage { get; } = NewStage();
         public Host Host { get; } = new();
-        public AlundraGameState State { get; } = new();
+        public GameState State { get; } = new();
         public RecordingSound Sound { get; } = new();
         public EventProgramState Program { get; }
         public HashSet<int> Before { get; }
@@ -324,7 +324,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     public static IEnumerable<object[]> LifeCases() => Golden.Where(r => r[0] == "P").Select(r => new object[] { int.Parse(r[1]), int.Parse(r[2]), int.Parse(r[3]), int.Parse(r[4]) });
 
     /// <summary>E20.c2a T3: a hero that carries its life as the binary's does (pulled from the stats at its creation), the stats as given.</summary>
-    private static AlundraEntityScriptProxy CarryingHero(AlundraGameState state, int hp, int hpMax)
+    private static AlundraEntityScriptProxy CarryingHero(GameState state, int hp, int hpMax)
     {
         state.PlayerStats.HpMax = (short)hpMax;
         state.PlayerStats.Hp = (short)hp;
@@ -336,9 +336,9 @@ public sealed class AlundraNativeEffectTests : IDisposable
     }
 
     /// <summary>The END of the hero's tick (<c>0x80032914</c>) through the locked branch of <c>MovePlayer</c> (the vessel runs in a locked script): <c>UpdateItemEffectState</c>, then the two stat setters.</summary>
-    private static void LockedTick(AlundraEntityScriptProxy hero, AlundraGameState state)
+    private static void LockedTick(AlundraEntityScriptProxy hero, GameState state)
     {
-        state.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ControlLocked;
+        state.PlayerControlFlags |= GameState.PlayerControlBits.ControlLocked;
         var pad = default(AlundraPadState);
         AlundraPlayerManager.MovePlayer(hero, in pad, state, host: null);
     }
@@ -349,7 +349,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     [MemberData(nameof(LifeCases))]
     public void TheLife_IsTheRowsP_TheVesselThenTheEndOfMovePlayer(int hp, int hpMax, int statsHp, int statsHpMax)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var hero = CarryingHero(state, hp, hpMax);
 
         Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = hero }, state, VesselProgram);
@@ -365,7 +365,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     [Fact]
     public void TheVessel_At50Over50_GivesAnEntityOf51_AndStatsThatStayAtFifty()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var hero = CarryingHero(state, 50, 50);
 
         Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = hero }, state, VesselProgram);
@@ -381,7 +381,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     [Fact]
     public void TheVessel_WithoutAHeroThatCarriesItsLife_RaisesTheStatsAtOnce_TheFormerSeam()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         state.PlayerStats.Hp = 4;
 
         Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = HeroAt(0, 0, 0) }, state, VesselProgram); // a bare proxy: its life is never mirrored.
@@ -403,7 +403,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     [InlineData(50, 50, 50, 50)]
     public void Opcode0xBC_RaisesTheMaximumOfTheEntityByTheOperand_CappedAt50_AndLeavesTheLife(int hpMax, int hp, int hpMaxAfter, int hpAfter)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var hero = CarryingHero(state, hp, hpMax);
 
         var program = Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = hero }, state, IncreaseHpMaxBy5Program);
@@ -420,7 +420,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     [Fact]
     public void Opcode0xBC_OnAnEntityAlreadyAbove50_StillGives50()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var hero = CarryingHero(state, 50, 50);
         hero.HpMax = 51; // the uncapped vessel of U7 (c2-binary): the entity may hold 51.
         hero.Hp = 51;
@@ -433,7 +433,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     [Fact]
     public void Opcode0xBC_WithoutAHeroThatCarriesItsLife_RaisesTheStats()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         state.PlayerStats.HpMax = 12;
         state.PlayerStats.Hp = 3;
 
@@ -445,12 +445,12 @@ public sealed class AlundraNativeEffectTests : IDisposable
     [Fact]
     public void Opcode0xC3_FillsTheEntityLife_TheMagic_AndSnapsTheFourCountersOfTheHud()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var hero = CarryingHero(state, 3, 12);
         state.PlayerStats.MpMax = 4;
         state.PlayerStats.Mp = 1;
         var hud = AlundraHudDirector.Instance;
-        hud.ResetDisplayForLoad(new AlundraPlayerStats { Hp = 3, HpMax = 10, Mp = 1, MpMax = 2 }); // the display lags behind: 3/10 and 1/2.
+        hud.ResetDisplayForLoad(new PlayerStats { Hp = 3, HpMax = 10, Mp = 1, MpMax = 2 }); // the display lags behind: 3/10 and 1/2.
         Assert.Equal((3, 10, 1, 2), (hud.Hp, hud.HpMax, hud.Mp, hud.MpMax));
 
         var program = Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = hero }, state, RestoreProgram);
@@ -469,7 +469,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     [Fact]
     public void Opcode0xC3_WithoutAHeroThatCarriesItsLife_FillsTheStats()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         state.PlayerStats.HpMax = 12;
         state.PlayerStats.Hp = 3;
 
@@ -488,7 +488,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
         var stage = NewStage();
         var sound = new RecordingSound();
         var host = new Host { Stage = stage, Sound = sound, PlayerEntity = HeroAt(65273856, 33030144, 0) };
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         Assert.Equal((10, 10), ((int)gameState.PlayerStats.Hp, (int)gameState.PlayerStats.HpMax));
         gameState.PlayerStats.Hp = 4;
 
@@ -511,7 +511,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     {
         var stage = NewStage();
         var hero = HeroAt(65273856, 33030144, 0);
-        Exec(new Host { Stage = stage, Sound = new RecordingSound(), PlayerEntity = hero }, new AlundraGameState(), VesselProgram);
+        Exec(new Host { Stage = stage, Sound = new RecordingSound(), PlayerEntity = hero }, new GameState(), VesselProgram);
         hero.PosX = 1;
         hero.PosY = 2;
         hero.PosZ = 3;
@@ -527,7 +527,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     {
         foreach (var (hpMaxBefore, hpBefore) in new[] { (49, 20), (50, 50), (50, 3) })
         {
-            var gameState = new AlundraGameState();
+            var gameState = new GameState();
             gameState.PlayerStats.HpMax = (short)hpMaxBefore;
             gameState.PlayerStats.Hp = (short)hpBefore;
             gameState.PlayerStats.WeaponId = 1; // the New Game weapon: a state the save validation accepts
@@ -543,7 +543,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     [Fact]
     public void TheHud_CatchesUpToTheNewMaximum_AfterAFewTicks()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = AlundraHudDirector.Instance;
         director.AttachToWorld(state);
         state.AddFlag(1813, 0x200000); // "please appear"
@@ -629,7 +629,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
         using var log = DebugLog.Install();
         var stage = NewStage();
         var sound = new RecordingSound();
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var trace = new List<EventTraceRecord>();
 
         var state = Exec(new Host { Stage = stage, Sound = sound, PlayerEntity = null }, gameState, new[] { 0x82, 0x53, 0x82, 0x53, 0x1A, 9, 0xFF }, trace);
@@ -649,7 +649,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     public void WithoutAStage_TheLifeAndTheSoundAreDone_NothingIsDrawn_AndTheTraceIsDegraded()
     {
         var sound = new RecordingSound();
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var trace = new List<EventTraceRecord>();
 
         var state = Exec(new Host { Stage = null, Sound = sound, PlayerEntity = HeroAt(0, 0, 0) }, gameState, VesselProgram, trace);
@@ -665,7 +665,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     public void WithoutASoundPlayer_TheLifeAndTheEffectsAreDone()
     {
         var stage = NewStage();
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
 
         Exec(new Host { Stage = stage, Sound = null, PlayerEntity = HeroAt(0, 0, 0) }, gameState, VesselProgram);
         stage.RunFrame(0, Array.Empty<bool>());

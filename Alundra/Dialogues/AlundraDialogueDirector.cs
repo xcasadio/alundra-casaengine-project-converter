@@ -70,7 +70,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     private const int PortraitRestX = 8;
     private const int PortraitRestBottom = 172;
     private IDialoguePresenter? _presenter;
-    private AlundraGameState? _gameState;
+    private GameState? _gameState;
     private IAlundraSoundPlayer? _soundPlayer;
 
     // E15.c T5 (docs/plan-e15-yarn.md, contract item 2): this director's own Yarn runner, built on a
@@ -82,7 +82,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     // just re-points the capture presenter's own WorldPresenter, keeping any dialogue already running.
     private AlundraDialogueCapturePresenter? _capturePresenter;
     private YarnDialogueRunner? _runner;
-    private AlundraGameState? _boundGameState;
+    private GameState? _boundGameState;
 
     private int _pageCount;
     private int _pagesDelivered;
@@ -153,7 +153,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     /// tolerated value (no UI view available for this world's active render view) - <see cref="HasPresenter"/>
     /// then drives every opcode's own degraded fallback. <paramref name="soundPlayer"/> plays the sounds of the box (6 at the opening, 7 at the close,
     /// 79 to 82 for the voices, F2-R5).</summary>
-    public void AttachToWorld(IDialoguePresenter? presenter, AlundraGameState? gameState, IAlundraSoundPlayer? soundPlayer = null)
+    public void AttachToWorld(IDialoguePresenter? presenter, GameState? gameState, IAlundraSoundPlayer? soundPlayer = null)
     {
         _presenter = presenter;
         _gameState = gameState;
@@ -188,7 +188,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
 
     /// <summary>Map-entry reset (mirrors <see cref="AlundraScreenFadeDirector.InstallForMapEntry"/>'s own
     /// contract): closes out any dialogue this session still thought was open (clearing
-    /// <see cref="AlundraGameState.PlayerControlFlags"/>'s MessageBox/MenuOpen bits so a stale lock never
+    /// <see cref="GameState.PlayerControlFlags"/>'s MessageBox/MenuOpen bits so a stale lock never
     /// survives a map transition) and resets every piece of open/mask/page/choice state to New-Game-
     /// equivalent. Called from <see cref="AlundraWorldProxy.InstallDialogueSystems"/>, right after
     /// <see cref="AttachToWorld"/> - the ONLY call site (same M16 lesson as every other install method in
@@ -271,8 +271,8 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
 
         // The binary: MessageBox (0x10, player frozen, the scripts keep ticking) for 1, MenuOpen (0x08, map events and world updates pause too) otherwise.
         _gameState.PlayerControlFlags |= controlMode == 1
-            ? AlundraGameState.PlayerControlBits.MessageBox
-            : AlundraGameState.PlayerControlBits.MenuOpen;
+            ? GameState.PlayerControlBits.MessageBox
+            : GameState.PlayerControlBits.MenuOpen;
     }
 
     private void ClearControlFlags()
@@ -283,7 +283,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         }
 
         // §1.2: "close clears both" - unconditionally, regardless of which one open actually set.
-        _gameState.PlayerControlFlags &= ~(AlundraGameState.PlayerControlBits.MessageBox | AlundraGameState.PlayerControlBits.MenuOpen);
+        _gameState.PlayerControlFlags &= ~(GameState.PlayerControlBits.MessageBox | GameState.PlayerControlBits.MenuOpen);
     }
 
     // ---- the page: the runner delivers it, the box types it
@@ -606,7 +606,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     /// <summary>
     /// E16.e L4 (docs/plan-e16-etat-partie.md, SE1): ends a choice list without a selection - clears the awaiting
     /// state and any result not yet taken, and stops listening to the presenter. It neither closes a box nor touches
-    /// <see cref="AlundraGameState.PlayerControlFlags"/>: the save book calls it on its abandon and its reset, after
+    /// <see cref="GameState.PlayerControlFlags"/>: the save book calls it on its abandon and its reset, after
     /// closing the box it owns, so no choice of its own is ever left waiting. A no-op when no choice is pending.
     /// </summary>
     internal void CancelChoice()
@@ -621,7 +621,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     /// a box (<see cref="OpenChoice"/> with no <see cref="Open"/> before it) - the save screen's OUI/NON. The release of
     /// a box would clear <c>MessageBox</c>/<c>MenuOpen</c>, which the save screen keeps until its state <c>0x63</c>. So this clears
     /// the choice in waiting and any result not yet taken, and closes the choice box's machine (E19.f3a: the choice is the director's own,
-    /// no engine window is left to close). It never touches <see cref="AlundraGameState.PlayerControlFlags"/>.
+    /// no engine window is left to close). It never touches <see cref="GameState.PlayerControlFlags"/>.
     /// Returns false, doing nothing, while a box is open (<see cref="IsOpen"/>): that choice is not a lone one.
     /// </summary>
     internal bool CloseStandaloneChoice()

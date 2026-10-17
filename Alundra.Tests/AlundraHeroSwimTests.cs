@@ -39,7 +39,7 @@ public sealed class AlundraHeroSwimTests : IDisposable
 
     public AlundraHeroSwimTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -48,7 +48,7 @@ public sealed class AlundraHeroSwimTests : IDisposable
         AlundraNativeEffects.CreatedForTests = null;
         AlundraPlayerManager.TryUseItemResultForTests = null;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 

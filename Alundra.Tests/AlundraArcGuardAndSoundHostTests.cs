@@ -18,7 +18,7 @@ public sealed class AlundraArcGuardAndSoundHostTests
 {
     // The arc "A5" is one of those that must meet no entity (T-REG-0); the montage is the one of the arc of the tests of the air state (the real map 179).
     private static ArcSpec GuardedSpec(string name) => new(name, "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 100, RealController: true, Prefabs: true,
-        Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0));
+        Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0));
 
     [Fact]
     public void TReg0_AGreenArcOfTheGuardedSet_ThatMetAnEntity_FailsAtItsDispose()

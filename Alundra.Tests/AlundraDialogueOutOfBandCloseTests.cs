@@ -30,13 +30,13 @@ public sealed class AlundraDialogueOutOfBandCloseTests : IDisposable
     public AlundraDialogueOutOfBandCloseTests()
     {
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
     }
 
     public void Dispose()
     {
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
     }
 
     [Fact]
@@ -51,14 +51,14 @@ public sealed class AlundraDialogueOutOfBandCloseTests : IDisposable
     public void AWindowDrivenClose_BringsTheLogicalBoxDown_AndClearsTheFreezeFlag()
     {
         var presenter = new AlundraDialoguePresenter(new RecordingUIViewRuntime());
-        var state = new AlundraGameState();
+        var state = new GameState();
         AlundraDialogueDirector.Instance.AttachToWorld(presenter, state);
 
         // controlMode 0 is the "world closes" box: it posts MenuOpen, which T2 freezes the entity pass
         // behind (AlundraDialogueDirector.SetControlFlags).
         AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Bonjour", "Bonjour."), "Start", controlMode: 0);
         Assert.True(AlundraDialogueDirector.Instance.IsOpen);
-        Assert.NotEqual(0u, state.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask);
+        Assert.NotEqual(0u, state.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask);
 
         // The window's own close control fires - the exact production wiring, not a mirror.
         var requestClose = typeof(AlundraDialoguePresenter)
@@ -67,7 +67,7 @@ public sealed class AlundraDialogueOutOfBandCloseTests : IDisposable
         requestClose!.Invoke(presenter, null);
 
         Assert.False(AlundraDialogueDirector.Instance.IsOpen);
-        Assert.Equal(0u, state.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask);
+        Assert.Equal(0u, state.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask);
     }
 
     private sealed class RecordingUIViewRuntime : IUIViewRuntime

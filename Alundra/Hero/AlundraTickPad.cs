@@ -9,7 +9,7 @@ namespace Alundra.Hero;
 /// of the original's 50 Hz frame, where <c>PadManager.UpdatePads</c> refreshes it at the head of every
 /// main-loop frame (GameEngine.cs:1518).
 ///
-/// <para><b>Why a second pad next to <see cref="AlundraGameState.LastPadState"/></b>: that snapshot is
+/// <para><b>Why a second pad next to <see cref="GameState.LastPadState"/></b>: that snapshot is
 /// rebuilt once per RENDERED frame (AlundraEntityScriptProxy.Update), and the port runs zero, one or
 /// several logic ticks per rendered frame (AlundraLogicClock). An edge or a repeat counter computed per
 /// rendered frame would depend on the display rate: a consumer ticking twice in one frame would see the

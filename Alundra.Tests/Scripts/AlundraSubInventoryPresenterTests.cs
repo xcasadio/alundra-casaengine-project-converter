@@ -34,7 +34,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
         AlundraInventoryPostProcess.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -47,7 +47,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
         AlundraInventoryPostProcess.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -86,17 +86,17 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
         public void Dispose() { }
     }
 
-    private static void Tick(AlundraGameState state, AlundraSubInventoryDirector director, AlundraSubInventoryPresenter presenter, uint hold)
+    private static void Tick(GameState state, AlundraSubInventoryDirector director, AlundraSubInventoryPresenter presenter, uint hold)
     {
         state.TickPad.Update(hold);
         director.Tick();
         presenter.Tick();
     }
 
-    private static (AlundraGameState State, AlundraSubInventoryDirector Director, AlundraSubInventoryPresenter Presenter,
+    private static (GameState State, AlundraSubInventoryDirector Director, AlundraSubInventoryPresenter Presenter,
         AlundraSubInventoryViewModel View, FakeSubInventoryScreen Screen, RecordingUIViewRuntime UiView) NewFixture()
     {
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
         var itemTables = ItemTablesFixture.LoadReal();
         var director = AlundraSubInventoryDirector.Instance;
         director.AttachToWorld(state, itemTables, null);
@@ -203,7 +203,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
     [Fact]
     public void MainAndSubScreens_AreNeverBothPushed_DuringARoundTrip()
     {
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
         var itemTables = ItemTablesFixture.LoadReal();
 
         var mainDirector = AlundraInventoryDirector.Instance;

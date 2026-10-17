@@ -161,7 +161,7 @@ public class AlundraLadderClimbTests
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController { get; init; }
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
@@ -386,13 +386,13 @@ public class AlundraLadderClimbTests
         Assert.Equal(AlundraPlayerManager.ClimbStillAnimationId, proxy.TargetAnimationId);
         var heldRootZ = entity.RootComponent!.LocalTransform.Position.Z;
 
-        host.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        host.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
         GameplayFreeze.Apply(proxy, gameplayBlocked: true);
         world.Update(1f / 50f);
         world.Update(1f / 50f);
         Assert.Equal(heldRootZ, entity.RootComponent!.LocalTransform.Position.Z);
 
-        host.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+        host.GameState.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
         GameplayFreeze.Apply(proxy, gameplayBlocked: false);
         host.TicksPerFrame = 0;
         world.Update(1f / 50f);
@@ -438,7 +438,7 @@ public class AlundraLadderClimbTests
         }
 
         var frozenRootZ = entity.RootComponent!.LocalTransform.Position.Z;
-        host.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        host.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
         GameplayFreeze.Apply(proxy, gameplayBlocked: true);
         for (var frame = 0; frame < 5; frame++)
         {
@@ -449,7 +449,7 @@ public class AlundraLadderClimbTests
             Assert.Equal(frozenRootZ, entity.RootComponent!.LocalTransform.Position.Z); // the root itself holds its height, not only the logical Z.
         }
 
-        host.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+        host.GameState.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
         GameplayFreeze.Apply(proxy, gameplayBlocked: false);
         Assert.Equal(previousForce, proxy.ForceZ);
         Assert.Equal(previousPosZ, proxy.PosZ);
@@ -602,7 +602,7 @@ public class AlundraLadderClimbTests
         player.Slope_18c = 0; // broken: not on a ladder cell.
         var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState(), host: null);
+        AlundraPlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
 
         Assert.NotEqual(AlundraPlayerManager.ClimbingAnimationId, player.TargetAnimationId);
     }
@@ -613,7 +613,7 @@ public class AlundraLadderClimbTests
         var player = MakeQualifyingIdlePlayer();
         var pad = default(AlundraPadState); // broken: buttonsHold == 0.
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState(), host: null);
+        AlundraPlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
 
         // CORRECTED (verifier F4): `Assert.NotEqual(ClimbingAnimationId, ...)` is inert against a mutant
         // that removes this conjunct from the gate - a broken gate here still leaves TargetAnimationId at
@@ -630,7 +630,7 @@ public class AlundraLadderClimbTests
         var player = MakeQualifyingIdlePlayer();
         var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right }; // broken: dir == 0x18, not 0x10.
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState(), host: null);
+        AlundraPlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
 
         // CORRECTED (verifier F4): same inert-NotEqual problem as CaseSixGate_NoPadHeld above. The gate
         // correctly does NOT fire (dir == 0x18, not 0x10), so TargetAnimationId falls through to the
@@ -645,7 +645,7 @@ public class AlundraLadderClimbTests
         player.TargetDirection = 0x18; // broken: not already facing up.
         var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState(), host: null);
+        AlundraPlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
 
         Assert.NotEqual(AlundraPlayerManager.ClimbingAnimationId, player.TargetAnimationId);
     }
@@ -657,7 +657,7 @@ public class AlundraLadderClimbTests
         player.ForceAdjusted = 0; // broken: no collision this tick (never walked into the wall).
         var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState(), host: null);
+        AlundraPlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
 
         Assert.NotEqual(AlundraPlayerManager.ClimbingAnimationId, player.TargetAnimationId);
     }
@@ -669,7 +669,7 @@ public class AlundraLadderClimbTests
         player.CarriedEntity = new CasaEngine.Framework.Scene.Entities.Entity(); // broken: carrying something.
         var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState(), host: null);
+        AlundraPlayerManager.MovePlayer(player, in pad, new GameState(), host: null);
 
         Assert.NotEqual(AlundraPlayerManager.ClimbingAnimationId, player.TargetAnimationId);
     }

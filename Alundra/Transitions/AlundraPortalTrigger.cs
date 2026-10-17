@@ -16,7 +16,7 @@ namespace Alundra.Transitions;
 /// retail build path this port targets, not ported).
 ///
 /// DETECTION ONLY (T3's whole scope, per the ticket): <see cref="TryGetTrigger"/> is pure - it reads
-/// <see cref="AlundraEntityScriptProxy"/>/<see cref="AlundraPadState"/>/<see cref="AlundraGameState"/>/the
+/// <see cref="AlundraEntityScriptProxy"/>/<see cref="AlundraPadState"/>/<see cref="GameState"/>/the
 /// portal list and writes nothing, starts no fade, requests no world change, and never calls
 /// <c>HandleWarpTransition</c>. It is the seam T4's <c>AlundraWarpDirector</c> will consume (via
 /// <see cref="AlundraPlayerManager.MovePlayer"/>'s own call site, wired through
@@ -49,7 +49,7 @@ internal static class AlundraPortalTrigger
     /// (<c>AnimationTables.CardinalDirectionTable[portal.ArrivalDirectionIndex]</c>, §1.2.c - e.g. index 1
     /// gives 0x10, never the raw index 1 itself) when a warp should begin THIS call; otherwise null.
     ///
-    /// DEVIATION (documented, sibling of D-T-10/D-T-12): <see cref="AlundraGameState.IsWarpDisabled"/> is
+    /// DEVIATION (documented, sibling of D-T-10/D-T-12): <see cref="GameState.IsWarpDisabled"/> is
     /// checked HERE, even though the original only tests <c>g_isWarpDisabled</c> inside
     /// <c>HandleWarpTransition</c> (downstream of this predicate, T4's own scope) - folded in per the
     /// plan's point 5 so this already-wired seam behaves correctly before T4's director exists, and T4
@@ -58,7 +58,7 @@ internal static class AlundraPortalTrigger
     internal static (AlundraPortalRecord Portal, uint ArrivalDirectionId)? TryGetTrigger(
         AlundraEntityScriptProxy player,
         in AlundraPadState pad,
-        AlundraGameState state,
+        GameState state,
         IReadOnlyList<AlundraPortalRecord> portals)
     {
         if (state.IsWarpDisabled)

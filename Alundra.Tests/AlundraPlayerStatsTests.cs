@@ -10,7 +10,7 @@ namespace Alundra.Tests;
 /// <c>SetPlayerMpMax</c>/<c>SetPlayerMp</c>/<c>SetMoney</c> - see <see cref="AlundraPlayerManager"/>'s
 /// own doc for the exact line ranges each setter ports. Uses fresh <c>new AlundraGameState()</c>
 /// instances throughout (same convention as <see cref="AlundraPlayerManagerTests"/>), not the shared
-/// <see cref="AlundraGameState.Instance"/> singleton, so no reset-for-tests seam is needed here.
+/// <see cref="GameState.Instance"/> singleton, so no reset-for-tests seam is needed here.
 /// </summary>
 public class AlundraPlayerStatsTests
 {
@@ -26,7 +26,7 @@ public class AlundraPlayerStatsTests
     [InlineData(9999, 50)]  // well above the ceiling
     public void SetPlayerHpMax_ClampsToZeroFifty(int hpMax, short expected)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
 
         var result = AlundraPlayerManager.SetPlayerHpMax(state, hpMax);
 
@@ -42,7 +42,7 @@ public class AlundraPlayerStatsTests
     [Fact]
     public void SetPlayerHp_NegativeAmount_ClampsToZero()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         AlundraPlayerManager.SetPlayerHpMax(state, 20);
 
         var result = AlundraPlayerManager.SetPlayerHp(state, -1);
@@ -54,7 +54,7 @@ public class AlundraPlayerStatsTests
     [Fact]
     public void SetPlayerHp_AboveCurrentHpMax_ClampsToHpMax()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         AlundraPlayerManager.SetPlayerHpMax(state, 20);
 
         var result = AlundraPlayerManager.SetPlayerHp(state, 21);
@@ -66,7 +66,7 @@ public class AlundraPlayerStatsTests
     [Fact]
     public void SetPlayerHp_WithinBounds_PassesThroughUnclamped()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         AlundraPlayerManager.SetPlayerHpMax(state, 20);
 
         var result = AlundraPlayerManager.SetPlayerHp(state, 15);
@@ -87,7 +87,7 @@ public class AlundraPlayerStatsTests
     [InlineData(999, 4)] // well above the ceiling
     public void SetPlayerMpMax_ClampsToZeroFour(short mpMax, short expected)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
 
         var result = AlundraPlayerManager.SetPlayerMpMax(state, mpMax);
 
@@ -102,7 +102,7 @@ public class AlundraPlayerStatsTests
     [Fact]
     public void SetPlayerMp_NegativeAmount_ClampsToZero()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         AlundraPlayerManager.SetPlayerMpMax(state, 3);
 
         var result = AlundraPlayerManager.SetPlayerMp(state, -1);
@@ -114,7 +114,7 @@ public class AlundraPlayerStatsTests
     [Fact]
     public void SetPlayerMp_AboveCurrentMpMax_ClampsToMpMax()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         AlundraPlayerManager.SetPlayerMpMax(state, 3);
 
         var result = AlundraPlayerManager.SetPlayerMp(state, 4);
@@ -126,7 +126,7 @@ public class AlundraPlayerStatsTests
     [Fact]
     public void SetPlayerMp_WithinBounds_PassesThroughUnclamped()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         AlundraPlayerManager.SetPlayerMpMax(state, 3);
 
         var result = AlundraPlayerManager.SetPlayerMp(state, 2);
@@ -147,7 +147,7 @@ public class AlundraPlayerStatsTests
     [InlineData(32000, 9999)]  // well above the ceiling, still within short range
     public void SetMoney_ClampsToZeroNineNineNineNine(int amount, short expected)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
 
         var result = AlundraPlayerManager.SetMoney(state, (short)amount);
 
@@ -162,7 +162,7 @@ public class AlundraPlayerStatsTests
     [Fact]
     public void PlayerStats_IsTheSameInstanceAcrossReads_NoSeparateSaveAndCurrentObject()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
 
         var firstRead = state.PlayerStats;
         AlundraPlayerManager.SetPlayerHp(state, 7);
@@ -182,7 +182,7 @@ public class AlundraPlayerStatsTests
     [Fact]
     public void Construction_MatchesNewGameDefaults()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
 
         Assert.Equal(10, state.PlayerStats.Hp);
         Assert.Equal(10, state.PlayerStats.HpMax);
@@ -194,7 +194,7 @@ public class AlundraPlayerStatsTests
     [Fact]
     public void InitializeNewGameStats_ResetsAnAlreadyMutatedInstanceToNewGameDefaults()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         AlundraPlayerManager.SetPlayerHpMax(state, 45);
         AlundraPlayerManager.SetPlayerHp(state, 38);
         AlundraPlayerManager.SetPlayerMpMax(state, 3);

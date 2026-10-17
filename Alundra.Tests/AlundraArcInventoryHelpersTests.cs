@@ -18,7 +18,7 @@ public sealed class AlundraArcInventoryHelpersTests
     /// <summary>The overworld map 10 from a portal arrival (the arc of the hero attack tests): the hero stands free on open ground, with an empty inventory.</summary>
     private static ArcSpec Spec(string name) => new(
         name, "Overworld", "Overworld 2,1-10", Array.Empty<int>(), 0, 0, 0, 400, RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(16515072, 61341696, 0, AlundraGameState.ResetAnimationId, 16));
+        Arrival: new ArcArrival(16515072, 61341696, 0, GameState.ResetAnimationId, 16));
 
     private static void WaitUntilTheHeroIsFree(ArcRun arc)
     {

@@ -11,7 +11,7 @@ namespace Alundra.Maps.Loop;
 /// E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): the part of the world freeze the T2 gate cannot
 /// reach, because the ENGINE runs it, outside every gameplay proxy.
 ///
-/// <para>While <see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/> is posed (an open
+/// <para>While <see cref="GameState.PlayerControlBits.GameplayBlockedMask"/> is posed (an open
 /// inventory, a dialogue box - every MenuOpen, D-E13D-15), the original skips <c>UpdateEntities</c> for
 /// every entity, hero included: no event, no physics, no animation (EntityManager.cs:367-390). The port's
 /// T2 gate already skips the DLL's own passes (AlundraEntityScriptProxy.Update), but two engine systems

@@ -81,7 +81,7 @@ public sealed class AlundraSailor12EndOfIntroTests
 
         Assert.True(NavigationGrid2D.TryCreateFromTileMap(tileMapData, LoadTileSets(root, tileMapData), 1f, out var grid));
         var context = new NavContext { NavigationGrid = grid };
-        var runner = new AlundraEventProgramRunner(new EventProgramDocument { MapIndex = 389, EventCodesCTable = new[] { 0, 0 }, Codes = codes }, new AlundraGameState(), context);
+        var runner = new AlundraEventProgramRunner(new EventProgramDocument { MapIndex = 389, EventCodesCTable = new[] { 0, 0 }, Codes = codes }, new GameState(), context);
         var lastPc = -1;
         var lastOpcode = -1;
         var reachedStop = false;
@@ -182,7 +182,7 @@ public sealed class AlundraSailor12EndOfIntroTests
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.Controller = entity.GetComponent<CharacterControllerComponent>();
         proxy.IsPlayer = false;
-        proxy.ScriptHost = new Host(new AlundraEventProgramRunner(new EventProgramDocument { MapIndex = 389, EventCodesCTable = new[] { 0, 0 }, Codes = new[] { 0xFF } }, new AlundraGameState(), null));
+        proxy.ScriptHost = new Host(new AlundraEventProgramRunner(new EventProgramDocument { MapIndex = 389, EventCodesCTable = new[] { 0, 0 }, Codes = new[] { 0xFF } }, new GameState(), null));
         proxy.Status = EntityStatus.Normal;
         proxy.PosX = (int)Math.Round((double)startPosition.X * 65536.0);
         proxy.PosY = (int)Math.Round((double)startPosition.Y * 65536.0);
@@ -198,7 +198,7 @@ public sealed class AlundraSailor12EndOfIntroTests
         public Host(IEventProgramRunner runner) => Runner = runner;
         public IEventProgramRunner Runner { get; }
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
 

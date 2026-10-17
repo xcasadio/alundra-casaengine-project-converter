@@ -76,7 +76,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         AlundraSaveScreenDirector.Instance.ResetForTests();
     }
 
-    private static AlundraGameState State => AlundraGameState.Instance;
+    private static GameState State => GameState.Instance;
 
     private static AlundraDialogueDirector Dialogue => AlundraDialogueDirector.Instance;
 
@@ -166,7 +166,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
         // 0x2710: MenuOpen and the "Examen" message, which slides in from y = 240.
         Tick();
-        Assert.Equal(AlundraGameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
+        Assert.Equal(GameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
         Assert.True(Director.IsMessageBoxDrawn);
         Assert.Equal((16, 240), Director.MessageBoxPosition);
         Assert.Equal((Examine, 32, 252), Director.MessageLine0);
@@ -201,7 +201,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Tick(300);
         Assert.Equal(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
         Assert.True(Director.IsActive);
-        Assert.Equal(AlundraGameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
+        Assert.Equal(GameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
 
         // Square closes the message; the end chain; MenuOpen cleared at 0x63.
         Press(AlundraPadState.Square);
@@ -260,7 +260,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     public void StartFailure_ShowsTheFailureMessage_WaitsForSquare_ThenEndsWithoutWriting()
     {
         Assert.True(Director.StartFailure());
-        Assert.Equal(AlundraGameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
+        Assert.Equal(GameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
 
         Tick();
         Assert.Equal((Failed0, Failed1), (Director.MessageLine0.Text, Director.MessageLine1.Text));
@@ -597,10 +597,10 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
         Assert.Equal(37, taken); // E19.f3a: NON armed one tick after the Cross is taken 37 ticks later (38 after the Cross)
         Assert.False(Dialogue.IsAwaitingChoice);
-        Assert.Equal(AlundraGameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
+        Assert.Equal(GameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
 
         TickUntilState(AlundraSaveScreenDirector.StateEnd);
-        Assert.Equal(AlundraGameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
+        Assert.Equal(GameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
         Tick();
         Assert.Equal(0u, State.PlayerControlFlags);
     }
@@ -664,14 +664,14 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     [Fact]
     public void CloseStandaloneChoice_ClosesALoneChoice_AndNeverTouchesTheFlags()
     {
-        State.PlayerControlFlags = AlundraGameState.PlayerControlBits.MenuOpen | AlundraGameState.PlayerControlBits.ControlLocked;
+        State.PlayerControlFlags = GameState.PlayerControlBits.MenuOpen | GameState.PlayerControlBits.ControlLocked;
         Dialogue.OpenChoice(new[] { "OUI", "NON" });
 
         Assert.True(Dialogue.CloseStandaloneChoice());
 
         Assert.False(Dialogue.IsAwaitingChoice);
         Assert.Null(Dialogue.TakeChoiceResult());
-        Assert.Equal(AlundraGameState.PlayerControlBits.MenuOpen | AlundraGameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
+        Assert.Equal(GameState.PlayerControlBits.MenuOpen | GameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
     }
 
     // ---- L2 adapted: every failure of the write ------------------------------------------------------------------
@@ -732,7 +732,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         while (Director.State != AlundraSaveScreenDirector.StateWaitSquare)
         {
             Assert.True(Director.IsActive);
-            Assert.Equal(AlundraGameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
+            Assert.Equal(GameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
             Tick();
         }
 
@@ -740,7 +740,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         State.PlayerControlFlags = 0;
         InventoryTick(AlundraPadState.Start);
         Assert.False(AlundraInventoryDirector.Instance.IsActive);
-        State.PlayerControlFlags = AlundraGameState.PlayerControlBits.MenuOpen;
+        State.PlayerControlFlags = GameState.PlayerControlBits.MenuOpen;
 
         Press(AlundraPadState.Square);
         TickUntilState(AlundraSaveScreenDirector.StateIdle);
@@ -759,7 +759,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     public void WorldChange_WhileTheScreensChoiceWaits_ClosesIt_ReleasesTheFlags_WritesNothing_AndNothingStaysPushed()
     {
         Director.NoteBookFlowStarted();
-        State.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ControlLocked;
+        State.PlayerControlFlags |= GameState.PlayerControlBits.ControlLocked;
         StartAndOpenPicker();
         Press(AlundraPadState.Cross);
         Assert.True(Dialogue.IsAwaitingChoice);
@@ -799,7 +799,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.Equal(AlundraSaveBook.StateQuestion, AlundraSaveBook.ReadState(book));
         Assert.True(Dialogue.IsOpen);
         Assert.True(Director.IsBookFlowActive);
-        Assert.NotEqual(0u, State.PlayerControlFlags & AlundraGameState.PlayerControlBits.ControlLocked);
+        Assert.NotEqual(0u, State.PlayerControlFlags & GameState.PlayerControlBits.ControlLocked);
 
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
         AddHeroPawn(world);

@@ -45,7 +45,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
 
     public AlundraFlailBounceTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -53,7 +53,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
     {
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         AlundraPlayerAnimationEffects.StubCallsForTests = null;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 

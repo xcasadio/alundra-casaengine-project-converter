@@ -126,7 +126,7 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
     }
 
     /// <summary>Test-only: clears the session cache so tests do not leak a catalog loaded by one test
-    /// into another through <see cref="GetOrCreate"/> - same seam as <see cref="AlundraGameState.ResetForTests"/>.</summary>
+    /// into another through <see cref="GetOrCreate"/> - same seam as <see cref="GameState.ResetForTests"/>.</summary>
     internal static void ResetForTests() => SessionCacheByProjectPath.Clear();
 
     // No naming policy: field names/order match SpriteWriter.SpriteRecordJson exactly.

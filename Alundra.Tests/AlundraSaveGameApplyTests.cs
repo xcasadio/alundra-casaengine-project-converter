@@ -67,7 +67,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
 
     private static AlundraSaveGameDirector Director => AlundraSaveGameDirector.Instance;
 
-    private static AlundraGameState State => AlundraGameState.Instance;
+    private static GameState State => GameState.Instance;
 
     /// <summary>A save carrying something in every field, valid against the real export.</summary>
     private static AlundraSaveGame RichSave()

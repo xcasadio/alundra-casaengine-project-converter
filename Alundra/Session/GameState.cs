@@ -27,7 +27,7 @@ namespace Alundra.Session;
 /// that upper bound. This is the full extent of E3's InitializeGameState port pulled forward; anything
 /// else that method sets up (items, HP, map index tables, ...) is out of scope for this interpreter.
 /// </summary>
-public sealed class AlundraGameState
+public sealed class GameState
 {
     /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-T-3,
     /// docs/plan-transitions-carte.md) - same shape as <see cref="AlundraMusicPlayer.Instance"/>/
@@ -37,7 +37,7 @@ public sealed class AlundraGameState
     /// build their own private instance directly, never through this session carrier) - so <see cref="Instance"/>
     /// is just one more instance, reachable through the same public constructor, that <see cref="AlundraWorldProxy.GameState"/>
     /// happens to always resolve to.</summary>
-    public static readonly AlundraGameState Instance = new();
+    public static readonly GameState Instance = new();
 
     private const int WordCount = 1024;
     private const uint TemporaryFlagBit = 0x8000;
@@ -188,10 +188,10 @@ public sealed class AlundraGameState
     /// E13 C0 (docs/plan-e13-hud.md §1.5 bis): port of the original's <c>g_playerStats</c>/
     /// <c>g_saveData.PlayerStats</c> - a SINGLE aliased object in the original (GameInitializer.cs:444-445),
     /// so a single field here, never a separate "save" and "current" pair. See
-    /// <see cref="AlundraPlayerStats"/>'s own doc for why the object lives here and its setters live on
+    /// <see cref="Session.PlayerStats"/>'s own doc for why the object lives here and its setters live on
     /// <see cref="AlundraPlayerManager"/>.
     /// </summary>
-    public readonly AlundraPlayerStats PlayerStats = new();
+    public readonly PlayerStats PlayerStats = new();
 
     /// <summary>
     /// E13.c S3 (docs/plan-e13c-icones-hud.md): port of <c>g_saveData.NumberOfItems</c>

@@ -15,7 +15,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E16.d T1 (docs/plan-e16-etat-partie.md, K8 steps 1, 3 and 4, D-E16-19, SC1, SC7): the session resets a
-/// load runs on the arrival map - <see cref="AlundraGameState.ResetSessionForLoad"/>,
+/// load runs on the arrival map - <see cref="GameState.ResetSessionForLoad"/>,
 /// <see cref="AlundraHudDirector.ResetDisplayForLoad"/> and the <c>ResetSessionForLoad</c> of both inventory
 /// directors, the post-process and the portrait. Nothing here reads or writes a save file (D-E16-31).
 /// </summary>
@@ -39,7 +39,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         AlundraInventoryPortrait.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -48,10 +48,10 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
     [Fact]
     public void GameState_ResetSessionForLoad_ResetsEverySessionField_AndKeepsEveryFieldTheSaveCarries()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
 
         // Session fields, all away from their start-of-session value.
-        state.PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked | AlundraGameState.PlayerControlBits.MenuOpen;
+        state.PlayerControlFlags = GameState.PlayerControlBits.ControlLocked | GameState.PlayerControlBits.MenuOpen;
         state.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Start };
         state.TickPad.Update(AlundraPadState.Start);
         Assert.NotEqual(0u, state.TickPad.ButtonsHold);
@@ -139,7 +139,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
     [Fact]
     public void Hud_CaughtMidMpMaxCatchUp_ThenLoadAtFourOfFour_ReopensAndSettles_WithoutException()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         state.PlayerStats.MpMax = 3;
         state.PlayerStats.Mp = 3;
         var hud = AlundraHudDirector.Instance;
@@ -202,7 +202,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
     [Fact]
     public void Hud_ResetDisplayForLoad_TakesTheLoadedValues_AndKeepsPhaseYFrameCounterAndTheAttachedState()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var hud = AlundraHudDirector.Instance;
         hud.AttachToWorld(state);
         state.PlayerStats.Money = 500;
@@ -216,7 +216,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         Assert.True(hud.IsMoneyRolling);
         var (phase, y, frameCounter) = (hud.Phase, hud.Y, hud.FrameCounter);
 
-        var loaded = new AlundraPlayerStats { Hp = 12, HpMax = 30, Mp = 1, MpMax = 2, Money = 42 };
+        var loaded = new PlayerStats { Hp = 12, HpMax = 30, Mp = 1, MpMax = 2, Money = 42 };
         hud.ResetDisplayForLoad(loaded);
 
         Assert.Equal((12, 30, 1, 2, 42), (hud.Hp, hud.HpMax, hud.Mp, hud.MpMax, hud.Money));
@@ -232,7 +232,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
 
     // ---- Inventories, post-process and portrait (K8 step 4) ------------------------------------------------
 
-    private static void InventoryTick(AlundraGameState state, uint hold)
+    private static void InventoryTick(GameState state, uint hold)
     {
         state.TickPad.Update(hold);
         AlundraInventoryDirector.Instance.Tick(null);
@@ -241,7 +241,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         AlundraInventoryPortrait.Instance.Step();
     }
 
-    private static void InventoryTicks(AlundraGameState state, int count)
+    private static void InventoryTicks(GameState state, int count)
     {
         for (var i = 0; i < count; i++)
         {
@@ -261,7 +261,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
     public void Inventories_ResetSessionForLoad_CloseEverything_AndKeepTheAttachments()
     {
         var tables = ItemTablesFixture.LoadReal();
-        var state = new AlundraGameState();
+        var state = new GameState();
         AlundraPlayerManager.InitializeNewGameInventory(state, tables);
         var main = AlundraInventoryDirector.Instance;
         var sub = AlundraSubInventoryDirector.Instance;

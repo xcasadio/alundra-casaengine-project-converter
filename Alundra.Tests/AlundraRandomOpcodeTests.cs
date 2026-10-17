@@ -31,7 +31,7 @@ public sealed class AlundraRandomOpcodeTests : IDisposable
             EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = new[] { 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0xFF },
         };
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState());
+        var runner = new AlundraEventProgramRunner(document, new GameState());
         var entity = new AlundraEntityScriptProxy();
         var directions = new List<uint>();
         uint? seedAfterTheFirstDraw = null;

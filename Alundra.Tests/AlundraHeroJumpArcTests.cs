@@ -28,7 +28,7 @@ public sealed class AlundraHeroJumpArcTests
     private static ArcSpec A10JSpec => new(
         "A10J", "Overworld", "Overworld 2,1-10", new[] { 1654, 203 }, 0, 0, 0, 466, // E19.f2a: 450 before; the end moves from 342 to 388 (annex V-136)
         RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(16515072, 61341696, 0, AlundraGameState.ResetAnimationId, 16));
+        Arrival: new ArcArrival(16515072, 61341696, 0, GameState.ResetAnimationId, 16));
 
     private sealed record Pose(int X, int Y, int Z, int IsOnGround, int CollidedWithEntityZ, int ForceZ, int ForceAdjusted, uint Animation);
 

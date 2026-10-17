@@ -77,7 +77,7 @@ internal static class AlundraLootRoll
     /// The roll <c>0x80032A40</c> of one creation. <paramref name="hasRecord"/> is whether an entity record made it; <paramref name="recordFlag"/> the record's flag word (<c>_10</c>, 16 bits), <paramref name="recordCode"/> its
     /// <c>Contents</c> (only the low byte counts), <paramref name="headerCode"/> the sprite header's <c>Contents</c> (only the low byte counts); <paramref name="state"/> holds the two flag banks.
     /// </summary>
-    public static Result Roll(bool hasRecord, int recordFlag, int recordCode, int headerCode, AlundraGameState state, Func<uint> draw)
+    public static Result Roll(bool hasRecord, int recordFlag, int recordCode, int headerCode, GameState state, Func<uint> draw)
     {
         int code;
         var gameFlag = 0;

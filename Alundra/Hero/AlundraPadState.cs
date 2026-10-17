@@ -64,11 +64,11 @@ public readonly struct AlundraPadState
 
     /// <summary>
     /// E20.a A1 (D-E20-2): the pad of ONE logic tick, as the binary's <c>MovePlayer</c> reads it (<c>g_padState1</c>, refreshed once per tick just before <c>UpdateWorld</c>,
-    /// <c>0x8002BB5C</c>): hold (<c>0x80126F28</c>), pressed edge (<c>0x80126F2A</c>) and released edge, from <paramref name="tickPad"/> (<see cref="AlundraGameState.TickPad"/> in a driven world).
+    /// <c>0x8002BB5C</c>): hold (<c>0x80126F28</c>), pressed edge (<c>0x80126F2A</c>) and released edge, from <paramref name="tickPad"/> (<see cref="GameState.TickPad"/> in a driven world).
     /// </summary>
     public static AlundraPadState FromTickPad(AlundraTickPad tickPad) => FromTickPad(tickPad, default);
 
-    /// <summary>E20.d2a S1: the pad of the tick as <see cref="FromTickPad(AlundraTickPad)"/> builds it, plus the stick sample of the FRAME (<paramref name="frameSample"/>, <see cref="AlundraGameState.LastPadState"/>):
+    /// <summary>E20.d2a S1: the pad of the tick as <see cref="FromTickPad(AlundraTickPad)"/> builds it, plus the stick sample of the FRAME (<paramref name="frameSample"/>, <see cref="GameState.LastPadState"/>):
     /// the digital and stick direction bits and the signed deflection, copied as they are (the tick pad itself does not carry them).</summary>
     public static AlundraPadState FromTickPad(AlundraTickPad tickPad, in AlundraPadState frameSample) => new()
     {

@@ -58,7 +58,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
         public IAlundraDialogueDirector? DialogueDirector { get; set; }
     }
 
-    private static void AttachRealDialogueContext(AlundraGameState gameState)
+    private static void AttachRealDialogueContext(GameState gameState)
     {
         Director.AttachToWorld(new DialogueService(), gameState);
         Director.InstallForMapEntry();
@@ -69,7 +69,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
     [Fact]
     public void GlyphMarker_BecomesFont3Character_NoStrayOperandDigit()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AttachRealDialogueContext(gameState);
 
         // The real corpus shape: "\W2" at the end of a clause ("Ouf\W2 Je l'ai échappé belle") - glyph 18
@@ -89,7 +89,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
     [Fact]
     public void BrMarker_BecomesLineBreak()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AttachRealDialogueContext(gameState);
 
         var asset = DialogueTestAssets.BuildRaw("BrPage", "Start", "line one[br trimwhitespace=false/]line two");
@@ -104,7 +104,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
     [Fact]
     public void EmptyMarkerPage_ShowsAnEmptyBox()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AttachRealDialogueContext(gameState);
 
         var asset = DialogueTestAssets.BuildRaw("EmptyPage", "Start", "[empty trimwhitespace=false/]");
@@ -118,7 +118,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
     [Fact]
     public void AbsentNode_OpensAnEmptyBox_LikeAnUnexportedSlotDidBeforeE15c()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AttachRealDialogueContext(gameState);
 
         var asset = DialogueTestAssets.SinglePage("SomeNode", "text", node: "M1_S000");
@@ -133,7 +133,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
     [Fact]
     public void NullAsset_OpensAnEmptyBox()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AttachRealDialogueContext(gameState);
 
         Director.Open(null, null, controlMode: 1);
@@ -147,7 +147,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
     [Fact]
     public void PageCommands_RunOnlyWhenTheirOwnPageIsShown_NeverBefore()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AttachRealDialogueContext(gameState);
 
         var asset = DialogueTestAssets.Build(
@@ -190,7 +190,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
     [Fact]
     public void SharedTable_BitClear_ResolvesSharedNode_AndDisplaysIt()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AttachRealDialogueContext(gameState);
         var worldContext = new FakeEntityWorldContext { DialogueDirector = Director };
 
@@ -210,7 +210,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
     [Fact]
     public void DegradedPath_NoDirector_RunsEveryPagesCommands_FalconUpdateIncluded()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.FalconTemp = 4;
         var context = new FakeEntityWorldContext { DialogueDirector = null };
 

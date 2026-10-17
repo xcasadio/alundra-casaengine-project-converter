@@ -140,7 +140,7 @@ internal sealed class ArcRun : IDisposable
     /// invariants (a position that must not change between two pcs).</summary>
     public Action? OnFrame { get; set; }
 
-    public static AlundraGameState State => AlundraGameState.Instance;
+    public static GameState State => GameState.Instance;
 
     /// <summary>E20.f0 T4: the item tables of the world, which the hero's inventory setters need (non-null in an arc with <see cref="ArcSpec.Prefabs"/>).</summary>
     private AlundraItemTables InventoryTables
@@ -295,7 +295,7 @@ internal sealed class ArcRun : IDisposable
 
             // The map-entry animation (0x36) ends through the animation chain (anim 54 -> 0), which the headless
             // montage never plays: the hero is put at its end, Idle.
-            Assert.Equal(AlundraGameState.ResetAnimationId, Hero.TargetAnimationId);
+            Assert.Equal(GameState.ResetAnimationId, Hero.TargetAnimationId);
             Hero.TargetAnimationId = 0;
 
             // Position and tile together, before the first frame: AdoptPlayerPawn puts the hero on the New Game tile

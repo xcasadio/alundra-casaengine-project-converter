@@ -28,7 +28,7 @@ public sealed class BackdropCellularPushProductionTests : IDisposable
 {
     public BackdropCellularPushProductionTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -36,7 +36,7 @@ public sealed class BackdropCellularPushProductionTests : IDisposable
 
     public void Dispose()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();

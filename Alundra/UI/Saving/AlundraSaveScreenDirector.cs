@@ -38,7 +38,7 @@ namespace Alundra.UI.Saving;
 /// <para><b>Labels (L3, D-E16-36).</b> Once per opening, at the entry of <c>0x0C</c> and never during the picker
 /// (SE9): <see cref="IAlundraSaveSlots.TryLoad"/> then <see cref="AlundraSaveGame.TryValidate"/> of <c>slot1</c> to
 /// <c>slot4</c>, with the guarded rules factory of E16.d (<see cref="AlundraSaveGameDirector.TryCreateRules"/>). A
-/// valid slot shows, recomputed, the chapter's name (ETC text <see cref="AlundraChapterFlags.GetFirstEnabledFlagIndex"/>)
+/// valid slot shows, recomputed, the chapter's name (ETC text <see cref="ChapterFlags.GetFirstEnabledFlagIndex"/>)
 /// on line 1 and <see cref="AlundraSaveGame.BuildSummary"/> on line 2, the order of the binary (O-E16-18,
 /// 0x80060128-0x80060134, 0x80058D74-0x80058DC4). Any other case shows what the binary shows for an empty block of
 /// the file: two empty lines in a box still drawn (<see cref="EmptySlotLine"/>). The file's metadata is never read;
@@ -233,7 +233,7 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
         public string Line1 = string.Empty;
     }
 
-    private AlundraGameState? _gameState;
+    private GameState? _gameState;
     private IAlundraSoundPlayer? _soundPlayer;
 
     private int _state;
@@ -343,7 +343,7 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
 
     /// <summary>Re-points this session instance at the world's game state and sound player, touching no flow state
     /// (same contract as the other session directors). Null is tolerated: <see cref="Tick"/> then does nothing.</summary>
-    public void AttachToWorld(AlundraGameState? gameState, IAlundraSoundPlayer? soundPlayer)
+    public void AttachToWorld(GameState? gameState, IAlundraSoundPlayer? soundPlayer)
     {
         _gameState = gameState;
         _soundPlayer = soundPlayer;
@@ -370,10 +370,10 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
 
         if (_gameState != null)
         {
-            _gameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.ControlLocked;
+            _gameState.PlayerControlFlags &= ~GameState.PlayerControlBits.ControlLocked;
             if (_menuOpenPosted)
             {
-                _gameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+                _gameState.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
             }
         }
 
@@ -461,7 +461,7 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
 
     // ---- The state machine ---------------------------------------------------------------------------------------
 
-    private void RunState(AlundraGameState state)
+    private void RunState(GameState state)
     {
         switch (_state)
         {
@@ -628,7 +628,7 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
                 // 0x63: g_isMemoryCopyInProgress = 0, g_globalTransitionState = 0, MenuOpen cleared.
                 _fadeSubstate = 0;
                 _fadeFrame = 0;
-                state.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+                state.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
                 _menuOpenPosted = false;
                 _capturedSave = null;
                 _transition = Transition.None;
@@ -641,7 +641,7 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
     /// write, ADAPTED (L2): the object captured at the book's state 5, itself (SE4), to the slot of the entry frozen
     /// at Cross (SE5), in binary, with its metadata. Any status but <see cref="SaveGameSaveStatus.Saved"/>, and any
     /// exception, is the failure <c>0x3fd</c>.</summary>
-    private void RunWrite(AlundraGameState state)
+    private void RunWrite(GameState state)
     {
         if (!AdvanceFade(WaitLimit))
         {
@@ -717,7 +717,7 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
     {
         if (_gameState != null)
         {
-            _gameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+            _gameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
         }
 
         _menuOpenPosted = true;
@@ -765,7 +765,7 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
                     continue;
                 }
 
-                var chapter = AlundraChapterFlags.GetFirstEnabledFlagIndex(loaded.GameFlags);
+                var chapter = ChapterFlags.GetFirstEnabledFlagIndex(loaded.GameFlags);
                 _labelLine0[i] = Bound(ResolveEtc(chapter));
                 _labelLine1[i] = Bound(AlundraSaveGame.BuildSummary(loaded.HpMax, loaded.GameTime));
             }
@@ -912,7 +912,7 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
     }
 
     /// <summary><c>DisplayMemoryCardMenu</c> (0x80058F24), one call.</summary>
-    private void RenderPicker(AlundraGameState state)
+    private void RenderPicker(GameState state)
     {
         if ((_pickerFlags & (PickerOpening | PickerScrolling)) != 0)
         {
@@ -972,7 +972,7 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
 
     /// <summary>0x800594C8-0x80059C84: Cross asks OUI/NON; otherwise Down, then Up, in the same tick
     /// (<c>ButtonsJustPressedByInterval</c>, the key repeat).</summary>
-    private void RunPickerInput(AlundraGameState state)
+    private void RunPickerInput(GameState state)
     {
         var pad = _padInterval;
 
@@ -1220,7 +1220,7 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
         return false;
     }
 
-    private void RunTransition(AlundraGameState state)
+    private void RunTransition(GameState state)
     {
         switch (_transition)
         {

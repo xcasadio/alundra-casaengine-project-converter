@@ -146,12 +146,12 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
         m.RunFrame(); // frame R: the pass releases the box, then the trigger reads the Start of this tick
         Assert.False(m.Director.IsOpen);
         Assert.True(AlundraInventoryDirector.Instance.IsActive);
-        Assert.Equal(AlundraGameState.PlayerControlBits.MenuOpen, m.State.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+        Assert.Equal(GameState.PlayerControlBits.MenuOpen, m.State.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
     }
 
     [Theory]
-    [InlineData(0, AlundraGameState.PlayerControlBits.MenuOpen)]
-    [InlineData(1, AlundraGameState.PlayerControlBits.MessageBox)]
+    [InlineData(0, GameState.PlayerControlBits.MenuOpen)]
+    [InlineData(1, GameState.PlayerControlBits.MessageBox)]
     public void MapEventOpeningABox_OnTheTriggerTick_WinsOverTheInventory(int controlMode, uint expectedFlags)
     {
         // binary: a box opened inside UpdateWorld(P) (map events) poses 0x08/0x10 before the trigger tests 0x800DC4B8 == 0: the Start of P is lost.
@@ -196,7 +196,7 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
         Assert.True(started);
         Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
         Assert.False(AlundraInventoryDirector.Instance.IsActive);
-        Assert.Equal(0u, m.State.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+        Assert.Equal(0u, m.State.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
         m.RunFrames(2);
         Assert.False(AlundraInventoryDirector.Instance.IsActive);
     }

@@ -86,7 +86,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
@@ -98,7 +98,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
 
         // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
         // isolation) - kept for symmetry with the existing session-singleton test classes.
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
@@ -544,7 +544,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
     /// + camera entity, a real <see cref="AlundraWorldProxy"/> with the real map-389
     /// <see cref="TileMapData"/> installed as <c>_tileMapData</c>, the player seeded EXACTLY as
     /// <see cref="AlundraWorldProxy"/>'s own private <c>AdoptPlayerPawn</c> does (tile 33/59 -&gt; px
-    /// 804/952 - <see cref="AlundraGameState.CameraTileX"/>/<see cref="AlundraGameState.CameraTileY"/>,
+    /// 804/952 - <see cref="GameState.CameraTileX"/>/<see cref="GameState.CameraTileY"/>,
     /// <c>PlayerEntity</c> == <c>EntityFollowedByCamera</c> - <c>AdoptPlayerPawn</c> itself is not
     /// headless-reachable, it needs a live <see cref="AlundraPlayerController"/>, the same reason
     /// <c>IntroTraceHarnessTests</c>' own <c>HeadlessIntroSimulation</c> seeds its player by hand too), the
@@ -598,16 +598,16 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         playerProxy.Status = EntityStatus.Normal;
         playerProxy.EntityRefId = -1;
         playerProxy.EventTrigger = ScriptHelper.ProgramUnknown;
-        playerProxy.PosX = (AlundraGameState.CameraTileX * 24 + 12) << 16;
-        playerProxy.PosY = (AlundraGameState.CameraTileY * 16 + 8) << 16;
+        playerProxy.PosX = (GameState.CameraTileX * 24 + 12) << 16;
+        playerProxy.PosY = (GameState.CameraTileY * 16 + 8) << 16;
         playerProxy.PosZ = 0;
         playerProxy.TileX = (playerProxy.PosX >> 16) / 24;
         playerProxy.TileY = (playerProxy.PosY >> 16) / 16;
         playerProxy.TileZ = 0;
-        playerProxy.TargetAnimationId = AlundraGameState.ResetAnimationId;
-        playerProxy.TargetDirection = AlundraGameState.ResetDirectionId;
-        playerProxy.CurrentAnimationId = ~AlundraGameState.ResetAnimationId;
-        playerProxy.CurrentDirection = ~AlundraGameState.ResetDirectionId;
+        playerProxy.TargetAnimationId = GameState.ResetAnimationId;
+        playerProxy.TargetDirection = GameState.ResetDirectionId;
+        playerProxy.CurrentAnimationId = ~GameState.ResetAnimationId;
+        playerProxy.CurrentDirection = ~GameState.ResetDirectionId;
 
         proxy.PlayerEntity = playerProxy;
         proxy.EntityFollowedByCamera = playerProxy;

@@ -31,7 +31,7 @@ public sealed class AlundraHeroChargeArenaTests : IDisposable
     public AlundraHeroChargeArenaTests(ITestOutputHelper output)
     {
         _output = output;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -39,7 +39,7 @@ public sealed class AlundraHeroChargeArenaTests : IDisposable
     {
         AlundraRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 

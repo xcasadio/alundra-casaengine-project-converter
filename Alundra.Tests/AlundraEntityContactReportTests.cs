@@ -41,7 +41,7 @@ public sealed class AlundraEntityContactReportTests
     /// at (160, 100), a probe installed. The hero walks east by his <c>TargetDirection</c> and the walk animation (speed 208), north on 16.</summary>
     private static HeroRig NewHeroRig()
     {
-        var host = new ContactHost(playerControlFlags: AlundraGameState.PlayerControlBits.ControlLocked, playerController: new AlundraPlayerController());
+        var host = new ContactHost(playerControlFlags: GameState.PlayerControlBits.ControlLocked, playerController: new AlundraPlayerController());
         var world = ContactWorld.BuildWorld(new FlatGroundField { GroundZ = 48f }, new AlundraMovementObstacleProbe(host));
         var hero = ContactWorld.AddEntity(world, host, "Hero", 100, 100, 48, -10, -7, 0, 21, 15, 32, isPlayer: true);
         var npc = ContactWorld.AddEntity(world, host, "Npc", 160, 100, 48, -10, -7, 0, 20, 14, 32);
@@ -124,7 +124,7 @@ public sealed class AlundraEntityContactReportTests
 
         Assert.Same(rig.Npc, rig.Hero.XCollisionEntity);
 
-        rig.Host.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        rig.Host.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
         Stop(rig); // were the pipeline running, an idle tick would clear the contact.
         for (var tick = 0; tick < 3; tick++)
         {
@@ -132,7 +132,7 @@ public sealed class AlundraEntityContactReportTests
             Assert.Same(rig.Npc, rig.Hero.XCollisionEntity);
         }
 
-        rig.Host.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+        rig.Host.GameState.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
         rig.Tick();
         Assert.Null(rig.Hero.XCollisionEntity);
     }
@@ -202,7 +202,7 @@ public sealed class AlundraEntityContactReportTests
     private static (AlundraEventProgramRunner Runner, AlundraEntityScriptProxy Entity, EventProgramState State) WalkMontage(params int[] codes)
     {
         var document = NewDocument(codes);
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), new GridWorld(SyntheticGrid()));
+        var runner = new AlundraEventProgramRunner(document, new GameState(), new GridWorld(SyntheticGrid()));
         var entity = new AlundraEntityScriptProxy { PosX = 108 << 16, PosY = 88 << 16, TargetDirection = 24 };
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
         return (runner, entity, state);

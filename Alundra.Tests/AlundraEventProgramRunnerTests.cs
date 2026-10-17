@@ -36,8 +36,8 @@ public class AlundraEventProgramRunnerTests
         };
     }
 
-    private static AlundraEventProgramRunner NewRunner(EventProgramDocument document, AlundraGameState? gameState = null, IEntityWorldContext? worldContext = null)
-        => new(document, gameState ?? new AlundraGameState(), worldContext);
+    private static AlundraEventProgramRunner NewRunner(EventProgramDocument document, GameState? gameState = null, IEntityWorldContext? worldContext = null)
+        => new(document, gameState ?? new GameState(), worldContext);
 
     private static AlundraEntityScriptProxy NewEntity() => new();
 
@@ -393,7 +393,7 @@ public class AlundraEventProgramRunnerTests
     {
         // Flag word (v2<<8|v1) = 300 = 0x012C -> v1=0x2C(44), v2=0x01(1); bit = v1&0x1f = 44&31 = 12.
         var document = NewDocument(0x05, 44, 1, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
@@ -428,7 +428,7 @@ public class AlundraEventProgramRunnerTests
     public void IfFlagOff_FallsThrough_WhenFlagSet()
     {
         var document = NewDocument(0x31, 92, 3, 5, 0, 0, 0x1A, 1, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(860, 1u << (92 & 0x1f));
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
@@ -463,7 +463,7 @@ public class AlundraEventProgramRunnerTests
     public void WaitUntilFlagOn_FlagSet_AdvancesByThree()
     {
         var document = NewDocument(0x36, 44, 1, 0x1A, 9, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(300, 1u << (44 & 0x1f));
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
@@ -532,7 +532,7 @@ public class AlundraEventProgramRunnerTests
     [Fact]
     public void RunScript_NoDocument_IsCountedNoOp_DegradedMode()
     {
-        var runner = new AlundraEventProgramRunner(null, new AlundraGameState());
+        var runner = new AlundraEventProgramRunner(null, new GameState());
         var entity = NewEntity();
         entity.ProgramIndexes[ScriptHelper.ProgramALoad] = 133;
 
@@ -545,7 +545,7 @@ public class AlundraEventProgramRunnerTests
     [Fact]
     public void RunSpriteEvent_IsCountedNoOp()
     {
-        var runner = new AlundraEventProgramRunner(null, new AlundraGameState());
+        var runner = new AlundraEventProgramRunner(null, new GameState());
         var entity = NewEntity();
 
         runner.RunSpriteEvent(entity);
@@ -744,7 +744,7 @@ public class AlundraEventProgramRunnerTests
         // Four (flag,bit) pairs, each encoded as flag = v[2i+1] + v[2i+2]*0x100: flags 12/13/14/15
         // directly (all < 32, so mask = 1<<flag - keeps the test arithmetic simple).
         var document = NewDocument(0x33, 12, 0, 13, 0, 14, 0, 15, 0, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(12, 1u << 12);
         gameState.AddFlag(13, 1u << 13);
         gameState.AddFlag(14, 1u << 14);
@@ -764,7 +764,7 @@ public class AlundraEventProgramRunnerTests
     {
         // Same four pairs as above, but flag 14's bit is never set.
         var document = NewDocument(0x33, 12, 0, 13, 0, 14, 0, 15, 0, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(12, 1u << 12);
         gameState.AddFlag(13, 1u << 13);
         gameState.AddFlag(15, 1u << 15);
@@ -783,7 +783,7 @@ public class AlundraEventProgramRunnerTests
     {
         // flag = v1 + v2*0x100 = 44 + 1*0x100 = 300 (below 0x8000, persistent bank); bit = 44&0x1f = 12.
         var document = NewDocument(0x32, 44, 1, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(300, 0xFFFFFFFFu & ~(1u << 12)); // every other bit of the word already set.
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
@@ -809,7 +809,7 @@ public class AlundraEventProgramRunnerTests
         // flag id | 0x8000 selects the session-only temporary bank (AlundraGameState's own doc);
         // v2=0x81 -> flag = 44 + 0x81*0x100 = 0x8100 + 44 = 0x812C; bit = 44&0x1f = 12.
         var document = NewDocument(0x32, 44, 0x81, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
@@ -832,7 +832,7 @@ public class AlundraEventProgramRunnerTests
     {
         // Same four (flag,bit) pairs as CheckFlagsOn's own tests, all clear.
         var document = NewDocument(0x34, 12, 0, 13, 0, 14, 0, 15, 0, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
@@ -847,7 +847,7 @@ public class AlundraEventProgramRunnerTests
     public void CheckFlagsOff_0x34_OnlyFirstBitSet_SetsResult0()
     {
         var document = NewDocument(0x34, 12, 0, 13, 0, 14, 0, 15, 0, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(12, 1u << 12);
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
@@ -863,7 +863,7 @@ public class AlundraEventProgramRunnerTests
     public void CheckFlagsOff_0x34_OnlyFourthBitSet_SetsResult0()
     {
         var document = NewDocument(0x34, 12, 0, 13, 0, 14, 0, 15, 0, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(15, 1u << 15);
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
@@ -879,7 +879,7 @@ public class AlundraEventProgramRunnerTests
     public void CheckFlagsOff_0x34_AllFourBitsSet_SetsResult0()
     {
         var document = NewDocument(0x34, 12, 0, 13, 0, 14, 0, 15, 0, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(12, 1u << 12);
         gameState.AddFlag(13, 1u << 13);
         gameState.AddFlag(14, 1u << 14);
@@ -900,7 +900,7 @@ public class AlundraEventProgramRunnerTests
         // flag = v2<<8|v1 = 1<<8|44 = 300; bit = 44&0x1f = 12 - the OPPOSITE polarity from 0x36's own
         // test (WaitUntilFlagOn_FlagClear_SuspendsAtSameCodeIndex): here it is the SET bit that suspends.
         var document = NewDocument(0x35, 44, 1, 0x1A, 9, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(300, 1u << (44 & 0x1f));
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
@@ -1704,7 +1704,7 @@ public class AlundraEventProgramRunnerTests
     public void PlayerLoseControl_0x10_SetsControlLockedBit()
     {
         var document = NewDocument(0x10, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
 
@@ -1712,17 +1712,17 @@ public class AlundraEventProgramRunnerTests
         runner.RunOneScriptCall(entity, state);
 
         Assert.Equal(
-            AlundraGameState.PlayerControlBits.ControlLocked,
-            gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.ControlLocked);
+            GameState.PlayerControlBits.ControlLocked,
+            gameState.PlayerControlFlags & GameState.PlayerControlBits.ControlLocked);
     }
 
     [Fact]
     public void PlayerGainControl_0x11_ClearsControlLockedBit_PreservesOtherBits()
     {
         var document = NewDocument(0x11, 0xFF);
-        var gameState = new AlundraGameState
+        var gameState = new GameState
         {
-            PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked | AlundraGameState.PlayerControlBits.MenuOpen,
+            PlayerControlFlags = GameState.PlayerControlBits.ControlLocked | GameState.PlayerControlBits.MenuOpen,
         };
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
@@ -1730,8 +1730,8 @@ public class AlundraEventProgramRunnerTests
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
         runner.RunOneScriptCall(entity, state);
 
-        Assert.Equal(0u, gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.ControlLocked);
-        Assert.Equal(AlundraGameState.PlayerControlBits.MenuOpen, gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+        Assert.Equal(0u, gameState.PlayerControlFlags & GameState.PlayerControlBits.ControlLocked);
+        Assert.Equal(GameState.PlayerControlBits.MenuOpen, gameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
     }
 
     [Fact]
@@ -1740,7 +1740,7 @@ public class AlundraEventProgramRunnerTests
         // Real Load-program operand bytes (docs/intro-programs-389.txt offset 305):
         // params=[17,0,183,1] -> index = (0<<8)|17 = 17; value = (1<<8)|183 = 439.
         var document = NewDocument(0x38, 17, 0, 183, 1, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
 
@@ -1755,7 +1755,7 @@ public class AlundraEventProgramRunnerTests
     {
         // v1=255,v2=255 -> index = 0xFFFF = 65535, far beyond the table's 500 entries.
         var document = NewDocument(0x38, 255, 255, 1, 0, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
 
@@ -2861,7 +2861,7 @@ public class AlundraEventProgramRunnerTests
         // Real map-389 params [0,16,0]: flag = (v2<<8)|v1 = (16<<8)|0 = 0x1000 = Up, snapshot 0 (Hold).
         var document = NewDocument(0x2F, 0, 16, 0, 0xFF);
         // E20.a A1: 0x2F modes 0 and 1 read the pad of the TICK (AlundraGameState.TickPad), not the snapshot of the rendered frame.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.TickPad.Update(AlundraPadState.Up);
         var runner = NewRunner(document, gameState: gameState);
         var entity = NewEntity();
@@ -2877,7 +2877,7 @@ public class AlundraEventProgramRunnerTests
     public void CheckPadButtons_0x2F_ButtonNotHeld_ResultZero()
     {
         var document = NewDocument(0x2F, 0, 16, 0, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.TickPad.Update(AlundraPadState.Down);
         var runner = NewRunner(document, gameState: gameState);
         var entity = NewEntity();
@@ -2893,7 +2893,7 @@ public class AlundraEventProgramRunnerTests
     {
         var document = NewDocument(0x2F, 0, 16, 1, 0xFF); // v3=1 -> ButtonsJustPressed
         // E20.a A1: the edge of the tick pad (the pad went from nothing to Up on this tick); a held Up on a later tick has none.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.TickPad.Update(AlundraPadState.Up);
         var runner = NewRunner(document, gameState: gameState);
         var entity = NewEntity();
@@ -2917,7 +2917,7 @@ public class AlundraEventProgramRunnerTests
         var document = NewDocument(0x2F, 0, 16, mode, 0xFF);
         // Both real fields set so a bug reading the wrong one would still (wrongly) pass - only reading
         // NEITHER (the degraded path) proves this.
-        var gameState = new AlundraGameState
+        var gameState = new GameState
         {
             LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Up, ButtonsJustPressed = AlundraPadState.Up },
         };
@@ -2938,7 +2938,7 @@ public class AlundraEventProgramRunnerTests
         // A pad state with ONLY bit 0 held (0x0001). v1 carries the LOW byte, v2 the HIGH byte
         // (flag = v[2]<<8|v[1]) - two disjoint single-bit masks prove each operand lands in its own byte
         // position, not that they are simply OR'd/ignored.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.TickPad.Update(0x0001);
 
         // v1=0x01 (low byte) -> flag = 0x0001 - matches the held bit.
@@ -2966,7 +2966,7 @@ public class AlundraEventProgramRunnerTests
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunnerForPadSeamTest();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController { get; init; }
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = System.Array.Empty<AlundraEntityScriptProxy>();
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
@@ -3015,7 +3015,7 @@ public class AlundraEventProgramRunnerTests
     public void PadSeam_Neutralization_NoPlayerUpdateRan_LastPadStateStaysZero_0x2FReadsZero()
     {
         // Same gameState, but never touched by a player Update - the untouched default.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
 
         var document = NewDocument(0x2F, 0, 16, 0, 0xFF);
         var runner = NewRunner(document, gameState: gameState);
@@ -3097,7 +3097,7 @@ public class AlundraEventProgramRunnerTests
 
         var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 18, TileY = 38, TileZ = 8 };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
-        var runner = new AlundraEventProgramRunner(document!, new AlundraGameState(), context);
+        var runner = new AlundraEventProgramRunner(document!, new GameState(), context);
 
         var records = RunHatchDoorProgramTwice(runner, player);
 
@@ -3127,7 +3127,7 @@ public class AlundraEventProgramRunnerTests
         // mutation-tuiles.md).
         var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 18, TileY = 38, TileZ = 8 };
         var context = new FakeEntityWorldContext { PlayerEntity = null };
-        var runner = new AlundraEventProgramRunner(document!, new AlundraGameState(), context);
+        var runner = new AlundraEventProgramRunner(document!, new GameState(), context);
 
         var records = RunHatchDoorProgramTwice(runner, player);
 
@@ -3761,7 +3761,7 @@ public class AlundraEventProgramRunnerTests
             var document = NewDocument(0x53, 17, 1, 5, 6, 2, 0, 69, 0xFF);
             var player = NewPlayerForWarp(targetAnimationId: 7, targetDirection: 0x18);
             var context = new FakeEntityWorldContext { PlayerEntity = player };
-            var gameState = new AlundraGameState { IsWarpDisabled = true };
+            var gameState = new GameState { IsWarpDisabled = true };
             var runner = NewRunner(document, gameState, context);
             var entity = NewEntity();
             var state = new EventProgramState { Codes = document.CodesAsBytes() };
@@ -3784,7 +3784,7 @@ public class AlundraEventProgramRunnerTests
         try
         {
             var document = NewDocument(0x9B, 0xFF);
-            var gameState = new AlundraGameState();
+            var gameState = new GameState();
             var runner = NewRunner(document, gameState);
             var entity = NewEntity();
             var state = new EventProgramState { Codes = document.CodesAsBytes() };
@@ -3816,7 +3816,7 @@ public class AlundraEventProgramRunnerTests
         try
         {
             var document = NewDocument(0x9C, 0xFF);
-            var gameState = new AlundraGameState { IsWarpDisabled = true };
+            var gameState = new GameState { IsWarpDisabled = true };
             var runner = NewRunner(document, gameState);
             var entity = NewEntity();
             var state = new EventProgramState { Codes = document.CodesAsBytes() };
@@ -3888,7 +3888,7 @@ public class AlundraEventProgramRunnerTests
 
         // flag = v1 + v2*0x100 = 7 + 0x80*0x100 = 0x8007 (temporary bank); bit = 7&0x1f = 7. Isolated
         // into its own 0xFF-terminated buffer (the real program keeps going past it).
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
         var state = new EventProgramState { Codes = instructionBytes.Append((byte)0xFF).ToArray() };
@@ -3921,7 +3921,7 @@ public class AlundraEventProgramRunnerTests
             new byte[] { 0x34, 0x0A, 0x80, 0x0B, 0x80, 0x0C, 0x80, 0x0D, 0x80 },
             instructionBytes);
 
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
         var isolatedCodes = instructionBytes.Append((byte)0xFF).ToArray();
@@ -3958,7 +3958,7 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(new byte[] { 0x35, 0x5A, 0x80 }, instructionBytes);
 
         // flag = v1 + v2*0x100 = 0x5A + 0x80*0x100 = 0x805A (temporary bank); bit = 0x5A&0x1f = 0x1A.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(0x805A, 1u << 0x1A);
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
@@ -4029,7 +4029,7 @@ public class AlundraEventProgramRunnerTests
 
         // v1=0 (raw entity-record-id search, 0x80 clear): no spawned entity carries EntityRefId 0 in
         // this isolated fixture -> matches empty -> Result=1 ("no entity").
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var context = new FakeEntityWorldContext();
         var runner = NewRunner(document, gameState, context);
         var entity = NewEntity();
@@ -4382,7 +4382,7 @@ public class AlundraEventProgramRunnerTests
         // v1=0x80 (owner itself), v2=0x81 (player): place the owner and the player at the SAME position
         // so the player lands inside the box the real offsets build around the owner (D-E16-27's own
         // worked example).
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var player = new AlundraEntityScriptProxy { IsPlayer = true };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
         var runner = NewRunner(document, gameState, context);
@@ -4464,7 +4464,7 @@ public class AlundraEventProgramRunnerTests
         // v1=0 (raw entity-record-id search, 0x80 clear), v2=0 (wanted CurrentAnimationId): one spawned
         // candidate with EntityRefId 0 and CurrentAnimationId 0 gives a meaningful true case off the
         // real operands.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var candidate = NewEntity();
         candidate.Status = EntityStatus.Normal;
         candidate.EntityRefId = 0;
@@ -4645,7 +4645,7 @@ public class AlundraEventProgramRunnerTests
 
         // v1=0x81 (player): a player set exactly on the ground (ModdedPosZ == TerrainHeight + 1 raw
         // 16.16 unit) gives a meaningful true case off the real operand.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var player = new AlundraEntityScriptProxy { IsPlayer = true, TerrainHeight = 20 << 16, PosZ = (20 << 16) + 1 };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
         var runner = NewRunner(document, gameState, context);
@@ -4719,7 +4719,7 @@ public class AlundraEventProgramRunnerTests
     {
         // Flag id 0x0007 (bit 0x8000 clear -> GAME bank, not temporary).
         var document = NewDocument(0x7B, 7, 0, 6, 0, 0xFF, /*6*/ 0x1A, 42, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(0x0007, 1u << (7 & 0x1f));
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
@@ -4764,7 +4764,7 @@ public class AlundraEventProgramRunnerTests
     public void JumpIfFlagClear_0x7C_FlagSet_AdvancesBySize_MarkUntouched()
     {
         var document = NewDocument(0x7C, 0x07, 0x80, 6, 0, 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(0x8007, 1u << (0x07 & 0x1f));
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
@@ -4845,7 +4845,7 @@ public class AlundraEventProgramRunnerTests
     public void JumpFromParamIfFlagSet_0x80_FlagSet_ReturnsToMark_TemporaryBank()
     {
         var document = NewDocument(0x01, 0x01, /*2*/ 0xFF, 0x01, 0x01, /*5*/ 0x80, 7, 0x80, /*8*/ 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(0x8007, 1u << (7 & 0x1f));
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
@@ -4886,7 +4886,7 @@ public class AlundraEventProgramRunnerTests
     public void JumpFromParamIfFlagClear_0x81_FlagSet_AdvancesBySize()
     {
         var document = NewDocument(0x01, 0x01, 0xFF, 0x01, 0x01, /*5*/ 0x81, 7, 0, /*8*/ 0xFF);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(0x0007, 1u << (7 & 0x1f));
         var runner = NewRunner(document, gameState);
         var entity = NewEntity();
@@ -4941,7 +4941,7 @@ public class AlundraEventProgramRunnerTests
         // (the FIRST check's own operand) picks the branch that reaches offset 807. Flag 0x03FC (the
         // 0x81's own operand, bit 0x8000 clear -> GAME bank) is left at its default CLEAR state, so the
         // 0x81 takes its branch.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(0x045A, 1u << (0x5A & 0x1f));
         var runner = new AlundraEventProgramRunner(document, gameState, null);
         var entity = NewEntity();
@@ -4995,7 +4995,7 @@ public class AlundraEventProgramRunnerTests
         // 752 (resumes next call at 753), an unimplemented 0x73 at 753, a real 0x37 Wait(1) at 755, then
         // 0x3B (Check player in area, box [40,40,17,17,1,1]) at 757, whose Result gates the 0x03 (if true
         // goto) at 764 that reaches offset 773.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(0x83EC, 1u << (0xEC & 0x1f));
         var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 40, TileY = 17, TileZ = 1 };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
@@ -5059,7 +5059,7 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(new byte[] { 0x07, 0x1A, 0x00, 0x21, 0x24, 0x3B, 0x00, 0x06 }, codeBytes[1739..1747]);
         Assert.Equal(0x7E, codeBytes[1747]);
 
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(0x807A, 1u << (0x7A & 0x1f));
         var owner = NewEntity();
         owner.Status = EntityStatus.Normal; // gates the raw-id search on the owner's own status

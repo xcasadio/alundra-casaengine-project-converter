@@ -289,7 +289,7 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
     {
         // The arrival tile (30, 10) is inside the zone (27, 0)-(51, 27) of the records 4, 5 and 6 of map 109 (G3a-0, table Z); the hero is then moved off it
         // (the scripts and the physics of the first frame do) before the proxy's first Update.
-        using var arc = new ArcRun(Dream109(new ArcArrival((30 * 24 + 12) << 16, (10 * 16 + 8) << 16, 0, AlundraGameState.ResetAnimationId, 0)));
+        using var arc = new ArcRun(Dream109(new ArcArrival((30 * 24 + 12) << 16, (10 * 16 + 8) << 16, 0, GameState.ResetAnimationId, 0)));
         Assert.Equal((30, 10), (arc.Hero.TileX, arc.Hero.TileY));
         arc.Hero.TileX = 0;
         arc.Hero.TileY = 59;
@@ -332,9 +332,9 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
 
         foreach (var (flags, moves) in new[]
         {
-            (AlundraGameState.PlayerControlBits.MenuOpen, false), (AlundraGameState.PlayerControlBits.Unused40, false),
-            (AlundraGameState.PlayerControlBits.MenuOpen | AlundraGameState.PlayerControlBits.Unused40, false),
-            (0x01u, true), (0x07u, true), (0x37u, true), (AlundraGameState.PlayerControlBits.ForcedWeapon, true),
+            (GameState.PlayerControlBits.MenuOpen, false), (GameState.PlayerControlBits.Unused40, false),
+            (GameState.PlayerControlBits.MenuOpen | GameState.PlayerControlBits.Unused40, false),
+            (0x01u, true), (0x07u, true), (0x37u, true), (GameState.PlayerControlBits.ForcedWeapon, true),
         })
         {
             proxy.GameState.PlayerControlFlags = flags;

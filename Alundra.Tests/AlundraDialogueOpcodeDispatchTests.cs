@@ -53,7 +53,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     }
 
     private static AlundraEventProgramRunner NewRunner(
-        EventProgramDocument document, AlundraGameState gameState, IEntityWorldContext? worldContext,
+        EventProgramDocument document, GameState gameState, IEntityWorldContext? worldContext,
         DialogueAsset? mapAsset = null)
         => new(document, gameState, worldContext) { MapDialogueAsset = mapAsset };
 
@@ -102,7 +102,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         return kind;
     }
 
-    private static FakeEntityWorldContext NewRealDialogueContext(AlundraGameState gameState)
+    private static FakeEntityWorldContext NewRealDialogueContext(GameState gameState)
     {
         AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), gameState);
         AlundraDialogueDirector.Instance.InstallForMapEntry();
@@ -114,7 +114,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void OpenDialog_0x0D_DispatchedAgainWhileStillOpen_RetriesInsteadOfOpeningASecondBox()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var context = NewRealDialogueContext(gameState);
 
         // 0x0D(textId=0x81,ctrl=1) opens "FIRST"; 0x02 Goto(-3) jumps straight back to the SAME 0x0D -
@@ -139,7 +139,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void CloseMask_DefaultMask3_ButtonClosesTheBox()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         NewRealDialogueContext(gameState);
         var director = AlundraDialogueDirector.Instance;
 
@@ -160,7 +160,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void CloseMask_Mask4_ButtonDoesNotClose_OnlyScriptCloseDoes()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         NewRealDialogueContext(gameState);
         var director = AlundraDialogueDirector.Instance;
 
@@ -187,7 +187,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void EveryOpen_ResetsCloseMaskToDefault3()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         NewRealDialogueContext(gameState);
         var director = AlundraDialogueDirector.Instance;
 
@@ -214,7 +214,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void Degraded_NoDirectorAtAll_0x44_WritesResultOne_KindDegraded()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var context = new FakeEntityWorldContext { DialogueDirector = null };
         var document = NewDocument(0x44, 0xFF);
         var runner = NewRunner(document, gameState, context);
@@ -233,7 +233,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void Degraded_ADirectorWithoutAPresenter_0x44_WritesResultOne_AndOpensNoChoice()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AlundraDialogueDirector.Instance.AttachToWorld(null, gameState);
         AlundraDialogueDirector.Instance.InstallForMapEntry();
         Assert.False(AlundraDialogueDirector.Instance.HasPresenter);
@@ -255,7 +255,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void Degraded_NoDirectorAtAll_0x39_AlwaysAdvances()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var context = new FakeEntityWorldContext { DialogueDirector = null };
         var document = NewDocument(0x39, 0xFF);
         var runner = NewRunner(document, gameState, context);
@@ -271,7 +271,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void Degraded_0x0D_StillParsesAndAppliesNumericFlags_SoALaterWaitDoesNotDeadlock()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var context = new FakeEntityWorldContext { DialogueDirector = null };
         var document = NewDocument(0x0D, 0x81, 1, 0xFF);
         // The original's "\999" mid-string numeric code becomes a <<flag 999>> command before the line
@@ -300,7 +300,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void Degraded_0x50And0x51_NoOpButNeverThrow()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var context = new FakeEntityWorldContext { DialogueDirector = null };
         var document = NewDocument(0x50, 4, 0x51, 0xFF);
         var runner = NewRunner(document, gameState, context);
@@ -317,7 +317,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void Opcodes0x4CTo0x4F_AreExecutedBySize_NoneGivesTheHandBack_AndTheyReachTheBox()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var context = NewRealDialogueContext(gameState);
         var director = AlundraDialogueDirector.Instance;
         director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 1);
@@ -349,7 +349,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void Degraded_0x4CTo0x4F_NoDirector_AdvanceBySizeWithoutThrowing()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var context = new FakeEntityWorldContext { DialogueDirector = null };
         var document = NewDocument(0x4C, 4, 0x4D, 0x4E, 6, 0x4F, 0xFF);
         var runner = NewRunner(document, gameState, context);
@@ -366,14 +366,14 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void ControlMode1_SetsMessageBox_ControlMode0_SetsMenuOpen_CloseClearsBoth()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         NewRealDialogueContext(gameState);
         var director = AlundraDialogueDirector.Instance;
 
         director.Open(DialogueTestAssets.SinglePage("Box", "box"), "Start", controlMode: 1);
         Assert.Equal(
-            AlundraGameState.PlayerControlBits.MessageBox,
-            gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MessageBox);
+            GameState.PlayerControlBits.MessageBox,
+            gameState.PlayerControlFlags & GameState.PlayerControlBits.MessageBox);
 
         director.SetCloseMask(4);
         Assert.True(director.RequestScriptClose());
@@ -383,17 +383,17 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         var boxPasses = new DialogueBoxPassDriver(director, gameState);
         boxPasses.RunTo(49);
         Assert.Equal(
-            AlundraGameState.PlayerControlBits.MessageBox,
-            gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MessageBox);
+            GameState.PlayerControlBits.MessageBox,
+            gameState.PlayerControlFlags & GameState.PlayerControlBits.MessageBox);
         boxPasses.RunTo(50);
         Assert.Equal(
             0u,
-            gameState.PlayerControlFlags & (AlundraGameState.PlayerControlBits.MessageBox | AlundraGameState.PlayerControlBits.MenuOpen));
+            gameState.PlayerControlFlags & (GameState.PlayerControlBits.MessageBox | GameState.PlayerControlBits.MenuOpen));
 
         director.Open(DialogueTestAssets.SinglePage("MenuBox", "menu box"), "Start", controlMode: 0);
         Assert.Equal(
-            AlundraGameState.PlayerControlBits.MenuOpen,
-            gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+            GameState.PlayerControlBits.MenuOpen,
+            gameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
 
         director.SetCloseMask(4);
         Assert.True(director.RequestScriptClose());
@@ -402,12 +402,12 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         var menuPasses = new DialogueBoxPassDriver(director, gameState);
         menuPasses.RunTo(69);
         Assert.Equal(
-            AlundraGameState.PlayerControlBits.MenuOpen,
-            gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+            GameState.PlayerControlBits.MenuOpen,
+            gameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
         menuPasses.RunTo(70);
         Assert.Equal(
             0u,
-            gameState.PlayerControlFlags & (AlundraGameState.PlayerControlBits.MessageBox | AlundraGameState.PlayerControlBits.MenuOpen));
+            gameState.PlayerControlFlags & (GameState.PlayerControlBits.MessageBox | GameState.PlayerControlBits.MenuOpen));
     }
 
     // ---- local text masking (0x7F) -------------------------------------------------------------
@@ -415,7 +415,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void OpenDialog_0x0D_MasksTextIdWith0x7F_ToIndexLocalStrings()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var context = NewRealDialogueContext(gameState);
         var mapAsset = MapAsset((0, "index0"), (1, "index1"), (2, "index2"));
         // textId = 0x82 -> masked 0x82 & 0x7f = 2 -> "index2".
@@ -456,7 +456,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         // EngineEnvironment.ProjectPath.
         AlundraEtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var context = NewRealDialogueContext(gameState);
         AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Question", "question"), "Start", controlMode: 1);
 
@@ -497,7 +497,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     {
         AlundraEtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var context = NewRealDialogueContext(gameState);
         AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Question", "question"), "Start", controlMode: 1);
 

@@ -12,7 +12,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// Pins the PRODUCTION wiring of D-T-3 (docs/plan-transitions-carte.md, slice T1):
-/// <c>AlundraWorldProxy.GameState</c> resolves to <see cref="AlundraGameState.Instance"/> instead of a
+/// <c>AlundraWorldProxy.GameState</c> resolves to <see cref="GameState.Instance"/> instead of a
 /// per-world field initializer.
 ///
 /// Why this class exists: the closing verifier of T1 found that this one statement - the most
@@ -31,7 +31,7 @@ public sealed class AlundraWorldProxySessionStateTests : IDisposable
 {
     public AlundraWorldProxySessionStateTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
@@ -39,7 +39,7 @@ public sealed class AlundraWorldProxySessionStateTests : IDisposable
 
     public void Dispose()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
@@ -53,7 +53,7 @@ public sealed class AlundraWorldProxySessionStateTests : IDisposable
 
         // D-T-3: the proxy is rebuilt per world by ElementFactory, but its game state is not.
         Assert.Same(worldOneProxy.GameState, worldTwoProxy.GameState);
-        Assert.Same(AlundraGameState.Instance, worldOneProxy.GameState);
+        Assert.Same(GameState.Instance, worldOneProxy.GameState);
     }
 
     [Fact]

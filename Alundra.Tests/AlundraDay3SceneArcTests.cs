@@ -66,7 +66,7 @@ public sealed class AlundraDay3SceneArcTests
     private static ArcSpec A13Spec => new(
         "A13", "Inoa", "Inoa-176", new[] { 203, 1651, 1652, 1660 }, 0, 0, 0, 1500,
         RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(11796480, 36175872, 10485760, AlundraGameState.ResetAnimationId, 24));
+        Arrival: new ArcArrival(11796480, 36175872, 10485760, GameState.ResetAnimationId, 24));
 
     /// <summary>
     /// A13 (G203, G1651, G1652, G1660): the hero arrives on map 176 by the <c>0x53 @451</c> of the map 179 (A12), at (180, 552, 160). B[6] (program @468)
@@ -113,7 +113,7 @@ public sealed class AlundraDay3SceneArcTests
     private static ArcSpec A14Spec => new(
         "A14", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1652, 1653, 1660 }, 0, 0, 0, 1000,
         RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(27525120, 7864320, 1048576, AlundraGameState.ResetAnimationId, 0));
+        Arrival: new ArcArrival(27525120, 7864320, 1048576, GameState.ResetAnimationId, 0));
 
     /// <summary>
     /// A14 (G203, G1651 to G1653, G1660): the hero arrives on map 179 by the <c>0x53 @533</c> of the map 176 (A13). B[3] (program @464) sets T800
@@ -163,7 +163,7 @@ public sealed class AlundraDay3SceneArcTests
     private static ArcSpec A15Spec => new(
         "A15", "Inoa", "Inoa-176", new[] { 203, 1651, 1652, 1653, 1654, 1660 }, 0, 0, 0, 2500,
         RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(8650752, 35127296, 10485760, AlundraGameState.ResetAnimationId, 0));
+        Arrival: new ArcArrival(8650752, 35127296, 10485760, GameState.ResetAnimationId, 0));
 
     /// <summary>
     /// A15 (G203, G1651 to G1654, G1660): the hero arrives on map 176 by the <c>0x53 @568</c> of the map 179 (A14). B[7] (program @544) sets T0 (<c>0x05 @561</c>);
@@ -226,7 +226,7 @@ public sealed class AlundraDay3SceneArcTests
     private static ArcSpec A17Spec => new(
         "A17", "Church", "Church-135", new[] { 203, 1654 }, 0, 0, 0, 2500,
         RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(30670848, 54001664, 1048576, AlundraGameState.ResetAnimationId, 16));
+        Arrival: new ArcArrival(30670848, 54001664, 1048576, GameState.ResetAnimationId, 16));
 
     /// <summary>Frames until <paramref name="done"/>, with the button of the arcs' rule on the frames that start with a dialogue open (E19.f2a: held while the box
     /// types, released then pressed when it waits for a press), and answering the choice of a box the first option (OUI) at the start of the frame, as a player
@@ -346,7 +346,7 @@ public sealed class AlundraDay3SceneArcTests
     private static ArcSpec A18Spec => new(
         "A18", "Inoa", "Inoa (inner)-178", new[] { 203, 1654, 1655 }, 0, 0, 0, 4000,
         RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(60555264, 26738688, 0, AlundraGameState.ResetAnimationId, 16));
+        Arrival: new ArcArrival(60555264, 26738688, 0, GameState.ResetAnimationId, 16));
 
     /// <summary>
     /// A18 (G203, G1654, G1655): the hero arrives on map 178 by the portal 176.7. Septimus (record 15, C program @512) talks to the hero and the first phase ends

@@ -24,7 +24,7 @@ namespace Alundra.Tests;
 public sealed class AlundraWeaponLockOpcodesTests
 {
     private const int ResultBefore = 7;
-    private const uint Lock = AlundraGameState.PlayerControlBits.ForcedWeapon;
+    private const uint Lock = GameState.PlayerControlBits.ForcedWeapon;
 
     private sealed class Context : IEntityWorldContext
     {
@@ -46,7 +46,7 @@ public sealed class AlundraWeaponLockOpcodesTests
         => new() { Status = EntityStatus.Normal, LogicContextEntity = new Entity { Name = "logic" } };
 
     /// <summary>Runs the instruction bytes followed by <c>0x1A 9 0xFF</c>: animation 9 proves the opcode consumed exactly its size.</summary>
-    private static (EventProgramState State, EventTraceRecord First) Run(AlundraGameState gameState, AlundraItemTables? tables, params int[] instruction)
+    private static (EventProgramState State, EventTraceRecord First) Run(GameState gameState, AlundraItemTables? tables, params int[] instruction)
     {
         var codes = instruction.Concat(new[] { 0x1A, 9, 0xFF }).ToArray();
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new int[6], Codes = codes };
@@ -60,9 +60,9 @@ public sealed class AlundraWeaponLockOpcodesTests
         return (state, trace.First(t => t.CodeIndex == 0));
     }
 
-    private static AlundraGameState Owning(params int[] items)
+    private static GameState Owning(params int[] items)
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         foreach (var item in items)
         {
             gameState.NumberOfItems[item * 2 + 1] = 1;
@@ -127,7 +127,7 @@ public sealed class AlundraWeaponLockOpcodesTests
     public void TheRealBytesOfTheTwo0xC1Sites_ClearBit0x80_AndNothingElse(int map, int pc)
     {
         var (document, _) = LoadMap(SaveGameDirectorTestSupport.FindProjectRoot(), map);
-        var gameState = new AlundraGameState { PlayerControlFlags = 0x80 | 0x04 };
+        var gameState = new GameState { PlayerControlFlags = 0x80 | 0x04 };
 
         var (state, first) = Run(gameState, RealTables, document.Codes[pc]);
 
@@ -175,7 +175,7 @@ public sealed class AlundraWeaponLockOpcodesTests
     [InlineData(255)]
     public void Opcode0xC0_AnOperandPastSlot6_IsRejectedBySetPlayerWeaponId_ButTheBitIsStillPosed(int operand)
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.WeaponId = 3;
 
         Run(gameState, RealTables, 0xC0, operand);
@@ -187,7 +187,7 @@ public sealed class AlundraWeaponLockOpcodesTests
     [Fact]
     public void Opcode0xC0_WithoutItemTables_StillPosesTheBit_AndConsumesItsSize()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
 
         var (_, first) = Run(gameState, null, 0xC0, 0);
 
@@ -198,7 +198,7 @@ public sealed class AlundraWeaponLockOpcodesTests
     [Fact]
     public void Opcode0xC1_OnAClearBit_ChangesNothing()
     {
-        var gameState = new AlundraGameState { PlayerControlFlags = 0x10 };
+        var gameState = new GameState { PlayerControlFlags = 0x10 };
 
         var (_, first) = Run(gameState, RealTables, 0xC1);
 

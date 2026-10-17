@@ -73,7 +73,7 @@ internal static class LeverArcs
     /// <summary>A spec on the real prefabs and controller, arriving at a pixel (the arrival is what puts the hero in the spawn zone of the lever records).</summary>
     public static ArcSpec Spec(string name, string zone, string world, int[] flags, int pixelX, int pixelY, int zLevel, uint direction, int frameLimit) => new(
         name, zone, world, flags, 0, 0, 0, frameLimit, RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(pixelX << 16, pixelY << 16, zLevel << 20, AlundraGameState.ResetAnimationId, direction));
+        Arrival: new ArcArrival(pixelX << 16, pixelY << 16, zLevel << 20, GameState.ResetAnimationId, direction));
 
     public static AlundraCellStore Store(ArcRun arc) => (AlundraCellStore)arc.Proxy.CellMutator!;
 
@@ -144,7 +144,7 @@ internal static class LeverArcs
 
     public static bool ClassA(AlundraEntityScriptProxy e) => (e.Flags & EntityFlags.ClassA) != 0;
 
-    public static bool Locked() => (AlundraGameState.Instance.PlayerControlFlags & AlundraGameState.PlayerControlBits.ControlLocked) != 0;
+    public static bool Locked() => (GameState.Instance.PlayerControlFlags & GameState.PlayerControlBits.ControlLocked) != 0;
 
     /// <summary>The hero stands free and where the arc put it: on the ground, nothing locks the pad, Idle.</summary>
     /// <summary>The tuples (walkability, height, ground property, floor tile) of the cells.</summary>
@@ -156,7 +156,7 @@ internal static class LeverArcs
     public static void AssertHeroReady(ArcRun arc, int x, int y, int z)
     {
         Assert.Equal(1, arc.Hero.IsOnGround);
-        Assert.Equal(0u, AlundraGameState.Instance.PlayerControlFlags);
+        Assert.Equal(0u, GameState.Instance.PlayerControlFlags);
         Assert.Equal(0u, arc.Hero.TargetAnimationId);
         Assert.Equal((x, y, z), (arc.Hero.PosX >> 16, arc.Hero.PosY >> 16, arc.Hero.PosZ >> 16));
     }

@@ -56,7 +56,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
 {
     public AlundraWarpArrivalTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -67,7 +67,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
 
     public void Dispose()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -320,7 +320,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
     {
         var departurePlayer = NewDeparturePlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
         AlundraWarpDirector.Instance.BeginDeparture(
-            Map389Portal0(transitionEffectId), arrivalDirectionId: 0x10, departurePlayer, new AlundraGameState());
+            Map389Portal0(transitionEffectId), arrivalDirectionId: 0x10, departurePlayer, new GameState());
     }
 
     /// <summary>Captures every <see cref="Logs.WriteInfo"/> call for one test, then unregisters itself
@@ -479,10 +479,10 @@ public sealed class AlundraWarpArrivalTests : IDisposable
 
         var hero = Assert.IsType<AlundraEntityScriptProxy>(heroEntity.GameplayProxy);
 
-        Assert.Equal((AlundraGameState.CameraTileX * 24 + 12) << 16, hero.PosX);
-        Assert.Equal((AlundraGameState.CameraTileY * 16 + 8) << 16, hero.PosY);
-        Assert.Equal(AlundraGameState.ResetAnimationId, hero.TargetAnimationId);
-        Assert.Equal(AlundraGameState.ResetDirectionId, hero.TargetDirection);
+        Assert.Equal((GameState.CameraTileX * 24 + 12) << 16, hero.PosX);
+        Assert.Equal((GameState.CameraTileY * 16 + 8) << 16, hero.PosY);
+        Assert.Equal(GameState.ResetAnimationId, hero.TargetAnimationId);
+        Assert.Equal(GameState.ResetDirectionId, hero.TargetDirection);
         Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
     }
 
@@ -512,8 +512,8 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         }
 
         var hero = Assert.IsType<AlundraEntityScriptProxy>(heroEntity.GameplayProxy);
-        var newGamePosX = (AlundraGameState.CameraTileX * 24 + 12) << 16;
-        var newGamePosY = (AlundraGameState.CameraTileY * 16 + 8) << 16;
+        var newGamePosX = (GameState.CameraTileX * 24 + 12) << 16;
+        var newGamePosY = (GameState.CameraTileY * 16 + 8) << 16;
 
         Assert.NotEqual(newGamePosX, hero.PosX);
         Assert.NotEqual(newGamePosY, hero.PosY);
@@ -542,9 +542,9 @@ public sealed class AlundraWarpArrivalTests : IDisposable
             EngineEnvironment.ProjectPath = previousProjectPath;
         }
 
-        Assert.False(AlundraGameState.Instance.NewGameInventoryInitialized);
-        Assert.Equal(0, AlundraGameState.Instance.PlayerStats.WeaponId);
-        Assert.All(AlundraGameState.Instance.NumberOfItems, count => Assert.Equal(0, count));
+        Assert.False(GameState.Instance.NewGameInventoryInitialized);
+        Assert.Equal(0, GameState.Instance.PlayerStats.WeaponId);
+        Assert.All(GameState.Instance.NumberOfItems, count => Assert.Equal(0, count));
     }
 
     // -----------------------------------------------------------------------------------------------

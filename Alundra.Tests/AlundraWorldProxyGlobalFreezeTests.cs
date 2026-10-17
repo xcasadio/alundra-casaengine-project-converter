@@ -52,7 +52,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
@@ -64,7 +64,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
 
         // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
         // isolation) - kept for symmetry with the existing session-singleton test classes.
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
@@ -98,7 +98,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
     /// The camera follow (<see cref="AlundraCameraDirector.UpdateCameraFollow"/>) is "dehors" (§1.5's own
     /// table: "the original's own look-at update is the LAST thing UpdateEntities does, AFTER the `else`")
     /// - it must keep tracking <see cref="AlundraWorldProxy.EntityFollowedByCamera"/> even while
-    /// <see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/> is posed (a MenuOpen dialogue
+    /// <see cref="GameState.PlayerControlBits.GameplayBlockedMask"/> is posed (a MenuOpen dialogue
     /// box must not also freeze the camera).
     /// </summary>
     [Fact]
@@ -116,7 +116,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
         proxy.Update(0.02f); // frame 1: snaps straight to the look-at (ArmFirstFrameSnap).
         var targetAfterFirstFrame = camera.Target;
 
-        proxy.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        proxy.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
 
         // Move the followed target while frozen - the original's own look-at update is not behind the
         // GameplayBlockedMask gate at all (§1.5), so the camera must still react to it.
@@ -126,7 +126,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
 
         Assert.NotEqual(targetAfterFirstFrame, camera.Target);
 
-        proxy.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+        proxy.GameState.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
     }
 
     // -----------------------------------------------------------------------------------------
@@ -302,7 +302,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
     /// "tileMap" entity with loaded <see cref="TileMapData"/>, exactly the montage
     /// <see cref="AlundraCellVisualSyncTests"/> already proves is reachable headless) and pins the two
     /// T1 instructions that sit right after them (AlundraWorldProxy.cs:527/535):
-    /// <see cref="AlundraGameState.InstallForMapEntry"/> really runs (a stale TemporaryFlags entry and a
+    /// <see cref="GameState.InstallForMapEntry"/> really runs (a stale TemporaryFlags entry and a
     /// non-null InteractLatchEntity, both seeded BEFORE the call, are gone after it), and
     /// <see cref="AlundraWorldProxy.ActiveCollisionEntity"/> really gets reset to null. The call is made
     /// with NO try/catch: if a later step inside the SAME method throws, that is itself new information
@@ -316,16 +316,16 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
         // Seed a stale value for each of the two instructions T2 must pin, so InitializeWithWorld running
         // is the ONLY thing that can make the post-call assertions below true.
         const int seededTemporaryFlagIndex = 3;
-        AlundraGameState.Instance.TemporaryFlags[seededTemporaryFlagIndex] = 0xdead_beef;
-        AlundraGameState.Instance.InteractLatchEntity = new AlundraEntityScriptProxy();
+        GameState.Instance.TemporaryFlags[seededTemporaryFlagIndex] = 0xdead_beef;
+        GameState.Instance.InteractLatchEntity = new AlundraEntityScriptProxy();
 
         var proxy = new AlundraWorldProxy();
         proxy.ActiveCollisionEntity = new AlundraEntityScriptProxy();
 
         proxy.InitializeWithWorld(world);
 
-        Assert.Equal(0u, AlundraGameState.Instance.TemporaryFlags[seededTemporaryFlagIndex]);
-        Assert.Null(AlundraGameState.Instance.InteractLatchEntity);
+        Assert.Equal(0u, GameState.Instance.TemporaryFlags[seededTemporaryFlagIndex]);
+        Assert.Null(GameState.Instance.InteractLatchEntity);
         Assert.Null(proxy.ActiveCollisionEntity);
     }
 }

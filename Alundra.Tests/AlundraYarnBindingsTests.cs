@@ -71,7 +71,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     [InlineData(401)]
     public void FlagCommand_SetsTheRightBitInTemporaryFlags(int n)
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
         var (runner, _) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("FlagCommand", $$"""
@@ -96,7 +96,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     [Fact]
     public void FalconUpdateCommand_SumsFalconsAndMovesCategory()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.Falcon = 5;
         gameState.PlayerStats.FalconTemp = 3;
         gameState.GameFlags[0x2c] = 0x2000000; // selects category 1 (§5.7)
@@ -126,7 +126,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     {
         // Falcon starts non-zero (2) so falcon_temp() (kept FalconTemp, 7) and falcon() (updated Falcon,
         // 2 + 7 = 9) differ - a mixup between the two would go unnoticed if they happened to match.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.Falcon = 2;
         gameState.PlayerStats.FalconTemp = 7;
         var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
@@ -151,7 +151,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         // ADR-0007/T4 fix: the kept values start at 0 in the constructor, never copied from gameState at
         // construction time - so a change made to the game state AFTER the bindings are built, but
         // before falcon_update ever runs, must still be the value falcon_update's own snapshot picks up.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
         gameState.PlayerStats.Falcon = 2;
         gameState.PlayerStats.FalconTemp = 7;
@@ -177,7 +177,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         // not category 0's item (0x53) - which is what a constructor-time-only snapshot (or one taken
         // once and never refreshed by the falcon_update handler) would still report.
         SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"), (0x35, "Bouclier"));
-        var gameState = new AlundraGameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
+        var gameState = new GameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
         gameState.GameFlags[0x2c] = 0x2000000; // first falcon_update moves to category 1 (item 0x33)
         var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
@@ -203,7 +203,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     [Fact]
     public void Falcon_ReadsTheUpdatedValue()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.Falcon = 2;
         gameState.PlayerStats.FalconTemp = 3;
         var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
@@ -225,7 +225,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     public void CategoryItemNameBefore_ReadsTheKeptCategorysItem()
     {
         SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
-        var gameState = new AlundraGameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
+        var gameState = new GameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
         gameState.GameFlags[0x2c] = 0x2000000; // moves to category 1 (reward item 0x33) on update
         var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
@@ -246,7 +246,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     public void CategoryItemName_ReadsTheCurrentCategorysItem()
     {
         SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x2000000; // moves to category 1 (reward item 0x33) on update
         var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
@@ -266,7 +266,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     [Fact]
     public void CategoryThreshold_ReadsTheCurrentCategorysThreshold()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x2000000; // category 1 -> threshold 20 (§5.7)
         var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
@@ -286,7 +286,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     [Fact]
     public void CategoryRemaining_ReadsThresholdMinusFalcon()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.Falcon = 5;
         gameState.GameFlags[0x2c] = 0x2000000; // category 1 -> threshold 20
         var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
@@ -310,7 +310,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     [InlineData(2, 33)]
     public void GameVar_ReadsGameVariables(int index, int value)
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameVariables[0] = 11;
         gameState.GameVariables[1] = 22;
         gameState.GameVariables[2] = 33;
@@ -331,7 +331,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     [Fact]
     public void GameVar_OutOfRange_ReturnsZeroAndLogsOnce()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("GameVarOutOfRange", """
@@ -360,7 +360,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     public void ChurchM134S016_ShowsTheCategoryItemNameBeforeTheUpdate()
     {
         SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
-        var gameState = new AlundraGameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
+        var gameState = new GameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
         gameState.GameFlags[0x2c] = 0x2000000; // the update this page triggers moves to category 1
         var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
@@ -384,7 +384,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     public void ChurchM134S019_ShowsTheThresholdAndCategoryItemNameAfterTheUpdate()
     {
         SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[0x2c] = 0x2000000; // moves to category 1: threshold 20, item 0x33
         var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
@@ -413,7 +413,7 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     [Fact]
     public void UnknownCommand_IsLoggedOnceAndDoesNotThrow()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
         var (runner, presenter) = NewRunner(bindings);
         DialogueAsset asset = CompileAsset("UnknownCommand", """

@@ -279,7 +279,7 @@ public class AlundraNpcCharacterControllerMoverTests
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
 
         /// <summary>E4.f (verifier A5 tests): mutable so a test can seed the collidables list a scripted
@@ -317,7 +317,7 @@ public class AlundraNpcCharacterControllerMoverTests
         public RealRunnerScriptHost(IEventProgramRunner runner) => Runner = runner;
         public IEventProgramRunner Runner { get; }
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
 
         /// <summary>See <see cref="FakeScriptHost.Collidables"/>'s own doc.</summary>
@@ -371,7 +371,7 @@ public class AlundraNpcCharacterControllerMoverTests
             EventCodesCTable = new[] { 0, 0 },
             Codes = codes,
         };
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), worldContext);
+        var runner = new AlundraEventProgramRunner(document, new GameState(), worldContext);
         proxy.ScriptHost = new RealRunnerScriptHost(runner);
         proxy.ProgramIndexes[ScriptHelper.ProgramCTick] = 0x81; // bit 0x80 set, masked index 1.
         return runner;
@@ -799,7 +799,7 @@ public class AlundraNpcCharacterControllerMoverTests
         // -MapGravityRaw&lt;&lt;8=-32768 decay is +196608 (+3 px/tick) - still positive, so this tick's own
         // terrain-reset test (ForceZ &lt; 0) must NOT fire.
         var runner = new AlundraEventProgramRunner(
-            new EventProgramDocument { MapIndex = 389, Codes = Array.Empty<int>() }, new AlundraGameState(), worldContext: null);
+            new EventProgramDocument { MapIndex = 389, Codes = Array.Empty<int>() }, new GameState(), worldContext: null);
         runner.RunOneScriptCall(proxy, new EventProgramState { Codes = new byte[] { 0x1B, 128, 3, 0xFF } });
 
         world.Update(1f / 50f);
@@ -871,7 +871,7 @@ public class AlundraNpcCharacterControllerMoverTests
         proxy.ApplyGravitySettingsToController(); // spawn-time resync (ApplySpawnInitialization's own real call).
 
         var runner = new AlundraEventProgramRunner(
-            new EventProgramDocument { MapIndex = 389, Codes = Array.Empty<int>() }, new AlundraGameState(), worldContext: null);
+            new EventProgramDocument { MapIndex = 389, Codes = Array.Empty<int>() }, new GameState(), worldContext: null);
         void RunOpcode(params int[] codes)
             => runner.RunOneScriptCall(proxy, new EventProgramState { Codes = Array.ConvertAll(codes, c => (byte)c) });
 
@@ -2269,7 +2269,7 @@ public class AlundraNpcCharacterControllerMoverTests
     private sealed class GullClimbRunner : IEventProgramRunner
     {
         private static readonly byte[] ClimbBytes = { 0x1B, 128, 3, 0xFF };
-        private readonly AlundraEventProgramRunner _opcodeRunner = new(document: null, new AlundraGameState(), worldContext: null);
+        private readonly AlundraEventProgramRunner _opcodeRunner = new(document: null, new GameState(), worldContext: null);
 
         public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
         {
@@ -2301,7 +2301,7 @@ public class AlundraNpcCharacterControllerMoverTests
     {
         public IEventProgramRunner Runner { get; } = new GullClimbRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public List<AlundraEntityScriptProxy> Collidables { get; } = new();
         IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
@@ -2788,7 +2788,7 @@ public class AlundraNpcCharacterControllerMoverTests
         public TickCountingRunnerScriptHost(IEventProgramRunner runner) => Runner = runner;
         public IEventProgramRunner Runner { get; }
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public List<AlundraEntityScriptProxy> Collidables { get; } = new();
         IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
@@ -2845,7 +2845,7 @@ public class AlundraNpcCharacterControllerMoverTests
             // tests.
             Codes = new[] { 0x1F, 24, 0, 0x1A, 254, 0xFF },
         };
-        var opcodeRunner = new AlundraEventProgramRunner(document, new AlundraGameState(), worldContext: null);
+        var opcodeRunner = new AlundraEventProgramRunner(document, new GameState(), worldContext: null);
         var countingRunner = new ScriptPassCountingRunner(opcodeRunner);
         var host = new TickCountingRunnerScriptHost(countingRunner);
 
@@ -2944,7 +2944,7 @@ public class AlundraNpcCharacterControllerMoverTests
             // program outcome.
             Codes = new[] { 0x1A, 1, 0xFF },
         };
-        var opcodeRunner = new AlundraEventProgramRunner(document, new AlundraGameState(), worldContext: null);
+        var opcodeRunner = new AlundraEventProgramRunner(document, new GameState(), worldContext: null);
         var countingRunner = new ScriptPassCountingRunner(opcodeRunner);
         var host = new TickCountingRunnerScriptHost(countingRunner);
 

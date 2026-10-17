@@ -87,7 +87,7 @@ public sealed partial class AlundraRandomPerTickTests
     {
         const uint seed = 0x0BADF00D;
         var proxy = WarmProxy();
-        proxy.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.MenuOpen;
+        proxy.GameState.PlayerControlFlags = GameState.PlayerControlBits.MenuOpen;
         AlundraRandom.RandomSeed = seed;
 
         proxy.Update(0.04f);

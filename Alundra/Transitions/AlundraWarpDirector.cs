@@ -253,7 +253,7 @@ public sealed class AlundraWarpDirector
 
     /// <summary>
     /// D-T-15's own map-entry disposition - called from <see cref="AlundraWorldProxy.InitializeWithWorld"/>
-    /// alongside its session-carrier peers (<see cref="AlundraGameState.InstallForMapEntry"/>,
+    /// alongside its session-carrier peers (<see cref="GameState.InstallForMapEntry"/>,
     /// <see cref="AlundraScreenFadeDirector.InstallForMapEntry"/>), BEFORE <c>AdoptPlayerPawn</c> runs
     /// (T5's own reader of the arrival record this method deliberately leaves untouched - see this
     /// class' own doc). Port of <c>GameEngine.cs:302</c>'s <c>_isWarpTransitionRunning = false</c>,
@@ -319,7 +319,7 @@ public sealed class AlundraWarpDirector
         AlundraPortalRecord portal,
         uint arrivalDirectionId,
         AlundraEntityScriptProxy player,
-        AlundraGameState state,
+        GameState state,
         uint? arrivalAnimationId = null)
     {
         // [R8] (T3's own note, §1.2.g/T3's "Déviation consignée"): the original only tests
@@ -377,7 +377,7 @@ public sealed class AlundraWarpDirector
     /// (not the portal path's constant 0x36 animation / caller-supplied direction), and the departure sfx
     /// is <paramref name="sfxId"/>, the opcode's own raw <c>v[7]</c> operand, played DIRECTLY - not looked
     /// up through <see cref="WarpBehaviorTable"/> (there is no <c>WarpBehaviorId</c> here, no portal).
-    /// [R8]: the <see cref="AlundraGameState.IsWarpDisabled"/> test is repeated here too, exactly like
+    /// [R8]: the <see cref="GameState.IsWarpDisabled"/> test is repeated here too, exactly like
     /// <see cref="BeginDeparture"/> - opcode 0x53 never goes through <see cref="AlundraPortalTrigger"/>'s
     /// predicate.
     ///
@@ -399,7 +399,7 @@ public sealed class AlundraWarpDirector
         int effectId,
         int sfxId,
         AlundraEntityScriptProxy player,
-        AlundraGameState state)
+        GameState state)
     {
         if (state.IsWarpDisabled)
         {
@@ -454,12 +454,12 @@ public sealed class AlundraWarpDirector
     /// same <c>world-index.json</c> key the validation checked), at the given 16.16/<c>&lt;&lt; 20</c> position.
     /// Converges on <see cref="BeginDepartureCore"/> like the two other departures, with what the original's
     /// New Game and load both use (<c>AlundraGameState.cs</c>, <c>GameInitializer.cs:414</c>): the animation
-    /// <see cref="AlundraGameState.ResetAnimationId"/> (<c>0x36</c>) and the direction
-    /// <see cref="AlundraGameState.ResetDirectionId"/> (0) - never the hero's current animation, which
+    /// <see cref="GameState.ResetAnimationId"/> (<c>0x36</c>) and the direction
+    /// <see cref="GameState.ResetDirectionId"/> (0) - never the hero's current animation, which
     /// <see cref="BeginDepartureFromChangeMapOpcode"/> would copy (a load pressed mid-attack or mid-jump). Effect
     /// 0, and an EMPTY sound action: no departure sound, and no
     /// <see cref="AlundraMusicPlayer.HandleWarpDeparture"/> - the arrival's own <c>PlayMapMusic</c> sets the
-    /// music. Repeats the <see cref="AlundraGameState.IsWarpDisabled"/> test of the two other entries (the caller
+    /// music. Repeats the <see cref="GameState.IsWarpDisabled"/> test of the two other entries (the caller
     /// has already refused it, K7 step 5).
     /// </summary>
     internal void BeginDepartureForLoad(
@@ -468,7 +468,7 @@ public sealed class AlundraWarpDirector
         int posY,
         int posZ,
         AlundraEntityScriptProxy player,
-        AlundraGameState state)
+        GameState state)
     {
         if (state.IsWarpDisabled)
         {
@@ -482,8 +482,8 @@ public sealed class AlundraWarpDirector
             posX,
             posY,
             posZ,
-            animationId: AlundraGameState.ResetAnimationId,
-            directionId: AlundraGameState.ResetDirectionId,
+            animationId: GameState.ResetAnimationId,
+            directionId: GameState.ResetDirectionId,
             effectId: 0,
             player,
             soundAction: static () => { });

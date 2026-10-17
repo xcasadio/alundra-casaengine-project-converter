@@ -300,7 +300,7 @@ internal sealed class JumpHeroRig
     {
         var pad = new HeroPad();
         var controller = new AlundraPlayerController { PadStateProviderForTests = () => freePad ? pad.State : default };
-        var host = new ContactHost(playerControlFlags: freePad ? 0 : AlundraGameState.PlayerControlBits.ControlLocked, playerController: controller);
+        var host = new ContactHost(playerControlFlags: freePad ? 0 : GameState.PlayerControlBits.ControlLocked, playerController: controller);
         var world = ContactWorld.BuildWorld(field ?? FlatCells.Create(), probeFactory?.Invoke(host));
         configure?.Invoke(world, host);
 

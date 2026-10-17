@@ -87,9 +87,9 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
         public IAlundraDialogueDirector? DialogueDirector { get; set; }
     }
 
-    private static (AlundraEventProgramRunner Runner, AlundraGameState GameState, FakeContext Context) NewRealMontage(int[] codes)
+    private static (AlundraEventProgramRunner Runner, GameState GameState, FakeContext Context) NewRealMontage(int[] codes)
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), gameState);
         AlundraDialogueDirector.Instance.InstallForMapEntry();
         var context = new FakeContext { DialogueDirector = AlundraDialogueDirector.Instance };
@@ -150,10 +150,10 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
 
         runner.RunOneScriptCall(new AlundraEntityScriptProxy(), NewState(codes));
 
-        var messageBoxBit = gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MessageBox;
-        var menuBit = gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen;
-        Assert.Equal(messageBox ? AlundraGameState.PlayerControlBits.MessageBox : 0u, messageBoxBit);
-        Assert.Equal(messageBox ? 0u : AlundraGameState.PlayerControlBits.MenuOpen, menuBit);
+        var messageBoxBit = gameState.PlayerControlFlags & GameState.PlayerControlBits.MessageBox;
+        var menuBit = gameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen;
+        Assert.Equal(messageBox ? GameState.PlayerControlBits.MessageBox : 0u, messageBoxBit);
+        Assert.Equal(messageBox ? 0u : GameState.PlayerControlBits.MenuOpen, menuBit);
     }
 
     [Theory]
@@ -161,7 +161,7 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
     public void WithoutAPresenter_DegradesToAnAdvance_StillSettingTheNodeFlags_AndLeavesResultAlone(int opcode, int size)
     {
         var codes = Codes(opcode, mode: 1);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var runner = new AlundraEventProgramRunner(NewDocument(codes), gameState, new FakeContext { DialogueDirector = null })
         {
             MapDialogueAsset = MapAsset(),

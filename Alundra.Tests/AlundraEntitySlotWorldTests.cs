@@ -23,7 +23,7 @@ public sealed class AlundraEntitySlotWorldTests
 {
     private const int HeroX = 150;
     private const int HeroY = 100;
-    private const uint Blocked = AlundraGameState.PlayerControlBits.GameplayBlockedMask;
+    private const uint Blocked = GameState.PlayerControlBits.GameplayBlockedMask;
 
     private static ArcRun Arc(string name) => new(new ArcSpec("E20e0a2-" + name, "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true));
 

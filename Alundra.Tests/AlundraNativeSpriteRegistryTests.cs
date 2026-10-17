@@ -34,12 +34,12 @@ public sealed class AlundraNativeSpriteRegistryTests : IDisposable
 
     private static void Reset()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraSaveBook.Instance.ResetForTests();
         AlundraSaveScreenDirector.Instance.ResetForTests();
     }
 
-    private static AlundraEventProgramRunner NewRunner() => new(null, AlundraGameState.Instance);
+    private static AlundraEventProgramRunner NewRunner() => new(null, GameState.Instance);
 
     private static AlundraEntityScriptProxy Entity(int spriteType, int slot, int code)
     {

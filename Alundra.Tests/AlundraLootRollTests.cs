@@ -37,7 +37,7 @@ public sealed class AlundraLootRollTests
         }
     }
 
-    private static void SetBank(AlundraGameState state, uint bank, int word, uint value)
+    private static void SetBank(GameState state, uint bank, int word, uint value)
     {
         var words = bank switch
         {
@@ -96,7 +96,7 @@ public sealed class AlundraLootRollTests
         foreach (var v in vectors)
         {
             var label = v.GetProperty("label").GetString()!;
-            var state = new AlundraGameState();
+            var state = new GameState();
             foreach (var bank in v.GetProperty("banks").EnumerateArray())
             {
                 SetBank(state, U(bank[0]), I(bank[1]), U(bank[2]));
@@ -123,7 +123,7 @@ public sealed class AlundraLootRollTests
         {
             var label = $"page {I(v.GetProperty("page"))} index {I(v.GetProperty("index"))} seed {v.GetProperty("seed_name").GetString()}";
             var stream = new Stream(U(v.GetProperty("rng_in")));
-            var result = AlundraLootRoll.Roll(false, 0, 0, I(v.GetProperty("header_contents")), new AlundraGameState(), stream.Next);
+            var result = AlundraLootRoll.Roll(false, 0, 0, I(v.GetProperty("header_contents")), new GameState(), stream.Next);
             Assert.True(I(v.GetProperty("item")) == (int)result.ItemId, $"{label}: item {result.ItemId}, machine {I(v.GetProperty("item"))}");
             Assert.True(I(v.GetProperty("flag40")) == result.GameFlag, $"{label}: +0x40 {result.GameFlag}, machine {I(v.GetProperty("flag40"))}");
             Assert.True(U(v.GetProperty("rng_out")) == stream.State, $"{label}: word {stream.State:X8}, machine {U(v.GetProperty("rng_out")):X8}");
@@ -142,7 +142,7 @@ public sealed class AlundraLootRollTests
         foreach (var v in vectors)
         {
             var label = v.GetProperty("label").GetString()!;
-            var state = new AlundraGameState();
+            var state = new GameState();
             foreach (var bank in v.GetProperty("banks").EnumerateArray())
             {
                 SetBank(state, Convert.ToUInt32(bank[0].GetString(), 16), I(bank[1]), Convert.ToUInt32(bank[2].GetString(), 16));
@@ -167,7 +167,7 @@ public sealed class AlundraLootRollTests
         var histogram = new int[3];
         foreach (var v in vectors)
         {
-            var state = new AlundraGameState();
+            var state = new GameState();
             foreach (var w in v[5].EnumerateArray())
             {
                 SetBank(state, PersistentBank, I(w[0]) / 4, U(w[1]));
@@ -196,7 +196,7 @@ public sealed class AlundraLootRollTests
     public void ARollThatDrawsNothing_NeverCallsTheDraw()
     {
         // A code without bit 0x80 and a raised flag both give no draw: the delegate must not even be called (the shared stream does not move).
-        var state = new AlundraGameState();
+        var state = new GameState();
         state.GameFlags[0] |= 1u << 5;
         var calls = 0;
         uint Draw()
@@ -219,7 +219,7 @@ public sealed class AlundraLootRollTests
     public void OnlyTheLowByteOfTheHeaderCodeCounts_WithAndWithoutARecord()
     {
         // The binary reads a byte (+0x1F of the header): 0x182 is 0x82, the code of one draw, in both paths (without a record, and with a record whose own code is 0).
-        var state = new AlundraGameState();
+        var state = new GameState();
         var calls = 0;
         uint Draw()
         {

@@ -82,7 +82,7 @@ public sealed class AlundraEntityDestructionTests
     private static (AlundraEntityScriptProxy Entity, ContactHost Host, AlundraEventProgramRunner Runner) NativeE(int slot, int spriteIndex, int scriptedIndex = 0)
     {
         var host = new ContactHost();
-        var runner = new AlundraEventProgramRunner(null, new AlundraGameState());
+        var runner = new AlundraEventProgramRunner(null, new GameState());
         var entity = new AlundraEntityScriptProxy { Status = EntityStatus.Deactivated, Flags = EntityFlags.Collidable, ScriptHost = host, EventTrigger = slot };
         entity.SpriteProgramIndexes[slot] = spriteIndex;
         entity.ProgramIndexes[slot] = scriptedIndex;
@@ -155,7 +155,7 @@ public sealed class AlundraEntityDestructionTests
             EventCodesCTable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = new[] { 0x19, 0xFF },
         };
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState());
+        var runner = new AlundraEventProgramRunner(document, new GameState());
         var host = new ContactHost(runner);
         var entity = new AlundraEntityScriptProxy { Status = EntityStatus.Normal, Flags = EntityFlags.Collidable, ScriptHost = host };
         entity.ProgramIndexes[ScriptHelper.ProgramCTick] = 0x81; // the program of slot C is 0x19 (Deactivate), no program on slot E.

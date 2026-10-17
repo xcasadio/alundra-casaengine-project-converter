@@ -10,12 +10,12 @@ namespace Alundra.Dialogues.Yarn;
 
 /// <summary>
 /// E16.f T2 (docs/plan-e16-etat-partie.md, ADR-0010, ADR-0011): <c>Yarn.IVariableStorage</c> adossé aux
-/// deux banques de drapeaux d'<see cref="AlundraGameState"/> - <c>$flag_n</c> lit/écrit le drapeau
-/// <c>n</c> de <see cref="AlundraGameState.GameFlags"/>, <c>$tmp_flag_n</c> le drapeau <c>n</c> de
-/// <see cref="AlundraGameState.TemporaryFlags"/> (D-E16-16), <c>n</c> décimal de 0 à 2047 sans zéro de
+/// deux banques de drapeaux d'<see cref="GameState"/> - <c>$flag_n</c> lit/écrit le drapeau
+/// <c>n</c> de <see cref="GameState.GameFlags"/>, <c>$tmp_flag_n</c> le drapeau <c>n</c> de
+/// <see cref="GameState.TemporaryFlags"/> (D-E16-16), <c>n</c> décimal de 0 à 2047 sans zéro de
 /// tête (D-E16-25). Ce stockage NE GARDE AUCUNE DONNÉE PROPRE (D-E16-15) : chaque lecture/écriture
-/// retombe directement sur <see cref="AlundraGameState.GetFlag"/>/<see cref="AlundraGameState.AddFlag"/>/
-/// <see cref="AlundraGameState.SetFlag"/>, exactement comme les opcodes <c>0x30</c>/<c>0x31</c>
+/// retombe directement sur <see cref="GameState.GetFlag"/>/<see cref="GameState.AddFlag"/>/
+/// <see cref="GameState.SetFlag"/>, exactement comme les opcodes <c>0x30</c>/<c>0x31</c>
 /// (<c>AlundraEventProgramRunner.cs:1416</c>, test de bit) et <c>0x05</c>/<c>0x06</c>
 /// (<c>AlundraEventProgramRunner.cs:449-457</c>, pose/efface le bit) le font déjà - un drapeau écrit
 /// depuis Yarn est donc sauvegardé, ou non, exactement comme un drapeau écrit par un opcode.
@@ -36,10 +36,10 @@ public sealed class AlundraYarnVariableStorage : IVariableStorage
     private const uint TemporaryFlagBit = 0x8000; // même bit que AlundraYarnBindings.HandleFlagCommand.
     private const int MaxFlagId = 2047; // D-E16-25 - les deux banques de 64 mots de l'original.
 
-    private readonly AlundraGameState _gameState;
+    private readonly GameState _gameState;
     private readonly HashSet<string> _loggedRefusedNames = new(StringComparer.Ordinal);
 
-    public AlundraYarnVariableStorage(AlundraGameState gameState)
+    public AlundraYarnVariableStorage(GameState gameState)
     {
         ArgumentNullException.ThrowIfNull(gameState);
 
@@ -108,11 +108,11 @@ public sealed class AlundraYarnVariableStorage : IVariableStorage
         }
     }
 
-    /// <summary>Contrat item 7 : le cycle de vie des deux banques reste à <see cref="AlundraGameState"/>
+    /// <summary>Contrat item 7 : le cycle de vie des deux banques reste à <see cref="GameState"/>
     /// (entrée de carte, nouvelle partie, chargement, D-E16-6) - cet appel ne les touche jamais, mais est
     /// journalisé (E16.f T1 a mesuré qu'un dialogue sans <c>visited()</c> ne l'appelle jamais).</summary>
     public void Clear()
-        => Logs.WriteWarning("AlundraYarnVariableStorage: Clear() ignored - flag bank lifetime stays with AlundraGameState (D-E16-6).");
+        => Logs.WriteWarning("AlundraYarnVariableStorage: Clear() ignored - flag bank lifetime stays with GameState (D-E16-6).");
 
     /// <summary>Découpe <c>$flag_n</c>/<c>$tmp_flag_n</c> (D-E16-16) : <paramref name="n"/> doit être un
     /// décimal de 0 à <see cref="MaxFlagId"/> sans zéro de tête (D-E16-25), sinon le nom entier est

@@ -35,7 +35,7 @@ public sealed class AlundraChestOpcodeTests
     private static AlundraEntityScriptProxy Chest(int refId, int contentsGameFlag)
         => new() { EntityRefId = refId, Status = EntityStatus.Normal, ContentsGameFlag = contentsGameFlag };
 
-    private static EventProgramState Run(AlundraGameState gameState, Context context)
+    private static EventProgramState Run(GameState gameState, Context context)
     {
         var document = new EventProgramDocument
         {
@@ -54,7 +54,7 @@ public sealed class AlundraChestOpcodeTests
     [Fact]
     public void ChestOpened_FlagSet_AnswersOne()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(1192, 1u << (1192 & 31));
         var context = new Context();
         context.Spawned.Add(Chest(4, 1192));
@@ -68,13 +68,13 @@ public sealed class AlundraChestOpcodeTests
         var context = new Context();
         context.Spawned.Add(Chest(4, 1192));
 
-        Assert.Equal(0, Run(new AlundraGameState(), context).Result);
+        Assert.Equal(0, Run(new GameState(), context).Result);
     }
 
     [Fact]
     public void ChestOpened_NoContentsFlag_AnswersZero()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(0, 1);
         var context = new Context();
         context.Spawned.Add(Chest(4, 0));
@@ -88,13 +88,13 @@ public sealed class AlundraChestOpcodeTests
         var context = new Context();
         context.Spawned.Add(Chest(5, 1192));
 
-        Assert.Equal(0, Run(new AlundraGameState(), context).Result);
+        Assert.Equal(0, Run(new GameState(), context).Result);
     }
 
     [Fact]
     public void ChestOpened_TemporaryFlag_ReadsTheTemporaryBank()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(0x8005, 1u << 5);
         var context = new Context();
         context.Spawned.Add(Chest(4, 0x8005));
@@ -105,7 +105,7 @@ public sealed class AlundraChestOpcodeTests
     [Fact]
     public void ChestOpened_TwoMatches_OnlyTheFirstDecides()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(1192, 1u << (1192 & 31)); // only the second chest's flag is set.
         var context = new Context();
         context.Spawned.Add(Chest(4, 1193));

@@ -23,7 +23,7 @@ namespace Alundra.Dialogues;
 /// Opcode-facing seam over <see cref="AlundraDialogueDirector"/> (docs/plan-e12-dialogues.md, slice
 /// E12.a, D-E12-5: "the moteur is MECHANISM, the DLL is POLICY" - the engine's own
 /// <see cref="IDialoguePresenter"/> knows nothing about the close-mode mask, numeric control-code flags,
-/// paging on <c>\A</c>, or <see cref="AlundraGameState.PlayerControlFlags"/>; all of that lives here).
+/// paging on <c>\A</c>, or <see cref="GameState.PlayerControlFlags"/>; all of that lives here).
 /// Backs opcodes 0x0D/0x39/0x44/0x4C-0x51/0x5C in <see cref="AlundraEventProgramRunner.Dispatch"/> via
 /// <see cref="IEntityWorldContext.DialogueDirector"/> - a default interface member (same shape as
 /// <see cref="IEntityWorldContext.ScreenFadeDirector"/>), so every EXISTING implementer keeps compiling
@@ -56,8 +56,8 @@ public interface IAlundraDialogueDirector
     /// Opcode 0x0D/0x5C/0xC4's own "open" half (Dispatch itself owns the reentrancy guard - see that method's
     /// own doc on why 0x0D checks <see cref="IsOpen"/> BEFORE calling this, T2): resets the box to the state of
     /// <c>InitializeDialogMessage</c> (text flags 3, close mode 3, scroll mode 3, the latches off), applies
-    /// <paramref name="controlMode"/>'s <see cref="AlundraGameState.PlayerControlBits.MessageBox"/> (1) or
-    /// <see cref="AlundraGameState.PlayerControlBits.MenuOpen"/> (anything else) bit, plays sound 6, and starts
+    /// <paramref name="controlMode"/>'s <see cref="GameState.PlayerControlBits.MessageBox"/> (1) or
+    /// <see cref="GameState.PlayerControlBits.MenuOpen"/> (anything else) bit, plays sound 6, and starts
     /// <paramref name="node"/> of <paramref name="asset"/> on this director's own Yarn runner (docs/plan-e15-yarn.md, E15.c
     /// contract item 2), whose first page is cut into the steps of the box (E19.f2a, F2-R3): the box types it one step at a time
     /// from its own passes. The page's commands/functions run when the runner delivers it. Either
@@ -89,7 +89,7 @@ public interface IAlundraDialogueDirector
 
     /// <summary>One pass of the box for a host that has no world proxy to run it (the unit tests): the pass takes the square button of the PREVIOUS
     /// call - the binary's box reads the pad sampled during the previous frame - then this call records the square of
-    /// <see cref="AlundraGameState.LastPadState"/> (<c>ButtonsHold</c>, the rising edge being taken against the previous call). The world proxy
+    /// <see cref="GameState.LastPadState"/> (<c>ButtonsHold</c>, the rising edge being taken against the previous call). The world proxy
     /// does not call this: it calls <see cref="AlundraDialogueDirector.Pass"/> itself, on the square of its own pad pass (F2-R1).</summary>
     void Tick();
 

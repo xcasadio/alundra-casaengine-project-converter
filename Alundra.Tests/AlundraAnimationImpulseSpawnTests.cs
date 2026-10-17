@@ -223,10 +223,10 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
     {
         // The arrival of the preset day3-after-dream (map 179, tile (17, 7), z 1), on the real map, the real prefab of the hero and the real controller.
         var spec = new ArcSpec("UJ-7", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 100, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0));
+            Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0));
         using var arc = new ArcRun(spec);
         Assert.True(arc.Hero.SpawnAnimationActive, "AdoptPlayerPawn raises the flag of the appearance with the animation of the arrival");
-        Assert.Equal(AlundraGameState.ResetAnimationId, arc.Hero.SpawnAnimationId);
+        Assert.Equal(GameState.ResetAnimationId, arc.Hero.SpawnAnimationId);
         arc.OneFrame();
         arc.OneFrame();
         var hero = arc.Hero;
@@ -256,7 +256,7 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
 
         // E19.d2c2 (S1): the hero is control-locked from here on, as a scripted arrival is; otherwise the tail of MovePlayer rewrites the animation 2 (a jump
         // state) to Idle at the first frame on the ground and the test would no longer discriminate the exemption of R2.
-        ArcRun.State.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ControlLocked;
+        ArcRun.State.PlayerControlFlags |= GameState.PlayerControlBits.ControlLocked;
         var rest = hero.PosZ;
         for (var tick = 1; tick <= 5; tick++)
         {

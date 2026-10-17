@@ -99,7 +99,7 @@ public sealed class AlundraHitOpcodesTests
     private static EventProgramState Run(K3World world, AlundraEntityScriptProxy self, params int[] code)
     {
         var document = Document(code.Append(0xFF).ToArray());
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), world.Context);
+        var runner = new AlundraEventProgramRunner(document, new GameState(), world.Context);
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = Sentinel };
         runner.RunOneScriptCall(self, state);
         return state;
@@ -389,7 +389,7 @@ public sealed class AlundraHitOpcodesTests
     // -----------------------------------------------------------------------------------------
 
 
-    private static AlundraEventProgramRunner RunnerFor(K3World world, AlundraGameState state, int[] aTable, int[] dTable, int[] codes)
+    private static AlundraEventProgramRunner RunnerFor(K3World world, GameState state, int[] aTable, int[] dTable, int[] codes)
     {
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = aTable, EventCodesDTable = dTable, Codes = codes };
         return new AlundraEventProgramRunner(document, state, world.Context);
@@ -402,7 +402,7 @@ public sealed class AlundraHitOpcodesTests
     public void Op87_InAProgramD_DecidesOnItsOwnAnswer_NotOnTheResultAProgramALeftInTheSharedState()
     {
         var world = new K3World();
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         // A program A at code 0 (0x2C on a search that finds nothing: Result := 1), the program D above at code 3.
         var codes = new[] { 0x2C, 5, 0xFF }.Concat(SwordSwitchProgram).ToArray();
         var runner = RunnerFor(world, gameState, new[] { 0, 0 }, new[] { 0, 3 }, codes);
@@ -434,7 +434,7 @@ public sealed class AlundraHitOpcodesTests
     public void Op95_InAProgramD_ReadsTheStoredBox_AndTheStateItLeavesIsTheNextProgramsInput()
     {
         var world = new K3World();
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         // A program D at 0: 0x95 [9, 5, 0, 2, 2, _, mask 0x0008, sword]; the jump when false; the flag 11 on; the end.
         var codes = new[] { 0x95, 9, 5, 0, 2, 2, 0, 0x08, 0x00, 0x00, 0x04, 6, 0, 0x05, 11, 0, 0xFF };
         var runner = RunnerFor(world, gameState, new[] { 0, 0 }, new[] { 0, 0 }, codes);

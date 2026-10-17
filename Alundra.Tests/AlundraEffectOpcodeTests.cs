@@ -127,7 +127,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
     {
         var codes = instructions.SelectMany(i => i).Concat(new[] { 0x1A, 9, 0xFF }).ToArray();
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new int[6], Codes = codes };
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), host);
+        var runner = new AlundraEventProgramRunner(document, new GameState(), host);
         var trace = new List<EventTraceRecord>();
         runner.TraceSink = trace.Add;
         entity ??= new AlundraEntityScriptProxy { Status = EntityStatus.Normal, LogicContextEntity = new Entity { Name = "logic" } };
@@ -740,7 +740,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         public int Calls;
         public IEventProgramRunner Runner => this;
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) { }

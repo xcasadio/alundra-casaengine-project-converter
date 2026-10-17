@@ -54,7 +54,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         AlundraInventoryPortrait.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -116,14 +116,14 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
     {
         var root = FindProjectRoot();
         var tables = new AlundraItemTables(root);
-        var state = new AlundraGameState();
+        var state = new GameState();
         AlundraPlayerManager.InitializeNewGameInventory(state, tables);
         Assert.Contains(state.NumberOfItems, count => count != 0); // the New Game inventory is really there.
         var hero = new AlundraEntityScriptProxy
         {
-            TileX = AlundraGameState.CameraTileX,
-            TileY = AlundraGameState.CameraTileY,
-            TileZ = AlundraGameState.CameraTileZ,
+            TileX = GameState.CameraTileX,
+            TileY = GameState.CameraTileY,
+            TileZ = GameState.CameraTileZ,
         };
 
         Assert.True(AlundraSaveGame.TryCaptureFromWorld(state, Map389WorldName, hero, out var save));
@@ -151,7 +151,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
             return save;
         }
 
-        save.GameTime = AlundraGameState.GameTimeMax;
+        save.GameTime = GameState.GameTimeMax;
         save.CameraTileX = 51;
         save.CameraTileY = 59;
         save.CameraTileZ = AlundraSaveGame.MaxCameraTileZ;
@@ -223,7 +223,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         var save = BoundsSave(tables, atMaximum);
         Assert.True(save.TryValidate(rules, out var error), error);
 
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
         save.ApplyTo(state);
 
         // The jauge: opened by its display request, ticked with its real presenter until every roll settles.

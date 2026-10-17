@@ -251,7 +251,7 @@ public sealed class AlundraVisionArcTests
         // The block's parent is the hero (the logic entity of B1).
         Assert.Same(arc.HeroEntity, arc.EntityByRecord(1)!.ParentEntity);
 
-        Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
+        Assert.Equal(GameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
         AssertNoOtherSkippedOpcode(arc);
     }
 
@@ -344,7 +344,7 @@ public sealed class AlundraVisionArcTests
         Assert.Same(arc.HeroEntity, blockProxy.ParentEntity);
         Assert.Same(ArcRun.EntityOf(blockProxy), arc.EntityByRecord(0)!.ParentEntity);
 
-        Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
+        Assert.Equal(GameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
 
         if (prefabs)
         {

@@ -53,7 +53,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraSoundGroupIndexTable.ResetForTests(); // B3 (D-B-7): joins the session carriers this class resets.
@@ -66,7 +66,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
     {
         // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
         // isolation) - kept for symmetry with the existing session-singleton test classes.
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraSoundGroupIndexTable.ResetForTests(); // B3 (D-B-7): joins the session carriers this class resets.

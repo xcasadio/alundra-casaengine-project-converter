@@ -27,7 +27,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
 
     private static void ResetSessionState()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests();
         AlundraMusicPlayer.Instance.ResetForTests();
@@ -49,7 +49,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
     {
         public IEventProgramRunner Runner { get; set; } = null!;
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
         public IReadOnlyList<AlundraPortalRecord> Portals { get; init; } = Array.Empty<AlundraPortalRecord>();
@@ -83,7 +83,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
     };
 
     private static (EventProgramState State, AlundraEventProgramRunner Runner) Run(
-        AlundraEntityScriptProxy hero, IReadOnlyList<AlundraPortalRecord> portals, AlundraGameState gameState, int result, bool withHost = true)
+        AlundraEntityScriptProxy hero, IReadOnlyList<AlundraPortalRecord> portals, GameState gameState, int result, bool withHost = true)
     {
         var document = new EventProgramDocument
         {
@@ -107,7 +107,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
     {
         var hero = Hero(30, 20);
 
-        var (state, _) = Run(hero, new[] { PortalAround(30, 20) }, new AlundraGameState(), result: 0);
+        var (state, _) = Run(hero, new[] { PortalAround(30, 20) }, new GameState(), result: 0);
 
         Assert.Equal(1, state.Result);
         Assert.Equal(1, state.CodeIndex);
@@ -122,7 +122,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
     {
         var hero = Hero(5, 5);
 
-        var (state, _) = Run(hero, new[] { PortalAround(30, 20) }, new AlundraGameState(), result: 1);
+        var (state, _) = Run(hero, new[] { PortalAround(30, 20) }, new GameState(), result: 1);
 
         Assert.Equal(0, state.Result);
         Assert.Equal(1, state.CodeIndex);
@@ -135,7 +135,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
     {
         var hero = Hero(30, 20);
 
-        var (state, _) = Run(hero, new[] { PortalAround(30, 20) }, new AlundraGameState { IsWarpDisabled = true }, result: 0);
+        var (state, _) = Run(hero, new[] { PortalAround(30, 20) }, new GameState { IsWarpDisabled = true }, result: 0);
 
         Assert.Equal(1, state.Result);
         Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
@@ -147,7 +147,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
     {
         var hero = Hero(30, 20);
 
-        var (state, _) = Run(hero, new[] { PortalAround(30, 20) }, new AlundraGameState(), result: 1, withHost: false);
+        var (state, _) = Run(hero, new[] { PortalAround(30, 20) }, new GameState(), result: 1, withHost: false);
 
         Assert.Equal(0, state.Result);
         Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
@@ -158,7 +158,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
     {
         var hero = Hero(30, 20);
 
-        AlundraWarpDirector.Instance.BeginDeparture(PortalAround(30, 20), 0x10, hero, new AlundraGameState());
+        AlundraWarpDirector.Instance.BeginDeparture(PortalAround(30, 20), 0x10, hero, new GameState());
 
         var record = AlundraWarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(0x36u, record.AnimationId);

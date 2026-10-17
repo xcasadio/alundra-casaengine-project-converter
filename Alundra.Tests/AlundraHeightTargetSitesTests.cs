@@ -87,17 +87,17 @@ public sealed class AlundraHeightTargetSitesTests
 
         using var arc = new ArcRun(new ArcSpec("H1b3-" + site.Id, Path.GetFileName(Path.GetDirectoryName(worldDir)!), Path.GetFileName(worldDir), Array.Empty<int>(),
             site.HeroX, site.HeroY, site.HeroZ, site.Frames, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival((site.HeroX * 24 + 12) << 16, (site.HeroY * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0)));
+            Arrival: new ArcArrival((site.HeroX * 24 + 12) << 16, (site.HeroY * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0)));
 
         // The map load clears the temporary flags (the 0x8000 banks): the flags the programs wait for are set after it.
         if (site.Flag is { } flag)
         {
-            AlundraGameState.Instance.AddFlag(flag, 1u << 1);
+            GameState.Instance.AddFlag(flag, 1u << 1);
         }
 
         if (site.RideHero)
         {
-            AlundraGameState.Instance.AddFlag(32774, 1u << 6);
+            GameState.Instance.AddFlag(32774, 1u << 6);
         }
 
         var framesAtPc = new List<int>();
@@ -120,7 +120,7 @@ public sealed class AlundraHeightTargetSitesTests
             var entity = arc.EntityByRecord(site.Rec);
             if (site.RideHero && arc.Frame == 3)
             {
-                AlundraGameState.Instance.SetFlag(32774, ~(1u << 6));
+                GameState.Instance.SetFlag(32774, ~(1u << 6));
             }
 
             if (site.RideHero && !ridden && entity != null && entity.CollidedWithEntityZ != 0 && entity.PosZ <= (16 << 16) + 70000)

@@ -332,13 +332,13 @@ public sealed class AlundraLogicalZWorldTests
         {
             if (tick == 5)
             {
-                arc.Proxy.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen; // the freeze: three frames without any tick.
+                arc.Proxy.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen; // the freeze: three frames without any tick.
                 for (var i = 0; i < 3; i++)
                 {
                     Frame(arc, 1);
                 }
 
-                arc.Proxy.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen; // the thaw.
+                arc.Proxy.GameState.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen; // the thaw.
             }
 
             Frame(arc, 1);
@@ -579,9 +579,9 @@ public sealed class AlundraLogicalZWorldTests
         var falling = Born(thaw, false, Arrow, 100, 0);
         Frames(thaw, 1, 5);
         var rootBefore = RootZ(falling);
-        thaw.Proxy.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        thaw.Proxy.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
         Frame(thaw, 1);
-        thaw.Proxy.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+        thaw.Proxy.GameState.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
         thaw.OneFrame(0.001f);
         thaw.OneFrame(0.001f);
         thaw.OneFrame(0.001f);

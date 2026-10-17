@@ -71,14 +71,14 @@ public sealed class AlundraDamageTests
     // K1: the equipment records of each inventory, steps 2 to 5 of UpdateItemEffectState.
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraGameState StateOf(JsonElement pre)
+    private static GameState StateOf(JsonElement pre)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         CopyInventory(state, pre);
         return state;
     }
 
-    private static void CopyInventory(AlundraGameState state, JsonElement pre)
+    private static void CopyInventory(GameState state, JsonElement pre)
     {
         Array.Clear(state.NumberOfItems);
         foreach (var owned in pre.GetProperty("owned").EnumerateObject())

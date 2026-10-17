@@ -36,7 +36,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     private static void Reset()
     {
         AlundraEtcStringTable.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
 
         // E16.e T3: slot F now notes the flow to the real save screen - reset both session singletons.
@@ -116,7 +116,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     [InlineData(ScriptHelper.ProgramCTick, AlundraSaveBook.TickCode)]
     public void RunPickedEvent_SaveBookSlot_ReachesTheBook(int slot, int code)
     {
-        var runner = new AlundraEventProgramRunner(null, AlundraGameState.Instance);
+        var runner = new AlundraEventProgramRunner(null, GameState.Instance);
         var book = Entity(AlundraSaveBook.SpriteType, slot, code);
 
         book.RunPickedEvent(runner);
@@ -135,14 +135,14 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     [InlineData(-1, ScriptHelper.ProgramCTick, AlundraSaveBook.TickCode)]
     public void RunPickedEvent_OtherSpriteType_WithABookCode_IsACountedNoOp(int spriteType, int slot, int code)
     {
-        var runner = new AlundraEventProgramRunner(null, AlundraGameState.Instance);
+        var runner = new AlundraEventProgramRunner(null, GameState.Instance);
         var entity = Entity(spriteType, slot, code);
 
         entity.RunPickedEvent(runner);
 
         Assert.Equal(1, runner.SpriteEventRunCount);
         Assert.Equal(0, runner.SaveBookEventRunCount);
-        Assert.Equal(0u, AlundraGameState.Instance.PlayerControlFlags);
+        Assert.Equal(0u, GameState.Instance.PlayerControlFlags);
         Assert.Equal(new byte[4], entity.Bytes);
     }
 
@@ -156,14 +156,14 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     [InlineData(ScriptHelper.ProgramEDeactivate, AlundraSaveBook.TickCode)]
     public void RunPickedEvent_SaveBookType_WithAnotherSlotOrCode_IsACountedNoOp(int slot, int code)
     {
-        var runner = new AlundraEventProgramRunner(null, AlundraGameState.Instance);
+        var runner = new AlundraEventProgramRunner(null, GameState.Instance);
         var book = Entity(AlundraSaveBook.SpriteType, slot, code);
 
         book.RunPickedEvent(runner);
 
         Assert.Equal(1, runner.SpriteEventRunCount);
         Assert.Equal(0, runner.SaveBookEventRunCount);
-        Assert.Equal(0u, AlundraGameState.Instance.PlayerControlFlags);
+        Assert.Equal(0u, GameState.Instance.PlayerControlFlags);
     }
 
     /// <summary>L1: a script program on the slot (<c>ProgramIndexes[slot] &amp; 0x7f != 0</c>) is never the native
@@ -171,7 +171,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     [Fact]
     public void RunSpriteEvent_SaveBookSlotCarryingAScriptProgram_IsNotTheBook()
     {
-        var runner = new AlundraEventProgramRunner(null, AlundraGameState.Instance);
+        var runner = new AlundraEventProgramRunner(null, GameState.Instance);
         var book = Entity(AlundraSaveBook.SpriteType, ScriptHelper.ProgramFInteract, AlundraSaveBook.InteractCode);
         book.ProgramIndexes[ScriptHelper.ProgramFInteract] = 0x85;
 
@@ -268,7 +268,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
         AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
         AlundraEntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefabAssetId, BookHeader()));
         proxy.EventTrigger = ScriptHelper.ProgramCTick;
-        var runner = new AlundraEventProgramRunner(null, AlundraGameState.Instance);
+        var runner = new AlundraEventProgramRunner(null, GameState.Instance);
 
         proxy.RunPickedEvent(runner);
 

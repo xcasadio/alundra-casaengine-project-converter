@@ -132,7 +132,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
     private static void OpenTheBox(string name)
     {
         Director.AdvanceProviderForTests = c => AlundraTextBoxOracle.GlyphWidth(OraclePages.ByteOf(c));
-        Director.AttachToWorld(new DialogueService(), new AlundraGameState());
+        Director.AttachToWorld(new DialogueService(), new GameState());
         Director.InstallForMapEntry();
         Director.Open(DialogueTestAssets.BuildRaw("vm-" + name, "Start", Of(name).Pages), "Start", controlMode: 1);
     }

@@ -38,7 +38,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
         return DialogueAsset.FromCompiledProgram(name, "Start", result.ProgramBytes, result.LineTexts);
     }
 
-    private static (YarnDialogueRunner Runner, FakeDialoguePresenter Presenter) NewRunner(AlundraGameState gameState)
+    private static (YarnDialogueRunner Runner, FakeDialoguePresenter Presenter) NewRunner(GameState gameState)
     {
         var presenter = new FakeDialoguePresenter();
         var runner = new YarnDialogueRunner(presenter) { VariableStorage = new AlundraYarnVariableStorage(gameState) };
@@ -52,7 +52,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [Fact]
     public void Read_BitSetByOpcode0x05_IsTrueInIf()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(42, 1u << (42 & 0x1f)); // AlundraEventProgramRunner.cs:449 (0x05)
         var (runner, presenter) = NewRunner(gameState);
         DialogueAsset asset = CompileAsset("ReadFlag", """
@@ -74,7 +74,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [Fact]
     public void Read_TempFlag_ReadsTemporaryBank()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(42 | 0x8000, 1u << (42 & 0x1f)); // temporary bank only
         var (runner, presenter) = NewRunner(gameState);
         DialogueAsset asset = CompileAsset("ReadTempFlag", """
@@ -96,7 +96,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [Fact]
     public void Read_SameIdInBothBanks_AreDistinctFlags()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(42, 1u << (42 & 0x1f)); // GameFlags only, not TemporaryFlags
         var (runner, presenter) = NewRunner(gameState);
         DialogueAsset asset = CompileAsset("DistinctBanks", """
@@ -122,7 +122,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [Fact]
     public void Write_SetTrue_IsSeenByOpcode0x30sOwnBitTest()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var (runner, _) = NewRunner(gameState);
         DialogueAsset asset = CompileAsset("WriteFlagTrue", """
             title: Start
@@ -142,7 +142,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [Fact]
     public void Write_SetFalse_ClearsOnlyThatBit()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.GameFlags[IndexOf(100)] = 0xFFFFFFFF; // every bit of that word set beforehand
         var (runner, _) = NewRunner(gameState);
         DialogueAsset asset = CompileAsset("WriteFlagFalse", """
@@ -176,7 +176,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
             var name = isTemporary ? $"$tmp_flag_{n}" : $"$flag_{n}";
             var flagId = (uint)n | (isTemporary ? 0x8000u : 0u);
 
-            var viaYarn = new AlundraGameState();
+            var viaYarn = new GameState();
             var (runner, _) = NewRunner(viaYarn);
             runner.Start(CompileAsset($"Boundary{n}{isTemporary}", $$"""
                 title: Start
@@ -186,7 +186,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
                 ===
                 """));
 
-            var viaOpcode = new AlundraGameState();
+            var viaOpcode = new GameState();
             viaOpcode.AddFlag(flagId, 1u << (n & 0x1f)); // opcode 0x05 (AlundraEventProgramRunner.cs:449)
 
             Assert.Equal(viaOpcode.GameFlags, viaYarn.GameFlags);
@@ -206,7 +206,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
             var name = isTemporary ? $"$tmp_flag_{n}" : $"$flag_{n}";
             var flagId = (uint)n | (isTemporary ? 0x8000u : 0u);
 
-            var viaYarn = new AlundraGameState();
+            var viaYarn = new GameState();
             (isTemporary ? viaYarn.TemporaryFlags : viaYarn.GameFlags)[IndexOf(n)] = 0xFFFFFFFF;
             var (runner, _) = NewRunner(viaYarn);
             runner.Start(CompileAsset($"BoundaryFalse{n}{isTemporary}", $$"""
@@ -217,7 +217,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
                 ===
                 """));
 
-            var viaOpcode = new AlundraGameState();
+            var viaOpcode = new GameState();
             (isTemporary ? viaOpcode.TemporaryFlags : viaOpcode.GameFlags)[IndexOf(n)] = 0xFFFFFFFF;
             viaOpcode.SetFlag(flagId, ~(1u << (n & 0x1f))); // opcode 0x06 (AlundraEventProgramRunner.cs:457)
 
@@ -241,7 +241,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [InlineData("$tmp_flag_x")]
     public void RefusedName_SetTrue_LogsOnceAndLeavesBanksUnchanged(string name)
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         SeedBanks(gameState);
         var gameFlagsSnapshot = (uint[])gameState.GameFlags.Clone();
         var temporaryFlagsSnapshot = (uint[])gameState.TemporaryFlags.Clone();
@@ -266,7 +266,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [Fact]
     public void NumberUnderFlagName_IsRefused_LogsOnceAndLeavesBanksUnchanged()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         SeedBanks(gameState);
         var gameFlagsSnapshot = (uint[])gameState.GameFlags.Clone();
         var temporaryFlagsSnapshot = (uint[])gameState.TemporaryFlags.Clone();
@@ -293,7 +293,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [InlineData("$foo")]
     public void RefusedName_Read_IsFalseAndLogsOnce(string name)
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var storage = new AlundraYarnVariableStorage(gameState);
         using var logger = CapturingWarningLogger.Install();
 
@@ -312,7 +312,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [InlineData("$foo")]
     public void GetVariableKind_RefusedName_IsUnknown(string name)
     {
-        var storage = new AlundraYarnVariableStorage(new AlundraGameState());
+        var storage = new AlundraYarnVariableStorage(new GameState());
 
         Assert.Equal(VariableKind.Unknown, storage.GetVariableKind(name));
     }
@@ -322,7 +322,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [InlineData("$tmp_flag_2047")]
     public void GetVariableKind_ValidFlagName_IsStored(string name)
     {
-        var storage = new AlundraYarnVariableStorage(new AlundraGameState());
+        var storage = new AlundraYarnVariableStorage(new GameState());
 
         Assert.Equal(VariableKind.Stored, storage.GetVariableKind(name));
     }
@@ -334,7 +334,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [Fact]
     public void Clear_LeavesBothBanksUnchanged()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         SeedBanks(gameState);
         var gameFlagsSnapshot = (uint[])gameState.GameFlags.Clone();
         var temporaryFlagsSnapshot = (uint[])gameState.TemporaryFlags.Clone();
@@ -353,7 +353,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [Fact]
     public void Director_CreatedRunner_UsesThisStorage()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), gameState);
         AlundraDialogueDirector.Instance.InstallForMapEntry();
 
@@ -376,7 +376,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [Fact]
     public void MapEntry_ClearsTempFlagButKeepsGameFlag()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var (runner, _) = NewRunner(gameState);
         runner.Start(CompileAsset("MapEntryFlags", """
             title: Start
@@ -403,7 +403,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
     [Fact]
     public void Save_RoundTrip_KeepsGameFlagsDropsTemporaryFlags()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var (runner, _) = NewRunner(gameState);
         runner.Start(CompileAsset("SaveRoundTrip", """
             title: Start
@@ -417,7 +417,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
             """));
 
         var save = AlundraSaveGame.Capture(gameState, currentMapId: 1, tileX: 0, tileY: 0, tileZ: 0);
-        var restored = new AlundraGameState();
+        var restored = new GameState();
         save.ApplyTo(restored);
 
         var mask0 = 1u << (0 & 0x1f);
@@ -434,7 +434,7 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
 
     /// <summary>Seeds a few bits in both banks so a "no state change" assertion is meaningful (an
     /// all-zero snapshot could hide an accidental write that happens to land on an already-zero bit).</summary>
-    private static void SeedBanks(AlundraGameState gameState)
+    private static void SeedBanks(GameState gameState)
     {
         gameState.GameFlags[0] = 0x12345678;
         gameState.GameFlags[5] = 0xABCDEF01;

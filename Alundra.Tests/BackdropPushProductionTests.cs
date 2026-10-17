@@ -41,7 +41,7 @@ public sealed class BackdropPushProductionTests : IDisposable
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy
         // and drives proxy.Update over the real map 389 montage - reset the session carriers, same as
         // every other class exercising this montage (AlundraWorldProxyGlobalFreezeTests, ...).
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -49,7 +49,7 @@ public sealed class BackdropPushProductionTests : IDisposable
 
     public void Dispose()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -97,7 +97,7 @@ public sealed class BackdropPushProductionTests : IDisposable
 
     /// <summary>
     /// (b) The freeze-gate pin (D-E9b-2's own "hors porte de gel" clause): posing
-    /// <see cref="AlundraGameState.PlayerControlBits.MenuOpen"/> (part of <c>GameplayBlockedMask</c>)
+    /// <see cref="GameState.PlayerControlBits.MenuOpen"/> (part of <c>GameplayBlockedMask</c>)
     /// BEFORE the very same <c>Update(0.04f)</c> as the test above must NOT change the result -
     /// <c>PendingTicks</c> is still 2, proving <see cref="AlundraBackdropStage.PushFrame"/>'s call site
     /// sits outside the gameplay freeze gate (a MenuOpen dialogue box does not also freeze the backdrop
@@ -119,7 +119,7 @@ public sealed class BackdropPushProductionTests : IDisposable
         proxy.Update(0.02f); // priming frame.
         proxy.Update(0f); // resets PendingTicks to 0 (see the sibling test).
 
-        proxy.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        proxy.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
 
         proxy.Update(0.04f);
 

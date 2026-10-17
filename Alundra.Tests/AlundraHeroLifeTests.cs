@@ -96,7 +96,7 @@ public sealed class AlundraHeroLifeTests
 
         public required AlundraEntityScriptProxy Hero { get; init; }
 
-        public AlundraGameState State => Host.GameState;
+        public GameState State => Host.GameState;
 
         public AlundraEquipmentRecords Records => Host.EquipmentRecords!;
     }
@@ -320,12 +320,12 @@ public sealed class AlundraHeroLifeTests
         Frozen,
     }
 
-    private static void RunExit(AlundraEntityScriptProxy hero, AlundraGameState state, Exit exit)
+    private static void RunExit(AlundraEntityScriptProxy hero, GameState state, Exit exit)
     {
         switch (exit)
         {
             case Exit.Locked:
-                state.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ControlLocked;
+                state.PlayerControlFlags |= GameState.PlayerControlBits.ControlLocked;
                 break;
             case Exit.Frozen:
                 hero.BlockedByEntity = new Entity { Name = "blocker" }; // +0x20 != 0, the DLL's BlockedByEntity branch.
@@ -342,7 +342,7 @@ public sealed class AlundraHeroLifeTests
     [InlineData(Exit.Frozen)]
     public void TheEnd_OfEveryExitOfMovePlayer_MirrorsTheEntityLifeIntoTheStats_HpMaxFirst(Exit exit)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         state.PlayerStats.HpMax = 4;
         state.PlayerStats.Hp = 3;
         var hero = new AlundraEntityScriptProxy { Hp = 20, HpMax = 30, LifePulledFromStats = true };
@@ -359,7 +359,7 @@ public sealed class AlundraHeroLifeTests
     [InlineData(Exit.Frozen)]
     public void TheEnd_AHeroThatNeverPulledItsLife_IsNotMirrored_TheBareMontagesKeepTheirStats(Exit exit)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         state.PlayerStats.HpMax = 12;
         state.PlayerStats.Hp = 4;
         var hero = new AlundraEntityScriptProxy(); // Hp 0, HpMax 0 (the C# defaults), LifePulledFromStats false.
@@ -376,7 +376,7 @@ public sealed class AlundraHeroLifeTests
     [InlineData(4, 12, 4, 12)] // E3-12-4
     public void TheEnd_ClampsLikeTheSetters(int hp, int hpMax, int statsHp, int statsHpMax)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var hero = new AlundraEntityScriptProxy { Hp = hp, HpMax = hpMax, LifePulledFromStats = true };
 
         RunExit(hero, state, Exit.Normal);
@@ -415,7 +415,7 @@ public sealed class AlundraHeroLifeTests
     [InlineData(0x19, 0)] // the object 0x19 does not count.
     public void BootsLevelOf_IsTheFirstOwnedOf_1C_1B_1A(int item, int expected)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         Array.Clear(state.NumberOfItems);
         state.NumberOfItems[item * 2 + 1] = 1;
 
@@ -505,7 +505,7 @@ public sealed class AlundraHeroLifeTests
         return records;
     }
 
-    private static void Regenerate(AlundraEntityScriptProxy hero, AlundraGameState state, AlundraEquipmentRecords? records, uint hold = 0)
+    private static void Regenerate(AlundraEntityScriptProxy hero, GameState state, AlundraEquipmentRecords? records, uint hold = 0)
     {
         var pad = new AlundraPadState { ButtonsHold = hold };
         AlundraPlayerManager.RegenerateLife(hero, in pad, state, records);
@@ -514,7 +514,7 @@ public sealed class AlundraHeroLifeTests
     [Fact]
     public void Regeneration_OneRecordOfByte2_3_GainsOneEveryFourTicks()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var hero = new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 };
         var records = RecordsWithPeriods(3);
 
@@ -536,7 +536,7 @@ public sealed class AlundraHeroLifeTests
     [InlineData(0x40u)]
     public void Regeneration_EachBitOf_0x7C_ClosesTheGate_AndZeroesTheCounters(uint flag)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var hero = new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 };
         var records = RecordsWithPeriods(100, 100, 100);
         Regenerate(hero, state, records);
@@ -556,7 +556,7 @@ public sealed class AlundraHeroLifeTests
     [InlineData(0x80u)] // the scripted weapon lock is not in the mask 0x7C.
     public void Regeneration_TheBitsOutsideTheMask_DoNotCloseTheGate(uint flag)
     {
-        var state = new AlundraGameState { PlayerControlFlags = flag };
+        var state = new GameState { PlayerControlFlags = flag };
         var hero = new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 };
 
         Regenerate(hero, state, RecordsWithPeriods(100));
@@ -569,7 +569,7 @@ public sealed class AlundraHeroLifeTests
     {
         var records = RecordsWithPeriods(100);
 
-        var state = new AlundraGameState();
+        var state = new GameState();
         var frozen = new AlundraEntityScriptProxy { Hp = 5, HpMax = 10, BlockedByEntity = new Entity { Name = "blocker" } };
         Regenerate(frozen, state, records);
         Assert.Equal(0, state.RegenerationCounters[0]);
@@ -593,7 +593,7 @@ public sealed class AlundraHeroLifeTests
     [Fact]
     public void Regeneration_TwoRecordsThatPassTogether_GainTwo_CappedAtTheMaximum_AndARecordWithoutByte2ZeroesItsCounter()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var hero = new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 };
         var records = RecordsWithPeriods(1, 1, 0);
 
@@ -613,7 +613,7 @@ public sealed class AlundraHeroLifeTests
     [Fact]
     public void Regeneration_TheCountersAreSessionState_TheyContinueWithTheHeroOfTheNextMap()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var records = RecordsWithPeriods(100);
         Regenerate(new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 }, state, records);
         Regenerate(new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 }, state, records);
@@ -626,7 +626,7 @@ public sealed class AlundraHeroLifeTests
     [Fact]
     public void Regeneration_WithoutRecords_OnlyKeepsTheCountersAtZero()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var hero = new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 };
 
         Regenerate(hero, state, records: null);
@@ -742,7 +742,7 @@ public sealed class AlundraHeroLifeArcTests
     /// <summary>A real arrival on the map 179 (the preset of AlundraAnimationImpulseSpawnTests UJ-7): the new-game kit does not run, the inventory is the one the test gives.</summary>
     private static ArcSpec Inoa179(string name) =>
         new("E20c2a-" + name, "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 100, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0));
+            Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0));
 
     public static IEnumerable<object[]> E3Runs() => AlundraHeroLifeTests.RunNames("E3.json");
 

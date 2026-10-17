@@ -26,7 +26,7 @@ namespace Alundra.SaveGames;
 /// <c>playerStats</c> object by <see cref="Serialize"/>.</para>
 ///
 /// <para><b>Own arrays (C2, SC4).</b> The three arrays are <c>readonly</c> fields allocated at their length,
-/// never shared with <see cref="AlundraGameState"/>: the service fills THIS object's arrays when loading, the
+/// never shared with <see cref="GameState"/>: the service fills THIS object's arrays when loading, the
 /// live state is only touched by <see cref="ApplyTo"/> (E16.d), and neither the validation nor
 /// <see cref="ApplyTo"/> can meet a null or wrongly sized array.</para>
 ///
@@ -121,7 +121,7 @@ public sealed class AlundraSaveGame : ISaveGameData
     /// <summary><c>PlayerStats.MpMax</c>.</summary>
     public short MpMax;
 
-    /// <summary><c>PlayerStats.MoneyAmount</c> (<see cref="AlundraPlayerStats.Money"/>).</summary>
+    /// <summary><c>PlayerStats.MoneyAmount</c> (<see cref="PlayerStats.Money"/>).</summary>
     public short Money;
 
     /// <summary><c>PlayerStats.WeaponId</c>.</summary>
@@ -194,13 +194,13 @@ public sealed class AlundraSaveGame : ISaveGameData
 
     /// <summary>
     /// C5: port of what <c>UpdateSavedData</c> (0x80031588, <c>GameEngine.cs:2648-2662</c>) gathers, from
-    /// values already read. Copies words 0 to 63 of <see cref="AlundraGameState.GameFlags"/>, the map table,
-    /// the item counters, the nine stats, <see cref="AlundraGameState.GameTime"/> and
-    /// <see cref="AlundraGameState.DeathRetryCount"/> into this object's OWN arrays, then sets
+    /// values already read. Copies words 0 to 63 of <see cref="GameState.GameFlags"/>, the map table,
+    /// the item counters, the nine stats, <see cref="GameState.GameTime"/> and
+    /// <see cref="GameState.DeathRetryCount"/> into this object's OWN arrays, then sets
     /// <see cref="InitialMapId"/> and <see cref="CameraTileX"/>/<see cref="CameraTileY"/>/<see cref="CameraTileZ"/>
     /// from the arguments. Does not validate. Production goes through <see cref="TryCaptureFromWorld"/>.
     /// </summary>
-    public static AlundraSaveGame Capture(AlundraGameState state, int currentMapId, int tileX, int tileY, int tileZ)
+    public static AlundraSaveGame Capture(GameState state, int currentMapId, int tileX, int tileY, int tileZ)
     {
         ArgumentNullException.ThrowIfNull(state);
 
@@ -244,7 +244,7 @@ public sealed class AlundraSaveGame : ISaveGameData
     /// validates.</para>
     /// </summary>
     public static bool TryCaptureFromWorld(
-        AlundraGameState state,
+        GameState state,
         string worldName,
         AlundraEntityScriptProxy? player,
         out AlundraSaveGame? save)
@@ -271,7 +271,7 @@ public sealed class AlundraSaveGame : ISaveGameData
     /// <list type="number">
     /// <item><description><see cref="LoadedDataVersion"/> must be 1: the engine loads any version up to
     /// <see cref="LatestDataVersion"/>, 0 included (SC2);</description></item>
-    /// <item><description><c>gameTime</c>: 0..<see cref="AlundraGameState.GameTimeMax"/>;</description></item>
+    /// <item><description><c>gameTime</c>: 0..<see cref="GameState.GameTimeMax"/>;</description></item>
     /// <item><description><c>initialMapId</c>: a key of <c>world-index.json</c>, whose world is in the catalog and
     /// whose <c>.tileMap</c> gives a width and a height of at least 1. Only that one <c>.tileMap</c> is read, only
     /// after the key is found: its path always comes from <c>world-index.json</c>, never from the save. An
@@ -306,9 +306,9 @@ public sealed class AlundraSaveGame : ISaveGameData
             return Format($"data version {LoadedDataVersion} is not supported, only {DataVersion1}");
         }
 
-        if (GameTime > AlundraGameState.GameTimeMax)
+        if (GameTime > GameState.GameTimeMax)
         {
-            return OutsideRange("gameTime", GameTime, 0, AlundraGameState.GameTimeMax);
+            return OutsideRange("gameTime", GameTime, 0, GameState.GameTimeMax);
         }
 
         var mapError = CheckInitialMap(rules, out var mapWidth, out var mapHeight);
@@ -468,14 +468,14 @@ public sealed class AlundraSaveGame : ISaveGameData
 
     /// <summary>
     /// C6: copies an ALREADY VALIDATED object into <paramref name="state"/>. Clears the 1024 words of
-    /// <see cref="AlundraGameState.GameFlags"/> before copying the 64 saved ones (otherwise flags of the
+    /// <see cref="GameState.GameFlags"/> before copying the 64 saved ones (otherwise flags of the
     /// session in progress would survive), then copies the map table, the item counters, the nine stats,
     /// <see cref="DeathRetryCount"/> and <see cref="GameTime"/>, and drops the unsaved fraction of the game
     /// time. It touches neither <c>TemporaryFlags</c>, <c>TextCategoryIndex</c>, <c>GameVariables</c>,
     /// <c>PlayerControlFlags</c> nor the rest of the session: that is E16.d's step 4. The array lengths are
     /// fixed at construction on both sides, so it does not throw.
     /// </summary>
-    public void ApplyTo(AlundraGameState state)
+    public void ApplyTo(GameState state)
     {
         ArgumentNullException.ThrowIfNull(state);
 
@@ -505,7 +505,7 @@ public sealed class AlundraSaveGame : ISaveGameData
     /// writes into <c>CurrentFlagName</c> and <c>GameStateDescription</c>, which the slot list reads without
     /// decoding the save:
     /// <list type="bullet">
-    /// <item><description><c>chapter</c>: <see cref="AlundraChapterFlags.GetFirstEnabledFlagIndex"/> over
+    /// <item><description><c>chapter</c>: <see cref="ChapterFlags.GetFirstEnabledFlagIndex"/> over
     /// <see cref="GameFlags"/>, on four digits (<c>"0000"</c> to <c>"0041"</c>, F8);</description></item>
     /// <item><description><c>summary</c>: <see cref="BuildSummary"/> over <see cref="HpMax"/> and
     /// <see cref="GameTime"/> (F6).</description></item>
@@ -516,7 +516,7 @@ public sealed class AlundraSaveGame : ISaveGameData
     {
         return new Dictionary<string, string>(StringComparer.Ordinal)
         {
-            ["chapter"] = AlundraChapterFlags.FormatChapter(AlundraChapterFlags.GetFirstEnabledFlagIndex(GameFlags)),
+            ["chapter"] = ChapterFlags.FormatChapter(ChapterFlags.GetFirstEnabledFlagIndex(GameFlags)),
             ["summary"] = BuildSummary(HpMax, GameTime),
         };
     }

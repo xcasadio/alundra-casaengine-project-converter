@@ -37,7 +37,7 @@ public sealed class AlundraInoaDayOneArcTests
     private static ArcSpec A20Spec => new(
         "A20", "Inoa", "Inoa-162", Array.Empty<int>(), 0, 0, 0, 402,
         RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(47972352, 27787264, 0, AlundraGameState.ResetAnimationId, 0));
+        Arrival: new ArcArrival(47972352, 27787264, 0, GameState.ResetAnimationId, 0));
 
     /// <summary>
     /// A20 (no flag): the hero arrives by portal 163.0 at (732, 424). The map event B[7] (<c>@572</c>) locks the player, makes Sybill
@@ -113,7 +113,7 @@ public sealed class AlundraInoaDayOneArcTests
     private static ArcSpec A10Spec => new(
         "A10", "Inoa", "Inoa (inner)-165", Array.Empty<int>(), 0, 0, 0, 2132,
         RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(19660800, 23592960, 0, AlundraGameState.ResetAnimationId, 16));
+        Arrival: new ArcArrival(19660800, 23592960, 0, GameState.ResetAnimationId, 16));
 
     private sealed class A10Samples
     {

@@ -49,7 +49,7 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
         AlundraInventoryPostProcess.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();

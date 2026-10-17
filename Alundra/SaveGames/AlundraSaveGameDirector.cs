@@ -138,7 +138,7 @@ public sealed class AlundraSaveGameDirector
     /// <param name="state">The session's game state.</param>
     /// <param name="worldName">The current world's name, whose "-{id}" suffix is the current map (F4).</param>
     /// <param name="player">The hero (<see cref="AlundraWorldProxy.PlayerEntity"/>), or null.</param>
-    internal void UpdateRecipeKeys(KeyboardManager? keyboard, AlundraGameState state, string? worldName, AlundraEntityScriptProxy? player)
+    internal void UpdateRecipeKeys(KeyboardManager? keyboard, GameState state, string? worldName, AlundraEntityScriptProxy? player)
     {
         ArgumentNullException.ThrowIfNull(state);
 
@@ -191,7 +191,7 @@ public sealed class AlundraSaveGameDirector
 
     /// <summary>K6 (F5/F6): preconditions, capture, validate, then write - nothing is written at the first
     /// refusal.</summary>
-    private void SaveToSlot(string slot, SaveGameFormat format, AlundraGameState state, string? worldName, AlundraEntityScriptProxy? player)
+    private void SaveToSlot(string slot, SaveGameFormat format, GameState state, string? worldName, AlundraEntityScriptProxy? player)
     {
         var key = format == SaveGameFormat.Binary ? SaveBinaryKey : SaveJsonKey;
 
@@ -244,7 +244,7 @@ public sealed class AlundraSaveGameDirector
     /// the load made PENDING and the departure armed through the warp path. Nothing of the live state changes
     /// here: the load is applied on the arrival map (K8, <see cref="ApplyPendingLoad"/>).
     /// </summary>
-    private void LoadMostRecent(AlundraGameState state, AlundraEntityScriptProxy? player)
+    private void LoadMostRecent(GameState state, AlundraEntityScriptProxy? player)
     {
         // K7 step 1: the original never loads freely in the middle of a session (§0.2).
         if (player == null)
@@ -356,7 +356,7 @@ public sealed class AlundraSaveGameDirector
 
     /// <summary>
     /// K8 (docs/plan-e16-etat-partie.md, G5): applies the pending load on its arrival map. Called from
-    /// <see cref="AlundraWorldProxy.InitializeWithWorld"/> right after <see cref="AlundraGameState.InstallForMapEntry"/>,
+    /// <see cref="AlundraWorldProxy.InitializeWithWorld"/> right after <see cref="GameState.InstallForMapEntry"/>,
     /// so during the arrival world's installation and BEFORE its first tick, where the entities' programs (their
     /// load program, slot A) and the map events are the first readers of the loaded values. Nothing before
     /// <c>InstallForMapEntry</c> reads the session state, and nothing after it overwrites the loaded values.
@@ -368,7 +368,7 @@ public sealed class AlundraSaveGameDirector
     /// id, <paramref name="arrivalMapId"/> null), it abandons the load with a warning and applies
     /// nothing.</description></item>
     /// <item><description>Otherwise, in this order and without throwing (the array lengths are fixed on both
-    /// sides, E16.c C6): <see cref="AlundraGameState.ResetSessionForLoad"/> (step 1); the save's
+    /// sides, E16.c C6): <see cref="GameState.ResetSessionForLoad"/> (step 1); the save's
     /// <see cref="AlundraSaveGame.ApplyTo"/> (step 2: flags, map table, item counters, stats, death retries,
     /// game time, which resumes from there); <see cref="AlundraHudDirector.ResetDisplayForLoad"/> with the stats
     /// just loaded (step 3, SC1); and the <c>ResetSessionForLoad</c> of both inventory directors, the
@@ -377,7 +377,7 @@ public sealed class AlundraSaveGameDirector
     /// The dialogue is reset by its own map entry, which runs next (G8), and the hero is placed by the warp
     /// arrival (G6).
     /// </summary>
-    internal void ApplyPendingLoad(AlundraGameState state, int? arrivalMapId)
+    internal void ApplyPendingLoad(GameState state, int? arrivalMapId)
     {
         ArgumentNullException.ThrowIfNull(state);
 
@@ -473,7 +473,7 @@ public sealed class AlundraSaveGameDirector
     /// <see cref="FindSessionBlocker"/>. Each one is tested on its own (G7): none implies another. Null when the
     /// save may proceed, otherwise the reason of the refusal.
     /// </summary>
-    private static string? FindSaveBlocker(AlundraGameState state, AlundraEntityScriptProxy? player)
+    private static string? FindSaveBlocker(GameState state, AlundraEntityScriptProxy? player)
     {
         if (player == null)
         {
@@ -491,14 +491,14 @@ public sealed class AlundraSaveGameDirector
     /// <summary>
     /// K6 step 1 and K7 step 1: what both keys refuse, each tested on its own (G7) - a dialogue box open
     /// (<see cref="AlundraDialogueDirector.IsOpen"/>: a box with a control mode other than 0 or 1 leaves
-    /// <see cref="AlundraGameState.PlayerControlFlags"/> untouched); the main or the sub-inventory active; the
+    /// <see cref="GameState.PlayerControlFlags"/> untouched); the main or the sub-inventory active; the
     /// inventory post-process not idle, or the portrait not <see cref="AlundraInventoryPortrait.StateIdle"/>
     /// (<see cref="AlundraInventoryPortrait.StateAtRest"/> is the portrait shown DURING a menu, SD12); a warp
     /// transition in progress (not implied by the control flags); the master BGM fade armed (opcode
     /// <c>0xA6</c>: it would survive the load and could cut the arrival map's music, SD4); any bit of
-    /// <see cref="AlundraGameState.PlayerControlFlags"/>.
+    /// <see cref="GameState.PlayerControlFlags"/>.
     /// </summary>
-    private static string? FindSessionBlocker(AlundraGameState state)
+    private static string? FindSessionBlocker(GameState state)
     {
         if (AlundraDialogueDirector.Instance.IsOpen)
         {

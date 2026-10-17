@@ -37,14 +37,14 @@ public sealed class AlundraFlailBounceArcTests : IDisposable
     public AlundraFlailBounceArcTests(ITestOutputHelper output)
     {
         _output = output;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
     {
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -115,7 +115,7 @@ public sealed class AlundraFlailBounceArcTests : IDisposable
 
     private static ArcSpec Map69(string name, int pixelX, uint direction) => new(
         name, "Coastal Cave", "Coastal Cave-69", Array.Empty<int>(), 0, 0, 0, 600, RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(pixelX << 16, 232 << 16, 0, AlundraGameState.ResetAnimationId, direction));
+        Arrival: new ArcArrival(pixelX << 16, 232 << 16, 0, GameState.ResetAnimationId, direction));
 
     private static void WaitUntilTheHeroIsFree(ArcRun arc)
     {

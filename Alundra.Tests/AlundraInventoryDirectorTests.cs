@@ -25,7 +25,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// E13.d D4 acceptance (docs/plan-e13d-inventaire.md) - drives <see cref="AlundraInventoryDirector"/> the
 /// way <see cref="AlundraHudDirectorTests"/> drives <see cref="AlundraHudDirector"/>: a tick is
-/// <c>state.TickPad.Update(hold)</c> then <c>director.Tick(player)</c>, isolated <see cref="AlundraGameState"/>
+/// <c>state.TickPad.Update(hold)</c> then <c>director.Tick(player)</c>, isolated <see cref="GameState"/>
 /// instances for every test but the last (which drives the real <see cref="AlundraWorldProxy"/>).
 /// </summary>
 public sealed class AlundraInventoryDirectorTests : IDisposable
@@ -39,7 +39,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -57,7 +57,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -129,16 +129,16 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
             + $"'{AppContext.BaseDirectory}' - this test needs the real converter export.");
     }
 
-    private static AlundraGameState NewState() => new();
+    private static GameState NewState() => new();
 
-    private static AlundraInventoryDirector NewDirector(AlundraGameState state, AlundraItemTables? tables = null, IAlundraSoundPlayer? sound = null)
+    private static AlundraInventoryDirector NewDirector(GameState state, AlundraItemTables? tables = null, IAlundraSoundPlayer? sound = null)
     {
         var director = AlundraInventoryDirector.Instance;
         director.AttachToWorld(state, tables ?? ItemTablesFixture.LoadReal(), sound);
         return director;
     }
 
-    private static void Tick(AlundraGameState state, AlundraInventoryDirector director, uint hold, AlundraEntityScriptProxy? player = null)
+    private static void Tick(GameState state, AlundraInventoryDirector director, uint hold, AlundraEntityScriptProxy? player = null)
     {
         state.TickPad.Update(hold);
         director.Tick(player);
@@ -146,7 +146,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
     /// <summary>Ticks (no input) until <paramref name="predicate"/> holds, up to <paramref name="maxTicks"/> -
     /// used for the text-reveal milestones whose exact tick count is secondary to the state reached.</summary>
-    private static void TickUntil(AlundraGameState state, AlundraInventoryDirector director, Func<bool> predicate, int maxTicks = 300)
+    private static void TickUntil(GameState state, AlundraInventoryDirector director, Func<bool> predicate, int maxTicks = 300)
     {
         for (var i = 0; i < maxTicks && !predicate(); i++)
         {
@@ -161,7 +161,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     /// documents why 18, the same "mode == 0 on entry, two calls after the target is reached" shape
     /// <see cref="AlundraHudDirector"/>'s own tween has) so the caller starts from the settled,
     /// input-accepting state.</summary>
-    private static void OpenAndSettle(AlundraGameState state, AlundraInventoryDirector director)
+    private static void OpenAndSettle(GameState state, AlundraInventoryDirector director)
     {
         Tick(state, director, AlundraPadState.Start); // trigger + DisplayInventory + FUN_80054f1c, same tick.
         for (var i = 0; i < 18; i++)
@@ -209,7 +209,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     public void Trigger_Refused_WhenPlayerControlFlagsNonZero()
     {
         var state = NewState();
-        state.PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked;
+        state.PlayerControlFlags = GameState.PlayerControlBits.ControlLocked;
         var director = NewDirector(state);
 
         Tick(state, director, AlundraPadState.Start);
@@ -223,7 +223,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     public void Trigger_Refused_WhenOnlyTheScriptedWeaponBit0x80IsSet_AndOpensOnceItIsCleared()
     {
         var state = NewState();
-        state.PlayerControlFlags = AlundraGameState.PlayerControlBits.ForcedWeapon;
+        state.PlayerControlFlags = GameState.PlayerControlBits.ForcedWeapon;
         var director = NewDirector(state);
 
         Tick(state, director, AlundraPadState.Start);
@@ -302,7 +302,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         Assert.False(director.IsActive);
         Assert.Equal(0u, director.ForbiddenWarpFlag);
-        Assert.Equal(0u, state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+        Assert.Equal(0u, state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
     }
 
     [Fact]
@@ -347,7 +347,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         Assert.Equal(new[] { 4 }, sound.Requests);
         Assert.Equal(5u, director.ForbiddenWarpFlag);
-        Assert.True((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+        Assert.True((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0);
         Assert.Equal(AlundraHudDirector.HudPhase.Idle, AlundraHudDirector.Instance.Phase); // ArmDisappearance's own guard (Phase&3==1) is false while Idle - never armed from a cold Idle HUD.
         Assert.Equal((8, 16), director.BoxPosition(0)); // weapon box - untouched this same tick.
 
@@ -693,7 +693,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         Assert.Contains(5, sound.Requests);
         Assert.Equal(3u, director.ForbiddenWarpFlag); // bit0 (residual) | bit1 (SlideCloseBit).
-        Assert.True((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0); // still open mid-slide.
+        Assert.True((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0); // still open mid-slide.
 
         Tick(state, director, 0); // first close-slide tick - box snaps to its off-screen TARGET-bound source (== origin here).
         Assert.Equal((8, 16), director.BoxPosition(0)); // source for box0/1 on close IS the origin (unmoved this tick).
@@ -705,7 +705,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         Assert.Equal(0u, director.ForbiddenWarpFlag);
         Assert.False(director.IsActive);
-        Assert.False((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+        Assert.False((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0);
         // MainInventoryManager.cs:881-894 - the close-completion branch snaps every box back to its
         // OWN origin, even though it was just at its off-screen close target: matches the original,
         // which ports the same "snap all boxes to originX/Y" regardless of the box's live position.
@@ -727,7 +727,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         Assert.Equal(new[] { 5 }, sound.Requests);
         Assert.Equal(3u, director.ForbiddenWarpFlag); // bit0 (residual) | bit1 (SlideCloseBit).
-        Assert.True((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+        Assert.True((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0);
 
         for (var i = 0; i < 18; i++)
         {
@@ -735,7 +735,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         }
 
         Assert.False(director.IsActive);
-        Assert.False((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+        Assert.False((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0);
     }
 
     /// <summary>E13.d SI3.a: the opening trigger keeps the decompilation's 0x803 (0x8002bcac tests
@@ -795,7 +795,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         Assert.Equal(new[] { 5 }, sound.Requests); // FUN_800556dc's own sound - the close slide is armed.
         Assert.Equal(3u, director.ForbiddenWarpFlag); // bit0 (residual) | bit1 (SlideCloseBit).
         Assert.Equal(1, AlundraInventoryPostProcess.Instance.State);
-        Assert.True((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+        Assert.True((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -1022,7 +1022,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
             Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress, $"frame {frame}: the montage left the transition");
             Assert.False(AlundraInventoryDirector.Instance.IsActive, $"frame {frame}: the inventory opened mid-transition");
-            Assert.Equal(0u, worldProxy.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+            Assert.Equal(0u, worldProxy.GameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
         }
 
         // Not vacuous: the same montage opens once the arrival has lifted the gate and the 0.2 s map-entry

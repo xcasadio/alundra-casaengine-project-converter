@@ -16,7 +16,7 @@ namespace Alundra.UI.SubInventory;
 /// and <c>UpdateCursorSpritePosition</c>'s own reference table (plan §1.5). No MGUI type appears anywhere in
 /// this file, same "pure function of plain data" shape as <see cref="AlundraInventoryComposer"/> - every
 /// input is either a director-exposed value or a value the caller (SI4's presenter) already resolved through
-/// <see cref="AlundraItemTables"/>/<see cref="AlundraGameState"/>.
+/// <see cref="AlundraItemTables"/>/<see cref="GameState"/>.
 ///
 /// <b>D-E13D-34 (icons at their original top-left, no centring)</b>: every icon - armory, key items, armor,
 /// boots - is drawn where the original draws it, whatever its sprite's size; the author's "au plus simple",

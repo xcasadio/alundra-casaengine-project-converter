@@ -145,7 +145,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
             return _kit;
         }
 
-        var state = new AlundraGameState();
+        var state = new GameState();
         var items = AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
         AlundraPlayerManager.InitializeNewGameInventory(state, items);
         var records = new AlundraEquipmentRecords();
@@ -303,7 +303,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         var (heroEntity, hero) = NewHero(heroWords, heroAttack, heroBox);
         var sounds = new SoundRecorder();
         var context = new OracleContext { PlayerEntity = hero, EquipmentRecords = Kit(), HeroAnimationLatch = unchecked((uint)latch), SoundPlayer = sounds };
-        var runner = new AlundraEventProgramRunner(null, new AlundraGameState(), context);
+        var runner = new AlundraEventProgramRunner(null, new GameState(), context);
         var (letter, code) = KeyOf(handler);
         var forcesBefore = ForcesBefore(changed);
         var entity = NewMuruta(before, forcesBefore, letter, code, heroEntity, 2);
@@ -388,7 +388,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         // The attack (0x81, 1) adds the power of Attacks[latch + 1] of each equipment record: with the kit's weapon (1, 1) the damage of the Muruta (level 1, 3 HP) is 2 at the latch 16, as the oracle's hall shows.
         var hero = NewHero(new Dictionary<string, long> { ["posx"] = 0, ["posy"] = 0, ["tilex_120"] = 0, ["tiley_124"] = 0, ["floor_134"] = 1 }, new long[] { 0x81, 1 }, false);
         var context = new OracleContext { PlayerEntity = hero.Proxy, EquipmentRecords = Kit(), HeroAnimationLatch = 16 };
-        var runner = new AlundraEventProgramRunner(null, new AlundraGameState(), context);
+        var runner = new AlundraEventProgramRunner(null, new GameState(), context);
         var entity = NewMuruta(new Dictionary<string, long> { ["hp"] = 3, ["touching_224"] = 1, ["posx"] = 1 << 20, ["posy"] = 0 }, new Dictionary<string, long>(), ScriptHelper.ProgramDTouch, AlundraMurutaAi.TouchCode, hero.Entity, 2);
 
         entity.RunPickedEvent(runner);
@@ -429,7 +429,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
             Assert.NotNull(world.EffectStage.Reservoir.Create(false, 9, 0, 0, 0, 0));
         }
 
-        var runner = new AlundraEventProgramRunner(null, new AlundraGameState(), world);
+        var runner = new AlundraEventProgramRunner(null, new GameState(), world);
         var letter = ScriptHelper.ProgramEDeactivate;
         var forcesBefore = ForcesBefore(changed);
         var entity = NewMuruta(before, forcesBefore, letter, 1, heroEntity, status);

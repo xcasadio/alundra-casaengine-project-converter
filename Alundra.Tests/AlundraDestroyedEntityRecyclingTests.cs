@@ -29,7 +29,7 @@ public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
     {
         // D-T-14 (docs/plan-transitions-carte.md): this class constructs an AlundraWorldProxy, so it resets the session carriers in its constructor (the
         // isolation-carrying element) and in Dispose (hygiene).
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -37,7 +37,7 @@ public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
 
     public void Dispose()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -199,13 +199,13 @@ public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
     {
         var m = new Montage();
         m.Npc.Status = EntityStatus.FlagToDestroy;
-        m.Proxy.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        m.Proxy.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
 
         m.Proxy.Update(0.02f);
 
         AssertNotRecycled(m);
 
-        m.Proxy.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+        m.Proxy.GameState.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
         m.Proxy.Update(0.02f);
 
         AssertRecycled(m);
@@ -220,7 +220,7 @@ public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
             if (pass == 0)
             {
                 m.Npc.Status = EntityStatus.FlagToDestroy;
-                m.Proxy.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen; // the box opens in the same program.
+                m.Proxy.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen; // the box opens in the same program.
             }
         };
 
@@ -228,7 +228,7 @@ public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
         m.Proxy.Update(0.02f);
         AssertNotRecycled(m);
 
-        m.Proxy.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+        m.Proxy.GameState.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
         m.Proxy.Update(0.02f);
         AssertRecycled(m);
     }

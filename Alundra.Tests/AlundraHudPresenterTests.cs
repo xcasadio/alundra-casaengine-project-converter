@@ -47,7 +47,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
     {
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -57,7 +57,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
     {
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -81,7 +81,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         public void SetAnimationClock(int frameCounter, bool moneyRolling) => ClockCalls.Add((frameCounter, moneyRolling));
     }
 
-    private static AlundraHudDirector ArmedOpening(AlundraGameState state)
+    private static AlundraHudDirector ArmedOpening(GameState state)
     {
         var director = AlundraHudDirector.Instance;
         director.AttachToWorld(state);
@@ -101,7 +101,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         const int scale = 3; // arbitrary, non-1 factor - proves the multiplication actually happens.
         const int bakedBoxY = 0x10; // AlundraHudComposer's own baked UIBoxHud.Y - see AlundraHudPresenter's own doc.
 
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         var view = new RecordingHudView(scale);
         var presenter = new AlundraHudPresenter(director, view);
@@ -122,7 +122,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
     [Fact]
     public void Tick_PushesTheDirectorsAnimationClock_BeforeTheTiles_EveryTick()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         AlundraPlayerManager.SetMoney(state, 1000);
         var view = new RecordingHudView(1);
@@ -147,7 +147,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         const int scale = 3;
         const int bakedBoxY = 0x10;
 
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         var view = new RecordingHudView(scale);
         var presenter = new AlundraHudPresenter(director, view);
@@ -191,7 +191,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
     [Fact]
     public void Tick_PushesRecomposedTiles_MatchingWhatTheComposerItselfProduces_Over40Ticks()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         AlundraPlayerManager.SetPlayerMpMax(state, 4); // instant at ArmAppearance - HpMax/MpMax jump immediately.
         AlundraPlayerManager.SetPlayerMp(state, 4); // catches up 1 point / 8 active ticks (C1, already proven).
@@ -239,7 +239,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
     [Fact]
     public void ScriptedCloseDuringTheMpMaxCatchUp_ThenReopen_StillComposesFourPips()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         AlundraPlayerManager.SetPlayerMpMax(state, 3);
         AlundraPlayerManager.SetPlayerMp(state, 3);
@@ -309,7 +309,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
     public void Tick_PushesTheEquipmentSourcesIcons_OnEveryDrawnTick_AndAsksTheSourceOnlyThen()
     {
         var sword = Guid.Parse("aeebd7a0-faa7-57b0-a844-34470272a4eb");
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = AlundraHudDirector.Instance;
         director.AttachToWorld(state); // no open request: the jauge stays hidden
 
@@ -345,7 +345,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
     [Fact]
     public void Tick_WithoutAnEquipmentSource_ShowsBothBoxesEmpty()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         var view = new RecordingHudView(pixelScale: 1);
         var presenter = new AlundraHudPresenter(director, view);

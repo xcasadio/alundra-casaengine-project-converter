@@ -125,7 +125,7 @@ internal sealed class DialogueBoxMontage : IDisposable
     {
         AlundraDialogueDirector.Instance.ResetForTests();
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -160,7 +160,7 @@ internal sealed class DialogueBoxMontage : IDisposable
 
     public AlundraWorldProxy Proxy { get; }
 
-    public AlundraGameState State => Proxy.GameState;
+    public GameState State => Proxy.GameState;
 
     public AlundraDialogueDirector Director => AlundraDialogueDirector.Instance;
 
@@ -185,7 +185,7 @@ internal sealed class DialogueBoxMontage : IDisposable
     {
         // The pad of the frame is decided at its start, before any script (the helper of the arcs reads the director there), and read by the proxy's update.
         State.LastPadState = new AlundraPadState { ButtonsHold = PadForFrame?.Invoke(Frame) ?? 0 };
-        if ((State.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) == 0)
+        if ((State.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) == 0)
         {
             EntityScript?.Invoke(Frame);
         }
@@ -221,7 +221,7 @@ internal sealed class DialogueBoxMontage : IDisposable
     {
         AlundraDialogueDirector.Instance.ResetForTests();
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();

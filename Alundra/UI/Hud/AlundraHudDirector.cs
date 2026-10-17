@@ -28,7 +28,7 @@ namespace Alundra.UI.Hud;
 ///
 /// <para>SESSION-scoped singleton, same shape as <see cref="AlundraDialogueDirector"/>/
 /// <see cref="AlundraScreenFadeDirector"/>: <see cref="AttachToWorld"/> re-points this session's
-/// <see cref="AlundraGameState"/> reference WITHOUT touching any animated state;
+/// <see cref="GameState"/> reference WITHOUT touching any animated state;
 /// <see cref="InstallForMapEntry"/> is the separate map-entry call, which arms the appearance when the persistent
 /// latch is set (the main loop's map-entry block, 0x8002c3d0 - see that method's own doc).</para>
 /// </summary>
@@ -103,7 +103,7 @@ public sealed class AlundraHudDirector
         ClosingDuringOpening = 7,
     }
 
-    private AlundraGameState? _gameState;
+    private GameState? _gameState;
 
     public HudPhase Phase { get; private set; } = HudPhase.Idle;
 
@@ -129,7 +129,7 @@ public sealed class AlundraHudDirector
     /// <summary>E13 C2 (docs/plan-e13-hud.md, mission point 2): the TRUE current HP cap -
     /// <c>DisplayLife</c>'s own empty-big-crystal count reads <c>GetPlayerHpMax()</c> here
     /// (HudManager.cs:767), never the rolled/displayed <see cref="HpMax"/> every other Display* call
-    /// reads. Falls back to <see cref="HpMax"/> itself with no live <see cref="AlundraGameState"/>
+    /// reads. Falls back to <see cref="HpMax"/> itself with no live <see cref="GameState"/>
     /// attached (same degraded shape as every other missing-system seam in this DLL) - the two values
     /// agree once <see cref="HpMax"/> has finished catching up (<see cref="_hpMaxSubStep"/>), and differ
     /// only for the few ticks it still lags a just-raised true cap.</summary>
@@ -194,12 +194,12 @@ public sealed class AlundraHudDirector
     private static readonly int[] MagicPipPhaseOffset = { 0, 1, 2, 3 };
 
     /// <summary>Re-points this session-scoped instance at the current world's own
-    /// <see cref="AlundraGameState"/> - same "re-point without touching state" contract as
+    /// <see cref="GameState"/> - same "re-point without touching state" contract as
     /// <see cref="AlundraDialogueDirector.AttachToWorld"/>/<see cref="AlundraScreenFadeDirector.AttachToWorld"/>.
     /// <paramref name="gameState"/> null is tolerated (no live session yet) - <see cref="Tick"/> then
     /// degrades to a no-op (<see cref="RunTriggerMachine"/>'s own null guard), same shape as every other
     /// missing-system seam in this DLL.</summary>
-    public void AttachToWorld(AlundraGameState? gameState)
+    public void AttachToWorld(GameState? gameState)
     {
         _gameState = gameState;
     }
@@ -213,7 +213,7 @@ public sealed class AlundraHudDirector
     /// at the next map entry: <see cref="InitializeHudPositionBeforeHide"/> checks the latch and
     /// <c>g_drawFrameFlags == 0</c> (<see cref="Phase"/> idle), and does nothing otherwise - an open jauge is left as it is,
     /// without a jump, and the animated values (HP, MP, money) are never touched, they survive a map change like
-    /// <see cref="AlundraGameState.PlayerStats"/> (E13 C0).
+    /// <see cref="GameState.PlayerStats"/> (E13 C0).
     /// </summary>
     public void InstallForMapEntry()
     {
@@ -274,7 +274,7 @@ public sealed class AlundraHudDirector
     /// <para>Kept as they are: <see cref="Phase"/>, <see cref="Y"/> and the slide, <see cref="FrameCounter"/> and
     /// the attached state - an open jauge stays open, without a jump.</para>
     /// </summary>
-    internal void ResetDisplayForLoad(AlundraPlayerStats stats)
+    internal void ResetDisplayForLoad(PlayerStats stats)
     {
         System.ArgumentNullException.ThrowIfNull(stats);
 
@@ -297,7 +297,7 @@ public sealed class AlundraHudDirector
     /// (<c>GetPlayerHpMax</c> twice, <c>GetPlayerMpMax</c> twice), so the display is full at once. The four catch-up sub-steps are left as they are: the binary writes only the four counters, not the
     /// full reset of <see cref="ResetDisplayForLoad"/>.
     /// </summary>
-    internal void SnapDisplayedLifeAndMagic(AlundraPlayerStats stats)
+    internal void SnapDisplayedLifeAndMagic(PlayerStats stats)
     {
         System.ArgumentNullException.ThrowIfNull(stats);
 
@@ -398,8 +398,8 @@ public sealed class AlundraHudDirector
     /// <summary>
     /// Port of <c>GraphicManager.UpdateUserInterface</c>'s three HUD branches (GraphicManager.cs:1656-1673,
     /// verbatim order) - the ONLY consumer this DLL was missing (plan §1.6: every opcode that WRITES
-    /// these three flags already exists). Reads/writes flags through <see cref="AlundraGameState.GetFlag"/>/
-    /// <see cref="AlundraGameState.AddFlag"/>/<see cref="AlundraGameState.SetFlag"/> - never the raw
+    /// these three flags already exists). Reads/writes flags through <see cref="GameState.GetFlag"/>/
+    /// <see cref="GameState.AddFlag"/>/<see cref="GameState.SetFlag"/> - never the raw
     /// arrays, same discipline as every opcode dispatch in this DLL.
     /// </summary>
     private void RunTriggerMachine()
@@ -477,7 +477,7 @@ public sealed class AlundraHudDirector
     /// refresh the displayed-max trackers to the true current max. Mission item 5's own check: this is
     /// the ONLY reset the original performs at arming - it does NOT touch the rolled current values or
     /// their sub-step counters (contrast <c>InitializeHpAndMp</c>, HudManager.cs:17-22, a FULL reset to
-    /// true-max used only by New Game init, out of this director's scope - <see cref="AlundraPlayerStats"/>
+    /// true-max used only by New Game init, out of this director's scope - <see cref="PlayerStats"/>
     /// already starts at 10/10/0/0/0, C0).
     /// </summary>
     private void ArmAppearance()

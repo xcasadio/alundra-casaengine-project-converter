@@ -160,7 +160,7 @@ public sealed class AlundraPrefabArcSupportTests
         var spec = new ArcSpec(
             "TH3b", Zone, "Inoa (inner)-165", System.Array.Empty<int>(), 0, 0, 0, 100,
             RealController: true, Prefabs: true,
-            Arrival: new ArcArrival(19660800, 23592960, 0, AlundraGameState.ResetAnimationId, 16));
+            Arrival: new ArcArrival(19660800, 23592960, 0, GameState.ResetAnimationId, 16));
         using var arc = new ArcRun(spec);
 
         Assert.False(AlundraWarpDirector.Instance.HasPendingArrival); // consumed by the adoption, as in production.

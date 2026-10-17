@@ -53,7 +53,7 @@ namespace Alundra.Tests;
 /// So this trace's ordering is the linear "skip path" the interpreter actually takes, not real gameplay
 /// timing: opcodes that would suspend for multiple frames in the original (dialog waits, animation waits,
 /// 0x37 Wait's own multi-frame case) appear earlier/denser here than they would in real play. Flag-gated
-/// branches use New Game's all-zero flags (see <see cref="AlundraGameState"/>'s class doc), except
+/// branches use New Game's all-zero flags (see <see cref="GameState"/>'s class doc), except
 /// whatever flags this same trace sets along the way via opcode 0x05.
 /// </summary>
 public class IntroTraceHarnessTests
@@ -391,7 +391,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     private readonly string _worldName;
     private readonly EventProgramDocument _document;
     private readonly byte[] _codesBytes;
-    private readonly AlundraGameState _gameState = new();
+    private readonly GameState _gameState = new();
     private readonly AlundraEventProgramRunner _runner;
     private readonly TraceAwareEntityRunner _wrapperRunner;
 
@@ -638,16 +638,16 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             EntityRefId = -1,
             Status = EntityStatus.Normal,
             EventTrigger = ScriptHelper.ProgramUnknown,
-            TileX = AlundraGameState.CameraTileX,
-            TileY = AlundraGameState.CameraTileY,
+            TileX = GameState.CameraTileX,
+            TileY = GameState.CameraTileY,
             TileZ = 0,
-            PosX = (AlundraGameState.CameraTileX * 24 + 12) << 16,
-            PosY = (AlundraGameState.CameraTileY * 16 + 8) << 16,
+            PosX = (GameState.CameraTileX * 24 + 12) << 16,
+            PosY = (GameState.CameraTileY * 16 + 8) << 16,
             PosZ = 0,
-            TargetAnimationId = AlundraGameState.ResetAnimationId,
-            CurrentAnimationId = AlundraGameState.ResetAnimationId,
-            TargetDirection = AlundraGameState.ResetDirectionId,
-            CurrentDirection = AlundraGameState.ResetDirectionId,
+            TargetAnimationId = GameState.ResetAnimationId,
+            CurrentAnimationId = GameState.ResetAnimationId,
+            TargetDirection = GameState.ResetDirectionId,
+            CurrentDirection = GameState.ResetDirectionId,
         };
         var playerOwnerEntity = new Entity();
         _player.LogicContextEntity = playerOwnerEntity;
@@ -1274,7 +1274,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     // AlundraEntityScriptProxy.Update's own player branch (AlundraPlayerManager.MovePlayer/Tick) is a
     // documented no-op, exactly like "no player controller yet" used to read before E2 (see RunFrame's own
     // comment) - keeps this trace's frame count/opcode sequence unchanged.
-    public AlundraGameState GameState => _gameState;
+    public GameState GameState => _gameState;
 
     public AlundraPlayerController? PlayerController => null;
 
@@ -1436,7 +1436,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// E7.c retrait (2026-08-28, docs/plan-e7-mutation-tuiles.md, acceptance item 6): 0x2F ("Check moving
     /// in dir", D-E7-7 relabels it "Check pad buttons") is REMOVED too - now a genuinely
     /// <c>Implemented</c> opcode (AlundraEventProgramRunner.Dispatch case 0x2F) reading this harness's own
-    /// real <see cref="AlundraGameState.LastPadState"/> (D-E7-8). Inert on map 389: fact 3 established
+    /// real <see cref="GameState.LastPadState"/> (D-E7-8). Inert on map 389: fact 3 established
     /// 0x2F is dispatched ZERO times in this trace's own window (it always sits behind 0x3B, which stays
     /// false throughout - see <see cref="PessimisticPredicateOpcodes"/>'s own updated doc below), so this
     /// removal is dead-code cleanup, not an observed behaviour change.

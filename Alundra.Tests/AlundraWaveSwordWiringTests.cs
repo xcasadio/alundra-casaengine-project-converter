@@ -53,7 +53,7 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
         AlundraNativeEffects.CreatedForTests = null;
         AlundraRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 

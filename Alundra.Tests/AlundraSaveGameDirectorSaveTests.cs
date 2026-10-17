@@ -44,7 +44,7 @@ public sealed class AlundraSaveGameDirectorSaveTests : IDisposable
 
     private static AlundraSaveGameDirector Director => AlundraSaveGameDirector.Instance;
 
-    private static AlundraGameState State => AlundraGameState.Instance;
+    private static GameState State => GameState.Instance;
 
     /// <summary>One press of <paramref name="key"/>: a frame with it released, then a frame with it held.</summary>
     private void Press(Keys key, AlundraEntityScriptProxy? hero, string worldName = Map389WorldName)

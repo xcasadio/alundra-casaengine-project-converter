@@ -43,7 +43,7 @@ public sealed class AlundraNewGameEntryTests : IDisposable
 {
     public AlundraNewGameEntryTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -55,7 +55,7 @@ public sealed class AlundraNewGameEntryTests : IDisposable
 
     public void Dispose()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -148,7 +148,7 @@ public sealed class AlundraNewGameEntryTests : IDisposable
     }
 
     private static bool HudScriptOpenRequestIsRaised()
-        => (AlundraGameState.Instance.GetFlag(AlundraHudDirector.ScriptOpenRequestFlag) & AlundraHudDirector.ScriptOpenRequestMask) != 0;
+        => (GameState.Instance.GetFlag(AlundraHudDirector.ScriptOpenRequestFlag) & AlundraHudDirector.ScriptOpenRequestMask) != 0;
 
     // -----------------------------------------------------------------------------------------------
     // Comportement d'origine : stats de nouvelle partie, et la jauge n'apparaît que sur demande de script.
@@ -159,7 +159,7 @@ public sealed class AlundraNewGameEntryTests : IDisposable
     {
         InitializeNewGameEntryOnMap389();
 
-        var stats = AlundraGameState.Instance.PlayerStats;
+        var stats = GameState.Instance.PlayerStats;
         Assert.Equal(10, stats.Hp);
         Assert.Equal(10, stats.HpMax);
         Assert.Equal(0, stats.Mp);
@@ -184,7 +184,7 @@ public sealed class AlundraNewGameEntryTests : IDisposable
     [Fact]
     public void MapEntry_WithTheLatchSetInTheSession_ArmsTheHudAppearance()
     {
-        AlundraGameState.Instance.AddFlag(AlundraHudDirector.PersistentLatchFlag, AlundraHudDirector.PersistentLatchMask);
+        GameState.Instance.AddFlag(AlundraHudDirector.PersistentLatchFlag, AlundraHudDirector.PersistentLatchMask);
 
         InitializeNewGameEntryOnMap389();
 
@@ -202,8 +202,8 @@ public sealed class AlundraNewGameEntryTests : IDisposable
     {
         InitializeNewGameEntryOnMap389();
 
-        Assert.True(AlundraGameState.Instance.NewGameInventoryInitialized);
-        Assert.Equal(1, AlundraGameState.Instance.PlayerStats.WeaponId);
+        Assert.True(GameState.Instance.NewGameInventoryInitialized);
+        Assert.Equal(1, GameState.Instance.PlayerStats.WeaponId);
     }
 
     [Fact]
@@ -212,12 +212,12 @@ public sealed class AlundraNewGameEntryTests : IDisposable
         InitializeNewGameEntryOnMap389();
 
         // Were the inventory to run again, it would zero every counter and put the slot back to 1.
-        AlundraGameState.Instance.PlayerStats.WeaponId = 3;
-        AlundraGameState.Instance.NumberOfItems[4 * 2 + 1] = 1;
+        GameState.Instance.PlayerStats.WeaponId = 3;
+        GameState.Instance.NumberOfItems[4 * 2 + 1] = 1;
 
         InitializeNewGameEntryOnMap389();
 
-        Assert.Equal(3, AlundraGameState.Instance.PlayerStats.WeaponId);
-        Assert.Equal(1, AlundraGameState.Instance.NumberOfItems[4 * 2 + 1]);
+        Assert.Equal(3, GameState.Instance.PlayerStats.WeaponId);
+        Assert.Equal(1, GameState.Instance.NumberOfItems[4 * 2 + 1]);
     }
 }

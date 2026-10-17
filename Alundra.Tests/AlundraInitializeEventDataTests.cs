@@ -28,7 +28,7 @@ public sealed class AlundraInitializeEventDataTests
     {
         // D, like A, E and F, is re-initialized at every call (one shared state): the binary keeps the marker of the wait, so the count goes
         // on across calls; the port used to clear it and the wait never ended.
-        var runner = new AlundraEventProgramRunner(WaitThenSetAnim9(3), new AlundraGameState());
+        var runner = new AlundraEventProgramRunner(WaitThenSetAnim9(3), new GameState());
         var entity = new AlundraEntityScriptProxy();
         entity.ProgramIndexes[ScriptHelper.ProgramDTouch] = 0x80;
 
@@ -55,7 +55,7 @@ public sealed class AlundraInitializeEventDataTests
         // One opcode per call (the measurement's montage): the call that passes the wait stops right after it, so nothing past the wait
         // needs a world. The zone is made up; the hero leaves it for one tick after 31 ticks in it, then comes back.
         var passed = false;
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState()) { MaxIterationsPerCall = 1 };
+        var runner = new AlundraEventProgramRunner(document, new GameState()) { MaxIterationsPerCall = 1 };
         runner.TraceSink = r =>
         {
             if (r.CodeIndex == entry && r.Kind == EventTraceKind.Implemented && r.Size != 0)
@@ -87,7 +87,7 @@ public sealed class AlundraInitializeEventDataTests
     {
         // C has the entity's own state: cleared by hand after 2 calls as EndCall clears a running state (Sp = 0, Codes = null), the next call
         // re-initializes it, and the kept marker lets the count go on (the port used to restart it: 2 calls more).
-        var runner = new AlundraEventProgramRunner(WaitThenSetAnim9(3), new AlundraGameState());
+        var runner = new AlundraEventProgramRunner(WaitThenSetAnim9(3), new GameState());
         var entity = new AlundraEntityScriptProxy();
         entity.ProgramIndexes[ScriptHelper.ProgramCTick] = 0x80;
 
@@ -109,7 +109,7 @@ public sealed class AlundraInitializeEventDataTests
     [Fact]
     public void M9d_AReInitializationWritesTheStartAndThePc()
     {
-        var runner = new AlundraEventProgramRunner(WaitThenSetAnim9(3), new AlundraGameState());
+        var runner = new AlundraEventProgramRunner(WaitThenSetAnim9(3), new GameState());
         var entity = new AlundraEntityScriptProxy();
         entity.ProgramIndexes[ScriptHelper.ProgramCTick] = 0x80;
 

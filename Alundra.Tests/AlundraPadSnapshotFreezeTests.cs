@@ -23,8 +23,8 @@ namespace Alundra.Tests;
 /// Regression pin for the softlock T2 introduced and the user hit in play: with a MenuOpen dialogue box
 /// up, NPCs stayed frozen and the player stayed uncontrollable even after the box went away.
 ///
-/// Root cause: the pad snapshot (<see cref="AlundraGameState.LastPadState"/>) was published from INSIDE
-/// the block T2 gates behind <see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/>. The
+/// Root cause: the pad snapshot (<see cref="GameState.LastPadState"/>) was published from INSIDE
+/// the block T2 gates behind <see cref="GameState.PlayerControlBits.GameplayBlockedMask"/>. The
 /// original never freezes its pad global: <c>PadManager.UpdatePads</c> runs from the main loop
 /// (GameEngine.cs:1518) and even from inside the warp transition loop (GameEngine.cs:280), both outside
 /// <c>UpdateEntities</c>. Freezing it froze the very input the dialogue box's own advance/close pass
@@ -42,14 +42,14 @@ public sealed class AlundraPadSnapshotFreezeTests : IDisposable
 
     public AlundraPadSnapshotFreezeTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
     }
 
     public void Dispose()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
     }
@@ -72,7 +72,7 @@ public sealed class AlundraPadSnapshotFreezeTests : IDisposable
         HeroWorldFixture.BuildHeroPawn(world, new CharacterControllerSettings(), new Vector3(804f, 952f, 0f), host);
 
         // A dialogue box with controlMode 0 posts MenuOpen, which is what freezes the entity pass (T2).
-        host.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        host.GameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
 
         // The player now presses the interact button - the press that must advance and eventually close
         // the box. It reaches the game state ONLY if the snapshot is published outside the freeze.
@@ -110,7 +110,7 @@ public sealed class AlundraPadSnapshotFreezeTests : IDisposable
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController { get; init; }
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
 

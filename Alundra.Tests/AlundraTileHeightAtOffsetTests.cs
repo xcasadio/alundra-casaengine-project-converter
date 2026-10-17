@@ -156,7 +156,7 @@ public class AlundraTileHeightAtOffsetTests
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public System.Collections.Generic.IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) { }

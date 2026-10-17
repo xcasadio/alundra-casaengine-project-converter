@@ -207,7 +207,7 @@ public static class AlundraPlayerManager
 
     /// <summary>PlayerAnimation.LoadingMap = 0x36 (PlayerAnimation.cs:62) - the animation
     /// <c>ResetEntityState</c>/<c>AlundraWorldProxy</c>'s own pawn-adoption spawns the hero with
-    /// (<see cref="AlundraGameState.ResetAnimationId"/>).</summary>
+    /// (<see cref="GameState.ResetAnimationId"/>).</summary>
     private const uint LoadingMapAnimationId = 0x36;
 
     /// <summary>PlayerAnimation.Climbing = 0x0E (PlayerAnimation.cs, address comment - see
@@ -280,7 +280,7 @@ public static class AlundraPlayerManager
     /// position change is <see cref="Tick"/>, called separately (mirrors the original's own split between
     /// <c>PlayerManager.MovePlayer</c> and <c>PhysicsEngine.UpdateEntitiesPhysics</c>).
     /// </summary>
-    public static void MovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IScriptHost? host)
+    public static void MovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, GameState state, IScriptHost? host)
     {
         MovePlayerCallCountForTests++;
 
@@ -333,7 +333,7 @@ public static class AlundraPlayerManager
         // nothing ported yet drives carried entities, warp effects, or forced-sequence facing - so the rest of
         // this branch is a deliberate no-op: the player simply does not move or change animation while
         // g_playerControlFlags carries any of ControlLocked/MessageBox/ForcedSequence.
-        if (!DebugIgnoreControlLock && (state.PlayerControlFlags & AlundraGameState.PlayerControlBits.InputBlockedMask) != 0)
+        if (!DebugIgnoreControlLock && (state.PlayerControlFlags & GameState.PlayerControlBits.InputBlockedMask) != 0)
         {
             AlundraPlayerAnimationEffects.Create(player, AlundraPlayerAnimationEffects.LockedMode);
 
@@ -632,7 +632,7 @@ public static class AlundraPlayerManager
     /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>): the bare heroes of the unit tests keep the default life of 0, which would otherwise be written over the stats the test set up. This guard is the one
     /// documented deviation of the epilogue.
     /// </summary>
-    internal static void EndOfMovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IScriptHost? host)
+    internal static void EndOfMovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, GameState state, IScriptHost? host)
     {
         UpdateItemEffectState(player, in pad, state, host);
 
@@ -653,7 +653,7 @@ public static class AlundraPlayerManager
     /// weapon effects, the weapon steps, <c>PlayerTryAttack</c> or <c>PlayerTryAction</c>; the caller ends the tick. It reads no boots level: the wall of the deep water (O-E19-22) and the currents (O-E20-16) are not ported,
     /// so a hero without the swim boots swims where the original stops him; the splash, the wake and the ripple of the dive (the shadow pass <c>0x80038E84</c> and <c>CreatePlayerAnimationEffects</c>) are E20.e's.
     /// </summary>
-    private static void SwimTick(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IScriptHost? host, uint nibble, uint dir)
+    private static void SwimTick(AlundraEntityScriptProxy player, in AlundraPadState pad, GameState state, IScriptHost? host, uint nibble, uint dir)
     {
         player.WeaponChargeTimer = 0;
         player.WeaponRecordPointer = 0;
@@ -695,7 +695,7 @@ public static class AlundraPlayerManager
     /// <c>TryUseItem</c> at 0 ends the tick; <c>CheckEntityInteraction</c> 2 gives 0x1D, another non-zero value ends the tick; then an edge of the Triangle, the Cross or the Square (<see cref="SwimDiveButtons"/>) starts the
     /// burst (0x28), else any bit of the direction nibble (even a contradictory pair) swims (0x0F), else the hero floats (0x1D).
     /// </summary>
-    private static void SwimSteerTick(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IScriptHost? host, uint nibble, uint dir)
+    private static void SwimSteerTick(AlundraEntityScriptProxy player, in AlundraPadState pad, GameState state, IScriptHost? host, uint nibble, uint dir)
     {
         player.TargetDirection = dir;
         if (TryUseItem(player, in pad) == 0)
@@ -1297,7 +1297,7 @@ public static class AlundraPlayerManager
     /// </list>
     /// A host without the seam, tables or records does steps 1, 6 and 2-5 nothing (a bare test montage); the regeneration then finds no record and only keeps its counters at 0.
     /// </summary>
-    internal static void UpdateItemEffectState(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IScriptHost? host)
+    internal static void UpdateItemEffectState(AlundraEntityScriptProxy player, in AlundraPadState pad, GameState state, IScriptHost? host)
     {
         RefreshEquipmentAndSheet(player, state, host);
         RegenerateLife(player, in pad, state, host?.EquipmentRecords);
@@ -1308,7 +1308,7 @@ public static class AlundraPlayerManager
     /// (<see cref="AlundraWorldProxy"/>, E20.c2a T2): the binary's sheet is a global that outlives the map load (the load only empties the record pointers), so a hit on the first tick of a map reads the sheet of the
     /// end of the previous map; this port, which rebuilds the world's records at every map, computes it again at the adoption from the same inventory instead of reading an empty sheet.
     /// </summary>
-    internal static void RefreshEquipmentAndSheet(AlundraEntityScriptProxy player, AlundraGameState state, IScriptHost? host)
+    internal static void RefreshEquipmentAndSheet(AlundraEntityScriptProxy player, GameState state, IScriptHost? host)
     {
         if (host?.EquipmentRecords is not { } records)
         {
@@ -1328,7 +1328,7 @@ public static class AlundraPlayerManager
     /// Step 1 of <c>UpdateItemEffectState</c> (<c>0x800307EC-0x80030890</c>): the boots level <c>[0x80127000]</c>, 3 when the object <c>0x1C</c> is owned, else 2 for <c>0x1B</c>, else 1 for <c>0x1A</c>, else 0
     /// (<see cref="GetNumberOfItem"/>, <c>0x8004E428</c>); the object <c>0x19</c> does not count. Shared with the physics of the DLL (<see cref="AlundraScriptedMotion"/>).
     /// </summary>
-    internal static int BootsLevelOf(AlundraGameState state)
+    internal static int BootsLevelOf(GameState state)
     {
         if (GetNumberOfItem(state, 0x1C) != 0)
         {
@@ -1414,11 +1414,11 @@ public static class AlundraPlayerManager
     /// <summary>
     /// Step 7 of <c>UpdateItemEffectState</c>, the regeneration (<c>0x80030C20-0x80030D3C</c>). Its gates, all of which must hold: no bit of <c>0x7C</c> in the control flags, the hero not frozen (<c>+0x20</c>,
     /// <see cref="AlundraEntityScriptProxy.BlockedByEntity"/>), the hold word of the pad (<c>0x80126F28</c>, a halfword: every button and the D-pad) zero, the life not 0 and below the maximum. When a gate is closed
-    /// the three counters (<see cref="AlundraGameState.RegenerationCounters"/>) go back to 0 and the life is left alone. Otherwise, for each of the three records with a byte 2 (the period, <see cref="AlundraBalanceRecord.MaxHp"/>)
+    /// the three counters (<see cref="GameState.RegenerationCounters"/>) go back to 0 and the life is left alone. Otherwise, for each of the three records with a byte 2 (the period, <see cref="AlundraBalanceRecord.MaxHp"/>)
     /// other than 0, the counter grows by one and, when it passes the byte 2, goes back to 0 and the life gains 1 (so a period of byte 2 + 1 ticks; a record without a byte 2 zeroes its counter); the life is then
     /// capped at the maximum.
     /// </summary>
-    internal static void RegenerateLife(AlundraEntityScriptProxy hero, in AlundraPadState pad, AlundraGameState state, AlundraEquipmentRecords? records)
+    internal static void RegenerateLife(AlundraEntityScriptProxy hero, in AlundraPadState pad, GameState state, AlundraEquipmentRecords? records)
     {
         var counters = state.RegenerationCounters;
         if ((state.PlayerControlFlags & RegenerationClosedFlags) != 0
@@ -1477,7 +1477,7 @@ public static class AlundraPlayerManager
     /// </list>
     /// The record of item <c>n</c> is <see cref="AlundraBalanceTables.SelectEquipment"/>, with NO remapping of the index (the sprite lookup remaps <c>0x1F-0x7F</c> to <c>0x1E</c>, the equipment lookup does not).
     /// </summary>
-    internal static void FillEquipmentRecords(AlundraGameState state, AlundraItemTables itemTables, AlundraBalanceTables balanceTables, int threshold, AlundraEquipmentRecords records)
+    internal static void FillEquipmentRecords(GameState state, AlundraItemTables itemTables, AlundraBalanceTables balanceTables, int threshold, AlundraEquipmentRecords records)
     {
         records.ClearAll(); // 0x800308A4-0x800308BC: all six words, the item words too (the map load, 0x80044520, empties the pointers only: records.Clear()).
 
@@ -1664,7 +1664,7 @@ public static class AlundraPlayerManager
     /// starts (§1.2.e: <c>AdvanceWarpTransitionFrame</c> replaces <c>UpdateEntities</c> outright, for
     /// every entity, not just the scripted ones this DLL's own gel gate already covers). This port's
     /// hero instead owns a continuous engine-driven <c>CharacterControllerComponent.Settings.Gravity</c>/
-    /// <c>MaxFallSpeed</c> integrator that the gel gate (<see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/>/
+    /// <c>MaxFallSpeed</c> integrator that the gel gate (<see cref="GameState.PlayerControlBits.GameplayBlockedMask"/>/
     /// <see cref="AlundraWarpDirector.IsTransitionInProgress"/>) never touches - so a departure triggered
     /// mid-air would keep falling for the whole 16-tick outgoing fade, importing that fall into the
     /// arrival pose. CHOSEN FIX (not a deviation): reuse the exact same DLL-only mechanism
@@ -1748,14 +1748,14 @@ public static class AlundraPlayerManager
     /// false; this method's own repeated check just carries the same gate one level deeper, narrowly,
     /// the way D-E12D-5 chose - not because the port lacked one.
     /// </summary>
-    internal static int CheckEntityInteraction(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IScriptHost? host)
+    internal static int CheckEntityInteraction(AlundraEntityScriptProxy player, in AlundraPadState pad, GameState state, IScriptHost? host)
     {
         if (host == null)
         {
             return 0;
         }
 
-        if ((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0)
+        if ((state.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0)
         {
             return 0;
         }
@@ -1851,7 +1851,7 @@ public static class AlundraPlayerManager
     /// <summary>PlayerManager.SetPlayerHpMax (0x8004dc68, PlayerManager.cs:1705-1731, IsGodMode override
     /// at :1725-1729 excluded, see this method group's own header comment). Ceiling 50 (0x32/0x33 in the
     /// original: any value &gt;= 51 becomes 50), floor 0.</summary>
-    public static int SetPlayerHpMax(AlundraGameState state, int hpMax)
+    public static int SetPlayerHpMax(GameState state, int hpMax)
     {
         var stats = state.PlayerStats;
 
@@ -1873,7 +1873,7 @@ public static class AlundraPlayerManager
     /// clamps of <see cref="SetPlayerHpMax"/> and <see cref="SetPlayerHp"/> (a vessel at 50/50 gives an entity of 51/51 and stats of 50/50). Without such a hero (no hero, or the bare proxy of a test montage, whose
     /// life is never mirrored) the stats are raised at once through the same setters, the former seam: the maximum + 1 capped at 50, the life filled to the raised value.
     /// </summary>
-    public static void IncreaseHpMaxAndFill(AlundraGameState state, AlundraEntityScriptProxy? hero = null)
+    public static void IncreaseHpMaxAndFill(GameState state, AlundraEntityScriptProxy? hero = null)
     {
         if (hero is { LifePulledFromStats: true })
         {
@@ -1891,7 +1891,7 @@ public static class AlundraPlayerManager
     /// Opcode <c>0xBC</c> (<c>Script_188_0BC</c>, <c>0x80041C00</c>): the hero's maximum life goes up by the operand byte, capped at <c>0x32</c> (<c>slti 0x33</c>); the life is not touched. Written on the entity of a
     /// hero that carries its life; otherwise (no hero, a bare test proxy) on the stats through <see cref="SetPlayerHpMax"/>, which has the same cap.
     /// </summary>
-    public static void IncreaseHpMax(AlundraGameState state, AlundraEntityScriptProxy? hero, int amount)
+    public static void IncreaseHpMax(GameState state, AlundraEntityScriptProxy? hero, int amount)
     {
         if (hero is { LifePulledFromStats: true })
         {
@@ -1908,7 +1908,7 @@ public static class AlundraPlayerManager
     /// (<c>0x8004B730</c>): the four displayed counters of the HUD (<see cref="AlundraHudDirector"/>) jump to the maxima of the stats, so the hearts and pips fill at once instead of rolling up. Without a hero that
     /// carries its life the stats are filled instead (<see cref="SetPlayerHp"/> to the stats' own maximum).
     /// </summary>
-    public static void RestoreLifeAndMagic(AlundraGameState state, AlundraEntityScriptProxy? hero)
+    public static void RestoreLifeAndMagic(GameState state, AlundraEntityScriptProxy? hero)
     {
         if (hero is { LifePulledFromStats: true })
         {
@@ -1925,9 +1925,9 @@ public static class AlundraPlayerManager
 
     /// <summary>PlayerManager.SetPlayerHp (0x8004dd30, PlayerManager.cs:1734-1761, IsGodMode override at
     /// :1751-1755 excluded). Clamped to
-    /// <c>[0, HpMax]</c> - not to a fixed constant, to whatever <see cref="AlundraPlayerStats.HpMax"/>
+    /// <c>[0, HpMax]</c> - not to a fixed constant, to whatever <see cref="PlayerStats.HpMax"/>
     /// currently holds.</summary>
-    public static int SetPlayerHp(AlundraGameState state, short amount)
+    public static int SetPlayerHp(GameState state, short amount)
     {
         var stats = state.PlayerStats;
 
@@ -1949,7 +1949,7 @@ public static class AlundraPlayerManager
 
     /// <summary>PlayerManager.SetPlayerMpMax (0x8004ddf4, PlayerManager.cs:1791-1811). Ceiling 4 (any
     /// value &gt;= 5 becomes 4), floor 0, clamped on both sides per docs/plan-e13-hud.md §1.5.</summary>
-    public static int SetPlayerMpMax(AlundraGameState state, short mpMax)
+    public static int SetPlayerMpMax(GameState state, short mpMax)
     {
         var stats = state.PlayerStats;
 
@@ -1968,7 +1968,7 @@ public static class AlundraPlayerManager
     /// <summary>PlayerManager.SetPlayerMp (0x8004debc, PlayerManager.cs:1813-1829). Clamped to <c>[0,
     /// MpMax]</c>, same shape as
     /// <see cref="SetPlayerHp"/>.</summary>
-    public static int SetPlayerMp(AlundraGameState state, short amount)
+    public static int SetPlayerMp(GameState state, short amount)
     {
         var stats = state.PlayerStats;
 
@@ -1992,7 +1992,7 @@ public static class AlundraPlayerManager
     /// <c>[0, 9999]</c> - the original checks <c>amount &lt; 10000</c> then floors negative amounts at 0;
     /// since <paramref name="amount"/> never legitimately exceeds 9999 in play, the net effect is the
     /// symmetric clamp docs/plan-e13-hud.md §1.5 describes.</summary>
-    public static int SetMoney(AlundraGameState state, short amount)
+    public static int SetMoney(GameState state, short amount)
     {
         var stats = state.PlayerStats;
 
@@ -2010,11 +2010,11 @@ public static class AlundraPlayerManager
 
     /// <summary>New Game stat reset - port of the <c>SlotData == 0</c> branch's own five setter calls
     /// (GameInitializer.cs:372-376): <c>SetPlayerHpMax(10); SetPlayerHp(10); SetPlayerMpMax(0);
-    /// SetPlayerMp(0); SetMoney(0)</c>. <see cref="AlundraPlayerStats"/>'s own field initializers already
+    /// SetPlayerMp(0); SetMoney(0)</c>. <see cref="PlayerStats"/>'s own field initializers already
     /// match this exact outcome, so this method exists for callers that need to reset stats on an
-    /// ALREADY-CONSTRUCTED <see cref="AlundraGameState"/> (e.g. a New-Game flow reusing the session
+    /// ALREADY-CONSTRUCTED <see cref="GameState"/> (e.g. a New-Game flow reusing the session
     /// singleton) rather than relying on construction-time defaults.</summary>
-    public static void InitializeNewGameStats(AlundraGameState state)
+    public static void InitializeNewGameStats(GameState state)
     {
         SetPlayerHpMax(state, 10);
         SetPlayerHp(state, 10);
@@ -2043,7 +2043,7 @@ public static class AlundraPlayerManager
     /// (items 1, 17 and 25 in the shipped data), then the weapon is set to slot 1, the sword's.
     /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> runs this once per session, at the New Game entry.
     /// </summary>
-    public static void InitializeNewGameInventory(AlundraGameState state, AlundraItemTables tables)
+    public static void InitializeNewGameInventory(GameState state, AlundraItemTables tables)
     {
         // GameInitializer.cs:473-479: 0x80 pairs, both halves zeroed.
         Array.Clear(state.NumberOfItems);
@@ -2069,7 +2069,7 @@ public static class AlundraPlayerManager
     /// <summary>Port of <c>SetPlayerWeaponId</c> (PlayerManager.cs:1832-1845, 8004e484): stores -1 (no weapon) or
     /// a weapon slot 1..6, rejects everything else (0 included), and ends, as the original does, by resolving the
     /// weapon's item - a lookup whose result the original discards too.</summary>
-    public static void SetPlayerWeaponId(AlundraGameState state, AlundraItemTables tables, int weaponId)
+    public static void SetPlayerWeaponId(GameState state, AlundraItemTables tables, int weaponId)
     {
         // ALUN_CD.EXE (France) 0x8004e484 settles docs/plan-e13c-icones-hud.md open point 7: the argument is a
         // 32-bit int; -1 is stored (beq at 0x8004e490), otherwise (weaponId - 1) <u 6 must hold (sltiu at
@@ -2085,7 +2085,7 @@ public static class AlundraPlayerManager
 
     /// <summary>Port of <c>GetItemIdFromCurrentWeapon</c> (PlayerManager.cs:4462-4466, 8004e030): the item
     /// the equipped weapon slot resolves to, or <see cref="NoItem"/>.</summary>
-    public static uint GetItemIdFromCurrentWeapon(AlundraGameState state, AlundraItemTables tables)
+    public static uint GetItemIdFromCurrentWeapon(GameState state, AlundraItemTables tables)
     {
         return GetWeaponIdBySlotId(state, tables, state.PlayerStats.WeaponId - 1);
     }
@@ -2093,7 +2093,7 @@ public static class AlundraPlayerManager
     /// <summary>Port of <c>GetWeaponIdBySlotId</c> (PlayerManager.cs:4433-4460). Each case of the original
     /// calls its own <c>GetWeaponIdFromSlotN</c> (PlayerManager.cs:4468-4496), every one of which is nothing
     /// but <c>GetItemIdFromSlotId(N)</c>; the call is written inline here, the case-to-slot mapping kept.</summary>
-    public static uint GetWeaponIdBySlotId(AlundraGameState state, AlundraItemTables tables, int slotId)
+    public static uint GetWeaponIdBySlotId(GameState state, AlundraItemTables tables, int slotId)
     {
         var itemId = NoItem;
 
@@ -2126,7 +2126,7 @@ public static class AlundraPlayerManager
     /// items of an inventory slot, the one to use. The first owned match wins at once when its replacement
     /// flag is clear; otherwise a later owned match replaces it only on a strictly higher replacement
     /// priority. <see cref="NoItem"/> when nothing in the slot is owned.</summary>
-    public static uint GetItemIdFromSlotId(AlundraGameState state, AlundraItemTables tables, uint slotId)
+    public static uint GetItemIdFromSlotId(GameState state, AlundraItemTables tables, uint slotId)
     {
         if (slotId >= 0x20)
         {
@@ -2179,7 +2179,7 @@ public static class AlundraPlayerManager
 
     /// <summary>Port of <c>GetNumberOfItem</c> (PlayerManager.cs:4330-4346, 8004e428): how many of an item
     /// the player owns, 0 for an id out of range.</summary>
-    public static int GetNumberOfItem(AlundraGameState state, int itemId)
+    public static int GetNumberOfItem(GameState state, int itemId)
     {
         int nbItem;
 
@@ -2197,7 +2197,7 @@ public static class AlundraPlayerManager
 
     /// <summary>Port of <c>SetCurrentItemId</c> (PlayerManager.cs:4421-4431, 8004e4d8): equips an accessory,
     /// refusing an id out of range.</summary>
-    public static void SetCurrentItemId(AlundraGameState state, uint itemId)
+    public static void SetCurrentItemId(GameState state, uint itemId)
     {
         if ((int)itemId < 0 || itemId >= ItemsCount)
         {
@@ -2215,7 +2215,7 @@ public static class AlundraPlayerManager
     /// STARTED from, not the re-resolved one, exactly as the original does. <see cref="NoItem"/> when the
     /// equipped accessory is not owned, which is the New Game state: item 0, count 0, an empty box.
     /// </summary>
-    public static uint SetItemIdFromCurrentItemId(AlundraGameState state, AlundraItemTables tables)
+    public static uint SetItemIdFromCurrentItemId(GameState state, AlundraItemTables tables)
     {
         var currentItemId = state.PlayerStats.ItemId;
         var numberOfItem = GetNumberOfItem(state, currentItemId);
@@ -2236,7 +2236,7 @@ public static class AlundraPlayerManager
     /// an item unless the player already holds its max count (column 3). Returns the new count, or the
     /// unchanged count when it was already at its max - the binary's own value (8004e58c/8004e5b0: the count is
     /// returned); the decompilation returned the item id there, which made opcode 0x82 report "given" for nothing.</summary>
-    public static int AddOneItemIfUnlocked(AlundraGameState state, AlundraItemTables tables, int itemId)
+    public static int AddOneItemIfUnlocked(GameState state, AlundraItemTables tables, int itemId)
     {
         if (itemId < 0 || itemId >= ItemsCount)
         {
@@ -2261,7 +2261,7 @@ public static class AlundraPlayerManager
     /// <summary>Port of <c>UseItem</c> (8004e5c4, PlayerManager.cs:1871-1897): consumes one of an item. An id out of
     /// range answers 0 and writes nothing (the original's own quirk: a caller testing for -1 reads it as "used"); a count
     /// of 0 answers -1 and writes nothing; otherwise the count drops by one and the new count is returned.</summary>
-    public static int UseItem(AlundraGameState state, int itemId)
+    public static int UseItem(GameState state, int itemId)
     {
         if (itemId < 0 || itemId >= ItemsCount)
         {
@@ -2283,7 +2283,7 @@ public static class AlundraPlayerManager
     /// <summary>Port of <c>AddMoney</c> (8004dfd8): <c>SetMoney(Money + amount)</c>. The sum is computed on 32 bits and
     /// clamped to <c>[0, 9999]</c> as <see cref="SetMoney"/> does - never cast to a <see cref="short"/> first, which
     /// would wrap a large amount into a negative one.</summary>
-    public static int AddMoney(AlundraGameState state, int amount)
+    public static int AddMoney(GameState state, int amount)
     {
         var sum = state.PlayerStats.Money + amount;
         state.PlayerStats.Money = (short)(sum < 0 ? 0 : sum >= 10000 ? 9999 : sum);
@@ -2306,7 +2306,7 @@ public static class AlundraPlayerManager
     /// effect included. Each item that resolves is mapped to its portrait's asset id; a sentinel, or an item
     /// without a portrait, leaves its box empty.
     /// </summary>
-    public static (Guid? Weapon, Guid? Accessory) ResolveHudEquipmentIcons(AlundraGameState state, AlundraItemTables tables)
+    public static (Guid? Weapon, Guid? Accessory) ResolveHudEquipmentIcons(GameState state, AlundraItemTables tables)
     {
         Guid? weapon = null;
         var weaponItemId = GetItemIdFromCurrentWeapon(state, tables);

@@ -13,7 +13,7 @@ namespace Alundra.SaveGames;
 /// builder that turns one into an <see cref="AlundraSaveGame"/>.
 ///
 /// <para>Pure and without any global state or disk access: the builder starts from a fresh
-/// <see cref="AlundraGameState"/> (flags at 0, identity map table), runs the new game's own
+/// <see cref="GameState"/> (flags at 0, identity map table), runs the new game's own
 /// <see cref="AlundraPlayerManager.InitializeNewGameStats"/> and
 /// <see cref="AlundraPlayerManager.InitializeNewGameInventory"/> with the item tables of the rules, applies the
 /// preset, captures with <see cref="AlundraSaveGame.Capture"/> and validates with the real
@@ -176,7 +176,7 @@ public static class AlundraTestSaves
             return false;
         }
 
-        var state = new AlundraGameState();
+        var state = new GameState();
         AlundraPlayerManager.InitializeNewGameStats(state);
         AlundraPlayerManager.InitializeNewGameInventory(state, rules.ItemTables);
 
@@ -290,7 +290,7 @@ public static class AlundraTestSaves
     /// <summary>The optional stat fields against the domains of the save (<see cref="AlundraSaveGame"/>): a setter would clamp a value outside them silently.</summary>
     private static string CheckStats(Preset preset)
     {
-        var newGame = new AlundraGameState();
+        var newGame = new GameState();
         AlundraPlayerManager.InitializeNewGameStats(newGame);
         var hpMax = preset.HpMax ?? newGame.PlayerStats.HpMax;
         var mpMax = preset.MpMax ?? newGame.PlayerStats.MpMax;

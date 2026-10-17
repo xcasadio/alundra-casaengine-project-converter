@@ -221,7 +221,7 @@ public class HeroTraceHarnessTests
 
         // §2.4: PlayerControlFlags = 0 explicitly (not the ALUNDRA_DEBUG_IGNORE_CONTROL_LOCK escape hatch),
         // so MovePlayer's real InputBlockedMask gate is exercised (and found open) rather than masked.
-        public AlundraGameState GameState { get; } = new() { PlayerControlFlags = 0 };
+        public GameState GameState { get; } = new() { PlayerControlFlags = 0 };
         public AlundraPlayerController? PlayerController { get; init; }
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
 
@@ -253,8 +253,8 @@ public class HeroTraceHarnessTests
 
     private const int TileWidth = 24;
     private const int TileHeight = 16;
-    private const int CameraTileX = AlundraGameState.CameraTileX;
-    private const int CameraTileY = AlundraGameState.CameraTileY;
+    private const int CameraTileX = GameState.CameraTileX;
+    private const int CameraTileY = GameState.CameraTileY;
 
     /// <summary>Common header/dimensions/gravity-override setup shared by both scenarios' initial state -
     /// the ONLY difference between them is the position write (§2.2's exact recipe for scenario A vs a
@@ -264,9 +264,9 @@ public class HeroTraceHarnessTests
     private static void ApplyCommonHeaderAndOverrides(AlundraEntityScriptProxy proxy, SpriteRecordHeader header, TileMapData tileMapData)
     {
         proxy.TargetAnimationId = 0; // §2.3 documented gap (Idle, not LoadingMap).
-        proxy.TargetDirection = AlundraGameState.ResetDirectionId;
+        proxy.TargetDirection = GameState.ResetDirectionId;
         proxy.CurrentAnimationId = ~0u;
-        proxy.CurrentDirection = ~AlundraGameState.ResetDirectionId;
+        proxy.CurrentDirection = ~GameState.ResetDirectionId;
         proxy.IsOnGround = 1;
 
         proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));

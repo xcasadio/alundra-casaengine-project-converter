@@ -15,7 +15,7 @@ namespace Alundra.Tests;
 /// </summary>
 public class AlundraPlayerManagerTests
 {
-    private static AlundraGameState NewUnlockedState() => new(); // PlayerControlFlags = 0 (New Game default)
+    private static GameState NewUnlockedState() => new(); // PlayerControlFlags = 0 (New Game default)
 
     // -----------------------------------------------------------------------------------------
     // Direction table (StaticVariables.g_directionByButtons, PlayerManager.cs:199-205) - all 16
@@ -123,7 +123,7 @@ public class AlundraPlayerManagerTests
     {
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
         var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
-        var state = new AlundraGameState { PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked };
+        var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 
         AlundraPlayerManager.MovePlayer(player, in pad, state, host: null);
 
@@ -219,7 +219,7 @@ public class AlundraPlayerManagerTests
     public void MovePlayer_LoadingMapWhileInputBlocked_StaysLoadingMap()
     {
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 1 };
-        var state = new AlundraGameState { PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked };
+        var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 
         AlundraPlayerManager.MovePlayer(player, in NoInput, state, host: null);
 
@@ -342,7 +342,7 @@ public class AlundraPlayerManagerTests
         {
             var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
             var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
-            var state = new AlundraGameState { PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked };
+            var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 
             AlundraPlayerManager.MovePlayer(player, in pad, state, host: null);
 
@@ -365,7 +365,7 @@ public class AlundraPlayerManagerTests
         {
             var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
             var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
-            var state = new AlundraGameState { PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked };
+            var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 
             AlundraPlayerManager.MovePlayer(player, in pad, state, host: null);
 

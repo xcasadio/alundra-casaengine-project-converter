@@ -129,9 +129,9 @@ internal static class ItemTablesFixture
 /// </summary>
 public class AlundraItemInventoryTests
 {
-    private static AlundraGameState NewGameState(AlundraItemTables tables)
+    private static GameState NewGameState(AlundraItemTables tables)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         AlundraPlayerManager.InitializeNewGameInventory(state, tables);
         return state;
     }
@@ -220,7 +220,7 @@ public class AlundraItemInventoryTests
     public void SetPlayerWeaponId_KeepsSlots1To6(int weaponId)
     {
         var tables = ItemTablesFixture.LoadReal();
-        var state = new AlundraGameState();
+        var state = new GameState();
 
         AlundraPlayerManager.SetPlayerWeaponId(state, tables, (ushort)weaponId);
 
@@ -233,7 +233,7 @@ public class AlundraItemInventoryTests
         // docs/plan-e13c-icones-hud.md, open point 7, settled by ALUN_CD.EXE 0x8004e49c (plan E13.d SI9.b):
         // (0 - 1) <u 6 fails, so 0 is rejected and the current slot is kept.
         var tables = ItemTablesFixture.LoadReal();
-        var state = new AlundraGameState();
+        var state = new GameState();
         state.PlayerStats.WeaponId = 3;
 
         AlundraPlayerManager.SetPlayerWeaponId(state, tables, 0);
@@ -246,7 +246,7 @@ public class AlundraItemInventoryTests
     {
         // ALUN_CD.EXE 0x8004e490: -1 is stored before the range test (the decompilation's ushort never saw it).
         var tables = ItemTablesFixture.LoadReal();
-        var state = new AlundraGameState();
+        var state = new GameState();
         state.PlayerStats.WeaponId = 3;
 
         AlundraPlayerManager.SetPlayerWeaponId(state, tables, -1);
@@ -262,7 +262,7 @@ public class AlundraItemInventoryTests
     public void SetPlayerWeaponId_RejectsAnythingAbove6_AndKeepsTheCurrentSlot(int weaponId)
     {
         var tables = ItemTablesFixture.LoadReal();
-        var state = new AlundraGameState();
+        var state = new GameState();
         state.PlayerStats.WeaponId = 3;
 
         AlundraPlayerManager.SetPlayerWeaponId(state, tables, (ushort)weaponId);
@@ -278,7 +278,7 @@ public class AlundraItemInventoryTests
     public void NoWeaponOwned_ResolvesToTheSentinel_AndTheWeaponBoxStaysEmpty()
     {
         var tables = ItemTablesFixture.LoadReal();
-        var state = new AlundraGameState(); // nothing owned, no New Game run
+        var state = new GameState(); // nothing owned, no New Game run
         state.PlayerStats.WeaponId = 1;
 
         Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, tables));
@@ -302,7 +302,7 @@ public class AlundraItemInventoryTests
         // Items 1..4 share slot 1 with priorities 0..3 and the replacement flag set: owning 1, 3 and 4 must
         // give 4, the highest priority, and owning 1 and 3 must give 3.
         var tables = ItemTablesFixture.LoadReal();
-        var state = new AlundraGameState();
+        var state = new GameState();
         state.NumberOfItems[1 * 2 + 1] = 1;
         state.NumberOfItems[3 * 2 + 1] = 1;
 
@@ -321,7 +321,7 @@ public class AlundraItemInventoryTests
         try
         {
             var tables = new AlundraItemTables(projectPath);
-            var state = new AlundraGameState();
+            var state = new GameState();
             state.NumberOfItems[2 * 2 + 1] = 1;
             state.NumberOfItems[4 * 2 + 1] = 1; // higher priority, never looked at
 
@@ -342,7 +342,7 @@ public class AlundraItemInventoryTests
         try
         {
             var tables = new AlundraItemTables(projectPath);
-            var state = new AlundraGameState();
+            var state = new GameState();
             state.NumberOfItems[1 * 2 + 1] = 1;
             state.NumberOfItems[3 * 2 + 1] = 1;
 
@@ -359,7 +359,7 @@ public class AlundraItemInventoryTests
     {
         var tables = ItemTablesFixture.LoadReal();
 
-        Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromSlotId(new AlundraGameState(), tables, 0x20));
+        Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromSlotId(new GameState(), tables, 0x20));
     }
 
     // -------------------------------------------------------------------------------------------------
@@ -370,7 +370,7 @@ public class AlundraItemInventoryTests
     public void AddOneItemIfUnlocked_StopsAtTheMaxCount_AndThenReturnsTheCount()
     {
         var tables = ItemTablesFixture.LoadReal();
-        var state = new AlundraGameState();
+        var state = new GameState();
 
         Assert.Equal(1, AlundraPlayerManager.AddOneItemIfUnlocked(state, tables, 17)); // max count 1
         // The binary (0x8004E58C/0x8004E5B0) returns the count at the maximum; the decompilation returned the item id (17).
@@ -383,7 +383,7 @@ public class AlundraItemInventoryTests
     [InlineData(99)]
     public void GetNumberOfItem_OutOfRange_IsZero(int itemId)
     {
-        Assert.Equal(0, AlundraPlayerManager.GetNumberOfItem(new AlundraGameState(), itemId));
+        Assert.Equal(0, AlundraPlayerManager.GetNumberOfItem(new GameState(), itemId));
     }
 
     [Fact]
@@ -392,7 +392,7 @@ public class AlundraItemInventoryTests
         // Item 1 is owned, and item 4 - same slot, higher priority - too: the call returns the id it started
         // from (1) and, as a side effect, equips 4, exactly as the original does.
         var tables = ItemTablesFixture.LoadReal();
-        var state = new AlundraGameState();
+        var state = new GameState();
         state.NumberOfItems[1 * 2 + 1] = 1;
         state.NumberOfItems[4 * 2 + 1] = 1;
         state.PlayerStats.ItemId = 1;

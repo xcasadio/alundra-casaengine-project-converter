@@ -117,8 +117,8 @@ public class AlundraEntityLogicalRenderPoseTests
     public void RenderPoseFormula_HeroNewGameSpawn_MatchesTheOldFormula()
     {
         // AdoptPlayerPawn's own New Game spawn (AlundraWorldProxy.cs ~1006-1008).
-        var posX = (AlundraGameState.CameraTileX * TileWidth + TileWidth / 2) << 16;
-        var posY = (AlundraGameState.CameraTileY * TileHeight + TileHeight / 2) << 16;
+        var posX = (GameState.CameraTileX * TileWidth + TileWidth / 2) << 16;
+        var posY = (GameState.CameraTileY * TileHeight + TileHeight / 2) << 16;
         const int posZ = 0;
 
         var expected = OldResolveWorldPosition(posX, posY, posZ);
@@ -168,7 +168,7 @@ public class AlundraEntityLogicalRenderPoseTests
     {
         public IEventProgramRunner Runner { get; }
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = new List<AlundraEntityScriptProxy>();
 

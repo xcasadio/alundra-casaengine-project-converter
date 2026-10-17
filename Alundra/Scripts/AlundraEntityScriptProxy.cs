@@ -1303,7 +1303,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         // T4 (docs/plan-transitions-carte.md §3, D-T-6): OR'd with AlundraWarpDirector's own gel gate -
         // same "third mechanism" note as AlundraWorldProxy.Update's own T4 comment on its sibling
         // gameplayBlocked local.
-        var gameplayBlocked = (ScriptHost.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
+        var gameplayBlocked = (ScriptHost.GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0
             || AlundraWarpDirector.Instance.IsTransitionInProgress;
 
         // T2 REGRESSION FIX (softlock reported in play): the pad snapshot is "dehors", NOT "dedans".
@@ -1413,12 +1413,12 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     }
 
     /// <summary>
-    /// E20.a A2: set by <see cref="Update"/> when the host drives the ticks and the gate (<see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/>) was open at the
+    /// E20.a A2: set by <see cref="Update"/> when the host drives the ticks and the gate (<see cref="GameState.PlayerControlBits.GameplayBlockedMask"/>) was open at the
     /// head of the frame, the condition under which this entity's <see cref="FrameSyncPasses.SyncAnimation"/> ran (T2, "dedans"). Consumed by the host's end-of-frame publication.
     /// </summary>
     internal bool SyncAnimationDue;
 
-    /// <summary>Everything <see cref="Update"/> skips while <see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/>
+    /// <summary>Everything <see cref="Update"/> skips while <see cref="GameState.PlayerControlBits.GameplayBlockedMask"/>
     /// is posed - see that method's own T2 doc for the exhaustive per-pass placement this reproduces. The self-driven mode only (a host with no
     /// <see cref="IScriptHost.DrivesEntityTicks"/>): the pull of the root pose, the loop of ticks of <see cref="RunSelfDrivenTicks"/>, then SyncAnimation.</summary>
     private void RunGameplayBlockableUpdate(float elapsedTime)
@@ -1507,7 +1507,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// false): this entity runs ALL the ticks of the frame in its own loop (entity-major), each over the same tick passes the host drives in the binary's order
     /// (<see cref="TickPrograms"/>, <see cref="TickAnimationClock"/>, <see cref="TickPhysics"/>, <see cref="MovePlayerOnTickPad"/>), so the montages that call
     /// <see cref="Update"/> directly keep working. E20.a A4: the hero's <c>MovePlayer</c> runs at EVERY tick, on a pad of the tick (<see cref="SelfDrivenTickPad"/>, advanced here from the hold
-    /// state <see cref="Update"/> published, as the world advances <see cref="AlundraGameState.TickPad"/> in a driven world), and not at all in a frame without tick.
+    /// state <see cref="Update"/> published, as the world advances <see cref="GameState.TickPad"/> in a driven world), and not at all in a frame without tick.
     /// </summary>
     private void RunSelfDrivenTicks(float elapsedTime)
     {
@@ -1550,7 +1550,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         }
     }
 
-    /// <summary>E20.a A4: the pad of the tick of this hero in the self-driven mode (a driven world uses <see cref="AlundraGameState.TickPad"/>, which it advances itself).</summary>
+    /// <summary>E20.a A4: the pad of the tick of this hero in the self-driven mode (a driven world uses <see cref="GameState.TickPad"/>, which it advances itself).</summary>
     internal readonly AlundraTickPad SelfDrivenTickPad = new();
 
     private readonly AlundraPadState[] _selfDrivenPadOfTick = new AlundraPadState[16];

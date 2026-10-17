@@ -45,7 +45,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
@@ -58,7 +58,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
 
         // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
         // isolation) - kept for symmetry with the existing session-singleton test classes.
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
@@ -92,7 +92,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         // The sailor-13 shape: controlMode 0 -> MenuOpen posed, and NO script left running to pump 0x39.
         director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
         Assert.True(director.IsOpen);
-        Assert.NotEqual(0u, proxy.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+        Assert.NotEqual(0u, proxy.GameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
 
         // E19.f2a (F2-R1): one Update is one tick and the pass of the box of that tick, on the square button of the tick BEFORE. One tick with no button:
         // the pass runs but nothing closes the box yet.
@@ -126,7 +126,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
 
         Assert.False(director.IsOpen);
         Assert.Equal(0u, proxy.GameState.PlayerControlFlags
-            & (AlundraGameState.PlayerControlBits.MenuOpen | AlundraGameState.PlayerControlBits.MessageBox));
+            & (GameState.PlayerControlBits.MenuOpen | GameState.PlayerControlBits.MessageBox));
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
 
         Assert.False(director.IsOpen);
         Assert.Equal(0u, proxy.GameState.PlayerControlFlags
-            & (AlundraGameState.PlayerControlBits.MenuOpen | AlundraGameState.PlayerControlBits.MessageBox));
+            & (GameState.PlayerControlBits.MenuOpen | GameState.PlayerControlBits.MessageBox));
     }
 
     [Fact]
@@ -172,14 +172,14 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
 
         director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
         Assert.True(director.IsOpen);
-        Assert.NotEqual(0u, proxy.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+        Assert.NotEqual(0u, proxy.GameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
 
         proxy.InstallDialogueSystems(new World { Name = "TestWorld" });
 
         Assert.False(director.IsOpen);
         Assert.False(director.IsAwaitingChoice);
         Assert.Equal(0u, proxy.GameState.PlayerControlFlags
-            & (AlundraGameState.PlayerControlBits.MenuOpen | AlundraGameState.PlayerControlBits.MessageBox));
+            & (GameState.PlayerControlBits.MenuOpen | GameState.PlayerControlBits.MessageBox));
     }
 
     [Fact]
@@ -189,7 +189,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         // triggered the interaction) does not read the pad while it slides in (the slide, 18 passes, never does), so the opening press cannot advance or close
         // what it just opened and nothing needs to swallow it any more; the box closes on a press its pass sees once the typing is done (the pass 48: the
         // text "bonjour" ends at 47), is released 18 passes later (66), and the auto-timer, armed at the end of the typing, still closes it alone at 425.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var director = AlundraDialogueDirector.Instance;
         director.AttachToWorld(new DialogueService(), gameState);
 
@@ -224,7 +224,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         // F4: collapsing AttachToWorld into a reset (the tempting "simplification") used to stay green
         // too. The AttachToWorld/InstallForMapEntry split is the session-singleton contract shared with
         // AlundraMusicPlayer/AlundraScreenFadeDirector: re-point WITHOUT resetting.
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var director = AlundraDialogueDirector.Instance;
         director.AttachToWorld(new DialogueService(), gameState);
 

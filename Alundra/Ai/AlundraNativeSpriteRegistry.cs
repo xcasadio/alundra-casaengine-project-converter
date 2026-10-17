@@ -17,7 +17,7 @@ namespace Alundra.Ai;
 /// original's per-slot function tables (<c>g_entityEventFunctionsByType</c>, master table 0x80098F4C), shaped like
 /// the save book's handlers: the entity whose picked event it is, the world context and the game state.
 /// </summary>
-internal delegate void AlundraNativeSpriteHandler(AlundraEntityScriptProxy entity, IEntityWorldContext context, AlundraGameState state);
+internal delegate void AlundraNativeSpriteHandler(AlundraEntityScriptProxy entity, IEntityWorldContext context, GameState state);
 
 /// <summary>
 /// E14.a0 (D-E14-1, docs/plan-e14-ia-native.md section 1.1a): the registry of the native sprite handlers, keyed by

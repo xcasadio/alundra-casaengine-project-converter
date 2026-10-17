@@ -40,14 +40,14 @@ public sealed class AlundraHeroAttackTests : IDisposable
 
     public AlundraHeroAttackTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
     {
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -270,7 +270,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
     public void ScriptedWeaponBit0x80_DoesNotStopTheSwing_ButTheControlLockDoes()
     {
         var (locked, _) = Start(AttackOracleTrace.Load("AT1"));
-        locked.Host.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.ForcedWeapon;
+        locked.Host.GameState.PlayerControlFlags = GameState.PlayerControlBits.ForcedWeapon;
         locked.Step(Square);
 
         Assert.Equal(0x10u, locked.Hero.TargetAnimationId);
@@ -278,7 +278,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
         Assert.Equal(0x80u, locked.Host.GameState.PlayerControlFlags);
 
         var (control, _) = Start(AttackOracleTrace.Load("AT1"));
-        control.Host.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked;
+        control.Host.GameState.PlayerControlFlags = GameState.PlayerControlBits.ControlLocked;
         control.Step(Square);
 
         Assert.NotEqual(0x10u, control.Hero.TargetAnimationId);
@@ -417,7 +417,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
     /// <summary>The overworld map 10 from a portal arrival, with no scene flag set: no event locks the pad, the hero stands free (Idle) on open ground.</summary>
     private static ArcSpec FreeHeroSpec(string name) => new(
         name, "Overworld", "Overworld 2,1-10", Array.Empty<int>(), 0, 0, 0, 400, RealController: true, Prefabs: true,
-        Arrival: new ArcArrival(16515072, 61341696, 0, AlundraGameState.ResetAnimationId, 16));
+        Arrival: new ArcArrival(16515072, 61341696, 0, GameState.ResetAnimationId, 16));
 
     private static RecordingSoundPlayer InjectSounds(ArcRun arc)
     {
@@ -429,13 +429,13 @@ public sealed class AlundraHeroAttackTests : IDisposable
     /// <summary>Runs the arc until the hero stands free: Idle (the arrival animation chained away), no lock on the pad.</summary>
     private static void WaitUntilTheHeroIsFree(ArcRun arc)
     {
-        for (var frame = 0; frame < 300 && !(arc.Hero.TargetAnimationId == 0u && arc.Hero.CurrentAnimationId == 0u && AlundraGameState.Instance.PlayerControlFlags == 0); frame++)
+        for (var frame = 0; frame < 300 && !(arc.Hero.TargetAnimationId == 0u && arc.Hero.CurrentAnimationId == 0u && GameState.Instance.PlayerControlFlags == 0); frame++)
         {
             arc.OneFrame();
         }
 
         Assert.Equal(0u, arc.Hero.TargetAnimationId);
-        Assert.Equal(0u, AlundraGameState.Instance.PlayerControlFlags);
+        Assert.Equal(0u, GameState.Instance.PlayerControlFlags);
     }
 
     [Fact]
@@ -448,7 +448,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
         WaitUntilTheHeroIsFree(arc);
         arc.OneFrame();
         sounds.Requests.Clear();
-        AlundraPlayerManager.InitializeNewGameInventory(AlundraGameState.Instance, ((IScriptHost)arc.Proxy).ItemTables!);
+        AlundraPlayerManager.InitializeNewGameInventory(GameState.Instance, ((IScriptHost)arc.Proxy).ItemTables!);
 
         // On the ground: the press at S asks the sound 29 at S, the swing 0x10 runs ticks S to S+20, Idle at S+21 (tick 22 of AT1).
         var swing = new List<uint>();
@@ -508,7 +508,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
         arc.OneFrame();
 
         // The Steel Edge (item 2, slot 1, rank above the basic sword's) owned and equipped: the record 1, the swing 0x3F, the pointer at the record's own address.
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
         AlundraPlayerManager.InitializeNewGameInventory(state, tables!);
         state.NumberOfItems[2 * 2 + 1] = 1;
         AlundraPlayerManager.SetPlayerWeaponId(state, tables!, 1);

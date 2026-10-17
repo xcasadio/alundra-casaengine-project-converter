@@ -37,7 +37,7 @@ public class AlundraWorldProxyLogicClockTests
     {
         public IEventProgramRunner Runner { get; }
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = System.Array.Empty<AlundraEntityScriptProxy>();
 

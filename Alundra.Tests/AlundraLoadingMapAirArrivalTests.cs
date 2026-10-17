@@ -26,7 +26,7 @@ public sealed class AlundraLoadingMapAirArrivalTests
     private static List<Sample> Run(string zone, string worldName, int tileX, int tileY, int zLevel, uint directionId, int frames)
     {
         var spec = new ArcSpec("E19v", zone, worldName, Array.Empty<int>(), 0, 0, 0, frames + 10, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival((tileX * 24 + 12) << 16, (tileY * 16 + 8) << 16, zLevel << 20, AlundraGameState.ResetAnimationId, directionId));
+            Arrival: new ArcArrival((tileX * 24 + 12) << 16, (tileY * 16 + 8) << 16, zLevel << 20, GameState.ResetAnimationId, directionId));
         using var arc = new ArcRun(spec);
         var hero = arc.Hero;
 
@@ -38,7 +38,7 @@ public sealed class AlundraLoadingMapAirArrivalTests
         {
             arc.OneFrame();
             samples.Add(new Sample(frame, hero.TargetAnimationId, hero.IsOnGround == 0 || hero.HeroAirborne,
-                (ArcRun.State.PlayerControlFlags & AlundraGameState.PlayerControlBits.InputBlockedMask) == 0));
+                (ArcRun.State.PlayerControlFlags & GameState.PlayerControlBits.InputBlockedMask) == 0));
         }
 
         return samples;
@@ -77,7 +77,7 @@ public sealed class AlundraLoadingMapAirArrivalTests
         hero.IsOnGround = 0;
         Assert.Equal(1048576, hero.ComputeTerrainHeight());
 
-        AlundraPlayerManager.MovePlayer(hero, default, new AlundraGameState(), host: null);
+        AlundraPlayerManager.MovePlayer(hero, default, new GameState(), host: null);
 
         Assert.Equal(LoadingMap, hero.TargetAnimationId);
     }
@@ -92,7 +92,7 @@ public sealed class AlundraLoadingMapAirArrivalTests
         hero.PosZ = 2097152;
         hero.IsOnGround = 0;
 
-        AlundraPlayerManager.MovePlayer(hero, default, new AlundraGameState(), host: null);
+        AlundraPlayerManager.MovePlayer(hero, default, new GameState(), host: null);
 
         Assert.Equal(AirStill, hero.TargetAnimationId);
     }

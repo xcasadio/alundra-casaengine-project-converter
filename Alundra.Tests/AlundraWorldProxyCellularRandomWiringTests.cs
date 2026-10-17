@@ -34,7 +34,7 @@ public sealed class AlundraWorldProxyCellularRandomWiringTests : System.IDisposa
     {
         // D-T-14 (docs/plan-transitions-carte.md): this class constructs an AlundraWorldProxy, so it resets the session carriers in its constructor (the
         // isolation-carrying element) and in Dispose (hygiene).
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -42,7 +42,7 @@ public sealed class AlundraWorldProxyCellularRandomWiringTests : System.IDisposa
 
     public void Dispose()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();

@@ -74,7 +74,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
 
     private static EventProgramState Run(
         int[] codes,
-        AlundraGameState gameState,
+        GameState gameState,
         IEntityWorldContext? context = null,
         List<EventTraceRecord>? trace = null)
     {
@@ -92,14 +92,14 @@ public sealed class AlundraItemAndMoneyOpcodesTests
         return state;
     }
 
-    private static AlundraGameState StateWithMoney(int money)
+    private static GameState StateWithMoney(int money)
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.Money = (short)money;
         return gameState;
     }
 
-    private static int Count(AlundraGameState gameState, int itemId) => gameState.NumberOfItems[itemId * 2 + 1];
+    private static int Count(GameState gameState, int itemId) => gameState.NumberOfItems[itemId * 2 + 1];
 
     // ---------------------------------------------------------------------------------------
     // The helpers
@@ -121,7 +121,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [Fact]
     public void UseItem_InvalidId_Returns0_ZeroCount_ReturnsMinus1_ElseDecrements()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.NumberOfItems[88 * 2 + 1] = 2;
 
         Assert.Equal(0, AlundraPlayerManager.UseItem(gameState, 99));
@@ -138,7 +138,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [Fact]
     public void Give_0x82_Item36AtCount0_GivesOne()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
 
         var state = Run(new[] { 0x82, 36, 0x1A, 9, 0xFF }, gameState);
 
@@ -149,7 +149,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [Fact]
     public void Give_0x82_Item36AtCount8_GivesTheLastOne_ThenRefuses()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.NumberOfItems[73] = 8;
 
         var first = Run(new[] { 0x82, 36, 0x1A, 9, 0xFF }, gameState);
@@ -164,7 +164,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [Fact]
     public void Give_0x82_Item41AtItsMaximum_Refuses_BecauseTheBinaryReturnsTheCountNotTheId()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.NumberOfItems[41 * 2 + 1] = 1;
 
         var state = Run(new[] { 0x82, 41, 0x1A, 9, 0xFF }, gameState);
@@ -178,7 +178,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [InlineData(99)]
     public void Give_0x82_Id0_Or_AnIdOutOfTheTable_AnswersZero_AndWritesNothing(int id)
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
 
         var state = Run(new[] { 0x82, id, 0x1A, 9, 0xFF }, gameState);
 
@@ -205,9 +205,9 @@ public sealed class AlundraItemAndMoneyOpcodesTests
             Directory.Delete(projectPath, recursive: true);
         }
 
-        Assert.Equal(1, AlundraPlayerManager.AddOneItemIfUnlocked(new AlundraGameState(), tables, 0)); // the montage discriminates: the default branch would give it.
+        Assert.Equal(1, AlundraPlayerManager.AddOneItemIfUnlocked(new GameState(), tables, 0)); // the montage discriminates: the default branch would give it.
 
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var state = Run(new[] { 0x82, 0, 0x1A, 9, 0xFF }, gameState, new Context { Tables = tables });
 
         Assert.Equal(0, state.Result);
@@ -253,7 +253,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [Fact]
     public void Give_0x82_Id0x4F_RaisesFalconTemp_AndSetsG1450()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.FalconTemp = 49;
 
         var state = Run(new[] { 0x82, 0x4F, 0x1A, 9, 0xFF }, gameState);
@@ -266,7 +266,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [Fact]
     public void Give_0x82_Id0x4F_AtTheCap_StaysAt50_AndStillAnswersOne()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.FalconTemp = 50;
 
         var state = Run(new[] { 0x82, 0x4F, 0x1A, 9, 0xFF }, gameState);
@@ -279,7 +279,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     public void Give_0x82_Id0x53_WithoutAStage_AnswersOne_RaisesTheLife_GivesNoItem_AndTracesDegraded()
     {
         // E19.g G3d (the life vessel): the life is raised through the setters whatever the host; the effects need a stage and a hero (no stage here: skipped, so no number is drawn).
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.Hp = 4;
         var trace = new List<EventTraceRecord>();
 
@@ -300,7 +300,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [InlineData(0x56)]
     public void Give_0x82_TheOtherHeroSubCases_StayDegraded_AnswerOne_AndWriteNothing(int id)
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var trace = new List<EventTraceRecord>();
 
         var state = Run(new[] { 0x82, id, 0x1A, 9, 0xFF }, gameState, trace: trace);
@@ -314,7 +314,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [Fact]
     public void Give_0x82_AnItem_WithoutTables_IsDegraded_ResultZero_NothingWritten()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         var trace = new List<EventTraceRecord>();
 
         var state = Run(new[] { 0x82, 36, 0x1A, 9, 0xFF }, gameState, new Context(), trace);
@@ -335,7 +335,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [InlineData(2, 0, 1)]
     public void HasCount_0x83_IsCountAtLeastV2(int count, int v2, int expected)
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.NumberOfItems[61 * 2 + 1] = (short)count;
 
         var state = Run(new[] { 0x83, 61, v2, 0x1A, 9, 0xFF }, gameState);
@@ -347,7 +347,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [Fact]
     public void HasCount_0x83_IdOutOfTheTable_AnswersZero()
     {
-        var state = Run(new[] { 0x83, 99, 1, 0x1A, 9, 0xFF }, new AlundraGameState());
+        var state = Run(new[] { 0x83, 99, 1, 0x1A, 9, 0xFF }, new GameState());
 
         Assert.Equal(0, state.Result);
     }
@@ -355,7 +355,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [Fact]
     public void Use_0x84_Item88AtCount1_ConsumesIt_AnswersOne()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.NumberOfItems[88 * 2 + 1] = 1;
 
         var state = Run(new[] { 0x84, 88, 0x1A, 9, 0xFF }, gameState);
@@ -367,7 +367,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [Fact]
     public void Use_0x84_Item88AtCount0_AnswersZero_AndWritesNothing()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
 
         var state = Run(new[] { 0x84, 88, 0x1A, 9, 0xFF }, gameState);
 
@@ -378,7 +378,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     [Fact]
     public void Use_0x84_AnInvalidId_AnswersOne_AsTheBinaryDoes_AndWritesNothing()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
 
         var state = Run(new[] { 0x84, 99, 0x1A, 9, 0xFF }, gameState);
 

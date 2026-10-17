@@ -297,7 +297,7 @@ public sealed class AlundraBirthBoxTests : IDisposable
         public int Calls;
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController { get; init; }
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
 

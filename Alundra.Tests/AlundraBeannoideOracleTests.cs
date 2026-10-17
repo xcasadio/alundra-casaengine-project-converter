@@ -125,7 +125,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
             return _kit;
         }
 
-        var state = new AlundraGameState();
+        var state = new GameState();
         var items = AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
         AlundraPlayerManager.InitializeNewGameInventory(state, items);
         var records = new AlundraEquipmentRecords();
@@ -250,7 +250,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
     {
         var (heroEntity, hero) = NewHero(heroWords, heroAttack);
         var context = new OracleContext { PlayerEntity = hero, EquipmentRecords = Kit(), HeroAnimationLatch = unchecked((uint)latch) };
-        var runner = new AlundraEventProgramRunner(null, new AlundraGameState(), context);
+        var runner = new AlundraEventProgramRunner(null, new GameState(), context);
         var letter = LetterOf(handler);
         var forcesBefore = ForcesBefore(changed);
         var entity = NewBeannoid(before, forcesBefore, letter, heroEntity, 2);
@@ -321,7 +321,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
         // The attack (0x81, 1) adds the power of Attacks[latch + 1] of each equipment record: with the kit's weapon (1, 1) the damage is 2 at the latches -1, 0, 1, 3 and 16 alike (one attack in the record), and 1 without the bit 0x80.
         var hero = NewHero(new Dictionary<string, long> { ["posx"] = 0, ["posy"] = 0, ["tilex_120"] = 0, ["tiley_124"] = 0, ["floor_134"] = 1 }, new long[] { 0x81, 1 });
         var context = new OracleContext { PlayerEntity = hero.Proxy, EquipmentRecords = Kit(), HeroAnimationLatch = 16 };
-        var runner = new AlundraEventProgramRunner(null, new AlundraGameState(), context);
+        var runner = new AlundraEventProgramRunner(null, new GameState(), context);
         var entity = NewBeannoid(new Dictionary<string, long> { ["hp"] = 9, ["touching_224"] = 1, ["posx"] = 1 << 20, ["posy"] = 0 }, new Dictionary<string, long>(), ScriptHelper.ProgramDTouch, hero.Entity, 2);
 
         entity.RunPickedEvent(runner);
@@ -347,7 +347,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
             Assert.NotNull(world.EffectStage.Reservoir.Create(false, 9, 0, 0, 0, 0));
         }
 
-        var runner = new AlundraEventProgramRunner(null, new AlundraGameState(), world);
+        var runner = new AlundraEventProgramRunner(null, new GameState(), world);
         var letter = ScriptHelper.ProgramEDeactivate;
         var forcesBefore = ForcesBefore(changed);
         var entity = NewBeannoid(before, forcesBefore, letter, heroEntity, status);

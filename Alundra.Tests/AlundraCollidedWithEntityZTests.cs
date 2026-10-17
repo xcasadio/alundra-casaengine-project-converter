@@ -119,7 +119,7 @@ public sealed class AlundraCollidedWithEntityZTests
         {
             var world = HeroWorldFixture.BuildWorld(FlatCells.Create());
             var controller = new AlundraPlayerController { PadStateProviderForTests = () => default };
-            var host = new ContactHost(null, AlundraGameState.PlayerControlBits.ControlLocked, controller);
+            var host = new ContactHost(null, GameState.PlayerControlBits.ControlLocked, controller);
             var settings = HeroWorldFixture.LoadHeroControllerSettings(projectRoot!);
             settings.Gravity = 1250f;
             settings.MaxFallSpeed = 800f;

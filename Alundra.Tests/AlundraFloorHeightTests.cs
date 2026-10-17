@@ -127,7 +127,7 @@ public class AlundraFloorHeightTests
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController { get; init; }
         public List<AlundraEntityScriptProxy> Collidables { get; } = new();
         IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;

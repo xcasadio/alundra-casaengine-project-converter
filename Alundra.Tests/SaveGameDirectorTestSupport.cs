@@ -97,7 +97,7 @@ internal static class SaveGameDirectorTestSupport
     }
 
     /// <summary>A hero on the ground at a tile of map 389 (the New Game tile by default).</summary>
-    internal static AlundraEntityScriptProxy HeroAt(int tileX = AlundraGameState.CameraTileX, int tileY = AlundraGameState.CameraTileY, int tileZ = AlundraGameState.CameraTileZ)
+    internal static AlundraEntityScriptProxy HeroAt(int tileX = GameState.CameraTileX, int tileY = GameState.CameraTileY, int tileZ = GameState.CameraTileZ)
         => new() { IsPlayer = true, TileX = tileX, TileY = tileY, TileZ = tileZ, IsOnGround = 1 };
 
     /// <summary>A save that validates against <see cref="RealRules"/>: the New Game identity table, map 389 at
@@ -128,7 +128,7 @@ internal static class SaveGameDirectorTestSupport
         AlundraInventoryPortrait.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests();
         AlundraCameraSway.Instance.ResetForTests();
@@ -160,8 +160,8 @@ internal static class SaveGameDirectorTestSupport
             case SaveGameBlocker.SubInventoryOpen:
             {
                 var tables = ItemTablesFixture.LoadReal();
-                AlundraInventoryDirector.Instance.AttachToWorld(AlundraGameState.Instance, tables, null);
-                AlundraSubInventoryDirector.Instance.AttachToWorld(AlundraGameState.Instance, tables, null);
+                AlundraInventoryDirector.Instance.AttachToWorld(GameState.Instance, tables, null);
+                AlundraSubInventoryDirector.Instance.AttachToWorld(GameState.Instance, tables, null);
                 InventoryTick(AlundraPadState.Start);
                 InventoryTicks(20);
                 if (blocker == SaveGameBlocker.SubInventoryOpen)
@@ -178,7 +178,7 @@ internal static class SaveGameDirectorTestSupport
 
                 // Only the inventory blocks: the portrait (shared by both menus) and the flags are put back.
                 AlundraInventoryPortrait.Instance.ResetSessionForLoad();
-                AlundraGameState.Instance.PlayerControlFlags = 0;
+                GameState.Instance.PlayerControlFlags = 0;
                 return (hero, blocker == SaveGameBlocker.SubInventoryOpen ? "sub-inventory is open" : "the inventory is open");
             }
 
@@ -204,7 +204,7 @@ internal static class SaveGameDirectorTestSupport
                 Assert.Equal(AlundraInventoryPortrait.StateReturning, AlundraInventoryPortrait.Instance.State);
                 return (hero, "portrait is not idle");
             case SaveGameBlocker.TransitionInProgress:
-                AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(390, 0, 0, 0, 0, 0, HeroAt(), new AlundraGameState());
+                AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(390, 0, 0, 0, 0, 0, HeroAt(), new GameState());
                 Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
                 return (hero, "map transition is in progress");
             case SaveGameBlocker.MasterMusicFadeArmed:
@@ -212,7 +212,7 @@ internal static class SaveGameDirectorTestSupport
                 Assert.True(AlundraBgmFadeDirector.Instance.IsArmed);
                 return (hero, "master music fade");
             case SaveGameBlocker.ControlFlagsNonZero:
-                AlundraGameState.Instance.PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked;
+                GameState.Instance.PlayerControlFlags = GameState.PlayerControlBits.ControlLocked;
                 return (hero, "PlayerControlFlags");
             default:
                 throw new ArgumentOutOfRangeException(nameof(blocker));
@@ -221,7 +221,7 @@ internal static class SaveGameDirectorTestSupport
 
     internal static void InventoryTick(uint hold)
     {
-        AlundraGameState.Instance.TickPad.Update(hold);
+        GameState.Instance.TickPad.Update(hold);
         AlundraInventoryDirector.Instance.Tick(null);
         AlundraSubInventoryDirector.Instance.Tick();
         AlundraInventoryPostProcess.Instance.Run();
@@ -429,7 +429,7 @@ internal static class SaveGameDirectorTestSupport
         bool FadeSettled,
         bool HasPendingLoad)
     {
-        public static StateSnapshot Take(AlundraGameState state)
+        public static StateSnapshot Take(GameState state)
         {
             var s = state.PlayerStats;
             return new StateSnapshot(

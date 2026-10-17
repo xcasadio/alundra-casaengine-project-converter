@@ -37,14 +37,14 @@ public sealed class AlundraHeroSlideTests : IDisposable
 
     public AlundraHeroSlideTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
     {
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -303,7 +303,7 @@ public sealed class AlundraHeroSlideTests : IDisposable
     private static void RunOpcode(AlundraEntityScriptProxy entity, int opcode, int result, out EventProgramState state)
     {
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 }, Codes = new[] { opcode, 0xFF } };
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState());
+        var runner = new AlundraEventProgramRunner(document, new GameState());
         state = new EventProgramState { Codes = document.CodesAsBytes(), Result = result };
         runner.RunOneScriptCall(entity, state);
     }
@@ -351,7 +351,7 @@ public sealed class AlundraHeroSlideTests : IDisposable
     // -----------------------------------------------------------------------------------------
 
     private static ArcSpec GuardedSpec(string name) => new(name, "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 100, RealController: true, Prefabs: true,
-        Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0));
+        Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0));
 
     [Fact]
     public void ArcsWithoutSlide_AnArcOfTheRealControllerThatSlid_FailsAtItsDispose_ThePinnedArcsPinTheirCount()

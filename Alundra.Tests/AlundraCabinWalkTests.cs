@@ -166,7 +166,7 @@ public sealed class AlundraCabinWalkTests
 
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
 
-        public AlundraGameState GameState { get; } = new() { PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked };
+        public GameState GameState { get; } = new() { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 
         public AlundraPlayerController? PlayerController { get; init; } = new AlundraPlayerController();
 

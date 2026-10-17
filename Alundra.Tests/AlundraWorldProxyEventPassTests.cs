@@ -43,7 +43,7 @@ public class AlundraWorldProxyEventPassTests
     {
         public IEventProgramRunner Runner { get; }
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = new List<AlundraEntityScriptProxy>();
         public readonly List<(AlundraEntityScriptProxy Entity, int EffectId)> Destroyed = new();
@@ -492,7 +492,7 @@ public class AlundraWorldProxyEventPassTests
     };
 
     private static AlundraEventProgramRunner RealRunner(EventProgramDocument document, MapEventWorld world)
-        => new(document, new AlundraGameState(), world);
+        => new(document, new GameState(), world);
 
     /// <summary>One tick: the hero stands on (x, x), one <see cref="AlundraWorldProxy.RunMapEventsPass"/>.</summary>
     private static void Tick(AlundraEntityScriptProxy hero, MapEvent mapEvent, IEventProgramRunner runner, int x)
@@ -731,7 +731,7 @@ public class AlundraWorldProxyEventPassTests
         var mapEvent = NewMapEvent(0, 0, 10, 10, 129, player);
 
         AlundraWorldProxy.RunMapEventsPass(
-            player, new[] { mapEvent }, runner, AlundraGameState.PlayerControlBits.MenuOpen);
+            player, new[] { mapEvent }, runner, GameState.PlayerControlBits.MenuOpen);
 
         Assert.Empty(runner.Calls);
     }

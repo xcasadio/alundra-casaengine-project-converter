@@ -41,7 +41,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 {
     public AlundraWarpDepartureTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -52,7 +52,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
     public void Dispose()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -392,7 +392,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         AlundraWarpDirector.Instance.AttachToWorld(new GameManager(null), soundPlayer: null, projectRoot);
 
         var player = NewPlayer(posXPixels: 0, posYPixels: 0);
-        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new AlundraGameState());
+        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new GameState());
 
         Assert.NotNull(AlundraWarpDirector.Instance.PendingWorldPathForTests);
 
@@ -411,7 +411,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         AlundraScreenFadeDirector.Instance.AttachToWorld(service);
 
         var player = NewPlayer(posXPixels: 0, posYPixels: 0);
-        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new AlundraGameState());
+        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new GameState());
 
         for (var tick = 0; tick < 24; tick++)
         {
@@ -434,7 +434,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         AlundraWarpDirector.Instance.AttachToWorld(gameManager: null, soundPlayer: null, FindProjectRoot());
 
         var player = NewPlayerWithController(gravity: 42f, maxFallSpeed: 7f);
-        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new AlundraGameState());
+        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new GameState());
 
         Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
         Assert.Equal(0f, player.Controller!.Settings.Gravity);
@@ -763,7 +763,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             // The 0x53 path itself, not the portal path: v[7]'s raw sfx id (69), no WarpBehaviorTable.
             AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
                 desiredMapIndex: 45, posX: 10 * 24, posY: 40 * 16, posZ: 0, effectId: 0, sfxId: 69,
-                player, AlundraGameState.Instance);
+                player, GameState.Instance);
 
             // F2: the departure only RECORDS the request - nothing armed yet, same frame it was requested.
             Assert.Single(backend.StreamVoices);
@@ -820,7 +820,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
                 desiredMapIndex: 45, posX: 10 * 24, posY: 40 * 16, posZ: 0, effectId: 0, sfxId: 55,
-                player, AlundraGameState.Instance);
+                player, GameState.Instance);
 
             // F2: the departure only RECORDS the request - the voice is still playing right after it.
             Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
@@ -879,13 +879,13 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
                 desiredMapIndex: 45, posX: 10 * 24, posY: 40 * 16, posZ: 0, effectId: 0, sfxId: 379,
-                player, AlundraGameState.Instance);
+                player, GameState.Instance);
 
             Assert.DoesNotContain(379, soundPlayer.Requests); // silent - never played.
 
             AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
                 desiredMapIndex: 45, posX: 10 * 24, posY: 40 * 16, posZ: 0, effectId: 0, sfxId: 55,
-                player, AlundraGameState.Instance);
+                player, GameState.Instance);
 
             Assert.Contains(55, soundPlayer.Requests); // audible - still played.
         }

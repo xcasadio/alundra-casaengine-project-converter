@@ -59,7 +59,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
     private static void OpenTheBox(string[] pages)
     {
         Director.AdvanceProviderForTests = c => AlundraTextBoxOracle.GlyphWidth(OraclePages.ByteOf(c));
-        Director.AttachToWorld(new DialogueService(), new AlundraGameState());
+        Director.AttachToWorld(new DialogueService(), new GameState());
         Director.InstallForMapEntry();
         Director.Open(DialogueTestAssets.BuildRaw("pixels", "Start", pages), "Start", controlMode: 1);
     }

@@ -34,10 +34,10 @@ internal sealed class DialogueHarnessButton
 internal sealed class DialogueBoxPassDriver
 {
     private readonly AlundraDialogueDirector _director;
-    private readonly AlundraGameState _gameState;
+    private readonly GameState _gameState;
     private readonly HashSet<int> _holdBefore = new();
 
-    public DialogueBoxPassDriver(AlundraDialogueDirector director, AlundraGameState gameState)
+    public DialogueBoxPassDriver(AlundraDialogueDirector director, GameState gameState)
     {
         _director = director;
         _gameState = gameState;

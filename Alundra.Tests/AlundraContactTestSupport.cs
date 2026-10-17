@@ -67,7 +67,7 @@ internal sealed class ContactHost : IScriptHost
     public ContactHost(IEventProgramRunner? runner = null, uint playerControlFlags = 0, AlundraPlayerController? playerController = null)
     {
         Runner = runner ?? new NoOpRunner();
-        GameState = new AlundraGameState { PlayerControlFlags = playerControlFlags };
+        GameState = new GameState { PlayerControlFlags = playerControlFlags };
         PlayerController = playerController;
     }
 
@@ -75,7 +75,7 @@ internal sealed class ContactHost : IScriptHost
 
     public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
 
-    public AlundraGameState GameState { get; }
+    public GameState GameState { get; }
 
     public AlundraPlayerController? PlayerController { get; }
 

@@ -17,7 +17,7 @@ namespace Alundra.Dialogues.Yarn;
 /// <see cref="YarnDialogueRunner"/> the two commands and seven functions of the E15.b function
 /// contract, so pages emitted with <c>&lt;&lt;flag n&gt;&gt;</c>, <c>&lt;&lt;falcon_update&gt;&gt;</c>
 /// and the seven <c>{...}</c> reads compiled by the converter run against this DLL's own
-/// <see cref="AlundraGameState"/>/<see cref="AlundraTextProgress"/> port instead of the placeholder
+/// <see cref="GameState"/>/<see cref="AlundraTextProgress"/> port instead of the placeholder
 /// implementations the converter's own <c>AlundraYarnFunctions</c> class registers for its compile-time
 /// checks (that class lives in the converter project, which this DLL cannot reference - the names and
 /// delegate types below MUST stay identical to it; a mismatch would compile a Yarn script the DLL then
@@ -69,10 +69,10 @@ public sealed class AlundraYarnBindings
     /// <summary><c>\X5</c>: the current category's threshold minus the falcon count.</summary>
     public const string CategoryRemainingFunctionName = "category_remaining";
 
-    /// <summary><c>\V&lt;n&gt;</c>: <see cref="AlundraGameState.GameVariables"/>[n].</summary>
+    /// <summary><c>\V&lt;n&gt;</c>: <see cref="GameState.GameVariables"/>[n].</summary>
     public const string GameVarFunctionName = "game_var";
 
-    private readonly AlundraGameState _gameState;
+    private readonly GameState _gameState;
     private readonly string _projectPath;
     private readonly HashSet<string> _loggedUnhandledCommandNames = new(StringComparer.Ordinal);
     private bool _loggedInvalidFlagArgumentOnce;
@@ -84,20 +84,20 @@ public sealed class AlundraYarnBindings
     /// (ADR-0007). Both start at 0 - the same "never ran yet" value <c>falcon_temp()</c>/
     /// <c>category_item_name_before()</c> should report for a page that reads them before any
     /// <c>falcon_update</c> has ever run in this session - and are only ever taken from the live
-    /// <see cref="AlundraGameState"/> by <see cref="HandleFalconUpdateCommand"/>'s own snapshot, at the
+    /// <see cref="GameState"/> by <see cref="HandleFalconUpdateCommand"/>'s own snapshot, at the
     /// moment each <c>falcon_update</c> actually runs (never here at construction time, since the game
     /// state can still change between binding construction and that first call).</summary>
     private int _keptFalconTemp;
     private int _keptCategoryIndex;
 
-    public AlundraYarnBindings(AlundraGameState gameState)
+    public AlundraYarnBindings(GameState gameState)
         : this(gameState, EngineEnvironment.ProjectPath)
     {
     }
 
     /// <summary>Overload tests use to point item-name resolution at a fixture project directory instead
     /// of <see cref="EngineEnvironment.ProjectPath"/> (same pattern as <see cref="AlundraItemTables"/>).</summary>
-    public AlundraYarnBindings(AlundraGameState gameState, string projectPath)
+    public AlundraYarnBindings(GameState gameState, string projectPath)
     {
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(projectPath);
@@ -164,14 +164,14 @@ public sealed class AlundraYarnBindings
 
     /// <summary>The one write of a text flag, shared by the <c>flag</c> command and the
     /// <see cref="FlagMarkerName"/> markers: <c>AddFlag(n | 0x8000, 1 &lt;&lt; (n &amp; 0x1f))</c>.</summary>
-    internal static void SetTextFlag(AlundraGameState gameState, uint n)
+    internal static void SetTextFlag(GameState gameState, uint n)
         => gameState.AddFlag(n | 0x8000, 1u << (int)(n & 0x1f));
 
     /// <summary>E19.f0 (D-E19-48, D-E12-4 until E19.f2): sets the flag of every <see cref="FlagMarkerName"/>
     /// marker of <paramref name="line"/>, in the order of the attribute list, all at once - the page's
     /// display. Any other marker (<c>yield</c>, a name this DLL does not know yet) is ignored; a marker
     /// without a usable non-negative <c>id</c> is skipped.</summary>
-    internal static void ApplyFlagMarkers(AlundraGameState gameState, DialogueLine line)
+    internal static void ApplyFlagMarkers(GameState gameState, DialogueLine line)
     {
         foreach (var attribute in line.Attributes)
         {
@@ -224,7 +224,7 @@ public sealed class AlundraYarnBindings
         return name;
     }
 
-    /// <summary>§5.7: <c>\V</c> reads <see cref="AlundraGameState.GameVariables"/> with NO bound check in
+    /// <summary>§5.7: <c>\V</c> reads <see cref="GameState.GameVariables"/> with NO bound check in
     /// the original (<c>c - '0'</c>) - this port stays in bounds and degrades instead of throwing.</summary>
     private float ResolveGameVar(int index)
     {

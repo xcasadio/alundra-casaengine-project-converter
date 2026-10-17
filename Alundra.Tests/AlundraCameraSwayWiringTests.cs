@@ -37,7 +37,7 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
     private static void Reset()
     {
         AlundraCameraSway.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -130,7 +130,7 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
         var swayBefore = (sway.Flag, sway.OffsetX, sway.OffsetY, sway.ReachX, sway.ReachY);
         var targetBefore = camera.Target;
 
-        var state = new AlundraGameState();
+        var state = new GameState();
         var player = new AlundraEntityScriptProxy
         {
             IsPlayer = true,

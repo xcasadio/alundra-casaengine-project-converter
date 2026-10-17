@@ -61,7 +61,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
 
     private static AlundraSaveGameDirector Director => AlundraSaveGameDirector.Instance;
 
-    private static AlundraGameState State => AlundraGameState.Instance;
+    private static GameState State => GameState.Instance;
 
     private void PressF9(AlundraEntityScriptProxy? hero)
     {
@@ -246,7 +246,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
     [Fact]
     public void TransitionInProgress_IsRefused_NoLoadPending()
     {
-        AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(390, 0, 0, 0, 0, 0, HeroAt(), new AlundraGameState());
+        AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(390, 0, 0, 0, 0, 0, HeroAt(), new GameState());
         var before = StateSnapshot.Take(State);
 
         PressF9(HeroAt());
@@ -332,9 +332,9 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
         PressF9(hero);
 
         var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
-        Assert.Equal(AlundraGameState.ResetAnimationId, arrival.AnimationId);
+        Assert.Equal(GameState.ResetAnimationId, arrival.AnimationId);
         Assert.Equal(0x36u, arrival.AnimationId);
-        Assert.Equal(AlundraGameState.ResetDirectionId, arrival.DirectionId);
+        Assert.Equal(GameState.ResetDirectionId, arrival.DirectionId);
     }
 
     /// <summary>A departure aborted by the warp director's abort guard (forced here by re-attaching it without a

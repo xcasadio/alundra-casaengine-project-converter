@@ -36,7 +36,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
         AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -49,7 +49,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
         AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -88,17 +88,17 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
         public void Dispose() { }
     }
 
-    private static void Tick(AlundraGameState state, AlundraInventoryDirector director, AlundraInventoryPresenter presenter, uint hold)
+    private static void Tick(GameState state, AlundraInventoryDirector director, AlundraInventoryPresenter presenter, uint hold)
     {
         state.TickPad.Update(hold);
         director.Tick(null);
         presenter.Tick();
     }
 
-    private static (AlundraGameState State, AlundraInventoryDirector Director, AlundraInventoryPresenter Presenter,
+    private static (GameState State, AlundraInventoryDirector Director, AlundraInventoryPresenter Presenter,
         AlundraInventoryViewModel View, FakeInventoryScreen Screen, RecordingUIViewRuntime UiView) NewFixture()
     {
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
         var itemTables = ItemTablesFixture.LoadReal();
         var director = AlundraInventoryDirector.Instance;
         director.AttachToWorld(state, itemTables, null);

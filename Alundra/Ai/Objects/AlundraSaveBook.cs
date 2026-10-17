@@ -177,7 +177,7 @@ public sealed class AlundraSaveBook
     /// <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> to 0, <c>ControlLocked</c>, and the flow noted to the
     /// screen. SE7: ignored while the book is not at rest (the original restarts it at state 1 in mid-flow).
     /// </summary>
-    internal void RunInteract(AlundraEntityScriptProxy book, IEntityWorldContext context, AlundraGameState state)
+    internal void RunInteract(AlundraEntityScriptProxy book, IEntityWorldContext context, GameState state)
     {
         if (ReadState(book) != StateIdle)
         {
@@ -190,7 +190,7 @@ public sealed class AlundraSaveBook
             player.TargetAnimationId = 0;
         }
 
-        state.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ControlLocked;
+        state.PlayerControlFlags |= GameState.PlayerControlBits.ControlLocked;
         _ownedOpenSerial = null;
         _choiceOpened = false;
         Screen?.NoteBookFlowStarted();
@@ -200,7 +200,7 @@ public sealed class AlundraSaveBook
     /// Slot C code 72: port of <c>AI_ProcessWarpTransitionState</c> (0x8007B998), states 1, 2, 4, 5 and 6, with the
     /// corrections of the class doc. Any other state does nothing, as in the original (state 0: at rest).
     /// </summary>
-    internal void RunTick(AlundraEntityScriptProxy book, IEntityWorldContext context, AlundraGameState state)
+    internal void RunTick(AlundraEntityScriptProxy book, IEntityWorldContext context, GameState state)
     {
         var dialogue = AlundraDialogueDirector.Instance;
 
@@ -237,7 +237,7 @@ public sealed class AlundraSaveBook
     /// <summary>State 1 (0x8007B9E4): the question text in a box closable by script only, then a 61-tick wait. SE2:
     /// abandon, opening nothing, without a presenter, while a box is open or a choice waits (the equivalent of the
     /// original's <c>0x80045004</c> test), or when ETC <c>0x40</c> does not resolve.</summary>
-    private void RunMessage(AlundraEntityScriptProxy book, AlundraGameState state, AlundraDialogueDirector dialogue)
+    private void RunMessage(AlundraEntityScriptProxy book, GameState state, AlundraDialogueDirector dialogue)
     {
         if (!dialogue.HasPresenter)
         {
@@ -268,7 +268,7 @@ public sealed class AlundraSaveBook
     /// <summary>State 2 (0x8007BA18): after the wait, OUI/NON. SE2/H2: without a presenter, or when ETC
     /// <c>0x41</c>/<c>0x42</c> do not resolve - the only observable failures of the question - abandon instead of the
     /// original's park in state 3.</summary>
-    private void RunQuestion(AlundraEntityScriptProxy book, AlundraGameState state, AlundraDialogueDirector dialogue)
+    private void RunQuestion(AlundraEntityScriptProxy book, GameState state, AlundraDialogueDirector dialogue)
     {
         book.DelayOrAngleOrEntityId--;
         if (book.DelayOrAngleOrEntityId != -1)
@@ -297,7 +297,7 @@ public sealed class AlundraSaveBook
     /// <summary>State 4 (0x8007BA80): the answer. The box of the book is closed first (<c>TryActivateTextHoldState</c>,
     /// <c>FunctionTypeC.cs:6893</c>, SE1); NON abandons, OUI waits 61 ticks. SE2: a choice another
     /// <see cref="AlundraDialogueDirector.Open"/> cleared (no result, nothing waiting) abandons.</summary>
-    private void RunAnswer(AlundraEntityScriptProxy book, AlundraGameState state, AlundraDialogueDirector dialogue)
+    private void RunAnswer(AlundraEntityScriptProxy book, GameState state, AlundraDialogueDirector dialogue)
     {
         var answer = dialogue.TakeChoiceResult();
         if (answer == null)
@@ -327,7 +327,7 @@ public sealed class AlundraSaveBook
     /// hero's map and tile, then the validation of the capture (E16.c C5). SE4/SE8: without rules, or a capture that
     /// does not validate, the screen starts on its failure message and nothing is written; SE7: a screen already
     /// active abandons.</summary>
-    private void RunCapture(AlundraEntityScriptProxy book, IEntityWorldContext context, AlundraGameState state, AlundraDialogueDirector dialogue)
+    private void RunCapture(AlundraEntityScriptProxy book, IEntityWorldContext context, GameState state, AlundraDialogueDirector dialogue)
     {
         book.DelayOrAngleOrEntityId--;
         if (book.DelayOrAngleOrEntityId != -1)
@@ -361,7 +361,7 @@ public sealed class AlundraSaveBook
         WriteState(book, StateWaitScreen);
     }
 
-    private static string? CaptureAndValidate(IEntityWorldContext context, AlundraGameState state, out AlundraSaveGame? save)
+    private static string? CaptureAndValidate(IEntityWorldContext context, GameState state, out AlundraSaveGame? save)
     {
         save = null;
         var worldName = context.WorldName;
@@ -403,7 +403,7 @@ public sealed class AlundraSaveBook
     /// box the book owns, cancel the choice it opened, clear <c>ControlLocked</c>, state 0, and end the flow at the
     /// screen. <paramref name="reason"/> is logged when not null.
     /// </summary>
-    private void Reset(AlundraEntityScriptProxy book, AlundraGameState state, AlundraDialogueDirector dialogue, string? reason)
+    private void Reset(AlundraEntityScriptProxy book, GameState state, AlundraDialogueDirector dialogue, string? reason)
     {
         if (reason != null)
         {
@@ -419,7 +419,7 @@ public sealed class AlundraSaveBook
         }
 
         _choiceOpened = false;
-        state.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.ControlLocked;
+        state.PlayerControlFlags &= ~GameState.PlayerControlBits.ControlLocked;
         WriteState(book, StateIdle);
         Screen?.NoteBookFlowEnded();
     }

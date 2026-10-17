@@ -13,7 +13,7 @@ namespace Alundra.UI.Inventory;
 /// <summary>
 /// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-6): reads <see cref="AlundraInventoryDirector"/>'s own
 /// already-ticked state plus the item/stat lookups it does not own (<see cref="AlundraPlayerManager"/>,
-/// <see cref="AlundraItemTables"/>, <see cref="AlundraPlayerStats"/>), composes an
+/// <see cref="AlundraItemTables"/>, <see cref="PlayerStats"/>), composes an
 /// <see cref="InventoryDisplayModel"/> through the pure <see cref="AlundraInventoryComposer"/>, and writes
 /// it into the screen's <see cref="AlundraInventoryViewModel"/> (parent ADR-0002), which the screen's XAML binds -
 /// one <see cref="Tick"/> call per LOGIC tick, made from
@@ -38,7 +38,7 @@ public sealed class AlundraInventoryPresenter
     private const int KeyItemId = 0x3d;
 
     private readonly AlundraInventoryDirector _director;
-    private readonly AlundraGameState _gameState;
+    private readonly GameState _gameState;
     private readonly AlundraItemTables _itemTables;
     private readonly AlundraInventoryViewModel _viewModel;
     private readonly IUIScreen _screen;
@@ -50,7 +50,7 @@ public sealed class AlundraInventoryPresenter
 
     public AlundraInventoryPresenter(
         AlundraInventoryDirector director,
-        AlundraGameState gameState,
+        GameState gameState,
         AlundraItemTables itemTables,
         AlundraInventoryViewModel viewModel,
         IUIScreen screen,

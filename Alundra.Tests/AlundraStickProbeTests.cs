@@ -26,7 +26,7 @@ public sealed class AlundraStickProbeTests : IDisposable
 
     public AlundraStickProbeTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -35,7 +35,7 @@ public sealed class AlundraStickProbeTests : IDisposable
         AlundraStickProbe.SetForTests(null, null);
         AlundraEntityScriptProxy.PadOfTickSeenForTests = null;
         AlundraNativeEffects.CreatedForTests = null;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 

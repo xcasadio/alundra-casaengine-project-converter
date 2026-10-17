@@ -41,7 +41,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
 
     public AlundraHeroChargeTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -51,7 +51,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
         AlundraPlayerManager.WeaponSpawnCallsForTests = null;
         AlundraRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -663,7 +663,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
         hero.AuraGeneration = aura.Generation;
         hero.TargetAnimationId = 0x2D; // a state the skeleton of CreatePlayerAnimationEffects(1) reacts to (the landing stub), so that the call is observable.
         hero.IsOnGround = 1;
-        m.Rig.Host.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked;
+        m.Rig.Host.GameState.PlayerControlFlags = GameState.PlayerControlBits.ControlLocked;
         var calls = new List<(int Mode, string Stub, uint State)>();
         AlundraPlayerAnimationEffects.StubCallsForTests = calls;
         var pad = new AlundraPadState { ButtonsHold = Square };
@@ -722,7 +722,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
         var state = m.Rig.Host.GameState;
         for (var tick = 93; tick <= 130; tick++)
         {
-            state.PlayerControlFlags = tick <= 102 ? AlundraGameState.PlayerControlBits.ControlLocked : 0;
+            state.PlayerControlFlags = tick <= 102 ? GameState.PlayerControlBits.ControlLocked : 0;
             var before = spawns.Count;
             m.Tick(0);
             if (tick <= 102)

@@ -296,7 +296,7 @@ public sealed class AlundraAnimationSoundTests
         var spec = new ArcSpec(
             "A18", "Inoa", "Inoa (inner)-178", new[] { 203, 1654, 1655 }, 0, 0, 0, 4000,
             RealController: true, Prefabs: true,
-            Arrival: new ArcArrival(60555264, 26738688, 0, AlundraGameState.ResetAnimationId, 16));
+            Arrival: new ArcArrival(60555264, 26738688, 0, GameState.ResetAnimationId, 16));
         using var arc = new ArcRun(spec);
         var sounds = Inject(arc);
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(C, 543, 0x11), "C[6] executes 0x11 @543");
@@ -322,7 +322,7 @@ public sealed class AlundraAnimationSoundTests
         // (SpawnEntityByRecordId, record 2) and given the animation 1 as 0x1A does, then left to its chain.
         var spec = new ArcSpec(
             "E19t-179", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 100, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0));
+            Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0));
         using var arc = new ArcRun(spec);
         var sounds = Inject(arc);
         arc.OneFrame();
@@ -355,7 +355,7 @@ public sealed class AlundraAnimationSoundTests
         // AlundraArcGuardAndSoundHostTests does) and the arrival adoption invoked again, as UJ-7 does. The animation 43 carries an impulse and the sound 10
         // (system bank); the default arrival animation, 0x36, has no sound and would prove nothing.
         var spec = new ArcSpec("E19t-arrival", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 100, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0));
+            Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0));
         using var arc = new ArcRun(spec);
         var hero = arc.Hero;
         Assert.Equal(10, hero.AnimSetsByAnim![43].Sfx);
@@ -372,7 +372,7 @@ public sealed class AlundraAnimationSoundTests
         Assert.Equal(43u, hero.TargetAnimationId);
         Assert.Equal(new[] { 10 }, sounds.Ids); // asked by the adoption itself.
 
-        ArcRun.State.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ControlLocked;
+        ArcRun.State.PlayerControlFlags |= GameState.PlayerControlBits.ControlLocked;
         arc.OneFrame();
         arc.OneFrame();
         Assert.NotEqual(~43u, hero.CurrentAnimationId); // the first switch happened (whatever animation the hero plays by now) ...

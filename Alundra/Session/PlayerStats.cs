@@ -21,7 +21,7 @@ namespace Alundra.Session;
 /// by <c>g_playerStats = g_saveData.PlayerStats</c> (GameInitializer.cs:444-445, inside
 /// <c>InitializePlayerStatsAndItems</c>) - so "the save" and "the current session" read and write the
 /// very same object; there was never a second one to keep in sync. This port reproduces that by giving
-/// <see cref="AlundraGameState"/> exactly one <see cref="AlundraPlayerStats"/> field (see that class'
+/// <see cref="GameState"/> exactly one <see cref="PlayerStats"/> field (see that class'
 /// own <c>PlayerStats</c> member) - docs/plan-e13-hud.md §1.5 bis, corrected by adverse review
 /// 2026-09-18 after a first draft wrongly claimed two separate objects.</para>
 ///
@@ -31,10 +31,10 @@ namespace Alundra.Session;
 /// C0's own note: "l'emplacement des setters est ton choix local" - kept beside <see cref="AlundraPlayerManager"/>
 /// because that is where the original's own <c>SetPlayerHp</c>/<c>SetPlayerHpMax</c>/<c>SetPlayerMp</c>/
 /// <c>SetPlayerMpMax</c>/<c>SetMoney</c> live, PlayerManager.cs:1671-1830, and because
-/// <see cref="AlundraPlayerManager"/> already takes an explicit <see cref="AlundraGameState"/> parameter
+/// <see cref="AlundraPlayerManager"/> already takes an explicit <see cref="GameState"/> parameter
 /// on every other method in this port, the same shape these setters need).</para>
 /// </summary>
-public sealed class AlundraPlayerStats
+public sealed class PlayerStats
 {
     /// <summary>Current HP. New Game default 10 - port of the New Game branch's
     /// <c>SetPlayerHp(10)</c> call (GameInitializer.cs:372-376, <c>SlotData == 0</c>).</summary>
@@ -83,8 +83,8 @@ public sealed class AlundraPlayerStats
     public short FalconTemp;
 
     /// <summary>Test-only: restores this object to its New-Game-equivalent construction state, the same
-    /// seam every other session-singleton field on <see cref="AlundraGameState"/> gets from
-    /// <see cref="AlundraGameState.ResetForTests"/>.</summary>
+    /// seam every other session-singleton field on <see cref="GameState"/> gets from
+    /// <see cref="GameState.ResetForTests"/>.</summary>
     internal void ResetForTests()
     {
         Hp = 10;

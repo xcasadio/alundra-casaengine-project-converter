@@ -11,16 +11,16 @@ namespace Alundra.Dialogues;
 /// Both are called only from the four <c>\X</c> sites of the text decoder (§5.7), which E15.c's
 /// <c>falcon_update</c> Yarn command drives (docs/plan-e15-yarn.md §1, ADR-0007) - this class holds
 /// just the two ported procedures and the constant tables they use, operating on
-/// <see cref="AlundraGameState"/> fields (<see cref="AlundraGameState.TextCategoryIndex"/>,
-/// <see cref="AlundraGameState.GameFlags"/>, <see cref="AlundraPlayerStats.Falcon"/>/
-/// <see cref="AlundraPlayerStats.FalconTemp"/>).
+/// <see cref="GameState"/> fields (<see cref="GameState.TextCategoryIndex"/>,
+/// <see cref="GameState.GameFlags"/>, <see cref="PlayerStats.Falcon"/>/
+/// <see cref="PlayerStats.FalconTemp"/>).
 /// </summary>
 public static class AlundraTextProgress
 {
     /// <summary>
     /// <c>g_categoryThresholdTable</c> @ 0x8009A834 (docs/plan-e15-yarn.md §5.7): initialized data,
     /// never written, read by <c>\X3</c>, <c>\X5</c> and <see cref="UpdatePlayerProgressState"/>.
-    /// Index by <see cref="AlundraGameState.TextCategoryIndex"/>.
+    /// Index by <see cref="GameState.TextCategoryIndex"/>.
     /// </summary>
     public static readonly int[] CategoryThresholds = { 15, 20, 25, 30, 35, 40, 45, 50 };
 
@@ -48,7 +48,7 @@ public static class AlundraTextProgress
     /// resets the temporary count, clamps the total at 0x32 (signed), then clears
     /// <see cref="FalconUpdatedClearBit"/> of <c>GameFlags[0x2d]</c>.
     /// </summary>
-    public static void UpdateNumberOfFalcon(AlundraGameState gameState)
+    public static void UpdateNumberOfFalcon(GameState gameState)
     {
         var stats = gameState.PlayerStats;
         stats.Falcon = unchecked((short)(stats.Falcon + stats.FalconTemp));
@@ -71,13 +71,13 @@ public static class AlundraTextProgress
     ///
     /// Masks <c>GameFlags[0x2d]</c> to <c>0xfffffe01</c> (keeping every bit outside 0x1FE), then ORs in
     /// exactly one of the eight category bits (0x100 down to 0x2) and sets
-    /// <see cref="AlundraGameState.TextCategoryIndex"/> to the matching index (7 down to 0), by testing
+    /// <see cref="GameState.TextCategoryIndex"/> to the matching index (7 down to 0), by testing
     /// <c>GameFlags[0x2c]</c>'s bits from the sign bit down to 0x2000000. Finally compares
-    /// <see cref="AlundraPlayerStats.Falcon"/> (already updated by <see cref="UpdateNumberOfFalcon"/>)
-    /// against <see cref="CategoryThresholds"/>[<see cref="AlundraGameState.TextCategoryIndex"/>] -
+    /// <see cref="PlayerStats.Falcon"/> (already updated by <see cref="UpdateNumberOfFalcon"/>)
+    /// against <see cref="CategoryThresholds"/>[<see cref="GameState.TextCategoryIndex"/>] -
     /// strictly, signed: below it clears <see cref="ThresholdReachedBit"/>, at or above it sets it.
     /// </summary>
-    public static void UpdatePlayerProgressState(AlundraGameState gameState)
+    public static void UpdatePlayerProgressState(GameState gameState)
     {
         var gameFlags = gameState.GameFlags;
         var progressFlags = gameFlags[0x2d] & 0xfffffe01;

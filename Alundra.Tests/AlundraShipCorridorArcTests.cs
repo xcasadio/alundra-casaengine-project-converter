@@ -228,7 +228,7 @@ public sealed class AlundraShipCorridorArcTests
         // push of that frame) and the roll moves the hero (X decreases, Y increases).
         for (var frame = 221; frame <= 225; frame++)
         {
-            Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, flagsAtTheEndOfFrame[frame - 1]);
+            Assert.Equal(GameState.PlayerControlBits.ControlLocked, flagsAtTheEndOfFrame[frame - 1]);
             Assert.True(heroAtTheEndOfFrame[frame].X < heroAtTheEndOfFrame[frame - 1].X, $"frame {frame}: PosX does not decrease");
             Assert.True(heroAtTheEndOfFrame[frame].Y > heroAtTheEndOfFrame[frame - 1].Y, $"frame {frame}: PosY does not grow");
         }

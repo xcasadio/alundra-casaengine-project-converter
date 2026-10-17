@@ -39,7 +39,7 @@ public class AlundraHeroJumpTests
     private static void RunProgram(JumpHeroRig rig, params int[] codes)
     {
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 }, Codes = codes };
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), null);
+        var runner = new AlundraEventProgramRunner(document, new GameState(), null);
         runner.RunOneScriptCall(rig.Hero, new EventProgramState { Codes = document.CodesAsBytes() });
     }
 

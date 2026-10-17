@@ -12,30 +12,30 @@ namespace Alundra.Tests;
 /// <summary>
 /// T1 acceptance (docs/plan-transitions-carte.md, slice "T1 - État de partie en session"): the SEVEN rows
 /// of D-T-13's own field-by-field disposition table, each asserted across two CONSECUTIVE map entries
-/// sharing the same session carrier (<see cref="AlundraGameState.Instance"/>) - the "two worlds share the
+/// sharing the same session carrier (<see cref="GameState.Instance"/>) - the "two worlds share the
 /// singleton" shape T7 already established (<see cref="AlundraScreenFadeDirectorTests"/>:370-412), driven
-/// here through <see cref="AlundraGameState.InstallForMapEntry"/> directly rather than a full
+/// here through <see cref="GameState.InstallForMapEntry"/> directly rather than a full
 /// <see cref="AlundraWorldProxy.InitializeWithWorld"/> montage - that method needs a live CasaEngineGame
 /// asset catalog just to REACH this call (see <see cref="AlundraWorldProxyTests"/>' own class doc for why
-/// the whole method is never exercised end-to-end in this test host), and <see cref="AlundraGameState"/>'s
+/// the whole method is never exercised end-to-end in this test host), and <see cref="GameState"/>'s
 /// own map-entry behaviour has no such dependency.
 ///
 /// This class does NOT construct an <see cref="AlundraWorldProxy"/>, so it falls outside D-T-14's own
 /// "ten classes" criterion (docs/plan-transitions-carte.md, D-T-14) - it still resets
-/// <see cref="AlundraGameState.Instance"/>/<see cref="AlundraSoundBank"/>'s session cache in
+/// <see cref="GameState.Instance"/>/<see cref="AlundraSoundBank"/>'s session cache in
 /// constructor/Dispose, for the same isolation reason every other session-singleton test class does.
 /// </summary>
 public sealed class AlundraGameStateSessionTests : IDisposable
 {
     public AlundraGameStateSessionTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraSoundBank.ResetForTests();
     }
 
     public void Dispose()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraSoundBank.ResetForTests();
     }
 
@@ -45,7 +45,7 @@ public sealed class AlundraGameStateSessionTests : IDisposable
     [Fact]
     public void GameFlags_SurvivesTheNextMapEntry()
     {
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
 
         // "World 1" sets a save-game flag during play (bit 0x8000 clear -> GameFlags bank).
         state.AddFlag(flag: 3, mask: 0x1);
@@ -59,7 +59,7 @@ public sealed class AlundraGameStateSessionTests : IDisposable
     [Fact]
     public void TemporaryFlags_ClearedAtTheNextMapEntry()
     {
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
 
         // "World 1" sets a session-only flag during play (bit 0x8000 set -> TemporaryFlags bank).
         state.AddFlag(flag: 0x8000 | 3, mask: 0x1);
@@ -73,7 +73,7 @@ public sealed class AlundraGameStateSessionTests : IDisposable
     [Fact]
     public void MapIdToInternalMapIndexTable_SurvivesTheNextMapEntry_NonIdentityEntry()
     {
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
 
         // "World 1" writes a NON-identity entry, as opcode 0x38 would (Script_SetSaveMapIdToInternalMapIndex_038,
         // EntityEventHandlers.cs:1202-1207).
@@ -88,21 +88,21 @@ public sealed class AlundraGameStateSessionTests : IDisposable
     [Fact]
     public void PlayerControlFlags_ControlLocked_SurvivesTheNextMapEntry()
     {
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
 
         // "World 1" locks player control (event opcode 0x10's own bridge).
-        state.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ControlLocked;
-        Assert.NotEqual(0u, state.PlayerControlFlags & AlundraGameState.PlayerControlBits.ControlLocked);
+        state.PlayerControlFlags |= GameState.PlayerControlBits.ControlLocked;
+        Assert.NotEqual(0u, state.PlayerControlFlags & GameState.PlayerControlBits.ControlLocked);
 
         state.InstallForMapEntry(); // "World 2"'s own map-entry install.
 
-        Assert.NotEqual(0u, state.PlayerControlFlags & AlundraGameState.PlayerControlBits.ControlLocked); // D-T-13: conservé.
+        Assert.NotEqual(0u, state.PlayerControlFlags & GameState.PlayerControlBits.ControlLocked); // D-T-13: conservé.
     }
 
     [Fact]
     public void LastPadState_SurvivesTheNextMapEntry_ReadableBeforeThatWorldsFirstPlayerUpdate()
     {
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
 
         // "World 1"'s last published pad snapshot (AlundraEntityScriptProxy.Update's own player branch).
         var pad = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
@@ -118,7 +118,7 @@ public sealed class AlundraGameStateSessionTests : IDisposable
     [Fact]
     public void InteractLatch_EntityClearedButEightNumericFieldsSurvive_NoWorldOneEntityReachable()
     {
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
 
         // "World 1" leaves the interact latch armed on one of its own entities.
         var world1Entity = new AlundraEntityScriptProxy();

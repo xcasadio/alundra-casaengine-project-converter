@@ -63,7 +63,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         AlundraSaveBook.Instance.ResetForTests();
     }
 
-    private static AlundraGameState State => AlundraGameState.Instance;
+    private static GameState State => GameState.Instance;
 
     private static AlundraSaveScreenDirector Director => AlundraSaveScreenDirector.Instance;
 

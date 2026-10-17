@@ -98,7 +98,7 @@ public sealed class AlundraTestSavesTests : IDisposable
         var rules = RealRules();
 
         // The new game, built the way the game builds it.
-        var newGame = new AlundraGameState();
+        var newGame = new GameState();
         AlundraPlayerManager.InitializeNewGameStats(newGame);
         AlundraPlayerManager.InitializeNewGameInventory(newGame, rules.ItemTables);
         var reference = AlundraSaveGame.Capture(newGame, expected.MapId, expected.TileX, expected.TileY, expected.TileZ);
@@ -396,7 +396,7 @@ public sealed class AlundraTestSavesTests : IDisposable
         Assert.Equal(((short)10, (short)10, (short)0, (short)0, (short)0, (short)1, (short)0), (save.Hp, save.HpMax, save.Mp, save.MpMax, save.Money, save.WeaponId, save.ItemId));
 
         // The state a load puts in place owns the boots of level 2.
-        var reloaded = new AlundraGameState();
+        var reloaded = new GameState();
         save.ApplyTo(reloaded);
         Assert.Equal(1, reloaded.NumberOfItems[2 * 0x1B + 1]);
         Assert.True(save.TryValidate(rules, out var error), error);
@@ -440,7 +440,7 @@ public sealed class AlundraTestSavesTests : IDisposable
     {
         var row = Row(name);
         var rules = RealRules();
-        var reloaded = new AlundraGameState();
+        var reloaded = new GameState();
 
         Build(name).ApplyTo(reloaded); // the state a load puts in place: the aller-retour of the save.
 
@@ -468,7 +468,7 @@ public sealed class AlundraTestSavesTests : IDisposable
 
         foreach (var (name, items) in expected)
         {
-            var state = new AlundraGameState();
+            var state = new GameState();
             Build(name).ApplyTo(state);
             for (var slot = 1; slot <= 6; slot++)
             {
@@ -560,7 +560,7 @@ public sealed class AlundraTestSavesTests : IDisposable
         slots.Slots.Add(new AlundraSlotEntry("test-" + name, true, T0));
         AlundraWarpDirector.Instance.AttachToWorld(BuildGameManager(), null, FindProjectRoot());
 
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
         slots.LoadedSave = Build(name);
         director.UpdateRecipeKeys(null, state, Map389WorldName, HeroAt());
         keys.Held.Add(Keys.F9);

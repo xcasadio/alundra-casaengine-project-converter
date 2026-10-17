@@ -247,7 +247,7 @@ public sealed class AlundraVisionAndCoastArcTests
         // The end: no box, the hero still locked.
         Assert.Equal(0u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
         Assert.False(AlundraDialogueDirector.Instance.IsOpen);
-        Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
+        Assert.Equal(GameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
         AssertNoUnexpectedError(arc);
     }
 
@@ -415,7 +415,7 @@ public sealed class AlundraVisionAndCoastArcTests
         // The end: no box, the hero still locked.
         Assert.Equal(0u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
         Assert.False(AlundraDialogueDirector.Instance.IsOpen);
-        Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
+        Assert.Equal(GameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
         AssertNoUnexpectedError(arc);
     }
 

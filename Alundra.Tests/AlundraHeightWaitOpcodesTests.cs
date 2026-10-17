@@ -27,7 +27,7 @@ public class AlundraHeightWaitOpcodesTests
 
     private static (AlundraEventProgramRunner Runner, List<EventTraceRecord> Trace) NewRunner(EventProgramDocument document)
     {
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), null);
+        var runner = new AlundraEventProgramRunner(document, new GameState(), null);
         var trace = new List<EventTraceRecord>();
         runner.TraceSink = trace.Add;
         return (runner, trace);

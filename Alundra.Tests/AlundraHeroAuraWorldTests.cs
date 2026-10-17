@@ -29,7 +29,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
 
     public AlundraHeroAuraWorldTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -38,7 +38,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
         AlundraNativeEffects.CreatedForTests = null;
         AlundraRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 

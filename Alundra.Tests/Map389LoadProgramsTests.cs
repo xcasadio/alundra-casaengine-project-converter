@@ -62,7 +62,7 @@ public class Map389LoadProgramsTests
         var document = MapEventProgramLoader.Load(projectRoot, WorldName);
         Assert.NotNull(document);
 
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState());
+        var runner = new AlundraEventProgramRunner(document, new GameState());
 
         // Entities 6-9 (EventCodesA_LoadIndex 134-137) all fall (under New Game's all-zero flags)
         // through their "if flag off" branch straight to a nonzero SetAnim, per the decoded programs at
@@ -117,7 +117,7 @@ public class Map389LoadProgramsTests
 
         var document = MapEventProgramLoader.Load(projectRoot, WorldName);
         var context = new RecordingWorldContext();
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), context);
+        var runner = new AlundraEventProgramRunner(document, new GameState(), context);
 
         var e11 = new AlundraEntityScriptProxy { PosX = 111, PosY = 222, PosZ = 333 };
         e11.ProgramIndexes[ScriptHelper.ProgramALoad] = 139;
@@ -147,7 +147,7 @@ public class Map389LoadProgramsTests
         }
 
         var document = MapEventProgramLoader.Load(projectRoot, WorldName);
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.AddFlag(860, 1u << (0x5c & 0x1f)); // the exact flag/bit these three programs test
         var context = new RecordingWorldContext();
         var runner = new AlundraEventProgramRunner(document, gameState, context);

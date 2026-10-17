@@ -80,7 +80,7 @@ public sealed class AlundraAbsoluteZWritesTests
     {
         using var arc = new ArcRun(new ArcSpec(
             "H1b1-" + world, zone, world, Array.Empty<int>(), tileX, tileY, 1, 200, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival((tileX * 24 + 12) << 16, (tileY * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0)));
+            Arrival: new ArcArrival((tileX * 24 + 12) << 16, (tileY * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0)));
         // The map-load spawn zone is tested against the hero's tile AT the load: the arrival puts him in the zone of the crates.
         for (var i = 0; i < 60; i++)
         {

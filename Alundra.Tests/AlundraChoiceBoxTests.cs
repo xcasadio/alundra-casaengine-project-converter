@@ -184,7 +184,7 @@ public sealed class AlundraChoiceBoxMachineTests
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraChoiceBoxDirectorTests : IDisposable
 {
-    private readonly AlundraGameState _state = new();
+    private readonly GameState _state = new();
     private readonly PassStampedSoundPlayer _sounds;
 
     public AlundraChoiceBoxDirectorTests()

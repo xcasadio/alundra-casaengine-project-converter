@@ -33,7 +33,7 @@ public sealed class AlundraRandomDirectionModesTests : IDisposable
             EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = new[] { 0xFF },
         };
-        return new AlundraEventProgramRunner(document, new AlundraGameState());
+        return new AlundraEventProgramRunner(document, new GameState());
     }
 
     private static uint[] Draw(ulong seed, params uint[] encodedDirs)
@@ -130,7 +130,7 @@ public sealed class AlundraRandomDirectionModesTests : IDisposable
         Assert.Equal(new byte[] { 0x5A, 0x80, 0x80 }, codes[144..147]);
 
         AlundraRandom.RandomSeed = 0xB017C93D;
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState());
+        var runner = new AlundraEventProgramRunner(document, new GameState());
         var entity = new AlundraEntityScriptProxy();
         var state = new EventProgramState { Codes = codes, CodeIndex = 144 };
 

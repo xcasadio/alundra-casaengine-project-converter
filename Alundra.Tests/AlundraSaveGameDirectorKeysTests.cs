@@ -43,12 +43,12 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
         Director.RulesFactoryForTests = RealRules;
 
         // A New Game state already carries the sword's slot (F10): a capture of it validates.
-        AlundraGameState.Instance.PlayerStats.WeaponId = 1;
+        GameState.Instance.PlayerStats.WeaponId = 1;
         return (keyboard, slots);
     }
 
     private static void Frame(AlundraEntityScriptProxy? hero, string worldName = Map389WorldName)
-        => Director.UpdateRecipeKeys(null, AlundraGameState.Instance, worldName, hero);
+        => Director.UpdateRecipeKeys(null, GameState.Instance, worldName, hero);
 
     // ---- K2: the switch ---------------------------------------------------------------------------------------
 
@@ -70,7 +70,7 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
     {
         var (keyboard, slots) = Arm(enabled: false);
         keyboard.Held.UnionWith(new[] { Keys.F5, Keys.F6, Keys.F9 });
-        var before = StateSnapshot.Take(AlundraGameState.Instance);
+        var before = StateSnapshot.Take(GameState.Instance);
         using var log = LogCapture.Install();
 
         for (var frame = 0; frame < 5; frame++)
@@ -85,7 +85,7 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
         Assert.True(slots.NothingCalled);
         Assert.Empty(log.Infos);
         Assert.Empty(log.Warnings);
-        StateSnapshot.Take(AlundraGameState.Instance).AssertSameAs(before);
+        StateSnapshot.Take(GameState.Instance).AssertSameAs(before);
     }
 
     /// <summary>SD7: without any forcing, the switch is the build's - on in a DLL compiled in Debug, off in
@@ -253,7 +253,7 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
         var (keyboard, _) = Arm(enabled: true);
         Director.SaveSlots = new AlundraEngineSaveSlots(() => throw new InvalidOperationException("simulated service failure"));
         var hero = HeroAt();
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
         state.PlayerStats.WeaponId = 1; // a capture of this state validates, so F5/F6 do reach the service.
         var before = StateSnapshot.Take(state);
         using var log = LogCapture.Install();

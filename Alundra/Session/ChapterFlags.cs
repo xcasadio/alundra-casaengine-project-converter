@@ -26,7 +26,7 @@ namespace Alundra.Session;
 /// original's loader uses only those digits. <see cref="FormatChapter"/> writes the same four digits. The
 /// chapter's name and its display belong to E16.e.</para>
 /// </summary>
-public static class AlundraChapterFlags
+public static class ChapterFlags
 {
     /// <summary>The walk's end: an id at or above this value stops it (0x800813B0).</summary>
     private const ushort Terminator = 0x8000;

@@ -75,7 +75,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         AlundraSaveBook.Instance.ResetForTests();
     }
 
-    private static AlundraGameState State => AlundraGameState.Instance;
+    private static GameState State => GameState.Instance;
 
     private static AlundraDialogueDirector Dialogue => AlundraDialogueDirector.Instance;
 
@@ -139,7 +139,7 @@ public sealed class AlundraSaveBookTests : IDisposable
     {
         Interact();
         Assert.Equal(AlundraSaveBook.StateMessage, BookState);
-        Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
+        Assert.Equal(GameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
         Assert.Equal(0u, _hero.TargetAnimationId);
         Assert.Equal(1, _screen.FlowStarted);
 
@@ -150,7 +150,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         Assert.Equal(AlundraSaveBook.ScriptCloseOnlyMask, Dialogue.CloseMaskForTests);
         Assert.Equal("Enregistrer tes progrès?", Dialogue.CurrentLineForTests?.Text);
         Assert.Equal(
-            AlundraGameState.PlayerControlBits.ControlLocked | AlundraGameState.PlayerControlBits.MessageBox,
+            GameState.PlayerControlBits.ControlLocked | GameState.PlayerControlBits.MessageBox,
             State.PlayerControlFlags);
 
         // State 2: 0x3C counted down to -1.
@@ -170,19 +170,19 @@ public sealed class AlundraSaveBookTests : IDisposable
         Assert.True(Dialogue.IsOpen);
         Assert.False(Dialogue.IsAwaitingChoice);
         Assert.Equal(
-            AlundraGameState.PlayerControlBits.ControlLocked | AlundraGameState.PlayerControlBits.MessageBox,
+            GameState.PlayerControlBits.ControlLocked | GameState.PlayerControlBits.MessageBox,
             State.PlayerControlFlags);
 
         // The box of the question is released at the Tick 134 (annex V-36): up at 133, down at 134 - BEFORE the capture of the book (Tick 160).
         Tick(34);
         Assert.True(Dialogue.IsOpen);
         Assert.Equal(
-            AlundraGameState.PlayerControlBits.ControlLocked | AlundraGameState.PlayerControlBits.MessageBox,
+            GameState.PlayerControlBits.ControlLocked | GameState.PlayerControlBits.MessageBox,
             State.PlayerControlFlags);
         Tick();
         Assert.False(Dialogue.IsOpen);
         Assert.Equal(AlundraSaveBook.StateCapture, BookState);
-        Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
+        Assert.Equal(GameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
 
         // State 5: 61 ticks after the answer (the Tick 99), then the capture and the screen (the Tick 160).
         Tick(Wait - 1 - 35);
@@ -198,7 +198,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         // State 6: waits for the screen's end, then the reset.
         Tick(40);
         Assert.Equal(AlundraSaveBook.StateWaitScreen, BookState);
-        Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
+        Assert.Equal(GameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
         _screen.IsActive = false;
         Tick();
         Assert.Equal(1, _screen.FlowEnded);
@@ -334,7 +334,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         Assert.Equal(0, _screen.FailuresStarted);
         Assert.Equal(serial, Dialogue.OpenSerial);
         Assert.True(Dialogue.IsOpen); // the other box is not the book's.
-        Assert.Equal(0u, State.PlayerControlFlags & AlundraGameState.PlayerControlBits.ControlLocked);
+        Assert.Equal(0u, State.PlayerControlFlags & GameState.PlayerControlBits.ControlLocked);
 
         Dialogue.NotifyPresenterClosed();
         AssertReleased();
@@ -463,7 +463,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         Assert.True(ticks < 500);
         Assert.Equal(1, _screen.FailuresStarted);
         Assert.False(_screen.IsActive);
-        Assert.Equal(0u, State.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+        Assert.Equal(0u, State.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
         State.PlayerStats.HpMax = 10;
         AssertReleased();
     }
@@ -518,17 +518,17 @@ public sealed class AlundraSaveBookTests : IDisposable
         }
 
         /// <summary>Plays a failure chain: MenuOpen posed, then cleared on its last tick with the screen's end.</summary>
-        public void Step(AlundraGameState state)
+        public void Step(GameState state)
         {
             if (!IsActive)
             {
                 return;
             }
 
-            state.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+            state.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
             if (--_failureTicksLeft <= 0)
             {
-                state.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+                state.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
                 IsActive = false;
             }
         }

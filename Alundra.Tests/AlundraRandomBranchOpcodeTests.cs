@@ -28,7 +28,7 @@ public sealed class AlundraRandomBranchOpcodeTests : IDisposable
             EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = new[] { 0x8C, threshold, 0xFF },
         };
-        runner ??= new AlundraEventProgramRunner(document, new AlundraGameState());
+        runner ??= new AlundraEventProgramRunner(document, new GameState());
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 7 };
 
         runner.RunOneScriptCall(new AlundraEntityScriptProxy(), state);

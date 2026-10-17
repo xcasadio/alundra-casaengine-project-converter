@@ -46,14 +46,14 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
 
     public AlundraHeroFallAndPadJumpTests()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
     {
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -552,7 +552,7 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         Assert.Equal(JumpHeights[7], hero.PosZ);
         var forceZ = hero.ForceZ;
 
-        rig.Host.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.MenuOpen;
+        rig.Host.GameState.PlayerControlFlags = GameState.PlayerControlBits.MenuOpen;
         GameplayFreeze.Apply(hero, gameplayBlocked: true);
         for (var frame = 0; frame < 5; frame++)
         {
@@ -605,7 +605,7 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         if (lowGravityOpcode)
         {
             var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 }, Codes = new[] { 0x17, 0xFF } };
-            var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), null);
+            var runner = new AlundraEventProgramRunner(document, new GameState(), null);
             runner.RunOneScriptCall(rig.Hero, new EventProgramState { Codes = document.CodesAsBytes() });
             Assert.Equal(0f, rig.Controller.Settings.Gravity);
         }
@@ -658,7 +658,7 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         }
 
         Assert.Equal(0f, rig.Controller.Settings.StepHeight);
-        rig.Host.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.MenuOpen;
+        rig.Host.GameState.PlayerControlFlags = GameState.PlayerControlBits.MenuOpen;
         GameplayFreeze.Apply(rig.Hero, gameplayBlocked: true);
         rig.Step();
         Assert.Equal(0f, rig.Controller.Settings.StepHeight);
@@ -677,7 +677,7 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
     public void S6c_TheAdoptionOfANewPawnInTheAir_GivesTheEngineValuesBack()
     {
         var spec = new ArcSpec("S6c", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 100, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0));
+            Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0));
         using var arc = new ArcRun(spec);
         arc.OneFrame();
         arc.OneFrame();
@@ -696,7 +696,7 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
 
         // The same re-adoption as UJ-7 (the pending arrival consumed by AdoptPlayerPawn of the world).
         AlundraWarpDirector.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.SetPendingArrivalForTests(179, (17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0);
+        AlundraWarpDirector.Instance.SetPendingArrivalForTests(179, (17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0);
         var tileMapData = (CasaEngine.Framework.Assets.TileMap.TileMapData)typeof(AlundraWorldProxy)
             .GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!;
         typeof(AlundraWorldProxy).GetMethod("AdoptPlayerPawn", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(arc.Proxy, new object[] { arc.RealWorld!, tileMapData });

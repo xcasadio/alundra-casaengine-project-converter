@@ -49,9 +49,9 @@ public interface IScriptHost
 
     /// <summary>The shared game-flag/control-flag store (E2: also read by
     /// <see cref="AlundraEntityScriptProxy.Update"/>'s own player branch for
-    /// <see cref="AlundraGameState.PlayerControlBits.InputBlockedMask"/>, mirroring the original's single
+    /// <see cref="GameState.PlayerControlBits.InputBlockedMask"/>, mirroring the original's single
     /// global <c>g_playerControlFlags</c>) - see <see cref="AlundraWorldProxy.GameState"/>'s own doc.</summary>
-    AlundraGameState GameState { get; }
+    GameState GameState { get; }
 
     /// <summary>
     /// The world's own <see cref="AlundraPlayerController"/> (E2), or null when no such controller

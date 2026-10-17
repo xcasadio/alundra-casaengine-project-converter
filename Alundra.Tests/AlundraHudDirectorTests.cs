@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E13 C1 acceptance (docs/plan-e13-hud.md, tranche "C1 - DLL : le directeur de session du HUD"). Every
-/// flag constant below is re-derived independently from <see cref="AlundraGameState"/>'s own arithmetic
+/// flag constant below is re-derived independently from <see cref="GameState"/>'s own arithmetic
 /// (<c>IndexOf(flag) = (flag &gt;&gt; 5) &amp; 0x3ff</c>, AlundraGameState.cs:194/196 - see the mission's
 /// own item 4) rather than copied from <see cref="AlundraHudDirector"/>'s private constants, so a
 /// regression in one cannot silently pass the other's test.
@@ -47,7 +47,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
         // drives AlundraWorldProxy, which reads the SESSION-scoped AlundraGameState.Instance (not a
         // fresh instance) - reset every session carrier AlundraDialogueFramePassTests also resets, so no
         // earlier test's state leaks in here and this class leaks none out either.
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -57,13 +57,13 @@ public sealed class AlundraHudDirectorTests : IDisposable
     {
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
-    private static AlundraHudDirector ArmedOpening(AlundraGameState state)
+    private static AlundraHudDirector ArmedOpening(GameState state)
     {
         var director = AlundraHudDirector.Instance;
         director.AttachToWorld(state);
@@ -88,7 +88,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     {
         var expected = new[] { -41, -38, -34, -30, -26, -22, -19, -15, -11, -7, -3, 0, 4, 8, 12, 16, 16, 16 };
 
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
 
         var actual = new int[18];
@@ -107,7 +107,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     {
         var expected = new[] { 16, 13, 9, 5, 1, -3, -6, -10, -14, -18, -22, -25, -29, -33, -37, -41, -41, -41 };
 
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         TickMany(director, 18); // reach Displayed(1) at Y = 16, exactly like the previous test.
         Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
@@ -143,7 +143,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     [Fact]
     public void PhaseMachine_GoesThroughAllFourValues_InOrder()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
 
         Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase); // before the first Tick.
@@ -168,7 +168,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     [Fact]
     public void LatchClearedDuringOpening_SlidesOutFromWhereItIs_ThenIdle()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         TickMany(director, 5); // Opening, mid-slide: -41, -38, -34, -30, -26.
         Assert.Equal(AlundraHudDirector.HudPhase.Opening, director.Phase);
@@ -201,7 +201,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     [Fact]
     public void BranchThree_HidesInstantly_NoAnimation_UnlikeBranchOnesAnimatedClose()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         TickMany(director, 18);
         Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
@@ -223,7 +223,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     [Fact]
     public void BranchOne_RearmsEveryTick_ButOnlyActsWhileDisplayed_HarmlessOnceIdle()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         TickMany(director, 18); // Displayed(1).
         state.SetFlag(PersistentLatchFlag, ~PersistentLatchMask);
@@ -249,7 +249,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     [Fact]
     public void HpCatchUp_LosesOnePoint_EveryEightActiveTicks()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         TickMany(director, 18); // Displayed(1), FrameCounter == 18, Hp == HpMax == 10 (New-Game default).
 
@@ -265,7 +265,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     [Fact]
     public void CoinIconFrame_AdvancesOnce_EverySixActiveTicks_WhileRolling()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         TickMany(director, 18); // Displayed(1), FrameCounter == 18, Money settled at 0 == 0 (no roll).
         Assert.Equal(0, director.CoinIconFrame);
@@ -298,7 +298,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     [Fact]
     public void IsMoneyRolling_IsTrueWhileTheCoinMayAdvance_AndFalseOnceGaragedAtZero()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         TickMany(director, 18);
         Assert.False(director.IsMoneyRolling); // nothing to roll: 0 == 0.
@@ -328,7 +328,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     [Fact]
     public void CoinIconFrame_IsGaragedAtZero_OnceTheMoneyRollSettles()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         AlundraPlayerManager.SetMoney(state, 5); // small target, settles within the 18-tick opening.
         TickMany(director, 18);
@@ -344,7 +344,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     [Fact]
     public void MagicPipFrame_AdvancesOnce_EveryTenActiveTicks_CycleOfFour_RipplingByPipIndex()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
 
         // FrameCounter counts every active tick starting at 1 (the very first Tick call). Phase per
@@ -384,7 +384,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     [Fact]
     public void MoneyRoll_MovesByTenThenByOne_TowardTheTrueTarget()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         AlundraPlayerManager.SetMoney(state, 25);
 
@@ -410,7 +410,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     [Fact]
     public void MoneyRoll_MovesDownwardByTenThenByOne()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         AlundraPlayerManager.SetMoney(state, 2163); // C0's own debug value set, well above the New-Game 0.
         TickMany(director, 18); // Displayed(1); money is still rolling upward, far from settled.
@@ -456,7 +456,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     [Fact]
     public void AttachToWorld_RePointsWithoutResetting_InstallForMapEntry_DoesNotResetEither()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var director = ArmedOpening(state);
         TickMany(director, 10); // mid-transition: Opening(5), FrameCounter == 10, Y somewhere in the table.
 
@@ -484,7 +484,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     public void InstallForMapEntry_LatchSetAndIdle_ArmsTheAppearance_ThenSlidesInThroughTheMeasuredTable()
     {
         var expected = new[] { -41, -38, -34, -30, -26, -22, -19, -15, -11, -7, -3, 0, 4, 8, 12, 16, 16, 16 };
-        var state = new AlundraGameState();
+        var state = new GameState();
         state.AddFlag(PersistentLatchFlag, PersistentLatchMask);
         var director = AlundraHudDirector.Instance;
         director.AttachToWorld(state);
@@ -508,7 +508,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     public void InstallForMapEntry_LatchClear_StaysIdle()
     {
         var director = AlundraHudDirector.Instance;
-        director.AttachToWorld(new AlundraGameState());
+        director.AttachToWorld(new GameState());
 
         director.InstallForMapEntry();
 

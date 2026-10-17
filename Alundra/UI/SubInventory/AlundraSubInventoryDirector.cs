@@ -71,14 +71,14 @@ public sealed class AlundraSubInventoryDirector
 
     private bool _hasTickedSinceOpen;
 
-    private AlundraGameState? _gameState;
+    private GameState? _gameState;
     private AlundraItemTables? _itemTables;
     private IAlundraSoundPlayer? _soundPlayer;
 
     /// <summary>Re-points this session-scoped instance, same "re-point without touching state" contract as
     /// <see cref="AlundraInventoryDirector.AttachToWorld"/>. Every argument null is tolerated (no live
     /// session yet) - <see cref="Tick"/>/<see cref="OpenFromPostProcess"/> then degrade to no-ops.</summary>
-    public void AttachToWorld(AlundraGameState? gameState, AlundraItemTables? itemTables, IAlundraSoundPlayer? soundPlayer)
+    public void AttachToWorld(GameState? gameState, AlundraItemTables? itemTables, IAlundraSoundPlayer? soundPlayer)
     {
         _gameState = gameState;
         _itemTables = itemTables;
@@ -452,7 +452,7 @@ public sealed class AlundraSubInventoryDirector
         _textReveal.Reset();
         _hasTickedSinceOpen = false;
 
-        _gameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        _gameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
 
         ArmTweensForOpen();
 
@@ -550,7 +550,7 @@ public sealed class AlundraSubInventoryDirector
         if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.L1 | AlundraPadState.R1)) != 0)
         {
             RunCloseSetup();
-            _gameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+            _gameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
             AlundraInventoryPortrait.Instance.ReturnToHead(); // 0x80053684, before the post-process state (0x80053694).
             AlundraInventoryPostProcess.Instance.State = 2;
         }
@@ -594,7 +594,7 @@ public sealed class AlundraSubInventoryDirector
             // :414-417 - MenuOpen cleared ONLY if the post-process is not about to open the main inventory.
             if ((AlundraInventoryPostProcess.Instance.State & 2) == 0)
             {
-                _gameState!.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+                _gameState!.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
             }
 
             return false; // :420 - return (skip the draw tail this same tick).

@@ -43,10 +43,10 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
 
     private const string Yield = "[yield trimwhitespace=false/]";
 
-    private static bool IsSet(AlundraGameState gameState, int n)
+    private static bool IsSet(GameState gameState, int n)
         => (gameState.GetFlag((uint)n | 0x8000u) & (1u << (n & 0x1f))) != 0;
 
-    private static void AttachRealDialogueContext(AlundraGameState gameState)
+    private static void AttachRealDialogueContext(GameState gameState)
     {
         Director.AttachToWorld(new DialogueService(), gameState);
         Director.InstallForMapEntry();
@@ -110,7 +110,7 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
     [Fact]
     public void MidTextFlagMarker_IsSetWhenItsPageIsShown_AndNeverEarlier()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AttachRealDialogueContext(gameState);
 
         var asset = DialogueTestAssets.BuildRaw(
@@ -156,7 +156,7 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
     [Fact]
     public void SeveralFlagMarkersOfOnePage_AreAllSet_IncludingTheEndOfTextOne()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AttachRealDialogueContext(gameState);
 
         // M389_S106 p0 shape: "...?[flag 1004][yield][flag 999][yield]" - the end-of-text classes.
@@ -186,7 +186,7 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
     [Fact]
     public void FlagsOnlyPage_SetsItsFlagsAndShowsAnEmptyBox()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AttachRealDialogueContext(gameState);
 
         // M45_S097 p1: [flag 999][yield][empty].
@@ -209,7 +209,7 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
     [Fact]
     public void YieldAndUnknownMarkers_AreIgnored_AndSetNoFlag()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AttachRealDialogueContext(gameState);
 
         var asset = DialogueTestAssets.BuildRaw(
@@ -228,7 +228,7 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
     [Fact]
     public void TheOldFlagCommand_IsStillServed()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         AttachRealDialogueContext(gameState);
 
         var asset = DialogueTestAssets.BuildRaw("OldCommand", "Start", "<<flag 30>>\npage zero");
@@ -244,7 +244,7 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
     public void TheCapturePresenter_SetsNoFlag_FalconUpdateStillRunsBeforeTheLine()
     {
         // M134_S019 shape: falcon_update first, then the line ending "...{falcon()}.[flag 100][yield]".
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.FalconTemp = 4;
         var world = new SnapshotPresenter(() => $"flag100={IsSet(gameState, 100)};falcon={gameState.PlayerStats.Falcon}");
         var capture = new AlundraDialogueCapturePresenter(world);
@@ -285,7 +285,7 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
     [Fact]
     public void DegradedPath_NoDirector_ReadsTheFlagMarkersOfEveryPage()
     {
-        var gameState = new AlundraGameState();
+        var gameState = new GameState();
         gameState.PlayerStats.FalconTemp = 4;
         var context = new FakeEntityWorldContext { DialogueDirector = null };
 

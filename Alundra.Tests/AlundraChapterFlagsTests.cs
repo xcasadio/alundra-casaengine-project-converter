@@ -8,7 +8,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E16.c T2 (docs/plan-e16-etat-partie.md, C7, F6 to F8): the chapter walk
-/// (<see cref="AlundraChapterFlags.GetFirstEnabledFlagIndex"/>, port of 0x800813B0) and the slot summary
+/// (<see cref="ChapterFlags.GetFirstEnabledFlagIndex"/>, port of 0x800813B0) and the slot summary
 /// (<see cref="AlundraSaveGame.BuildSummary"/>, port of <c>UpdateMenuStatusText</c>'s text). The expected
 /// summary is computed here, independently, from F6's formulas.
 /// </summary>
@@ -26,43 +26,43 @@ public sealed class AlundraChapterFlagsTests
         0x04A0,
     ];
 
-    private static void Set(AlundraGameState state, ushort flagId) => state.AddFlag(flagId, 1u << (flagId & 0x1F));
+    private static void Set(GameState state, ushort flagId) => state.AddFlag(flagId, 1u << (flagId & 0x1F));
 
     [Fact]
     public void FlagIds_AreThe41IdsOfTheBinary_AllInsideThe64SavedWords()
     {
-        Assert.Equal(ExpectedFlagIds, AlundraChapterFlags.FlagIds.ToArray());
-        Assert.Equal(41, AlundraChapterFlags.LastChapterIndex);
-        Assert.All(AlundraChapterFlags.FlagIds, id => Assert.True(id >> 5 < 64));
+        Assert.Equal(ExpectedFlagIds, ChapterFlags.FlagIds.ToArray());
+        Assert.Equal(41, ChapterFlags.LastChapterIndex);
+        Assert.All(ChapterFlags.FlagIds, id => Assert.True(id >> 5 < 64));
     }
 
     [Fact]
     public void NoFlagSet_Returns0()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
 
-        Assert.Equal(0, AlundraChapterFlags.GetFirstEnabledFlagIndex(state.GameFlags));
+        Assert.Equal(0, ChapterFlags.GetFirstEnabledFlagIndex(state.GameFlags));
     }
 
     [Fact]
     public void FirstFlagOnly_Returns1()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         Set(state, ExpectedFlagIds[0]);
 
-        Assert.Equal(1, AlundraChapterFlags.GetFirstEnabledFlagIndex(state.GameFlags));
+        Assert.Equal(1, ChapterFlags.GetFirstEnabledFlagIndex(state.GameFlags));
     }
 
     [Fact]
     public void AllFlagsSet_Returns41()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         foreach (var id in ExpectedFlagIds)
         {
             Set(state, id);
         }
 
-        Assert.Equal(41, AlundraChapterFlags.GetFirstEnabledFlagIndex(state.GameFlags));
+        Assert.Equal(41, ChapterFlags.GetFirstEnabledFlagIndex(state.GameFlags));
     }
 
     [Theory]
@@ -72,7 +72,7 @@ public sealed class AlundraChapterFlagsTests
     [InlineData(40)]
     public void HoleInTheMiddle_ReturnsTheHolesIndex(int hole)
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         for (var i = 0; i < ExpectedFlagIds.Length; i++)
         {
             if (i != hole)
@@ -81,24 +81,24 @@ public sealed class AlundraChapterFlagsTests
             }
         }
 
-        Assert.Equal(hole, AlundraChapterFlags.GetFirstEnabledFlagIndex(state.GameFlags));
+        Assert.Equal(hole, ChapterFlags.GetFirstEnabledFlagIndex(state.GameFlags));
     }
 
     [Fact]
     public void ChapterIdSetInTemporaryFlags_IsNotSeen()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         var id = ExpectedFlagIds[0];
         state.AddFlag(0x8000u | id, 1u << (id & 0x1F)); // the session-only bank, same word and bit.
         Assert.NotEqual(0u, state.TemporaryFlags[id >> 5]);
 
-        Assert.Equal(0, AlundraChapterFlags.GetFirstEnabledFlagIndex(state.GameFlags));
+        Assert.Equal(0, ChapterFlags.GetFirstEnabledFlagIndex(state.GameFlags));
     }
 
     [Fact]
     public void The64SavedWords_GiveTheSameChapterAsThe1024SessionWords()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
         for (var i = 0; i < 25; i++)
         {
             Set(state, ExpectedFlagIds[i]);
@@ -106,14 +106,14 @@ public sealed class AlundraChapterFlagsTests
 
         var saved = state.GameFlags.Take(64).ToArray();
 
-        Assert.Equal(25, AlundraChapterFlags.GetFirstEnabledFlagIndex(state.GameFlags));
-        Assert.Equal(25, AlundraChapterFlags.GetFirstEnabledFlagIndex(saved));
+        Assert.Equal(25, ChapterFlags.GetFirstEnabledFlagIndex(state.GameFlags));
+        Assert.Equal(25, ChapterFlags.GetFirstEnabledFlagIndex(saved));
     }
 
     [Fact]
     public void ShorterArray_ReadsMissingWordsAsClear_WithoutThrowing()
     {
-        Assert.Equal(0, AlundraChapterFlags.GetFirstEnabledFlagIndex(new uint[0]));
+        Assert.Equal(0, ChapterFlags.GetFirstEnabledFlagIndex(new uint[0]));
     }
 
     [Theory]
@@ -122,7 +122,7 @@ public sealed class AlundraChapterFlagsTests
     [InlineData(41, "0041")]
     public void FormatChapter_WritesFourDigits(int index, string expected)
     {
-        Assert.Equal(expected, AlundraChapterFlags.FormatChapter(index));
+        Assert.Equal(expected, ChapterFlags.FormatChapter(index));
     }
 
     // ---- Summary text (F6) ----------------------------------------------------------------------
@@ -152,7 +152,7 @@ public sealed class AlundraChapterFlagsTests
     [InlineData(3600u)]
     [InlineData(215999u)]
     [InlineData(216000u)]
-    [InlineData(AlundraGameState.GameTimeMax)]
+    [InlineData(GameState.GameTimeMax)]
     public void BuildSummary_Time_MatchesF6(uint gameTime)
     {
         var summary = AlundraSaveGame.BuildSummary(10, gameTime);
@@ -180,7 +180,7 @@ public sealed class AlundraChapterFlagsTests
     [InlineData(3600u, "  HP 10       TIME 00:01:00   ")]
     [InlineData(215999u, "  HP 10       TIME 00:59:59   ")]
     [InlineData(216000u, "  HP 10       TIME 01:00:00   ")]
-    [InlineData(AlundraGameState.GameTimeMax, "  HP 10       TIME 99:59:59   ")]
+    [InlineData(GameState.GameTimeMax, "  HP 10       TIME 99:59:59   ")]
     public void BuildSummary_Time_ReadsAsSixtiethsOfASecond(uint gameTime, string expected)
     {
         Assert.Equal(expected, AlundraSaveGame.BuildSummary(10, gameTime));

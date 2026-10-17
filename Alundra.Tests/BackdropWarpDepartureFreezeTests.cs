@@ -223,7 +223,7 @@ internal static class BackdropWarpDepartureSupport
 {
     internal static void ResetSingletons()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();

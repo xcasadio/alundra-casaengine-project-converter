@@ -11,12 +11,12 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E16.c T1 (docs/plan-e16-etat-partie.md, C1/C8, D-E16-23): the game-time counter
-/// (<see cref="AlundraGameState.GameTime"/>, port of <c>g_gameplayTime</c>) and the death-retry counter
-/// (<see cref="AlundraGameState.DeathRetryCount"/>, the original's <c>SaveSlotIndex</c>, D-E16-22). The
+/// (<see cref="GameState.GameTime"/>, port of <c>g_gameplayTime</c>) and the death-retry counter
+/// (<see cref="GameState.DeathRetryCount"/>, the original's <c>SaveSlotIndex</c>, D-E16-22). The
 /// counter counts sixtieths of a second on elapsed real time, capped at <c>0x14996C4</c>; the cap is applied
 /// in <see cref="double"/> before the <see cref="uint"/> conversion (SC11). The last test drives the
 /// production call site, the head of <see cref="AlundraWorldProxy.Update"/>, through
-/// <see cref="AlundraGameState.Instance"/> - reset around every test, like every session-singleton test class.
+/// <see cref="GameState.Instance"/> - reset around every test, like every session-singleton test class.
 /// </summary>
 public sealed class AlundraGameTimeTests : IDisposable
 {
@@ -32,7 +32,7 @@ public sealed class AlundraGameTimeTests : IDisposable
 
     private static void ResetSingletons()
     {
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -41,15 +41,15 @@ public sealed class AlundraGameTimeTests : IDisposable
     [Fact]
     public void GameTimeMax_IsTheOriginalsCap_9959_59_InSixtieths()
     {
-        Assert.Equal(0x14996C4u, AlundraGameState.GameTimeMax);
-        Assert.Equal(((99u * 60u + 59u) * 60u + 59u) * 60u, AlundraGameState.GameTimeMax); // 99:59:59, zero sixtieths.
-        Assert.Equal(60, AlundraGameState.GameTimeUnitsPerSecond);
+        Assert.Equal(0x14996C4u, GameState.GameTimeMax);
+        Assert.Equal(((99u * 60u + 59u) * 60u + 59u) * 60u, GameState.GameTimeMax); // 99:59:59, zero sixtieths.
+        Assert.Equal(60, GameState.GameTimeUnitsPerSecond);
     }
 
     [Fact]
     public void AdvanceGameTime_OneSecondInOneStep_Adds60()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
 
         state.AdvanceGameTime(1f);
 
@@ -59,7 +59,7 @@ public sealed class AlundraGameTimeTests : IDisposable
     [Fact]
     public void AdvanceGameTime_OneSecondInSixtyStepsOfOneSixtieth_Adds60()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
 
         for (var i = 0; i < 60; i++)
         {
@@ -72,7 +72,7 @@ public sealed class AlundraGameTimeTests : IDisposable
     [Fact]
     public void AdvanceGameTime_120StepsOfOneHundredTwentieth_Add60()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
 
         for (var i = 0; i < 120; i++)
         {
@@ -85,13 +85,13 @@ public sealed class AlundraGameTimeTests : IDisposable
     [Fact]
     public void AdvanceGameTime_StopsAtTheCap()
     {
-        var state = new AlundraGameState { GameTime = AlundraGameState.GameTimeMax - 1 };
+        var state = new GameState { GameTime = GameState.GameTimeMax - 1 };
 
         state.AdvanceGameTime(1f); // +60 units, only 1 left below the cap.
-        Assert.Equal(AlundraGameState.GameTimeMax, state.GameTime);
+        Assert.Equal(GameState.GameTimeMax, state.GameTime);
 
         state.AdvanceGameTime(1f); // already at the cap: stays there.
-        Assert.Equal(AlundraGameState.GameTimeMax, state.GameTime);
+        Assert.Equal(GameState.GameTimeMax, state.GameTime);
     }
 
     [Theory]
@@ -104,7 +104,7 @@ public sealed class AlundraGameTimeTests : IDisposable
     [InlineData(float.MinValue)]
     public void AdvanceGameTime_NonFiniteZeroOrNegative_AddsNothing_AndLeavesTheFractionUsable(float elapsedSeconds)
     {
-        var state = new AlundraGameState { GameTime = 100 };
+        var state = new GameState { GameTime = 100 };
 
         state.AdvanceGameTime(elapsedSeconds);
         Assert.Equal(100u, state.GameTime);
@@ -119,23 +119,23 @@ public sealed class AlundraGameTimeTests : IDisposable
     [InlineData(1e12f, 0u)]
     [InlineData(float.MaxValue, 0u)]
     [InlineData(1e12f, 12345u)]
-    [InlineData(float.MaxValue, AlundraGameState.GameTimeMax - 1)]
+    [InlineData(float.MaxValue, GameState.GameTimeMax - 1)]
     public void AdvanceGameTime_HugeFiniteDuration_ReachesTheCapWithoutWrapping(float elapsedSeconds, uint start)
     {
-        var state = new AlundraGameState { GameTime = start };
+        var state = new GameState { GameTime = start };
 
         state.AdvanceGameTime(elapsedSeconds);
-        Assert.Equal(AlundraGameState.GameTimeMax, state.GameTime);
+        Assert.Equal(GameState.GameTimeMax, state.GameTime);
 
         // Still capped, and still well-behaved, afterwards.
         state.AdvanceGameTime(1f);
-        Assert.Equal(AlundraGameState.GameTimeMax, state.GameTime);
+        Assert.Equal(GameState.GameTimeMax, state.GameTime);
     }
 
     [Fact]
     public void InstallForMapEntry_KeepsGameTimeAndDeathRetryCount()
     {
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
         state.GameTime = 123456;
         state.DeathRetryCount = 7;
 
@@ -148,7 +148,7 @@ public sealed class AlundraGameTimeTests : IDisposable
     [Fact]
     public void InstallForMapEntry_KeepsTheUnsavedFraction()
     {
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
         state.AdvanceGameTime(0.5f / 60f); // half a unit, still pending.
 
         state.InstallForMapEntry();
@@ -160,7 +160,7 @@ public sealed class AlundraGameTimeTests : IDisposable
     [Fact]
     public void ResetForTests_ZeroesGameTimeDeathRetryCountAndTheFraction()
     {
-        var state = AlundraGameState.Instance;
+        var state = GameState.Instance;
         state.GameTime = 123456;
         state.DeathRetryCount = 7;
         state.AdvanceGameTime(0.75f / 60f); // three quarters of a unit, still pending.
@@ -178,7 +178,7 @@ public sealed class AlundraGameTimeTests : IDisposable
     [Fact]
     public void NewState_StartsAtZero()
     {
-        var state = new AlundraGameState();
+        var state = new GameState();
 
         Assert.Equal(0u, state.GameTime);
         Assert.Equal((byte)0, state.DeathRetryCount);
@@ -201,7 +201,7 @@ public sealed class AlundraGameTimeTests : IDisposable
             worldProxy.Update(0.25f);
         }
 
-        Assert.Same(AlundraGameState.Instance, worldProxy.GameState);
-        Assert.Equal(60u, AlundraGameState.Instance.GameTime);
+        Assert.Same(GameState.Instance, worldProxy.GameState);
+        Assert.Equal(60u, GameState.Instance.GameTime);
     }
 }

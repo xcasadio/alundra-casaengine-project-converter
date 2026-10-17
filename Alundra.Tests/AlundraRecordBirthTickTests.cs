@@ -368,7 +368,7 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
         var worldDir = Directory.GetDirectories(Path.Combine(root, "Maps")).SelectMany(Directory.GetDirectories)
             .First(d => Path.GetFileName(d).EndsWith("-321", StringComparison.Ordinal));
         var arc = new ArcRun(new ArcSpec("E20e0a4-b6-321", Path.GetFileName(Path.GetDirectoryName(worldDir)!), Path.GetFileName(worldDir), Array.Empty<int>(), 8, 6, 1, 100, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival((8 * 24 + 12) << 16, (6 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0)));
+            Arrival: new ArcArrival((8 * 24 + 12) << 16, (6 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0)));
         using var run = new ScriptBirth(arc, "mapEvents", a => Op2D(a, 1, 321));
         (bool Pending, int Speed, int TargetForceX, int TargetForceY)? firstTick = null;
         var previousTrace = arc.Proxy.TickTraceForTests;

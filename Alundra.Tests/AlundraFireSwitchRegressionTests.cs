@@ -39,7 +39,7 @@ public sealed class AlundraFireSwitchRegressionTests
     {
         // The hero arrives inside the spawn zone of the switches (their records only exist when the player is in tiles 35-51 by 5-24).
         var spec = new ArcSpec("E20c1b-fire303", "Olen, Cephas house", "Olen, Cephas house-303", Array.Empty<int>(), 0, 0, 0, 2000, RealController: true, Prefabs: true,
-            Arrival: new ArcArrival((38 * 24 + 12) << 16, (11 * 16 + 8) << 16, 0, AlundraGameState.ResetAnimationId, 24));
+            Arrival: new ArcArrival((38 * 24 + 12) << 16, (11 * 16 + 8) << 16, 0, GameState.ResetAnimationId, 24));
         using var arc = new ArcRun(spec);
         arc.Hero.TargetAnimationId = 0; // the map-entry animation ends through its chain, which the headless montage never plays.
         for (var i = 0; i < 6; i++)

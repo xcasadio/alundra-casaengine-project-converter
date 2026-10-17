@@ -10,7 +10,7 @@ namespace Alundra.UI.Hud;
 /// (HudManager.cs:910-953), <c>DisplayLife</c> (:716-826), <c>DisplayMp</c> (:605-690 minus its own
 /// animated-icon computation, which <see cref="AlundraHudDirector.MagicPipFrame"/> already owns, C1) and
 /// <c>DisplayMoney</c> (:857-906). Takes only the DIRECTOR's own DISPLAYED (rolled) values - never
-/// <see cref="AlundraPlayerStats"/> directly (mission item 2: "la composition suit les valeurs affichées
+/// <see cref="PlayerStats"/> directly (mission item 2: "la composition suit les valeurs affichées
 /// (roulées) du directeur, pas les vraies stats") - and returns the flat list of tiles the original would
 /// actually have called <c>Renderer.AddSprite</c> for, in the same left-to-right, top-to-bottom order the
 /// original's own loops draw them. No MGUI type appears anywhere in this file (mission item 2's own "il

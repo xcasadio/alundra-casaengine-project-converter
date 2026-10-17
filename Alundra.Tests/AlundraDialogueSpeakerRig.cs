@@ -80,7 +80,7 @@ internal sealed class SpeakerRig : IDisposable
 
     public AlundraDialogueDirector Director => AlundraDialogueDirector.Instance;
 
-    public AlundraGameState GameState { get; } = new();
+    public GameState GameState { get; } = new();
 
     public SpeakerSoundRecorder Sound { get; } = new();
 

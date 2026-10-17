@@ -27,7 +27,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     public AlundraCameraSwayTests()
     {
         AlundraCameraSway.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -36,7 +36,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     public void Dispose()
     {
         AlundraCameraSway.Instance.ResetForTests();
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -277,7 +277,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
             EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = codes,
         };
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), context);
+        var runner = new AlundraEventProgramRunner(document, new GameState(), context);
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
         EventTraceKind? kind = null;
         runner.TraceSink = record =>

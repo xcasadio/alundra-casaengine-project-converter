@@ -55,7 +55,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
         AlundraNativeEffects.CreatedForTests = null;
         AlundraRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraGameState.Instance.ResetForTests();
+        GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -167,7 +167,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
     [Fact]
     public void V3_TheProductionRegistryHoldsSevenKeys_TheWaveTypesHaveC61AndE10InLineAndNoOtherProgram_TheInvariantHoldsForThem()
     {
-        var runner = new AlundraEventProgramRunner(null, AlundraGameState.Instance);
+        var runner = new AlundraEventProgramRunner(null, GameState.Instance);
         var registry = runner.NativeSprites;
         var catalog = new SpriteRecordCatalog(ProjectRootFinder.Find());
 

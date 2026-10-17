@@ -46,7 +46,7 @@ public class AlundraEventProgramRunnerWaitCollidedZTests
 
     private static (AlundraEventProgramRunner Runner, List<EventTraceRecord> Trace) NewRunner(EventProgramDocument document, IEntityWorldContext? world = null)
     {
-        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), world);
+        var runner = new AlundraEventProgramRunner(document, new GameState(), world);
         var trace = new List<EventTraceRecord>();
         runner.TraceSink = trace.Add;
         return (runner, trace);

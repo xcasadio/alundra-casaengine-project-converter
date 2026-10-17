@@ -71,7 +71,7 @@ public sealed class AlundraNoGravityLandingTests
 
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
 
-        public AlundraGameState GameState { get; } = new();
+        public GameState GameState { get; } = new();
 
         public AlundraPlayerController? PlayerController => null;
 

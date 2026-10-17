@@ -200,8 +200,8 @@ public sealed class AlundraDialogueBoxOracleComparisonTests
             var b = montage.Director.Box;
             ends.Add(new FrameEnd(
                 b.Phase, b.GlyphCount, b.IsCursorShown,
-                (montage.State.PlayerControlFlags & AlundraGameState.PlayerControlBits.MessageBox) != 0,
-                (montage.State.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0, b.Y));
+                (montage.State.PlayerControlFlags & GameState.PlayerControlBits.MessageBox) != 0,
+                (montage.State.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0, b.Y));
             foreach (var flag in flags)
             {
                 if (firstFlagFrame[flag] == null && (montage.State.GetFlag((uint)flag | 0x8000u) & (1u << (flag & 0x1f))) != 0)

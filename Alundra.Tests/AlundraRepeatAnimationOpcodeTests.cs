@@ -39,7 +39,7 @@ public class AlundraRepeatAnimationOpcodeTests
         public Harness(params int[] codes)
         {
             var document = NewDocument(codes);
-            Runner = new AlundraEventProgramRunner(document, new AlundraGameState());
+            Runner = new AlundraEventProgramRunner(document, new GameState());
             Runner.TraceSink = Trace.Add;
             State = new EventProgramState { Codes = document.CodesAsBytes() };
         }
