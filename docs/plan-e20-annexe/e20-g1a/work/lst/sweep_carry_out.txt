@@ -1,0 +1,6 @@
+carry group sweep: 12000 vectors, 0 mismatches
+coverage 80031df8-80031e34: 15/15 
+coverage 80031d54-80031d68: 0/5 uncovered 80031d54 80031d58 80031d5c 80031d60 80031d64
+coverage 800322b4-800324b8: 129/129 
+coverage 80031d68-80031d80: 6/6 
+vectors per state: {'0x5': 1201, '0x6': 1244, '0x7': 1161, '0x9': 1159, '0xa': 1191, '0xb': 1229, '0xc': 1186, '0x2e': 1205, '0x2f': 1180, '0x30': 1244}

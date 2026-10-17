@@ -1,0 +1,316 @@
+def drv_earth2(env, item):                             # 0x800354D0
+    m = env.m
+    P = m.s32(PHASE)
+    if P == 1:
+        if slope_helper(env):
+            return 1
+        if m.s32(COUNTER) < 0x118:
+            return 0
+        m.w32(HERO + 0x88, 0x34)
+        m.w32(PHASE, P + 1)
+        return 0
+    if P == 0:
+        if slope_helper(env):
+            return 1
+        c = m.s32(COUNTER)
+        hits, a, entered = walk_table(m, EARTH2, 4, c)
+        for h in hits:
+            st1 = rng_step(m)                          # first step: r1 = hi(st1 * 32) picks the offset vector
+            r1 = (st1 * 0x20) >> 32
+            st2 = (st1 * 0x7D2B89DD + 0xE06A02E7) & M32  # second step: r2 = hi(st2 * 32) is the direction
+            r2 = (st2 * 0x20) >> 32
+            m.w32(RNG, st2)
+            k = m.s16(h + 2) + 0xA00
+            yoff = s32(m.s16(TAB_Y + 2 * r1) * k)
+            xoff = s32(m.s16(TAB_X + 2 * r1) * k)
+            z = (m.u32(HERO + 0x11C) + 0x1000000) & M32
+            e = env.spawn(HERO, 0, 0x11, (m.u32(HERO + 0x114) + xoff) & M32, (m.u32(HERO + 0x118) + yoff) & M32, z, r2)
+            if e:
+                if s32(z) < m.s32(e + 0x138):
+                    destroy_nofx(m, e)
+                else:
+                    m.w32(e + 0xB8, 0xFFF80000)
+        if m.u16(a) == 0xFFFF:
+            m.w32(PHASE, m.s32(PHASE) + 1)
+        return 0
+    if P == 2:
+        return 0 if m.s32(HERO + 0x88) == 0x34 else 1
+    return 0
+
+
+def drv_water(env, item):                              # 0x80035790
+    m = env.m
+    P = m.s32(PHASE)
+    if P == 1:
+        return water_phase1(env, item)
+    if P == 0:
+        if slope_helper(env):
+            return 1
+        tbl = WATER_UP if item == 0x2D else WATER_LO
+        c = m.s32(COUNTER)
+        hits, a, entered = walk_table(m, tbl, 14, c)
+        for h in hits:
+            e = env.spawn(HERO, 0, 0x13, m.u32(HERO + 0x114), m.u32(HERO + 0x118), (m.u32(HERO + 0x11C) + 0x80000) & M32, 0)
+            if e:
+                m.w32(e + 0x70, 0xFE)
+                m.w32(e + 0x274, m.s16(h + 2))
+                m.w32(e + 0x278, m.s16(h + 4))
+                m.w32(e + 0x27C, m.s16(h + 6))
+                e8 = m.s16(h + 8)
+                m.w32(e + 0x280, e8)
+                m.w32(e + 0x284, 1)
+                m.w32(e + 0x288, 0)
+                v1 = s32(m.s16(h + 0xA) + s32(e8 * c))
+                t = v1 if v1 >= 0 else v1 + 0xFF
+                m.w32(e + 0x28C, v1 - ((t >> 8) << 8))
+                m.w32(e + 0x290, m.s16(h + 0xC) - c)
+        if m.u16(a) == 0xFFFF:
+            m.w32(0x80127118, 0)
+            m.w32(PHASE, m.s32(PHASE) + 1)
+        return 0
+    if P == 2:
+        if m.s32(HERO + 0x88) == 0x34:
+            return 0
+        count = s32(m.u32(G_COUNT))
+        if count <= 0:
+            return 1
+        for i in range(1, count + 1):
+            e = ent(i)
+            if m.s32(e + 0x68) == 0x13 and m.s32(e + 0x290) > 0:
+                return 0
+        return 1
+    return 0
+
+
+def water_phase1(env, item):
+    m = env.m
+    if slope_helper(env):
+        return 1
+    t = m.s32(0x80127118) + 1
+    m.w32(0x80127118, t)
+    if t == 0x1E:
+        if item == 0x2D:
+            heal_water(env)
+            env.sound(0x31)
+        else:
+            heal_full(env)
+            env.sound(0x30)
+    if m.s32(0x80127118) < 0x3C:
+        return 0
+    m.w32(HERO + 0x88, 0x34)
+    m.w32(PHASE, m.s32(PHASE) + 1)
+    return 0
+
+
+def drv_fire1(env, item):                              # 0x80035A84
+    m = env.m
+    P = m.s32(PHASE)
+    if P == 0:
+        if slope_helper(env):
+            return 1
+        if m.s32(HERO + 0x88) != 0x33:
+            return 0
+        e = env.spawn(HERO, 0, 0x14, m.u32(HERO + 0x114), m.u32(HERO + 0x118), m.u32(HERO + 0x11C), 0)
+        m.w32(0x8012711C, e)
+        if e == 0:
+            return 1
+        m.w32(0x80127120, m.u32(e + 4))
+        m.w32(PHASE, m.s32(PHASE) + 1)
+        return fire1_phase1(env)
+    if P == 1:
+        return fire1_phase1(env)
+    if P == 2:
+        return 0 if m.s32(HERO + 0x88) == 0x34 else 1
+    return 0
+
+
+def fire1_phase1(env):
+    m = env.m
+    if slope_helper(env):
+        return 1
+    ent_ptr = m.u32(0x8012711C)
+    if m.u32(ent_ptr + 4) == m.u32(0x80127120):
+        if (m.s32(COUNTER) & 7) != 0:
+            return 0
+        st = rng_step(m)
+        m.w32(RNG, st)
+        r = (st * 0x20) >> 32
+        e = env.spawn(HERO, 0, 0x17, m.u32(HERO + 0x114), m.u32(HERO + 0x118), (m.u32(HERO + 0x11C) + 0x100000) & M32, r)
+        if e:
+            m.w32(e + 0xB8, 0x80000)
+            m.w32(e + 0x274, 0x10)
+            m.w32(e + 0x278, 0)
+        return 0
+    m.w32(HERO + 0x88, 0x34)
+    m.w32(PHASE, m.s32(PHASE) + 1)
+    return 0
+
+
+def copy9(m, src, dst):
+    for k in range(9):
+        m.w32(dst + 4 * k, m.u32(src + 4 * k))
+
+
+def drv_fire2(env, item):                              # 0x80035C64
+    m = env.m
+    P = m.s32(PHASE)
+    if P == 0:
+        if slope_helper(env):
+            return 1
+        if m.s32(HERO + 0x88) != 0x33:
+            return 0
+        e = env.spawn(HERO, 0, 0x15, m.u32(HERO + 0x114), m.u32(HERO + 0x118), m.u32(HERO + 0x11C), 0)
+        m.w32(0x80127124, e)
+        if e == 0:
+            return 1
+        copy9(m, SHAKE, SHAKE_BAK)
+        m.w32(PHASE, m.s32(PHASE) + 1)
+        m.w32(0x80127128, m.u32(m.u32(0x80127124) + 4))
+        return fire2_phase1(env)
+    if P == 1:
+        return fire2_phase1(env)
+    if P == 2:
+        return 0 if m.s32(HERO + 0x88) == 0x34 else 1
+    return 0
+
+
+def fire2_phase1(env):
+    m = env.m
+    if slope_helper(env):
+        copy9(m, SHAKE_BAK, SHAKE)
+        return 1
+    if m.u32(m.u32(0x80127124) + 4) == m.u32(0x80127128):
+        m.w32(SHAKE, 1)
+        c = m.s32(COUNTER)
+        m.w32(SHAKE + 8, c >> 4)
+        m.w32(SHAKE + 0x10, c >> 4)
+        m.w32(SHAKE + 4, c >> 6)
+        m.w32(SHAKE + 0xC, c >> 6)
+        return 0
+    copy9(m, SHAKE_BAK, SHAKE)
+    m.w32(HERO + 0x88, 0x34)
+    m.w32(PHASE, m.s32(PHASE) + 1)
+    return 0
+
+
+def drv_wind1(env, item):                              # 0x80035EB0
+    m = env.m
+    P = m.s32(PHASE)
+    if P == 0:
+        m.w32(0x8012712C, 0)
+        m.w32(PHASE, 1)
+        return wind1_phase1(env)
+    if P == 1:
+        return wind1_phase1(env)
+    if P == 2:
+        return 0 if m.s32(HERO + 0x88) == 0x34 else 1
+    return 0
+
+
+def wind1_phase1(env):
+    m = env.m
+    if slope_helper(env):
+        return 1
+    if m.s32(HERO + 0x88) != 0x33:
+        return 0
+    c = m.s32(COUNTER)
+    s3 = 0
+    if not (c < m.u16(WIND1)):
+        a = WIND1
+        while True:
+            if m.u16(a) == c:
+                q = query(m, HERO, 1, 0x0B)
+                sel = 0
+                for (e, d) in q:
+                    if s32((m.u32(HERO + 0x11C) + 0x500000) & M32) < m.s32(e + 0x11C):
+                        continue
+                    if e == m.u32(0x8012712C):
+                        continue
+                    if d >= 0x6401:                    # signed slti: distances are < 2^31 here
+                        break
+                    sel = e
+                    break
+                if sel:
+                    sp = env.spawn(HERO, 0, 0x16, m.u32(sel + 0x114), m.u32(sel + 0x118), (m.u32(sel + 0x11C) + 0x800000) & M32, 0)
+                    if sp:
+                        m.w32(sp + 0xB8, 0xFFF80000)
+                    m.w32(0x8012712C, sel)
+                else:
+                    st1 = rng_step(m)
+                    st2 = (st1 * 0x7D2B89DD + 0xE06A02E7) & M32
+                    rx = (st1 * 0xC00001) >> 32
+                    ry = (st2 * 0x800001) >> 32
+                    m.w32(RNG, st2)
+                    x = (m.u32(HERO + 0x114) + rx + 0xFFA00000) & M32
+                    y = (m.u32(HERO + 0x118) + ry + 0xFFC00000) & M32
+                    z = (m.u32(HERO + 0x11C) + 0x800000) & M32
+                    sp = env.spawn(HERO, 0, 0x16, x, y, z, 0)
+                    if sp:
+                        if m.s32(sp + 0x144) != 0:
+                            destroy_nofx(m, sp)
+                        else:
+                            m.w32(sp + 0xB8, 0xFFF80000)
+                    m.w32(0x8012712C, 0)
+            a += 2
+            s3 += 1
+            if c < m.u16(a):
+                break
+    if m.u16(WIND1 + 2 * s3) != 0xFFFF:
+        return 0
+    m.w32(HERO + 0x88, 0x34)
+    m.w32(PHASE, m.s32(PHASE) + 1)
+    return 0
+
+
+def drv_wind2(env, item):                              # 0x80036218
+    m = env.m
+    P = m.s32(PHASE)
+    if P == 0:
+        if slope_helper(env):
+            return 1
+        if m.s32(HERO + 0x88) != 0x33:
+            return 0
+        e = env.spawn(HERO, 0, 0x18, m.u32(HERO + 0x114), m.u32(HERO + 0x118), m.u32(HERO + 0x11C), 0)
+        m.w32(0x80127130, e)
+        if e == 0:
+            return 1
+        m.w32(0x80127134, m.u32(e + 4))
+        m.w32(PHASE, m.s32(PHASE) + 1)
+        return 0
+    if P == 1:
+        if slope_helper(env):
+            return 1
+        if m.u32(m.u32(0x80127130) + 4) == m.u32(0x80127134):
+            return 0
+        m.w32(HERO + 0x88, 0x34)
+        m.w32(PHASE, m.s32(PHASE) + 1)
+        return 0
+    if P == 2:
+        return 0 if m.s32(HERO + 0x88) == 0x34 else 1
+    return 0
+
+
+DRIVERS = {0x2B: drv_earth1, 0x2C: drv_earth2, 0x2D: drv_water, 0x2E: drv_water, 0x2F: drv_fire1, 0x30: drv_fire2, 0x31: drv_wind1, 0x32: drv_wind2}
+
+
+def wrapper(env):                                      # 0x8003634C
+    m = env.m
+    item = m.s32(INUSE)
+    if item == 0:
+        return 1
+    idx = (item - 0x1F) & M32
+    if idx < 0x14:
+        if item in DRIVERS:
+            res = DRIVERS[item](env, item)
+        elif item in (0x1F, 0x20, 0x23):
+            raise NotImplementedError('beans / cape / bomb driver not modelled here')
+        else:
+            res = 1
+    else:
+        res = 1
+    c = m.s32(COUNTER)
+    if not (0x7FFFFFFE < c):
+        m.w32(COUNTER, c + 1)
+    if res != 0:
+        m.w32(INUSE, 0)
+    return res

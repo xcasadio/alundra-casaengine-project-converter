@@ -1,0 +1,18 @@
+; function 0x8003A774..0x8003A7B0 (15 words)
+8003A774  8c8301b8  lw       $v1, 0x1b8($a0)               ; a0.ActiveEffect
+8003A778  24020004  addiu    $v0, $zero, 4
+8003A77C  ac820010  sw       $v0, 0x10($a0)                ; a0.Status
+8003A780  2402ffff  addiu    $v0, $zero, -1
+8003A784  10600003  beqz     $v1, 0x8003a794   -> L_8003A794
+8003A788  ac820228  sw       $v0, 0x228($a0)               ; a0.EventTrigger
+8003A78C  ac600068  sw       $zero, 0x68($v1)              ; v1.ptr68
+8003A790  ac8001b8  sw       $zero, 0x1b8($a0)             ; a0.ActiveEffect
+L_8003A794:
+8003A794  8c840028  lw       $a0, 0x28($a0)                ; a0.Platform
+8003A798  00000000  nop      
+8003A79C  10800002  beqz     $a0, 0x8003a7a8   -> L_8003A7A8
+8003A7A0  00000000  nop      
+8003A7A4  ac80002c  sw       $zero, 0x2c($a0)
+L_8003A7A8:
+8003A7A8  03e00008  jr       $ra
+8003A7AC  00000000  nop      

@@ -1,0 +1,48 @@
+; function 0x80039B28..0x80039BD0 (42 words)
+80039B28  27bdffe8  addiu    $sp, $sp, -0x18
+80039B2C  10800006  beqz     $a0, 0x80039b48   -> L_80039B48
+80039B30  afbf0010  sw       $ra, 0x10($sp)                ; sp+0x10
+80039B34  3c028012  lui      $v0, 0x8012
+80039B38  24436e70  addiu    $v1, $v0, 0x6e70              ; =0x80126E70
+80039B3C  24020020  addiu    $v0, $zero, 0x20
+80039B40  0800e6d7  j        0x80039b5c   -> L_80039B5C
+80039B44  acc00000  sw       $zero, ($a2)
+L_80039B48:
+80039B48  3c028012  lui      $v0, 0x8012
+80039B4C  24436ec0  addiu    $v1, $v0, 0x6ec0              ; =0x80126EC0
+80039B50  2402000b  addiu    $v0, $zero, 0xb
+80039B54  acc20000  sw       $v0, ($a2)
+80039B58  24020060  addiu    $v0, $zero, 0x60
+L_80039B5C:
+80039B5C  04a00014  bltz     $a1, 0x80039bb0   -> L_80039BB0
+80039B60  ace20000  sw       $v0, ($a3)
+80039B64  8c620010  lw       $v0, 0x10($v1)                ; v1.Status
+80039B68  00000000  nop      
+80039B6C  00a2102a  slt      $v0, $a1, $v0
+80039B70  1040000f  beqz     $v0, 0x80039bb0   -> L_80039BB0
+80039B74  00051080  sll      $v0, $a1, 2
+80039B78  8c63000c  lw       $v1, 0xc($v1)                 ; v1.Parent
+80039B7C  00000000  nop      
+80039B80  00431021  addu     $v0, $v0, $v1
+80039B84  8c430000  lw       $v1, ($v0)
+80039B88  00000000  nop      
+80039B8C  04610009  bgez     $v1, 0x80039bb4   -> L_80039BB4
+80039B90  3c048002  lui      $a0, 0x8002
+80039B94  3c02801f  lui      $v0, 0x801f
+80039B98  3442ffff  ori      $v0, $v0, 0xffff              ; =0x801FFFFF
+80039B9C  0043102b  sltu     $v0, $v0, $v1
+80039BA0  14400004  bnez     $v0, 0x80039bb4   -> L_80039BB4
+80039BA4  00601021  move     $v0, $v1
+80039BA8  0800e6f0  j        0x80039bc0   -> L_80039BC0
+80039BAC  00000000  nop      
+L_80039BB0:
+80039BB0  3c048002  lui      $a0, 0x8002
+L_80039BB4:
+80039BB4  0c02057b  jal      0x800815ec                    ; FUN_800815EC
+80039BB8  248439cc  addiu    $a0, $a0, 0x39cc
+80039BBC  00001021  move     $v0, $zero
+L_80039BC0:
+80039BC0  8fbf0010  lw       $ra, 0x10($sp)                ; sp+0x10
+80039BC4  27bd0018  addiu    $sp, $sp, 0x18
+80039BC8  03e00008  jr       $ra
+80039BCC  00000000  nop      

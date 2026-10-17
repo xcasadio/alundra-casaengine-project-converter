@@ -1,0 +1,110 @@
+== A. sprite types whose header Contents != 0 (count; 1000 = global bank) ==
+type  34 'I04_Épée sacrée Elnard': header Contents {'0x82': 39} zero-in: 1000
+type  35 'I05_Arc du chasseur': header Contents {'0x82': 189} zero-in: 1000
+type  36 'I06_Arc de William': header Contents {'0x82': 127} zero-in: 1000
+type  37 'I07_Bâton magique': header Contents {'0x82': 14} zero-in: 1000
+type  38 'I08_Objet 008': header Contents {'0xf8': 20} zero-in: 1000
+type  41 'I11_Objet 011': header Contents {'0xf7': 3} zero-in: 1000
+type  73 'I43_Tome de la Terre (haut)': header Contents {'0xfc': 18} zero-in: 1000
+type  79 'I49_Tome du dieu du vent (haut)': header Contents {'0xfc': 18} zero-in: 1000
+type  82 'I52_Anneau d’ogre': header Contents {'0xfc': 8} zero-in: 1000
+type  85 'I55_Anneau de régénération': header Contents {'0xfc': 13} zero-in: 1000
+type  88 'I58_Objet 058': header Contents {'0xfc': 1} zero-in: 1000
+type  91 'I61_Clé': header Contents {'0xfb': 25} zero-in: 1000
+type  94 'I64_Emblème de topaze': header Contents {'0xfb': 10} zero-in: 1000
+type 100 'I70_5 Gildas': header Contents {'0xfb': 10} zero-in: 1000
+type 106 'I76_Testament d’Anzes': header Contents {'0xfb': 11} zero-in: 1000
+type 109 'I79_Bec en or': header Contents {'0xfb': 5} zero-in: 1000
+type 115 'I85_Cœur moyen': header Contents {'0xfb': 9} zero-in: 1000
+type 118 'I88_Livre d’Elna': header Contents {'0xff': 6} zero-in: 1000
+type 119 'I89_Objet 089': header Contents {'0xff': 2} zero-in: 1000
+type 120 'I90_Objet 090': header Contents {'0xff': 6} zero-in: 0
+type 121 'I91_Objet 091': header Contents {'0xfc': 14} zero-in: 0
+type 126 'I96_Objet 096': header Contents {'0xff': 14} zero-in: 0
+type 128 '(vide)': header Contents {'0xfb': 9} zero-in: 0
+type 131 '(vide)': header Contents {'0xff': 1} zero-in: 0
+type 133 '(vide)': header Contents {'0xfc': 2} zero-in: 0
+type 134 '(vide)': header Contents {'0xff': 10} zero-in: 0
+type 139 '(vide)': header Contents {'0xfc': 1} zero-in: 0
+type 145 '(vide)': header Contents {'0xfc': 12} zero-in: 0
+type 148 '(vide)': header Contents {'0xfa': 10} zero-in: 0
+type 154 '(vide)': header Contents {'0xfc': 9} zero-in: 1000
+type 167 '(vide)': header Contents {'0xfb': 3} zero-in: 0
+type 169 '(vide)': header Contents {'0xfc': 6} zero-in: 0
+type 172 '(vide)': header Contents {'0xfc': 3} zero-in: 0
+type 175 '(vide)': header Contents {'0xfc': 4} zero-in: 0
+type 181 '(vide)': header Contents {'0xfc': 16} zero-in: 0
+type 184 '(vide)': header Contents {'0xfc': 8} zero-in: 0
+type 185 '(vide)': header Contents {'0xfc': 3} zero-in: 0
+type 187 '(vide)': header Contents {'0xfc': 5} zero-in: 0
+type 193 '(vide)': header Contents {'0xfc': 4} zero-in: 0
+type 196 '(vide)': header Contents {'0xfc': 8} zero-in: 0
+type 205 '(vide)': header Contents {'0xfc': 2} zero-in: 0
+type 211 '(vide)': header Contents {'0xfb': 6} zero-in: 0
+type 217 '(vide)': header Contents {'0xfb': 5} zero-in: 0
+type 222 '(vide)': header Contents {'0xfc': 3} zero-in: 0
+type 230 'Mur à boule de fer (2×2×1) permanent': header Contents {'0xff': 1000} zero-in: 1
+type 232 'Mur à boule de fer (2×2×2) permanent': header Contents {'0xff': 1000} zero-in: 2
+type 234 'Pierre très lourde': header Contents {'0xff': 1000} zero-in: 2
+type 238 'Ronces enflammées 222': header Contents {'0xff': 1000} zero-in: 2
+type 239 'Ronces enflammées 112': header Contents {'0xff': 1000} zero-in: 1
+type 240 'Plateforme mobile toutes directions': header Contents {'0xfc': 1} zero-in: 1000
+type 248 'Bloc transparent (gigantesque)': header Contents {'0xfc': 2} zero-in: 1000
+type 249 'Bloc transparent (minuscule)': header Contents {'0xfb': 2} zero-in: 1000
+type 252 'Rocher tombant': header Contents {'0xfb': 3} zero-in: 1000
+type 254 'Panneau générique': header Contents {'0x82': 1000} zero-in: 4
+
+placed enabled entities 9631 entity Contents > 0xFF 0 with flag 396 flag invalid (>=0x800) 0
+effective code kinds: {'none': 4928, 'fixed': 497, 'random': 4206}
+
+== B1. placed entities with effective code != 0, by type and code ==
+type  30 'Coffre au trésor': {'0x1': 2, '0x2': 3, '0x3': 2, '0x4': 3, '0x5': 1, '0x6': 2, '0x7': 1, '0x8': 1, '0x9': 1, '0xa': 1, '0xb': 1, '0xc': 1, '0xd': 1, '0xe': 2, '0xf': 1, '0x10': 2, '0x11': 1, '0x12': 1, '0x13': 2, '0x14': 1, '0x15': 1, '0x16': 1, '0x17': 1, '0x18': 1, '0x19': 1, '0x1a': 2, '0x1b': 2, '0x1c': 2, '0x1d': 1, '0x1e': 1, '0x1f': 1, '0x20': 2, '0x21': 1, '0x22': 1, '0x23': 1, '0x24': 109, '0x25': 15, '0x26': 10, '0x27': 18, '0x28': 1, '0x29': 27, '0x2a': 1, '0x2b': 2, '0x2c': 3, '0x2d': 2, '0x2e': 2, '0x2f': 3, '0x30': 2, '0x31': 2, '0x32': 2, '0x33': 1, '0x34': 1, '0x35': 1, '0x36': 2, '0x37': 1, '0x38': 1, '0x39': 2, '0x3a': 1, '0x3b': 1, '0x3c': 2, '0x3d': 48, '0x3e': 2, '0x3f': 3, '0x40': 3, '0x41': 2, '0x42': 2, '0x43': 2, '0x44': 1, '0x45': 3, '0x46': 1, '0x47': 7, '0x48': 40, '0x49': 2, '0x4a': 1, '0x4b': 1, '0x4c': 1, '0x4d': 1, '0x4e': 1, '0x4f': 55, '0x50': 5, '0x51': 1, '0x52': 1, '0x53': 39, '0x54': 1, '0x55': 1, '0x56': 1, '0x57': 1, '0x58': 1, '0x59': 1, '0x5a': 1, '0x5b': 1, '0x5c': 1, '0x5d': 1, '0x5e': 1, '0x5f': 1, '0x60': 1, '0x61': 1}
+type  34 'I04_Épée sacrée Elnard': {'0x82': 76}
+type  35 'I05_Arc du chasseur': {'0x82': 915}
+type  36 'I06_Arc de William': {'0x82': 995}
+type  37 'I07_Bâton magique': {'0x82': 27}
+type  38 'I08_Objet 008': {'0xf8': 42}
+type  41 'I11_Objet 011': {'0xf7': 8}
+type  73 'I43_Tome de la Terre (haut)': {'0xfc': 118}
+type  79 'I49_Tome du dieu du vent (haut)': {'0xfc': 130}
+type  82 'I52_Anneau d’ogre': {'0xfc': 33}
+type  85 'I55_Anneau de régénération': {'0xfc': 61}
+type  88 'I58_Objet 058': {'0xfc': 2}
+type  91 'I61_Clé': {'0xfb': 203}
+type  94 'I64_Emblème de topaze': {'0xfb': 39}
+type 100 'I70_5 Gildas': {'0xfb': 30}
+type 106 'I76_Testament d’Anzes': {'0xfb': 110}
+type 109 'I79_Bec en or': {'0xfb': 25}
+type 115 'I85_Cœur moyen': {'0xfb': 40}
+type 118 'I88_Livre d’Elna': {'0xff': 33}
+type 119 'I89_Objet 089': {'0xff': 15}
+type 120 'I90_Objet 090': {'0xff': 47}
+type 121 'I91_Objet 091': {'0xfc': 65}
+type 126 'I96_Objet 096': {'0xff': 155}
+type 128 '(vide)': {'0xfb': 150}
+type 131 '(vide)': {'0xff': 29}
+type 133 '(vide)': {'0xfc': 12}
+type 134 '(vide)': {'0xff': 73}
+type 139 '(vide)': {'0xfc': 4}
+type 145 '(vide)': {'0xfc': 84}
+type 148 '(vide)': {'0xfa': 22}
+type 154 '(vide)': {'0xfc': 76}
+type 169 '(vide)': {'0xfc': 34}
+type 172 '(vide)': {'0xfc': 16}
+type 175 '(vide)': {'0xfc': 16}
+type 181 '(vide)': {'0xfc': 75}
+type 184 '(vide)': {'0xfc': 40}
+type 185 '(vide)': {'0xfc': 14}
+type 187 '(vide)': {'0xfc': 26}
+type 193 '(vide)': {'0xfc': 15}
+type 196 '(vide)': {'0xfc': 26}
+type 205 '(vide)': {'0xfc': 6}
+type 211 '(vide)': {'0xfb': 37}
+type 217 '(vide)': {'0xfb': 35}
+type 230 'Mur à boule de fer (2×2×1) permanent': {'0xff': 4}
+type 232 'Mur à boule de fer (2×2×2) permanent': {'0xff': 17}
+type 234 'Pierre très lourde': {'0xff': 7}
+type 238 'Ronces enflammées 222': {'0xff': 61}
+type 239 'Ronces enflammées 112': {'0xff': 96}
+type 252 'Rocher tombant': {'0xfb': 5}
+type 254 'Panneau générique': {'0x82': 57}

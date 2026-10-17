@@ -1,0 +1,6 @@
+scenarios 600
+  current   scenarios with >=1 mismatching tick: 595 / 600   mismatching ticks by field: {'rel': 6959, 'hz': 6959, 'coll': 634, 'ride': 6383, 'ground': 5240, 'cz': 8}
+  proposed  scenarios with >=1 mismatching tick:   0 / 600   mismatching ticks by field: {}
+  proposed-peek scenarios with >=1 mismatching tick: 595 / 600   mismatching ticks by field: {'rel': 6598, 'ground': 6598, 'hz': 6598, 'ride': 6066, 'coll': 208, 'cz': 38}
+  proposed-movefirst scenarios with >=1 mismatching tick: 544 / 600   mismatching ticks by field: {'rel': 5309, 'ground': 5309, 'coll': 1049, 'hz': 5309, 'ride': 4811, 'cz': 4}
+  proposed-endpass scenarios with >=1 mismatching tick: 505 / 600   mismatching ticks by field: {'ground': 2776}

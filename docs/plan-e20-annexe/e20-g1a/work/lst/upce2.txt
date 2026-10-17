@@ -1,0 +1,80 @@
+0x8002f9e0  addiu    $v0, $v0, 0x7d30
+0x8002f9e4  ori      $a2, $a2, 0xffff
+0x8002f9e8  lw       $a0, 0x114($a3)
+0x8002f9ec  lw       $v1, 0x114($v0)
+0x8002f9f0  lw       $a1, 0x118($a3)
+0x8002f9f4  subu     $s2, $a0, $v1
+0x8002f9f8  lw       $v1, 0x118($v0)
+0x8002f9fc  lw       $a0, 0x11c($a3)
+0x8002fa00  lw       $v0, 0x11c($v0)
+0x8002fa04  subu     $s1, $a1, $v1
+0x8002fa08  subu     $s0, $a0, $v0
+0x8002fa0c  bgez     $s2, 0x8002fa18
+0x8002fa10  move     $v1, $s2
+0x8002fa14  negu     $v1, $v1
+0x8002fa18  bgez     $s1, 0x8002fa24
+0x8002fa1c  move     $a1, $s1
+0x8002fa20  negu     $a1, $a1
+0x8002fa24  bgez     $s0, 0x8002fa30
+0x8002fa28  move     $a0, $s0
+0x8002fa2c  negu     $a0, $a0
+0x8002fa30  slt      $v0, $a2, $v1
+0x8002fa34  bnez     $v0, 0x8002fa5c
+0x8002fa38  slt      $v0, $a2, $a1
+0x8002fa3c  bnez     $v0, 0x8002fa5c
+0x8002fa40  slt      $v0, $a2, $a0
+0x8002fa44  bnez     $v0, 0x8002fa60
+0x8002fa48  move     $a0, $s2
+0x8002fa4c  jal      0x8003a774
+0x8002fa50  move     $a0, $a3
+0x8002fa54  j        0x8002faf8
+0x8002fa58  nop      
+0x8002fa5c  move     $a0, $s2
+0x8002fa60  move     $a1, $zero
+0x8002fa64  jal      0x8002f854
+0x8002fa68  lui      $a2, 2
+0x8002fa6c  move     $s2, $v0
+0x8002fa70  move     $a0, $s1
+0x8002fa74  move     $a1, $zero
+0x8002fa78  jal      0x8002f854
+0x8002fa7c  lui      $a2, 2
+0x8002fa80  move     $s1, $v0
+0x8002fa84  move     $a0, $s0
+0x8002fa88  move     $a1, $zero
+0x8002fa8c  jal      0x8002f854
+0x8002fa90  lui      $a2, 2
+0x8002fa94  lui      $v1, 0x8012
+0x8002fa98  addiu    $v1, $v1, 0x7d30
+0x8002fa9c  sw       $s2, 0x30($v1)
+0x8002faa0  sw       $s1, 0x34($v1)
+0x8002faa4  j        0x8002faf8
+0x8002faa8  sw       $v0, 0x38($v1)
+0x8002faac  j        0x8002faf8
+0x8002fab0  sw       $v0, -0x70d8($a0)
+0x8002fab4  addiu    $v1, $v1, 0x7d30
+0x8002fab8  sw       $v0, 0x24($a3)
+0x8002fabc  lw       $v0, 0x8c($v1)
+0x8002fac0  nop      
+0x8002fac4  sw       $v0, 0x8c($a3)
+0x8002fac8  lw       $v0, 0x114($v1)
+0x8002facc  nop      
+0x8002fad0  sw       $v0, 0x114($a3)
+0x8002fad4  lw       $v0, 0x118($v1)
+0x8002fad8  nop      
+0x8002fadc  sw       $v0, 0x118($a3)
+0x8002fae0  lw       $v0, 0x11c($v1)
+0x8002fae4  lui      $v1, 0x20
+0x8002fae8  addu     $v0, $v0, $v1
+0x8002faec  sw       $v0, 0x11c($a3)
+0x8002faf0  lui      $v0, 0x800a
+0x8002faf4  sw       $zero, -0x70d8($v0)
+0x8002faf8  lw       $ra, 0x1c($sp)
+0x8002fafc  lw       $s2, 0x18($sp)
+0x8002fb00  lw       $s1, 0x14($sp)
+0x8002fb04  lw       $s0, 0x10($sp)
+0x8002fb08  addiu    $sp, $sp, 0x20
+0x8002fb0c  jr       $ra
+0x8002fb10  nop      
+0x8002fb14  lui      $v0, 0x8012
+0x8002fb18  lw       $v0, 0x7db8($v0)
+0x8002fb1c  addiu    $sp, $sp, -0x68

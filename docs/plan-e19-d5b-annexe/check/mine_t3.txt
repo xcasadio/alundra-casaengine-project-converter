@@ -1,0 +1,12 @@
+t00 plat x=  6553600 afx=      0 ffx=      0 | hero x=  6553600 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t01 plat x=  6553600 afx=      0 ffx=      0 | hero x=  6553600 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t02 plat x=  6553600 afx=      0 ffx=      0 | hero x=  6553600 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t03 plat x=  6619136 afx=  65536 ffx=  65536 | hero x=  6619136 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t04 plat x=  6684672 afx=  65536 ffx=  65536 | hero x=  6684672 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t05 plat x=  6750208 afx=  65536 ffx=  65536 | hero x=  6750208 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t06 plat x=  6815744 afx=  65536 ffx=  65536 | hero x=  6815744 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t07 plat x=  6881280 afx=  65536 ffx=  65536 | hero x=  6881280 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t08 plat x=  6881280 afx=      0 ffx=      0 | hero x=  6881280 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t09 plat x=  6881280 afx=      0 ffx=      0 | hero x=  6881280 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t10 plat x=  6881280 afx=      0 ffx=      0 | hero x=  6881280 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t11 plat x=  6881280 afx=      0 ffx=      0 | hero x=  6881280 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1

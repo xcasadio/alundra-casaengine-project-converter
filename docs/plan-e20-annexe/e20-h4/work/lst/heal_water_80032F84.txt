@@ -1,0 +1,99 @@
+; function 0x80032F84..0x800330FC (94 words)
+80032F84  27bdffc8  addiu    $sp, $sp, -0x38
+80032F88  afbf0034  sw       $ra, 0x34($sp)                ; sp+0x34
+80032F8C  afb40030  sw       $s4, 0x30($sp)                ; sp+0x30
+80032F90  afb3002c  sw       $s3, 0x2c($sp)                ; sp+0x2C
+80032F94  afb20028  sw       $s2, 0x28($sp)                ; sp+0x28
+80032F98  afb10024  sw       $s1, 0x24($sp)                ; sp+0x24
+80032F9C  afb00020  sw       $s0, 0x20($sp)                ; sp+0x20
+80032FA0  8c860018  lw       $a2, 0x18($a0)
+80032FA4  8c850014  lw       $a1, 0x14($a0)                ; a0.Hp
+80032FA8  000617c2  srl      $v0, $a2, 0x1f
+80032FAC  00c21021  addu     $v0, $a2, $v0
+80032FB0  00021843  sra      $v1, $v0, 1
+80032FB4  28620005  slti     $v0, $v1, 5
+80032FB8  10400002  beqz     $v0, 0x80032fc4   -> L_80032FC4
+80032FBC  00000000  nop      
+80032FC0  24030005  addiu    $v1, $zero, 5
+L_80032FC4:
+80032FC4  00a32821  addu     $a1, $a1, $v1
+80032FC8  00c5102a  slt      $v0, $a2, $a1
+80032FCC  10400002  beqz     $v0, 0x80032fd8   -> L_80032FD8
+80032FD0  00000000  nop      
+80032FD4  00c02821  move     $a1, $a2
+L_80032FD8:
+80032FD8  ac850014  sw       $a1, 0x14($a0)                ; a0.Hp
+80032FDC  00008021  move     $s0, $zero
+80032FE0  3c028012  lui      $v0, 0x8012
+80032FE4  24547d30  addiu    $s4, $v0, 0x7d30              ; =0x80127D30 EntityTable(hero slot0)
+80032FE8  3c13800a  lui      $s3, 0x800a
+80032FEC  3c127d2b  lui      $s2, 0x7d2b                   ; <<RNG step begins>>
+80032FF0  365289dd  ori      $s2, $s2, 0x89dd              ; =0x7D2B89DD
+80032FF4  3c11e06a  lui      $s1, 0xe06a
+80032FF8  363102e7  ori      $s1, $s1, 0x2e7               ; =0xE06A02E7
+80032FFC  3c030010  lui      $v1, 0x10
+L_80033000:
+80033000  8e820118  lw       $v0, 0x118($s4)               ; s4.PosY
+80033004  00002021  move     $a0, $zero
+80033008  afa20010  sw       $v0, 0x10($sp)                ; sp+0x10
+8003300C  8e82011c  lw       $v0, 0x11c($s4)               ; s4.PosZ
+80033010  2405000e  addiu    $a1, $zero, 0xe
+80033014  00431021  addu     $v0, $v0, $v1
+80033018  afa20014  sw       $v0, 0x14($sp)                ; sp+0x14
+8003301C  8e870114  lw       $a3, 0x114($s4)               ; s4.PosX
+80033020  0c00ef76  jal      0x8003bdd8                    ; CreateEffectEntity
+80033024  00803021  move     $a2, $a0
+80033028  00404821  move     $t1, $v0
+8003302C  11200026  beqz     $t1, 0x800330c8   -> L_800330C8
+80033030  3c08fffe  lui      $t0, 0xfffe
+80033034  8e628708  lw       $v0, -0x78f8($s3)
+80033038  00000000  nop      
+8003303C  00520018  mult     $v0, $s2
+80033040  00001812  mflo     $v1
+80033044  00711821  addu     $v1, $v1, $s1
+80033048  00000000  nop      
+8003304C  00720018  mult     $v1, $s2
+80033050  00002012  mflo     $a0
+80033054  3c020002  lui      $v0, 2
+80033058  34420001  ori      $v0, $v0, 1                   ; =0x00020001
+8003305C  00620019  multu    $v1, $v0                      ; <<multu: RNG scale (look at the addiu N above)>>
+80033060  3c020003  lui      $v0, 3
+80033064  00005810  mfhi     $t3
+80033068  00005012  mflo     $t2
+8003306C  34420001  ori      $v0, $v0, 1                   ; =0x00030001
+80033070  00912821  addu     $a1, $a0, $s1
+80033074  00a20019  multu    $a1, $v0                      ; <<multu: RNG scale (look at the addiu N above)>>
+80033078  3c020002  lui      $v0, 2
+8003307C  afaa0018  sw       $t2, 0x18($sp)                ; sp+0x18
+80033080  afab001c  sw       $t3, 0x1c($sp)                ; sp+0x1C
+80033084  ad22005c  sw       $v0, 0x5c($t1)                ; t1.ProgIdxE
+80033088  8faa0018  lw       $t2, 0x18($sp)                ; sp+0x18
+8003308C  8fab001c  lw       $t3, 0x1c($sp)                ; sp+0x1C
+80033090  35088000  ori      $t0, $t0, 0x8000              ; =0xFFFE8000
+80033094  ae638708  sw       $v1, -0x78f8($s3)
+80033098  ae658708  sw       $a1, -0x78f8($s3)
+8003309C  000b1003  sra      $v0, $t3, 0
+800330A0  000b1fc3  sra      $v1, $t3, 0x1f
+800330A4  3c04ffff  lui      $a0, 0xffff
+800330A8  00441021  addu     $v0, $v0, $a0
+800330AC  ad220054  sw       $v0, 0x54($t1)                ; t1.ProgIdxC
+800330B0  00003810  mfhi     $a3
+800330B4  00003012  mflo     $a2
+800330B8  00071003  sra      $v0, $a3, 0
+800330BC  00071fc3  sra      $v1, $a3, 0x1f
+800330C0  00481021  addu     $v0, $v0, $t0
+800330C4  ad220058  sw       $v0, 0x58($t1)                ; t1.ProgIdxD
+L_800330C8:
+800330C8  26100001  addiu    $s0, $s0, 1
+800330CC  2a020004  slti     $v0, $s0, 4
+800330D0  1440ffcb  bnez     $v0, 0x80033000   -> L_80033000
+800330D4  3c030010  lui      $v1, 0x10
+800330D8  8fbf0034  lw       $ra, 0x34($sp)                ; sp+0x34
+800330DC  8fb40030  lw       $s4, 0x30($sp)                ; sp+0x30
+800330E0  8fb3002c  lw       $s3, 0x2c($sp)                ; sp+0x2C
+800330E4  8fb20028  lw       $s2, 0x28($sp)                ; sp+0x28
+800330E8  8fb10024  lw       $s1, 0x24($sp)                ; sp+0x24
+800330EC  8fb00020  lw       $s0, 0x20($sp)                ; sp+0x20
+800330F0  27bd0038  addiu    $sp, $sp, 0x38
+800330F4  03e00008  jr       $ra
+800330F8  00000000  nop      

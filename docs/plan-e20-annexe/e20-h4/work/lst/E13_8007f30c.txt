@@ -1,0 +1,30 @@
+; function 0x8007F30C..0x8007F378 (27 words)
+8007F30C  27bdffe8  addiu    $sp, $sp, -0x18
+8007F310  00802821  move     $a1, $a0
+8007F314  afbf0010  sw       $ra, 0x10($sp)                ; sp+0x10
+8007F318  8ca20088  lw       $v0, 0x88($a1)                ; a1.TargetAnim
+8007F31C  24060001  addiu    $a2, $zero, 1
+8007F320  14460009  bne      $v0, $a2, 0x8007f348   -> L_8007F348
+8007F324  24020002  addiu    $v0, $zero, 2
+8007F328  8ca200ac  lw       $v0, 0xac($a1)                ; a1.AnimEndFlag
+8007F32C  00000000  nop      
+8007F330  1446000d  bne      $v0, $a2, 0x8007f368   -> L_8007F368
+8007F334  00000000  nop      
+8007F338  0c00e967  jal      0x8003a59c                    ; DestroyEntity
+8007F33C  2405ffff  addiu    $a1, $zero, -1
+8007F340  0801fcda  j        0x8007f368   -> L_8007F368
+8007F344  00000000  nop      
+L_8007F348:
+8007F348  3c04800e  lui      $a0, 0x800e
+8007F34C  8ca3006c  lw       $v1, 0x6c($a1)                ; a1.Flags
+8007F350  ac82d874  sw       $v0, -0x278c($a0)             ; [0x800DD874]
+8007F354  2402ffcf  addiu    $v0, $zero, -0x31
+8007F358  aca60088  sw       $a2, 0x88($a1)                ; a1.TargetAnim
+8007F35C  34630040  ori      $v1, $v1, 0x40
+8007F360  00621824  and      $v1, $v1, $v0
+8007F364  aca3006c  sw       $v1, 0x6c($a1)                ; a1.Flags
+L_8007F368:
+8007F368  8fbf0010  lw       $ra, 0x10($sp)                ; sp+0x10
+8007F36C  27bd0018  addiu    $sp, $sp, 0x18
+8007F370  03e00008  jr       $ra
+8007F374  00000000  nop      

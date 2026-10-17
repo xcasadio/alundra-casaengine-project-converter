@@ -1,0 +1,6 @@
+SURVIVOR 80031dfc imm-1            addiu $v1, $v0, 0x7d30       -> addiu $v1, $v0, 0x7d2f
+SURVIVOR 800322c8 off+4            lw $v0, 0x2c($v1)            -> lw $v0, 0x30($v1)
+SURVIVOR 80032304 off+4            lw $v0, 0x2c($v1)            -> lw $v0, 0x30($v1)
+SURVIVOR 80032398 off+4            lw $v0, 0x114($s0)           -> lw $v0, 0x118($s0)
+SURVIVOR 800323ac off+4            sw $v0, 0x118($a0)           -> sw $v0, 0x11c($a0)
+carry-group mutants 131 killed 126 survivors 5

@@ -1,0 +1,25 @@
+vectors 4000, ticks 9947, vectors with a mismatch 0, entity-ticks with RidingEntity set 537, features {'coll': 6846, 'ground': 10589, 'ride': 537}, 62.1s
+coverage P 0x80038364              100 /  100 instructions  (100.0%)
+coverage riders 0x800364C8          81 /   81 instructions  (100.0%)
+coverage forces 0x80036828         168 /  235 instructions  (71.5%)
+coverage ridercopy 0x80037364       32 /   32 instructions  (100.0%)
+coverage ComputeZ 0x800375E0        84 /   84 instructions  (100.0%)
+coverage landing 0x80036BFC        102 /  102 instructions  (100.0%)
+coverage ceiling 0x80036D94        104 /  104 instructions  (100.0%)
+coverage MoveEntity 0x80037E34      22 /   61 instructions  (36.1%)
+coverage FloorHeight 0x80037F28     79 /   79 instructions  (100.0%)
+mutants (each run on the same recorded real outputs):
+  win_no_plus1           KILLED    differing vectors 23  (0, 2, 'z', 3604481, 3506177)
+  ride_top_nopl1         KILLED    differing vectors 361  (0, 1, 'ffz', -81920, -147456)
+  ride_mask_0x100        KILLED    differing vectors 83  (2, 1, 'fz', 65536, 0)
+  land_t_ge              KILLED    differing vectors 114  (0, 1, 'z', -524287, -524288)
+  land_cand_le           KILLED    differing vectors 51  (0, 1, 'z', 1835008, 1835009)
+  land_below_le          KILLED    differing vectors 15  (1, 1, 'z', 4194305, 4194304)
+  ceil_le                KILLED    differing vectors 4  (0, 2, 'z', 1, 0)
+  no_ridercopy           KILLED    differing vectors 255  (0, 1, 'z', 2097153, 2146305)
+  no_recursion           SURVIVED  differing vectors 0  
+  no_move_first          KILLED    differing vectors 193  (0, 1, 'z', -524287, -524288)
+  moved_ignored          KILLED    differing vectors 180  (0, -1, 'runaway', 0, 1)
+  copy_ignores_impulse   KILLED    differing vectors 10  (1, 0, 'z', 902848, 206529)
+  one_sided              KILLED    differing vectors 199  (0, 3, 'z', 124583937, 124633089)
+mutants killed 12 / 13

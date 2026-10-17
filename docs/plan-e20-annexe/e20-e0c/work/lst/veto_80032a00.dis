@@ -1,0 +1,16 @@
+0x80032a00  addiu    $sp, $sp, -0x18
+0x80032a04  addiu    $v0, $zero, 0x26
+0x80032a08  beq      $a0, $v0, 0x80032a24
+0x80032a0c  sw       $ra, 0x10($sp)
+0x80032a10  addiu    $v0, $zero, 0x51
+0x80032a14  beq      $a0, $v0, 0x80032a24
+0x80032a18  addiu    $v0, $zero, 0x52
+0x80032a1c  bne      $a0, $v0, 0x80032a30
+0x80032a20  move     $v0, $zero
+0x80032a24  jal      0x8004dddc
+0x80032a28  nop      
+0x80032a2c  sltiu    $v0, $v0, 1
+0x80032a30  lw       $ra, 0x10($sp)
+0x80032a34  addiu    $sp, $sp, 0x18
+0x80032a38  jr       $ra
+0x80032a3c  nop      

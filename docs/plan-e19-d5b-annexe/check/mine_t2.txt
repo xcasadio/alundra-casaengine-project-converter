@@ -1,0 +1,26 @@
+== descending 1 px/tick from t2, stop at t7, hero on it, platform 40 px above ground
+t00  plat z=  2621441 fz=       0 ffz=       0 | hero z=  3145729 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t01  plat z=  2621441 fz=       0 ffz=       0 | hero z=  3145729 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t02  plat z=  2555905 fz=  -65536 ffz=  -65536 | hero z=  3080193 (rel        0) fz=  -65536 ffz=  -65536 ride=1 coll=0 gnd=1
+t03  plat z=  2490369 fz=  -65536 ffz=  -65536 | hero z=  3014657 (rel        0) fz=  -65536 ffz=  -65536 ride=1 coll=0 gnd=1
+t04  plat z=  2424833 fz=  -65536 ffz=  -65536 | hero z=  2949121 (rel        0) fz=  -65536 ffz=  -65536 ride=1 coll=0 gnd=1
+t05  plat z=  2359297 fz=  -65536 ffz=  -65536 | hero z=  2883585 (rel        0) fz=  -65536 ffz=  -65536 ride=1 coll=0 gnd=1
+t06  plat z=  2293761 fz=  -65536 ffz=  -65536 | hero z=  2818049 (rel        0) fz=  -65536 ffz=  -65536 ride=1 coll=0 gnd=1
+t07  plat z=  2293761 fz=       0 ffz=       0 | hero z=  2818049 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t08  plat z=  2293761 fz=       0 ffz=       0 | hero z=  2818049 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t09  plat z=  2293761 fz=       0 ffz=       0 | hero z=  2818049 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t10  plat z=  2293761 fz=       0 ffz=       0 | hero z=  2818049 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+== descending 0.5 then 2 px/tick
+t00  plat z=  2621441 fz=       0 ffz=       0 | hero z=  3145729 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t01  plat z=  2621441 fz=       0 ffz=       0 | hero z=  3145729 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t02  plat z=  2588673 fz=  -32768 ffz=  -32768 | hero z=  3112961 (rel        0) fz=  -32768 ffz=  -32768 ride=1 coll=0 gnd=1
+t03  plat z=  2555905 fz=  -32768 ffz=  -32768 | hero z=  3080193 (rel        0) fz=  -32768 ffz=  -32768 ride=1 coll=0 gnd=1
+t04  plat z=  2523137 fz=  -32768 ffz=  -32768 | hero z=  3047425 (rel        0) fz=  -32768 ffz=  -32768 ride=1 coll=0 gnd=1
+t05  plat z=  2490369 fz=  -32768 ffz=  -32768 | hero z=  3014657 (rel        0) fz=  -32768 ffz=  -32768 ride=1 coll=0 gnd=1
+t06  plat z=  2457601 fz=  -32768 ffz=  -32768 | hero z=  2981889 (rel        0) fz=  -32768 ffz=  -32768 ride=1 coll=0 gnd=1
+t07  plat z=  2326529 fz= -131072 ffz= -131072 | hero z=  2850817 (rel        0) fz= -131072 ffz= -131072 ride=1 coll=0 gnd=1
+t08  plat z=  2195457 fz= -131072 ffz= -131072 | hero z=  2719745 (rel        0) fz= -131072 ffz= -131072 ride=1 coll=0 gnd=1
+t09  plat z=  2064385 fz= -131072 ffz= -131072 | hero z=  2588673 (rel        0) fz= -131072 ffz= -131072 ride=1 coll=0 gnd=1
+t10  plat z=  2064385 fz=       0 ffz=       0 | hero z=  2588673 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t11  plat z=  2064385 fz=       0 ffz=       0 | hero z=  2588673 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t12  plat z=  2064385 fz=       0 ffz=       0 | hero z=  2588673 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1

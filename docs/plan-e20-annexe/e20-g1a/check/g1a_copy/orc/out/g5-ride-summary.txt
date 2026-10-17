@@ -1,0 +1,2 @@
+carry=False: hero.support==platform from t55 ; hero X - platform X over 40 ticks [0.0] ; hero Z values [8.0] ; crate X - hero X None ; platform X end 405.00 hero X end 405.00
+carry=True: hero.support==platform from t55 ; hero X - platform X over 40 ticks [0.0] ; hero Z values [8.0] ; crate X - hero X [0.0] ; platform X end 405.00 hero X end 405.00

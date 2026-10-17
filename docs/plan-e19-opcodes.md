@@ -3735,7 +3735,7 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   | Textes : commentaire de T-C61 (`0x30 @983` teste G672, `0x05 @990` le pose), doc d'A10 périmée (« returns 1 at its first call »), Meade non écrit dans le test d'A10 ; A12 sans `using` (un arc bloqué laisse l'état global sale) ; UJ-0x8000 avec gravité ne discrimine que le terme `!gravity` ; liste fermée de l'acceptation 2 qui omettait la propriété `SoundPlayer` de `ContactHost` et un commentaire et un `cref` de C5. | P4 | Reportés à l'hygiène d'E19.d2c2 ; la liste incomplète est acceptée (aucune assertion touchée). |
   | L'effacement du drapeau d'apparition par `0x1C` n'a pas de test (aucun site réel). | P4 | Reporté à E19.m (déjà noté). |
 
-##### 1.2h.3.2 E19.d2c2 — Saut à la manette, chutes, dessus d'objets ⏳ (état au 2026-10-07 : D0 à D4 et D5a faites ; D5b (F2) en pause, conception à soumettre de nouveau à l'auteur ; D6 et D7 à venir)
+##### 1.2h.3.2 E19.d2c2 — Saut à la manette, chutes, dessus d'objets ⏳ (état au 2026-10-07 : D0 à D4 et D5a faites ; D5b (F2) en pause, conception à soumettre de nouveau à l'auteur ; D6 et D7 à venir ; étude de conception de D5b au binaire le 2026-10-17, §1.2h.3.2a)
 
 **Résultat** : Alundra saute à la Croix (sur place ou en marchant), se dirige en l'air, retombe ; elle tombe des rebords
 avec la même mécanique ; elle se pose sur les coffres, plateformes et interrupteurs et une plateforme qui bouge la porte ;
@@ -4098,6 +4098,28 @@ inchangées.
   l'original.
 - Sites `0x2F` qui lisent la Croix hors de la chaîne (51, 440, 477, 143, 475) : la même pression sert le script et le saut,
   comme l'original.
+
+##### 1.2h.3.2a D5b — étude de conception au binaire (2026-10-17, lecture seule ; à soumettre à l'auteur)
+
+Étude faite pour le thème de repli de l'auteur du 2026-10-16 (« monter sur une plateforme »), pendant la pause du chantier de
+restructuration. Preuves : `docs/plan-e19-d5b-annexe/` (rapport, critique indépendante, scripts, traces du code réel).
+
+- **Depuis E20.a, la DLL joue les programmes de toutes les entités avant toute physique, comme le binaire.** Il reste quatre écarts, dans la
+  passe physique et la passe des compteurs : le héros lit la force du tick de son porteur avec un tick de retard (`TickForceZ`,
+  `LastTickDeltaX/Y`) ; la DLL ne « déplace pas d'abord la cible » quand le héros se pose sur une entité qui n'a pas encore bougé (le
+  binaire le fait, `0x800376B8-DC` à l'atterrissage, `0x80037630-50` au plafond) ; `IsOnGround` du héros est calculé avant que le porteur
+  bouge (le binaire : une passe de fin, `0x80038064`) ; `RidingEntity` n'est pas remis à 0 par la passe des compteurs (O-E20-9).
+- **Conception proposée : un portage d'ordre, pas une tolérance** (la tolérance S4b de l'ancien F2 devient inutile) : M1 la force du tick du porteur
+  connue avant que le héros bouge ; M2 le déplacement préalable de la cible ; M3 la passe de fin pour `IsOnGround` ; M4 le nettoyage de
+  `RidingEntity` aux compteurs. Preuves : un modèle Python de la passe du binaire contre le code réel (0 écart sur 2 × 4 000 vecteurs en Z et
+  400 en XY) ; une transcription de la DLL contre le binaire sur 600 scénarios : l'ordre actuel est faux sur 595, l'ordre proposé exact sur
+  600 ; chaque mécanisme est nécessaire (ablation). La critique, avec son propre harnais (3 000 vecteurs, 13 680 ticks, 0 écart ; une mutation
+  du binaire réel qui casse la descente), confirme M1 à M4 et **ajoute une tâche bloquante** : le héros qui **retombe sur une plateforme qui
+  monte**. Dans le binaire, le porteur qui monte s'arrête sous le héros en l'air (plafond d'entités `0x80036D94`) ; dans la DLL, ce plafond
+  ne sert qu'au héros (`AlundraScriptedMotion.cs:354`) : avec M1 à M4 seuls, le porteur traverse le héros (73 scénarios faux sur 600, 1 avec
+  le plafond des porteurs). Elle précise aussi M3 pour les entités qui jouent seules leurs ticks, et M2 sur les trois chemins verticaux.
+- `0x52` et `0x83` cités jusque-là parmi les « attentes » sont des numéros de carte (52, 83), pas des opcodes.
+- Questions Q-D5B-1 à Q-D5B-6 (§3) ; tâches proposées au §12 du rapport, plus la tâche « plafond des porteurs » de la critique.
 
 ### 1.2i E19.e — La chaîne du jour 3 et du jour 4 prouvée, et un test statique des opcodes sautés ✅ (E0 à E5 faites et CONFIRMED le 2026-10-03 ; recette E6 : point 1 (livre de la 163) validé le 2026-10-06, jours 3 et 4 non atteints (recette du 2026-10-06, §1.2x))
 
@@ -12458,6 +12480,12 @@ Réservé aux mesures faites en exécutant les tranches.
 | Q-sm-6 | (2026-10-17) `0x9E` et `0x88` (0 site) : les porter avec des vecteurs seulement, ou les laisser sautés ? | l'auteur |
 | Q-sm-7 | (2026-10-17) Les libellés faux de `EventOpcodeSizeTable.cs` (`0x6B`-`0x6D`, `0x88`, `0x97`, `0xA9`, `0xAA`, `0xB4`-`0xB6`) sont corrigés dans la tranche qui porte l'opcode | E19.sm1 à sm4 |
 | Q-sm-8 | (2026-10-17) Les cartes 55 à 57 (11 lectures de `0x6D` sans `0x6A`) sont-elles atteignables dans le jeu livré ? | l'auteur |
+| Q-D5B-1 | (2026-10-17) Plateformes qui bougent en Z (D5b) : le héros seul (M1 à M4, plus le plafond des porteurs) ou tous les passagers, caisses comprises ? | l'auteur |
+| Q-D5B-2 | (2026-10-17) Accepter que la correction déplace l'épingle d'UH-14 (le retard de phase de D-E20-40 disparaît) ? | l'auteur |
+| Q-D5B-3 | (2026-10-17) Piles XY (une caisse au milieu d'une pile reçoit deux fois la force de la plateforme dans le binaire) : reproduire, corriger ou ignorer ? À mesurer d'abord dans le corpus | l'auteur |
+| Q-D5B-4 | (2026-10-17) Carte de recette : 83 (navette), 22 (ascenseur), 159 et 160 (bulles), ou une trappe (52, 148, 152, 154, 410, 423) ? | l'auteur |
+| Q-D5B-5 | (2026-10-17) L'atterrissage non strict des PNJ (D-E19-40) sur les ascenseurs qui touchent le terrain : tranche séparée ? | l'auteur |
+| Q-D5B-6 | (2026-10-17) La liste des entités solides alignée sur le binaire pour le statut 4 (une entité détruite reste solide jusqu'à son recyclage, sans effet visible connu) ? | E19.d2c2 D5b (T0) |
 
 ## 4. Hors périmètre
 

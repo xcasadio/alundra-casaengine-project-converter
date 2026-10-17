@@ -1,0 +1,60 @@
+; function 0x80034D2C..0x80034E08 (55 words)
+80034D2C  27bdffd0  addiu    $sp, $sp, -0x30
+80034D30  afb20020  sw       $s2, 0x20($sp)                ; sp+0x20
+80034D34  24120001  addiu    $s2, $zero, 1
+80034D38  3c038013  lui      $v1, 0x8013
+80034D3C  8c634360  lw       $v1, 0x4360($v1)              ; [0x80134360]
+80034D40  3c028012  lui      $v0, 0x8012
+80034D44  afb1001c  sw       $s1, 0x1c($sp)                ; sp+0x1C
+80034D48  24517fc4  addiu    $s1, $v0, 0x7fc4              ; =0x80127FC4
+80034D4C  afbf0028  sw       $ra, 0x28($sp)                ; sp+0x28
+80034D50  afb30024  sw       $s3, 0x24($sp)                ; sp+0x24
+80034D54  18600024  blez     $v1, 0x80034de8   -> L_80034DE8
+80034D58  afb00018  sw       $s0, 0x18($sp)                ; sp+0x18
+80034D5C  24130002  addiu    $s3, $zero, 2
+80034D60  26300020  addiu    $s0, $s1, 0x20                ; =0x80127FE4
+L_80034D64:
+80034D64  8e02fff0  lw       $v0, -0x10($s0)
+80034D68  00000000  nop      
+80034D6C  14530016  bne      $v0, $s3, 0x80034dc8   -> L_80034DC8
+80034D70  24020014  addiu    $v0, $zero, 0x14
+80034D74  8e030048  lw       $v1, 0x48($s0)                ; s0.ref48
+80034D78  00000000  nop      
+80034D7C  1462000e  bne      $v1, $v0, 0x80034db8   -> L_80034DB8
+80034D80  24020017  addiu    $v0, $zero, 0x17
+80034D84  8e0200f8  lw       $v0, 0xf8($s0)
+80034D88  00002021  move     $a0, $zero
+80034D8C  afa20010  sw       $v0, 0x10($sp)                ; sp+0x10
+80034D90  8e0200fc  lw       $v0, 0xfc($s0)
+80034D94  24050013  addiu    $a1, $zero, 0x13
+80034D98  afa20014  sw       $v0, 0x14($sp)                ; sp+0x14
+80034D9C  8e0700f4  lw       $a3, 0xf4($s0)
+80034DA0  0c00ef76  jal      0x8003bdd8                    ; CreateEffectEntity
+80034DA4  24060002  addiu    $a2, $zero, 2
+80034DA8  0c00e9dd  jal      0x8003a774                    ; DestroyEntityNoFx
+80034DAC  02202021  move     $a0, $s1
+80034DB0  8e030048  lw       $v1, 0x48($s0)                ; s0.ref48
+80034DB4  24020017  addiu    $v0, $zero, 0x17
+L_80034DB8:
+80034DB8  14620003  bne      $v1, $v0, 0x80034dc8   -> L_80034DC8
+80034DBC  24020003  addiu    $v0, $zero, 3
+80034DC0  ae02fff0  sw       $v0, -0x10($s0)
+80034DC4  ae000000  sw       $zero, ($s0)
+L_80034DC8:
+80034DC8  26520001  addiu    $s2, $s2, 1
+80034DCC  26100294  addiu    $s0, $s0, 0x294
+80034DD0  3c028013  lui      $v0, 0x8013
+80034DD4  8c424360  lw       $v0, 0x4360($v0)              ; [0x80134360]
+80034DD8  00000000  nop      
+80034DDC  0052102a  slt      $v0, $v0, $s2
+80034DE0  1040ffe0  beqz     $v0, 0x80034d64   -> L_80034D64
+80034DE4  26310294  addiu    $s1, $s1, 0x294
+L_80034DE8:
+80034DE8  8fbf0028  lw       $ra, 0x28($sp)                ; sp+0x28
+80034DEC  8fb30024  lw       $s3, 0x24($sp)                ; sp+0x24
+80034DF0  8fb20020  lw       $s2, 0x20($sp)                ; sp+0x20
+80034DF4  8fb1001c  lw       $s1, 0x1c($sp)                ; sp+0x1C
+80034DF8  8fb00018  lw       $s0, 0x18($sp)                ; sp+0x18
+80034DFC  27bd0030  addiu    $sp, $sp, 0x30
+80034E00  03e00008  jr       $ra
+80034E04  00000000  nop      

@@ -1,0 +1,23 @@
+LADDER carry=True
+t058 pad=0000 | H anim_t=12 carried2C=80127FC4 px=91.0000 py=108.0000 pz=0.0000 fz=0.0000 slope=6 adj=0 ground=1 | C1 pz=32.0000
+t060 pad=0000 | H anim_t=12 carried2C=80127FC4 px=91.0000 py=108.0000 pz=0.0000 fz=0.0000 slope=6 adj=0 ground=1 | C1 pz=32.0000
+t062 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=104.7500 pz=0.0000 fz=0.0000 slope=6 adj=0 ground=1 | C1 pz=32.0000
+t064 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=0 ground=1 | C1 pz=32.0000
+t066 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t068 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t070 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t072 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t074 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t076 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t078 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t080 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t082 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t084 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t086 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t088 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t090 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t092 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t094 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t096 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t098 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000
+t100 pad=1000 | H anim_t=7 carried2C=80127FC4 px=91.0000 py=103.0000 pz=0.0000 fz=0.0000 slope=6 adj=1 ground=1 | C1 pz=32.0000

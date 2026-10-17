@@ -1,0 +1,1 @@
+Beannoid(map_14 sprite 79) at x=165: {'tick': 82, 'attacker': '0x80127fc4', 'hp0': 9, 'atk_rec_ptr': '0x801454f5', 'atk_rec_bytes': [301957121, 2155905024], 'hp1': 0, 'dead': 1, 'sheet_responses': [15, 10, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]}

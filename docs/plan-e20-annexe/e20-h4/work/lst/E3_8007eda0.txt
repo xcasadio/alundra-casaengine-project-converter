@@ -1,0 +1,28 @@
+; function 0x8007EDA0..0x8007EE04 (25 words)
+8007EDA0  27bdffe8  addiu    $sp, $sp, -0x18
+8007EDA4  afbf0010  sw       $ra, 0x10($sp)                ; sp+0x10
+8007EDA8  8c830088  lw       $v1, 0x88($a0)                ; a0.TargetAnim
+8007EDAC  24020001  addiu    $v0, $zero, 1
+8007EDB0  14620009  bne      $v1, $v0, 0x8007edd8   -> L_8007EDD8
+8007EDB4  00000000  nop      
+8007EDB8  8c8200ac  lw       $v0, 0xac($a0)                ; a0.AnimEndFlag
+8007EDBC  00000000  nop      
+8007EDC0  14430005  bne      $v0, $v1, 0x8007edd8   -> L_8007EDD8
+8007EDC4  00000000  nop      
+8007EDC8  0c00e967  jal      0x8003a59c                    ; DestroyEntity
+8007EDCC  2405ffff  addiu    $a1, $zero, -1
+8007EDD0  0801fb7d  j        0x8007edf4   -> L_8007EDF4
+8007EDD4  00000000  nop      
+L_8007EDD8:
+8007EDD8  8c82006c  lw       $v0, 0x6c($a0)                ; a0.Flags
+8007EDDC  24030001  addiu    $v1, $zero, 1
+8007EDE0  ac830088  sw       $v1, 0x88($a0)                ; a0.TargetAnim
+8007EDE4  2403ffcf  addiu    $v1, $zero, -0x31
+8007EDE8  34420040  ori      $v0, $v0, 0x40
+8007EDEC  00431024  and      $v0, $v0, $v1
+8007EDF0  ac82006c  sw       $v0, 0x6c($a0)                ; a0.Flags
+L_8007EDF4:
+8007EDF4  8fbf0010  lw       $ra, 0x10($sp)                ; sp+0x10
+8007EDF8  27bd0018  addiu    $sp, $sp, 0x18
+8007EDFC  03e00008  jr       $ra
+8007EE00  00000000  nop      

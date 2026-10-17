@@ -1,0 +1,10 @@
+MODE 0 (every free tick): offsets (x, y, z) in px after tick t, obj at the oracle geometry
+  east  (+21, 0, 0)      first tick where X/Y moves: 12 ; ticks to (0,0,32): 32 ; samples [(1, 21.0, 0.0, 1.0), (11, 21.0, 0.0, 11.0), (12, 20.0, 0.0, 12.0), (13, 19.0, 0.0, 13.0), (21, 11.0, 0.0, 21.0), (32, 0.0, 0.0, 32.0), (33, 0.0, 0.0, 32.0)]
+  west  (-21, 0, 0)      first tick where X/Y moves: 12 ; ticks to (0,0,32): 32 ; samples [(1, -21.0, 0.0, 1.0), (11, -21.0, 0.0, 11.0), (12, -20.0, 0.0, 12.0), (13, -19.0, 0.0, 13.0), (21, -11.0, 0.0, 21.0), (32, 0.0, 0.0, 32.0), (33, 0.0, 0.0, 32.0)]
+  north (0, -15, 0)      first tick where X/Y moves: 18 ; ticks to (0,0,32): 32 ; samples [(1, 0.0, -15.0, 1.0), (11, 0.0, -15.0, 11.0), (12, 0.0, -15.0, 12.0), (13, 0.0, -15.0, 13.0), (21, 0.0, -11.0, 21.0), (32, 0.0, 0.0, 32.0), (33, 0.0, 0.0, 32.0)]
+  south (0, +15, 0)      first tick where X/Y moves: 18 ; ticks to (0,0,32): 32 ; samples [(1, 0.0, 15.0, 1.0), (11, 0.0, 15.0, 11.0), (12, 0.0, 15.0, 12.0), (13, 0.0, 15.0, 13.0), (21, 0.0, 11.0, 21.0), (32, 0.0, 0.0, 32.0), (33, 0.0, 0.0, 32.0)]
+  on the head (0,0,32)   first tick where X/Y moves: None ; ticks to (0,0,32): 1 ; samples [(1, 0.0, 0.0, 32.0), (11, 0.0, 0.0, 32.0), (12, 0.0, 0.0, 32.0), (13, 0.0, 0.0, 32.0), (21, 0.0, 0.0, 32.0), (32, 0.0, 0.0, 32.0), (33, 0.0, 0.0, 32.0)]
+MODE 1 (locked control, every tick): the object at (0,0,32) over the head
+  AttackCount=1: destroyed (status 4) at call number 22 ; offsets sampled [(5, 32.0), (6, 30.0), (7, 28.0), (21, 0.0), (22, 0.0), (23, 0.0)]
+  AttackCount=0: destroyed (status 4) at call number None ; offsets sampled [(5, 32.0), (6, 32.0), (7, 32.0), (21, 32.0), (22, 32.0), (23, 32.0)]
+MODE 2 (hurt, slope 4, death) once, then MODE 0: offsets stay what they were, +0x24 = -1 set

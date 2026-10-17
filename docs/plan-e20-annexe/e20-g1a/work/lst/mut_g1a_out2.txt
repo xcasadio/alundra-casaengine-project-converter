@@ -1,0 +1,78 @@
+SURVIVOR 8002f85c addu<->subu      move $v0, $v1                -> subu $v0, $v1, $zero
+SURVIVOR 8002f86c addu<->subu      move $v0, $a1                -> subu $v0, $a1, $zero
+SURVIVOR 8002edc4 addu<->subu      move $s0, $a0                -> subu $s0, $a0, $zero
+SURVIVOR 8002edec imm+1            sltiu $v0, $v1, 4            -> sltiu $v0, $v1, 5
+SURVIVOR 8002edf4 addu<->subu      move $v0, $zero              -> negu $v0, $zero
+SURVIVOR 8002ee94 addu<->subu      move $v0, $zero              -> negu $v0, $zero
+SURVIVOR 8002eeac imm+1            addiu $sp, $sp, -0x28        -> addiu $sp, $sp, -0x27
+SURVIVOR 8002eeac imm-1            addiu $sp, $sp, -0x28        -> addiu $sp, $sp, -0x29
+SURVIVOR 8002eeb8 off+4            sw $ra, 0x24($sp)            -> sw $ra, 0x28($sp)
+SURVIVOR 8002eec0 off+4            sw $s3, 0x1c($sp)            -> sw $s3, 0x20($sp)
+SURVIVOR 8002eec4 off+4            sw $s2, 0x18($sp)            -> sw $s2, 0x1c($sp)
+SURVIVOR 8002eec8 off+4            sw $s1, 0x14($sp)            -> sw $s1, 0x18($sp)
+SURVIVOR 8002eecc off+4            sw $s0, 0x10($sp)            -> sw $s0, 0x14($sp)
+SURVIVOR 8002ef30 addu<->subu      move $a0, $s1                -> subu $a0, $s1, $zero
+SURVIVOR 8002ef48 off+4            lw $v0, 0x4360($v1)          -> lw $v0, 0x4364($v1)
+SURVIVOR 8002ef54 addu<->subu      move $s2, $zero              -> negu $s2, $zero
+SURVIVOR 8002ef58 addu<->subu      move $s4, $s1                -> subu $s4, $s1, $zero
+SURVIVOR 8002ef5c addu<->subu      move $s3, $v1                -> subu $s3, $v1, $zero
+SURVIVOR 8002efa0 addu<->subu      move $a0, $s1                -> subu $a0, $s1, $zero
+SURVIVOR 8002efbc slt<->sltu       slt $v0, $v0, $s2            -> sltu $v0, $v0, $s2
+SURVIVOR 8002efc8 addu<->subu      move $v0, $zero              -> negu $v0, $zero
+SURVIVOR 8002efd0 off+4            lw $s4, 0x20($sp)            -> lw $s4, 0x24($sp)
+SURVIVOR 8002efd4 off+4            lw $s3, 0x1c($sp)            -> lw $s3, 0x20($sp)
+SURVIVOR 8002efd8 off+4            lw $s2, 0x18($sp)            -> lw $s2, 0x1c($sp)
+SURVIVOR 8002efdc off+4            lw $s1, 0x14($sp)            -> lw $s1, 0x18($sp)
+SURVIVOR 8002f88c imm+1            addiu $sp, $sp, -0x20        -> addiu $sp, $sp, -0x1f
+SURVIVOR 8002f88c imm-1            addiu $sp, $sp, -0x20        -> addiu $sp, $sp, -0x21
+SURVIVOR 8002f890 off+4            sw $ra, 0x1c($sp)            -> sw $ra, 0x20($sp)
+SURVIVOR 8002f898 off+4            sw $s1, 0x14($sp)            -> sw $s1, 0x18($sp)
+SURVIVOR 8002f8a0 off+4            sw $s0, 0x10($sp)            -> sw $s0, 0x14($sp)
+SURVIVOR 8002f8c4 addu<->subu      move $a0, $zero              -> negu $a0, $zero
+SURVIVOR 8002f908 addu<->subu      move $v1, $s2                -> subu $v1, $s2, $zero
+SURVIVOR 8002f91c addu<->subu      move $a1, $s1                -> subu $a1, $s1, $zero
+SURVIVOR 8002f930 slt<->sltu       slt $v0, $v1, $a1            -> sltu $v0, $v1, $a1
+SURVIVOR 8002f93c slt<->sltu       slt $v0, $v1, $a1            -> sltu $v0, $v1, $a1
+SURVIVOR 8002f944 slt<->sltu       slt $v0, $v1, $a0            -> sltu $v0, $v1, $a0
+SURVIVOR 8002f948 addu<->subu      move $v1, $a1                -> subu $v1, $a1, $zero
+SURVIVOR 8002f94c slt<->sltu       slt $v0, $v1, $a0            -> sltu $v0, $v1, $a0
+SURVIVOR 8002f954 addu<->subu      move $a0, $s0                -> subu $a0, $s0, $zero
+SURVIVOR 8002f958 addu<->subu      move $a0, $s2                -> subu $a0, $s2, $zero
+SURVIVOR 8002f95c addu<->subu      move $a1, $zero              -> negu $a1, $zero
+SURVIVOR 8002f968 addu<->subu      move $s2, $v0                -> subu $s2, $v0, $zero
+SURVIVOR 8002f96c addu<->subu      move $a0, $s1                -> subu $a0, $s1, $zero
+SURVIVOR 8002f970 addu<->subu      move $a1, $zero              -> negu $a1, $zero
+SURVIVOR 8002f97c addu<->subu      move $s1, $v0                -> subu $s1, $v0, $zero
+SURVIVOR 8002f980 addu<->subu      move $a0, $s0                -> subu $a0, $s0, $zero
+SURVIVOR 8002f990 addu<->subu      move $s0, $v0                -> subu $s0, $v0, $zero
+SURVIVOR 8002fa10 addu<->subu      move $v1, $s2                -> subu $v1, $s2, $zero
+SURVIVOR 8002fa1c addu<->subu      move $a1, $s1                -> subu $a1, $s1, $zero
+SURVIVOR 8002fa28 addu<->subu      move $a0, $s0                -> subu $a0, $s0, $zero
+SURVIVOR 8002fa30 slt<->sltu       slt $v0, $a2, $v1            -> sltu $v0, $a2, $v1
+SURVIVOR 8002fa38 slt<->sltu       slt $v0, $a2, $a1            -> sltu $v0, $a2, $a1
+SURVIVOR 8002fa40 slt<->sltu       slt $v0, $a2, $a0            -> sltu $v0, $a2, $a0
+SURVIVOR 8002fa48 addu<->subu      move $a0, $s2                -> subu $a0, $s2, $zero
+SURVIVOR 8002fa50 addu<->subu      move $a0, $a3                -> subu $a0, $a3, $zero
+SURVIVOR 8002fa5c addu<->subu      move $a0, $s2                -> subu $a0, $s2, $zero
+SURVIVOR 8002fa60 addu<->subu      move $a1, $zero              -> negu $a1, $zero
+SURVIVOR 8002fa6c addu<->subu      move $s2, $v0                -> subu $s2, $v0, $zero
+SURVIVOR 8002fa70 addu<->subu      move $a0, $s1                -> subu $a0, $s1, $zero
+SURVIVOR 8002fa74 addu<->subu      move $a1, $zero              -> negu $a1, $zero
+SURVIVOR 8002fa80 addu<->subu      move $s1, $v0                -> subu $s1, $v0, $zero
+SURVIVOR 8002fa84 addu<->subu      move $a0, $s0                -> subu $a0, $s0, $zero
+SURVIVOR 8002fa88 addu<->subu      move $a1, $zero              -> negu $a1, $zero
+SURVIVOR 8002fafc off+4            lw $s2, 0x18($sp)            -> lw $s2, 0x1c($sp)
+SURVIVOR 8002fb00 off+4            lw $s1, 0x14($sp)            -> lw $s1, 0x18($sp)
+SURVIVOR 8002fb04 off+4            lw $s0, 0x10($sp)            -> lw $s0, 0x14($sp)
+SURVIVOR 8002fb08 imm+1            addiu $sp, $sp, 0x20         -> addiu $sp, $sp, 0x21
+SURVIVOR 8002fb08 imm-1            addiu $sp, $sp, 0x20         -> addiu $sp, $sp, 0x1f
+SURVIVOR 8007ed30 imm+1            addiu $sp, $sp, -0x18        -> addiu $sp, $sp, -0x17
+SURVIVOR 8007ed30 imm-1            addiu $sp, $sp, -0x18        -> addiu $sp, $sp, -0x19
+SURVIVOR 8007ed90 off+4            lw $ra, 0x10($sp)            -> lw $ra, 0x14($sp)
+SURVIVOR 8007ed94 imm+1            addiu $sp, $sp, 0x18         -> addiu $sp, $sp, 0x19
+SURVIVOR 8007ed94 imm-1            addiu $sp, $sp, 0x18         -> addiu $sp, $sp, 0x17
+SURVIVOR 80037e3c addu<->subu      move $s1, $a0                -> subu $s1, $a0, $zero
+SURVIVOR 80037e70 addu<->subu      move $a0, $s0                -> subu $a0, $s0, $zero
+SURVIVOR 80037efc addu<->subu      move $a0, $s1                -> subu $a0, $s1, $zero
+SURVIVOR 80037f04 addu<->subu      move $a0, $s1                -> subu $a0, $s1, $zero
+mutants 416 killed 339 survivors 77

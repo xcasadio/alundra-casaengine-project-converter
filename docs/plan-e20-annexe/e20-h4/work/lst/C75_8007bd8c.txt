@@ -1,0 +1,177 @@
+; function 0x8007BD8C..0x8007C024 (166 words)
+8007BD8C  27bdffd8  addiu    $sp, $sp, -0x28
+8007BD90  afb1001c  sw       $s1, 0x1c($sp)                ; sp+0x1C
+8007BD94  00808821  move     $s1, $a0
+8007BD98  3c028012  lui      $v0, 0x8012
+8007BD9C  94426f28  lhu      $v0, 0x6f28($v0)              ; [0x80126F28]
+8007BDA0  26240274  addiu    $a0, $s1, 0x274
+8007BDA4  afbf0024  sw       $ra, 0x24($sp)                ; sp+0x24
+8007BDA8  afb20020  sw       $s2, 0x20($sp)                ; sp+0x20
+8007BDAC  30420020  andi     $v0, $v0, 0x20
+8007BDB0  14400005  bnez     $v0, 0x8007bdc8   -> L_8007BDC8
+8007BDB4  afb00018  sw       $s0, 0x18($sp)                ; sp+0x18
+8007BDB8  8c82001c  lw       $v0, 0x1c($a0)
+8007BDBC  00000000  nop      
+8007BDC0  2442ffff  addiu    $v0, $v0, -1                  ; =0x8011FFFF
+8007BDC4  ac82001c  sw       $v0, 0x1c($a0)
+L_8007BDC8:
+8007BDC8  8c82001c  lw       $v0, 0x1c($a0)
+8007BDCC  00000000  nop      
+8007BDD0  18400049  blez     $v0, 0x8007bef8   -> L_8007BEF8
+8007BDD4  00000000  nop      
+8007BDD8  8c870010  lw       $a3, 0x10($a0)                ; a0.Status
+8007BDDC  8c860014  lw       $a2, 0x14($a0)                ; a0.Hp
+8007BDE0  8e230274  lw       $v1, 0x274($s1)               ; s1.Bytes0
+8007BDE4  00071080  sll      $v0, $a3, 2
+8007BDE8  00441021  addu     $v0, $v0, $a0
+8007BDEC  00c3182a  slt      $v1, $a2, $v1
+8007BDF0  8c450000  lw       $a1, ($v0)
+8007BDF4  00000000  nop      
+8007BDF8  00a6102a  slt      $v0, $a1, $a2
+8007BDFC  14400007  bnez     $v0, 0x8007be1c   -> L_8007BE1C
+8007BE00  00031980  sll      $v1, $v1, 6
+8007BE04  8c820008  lw       $v0, 8($a0)
+8007BE08  00000000  nop      
+8007BE0C  00431021  addu     $v0, $v0, $v1
+8007BE10  00c23021  addu     $a2, $a2, $v0
+8007BE14  0801ef8b  j        0x8007be2c   -> L_8007BE2C
+8007BE18  00c5102a  slt      $v0, $a2, $a1
+L_8007BE1C:
+8007BE1C  8c820008  lw       $v0, 8($a0)
+8007BE20  00000000  nop      
+8007BE24  00c23023  subu     $a2, $a2, $v0
+8007BE28  00a6102a  slt      $v0, $a1, $a2
+L_8007BE2C:
+8007BE2C  14400003  bnez     $v0, 0x8007be3c   -> L_8007BE3C
+8007BE30  38e20001  xori     $v0, $a3, 1
+8007BE34  00a03021  move     $a2, $a1
+8007BE38  ac820010  sw       $v0, 0x10($a0)                ; a0.Status
+L_8007BE3C:
+8007BE3C  8c830018  lw       $v1, 0x18($a0)
+8007BE40  8c82000c  lw       $v0, 0xc($a0)                 ; a0.Parent
+8007BE44  ac860014  sw       $a2, 0x14($a0)                ; a0.Hp
+8007BE48  00621821  addu     $v1, $v1, $v0
+8007BE4C  306300ff  andi     $v1, $v1, 0xff
+8007BE50  3c028002  lui      $v0, 0x8002
+8007BE54  244204f0  addiu    $v0, $v0, 0x4f0               ; =0x800204F0
+8007BE58  ac830018  sw       $v1, 0x18($a0)
+8007BE5C  00031840  sll      $v1, $v1, 1
+8007BE60  00621021  addu     $v0, $v1, $v0
+8007BE64  84440000  lh       $a0, ($v0)                    ; [0x800204F0]
+8007BE68  00000000  nop      
+8007BE6C  00860018  mult     $a0, $a2
+8007BE70  3c058012  lui      $a1, 0x8012
+8007BE74  3c028002  lui      $v0, 0x8002
+8007BE78  244206f0  addiu    $v0, $v0, 0x6f0               ; =0x800206F0
+8007BE7C  00621821  addu     $v1, $v1, $v0
+8007BE80  00002012  mflo     $a0
+8007BE84  84620000  lh       $v0, ($v1)
+8007BE88  24a57d30  addiu    $a1, $a1, 0x7d30              ; =0x80127D30 EntityTable(hero slot0)
+8007BE8C  00460018  mult     $v0, $a2
+8007BE90  00041840  sll      $v1, $a0, 1
+8007BE94  00641821  addu     $v1, $v1, $a0
+8007BE98  8ca20114  lw       $v0, 0x114($a1)               ; a1.PosX [0x80127E44]
+8007BE9C  8ca400c4  lw       $a0, 0xc4($a1)                ; a1.ForceX [0x80127DF4]
+8007BEA0  8ca600c8  lw       $a2, 0xc8($a1)                ; a1.ForceY [0x80127DF8]
+8007BEA4  00431021  addu     $v0, $v0, $v1
+8007BEA8  00441021  addu     $v0, $v0, $a0
+8007BEAC  8e240114  lw       $a0, 0x114($s1)               ; s1.PosX
+8007BEB0  8ca30118  lw       $v1, 0x118($a1)               ; a1.PosY [0x80127E48]
+8007BEB4  00441023  subu     $v0, $v0, $a0
+8007BEB8  ae2200cc  sw       $v0, 0xcc($s1)
+8007BEBC  00005012  mflo     $t2
+8007BEC0  000a1040  sll      $v0, $t2, 1
+8007BEC4  00621821  addu     $v1, $v1, $v0
+8007BEC8  8e220118  lw       $v0, 0x118($s1)               ; s1.PosY
+8007BECC  00661821  addu     $v1, $v1, $a2
+8007BED0  00621823  subu     $v1, $v1, $v0
+8007BED4  ae2300d0  sw       $v1, 0xd0($s1)
+8007BED8  8ca2011c  lw       $v0, 0x11c($a1)               ; a1.PosZ [0x80127E4C]
+8007BEDC  8e23011c  lw       $v1, 0x11c($s1)               ; s1.PosZ
+8007BEE0  00000000  nop      
+8007BEE4  00431023  subu     $v0, $v0, $v1
+8007BEE8  3c030008  lui      $v1, 8
+8007BEEC  00431021  addu     $v0, $v0, $v1
+8007BEF0  0801f002  j        0x8007c008   -> L_8007C008
+8007BEF4  ae2200b8  sw       $v0, 0xb8($s1)                ; s1.ForceZ
+L_8007BEF8:
+8007BEF8  1440003f  bnez     $v0, 0x8007bff8   -> L_8007BFF8
+8007BEFC  02202021  move     $a0, $s1
+8007BF00  24050001  addiu    $a1, $zero, 1
+8007BF04  3c12800d  lui      $s2, 0x800d
+8007BF08  2650c058  addiu    $s0, $s2, -0x3fa8             ; =0x800CC058
+8007BF0C  8e2201c8  lw       $v0, 0x1c8($s1)               ; s1.CurAttack
+8007BF10  02003821  move     $a3, $s0
+8007BF14  90460000  lbu      $a2, ($v0)
+8007BF18  26020100  addiu    $v0, $s0, 0x100               ; =0x800CC158
+8007BF1C  afa20010  sw       $v0, 0x10($sp)                ; sp+0x10
+8007BF20  0c00ebdc  jal      0x8003af70                    ; FUN_8003AF70
+8007BF24  30c6000f  andi     $a2, $a2, 0xf
+8007BF28  10400010  beqz     $v0, 0x8007bf6c   -> L_8007BF6C
+8007BF2C  3c037d2b  lui      $v1, 0x7d2b                   ; <<RNG step begins>>
+8007BF30  8e020100  lw       $v0, 0x100($s0)               ; [0x800CC158]
+8007BF34  00000000  nop      
+8007BF38  28423840  slti     $v0, $v0, 0x3840
+8007BF3C  1040000c  beqz     $v0, 0x8007bf70   -> L_8007BF70
+8007BF40  3c04800a  lui      $a0, 0x800a
+8007BF44  8e42c058  lw       $v0, -0x3fa8($s2)             ; [0x800CC058]
+8007BF48  8e240114  lw       $a0, 0x114($s1)               ; s1.PosX
+8007BF4C  8e250118  lw       $a1, 0x118($s1)               ; s1.PosY
+8007BF50  8c430114  lw       $v1, 0x114($v0)               ; v0.PosX [0x800CC26C]
+8007BF54  8c420118  lw       $v0, 0x118($v0)               ; v0.PosY [0x800CC270]
+8007BF58  00642023  subu     $a0, $v1, $a0
+8007BF5C  0c00ba05  jal      0x8002e814                    ; GetDirectionToTarget
+8007BF60  00452823  subu     $a1, $v0, $a1
+8007BF64  0801efeb  j        0x8007bfac   -> L_8007BFAC
+8007BF68  00401821  move     $v1, $v0
+L_8007BF6C:
+8007BF6C  3c04800a  lui      $a0, 0x800a
+L_8007BF70:
+8007BF70  8c828708  lw       $v0, -0x78f8($a0)
+8007BF74  346389dd  ori      $v1, $v1, 0x89dd
+8007BF78  00430018  mult     $v0, $v1
+8007BF7C  3c02e06a  lui      $v0, 0xe06a
+8007BF80  344202e7  ori      $v0, $v0, 0x2e7               ; =0xE06A02E7
+8007BF84  00004012  mflo     $t0
+8007BF88  24030020  addiu    $v1, $zero, 0x20
+8007BF8C  01021021  addu     $v0, $t0, $v0
+8007BF90  00430019  multu    $v0, $v1                      ; <<multu: RNG scale (look at the addiu N above)>>
+8007BF94  ac828708  sw       $v0, -0x78f8($a0)
+8007BF98  00004810  mfhi     $t1
+8007BF9C  00004012  mflo     $t0
+8007BFA0  00091003  sra      $v0, $t1, 0
+8007BFA4  00091fc3  sra      $v1, $t1, 0x1f
+8007BFA8  00401821  move     $v1, $v0
+L_8007BFAC:
+8007BFAC  3c028002  lui      $v0, 0x8002
+8007BFB0  24423654  addiu    $v0, $v0, 0x3654              ; =0x80023654 DirForceTableX?
+8007BFB4  00031840  sll      $v1, $v1, 1
+8007BFB8  00621021  addu     $v0, $v1, $v0
+8007BFBC  84420000  lh       $v0, ($v0)                    ; [0x80023654=DirForceTableX?]
+8007BFC0  00000000  nop      
+8007BFC4  00021200  sll      $v0, $v0, 8
+8007BFC8  ae220274  sw       $v0, 0x274($s1)               ; s1.Bytes0
+8007BFCC  3c028002  lui      $v0, 0x8002
+8007BFD0  24423694  addiu    $v0, $v0, 0x3694              ; =0x80023694 DirForceTableY?
+8007BFD4  00621821  addu     $v1, $v1, $v0
+8007BFD8  8e22006c  lw       $v0, 0x6c($s1)                ; s1.Flags
+8007BFDC  84630000  lh       $v1, ($v1)
+8007BFE0  34422130  ori      $v0, $v0, 0x2130              ; =0x800237B4
+8007BFE4  ae22006c  sw       $v0, 0x6c($s1)                ; s1.Flags
+8007BFE8  3c02000a  lui      $v0, 0xa
+8007BFEC  00031a00  sll      $v1, $v1, 8
+8007BFF0  ae2200b8  sw       $v0, 0xb8($s1)                ; s1.ForceZ
+8007BFF4  ae230278  sw       $v1, 0x278($s1)               ; s1.Bytes4
+L_8007BFF8:
+8007BFF8  8e220274  lw       $v0, 0x274($s1)               ; s1.Bytes0
+8007BFFC  8e230278  lw       $v1, 0x278($s1)               ; s1.Bytes4
+8007C000  ae2200cc  sw       $v0, 0xcc($s1)
+8007C004  ae2300d0  sw       $v1, 0xd0($s1)
+L_8007C008:
+8007C008  8fbf0024  lw       $ra, 0x24($sp)                ; sp+0x24
+8007C00C  8fb20020  lw       $s2, 0x20($sp)                ; sp+0x20
+8007C010  8fb1001c  lw       $s1, 0x1c($sp)                ; sp+0x1C
+8007C014  8fb00018  lw       $s0, 0x18($sp)                ; sp+0x18
+8007C018  27bd0028  addiu    $sp, $sp, 0x28
+8007C01C  03e00008  jr       $ra
+8007C020  00000000  nop      

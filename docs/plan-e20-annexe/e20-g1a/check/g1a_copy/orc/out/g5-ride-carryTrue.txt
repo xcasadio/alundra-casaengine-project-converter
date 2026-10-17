@@ -1,0 +1,18 @@
+RIDE carry=True platform top=8.00
+t053 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=109.0000 pz=0.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=0 floor=0.0000 | C1 px=109.0000 pz=32.0000 status=2 support=0 ground=0
+t054 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=109.0000 pz=0.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=0 floor=0.0000 | C1 px=109.0000 pz=32.0000 status=2 support=0 ground=0
+t055 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=301.8750 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=301.8750 pz=40.0000 status=2 support=0 ground=0 | J snd(0)
+t056 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=303.7500 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=303.7500 pz=40.0000 status=2 support=0 ground=0
+t057 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=305.6250 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=305.6250 pz=40.0000 status=2 support=0 ground=0
+t058 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=307.5000 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=307.5000 pz=40.0000 status=2 support=0 ground=0
+t059 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=309.3750 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=309.3750 pz=40.0000 status=2 support=0 ground=0
+t060 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=311.2500 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=311.2500 pz=40.0000 status=2 support=0 ground=0
+t061 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=313.1250 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=313.1250 pz=40.0000 status=2 support=0 ground=0
+t062 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=315.0000 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=315.0000 pz=40.0000 status=2 support=0 ground=0
+t063 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=316.8750 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=316.8750 pz=40.0000 status=2 support=0 ground=0
+t064 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=318.7500 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=318.7500 pz=40.0000 status=2 support=0 ground=0
+t065 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=320.6250 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=320.6250 pz=40.0000 status=2 support=0 ground=0
+t066 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=322.5000 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=322.5000 pz=40.0000 status=2 support=0 ground=0
+t067 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=324.3750 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=324.3750 pz=40.0000 status=2 support=0 ground=0
+t068 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=326.2500 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=326.2500 pz=40.0000 status=2 support=0 ground=0
+t069 pad=0000 | H anim_t=12 carried2C=80127FC4 off38=32.0000 px=328.1250 pz=8.0000 fx=0.0000 fz=0.0000 ground=1 adj=0 support=80128258 floor=8.0000 | C1 px=328.1250 pz=40.0000 status=2 support=0 ground=0

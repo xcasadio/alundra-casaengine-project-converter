@@ -1,0 +1,9 @@
+step       16000 vectors     0 mismatches   coverage 12/12 instructions
+trylift     8000 vectors     0 mismatches   coverage 60/60 instructions
+pta         8000 vectors     0 mismatches   coverage 77/77 instructions
+upce       20000 vectors     0 mismatches   coverage 164/164 instructions
+c23         8000 vectors     0 mismatches   coverage 33/33 instructions
+e2          8000 vectors     0 mismatches   coverage 28/28 instructions
+moveent     4000 vectors     0 mismatches   coverage 61/61 instructions
+destroy1    4000 vectors     0 mismatches   coverage 15/15 instructions
+TOTAL mismatches 0

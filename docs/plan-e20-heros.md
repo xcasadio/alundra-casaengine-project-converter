@@ -6601,6 +6601,18 @@ deviendra la tranche suivante) : §1.1, ligne 10 : l'ordre interne g1a, g2a, g2b
 e0b2 des prérequis de g2. Jusque-là l'enveloppe READY (révision 9) fait foi. (2) `docs/plan-e20-annexe/e20-armes/h-g-deps.md` §3.1 et `order-critic.md` ligne 19 : les cinq corrections des écarts 1 à 4 et 9 (annexes en lecture seule : une note de renvoi dans le plan, pas de modification). (3) §1.18 O-E0K-5 : « Porté `+0x28` et passagers » renvoie à D-G-2, D-G-3 et D-G-12 (fait à l'insertion) ; O-E0K-2 : la révision 9 a déjà
 nommé ses propriétaires (f6a, et le recensement de son T0) ; g2b ne prend rien de plus sans la révision 10. (4) Commentaires périmés à corriger par la tranche qui touche le fichier : `EntityFlags.cs` (`EntityPickupKind`, g1a), `AlundraWorldProxy.cs:2930` et `:3553`.
 
+**Lecture au binaire de g1a et g2a (2026-10-17, `docs/plan-e20-annexe/e20-g1a/`).** `TryLift`, `PlayerTryAction`,
+`UpdatePlayerCarriedEntity` (trois modes) et `StepTowards`, C23, E2, la destruction à un argument, la branche « porteur » de `MoveEntity`,
+les moitiés « portées » de C4, C70 et C73 et le groupe d'états de portage de `MovePlayer` sont modélisés et comparés au vrai code : 0 écart
+sur plus de 100 000 vecteurs, 100 % des instructions ; une critique indépendante (ses propres modèles et vecteurs, 236 mutants) confirme.
+Les décisions de §1.24 tiennent. Corrections : E2 est à `0x8007ED30` (`0x8007ED10` est E0/E1) ; la « règle des 5 ticks » vaut pour un
+objet **porté** pendant un verrou de contrôle ou une case de sortie (il est avalé au 22ᵉ appel ; jamais s'il n'a pas d'attaque : herbe,
+haricots), pas pour un objet lancé ; la marche avec un objet démarre **sans rampe** (`Acceleration` 0 sur les fiches 5, 6, 7, 46, 47, 48).
+**O-E20-19 est tranchée par le binaire** : un objet lancé blesse une cible de classe A à l'impact ; un objet porté ne blesse personne.
+Conséquence de D-E20-39 : aucun chemin de production ne met un objet dans les mains avant g3 et g1b (ni avant h3 pour la bombe et les
+haricots) : g1a et g2a sont inertes en jeu et se valident par des tests et des valeurs de référence tirées du binaire. Questions
+Q-G1A-1 à Q-G1A-6 (§2).
+
 ### 1.25 État des lieux des attaques et du portage (2026-10-16, lecture seule)
 
 Thèmes de repli donnés par l'auteur le 2026-10-16 (« toutes les attaques du joueur doivent être implémentées » ; « le joueur doit pouvoir
@@ -6636,6 +6648,27 @@ consomme le générateur. 9 089 cases coupables dans 165 cartes (179 sur la cart
 divisée deux fois, un `+0x80000` de trop, deux tirages par maillon de butin au lieu d'un, une division tronquée au lieu d'un plancher…) :
 le binaire tranche. Tâches e-T0 à e-T5 au §9 du rapport ; dépendance au butin (E20.e0c).
 
+**Lecture au binaire du butin, E20.e0c (2026-10-17, `docs/plan-e20-annexe/e20-e0c/`).** Le butin tient en trois fonctions et un tirage à
+la création : `ChooseRandomlyAnItem` (`0x80032968`, un pas du générateur par maillon), `SpawnRandomLoot` (`0x80032C7C`, appelé par la
+seule coupe de l'herbe) et `SpawnContents` (`0x80032B90`, trois appelants dont `DestroyEntity`) ; le contenu est tiré à la création de
+chaque entité (`0x80032A40`), ce que la DLL fait déjà (E20.e0b2, table identique octet pour octet). Tout ramassage passe par C255
+(`0x8007C174`), seul appelant de `GiveItem` (`0x80033F00`) et d'`ApplyItem` ; A255 n'initialise que les objets posés et le coffre ; le
+même C255 sert les 151 objets posés sur les cartes (message, fanfare). Modèles comparés au vrai code (0 écart, couverture complète) et
+confirmés par une critique indépendante, qui corrige le recensement des contenus (la page d'un sprite se lit au bit 7 de `SpriteDirection`).
+Manques de la DLL : le lâcher, le veto PM (objets `0x26`, `0x51`, `0x52`), C255, A255, `GiveItem` ; `ModdedPos` (lu par C255 pour le
+contact) n'est écrit qu'à la création ; aucun rendu ne cache une entité clignotante (`(DamagedTickCounter & 3) == 3`) ; `AlundraItemTables`
+ne garde qu'une colonne de `item-drop-properties.json` sur trois utiles. Questions Q-E0C-1 à Q-E0C-7 (§2).
+
+**Lecture au binaire du cadre d'usage d'un objet et des magies, E20.h0 et h4 (2026-10-17, `docs/plan-e20-annexe/e20-h4/`).** Le cadre
+(`TryUseItem` `0x8002ED64`, le départ `0x8003499C`, le pilote `0x8003634C`, l'annulation `0x800350C0`), les huit pilotes de tomes et les
+gestionnaires qu'ils font naître (C63, C65, C75, E3, E13, E28) sont lus et modélisés (0 écart ; une critique indépendante confirme, avec
+trois modèles écrits par elle). Faits qui changent le plan : le « vent bas » (I50) n'est pas un warp mais une **tornade** qui attire les
+ennemis (C65 ; la fonction que la décompilation nomme `IsFadeActive` n'est pas un fondu) ; les deux tomes d'eau font naître le même sprite
+19 (3 orbes ou 6) ; un sort coûte **1 PM**, rien avec le bâton magique (objet 7), et échoue à 0 PM (la décompilation le lance quand même) ;
+les orbes et la tornade n'avancent que par la **poussée** `+0xCC/+0xD0`, que la DLL déclare sans consommateur (prérequis non planifié) ;
+pendant un sort, le menu Start est refusé ; E3 est partagé avec 98 sprites d'ennemis (clé commune avec E14) ; le départ lance une piste XA
+(comme `0xB9`, O-E19-36) ; les tomes n'exigent pas E20.g. Questions Q-H4-1 à Q-H4-8 (§2).
+
 ## 2. Points ouverts
 
 | Point | Question | Où elle se tranche |
@@ -6663,6 +6696,27 @@ le binaire tranche. Tâches e-T0 à e-T5 au §9 du rapport ; dépendance au buti
 | O-E20-20 | (2026-10-16) E20.h (h0 cadre de l'usage d'un objet, h1 soins, h3 bombe et graines, h4 magies) n'a pas de section détaillée ; les corps de C63, C65, C75, E3, E13 et E28 ne sont pas lus (`docs/plan-e20-annexe/e20-armes/h-g-deps.md:111`) | E20.h (T0) |
 | O-E20-21 | (2026-10-16) Les blocs poussables : aucune tranche ; la tête de C4 (« pierres, tonneaux, blocs ») seule est décodée (g2c). Font-ils partie du portage ou des plateformes ? | E20.g2c (T0), l'auteur |
 | O-E20-22 | (2026-10-16) Le nettoyage de `PlatformEntity.CarriedEntity` au recyclage d'une entité n'est pas porté (`AlundraWorldProxy.cs:3290`, commentaire) : sans effet tant que rien ne porte, à reprendre dans g1a | E20.g1a |
+| Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains | l'auteur |
+| Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? | l'auteur |
+| Q-G1A-3 | (2026-10-17) Un objet lancé ne blesse, avant E14.b, que les cibles dont le gestionnaire D est porté (Beannoïde, Muruta) : confirmer | l'auteur |
+| Q-G1A-4 | (2026-10-17) D-F5-5 : prendre dans g2a la garde étroite d'une ligne (« une entité marquée et lancée lit `TargetAnimationId` »), ou attendre f5 ? Défaut : la garde étroite | E20.g2a (T0) |
+| Q-G1A-5 | (2026-10-17) Recette : il faut une carte avec un objet soulevable, une plateforme qui se déplace d'elle-même à l'horizontale et un dessus de 16 px ; le T0 dépouille les cartes candidates | E20.g1a (T0) |
+| Q-G1A-6 | (2026-10-17) Changer de carte avec un objet : l'original efface-t-il l'objet porté au chargement (la décompilation efface les 64 cases ; non lu au binaire) ? Un test que le héros reconstruit à l'arrivée n'emporte pas `CarriedEntity` | E20.g1a (T0) |
+| Q-E0C-1 | (2026-10-17) Le ramassage des 151 objets posés sur les cartes (message « X gagné ! », fanfare, blocage des autres entités) entre-t-il dans e0c ? Sans lui, vases, cœurs et herbes posés restent inertes, seul le butin se ramasse | l'auteur |
+| Q-E0C-2 | (2026-10-17) Les étincelles de ramassage naissent-elles tout de suite (comme le binaire, ordre exact des 8 pas du générateur) ou par la file d'effets (ordre différent) ? Étend l'ADR-0057 aux objets | l'auteur |
+| Q-E0C-3 | (2026-10-17) Le clignotement des 120 derniers ticks d'un objet lâché (même règle que le héros blessé) : maintenant, ou avec E20.c2b ? Sans lui, l'objet disparaît à 600 ticks sans avertissement | l'auteur |
+| Q-E0C-4 | (2026-10-17) Le contact de ramassage : rafraîchir `ModdedPos` en fin d'image pour toutes les entités (fidèle, une image de décalage) ou le calculer en direct ? | E20.e0c (T0) |
+| Q-E0C-5 | (2026-10-17) Ne pas porter l'écriture parasite `SetGameFlag(0xFFFFFFFF)` des objets posés ni le registre `[0x80149CBC]` (règle « corriger les défauts de l'original ») ? Proposé : non, écart documenté | l'auteur |
+| Q-E0C-6 | (2026-10-17) Le lâcher des enfants d'un boss par E11 (récursion) : dans e0c ou avec E14.b ? La DLL traite E11 comme un no-op | l'auteur |
+| Q-E0C-7 | (2026-10-17) Les PV des cœurs : écrire la vie du héros quand elle est portée par le héros, les statistiques sinon (même règle qu'`IncreaseHpMaxAndFill`) ? Proposé : oui | E20.e0c (T0) |
+| Q-H4-1 | (2026-10-17) Les pistes XA lancées par les sorts : les jouer (décodage du `.bin`, O-E19-36) ou un bouchon journalisé comme `0xB9` ? | l'auteur |
+| Q-H4-2 | (2026-10-17) Défauts avérés de l'original (la règle : un bug avéré se corrige) : le dernier emplacement utilisé n'est jamais visé par les sorts ; la première frappe du vent 1 est perdue (7 frappes au lieu de 8) ; le guidage de C63 tourne dans le sens numérique et non par le plus court ; le tri de la requête est instable. Corriger lesquels ? | l'auteur |
+| Q-H4-3 | (2026-10-17) Qui porte la poussée `+0xCC/+0xD0` (orbes d'eau, tornade) : E20.e0k, E14, ou une tranche nouvelle avant l'eau et le vent 2 ? | l'auteur |
+| Q-H4-4 | (2026-10-17) Le menu Start refusé pendant un sort (jusqu'à ~344 ticks pour l'eau) : à confirmer en jeu | recette |
+| Q-H4-5 | (2026-10-17) Les sons de plusieurs effets (8, 14, 18, 19, 26) ne sont pas décodés (commande son possible dans les programmes d'effets) | E20.h4 (T0) |
+| Q-H4-6 | (2026-10-17) L'unité du coup de caméra d'E13 (+2 sur le défilement Y pendant un tick, INFÉRENCE) | E20.h4 (T0) |
+| Q-H4-7 | (2026-10-17) Les tomes sont donnés en coffre (cartes 25, 76, 84, 95 ; niveau 2 : 17, 439, 3, 448, 431) et par des `0x82` (cartes 17, 31, 77, 80, 158, 439, 443) ; le bâton par la 134 : lesquels sont sur la chaîne actuelle ? | E20.h4 (T0) |
+| Q-H4-8 | (2026-10-17) E3 et E13 : une inscription commune avec E14 (E3 sert 98 sprites d'ennemis) ; dépend du registre cumulatif d'E14.b0 | E14.b0 |
 
 ## 3. Hors périmètre
 

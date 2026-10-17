@@ -1,0 +1,10 @@
+== rise 1px/tick t3..t8, stop t9
+   mismatching ticks (of 14) vs the binary:  current {'rel': 11, 'ground': 10, 'ride': 10}   proposed none
+== descend 1px/tick t3..t8, stop t9
+   mismatching ticks (of 14) vs the binary:  current {'rel': 7, 'coll': 3, 'ride': 7, 'ground': 3}   proposed none
+== rise 0.5 then 2 then descend 1
+   mismatching ticks (of 14) vs the binary:  current {'rel': 12, 'ground': 11, 'ride': 11}   proposed none
+== gravity carrier at rest on the ground (UH-18)
+   mismatching ticks (of 14) vs the binary:  current {'coll': 1}   proposed none
+== gravity carrier at rest, script writes 1B +1px (eaten by the decay)
+   mismatching ticks (of 14) vs the binary:  current {'coll': 5, 'rel': 11, 'ground': 5, 'ride': 10}   proposed none

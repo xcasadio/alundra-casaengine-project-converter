@@ -1,0 +1,4 @@
+SURVIVOR 80031dfc imm-1            addiu $v1, $v0, 0x7d30       -> addiu $v1, $v0, 0x7d2f
+SURVIVOR 800323bc off+4            sw $v0, 0x11c($a0)           -> sw $v0, 0x120($a0)
+SURVIVOR 80031d7c addu<->subu      move $a0, $zero              -> negu $a0, $zero
+carry-group mutants 131 killed 128 survivors 3

@@ -1,0 +1,58 @@
+; function 0x80034C54..0x80034D2C (54 words)
+80034C54  27bdffc8  addiu    $sp, $sp, -0x38
+80034C58  afb20020  sw       $s2, 0x20($sp)                ; sp+0x20
+80034C5C  24120001  addiu    $s2, $zero, 1
+80034C60  3c048013  lui      $a0, 0x8013
+80034C64  8c824360  lw       $v0, 0x4360($a0)              ; [0x80134360]
+80034C68  3c038012  lui      $v1, 0x8012
+80034C6C  afb1001c  sw       $s1, 0x1c($sp)                ; sp+0x1C
+80034C70  24717fc4  addiu    $s1, $v1, 0x7fc4              ; =0x80127FC4
+80034C74  afbf0030  sw       $ra, 0x30($sp)                ; sp+0x30
+80034C78  afb5002c  sw       $s5, 0x2c($sp)                ; sp+0x2C
+80034C7C  afb40028  sw       $s4, 0x28($sp)                ; sp+0x28
+80034C80  afb30024  sw       $s3, 0x24($sp)                ; sp+0x24
+80034C84  1840001f  blez     $v0, 0x80034d04   -> L_80034D04
+80034C88  afb00018  sw       $s0, 0x18($sp)                ; sp+0x18
+80034C8C  24150013  addiu    $s5, $zero, 0x13
+80034C90  24140002  addiu    $s4, $zero, 2
+80034C94  00809821  move     $s3, $a0
+80034C98  26300114  addiu    $s0, $s1, 0x114               ; =0x801280D8
+L_80034C9C:
+80034C9C  8e02ff54  lw       $v0, -0xac($s0)
+80034CA0  00000000  nop      
+80034CA4  14550010  bne      $v0, $s5, 0x80034ce8   -> L_80034CE8
+80034CA8  00000000  nop      
+80034CAC  8e02fefc  lw       $v0, -0x104($s0)
+80034CB0  00000000  nop      
+80034CB4  1454000c  bne      $v0, $s4, 0x80034ce8   -> L_80034CE8
+80034CB8  2405001a  addiu    $a1, $zero, 0x1a
+80034CBC  8e020004  lw       $v0, 4($s0)
+80034CC0  00002021  move     $a0, $zero
+80034CC4  afa20010  sw       $v0, 0x10($sp)                ; sp+0x10
+80034CC8  8e020008  lw       $v0, 8($s0)
+80034CCC  00000000  nop      
+80034CD0  afa20014  sw       $v0, 0x14($sp)                ; sp+0x14
+80034CD4  8e070000  lw       $a3, ($s0)
+80034CD8  0c00ef76  jal      0x8003bdd8                    ; CreateEffectEntity
+80034CDC  00803021  move     $a2, $a0
+80034CE0  0c00e9dd  jal      0x8003a774                    ; DestroyEntityNoFx
+80034CE4  02202021  move     $a0, $s1
+L_80034CE8:
+80034CE8  26520001  addiu    $s2, $s2, 1
+80034CEC  26100294  addiu    $s0, $s0, 0x294
+80034CF0  8e624360  lw       $v0, 0x4360($s3)
+80034CF4  00000000  nop      
+80034CF8  0052102a  slt      $v0, $v0, $s2
+80034CFC  1040ffe7  beqz     $v0, 0x80034c9c   -> L_80034C9C
+80034D00  26310294  addiu    $s1, $s1, 0x294
+L_80034D04:
+80034D04  8fbf0030  lw       $ra, 0x30($sp)                ; sp+0x30
+80034D08  8fb5002c  lw       $s5, 0x2c($sp)                ; sp+0x2C
+80034D0C  8fb40028  lw       $s4, 0x28($sp)                ; sp+0x28
+80034D10  8fb30024  lw       $s3, 0x24($sp)                ; sp+0x24
+80034D14  8fb20020  lw       $s2, 0x20($sp)                ; sp+0x20
+80034D18  8fb1001c  lw       $s1, 0x1c($sp)                ; sp+0x1C
+80034D1C  8fb00018  lw       $s0, 0x18($sp)                ; sp+0x18
+80034D20  27bd0038  addiu    $sp, $sp, 0x38
+80034D24  03e00008  jr       $ra
+80034D28  00000000  nop      

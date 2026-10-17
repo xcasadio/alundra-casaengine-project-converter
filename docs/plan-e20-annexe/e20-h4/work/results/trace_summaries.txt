@@ -1,0 +1,72 @@
+item 0x2b: MP 4 -> 3
+  tick   1 hero anim 0x32 item_in_use 0x2b phase 0 counter 0 active entities 0
+  tick  33 hero anim 0x33 item_in_use 0x2b phase 0 counter 32 active entities 6
+  tick  97 hero anim 0x33 item_in_use 0x2b phase 1 counter 96 active entities 14
+  tick 102 hero anim 0x34 item_in_use 0x2b phase 2 counter 101 active entities 12
+  tick 128 hero anim 0x0 item_in_use 0x2b phase 2 counter 127 active entities 2
+  tick 129 hero anim 0x0 item_in_use 0x0 phase 2 counter 128 active entities 2
+  type 16: 32 spawned, births 22..97, lifetimes 30..34 ticks (median 31)
+  sounds (id: count): {46: 32}
+item 0x2c: MP 4 -> 3
+  tick   1 hero anim 0x32 item_in_use 0x2c phase 0 counter 0 active entities 0
+  tick  33 hero anim 0x33 item_in_use 0x2c phase 0 counter 32 active entities 1
+  tick 242 hero anim 0x33 item_in_use 0x2c phase 1 counter 241 active entities 6
+  tick 282 hero anim 0x34 item_in_use 0x2c phase 2 counter 281 active entities 2
+  tick 308 hero anim 0x0 item_in_use 0x2c phase 2 counter 307 active entities 0
+  tick 309 hero anim 0x0 item_in_use 0x0 phase 2 counter 308 active entities 0
+  type 17: 15 spawned, births 18..242, lifetimes 49..82 ticks (median 81)
+  sounds (id: count): {55: 15, 45: 15}
+item 0x2d: MP 4 -> 3
+  tick   1 hero anim 0x32 item_in_use 0x2d phase 0 counter 0 active entities 0
+  tick  33 hero anim 0x33 item_in_use 0x2d phase 0 counter 32 active entities 0
+  tick  82 hero anim 0x33 item_in_use 0x2d phase 1 counter 81 active entities 3
+  tick 142 hero anim 0x34 item_in_use 0x2d phase 2 counter 141 active entities 3
+  tick 168 hero anim 0x0 item_in_use 0x2d phase 2 counter 167 active entities 3
+  tick 344 hero anim 0x0 item_in_use 0x0 phase 2 counter 343 active entities 3
+  type 19: 3 spawned, births 42..82, lifetimes 297..342 ticks (median 321)
+  sounds (id: count): {49: 1}
+  effects (kind, id, anim): count {('effect_3BDD8', 14, 0): 4, ('effect_3BE74', 8, 0): 3}
+item 0x2e: MP 4 -> 3
+  tick   1 hero anim 0x32 item_in_use 0x2e phase 0 counter 0 active entities 0
+  tick  33 hero anim 0x33 item_in_use 0x2e phase 0 counter 32 active entities 0
+  tick 142 hero anim 0x33 item_in_use 0x2e phase 1 counter 141 active entities 6
+  tick 202 hero anim 0x34 item_in_use 0x2e phase 2 counter 201 active entities 6
+  tick 228 hero anim 0x0 item_in_use 0x2e phase 2 counter 227 active entities 6
+  tick 394 hero anim 0x0 item_in_use 0x0 phase 2 counter 393 active entities 3
+  type 19: 6 spawned, births 42..142, lifetimes 292..352 ticks (median 332)
+  sounds (id: count): {48: 1}
+  effects (kind, id, anim): count {('effect_3BDD8', 14, 0): 8, ('effect_3BE74', 8, 0): 6}
+item 0x2f: MP 4 -> 3
+  tick   1 hero anim 0x32 item_in_use 0x2f phase 0 counter 0 active entities 0
+  tick  33 hero anim 0x33 item_in_use 0x2f phase 0 counter 32 active entities 0
+  tick  34 hero anim 0x33 item_in_use 0x2f phase 1 counter 33 active entities 2
+  tick 123 hero anim 0x34 item_in_use 0x2f phase 2 counter 122 active entities 8
+  tick 149 hero anim 0x0 item_in_use 0x2f phase 2 counter 148 active entities 5
+  tick 150 hero anim 0x0 item_in_use 0x0 phase 2 counter 149 active entities 5
+  type 20: 1 spawned, births 34..34, lifetimes 89..89 ticks (median 89)
+  type 23: 12 spawned, births 34..122, lifetimes 53..81 ticks (median 76)
+item 0x30: MP 4 -> 3
+  tick   1 hero anim 0x32 item_in_use 0x30 phase 0 counter 0 active entities 0
+  tick  33 hero anim 0x33 item_in_use 0x30 phase 0 counter 32 active entities 0
+  tick  34 hero anim 0x33 item_in_use 0x30 phase 1 counter 33 active entities 1
+  tick 156 hero anim 0x34 item_in_use 0x30 phase 2 counter 155 active entities 0
+  tick 182 hero anim 0x0 item_in_use 0x30 phase 2 counter 181 active entities 0
+  tick 183 hero anim 0x0 item_in_use 0x0 phase 2 counter 182 active entities 0
+  type 21: 1 spawned, births 34..34, lifetimes 122..122 ticks (median 122)
+  effects (kind, id, anim): count {('effect_3BDD8', 19, 2): 8}
+item 0x31: MP 4 -> 3
+  tick   1 hero anim 0x32 item_in_use 0x31 phase 0 counter 0 active entities 0
+  tick   2 hero anim 0x32 item_in_use 0x31 phase 1 counter 1 active entities 0
+  tick  33 hero anim 0x33 item_in_use 0x31 phase 1 counter 32 active entities 0
+  tick 102 hero anim 0x34 item_in_use 0x31 phase 2 counter 101 active entities 4
+  tick 128 hero anim 0x0 item_in_use 0x31 phase 2 counter 127 active entities 2
+  tick 129 hero anim 0x0 item_in_use 0x0 phase 2 counter 128 active entities 2
+  type 22: 7 spawned, births 42..102, lifetimes 38..39 ticks (median 39)
+item 0x32: MP 4 -> 3
+  tick   1 hero anim 0x32 item_in_use 0x32 phase 0 counter 0 active entities 0
+  tick  33 hero anim 0x33 item_in_use 0x32 phase 0 counter 32 active entities 0
+  tick  34 hero anim 0x33 item_in_use 0x32 phase 1 counter 33 active entities 1
+  tick 216 hero anim 0x34 item_in_use 0x32 phase 2 counter 215 active entities 0
+  tick 242 hero anim 0x0 item_in_use 0x32 phase 2 counter 241 active entities 0
+  tick 243 hero anim 0x0 item_in_use 0x0 phase 2 counter 242 active entities 0
+  type 24: 1 spawned, births 34..34, lifetimes 182..182 ticks (median 182)

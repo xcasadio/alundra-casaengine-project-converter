@@ -1,0 +1,56 @@
+item 0x2b inv=0
+   target (140,100) moved to (140,100): hits  4 dmg  128 first tick 25 by {(16, 32): 4}
+   target (100,140) moved to (100,140): hits  2 dmg   64 first tick 33 by {(16, 32): 2}
+   target (180,100) moved to (180,100): hits  3 dmg   96 first tick 36 by {(16, 32): 3}
+   target (100, 60) moved to (100, 60): hits  3 dmg   96 first tick 28 by {(16, 32): 3}
+   target ( 60,100) moved to ( 60,100): hits  3 dmg   96 first tick 40 by {(16, 32): 3}
+   target (140,140) moved to (140,140): hits  3 dmg   96 first tick 32 by {(16, 32): 3}
+item 0x2c inv=0
+   target (140,100) moved to (140,100): hits  7 dmg  448 first tick 46 by {(17, 64): 7}
+   target (100,140) moved to (100,140): hits  9 dmg  576 first tick 46 by {(17, 64): 9}
+   target (180,100) moved to (180,100): hits  0 dmg    0 first tick None by {}
+   target (100, 60) moved to (100, 60): hits  6 dmg  384 first tick 62 by {(17, 64): 6}
+   target ( 60,100) moved to ( 60,100): hits  9 dmg  576 first tick 46 by {(17, 64): 9}
+   target (140,140) moved to (140,140): hits  6 dmg  384 first tick 46 by {(17, 64): 6}
+item 0x2d inv=0
+   target (140,100) moved to (140,100): hits  3 dmg  192 first tick 85 by {(19, 64): 3}
+   target (100,140) moved to (100,140): hits  0 dmg    0 first tick None by {}
+   target (180,100) moved to (180,100): hits  0 dmg    0 first tick None by {}
+   target (100, 60) moved to (100, 60): hits  0 dmg    0 first tick None by {}
+   target ( 60,100) moved to ( 60,100): hits  0 dmg    0 first tick None by {}
+   target (140,140) moved to (140,140): hits  0 dmg    0 first tick None by {}
+item 0x2e inv=0
+   target (140,100) moved to (140,100): hits  4 dmg  256 first tick 73 by {(19, 64): 4}
+   target (100,140) moved to (100,140): hits  1 dmg   64 first tick 140 by {(19, 64): 1}
+   target (180,100) moved to (180,100): hits  0 dmg    0 first tick None by {}
+   target (100, 60) moved to (100, 60): hits  0 dmg    0 first tick None by {}
+   target ( 60,100) moved to ( 60,100): hits  1 dmg   64 first tick 120 by {(19, 64): 1}
+   target (140,140) moved to (140,140): hits  0 dmg    0 first tick None by {}
+item 0x2f inv=0
+   target (140,100) moved to (140,100): hits  3 dmg   96 first tick 93 by {(23, 32): 3}
+   target (100,140) moved to (100,140): hits  1 dmg   32 first tick 149 by {(23, 32): 1}
+   target (180,100) moved to (180,100): hits  0 dmg    0 first tick None by {}
+   target (100, 60) moved to (100, 60): hits  2 dmg   64 first tick 157 by {(23, 32): 2}
+   target ( 60,100) moved to ( 60,100): hits  3 dmg   96 first tick 101 by {(23, 32): 3}
+   target (140,140) moved to (140,140): hits  0 dmg    0 first tick None by {}
+item 0x30 inv=0
+   target (140,100) moved to (140,100): hits  5 dmg  640 first tick 44 by {(21, 128): 5}
+   target (100,140) moved to (100,140): hits  4 dmg  512 first tick 56 by {(21, 128): 4}
+   target (180,100) moved to (180,100): hits  4 dmg  512 first tick 74 by {(21, 128): 4}
+   target (100, 60) moved to (100, 60): hits  4 dmg  512 first tick 56 by {(21, 128): 4}
+   target ( 60,100) moved to ( 60,100): hits  5 dmg  640 first tick 44 by {(21, 128): 5}
+   target (140,140) moved to (140,140): hits  4 dmg  512 first tick 56 by {(21, 128): 4}
+item 0x31 inv=0
+   target (140,100) moved to (140,100): hits  2 dmg   64 first tick 83 by {(22, 32): 2}
+   target (100,140) moved to (100,140): hits  2 dmg   64 first tick 73 by {(22, 32): 2}
+   target (180,100) moved to (180,100): hits  2 dmg   64 first tick 102 by {(22, 32): 2}
+   target (100, 60) moved to (100, 60): hits  2 dmg   64 first tick 53 by {(22, 32): 2}
+   target ( 60,100) moved to ( 60,100): hits  4 dmg  128 first tick 63 by {(22, 32): 4}
+   target (140,140) moved to (140,140): hits  2 dmg   64 first tick 92 by {(22, 32): 2}
+item 0x32 inv=0
+   target (140,100) moved to (140,100): hits  6 dmg  768 first tick 36 by {(24, 128): 6}
+   target (100,140) moved to ( 83,116): hits  5 dmg  640 first tick 52 by {(24, 128): 5}
+   target (180,100) moved to (164,109): hits  0 dmg    0 first tick None by {}
+   target (100, 60) moved to (113, 73): hits  6 dmg  768 first tick 44 by {(24, 128): 6}
+   target ( 60,100) moved to ( 60,100): hits  6 dmg  768 first tick 36 by {(24, 128): 6}
+   target (140,140) moved to (140,140): hits  0 dmg    0 first tick None by {}

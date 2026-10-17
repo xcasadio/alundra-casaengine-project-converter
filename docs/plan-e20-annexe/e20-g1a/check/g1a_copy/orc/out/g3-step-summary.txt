@@ -1,0 +1,14 @@
+WALK hb=1 carry=False: final hero X 133.000 Z 0.000 ; max Z 0.00 ; blocked(adj) ticks 95 ; anim changes ['t61 anim_t:0>1'] ; crate Z-hero Z at end 0.0
+WALK hb=1 carry=True: final hero X 133.000 Z 0.000 ; max Z 0.00 ; blocked(adj) ticks 92 ; anim changes ['t61 anim_t:12>7'] ; crate Z-hero Z at end 32.0
+WALK hb=2 carry=False: final hero X 133.000 Z 0.000 ; max Z 0.00 ; blocked(adj) ticks 95 ; anim changes ['t61 anim_t:0>1'] ; crate Z-hero Z at end 0.0
+WALK hb=2 carry=True: final hero X 133.000 Z 0.000 ; max Z 0.00 ; blocked(adj) ticks 92 ; anim changes ['t61 anim_t:12>7'] ; crate Z-hero Z at end 32.0
+WALK hb=3 carry=False: final hero X 133.000 Z 0.000 ; max Z 0.00 ; blocked(adj) ticks 95 ; anim changes ['t61 anim_t:0>1'] ; crate Z-hero Z at end 0.0
+WALK hb=3 carry=True: final hero X 133.000 Z 0.000 ; max Z 0.00 ; blocked(adj) ticks 92 ; anim changes ['t61 anim_t:12>7'] ; crate Z-hero Z at end 32.0
+JUMP hb=1 carry=False at t86 (hero X at jump [133.0]): final hero X 327.133 Z 0.000 ; max Z 27.50 ; blocked(adj) ticks 4 ; anim changes ['t87 anim_t:1>2', 't88 anim_t:2>44', 't105 anim_t:44>1', 't139 anim_t:1>44', 't147 anim_t:44>1'] ; crate Z-hero Z at end 0.0
+JUMP hb=1 carry=False at t92 (hero X at jump [133.0]): final hero X 312.508 Z 0.000 ; max Z 27.50 ; blocked(adj) ticks 4 ; anim changes ['t93 anim_t:1>2', 't94 anim_t:2>44', 't111 anim_t:44>1', 't145 anim_t:1>44', 't153 anim_t:44>1'] ; crate Z-hero Z at end 0.0
+JUMP hb=1 carry=True at t86 (hero X at jump [133.0]): final hero X 330.438 Z 0.000 ; max Z 27.50 ; blocked(adj) ticks 4 ; anim changes ['t87 anim_t:7>6', 't88 anim_t:6>47', 't105 anim_t:47>7', 't138 anim_t:7>47', 't146 anim_t:47>7'] ; crate Z-hero Z at end 32.0
+JUMP hb=1 carry=True at t92 (hero X at jump [133.0]): final hero X 315.812 Z 0.000 ; max Z 27.50 ; blocked(adj) ticks 4 ; anim changes ['t93 anim_t:7>6', 't94 anim_t:6>47', 't111 anim_t:47>7', 't144 anim_t:7>47', 't152 anim_t:47>7'] ; crate Z-hero Z at end 32.0
+JUMP hb=2 carry=False at t86 (hero X at jump [133.0]): final hero X 133.000 Z 0.000 ; max Z 27.50 ; blocked(adj) ticks 85 ; anim changes ['t87 anim_t:1>2', 't88 anim_t:2>44', 't108 anim_t:44>1'] ; crate Z-hero Z at end 0.0
+JUMP hb=2 carry=False at t92 (hero X at jump [133.0]): final hero X 133.000 Z 0.000 ; max Z 27.50 ; blocked(adj) ticks 79 ; anim changes ['t93 anim_t:1>2', 't94 anim_t:2>44', 't114 anim_t:44>1'] ; crate Z-hero Z at end 0.0
+JUMP hb=2 carry=True at t86 (hero X at jump [133.0]): final hero X 133.000 Z 0.000 ; max Z 27.50 ; blocked(adj) ticks 85 ; anim changes ['t87 anim_t:7>6', 't88 anim_t:6>47', 't108 anim_t:47>7'] ; crate Z-hero Z at end 32.0
+JUMP hb=2 carry=True at t92 (hero X at jump [133.0]): final hero X 133.000 Z 0.000 ; max Z 27.50 ; blocked(adj) ticks 79 ; anim changes ['t93 anim_t:7>6', 't94 anim_t:6>47', 't114 anim_t:47>7'] ; crate Z-hero Z at end 32.0

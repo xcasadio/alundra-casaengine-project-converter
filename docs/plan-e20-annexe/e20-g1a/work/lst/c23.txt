@@ -1,0 +1,70 @@
+0x8006b848  lw       $v0, 0x28($a0)
+0x8006b84c  nop      
+0x8006b850  beqz     $v0, 0x8006b8c4
+0x8006b854  nop      
+0x8006b858  lw       $v1, 0x24($a0)
+0x8006b85c  nop      
+0x8006b860  beqz     $v1, 0x8006b8c0
+0x8006b864  addiu    $v0, $zero, -1
+0x8006b868  bne      $v1, $v0, 0x8006b878
+0x8006b86c  lui      $v0, 0x8002
+0x8006b870  j        0x8006b888
+0x8006b874  addiu    $v0, $zero, 3
+0x8006b878  addiu    $v0, $v0, 0x7400
+0x8006b87c  sll      $v1, $v1, 2
+0x8006b880  addu     $v1, $v1, $v0
+0x8006b884  lw       $v0, ($v1)
+0x8006b888  nop      
+0x8006b88c  sw       $v0, 0x88($a0)
+0x8006b890  lw       $v0, 0x28($a0)
+0x8006b894  nop      
+0x8006b898  beqz     $v0, 0x8006b8a4
+0x8006b89c  sw       $zero, 0x24($a0)
+0x8006b8a0  sw       $zero, 0x2c($v0)
+0x8006b8a4  lw       $v0, 0x6c($a0)
+0x8006b8a8  addiu    $v1, $zero, -0x81
+0x8006b8ac  sw       $zero, 0x28($a0)
+0x8006b8b0  ori      $v0, $v0, 0x30
+0x8006b8b4  and      $v0, $v0, $v1
+0x8006b8b8  j        0x8006b8c4
+0x8006b8bc  sw       $v0, 0x6c($a0)
+0x8006b8c0  sw       $zero, 0x88($a0)
+0x8006b8c4  jr       $ra
+0x8006b8c8  nop      
+0x8006b8cc  jr       $ra
+0x8006b8d0  nop      
+0x8006b8d4  addiu    $sp, $sp, -0x48
+0x8006b8d8  sw       $s1, 0x3c($sp)
+0x8006b8dc  move     $s1, $a0
+0x8006b8e0  addiu    $a1, $sp, 0x20
+0x8006b8e4  sw       $ra, 0x40($sp)
+0x8006b8e8  jal      0x8007fe20
+0x8006b8ec  sw       $s0, 0x38($sp)
+0x8006b8f0  lw       $v1, 0x88($s1)
+0x8006b8f4  nop      
+0x8006b8f8  sltiu    $v0, $v1, 0xb
+0x8006b8fc  beqz     $v0, 0x8006bd18
+0x8006b900  lui      $v0, 0x8002
+0x8006b904  addiu    $v0, $v0, 0x7414
+0x8006b908  sll      $v1, $v1, 2
+0x8006b90c  addu     $v1, $v1, $v0
+0x8006b910  lw       $v0, ($v1)
+0x8006b914  nop      
+0x8006b918  jr       $v0
+0x8006b91c  nop      
+0x8006b920  lw       $v0, 0x20($sp)
+0x8006b924  nop      
+0x8006b928  slti     $v0, $v0, 5
+0x8006b92c  beqz     $v0, 0x8006bd18
+0x8006b930  nop      
+0x8006b934  lw       $v0, 0x24($sp)
+0x8006b938  nop      
+0x8006b93c  slti     $v0, $v0, 5
+0x8006b940  beqz     $v0, 0x8006bd18
+0x8006b944  lui      $v0, 0x10
+0x8006b948  lw       $v1, 0x28($sp)
+0x8006b94c  nop      
+0x8006b950  slt      $v0, $v0, $v1
+0x8006b954  bnez     $v0, 0x8006bd18
+0x8006b958  addiu    $v0, $zero, 4
+0x8006b95c  j        0x8006bd18

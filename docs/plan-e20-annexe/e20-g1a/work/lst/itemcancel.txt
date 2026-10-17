@@ -1,0 +1,76 @@
+0x80034ac0  addiu    $sp, $sp, 0x18
+0x80034ac4  jr       $ra
+0x80034ac8  nop      
+0x80034acc  addiu    $sp, $sp, -0x20
+0x80034ad0  lui      $v0, 0x8012
+0x80034ad4  addiu    $a0, $v0, 0x7d30
+0x80034ad8  sw       $ra, 0x1c($sp)
+0x80034adc  sw       $s0, 0x18($sp)
+0x80034ae0  lw       $s0, 0x2c($a0)
+0x80034ae4  nop      
+0x80034ae8  beqz     $s0, 0x80034b40
+0x80034aec  addiu    $v0, $zero, 1
+0x80034af0  lw       $v1, 0x68($s0)
+0x80034af4  nop      
+0x80034af8  bne      $v1, $v0, 0x80034b40
+0x80034afc  nop      
+0x80034b00  lw       $v0, 0x24($s0)
+0x80034b04  nop      
+0x80034b08  bnez     $v0, 0x80034b40
+0x80034b0c  addiu    $a1, $zero, 8
+0x80034b10  sw       $zero, 0x2c($a0)
+0x80034b14  lw       $v0, 0x118($s0)
+0x80034b18  move     $a0, $zero
+0x80034b1c  sw       $v0, 0x10($sp)
+0x80034b20  lw       $v0, 0x11c($s0)
+0x80034b24  nop      
+0x80034b28  sw       $v0, 0x14($sp)
+0x80034b2c  lw       $a3, 0x114($s0)
+0x80034b30  jal      0x8003bdd8
+0x80034b34  move     $a2, $a0
+0x80034b38  jal      0x8003a774
+0x80034b3c  move     $a0, $s0
+0x80034b40  lw       $ra, 0x1c($sp)
+0x80034b44  lw       $s0, 0x18($sp)
+0x80034b48  addiu    $sp, $sp, 0x20
+0x80034b4c  jr       $ra
+0x80034b50  nop      
+0x80034b54  addiu    $sp, $sp, -0x20
+0x80034b58  lui      $v0, 0x8012
+0x80034b5c  addiu    $a0, $v0, 0x7d30
+0x80034b60  sw       $ra, 0x1c($sp)
+0x80034b64  sw       $s0, 0x18($sp)
+0x80034b68  lw       $s0, 0x2c($a0)
+0x80034b6c  nop      
+0x80034b70  beqz     $s0, 0x80034bc8
+0x80034b74  addiu    $v0, $zero, 2
+0x80034b78  lw       $v1, 0x68($s0)
+0x80034b7c  nop      
+0x80034b80  bne      $v1, $v0, 0x80034bc8
+0x80034b84  nop      
+0x80034b88  lw       $v0, 0x24($s0)
+0x80034b8c  nop      
+0x80034b90  bnez     $v0, 0x80034bc8
+0x80034b94  addiu    $a1, $zero, 0xc
+0x80034b98  sw       $zero, 0x2c($a0)
+0x80034b9c  lw       $v0, 0x118($s0)
+0x80034ba0  move     $a0, $zero
+0x80034ba4  sw       $v0, 0x10($sp)
+0x80034ba8  lw       $v0, 0x11c($s0)
+0x80034bac  nop      
+0x80034bb0  sw       $v0, 0x14($sp)
+0x80034bb4  lw       $a3, 0x114($s0)
+0x80034bb8  jal      0x8003bdd8
+0x80034bbc  move     $a2, $a0
+0x80034bc0  jal      0x8003a774
+0x80034bc4  move     $a0, $s0
+0x80034bc8  lw       $ra, 0x1c($sp)
+0x80034bcc  lw       $s0, 0x18($sp)
+0x80034bd0  addiu    $sp, $sp, 0x20
+0x80034bd4  jr       $ra
+0x80034bd8  nop      
+0x80034bdc  addiu    $a0, $zero, 1
+0x80034be0  lui      $v1, 0x8012
+0x80034be4  lui      $v0, 0x8013
+0x80034be8  lw       $v0, 0x4360($v0)
+0x80034bec  nop      

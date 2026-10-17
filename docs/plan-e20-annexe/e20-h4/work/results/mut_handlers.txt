@@ -1,0 +1,37 @@
+CAUGHT   e3: anim 1 -> 2 | vectors 1800 seed 20261017 mismatches 216
+CAUGHT   e3: flag mask 0x30 kept | vectors 1800 seed 20261017 mismatches 155
+CAUGHT   e3: destroy needs only the animation end | vectors 1800 seed 20261017 mismatches 45
+CAUGHT   e13: camera kick 2 -> 3 | vectors 1800 seed 20261017 mismatches 133
+CAUGHT   e13: behaves like e3 when the animation runs | vectors 1800 seed 20261017 mismatches 77
+CAUGHT   e28: ring radius base 0x320 -> 0x321 | vectors 1800 seed 20261017 mismatches 255
+CAUGHT   e28: random range 0x1801 -> 0x1800 | vectors 1800 seed 20261017 mismatches 254
+CAUGHT   e28: 8 bursts -> 7 | vectors 1800 seed 20261017 mismatches 255
+CAUGHT   e28: effect variant 2 -> 3 | vectors 1800 seed 20261017 mismatches 255
+CAUGHT   e28: tables walked every 4th entry -> every 2nd | vectors 1800 seed 20261017 mismatches 255
+CAUGHT   c63: delay decrement removed | vectors 1800 seed 20261017 mismatches 147
+CAUGHT   c63: fall speed 0xFFFD0000 -> 0xFFFE0000 | vectors 1800 seed 20261017 mismatches 112
+CAUGHT   c63: retry delay draw below 9 -> 8 | vectors 1800 seed 20261017 mismatches 19
+CAUGHT   c63: turn step 4 -> 3 | vectors 1800 seed 20261017 mismatches 20
+CAUGHT   c63: turn by the shortest way (mod 32) | vectors 1800 seed 20261017 mismatches 3
+CAUGHT   c63: re-arm turn delay 2 -> 1 | vectors 1800 seed 20261017 mismatches 47
+CAUGHT   c63: target status test removed | vectors 1800 seed 20261017 mismatches 20
+CAUGHT   c63: target identity test removed | vectors 1800 seed 20261017 mismatches 5
+CAUGHT   c65: window X 0x1400000 -> 0x1000000 | vectors 1800 seed 20261017 mismatches 12
+CAUGHT   c65: window Y 0xF00000 -> 0xE00000 | vectors 1800 seed 20261017 mismatches 2
+CAUGHT   c65: rotation +0x14 -> +0x10 | vectors 1800 seed 20261017 mismatches 77
+CAUGHT   c65: X push factor 3 -> 2 | vectors 1800 seed 20261017 mismatches 73
+CAUGHT   c65: pulls every target of the window | vectors 1800 seed 20261017 mismatches 25
+CAUGHT   c75: life freezes when Circle NOT held | vectors 1800 seed 20261017 mismatches 263
+CAUGHT   c75: initial growth bonus 64 -> 32 | vectors 1800 seed 20261017 mismatches 34
+CAUGHT   c75: X radius factor 3 -> 2 | vectors 1800 seed 20261017 mismatches 93
+CAUGHT   c75: Y radius factor 2 -> 3 | vectors 1800 seed 20261017 mismatches 93
+CAUGHT   c75: hero force not added | vectors 1800 seed 20261017 mismatches 96
+CAUGHT   c75: height above the hero 0x80000 -> 0x100000 | vectors 1800 seed 20261017 mismatches 96
+MISSED   c75: target range 0x3840 -> 0x3841 | vectors 1800 seed 20261017 mismatches 0
+CAUGHT   c75: launch flags 0x2130 -> 0x2030 | vectors 1800 seed 20261017 mismatches 58
+CAUGHT   c75: launch lift 0xA0000 -> 0x90000 | vectors 1800 seed 20261017 mismatches 58
+CAUGHT   c75: launch speed shift 8 -> 7 | vectors 1800 seed 20261017 mismatches 53
+CAUGHT   c75: random direction below 32 -> 31 | vectors 1800 seed 20261017 mismatches 22
+CAUGHT   c75: angle mask 0xFF -> 0x7F | vectors 1800 seed 20261017 mismatches 55
+CAUGHT   c75: mode toggle removed | vectors 1800 seed 20261017 mismatches 11
+35/36 mutations caught; not found 0; missed: ['c75: target range 0x3840 -> 0x3841']

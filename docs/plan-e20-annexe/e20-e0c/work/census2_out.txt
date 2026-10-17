@@ -1,0 +1,113 @@
+== A. (page,type) with header Contents != 0 : header combos (Contents, A, C, BreakEffect) x maps ==
+G230 'Mur à boule de fer (2×2×1) permanent': {'0xff/A0/C0/B11': 1}  other: 0
+G232 'Mur à boule de fer (2×2×2) permanent': {'0xff/A0/C0/B11': 1}  other: 0
+G234 'Pierre très lourde': {'0xff/A0/C23/B11': 1}  other: 0
+G238 'Ronces enflammées 222': {'0xff/A0/C0/B8': 1}  other: 0
+G239 'Ronces enflammées 112': {'0xff/A0/C0/B8': 1}  other: 0
+G254 'Panneau générique': {'0x82/A0/C0/B0': 1}  other: 0
+M 34 'Tonneau générique': {'0x82/A0/C4/B10': 39}  other: 0
+M 35 'Cruche générique': {'0x82/A0/C23/B10': 189}  other: 0
+M 36 'Caisse en bois générique': {'0x82/A0/C23/B10': 127}  other: 0
+M 37 'Pierre générique': {'0x82/A0/C4/B10': 14}  other: 0
+M 38 'Cruche n°2': {'0xf8/A0/C23/B10': 20}  other: 0
+M 41 'Herbe transportable': {'0xf7/A0/C23/B2': 3}  other: 0
+M 73 '◆Slime gélatineux': {'0xfc/A1/C26/B8': 18}  other: 0
+M 79 '◆Beannoïde': {'0xfc/A1/C1/B8': 18}  other: 0
+M 82 '◆Orc (hache) Niv.1': {'0xfc/A0/C15/B8': 8}  other: 0
+M 85 '◆Orc (masse) Niv.1': {'0xfc/A0/C16/B8': 13}  other: 0
+M 88 '◆Orc (armure de fer) Niv.1': {'0xfc/A0/C17/B8': 1}  other: 0
+M 91 '◆Muruta (griffes) Niv.1': {'0xfb/A0/C10/B8': 25}  other: 0
+M 94 '◆Muruta (arc) Niv.1': {'0xfb/A0/C33/B8': 10}  other: 0
+M100 '◆Muruta (boomerang) Niv.1': {'0xfb/A0/C35/B8': 10}  other: 0
+M106 '◆Homme-lézard (épée) Niv.1': {'0xfb/A0/C2/B8': 11}  other: 0
+M109 '◆Homme-lézard (lance) Niv.1': {'0xfb/A0/C32/B8': 5}  other: 0
+M115 '◆Homme-lézard (projectiles) Niv.1': {'0xfb/A0/C34/B8': 9}  other: 0
+M118 'Mur à boule de fer (222) – boule de fer': {'0xff/A0/C0/B11': 6}  other: 0
+M119 'Mur à boule de fer (221)': {'0xff/A0/C0/B11': 2}  other: 0
+M120 'Mur à boule de fer (112) – axe': {'0xff/A0/C0/B11': 6}  other: 0
+M121 '◆Mimming (faux) Niv.1': {'0xfc/A0/C13/B8': 14}  other: 0
+M126 'Mur à boule de fer (111)': {'0xff/A0/C0/B11': 14}  other: 0
+M128 'Statue d’homme-lézard transformé': {'0xfb/A0/C0/B11': 9}  other: 0
+M131 'Pilier détruisible (UD■/LR●)': {'0xff/A0/C0/B11': 1}  other: 0
+M133 '◆Roper Niv.1': {'0xfc/A0/C11/B8': 2}  other: 0
+M134 'Colonne de glace': {'0xff/A0/C69/B10': 10}  other: 0
+M139 '◆Tête de roche Niv.1': {'0xfc/A1/C8/B8': 1}  other: 0
+M145 '◆Homme-insecte Niv.1': {'0xfc/A1/C7/B8': 12}  other: 0
+M148 '◆Mimique Niv.1': {'0xfa/A3/C6/B8': 10}  other: 0
+M154 '◆Ver Niv.1': {'0xfc/A1/C29/B8': 9}  other: 0
+M167 '◆Projectiles à tête chercheuse (lents)': {'0xfb/A0/C59/B0': 3}  other: 0
+M169 '◆Homme momie Niv.1': {'0xfc/A0/C5/B8': 6}  other: 0
+M172 '◆Fantôme Niv.1': {'0xfc/A0/C9/B8': 3}  other: 0
+M175 '◆Homme de boue Niv.1': {'0xfc/A0/C31/B8': 4}  other: 0
+M181 '◆Tortue de roche Niv.1': {'0xfc/A2/C3/B8': 16}  other: 0
+M184 '◆Homme-ombre Niv.1': {'0xfc/A4/C20/B8': 8}  other: 0
+M185 '◆Tortue de roche Niv.2': {'0xfc/A2/C3/B8': 3}  other: 0
+M187 '◆Champignon Niv.1': {'0xfc/A6/C25/B8': 5}  other: 0
+M193 '◆Zombie Niv.1': {'0xfc/A0/C21/B8': 4}  other: 0
+M196 '◆P-Zoldia Niv.1': {'0xfc/A0/C12/B8': 8}  other: 0
+M205 '◆Homme de bois Niv.1': {'0xfc/A3/C27/B8': 2}  other: 0
+M211 '◆Fourneau Niv.1': {'0xfb/A0/C28/B8': 6}  other: 0
+M217 '◆Oiseau de feu Niv.1': {'0xfb/A7/C30/B8': 5}  other: 0
+M222 '◆Petit slime': {'0xfc/A0/C1/B8': 3}  other: 0
+M240 '◆Chute de rochers de Nilude (222)': {'0xfc/A0/C83/B0': 1}  other: 0
+M248 '◆Mille-pattes (projectiles réfléchis)': {'0xfc/A0/C81/B8': 2}  other: 0
+M249 '◆Mille-pattes (œufs explosifs)': {'0xfb/A0/C82/B8': 2}  other: 0
+M252 '◆Sbires du roi': {'0xfb/A0/C10/B8': 3}  other: 0
+
+== B. placed enabled entities:  9631  unresolved types: 0
+== B1. non-zero effective code, by (page,type): code(source E=entity H=header) x count ==
+G 30 'Coffre au trésor': 494 chests with entity Contents (fixed item ids), see B2
+G230 'Mur à boule de fer (2×2×1) permanent': {'0xffH': 4}
+G232 'Mur à boule de fer (2×2×2) permanent': {'0xffH': 17}
+G234 'Pierre très lourde': {'0xffH': 7}
+G238 'Ronces enflammées 222': {'0xffH': 61}
+G239 'Ronces enflammées 112': {'0xffH': 96}
+G254 'Panneau générique': {'0x82H': 57}
+M 30 'Cephas (gardien de cimetière)': {'0x36E': 1, '0x4fE': 2}
+M 34 'Tonneau générique': {'0x82H': 76}
+M 35 'Cruche générique': {'0x82H': 915}
+M 36 'Caisse en bois générique': {'0x82H': 995}
+M 37 'Pierre générique': {'0x82H': 27}
+M 38 'Cruche n°2': {'0xf8H': 42}
+M 41 'Herbe transportable': {'0xf7H': 8}
+M 73 '◆Slime gélatineux': {'0xfcH': 118}
+M 79 '◆Beannoïde': {'0xfcH': 130}
+M 82 '◆Orc (hache) Niv.1': {'0xfcH': 33}
+M 85 '◆Orc (masse) Niv.1': {'0xfcH': 61}
+M 88 '◆Orc (armure de fer) Niv.1': {'0xfcH': 2}
+M 91 '◆Muruta (griffes) Niv.1': {'0xfbH': 203}
+M 94 '◆Muruta (arc) Niv.1': {'0xfbH': 39}
+M100 '◆Muruta (boomerang) Niv.1': {'0xfbH': 30}
+M106 '◆Homme-lézard (épée) Niv.1': {'0xfbH': 110}
+M109 '◆Homme-lézard (lance) Niv.1': {'0xfbH': 25}
+M115 '◆Homme-lézard (projectiles) Niv.1': {'0xfbH': 40}
+M118 'Mur à boule de fer (222) – boule de fer': {'0xffH': 33}
+M119 'Mur à boule de fer (221)': {'0xffH': 15}
+M120 'Mur à boule de fer (112) – axe': {'0xffH': 47}
+M121 '◆Mimming (faux) Niv.1': {'0xfcH': 65}
+M126 'Mur à boule de fer (111)': {'0xffH': 155}
+M128 'Statue d’homme-lézard transformé': {'0xfbH': 150}
+M131 'Pilier détruisible (UD■/LR●)': {'0xffH': 29}
+M133 '◆Roper Niv.1': {'0xfcH': 12}
+M134 'Colonne de glace': {'0xffH': 73}
+M139 '◆Tête de roche Niv.1': {'0xfcH': 4}
+M145 '◆Homme-insecte Niv.1': {'0xfcH': 84}
+M148 '◆Mimique Niv.1': {'0xfaH': 22}
+M154 '◆Ver Niv.1': {'0xfcH': 76}
+M169 '◆Homme momie Niv.1': {'0xfcH': 34}
+M172 '◆Fantôme Niv.1': {'0xfcH': 16}
+M175 '◆Homme de boue Niv.1': {'0xfcH': 16}
+M181 '◆Tortue de roche Niv.1': {'0xfcH': 75}
+M184 '◆Homme-ombre Niv.1': {'0xfcH': 40}
+M185 '◆Tortue de roche Niv.2': {'0xfcH': 14}
+M187 '◆Champignon Niv.1': {'0xfcH': 26}
+M193 '◆Zombie Niv.1': {'0xfcH': 15}
+M196 '◆P-Zoldia Niv.1': {'0xfcH': 26}
+M205 '◆Homme de bois Niv.1': {'0xfcH': 6}
+M211 '◆Fourneau Niv.1': {'0xfbH': 37}
+M217 '◆Oiseau de feu Niv.1': {'0xfbH': 35}
+M252 '◆Sbires du roi': {'0xfbH': 5}
+B2 chests (G30): n= 515 distinct items 98 top [(36, 109), (79, 53), (61, 48), (72, 40), (83, 39), (41, 27), (0, 21), (39, 18), (37, 15), (38, 10), (71, 7), (80, 5)]
+kinds {'none': 4928, 'fixed': 497, 'random': 4206}
+placed with ContentsGameFlag: 396 of which by type: [(('G', 30), 393), (('M', 30), 3)]
+flag bit15 (temporary flags) set: 0

@@ -1,0 +1,4403 @@
+[
+ {
+  "map": 1,
+  "rec": 4,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 6
+ },
+ {
+  "map": 10,
+  "rec": 69,
+  "name": "I74_Bouquet de fleurs",
+  "flags": 2294144,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 10,
+  "rec": 81,
+  "name": "I74_Bouquet de fleurs",
+  "flags": 2294144,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 13,
+  "rec": 6,
+  "name": "asiba (plateforme)",
+  "flags": 196992,
+  "size": [
+   48,
+   32,
+   12
+  ],
+  "forces": [
+   -128,
+   0,
+   128,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 13,
+  "rec": 8,
+  "name": "asiba (plateforme)",
+  "flags": 196992,
+  "size": [
+   48,
+   32,
+   12
+  ],
+  "forces": [
+   -128,
+   0,
+   128,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 13,
+  "rec": 22,
+  "name": "asiba (plateforme)",
+  "flags": 196992,
+  "size": [
+   48,
+   32,
+   12
+  ],
+  "forces": [
+   -128,
+   0,
+   128,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 13,
+  "rec": 23,
+  "name": "asiba (plateforme)",
+  "flags": 196992,
+  "size": [
+   48,
+   32,
+   12
+  ],
+  "forces": [
+   -128,
+   0,
+   128,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 13,
+  "rec": 24,
+  "name": "asiba (plateforme)",
+  "flags": 196992,
+  "size": [
+   48,
+   32,
+   12
+  ],
+  "forces": [
+   -128,
+   0,
+   128,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 19,
+  "rec": 11,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   256,
+   512
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 22,
+  "rec": 2,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 27,
+  "rec": 40,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 28,
+  "rec": 13,
+  "name": "Trappe d\u2019escalier (petite)",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 28,
+  "rec": 14,
+  "name": "Trappe d\u2019escalier (petite)",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 28,
+  "rec": 15,
+  "name": "Trappe d\u2019escalier (petite)",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 28,
+  "rec": 16,
+  "name": "Trappe d\u2019escalier (petite)",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 28,
+  "rec": 17,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 29,
+  "rec": 28,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 30,
+  "rec": 0,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   256,
+   384,
+   512
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 30,
+  "rec": 1,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   256,
+   384,
+   512
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 30,
+  "rec": 2,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 31,
+  "rec": 15,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 31,
+  "rec": 17,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 36,
+  "rec": 3,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 39,
+  "rec": 2,
+  "name": "Grille de fer (petite)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   56
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 44,
+  "rec": 15,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 50,
+  "rec": 14,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -4096,
+   -256,
+   0
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 50,
+  "rec": 28,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 50,
+  "rec": 29,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 50,
+  "rec": 30,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 50,
+  "rec": 31,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 51,
+  "rec": 24,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -4096,
+   -129,
+   0
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 52,
+  "rec": 22,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -4096,
+   -512,
+   0,
+   256
+  ],
+  "nsites": 5
+ },
+ {
+  "map": 52,
+  "rec": 27,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 52,
+  "rec": 37,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -4096,
+   -256,
+   0
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 52,
+  "rec": 58,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 52,
+  "rec": 59,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 52,
+  "rec": 60,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 52,
+  "rec": 61,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 53,
+  "rec": 14,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -129,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 54,
+  "rec": 1,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -129,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 54,
+  "rec": 2,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 54,
+  "rec": 3,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -129,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 54,
+  "rec": 4,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 54,
+  "rec": 25,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -129,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 54,
+  "rec": 26,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -129,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 54,
+  "rec": 39,
+  "name": "Meia (pour YM08)",
+  "flags": 12812672,
+  "size": [
+   20,
+   14,
+   32
+  ],
+  "forces": [
+   1360
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 55,
+  "rec": 11,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 57,
+  "rec": 9,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -128,
+   0,
+   256
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 57,
+  "rec": 10,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -128,
+   0,
+   256
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 58,
+  "rec": 5,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 58,
+  "rec": 8,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 59,
+  "rec": 18,
+  "name": "Plateforme flottante fragile (grande)",
+  "flags": 352384,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 60,
+  "rec": 5,
+  "name": "Interrupteur \u00e0 ballon",
+  "flags": 221569,
+  "size": [
+   22,
+   14,
+   20
+  ],
+  "forces": [
+   -128,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 60,
+  "rec": 6,
+  "name": "Interrupteur \u00e0 ballon",
+  "flags": 221569,
+  "size": [
+   22,
+   14,
+   20
+  ],
+  "forces": [
+   -128,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 60,
+  "rec": 7,
+  "name": "Interrupteur \u00e0 ballon",
+  "flags": 221569,
+  "size": [
+   22,
+   14,
+   20
+  ],
+  "forces": [
+   -128,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 60,
+  "rec": 8,
+  "name": "Interrupteur \u00e0 ballon",
+  "flags": 221569,
+  "size": [
+   22,
+   14,
+   20
+  ],
+  "forces": [
+   -128,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 68,
+  "rec": 10,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 68,
+  "rec": 11,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 68,
+  "rec": 12,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 68,
+  "rec": 13,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 68,
+  "rec": 14,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -512,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 68,
+  "rec": 15,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -512,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 68,
+  "rec": 16,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -512,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 68,
+  "rec": 17,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -512,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 70,
+  "rec": 17,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -512,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 70,
+  "rec": 30,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   0,
+   512
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 72,
+  "rec": 17,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 74,
+  "rec": 16,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 74,
+  "rec": 22,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 77,
+  "rec": 14,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 77,
+  "rec": 15,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 77,
+  "rec": 16,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 77,
+  "rec": 17,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 77,
+  "rec": 18,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 77,
+  "rec": 19,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 77,
+  "rec": 20,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 77,
+  "rec": 21,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 77,
+  "rec": 24,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 77,
+  "rec": 25,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 77,
+  "rec": 29,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 77,
+  "rec": 30,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 77,
+  "rec": 31,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 77,
+  "rec": 32,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 78,
+  "rec": 19,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 78,
+  "rec": 20,
+  "name": "Bois flottant .01 sur l\u2019eau / .23 en l\u2019air",
+  "flags": 197090,
+  "size": [
+   42,
+   10,
+   16
+  ],
+  "forces": [
+   -640
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 80,
+  "rec": 5,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 80,
+  "rec": 16,
+  "name": "Statue d\u2019homme-l\u00e9zard transform\u00e9",
+  "flags": 8576,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   1024
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 83,
+  "rec": 22,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 87,
+  "rec": 13,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 87,
+  "rec": 14,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 87,
+  "rec": 15,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 87,
+  "rec": 16,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 89,
+  "rec": 2,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   256,
+   512
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 89,
+  "rec": 27,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 90,
+  "rec": 0,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -32,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 90,
+  "rec": 1,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -32,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 90,
+  "rec": 2,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -32,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 90,
+  "rec": 9,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -32,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 90,
+  "rec": 10,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -32,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 91,
+  "rec": 1,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   256,
+   512
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 93,
+  "rec": 0,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 93,
+  "rec": 1,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 93,
+  "rec": 2,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 93,
+  "rec": 13,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -32,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 93,
+  "rec": 14,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -32,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 93,
+  "rec": 15,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -32,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 93,
+  "rec": 16,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -32,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 93,
+  "rec": 17,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -32,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 93,
+  "rec": 18,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -32,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 93,
+  "rec": 19,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -32,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 93,
+  "rec": 47,
+  "name": "Bloc transparent (8\u00d72\u00d71)",
+  "flags": 8320,
+  "size": [
+   240,
+   32,
+   16
+  ],
+  "forces": [
+   -32,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 95,
+  "rec": 0,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 102,
+  "rec": 0,
+  "name": "Bloc \u00e0 pousser/attaquer",
+  "flags": 204928,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 102,
+  "rec": 9,
+  "name": "Bloc \u00e0 pousser/attaquer",
+  "flags": 204928,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 102,
+  "rec": 26,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 104,
+  "rec": 3,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 108,
+  "rec": 7,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 108,
+  "rec": 8,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 114,
+  "rec": 0,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 115,
+  "rec": 19,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   -128,
+   0,
+   128
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 120,
+  "rec": 14,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -256,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 120,
+  "rec": 15,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -208,
+   208
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 120,
+  "rec": 16,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -96,
+   144
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 121,
+  "rec": 0,
+  "name": "Porte (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 121,
+  "rec": 1,
+  "name": "Porte (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 121,
+  "rec": 2,
+  "name": "Porte (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 121,
+  "rec": 3,
+  "name": "Porte (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 122,
+  "rec": 9,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -16,
+   0,
+   64
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 122,
+  "rec": 10,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -80,
+   0,
+   128
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 122,
+  "rec": 11,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 123,
+  "rec": 9,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 125,
+  "rec": 20,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -1024,
+   0,
+   1024
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 125,
+  "rec": 21,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -1024,
+   0,
+   1024
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 136,
+  "rec": 15,
+  "name": "I89_Objet 089",
+  "flags": 2294144,
+  "size": [
+   22,
+   14,
+   14
+  ],
+  "forces": [
+   0,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 138,
+  "rec": 2,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   -128,
+   0,
+   128
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 141,
+  "rec": 24,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   0,
+   128
+  ],
+  "nsites": 10
+ },
+ {
+  "map": 148,
+  "rec": 28,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -512,
+   -256,
+   0,
+   256,
+   512
+  ],
+  "nsites": 5
+ },
+ {
+  "map": 149,
+  "rec": 6,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 152,
+  "rec": 22,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -512,
+   -256,
+   0,
+   256,
+   512
+  ],
+  "nsites": 5
+ },
+ {
+  "map": 152,
+  "rec": 23,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -512,
+   -256,
+   0,
+   256,
+   512
+  ],
+  "nsites": 5
+ },
+ {
+  "map": 153,
+  "rec": 1,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 154,
+  "rec": 22,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -512,
+   -256,
+   0,
+   256,
+   512
+  ],
+  "nsites": 5
+ },
+ {
+  "map": 156,
+  "rec": 0,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   1024
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 156,
+  "rec": 1,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -1024
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 156,
+  "rec": 2,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   1024
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 156,
+  "rec": 3,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -1024
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 159,
+  "rec": 2,
+  "name": "Bulle .0-1-2 support /3-4 non support",
+  "flags": 8384,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   128
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 159,
+  "rec": 13,
+  "name": "Bulle .0-1-2 support /3-4 non support",
+  "flags": 8384,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   128
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 159,
+  "rec": 17,
+  "name": "Bulle .0-1-2 support /3-4 non support",
+  "flags": 8384,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   128
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 159,
+  "rec": 18,
+  "name": "Bulle .0-1-2 support /3-4 non support",
+  "flags": 8384,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   128
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 160,
+  "rec": 1,
+  "name": "Bulle .0-1-2 support /3-4 non support",
+  "flags": 8384,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   128
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 160,
+  "rec": 24,
+  "name": "Bulle .0-1-2 support /3-4 non support",
+  "flags": 8384,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   128
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 174,
+  "rec": 2,
+  "name": "Nadia (femme insomniaque)",
+  "flags": 8626560,
+  "size": [
+   20,
+   14,
+   32
+  ],
+  "forces": [
+   -1536,
+   0,
+   1536
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 181,
+  "rec": 2,
+  "name": "Nadia (femme insomniaque)",
+  "flags": 8626560,
+  "size": [
+   20,
+   14,
+   32
+  ],
+  "forces": [
+   -1536,
+   0,
+   1536
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 229,
+  "rec": 0,
+  "name": "Kline (somnambule)",
+  "flags": 8626560,
+  "size": [
+   20,
+   14,
+   32
+  ],
+  "forces": [
+   2304
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 260,
+  "rec": 16,
+  "name": "I76_Testament d\u2019Anzes",
+  "flags": 2097536,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   0,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 306,
+  "rec": 0,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 306,
+  "rec": 9,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 306,
+  "rec": 13,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -512,
+   0,
+   512
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 306,
+  "rec": 14,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -512,
+   0,
+   512
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 307,
+  "rec": 0,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 307,
+  "rec": 1,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 307,
+  "rec": 4,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 307,
+  "rec": 5,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 309,
+  "rec": 2,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   -128,
+   0,
+   128
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 309,
+  "rec": 9,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 309,
+  "rec": 13,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 310,
+  "rec": 2,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 324,
+  "rec": 2,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   128
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 329,
+  "rec": 0,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -512
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 329,
+  "rec": 1,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -512
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 329,
+  "rec": 2,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -512
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 329,
+  "rec": 3,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -512
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 329,
+  "rec": 10,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 331,
+  "rec": 69,
+  "name": "I74_Bouquet de fleurs",
+  "flags": 2294144,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 331,
+  "rec": 81,
+  "name": "I74_Bouquet de fleurs",
+  "flags": 2294144,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 334,
+  "rec": 2,
+  "name": "I35_Bombe explosive",
+  "flags": 2294144,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 339,
+  "rec": 20,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 6
+ },
+ {
+  "map": 340,
+  "rec": 15,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   128
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 340,
+  "rec": 16,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -128,
+   0,
+   128
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 340,
+  "rec": 17,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   128
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 340,
+  "rec": 18,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -128,
+   0,
+   128
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 344,
+  "rec": 21,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 344,
+  "rec": 42,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 344,
+  "rec": 50,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 344,
+  "rec": 51,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 344,
+  "rec": 52,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 344,
+  "rec": 53,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 345,
+  "rec": 10,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 345,
+  "rec": 11,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 345,
+  "rec": 12,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 345,
+  "rec": 13,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 345,
+  "rec": 14,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 345,
+  "rec": 15,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 345,
+  "rec": 16,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 345,
+  "rec": 17,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 345,
+  "rec": 18,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 345,
+  "rec": 19,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 345,
+  "rec": 20,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 345,
+  "rec": 21,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 2,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 3,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 4,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 5,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 6,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 7,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 8,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 9,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 10,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 11,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 12,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 13,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 14,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 347,
+  "rec": 15,
+  "name": "Interrupteur (pi\u00e9tiner) \u2190 \u00e0 utiliser !",
+  "flags": 204928,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -128,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 358,
+  "rec": 1,
+  "name": "Kline (somnambule)",
+  "flags": 8626560,
+  "size": [
+   20,
+   14,
+   32
+  ],
+  "forces": [
+   4096
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 363,
+  "rec": 0,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 365,
+  "rec": 2,
+  "name": "I35_Bombe explosive",
+  "flags": 2294144,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 367,
+  "rec": 0,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   -256,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 382,
+  "rec": 8,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 385,
+  "rec": 6,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 385,
+  "rec": 7,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 385,
+  "rec": 8,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 386,
+  "rec": 16,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 389,
+  "rec": 6,
+  "name": "Marin-passager-mouette",
+  "flags": 237952,
+  "size": [
+   18,
+   12,
+   32
+  ],
+  "forces": [
+   -129,
+   0,
+   896
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 389,
+  "rec": 7,
+  "name": "Marin-passager-mouette",
+  "flags": 237952,
+  "size": [
+   18,
+   12,
+   32
+  ],
+  "forces": [
+   -129,
+   0,
+   896
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 389,
+  "rec": 8,
+  "name": "Marin-passager-mouette",
+  "flags": 237952,
+  "size": [
+   18,
+   12,
+   32
+  ],
+  "forces": [
+   -129,
+   0,
+   896
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 389,
+  "rec": 9,
+  "name": "Marin-passager-mouette",
+  "flags": 237952,
+  "size": [
+   18,
+   12,
+   32
+  ],
+  "forces": [
+   -129,
+   0,
+   896
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 389,
+  "rec": 10,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   -192,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 389,
+  "rec": 11,
+  "name": "Marin-passager-mouette",
+  "flags": 237952,
+  "size": [
+   18,
+   12,
+   32
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 389,
+  "rec": 18,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 391,
+  "rec": 0,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   -256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 394,
+  "rec": 2,
+  "name": "Marin-passager-mouette",
+  "flags": 237952,
+  "size": [
+   18,
+   12,
+   32
+  ],
+  "forces": [
+   1024
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 410,
+  "rec": 22,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 413,
+  "rec": 0,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   512
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 422,
+  "rec": 19,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 422,
+  "rec": 22,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -2049,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 422,
+  "rec": 24,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   128
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 422,
+  "rec": 26,
+  "name": "Gros bloc transparent (6\u00d710)",
+  "flags": 384,
+  "size": [
+   140,
+   156,
+   8
+  ],
+  "forces": [
+   -4096,
+   -64,
+   0
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 422,
+  "rec": 28,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   -2049,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 423,
+  "rec": 32,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   128
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 423,
+  "rec": 33,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   128
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 424,
+  "rec": 28,
+  "name": "Grille de fer (petite)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   56
+  ],
+  "forces": [
+   -2048,
+   0,
+   128
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 424,
+  "rec": 29,
+  "name": "Grille de fer (petite)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   56
+  ],
+  "forces": [
+   -2048,
+   0,
+   128
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 425,
+  "rec": 11,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 426,
+  "rec": 23,
+  "name": "Plateforme flottante (grande)",
+  "flags": 352448,
+  "size": [
+   48,
+   32,
+   8
+  ],
+  "forces": [
+   -256,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 426,
+  "rec": 27,
+  "name": "Tonneau g\u00e9n\u00e9rique",
+  "flags": 3351524,
+  "size": [
+   21,
+   15,
+   16
+  ],
+  "forces": [
+   32,
+   1280,
+   2304,
+   3584,
+   4608
+  ],
+  "nsites": 5
+ },
+ {
+  "map": 429,
+  "rec": 23,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 429,
+  "rec": 24,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 429,
+  "rec": 25,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 429,
+  "rec": 34,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 432,
+  "rec": 1,
+  "name": "I68_Embl\u00e8me d\u2019argent",
+  "flags": 2294144,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   -256,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 440,
+  "rec": 13,
+  "name": "Jeune Meia",
+  "flags": 8618368,
+  "size": [
+   20,
+   14,
+   32
+  ],
+  "forces": [
+   1344
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 440,
+  "rec": 15,
+  "name": "Jeune Meia",
+  "flags": 8618368,
+  "size": [
+   20,
+   14,
+   32
+  ],
+  "forces": [
+   1408,
+   1536
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 440,
+  "rec": 20,
+  "name": "Jeune Meia",
+  "flags": 8618368,
+  "size": [
+   20,
+   14,
+   32
+  ],
+  "forces": [
+   1280,
+   1456
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 441,
+  "rec": 1,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   -256,
+   0
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 441,
+  "rec": 9,
+  "name": "Plateforme flottante (petite)",
+  "flags": 221376,
+  "size": [
+   24,
+   16,
+   8
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 442,
+  "rec": 25,
+  "name": "Mur \u00e0 boule de fer (111)",
+  "flags": 25025,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 442,
+  "rec": 26,
+  "name": "Mur \u00e0 boule de fer (111)",
+  "flags": 25025,
+  "size": [
+   24,
+   16,
+   16
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 3
+ },
+ {
+  "map": 443,
+  "rec": 3,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 443,
+  "rec": 4,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 443,
+  "rec": 13,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 443,
+  "rec": 14,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 443,
+  "rec": 15,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   0,
+   256
+  ],
+  "nsites": 2
+ },
+ {
+  "map": 444,
+  "rec": 24,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   -128,
+   0,
+   128
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 446,
+  "rec": 10,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   -512,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 446,
+  "rec": 11,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   -512,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 446,
+  "rec": 12,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   -512,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 446,
+  "rec": 13,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   -512,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 446,
+  "rec": 14,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   -512,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 446,
+  "rec": 15,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   -512,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 446,
+  "rec": 16,
+  "name": "Grille de fer (grande)",
+  "flags": 221312,
+  "size": [
+   24,
+   16,
+   88
+  ],
+  "forces": [
+   -512,
+   0,
+   256
+  ],
+  "nsites": 4
+ },
+ {
+  "map": 448,
+  "rec": 34,
+  "name": "Trappe d\u2019escalier (grande)",
+  "flags": 336000,
+  "size": [
+   48,
+   32,
+   32
+  ],
+  "forces": [
+   256
+  ],
+  "nsites": 1
+ },
+ {
+  "map": 449,
+  "rec": 2,
+  "name": "Bloc transparent (1\u00d71\u00d72)",
+  "flags": 24704,
+  "size": [
+   24,
+   16,
+   32
+  ],
+  "forces": [
+   0,
+   128
+  ],
+  "nsites": 2
+ }
+]

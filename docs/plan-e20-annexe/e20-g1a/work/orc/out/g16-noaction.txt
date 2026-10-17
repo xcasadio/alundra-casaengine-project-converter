@@ -1,0 +1,7 @@
+plain    throw (Square) : hero anim changes after t60 ['t61 anim_t:12>9 carried2C:80127FC4>0', 't80 anim_t:9>0'] ; hero.+0x2C at end 0 ; +0x180 at t60 0
+plain    jump (Cross)   : hero anim changes after t60 ['t61 anim_t:12>46', 't62 anim_t:46>48'] ; hero.+0x2C at end 80127FC4 ; +0x180 at t60 0
+gp=0x20  throw (Square) : hero anim changes after t60 [] ; hero.+0x2C at end 80127FC4 ; +0x180 at t60 2000
+gp=0x20  jump (Cross)   : hero anim changes after t60 ['t61 anim_t:12>46', 't62 anim_t:46>48'] ; hero.+0x2C at end 80127FC4 ; +0x180 at t60 2000
+gp=0x40  throw (Square) : hero anim changes after t60 ['t61 anim_t:12>9 carried2C:80127FC4>0', 't80 anim_t:9>0'] ; hero.+0x2C at end 0 ; +0x180 at t60 4000
+gp=0x40  jump (Cross)   : hero anim changes after t60 [] ; hero.+0x2C at end 80127FC4 ; +0x180 at t60 4000
+lift on gp=0x20 cells: lifted=True

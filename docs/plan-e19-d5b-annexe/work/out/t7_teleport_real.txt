@@ -1,0 +1,16 @@
+settled: 4325377 3276801 ride 1
+tick  1 obj z= 1179649 | hero z= 4292609 (DLL conv.  4292608) fz=  -32768 ride=None coll=0 gnd=0
+tick  2 obj z= 1179649 | hero z= 4227073 (DLL conv.  4227072) fz=  -65536 ride=None coll=0 gnd=0
+tick  3 obj z= 1179649 | hero z= 4128769 (DLL conv.  4128768) fz=  -98304 ride=None coll=0 gnd=0
+tick  4 obj z= 1179649 | hero z= 3997697 (DLL conv.  3997696) fz= -131072 ride=None coll=0 gnd=0
+tick  5 obj z= 1179649 | hero z= 3833857 (DLL conv.  3833856) fz= -163840 ride=None coll=0 gnd=0
+tick  6 obj z= 1179649 | hero z= 3637249 (DLL conv.  3637248) fz= -196608 ride=None coll=0 gnd=0
+tick  7 obj z= 1179649 | hero z= 3407873 (DLL conv.  3407872) fz= -229376 ride=None coll=0 gnd=0
+tick  8 obj z= 1179649 | hero z= 3145729 (DLL conv.  3145728) fz= -262144 ride=None coll=0 gnd=0
+tick  9 obj z= 1179649 | hero z= 2850817 (DLL conv.  2850816) fz= -294912 ride=None coll=0 gnd=0
+tick 10 obj z= 1179649 | hero z= 2523137 (DLL conv.  2523136) fz= -327680 ride=None coll=0 gnd=0
+tick 11 obj z= 1179649 | hero z= 2228225 (DLL conv.  2228224) fz=       0 ride=None coll=1 gnd=1
+tick 12 obj z= 1179649 | hero z= 2228225 (DLL conv.  2228224) fz=       0 ride=1 coll=0 gnd=1
+tick 13 obj z= 1179649 | hero z= 2228225 (DLL conv.  2228224) fz=       0 ride=1 coll=0 gnd=1
+tick 14 obj z= 1179649 | hero z= 2228225 (DLL conv.  2228224) fz=       0 ride=1 coll=0 gnd=1
+tick 15 obj z= 1179649 | hero z= 2228225 (DLL conv.  2228224) fz=       0 ride=1 coll=0 gnd=1

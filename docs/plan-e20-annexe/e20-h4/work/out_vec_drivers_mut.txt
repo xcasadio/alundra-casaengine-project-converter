@@ -1,0 +1,55 @@
+CAUGHT   earth1: end counter 0x64 -> 0x65 | vectors 1800 seed 20261017 mismatches 5
+CAUGHT   earth1: direction delta from the wrong field | vectors 1800 seed 20261017 mismatches 42
+CAUGHT   earth1: ForceZ shift 8 -> 7 | vectors 1800 seed 20261017 mismatches 42
+CAUGHT   earth1: sprite 0x10 -> 0x11 | vectors 1800 seed 20261017 mismatches 42
+CAUGHT   earth2: spawn height 0x1000000 -> 0x800000 | vectors 1800 seed 20261017 mismatches 38
+CAUGHT   earth2: radius base 0xA00 -> 0x9FF | vectors 1800 seed 20261017 mismatches 38
+MISSED   earth2: terrain test < -> <= | vectors 1800 seed 20261017 mismatches 0
+CAUGHT   earth2: direction from the first draw | vectors 1800 seed 20261017 mismatches 38
+CAUGHT   earth2: X and Y tables swapped | vectors 1800 seed 20261017 mismatches 38
+CAUGHT   earth2: fall speed 0xFFF80000 -> 0xFFF00000 | vectors 1800 seed 20261017 mismatches 17
+CAUGHT   earth2: end counter 0x118 -> 0x117 | vectors 1800 seed 20261017 mismatches 3
+CAUGHT   water: tables swapped | vectors 1800 seed 20261017 mismatches 68
+CAUGHT   water: spawn height 0x80000 -> 0x100000 | vectors 1800 seed 20261017 mismatches 58
+CAUGHT   water: life counter sign | vectors 1800 seed 20261017 mismatches 53
+CAUGHT   water: angle mod uses floor instead of truncation | vectors 1800 seed 20261017 mismatches 20
+CAUGHT   water: heal at 0x1E -> 0x1F | vectors 1800 seed 20261017 mismatches 41
+CAUGHT   water: heal sounds swapped | vectors 1800 seed 20261017 mismatches 11
+MISSED   water: end 0x3C -> 0x3B | vectors 1800 seed 20261017 mismatches 0
+CAUGHT   water: phase 2 scan excludes the last slot | vectors 1800 seed 20261017 mismatches 4
+CAUGHT   water: phase 2 waits for >= 0 | vectors 1800 seed 20261017 mismatches 4
+CAUGHT   heal water: minimum 5 -> 4 | vectors 1800 seed 20261017 mismatches 1
+CAUGHT   heal water: spark speed constant | vectors 1800 seed 20261017 mismatches 11
+CAUGHT   heal full: spark speed 448 -> 449 | vectors 1800 seed 20261017 mismatches 24
+CAUGHT   fire1: projectile cadence & 7 -> & 15 | vectors 1800 seed 20261017 mismatches 8
+CAUGHT   fire1: projectile height 0x100000 -> 0x80000 | vectors 1800 seed 20261017 mismatches 18
+CAUGHT   fire1: projectile delay byte 0x10 -> 0x11 | vectors 1800 seed 20261017 mismatches 17
+CAUGHT   fire1: projectile direction not drawn (0) | vectors 1800 seed 20261017 mismatches 18
+CAUGHT   fire1: entity identity compare removed | vectors 1800 seed 20261017 mismatches 26
+CAUGHT   fire2: shake shift 4 -> 5 | vectors 1800 seed 20261017 mismatches 77
+CAUGHT   fire2: shake shift 6 -> 7 | vectors 1800 seed 20261017 mismatches 55
+CAUGHT   fire2: shake not restored at the end | vectors 1800 seed 20261017 mismatches 17
+CAUGHT   fire2: cancel does not restore | vectors 1800 seed 20261017 mismatches 10
+CAUGHT   wind1: height limit 0x500000 -> 0x400000 | vectors 1800 seed 20261017 mismatches 1
+MISSED   wind1: distance limit 0x6401 -> 0x6400 | vectors 1800 seed 20261017 mismatches 0
+CAUGHT   wind1: strike height 0x800000 -> 0x400000 (target) | vectors 1800 seed 20261017 mismatches 17
+CAUGHT   wind1: random X range 0xC00001 -> 0xC00000 | vectors 1800 seed 20261017 mismatches 11
+CAUGHT   wind1: random Y offset -0x400000 -> -0x300000 | vectors 1800 seed 20261017 mismatches 23
+MISSED   wind1: last target not skipped | vectors 1800 seed 20261017 mismatches 0
+CAUGHT   wind1: query scans the last slot | vectors 1800 seed 20261017 mismatches 3
+CAUGHT   wind1: sort at 2 results | vectors 1800 seed 20261017 mismatches 3
+CAUGHT   wind1: ground test removed | vectors 1800 seed 20261017 mismatches 5
+CAUGHT   query: immune response test 0x80 -> 0xC0 | vectors 1800 seed 20261017 mismatches 5
+CAUGHT   query: status 3 excluded | vectors 1800 seed 20261017 mismatches 3
+CAUGHT   wind2: spawn sprite 0x18 -> 0x17 | vectors 1800 seed 20261017 mismatches 43
+CAUGHT   wind2: phase 1 alive test inverted | vectors 1800 seed 20261017 mismatches 71
+CAUGHT   cancel wind2: 16 -> 15 particles | vectors 1800 seed 20261017 mismatches 9
+CAUGHT   cancel wind2: particle spread shift 9 -> 8 | vectors 1800 seed 20261017 mismatches 9
+CAUGHT   cancel earth2: anim 1 -> 2 | vectors 1800 seed 20261017 mismatches 6
+CAUGHT   cancel water: effect 0x1A -> 0x19 | vectors 1800 seed 20261017 mismatches 7
+CAUGHT   cancel fire1: effect variant 2 -> 1 | vectors 1800 seed 20261017 mismatches 1
+CAUGHT   slope helper: slope 4 test removed | vectors 1800 seed 20261017 mismatches 10
+CAUGHT   slope helper: anim 0x33 not accepted | vectors 1800 seed 20261017 mismatches 755
+CAUGHT   wrapper: counter increments after the drive removed | vectors 1800 seed 20261017 mismatches 1800
+MISSED   wrapper: in-use cleared only on 1 | vectors 1800 seed 20261017 mismatches 0
+49/54 mutations caught; not found 0; missed: ['earth2: terrain test < -> <=', 'water: end 0x3C -> 0x3B', 'wind1: distance limit 0x6401 -> 0x6400', 'wind1: last target not skipped', 'wrapper: in-use cleared only on 1']

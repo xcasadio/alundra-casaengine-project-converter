@@ -1,0 +1,13 @@
+platform rises 1 px/tick the whole time ; hero impulse IZF=1280 at t3 (the +0xF8 word is cleared by UpdateAnimation at t4)
+t00 plat z= 6619137 | hero z= 7143425 (rel        0) fz=   65536 ffz=   65536 ride=1 coll=0 gnd=1
+t01 plat z= 6684673 | hero z= 7208961 (rel        0) fz=   65536 ffz=   65536 ride=1 coll=0 gnd=1
+t02 plat z= 6750209 | hero z= 7274497 (rel        0) fz=   65536 ffz=   65536 ride=1 coll=0 gnd=1
+t03 plat z= 6815745 | hero z= 7602177 (rel   262144) fz=  327680 ffz=  327680 ride=1 coll=0 gnd=0
+t04 plat z= 6881281 | hero z= 7897089 (rel   491520) fz=  294912 ffz=  294912 ride=None coll=0 gnd=0
+t05 plat z= 6946817 | hero z= 8159233 (rel   688128) fz=  262144 ffz=  262144 ride=None coll=0 gnd=0
+t06 plat z= 7012353 | hero z= 8388609 (rel   851968) fz=  229376 ffz=  229376 ride=None coll=0 gnd=0
+t07 plat z= 7077889 | hero z= 8585217 (rel   983040) fz=  196608 ffz=  196608 ride=None coll=0 gnd=0
+t08 plat z= 7143425 | hero z= 8749057 (rel  1081344) fz=  163840 ffz=  163840 ride=None coll=0 gnd=0
+t09 plat z= 7208961 | hero z= 8880129 (rel  1146880) fz=  131072 ffz=  131072 ride=None coll=0 gnd=0
+t10 plat z= 7274497 | hero z= 8978433 (rel  1179648) fz=   98304 ffz=   98304 ride=None coll=0 gnd=0
+t11 plat z= 7340033 | hero z= 9043969 (rel  1179648) fz=   65536 ffz=   65536 ride=None coll=0 gnd=0

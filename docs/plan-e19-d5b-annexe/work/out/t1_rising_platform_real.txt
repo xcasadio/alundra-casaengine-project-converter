@@ -1,0 +1,16 @@
+setup hero {'x': 6553600, 'y': 6553600, 'z': 524289, 'fz': 0, 'ffz': 0, 'ride': None, 'coll': 0, 'ground': 1, 'floor': 524289, 'terr': 0, 'adj': 0, 'ffx': 0, 'ffy': 0, 'afx': 0, 'afy': 0}
+setup plat {'x': 6553600, 'y': 6553600, 'z': 1, 'fz': 0, 'ffz': 0, 'ride': None, 'coll': 0, 'ground': 1, 'floor': 1, 'terr': 0, 'adj': 0, 'ffx': 0, 'ffy': 0, 'afx': 0, 'afy': 0}
+t00  plat z=        1 fz=       0 ffz=       0 | hero z=   524289 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t01  plat z=        1 fz=       0 ffz=       0 | hero z=   524289 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t02  plat z=        1 fz=       0 ffz=       0 | hero z=   524289 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t03  plat z=    65537 fz=   65536 ffz=   65536 | hero z=   589825 (rel        0) fz=   65536 ffz=   65536 ride=1 coll=0 gnd=1
+t04  plat z=   131073 fz=   65536 ffz=   65536 | hero z=   655361 (rel        0) fz=   65536 ffz=   65536 ride=1 coll=0 gnd=1
+t05  plat z=   196609 fz=   65536 ffz=   65536 | hero z=   720897 (rel        0) fz=   65536 ffz=   65536 ride=1 coll=0 gnd=1
+t06  plat z=   262145 fz=   65536 ffz=   65536 | hero z=   786433 (rel        0) fz=   65536 ffz=   65536 ride=1 coll=0 gnd=1
+t07  plat z=   327681 fz=   65536 ffz=   65536 | hero z=   851969 (rel        0) fz=   65536 ffz=   65536 ride=1 coll=0 gnd=1
+t08  plat z=   393217 fz=   65536 ffz=   65536 | hero z=   917505 (rel        0) fz=   65536 ffz=   65536 ride=1 coll=0 gnd=1
+t09  plat z=   393217 fz=       0 ffz=       0 | hero z=   917505 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t10  plat z=   393217 fz=       0 ffz=       0 | hero z=   917505 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t11  plat z=   393217 fz=       0 ffz=       0 | hero z=   917505 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t12  plat z=   393217 fz=       0 ffz=       0 | hero z=   917505 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1
+t13  plat z=   393217 fz=       0 ffz=       0 | hero z=   917505 (rel        0) fz=       0 ffz=       0 ride=1 coll=0 gnd=1

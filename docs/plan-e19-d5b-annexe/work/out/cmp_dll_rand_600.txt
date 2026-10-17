@@ -1,0 +1,3 @@
+scenarios 600
+  current   scenarios with >=1 mismatching tick: 595 / 600   mismatching ticks by field: {'rel': 6959, 'hz': 6959, 'coll': 634, 'ride': 6383, 'ground': 5240, 'cz': 8}
+  proposed  scenarios with >=1 mismatching tick:   0 / 600   mismatching ticks by field: {}

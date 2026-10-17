@@ -1,0 +1,15 @@
+STACK order UL
+t009 pad=2000 | H anim_t=1 carried2C=0 px=109.0000 xcoll=80127FC4 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=0 px=130.0000 pz=16.0000 support=80128258 ground=1 status=2
+t010 pad=2000 | H anim_t=1 carried2C=0 px=109.0000 xcoll=80127FC4 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=0 px=130.0000 pz=16.0000 support=80128258 ground=1 status=2
+t011 pad=2080 | H anim_t=5 carried2C=80127FC4 px=109.0000 xcoll=0 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=80127D30 px=130.0000 pz=16.0000 support=0 ground=0 status=2 | J snd(44)
+t012 pad=0000 | H anim_t=5 carried2C=80127FC4 px=109.0000 xcoll=0 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=80127D30 px=129.0000 pz=17.0000 support=0 ground=0 status=2
+t013 pad=0000 | H anim_t=5 carried2C=80127FC4 px=109.0000 xcoll=0 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=80127D30 px=128.0000 pz=18.0000 support=0 ground=0 status=2
+t014 pad=0000 | H anim_t=5 carried2C=80127FC4 px=109.0000 xcoll=0 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=80127D30 px=127.0000 pz=19.0000 support=0 ground=0 status=2
+t015 pad=0000 | H anim_t=5 carried2C=80127FC4 px=109.0000 xcoll=0 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=80127D30 px=126.0000 pz=20.0000 support=0 ground=0 status=2
+t016 pad=0000 | H anim_t=5 carried2C=80127FC4 px=109.0000 xcoll=0 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=80127D30 px=125.0000 pz=21.0000 support=0 ground=0 status=2
+t017 pad=0000 | H anim_t=5 carried2C=80127FC4 px=109.0000 xcoll=0 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=80127D30 px=124.0000 pz=22.0000 support=0 ground=0 status=2
+t018 pad=0000 | H anim_t=5 carried2C=80127FC4 px=109.0000 xcoll=0 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=80127D30 px=123.0000 pz=23.0000 support=0 ground=0 status=2
+t019 pad=0000 | H anim_t=5 carried2C=80127FC4 px=109.0000 xcoll=0 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=80127D30 px=122.0000 pz=24.0000 support=0 ground=0 status=2
+t020 pad=0000 | H anim_t=5 carried2C=80127FC4 px=109.0000 xcoll=0 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=80127D30 px=121.0000 pz=25.0000 support=0 ground=0 status=2
+t021 pad=0000 | H anim_t=5 carried2C=80127FC4 px=109.0000 xcoll=0 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=80127D30 px=120.0000 pz=26.0000 support=0 ground=0 status=2
+t022 pad=0000 | H anim_t=5 carried2C=80127FC4 px=109.0000 xcoll=0 | C2 carrier28=0 px=130.0000 pz=0.0000 support=0 ground=1 status=2 | C1 carrier28=80127D30 px=119.0000 pz=27.0000 support=0 ground=0 status=2

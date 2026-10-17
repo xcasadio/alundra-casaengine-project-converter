@@ -1,0 +1,17 @@
+H3 locked
+t059 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=32.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=32.0000 status=2 carrier28=80127D30
+t060 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=32.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=32.0000 status=2 carrier28=80127D30
+t061 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=32.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=32.0000 status=2 carrier28=80127D30
+t062 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=32.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=32.0000 status=2 carrier28=80127D30
+t063 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=32.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=32.0000 status=2 carrier28=80127D30
+t064 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=32.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=32.0000 status=2 carrier28=80127D30
+t065 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=30.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=30.0000 status=2 carrier28=80127D30
+t066 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=28.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=28.0000 status=2 carrier28=80127D30
+t067 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=26.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=26.0000 status=2 carrier28=80127D30
+t068 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=24.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=24.0000 status=2 carrier28=80127D30
+t069 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=22.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=22.0000 status=2 carrier28=80127D30
+t070 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=20.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=20.0000 status=2 carrier28=80127D30
+t071 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=18.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=18.0000 status=2 carrier28=80127D30
+t072 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=16.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=16.0000 status=2 carrier28=80127D30
+t073 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=14.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=14.0000 status=2 carrier28=80127D30
+t074 pad=0000 | H anim_t=12 carried2C=80127FC4 off30=0.0000 off34=0.0000 off38=12.0000 px=109.0000 | C1 px=109.0000 py=100.0000 pz=12.0000 status=2 carrier28=80127D30

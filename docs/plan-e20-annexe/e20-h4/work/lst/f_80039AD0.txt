@@ -1,0 +1,26 @@
+; function 0x80039AD0..0x80039B28 (22 words)
+80039AD0  27bdffe8  addiu    $sp, $sp, -0x18
+80039AD4  afbf0010  sw       $ra, 0x10($sp)                ; sp+0x10
+80039AD8  24040001  addiu    $a0, $zero, 1
+80039ADC  3c028012  lui      $v0, 0x8012
+80039AE0  24437fc4  addiu    $v1, $v0, 0x7fc4              ; =0x80127FC4
+L_80039AE4:
+80039AE4  8c620010  lw       $v0, 0x10($v1)                ; v1.Status
+80039AE8  00000000  nop      
+80039AEC  14400003  bnez     $v0, 0x80039afc   -> L_80039AFC
+80039AF0  24840001  addiu    $a0, $a0, 1
+80039AF4  0800e6c6  j        0x80039b18   -> L_80039B18
+80039AF8  00601021  move     $v0, $v1
+L_80039AFC:
+80039AFC  28820040  slti     $v0, $a0, 0x40
+80039B00  1440fff8  bnez     $v0, 0x80039ae4   -> L_80039AE4
+80039B04  24630294  addiu    $v1, $v1, 0x294
+80039B08  3c048002  lui      $a0, 0x8002
+80039B0C  0c02057b  jal      0x800815ec                    ; FUN_800815EC
+80039B10  248439b0  addiu    $a0, $a0, 0x39b0              ; =0x800239B0
+80039B14  00001021  move     $v0, $zero
+L_80039B18:
+80039B18  8fbf0010  lw       $ra, 0x10($sp)                ; sp+0x10
+80039B1C  27bd0018  addiu    $sp, $sp, 0x18
+80039B20  03e00008  jr       $ra
+80039B24  00000000  nop      

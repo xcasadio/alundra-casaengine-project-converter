@@ -1,0 +1,99 @@
+; function 0x8003AF70..0x8003B0E8 (94 words)
+8003AF70  27bdffe8  addiu    $sp, $sp, -0x18
+8003AF74  00a0c021  move     $t8, $a1
+8003AF78  afb00010  sw       $s0, 0x10($sp)                ; sp+0x10
+8003AF7C  00008021  move     $s0, $zero
+8003AF80  240b0001  addiu    $t3, $zero, 1
+8003AF84  3c028012  lui      $v0, 0x8012
+8003AF88  3c038013  lui      $v1, 0x8013
+8003AF8C  8c634360  lw       $v1, 0x4360($v1)              ; [0x80134360]
+8003AF90  8fa50028  lw       $a1, 0x28($sp)                ; sp+0x28
+8003AF94  244a7fc4  addiu    $t2, $v0, 0x7fc4              ; =0x80127FC4
+8003AF98  0163102a  slt      $v0, $t3, $v1
+8003AF9C  10400045  beqz     $v0, 0x8003b0b4   -> L_8003B0B4
+8003AFA0  afbf0014  sw       $ra, 0x14($sp)                ; sp+0x14
+8003AFA4  240f0080  addiu    $t7, $zero, 0x80
+8003AFA8  00607021  move     $t6, $v1
+8003AFAC  25480118  addiu    $t0, $t2, 0x118               ; =0x801280DC
+8003AFB0  00a06821  move     $t5, $a1
+8003AFB4  00e06021  move     $t4, $a3
+L_8003AFB8:
+8003AFB8  108a0039  beq      $a0, $t2, 0x8003b0a0   -> L_8003B0A0
+8003AFBC  00000000  nop      
+8003AFC0  8d02fef8  lw       $v0, -0x108($t0)
+8003AFC4  00000000  nop      
+8003AFC8  2442fffe  addiu    $v0, $v0, -2
+8003AFCC  2c420002  sltiu    $v0, $v0, 2
+8003AFD0  10400033  beqz     $v0, 0x8003b0a0   -> L_8003B0A0
+8003AFD4  00000000  nop      
+8003AFD8  8d02ff08  lw       $v0, -0xf8($t0)
+8003AFDC  00000000  nop      
+8003AFE0  1440002f  bnez     $v0, 0x8003b0a0   -> L_8003B0A0
+8003AFE4  00000000  nop      
+8003AFE8  8d02ff54  lw       $v0, -0xac($t0)
+8003AFEC  00000000  nop      
+8003AFF0  00581024  and      $v0, $v0, $t8
+8003AFF4  1040002a  beqz     $v0, 0x8003b0a0   -> L_8003B0A0
+8003AFF8  00000000  nop      
+8003AFFC  8d0200b8  lw       $v0, 0xb8($t0)                ; t0.ForceZ
+8003B000  00000000  nop      
+8003B004  14400026  bnez     $v0, 0x8003b0a0   -> L_8003B0A0
+8003B008  00000000  nop      
+8003B00C  8d0200b4  lw       $v0, 0xb4($t0)                ; t0.AnimFlagsB4
+8003B010  00000000  nop      
+8003B014  14400022  bnez     $v0, 0x8003b0a0   -> L_8003B0A0
+8003B018  00000000  nop      
+8003B01C  8d02ff9c  lw       $v0, -0x64($t0)
+8003B020  00000000  nop      
+8003B024  30420040  andi     $v0, $v0, 0x40
+8003B028  1440001d  bnez     $v0, 0x8003b0a0   -> L_8003B0A0
+8003B02C  00000000  nop      
+8003B030  8d0200ac  lw       $v0, 0xac($t0)                ; t0.AnimEndFlag
+8003B034  00000000  nop      
+8003B038  10400019  beqz     $v0, 0x8003b0a0   -> L_8003B0A0
+8003B03C  00461021  addu     $v0, $v0, $a2
+8003B040  90420002  lbu      $v0, 2($v0)
+8003B044  00000000  nop      
+8003B048  304200c0  andi     $v0, $v0, 0xc0
+8003B04C  104f0014  beq      $v0, $t7, 0x8003b0a0   -> L_8003B0A0
+8003B050  00000000  nop      
+8003B054  8d02fffc  lw       $v0, -4($t0)
+8003B058  8c830114  lw       $v1, 0x114($a0)               ; a0.PosX
+8003B05C  00000000  nop      
+8003B060  00431023  subu     $v0, $v0, $v1
+8003B064  00021403  sra      $v0, $v0, 0x10
+8003B068  00420018  mult     $v0, $v0
+8003B06C  8d020000  lw       $v0, ($t0)
+8003B070  8c830118  lw       $v1, 0x118($a0)               ; a0.PosY
+8003B074  00004812  mflo     $t1
+8003B078  00431023  subu     $v0, $v0, $v1
+8003B07C  00021403  sra      $v0, $v0, 0x10
+8003B080  00420018  mult     $v0, $v0
+8003B084  26100001  addiu    $s0, $s0, 1
+8003B088  ad8a0000  sw       $t2, ($t4)
+8003B08C  258c0004  addiu    $t4, $t4, 4
+8003B090  00001812  mflo     $v1
+8003B094  01231021  addu     $v0, $t1, $v1
+8003B098  ada20000  sw       $v0, ($t5)
+8003B09C  25ad0004  addiu    $t5, $t5, 4
+L_8003B0A0:
+8003B0A0  256b0001  addiu    $t3, $t3, 1
+8003B0A4  25080294  addiu    $t0, $t0, 0x294
+8003B0A8  016e102a  slt      $v0, $t3, $t6
+8003B0AC  1440ffc2  bnez     $v0, 0x8003afb8   -> L_8003AFB8
+8003B0B0  254a0294  addiu    $t2, $t2, 0x294
+L_8003B0B4:
+8003B0B4  2a020003  slti     $v0, $s0, 3
+8003B0B8  14400006  bnez     $v0, 0x8003b0d4   -> L_8003B0D4
+8003B0BC  02001021  move     $v0, $s0
+8003B0C0  00e02021  move     $a0, $a3
+8003B0C4  00003021  move     $a2, $zero
+8003B0C8  0c00eb81  jal      0x8003ae04                    ; FUN_8003AE04
+8003B0CC  2607ffff  addiu    $a3, $s0, -1
+8003B0D0  02001021  move     $v0, $s0
+L_8003B0D4:
+8003B0D4  8fbf0014  lw       $ra, 0x14($sp)                ; sp+0x14
+8003B0D8  8fb00010  lw       $s0, 0x10($sp)                ; sp+0x10
+8003B0DC  27bd0018  addiu    $sp, $sp, 0x18
+8003B0E0  03e00008  jr       $ra
+8003B0E4  00000000  nop      

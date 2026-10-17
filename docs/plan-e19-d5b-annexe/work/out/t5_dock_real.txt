@@ -1,0 +1,44 @@
+== hero half on the dock (x=120): block rises 1 px/tick t2..t5
+t0 block z=       1 | hero z= 1048577 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t1 block z=       1 | hero z= 1048577 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t2 block z=   65537 | hero z= 1114113 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t3 block z=  131073 | hero z= 1179649 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t4 block z=  196609 | hero z= 1245185 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t5 block z=  262145 | hero z= 1310721 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t6 block z=  262145 | hero z= 1310721 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t7 block z=  262145 | hero z= 1310721 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t8 block z=  262145 | hero z= 1310721 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+== hero fully over the hollow (x=108): block rises
+t0 block z=       1 | hero z= 1048577 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t1 block z=       1 | hero z= 1048577 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t2 block z=   65537 | hero z= 1114113 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t3 block z=  131073 | hero z= 1179649 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t4 block z=  196609 | hero z= 1245185 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t5 block z=  262145 | hero z= 1310721 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t6 block z=  262145 | hero z= 1310721 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t7 block z=  262145 | hero z= 1310721 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t8 block z=  262145 | hero z= 1310721 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+== block descends 1 px/tick from 8 px above the dock, hero half on the dock side (x=120)
+t0 block z=  524289 | hero z= 1572865 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t1 block z=  524289 | hero z= 1572865 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t2 block z=  458753 | hero z= 1507329 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t3 block z=  393217 | hero z= 1441793 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t4 block z=  327681 | hero z= 1376257 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t5 block z=  262145 | hero z= 1310721 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t6 block z=  196609 | hero z= 1245185 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t7 block z=  131073 | hero z= 1179649 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t8 block z=   65537 | hero z= 1114113 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t9 block z=       1 | hero z= 1048577 (rel       0) terrain-under-hero= 1048576 ride=1 coll=0 gnd=1
+t10 block z=       1 | hero z= 1048577 (rel       0) terrain-under-hero= 1048576 ride=1 coll=1 gnd=1
+t11 block z=       1 | hero z= 1048577 (rel       0) terrain-under-hero= 1048576 ride=1 coll=1 gnd=1
+t12 block z=       1 | hero z= 1048577 (rel       0) terrain-under-hero= 1048576 ride=1 coll=1 gnd=1
+t13 block z=       1 | hero z= 1048577 (rel       0) terrain-under-hero= 1048576 ride=1 coll=1 gnd=1
+== same, hero fully over the hollow (x=108)
+t0 block z=  524289 | hero z= 1572865 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t1 block z=  524289 | hero z= 1572865 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t2 block z=  458753 | hero z= 1507329 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t3 block z=  393217 | hero z= 1441793 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t4 block z=  327681 | hero z= 1376257 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t5 block z=  262145 | hero z= 1310721 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t6 block z=  196609 | hero z= 1245185 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1
+t7 block z=  131073 | hero z= 1179649 (rel       0) terrain-under-hero=       0 ride=1 coll=0 gnd=1

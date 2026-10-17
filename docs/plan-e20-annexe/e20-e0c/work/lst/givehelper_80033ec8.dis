@@ -1,0 +1,14 @@
+0x80033ec8  addiu    $sp, $sp, -0x18
+0x80033ecc  sw       $s0, 0x10($sp)
+0x80033ed0  sw       $ra, 0x14($sp)
+0x80033ed4  jal      0x8004e428
+0x80033ed8  move     $s0, $a0
+0x80033edc  move     $a0, $s0
+0x80033ee0  jal      0x8004e530
+0x80033ee4  move     $s0, $v0
+0x80033ee8  slt      $v0, $s0, $v0
+0x80033eec  lw       $ra, 0x14($sp)
+0x80033ef0  lw       $s0, 0x10($sp)
+0x80033ef4  addiu    $sp, $sp, 0x18
+0x80033ef8  jr       $ra
+0x80033efc  nop      

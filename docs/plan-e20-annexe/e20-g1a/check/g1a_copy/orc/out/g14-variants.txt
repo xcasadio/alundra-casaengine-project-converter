@@ -1,0 +1,21 @@
+map_392 sprite 36 (crate C23/E2 AttackCount 1) flags 3323E4 AttackCount 1:
+   THROW lift t11 ; hero anim after lift ['t11 anim_t:1>5', 't47 anim_t:5>12', 't61 anim_t:12>9'] ; crate changes ['t61 anim_t:0>1 carrier28:80127D30>0 flags6C:3323E4>332374', 't84 status:2>3 anim_t:1>2 flags6C:332374>332344', 't86 status:3>4', 't87 status:4>0 anim_t:2>0 flags6C:332344>0'] ; flight X 112.0..178.0
+   LOCKED locked at t60: hero.+0x2C at end 0 ; crate status changes ['t81 status:2>4', 't82 status:4>0 carrier28:80127D30>0']
+map_103 sprite 48 (C23/E2 MoreFlags C4 AttackCount 1) flags 3323C4 AttackCount 1:
+   THROW lift t11 ; hero anim after lift ['t11 anim_t:1>5', 't47 anim_t:5>12', 't61 anim_t:12>9'] ; crate changes ['t61 anim_t:0>1 carrier28:80127D30>0 flags6C:3323C4>332374', 't84 status:2>3 anim_t:1>2 flags6C:332374>332344', 't86 status:3>4', 't87 status:4>0 anim_t:2>0 flags6C:332344>0'] ; flight X 112.0..178.0
+   LOCKED locked at t60: hero.+0x2C at end 0 ; crate status changes ['t81 status:2>4', 't82 status:4>0 carrier28:80127D30>0']
+map_70 sprite 41 (C23/E2 AttackCount 0 break fx 2) flags ? AttackCount -1:
+   THROW spawner refused (map-record spawner refused map_70 sprite 41 record 0)
+   LOCKED spawner refused (map-record spawner refused map_70 sprite 41 record 0)
+map_22 sprite 34 (C4/E2) flags 3323E4 AttackCount 1:
+   THROW lift t11 ; hero anim after lift ['t11 anim_t:1>5', 't47 anim_t:5>12', 't61 anim_t:12>9'] ; crate changes ['t61 anim_t:0>1 carrier28:80127D30>0', 't84 anim_t:1>0'] ; flight X 112.0..178.0
+   LOCKED locked at t60: hero.+0x2C at end 0 ; crate status changes ['t81 status:2>4', 't82 status:4>0 carrier28:80127D30>0']
+map_27 sprite 107 (C4/E0 size 20x12x14 AttackCount 0) flags ? AttackCount -1:
+   THROW spawner refused (map-record spawner refused map_27 sprite 107 record 0)
+   LOCKED spawner refused (map-record spawner refused map_27 sprite 107 record 0)
+map_70 sprite 117 (C4/E2 AttackCount 7) flags ? AttackCount -1:
+   THROW spawner refused (map-record spawner refused map_70 sprite 117 record 0)
+   LOCKED spawner refused (map-record spawner refused map_70 sprite 117 record 0)
+map_86 sprite 137 (C70/E20 torch) flags 3323E2 AttackCount 1:
+   THROW lift t11 ; hero anim after lift ['t11 anim_t:1>5', 't47 anim_t:5>12', 't61 anim_t:12>9'] ; crate changes ['t61 anim_t:0>1 carrier28:80127D30>0 flags6C:3323E2>332376', 't84 status:2>3 anim_t:1>2 flags6C:332376>332346', 't87 status:3>4', 't88 status:4>0 anim_t:2>0 flags6C:332346>0'] ; flight X 112.0..178.0
+   LOCKED locked at t60: hero.+0x2C at end 0 ; crate status changes ['t78 status:2>3', 't81 status:3>4', 't82 status:4>0 carrier28:80127D30>0']

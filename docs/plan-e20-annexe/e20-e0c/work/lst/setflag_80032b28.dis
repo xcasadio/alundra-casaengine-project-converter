@@ -1,0 +1,26 @@
+0x80032b28  beqz     $a0, 0x80032b88
+0x80032b2c  srl      $v0, $a0, 3
+0x80032b30  andi     $v1, $v0, 0xffc
+0x80032b34  andi     $v0, $a0, 0x8000
+0x80032b38  beqz     $v0, 0x80032b50
+0x80032b3c  move     $a1, $v1
+0x80032b40  lui      $v0, 0x801f
+0x80032b44  addiu    $v0, $v0, -0x45c0
+0x80032b48  j        0x80032b5c
+0x80032b4c  addu     $a1, $v1, $v0
+0x80032b50  lui      $v0, 0x801f
+0x80032b54  addiu    $v0, $v0, -0x4cbc
+0x80032b58  addu     $a1, $a1, $v0
+0x80032b5c  bgez     $a0, 0x80032b68
+0x80032b60  move     $v0, $a0
+0x80032b64  addiu    $v0, $a0, 0x1f
+0x80032b68  sra      $v0, $v0, 5
+0x80032b6c  sll      $v0, $v0, 5
+0x80032b70  subu     $v0, $a0, $v0
+0x80032b74  addiu    $v1, $zero, 1
+0x80032b78  lw       $a0, ($a1)
+0x80032b7c  sllv     $v1, $v1, $v0
+0x80032b80  or       $a0, $a0, $v1
+0x80032b84  sw       $a0, ($a1)
+0x80032b88  jr       $ra
+0x80032b8c  nop      

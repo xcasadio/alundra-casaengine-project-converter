@@ -1,0 +1,32 @@
+t00 plat x=  6553600 afx=      0 ffx=      0 | hero x=  6553600 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t01 plat x=  6553600 afx=      0 ffx=      0 | hero x=  6553600 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t02 plat x=  6553600 afx=      0 ffx=      0 | hero x=  6553600 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t03 plat x=  6619136 afx=  65536 ffx=  65536 | hero x=  6619136 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t04 plat x=  6684672 afx=  65536 ffx=  65536 | hero x=  6684672 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t05 plat x=  6750208 afx=  65536 ffx=  65536 | hero x=  6750208 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t06 plat x=  6815744 afx=  65536 ffx=  65536 | hero x=  6815744 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t07 plat x=  6881280 afx=  65536 ffx=  65536 | hero x=  6881280 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t08 plat x=  6881280 afx=      0 ffx=      0 | hero x=  6881280 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t09 plat x=  6881280 afx=      0 ffx=      0 | hero x=  6881280 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t10 plat x=  6881280 afx=      0 ffx=      0 | hero x=  6881280 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t11 plat x=  6881280 afx=      0 ffx=      0 | hero x=  6881280 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+== hero on gravity crate on platform rising + moving east
+t0 plat x= 6553600 z= 2621441 | crate x= 6553600 (rel       0) z-rel       0 ride=2 coll=0 gnd=1 ffx=0 | hero x= 6553600 (rel crate       0) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=0
+t1 plat x= 6553600 z= 2621441 | crate x= 6553600 (rel       0) z-rel       0 ride=2 coll=0 gnd=1 ffx=0 | hero x= 6553600 (rel crate       0) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=0
+t2 plat x= 6619136 z= 2686977 | crate x= 6684672 (rel   65536) z-rel       0 ride=2 coll=0 gnd=1 ffx=131072 | hero x= 6553600 (rel crate -131072) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=65536
+t3 plat x= 6684672 z= 2752513 | crate x= 6815744 (rel  131072) z-rel       0 ride=2 coll=0 gnd=1 ffx=131072 | hero x= 6553600 (rel crate -262144) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=65536
+t4 plat x= 6750208 z= 2818049 | crate x= 6946816 (rel  196608) z-rel       0 ride=2 coll=0 gnd=1 ffx=131072 | hero x= 6553600 (rel crate -393216) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=65536
+t5 plat x= 6815744 z= 2883585 | crate x= 7077888 (rel  262144) z-rel       0 ride=2 coll=0 gnd=1 ffx=131072 | hero x= 6553600 (rel crate -524288) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=65536
+t6 plat x= 6881280 z= 2949121 | crate x= 7208960 (rel  327680) z-rel       0 ride=2 coll=0 gnd=1 ffx=131072 | hero x= 6553600 (rel crate -655360) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=65536
+t7 plat x= 6946816 z= 3014657 | crate x= 7340032 (rel  393216) z-rel       0 ride=2 coll=0 gnd=1 ffx=131072 | hero x= 6553600 (rel crate -786432) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=65536
+t8 plat x= 7012352 z= 3080193 | crate x= 7471104 (rel  458752) z-rel       0 ride=2 coll=0 gnd=1 ffx=131072 | hero x= 6553600 (rel crate -917504) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=65536
+== same, crate WITHOUT gravity bit (cannot ride)
+t0 plat x= 6553600 z= 2621441 | crate x= 6553600 (rel       0) z-rel       0 ride=None coll=0 gnd=1 ffx=0 | hero x= 6553600 (rel crate       0) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=0
+t1 plat x= 6553600 z= 2621441 | crate x= 6553600 (rel       0) z-rel       0 ride=None coll=0 gnd=1 ffx=0 | hero x= 6553600 (rel crate       0) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=0
+t2 plat x= 6619136 z= 2621441 | crate x= 6553600 (rel  -65536) z-rel       0 ride=None coll=0 gnd=1 ffx=0 | hero x= 6553600 (rel crate       0) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=0
+t3 plat x= 6684672 z= 2621441 | crate x= 6553600 (rel -131072) z-rel       0 ride=None coll=0 gnd=1 ffx=0 | hero x= 6553600 (rel crate       0) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=0
+t4 plat x= 6750208 z= 2621441 | crate x= 6553600 (rel -196608) z-rel       0 ride=None coll=0 gnd=1 ffx=0 | hero x= 6553600 (rel crate       0) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=0
+t5 plat x= 6815744 z= 2621441 | crate x= 6553600 (rel -262144) z-rel       0 ride=None coll=0 gnd=1 ffx=0 | hero x= 6553600 (rel crate       0) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=0
+t6 plat x= 6881280 z= 2621441 | crate x= 6553600 (rel -327680) z-rel       0 ride=None coll=0 gnd=1 ffx=0 | hero x= 6553600 (rel crate       0) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=0
+t7 plat x= 6946816 z= 2621441 | crate x= 6553600 (rel -393216) z-rel       0 ride=None coll=0 gnd=1 ffx=0 | hero x= 6553600 (rel crate       0) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=0
+t8 plat x= 7012352 z= 2621441 | crate x= 6553600 (rel -458752) z-rel       0 ride=None coll=0 gnd=1 ffx=0 | hero x= 6553600 (rel crate       0) z-rel       0 ride=1 coll=0 gnd=1 ffx=0 ffz=0

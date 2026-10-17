@@ -1,0 +1,128 @@
+; function 0x80035A84..0x80035C64 (120 words)
+80035A84  27bdffd8  addiu    $sp, $sp, -0x28
+80035A88  afb00020  sw       $s0, 0x20($sp)                ; sp+0x20
+80035A8C  3c108012  lui      $s0, 0x8012
+80035A90  8e037160  lw       $v1, 0x7160($s0)              ; [0x80127160]
+80035A94  24020001  addiu    $v0, $zero, 1
+80035A98  10620029  beq      $v1, $v0, 0x80035b40   -> L_80035B40
+80035A9C  afbf0024  sw       $ra, 0x24($sp)                ; sp+0x24
+80035AA0  28620002  slti     $v0, $v1, 2
+80035AA4  10400005  beqz     $v0, 0x80035abc   -> L_80035ABC
+80035AA8  24020002  addiu    $v0, $zero, 2
+80035AAC  10600007  beqz     $v1, 0x80035acc   -> L_80035ACC
+80035AB0  00001021  move     $v0, $zero
+80035AB4  0800d714  j        0x80035c50   -> L_80035C50
+80035AB8  00000000  nop      
+L_80035ABC:
+80035ABC  1062005e  beq      $v1, $v0, 0x80035c38   -> L_80035C38
+80035AC0  00001021  move     $v0, $zero
+80035AC4  0800d714  j        0x80035c50   -> L_80035C50
+80035AC8  00000000  nop      
+L_80035ACC:
+80035ACC  0c00d46e  jal      0x800351b8                    ; SlopeCancelHelper
+80035AD0  00000000  nop      
+80035AD4  1440005e  bnez     $v0, 0x80035c50   -> L_80035C50
+80035AD8  24020001  addiu    $v0, $zero, 1
+80035ADC  3c028012  lui      $v0, 0x8012
+80035AE0  24447d30  addiu    $a0, $v0, 0x7d30              ; =0x80127D30 EntityTable(hero slot0)
+80035AE4  8c830088  lw       $v1, 0x88($a0)                ; a0.TargetAnim [0x80127DB8]
+80035AE8  24020033  addiu    $v0, $zero, 0x33
+80035AEC  14620057  bne      $v1, $v0, 0x80035c4c   -> L_80035C4C
+80035AF0  00002821  move     $a1, $zero
+80035AF4  8c870114  lw       $a3, 0x114($a0)               ; a0.PosX [0x80127E44]
+80035AF8  8c820118  lw       $v0, 0x118($a0)               ; a0.PosY [0x80127E48]
+80035AFC  8c83011c  lw       $v1, 0x11c($a0)               ; a0.PosZ [0x80127E4C]
+80035B00  24060014  addiu    $a2, $zero, 0x14
+80035B04  afa00018  sw       $zero, 0x18($sp)              ; sp+0x18
+80035B08  afa20010  sw       $v0, 0x10($sp)                ; sp+0x10
+80035B0C  0c00e7d6  jal      0x80039f58                    ; SpawnWarpEntity
+80035B10  afa30014  sw       $v1, 0x14($sp)                ; sp+0x14
+80035B14  00401821  move     $v1, $v0
+80035B18  3c028012  lui      $v0, 0x8012
+80035B1C  ac43711c  sw       $v1, 0x711c($v0)              ; [0x8012711C]
+80035B20  1060004b  beqz     $v1, 0x80035c50   -> L_80035C50
+80035B24  24020001  addiu    $v0, $zero, 1
+80035B28  8c620004  lw       $v0, 4($v1)
+80035B2C  8e037160  lw       $v1, 0x7160($s0)
+80035B30  3c048012  lui      $a0, 0x8012
+80035B34  24630001  addiu    $v1, $v1, 1
+80035B38  ac827120  sw       $v0, 0x7120($a0)              ; [0x80127120]
+80035B3C  ae037160  sw       $v1, 0x7160($s0)
+L_80035B40:
+80035B40  0c00d46e  jal      0x800351b8                    ; SlopeCancelHelper
+80035B44  00000000  nop      
+80035B48  14400041  bnez     $v0, 0x80035c50   -> L_80035C50
+80035B4C  24020001  addiu    $v0, $zero, 1
+80035B50  3c028012  lui      $v0, 0x8012
+80035B54  8c42711c  lw       $v0, 0x711c($v0)              ; [0x8012711C]
+80035B58  3c038012  lui      $v1, 0x8012
+80035B5C  8c440004  lw       $a0, 4($v0)                   ; [0x80120004]
+80035B60  8c627120  lw       $v0, 0x7120($v1)              ; [0x80127120]
+80035B64  00000000  nop      
+80035B68  1482002c  bne      $a0, $v0, 0x80035c1c   -> L_80035C1C
+80035B6C  3c058012  lui      $a1, 0x8012
+80035B70  3c028012  lui      $v0, 0x8012
+80035B74  8c42715c  lw       $v0, 0x715c($v0)              ; [0x8012715C]
+80035B78  00000000  nop      
+80035B7C  30420007  andi     $v0, $v0, 7
+80035B80  14400033  bnez     $v0, 0x80035c50   -> L_80035C50
+80035B84  00001021  move     $v0, $zero
+80035B88  3c037d2b  lui      $v1, 0x7d2b                   ; <<RNG step begins>>
+80035B8C  3c09800a  lui      $t1, 0x800a
+80035B90  8d228708  lw       $v0, -0x78f8($t1)             ; [0x80098708=RNG_state]
+80035B94  346389dd  ori      $v1, $v1, 0x89dd              ; =0x7D2B89DD
+80035B98  00430018  mult     $v0, $v1
+80035B9C  3c08e06a  lui      $t0, 0xe06a
+80035BA0  350802e7  ori      $t0, $t0, 0x2e7               ; =0xE06A02E7
+80035BA4  3c048012  lui      $a0, 0x8012
+80035BA8  00005012  mflo     $t2
+80035BAC  24020020  addiu    $v0, $zero, 0x20
+80035BB0  01484021  addu     $t0, $t2, $t0
+80035BB4  01020019  multu    $t0, $v0                      ; <<multu: RNG scale (look at the addiu N above)>>
+80035BB8  24847d30  addiu    $a0, $a0, 0x7d30              ; =0x80127D30 EntityTable(hero slot0)
+80035BBC  00002821  move     $a1, $zero
+80035BC0  8c870114  lw       $a3, 0x114($a0)               ; a0.PosX [0x80127E44]
+80035BC4  8c820118  lw       $v0, 0x118($a0)               ; a0.PosY [0x80127E48]
+80035BC8  24060017  addiu    $a2, $zero, 0x17
+80035BCC  afa20010  sw       $v0, 0x10($sp)                ; sp+0x10
+80035BD0  8c82011c  lw       $v0, 0x11c($a0)               ; a0.PosZ [0x80127E4C]
+80035BD4  3c030010  lui      $v1, 0x10
+80035BD8  ad288708  sw       $t0, -0x78f8($t1)             ; [0x80098708=RNG_state]
+80035BDC  00431021  addu     $v0, $v0, $v1
+80035BE0  afa20014  sw       $v0, 0x14($sp)                ; sp+0x14
+80035BE4  00005810  mfhi     $t3
+80035BE8  00005012  mflo     $t2
+80035BEC  000b1003  sra      $v0, $t3, 0
+80035BF0  000b1fc3  sra      $v1, $t3, 0x1f
+80035BF4  0c00e7d6  jal      0x80039f58                    ; SpawnWarpEntity
+80035BF8  afa20018  sw       $v0, 0x18($sp)                ; sp+0x18
+80035BFC  00401821  move     $v1, $v0
+80035C00  10600012  beqz     $v1, 0x80035c4c   -> L_80035C4C
+80035C04  3c020008  lui      $v0, 8
+80035C08  ac6200b8  sw       $v0, 0xb8($v1)                ; v1.ForceZ [0x001000B8]
+80035C0C  24020010  addiu    $v0, $zero, 0x10
+80035C10  ac620274  sw       $v0, 0x274($v1)               ; v1.Bytes0 [0x00100274]
+80035C14  0800d713  j        0x80035c4c   -> L_80035C4C
+80035C18  ac600278  sw       $zero, 0x278($v1)             ; v1.Bytes4 [0x00100278]
+L_80035C1C:
+80035C1C  3c048012  lui      $a0, 0x8012
+80035C20  8c827160  lw       $v0, 0x7160($a0)              ; [0x80127160]
+80035C24  24030034  addiu    $v1, $zero, 0x34
+80035C28  aca37db8  sw       $v1, 0x7db8($a1)
+80035C2C  24420001  addiu    $v0, $v0, 1
+80035C30  0800d713  j        0x80035c4c   -> L_80035C4C
+80035C34  ac827160  sw       $v0, 0x7160($a0)              ; [0x80127160]
+L_80035C38:
+80035C38  3c038012  lui      $v1, 0x8012
+80035C3C  8c647db8  lw       $a0, 0x7db8($v1)              ; [0x80127DB8]
+80035C40  24030034  addiu    $v1, $zero, 0x34
+80035C44  14830002  bne      $a0, $v1, 0x80035c50   -> L_80035C50
+80035C48  24020001  addiu    $v0, $zero, 1
+L_80035C4C:
+80035C4C  00001021  move     $v0, $zero
+L_80035C50:
+80035C50  8fbf0024  lw       $ra, 0x24($sp)                ; sp+0x24
+80035C54  8fb00020  lw       $s0, 0x20($sp)                ; sp+0x20
+80035C58  27bd0028  addiu    $sp, $sp, 0x28
+80035C5C  03e00008  jr       $ra
+80035C60  00000000  nop      

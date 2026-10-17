@@ -1,0 +1,82 @@
+; function 0x8007AF20..0x8007B04C (75 words)
+8007AF20  27bdffd0  addiu    $sp, $sp, -0x30
+8007AF24  afb1001c  sw       $s1, 0x1c($sp)                ; sp+0x1C
+8007AF28  00808821  move     $s1, $a0
+8007AF2C  24050001  addiu    $a1, $zero, 1
+8007AF30  3c02800d  lui      $v0, 0x800d
+8007AF34  afb00018  sw       $s0, 0x18($sp)                ; sp+0x18
+8007AF38  2450c058  addiu    $s0, $v0, -0x3fa8             ; =0x800CC058
+8007AF3C  afbf0028  sw       $ra, 0x28($sp)                ; sp+0x28
+8007AF40  afb30024  sw       $s3, 0x24($sp)                ; sp+0x24
+8007AF44  afb20020  sw       $s2, 0x20($sp)                ; sp+0x20
+8007AF48  8e2301c8  lw       $v1, 0x1c8($s1)               ; s1.CurAttack
+8007AF4C  26020100  addiu    $v0, $s0, 0x100               ; =0x800CC158
+8007AF50  90660000  lbu      $a2, ($v1)
+8007AF54  02003821  move     $a3, $s0
+8007AF58  afa20010  sw       $v0, 0x10($sp)                ; sp+0x10
+8007AF5C  0c00ebdc  jal      0x8003af70                    ; FUN_8003AF70
+8007AF60  30c6000f  andi     $a2, $a2, 0xf
+8007AF64  00404821  move     $t1, $v0
+8007AF68  19200030  blez     $t1, 0x8007b02c   -> L_8007B02C
+8007AF6C  00004021  move     $t0, $zero
+8007AF70  3c028002  lui      $v0, 0x8002
+8007AF74  245206f0  addiu    $s2, $v0, 0x6f0               ; =0x800206F0
+8007AF78  3c028002  lui      $v0, 0x8002
+8007AF7C  245304f0  addiu    $s3, $v0, 0x4f0               ; =0x800204F0
+8007AF80  02003821  move     $a3, $s0
+L_8007AF84:
+8007AF84  8cf00000  lw       $s0, ($a3)
+8007AF88  8e230114  lw       $v1, 0x114($s1)               ; s1.PosX
+8007AF8C  8e220118  lw       $v0, 0x118($s1)               ; s1.PosY
+8007AF90  8e050114  lw       $a1, 0x114($s0)               ; s0.PosX
+8007AF94  8e040118  lw       $a0, 0x118($s0)               ; s0.PosY
+8007AF98  00a32823  subu     $a1, $a1, $v1
+8007AF9C  00823023  subu     $a2, $a0, $v0
+8007AFA0  04a10002  bgez     $a1, 0x8007afac   -> L_8007AFAC
+8007AFA4  00a01821  move     $v1, $a1
+8007AFA8  00031823  negu     $v1, $v1
+L_8007AFAC:
+8007AFAC  3c020140  lui      $v0, 0x140
+8007AFB0  0043102a  slt      $v0, $v0, $v1
+8007AFB4  14400019  bnez     $v0, 0x8007b01c   -> L_8007B01C
+8007AFB8  3c0200f0  lui      $v0, 0xf0
+8007AFBC  04c10002  bgez     $a2, 0x8007afc8   -> L_8007AFC8
+8007AFC0  00c01821  move     $v1, $a2
+8007AFC4  00031823  negu     $v1, $v1
+L_8007AFC8:
+8007AFC8  0043102a  slt      $v0, $v0, $v1
+8007AFCC  14400014  bnez     $v0, 0x8007b020   -> L_8007B020
+8007AFD0  25080001  addiu    $t0, $t0, 1
+8007AFD4  00a02021  move     $a0, $a1
+8007AFD8  0c00ba05  jal      0x8002e814                    ; GetDirectionToTarget
+8007AFDC  00c02821  move     $a1, $a2
+8007AFE0  24420014  addiu    $v0, $v0, 0x14
+8007AFE4  3042001f  andi     $v0, $v0, 0x1f
+8007AFE8  00021100  sll      $v0, $v0, 4
+8007AFEC  00521821  addu     $v1, $v0, $s2
+8007AFF0  84640000  lh       $a0, ($v1)
+8007AFF4  00531021  addu     $v0, $v0, $s3
+8007AFF8  00041840  sll      $v1, $a0, 1
+8007AFFC  00641821  addu     $v1, $v1, $a0
+8007B000  00031a00  sll      $v1, $v1, 8
+8007B004  ae0300cc  sw       $v1, 0xcc($s0)
+8007B008  84420000  lh       $v0, ($v0)
+8007B00C  00000000  nop      
+8007B010  00021240  sll      $v0, $v0, 9
+8007B014  0801ec0b  j        0x8007b02c   -> L_8007B02C
+8007B018  ae0200d0  sw       $v0, 0xd0($s0)
+L_8007B01C:
+8007B01C  25080001  addiu    $t0, $t0, 1
+L_8007B020:
+8007B020  0109102a  slt      $v0, $t0, $t1
+8007B024  1440ffd7  bnez     $v0, 0x8007af84   -> L_8007AF84
+8007B028  24e70004  addiu    $a3, $a3, 4
+L_8007B02C:
+8007B02C  8fbf0028  lw       $ra, 0x28($sp)                ; sp+0x28
+8007B030  8fb30024  lw       $s3, 0x24($sp)                ; sp+0x24
+8007B034  8fb20020  lw       $s2, 0x20($sp)                ; sp+0x20
+8007B038  8fb1001c  lw       $s1, 0x1c($sp)                ; sp+0x1C
+8007B03C  8fb00018  lw       $s0, 0x18($sp)                ; sp+0x18
+8007B040  27bd0030  addiu    $sp, $sp, 0x30
+8007B044  03e00008  jr       $ra
+8007B048  00000000  nop      

@@ -1,0 +1,9 @@
+family C=4 E=0 MoreFlags=0x84 Break=10 Contents=0 size=(20,12,14)  map 27 record 107: flags6C=0x332384 kind=1  sheet idx=363 AttackCount(byte 0xE)=0  json AttackCount=0 attacks=[] MaxHp=0
+family C=4 E=2 MoreFlags=0xE4 Break=10 Contents=0 size=(21,15,16)  map 140 record 117: flags6C=0x2323E4 kind=1  sheet idx=373 AttackCount(byte 0xE)=7  json AttackCount=7 attacks=[(2, 2, 1), (1, 1, 128), (1, 1, 128), (1, 1, 128), (1, 1, 128), (1, 1, 128), (1, 1, 128)] MaxHp=0
+family C=4 E=2 MoreFlags=0xE4 Break=10 Contents=130 size=(21,15,16)  map 107 record 34: flags6C=0x3323E4 kind=1  sheet idx=290 AttackCount(byte 0xE)=1  json AttackCount=1 attacks=[(1, 1, 128)] MaxHp=0
+family C=23 E=2 MoreFlags=0xC4 Break=10 Contents=0 size=(21,15,16)  map 103 record 48: flags6C=0x3323C4 kind=1  sheet idx=304 AttackCount(byte 0xE)=1  json AttackCount=1 attacks=[(7, 7, 128)] MaxHp=0
+family C=23 E=2 MoreFlags=0xE4 Break=2 Contents=247 size=(21,15,16)  map 106 record 41: flags6C=0x2323E4 kind=1  sheet idx=297 AttackCount(byte 0xE)=0  json AttackCount=0 attacks=[] MaxHp=0
+family C=23 E=2 MoreFlags=0xE4 Break=10 Contents=0 size=(21,15,16)  map 69 record 182: flags6C=0x3323E4 kind=1  sheet idx=438 AttackCount(byte 0xE)=1  json AttackCount=1 attacks=[(1, 1, 128)] MaxHp=0
+family C=23 E=2 MoreFlags=0xE4 Break=10 Contents=130 size=(21,15,16)  map 100 record 35: flags6C=0x3323E4 kind=1  sheet idx=291 AttackCount(byte 0xE)=1  json AttackCount=1 attacks=[(1, 1, 128)] MaxHp=0
+family C=23 E=2 MoreFlags=0xE4 Break=10 Contents=248 size=(21,15,16)  map 166 record 38: flags6C=0x3323E4 kind=1  sheet idx=294 AttackCount(byte 0xE)=1  json AttackCount=1 attacks=[(1, 1, 128)] MaxHp=0
+family C=70 E=20 MoreFlags=0xE2 Break=10 Contents=0 size=(21,15,15)  map 441 record 137: flags6C=0x3323E2 kind=1  sheet idx=393 AttackCount(byte 0xE)=1  json AttackCount=1 attacks=[(6, 6, 1)] MaxHp=10
