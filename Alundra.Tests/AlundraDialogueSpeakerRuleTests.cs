@@ -334,11 +334,11 @@ public sealed class AlundraDialogueSpeakerRuleTests
             Assert.NotNull(director.ScrollSource);
 
             camera!.Target = new Vector3(333f, -222f, 0f);
-            Assert.Equal(AlundraCameraMath.ToOriginalScrollSpace(camera.Target), director.ScrollSource!());
+            Assert.Equal(CameraMath.ToOriginalScrollSpace(camera.Target), director.ScrollSource!());
 
             director.AttachToWorld(null, proxy.GameState); // a re-attachment does not drop it
             Assert.NotNull(director.ScrollSource);
-            Assert.Equal(AlundraCameraMath.ToOriginalScrollSpace(camera.Target), director.ScrollSource!());
+            Assert.Equal(CameraMath.ToOriginalScrollSpace(camera.Target), director.ScrollSource!());
 
             director.ResetForTests();
             Assert.Null(director.ScrollSource);

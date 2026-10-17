@@ -8,7 +8,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// Covers the pure math of the DEBUG-only right-stick camera pan
-/// (<see cref="AlundraCameraMath.ComputeDebugCameraPanOffset"/>, <see cref="AlundraCameraMath.ResolveDebugCameraBase"/>)
+/// (<see cref="CameraMath.ComputeDebugCameraPanOffset"/>, <see cref="CameraMath.ResolveDebugCameraBase"/>)
 /// and the <c>ALUNDRA_DEBUG_CAMERA_ENABLED</c> flag - see
 /// <see cref="AlundraWorldProxy.UpdateDebugCameraPan"/>'s own doc comment for the tool's rationale/lifetime
 /// and the base/offset composition (<c>Target = base + offset</c>).
@@ -24,7 +24,7 @@ public class AlundraWorldProxyDebugCameraPanTests
     {
         var offset = new Vector3(10f, -20f, 0f);
 
-        var result = AlundraCameraMath.ComputeDebugCameraPanOffset(offset, 0.1f, -0.15f, 1f);
+        var result = CameraMath.ComputeDebugCameraPanOffset(offset, 0.1f, -0.15f, 1f);
 
         Assert.Equal(offset, result);
     }
@@ -34,7 +34,7 @@ public class AlundraWorldProxyDebugCameraPanTests
     {
         var offset = new Vector3(10f, -20f, 0f);
 
-        var result = AlundraCameraMath.ComputeDebugCameraPanOffset(offset, 0.199f, -0.199f, 1f);
+        var result = CameraMath.ComputeDebugCameraPanOffset(offset, 0.199f, -0.199f, 1f);
 
         Assert.Equal(offset, result);
     }
@@ -46,7 +46,7 @@ public class AlundraWorldProxyDebugCameraPanTests
         // deadzone constant passes through (only strictly smaller magnitudes are zeroed).
         var offset = new Vector3(0f, 0f, 0f);
 
-        var result = AlundraCameraMath.ComputeDebugCameraPanOffset(offset, 0.2f, 0f, 1f);
+        var result = CameraMath.ComputeDebugCameraPanOffset(offset, 0.2f, 0f, 1f);
 
         Assert.Equal(100f, result.X); // 0.2 * 500 * 1
     }
@@ -56,7 +56,7 @@ public class AlundraWorldProxyDebugCameraPanTests
     {
         var offset = new Vector3(0f, 0f, 0f);
 
-        var result = AlundraCameraMath.ComputeDebugCameraPanOffset(offset, 1f, 0f, 0.5f);
+        var result = CameraMath.ComputeDebugCameraPanOffset(offset, 1f, 0f, 0.5f);
 
         // Full deflection on X only, half a second: 1 * 500 * 0.5 = 250.
         Assert.Equal(250f, result.X);
@@ -68,7 +68,7 @@ public class AlundraWorldProxyDebugCameraPanTests
     {
         var offset = new Vector3(100f, -50f, 0f);
 
-        var result = AlundraCameraMath.ComputeDebugCameraPanOffset(offset, 1f, 0f, 0.5f);
+        var result = CameraMath.ComputeDebugCameraPanOffset(offset, 1f, 0f, 0.5f);
 
         Assert.Equal(350f, result.X); // 100 + 250
         Assert.Equal(-50f, result.Y);
@@ -81,7 +81,7 @@ public class AlundraWorldProxyDebugCameraPanTests
         // "more positive = further up" - stick-up must increase the offset's Y - no sign flip.
         var offset = new Vector3(0f, 0f, 0f);
 
-        var result = AlundraCameraMath.ComputeDebugCameraPanOffset(offset, 0f, 1f, 1f);
+        var result = CameraMath.ComputeDebugCameraPanOffset(offset, 0f, 1f, 1f);
 
         Assert.True(result.Y > offset.Y);
         Assert.Equal(500f, result.Y);
@@ -92,7 +92,7 @@ public class AlundraWorldProxyDebugCameraPanTests
     {
         var offset = new Vector3(0f, 0f, 0f);
 
-        var result = AlundraCameraMath.ComputeDebugCameraPanOffset(offset, 0f, -1f, 1f);
+        var result = CameraMath.ComputeDebugCameraPanOffset(offset, 0f, -1f, 1f);
 
         Assert.True(result.Y < offset.Y);
         Assert.Equal(-500f, result.Y);
@@ -103,7 +103,7 @@ public class AlundraWorldProxyDebugCameraPanTests
     {
         var offset = new Vector3(3f, 4f, 0f);
 
-        var result = AlundraCameraMath.ComputeDebugCameraPanOffset(offset, 1f, 1f, 0f);
+        var result = CameraMath.ComputeDebugCameraPanOffset(offset, 1f, 1f, 0f);
 
         Assert.Equal(offset, result);
     }
@@ -115,7 +115,7 @@ public class AlundraWorldProxyDebugCameraPanTests
         // incoming accumulator was somehow non-zero.
         var offset = new Vector3(1f, 2f, 42f);
 
-        var result = AlundraCameraMath.ComputeDebugCameraPanOffset(offset, 1f, 1f, 1f);
+        var result = CameraMath.ComputeDebugCameraPanOffset(offset, 1f, 1f, 1f);
 
         Assert.Equal(0f, result.Z);
     }
@@ -125,7 +125,7 @@ public class AlundraWorldProxyDebugCameraPanTests
     {
         var offset = new Vector3(0f, 0f, 0f);
 
-        var result = AlundraCameraMath.ComputeDebugCameraPanOffset(offset, 0.5f, -0.5f, 1f);
+        var result = CameraMath.ComputeDebugCameraPanOffset(offset, 0.5f, -0.5f, 1f);
 
         Assert.Equal(250f, result.X);
         Assert.Equal(-250f, result.Y);
@@ -137,7 +137,7 @@ public class AlundraWorldProxyDebugCameraPanTests
         var lastWritten = new Vector3(100f, 200f, 0f);
         var previousBase = new Vector3(50f, 150f, 0f);
 
-        var result = AlundraCameraMath.ResolveDebugCameraBase(lastWritten, lastWritten, previousBase);
+        var result = CameraMath.ResolveDebugCameraBase(lastWritten, lastWritten, previousBase);
 
         Assert.Equal(previousBase, result);
     }
@@ -149,7 +149,7 @@ public class AlundraWorldProxyDebugCameraPanTests
         var previousBase = new Vector3(50f, 150f, 0f);
         var externalTarget = new Vector3(999f, -42f, 3f);
 
-        var result = AlundraCameraMath.ResolveDebugCameraBase(externalTarget, lastWritten, previousBase);
+        var result = CameraMath.ResolveDebugCameraBase(externalTarget, lastWritten, previousBase);
 
         Assert.Equal(externalTarget, result);
     }
@@ -167,7 +167,7 @@ public class AlundraWorldProxyDebugCameraPanTests
         var basePosition = initialTarget;
 
         // Frame 1: stick pans right for one second, no external write yet.
-        var offset = AlundraCameraMath.ComputeDebugCameraPanOffset(Vector3.Zero, 1f, 0f, 1f);
+        var offset = CameraMath.ComputeDebugCameraPanOffset(Vector3.Zero, 1f, 0f, 1f);
         var frame1Target = basePosition + offset;
         lastWritten = frame1Target;
 
@@ -179,7 +179,7 @@ public class AlundraWorldProxyDebugCameraPanTests
 
         // Frame 2: no further stick input (offset unchanged); base resolution must notice the external
         // write and adopt it, then the written Target must equal externalBase + the SAME offset.
-        basePosition = AlundraCameraMath.ResolveDebugCameraBase(externalTarget, lastWritten, basePosition);
+        basePosition = CameraMath.ResolveDebugCameraBase(externalTarget, lastWritten, basePosition);
         var frame2Target = basePosition + offset;
 
         Assert.Equal(externalTarget, basePosition);

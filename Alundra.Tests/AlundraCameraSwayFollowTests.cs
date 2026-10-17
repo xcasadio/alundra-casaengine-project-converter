@@ -8,29 +8,29 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E19.k1 K2 (docs/plan-e19-opcodes.md, section 1.2k.1): the camera follow adds the sway offset to the scroll at every
-/// tick, between the follow step and the map bound, never on the snap (<see cref="AlundraCameraMath.AdvanceCameraSmoothing"/>).
+/// tick, between the follow step and the map bound, never on the snap (<see cref="CameraMath.AdvanceCameraSmoothing"/>).
 /// Fixed target, fresh sway instance, one call per tick; values are read in the original's scroll space
-/// (<see cref="AlundraCameraMath.ToOriginalScrollSpace"/>) and are relative to the rest position (the state sitting on
+/// (<see cref="CameraMath.ToOriginalScrollSpace"/>) and are relative to the rest position (the state sitting on
 /// the target). Sequences reproduced by the audit's independent model (<c>0x8002CDA0</c>).
 /// </summary>
 public sealed class AlundraCameraSwayFollowTests
 {
     private static readonly Vector3 RestTarget = new(500f, -400f, 0f);
 
-    private static (int X, int Y) Scroll(Vector3 target) => AlundraCameraMath.ToOriginalScrollSpace(target);
+    private static (int X, int Y) Scroll(Vector3 target) => CameraMath.ToOriginalScrollSpace(target);
 
     private static (int X, int Y) RestScroll => Scroll(RestTarget);
 
-    private static AlundraCameraSway NewSway(int speedX, int speedY, int limitX, int limitY)
+    private static CameraSway NewSway(int speedX, int speedY, int limitX, int limitY)
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
         sway.Start(speedX, speedY, limitX, limitY);
         return sway;
     }
 
     /// <summary>One <c>AdvanceCameraSmoothing</c> call per tick; the first call is the snap when asked.</summary>
     private static (List<int> X, List<int> Y) Run(
-        AlundraCameraSway sway, int calls, bool snapFirst = false, int? mapWidthPx = null, int? mapHeightPx = null,
+        CameraSway sway, int calls, bool snapFirst = false, int? mapWidthPx = null, int? mapHeightPx = null,
         Vector3? start = null)
     {
         var state = start ?? RestTarget;
@@ -38,7 +38,7 @@ public sealed class AlundraCameraSwayFollowTests
         var ys = new List<int>();
         for (var i = 0; i < calls; i++)
         {
-            state = AlundraCameraMath.AdvanceCameraSmoothing(
+            state = CameraMath.AdvanceCameraSmoothing(
                 state, snapFirst && i == 0, RestTarget, 1, mapWidthPx, mapHeightPx, sway);
             var (x, y) = Scroll(state);
             xs.Add(x - RestScroll.X);
@@ -70,7 +70,7 @@ public sealed class AlundraCameraSwayFollowTests
     {
         var sway = NewSway(1, 1, 3, 2);
 
-        var state = AlundraCameraMath.AdvanceCameraSmoothing(RestTarget, true, RestTarget, 3, null, null, sway);
+        var state = CameraMath.AdvanceCameraSmoothing(RestTarget, true, RestTarget, 3, null, null, sway);
 
         var (x, y) = Scroll(state);
         Assert.Equal((-5, -3), (x - RestScroll.X, y - RestScroll.Y));
@@ -83,7 +83,7 @@ public sealed class AlundraCameraSwayFollowTests
     {
         var sway = NewSway(1, 1, 3, 2);
 
-        var state = AlundraCameraMath.AdvanceCameraSmoothing(RestTarget, true, RestTarget, 0, null, null, sway);
+        var state = CameraMath.AdvanceCameraSmoothing(RestTarget, true, RestTarget, 0, null, null, sway);
 
         Assert.Equal(RestTarget, state);
         Assert.Equal((0, 0, 0, 0), (sway.OffsetX, sway.OffsetY, sway.ReachX, sway.ReachY));
@@ -99,7 +99,7 @@ public sealed class AlundraCameraSwayFollowTests
         var xs = new List<int>();
         for (var i = 0; i < 14; i++)
         {
-            state = AlundraCameraMath.AdvanceCameraSmoothing(state, false, rest, 1, 1248, 960, sway);
+            state = CameraMath.AdvanceCameraSmoothing(state, false, rest, 1, 1248, 960, sway);
             xs.Add(Scroll(state).X);
         }
 
@@ -113,7 +113,7 @@ public sealed class AlundraCameraSwayFollowTests
         var state = RestTarget;
         for (var i = 0; i < 5; i++)
         {
-            state = AlundraCameraMath.AdvanceCameraSmoothing(state, false, RestTarget, 1, null, null, sway);
+            state = CameraMath.AdvanceCameraSmoothing(state, false, RestTarget, 1, null, null, sway);
         }
 
         Assert.Equal(-9, Scroll(state).X - RestScroll.X);
@@ -121,7 +121,7 @@ public sealed class AlundraCameraSwayFollowTests
         sway.Stop();
         for (var i = 0; i < 4; i++)
         {
-            state = AlundraCameraMath.AdvanceCameraSmoothing(state, false, RestTarget, 1, null, null, sway);
+            state = CameraMath.AdvanceCameraSmoothing(state, false, RestTarget, 1, null, null, sway);
             Assert.Equal(-9, Scroll(state).X - RestScroll.X);
         }
     }
@@ -129,16 +129,16 @@ public sealed class AlundraCameraSwayFollowTests
     [Fact]
     public void WithoutASway_OrWithAStoppedOne_TheStepIsUnchanged()
     {
-        var withNull = AlundraCameraMath.AdvanceCameraSmoothing(RestTarget + new Vector3(40f, -40f, 0f), false, RestTarget, 2, null, null);
-        var withStopped = AlundraCameraMath.AdvanceCameraSmoothing(
-            RestTarget + new Vector3(40f, -40f, 0f), false, RestTarget, 2, null, null, new AlundraCameraSway());
+        var withNull = CameraMath.AdvanceCameraSmoothing(RestTarget + new Vector3(40f, -40f, 0f), false, RestTarget, 2, null, null);
+        var withStopped = CameraMath.AdvanceCameraSmoothing(
+            RestTarget + new Vector3(40f, -40f, 0f), false, RestTarget, 2, null, null, new CameraSway());
 
         Assert.Equal(withNull, withStopped);
         // Two plain follow steps from a gap of (40, -40): floor 40>>4 = 2 then ... pinned against the pure step itself.
         var expected = RestTarget + new Vector3(40f, -40f, 0f);
         for (var i = 0; i < 2; i++)
         {
-            expected = AlundraCameraMath.StepCameraScroll(expected, RestTarget);
+            expected = CameraMath.StepCameraScroll(expected, RestTarget);
         }
 
         Assert.Equal(expected, withNull);

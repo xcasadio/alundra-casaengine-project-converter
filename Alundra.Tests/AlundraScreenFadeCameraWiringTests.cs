@@ -23,14 +23,14 @@ namespace Alundra.Tests;
 /// relecture): E10.a's own <see cref="CasaEngine.Framework.Application.Components.ScreenEffectComponent"/>
 /// reads the camera off <c>ViewManager.ActiveView.Camera</c>, but nothing under <c>Alundra/Scripts</c>
 /// references <c>ActiveView</c> anywhere - <see cref="AlundraBackdropStage"/> instead reuses whatever
-/// <see cref="AlundraCameraDirector"/> resolved (the FIRST <see cref="Camera2dComponent"/> found in
+/// <see cref="CameraDirector"/> resolved (the FIRST <see cref="Camera2dComponent"/> found in
 /// <c>World.Entities</c>, by component - see that class's own doc). This test proves, on the REAL
 /// installation path (<see cref="DefaultRuntimeViewBootstrapper"/>, the same bootstrapper
 /// <see cref="CasaEngineGame"/> always uses - nothing under <c>Alundra/Scripts</c> overrides
 /// <c>RuntimeViewBootstrapper</c>), that both resolve the SAME <see cref="Camera2dComponent"/> instance:
 /// <see cref="DefaultRuntimeViewBootstrapper.BootstrapViews"/> picks its camera the exact same way
 /// (<c>world.Entities.Select(e =&gt; e.GetComponent&lt;CameraComponent&gt;()).FirstOrDefault(...)</c>) as
-/// <see cref="AlundraCameraDirector.ResolveDebugCameraOnce"/> does for <see cref="Camera2dComponent"/> (a
+/// <see cref="CameraDirector.ResolveDebugCameraOnce"/> does for <see cref="Camera2dComponent"/> (a
 /// subclass of <see cref="CameraComponent"/>) - same world, same entity order, same "first match" rule.
 ///
 /// Outcome: <c>ActiveView</c> IS present and IS the resolved camera in the Alundra runtime (not absent,

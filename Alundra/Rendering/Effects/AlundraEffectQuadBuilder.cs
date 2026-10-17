@@ -42,7 +42,7 @@ internal static class AlundraEffectQuadBuilder
     private const int ScreenYMax = 368;
 
     /// <summary>Appends to <paramref name="into"/> the quads of every active slot with an image set, in the order of the slots then of the images. With <paramref name="hasScroll"/> the slots whose
-    /// screen anchor is outside the bounds of G3C-R2 are skipped; <paramref name="scrollX"/> and <paramref name="scrollY"/> are the original scroll (<see cref="AlundraCameraMath.ToOriginalScrollSpace"/>).</summary>
+    /// screen anchor is outside the bounds of G3C-R2 are skipped; <paramref name="scrollX"/> and <paramref name="scrollY"/> are the original scroll (<see cref="CameraMath.ToOriginalScrollSpace"/>).</summary>
     internal static void Build(IReadOnlyList<AlundraEffectSlot> slots, bool hasScroll, int scrollX, int scrollY, List<EffectQuad> into)
     {
         for (var s = 0; s < slots.Count; s++)

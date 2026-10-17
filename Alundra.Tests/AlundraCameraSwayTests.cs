@@ -18,7 +18,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E19.k1 K1 (docs/plan-e19-opcodes.md, section 1.2k.1): the camera sway state and its per-tick step
-/// (<see cref="AlundraCameraSway"/>), the opcodes 0x8E/0x8F through the real interpreter, and the map-load
+/// (<see cref="CameraSway"/>), the opcodes 0x8E/0x8F through the real interpreter, and the map-load
 /// reset. Every sequence below was reproduced by the independent model of the audit (binary
 /// <c>0x8002C894</c>).
 /// </summary>
@@ -26,7 +26,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
 {
     public AlundraCameraSwayTests()
     {
-        AlundraCameraSway.Instance.ResetForTests();
+        CameraSway.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
@@ -35,14 +35,14 @@ public sealed class AlundraCameraSwayTests : IDisposable
 
     public void Dispose()
     {
-        AlundraCameraSway.Instance.ResetForTests();
+        CameraSway.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
-    private static (int[] X, int[] Y) Steps(AlundraCameraSway sway, int count)
+    private static (int[] X, int[] Y) Steps(CameraSway sway, int count)
     {
         var xs = new int[count];
         var ys = new int[count];
@@ -63,7 +63,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void Step_1_1_3_2_TrianglesOnBothAxes_ReachFlagsFlipAtTheBounds()
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
         sway.Start(1, 1, 3, 2);
 
         var reachX = new List<int>();
@@ -90,7 +90,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void Step_3_1_6_2_ReachesTheBoundsExactly()
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
         sway.Start(3, 1, 6, 2);
 
         Assert.Equal(new[] { -3, -6, -3, 0, 3, 6, 3, 0 }, Steps(sway, 8).X);
@@ -99,7 +99,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void Step_8_1_8_2_BouncesBetweenTheBoundsAndZero()
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
         sway.Start(8, 1, 8, 2);
 
         Assert.Equal(new[] { -8, 0, 8, 0 }, Steps(sway, 4).X);
@@ -108,7 +108,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void Step_13_11_1_2_ASpeedBeyondTheLimitClampsToTheLimit()
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
         sway.Start(13, 11, 1, 2);
 
         var (xs, ys) = Steps(sway, 4);
@@ -120,7 +120,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void Step_ChangeInTheMiddle_KeepsOffsetAndReachAndClampsToTheNewLimit()
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
         sway.Start(1, 1, 3, 2);
         sway.Step();
         sway.Step();
@@ -137,7 +137,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void Stop_ThenAStep_ClearsSpeedLimitAndOffset_ButKeepsReach()
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
         sway.Start(1, 1, 3, 2);
         for (var i = 0; i < 3; i++)
         {
@@ -164,7 +164,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void Step_ASpeedXOfZeroClearsOffsetX()
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
         sway.Start(0, 1, 3, 2);
         sway.OffsetX = 2;
 
@@ -176,7 +176,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void Step_ASpeedYOfZeroFreezesOffsetYInsideTheBounds()
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
         sway.Start(1, 0, 3, 2);
         sway.OffsetY = 1;
         sway.ReachY = 0;
@@ -190,7 +190,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void Step_ASpeedYOfZeroStillClampsAnOffsetYBeyondTheBound_AndFlipsReach()
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
         sway.Start(1, 0, 3, 2);
         sway.OffsetY = -3;
         sway.ReachY = 0;
@@ -204,7 +204,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void Start_AnOperandOf200IsReadAs200_Unsigned()
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
 
         sway.Start(200, 201, 202, 203);
 
@@ -220,7 +220,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void InitializeWithWorld_ClearsOnlyTheFlag_ReachAndTheRestStay()
     {
-        var sway = AlundraCameraSway.Instance;
+        var sway = CameraSway.Instance;
         sway.Start(1, 1, 3, 2);
         sway.ReachX = 1;
         sway.ReachY = 1;
@@ -239,7 +239,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void ResetForTests_ClearsAllNineFields_ReachIncluded()
     {
-        var sway = AlundraCameraSway.Instance;
+        var sway = CameraSway.Instance;
         sway.Start(1, 1, 3, 2);
         sway.ReachX = 1;
         sway.ReachY = 1;
@@ -258,8 +258,8 @@ public sealed class AlundraCameraSwayTests : IDisposable
 
     private sealed class SwayContext : IEntityWorldContext
     {
-        public AlundraCameraSway? Sway { get; set; }
-        public AlundraCameraSway? CameraSway => Sway;
+        public CameraSway? Sway { get; set; }
+        public CameraSway? CameraSway => Sway;
         public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
         public AlundraEntityScriptProxy? PlayerEntity => null;
         public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
@@ -294,7 +294,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void Opcode_0x8E_SetsTheFourValuesAndFlag_Size5()
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
         var context = new SwayContext { Sway = sway };
 
         var (kind, codeIndex) = RunOne(context, 0x8E, 0x8E, 1, 2, 3, 4, 0xFF);
@@ -307,7 +307,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void Opcode_0x8E_ReadsOperandsAsUnsignedBytes()
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
 
         RunOne(new SwayContext { Sway = sway }, 0x8E, 0x8E, 200, 255, 128, 0, 0xFF);
 
@@ -317,7 +317,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
     [Fact]
     public void Opcode_0x8F_ClearsTheFlag_Size1()
     {
-        var sway = new AlundraCameraSway();
+        var sway = new CameraSway();
         sway.Start(1, 1, 3, 2);
         var context = new SwayContext { Sway = sway };
 

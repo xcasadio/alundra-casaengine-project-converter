@@ -189,9 +189,9 @@ public interface IEntityWorldContext
     /// This session's camera sway seam (E19.k1, docs/plan-e19-opcodes.md section 1.2k) - backs opcodes 0x8E/0x8F in
     /// <see cref="EventProgramRunner.Dispatch"/>. A default interface member, same "degraded, skip" shape as
     /// <see cref="ScreenFadeDirector"/> above. <see cref="AlundraWorldProxy"/> installs the session-scoped
-    /// <see cref="AlundraCameraSway.Instance"/>.
+    /// <see cref="CameraSway.Instance"/>.
     /// </summary>
-    AlundraCameraSway? CameraSway => null;
+    CameraSway? CameraSway => null;
 
     /// <summary>
     /// Sets the background layer mask of opcode 0xA4 (E19.k2, docs/plan-e19-opcodes.md section 1.2k.2): bit 0 switches

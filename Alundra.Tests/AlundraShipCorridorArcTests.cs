@@ -49,7 +49,7 @@ public sealed class AlundraShipCorridorArcTests
 
         public void TakeFrame(ArcRun arc)
         {
-            var sway = AlundraCameraSway.Instance;
+            var sway = CameraSway.Instance;
             SwayAfterFrame[arc.Frame - 1] = (sway.Flag, sway.SpeedX, sway.SpeedY, sway.LimitX, sway.LimitY, sway.OffsetX, sway.OffsetY, sway.ReachX, sway.ReachY);
         }
 

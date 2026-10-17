@@ -5,7 +5,7 @@ using Alundra.Cameras;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Covers <see cref="AlundraCameraMath.ToOriginalScrollSpace"/> (docs/plan-e9-backdrops-residus.md
+/// Covers <see cref="CameraMath.ToOriginalScrollSpace"/> (docs/plan-e9-backdrops-residus.md
 /// §2/§3, D-E9-1) - the sole conversion from the render-space camera <c>Target</c> back to the
 /// original's own <c>g_cameraScrollingX/Y</c> scroll space. Pure, headless-testable.
 /// </summary>
@@ -14,7 +14,7 @@ public class AlundraCameraMathTests
     [Fact]
     public void ToOriginalScrollSpace_MapOrigin_IsZeroZero()
     {
-        var (x, y) = AlundraCameraMath.ToOriginalScrollSpace(new Vector3(160f, -120f, 0f));
+        var (x, y) = CameraMath.ToOriginalScrollSpace(new Vector3(160f, -120f, 0f));
 
         Assert.Equal(0, x);
         Assert.Equal(0, y);
@@ -26,7 +26,7 @@ public class AlundraCameraMathTests
     [Fact]
     public void ToOriginalScrollSpace_Map389FarCorner_MatchesFrozenScrollBounds()
     {
-        var (x, y) = AlundraCameraMath.ToOriginalScrollSpace(new Vector3(1087f, -839f, 0f));
+        var (x, y) = CameraMath.ToOriginalScrollSpace(new Vector3(1087f, -839f, 0f));
 
         Assert.Equal(0x39f, x);
         Assert.Equal(0x2cf, y);

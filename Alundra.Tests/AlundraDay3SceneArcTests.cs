@@ -364,7 +364,7 @@ public sealed class AlundraDay3SceneArcTests
 
         // E19.k1 K3: the camera sway of Septimus' earthquake, sampled right after 0x8E @608, 0x8E @618 and 0x8F @683 (C[6]), and at
         // the end of the frame of @683.
-        var sway = AlundraCameraSway.Instance;
+        var sway = CameraSway.Instance;
         (int SpeedX, int SpeedY, int LimitX, int LimitY)? swayAt608 = null, swayAt618 = null;
         (int Flag, int SpeedX, int SpeedY, int LimitX, int LimitY, int OffsetX, int OffsetY)? swayAt683 = null, swayAfterTheFrameOf683 = null;
         var frameOf683 = -1;

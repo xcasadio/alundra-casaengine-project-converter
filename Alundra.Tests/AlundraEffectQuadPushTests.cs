@@ -558,7 +558,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
         Assert.NotEqual(service.GetSheetId(0), service.GetSheetId(1));
 
         var camera = proxy._cameraDirector.ResolvedCamera;
-        var scroll = AlundraCameraMath.ToOriginalScrollSpace(camera?.Target ?? Vector3.Zero);
+        var scroll = CameraMath.ToOriginalScrollSpace(camera?.Target ?? Vector3.Zero);
         var expected = new List<EffectQuad>();
         AlundraEffectQuadBuilder.Build(proxy._effectStage.Reservoir.Slots, camera != null, scroll.X, scroll.Y, expected);
 
@@ -581,7 +581,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
         {
             var target = new Vector3(scrollX + 160, -(scrollY + 120), 0);
 
-            Assert.Equal((scrollX, scrollY), AlundraCameraMath.ToOriginalScrollSpace(target));
+            Assert.Equal((scrollX, scrollY), CameraMath.ToOriginalScrollSpace(target));
         }
 
         // every scene of the prediction (docs/plan-e19-g3c-annexe/g3c_expected.json) carries exactly this target
@@ -593,7 +593,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
             var scroll = scene.GetProperty("scroll").EnumerateArray().Select(e => e.GetInt32()).ToArray();
             var target = scene.GetProperty("camera").GetProperty("target").EnumerateArray().Select(e => e.GetInt32()).ToArray();
             Assert.Equal(new[] { scroll[0] + 160, -(scroll[1] + 120) }, target);
-            Assert.Equal((scroll[0], scroll[1]), AlundraCameraMath.ToOriginalScrollSpace(new Vector3(target[0], target[1], 0)));
+            Assert.Equal((scroll[0], scroll[1]), CameraMath.ToOriginalScrollSpace(new Vector3(target[0], target[1], 0)));
         }
     }
 

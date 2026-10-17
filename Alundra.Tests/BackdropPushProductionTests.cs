@@ -89,7 +89,7 @@ public sealed class BackdropPushProductionTests : IDisposable
         Assert.Equal(2, service.PendingTicks);
 
         var target = proxy._cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero;
-        var expectedScroll = AlundraCameraMath.ToOriginalScrollSpace(target);
+        var expectedScroll = CameraMath.ToOriginalScrollSpace(target);
         Assert.Equal(expectedScroll.X, service.LastPushedScrollX);
         Assert.Equal(expectedScroll.Y, service.LastPushedScrollY);
         Assert.Equal(target, service.CameraTarget);

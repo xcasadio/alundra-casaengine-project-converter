@@ -49,7 +49,7 @@ namespace Alundra.Cameras;
 /// assigned in <c>InitializeWithWorld</c> AFTER two early returns, so an <c>Initialize</c>-time capture
 /// on this class would hold null forever and silently drop the map-bounds clamp.
 /// </summary>
-internal sealed class AlundraCameraDirector
+internal sealed class CameraDirector
 {
     /// <summary>DEBUG ONLY. Cached <see cref="Camera2dComponent"/> of the world's camera entity, resolved
     /// once on the first <see cref="ResolveDebugCameraOnce"/> call; stays null (and logs once) when the
@@ -69,7 +69,7 @@ internal sealed class AlundraCameraDirector
     /// <summary>
     /// DEBUG ONLY (see <see cref="UpdateDebugCameraPan"/>). The stick-accumulated pan offset applied on
     /// top of <see cref="_debugCameraBase"/> - <c>Z</c> is always 0 (matching
-    /// <see cref="AlundraCameraMath.ComputeDebugCameraPanOffset"/>'s own contract). Reset to
+    /// <see cref="CameraMath.ComputeDebugCameraPanOffset"/>'s own contract). Reset to
     /// <see cref="Vector3.Zero"/> by an R3 (right-stick) click; never touched at all while
     /// <c>AlundraWorldProxy.DebugCameraPanEnabled</c> is false.
     /// </summary>
@@ -81,7 +81,7 @@ internal sealed class AlundraCameraDirector
     /// in <see cref="Camera2dComponent.Target"/>, with the stick's own <see cref="_debugCameraOffset"/>
     /// subtracted back out. Adopted fresh from <see cref="Camera2dComponent.Target"/> whenever that no
     /// longer matches <see cref="_debugCameraLastWrittenTarget"/> - see
-    /// <see cref="AlundraCameraMath.ResolveDebugCameraBase"/>.
+    /// <see cref="CameraMath.ResolveDebugCameraBase"/>.
     /// </summary>
     private Vector3 _debugCameraBase;
 
@@ -89,7 +89,7 @@ internal sealed class AlundraCameraDirector
     /// DEBUG ONLY. True once <see cref="_debugCameraBase"/> has been seeded from the camera's actual
     /// <see cref="Camera2dComponent.Target"/> on the first tick the camera was found - before that, there
     /// is no prior write to compare <see cref="Camera2dComponent.Target"/> against, so
-    /// <see cref="AlundraCameraMath.ResolveDebugCameraBase"/> would otherwise wrongly treat the camera's
+    /// <see cref="CameraMath.ResolveDebugCameraBase"/> would otherwise wrongly treat the camera's
     /// initial target as "unchanged from a stale zero base".
     /// </summary>
     private bool _debugCameraBaseInitialized;
@@ -196,7 +196,7 @@ internal sealed class AlundraCameraDirector
     /// <c>GraphicManager</c>'s own scroll smoothing/clamp (<c>GraphicManager.cs:75-122</c>). Runs BEFORE
     /// <see cref="UpdateDebugCameraPan"/> (see <c>AlundraWorldProxy.Update</c>'s own ordering comment):
     /// this method writes the camera's <c>Target</c> as the new BASE, and
-    /// <see cref="UpdateDebugCameraPan"/>'s own <see cref="AlundraCameraMath.ResolveDebugCameraBase"/>
+    /// <see cref="UpdateDebugCameraPan"/>'s own <see cref="CameraMath.ResolveDebugCameraBase"/>
     /// call adopts that write as the base a moment later in the SAME frame, then adds the stick offset
     /// back on top - so the scripted follow and the debug pan never fight.
     ///
@@ -217,7 +217,7 @@ internal sealed class AlundraCameraDirector
         // ticksThisFrame steps here, after the map-event passes (the caller's own order). During a warp
         // transition neither a step nor an offset: the binary leaves its frame loop as soon as the departure is
         // armed (0x8002C454-0x8002C45C) and its transition loop calls neither the render nor the follow.
-        var sway = AlundraCameraSway.Instance;
+        var sway = CameraSway.Instance;
         var swayActive = !AlundraWarpDirector.Instance.IsTransitionInProgress;
 
         if (_debugCamera == null)
@@ -240,12 +240,12 @@ internal sealed class AlundraCameraDirector
         // auto-clears EntityFollowedByCamera either).
         var followed = followedByCamera;
         var hasValidTarget = followed != null && followed.IsLoadedNormalOrDeactivated;
-        (_cameraLookAtX, _cameraLookAtY, _cameraLookAtZ) = AlundraCameraMath.ResolveCameraLookAt(
+        (_cameraLookAtX, _cameraLookAtY, _cameraLookAtZ) = CameraMath.ResolveCameraLookAt(
             hasValidTarget,
             followed?.PosX >> 16 ?? 0, followed?.PosY >> 16 ?? 0, followed?.PosZ >> 16 ?? 0,
             _cameraLookAtX, _cameraLookAtY, _cameraLookAtZ);
 
-        var target = AlundraCameraMath.ComputeCameraLookAtRenderPosition(_cameraLookAtX, _cameraLookAtY, _cameraLookAtZ);
+        var target = CameraMath.ComputeCameraLookAtRenderPosition(_cameraLookAtX, _cameraLookAtY, _cameraLookAtZ);
 
         // Bug fix (docs/plan-camera-premiere-frame.md §3, point 2): a snap must not be spent on a frame
         // that carried no logic tick - AlundraCameraMath.AdvanceCameraSmoothing's own pure contract
@@ -264,7 +264,7 @@ internal sealed class AlundraCameraDirector
         // what keeps the camera locked to the sprites. The clamped value is what gets stored back into
         // _cameraSmoothedTarget, not just written out to Target, exactly like the original's own
         // g_cameraScrollingX/Y assignment (fresh verifier of cc1fc60).
-        _cameraSmoothedTarget = AlundraCameraMath.AdvanceCameraSmoothing(
+        _cameraSmoothedTarget = CameraMath.AdvanceCameraSmoothing(
             _cameraSmoothedTarget, snapsThisFrame, target, ticksThisFrame,
             mapWidthPx, mapHeightPx, swayActive ? sway : null);
 
@@ -294,7 +294,7 @@ internal sealed class AlundraCameraDirector
     /// script-driven follow camera): it only accumulates <see cref="_debugCameraOffset"/> (<c>Z</c> always
     /// 0), applied on top of <see cref="_debugCameraBase"/> - whatever the camera's own behavior (the
     /// scripted follow) last put in <c>Target</c>. Each frame this method first re-derives
-    /// <see cref="_debugCameraBase"/> from <c>Target</c> (see <see cref="AlundraCameraMath.ResolveDebugCameraBase"/>)
+    /// <see cref="_debugCameraBase"/> from <c>Target</c> (see <see cref="CameraMath.ResolveDebugCameraBase"/>)
     /// so an external write - the follow's own write - always wins as the base; the stick only ever adds
     /// a debug offset around it. An R3 (right-stick) click resets the offset to 0. While
     /// <c>AlundraWorldProxy.DebugCameraPanEnabled</c> is false, the stick never changes the offset and R3
@@ -316,7 +316,7 @@ internal sealed class AlundraCameraDirector
         // Base resilience (E5-proof, see this method's own doc): whatever last wrote Target - including
         // nothing yet, on the very first tick the camera was found - becomes the base to pan around.
         _debugCameraBase = _debugCameraBaseInitialized
-            ? AlundraCameraMath.ResolveDebugCameraBase(_debugCamera.Target, _debugCameraLastWrittenTarget, _debugCameraBase)
+            ? CameraMath.ResolveDebugCameraBase(_debugCamera.Target, _debugCameraLastWrittenTarget, _debugCameraBase)
             : _debugCamera.Target;
         _debugCameraBaseInitialized = true;
 
@@ -342,7 +342,7 @@ internal sealed class AlundraCameraDirector
                 {
                     _debugCameraOffset = gamePad.RightStickJustPressed
                         ? Vector3.Zero
-                        : AlundraCameraMath.ComputeDebugCameraPanOffset(
+                        : CameraMath.ComputeDebugCameraPanOffset(
                             _debugCameraOffset, gamePad.RightStickX, gamePad.RightStickY, elapsedTime);
                 }
             }

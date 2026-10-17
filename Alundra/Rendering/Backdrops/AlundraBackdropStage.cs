@@ -47,7 +47,7 @@ namespace Alundra.Rendering.Backdrops;
 /// <see cref="ScrollingLayerComponent.Update"/> (D-E9b-7), so this stage never touches a
 /// <c>GraphicsDevice</c> at all any more.
 ///
-/// The world and the resolved debug camera (owned by <see cref="AlundraCameraDirector"/>, S2) are read by
+/// The world and the resolved debug camera (owned by <see cref="CameraDirector"/>, S2) are read by
 /// the caller at USE TIME and passed in per frame rather than captured here (extended proof rule
 /// delta (a)): a stage that captured <c>World</c> at construction would predate
 /// <c>AlundraWorldProxy.InitializeWithWorld</c> assigning it, and the resolved camera is this stage's own
@@ -319,7 +319,7 @@ internal sealed class AlundraBackdropStage
         // plan-e9c-defauts-321.md, D-E9c-5), reproducing the original's own policy of placing
         // Ground=false layers behind every floor, wall and entity (GraphicManager.cs:825-826).
         var configuration = new ScrollingLayerConfiguration(
-            640, 480, (int)AlundraCameraMath.CameraVisibleWidth, (int)AlundraCameraMath.CameraVisibleHeight,
+            640, 480, (int)CameraMath.CameraVisibleWidth, (int)CameraMath.CameraVisibleHeight,
             backgroundDepth: 1f);
 
         return (layers.ToArray(), tintDefinition, configuration);
@@ -470,7 +470,7 @@ internal sealed class AlundraBackdropStage
     /// <summary>
     /// Plan E9.b (D-E9b-2) - pushes this frame's original-scroll-space state to <see cref="_service"/>
     /// (a no-op while <see cref="_service"/> is <see langword="null"/>, see <see cref="_service"/>'s own
-    /// doc): <see cref="AlundraCameraMath.ToOriginalScrollSpace"/> on <paramref name="resolvedCamera"/>'s
+    /// doc): <see cref="CameraMath.ToOriginalScrollSpace"/> on <paramref name="resolvedCamera"/>'s
     /// <c>Target</c> (or <see cref="Vector3.Zero"/> with no resolved camera), fed to
     /// <see cref="ScrollingLayerService.SetFrame"/> alongside <paramref name="ticksThisFrame"/> and the
     /// UNCONVERTED <c>Target</c> (still needed engine-side to place the covering quads in world space).
@@ -487,7 +487,7 @@ internal sealed class AlundraBackdropStage
     internal void PushFrame(int ticksThisFrame, Camera2dComponent? resolvedCamera)
     {
         var cameraTarget = resolvedCamera?.Target ?? Vector3.Zero;
-        var scroll = AlundraCameraMath.ToOriginalScrollSpace(cameraTarget);
+        var scroll = CameraMath.ToOriginalScrollSpace(cameraTarget);
 
         _service?.SetFrame(scroll.X, scroll.Y, ticksThisFrame, cameraTarget);
         _cellularService?.SetFrame(scroll.X, scroll.Y, ticksThisFrame, cameraTarget);

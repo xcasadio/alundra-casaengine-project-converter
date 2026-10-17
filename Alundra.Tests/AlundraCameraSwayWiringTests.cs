@@ -36,7 +36,7 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
 
     private static void Reset()
     {
-        AlundraCameraSway.Instance.ResetForTests();
+        CameraSway.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
@@ -58,7 +58,7 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
         PosZ = 0,
     };
 
-    private static void PoseSway(AlundraCameraSway sway) => sway.Start(1, 1, 3, 2);
+    private static void PoseSway(CameraSway sway) => sway.Start(1, 1, 3, 2);
 
     [Fact]
     public void WithACamera_ThreeFrames_MoveTheTargetByTheIntegralOfTheOffset()
@@ -75,16 +75,16 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
             proxy.Update(0.02f);
         }
 
-        var rest = AlundraCameraMath.ToOriginalScrollSpace(camera.Target);
+        var rest = CameraMath.ToOriginalScrollSpace(camera.Target);
 
-        PoseSway(AlundraCameraSway.Instance);
+        PoseSway(CameraSway.Instance);
 
         var xs = new int[3];
         var ys = new int[3];
         for (var i = 0; i < 3; i++)
         {
             proxy.Update(0.02f);
-            var (x, y) = AlundraCameraMath.ToOriginalScrollSpace(camera.Target);
+            var (x, y) = CameraMath.ToOriginalScrollSpace(camera.Target);
             xs[i] = x - rest.X;
             ys[i] = y - rest.Y;
         }
@@ -99,14 +99,14 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
         var world = new World { Name = "TestWorld" };
         var proxy = new AlundraWorldProxy();
         proxy.InitializeWithWorld(world);
-        PoseSway(AlundraCameraSway.Instance);
+        PoseSway(CameraSway.Instance);
 
         for (var i = 0; i < 3; i++)
         {
             proxy.Update(0.02f);
         }
 
-        var sway = AlundraCameraSway.Instance;
+        var sway = CameraSway.Instance;
         Assert.Equal((-3, -1), (sway.OffsetX, sway.OffsetY));
         Assert.Equal((1, 1), (sway.ReachX, sway.ReachY));
     }
@@ -124,7 +124,7 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
             proxy.Update(0.02f);
         }
 
-        var sway = AlundraCameraSway.Instance;
+        var sway = CameraSway.Instance;
         PoseSway(sway);
         sway.Step();
         var swayBefore = (sway.Flag, sway.OffsetX, sway.OffsetY, sway.ReachX, sway.ReachY);

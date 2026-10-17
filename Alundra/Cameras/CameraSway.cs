@@ -10,7 +10,7 @@ namespace Alundra.Cameras;
 /// <c>0x8E</c> (<see cref="Start"/>, handler <c>0x80040534</c>), disarmed by <c>0x8F</c> (<see cref="Stop"/>,
 /// handler <c>0x80040598</c>) and advanced once per logic tick by <see cref="Step"/> (<c>0x8002C894</c>, first call
 /// of the camera follow <c>0x8002CDA0</c>). The camera follow adds <see cref="OffsetX"/>/<see cref="OffsetY"/> to
-/// the scroll at every tick (<see cref="AlundraCameraMath.ComputeSmoothedCameraTarget"/>).
+/// the scroll at every tick (<see cref="CameraMath.ComputeSmoothedCameraTarget"/>).
 ///
 /// <para>Session-scoped, like <see cref="AlundraScreenFadeDirector.Instance"/>, and never saved. A map load
 /// only clears <see cref="Flag"/> (<see cref="OnMapLoad"/>, <c>0x8002CD54</c>): the first <see cref="Step"/>
@@ -19,14 +19,14 @@ namespace Alundra.Cameras;
 ///
 /// <para>Operands are the unsigned bytes of the opcode (0 to 255), stored as read.</para>
 /// </summary>
-public sealed class AlundraCameraSway
+public sealed class CameraSway
 {
     /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares - never
     /// <see langword="new"/>'d per world.</summary>
-    public static readonly AlundraCameraSway Instance = new();
+    public static readonly CameraSway Instance = new();
 
     /// <summary>Internal rather than private so pure tests can build a fresh instance (all nine fields at 0).</summary>
-    internal AlundraCameraSway()
+    internal CameraSway()
     {
     }
 

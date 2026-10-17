@@ -95,7 +95,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
         };
 
     /// <summary>
-    /// The camera follow (<see cref="AlundraCameraDirector.UpdateCameraFollow"/>) is "dehors" (§1.5's own
+    /// The camera follow (<see cref="CameraDirector.UpdateCameraFollow"/>) is "dehors" (§1.5's own
     /// table: "the original's own look-at update is the LAST thing UpdateEntities does, AFTER the `else`")
     /// - it must keep tracking <see cref="AlundraWorldProxy.EntityFollowedByCamera"/> even while
     /// <see cref="GameState.PlayerControlBits.GameplayBlockedMask"/> is posed (a MenuOpen dialogue

@@ -81,7 +81,7 @@ public sealed class BackdropCellularPushProductionTests : IDisposable
         Assert.Equal(target, scrollingService.CameraTarget);
         Assert.Equal(target, cellularService.CameraTarget); // SAME camera target as the sibling service.
 
-        var expectedScroll = AlundraCameraMath.ToOriginalScrollSpace(target);
+        var expectedScroll = CameraMath.ToOriginalScrollSpace(target);
         Assert.Equal(expectedScroll.X, cellularService.LastPushedCameraX);
         Assert.Equal(expectedScroll.Y, cellularService.LastPushedCameraY);
     }

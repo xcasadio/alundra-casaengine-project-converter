@@ -90,7 +90,7 @@ public sealed class AlundraEffectStage
     /// <summary>
     /// Pushes this frame's quads to the attached service (G3C-R5): the slots are walked by index, the buffers are reused, an empty frame is pushed when nothing is active. Called by
     /// <see cref="AlundraWorldProxy.Update"/> at every rendered frame, whatever the number of ticks (a tick frozen by <c>0x48</c>, a warp departure and a frame without tick included).
-    /// <paramref name="camera"/> gives the original scroll for the elimination (<see cref="AlundraCameraMath.ToOriginalScrollSpace"/>); without a camera nothing is eliminated. A null service does nothing.
+    /// <paramref name="camera"/> gives the original scroll for the elimination (<see cref="CameraMath.ToOriginalScrollSpace"/>); without a camera nothing is eliminated. A null service does nothing.
     /// </summary>
     public void PushFrame(Camera2dComponent? camera)
     {
@@ -100,7 +100,7 @@ public sealed class AlundraEffectStage
             return;
         }
 
-        var scroll = AlundraCameraMath.ToOriginalScrollSpace(camera.Target);
+        var scroll = CameraMath.ToOriginalScrollSpace(camera.Target);
         PushFrameAt(true, scroll.X, scroll.Y);
     }
 

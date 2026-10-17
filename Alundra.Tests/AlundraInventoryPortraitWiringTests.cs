@@ -78,10 +78,10 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
     }
 
     /// <summary>The head point the world hands the portrait: the player above, and the headless proxy's camera
-    /// (none resolved, so <see cref="AlundraCameraMath.ToOriginalScrollSpace"/> of <see cref="Vector3.Zero"/>).</summary>
+    /// (none resolved, so <see cref="CameraMath.ToOriginalScrollSpace"/> of <see cref="Vector3.Zero"/>).</summary>
     private static (int X, int Y) ExpectedHead(AlundraWorldProxy worldProxy)
     {
-        var scroll = AlundraCameraMath.ToOriginalScrollSpace(Vector3.Zero);
+        var scroll = CameraMath.ToOriginalScrollSpace(Vector3.Zero);
         var player = worldProxy.PlayerEntity!;
         return AlundraInventoryPortrait.ComputeHeadPoint(player.PosX, player.PosY, player.PosZ, scroll.X, scroll.Y);
     }

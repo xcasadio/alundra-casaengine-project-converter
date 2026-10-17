@@ -103,7 +103,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// Name of the debug-only environment variable that gates whether the right stick may drive
-    /// <see cref="AlundraCameraDirector.UpdateDebugCameraPan"/>'s DEBUG offset (and its R3/right-stick-click reset) at all.
+    /// <see cref="CameraDirector.UpdateDebugCameraPan"/>'s DEBUG offset (and its R3/right-stick-click reset) at all.
     /// ENABLED BY DEFAULT - user decision, 2026-08-24 - deliberately the opposite convention of
     /// <see cref="PlayerManager.DebugIgnoreControlLockEnvVar"/> ("never active by default"):
     /// that flag bypasses a real gameplay gate, so it must be opted into explicitly, whereas this one
@@ -127,13 +127,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     private static bool? _debugCameraPanEnabledOverrideForTests;
 
     /// <summary>Internal (widened from private, S2's base extraction rule) so
-    /// <see cref="AlundraCameraDirector.UpdateDebugCameraPan"/> can read it after the camera wiring moved
+    /// <see cref="CameraDirector.UpdateDebugCameraPan"/> can read it after the camera wiring moved
     /// out of this class.</summary>
     internal static bool DebugCameraPanEnabled
         => _debugCameraPanEnabledOverrideForTests ?? DebugCameraPanEnabledFromEnvironment;
 
     /// <summary>Test-only read of <see cref="DebugCameraPanEnabled"/> - that property itself is private
-    /// (production code only reads it from inside <see cref="AlundraCameraDirector.UpdateDebugCameraPan"/>), so tests exercise
+    /// (production code only reads it from inside <see cref="CameraDirector.UpdateDebugCameraPan"/>), so tests exercise
     /// the flag's resolution through this seam instead.</summary>
     internal static bool DebugCameraPanEnabledForTests => DebugCameraPanEnabled;
 
@@ -459,7 +459,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     internal AlundraEntityScriptProxy? ActiveCollisionEntity;
 
     /// <summary>
-    /// DEBUG ONLY (see <see cref="AlundraCameraMath.DebugCameraPanSpeedPixelsPerSecond"/>). Cached so <see cref="Update"/>,
+    /// DEBUG ONLY (see <see cref="CameraMath.DebugCameraPanSpeedPixelsPerSecond"/>). Cached so <see cref="Update"/>,
     /// which gets no <see cref="World"/> parameter, can still read the gamepad and reach the camera entity
     /// looked up in <see cref="InitializeWithWorld"/>.
     /// </summary>
@@ -596,7 +596,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// instance directly - the private-&gt;internal widening the plan's base extraction rule already
     /// permits - instead of adding a second reflection hop.
     /// </summary>
-    internal readonly AlundraCameraDirector _cameraDirector = new();
+    internal readonly CameraDirector _cameraDirector = new();
 
     /// <summary>
     /// E5.a: port of <c>g_entityFollowedByCamera</c> (GameEngine.cs) - see
@@ -610,7 +610,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// (Script_105_069). Public (rather than explicit-interface) since nothing about it needs hiding from
     /// this proxy's own surface, unlike <see cref="PlayerEntity"/>'s internal setter above. Clears
     /// <see cref="EntityFollowedByCamera"/> (which stays on this proxy) and DELEGATES the look-at pixel
-    /// coordinates themselves to <see cref="AlundraCameraDirector.SetForcedLookAt"/> (S2,
+    /// coordinates themselves to <see cref="CameraDirector.SetForcedLookAt"/> (S2,
     /// docs/plan-update-caracterisation.md) - see that collaborator's own doc on why this delegation is
     /// not the banned "facade".</summary>
     public void SetForcedCameraLookAt(int x, int y, int z)
@@ -696,9 +696,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// This session's camera sway (E19.k1, docs/plan-e19-opcodes.md section 1.2k) - the SESSION-scoped
-    /// <see cref="AlundraCameraSway.Instance"/>, NOT a per-world instance. Always non-null.
+    /// <see cref="CameraSway.Instance"/>, NOT a per-world instance. Always non-null.
     /// </summary>
-    public AlundraCameraSway CameraSway => AlundraCameraSway.Instance;
+    public CameraSway CameraSway => CameraSway.Instance;
 
     /// <summary>E19.g G3b (docs/plan-e19-opcodes.md, section 1.2o.6, G3B-R2): this world's effect stage, on which the opcodes <c>0x90</c> to <c>0x94</c> and <c>0xA0</c> to <c>0xA3</c> queue their operation.</summary>
     public AlundraEffectStage? EffectStage => _effectStage;
@@ -790,7 +790,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// Bug fix (docs/plan-camera-premiere-frame.md §3, point 1): on a free time-step engine faster than
     /// 50 Hz, the very first rendered frame can carry ZERO raw logic ticks (the accumulator has not yet
     /// reached <see cref="ScriptedMotion.FixedTickSeconds"/>) - so neither the map-events loop nor
-    /// the camera's armed first-frame snap (<see cref="AlundraCameraDirector.ArmFirstFrameSnap"/>) ever
+    /// the camera's armed first-frame snap (<see cref="CameraDirector.ArmFirstFrameSnap"/>) ever
     /// runs before that frame's own camera resolve, and the one snap is spent on the player's raw spawn
     /// pose instead of wherever the intro's own opening script retargets the camera one instruction
     /// later.
@@ -877,7 +877,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // E19.k1 (docs/plan-e19-opcodes.md section 1.2k): the binary's map load (0x8002CD54) only returns the
         // camera sway Flag to 0 (the first step then clears Limit, Speed and Offset; Reach persists). At the
         // head, before every early return below, so a world without a tile map clears it too.
-        AlundraCameraSway.Instance.OnMapLoad();
+        CameraSway.Instance.OnMapLoad();
 
         // E5.a (decision E5-2): port of GraphicManager.cs's own g_isCameraScrolling = 1 at map load - the
         // next UpdateCameraFollow call snaps straight to that frame's look-at instead of scrolling in from
@@ -1536,7 +1536,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
         // E19.f4b (F4B-R4): the portrait of a speaker flies from and to its head point, which needs the scroll of the camera in the original's pixels, read at the opening and at the return
         // (the same conversion as the inventory portrait's head point, UpdateInventoryPortraitHeadPoint). Kept by every later AttachToWorld; the director never reaches the world itself.
-        AlundraDialogueDirector.Instance.ScrollSource = () => AlundraCameraMath.ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero);
+        AlundraDialogueDirector.Instance.ScrollSource = () => CameraMath.ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero);
     }
 
     /// <summary>
@@ -1850,7 +1850,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>docs/plan-portrait-inventaire.md PI8: refreshes <see cref="AlundraInventoryPortrait"/>'s head point
     /// for this tick, before the inventory directors, from the player's 16.16 position and the original's
-    /// <c>g_cameraScrollingX/Y</c>, obtained through <see cref="AlundraCameraMath.ToOriginalScrollSpace"/> (the one
+    /// <c>g_cameraScrollingX/Y</c>, obtained through <see cref="CameraMath.ToOriginalScrollSpace"/> (the one
     /// sanctioned conversion, same fallback to <see cref="Vector3.Zero"/> as the backdrop stage when no camera is
     /// resolved). Integer arithmetic only: nothing allocated per tick.</summary>
     private void UpdateInventoryPortraitHeadPoint()
@@ -1861,7 +1861,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             return;
         }
 
-        var scroll = AlundraCameraMath.ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero);
+        var scroll = CameraMath.ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero);
         var head = AlundraInventoryPortrait.ComputeHeadPoint(player.PosX, player.PosY, player.PosZ, scroll.X, scroll.Y);
         AlundraInventoryPortrait.Instance.SetHeadPoint(head.X, head.Y);
     }

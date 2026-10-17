@@ -63,7 +63,7 @@ public sealed class AlundraShipBlockArcTests
 
         private static (int, int, int, int) SwayParameters()
         {
-            var sway = AlundraCameraSway.Instance;
+            var sway = CameraSway.Instance;
             return (sway.SpeedX, sway.SpeedY, sway.LimitX, sway.LimitY);
         }
 
@@ -74,7 +74,7 @@ public sealed class AlundraShipBlockArcTests
                 SwayAfterFrame0 = SwayParameters();
             }
 
-            if (AlundraCameraSway.Instance.Flag != 1)
+            if (CameraSway.Instance.Flag != 1)
             {
                 FramesWithTheSwayOff.Add(arc.Frame - 1);
             }

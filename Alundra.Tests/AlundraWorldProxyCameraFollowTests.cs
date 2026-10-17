@@ -11,11 +11,11 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// Covers the pure math of E5.a's scripted camera follow (docs/plan-e5-camera.md) -
-/// <see cref="AlundraCameraMath.ResolveCameraLookAt"/>, <see cref="AlundraCameraMath.ComputeCameraLookAtRenderPosition"/>,
-/// <see cref="AlundraCameraMath.ClampCameraTargetToMap"/>
-/// and <see cref="AlundraCameraMath.ComputeSmoothedCameraTarget"/> (the snap-or-step-then-clamp state
-/// transition) - plus E5.c's own integer scroll port, <see cref="AlundraCameraMath.StepCameraScroll"/>
-/// and <see cref="AlundraCameraMath.AdvanceCameraSmoothing"/> (the per-frame seam
+/// <see cref="CameraMath.ResolveCameraLookAt"/>, <see cref="CameraMath.ComputeCameraLookAtRenderPosition"/>,
+/// <see cref="CameraMath.ClampCameraTargetToMap"/>
+/// and <see cref="CameraMath.ComputeSmoothedCameraTarget"/> (the snap-or-step-then-clamp state
+/// transition) - plus E5.c's own integer scroll port, <see cref="CameraMath.StepCameraScroll"/>
+/// and <see cref="CameraMath.AdvanceCameraSmoothing"/> (the per-frame seam
 /// <see cref="AlundraWorldProxy.UpdateCameraFollow"/> calls with that frame's LOGIC TICK count).
 ///
 /// Not covered here (headless-untestable, needs a live World/Camera2dComponent): the thin wiring around
@@ -35,7 +35,7 @@ public class AlundraWorldProxyCameraFollowTests
     [Fact]
     public void ResolveCameraLookAt_ValidTarget_AdoptsCandidatePosition()
     {
-        var result = AlundraCameraMath.ResolveCameraLookAt(
+        var result = CameraMath.ResolveCameraLookAt(
             hasValidTarget: true, candidateX: 100, candidateY: 200, candidateZ: 3,
             previousX: 1, previousY: 2, previousZ: 3000);
 
@@ -49,7 +49,7 @@ public class AlundraWorldProxyCameraFollowTests
         // (still non-null, but destroyed) entity's own current position is - the candidate here is
         // deliberately a totally different, implausible position (e.g. wherever the player happens to be)
         // to prove the result is NOT that candidate.
-        var result = AlundraCameraMath.ResolveCameraLookAt(
+        var result = CameraMath.ResolveCameraLookAt(
             hasValidTarget: false, candidateX: 9999, candidateY: 9999, candidateZ: 9999,
             previousX: 804, previousY: 952, previousZ: 0);
 
@@ -78,7 +78,7 @@ public class AlundraWorldProxyCameraFollowTests
     [Fact]
     public void ComputeCameraLookAtRenderPosition_HeroNewGamePosition_MatchesHandComputedTarget()
     {
-        var result = AlundraCameraMath.ComputeCameraLookAtRenderPosition(804, 952, 0);
+        var result = CameraMath.ComputeCameraLookAtRenderPosition(804, 952, 0);
 
         Assert.Equal(new Vector3(804f, -936f, 0f), result);
     }
@@ -88,8 +88,8 @@ public class AlundraWorldProxyCameraFollowTests
     {
         // Y - Z shrinks as Z (elevation) rises, so render Y (= -(Y-Z) + 16) increases (moves up-screen) -
         // an elevated entity's look-at sits higher on screen than a grounded one at the same X/Y.
-        var grounded = AlundraCameraMath.ComputeCameraLookAtRenderPosition(100, 200, 0);
-        var elevated = AlundraCameraMath.ComputeCameraLookAtRenderPosition(100, 200, 32);
+        var grounded = CameraMath.ComputeCameraLookAtRenderPosition(100, 200, 0);
+        var elevated = CameraMath.ComputeCameraLookAtRenderPosition(100, 200, 32);
 
         Assert.True(elevated.Y > grounded.Y);
         Assert.Equal(grounded.Y + 32f, elevated.Y);
@@ -103,7 +103,7 @@ public class AlundraWorldProxyCameraFollowTests
     /// E5.c: the ONE rule the whole slice rests on, and the easiest to get wrong. <c>&gt;&gt; 4</c> is an
     /// arithmetic shift (a FLOOR), so it is not symmetric; our render space flips Y relative to the
     /// original's scroll space (<c>renderY = -scrollY - 120</c>, <c>renderX = scrollX + 160</c>, both
-    /// confirmed by <see cref="AlundraCameraMath.ClampCameraTargetToMap"/>'s own frozen map-389 bounds).
+    /// confirmed by <see cref="CameraMath.ClampCameraTargetToMap"/>'s own frozen map-389 bounds).
     /// The increment is therefore FLOOR on X and CEILING on Y - the same convention E5.b established for
     /// sprites. Every row below was checked against the original by computing <c>(-delta) &gt;&gt; 4</c> in
     /// scroll space and converting back.
@@ -128,7 +128,7 @@ public class AlundraWorldProxyCameraFollowTests
         var current = new Vector3(0f, 0f, 0f);
         var target = new Vector3(delta, delta, 0f);
 
-        var stepped = AlundraCameraMath.StepCameraScroll(current, target);
+        var stepped = CameraMath.StepCameraScroll(current, target);
 
         Assert.Equal(expectedX, stepped.X);
         Assert.Equal(expectedY, stepped.Y);
@@ -153,16 +153,16 @@ public class AlundraWorldProxyCameraFollowTests
         const int mapWidthPx = 1248;
         const int mapHeightPx = 960;
 
-        Assert.Equal(1087f, AlundraCameraMath.ClampCameraTargetToMap(new Vector3(99999f, -500f, 0f), mapWidthPx, mapHeightPx).X);
-        Assert.Equal(160f, AlundraCameraMath.ClampCameraTargetToMap(new Vector3(-99999f, -500f, 0f), mapWidthPx, mapHeightPx).X);
-        Assert.Equal(-120f, AlundraCameraMath.ClampCameraTargetToMap(new Vector3(500f, 99999f, 0f), mapWidthPx, mapHeightPx).Y);
-        Assert.Equal(-839f, AlundraCameraMath.ClampCameraTargetToMap(new Vector3(500f, -99999f, 0f), mapWidthPx, mapHeightPx).Y);
+        Assert.Equal(1087f, CameraMath.ClampCameraTargetToMap(new Vector3(99999f, -500f, 0f), mapWidthPx, mapHeightPx).X);
+        Assert.Equal(160f, CameraMath.ClampCameraTargetToMap(new Vector3(-99999f, -500f, 0f), mapWidthPx, mapHeightPx).X);
+        Assert.Equal(-120f, CameraMath.ClampCameraTargetToMap(new Vector3(500f, 99999f, 0f), mapWidthPx, mapHeightPx).Y);
+        Assert.Equal(-839f, CameraMath.ClampCameraTargetToMap(new Vector3(500f, -99999f, 0f), mapWidthPx, mapHeightPx).Y);
 
         // 0x39f/0x2cf cross-check, converted back to the original's own top-left scroll coordinates
         // (scrollX = TargetX - 160, scrollY = -TargetY - 120). Target.X's max and Target.Y's min are the
         // SAME corner of the map (bottom-right in the original's down-positive screen space), so the
         // probe pushes X positive and Y negative together.
-        var maxTarget = AlundraCameraMath.ClampCameraTargetToMap(new Vector3(99999f, -99999f, 0f), mapWidthPx, mapHeightPx);
+        var maxTarget = CameraMath.ClampCameraTargetToMap(new Vector3(99999f, -99999f, 0f), mapWidthPx, mapHeightPx);
         Assert.Equal(0x39f, (int)(maxTarget.X - 160f));
         Assert.Equal(0x2cf, (int)(-maxTarget.Y - 120f));
     }
@@ -172,7 +172,7 @@ public class AlundraWorldProxyCameraFollowTests
     {
         var target = new Vector3(600f, -400f, 0f);
 
-        var result = AlundraCameraMath.ClampCameraTargetToMap(target, 1248, 960);
+        var result = CameraMath.ClampCameraTargetToMap(target, 1248, 960);
 
         Assert.Equal(target, result);
     }
@@ -184,7 +184,7 @@ public class AlundraWorldProxyCameraFollowTests
         // camera's visible 320x240 area outside the map.
         var target = new Vector3(1240f, -955f, 0f);
 
-        var result = AlundraCameraMath.ClampCameraTargetToMap(target, 1248, 960);
+        var result = CameraMath.ClampCameraTargetToMap(target, 1248, 960);
 
         Assert.InRange(result.X, 160f, 1248f - 160f);
         Assert.InRange(result.Y, -(960f - 120f), -120f);
@@ -207,7 +207,7 @@ public class AlundraWorldProxyCameraFollowTests
     // -----------------------------------------------------------------------------------------
 
     /// <summary>
-    /// Exercises <see cref="AlundraCameraMath.ComputeSmoothedCameraTarget"/> - the exact state-transition
+    /// Exercises <see cref="CameraMath.ComputeSmoothedCameraTarget"/> - the exact state-transition
     /// <see cref="AlundraWorldProxy.UpdateCameraFollow"/> now calls every frame - across a short sequence
     /// of frames: pin the camera at the map's bottom edge (an unclamped look-at of -936, the verifier's
     /// own measured hidden overshoot, 97px past the -839 lower bound) for several ticks, THEN move the
@@ -221,7 +221,7 @@ public class AlundraWorldProxyCameraFollowTests
     /// E5.c updated the expected value: under the integer port the step is <c>ceil(delta / 16)</c> with
     /// delta = -800 - (-839) = +39, i.e. <c>ceil(2.4375) = 3</c>, so the state lands on exactly -836. (The
     /// former -836.5625 was the float lerp's own 1/16 of 39; that smoothing no longer exists - see
-    /// <see cref="AlundraCameraMath.StepCameraScroll"/>.) The PROPERTY under test is unchanged.
+    /// <see cref="CameraMath.StepCameraScroll"/>.) The PROPERTY under test is unchanged.
     ///
     /// A pre-fix implementation of this method (clamp applied only to the RETURNED render value, feeding
     /// the UNCLAMPED step result back as next frame's state) would still read -839 here: one step from the
@@ -243,7 +243,7 @@ public class AlundraWorldProxyCameraFollowTests
         var pinnedLookAt = new Vector3(804f, -936f, 0f);
         for (var i = 0; i < 5; i++)
         {
-            smoothed = AlundraCameraMath.ComputeSmoothedCameraTarget(
+            smoothed = CameraMath.ComputeSmoothedCameraTarget(
                 smoothed, needsSnap: i == 0, pinnedLookAt, mapWidthPx, mapHeightPx);
         }
 
@@ -252,7 +252,7 @@ public class AlundraWorldProxyCameraFollowTests
         // Look-at now moves inward (e.g. the followed entity steps away from the map edge) - one more
         // tick.
         var newLookAt = new Vector3(804f, -800f, 0f);
-        var nextFrame = AlundraCameraMath.ComputeSmoothedCameraTarget(
+        var nextFrame = CameraMath.ComputeSmoothedCameraTarget(
             smoothed, needsSnap: false, newLookAt, mapWidthPx, mapHeightPx);
 
         Assert.NotEqual(-839f, nextFrame.Y);
@@ -275,7 +275,7 @@ public class AlundraWorldProxyCameraFollowTests
         var previous = new Vector3(804f, -936f, 0f);
         var lookAt = new Vector3(1000f, -100f, 0f);
 
-        var result = AlundraCameraMath.AdvanceCameraSmoothing(
+        var result = CameraMath.AdvanceCameraSmoothing(
             previous, needsSnap: false, lookAt, ticksThisFrame: 0, mapWidthPx: null, mapHeightPx: null);
 
         Assert.Equal(previous, result);
@@ -295,11 +295,11 @@ public class AlundraWorldProxyCameraFollowTests
 
         // Look-at 97px past the -839 lower bound, E5.a's own measured New Game overshoot.
         var lookAt = new Vector3(804f, -936f, 0f);
-        var expected = AlundraCameraMath.ClampCameraTargetToMap(lookAt, mapWidthPx, mapHeightPx);
+        var expected = CameraMath.ClampCameraTargetToMap(lookAt, mapWidthPx, mapHeightPx);
 
-        var snappedNoTick = AlundraCameraMath.AdvanceCameraSmoothing(
+        var snappedNoTick = CameraMath.AdvanceCameraSmoothing(
             Vector3.Zero, needsSnap: true, lookAt, ticksThisFrame: 0, mapWidthPx, mapHeightPx);
-        var snappedFourTicks = AlundraCameraMath.AdvanceCameraSmoothing(
+        var snappedFourTicks = CameraMath.AdvanceCameraSmoothing(
             Vector3.Zero, needsSnap: true, lookAt, ticksThisFrame: 4, mapWidthPx, mapHeightPx);
 
         Assert.Equal(expected, snappedNoTick);
@@ -322,7 +322,7 @@ public class AlundraWorldProxyCameraFollowTests
 
         for (var tick = 0; tick < 200; tick++)
         {
-            state = AlundraCameraMath.AdvanceCameraSmoothing(
+            state = CameraMath.AdvanceCameraSmoothing(
                 state, needsSnap: false, lookAt, ticksThisFrame: 1, mapWidthPx, mapHeightPx);
 
             Assert.Equal(MathF.Truncate(state.X), state.X);
@@ -336,8 +336,8 @@ public class AlundraWorldProxyCameraFollowTests
     /// running only 14 frames from a hand-picked tick phase. Drives 3000 logic ticks of a followed entity
     /// moving at a steady rate, exactly as production does: its logical position is truncated to an int
     /// look-at (<c>PosY &gt;&gt; 16</c>), the look-at is turned into a render target by
-    /// <see cref="AlundraCameraMath.ComputeCameraLookAtRenderPosition"/>, and the camera takes ONE
-    /// <see cref="AlundraCameraMath.AdvanceCameraSmoothing"/> step per tick. The sprite's own rendered Y
+    /// <see cref="CameraMath.ComputeCameraLookAtRenderPosition"/>, and the camera takes ONE
+    /// <see cref="CameraMath.AdvanceCameraSmoothing"/> step per tick. The sprite's own rendered Y
     /// is the negated look-at (<c>ceil(-x) = -floor(x)</c>, E5.b's own identity), so the on-screen gap is
     /// <c>(-look) - state.Y</c> in logical pixels.
     ///
@@ -373,18 +373,18 @@ public class AlundraWorldProxyCameraFollowTests
         {
             rawY += pixelsPerTick;
             var lookAtY = (int)MathF.Floor(rawY); // followed.PosY >> 16
-            var target = AlundraCameraMath.ComputeCameraLookAtRenderPosition(804, lookAtY, 0);
+            var target = CameraMath.ComputeCameraLookAtRenderPosition(804, lookAtY, 0);
 
             if (!started)
             {
                 started = true;
-                integerState = AlundraCameraMath.AdvanceCameraSmoothing(
+                integerState = CameraMath.AdvanceCameraSmoothing(
                     integerState, needsSnap: true, target, ticksThisFrame: 0, null, null);
                 floatStateY = target.Y;
             }
             else
             {
-                integerState = AlundraCameraMath.AdvanceCameraSmoothing(
+                integerState = CameraMath.AdvanceCameraSmoothing(
                     integerState, needsSnap: false, target, ticksThisFrame: 1, null, null);
 
                 // Rejected variant, kept here purely as the counter-proof - see this test's own doc.
@@ -458,23 +458,23 @@ public class AlundraWorldProxyCameraFollowTests
                 rawY += pixelsPerTick;
                 delivered++;
 
-                var target = AlundraCameraMath.ComputeCameraLookAtRenderPosition(804, (int)MathF.Floor(rawY), 0);
+                var target = CameraMath.ComputeCameraLookAtRenderPosition(804, (int)MathF.Floor(rawY), 0);
 
                 if (!started)
                 {
                     started = true;
-                    state = AlundraCameraMath.AdvanceCameraSmoothing(state, true, target, 0, null, null);
+                    state = CameraMath.AdvanceCameraSmoothing(state, true, target, 0, null, null);
                 }
                 else if (!stepPerFrame)
                 {
-                    state = AlundraCameraMath.AdvanceCameraSmoothing(state, false, target, 1, null, null);
+                    state = CameraMath.AdvanceCameraSmoothing(state, false, target, 1, null, null);
                 }
             }
 
             if (stepPerFrame && started)
             {
-                var target = AlundraCameraMath.ComputeCameraLookAtRenderPosition(804, (int)MathF.Floor(rawY), 0);
-                state = AlundraCameraMath.AdvanceCameraSmoothing(state, false, target, 1, null, null);
+                var target = CameraMath.ComputeCameraLookAtRenderPosition(804, (int)MathF.Floor(rawY), 0);
+                state = CameraMath.AdvanceCameraSmoothing(state, false, target, 1, null, null);
             }
         }
 
