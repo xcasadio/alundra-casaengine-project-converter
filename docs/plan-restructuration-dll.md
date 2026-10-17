@@ -165,6 +165,13 @@ La lecture de la règle (3) (types secondaires publics, types internes, type pri
 - Budget : R2 et R3 sont mécaniques (`mech-executor`, une passe par domaine, un commit par domaine) ; R0 et R4 demandent du jugement
   (`executor`) ; `plan-verifier` avant chaque tranche ; un verifier frais après chaque tranche, deux pour R0 et R4 (moteur, données).
 - Retour arrière : `git revert` de la tranche ; pour R0 et R4, revert du commit parent et réexport depuis le commit précédent.
+- **Fusion du 2026-10-17 (demande de l'auteur : « quand tu auras fini ta tâche, merge dans main et repars d'une nouvelle branche à partir de
+  main »).** R0, R1 et R2 fusionnés dans `main` : branche d'intégration `integration/restructuration-r2` (fusion de `main` `4714a1d`, qui
+  portait déjà une partie de R2 et le pointeur moteur `1c49709a`, commit `aa4bb74` ; pointeur moteur monté au `main` du moteur `92d8e847`
+  à la demande de l'auteur, commit `11cc63e`) ; validation de l'état fusionné : la solution en Release (copie neutralisée) et en Debug sans
+  erreur, `Alundra.Tests` 5 097 / 0 échec dans les deux, le convertisseur 854 / 0 échec, `cmp` identique, garde des traces verte,
+  `check_names.py` sans constat ; avance rapide de `main` `4714a1d..11cc63e`, rien poussé. Le chantier continue sur
+  `chantier/restructuration-dll-r3`, créée depuis `main`.
 
 ## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export 🧪 (faite et CONFIRMED le 2026-10-17 : moteur `d4524e84` à `fcc5280b`, parent `146e1d8`, ADR-0075 du moteur ; restent les recettes de l'auteur, en jeu et dans l'éditeur)
 
