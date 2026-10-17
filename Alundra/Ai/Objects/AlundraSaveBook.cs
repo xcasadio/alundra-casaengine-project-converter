@@ -39,7 +39,7 @@ internal interface IAlundraSaveBookScreen
 /// <summary>
 /// E16.e L1 (docs/plan-e16-etat-partie.md): the save book, « SaveBook (Ne pas toucher !) » - sprite type 237,
 /// one per map on 65 maps (§2, Q4) - the ONLY entity whose native sprite AI this DLL runs. Its two native
-/// handlers are reached through <see cref="AlundraEventProgramRunner.RunSpriteEvent"/>, which dispatches here only
+/// handlers are reached through <see cref="EventProgramRunner.RunSpriteEvent"/>, which dispatches here only
 /// when <see cref="TryMatch"/> holds: slot F code 1 (<c>Script_FInteract_FUN_8007fc64</c>, 0x8007FC64) and slot C
 /// code 72 (<c>AI_ProcessWarpTransitionState</c>, 0x8007B998, entry 72 of the <c>ProgramCTick</c> table at
 /// 0x800C4F34, word 0x800C5054). Porting any other native handler is E14's, never this class's.

@@ -63,7 +63,7 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
     {
         var before = arc.Entities.ToList();
         var document = new EventProgramDocument { MapIndex = mapIndex, EventCodesATable = new[] { 0, 0 }, Codes = codes };
-        var runner = new AlundraEventProgramRunner(document, ArcRun.State, (IEntityWorldContext)arc.Proxy);
+        var runner = new EventProgramRunner(document, ArcRun.State, (IEntityWorldContext)arc.Proxy);
         runner.RunOneScriptCall(arc.Hero, new EventProgramState { Codes = document.CodesAsBytes() });
         return arc.Entities.Except(before).SingleOrDefault();
     }

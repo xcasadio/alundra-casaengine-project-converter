@@ -125,7 +125,7 @@ internal sealed class ArcRun : IDisposable
         (Entity?)typeof(CasaEngine.Framework.Scripting.GameplayProxy)
             .GetProperty("Owner", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!.GetValue(proxy);
 
-    public AlundraEventProgramRunner Runner { get; }
+    public EventProgramRunner Runner { get; }
 
     /// <summary>Frames run so far.</summary>
     public int Frame { get; private set; }
@@ -264,7 +264,7 @@ internal sealed class ArcRun : IDisposable
             typeof(AlundraBackdropStage).GetField("_clearColorApplied", BindingFlags.Instance | BindingFlags.NonPublic)!
                 .SetValue(Proxy._backdropStage, true); // the headless montage has no view for the clear colour.
 
-            Runner = Assert.IsType<AlundraEventProgramRunner>(Proxy.EventProgramRunner);
+            Runner = Assert.IsType<EventProgramRunner>(Proxy.EventProgramRunner);
             Runner.TraceSink = Record;
 
             // The headless game has no asset manager: the map's dialogues, the shared ones and the ETC texts come from

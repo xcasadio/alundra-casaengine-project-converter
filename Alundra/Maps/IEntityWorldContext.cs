@@ -20,7 +20,7 @@ namespace Alundra.Maps;
 /// Seam over the world-level entity services the entity search/manipulation opcodes need
 /// (0x2D ActivateEntity, 0x2E DestroyEntity, 0x62/0x63/0x64/0x65/0xAC, all of which fan out through
 /// <see cref="EntitySearchService"/>). Implemented by <see cref="AlundraWorldProxy"/> (which owns
-/// <c>_spawnedEntities</c> and the live <c>World</c>); <see cref="AlundraEventProgramRunner"/> depends on
+/// <c>_spawnedEntities</c> and the live <c>World</c>); <see cref="EventProgramRunner"/> depends on
 /// this interface rather than the concrete world proxy, so the interpreter stays unit-testable with a
 /// fake context instead of a live <c>World</c>.
 /// </summary>
@@ -39,7 +39,7 @@ public interface IEntityWorldContext
     /// The New Game hero entity (port of <c>ResetEntityState</c>, GameEngine.cs:648-670 - see
     /// <see cref="AlundraWorldProxy.PlayerEntity"/>'s own doc), or null when this world spawned none (no
     /// hero asset in the catalog, no prefab loader, etc. - see that same doc). Needed by
-    /// <see cref="AlundraEventProgramRunner.RunScript"/>'s slot F policy (EntityEventHandlers.cs:268-273:
+    /// <see cref="EventProgramRunner.RunScript"/>'s slot F policy (EntityEventHandlers.cs:268-273:
     /// slot F always zeroes the PLAYER's own forces, not the entity being run).
     /// </summary>
     AlundraEntityScriptProxy? PlayerEntity { get; }
@@ -95,7 +95,7 @@ public interface IEntityWorldContext
     /// by <see cref="AlundraWorldProxy.InitializeWithWorld"/> right after <c>World.CollisionField</c> from
     /// the SAME <c>TileMapData</c>, in "cell space" (<c>cellSize = 1</c>) - the DLL, not the engine's own
     /// <c>CharacterControllerNavigationDriverComponent</c> (not used in E4), does its own px&lt;-&gt;cell
-    /// conversion (see <see cref="AlundraEventProgramRunner"/>'s own 0x1E walk-detour helpers). Null in
+    /// conversion (see <see cref="EventProgramRunner"/>'s own 0x1E walk-detour helpers). Null in
     /// degraded mode (missing navigation layer/tileset, or a world with no tilemap at all) - every reader
     /// treats that as "no detour available, keep pushing" (0x1E's own original behavior). Settable by
     /// fakes so a test can inject a synthetic grid without a live <see cref="AlundraWorldProxy"/> (map 389
@@ -105,10 +105,10 @@ public interface IEntityWorldContext
 
     /// <summary>
     /// This world's cell-mutation seam (E7.a, docs/plan-e7-mutation-tuiles.md) - backs opcodes
-    /// 0x54/0x55/0x85 in <see cref="AlundraEventProgramRunner.Dispatch"/>. A default interface member
+    /// 0x54/0x55/0x85 in <see cref="EventProgramRunner.Dispatch"/>. A default interface member
     /// (rather than a required one) so every EXISTING implementer - <see cref="NoOpEntityWorldContext"/>,
     /// every test fake, <see cref="AlundraWorldProxy"/> itself - keeps compiling unmodified, defaulting to
-    /// null (the same "degraded, skip by size" fallback <see cref="AlundraEventProgramRunner"/> already
+    /// null (the same "degraded, skip by size" fallback <see cref="EventProgramRunner"/> already
     /// applies when a world has no mutator installed). Only the intro trace harness's
     /// <c>HeadlessIntroSimulation</c> overrides this, backed by a real <see cref="AlundraCellStore"/> built
     /// from the SAME parsed records its collision field aliases (E7.a's "production call site"
@@ -118,10 +118,10 @@ public interface IEntityWorldContext
 
     /// <summary>
     /// This world's sound-effect playback seam (E11.a, docs/plan-e11-audio.md) - backs opcodes
-    /// 0xBD/0xBE/0x12/0x75 in <see cref="AlundraEventProgramRunner.Dispatch"/>. A default interface
+    /// 0xBD/0xBE/0x12/0x75 in <see cref="EventProgramRunner.Dispatch"/>. A default interface
     /// member (rather than a required one) so every EXISTING implementer - <see cref="NoOpEntityWorldContext"/>,
     /// every test fake, <see cref="AlundraWorldProxy"/> itself - keeps compiling unmodified, defaulting
-    /// to null (the same "degraded, skip by size" fallback <see cref="AlundraEventProgramRunner"/> already
+    /// to null (the same "degraded, skip by size" fallback <see cref="EventProgramRunner"/> already
     /// applies when a world has no sound player installed). <see cref="AlundraWorldProxy"/> installs a
     /// real <see cref="AlundraSoundPlayer"/> once a <c>Game</c>'s <c>AudioSystemComponent</c> exists
     /// (<see cref="AlundraWorldProxy.InstallAudioSystems"/>); the intro trace harness's
@@ -163,7 +163,7 @@ public interface IEntityWorldContext
 
     /// <summary>
     /// This session's master BGM fade-machine seam (B2, docs/plan-e11b-opcodes-audio.md, D-B-5) - backs
-    /// opcodes 0xA5/0xA6 in <see cref="AlundraEventProgramRunner.Dispatch"/> (0xA7's own conditional
+    /// opcodes 0xA5/0xA6 in <see cref="EventProgramRunner.Dispatch"/> (0xA7's own conditional
     /// stop-all also goes through this, orchestrated at the dispatch site - see
     /// <see cref="AlundraBgmFadeDirector"/>'s own class doc). A default interface member, same
     /// "degraded, skip" shape as <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/> above, defaulting
@@ -177,7 +177,7 @@ public interface IEntityWorldContext
 
     /// <summary>
     /// This session's screen fade/tint seam (E10.b, docs/plan-e10-fondu.md) - backs opcodes
-    /// 0xAF/0xB0/0xB1 in <see cref="AlundraEventProgramRunner.Dispatch"/>. A default interface member,
+    /// 0xAF/0xB0/0xB1 in <see cref="EventProgramRunner.Dispatch"/>. A default interface member,
     /// same "degraded, skip" shape as <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/> above,
     /// defaulting to null so every EXISTING implementer keeps compiling unmodified.
     /// <see cref="AlundraWorldProxy"/> installs the session-scoped <see cref="AlundraScreenFadeDirector.Instance"/>
@@ -187,7 +187,7 @@ public interface IEntityWorldContext
 
     /// <summary>
     /// This session's camera sway seam (E19.k1, docs/plan-e19-opcodes.md section 1.2k) - backs opcodes 0x8E/0x8F in
-    /// <see cref="AlundraEventProgramRunner.Dispatch"/>. A default interface member, same "degraded, skip" shape as
+    /// <see cref="EventProgramRunner.Dispatch"/>. A default interface member, same "degraded, skip" shape as
     /// <see cref="ScreenFadeDirector"/> above. <see cref="AlundraWorldProxy"/> installs the session-scoped
     /// <see cref="AlundraCameraSway.Instance"/>.
     /// </summary>
@@ -204,7 +204,7 @@ public interface IEntityWorldContext
 
     /// <summary>
     /// This world's effect stage (E19.g G3b, docs/plan-e19-opcodes.md section 1.2o.6) - backs opcodes 0x90 to 0x94 and 0xA0 to 0xA3 in
-    /// <see cref="AlundraEventProgramRunner.Dispatch"/>, which queue their operation on it. A default interface member, same "degraded, skip by size"
+    /// <see cref="EventProgramRunner.Dispatch"/>, which queue their operation on it. A default interface member, same "degraded, skip by size"
     /// shape as <see cref="CameraSway"/> above, defaulting to null so every EXISTING implementer keeps compiling unmodified.
     /// <see cref="AlundraWorldProxy"/> returns its own stage.
     /// </summary>
@@ -212,7 +212,7 @@ public interface IEntityWorldContext
 
     /// <summary>
     /// This session's dialogue-flow seam (E12.a, docs/plan-e12-dialogues.md) - backs opcodes
-    /// 0x0D/0x39/0x44/0x50/0x51/0x5C in <see cref="AlundraEventProgramRunner.Dispatch"/>. A default
+    /// 0x0D/0x39/0x44/0x50/0x51/0x5C in <see cref="EventProgramRunner.Dispatch"/>. A default
     /// interface member, same "degraded, skip" shape as <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>/
     /// <see cref="ScreenFadeDirector"/> above, defaulting to null so every EXISTING implementer
     /// (<see cref="NoOpEntityWorldContext"/>, every existing test fake) keeps compiling unmodified.

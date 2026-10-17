@@ -64,7 +64,7 @@ internal sealed class HitArena : IDisposable
         {
             Arc.Proxy.HitSparksForTests = (x, y, z) => _tickSparks.Add((x, y, z));
             // E14.a0 (D-E14-5): the oracle's arena keeps the Beannoids as its stubs (counted no-ops): the registry of the native handlers is off.
-            if (Arc.Proxy.EventProgramRunner is AlundraEventProgramRunner realRunner)
+            if (Arc.Proxy.EventProgramRunner is EventProgramRunner realRunner)
             {
                 realRunner.NativeHandlersEnabled = false;
             }

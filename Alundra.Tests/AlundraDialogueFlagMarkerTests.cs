@@ -293,7 +293,7 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
             "DegradedMarkers", "M1_S001",
             "page zero" + Flag(10) + Yield, "<<falcon_update>>\n" + Flag(20) + "page one" + Flag(21) + Yield);
         var document = NewDocument(0x0D, 0x81, 1, 0xFF); // textId=0x81 -> bit 0x80 set, index 1 -> M1_S001.
-        var runner = new AlundraEventProgramRunner(document, gameState, context) { MapDialogueAsset = mapAsset };
+        var runner = new EventProgramRunner(document, gameState, context) { MapDialogueAsset = mapAsset };
         var entity = new AlundraEntityScriptProxy();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 

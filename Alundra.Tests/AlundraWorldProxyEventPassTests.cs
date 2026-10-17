@@ -491,7 +491,7 @@ public class AlundraWorldProxyEventPassTests
         Codes = codes,
     };
 
-    private static AlundraEventProgramRunner RealRunner(EventProgramDocument document, MapEventWorld world)
+    private static EventProgramRunner RealRunner(EventProgramDocument document, MapEventWorld world)
         => new(document, new GameState(), world);
 
     /// <summary>One tick: the hero stands on (x, x), one <see cref="AlundraWorldProxy.RunMapEventsPass"/>.</summary>

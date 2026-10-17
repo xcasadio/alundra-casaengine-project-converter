@@ -605,7 +605,7 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         if (lowGravityOpcode)
         {
             var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 }, Codes = new[] { 0x17, 0xFF } };
-            var runner = new AlundraEventProgramRunner(document, new GameState(), null);
+            var runner = new EventProgramRunner(document, new GameState(), null);
             runner.RunOneScriptCall(rig.Hero, new EventProgramState { Codes = document.CodesAsBytes() });
             Assert.Equal(0f, rig.Controller.Settings.Gravity);
         }

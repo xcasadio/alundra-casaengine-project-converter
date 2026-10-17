@@ -20,7 +20,7 @@ using Alundra.Transitions;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Covers <see cref="AlundraEventProgramRunner"/>'s interpreter core on synthetic bytecode (not real
+/// Covers <see cref="EventProgramRunner"/>'s interpreter core on synthetic bytecode (not real
 /// map data - see <see cref="MapEventProgramLoaderTests"/> for path resolution/loading, and the
 /// self-skipping map-389 test below for a real decoded program).
 /// </summary>
@@ -36,7 +36,7 @@ public class AlundraEventProgramRunnerTests
         };
     }
 
-    private static AlundraEventProgramRunner NewRunner(EventProgramDocument document, GameState? gameState = null, IEntityWorldContext? worldContext = null)
+    private static EventProgramRunner NewRunner(EventProgramDocument document, GameState? gameState = null, IEntityWorldContext? worldContext = null)
         => new(document, gameState ?? new GameState(), worldContext);
 
     private static AlundraEntityScriptProxy NewEntity() => new();
@@ -532,7 +532,7 @@ public class AlundraEventProgramRunnerTests
     [Fact]
     public void RunScript_NoDocument_IsCountedNoOp_DegradedMode()
     {
-        var runner = new AlundraEventProgramRunner(null, new GameState());
+        var runner = new EventProgramRunner(null, new GameState());
         var entity = NewEntity();
         entity.ProgramIndexes[ScriptHelper.ProgramALoad] = 133;
 
@@ -545,7 +545,7 @@ public class AlundraEventProgramRunnerTests
     [Fact]
     public void RunSpriteEvent_IsCountedNoOp()
     {
-        var runner = new AlundraEventProgramRunner(null, new GameState());
+        var runner = new EventProgramRunner(null, new GameState());
         var entity = NewEntity();
 
         runner.RunSpriteEvent(entity);
@@ -2170,7 +2170,7 @@ public class AlundraEventProgramRunnerTests
     // (0x0C is in AlundraRandomOpcodeTests: it consumes the static shared generator). Values are the binary's.
     // -----------------------------------------------------------------------------------------
 
-    private static List<EventTraceRecord> TraceOf(AlundraEventProgramRunner runner)
+    private static List<EventTraceRecord> TraceOf(EventProgramRunner runner)
     {
         var records = new List<EventTraceRecord>();
         runner.TraceSink = records.Add;
@@ -2568,7 +2568,7 @@ public class AlundraEventProgramRunnerTests
         return store!;
     }
 
-    private static EventTraceKind? CaptureKindForOpcode(AlundraEventProgramRunner runner, int opcode, System.Action run)
+    private static EventTraceKind? CaptureKindForOpcode(EventProgramRunner runner, int opcode, System.Action run)
     {
         EventTraceKind? kind = null;
         runner.TraceSink = record =>
@@ -3068,7 +3068,7 @@ public class AlundraEventProgramRunnerTests
     /// entry observed.</summary>
     private readonly record struct DispatchSnapshot(int Opcode, int CodeIndex, EventTraceKind Kind, int ResultAtDispatch);
 
-    private static List<DispatchSnapshot> RunHatchDoorProgramTwice(AlundraEventProgramRunner runner, AlundraEntityScriptProxy player)
+    private static List<DispatchSnapshot> RunHatchDoorProgramTwice(EventProgramRunner runner, AlundraEntityScriptProxy player)
     {
         var records = new List<DispatchSnapshot>();
         runner.TraceSink = r => records.Add(new DispatchSnapshot(r.Opcode, r.CodeIndex, r.Kind, r.State.Result));
@@ -3097,7 +3097,7 @@ public class AlundraEventProgramRunnerTests
 
         var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 18, TileY = 38, TileZ = 8 };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
-        var runner = new AlundraEventProgramRunner(document!, new GameState(), context);
+        var runner = new EventProgramRunner(document!, new GameState(), context);
 
         var records = RunHatchDoorProgramTwice(runner, player);
 
@@ -3127,7 +3127,7 @@ public class AlundraEventProgramRunnerTests
         // mutation-tuiles.md).
         var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 18, TileY = 38, TileZ = 8 };
         var context = new FakeEntityWorldContext { PlayerEntity = null };
-        var runner = new AlundraEventProgramRunner(document!, new GameState(), context);
+        var runner = new EventProgramRunner(document!, new GameState(), context);
 
         var records = RunHatchDoorProgramTwice(runner, player);
 
@@ -4903,7 +4903,7 @@ public class AlundraEventProgramRunnerTests
     /// gets to inspect them; only a value copied out immediately survives that.</summary>
     private readonly record struct FamilyTraceSnapshot(int CodeIndex, int Opcode, int ThirtyFour, int Result);
 
-    private static List<FamilyTraceSnapshot> RunWithFamilyTrace(AlundraEventProgramRunner runner, AlundraEntityScriptProxy entity, EventProgramState state, int callCount)
+    private static List<FamilyTraceSnapshot> RunWithFamilyTrace(EventProgramRunner runner, AlundraEntityScriptProxy entity, EventProgramState state, int callCount)
     {
         var records = new List<FamilyTraceSnapshot>();
         runner.TraceSink = record => records.Add(new FamilyTraceSnapshot(record.CodeIndex, record.Opcode, record.State._34, record.State.Result));
@@ -4943,7 +4943,7 @@ public class AlundraEventProgramRunnerTests
         // 0x81 takes its branch.
         var gameState = new GameState();
         gameState.AddFlag(0x045A, 1u << (0x5A & 0x1f));
-        var runner = new AlundraEventProgramRunner(document, gameState, null);
+        var runner = new EventProgramRunner(document, gameState, null);
         var entity = NewEntity();
         var state = new EventProgramState { Codes = codeBytes, CodeIndex = 512 };
 
@@ -4999,7 +4999,7 @@ public class AlundraEventProgramRunnerTests
         gameState.AddFlag(0x83EC, 1u << (0xEC & 0x1f));
         var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 40, TileY = 17, TileZ = 1 };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
-        var runner = new AlundraEventProgramRunner(document, gameState, context);
+        var runner = new EventProgramRunner(document, gameState, context);
         var entity = NewEntity();
         var state = new EventProgramState { Codes = codeBytes, CodeIndex = 744 };
 
@@ -5073,7 +5073,7 @@ public class AlundraEventProgramRunnerTests
         };
         var context = new FakeEntityWorldContext();
         context.SpawnedEntitiesList.Add(candidate);
-        var runner = new AlundraEventProgramRunner(document, gameState, context);
+        var runner = new EventProgramRunner(document, gameState, context);
         var state = new EventProgramState { Codes = codeBytes, CodeIndex = 1712 };
 
         // The real Break at the entry point (1712) ends the first call by itself; the 0x37 Wait(10) at

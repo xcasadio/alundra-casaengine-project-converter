@@ -196,7 +196,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
 
         var sharedAsset = DialogueTestAssets.SinglePage("Shared", "a shared phrase", node: "Shared_S005");
         var document = NewDocument(0x0D, 5, 1, 0xFF); // textId=5, bit 0x80 CLEAR -> shared table.
-        var runner = new AlundraEventProgramRunner(document, gameState, worldContext) { SharedDialogueAsset = sharedAsset };
+        var runner = new EventProgramRunner(document, gameState, worldContext) { SharedDialogueAsset = sharedAsset };
         var entity = new AlundraEntityScriptProxy();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
@@ -218,7 +218,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
             "DegradedTwoPages", "M1_S001",
             "<<flag 10>>\npage zero", "<<flag 20>>\n<<falcon_update>>\npage one");
         var document = NewDocument(0x0D, 0x81, 1, 0xFF); // textId=0x81 -> bit 0x80 set, index 1 -> M1_S001.
-        var runner = new AlundraEventProgramRunner(document, gameState, context) { MapDialogueAsset = mapAsset };
+        var runner = new EventProgramRunner(document, gameState, context) { MapDialogueAsset = mapAsset };
         var entity = new AlundraEntityScriptProxy();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
@@ -237,7 +237,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
         Assert.Equal(0, gameState.PlayerStats.FalconTemp);
     }
 
-    private static EventTraceKind? CaptureKindForOpcode(AlundraEventProgramRunner runner, int opcode, Action run)
+    private static EventTraceKind? CaptureKindForOpcode(EventProgramRunner runner, int opcode, Action run)
     {
         EventTraceKind? kind = null;
         runner.TraceSink = record =>

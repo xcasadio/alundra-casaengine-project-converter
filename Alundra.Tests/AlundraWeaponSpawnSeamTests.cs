@@ -239,7 +239,7 @@ public sealed class AlundraWeaponSpawnSeamTests : IDisposable
     public void S5_TheProductionSetPassesTheInvariant_TheFakeSetWithTheArrowFailsOnE17()
     {
         var catalog = new SpriteRecordCatalog(ProjectRootFinder.Find());
-        var registry = new AlundraEventProgramRunner(null, GameState.Instance).NativeSprites;
+        var registry = new EventProgramRunner(null, GameState.Instance).NativeSprites;
 
         Assert.Equal(new[] { 27, 28, 29 }.OrderBy(t => t), AlundraPlayerManager.ProductionWiredWeaponTypes.OrderBy(t => t)); // E20.f3c wires the three waves of the sword; C61 is registered and E10 handled in line, so the checker stays empty.
         Assert.Empty(AlundraPlayerManager.UnhandledWeaponSpriteCodes(AlundraPlayerManager.ProductionWiredWeaponTypes, catalog, registry));

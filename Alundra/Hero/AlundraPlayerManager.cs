@@ -1235,7 +1235,7 @@ public static class AlundraPlayerManager
 
     /// <summary>
     /// E20.f3a (D-F3-4): the invariant "a type is wired only when its handlers exist". For every type of the global page in <paramref name="types"/>, every non-zero code of its program C (tick) and of its program E
-    /// (deactivation) must be handled: a key of <paramref name="registry"/> for this type, or, for the program E, a code the runner treats in line (<see cref="AlundraEventProgramRunner.IsInlineDeactivateCode"/>). Returns the
+    /// (deactivation) must be handled: a key of <paramref name="registry"/> for this type, or, for the program E, a code the runner treats in line (<see cref="EventProgramRunner.IsInlineDeactivateCode"/>). Returns the
     /// (slot, code) pairs that are not, in the order of the types and then C before E; a type the catalog does not hold gives (-1, type). Empty means the types may be wired.
     /// </summary>
     internal static System.Collections.Generic.IReadOnlyList<(int Slot, int Code)> UnhandledWeaponSpriteCodes(
@@ -1256,7 +1256,7 @@ public static class AlundraPlayerManager
             }
 
             if (header.ProgramDeactivate != 0
-                && !AlundraEventProgramRunner.IsInlineDeactivateCode(header.ProgramDeactivate)
+                && !EventProgramRunner.IsInlineDeactivateCode(header.ProgramDeactivate)
                 && !registry.TryGet(ScriptHelper.ProgramEDeactivate, header.ProgramDeactivate, type, out _))
             {
                 unhandled.Add((ScriptHelper.ProgramEDeactivate, header.ProgramDeactivate));

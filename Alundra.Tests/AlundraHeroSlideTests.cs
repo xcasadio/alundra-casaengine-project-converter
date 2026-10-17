@@ -303,7 +303,7 @@ public sealed class AlundraHeroSlideTests : IDisposable
     private static void RunOpcode(AlundraEntityScriptProxy entity, int opcode, int result, out EventProgramState state)
     {
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 }, Codes = new[] { opcode, 0xFF } };
-        var runner = new AlundraEventProgramRunner(document, new GameState());
+        var runner = new EventProgramRunner(document, new GameState());
         state = new EventProgramState { Codes = document.CodesAsBytes(), Result = result };
         runner.RunOneScriptCall(entity, state);
     }

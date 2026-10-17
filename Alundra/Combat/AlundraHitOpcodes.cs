@@ -8,7 +8,7 @@ namespace Alundra.Combat;
 
 /// <summary>
 /// The questions the opcodes <c>0x87</c> (<c>0x80040048</c>) and <c>0x95</c> (<c>0x800407C0</c>) ask the hit state (E20.c1b K4, docs/plan-e20-heros.md section 1.6), as pure functions over entity proxies:
-/// is a target touched by an attack of a given type, and is some attacker's stored box inside a rectangle. The interpreter (<see cref="AlundraEventProgramRunner"/>) calls them; the oracle
+/// is a target touched by an attack of a given type, and is some attacker's stored box inside a rectangle. The interpreter (<see cref="EventProgramRunner"/>) calls them; the oracle
 /// <c>docs/plan-e20-annexe/e20-c1b/oracle/out/K3.txt</c> pins them.
 /// </summary>
 internal static class AlundraHitOpcodes

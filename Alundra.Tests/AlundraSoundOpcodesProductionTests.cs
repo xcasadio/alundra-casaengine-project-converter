@@ -9,7 +9,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// T1/T2 of docs/plan-e11-audio.md, slice E11.a: drives the REAL production call site -
-/// <see cref="AlundraWorldProxy.RunMapEventsPass"/>/<see cref="AlundraEventProgramRunner.Dispatch"/> -
+/// <see cref="AlundraWorldProxy.RunMapEventsPass"/>/<see cref="EventProgramRunner.Dispatch"/> -
 /// through <see cref="HeadlessIntroSimulation"/> (Alundra.Tests\IntroTraceHarnessTests.cs), not a
 /// synthetic document, exactly like <see cref="AlundraCellStoreProductionTests"/> does for E7.a. The
 /// exact counts are §1.1's own recount, not <c>&gt; 0</c> assertions (§2.1: the goldens are BLIND to

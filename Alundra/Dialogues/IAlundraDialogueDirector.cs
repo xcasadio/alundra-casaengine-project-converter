@@ -24,7 +24,7 @@ namespace Alundra.Dialogues;
 /// E12.a, D-E12-5: "the moteur is MECHANISM, the DLL is POLICY" - the engine's own
 /// <see cref="IDialoguePresenter"/> knows nothing about the close-mode mask, numeric control-code flags,
 /// paging on <c>\A</c>, or <see cref="GameState.PlayerControlFlags"/>; all of that lives here).
-/// Backs opcodes 0x0D/0x39/0x44/0x4C-0x51/0x5C in <see cref="AlundraEventProgramRunner.Dispatch"/> via
+/// Backs opcodes 0x0D/0x39/0x44/0x4C-0x51/0x5C in <see cref="EventProgramRunner.Dispatch"/> via
 /// <see cref="IEntityWorldContext.DialogueDirector"/> - a default interface member (same shape as
 /// <see cref="IEntityWorldContext.ScreenFadeDirector"/>), so every EXISTING implementer keeps compiling
 /// unmodified, degrading to null (skip-by-size, once-logged) exactly like that seam.
@@ -33,7 +33,7 @@ public interface IAlundraDialogueDirector
 {
     /// <summary>True once a real <see cref="IDialoguePresenter"/> has been attached
     /// (<see cref="AlundraDialogueDirector.AttachToWorld"/>) - the actual real/degraded switch every
-    /// opcode case in <see cref="AlundraEventProgramRunner.Dispatch"/> tests (NOT whether this interface
+    /// opcode case in <see cref="EventProgramRunner.Dispatch"/> tests (NOT whether this interface
     /// member itself is null - see that interface member's own doc).</summary>
     bool HasPresenter { get; }
 

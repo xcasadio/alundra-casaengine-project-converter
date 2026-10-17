@@ -330,7 +330,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
             EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = codes,
         };
-        var runner = new AlundraEventProgramRunner(document, new GameState(), context);
+        var runner = new EventProgramRunner(document, new GameState(), context);
         var entity = new AlundraEntityScriptProxy();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
@@ -485,7 +485,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
     // (d/e/f), driven through the REAL runner, exactly like ProductionSite_SyntheticProgram above.
     // -----------------------------------------------------------------------------------------------
 
-    private static AlundraEventProgramRunner NewRunner(int[] codes, out AlundraEntityScriptProxy entity, out EventProgramState state)
+    private static EventProgramRunner NewRunner(int[] codes, out AlundraEntityScriptProxy entity, out EventProgramState state)
     {
         var context = new ProductionFakeContext(AlundraMusicPlayer.Instance, AlundraBgmFadeDirector.Instance);
         var document = new EventProgramDocument
@@ -494,7 +494,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
             EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = codes,
         };
-        var runner = new AlundraEventProgramRunner(document, new GameState(), context);
+        var runner = new EventProgramRunner(document, new GameState(), context);
         entity = new AlundraEntityScriptProxy();
         state = new EventProgramState { Codes = document.CodesAsBytes() };
         return runner;

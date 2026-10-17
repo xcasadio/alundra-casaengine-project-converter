@@ -13,7 +13,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E14.a0 T2 (docs/plan-e14-ia-native.md section 1.1a, D-E14-1, D-E14-5): the registry of the native sprite handlers
-/// consulted by <see cref="AlundraEventProgramRunner.RunSpriteEvent"/> after the save book and E0/E1 - an entry runs for
+/// consulted by <see cref="EventProgramRunner.RunSpriteEvent"/> after the save book and E0/E1 - an entry runs for
 /// the sprite types it lists and not for another, an absent key stays a counted no-op, the switch turns everything off,
 /// and the book and E0/E1 never go through it. In production it holds the Beannoid's three handlers (E14.a1b) and the Muruta's three (E14.a1c).
 /// </summary>
@@ -39,7 +39,7 @@ public sealed class AlundraNativeSpriteRegistryTests : IDisposable
         AlundraSaveScreenDirector.Instance.ResetForTests();
     }
 
-    private static AlundraEventProgramRunner NewRunner() => new(null, GameState.Instance);
+    private static EventProgramRunner NewRunner() => new(null, GameState.Instance);
 
     private static AlundraEntityScriptProxy Entity(int spriteType, int slot, int code)
     {

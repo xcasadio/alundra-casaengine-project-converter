@@ -53,7 +53,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// (initially the player itself). Retargeted by opcodes 0x42 and 0x43, the only two that write it
     /// (E19.a, ALUN_CD.EXE 0x8003E808/0x8003E81C; 0x66 writes the owner's state, not this word, contrary to
     /// what this comment used to say). Null means "the entity itself" (<c>InitializeEntity</c>,
-    /// 0x80042028): <see cref="AlundraEventProgramRunner"/> resolves <c>LogicEntity ?? owner</c> before every
+    /// 0x80042028): <see cref="EventProgramRunner"/> resolves <c>LogicEntity ?? owner</c> before every
     /// instruction, and a clone starts on itself. Deliberately a SEPARATE
     /// field from this proxy's own <see cref="LogicContextEntity"/> below, which is an engine-only,
     /// unrelated-by-coincidence-of-name back-pointer to this proxy's OWN CasaEngine <see cref="Entity"/>
@@ -135,7 +135,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// Written by the two spawn paths (<see cref="EntitySpawnFactory.ApplySpawnInitialization"/>,
     /// <see cref="AlundraWorldProxy"/>'s hero adoption) next to <see cref="SpriteProgramIndexes"/>; -1 when no
     /// header resolved (degraded spawn, no native handler can apply). Read by
-    /// <see cref="AlundraEventProgramRunner.RunSpriteEvent"/> to recognise the save book (type
+    /// <see cref="EventProgramRunner.RunSpriteEvent"/> to recognise the save book (type
     /// <see cref="AlundraSaveBook.SpriteType"/>).
     /// </summary>
     public int SpriteType = -1;
@@ -377,7 +377,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// of it (an actual displacement within that epsilon; <c>CharacterControllerComponent.Move</c> returns
     /// the actual displacement - CharacterControllerComponent.cs:345-369) - the DLL's own equivalent of the
     /// original's "no sub-step was accepted" signal, consumed by opcode 0x1F
-    /// (<see cref="AlundraEventProgramRunner"/>'s own Walk-with-collision bridge) and by 0x1E's own
+    /// (<see cref="EventProgramRunner"/>'s own Walk-with-collision bridge) and by 0x1E's own
     /// navigation detour. A value this field holds after its owning entity's motion tick survives
     /// unchanged across any additional RENDERED frames until the entity's next LOGIC tick (there may be
     /// zero, one, or several ticks per rendered frame - see <see cref="IScriptHost.LogicTicksThisFrame"/>),
@@ -1189,7 +1189,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <summary>
     /// Engine-only, not part of the original struct: the active 0x1E navigation detour's own path state
     /// (E4.d decision D5, docs/plan-e4-deplacement-scripte.md) - reused across ticks (no per-frame
-    /// allocation: <see cref="AlundraEventProgramRunner"/>'s own walk-detour helpers only call
+    /// allocation: <see cref="EventProgramRunner"/>'s own walk-detour helpers only call
     /// <c>NavigationGrid2D.TryFindPath</c> ONCE per detour, right here, when engaging it), so a suspended
     /// 0x1E's own re-entry loop can keep re-deriving <see cref="TargetDirection"/> toward the CURRENT
     /// waypoint (<see cref="NavigationPath.CurrentPointIndex"/>) every tick without rebuilding the path.
@@ -1207,7 +1207,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// (successful or not), later ticks do not retry <c>TryFindPath</c> every frame while
     /// <see cref="ForceAdjusted"/> stays nonzero (that would allocate a fresh
     /// <see cref="NavigationPath"/>/search buffers every tick of a stuck walk, violating this codebase's
-    /// no-per-frame-allocation rule - see <see cref="AlundraEventProgramRunner"/>'s own class doc for the
+    /// no-per-frame-allocation rule - see <see cref="EventProgramRunner"/>'s own class doc for the
     /// same constraint applied elsewhere). Reset alongside <see cref="WalkDetourPath"/> at the same two
     /// points (fresh 0x1E occurrence / occurrence completion).
     /// </summary>
@@ -1216,7 +1216,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <summary>
     /// Persisted interpreter cursor for slots B (Map) and C (Tick) - the only two slots the original
     /// resumes across frames instead of always re-initializing (see
-    /// <see cref="AlundraEventProgramRunner"/>'s class doc). Slot A (Load) never reads this: it always
+    /// <see cref="EventProgramRunner"/>'s class doc). Slot A (Load) never reads this: it always
     /// runs off a fresh, throwaway <c>EventProgramState</c> instead (same reasoning). Not ported yet by
     /// any runner (B/C bytecode interpretation is a later chantier - V1 only interprets slot A), but the
     /// field lives here now so that work does not also need a proxy/Clone change.

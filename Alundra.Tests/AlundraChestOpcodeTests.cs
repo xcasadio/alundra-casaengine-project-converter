@@ -43,7 +43,7 @@ public sealed class AlundraChestOpcodeTests
             EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = new[] { 0x9F, 4, 0x1A, 9, 0xFF },
         };
-        var runner = new AlundraEventProgramRunner(document, gameState, context);
+        var runner = new EventProgramRunner(document, gameState, context);
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = ResultBefore };
         var entity = new AlundraEntityScriptProxy { Status = EntityStatus.Normal, LogicContextEntity = new Entity { Name = "logic" } };
         runner.RunOneScriptCall(entity, state);

@@ -327,7 +327,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     internal IEventProgramRunner EventProgramRunner = new NoOpEventProgramRunner();
 
     /// <summary>
-    /// Backing store for <see cref="EventProgramRunner"/> when it is a real <see cref="AlundraEventProgramRunner"/>
+    /// Backing store for <see cref="EventProgramRunner"/> when it is a real <see cref="Events.EventProgramRunner"/>
     /// (see <see cref="InitializeWithWorld"/>) - kept as its own field (rather than only living inside the
     /// runner's constructor call) so <see cref="Update"/> can read <see cref="GameState.PlayerControlFlags"/>
     /// for <see cref="RunMapEventsPass"/>'s own gate, mirroring how the original reads the SAME global
@@ -602,7 +602,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// E5.a: port of <c>g_entityFollowedByCamera</c> (GameEngine.cs) - see
     /// <see cref="IEntityWorldContext.EntityFollowedByCamera"/>'s own doc. Initialized to the hero at
     /// pawn adoption (port of <c>GameEngine.cs:644</c>, <see cref="AdoptPlayerPawn"/>), then only ever
-    /// written by opcodes 0x67/0x68/0x69 (<see cref="AlundraEventProgramRunner"/>).
+    /// written by opcodes 0x67/0x68/0x69 (<see cref="Events.EventProgramRunner"/>).
     /// </summary>
     public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
 
@@ -899,7 +899,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // failed to parse" and AlundraEventProgramRunner degrades to a counted no-op for slot A too, the
         // same shape as SpriteRecordCatalog's own degraded mode.
         var eventProgramDocument = MapEventProgramLoader.Load(EngineEnvironment.ProjectPath, world.Name);
-        var eventProgramRunner = new AlundraEventProgramRunner(eventProgramDocument, GameState, this);
+        var eventProgramRunner = new EventProgramRunner(eventProgramDocument, GameState, this);
         InstallDialogueAssets(world, eventProgramRunner);
         EventProgramRunner = eventProgramRunner;
 
@@ -1456,7 +1456,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// A no-op (both stay null) when this world has no <see cref="World.Game"/> or asset manager yet -
     /// the same degraded shape <see cref="MapEventProgramLoader"/> already had.
     /// </summary>
-    private void InstallDialogueAssets(World world, AlundraEventProgramRunner runner)
+    private void InstallDialogueAssets(World world, EventProgramRunner runner)
     {
         var assetContentManager = world.Game?.AssetContentManager;
         if (assetContentManager == null)
@@ -1506,7 +1506,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// state (<see cref="AlundraDialogueDirector.InstallForMapEntry"/>). No active UI view (no <c>Game</c>,
     /// or the active render view has none) -&gt; the presenter stays null, same tolerated degraded shape as
     /// every other missing-system seam in this DLL (<see cref="IAlundraDialogueDirector.HasPresenter"/> is
-    /// what <see cref="AlundraEventProgramRunner.Dispatch"/> actually tests). Called from
+    /// what <see cref="EventProgramRunner.Dispatch"/> actually tests). Called from
     /// <see cref="InitializeWithWorld"/> - the ONLY call site (M16 lesson, same precedent as
     /// <see cref="InstallScreenFadeSystems"/>/<see cref="InstallAudioSystems"/>) - and extracted as its own
     /// INTERNAL method so a test can drive it directly against a world with no <c>Game</c>.
@@ -1925,7 +1925,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// way <see cref="NavigationGrid2D.TryCreateFromTileMap"/> expects
     /// (<c>tileSets[tileSourceIndex]</c>). <c>cellSize</c> is always 1f: the DLL consumes the grid purely
     /// in "cell space" and does its own px&lt;-&gt;cell conversion (24x16 - see
-    /// <see cref="AlundraEventProgramRunner"/>'s own 0x1E walk-detour helpers), since the engine's
+    /// <see cref="Events.EventProgramRunner"/>'s own 0x1E walk-detour helpers), since the engine's
     /// <see cref="CasaEngine.Framework.AI.Navigation.CharacterControllerNavigationDriverComponent"/> is
     /// deliberately NOT used in E4 (its <c>(X, -Z)</c> intent axis is hard-coded, E4-2). Degraded mode -
     /// null, one warning - on a missing navigation layer (an older/regenerated export that predates E4.a)
@@ -3156,7 +3156,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// Port of <c>RunMapEvents</c> (GameEngine.cs:1667-1718, 0x8003c67c). Always executes against
     /// <paramref name="player"/> - every MapEvent's own logic entity starts as the player
     /// (<see cref="BuildMapEvents"/>) and is retargeted by opcodes 0x42/0x43 (E19.a; 0x66 does not touch it - see
-    /// <see cref="AlundraEntityScriptProxy.LogicEntity"/>), which <see cref="AlundraEventProgramRunner"/> reads
+    /// <see cref="AlundraEntityScriptProxy.LogicEntity"/>), which <see cref="Events.EventProgramRunner"/> reads
     /// before every instruction.
     /// </summary>
     internal static void RunMapEventsPass(

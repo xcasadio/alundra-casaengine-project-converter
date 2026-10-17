@@ -25,7 +25,7 @@ namespace Alundra.Events;
 /// Degraded mode (mirrors <see cref="SpriteRecordCatalog"/>'s class doc): a world name with no
 /// trailing map id, a missing/unparseable world-index.json, an id absent from it, or a missing/corrupt
 /// events file all log exactly one warning and return null - callers treat that as "the interpreter has
-/// no program to run" (see <see cref="AlundraEventProgramRunner"/>'s own degraded-mode doc).
+/// no program to run" (see <see cref="EventProgramRunner"/>'s own degraded-mode doc).
 /// </summary>
 public static class MapEventProgramLoader
 {

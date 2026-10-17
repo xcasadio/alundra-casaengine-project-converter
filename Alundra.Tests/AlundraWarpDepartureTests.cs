@@ -276,7 +276,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, proxy.GameState);
         Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
 
-        var runner = (AlundraEventProgramRunner)proxy.EventProgramRunner;
+        var runner = (EventProgramRunner)proxy.EventProgramRunner;
         var spriteRunsBeforeAnyTick = runner.SpriteEventRunCount;
 
         for (var tick = 0; tick < 16; tick++)
@@ -369,7 +369,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         proxy.PlayerEntity = player;
 
         AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, proxy.GameState);
-        var runner = (AlundraEventProgramRunner)proxy.EventProgramRunner;
+        var runner = (EventProgramRunner)proxy.EventProgramRunner;
         var before = runner.SpriteEventRunCount;
 
         proxy.Update(1f / 50f);

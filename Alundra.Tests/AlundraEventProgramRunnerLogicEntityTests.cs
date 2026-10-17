@@ -26,7 +26,7 @@ public class AlundraEventProgramRunnerLogicEntityTests
         Codes = codes,
     };
 
-    private static AlundraEventProgramRunner NewRunner(EventProgramDocument document, IEntityWorldContext? world = null)
+    private static EventProgramRunner NewRunner(EventProgramDocument document, IEntityWorldContext? world = null)
         => new(document, new GameState(), world);
 
     /// <summary>A world with a settable list of spawned entities and a player - just what the searches read.</summary>
@@ -512,7 +512,7 @@ public class AlundraEventProgramRunnerLogicEntityTests
 
         runner.RunOneScriptCall(owner, state); // returns instead of looping forever.
 
-        Assert.Equal(AlundraEventProgramRunner.ProductionLoopBudget, records.Count(r => r.Kind == EventTraceKind.Implemented));
+        Assert.Equal(EventProgramRunner.ProductionLoopBudget, records.Count(r => r.Kind == EventTraceKind.Implemented));
         var cut = Assert.Single(records, r => r.Kind == EventTraceKind.LoopBudgetExceeded);
         Assert.Same(records[^1].State, cut.State);
         Assert.Equal(1, state.CodeIndex); // the 1024th instruction was the 0x01 at 0: the next one is at 1, not yet read.

@@ -82,7 +82,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
         TargetDirection = 2,
     };
 
-    private static (EventProgramState State, AlundraEventProgramRunner Runner) Run(
+    private static (EventProgramState State, EventProgramRunner Runner) Run(
         AlundraEntityScriptProxy hero, IReadOnlyList<AlundraPortalRecord> portals, GameState gameState, int result, bool withHost = true)
     {
         var document = new EventProgramDocument
@@ -91,7 +91,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
             EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = new[] { 0x52, 0xFF },
         };
-        var runner = new AlundraEventProgramRunner(document, gameState, new Context { PlayerEntity = hero });
+        var runner = new EventProgramRunner(document, gameState, new Context { PlayerEntity = hero });
         if (withHost)
         {
             hero.ScriptHost = new PortalHost { Runner = runner, Portals = portals };

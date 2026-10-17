@@ -159,7 +159,7 @@ public sealed class AlundraHeroApexAndCeilingTests : IDisposable
     {
         var rig = JumpHeroRig.Build(z: 1792f, gravityFlag: false, configure: (world, host) => AddBox(world, host, "Roof", 190, 90, roofZ, 24, 16, 8));
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 }, Codes = new[] { 0x1B, 0x00, 0x40, 0xFF } };
-        var runner = new AlundraEventProgramRunner(document, new GameState(), null);
+        var runner = new EventProgramRunner(document, new GameState(), null);
         runner.RunOneScriptCall(rig.Hero, new EventProgramState { Codes = document.CodesAsBytes() });
         Assert.Equal(4194304, rig.Hero.ForceZ);
         return rig;
@@ -171,7 +171,7 @@ public sealed class AlundraHeroApexAndCeilingTests : IDisposable
         var rig = JumpHeroRig.Build(z: 1792f, gravityFlag: false);
         var hero = rig.Hero;
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 }, Codes = new[] { 0x1B, 0x00, 0x40, 0xFF } };
-        var runner = new AlundraEventProgramRunner(document, new GameState(), null);
+        var runner = new EventProgramRunner(document, new GameState(), null);
         runner.RunOneScriptCall(hero, new EventProgramState { Codes = document.CodesAsBytes() });
         Assert.Equal(4194304, hero.ForceZ);
 

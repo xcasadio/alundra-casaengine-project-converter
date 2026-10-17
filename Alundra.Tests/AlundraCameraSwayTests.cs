@@ -277,7 +277,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
             EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = codes,
         };
-        var runner = new AlundraEventProgramRunner(document, new GameState(), context);
+        var runner = new EventProgramRunner(document, new GameState(), context);
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
         EventTraceKind? kind = null;
         runner.TraceSink = record =>

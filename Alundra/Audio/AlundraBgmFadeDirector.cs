@@ -56,7 +56,7 @@ namespace Alundra.Audio;
 /// <para><b>0xA7's own stop-all flag is NOT handled here</b> (D-B-6): <see cref="StopAllSound"/> is
 /// still the method 0xA7's dispatch calls when its flag operand is set (fact 3's own "StopAllSound
 /// (drapeau) ou PlaySeq"), but the ORCHESTRATION - load first, then conditionally stop-all - lives at
-/// the opcode dispatch site (<see cref="AlundraEventProgramRunner.Dispatch"/>'s own 0xA7 case), not in
+/// the opcode dispatch site (<see cref="EventProgramRunner.Dispatch"/>'s own 0xA7 case), not in
 /// this class or in <see cref="AlundraMusicPlayer.PlayFromRawIndex"/>.</para>
 /// </remarks>
 public sealed class AlundraBgmFadeDirector : IAlundraBgmFadeDirector

@@ -344,7 +344,7 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
         Assert.Same(chest.LogicContextEntity, hero.RidingEntity);
         var context = new PlayerContext { Player = hero };
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 }, Codes = new[] { 0x3E, 0xFF } };
-        var runner = new AlundraEventProgramRunner(document, new GameState(), context);
+        var runner = new EventProgramRunner(document, new GameState(), context);
 
         var onChest = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
         runner.RunOneScriptCall(chest, onChest);
@@ -518,7 +518,7 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
     {
         var context = new PlayerContext { Player = hero };
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 }, Codes = new[] { 0x3E, 0xFF } };
-        var runner = new AlundraEventProgramRunner(document, new GameState(), context);
+        var runner = new EventProgramRunner(document, new GameState(), context);
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
         runner.RunOneScriptCall(asker, state);
         return state.Result;

@@ -34,7 +34,7 @@ namespace Alundra.UI.Speech;
 ///
 /// Constructed and wired ENTIRELY inside <see cref="AlundraWorldProxy.InstallDialogueSystems"/> (no
 /// separable call site, the M16 lesson every install method in this DLL already follows) - never held
-/// directly by <see cref="AlundraEventProgramRunner"/>, which only ever sees it through the generic
+/// directly by <see cref="EventProgramRunner"/>, which only ever sees it through the generic
 /// <see cref="IDialoguePresenter"/> reference <see cref="AlundraDialogueDirector"/> was attached to.
 /// </summary>
 public sealed class AlundraDialoguePresenter : IDialoguePresenter, IDisposable

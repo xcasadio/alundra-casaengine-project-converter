@@ -24,7 +24,7 @@ internal delegate void AlundraNativeSpriteHandler(AlundraEntityScriptProxy entit
 /// (program slot, sprite program code), each entry restricted to the sprite types it is registered for - the original's
 /// table is per slot and code (the binary entry), and the same code is shared by different sprite types whose AI is not
 /// ported yet, so a handler runs only for the types listed (the save book's <see cref="AlundraSaveBook.TryMatch"/> is
-/// the one precedent). <see cref="AlundraEventProgramRunner.RunSpriteEvent"/> consults it after the save book and
+/// the one precedent). <see cref="EventProgramRunner.RunSpriteEvent"/> consults it after the save book and
 /// E0/E1 (both stay outside the registry); an absent key or a type not listed is a counted no-op with one debug trace
 /// per key. In production it holds the handlers of the Beannoid (E14.a1b) with E14.a1c, of the Muruta and, with E20.f3c, the C61 of the sword wave (<see cref="CreateForProduction"/>).
 /// </summary>

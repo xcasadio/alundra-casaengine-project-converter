@@ -55,7 +55,7 @@ public sealed class AlundraClassAndBranchOpcodesTests
         List<EventTraceRecord>? trace = null)
     {
         var document = Document(codes);
-        var runner = new AlundraEventProgramRunner(document, new GameState(), context);
+        var runner = new EventProgramRunner(document, new GameState(), context);
         if (trace != null)
         {
             runner.TraceSink = trace.Add;

@@ -79,7 +79,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
         List<EventTraceRecord>? trace = null)
     {
         var document = Document(codes);
-        var runner = new AlundraEventProgramRunner(document, gameState, context ?? new Context { Tables = RealTables });
+        var runner = new EventProgramRunner(document, gameState, context ?? new Context { Tables = RealTables });
         if (trace != null)
         {
             runner.TraceSink = trace.Add;

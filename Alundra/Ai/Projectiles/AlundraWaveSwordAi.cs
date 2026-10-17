@@ -8,7 +8,7 @@ namespace Alundra.Ai.Projectiles;
 
 /// <summary>
 /// E20.f3c (docs/plan-e20-heros.md section 1.19.3, D-F3-6): the native handler C61 (<c>0x8007A958</c>) of the sword wave, the sprite types 27 (steel), 28 (demon) and 29 (holy) of the global page. C61 calls
-/// <c>CheckAndTriggerTileEffect</c> (<c>0x8003A7B0</c>) and nothing else; the death of the wave (E10, <c>0x8007F23C</c>, the body of E1) is handled in line by the runner (<see cref="AlundraEventProgramRunner.IsInlineDeactivateCode"/>,
+/// <c>CheckAndTriggerTileEffect</c> (<c>0x8003A7B0</c>) and nothing else; the death of the wave (E10, <c>0x8007F23C</c>, the body of E1) is handled in line by the runner (<see cref="EventProgramRunner.IsInlineDeactivateCode"/>,
 /// D-F3-5). The program A0 of these types only writes <c>AIValues[0]</c>, which no code of the wave reads: it is not registered (D-F3-7, section 1.20).
 /// </summary>
 internal static class AlundraWaveSwordAi

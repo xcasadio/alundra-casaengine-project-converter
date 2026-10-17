@@ -52,7 +52,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         };
     }
 
-    private static AlundraEventProgramRunner NewRunner(
+    private static EventProgramRunner NewRunner(
         EventProgramDocument document, GameState gameState, IEntityWorldContext? worldContext,
         DialogueAsset? mapAsset = null)
         => new(document, gameState, worldContext) { MapDialogueAsset = mapAsset };
@@ -86,7 +86,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         public IAlundraDialogueDirector? DialogueDirector { get; set; }
     }
 
-    private static EventTraceKind? CaptureKindForOpcode(AlundraEventProgramRunner runner, int opcode, Action run)
+    private static EventTraceKind? CaptureKindForOpcode(EventProgramRunner runner, int opcode, Action run)
     {
         EventTraceKind? kind = null;
         runner.TraceSink = record =>

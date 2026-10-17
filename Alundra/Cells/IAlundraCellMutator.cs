@@ -14,7 +14,7 @@ namespace Alundra.Cells;
 /// <summary>
 /// The three cell-mutation primitives 0x54/0x55/0x85 need (docs/plan-e7-mutation-tuiles.md, slice
 /// E7.a) - implemented by <see cref="AlundraCellStore"/>, consumed by
-/// <see cref="AlundraEventProgramRunner.Dispatch"/> through <see cref="IEntityWorldContext.CellMutator"/>.
+/// <see cref="EventProgramRunner.Dispatch"/> through <see cref="IEntityWorldContext.CellMutator"/>.
 /// A separate interface (rather than exposing <see cref="AlundraCellStore"/> itself through the seam)
 /// so a synthetic interpreter test can inject a fake without any real <see cref="AlundraCellsRecords"/>.
 /// </summary>

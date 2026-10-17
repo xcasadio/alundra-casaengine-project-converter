@@ -8,7 +8,7 @@ namespace Alundra.Maps;
 
 /// <summary>
 /// V1 default <see cref="IEntityWorldContext"/>: no entities, every spawn/destroy call is a logged no-op.
-/// Used when an <see cref="AlundraEventProgramRunner"/> is constructed without a real context (e.g. most
+/// Used when an <see cref="EventProgramRunner"/> is constructed without a real context (e.g. most
 /// synthetic interpreter tests, which do not exercise the search/manipulation opcodes).
 /// </summary>
 public sealed class NoOpEntityWorldContext : IEntityWorldContext

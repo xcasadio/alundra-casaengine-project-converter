@@ -40,7 +40,7 @@ public sealed class AlundraSaveBookTests : IDisposable
     private readonly FakeSaveSlots _slots = new();
     private readonly AlundraEntityScriptProxy _hero = HeroAt(tileX: 20, tileY: 30, tileZ: 1);
     private readonly FakeContext _context;
-    private readonly AlundraEventProgramRunner _runner;
+    private readonly EventProgramRunner _runner;
     private readonly AlundraEntityScriptProxy _book;
 
     public AlundraSaveBookTests()
@@ -61,7 +61,7 @@ public sealed class AlundraSaveBookTests : IDisposable
 
         _hero.TargetAnimationId = 1;
         _context = new FakeContext(_hero, Map389WorldName);
-        _runner = new AlundraEventProgramRunner(null, State, _context);
+        _runner = new EventProgramRunner(null, State, _context);
         _book = new AlundraEntityScriptProxy { SpriteType = AlundraSaveBook.SpriteType, Status = EntityStatus.Normal };
         _book.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = 254;
         _book.SpriteProgramIndexes[ScriptHelper.ProgramCTick] = AlundraSaveBook.TickCode;

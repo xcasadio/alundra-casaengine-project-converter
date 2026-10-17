@@ -10,7 +10,7 @@ namespace Alundra.Audio;
 
 /// <summary>
 /// Opcode-facing seam over <see cref="AlundraBgmFadeDirector"/> (B2, docs/plan-e11b-opcodes-audio.md,
-/// D-B-5) - backs opcode 0xA5 in <see cref="AlundraEventProgramRunner.Dispatch"/> (0xA6 dispatches
+/// D-B-5) - backs opcode 0xA5 in <see cref="EventProgramRunner.Dispatch"/> (0xA6 dispatches
 /// through the same instance too, D-B-5's own "one piece of state, one slice"). A default interface
 /// member on <see cref="IEntityWorldContext"/> (same shape as
 /// <see cref="IEntityWorldContext.ScreenFadeDirector"/>/<see cref="IEntityWorldContext.MusicPlayer"/>),

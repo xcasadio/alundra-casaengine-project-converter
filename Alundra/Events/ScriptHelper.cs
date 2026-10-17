@@ -67,7 +67,7 @@ public static class ScriptHelper
 
     /// <summary>
     /// Bit-for-bit port of <c>ScriptHelper.GetDirectionToTarget</c> (ScriptHelper.cs:23-86, address
-    /// 0x8003c... - see 0x27's own opcode doc in <see cref="AlundraEventProgramRunner"/> for the one
+    /// 0x8003c... - see 0x27's own opcode doc in <see cref="EventProgramRunner"/> for the one
     /// caller): resolves the packed direction (0..31) from the CALLER toward a point <paramref name="x"/>/
     /// <paramref name="y"/> pixels away (typically <c>target.PosX - self.PosX</c>, raw 16.16 fixed-point -
     /// the octant classification only depends on the x:y RATIO, so operating on the 16.16-scaled deltas

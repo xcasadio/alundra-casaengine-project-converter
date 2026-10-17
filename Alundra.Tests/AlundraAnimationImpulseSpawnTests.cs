@@ -236,7 +236,7 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
         // (AlundraEventProgramRunner case 0x53 -> BeginDepartureFromChangeMapOpcode, PlayerManager's own constants are not used).
         hero.TargetAnimationId = 2;
         var document = new EventProgramDocument { MapIndex = 179, EventCodesATable = new[] { 0, 0 }, Codes = new[] { 0x53, 179, 0, 17, 7, 1, 0, 0, 0xFF } };
-        var runner = new AlundraEventProgramRunner(document, ArcRun.State, new HeroWorldContext(hero));
+        var runner = new EventProgramRunner(document, ArcRun.State, new HeroWorldContext(hero));
         runner.RunOneScriptCall(new AlundraEntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal }, new EventProgramState { Codes = document.CodesAsBytes() });
         var record = AlundraWarpDirector.Instance.ArrivalRecordForTests;
         Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);

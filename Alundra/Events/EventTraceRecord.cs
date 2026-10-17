@@ -15,7 +15,7 @@ using Alundra.Entities;
 
 namespace Alundra.Events;
 
-/// <summary>One dispatched opcode (or program-boundary event), reported to <see cref="AlundraEventProgramRunner.TraceSink"/>
+/// <summary>One dispatched opcode (or program-boundary event), reported to <see cref="EventProgramRunner.TraceSink"/>
 /// - see that property own doc. Read-only trace record, never allocated on the null-sink path.
 /// <see cref="State"/> is the live <see cref="EventProgramState"/> being executed (a reference,
 /// not a copy - no extra allocation) so a trace-mode sink can inspect or mutate it (e.g. the intro

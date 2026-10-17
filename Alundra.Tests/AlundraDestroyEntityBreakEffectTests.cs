@@ -223,7 +223,7 @@ public sealed class AlundraDestroyEntityBreakEffectTests : IDisposable
     public void E1_ByRunPickedEvent_DestroysAndCreatesTheEffect_AndTheLetterIsMinus1Afterwards()
     {
         var world = World();
-        var runner = new AlundraEventProgramRunner(null, new GameState(), world);
+        var runner = new EventProgramRunner(null, new GameState(), world);
         var victim = Victim();
         victim.ScriptHost = world;
         victim.Status = EntityStatus.Deactivated;

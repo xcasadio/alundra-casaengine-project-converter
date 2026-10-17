@@ -53,7 +53,7 @@ public sealed class AlundraTurnOrderTests : IDisposable
             EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = codes,
         };
-        var runner = new AlundraEventProgramRunner(document, new GameState(), context);
+        var runner = new EventProgramRunner(document, new GameState(), context);
         var owner = NewNormalEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
         runner.RunOneScriptCall(owner, state);

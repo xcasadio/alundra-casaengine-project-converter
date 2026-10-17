@@ -50,7 +50,7 @@ namespace Alundra.Physics;
 /// No delegate/closure of any kind is used anywhere here (both callers inline their own tiny loop/call
 /// instead of sharing one through an <c>Action</c>) - both run every frame for potentially many entities,
 /// and a captured lambda would allocate per call, violating this codebase's no-per-frame-allocation rule
-/// (see e.g. <see cref="AlundraEventProgramRunner"/>'s own <c>_fetchScratch</c> doc for the same
+/// (see e.g. <see cref="EventProgramRunner"/>'s own <c>_fetchScratch</c> doc for the same
 /// constraint applied elsewhere).
 /// </summary>
 internal static class AlundraScriptedMotion

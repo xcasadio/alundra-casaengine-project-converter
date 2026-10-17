@@ -12,7 +12,7 @@ namespace Alundra.Transitions;
 /// E10.b, D-E10-4: "the moteur is MECHANISM, the DLL is POLICY" - the engine's own
 /// <see cref="ScreenEffectService"/> knows nothing about 16.16 fixed point, the channel swap, the
 /// persistence latch, or any other PSX fidelity rule; all of that lives here). Backs opcodes
-/// 0xAF/0xB0/0xB1 in <see cref="AlundraEventProgramRunner.Dispatch"/> via
+/// 0xAF/0xB0/0xB1 in <see cref="EventProgramRunner.Dispatch"/> via
 /// <see cref="IEntityWorldContext.ScreenFadeDirector"/> - a default interface member (same shape as
 /// <see cref="IEntityWorldContext.CellMutator"/>/<see cref="IEntityWorldContext.SoundPlayer"/>), so every
 /// EXISTING implementer (<see cref="NoOpEntityWorldContext"/>, every test fake) keeps compiling
@@ -41,7 +41,7 @@ public interface IAlundraScreenFadeDirector
 
     /// <summary>
     /// Opcode 0xB1's own predicate (Script_177_0B1, EntityEventHandlers.cs:3314-3327):
-    /// <c>fadeStepFlags == 0 &amp;&amp; warpFlags == 0</c>. The caller (<see cref="AlundraEventProgramRunner.Dispatch"/>)
+    /// <c>fadeStepFlags == 0 &amp;&amp; warpFlags == 0</c>. The caller (<see cref="EventProgramRunner.Dispatch"/>)
     /// writes <c>state.Result</c> from this BOTH ways - see that call site's own doc on why 0xB1 must
     /// never be routed through <c>UnknownOpcode</c>'s no-touch fallback (a skipped 0xB1 would leave
     /// Result stale).

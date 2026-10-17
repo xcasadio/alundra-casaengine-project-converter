@@ -108,7 +108,7 @@ public sealed class GameState
     /// port starts every world the same way, since only a New Game flow is covered so far). Read by
     /// <see cref="AlundraWorldProxy.RunMapEventsPass"/>'s <see cref="PlayerControlBits.GameplayBlockedMask"/>
     /// gate and by <see cref="AlundraPlayerManager.MovePlayer"/>'s <see cref="PlayerControlBits.InputBlockedMask"/>
-    /// gate; written by event opcodes 0x10/0x11 (E4.c, <see cref="AlundraEventProgramRunner"/>'s own
+    /// gate; written by event opcodes 0x10/0x11 (E4.c, <see cref="EventProgramRunner"/>'s own
     /// <c>ControlLocked</c> bridge). E6 is closed (docs/plan-conversion-totale.md §4 E6) and its
     /// decision E6-1 DECLINES the engine bridge onto <c>PlayerInput.IsInputEnable</c>/
     /// <c>CharacterControlMode</c>: the original has no global input switch - it tests this mask at each
@@ -133,10 +133,10 @@ public sealed class GameState
     /// D-E7-8 seam (docs/plan-e7-mutation-tuiles.md, slice E7.c): last pad snapshot published by
     /// <see cref="AlundraEntityScriptProxy.Update"/>'s own player branch, just before it calls
     /// <see cref="AlundraPlayerManager.MovePlayer"/> - the fidelity pendant of the original's global
-    /// <c>g_padState1</c> (read by <c>Script_47_02F</c>/<see cref="AlundraEventProgramRunner"/>'s own case
+    /// <c>g_padState1</c> (read by <c>Script_47_02F</c>/<see cref="EventProgramRunner"/>'s own case
     /// 0x2F). Chosen over widening <see cref="IEntityWorldContext"/> or the runner's own constructor:
     /// this class is the one seam <see cref="AlundraEntityScriptProxy"/> (the writer) and
-    /// <see cref="AlundraEventProgramRunner"/> (the reader) already BOTH hold a reference to, so no other
+    /// <see cref="EventProgramRunner"/> (the reader) already BOTH hold a reference to, so no other
     /// signature needs to change. Defaults to an all-zero <see cref="AlundraPadState"/> (nothing held) -
     /// the same safe no-op a 0x2F dispatched before this world's first player Update would see the
     /// original's own zero-initialized pad global read as.

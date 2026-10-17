@@ -456,7 +456,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         // real, document-backed one - proxy itself is the IEntityWorldContext, exactly like production
         // wiring (InitializeWithWorld: "new AlundraEventProgramRunner(eventProgramDocument, GameState,
         // this)").
-        proxy.EventProgramRunner = new AlundraEventProgramRunner(document, proxy.GameState, proxy);
+        proxy.EventProgramRunner = new EventProgramRunner(document, proxy.GameState, proxy);
 
         proxy.Update(0.02f); // exactly one 50Hz logic tick - runs RunMapEventsPass exactly once.
 
@@ -553,7 +553,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
     /// <see cref="EntitySpawnFactory.CreateBareEntityFromRecord"/> - the bare-entity, not
     /// prefab-clone, path, since this headless montage has no <c>World.Game.AssetContentManager</c> to
     /// clone a prefab through), map events built through the real <see cref="AlundraWorldProxy.BuildMapEvents"/>,
-    /// and the real bytecode interpreter (<see cref="AlundraEventProgramRunner"/>) wired over map 389's own
+    /// and the real bytecode interpreter (<see cref="EventProgramRunner"/>) wired over map 389's own
     /// real event-code document (the same file <see cref="MapEventProgramLoader"/> loads in production).
     ///
     /// The player entity is built through <c>Entity.Initialize()</c> off a bare
@@ -641,7 +641,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
 
         var document = MapEventProgramLoader.Load(projectRoot, Map389WorldName);
         Assert.NotNull(document);
-        proxy.EventProgramRunner = new AlundraEventProgramRunner(document!, proxy.GameState, proxy);
+        proxy.EventProgramRunner = new EventProgramRunner(document!, proxy.GameState, proxy);
 
         // Port of GameEngine.cs:1638-1664's own g_isCameraScrolling=1 at map load (InitializeWithWorld's
         // own InitializeWithWorld call site) - the next UpdateCameraFollow call snaps straight to that

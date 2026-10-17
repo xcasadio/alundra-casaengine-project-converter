@@ -99,7 +99,7 @@ public sealed class AlundraHitOpcodesTests
     private static EventProgramState Run(K3World world, AlundraEntityScriptProxy self, params int[] code)
     {
         var document = Document(code.Append(0xFF).ToArray());
-        var runner = new AlundraEventProgramRunner(document, new GameState(), world.Context);
+        var runner = new EventProgramRunner(document, new GameState(), world.Context);
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = Sentinel };
         runner.RunOneScriptCall(self, state);
         return state;
@@ -389,10 +389,10 @@ public sealed class AlundraHitOpcodesTests
     // -----------------------------------------------------------------------------------------
 
 
-    private static AlundraEventProgramRunner RunnerFor(K3World world, GameState state, int[] aTable, int[] dTable, int[] codes)
+    private static EventProgramRunner RunnerFor(K3World world, GameState state, int[] aTable, int[] dTable, int[] codes)
     {
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = aTable, EventCodesDTable = dTable, Codes = codes };
-        return new AlundraEventProgramRunner(document, state, world.Context);
+        return new EventProgramRunner(document, state, world.Context);
     }
 
     /// <summary>A program D: <c>0x87 [128, 0]</c> (am I touched by a sword), the jump when <c>Result</c> is 0 (<c>0x04</c>, to the end), the flag 9 on (<c>0x05</c>), the end.</summary>

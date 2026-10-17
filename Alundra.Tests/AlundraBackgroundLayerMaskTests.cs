@@ -83,7 +83,7 @@ public sealed class AlundraBackgroundLayerMaskTests : IDisposable
         public NavigationGrid2D? NavigationGrid => null;
     }
 
-    private static AlundraEventProgramRunner NewRunner(IEntityWorldContext context, int[] codes, out EventProgramState state)
+    private static EventProgramRunner NewRunner(IEntityWorldContext context, int[] codes, out EventProgramState state)
     {
         var document = new EventProgramDocument
         {
@@ -92,7 +92,7 @@ public sealed class AlundraBackgroundLayerMaskTests : IDisposable
             Codes = codes,
         };
         state = new EventProgramState { Codes = document.CodesAsBytes() };
-        return new AlundraEventProgramRunner(document, new GameState(), context);
+        return new EventProgramRunner(document, new GameState(), context);
     }
 
     private static (EventTraceKind? Kind, int CodeIndex) RunOne(IEntityWorldContext context, params int[] codes)

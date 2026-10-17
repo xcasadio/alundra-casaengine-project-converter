@@ -42,7 +42,7 @@ public class Map389LoadProgramsTests
 
     /// <summary>Runs one entity's slot-A Load program to completion and returns its final
     /// TargetAnimationId, mirroring what AlundraWorldProxy's pick phase does on the frame it spawns.</summary>
-    private static uint RunLoad(AlundraEventProgramRunner runner, int loadIndex)
+    private static uint RunLoad(EventProgramRunner runner, int loadIndex)
     {
         var entity = new AlundraEntityScriptProxy();
         entity.ProgramIndexes[ScriptHelper.ProgramALoad] = loadIndex;
@@ -62,7 +62,7 @@ public class Map389LoadProgramsTests
         var document = MapEventProgramLoader.Load(projectRoot, WorldName);
         Assert.NotNull(document);
 
-        var runner = new AlundraEventProgramRunner(document, new GameState());
+        var runner = new EventProgramRunner(document, new GameState());
 
         // Entities 6-9 (EventCodesA_LoadIndex 134-137) all fall (under New Game's all-zero flags)
         // through their "if flag off" branch straight to a nonzero SetAnim, per the decoded programs at
@@ -117,7 +117,7 @@ public class Map389LoadProgramsTests
 
         var document = MapEventProgramLoader.Load(projectRoot, WorldName);
         var context = new RecordingWorldContext();
-        var runner = new AlundraEventProgramRunner(document, new GameState(), context);
+        var runner = new EventProgramRunner(document, new GameState(), context);
 
         var e11 = new AlundraEntityScriptProxy { PosX = 111, PosY = 222, PosZ = 333 };
         e11.ProgramIndexes[ScriptHelper.ProgramALoad] = 139;
@@ -150,7 +150,7 @@ public class Map389LoadProgramsTests
         var gameState = new GameState();
         gameState.AddFlag(860, 1u << (0x5c & 0x1f)); // the exact flag/bit these three programs test
         var context = new RecordingWorldContext();
-        var runner = new AlundraEventProgramRunner(document, gameState, context);
+        var runner = new EventProgramRunner(document, gameState, context);
 
         // Load 139 (E11): SetAnim(0); flag on -> 0x64 SetEntitiesPosition(owner) then SetAnim(1).
         var e11 = new AlundraEntityScriptProxy();

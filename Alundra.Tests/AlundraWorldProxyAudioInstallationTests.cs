@@ -325,7 +325,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
             // see its own doc - a value over 255 there would just get truncated).
             Codes = new[] { 0xBD, sfxId & 0xFF, (sfxId >> 8) & 0xFF, 0xFF },
         };
-        proxy.EventProgramRunner = new AlundraEventProgramRunner(document, proxy.GameState, proxy);
+        proxy.EventProgramRunner = new EventProgramRunner(document, proxy.GameState, proxy);
 
         return player;
     }
@@ -344,7 +344,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
     /// </summary>
     private static void WireRescanSoundTrigger(AlundraWorldProxy proxy, int sfxId)
     {
-        var document = (EventProgramDocument)typeof(AlundraEventProgramRunner)
+        var document = (EventProgramDocument)typeof(EventProgramRunner)
             .GetField("_document", BindingFlags.Instance | BindingFlags.NonPublic)!
             .GetValue(proxy.EventProgramRunner)!;
         document.EventCodesCTable = new[] { 0, 0 };

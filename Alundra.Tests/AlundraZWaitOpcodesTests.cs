@@ -23,9 +23,9 @@ public class AlundraZWaitOpcodesTests
         Codes = codes,
     };
 
-    private static (AlundraEventProgramRunner Runner, System.Collections.Generic.List<EventTraceRecord> Trace) NewRunner(EventProgramDocument document)
+    private static (EventProgramRunner Runner, System.Collections.Generic.List<EventTraceRecord> Trace) NewRunner(EventProgramDocument document)
     {
-        var runner = new AlundraEventProgramRunner(document, new GameState(), null);
+        var runner = new EventProgramRunner(document, new GameState(), null);
         var trace = new System.Collections.Generic.List<EventTraceRecord>();
         runner.TraceSink = trace.Add;
         return (runner, trace);

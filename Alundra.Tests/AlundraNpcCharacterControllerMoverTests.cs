@@ -309,7 +309,7 @@ public class AlundraNpcCharacterControllerMoverTests
     }
 
     /// <summary>E4.d: same shape as <see cref="FakeScriptHost"/>, but wraps a REAL
-    /// <see cref="AlundraEventProgramRunner"/> instead of the no-op one - so a hand-built Tick program
+    /// <see cref="EventProgramRunner"/> instead of the no-op one - so a hand-built Tick program
     /// (0x1E/0x1F) actually dispatches through <see cref="AlundraEntityScriptProxy.Update"/>'s own
     /// pick/run pass every <c>World.Update</c>.</summary>
     private sealed class RealRunnerScriptHost : IScriptHost
@@ -340,7 +340,7 @@ public class AlundraNpcCharacterControllerMoverTests
         }
     }
 
-    /// <summary>E4.d: minimal <see cref="IEntityWorldContext"/> a hand-built <see cref="AlundraEventProgramRunner"/>
+    /// <summary>E4.d: minimal <see cref="IEntityWorldContext"/> a hand-built <see cref="EventProgramRunner"/>
     /// needs so its 0x1E/0x1F walk-detour helpers can reach an injected <see cref="NavigationGrid2D"/> -
     /// map 389 itself has 0 blocked navigation cells (E4.a's own finding), so obstacle/detour tests need
     /// a synthetic one. Every other member is a trivial no-op - none of this class' own tests exercise the
@@ -359,10 +359,10 @@ public class AlundraNpcCharacterControllerMoverTests
     }
 
     /// <summary>Wires <paramref name="proxy"/> so its own Tick slot (C) dispatches <paramref name="codes"/>
-    /// (a raw opcode byte stream, no header) through a REAL <see cref="AlundraEventProgramRunner"/> every
+    /// (a raw opcode byte stream, no header) through a REAL <see cref="EventProgramRunner"/> every
     /// <c>World.Update</c> - <see cref="ScriptHelper.ProgramCTick"/>'s masked index 1 -&gt; offset 0 (index
     /// 0 of the table is left unused/zero, never referenced).</summary>
-    private static AlundraEventProgramRunner WireRealTickProgram(
+    private static EventProgramRunner WireRealTickProgram(
         AlundraEntityScriptProxy proxy, int[] codes, IEntityWorldContext? worldContext = null)
     {
         var document = new EventProgramDocument
@@ -371,7 +371,7 @@ public class AlundraNpcCharacterControllerMoverTests
             EventCodesCTable = new[] { 0, 0 },
             Codes = codes,
         };
-        var runner = new AlundraEventProgramRunner(document, new GameState(), worldContext);
+        var runner = new EventProgramRunner(document, new GameState(), worldContext);
         proxy.ScriptHost = new RealRunnerScriptHost(runner);
         proxy.ProgramIndexes[ScriptHelper.ProgramCTick] = 0x81; // bit 0x80 set, masked index 1.
         return runner;
@@ -798,7 +798,7 @@ public class AlundraNpcCharacterControllerMoverTests
         // ForceZ=896*0x10000&gt;&gt;8=229376 (+3.5 px/tick) BEFORE this tick's own decay; net after the
         // -MapGravityRaw&lt;&lt;8=-32768 decay is +196608 (+3 px/tick) - still positive, so this tick's own
         // terrain-reset test (ForceZ &lt; 0) must NOT fire.
-        var runner = new AlundraEventProgramRunner(
+        var runner = new EventProgramRunner(
             new EventProgramDocument { MapIndex = 389, Codes = Array.Empty<int>() }, new GameState(), worldContext: null);
         runner.RunOneScriptCall(proxy, new EventProgramState { Codes = new byte[] { 0x1B, 128, 3, 0xFF } });
 
@@ -826,7 +826,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// operands, offset 900, [128,0,1]: clear mask (1&lt;&lt;8)|0 = 0x100 = <see cref="EntityFlags.Gravity"/>),
     /// zero the vertical impulse (0x1B [0,0]), hold for 60 real ticks, then a real 0x1B [127,255] scripted
     /// descent, then the REAL 0x62 opcode bridge restores gravity ([128,0,1]: set mask 0x100).
-    /// Pre-fix (original 0x62/0x63 fix), <see cref="AlundraEventProgramRunner.RunOneScriptCall"/>'s own
+    /// Pre-fix (original 0x62/0x63 fix), <see cref="EventProgramRunner.RunOneScriptCall"/>'s own
     /// 0x63 handler mutated <see cref="AlundraEntityScriptProxy.Flags"/> but never told the entity's own
     /// <see cref="CharacterControllerComponent"/> - <c>Settings.Gravity</c> stayed at its spawn-time 1250
     /// and kept pulling the entity down every RENDERED frame of the "hover" via the engine's own continuous
@@ -870,7 +870,7 @@ public class AlundraNpcCharacterControllerMoverTests
         proxy.MapZViscosityRaw = 4096;
         proxy.ApplyGravitySettingsToController(); // spawn-time resync (ApplySpawnInitialization's own real call).
 
-        var runner = new AlundraEventProgramRunner(
+        var runner = new EventProgramRunner(
             new EventProgramDocument { MapIndex = 389, Codes = Array.Empty<int>() }, new GameState(), worldContext: null);
         void RunOpcode(params int[] codes)
             => runner.RunOneScriptCall(proxy, new EventProgramState { Codes = Array.ConvertAll(codes, c => (byte)c) });
@@ -2257,7 +2257,7 @@ public class AlundraNpcCharacterControllerMoverTests
 
     /// <summary>Re-applies the real block-18-shaped 0x1B [128,3] impulse (gull entity 6's own real Tick
     /// program 134 does this every logic tick via its own Wait(1)-gated loop before the climb apex - see
-    /// GullHoverCycle's own doc above) through the REAL <see cref="AlundraEventProgramRunner"/> opcode
+    /// GullHoverCycle's own doc above) through the REAL <see cref="EventProgramRunner"/> opcode
     /// dispatch (not a hand-rolled ForceZ/SetVerticalVelocity assignment - same formula, real dispatch
     /// code), once per <see cref="AlundraEntityScriptProxy.Update"/>'s own per-LOGIC-tick pick/run call
     /// (never once per rendered frame - see that method's own E4.b doc): <see cref="AlundraEntityScriptProxy.PickEventTrigger"/>
@@ -2269,7 +2269,7 @@ public class AlundraNpcCharacterControllerMoverTests
     private sealed class GullClimbRunner : IEventProgramRunner
     {
         private static readonly byte[] ClimbBytes = { 0x1B, 128, 3, 0xFF };
-        private readonly AlundraEventProgramRunner _opcodeRunner = new(document: null, new GameState(), worldContext: null);
+        private readonly EventProgramRunner _opcodeRunner = new(document: null, new GameState(), worldContext: null);
 
         public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
         {
@@ -2754,15 +2754,15 @@ public class AlundraNpcCharacterControllerMoverTests
     // -----------------------------------------------------------------------------------------
 
     /// <summary>Counts every real script dispatch (<see cref="IEventProgramRunner.RunScript"/>) while
-    /// delegating to a REAL <see cref="AlundraEventProgramRunner"/> - lets a test observe "how many times
+    /// delegating to a REAL <see cref="EventProgramRunner"/> - lets a test observe "how many times
     /// this entity's own script pass actually ran" from OUTSIDE the fused per-tick loop, independent of
     /// <see cref="AlundraEntityScriptProxy.MotionTickCount"/>/<see cref="AlundraEntityScriptProxy.SupportTickCount"/>
     /// (which are incremented from inside <see cref="AlundraScriptedMotion"/>/<see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>
     /// respectively) - three independently-observed counters for the same ONE-CLOCK invariant.</summary>
     private sealed class ScriptPassCountingRunner : IEventProgramRunner
     {
-        private readonly AlundraEventProgramRunner _inner;
-        public ScriptPassCountingRunner(AlundraEventProgramRunner inner) => _inner = inner;
+        private readonly EventProgramRunner _inner;
+        public ScriptPassCountingRunner(EventProgramRunner inner) => _inner = inner;
         public int ScriptPassCount { get; private set; }
 
         public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
@@ -2813,7 +2813,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// (A) THE regression test - reproduces the user's own real-game stall as closely as this headless
     /// fixture can: a real map-389 wall (same cell/mask <see cref="Walk0x1F_RealWallCurtailsMovement_EndsEarlyOnForceAdjustedRatherThanDistance"/>
     /// already uses, at dt=1/50, where the bug is invisible - see this method's own final remark on why),
-    /// a REAL threshold-24 0x1F dispatched through the REAL <see cref="AlundraEventProgramRunner"/> once
+    /// a REAL threshold-24 0x1F dispatched through the REAL <see cref="EventProgramRunner"/> once
     /// per logic tick, but driven at dt=1/123 - the user's own real frame rate, and specifically NOT an
     /// exact divisor of the 50 Hz logic tick, which is exactly what let the two independent accumulators
     /// drift apart pre-fix. FAILS before this fix (confirmed by running this exact test body against the
@@ -2845,7 +2845,7 @@ public class AlundraNpcCharacterControllerMoverTests
             // tests.
             Codes = new[] { 0x1F, 24, 0, 0x1A, 254, 0xFF },
         };
-        var opcodeRunner = new AlundraEventProgramRunner(document, new GameState(), worldContext: null);
+        var opcodeRunner = new EventProgramRunner(document, new GameState(), worldContext: null);
         var countingRunner = new ScriptPassCountingRunner(opcodeRunner);
         var host = new TickCountingRunnerScriptHost(countingRunner);
 
@@ -2944,7 +2944,7 @@ public class AlundraNpcCharacterControllerMoverTests
             // program outcome.
             Codes = new[] { 0x1A, 1, 0xFF },
         };
-        var opcodeRunner = new AlundraEventProgramRunner(document, new GameState(), worldContext: null);
+        var opcodeRunner = new EventProgramRunner(document, new GameState(), worldContext: null);
         var countingRunner = new ScriptPassCountingRunner(opcodeRunner);
         var host = new TickCountingRunnerScriptHost(countingRunner);
 

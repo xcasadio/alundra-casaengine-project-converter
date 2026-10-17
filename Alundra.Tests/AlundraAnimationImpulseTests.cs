@@ -195,9 +195,9 @@ public sealed class AlundraAnimationImpulseTests
 
     private sealed class RelaunchRunner : IEventProgramRunner
     {
-        private readonly AlundraEventProgramRunner _inner;
+        private readonly EventProgramRunner _inner;
 
-        public RelaunchRunner(AlundraEventProgramRunner inner) => _inner = inner;
+        public RelaunchRunner(EventProgramRunner inner) => _inner = inner;
 
         /// <summary>The tick program starts when the test says (after the settling update of the montage).</summary>
         public bool Enabled { get; set; }
@@ -228,7 +228,7 @@ public sealed class AlundraAnimationImpulseTests
             EventCodesCTable = new[] { 0, 0 },
             Codes = new[] { 0x01, 0x1A, JumpNpcRig.ImpulseAnimation, 0x1C, 0x01, 0x1C, 0x01, 0xFF },
         };
-        var runner = new AlundraEventProgramRunner(document, new GameState());
+        var runner = new EventProgramRunner(document, new GameState());
         var gated = new RelaunchRunner(runner);
         var rig = JumpNpcRig.BuildWithSprite(new[] { JumpNpcRig.Loop(0, 1.6f), JumpNpcRig.Hold(JumpNpcRig.ImpulseAnimation, 0.6f, impulse: 1360) }, gated);
         gated.Enabled = true;
@@ -269,7 +269,7 @@ public sealed class AlundraAnimationImpulseTests
             EventCodesCTable = new[] { 0, 0 },
             Codes = new[] { 0x01, 0x1A, JumpNpcRig.ImpulseAnimation, 0x1C, 0x01, 0x1C, 0x01, 0xFF },
         };
-        var runner = new AlundraEventProgramRunner(document, new GameState());
+        var runner = new EventProgramRunner(document, new GameState());
         var gated = new RelaunchRunner(runner);
         var rig = JumpNpcRig.BuildWithSprite(new[] { JumpNpcRig.Loop(0, 1.6f), JumpNpcRig.Hold(JumpNpcRig.ImpulseAnimation, 0.6f, impulse: 1360) }, gated);
         gated.Enabled = true;

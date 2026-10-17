@@ -167,7 +167,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
     [Fact]
     public void V3_TheProductionRegistryHoldsSevenKeys_TheWaveTypesHaveC61AndE10InLineAndNoOtherProgram_TheInvariantHoldsForThem()
     {
-        var runner = new AlundraEventProgramRunner(null, GameState.Instance);
+        var runner = new EventProgramRunner(null, GameState.Instance);
         var registry = runner.NativeSprites;
         var catalog = new SpriteRecordCatalog(ProjectRootFinder.Find());
 

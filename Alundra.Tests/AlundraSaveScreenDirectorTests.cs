@@ -788,7 +788,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     {
         var hero = HeroAt(tileX: 33, tileY: 59, tileZ: 0);
         var context = new BookContext(hero, Map389WorldName);
-        var runner = new AlundraEventProgramRunner(null, State, context);
+        var runner = new EventProgramRunner(null, State, context);
         var book = NewBook();
         State.PlayerStats.WeaponId = 1;
 
@@ -820,7 +820,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     {
         var hero = HeroAt(tileX: 20, tileY: 30, tileZ: 1);
         var context = new BookContext(hero, Map389WorldName);
-        var runner = new AlundraEventProgramRunner(null, State, context);
+        var runner = new EventProgramRunner(null, State, context);
         var book = NewBook();
         State.PlayerStats.WeaponId = 1;
         Assert.Same(Director, AlundraSaveBook.Instance.Screen);
@@ -873,7 +873,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         var hero = HeroAt(tileX: 20, tileY: 30, tileZ: 1);
         hero.TileX = 5000; // outside every map: the capture does not validate.
         var context = new BookContext(hero, Map389WorldName);
-        var runner = new AlundraEventProgramRunner(null, State, context);
+        var runner = new EventProgramRunner(null, State, context);
         var book = NewBook();
         State.PlayerStats.WeaponId = 1;
 

@@ -31,7 +31,7 @@ public class AlundraRepeatAnimationOpcodeTests
 
     private sealed class Harness
     {
-        public readonly AlundraEventProgramRunner Runner;
+        public readonly EventProgramRunner Runner;
         public AlundraEntityScriptProxy Entity = new();
         public readonly EventProgramState State;
         public readonly List<EventTraceRecord> Trace = new();
@@ -39,7 +39,7 @@ public class AlundraRepeatAnimationOpcodeTests
         public Harness(params int[] codes)
         {
             var document = NewDocument(codes);
-            Runner = new AlundraEventProgramRunner(document, new GameState());
+            Runner = new EventProgramRunner(document, new GameState());
             Runner.TraceSink = Trace.Add;
             State = new EventProgramState { Codes = document.CodesAsBytes() };
         }

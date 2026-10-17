@@ -56,8 +56,8 @@ public enum EventTraceKind
 
     /// <summary>The loop guard ended this script call after too many dispatched opcodes without reaching
     /// 0xFF/0x00/a suspend (E19.a T4, D-E19-3, docs/plan-e19-opcodes.md): the budget is
-    /// <see cref="AlundraEventProgramRunner.MaxIterationsPerCall"/> when set, else
-    /// <see cref="AlundraEventProgramRunner.ProductionLoopBudget"/> - so this kind IS produced in production, and
+    /// <see cref="EventProgramRunner.MaxIterationsPerCall"/> when set, else
+    /// <see cref="EventProgramRunner.ProductionLoopBudget"/> - so this kind IS produced in production, and
     /// logged once per program. A documented deviation from the original, which has no guard (its loops always
     /// contain an opcode that suspends): almost always an unported suspending opcode (skipped instead of
     /// suspending) sitting inside a loop that never exits. The record carries <c>Codes[CodeIndex]</c>, the opcode

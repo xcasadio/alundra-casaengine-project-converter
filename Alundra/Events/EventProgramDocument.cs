@@ -16,7 +16,7 @@ namespace Alundra.Events;
 /// <c>AlundraCasaEngineProjectConverter.Writers.EventCodeWriter</c>/<c>Readers.EventCodeReader</c>,
 /// whose <c>EventCodeDocument</c> this mirrors field-for-field). Uninterpreted data: the six per-program
 /// tables (A-F) hold offsets into <see cref="Codes"/>, resolved the same way the original does (see
-/// <see cref="AlundraEventProgramRunner.InitializeEventData"/>).
+/// <see cref="EventProgramRunner.InitializeEventData"/>).
 /// </summary>
 public sealed class EventProgramDocument
 {
@@ -29,7 +29,7 @@ public sealed class EventProgramDocument
     public int[] EventCodesFTable { get; set; } = Array.Empty<int>();
 
     /// <summary>Raw code bytes (0-255 per source, stored as JSON numbers - see EventCodeWriter's class
-    /// doc). <see cref="AlundraEventProgramRunner"/> works off <see cref="CodesAsBytes"/> instead.</summary>
+    /// doc). <see cref="EventProgramRunner"/> works off <see cref="CodesAsBytes"/> instead.</summary>
     public int[] Codes { get; set; } = Array.Empty<int>();
 
     public byte[] CodesAsBytes() => Array.ConvertAll(Codes, value => (byte)value);

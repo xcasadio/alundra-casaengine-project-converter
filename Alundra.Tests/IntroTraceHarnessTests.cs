@@ -34,7 +34,7 @@ namespace Alundra.Tests;
 ///
 /// Purpose: replay the exact original frame structure (<see cref="HeadlessIntroSimulation"/>'s own doc
 /// comment lists every original call this mirrors, with file:line) using the REAL bytecode interpreter
-/// (<see cref="AlundraEventProgramRunner"/>, via its <see cref="AlundraEventProgramRunner.TraceSink"/>
+/// (<see cref="EventProgramRunner"/>, via its <see cref="EventProgramRunner.TraceSink"/>
 /// seam) and the runtime's own already-ported passes (<see cref="AlundraEntityScriptProxy.PickEventTrigger"/>/
 /// <see cref="AlundraEntityScriptProxy.RunPickedEvent"/>, <see cref="AlundraWorldProxy.RunMapEventsPass"/>,
 /// <see cref="AlundraWorldProxy.RunPendingEventTriggers"/>, <see cref="EntityRecordMapper"/>,
@@ -49,7 +49,7 @@ namespace Alundra.Tests;
 /// </list>
 ///
 /// IMPORTANT CAVEAT (also stated in the generated docs): unimplemented opcodes are SKIPPED here, not
-/// suspended - <see cref="AlundraEventProgramRunner"/>'s own documented V1 deviation (see its class doc).
+/// suspended - <see cref="EventProgramRunner"/>'s own documented V1 deviation (see its class doc).
 /// So this trace's ordering is the linear "skip path" the interpreter actually takes, not real gameplay
 /// timing: opcodes that would suspend for multiple frames in the original (dialog waits, animation waits,
 /// 0x37 Wait's own multi-frame case) appear earlier/denser here than they would in real play. Flag-gated
@@ -392,7 +392,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     private readonly EventProgramDocument _document;
     private readonly byte[] _codesBytes;
     private readonly GameState _gameState = new();
-    private readonly AlundraEventProgramRunner _runner;
+    private readonly EventProgramRunner _runner;
     private readonly TraceAwareEntityRunner _wrapperRunner;
 
     // E4.e simulated kinematics (docs/plan-e4-deplacement-scripte.md, decision E4-1): _catalog feeds
@@ -513,7 +513,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         _installSoundPlayer = installSoundPlayer;
         _installDialogueDirector = installDialogueDirector;
         _codesBytes = document.CodesAsBytes();
-        _runner = new AlundraEventProgramRunner(document, _gameState, this)
+        _runner = new EventProgramRunner(document, _gameState, this)
         {
             TraceSink = OnOpcodeTraced,
             // Safety valve, diagnostic only (see AlundraEventProgramRunner.MaxIterationsPerCall's own
@@ -585,7 +585,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// initial state <see cref="Run"/> does, then drives exactly <paramref name="frameCount"/> frames via
     /// the SAME per-frame <see cref="RunFrame"/> (hence the SAME production
     /// <see cref="AlundraWorldProxy.RunMapEventsPass"/> call, hence the same real
-    /// <see cref="AlundraEventProgramRunner.Dispatch"/> path 0x54/0x55/0x85 opcodes go through) - without
+    /// <see cref="EventProgramRunner.Dispatch"/> path 0x54/0x55/0x85 opcodes go through) - without
     /// <see cref="Run"/>'s own stop-condition/runaway-guard bookkeeping, since a full multi-thousand-frame
     /// intro trace is unnecessary just to observe the map-entry mutations dispatched on frame 1. Never
     /// called by <see cref="Run"/> itself - a separate entry point, not a change to it.
@@ -1126,7 +1126,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// <summary>No navigation grid in this harness (E4.d/E4.e decision E4-1: "sans murs ni navigation" -
     /// the intro's own paths are unobstructed on map 389, see docs/plan-e4-deplacement-scripte.md) -
     /// degraded mode, same shape as every other missing-system fallback here. 0x1E's own navigation
-    /// detour (<see cref="AlundraEventProgramRunner"/>'s Walk-with-collision bridge) simply never engages
+    /// detour (<see cref="EventProgramRunner"/>'s Walk-with-collision bridge) simply never engages
     /// without a grid (its own <c>grid != null</c> gate), which is exactly the documented deviation: every
     /// 0x1E/0x1F occurrence on map 389 now suspends for its REAL distance/time and ends by the ORIGINAL
     /// distance test alone, never by a synthetic wall.</summary>
@@ -1134,7 +1134,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E7.a (docs/plan-e7-mutation-tuiles.md) - the "production call site" acceptance: this harness drives
-    /// opcodes 0x54/0x55/0x85 through the REAL <see cref="AlundraEventProgramRunner.Dispatch"/> via
+    /// opcodes 0x54/0x55/0x85 through the REAL <see cref="EventProgramRunner.Dispatch"/> via
     /// <see cref="AlundraWorldProxy.RunMapEventsPass"/>/<see cref="TraceAwareEntityRunner.RunScript"/>
     /// exactly like production, backed by a real <see cref="AlundraCellStore"/> (see
     /// <see cref="_cellStore"/>'s own doc on why it shares its records with <see cref="_groundField"/>).
@@ -1148,7 +1148,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E11.a (docs/plan-e11-audio.md) - the "production call site" acceptance for T1: this harness
-    /// drives opcodes 0xBD/0xBE/0x12/0x75 through the REAL <see cref="AlundraEventProgramRunner.Dispatch"/>
+    /// drives opcodes 0xBD/0xBE/0x12/0x75 through the REAL <see cref="EventProgramRunner.Dispatch"/>
     /// via <see cref="AlundraWorldProxy.RunMapEventsPass"/>/<see cref="TraceAwareEntityRunner.RunScript"/>
     /// exactly like production, backed by itself as a fake <see cref="IAlundraSoundPlayer"/> (see
     /// <see cref="PlaySfx"/>). <see cref="_installSoundPlayer"/> gates only THIS property's returned
@@ -1158,7 +1158,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E12.a (docs/plan-e12-dialogues.md) - the "production call site" for T1: this harness drives
-    /// opcodes 0x0D/0x39/0x44/0x50/0x51/0x5C through the REAL <see cref="AlundraEventProgramRunner.Dispatch"/>
+    /// opcodes 0x0D/0x39/0x44/0x50/0x51/0x5C through the REAL <see cref="EventProgramRunner.Dispatch"/>
     /// via each entity's own <see cref="AlundraEntityScriptProxy.Update"/> -&gt; pick -&gt; run (the real
     /// slot-C path, NOT <see cref="AlundraWorldProxy.RunPendingEventTriggers"/>'s own D3 catch-up),
     /// exactly like production, backed by the SAME session-scoped <see cref="AlundraDialogueDirector.Instance"/>
@@ -1341,7 +1341,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         }
 
         /// <summary>
-        /// Delegates straight to the REAL production interpreter (<see cref="AlundraEventProgramRunner.RunScript"/>,
+        /// Delegates straight to the REAL production interpreter (<see cref="EventProgramRunner.RunScript"/>,
         /// which now interprets every slot A-F - see that class's own doc) after setting the trace
         /// context. <see cref="AlundraWorldProxy.RunMapEventsPass"/> always calls this with
         /// <paramref name="entity"/> = the player and <paramref name="programSlot"/> = <see cref="ScriptHelper.ProgramBMap"/>

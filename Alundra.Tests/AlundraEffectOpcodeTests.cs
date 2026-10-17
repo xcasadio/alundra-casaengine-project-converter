@@ -127,7 +127,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
     {
         var codes = instructions.SelectMany(i => i).Concat(new[] { 0x1A, 9, 0xFF }).ToArray();
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new int[6], Codes = codes };
-        var runner = new AlundraEventProgramRunner(document, new GameState(), host);
+        var runner = new EventProgramRunner(document, new GameState(), host);
         var trace = new List<EventTraceRecord>();
         runner.TraceSink = trace.Add;
         entity ??= new AlundraEntityScriptProxy { Status = EntityStatus.Normal, LogicContextEntity = new Entity { Name = "logic" } };

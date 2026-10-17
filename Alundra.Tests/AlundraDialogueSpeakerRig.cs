@@ -32,7 +32,7 @@ internal sealed class SpeakerSoundRecorder : IAlundraSoundPlayer
 
 /// <summary>
 /// E19.f4b (docs/plan-e19-opcodes.md, F4B-1, "T1, contrat fermé"): the montage at the level of the DIRECTOR, in the binary's order - the real session-scoped
-/// <see cref="AlundraDialogueDirector"/> over a presenter and a game state, the real <see cref="AlundraEventProgramRunner"/> on synthetic bytecode (<c>0x0D</c>,
+/// <see cref="AlundraDialogueDirector"/> over a presenter and a game state, the real <see cref="EventProgramRunner"/> on synthetic bytecode (<c>0x0D</c>,
 /// <c>0x5C</c>, <c>0xC4</c>) over a context whose <see cref="IEntityWorldContext.SpawnedEntities"/> the test sets, the names from an ETC asset of the 60 names of the
 /// binary, the advances of the glyphs from the oracle of the text box, the scroll of the camera from <see cref="AlundraDialogueDirector.ScrollSource"/>. The text ids
 /// <c>0x81</c> and <c>0x82</c> are the pages "AB" and "CD" of the map-1 asset.
@@ -73,7 +73,7 @@ internal sealed class SpeakerRig : IDisposable
         Director.InstallForMapEntry();
         Director.ScrollSource = () => Camera;
         World.DialogueDirector = Director;
-        Runner = new AlundraEventProgramRunner(Document(new[] { 0xFF }), GameState, World) { MapDialogueAsset = MapAsset() };
+        Runner = new EventProgramRunner(Document(new[] { 0xFF }), GameState, World) { MapDialogueAsset = MapAsset() };
     }
 
     public static int Advance(char c) => AlundraTextBoxOracle.GlyphWidth(OraclePages.ByteOf(c));
@@ -86,7 +86,7 @@ internal sealed class SpeakerRig : IDisposable
 
     public Context World { get; } = new();
 
-    public AlundraEventProgramRunner Runner { get; }
+    public EventProgramRunner Runner { get; }
 
     /// <summary>The scroll of the camera the director reads at the opening and at the return of a portrait.</summary>
     public (int X, int Y) Camera { get; set; } = (40, 20);

@@ -28,7 +28,7 @@ using Alundra.Dialogues.Yarn;
 
 namespace Alundra.Events;
 
-public sealed class AlundraEventProgramRunner : IEventProgramRunner
+public sealed class EventProgramRunner : IEventProgramRunner
 {
     public int ScriptRunCount { get; private set; }
     public int SpriteEventRunCount { get; private set; }
@@ -140,7 +140,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// <summary>E20.c1b K4 test seam: the state shared by the programs A, D, E and F (the binary's <c>0x8013D9E8</c>, whose <see cref="EventProgramState.Result"/> is <c>0x8013DA14</c>).</summary>
     internal EventProgramState SharedProgramStateForTests => _slotAScratchState;
 
-    public AlundraEventProgramRunner(EventProgramDocument? document, GameState gameState, IEntityWorldContext? worldContext = null)
+    public EventProgramRunner(EventProgramDocument? document, GameState gameState, IEntityWorldContext? worldContext = null)
     {
         _document = document;
         _codes = document?.CodesAsBytes();
@@ -171,7 +171,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             {
                 _loggedNoDocument = true;
                 Logs.WriteWarning(
-                    "AlundraEventProgramRunner: no event-code document loaded for this world; RunScript "
+                    "EventProgramRunner: no event-code document loaded for this world; RunScript "
                     + "is a counted no-op (degraded mode).");
             }
 
@@ -310,7 +310,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             if (_loggedNoOpKeys.Add((nativeSlot, nativeCode)))
             {
                 Logs.WriteDebug(
-                    $"AlundraEventProgramRunner: native sprite handler slot {nativeSlot} code {nativeCode} (sprite type {entity.SpriteType}) "
+                    $"EventProgramRunner: native sprite handler slot {nativeSlot} code {nativeCode} (sprite type {entity.SpriteType}) "
                     + "has no registered handler - counted no-op.");
             }
         }
@@ -319,7 +319,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         {
             _loggedSpriteEventOnce = true;
             Logs.WriteDebug(
-                "AlundraEventProgramRunner: RunSpriteEvent (native sprite AI, "
+                "EventProgramRunner: RunSpriteEvent (native sprite AI, "
                 + "g_entityEventFunctionsByType) not interpreted in V1 - counted no-op.");
         }
     }
@@ -341,7 +341,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         {
             _loggedGlobalTableFallback = true;
             Logs.WriteDebug(
-                $"AlundraEventProgramRunner: program index {programIndex} has bit 0x80 clear (original "
+                $"EventProgramRunner: program index {programIndex} has bit 0x80 clear (original "
                 + "would read the global AlundraMap/map_alundra table, not ported); falling back to the "
                 + "current map's table.");
         }
@@ -493,7 +493,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         }
 
         Logs.WriteWarning(
-            $"AlundraEventProgramRunner: loop guard - entity[{owner.EntityRefId}] slot {programSlot} program {programIndex} "
+            $"EventProgramRunner: loop guard - entity[{owner.EntityRefId}] slot {programSlot} program {programIndex} "
             + $"dispatched more than {MaxIterationsPerCall ?? ProductionLoopBudget} opcodes in one call without suspending "
             + $"(next opcode 0x{opcode:x2} @{codeIndex}); yielding until the next frame (D-E19-3 deviation, logged once per program).");
     }
@@ -557,7 +557,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
         logged = true;
         Logs.WriteWarning(
-            $"AlundraEventProgramRunner: opcode 0x{opcode:x2} with a program slot {slot} out of range (0..5); ignored - the original would write past its "
+            $"EventProgramRunner: opcode 0x{opcode:x2} with a program slot {slot} out of range (0..5); ignored - the original would write past its "
             + "array (E19.d D6, D-E19-22 correction; no such site in the corpus). Logged once per opcode.");
     }
 
@@ -1894,7 +1894,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                     if (v[6] == 3)
                     {
                         Logs.WriteWarning(
-                            "AlundraEventProgramRunner: opcode 0x53 (ChangeMap) carries transition effect "
+                            "EventProgramRunner: opcode 0x53 (ChangeMap) carries transition effect "
                             + "3 - frozen (T7, zero occurrences in the corpus), NOT the original's own "
                             + "same-map teleport branch - treated as a plain skip, not a warp.");
                     }
@@ -2359,7 +2359,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         if (spawned == null && _loggedFailedActivations.Add(v[1]))
         {
             Logs.WriteDebug(
-                $"AlundraEventProgramRunner: opcode 0x2D ActivateEntity({v[1]}) - spawn failed (record "
+                $"EventProgramRunner: opcode 0x2D ActivateEntity({v[1]}) - spawn failed (record "
                 + "disabled/missing, or the spawn path threw) - the original breakpoints here instead.");
         }
 
@@ -2393,7 +2393,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             if (_loggedFailedSpawns.Add((0x8A, v[1])))
             {
                 Logs.WriteWarning(
-                    $"AlundraEventProgramRunner: opcode 0x8A SpawnEntityAtPosition({v[1]}) - spawn failed "
+                    $"EventProgramRunner: opcode 0x8A SpawnEntityAtPosition({v[1]}) - spawn failed "
                     + "(record disabled/missing, or the spawn path threw) - the original stops here, the port goes on.");
             }
 
@@ -2422,7 +2422,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         if (spawned == null && _loggedFailedActivations.Add(v[2]))
         {
             Logs.WriteDebug(
-                $"AlundraEventProgramRunner: opcode 0x8B SpawnEntityNextToEntity({v[2]}) - spawn "
+                $"EventProgramRunner: opcode 0x8B SpawnEntityNextToEntity({v[2]}) - spawn "
                 + "failed (record disabled/missing, or the spawn path threw) - the original "
                 + "breakpoints here instead.");
         }
@@ -2798,7 +2798,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 if (!_loggedRecordlessHeightWait)
                 {
                     _loggedRecordlessHeightWait = true;
-                    Logs.WriteWarning("AlundraEventProgramRunner: Opcode 0x22 without an entity record: the wait ends.");
+                    Logs.WriteWarning("EventProgramRunner: Opcode 0x22 without an entity record: the wait ends.");
                 }
 
                 return 1;
@@ -3072,7 +3072,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             if (_loggedUnknownOpcodes.Add(command))
             {
                 Logs.WriteWarning(
-                    $"AlundraEventProgramRunner: opcode 0x{command:x2} has no known size; terminating "
+                    $"EventProgramRunner: opcode 0x{command:x2} has no known size; terminating "
                     + "this script call (V1 deviation).");
             }
 
@@ -3084,7 +3084,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         if (_loggedUnknownOpcodes.Add(command))
         {
             Logs.WriteWarning(
-                $"AlundraEventProgramRunner: opcode 0x{command:x2} ('{entry.Name}') not implemented; "
+                $"EventProgramRunner: opcode 0x{command:x2} ('{entry.Name}') not implemented; "
                 + $"skipping by its known size ({entry.Size}) (V1 deviation).");
         }
 
@@ -3162,7 +3162,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         if (_loggedDegradedOpcodes.Add(0x182))
         {
             Logs.WriteDebug(
-                "AlundraEventProgramRunner: opcode 0x82 sub-case 0x53 (life vessel) has no effect stage or no hero "
+                "EventProgramRunner: opcode 0x82 sub-case 0x53 (life vessel) has no effect stage or no hero "
                 + "- life and sound done, effects skipped.");
         }
     }
@@ -3177,7 +3177,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         if (_loggedDegradedOpcodes.Add(0x1A4))
         {
             Logs.WriteDebug(
-                "AlundraEventProgramRunner: opcode 0xa4 (BackgroundLayerMask) palette bank above 0 "
+                "EventProgramRunner: opcode 0xa4 (BackgroundLayerMask) palette bank above 0 "
                 + "(palette cycle not ported, O-E19-43) - mask applied, cycle skipped.");
         }
     }
@@ -3189,7 +3189,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         if (_loggedDegradedOpcodes.Add(opcode))
         {
             Logs.WriteDebug(
-                $"AlundraEventProgramRunner: opcode 0x{opcode:x2} ({name}) not implemented "
+                $"EventProgramRunner: opcode 0x{opcode:x2} ({name}) not implemented "
                 + $"({missingSystem} not ported yet) - degraded no-op, advancing by its size.");
         }
     }
@@ -3209,7 +3209,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         if (_loggedDegradedOpcodes.Add(opcode))
         {
             Logs.WriteWarning(
-                $"AlundraEventProgramRunner: opcode 0x{opcode:x2} ({name}) has no CellMutator installed "
+                $"EventProgramRunner: opcode 0x{opcode:x2} ({name}) has no CellMutator installed "
                 + "for this world - degraded no-op, advancing by its size.");
         }
     }
@@ -3230,7 +3230,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         if (_loggedDegradedOpcodes.Add(opcode))
         {
             Logs.WriteWarning(
-                $"AlundraEventProgramRunner: opcode 0x{opcode:x2} ({name}) has no PlayerEntity spawned "
+                $"EventProgramRunner: opcode 0x{opcode:x2} ({name}) has no PlayerEntity spawned "
                 + "for this world - degraded no-op (what it writes, if anything, is in its own case), advancing by its size.");
         }
     }
@@ -3249,7 +3249,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         if (_loggedDegradedOpcodes.Add(0x2F))
         {
             Logs.WriteWarning(
-                $"AlundraEventProgramRunner: opcode 0x2F (CheckPadButtons) snapshot mode {mode} "
+                $"EventProgramRunner: opcode 0x2F (CheckPadButtons) snapshot mode {mode} "
                 + "(ButtonsReleased/ButtonsJustPressedByInterval) is not backed by AlundraPadState - "
                 + "degraded no-op (Result = 0).");
         }
@@ -3357,7 +3357,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             if (_loggedOutOfRangeMapIndexes.Add(index))
             {
                 Logs.WriteWarning(
-                    $"AlundraEventProgramRunner: opcode 0x38 SetSaveMapIdToInternalMapIndex({index}) - "
+                    $"EventProgramRunner: opcode 0x38 SetSaveMapIdToInternalMapIndex({index}) - "
                     + $"index out of range (table size {table.Length}); write skipped (V1 deviation).");
             }
 

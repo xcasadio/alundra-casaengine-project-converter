@@ -50,7 +50,7 @@ public sealed class AlundraWeaponLockOpcodesTests
     {
         var codes = instruction.Concat(new[] { 0x1A, 9, 0xFF }).ToArray();
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new int[6], Codes = codes };
-        var runner = new AlundraEventProgramRunner(document, gameState, new Context { Tables = tables });
+        var runner = new EventProgramRunner(document, gameState, new Context { Tables = tables });
         var trace = new List<EventTraceRecord>();
         runner.TraceSink = trace.Add;
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = ResultBefore };

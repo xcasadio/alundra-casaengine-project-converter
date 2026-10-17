@@ -98,7 +98,7 @@ public sealed class AlundraAnimationClockDriveTests
     /// <summary>Runs the interpreter only for the slots the test enabled: the tick program (C) starts at the frame the test says.</summary>
     private sealed class GatedRunner : IEventProgramRunner
     {
-        public AlundraEventProgramRunner Inner = null!;
+        public EventProgramRunner Inner = null!;
         public bool TickProgramEnabled;
 
         public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
@@ -119,7 +119,7 @@ public sealed class AlundraAnimationClockDriveTests
         public readonly Entity Entity;
         public readonly AlundraEntityScriptProxy Proxy;
         public readonly AnimatedSpriteComponent Sprite;
-        public readonly AlundraEventProgramRunner Runner;
+        public readonly EventProgramRunner Runner;
         public readonly Host Host = new();
         public readonly List<(int Frame, int Opcode, int Result)> Calls = new();
         private readonly GatedRunner _gated = new();
@@ -143,7 +143,7 @@ public sealed class AlundraAnimationClockDriveTests
                 EventCodesCTable = new[] { 0, 0 },
                 Codes = program,
             };
-            Runner = new AlundraEventProgramRunner(document, Host.GameState);
+            Runner = new EventProgramRunner(document, Host.GameState);
             _entities = new List<Entity>();
             Runner.TraceSink = record =>
             {

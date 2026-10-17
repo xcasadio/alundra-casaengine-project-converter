@@ -143,7 +143,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     private static EventProgramState Exec(Host host, GameState gameState, int[] code, List<EventTraceRecord>? trace = null)
     {
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new int[6], Codes = code };
-        var runner = new AlundraEventProgramRunner(document, gameState, host);
+        var runner = new EventProgramRunner(document, gameState, host);
         if (trace != null)
         {
             runner.TraceSink = trace.Add;

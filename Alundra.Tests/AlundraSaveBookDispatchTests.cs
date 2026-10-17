@@ -18,7 +18,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// E16.e T1 (docs/plan-e16-etat-partie.md, L1, L6, SE6): the generic ETC text access
 /// (<see cref="AlundraEtcStringTable.TryResolveText"/>, on the real export's <c>Dialogues/Etc.dialogue</c>), and
-/// the dispatch of <see cref="AlundraEventProgramRunner.RunSpriteEvent"/> to the save book - only for sprite type
+/// the dispatch of <see cref="EventProgramRunner.RunSpriteEvent"/> to the save book - only for sprite type
 /// 237, a native slot, and (F, 1) or (C, 72) - with the sprite type retained by both spawn paths.
 /// </summary>
 public sealed class AlundraSaveBookDispatchTests : IDisposable
@@ -116,7 +116,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     [InlineData(ScriptHelper.ProgramCTick, AlundraSaveBook.TickCode)]
     public void RunPickedEvent_SaveBookSlot_ReachesTheBook(int slot, int code)
     {
-        var runner = new AlundraEventProgramRunner(null, GameState.Instance);
+        var runner = new EventProgramRunner(null, GameState.Instance);
         var book = Entity(AlundraSaveBook.SpriteType, slot, code);
 
         book.RunPickedEvent(runner);
@@ -135,7 +135,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     [InlineData(-1, ScriptHelper.ProgramCTick, AlundraSaveBook.TickCode)]
     public void RunPickedEvent_OtherSpriteType_WithABookCode_IsACountedNoOp(int spriteType, int slot, int code)
     {
-        var runner = new AlundraEventProgramRunner(null, GameState.Instance);
+        var runner = new EventProgramRunner(null, GameState.Instance);
         var entity = Entity(spriteType, slot, code);
 
         entity.RunPickedEvent(runner);
@@ -156,7 +156,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     [InlineData(ScriptHelper.ProgramEDeactivate, AlundraSaveBook.TickCode)]
     public void RunPickedEvent_SaveBookType_WithAnotherSlotOrCode_IsACountedNoOp(int slot, int code)
     {
-        var runner = new AlundraEventProgramRunner(null, GameState.Instance);
+        var runner = new EventProgramRunner(null, GameState.Instance);
         var book = Entity(AlundraSaveBook.SpriteType, slot, code);
 
         book.RunPickedEvent(runner);
@@ -167,11 +167,11 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     }
 
     /// <summary>L1: a script program on the slot (<c>ProgramIndexes[slot] &amp; 0x7f != 0</c>) is never the native
-    /// handler, even when <see cref="AlundraEventProgramRunner.RunSpriteEvent"/> is reached directly.</summary>
+    /// handler, even when <see cref="EventProgramRunner.RunSpriteEvent"/> is reached directly.</summary>
     [Fact]
     public void RunSpriteEvent_SaveBookSlotCarryingAScriptProgram_IsNotTheBook()
     {
-        var runner = new AlundraEventProgramRunner(null, GameState.Instance);
+        var runner = new EventProgramRunner(null, GameState.Instance);
         var book = Entity(AlundraSaveBook.SpriteType, ScriptHelper.ProgramFInteract, AlundraSaveBook.InteractCode);
         book.ProgramIndexes[ScriptHelper.ProgramFInteract] = 0x85;
 
@@ -268,7 +268,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
         EntitySpawnFactory.ApplyRecord(record, proxy);
         EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefabAssetId, BookHeader()));
         proxy.EventTrigger = ScriptHelper.ProgramCTick;
-        var runner = new AlundraEventProgramRunner(null, GameState.Instance);
+        var runner = new EventProgramRunner(null, GameState.Instance);
 
         proxy.RunPickedEvent(runner);
 

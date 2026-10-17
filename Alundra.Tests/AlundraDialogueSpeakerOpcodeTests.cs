@@ -87,13 +87,13 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
         public IAlundraDialogueDirector? DialogueDirector { get; set; }
     }
 
-    private static (AlundraEventProgramRunner Runner, GameState GameState, FakeContext Context) NewRealMontage(int[] codes)
+    private static (EventProgramRunner Runner, GameState GameState, FakeContext Context) NewRealMontage(int[] codes)
     {
         var gameState = new GameState();
         AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), gameState);
         AlundraDialogueDirector.Instance.InstallForMapEntry();
         var context = new FakeContext { DialogueDirector = AlundraDialogueDirector.Instance };
-        var runner = new AlundraEventProgramRunner(NewDocument(codes), gameState, context) { MapDialogueAsset = MapAsset() };
+        var runner = new EventProgramRunner(NewDocument(codes), gameState, context) { MapDialogueAsset = MapAsset() };
         return (runner, gameState, context);
     }
 
@@ -162,7 +162,7 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
     {
         var codes = Codes(opcode, mode: 1);
         var gameState = new GameState();
-        var runner = new AlundraEventProgramRunner(NewDocument(codes), gameState, new FakeContext { DialogueDirector = null })
+        var runner = new EventProgramRunner(NewDocument(codes), gameState, new FakeContext { DialogueDirector = null })
         {
             MapDialogueAsset = MapAsset(),
         };

@@ -10,7 +10,7 @@ namespace Alundra.Events;
 /// opcode byte to instruction size in bytes (opcode + parameters) and the original's own short
 /// description, covering every one of the 197 named opcodes (0x00-0xC4, 0xFF). Names are kept for log
 /// messages only; only <see cref="Sizes"/> drives interpreter behaviour (see
-/// <see cref="AlundraEventProgramRunner"/>'s unknown-opcode policy).
+/// <see cref="EventProgramRunner"/>'s unknown-opcode policy).
 ///
 /// A handful of entries carry size 0 in the source table itself (0x0E/0x0F/0x13/0x14/0x18 "do nothing
 /// (debug command)", 0x76/0x77/0x9D/0xAE "not implemented"/"fatal error") - the original's own
@@ -28,7 +28,7 @@ namespace Alundra.Events;
 ///
 /// Two names are swapped back (E19.m8 M-02): the source names <c>0x35</c> "Wait flag on" and <c>0x36</c>
 /// "Wait flag off", backwards - 0x35 advances once the flag bit is CLEAR and 0x36 once it is SET (see the
-/// case 0x35/0x36 comments on <see cref="AlundraEventProgramRunner"/>'s dispatch).
+/// case 0x35/0x36 comments on <see cref="EventProgramRunner"/>'s dispatch).
 ///
 /// Two names are made explicit (E19.d D8, no size change): <c>0x24</c> waits UNTIL the logic entity's ForceAdjusted is nonzero
 /// (0x8003DB70) and <c>0x40</c> also asks for the running program state to be cleared (<c>g_clearProgramState</c>, 0x8003E7B8).

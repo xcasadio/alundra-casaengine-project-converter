@@ -50,9 +50,9 @@ public class AlundraEventProgramRunnerProgramIndexTests
         public NavigationGrid2D? NavigationGrid => null;
     }
 
-    private static (AlundraEventProgramRunner Runner, List<EventTraceRecord> Trace) NewRunner(EventProgramDocument document, IEntityWorldContext? world = null)
+    private static (EventProgramRunner Runner, List<EventTraceRecord> Trace) NewRunner(EventProgramDocument document, IEntityWorldContext? world = null)
     {
-        var runner = new AlundraEventProgramRunner(document, new GameState(), world);
+        var runner = new EventProgramRunner(document, new GameState(), world);
         var trace = new List<EventTraceRecord>();
         runner.TraceSink = trace.Add;
         return (runner, trace);

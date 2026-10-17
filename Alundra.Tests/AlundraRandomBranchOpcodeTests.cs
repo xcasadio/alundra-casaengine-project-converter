@@ -20,7 +20,7 @@ public sealed class AlundraRandomBranchOpcodeTests : IDisposable
 
     public void Dispose() => AlundraRandom.Reset();
 
-    private static int Run(int threshold, AlundraEventProgramRunner? runner = null)
+    private static int Run(int threshold, EventProgramRunner? runner = null)
     {
         var document = new EventProgramDocument
         {
@@ -28,7 +28,7 @@ public sealed class AlundraRandomBranchOpcodeTests : IDisposable
             EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
             Codes = new[] { 0x8C, threshold, 0xFF },
         };
-        runner ??= new AlundraEventProgramRunner(document, new GameState());
+        runner ??= new EventProgramRunner(document, new GameState());
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 7 };
 
         runner.RunOneScriptCall(new AlundraEntityScriptProxy(), state);

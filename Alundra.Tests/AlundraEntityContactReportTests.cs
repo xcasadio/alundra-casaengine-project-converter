@@ -199,10 +199,10 @@ public sealed class AlundraEntityContactReportTests
         return grid;
     }
 
-    private static (AlundraEventProgramRunner Runner, AlundraEntityScriptProxy Entity, EventProgramState State) WalkMontage(params int[] codes)
+    private static (EventProgramRunner Runner, AlundraEntityScriptProxy Entity, EventProgramState State) WalkMontage(params int[] codes)
     {
         var document = NewDocument(codes);
-        var runner = new AlundraEventProgramRunner(document, new GameState(), new GridWorld(SyntheticGrid()));
+        var runner = new EventProgramRunner(document, new GameState(), new GridWorld(SyntheticGrid()));
         var entity = new AlundraEntityScriptProxy { PosX = 108 << 16, PosY = 88 << 16, TargetDirection = 24 };
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
         return (runner, entity, state);
