@@ -863,7 +863,7 @@ F5, F6, F9 ; dans l'éditeur, la ligne « Script » d'un monde et d'une entité 
 **But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/` et `Support/` ; les classes de test sans préfixe ;
 aucune valeur attendue changée. Le classement de l'inventaire (`report_inventory.md` §7) sert de base, recensé à nouveau en T0.
 
-## 10. Tranche R6 — Documentation vivante 🚧 (détaillée le 2026-10-18 ; révision 2, en relecture de clôture)
+## 10. Tranche R6 — Documentation vivante 🧪 (détaillée le 2026-10-18 ; révision 2, en relecture de clôture)
 
 **Relecture (2026-10-18).** REVISE, trois blocages corrigés (FIX, révision 1) : (1) les lignes qui demandent du jugement ont leur texte
 cible fixé ci-dessous (« Cibles fixées ») et l'exécutant devient un `executor` ; (2) les lignes F ont une tâche, un texte et un
@@ -1032,6 +1032,8 @@ convertisseur limité aux lignes du relevé.
 
 **Arrêts.** Une citation dont la cible n'est pas établie ; une ligne du relevé changée depuis le relevé ; un fichier gelé (plan, annexe, ADR,
 trace) touché.
+
+**Résultats (2026-10-17, exécution par un `executor`).** T0 : générateurs rejoués au HEAD `211a757` dans deux dossiers neufs ; (a) `occurrences.tsv` identique octet pour octet à celui de la découverte (232 lignes, aucun écart à expliquer) ; (b) `decl.py` : 28 `DECL`, exactement les cinq `NODECL` attendus (cibles 1 à 5), aucun autre. Le relevé versé `tools/dll-structure/r6-occurrences.tsv` compte 74 lignes (par ligne ou plage : 41 B, 18 A, 12 E, 2 F, 1 C ; les 84 occurrences du relevé de découverte groupées par ligne, plus les deux commentaires « lines 512..1447 » en classe E), cibles fixées 1 à 8 au caractère près. `apply_r6.py` (modes `apply` et `--check`) : `apply` appliqué une fois (74 lignes, 35 fichiers), `--check` sort 0, `prove_r4.py --kind end` sort 0 (le P3 `SpriteWriter.cs:92` est fermé). T3 : `prove_research.py` rend `identical=True` pour les trois lectures (`EventOpcodeSizeTable` 198 entrées, `AnimationTables` 3 tableaux, `Dispatch` 158 cases) ; `report_v2.py` ne peut pas régénérer `docs/census-0x24-waits.md` (il lit `census_v2.pkl`, absent, qui demande `gstatic.pkl`, `census.pkl` et une exécution complète du recensement, non versionnés) : le doc est corrigé à la main, avec la même phrase que `report_v2.py:103` ; régénération notée non faite. Suite du convertisseur : 854 réussies, 0 échec. Jugements : les deux commentaires « lines 512..1447 » (déjà faux à la base) deviennent « (parsed from the switch of Dispatch) » ; `WorldWriter.cs:376` « (Alundra/Scripts/) » → « (Alundra/Maps/) » et `research/census/README.md:46` → `Alundra/Events/` (les sources cités sont dans ces dossiers). Écart au plan : T2 (classe C) est dans le commit des docs, la même zone que T1 docs. Reste (🧪) : un verifier frais sur l'ensemble, les réponses de l'auteur à Q-R-4 et Q-R-5, les lignes T (chemins de tests) qui attendent R5.
 
 **Retour arrière.** `git revert` des commits de la tranche.
 
