@@ -11,6 +11,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Events;
+using Alundra.Cells;
 
 namespace Alundra.Tests;
 

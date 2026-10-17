@@ -21,6 +21,7 @@ using Microsoft.Xna.Framework;
 using Alundra.Scripts;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
+using Alundra.Cells;
 
 namespace Alundra.Maps.Loop;
 

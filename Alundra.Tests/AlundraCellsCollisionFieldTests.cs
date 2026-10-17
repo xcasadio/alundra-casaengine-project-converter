@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Assets.TileMap;
 using Microsoft.Xna.Framework;
@@ -9,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.Entities;
 using Alundra.Physics;
+using Alundra.Cells;
 
 namespace Alundra.Tests;
 

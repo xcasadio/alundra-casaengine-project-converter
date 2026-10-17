@@ -7,58 +7,9 @@ using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Alundra.Maps.Loop;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
-
-/// <summary>
-/// One map's "AlundraWallPlacements" custom property (see
-/// <c>AlundraCasaEngineProjectConverter.Writers.CellMetadataWriter.WriteWallPlacements</c> and
-/// <c>docs/formats/cells-companion.md</c>): every baked wall tile's exact flat-layer location
-/// (<see cref="Plane"/>/<see cref="X"/>/<see cref="Y"/>, matching <c>TileMapComponent.RemoveTile</c>'s
-/// own (layer, x, y) triple) plus its PSX depth slot (0..5, see <see cref="DepthSlot"/>). Columnar for
-/// the same reason the converter's own <c>WallPlacementDocument</c> is: this project does not reference
-/// the converter, so the shape is duplicated here rather than shared - field names/order are read back
-/// with the same <c>JsonNamingPolicy.SnakeCaseLower</c> the converter serialized them with, so no
-/// per-field attribute is needed on either side.
-/// </summary>
-public sealed class WallPlacementRecords
-{
-    public int MapIndex { get; init; }
-    public int Count { get; init; }
-    public int[] CellX { get; init; } = Array.Empty<int>();
-    public int[] CellY { get; init; } = Array.Empty<int>();
-    public int[] StackIndex { get; init; } = Array.Empty<int>();
-    public int[] Plane { get; init; } = Array.Empty<int>();
-    public int[] X { get; init; } = Array.Empty<int>();
-    public int[] Y { get; init; } = Array.Empty<int>();
-    public int[] Gid { get; init; } = Array.Empty<int>();
-    public int[] DepthSlot { get; init; } = Array.Empty<int>();
-}
-
-/// <summary>
-/// One baked FLOOR tile's placement - the "AlundraFloorPlacements" custom property counterpart to
-/// <see cref="WallPlacementRecords"/> (see
-/// <c>AlundraCasaEngineProjectConverter.Writers.WallPlacementReplayer.FloorPlacementDocument</c> and
-/// <c>docs/formats/cells-companion.md</c>). Most entries are elevated (Height &gt; 0) floors, recorded
-/// unconditionally; a Height-0 (ground-level) floor also appears here whenever it shares its bake
-/// position with another placement - the CLOSURE rule (see the converter's <c>WallPlacementReplayer</c>
-/// class doc) - so parsing and the strip/resubmit below make no assumption about which case a given
-/// entry is: the key formula (<c>CellY*16 + clamp(DepthSlot,0,5)</c>, see
-/// <see cref="ComputeFloorSortKey"/>) is Height-independent already. No <c>StackIndex</c> column: each
-/// cell has exactly one floor tile, so (CellX, CellY) alone identifies it.
-/// </summary>
-public sealed class FloorPlacementRecords
-{
-    public int MapIndex { get; init; }
-    public int Count { get; init; }
-    public int[] CellX { get; init; } = Array.Empty<int>();
-    public int[] CellY { get; init; } = Array.Empty<int>();
-    public int[] Plane { get; init; } = Array.Empty<int>();
-    public int[] X { get; init; } = Array.Empty<int>();
-    public int[] Y { get; init; } = Array.Empty<int>();
-    public int[] Gid { get; init; } = Array.Empty<int>();
-    public int[] DepthSlot { get; init; } = Array.Empty<int>();
-}
+namespace Alundra.Cells;
 
 /// <summary>
 /// Parses <see cref="WallPlacementRecords"/> from a <see cref="TileMapData"/>'s custom properties, and

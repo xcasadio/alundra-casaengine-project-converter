@@ -5,6 +5,7 @@ using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Audio;
 using CasaEngine.Framework.Audio.Mixing;
 using Alundra.Events;
+using Alundra.Cells;
 
 namespace Alundra.Scripts;
 

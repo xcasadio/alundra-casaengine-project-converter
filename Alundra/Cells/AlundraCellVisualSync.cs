@@ -6,8 +6,9 @@ using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Scene.Entities.Components;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Cells;
 
 /// <summary>
 /// E7.b (docs/plan-e7-mutation-tuiles.md): the visual + navigation half of "cell mutation at runtime" -

@@ -11,6 +11,7 @@ using Alundra.Session;
 using Alundra.Entities.Spawning;
 using Alundra.Scripts;
 using Alundra.Hero;
+using Alundra.Cells;
 
 namespace Alundra.Entities;
 

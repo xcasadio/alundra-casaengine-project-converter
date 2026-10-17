@@ -4,6 +4,7 @@ using CasaEngine.Framework.Assets.Sprites;
 using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Rendering.EffectQuads;
 using Microsoft.Xna.Framework;
+using Alundra.Cells;
 
 namespace Alundra.Scripts;
 

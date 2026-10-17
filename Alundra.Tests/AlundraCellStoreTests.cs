@@ -1,11 +1,11 @@
 using System;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.Physics;
+using Alundra.Cells;
 
 namespace Alundra.Tests;
 

@@ -22,6 +22,7 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Physics;
+using Alundra.Cells;
 
 namespace Alundra.Tests;
 

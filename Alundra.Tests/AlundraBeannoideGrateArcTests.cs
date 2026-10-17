@@ -9,6 +9,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Ai.Enemies;
 using Alundra.Combat;
+using Alundra.Cells;
 
 namespace Alundra.Tests;
 

@@ -13,6 +13,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Physics;
+using Alundra.Cells;
 
 namespace Alundra.Tests;
 

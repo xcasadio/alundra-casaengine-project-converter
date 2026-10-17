@@ -33,6 +33,7 @@ using Alundra.Combat;
 using Alundra.Items;
 using Alundra.Rng;
 using Alundra.Physics;
+using Alundra.Cells;
 
 namespace Alundra.Scripts;
 

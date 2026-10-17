@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Rendering.Depth;
@@ -12,6 +11,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Xunit;
 using Size = CasaEngine.Core.Math.Size;
+using Alundra.Cells;
 
 namespace Alundra.Tests;
 
