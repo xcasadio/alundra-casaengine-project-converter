@@ -649,13 +649,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// This world's cell-mutation seam (E7.a, docs/plan-e7-mutation-tuiles.md) - a real
-    /// <see cref="AlundraCellStore"/> built from the SAME parsed <see cref="CellsRecords"/>
+    /// <see cref="CellStore"/> built from the SAME parsed <see cref="CellsRecords"/>
     /// <see cref="CollisionField"/> aliases its own arrays from (<see cref="InstallCellAndOverlaySystems"/>),
     /// satisfying <see cref="IEntityWorldContext.CellMutator"/>. Null in degraded mode (missing/malformed
     /// "AlundraCells" property, or a tile_id/wall_tiles_offset column length mismatch) - the interpreter's
     /// own null-mutator fallback then applies (skip by size, <c>Degraded</c> trace kind).
     /// </summary>
-    public IAlundraCellMutator? CellMutator { get; private set; }
+    public ICellMutator? CellMutator { get; private set; }
 
     /// <summary>
     /// This world's sound-effect playback seam (E11.a, docs/plan-e11-audio.md) - a real
@@ -737,18 +737,18 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E7.b (docs/plan-e7-mutation-tuiles.md): the visual + navigation applier subscribed to
-    /// <see cref="CellMutator"/>'s (as an <see cref="AlundraCellStore"/>) own
-    /// <see cref="AlundraCellStore.CellsMutated"/> event - see <see cref="AlundraCellVisualSync"/>'s own
+    /// <see cref="CellMutator"/>'s (as an <see cref="CellStore"/>) own
+    /// <see cref="CellStore.CellsMutated"/> event - see <see cref="Cells.CellVisualSync"/>'s own
     /// class doc. Null when <see cref="CellMutator"/> is (no cell store installed - nothing to make
     /// visible), or when the wall/floor placement overlay itself was never applied.
     /// </summary>
-    private AlundraCellVisualSync? _cellVisualSync;
+    private CellVisualSync? _cellVisualSync;
 
     /// <summary>Test-only accessor (E7.b, docs/plan-e7-mutation-tuiles.md, acceptance items 1-8): lets a
-    /// test drive <see cref="AlundraCellVisualSync.FlushPendingOverlayReconstruction"/> and read
-    /// <see cref="AlundraCellVisualSync.ReconstructionCount"/> after mutating through <see cref="CellMutator"/>,
+    /// test drive <see cref="CellVisualSync.FlushPendingOverlayReconstruction"/> and read
+    /// <see cref="CellVisualSync.ReconstructionCount"/> after mutating through <see cref="CellMutator"/>,
     /// without exposing either on the public surface.</summary>
-    internal AlundraCellVisualSync? CellVisualSync => _cellVisualSync;
+    internal CellVisualSync? CellVisualSync => _cellVisualSync;
 
     /// <summary>
     /// Rendering instance wiring (S3, docs/plan-update-caracterisation.md) - built in this FIELD
@@ -1181,8 +1181,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <see cref="InitializeWithWorld"/> is now a thin caller; acceptance tests (docs/plan-e7-mutation-tuiles.md,
     /// slice E7.b) call this method directly - the SAME production path, not a hand-rolled store.
     ///
-    /// Builds <see cref="AlundraCellVisualSync"/> and subscribes it to the freshly-built
-    /// <see cref="AlundraCellStore"/>'s own <see cref="AlundraCellStore.CellsMutated"/> event - THIS
+    /// Builds <see cref="Cells.CellVisualSync"/> and subscribes it to the freshly-built
+    /// <see cref="CellStore"/>'s own <see cref="CellStore.CellsMutated"/> event - THIS
     /// subscription line is what makes 0x54/0x55/0x85 visible/routable at runtime (acceptance item 1's own
     /// mutation: deleting it must fail that test). Skipped entirely when no cell store could be built (no
     /// "AlundraCells" property, or a tile_id/wall_tiles_offset length mismatch) - degraded mode, same as
@@ -1223,9 +1223,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // aliases its arrays from - see AlundraCellStore's own class doc. Degraded (null CellMutator) on
         // a tile_id/wall_tiles_offset length mismatch, or when the collision field itself never parsed.
         CellMutator = null;
-        AlundraCellStore? cellStore = null;
+        CellStore? cellStore = null;
         if (cellRecords != null
-            && AlundraCellStore.TryCreate(cellRecords, tileMapData.MapSize.Width, tileMapData.MapSize.Height, world.Name, out cellStore))
+            && CellStore.TryCreate(cellRecords, tileMapData.MapSize.Width, tileMapData.MapSize.Height, world.Name, out cellStore))
         {
             CellMutator = cellStore;
         }
@@ -1264,7 +1264,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _cellVisualSync = null;
         if (cellStore != null)
         {
-            _cellVisualSync = AlundraCellVisualSync.Create(
+            _cellVisualSync = CellVisualSync.Create(
                 tileMapComponent, cellStore, tileMapData.MapSize.Width, tileMapData.MapSize.Height, world.Name,
                 tileMapComponent.TileSetData,
                 wallPlacements, submittedWallIndices,

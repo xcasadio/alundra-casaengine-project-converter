@@ -34,7 +34,7 @@ public static class WallPlacementOverlay
     /// tileset per map and <c>firstgid</c> fixed at 1 (see <c>TileSetGidMapReader</c>/
     /// <c>docs/formats/cells-companion.md</c>) - so the local tile id <see cref="TileMapComponent"/>'s own
     /// layers store is always <c>gid - 1</c>. Internal (not private) since E7.b's
-    /// <see cref="AlundraCellVisualSync"/> seeds its own live model off the SAME gid convention when it
+    /// <see cref="CellVisualSync"/> seeds its own live model off the SAME gid convention when it
     /// bootstraps from these two records documents (docs/plan-e7-mutation-tuiles.md, slice E7.b).</summary>
     internal const int FirstGid = 1;
 
@@ -194,7 +194,7 @@ public static class WallPlacementOverlay
     /// Returns the indices into <paramref name="records"/> that were ACTUALLY resubmitted (plan fact 13,
     /// docs/plan-e7-mutation-tuiles.md, slice E7.b): a mismatched entry above is a superset member of
     /// <paramref name="records"/> that never reached the overlay, so a caller seeding a live model of the
-    /// overlay's real contents (<see cref="AlundraCellVisualSync"/>) must seed from this return value, not
+    /// overlay's real contents (<see cref="CellVisualSync"/>) must seed from this return value, not
     /// from <paramref name="records"/> itself - resubmitting a mismatched entry at the first mutation-driven
     /// reconstruction would double-draw a tile whose flat original was never stripped.
     /// </summary>

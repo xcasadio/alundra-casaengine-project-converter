@@ -81,7 +81,7 @@ public class AlundraEventProgramRunnerTests
         // E7.a (docs/plan-e7-mutation-tuiles.md): declaring a plain public property with the interface's
         // own member signature overrides IEntityWorldContext.CellMutator's default-interface-member "=>
         // null" for THIS class - see IEntityWorldContext's own doc on why the default member exists.
-        public IAlundraCellMutator? CellMutator { get; set; }
+        public ICellMutator? CellMutator { get; set; }
 
         // E11.a (docs/plan-e11-audio.md): same override shape as CellMutator above - overrides
         // IEntityWorldContext.SoundPlayer's default-interface-member "=> null" for THIS class.
@@ -2545,7 +2545,7 @@ public class AlundraEventProgramRunnerTests
     // branch); cell (0,1) starts all-zero with no wall stack (to exercise stack destruction).
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraCellStore NewSyntheticCellStore(out CellsCollisionField field)
+    private static CellStore NewSyntheticCellStore(out CellsCollisionField field)
     {
         var tileMapData = new TileMapData();
         tileMapData.MapSize = new CasaEngine.Core.Math.Size(2, 2);
@@ -2563,7 +2563,7 @@ public class AlundraEventProgramRunnerTests
         Assert.True(fieldCreated);
         field = createdField!;
 
-        var storeCreated = AlundraCellStore.TryCreate(records!, 2, 2, "synthetic", out var store);
+        var storeCreated = CellStore.TryCreate(records!, 2, 2, "synthetic", out var store);
         Assert.True(storeCreated);
         return store!;
     }
@@ -2648,7 +2648,7 @@ public class AlundraEventProgramRunnerTests
             + "\"wall_tiles\":{}}";
 
         CellsCollisionField.TryCreate(tileMapData, "clamp", out var field, out var records);
-        AlundraCellStore.TryCreate(records!, width, height, "clamp", out var store);
+        CellStore.TryCreate(records!, width, height, "clamp", out var store);
         var context = new FakeEntityWorldContext { CellMutator = store };
         var document = NewDocument(0x54, 60, 70, 0x40, 0, 0xFF); // (60,70) -> clamps to (0x33,0x3b)
         var runner = NewRunner(document, worldContext: context);

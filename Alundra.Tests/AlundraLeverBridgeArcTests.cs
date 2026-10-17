@@ -25,7 +25,7 @@ public sealed class AlundraLeverBridgeArcTests
     // -----------------------------------------------------------------------------------------
 
     /// <summary>The cells (40..42, y) of the bridge.</summary>
-    private static List<LeverCell> BridgeRow(AlundraCellStore store, int y) => LeverArcs.Rect(store, 40, y, 3, 1);
+    private static List<LeverCell> BridgeRow(CellStore store, int y) => LeverArcs.Rect(store, 40, y, 3, 1);
 
     /// <summary>The pcs of the bridge program B[1] (@152, below the one-time ambience B[2] @300, whose End repeats every tick) that ran during the tick.</summary>
     private static int[] Bridge116(ArcRun arc, int tick) => LeverArcs.Pcs(arc, B, tick).Where(pc => pc < 300).ToArray();

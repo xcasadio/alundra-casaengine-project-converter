@@ -110,11 +110,11 @@ public interface IEntityWorldContext
     /// every test fake, <see cref="AlundraWorldProxy"/> itself - keeps compiling unmodified, defaulting to
     /// null (the same "degraded, skip by size" fallback <see cref="EventProgramRunner"/> already
     /// applies when a world has no mutator installed). Only the intro trace harness's
-    /// <c>HeadlessIntroSimulation</c> overrides this, backed by a real <see cref="AlundraCellStore"/> built
+    /// <c>HeadlessIntroSimulation</c> overrides this, backed by a real <see cref="CellStore"/> built
     /// from the SAME parsed records its collision field aliases (E7.a's "production call site"
     /// acceptance) - E7.b wires a real one into <see cref="AlundraWorldProxy"/> itself.
     /// </summary>
-    IAlundraCellMutator? CellMutator => null;
+    ICellMutator? CellMutator => null;
 
     /// <summary>
     /// This world's sound-effect playback seam (E11.a, docs/plan-e11-audio.md) - backs opcodes

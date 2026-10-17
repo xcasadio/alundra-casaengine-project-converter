@@ -43,7 +43,7 @@ public sealed class AlundraFlailBounceWallProbeTests : IDisposable
 
     private sealed record Tick(uint Target, int HitCounter, bool HasBox);
 
-    private static List<Tick> Run(int item, Action<IAlundraCellMutator>? walls, int ticks)
+    private static List<Tick> Run(int item, Action<ICellMutator>? walls, int ticks)
     {
         using var arena = new HitArena("f2-wall", 100, 100, null);
         arena.Arc.Give(item);
@@ -73,11 +73,11 @@ public sealed class AlundraFlailBounceWallProbeTests : IDisposable
     }
 
     // The cell (5, 5) and (5, 6) rewritten from real cells of the map (height 1: (33, 41) over two rows; height 2: (34, 48) over two rows).
-    private static void WallOfHeight1(IAlundraCellMutator cells) => cells.CopyCellRectangle(33, 41, 1, 2, 5, 5);
+    private static void WallOfHeight1(ICellMutator cells) => cells.CopyCellRectangle(33, 41, 1, 2, 5, 5);
 
-    private static void WallOfHeight2(IAlundraCellMutator cells) => cells.CopyCellRectangle(34, 48, 1, 2, 5, 5);
+    private static void WallOfHeight2(ICellMutator cells) => cells.CopyCellRectangle(34, 48, 1, 2, 5, 5);
 
-    private static void WallOfBit40(IAlundraCellMutator cells)
+    private static void WallOfBit40(ICellMutator cells)
     {
         cells.SetCellBits(5, 5, 0x40, 0);
         cells.SetCellBits(5, 6, 0x40, 0);

@@ -32,7 +32,7 @@ namespace Alundra.Cells;
 /// <see cref="CellsRecords"/> is parsed (and this store rebuilt from it) every time a world is
 /// (re)initialized, and nothing here ever writes back into <c>TileMapData</c> itself.
 /// </summary>
-public sealed class AlundraCellStore : IAlundraCellMutator
+public sealed class CellStore : ICellMutator
 {
     private readonly int _width;
     private readonly int _height;
@@ -52,7 +52,7 @@ public sealed class AlundraCellStore : IAlundraCellMutator
     /// </summary>
     public event Action<IReadOnlyList<int>>? CellsMutated;
 
-    private AlundraCellStore(int width, int height, CellsRecords records, string worldName)
+    private CellStore(int width, int height, CellsRecords records, string worldName)
     {
         _width = width;
         _height = height;
@@ -86,7 +86,7 @@ public sealed class AlundraCellStore : IAlundraCellMutator
                 // own row-major indices), but a hand-edited/corrupted document should not lose a wall
                 // stack without a trace.
                 Logs.WriteWarning(
-                    $"AlundraCellStore: world '{worldName}' - AlundraCells 'wall_tiles' key '{key}' is not a "
+                    $"CellStore: world '{worldName}' - AlundraCells 'wall_tiles' key '{key}' is not a "
                     + $"valid cell index in [0,{_wallTiles.Length}); that wall tile stack is dropped.");
             }
         }
@@ -100,7 +100,7 @@ public sealed class AlundraCellStore : IAlundraCellMutator
     /// mismatch these two arrays specifically can carry that <see cref="CellsCollisionField"/>'s
     /// own well-formed gate does not check (it never reads them - see that gate's own doc).
     /// </summary>
-    public static bool TryCreate(CellsRecords records, int width, int height, string worldName, out AlundraCellStore? store)
+    public static bool TryCreate(CellsRecords records, int width, int height, string worldName, out CellStore? store)
     {
         store = null;
         var expectedCellCount = width * height;
@@ -108,13 +108,13 @@ public sealed class AlundraCellStore : IAlundraCellMutator
         if (records.TileId.Length != expectedCellCount || records.WallTilesOffset.Length != expectedCellCount)
         {
             Logs.WriteWarning(
-                $"AlundraCellStore: world '{worldName}' - tile_id/wall_tiles_offset column length does not "
+                $"CellStore: world '{worldName}' - tile_id/wall_tiles_offset column length does not "
                 + $"match TileMapData.MapSize ({width}x{height}={expectedCellCount}); cell store not "
                 + "installed (degraded mode).");
             return false;
         }
 
-        store = new AlundraCellStore(width, height, records, worldName);
+        store = new CellStore(width, height, records, worldName);
         return true;
     }
 
@@ -190,7 +190,7 @@ public sealed class AlundraCellStore : IAlundraCellMutator
         if (srcX < 0 || srcY < 0 || width < 0 || height < 0 || dstX < 0 || dstY < 0)
         {
             Logs.WriteWarning(
-                $"AlundraCellStore.CopyCellRectangle: negative operand (srcX={srcX}, srcY={srcY}, "
+                $"CellStore.CopyCellRectangle: negative operand (srcX={srcX}, srcY={srcY}, "
                 + $"width={width}, height={height}, dstX={dstX}, dstY={dstY}) - the original debug-breaks "
                 + "here then proceeds with the same unclamped operands anyway; this port logs and "
                 + "proceeds identically (no debugger to break into).");
@@ -198,7 +198,7 @@ public sealed class AlundraCellStore : IAlundraCellMutator
         else if (_width < srcX + width || _height < srcY + height || _width < dstX + width || _height < dstY + height)
         {
             Logs.WriteWarning(
-                $"AlundraCellStore.CopyCellRectangle: rectangle exceeds map bounds ({_width}x{_height}) - "
+                $"CellStore.CopyCellRectangle: rectangle exceeds map bounds ({_width}x{_height}) - "
                 + $"srcX={srcX}, srcY={srcY}, width={width}, height={height}, dstX={dstX}, dstY={dstY} - "
                 + "the original debug-breaks here then proceeds with the same unclamped operands anyway; "
                 + "this port logs and proceeds identically (no debugger to break into).");

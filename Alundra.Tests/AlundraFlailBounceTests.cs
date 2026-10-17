@@ -305,7 +305,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         var tileMapData = new CasaEngine.Framework.Assets.TileMap.TileMapData();
         tileMapData.Load(Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(tileMapPath)));
         Assert.True(CellsCollisionField.TryCreate(tileMapData, "Overworld 3,1-14", out var field, out var records));
-        Assert.True(AlundraCellStore.TryCreate(records!, tileMapData.MapSize.Width, tileMapData.MapSize.Height, "Overworld 3,1-14", out var store));
+        Assert.True(CellStore.TryCreate(records!, tileMapData.MapSize.Width, tileMapData.MapSize.Height, "Overworld 3,1-14", out var store));
         Assert.Equal((52, 60), (tileMapData.MapSize.Width, tileMapData.MapSize.Height));
 
         Assert.True(field!.TryReadBinaryCell(7, 8, out var height, out var walkability));

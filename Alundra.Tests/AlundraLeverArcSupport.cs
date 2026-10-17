@@ -75,9 +75,9 @@ internal static class LeverArcs
         name, zone, world, flags, 0, 0, 0, frameLimit, RealController: true, Prefabs: true,
         Arrival: new ArcArrival(pixelX << 16, pixelY << 16, zLevel << 20, GameState.ResetAnimationId, direction));
 
-    public static AlundraCellStore Store(ArcRun arc) => (AlundraCellStore)arc.Proxy.CellMutator!;
+    public static CellStore Store(ArcRun arc) => (CellStore)arc.Proxy.CellMutator!;
 
-    public static LeverCell CellAt(AlundraCellStore store, int x, int y)
+    public static LeverCell CellAt(CellStore store, int x, int y)
     {
         var stack = store.GetWallTileStack(x, y);
         var text = stack is null ? "none" : stack.Value.Offset + ":" + string.Join(",", stack.Value.Tiles);
@@ -85,7 +85,7 @@ internal static class LeverArcs
     }
 
     /// <summary>The cells of a rectangle, row by row.</summary>
-    public static List<LeverCell> Rect(AlundraCellStore store, int x, int y, int width, int height)
+    public static List<LeverCell> Rect(CellStore store, int x, int y, int width, int height)
     {
         var cells = new List<LeverCell>();
         for (var j = 0; j < height; j++)
@@ -100,7 +100,7 @@ internal static class LeverArcs
     }
 
     /// <summary>The wall stack of a cell as a list (empty when the cell carries none).</summary>
-    public static int[] Walls(AlundraCellStore store, int x, int y) => store.GetWallTileStack(x, y)?.Tiles.ToArray() ?? Array.Empty<int>();
+    public static int[] Walls(CellStore store, int x, int y) => store.GetWallTileStack(x, y)?.Tiles.ToArray() ?? Array.Empty<int>();
 
     /// <summary>The frames at which the pc of the slot ran (any opcode).</summary>
     public static List<int> FramesAt(ArcRun arc, int slot, int pc) => arc.Trace.Where(t => t.Slot == slot && t.Pc == pc).Select(t => t.Frame).ToList();

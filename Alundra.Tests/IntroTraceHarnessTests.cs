@@ -417,7 +417,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     // the interpreter, proving the "no mutator" path leaves export values untouched via the SAME
     // production RunMapEventsPass call, not a different code path.
     private readonly bool _installCellMutator;
-    private AlundraCellStore? _cellStore;
+    private CellStore? _cellStore;
 
     // E11.a (docs/plan-e11-audio.md): T1's own "production call site" fake - this harness IMPLEMENTS
     // IAlundraSoundPlayer itself (rather than a separate class) since it already tracks its own Frame
@@ -495,7 +495,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     // post-mutation cell state after driving real frames via RunFramesForTest, without this class itself
     // needing any assertion of its own.
     public CellsCollisionField? GroundField => _groundField;
-    public AlundraCellStore? CellStore => _cellStore;
+    public CellStore? CellStore => _cellStore;
 
     /// <summary>E11.a test-only accessor (T1/T2, docs/plan-e11-audio.md): every <c>(Frame, sfxId)</c>
     /// pair requested through the REAL production dispatch path (0xBD/0xBE/0x12/0x75) while
@@ -684,7 +684,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         CellsCollisionField.TryCreate(tileMapData, _worldName, out _groundField, out var cellRecords);
         if (cellRecords != null)
         {
-            AlundraCellStore.TryCreate(
+            CellStore.TryCreate(
                 cellRecords, tileMapData.MapSize.Width, tileMapData.MapSize.Height, _worldName, out _cellStore);
         }
 
@@ -1136,7 +1136,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// E7.a (docs/plan-e7-mutation-tuiles.md) - the "production call site" acceptance: this harness drives
     /// opcodes 0x54/0x55/0x85 through the REAL <see cref="EventProgramRunner.Dispatch"/> via
     /// <see cref="AlundraWorldProxy.RunMapEventsPass"/>/<see cref="TraceAwareEntityRunner.RunScript"/>
-    /// exactly like production, backed by a real <see cref="AlundraCellStore"/> (see
+    /// exactly like production, backed by a real <see cref="Cells.CellStore"/> (see
     /// <see cref="_cellStore"/>'s own doc on why it shares its records with <see cref="_groundField"/>).
     /// <see cref="_installCellMutator"/> gates only THIS property's returned value - the neutralization
     /// twin (constructed with <c>installCellMutator: false</c>) still builds the same real store, it just
@@ -1144,7 +1144,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// production takes on a world with no cell store, proving the mutation actually flows through this
     /// exact seam rather than some other, accidental code path.
     /// </summary>
-    public IAlundraCellMutator? CellMutator => _installCellMutator ? _cellStore : null;
+    public ICellMutator? CellMutator => _installCellMutator ? _cellStore : null;
 
     /// <summary>
     /// E11.a (docs/plan-e11-audio.md) - the "production call site" acceptance for T1: this harness

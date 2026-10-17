@@ -165,7 +165,7 @@ public sealed class AlundraInoaDayOneArcTests
     public void A10_TheFirstVisitOnMap165_TheActorsPassTheSceneOnByFlags_ThePlayerGetsTheHandBack()
     {
         using var arc = new ArcRun(A10Spec);
-        var store = (AlundraCellStore)arc.Proxy.CellMutator!;
+        var store = (CellStore)arc.Proxy.CellMutator!;
         string Cells() => string.Join(",", Enumerable.Range(23, 4).Select(y => store.GetWalkability(12, y).ToString("X2")));
         var samples = new A10Samples { CellsAtStart = Cells() };
         arc.OnFrame = () => samples.TakeFrame(arc);

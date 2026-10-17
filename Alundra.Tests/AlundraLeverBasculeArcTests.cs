@@ -21,12 +21,12 @@ public sealed class AlundraLeverBasculeArcTests
     private const int D = ScriptHelper.ProgramDTouch;
 
     /// <summary>The platform <paramref name="i"/> (0, 1, 2): cells (21 + 4i .. 22 + 4i, 4 .. 7).</summary>
-    private static List<LeverCell> Platform(AlundraCellStore store, int i) => LeverArcs.Rect(store, 21 + 4 * i, 4, 2, 4);
+    private static List<LeverCell> Platform(CellStore store, int i) => LeverArcs.Rect(store, 21 + 4 * i, 4, 2, 4);
 
     /// <summary>The frame <paramref name="k"/> (0 to 3) of the template: cells (42 + 2k .. 43 + 2k, 4 .. 7).</summary>
-    private static List<LeverCell> Frame(AlundraCellStore store, int k) => LeverArcs.Rect(store, 42 + 2 * k, 4, 2, 4);
+    private static List<LeverCell> Frame(CellStore store, int k) => LeverArcs.Rect(store, 42 + 2 * k, 4, 2, 4);
 
-    private static void AssertPlatforms(AlundraCellStore store, int[] frames, string when)
+    private static void AssertPlatforms(CellStore store, int[] frames, string when)
     {
         for (var i = 0; i < 3; i++)
         {
@@ -38,7 +38,7 @@ public sealed class AlundraLeverBasculeArcTests
     }
 
     /// <summary>The wall stacks of the row 5 of the frame: their last four tiles, by frame (F0 ends 8678, 8688, 8698, 8708 and 8679, ...).</summary>
-    private static int[] Tail(AlundraCellStore store, int x, int y) => LeverArcs.Walls(store, x, y).TakeLast(4).ToArray();
+    private static int[] Tail(CellStore store, int x, int y) => LeverArcs.Walls(store, x, y).TakeLast(4).ToArray();
 
     private sealed record Hit(int[] TurnedOff, int[] TurnedOn, uint FacingInAnimation, uint FinalFacing, (int Platform, int Frame)[] At9, (int Platform, int Frame)[] At15, (int Platform, int Frame)[] At21, int[] After);
 

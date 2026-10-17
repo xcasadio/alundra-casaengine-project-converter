@@ -12,7 +12,7 @@ namespace Alundra.Audio;
 /// <summary>
 /// This world's sound-effect playback seam (docs/plan-e11-audio.md, slice E11.a, D-E11-1) - backs
 /// opcodes 0xBD/0xBE/0x12/0x75 in <see cref="EventProgramRunner.Dispatch"/>. Same precedent as
-/// <see cref="IAlundraCellMutator"/>: the vocabulary is Alundra's own (<c>int sfxId</c>), not
+/// <see cref="ICellMutator"/>: the vocabulary is Alundra's own (<c>int sfxId</c>), not
 /// <see cref="AudioService"/>'s, because <see cref="AudioService"/> is <c>sealed</c> and unusable as a
 /// fake in a synthetic interpreter test, and the opcodes themselves only ever carry a plain sfx id.
 /// </summary>

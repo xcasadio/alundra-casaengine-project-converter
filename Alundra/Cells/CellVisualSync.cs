@@ -12,7 +12,7 @@ namespace Alundra.Cells;
 
 /// <summary>
 /// E7.b (docs/plan-e7-mutation-tuiles.md): the visual + navigation half of "cell mutation at runtime" -
-/// subscribed to <see cref="AlundraCellStore.CellsMutated"/> by <see cref="AlundraWorldProxy"/>'s own
+/// subscribed to <see cref="CellStore.CellsMutated"/> by <see cref="AlundraWorldProxy"/>'s own
 /// installation method, this is what makes 0x54/0x55/0x85 actually redraw the map and re-route
 /// navigation instead of only mutating data E7.a otherwise leaves inert (that class doc's own "assumed
 /// gap"). One instance per world.
@@ -23,7 +23,7 @@ namespace Alundra.Cells;
 /// resubmitted (their own return value, fact 13 - not the raw placement documents, which are a superset:
 /// seeding from the documents would resubmit a mismatched entry whose flat tile was never stripped,
 /// double-drawing it the first time a mutation forces a reconstruction). On a mutated cell, this class
-/// re-derives that cell's floor/wall contributions from the SAME <see cref="AlundraCellStore"/> the
+/// re-derives that cell's floor/wall contributions from the SAME <see cref="CellStore"/> the
 /// opcodes just wrote into and compares them field-by-field against the model; only a real difference
 /// marks the overlay dirty. <see cref="FlushPendingOverlayReconstruction"/> - called once per rendered
 /// frame by <see cref="AlundraWorldProxy.Update"/>, coalescing every mutation dispatched that frame (a
@@ -41,7 +41,7 @@ namespace Alundra.Cells;
 /// map comes from <see cref="TileMapComponent.TileSetData"/>'s own per-tile "TileId" custom property (the
 /// only visual tileset any Render_* layer ever indexes, index 0 - plan fact 6), built once here.
 ///
-/// Wall stack holes (plan fact 14): <see cref="AlundraCellStore.GetWallTileStack"/> already trims its
+/// Wall stack holes (plan fact 14): <see cref="CellStore.GetWallTileStack"/> already trims its
 /// returned <c>Tiles</c> to the visible <c>Count</c> (never the backing array's own longer
 /// <c>Length</c>), but a <c>0xffff</c> entry INSIDE that visible range is a hole that still consumes its
 /// own stack index - the loop below walks the RAW index <c>k</c> and skips a hole without compacting, so
@@ -56,14 +56,14 @@ namespace Alundra.Cells;
 /// <see cref="TileMapComponent.AddSortedOverlayTile"/> itself throws on a bad reference and this class
 /// must never let that happen mid-frame.
 /// </summary>
-public sealed class AlundraCellVisualSync
+public sealed class CellVisualSync
 {
     private const int NoFloorTileId = 0xffff;
     private const int NoWallTileId = 0xffff;
     private const int NavigationWalkabilityMask = 0x40;
 
     private readonly TileMapComponent _tileMapComponent;
-    private readonly AlundraCellStore _cellStore;
+    private readonly CellStore _cellStore;
     private readonly int _width;
     private readonly int _height;
     private readonly string _worldName;
@@ -88,8 +88,8 @@ public sealed class AlundraCellVisualSync
     /// bump this.</summary>
     public int ReconstructionCount { get; private set; }
 
-    private AlundraCellVisualSync(
-        TileMapComponent tileMapComponent, AlundraCellStore cellStore, int width, int height, string worldName,
+    private CellVisualSync(
+        TileMapComponent tileMapComponent, CellStore cellStore, int width, int height, string worldName,
         Func<NavigationGrid2D?> navigationGridAccessor, Dictionary<int, int> localIdByRawTileId)
     {
         _tileMapComponent = tileMapComponent;
@@ -112,15 +112,15 @@ public sealed class AlundraCellVisualSync
     /// pick it up (the real resolver needs a live <c>AssetContentManager</c> and degrades to null without
     /// one - acceptance item 7's own "inject a grid into the proxy" step).
     /// </summary>
-    public static AlundraCellVisualSync Create(
-        TileMapComponent tileMapComponent, AlundraCellStore cellStore, int width, int height, string worldName,
+    public static CellVisualSync Create(
+        TileMapComponent tileMapComponent, CellStore cellStore, int width, int height, string worldName,
         TileSetData? visualTileSet,
         WallPlacementRecords? wallRecords, IReadOnlyList<int> submittedWallIndices,
         FloorPlacementRecords? floorRecords, IReadOnlyList<int> submittedFloorIndices,
         Func<NavigationGrid2D?> navigationGridAccessor)
     {
         var localIdByRawTileId = BuildRawToLocalTileIdMap(visualTileSet);
-        var sync = new AlundraCellVisualSync(
+        var sync = new CellVisualSync(
             tileMapComponent, cellStore, width, height, worldName, navigationGridAccessor, localIdByRawTileId);
 
         if (wallRecords != null)
@@ -185,7 +185,7 @@ public sealed class AlundraCellVisualSync
         return map;
     }
 
-    /// <summary>Subscribed directly to <see cref="AlundraCellStore.CellsMutated"/> by
+    /// <summary>Subscribed directly to <see cref="CellStore.CellsMutated"/> by
     /// <see cref="AlundraWorldProxy"/>'s installation method - acceptance item 1's own wiring check
     /// (docs/plan-e7-mutation-tuiles.md). Processes every mutated cell's overlay contributions AND its
     /// navigation cell; only the overlay half is deferred (<see cref="_overlayDirty"/>) to
@@ -272,7 +272,7 @@ public sealed class AlundraCellVisualSync
             {
                 _degradedWarned = true;
                 Logs.WriteWarning(
-                    $"AlundraCellVisualSync: world '{_worldName}' - cell ({x},{y}) mutated to an elevated floor "
+                    $"CellVisualSync: world '{_worldName}' - cell ({x},{y}) mutated to an elevated floor "
                     + $"(height={height}) over a flat floor that was never in the original AlundraFloorPlacements; "
                     + "left flat and un-adopted (degraded); further cells of this world are silent.");
             }
@@ -285,7 +285,7 @@ public sealed class AlundraCellVisualSync
         if (!_localIdByRawTileId.TryGetValue(tileId, out var localId))
         {
             Logs.WriteWarning(
-                $"AlundraCellVisualSync: world '{_worldName}' - cell ({x},{y})'s mutated floor raw tile id "
+                $"CellVisualSync: world '{_worldName}' - cell ({x},{y})'s mutated floor raw tile id "
                 + $"{tileId} has no matching local tile id in the visual tileset; entry skipped (degraded).");
             if (hadExisting)
             {
@@ -383,7 +383,7 @@ public sealed class AlundraCellVisualSync
             if (!_localIdByRawTileId.TryGetValue(raw, out var localId))
             {
                 Logs.WriteWarning(
-                    $"AlundraCellVisualSync: world '{_worldName}' - cell ({x},{y}) wall stack index {k}'s "
+                    $"CellVisualSync: world '{_worldName}' - cell ({x},{y}) wall stack index {k}'s "
                     + $"raw tile id {raw} has no matching local tile id in the visual tileset; entry skipped "
                     + "(degraded).");
                 if (hadExisting)

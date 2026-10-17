@@ -25,7 +25,7 @@ namespace Alundra.Physics;
 /// <c>JsonNamingPolicy.SnakeCaseLower</c> the converter serialized it with.
 ///
 /// E7.a (docs/plan-e7-mutation-tuiles.md): <see cref="TileId"/>, <see cref="WallTilesOffset"/> and the
-/// sparse <see cref="WallTiles"/> dictionary are now parsed too - <see cref="AlundraCellStore"/> needs
+/// sparse <see cref="WallTiles"/> dictionary are now parsed too - <see cref="CellStore"/> needs
 /// them to faithfully port <c>GameEngine.ChangeAreaTileProperties</c> (opcode 0x85), which copies both
 /// alongside Walkability/GroundProperty/Slope/Height. The JSON also carries <c>palette</c>/<c>tile</c>/
 /// <c>flags</c> columns, still silently ignored by <see cref="JsonSerializer"/>: <c>flags</c> in
@@ -47,7 +47,7 @@ public sealed class CellsRecords
 
     /// <summary>Sparse: only cells with an actual wall tile stack, keyed by cell index (as a string -
     /// JSON object keys must be strings, mirroring <c>CellMetadataDocument.WallTiles</c> on the
-    /// converter side). <see cref="AlundraCellStore"/> re-indexes this into a dense per-cell array once,
+    /// converter side). <see cref="CellStore"/> re-indexes this into a dense per-cell array once,
     /// at construction, rather than every reader re-parsing string keys.</summary>
     public Dictionary<string, WallTileStack> WallTiles { get; init; } = new();
 

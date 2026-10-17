@@ -100,7 +100,7 @@ public class AlundraCellsCollisionFieldTests
     /// E7.b (docs/plan-e7-mutation-tuiles.md, acceptance item 9, picking up an E7.a deferral): the
     /// pre-fill of all 256 possible <c>_surfaceTagCache</c> entries (not just the GroundProperty values
     /// present at load) had no test. A value ABSENT from the synthetic document at load (only 5 is
-    /// present) is introduced purely by a mutation - <see cref="AlundraCellStore.SetCellBits"/> OR-ing in
+    /// present) is introduced purely by a mutation - <see cref="CellStore.SetCellBits"/> OR-ing in
     /// 200, giving 205 - and must still read back as the surface tag "205", not the pre-fix "" fallback.
     /// </summary>
     [Fact]
@@ -115,7 +115,7 @@ public class AlundraCellsCollisionFieldTests
         var created = CellsCollisionField.TryCreate(tileMapData, "map_1", out var field, out var records);
         Assert.True(created);
 
-        var storeCreated = AlundraCellStore.TryCreate(records!, 1, 1, "map_1", out var store);
+        var storeCreated = CellStore.TryCreate(records!, 1, 1, "map_1", out var store);
         Assert.True(storeCreated);
 
         var position = new Vector3(0f, 0f, 0f);

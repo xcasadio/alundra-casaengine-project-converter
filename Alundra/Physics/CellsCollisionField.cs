@@ -102,7 +102,7 @@ public sealed class CellsCollisionField : ICollisionField
     /// <summary>
     /// Same as <see cref="TryCreate(TileMapData, string, out CellsCollisionField?)"/>, but also
     /// hands back the parsed <paramref name="records"/> - E7.a (docs/plan-e7-mutation-tuiles.md,
-    /// slice E7.a "share one parsed instance"): a caller that also wants an <see cref="AlundraCellStore"/>
+    /// slice E7.a "share one parsed instance"): a caller that also wants an <see cref="CellStore"/>
     /// for the SAME world builds it from these exact <paramref name="records"/> instead of re-parsing the
     /// "AlundraCells" custom property a second time, so both the field's aliased arrays and the store's
     /// mutations operate on the SAME <c>int[]</c> instances (element mutation instantly visible to
@@ -217,8 +217,8 @@ public sealed class CellsCollisionField : ICollisionField
     /// accessor next to <see cref="SampleGroundProperty"/>, exposing this exact same
     /// <c>_walkability[cellIndex]</c> instead of only its mask-combined form through
     /// <see cref="TrySampleGround(in Vector3, float, uint, out GroundSample)"/>'s <c>IsWalkable</c>.
-    /// Needed so a test can assert the EXACT bit pattern <see cref="AlundraCellStore.SetCellBits"/>/
-    /// <see cref="AlundraCellStore.ClearCellBits"/> left behind (0x54/0x55), the same way
+    /// Needed so a test can assert the EXACT bit pattern <see cref="CellStore.SetCellBits"/>/
+    /// <see cref="CellStore.ClearCellBits"/> left behind (0x54/0x55), the same way
     /// <see cref="SampleGroundProperty"/> already lets a test assert GroundProperty exactly rather than
     /// only through a walkability-mask side effect. Same clamp-to-nearest-cell convention as
     /// <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/> (never fails); does not touch
@@ -265,7 +265,7 @@ public sealed class CellsCollisionField : ICollisionField
     /// <summary>
     /// E20.f2: one cell by the binary's own indexing (the flail bounce, <c>0x800305E0-0x80030624</c>): the cell is at <c>[0x800DD86C] + 0x604 + row * 416 + column * 8</c>, a grid of 52 columns of 8
     /// bytes, addressed by the caller's already clamped <paramref name="column"/> (0 to <c>0x33</c>) and <paramref name="row"/> (0 to <c>0x3B</c>) - NOT by a world position, and NOT clamped to the map. Every map of the
-    /// export is 52 x 60 (<see cref="MapSizeReader"/>, F3), so the field's <c>row * width + column</c> is the binary's own cell; the arrays are the ones <see cref="AlundraCellStore"/> mutates, so a live
+    /// export is 52 x 60 (<see cref="MapSizeReader"/>, F3), so the field's <c>row * width + column</c> is the binary's own cell; the arrays are the ones <see cref="CellStore"/> mutates, so a live
     /// mutation (0x54, 0x55, 0x85) is seen here. <paramref name="heightUnits"/> is the cell's height byte (<c>lbu 3(cell)</c>, units of 16 px) and <paramref name="walkability"/> its walkability byte (the low
     /// byte of <c>lhu (cell)</c>, whose bit <c>0x40</c> the flail tests). Returns false, with zeros, when the cell is outside this field (a test field narrower than 52 x 60): the binary has a cell there that
     /// the field does not hold.

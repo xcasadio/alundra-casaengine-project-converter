@@ -10,7 +10,7 @@ using Alundra.Cells;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Covers <see cref="AlundraCellStore"/> against the REAL map 389 ("Ship Klark (beginning)") cell data.
+/// Covers <see cref="CellStore"/> against the REAL map 389 ("Ship Klark (beginning)") cell data.
 /// docs/plan-e7-mutation-tuiles.md, slice E7.a, acceptance 2 and 4. Acceptance 1 (synthetic, per-opcode
 /// dispatch) lives in <see cref="AlundraEventProgramRunnerTests"/>; acceptance 3 (the production call
 /// site, via the real headless intro harness) lives in <see cref="AlundraCellStoreProductionTests"/>.
@@ -45,7 +45,7 @@ public class AlundraCellStoreTests
             + "(docs/plan-e7-mutation-tuiles.md, slice E7.b, acceptance item 9).");
     }
 
-    private static (CellsCollisionField Field, AlundraCellStore Store) LoadMap389()
+    private static (CellsCollisionField Field, CellStore Store) LoadMap389()
     {
         var projectRoot = FindProjectRoot();
 
@@ -66,7 +66,7 @@ public class AlundraCellStoreTests
         var fieldCreated = CellsCollisionField.TryCreate(tileMapData, WorldName, out var field, out var records);
         Assert.True(fieldCreated, "map 389's AlundraCells custom property should parse and match MapSize.");
 
-        var storeCreated = AlundraCellStore.TryCreate(
+        var storeCreated = CellStore.TryCreate(
             records!, tileMapData.MapSize.Width, tileMapData.MapSize.Height, WorldName, out var store);
         Assert.True(storeCreated, "map 389's tile_id/wall_tiles_offset columns should match cell_count.");
 
@@ -201,7 +201,7 @@ public class AlundraCellStoreTests
 
     // -------------------- E7.b acceptance item 9: E7.a deferrals picked up (synthetic) --------------
 
-    private static AlundraCellStore NewSyntheticStoreWithMalformedWallTilesKey()
+    private static CellStore NewSyntheticStoreWithMalformedWallTilesKey()
     {
         var tileMapData = new TileMapData();
         tileMapData.MapSize = new CasaEngine.Core.Math.Size(1, 1);
@@ -213,7 +213,7 @@ public class AlundraCellStoreTests
         var fieldCreated = CellsCollisionField.TryCreate(tileMapData, "map_1", out _, out var records);
         Assert.True(fieldCreated);
 
-        var storeCreated = AlundraCellStore.TryCreate(records!, 1, 1, "map_1", out var store);
+        var storeCreated = CellStore.TryCreate(records!, 1, 1, "map_1", out var store);
         Assert.True(storeCreated);
         return store!;
     }
@@ -233,7 +233,7 @@ public class AlundraCellStoreTests
     }
 
     /// <summary>
-    /// E7.b: <see cref="AlundraCellStore.GetWallTileStack"/> used to hand back its own live backing array
+    /// E7.b: <see cref="CellStore.GetWallTileStack"/> used to hand back its own live backing array
     /// (or an <see cref="ArraySegment{T}"/> over it) whenever <c>Count == Tiles.Length</c> - a caller could
     /// mutate the store's own state through what looks like a read-only accessor. It must now always
     /// return an independent copy.
@@ -255,7 +255,7 @@ public class AlundraCellStoreTests
     }
 
     /// <summary>
-    /// E7.b: <see cref="AlundraCellStore.CellsMutated"/>'s payload used to be allocated unconditionally,
+    /// E7.b: <see cref="CellStore.CellsMutated"/>'s payload used to be allocated unconditionally,
     /// even with zero subscribers (both <c>CopyCellRectangle</c>'s <c>List&lt;int&gt;</c> and
     /// <c>ApplyCellBits</c>'s single-element array were built before the null-conditional invoke, which
     /// still evaluates its argument). Measured via <see cref="GC.GetAllocatedBytesForCurrentThread"/>: a

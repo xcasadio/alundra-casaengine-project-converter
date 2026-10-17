@@ -30,7 +30,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E7.b acceptance (docs/plan-e7-mutation-tuiles.md, slice E7.b): the visual + navigation applier
-/// (<see cref="AlundraCellVisualSync"/>) wired by <see cref="AlundraWorldProxy.InstallCellAndOverlaySystems"/>
+/// (<see cref="CellVisualSync"/>) wired by <see cref="AlundraWorldProxy.InstallCellAndOverlaySystems"/>
 /// (fact 17's extracted internal method), driven through the REAL map 389 export ("Ship Klark
 /// (beginning)"), a headless <see cref="TileMapComponent"/> (same no-graphics-device shape as
 /// <see cref="WallPlacementOverlayTests"/>'s own fixture, extended to the map's real 4 "Render_*" layers
@@ -313,7 +313,7 @@ public class AlundraCellVisualSyncTests : IDisposable
         var fixture = BuildHeadlessProxy();
         IEntityWorldContext context = fixture.Proxy;
 
-        var store = (AlundraCellStore)context.CellMutator!;
+        var store = (CellStore)context.CellMutator!;
 
         // Derive the exact draw positions of (18,37)'s own wall stack BEFORE mutating - the formula itself
         // (y - height - offset + k + 1), not a hardcoded guess (plan fact 2).
@@ -397,10 +397,10 @@ public class AlundraCellVisualSyncTests : IDisposable
 
         var fieldCreated = CellsCollisionField.TryCreate(tileMapData, "map_1", out _, out var cellRecords);
         Assert.True(fieldCreated);
-        var storeCreated = AlundraCellStore.TryCreate(cellRecords!, 2, 1, "map_1", out var store);
+        var storeCreated = CellStore.TryCreate(cellRecords!, 2, 1, "map_1", out var store);
         Assert.True(storeCreated);
 
-        var sync = AlundraCellVisualSync.Create(
+        var sync = CellVisualSync.Create(
             component, store!, 2, 1, "map_1", component.TileSetData,
             records, submitted,
             floorRecords: null, submittedFloorIndices: Array.Empty<int>(),
@@ -478,7 +478,7 @@ public class AlundraCellVisualSyncTests : IDisposable
     {
         var fixture = BuildHeadlessProxy();
         IEntityWorldContext context = fixture.Proxy;
-        var store = (AlundraCellStore)context.CellMutator!;
+        var store = (CellStore)context.CellMutator!;
 
         // (13,35) on map 389 carries a RUN of 0xffff holes followed by real tiles (plan fact 14). Copy it
         // onto (13,50) - same column (so offset/height stay meaningful), far enough down that even this
@@ -550,7 +550,7 @@ public class AlundraCellVisualSyncTests : IDisposable
         var newEntry = afterAt2114.Single(e => e.TileId == localId783);
 
         // Depth slot (raw 17166, plan fact 4): elevation = 27*16 + 7 + slot.
-        var expectedSlot = AlundraCellVisualSync.ComputeDepthSlot(17166);
+        var expectedSlot = CellVisualSync.ComputeDepthSlot(17166);
         var expectedElevation = 27 * 16 + 7 + Math.Clamp(expectedSlot, 0, 6);
         Assert.Equal(expectedElevation, newEntry.SortKey.Elevation);
 
@@ -574,7 +574,7 @@ public class AlundraCellVisualSyncTests : IDisposable
     {
         var fixture = BuildHeadlessProxy();
         IEntityWorldContext context = fixture.Proxy;
-        var store = (AlundraCellStore)context.CellMutator!;
+        var store = (CellStore)context.CellMutator!;
 
         // Drive a REAL reconstruction (the map-entry copy onto (18,37)), so every entry asserted below has
         // been resubmitted by the applier rather than left over from WallPlacementOverlay's init pass.
@@ -597,7 +597,7 @@ public class AlundraCellVisualSyncTests : IDisposable
 
         // Elevation is what the "source cellY vs draw row" trap (plan fact 3) gets wrong: the position uses
         // the draw row, the sort key must use the SOURCE cell row.
-        var wallSlot = AlundraCellVisualSync.ComputeDepthSlot(rawWall);
+        var wallSlot = CellVisualSync.ComputeDepthSlot(rawWall);
         Assert.Equal(WallPlacementOverlay.ComputeWallSortKey(37, wallSlot, 0).Elevation, wallEntry.SortKey.Elevation);
         Assert.NotEqual(wallDrawY * 16 + 7 + Math.Clamp(wallSlot, 0, 6), wallEntry.SortKey.Elevation);
 
@@ -607,7 +607,7 @@ public class AlundraCellVisualSyncTests : IDisposable
         var floorEntry = entries.Single(e =>
             e.GridX == 18 && e.GridY == floorDrawY && e.TileId == FindLocalTileId(fixture.Component, rawFloor));
 
-        var floorSlot = AlundraCellVisualSync.ComputeDepthSlot(rawFloor);
+        var floorSlot = CellVisualSync.ComputeDepthSlot(rawFloor);
         Assert.Equal(WallPlacementOverlay.ComputeFloorSortKey(37, floorSlot, 0).Elevation, floorEntry.SortKey.Elevation);
         Assert.NotEqual(floorDrawY * 16 + Math.Clamp(floorSlot, 0, 5), floorEntry.SortKey.Elevation);
     }
@@ -747,7 +747,7 @@ public class AlundraCellVisualSyncTests : IDisposable
     /// (0,6) a height-0 floor (raw 61, local 9), (0,7) an empty cell. Column 1 holds the destinations:
     /// (1,3) and (1,4) own a flat floor at load (raw 60, height 0), every other cell is empty - the shape
     /// of map 476's empty vision area (E19.r R2). No wall stacks, no placement documents.</summary>
-    private static (TileMapComponent Component, AlundraCellStore Store, AlundraCellVisualSync Sync) CreateEmptyAreaFixture()
+    private static (TileMapComponent Component, CellStore Store, CellVisualSync Sync) CreateEmptyAreaFixture()
     {
         const int width = 2;
         const int height = 8;
@@ -773,9 +773,9 @@ public class AlundraCellVisualSyncTests : IDisposable
         tileMapData.CustomProperties["AlundraCells"] = alundraCellsJson;
 
         Assert.True(CellsCollisionField.TryCreate(tileMapData, "map_476_like", out _, out var cellRecords));
-        Assert.True(AlundraCellStore.TryCreate(cellRecords!, width, height, "map_476_like", out var store));
+        Assert.True(CellStore.TryCreate(cellRecords!, width, height, "map_476_like", out var store));
 
-        var sync = AlundraCellVisualSync.Create(
+        var sync = CellVisualSync.Create(
             component, store!, width, height, "map_476_like", component.TileSetData,
             wallRecords: null, submittedWallIndices: Array.Empty<int>(),
             floorRecords: null, submittedFloorIndices: Array.Empty<int>(),
@@ -886,7 +886,7 @@ public class AlundraCellVisualSyncTests : IDisposable
 
     /// <summary>E19.m6 M6-4: <see cref="CreateEmptyAreaFixture"/>'s grid (2 x 8, same sources in column 0) with ONE floor placement at load: the cell (1,7) holds a
     /// height-3 floor (raw 60, local 5) drawn by the overlay at (1,4) (<c>WallPlacementOverlay.ApplyFloor</c> strips the flat tile there). No other flat floor.</summary>
-    private static (TileMapComponent Component, AlundraCellStore Store, AlundraCellVisualSync Sync, IReadOnlyList<int> Submitted) CreateFloorPlacementAtLoadFixture()
+    private static (TileMapComponent Component, CellStore Store, CellVisualSync Sync, IReadOnlyList<int> Submitted) CreateFloorPlacementAtLoadFixture()
     {
         const int width = 2;
         const int height = 8;
@@ -912,7 +912,7 @@ public class AlundraCellVisualSyncTests : IDisposable
         tileMapData.CustomProperties["AlundraCells"] = alundraCellsJson;
 
         Assert.True(CellsCollisionField.TryCreate(tileMapData, "map_476_like", out _, out var cellRecords));
-        Assert.True(AlundraCellStore.TryCreate(cellRecords!, width, height, "map_476_like", out var store));
+        Assert.True(CellStore.TryCreate(cellRecords!, width, height, "map_476_like", out var store));
 
         // The placement: cell (1,7), plane 0, drawn at (1,4), gid 6 = FirstGid + local tile id 5, depth slot 0.
         var floorRecords = new FloorPlacementRecords
@@ -929,7 +929,7 @@ public class AlundraCellVisualSyncTests : IDisposable
         };
         var submitted = WallPlacementOverlay.ApplyFloor(component, floorRecords, "map_476_like");
 
-        var sync = AlundraCellVisualSync.Create(
+        var sync = CellVisualSync.Create(
             component, store!, width, height, "map_476_like", component.TileSetData,
             wallRecords: null, submittedWallIndices: Array.Empty<int>(),
             floorRecords: floorRecords, submittedFloorIndices: submitted,
@@ -1015,7 +1015,7 @@ public class AlundraCellVisualSyncTests : IDisposable
     // -----------------------------------------------------------------------------------------
 
     /// <summary>Finds the LOCAL tile id (<see cref="TileMapComponent.TileSetData"/>'s own <c>TileData.Id</c>)
-    /// for a RAW PSX tile id, the exact same way <see cref="AlundraCellVisualSync"/> does (plan fact 5) - so
+    /// for a RAW PSX tile id, the exact same way <see cref="CellVisualSync"/> does (plan fact 5) - so
     /// a test can assert against the value the applier ACTUALLY computed instead of a hardcoded guess.</summary>
     private static int FindLocalTileId(TileMapComponent component, int rawTileId)
     {

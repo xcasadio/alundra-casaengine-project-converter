@@ -28,7 +28,7 @@ public sealed class AlundraLeverArcTests
 
     public AlundraLeverArcTests(ITestOutputHelper output) => _output = output;
 
-    private static void AssertCells(AlundraCellStore store, int x, int y, int walkability, int height, int groundProperty, int tileLeft, int tileRight)
+    private static void AssertCells(CellStore store, int x, int y, int walkability, int height, int groundProperty, int tileLeft, int tileRight)
     {
         var left = LeverArcs.CellAt(store, x, y);
         var right = LeverArcs.CellAt(store, x + 1, y);
