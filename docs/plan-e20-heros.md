@@ -7151,7 +7151,7 @@ après le chargement (`GameRandom.Reset()`, `:255-261`) : un arc est déterminis
 et du soulèvement de g1b) : g4a avec g3, g4b avec g1b. Q-G3-c (la chute de la caisse du dessus) : l'écart documenté jusqu'à E19.h2, mesuré
 en g4b.
 
-#### 1.29.1 E20.g4a — La barricade par le saut ⏳ (révision 2)
+#### 1.29.1 E20.g4a — La barricade par le saut ⏳ (révision 2, **READY** à la relecture de clôture)
 
 **Relecture (2026-10-18).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) les règles du pilote s'ancraient sur `0x11 @124`, qui ne
 s'exécute qu'après un roulis, comptaient en images sans dire comment trouver le tick du sondage à 2 et 3 ticks par image, et reposaient sur
@@ -7160,7 +7160,7 @@ pilote **ne déclenche aucun roulis** ; (2) le périmètre ne nommait ni la tabl
 tables du test des préréglages. Seconde relecture : REVISE, un blocage introduit par la révision 1 (le lâcher forcé à chaque sondage tombe
 aussi pendant le saut, alors que la fenêtre en X du binaire a été mesurée Gauche tenue de bout en bout) : FIX en révision 2 (le saut part à
 l'image qui suit un sondage, sa fenêtre en X est mesurée sur la DLL sous la règle du pilote à chaque cadence, arrêt si elle est vide) ;
-nouvelle époque, une seule relecture de clôture.
+nouvelle époque, une seule relecture de clôture : **READY** (2026-10-18).
 
 **Faits de B1 qui portent le pilote** (`critic-complet/c5_392_B1.out:29-40`, A5r `AlundraShipCorridorArcTests.cs:214-234`). La boucle :
 `@104 0x11` (rend la main), `@105 0x37 [15]` (attend), `@107 0x2F` (une direction est-elle tenue ?), `@111 0x04` (non : retour à `@105`),
