@@ -21,9 +21,9 @@ namespace Alundra.Tests;
 public sealed class AlundraDestroyEntityBreakEffectTests : IDisposable
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();
-    private readonly ulong _seed = AlundraRandom.RandomSeed;
+    private readonly ulong _seed = GameRandom.RandomSeed;
 
-    public void Dispose() => AlundraRandom.RandomSeed = _seed;
+    public void Dispose() => GameRandom.RandomSeed = _seed;
 
     private static AlundraWorldProxy World()
     {
@@ -206,14 +206,14 @@ public sealed class AlundraDestroyEntityBreakEffectTests : IDisposable
     public void TheDestruction_DrawsNoNumber_AndCreatesNoEntity_EvenWithContents()
     {
         var world = World();
-        AlundraRandom.RandomSeed = 0x12345678;
+        GameRandom.RandomSeed = 0x12345678;
         var victim = Victim();
         victim.ContentsItemId = 69;
 
         world.DestroyEntity(victim, -1);
         RunFrame(world, 2);
 
-        Assert.Equal(0x12345678UL, AlundraRandom.RandomSeed);
+        Assert.Equal(0x12345678UL, GameRandom.RandomSeed);
         Assert.Empty(((IEntityWorldContext)world).SpawnedEntities);
         Assert.Equal(69u, victim.ContentsItemId);
         Assert.Single(Slots(world));

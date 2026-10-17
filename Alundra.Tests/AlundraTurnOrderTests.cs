@@ -23,9 +23,9 @@ public sealed class AlundraTurnOrderTests : IDisposable
 {
     private const ulong Seed = 0xB017C93D;
 
-    public AlundraTurnOrderTests() => AlundraRandom.Reset();
+    public AlundraTurnOrderTests() => GameRandom.Reset();
 
-    public void Dispose() => AlundraRandom.Reset();
+    public void Dispose() => GameRandom.Reset();
 
     private sealed class WorldContext : IEntityWorldContext
     {
@@ -62,7 +62,7 @@ public sealed class AlundraTurnOrderTests : IDisposable
     [Fact]
     public void Turn_0x5A_Mode4_TwoEntitiesFound_TheLastFoundTakesTheFirstDraw()
     {
-        AlundraRandom.RandomSeed = Seed;
+        GameRandom.RandomSeed = Seed;
         var a = NewNormalEntity();
         var b = NewNormalEntity();
         var context = new WorldContext();
@@ -73,13 +73,13 @@ public sealed class AlundraTurnOrderTests : IDisposable
 
         Assert.Equal(24u, a.TargetDirection);
         Assert.Equal(0u, b.TargetDirection);
-        Assert.Equal(0xC81B4C37u, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(0xC81B4C37u, (uint)GameRandom.RandomSeed);
     }
 
     [Fact]
     public void Turn_0x5A_Mode5_TwoEntitiesFound_TheLastFoundTakesTheFirstDraw()
     {
-        AlundraRandom.RandomSeed = Seed;
+        GameRandom.RandomSeed = Seed;
         var a = NewNormalEntity();
         var b = NewNormalEntity();
         var context = new WorldContext();
@@ -95,7 +95,7 @@ public sealed class AlundraTurnOrderTests : IDisposable
     [Fact]
     public void Turn_0x5B_Mode5_TwoEntitiesFound_BothGetTheAnimation_TheLastFoundTakesTheFirstDraw()
     {
-        AlundraRandom.RandomSeed = Seed;
+        GameRandom.RandomSeed = Seed;
         var a = NewNormalEntity();
         var b = NewNormalEntity();
         var context = new WorldContext();

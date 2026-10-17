@@ -12,7 +12,7 @@ namespace Alundra.Ai.Enemies;
 /// (<c>0x8007D9A4</c>, slot D, code 1) of the master table <c>0x80098F4C</c> - registered in the registry of the native sprite handlers (<see cref="NativeSpriteRegistry"/>) for the type 335 only. E1 (its death) is
 /// not here: it is <c>DestroyEntity(e, -1)</c> of the host (E0/E1 stay outside the registry). They are ported from the real code of <c>ALUN_CD.EXE</c> (France) run in the emulator of the E14.a1 oracle
 /// (<c>docs/plan-e14-annexe/e14a/oracle-a1</c>: 1,185 single-call vectors of C1, 720 of D1, 3 of A1, and the calls of 21 scenarios) and compared call by call (<c>AlundraBeannoideOracleTests</c>). The fields they read are
-/// tied to the DLL's in the table of the plan (section 1.3b): the position, floor and tile of the entity and of the hero, the animation flags of the TICK, the generator's word (<see cref="AlundraRandom"/>).
+/// tied to the DLL's in the table of the plan (section 1.3b): the position, floor and tile of the entity and of the hero, the animation flags of the TICK, the generator's word (<see cref="GameRandom"/>).
 /// <para>
 /// Without a hero (<see cref="IEntityWorldContext.PlayerEntity"/> null) C1 does nothing and D1 only applies the damage and the animation (as <see cref="EnemyHelpers.HitReaction"/>): the binary always has a hero and the
 /// oracle has none of these cases (documented limit).

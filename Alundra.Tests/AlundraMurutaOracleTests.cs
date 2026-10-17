@@ -35,9 +35,9 @@ public sealed class AlundraMurutaOracleTests : IDisposable
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();
     private static readonly string[] ForceNames = { "tforcex_BC", "tforcey_C0", "forcex_C4", "forcey_C8", "fstepx_D4", "fstepy_D8" };
     private static readonly Lazy<AlundraEffectBank> Bank = new(() => EffectGolden.BankOf(Root, 14));
-    private readonly ulong _seed = AlundraRandom.RandomSeed;
+    private readonly ulong _seed = GameRandom.RandomSeed;
 
-    public void Dispose() => AlundraRandom.RandomSeed = _seed;
+    public void Dispose() => GameRandom.RandomSeed = _seed;
 
     // ---------------------------------------------------------------------------------------------------------------------
     // The fields: the oracle's names tied to the DLL's (the table of the plan, sections 1.3b and 1.3c)
@@ -310,12 +310,12 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         var expected = Expected(before, forcesBefore, changed);
         expected.Remove("letter_228"); // the pick of the oracle's slot; the real RunPickedEvent clears it afterwards (only E1's letter is compared).
         var heroBefore = HeroState(hero);
-        AlundraRandom.RandomSeed = unchecked((ulong)rngIn);
+        GameRandom.RandomSeed = unchecked((ulong)rngIn);
 
         entity.RunPickedEvent(runner);
 
         Assert.True(runner.NativeHandlerRunCount == 1, $"{where}: the registry did not run the handler ({runner.NativeHandlerRunCount} native runs)");
-        Assert.True(unchecked((uint)AlundraRandom.RandomSeed) == unchecked((uint)rngOut), $"{where}: the generator is {unchecked((uint)AlundraRandom.RandomSeed)}, the oracle has {unchecked((uint)rngOut)}");
+        Assert.True(unchecked((uint)GameRandom.RandomSeed) == unchecked((uint)rngOut), $"{where}: the generator is {unchecked((uint)GameRandom.RandomSeed)}, the oracle has {unchecked((uint)rngOut)}");
         Assert.True(journal.All(j => j.Kind == "sound"), $"{where}: the oracle journal has an entry that is not a sound");
         Assert.True(
             journal.Select(j => (int)j.Arguments[0]).SequenceEqual(sounds.Ids),
@@ -440,11 +440,11 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         expected["letter_228"] = -1; // C2.
         var platformBefore = entity.PlatformEntity;
         var heroBefore = HeroState(hero);
-        AlundraRandom.RandomSeed = unchecked((ulong)rngIn);
+        GameRandom.RandomSeed = unchecked((ulong)rngIn);
 
         entity.RunPickedEvent(runner);
 
-        Assert.True(unchecked((uint)AlundraRandom.RandomSeed) == unchecked((uint)rngIn), $"{where}: E1 drew a number (C3)");
+        Assert.True(unchecked((uint)GameRandom.RandomSeed) == unchecked((uint)rngIn), $"{where}: E1 drew a number (C3)");
         AssertFields(entity, expected, where); // C4.
         Assert.Same(platformBefore, entity.PlatformEntity);
         Assert.Equal(heroBefore, HeroState(hero)); // C6.

@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E20.e0b1 T2, the tests of the advance itself (red until phase B, T3): (a) the six words of the advance, (c) the world drives one step per logic tick, (d) the order in the tick. Every test here expects at least one
-/// REAL step: written red on the phase A code (where <see cref="AlundraRandom.AdvanceFrame"/> only feeds the virtual word of the measuring sink), green once phase B makes it write the real state. Each expected word is
+/// REAL step: written red on the phase A code (where <see cref="GameRandom.AdvanceFrame"/> only feeds the virtual word of the measuring sink), green once phase B makes it write the real state. Each expected word is
 /// computed by a step written locally (<see cref="Step"/>) from the seed and the counts of ticks and draws, never pasted.
 /// </summary>
 public sealed partial class AlundraRandomPerTickTests
@@ -36,11 +36,11 @@ public sealed partial class AlundraRandomPerTickTests
     [InlineData(0x12345678u, 4, 0xAFBE9EACu)]
     public void AdvanceFrame_StepsTheStreamOncePerCall_ToTheWordsOfTheBinary(uint seed, int calls, uint expected)
     {
-        AlundraRandom.RandomSeed = seed;
+        GameRandom.RandomSeed = seed;
 
         for (var i = 0; i < calls; i++)
         {
-            AlundraRandom.AdvanceFrame();
+            GameRandom.AdvanceFrame();
         }
 
         Assert.Equal(expected, Word);
@@ -73,7 +73,7 @@ public sealed partial class AlundraRandomPerTickTests
     {
         const uint seed = 0x12345678;
         var proxy = WarmProxy();
-        AlundraRandom.RandomSeed = seed;
+        GameRandom.RandomSeed = seed;
 
         proxy.Update(0.02f);
         Assert.Equal(StepN(seed, 1), Word);
@@ -88,7 +88,7 @@ public sealed partial class AlundraRandomPerTickTests
         const uint seed = 0x0BADF00D;
         var proxy = WarmProxy();
         proxy.GameState.PlayerControlFlags = GameState.PlayerControlBits.MenuOpen;
-        AlundraRandom.RandomSeed = seed;
+        GameRandom.RandomSeed = seed;
 
         proxy.Update(0.04f);
         proxy.Update(0.02f);
@@ -101,7 +101,7 @@ public sealed partial class AlundraRandomPerTickTests
     {
         const uint seed = 0xCAFEBABE;
         var proxy = HeadlessProxy();
-        AlundraRandom.RandomSeed = seed;
+        GameRandom.RandomSeed = seed;
 
         proxy.Update(0.0f);
         Assert.Equal(StepN(seed, 1), Word); // the floor: one tick, one step, like the post-load call a0 = 1 of the binary.
@@ -114,7 +114,7 @@ public sealed partial class AlundraRandomPerTickTests
     public void TwoWorldsInARow_StepTheStreamOncePerTickEach_WithoutCountingAnyTickTwice()
     {
         const uint seed = 0x13579BDF;
-        AlundraRandom.RandomSeed = seed;
+        GameRandom.RandomSeed = seed;
 
         var first = HeadlessProxy();
         first.Update(0.02f); // its first frame: 1 tick.
@@ -132,7 +132,7 @@ public sealed partial class AlundraRandomPerTickTests
     {
         const uint seed = 0xA5A5A5A5;
         var proxy = WarmProxy();
-        AlundraRandom.RandomSeed = seed;
+        GameRandom.RandomSeed = seed;
 
         proxy.Update(0.0f);
         proxy.Update(0.02f);
@@ -150,7 +150,7 @@ public sealed partial class AlundraRandomPerTickTests
         proxy.InitializeWithWorld(world);
         BackdropWarpDepartureSupport.SetPrivateField(proxy._backdropStage, "_clearColorApplied", true); // the headless montage has no view for the clear colour.
         proxy.Update(0.02f); // the priming frame.
-        AlundraRandom.RandomSeed = seed;
+        GameRandom.RandomSeed = seed;
 
         proxy.Update(0.02f); // a normal frame of one tick: step 1.
         Assert.Equal(StepN(seed, 1), Word);
@@ -194,7 +194,7 @@ public sealed partial class AlundraRandomPerTickTests
         {
             arena.Arc.Give(2);
             arena.Arc.Equip(1);
-            AlundraRandom.RandomSeed = seed;
+            GameRandom.RandomSeed = seed;
             var wordAfterCreation = new List<uint>();
             var tickOfCreation = new List<int>();
             var tick = 0;

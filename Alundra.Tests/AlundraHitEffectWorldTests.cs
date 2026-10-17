@@ -28,7 +28,7 @@ public sealed class AlundraHitEffectWorldTests : IDisposable
     private const int TotalTicks = 132; // a multiple of 1, 2 and 3.
 
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
-    private readonly ulong _previousSeed = AlundraRandom.RandomSeed;
+    private readonly ulong _previousSeed = GameRandom.RandomSeed;
 
     public AlundraHitEffectWorldTests()
     {
@@ -38,7 +38,7 @@ public sealed class AlundraHitEffectWorldTests : IDisposable
 
     public void Dispose()
     {
-        AlundraRandom.RandomSeed = _previousSeed;
+        GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -80,7 +80,7 @@ public sealed class AlundraHitEffectWorldTests : IDisposable
         {
             if (tick == 1)
             {
-                AlundraRandom.RandomSeed = Seed;
+                GameRandom.RandomSeed = Seed;
             }
         };
         arena.AfterTick = tick =>
@@ -105,7 +105,7 @@ public sealed class AlundraHitEffectWorldTests : IDisposable
                 .Where(s => s.TargetEffect is 4 or 5)
                 .Select(s => new SlotView(s.TargetEffect, s.Mode, s.Anchor, s.DepthOffset, s.Index))
                 .ToList();
-            outcome.Frames.Add(new Frame(arena.Samples.Count, views, AlundraRandom.RandomSeed));
+            outcome.Frames.Add(new Frame(arena.Samples.Count, views, GameRandom.RandomSeed));
         }
 
         return outcome;

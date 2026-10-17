@@ -36,7 +36,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
     private const uint South = 0;
 
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
-    private readonly ulong _previousSeed = AlundraRandom.RandomSeed;
+    private readonly ulong _previousSeed = GameRandom.RandomSeed;
     private readonly ITestOutputHelper _output;
 
     public AlundraWaveSwordLifeTests(ITestOutputHelper output)
@@ -53,7 +53,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
         PlayerManager.WiredWeaponTypesForTests = null;
         WaveSwordAi.StubCallsForTests = null;
         AlundraNativeEffects.CreatedForTests = null;
-        AlundraRandom.RandomSeed = _previousSeed;
+        GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();

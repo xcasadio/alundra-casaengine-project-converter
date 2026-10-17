@@ -32,13 +32,13 @@ public sealed partial class AlundraLootRollWorldTests : IDisposable
 
     public AlundraLootRollWorldTests()
     {
-        AlundraRandom.Reset();
+        GameRandom.Reset();
     }
 
     public void Dispose()
     {
         AlundraWorldProxy.CreationFaultHookForTests = null;
-        AlundraRandom.Reset();
+        GameRandom.Reset();
     }
 
     private static ArcRun Arc14(string name) => new(new ArcSpec("E20e0b2-" + name, "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true));
@@ -107,7 +107,7 @@ public sealed partial class AlundraLootRollWorldTests : IDisposable
         {
             using var arc = new ArcRun(PairSpec(i, pairs[i]));
             Assert.True(InitialSeed == (uint)arc.SeedAfterTheLoad, $"pair {i} (map {pairs[i].Map}): the word after the load is {(uint)arc.SeedAfterTheLoad:X8}");
-            Assert.True(InitialSeed == (uint)AlundraRandom.RandomSeed, $"pair {i} (map {pairs[i].Map}): the word after the construction is {(uint)AlundraRandom.RandomSeed:X8}");
+            Assert.True(InitialSeed == (uint)GameRandom.RandomSeed, $"pair {i} (map {pairs[i].Map}): the word after the construction is {(uint)GameRandom.RandomSeed:X8}");
             Assert.Equal((pairs[i].TileX, pairs[i].TileY), arc.HeroTileAtLoad);
         }
     }

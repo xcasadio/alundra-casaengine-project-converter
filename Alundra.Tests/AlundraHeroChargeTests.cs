@@ -35,7 +35,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
-    private readonly ulong _previousSeed = AlundraRandom.RandomSeed;
+    private readonly ulong _previousSeed = GameRandom.RandomSeed;
 
     private const uint Square = PadState.Square;
 
@@ -49,7 +49,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
     {
         AlundraNativeEffects.CreatedForTests = null;
         PlayerManager.WeaponSpawnCallsForTests = null;
-        AlundraRandom.RandomSeed = _previousSeed;
+        GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -97,7 +97,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
             Created.Clear();
             if (seed is { } word)
             {
-                AlundraRandom.RandomSeed = word;
+                GameRandom.RandomSeed = word;
             }
 
             AuraCreatedThisTick = null;
@@ -242,7 +242,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
                 }
             }
 
-            Check("rng_after", (uint)AlundraRandom.RandomSeed, row.RngAfter);
+            Check("rng_after", (uint)GameRandom.RandomSeed, row.RngAfter);
 
             // The shot call (the journal; E20.f3 wires the types one by one): the same calls at the same ticks, with the oracle's arguments; the oracle's Z is the DLL's plus one raw unit (ADR-0026).
             Check("spawn_calls", spawns.Count, row.Spawns.Count);
@@ -293,9 +293,9 @@ public sealed class AlundraHeroChargeTests : IDisposable
 
     internal sealed class SeedScope : IDisposable
     {
-        private readonly ulong _seed = AlundraRandom.RandomSeed;
+        private readonly ulong _seed = GameRandom.RandomSeed;
 
-        public void Dispose() => AlundraRandom.RandomSeed = _seed;
+        public void Dispose() => GameRandom.RandomSeed = _seed;
     }
 
     /// <summary>
@@ -323,7 +323,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
             auraAt[row.Tick] = m.AuraCreatedThisTick;
             soundsAt[row.Tick] = m.Sounds.Requests.ToArray();
             effectsAt[row.Tick] = m.Created.ToList();
-            wordsAt[row.Tick] = (entry, (uint)AlundraRandom.RandomSeed);
+            wordsAt[row.Tick] = (entry, (uint)GameRandom.RandomSeed);
         }
 
         Assert.Equal(1, chargeAt[1]);
@@ -365,7 +365,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
             m.Tick(row.Hold, row.RngBefore);
             Assert.Empty(m.Created);
             Assert.Equal(row.Charge, hero.WeaponChargeTimer);
-            Assert.Equal(row.RngBefore, (uint)AlundraRandom.RandomSeed); // the spark of the stage never ran: no number drawn.
+            Assert.Equal(row.RngBefore, (uint)GameRandom.RandomSeed); // the spark of the stage never ran: no number drawn.
         }
 
         Assert.Null(hero.AuraSlot); // no stage: no aura.
@@ -451,7 +451,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
                 Assert.Equal(60, hero.WeaponChargeTimer);
                 Assert.Equal(new[] { 43 }, m.Sounds.Requests.ToArray());
                 AssertTheBurst(m.Created);
-                Assert.Equal(0xAFBE9EACu, (uint)AlundraRandom.RandomSeed);
+                Assert.Equal(0xAFBE9EACu, (uint)GameRandom.RandomSeed);
                 Assert.NotNull(hero.AuraSlot);
             }
             else if (row.Tick == 92)
@@ -492,7 +492,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
         Assert.Equal(0x19u, m.Hero.TargetAnimationId);
         Assert.Equal(0x80028CDCu, m.Hero.WeaponRecordPointer);
         Assert.Equal(new[] { 43, 36, 428 }, m.Sounds.Requests.ToArray()); // the oracle's order is 428, 43, 36; the spark's sound comes last in the DLL.
-        Assert.Equal(0xAFBE9EACu, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(0xAFBE9EACu, (uint)GameRandom.RandomSeed);
         Assert.Equal(new[] { 428, 43, 36 }, rows[100].Sounds.ToArray());
     }
 
@@ -503,7 +503,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
     public void TheRelease_FailsWithACounterOf59_AndSucceedsWithACounterOf60(int releaseTick, bool succeeds)
     {
         using var seed = new SeedScope();
-        AlundraRandom.RandomSeed = 0x12345678;
+        GameRandom.RandomSeed = 0x12345678;
         var m = Start(2);
         var hero = m.Hero;
         for (var tick = 1; tick < releaseTick; tick++)
@@ -565,11 +565,11 @@ public sealed class AlundraHeroChargeTests : IDisposable
 
         var fillers = Fill(m, AlundraEffectReservoir.SlotCount - m.Stage.Reservoir.ActiveCount);
         Assert.Equal(AlundraEffectReservoir.SlotCount, m.Stage.Reservoir.ActiveCount);
-        AlundraRandom.RandomSeed = 0x12345678;
+        GameRandom.RandomSeed = 0x12345678;
         m.Tick(rows[84].Hold); // tick 85
         Assert.Empty(m.Created);
         Assert.Empty(m.Sounds.Requests);
-        Assert.Equal(0x12345678u, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(0x12345678u, (uint)GameRandom.RandomSeed);
 
         for (var tick = 86; tick <= 88; tick++)
         {
@@ -585,7 +585,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
         var effect = Assert.Single(m.Created);
         Assert.Equal(new Effect(16, false, 8274740, 4686300, 1048577, -86057, 93365, 0, 0, 1), effect); // the tuple of the tick 85 of the oracle (the same entry word), in the first free slot (the slot 0 holds the aura, E20.f1b).
         Assert.Equal(new[] { 429 }, m.Sounds.Requests.ToArray()); // +0x1C is 88 here: the sound of the cadence of 8.
-        Assert.Equal(0x24D2C78Au, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(0x24D2C78Au, (uint)GameRandom.RandomSeed);
     }
 
     /// <summary>Five free slots at the release (C2-steel, tick 91): the first five effects of the burst are created, in the slots 123 to 127 like the oracle's P2, the 11 others are skipped without shifting those; the sound 43, the pointer and 0x18 are there.</summary>
@@ -614,7 +614,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
         Assert.Equal(new[] { 43 }, m.Sounds.Requests.ToArray());
         Assert.Equal(0x80028C8Eu, m.Hero.WeaponRecordPointer);
         Assert.Equal(0x18u, m.Hero.TargetAnimationId);
-        Assert.Equal(0xAFBE9EACu, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(0xAFBE9EACu, (uint)GameRandom.RandomSeed);
     }
 
     /// <summary>Fills the first free slots of the reservoir with effects that never end (the aura's looping animation 1 of the global effect 3); returns them.</summary>

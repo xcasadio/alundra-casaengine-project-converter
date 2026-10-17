@@ -25,7 +25,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
     private const uint Square = PadState.Square;
 
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
-    private readonly ulong _previousSeed = AlundraRandom.RandomSeed;
+    private readonly ulong _previousSeed = GameRandom.RandomSeed;
 
     public AlundraHeroAuraWorldTests()
     {
@@ -36,7 +36,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
     public void Dispose()
     {
         AlundraNativeEffects.CreatedForTests = null;
-        AlundraRandom.RandomSeed = _previousSeed;
+        GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -105,7 +105,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
     private static List<Snapshot> RunGrouped(string name, int lastTick, params int[] frameSizes)
     {
         using var arena = Arena(name);
-        AlundraRandom.RandomSeed = 0x12345678;
+        GameRandom.RandomSeed = 0x12345678;
         arena.Begin();
         var tick = 0;
         var sizeIndex = 0;
@@ -151,7 +151,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
     private HitArena ArenaAtTheTickBeforeTheRenewal(string name, int until, out List<int> creationTicks)
     {
         var arena = Arena(name);
-        AlundraRandom.RandomSeed = 0x12345678;
+        GameRandom.RandomSeed = 0x12345678;
         arena.Begin();
         var ticks = new List<int>();
         var lastGeneration = 0;
@@ -242,7 +242,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
     public void TheAuraQuads_AreSortedStrictlyAfterTheHeroSprite_InTheSameBucket()
     {
         using var arena = Arena("draw", 100, 100);
-        AlundraRandom.RandomSeed = 0x12345678;
+        GameRandom.RandomSeed = 0x12345678;
         arena.Begin();
         for (var tick = 1; tick <= 50; tick++)
         {

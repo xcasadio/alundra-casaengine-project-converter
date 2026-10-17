@@ -27,7 +27,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// E19.g G3d (docs/plan-e19-opcodes.md, section 1.2o.6, G3D-R1 to R4): the life vessel (opcode <c>0x82</c>, sub-case <c>0x53</c>) through the real interpreter and the effect stage,
 /// against <c>docs/plan-e19-g3d-annexe/discovery/lib/g3d-golden.tsv</c> (rows <c>V</c>, <c>S</c>, <c>T</c>, <c>F</c>, <c>P</c>: produced by the real code of the binary in an interpreter), then the native
-/// creators of modes 1 and 3 against <c>g3d-modes13.tsv</c>. Every test that draws from <see cref="AlundraRandom"/> lives here, in the collection that serialises its static state.
+/// creators of modes 1 and 3 against <c>g3d-modes13.tsv</c>. Every test that draws from <see cref="GameRandom"/> lives here, in the collection that serialises its static state.
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
 public sealed class AlundraNativeEffectTests : IDisposable
@@ -37,13 +37,13 @@ public sealed class AlundraNativeEffectTests : IDisposable
 
     public AlundraNativeEffectTests()
     {
-        AlundraRandom.Reset();
+        GameRandom.Reset();
         ResetSingletons();
     }
 
     public void Dispose()
     {
-        AlundraRandom.Reset();
+        GameRandom.Reset();
         ResetSingletons();
     }
 
@@ -186,7 +186,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
             Host.PlayerEntity = HeroAt(scenario.HeroX, scenario.HeroY, scenario.HeroZ);
             State.PlayerStats.Hp = (short)scenario.Hp;
             State.PlayerStats.HpMax = (short)scenario.HpMax;
-            AlundraRandom.RandomSeed = scenario.Seed;
+            GameRandom.RandomSeed = scenario.Seed;
             Program = Exec(Host, State, VesselProgram);
         }
 
@@ -222,14 +222,14 @@ public sealed class AlundraNativeEffectTests : IDisposable
         Assert.Equal("49", s.Sounds);
         Assert.Equal((s.HpOut, s.HpMaxOut), ((int)rig.State.PlayerStats.Hp, (int)rig.State.PlayerStats.HpMax));
         Assert.Equal(0, rig.Stage.Reservoir.ActiveCount - s.Prefill + s.Free.Length); // nothing is written to the reservoir before the stage applies the queue
-        Assert.Equal(s.Seed, (uint)AlundraRandom.RandomSeed); // no number is drawn before the stage applies the queue
+        Assert.Equal(s.Seed, (uint)GameRandom.RandomSeed); // no number is drawn before the stage applies the queue
 
         rig.Apply();
 
         var created = rig.Created();
         Assert.Equal(s.Created, created.Count);
         Assert.Equal(s.Sparks, created.Count(slot => slot.ForceZ != 0));
-        Assert.Equal(s.SeedOut, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(s.SeedOut, (uint)GameRandom.RandomSeed);
         Assert.Equal(2, s.Size);
     }
 
@@ -498,12 +498,12 @@ public sealed class AlundraNativeEffectTests : IDisposable
         Assert.Equal((11, 11), ((int)gameState.PlayerStats.Hp, (int)gameState.PlayerStats.HpMax));
         Assert.Equal(new[] { 0x31 }, sound.Played.ToArray());
         Assert.Equal(0, stage.Reservoir.ActiveCount); // the sound is played at once, the effects are queued: the sound comes first
-        Assert.Equal(0xB017C93Du, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(0xB017C93Du, (uint)GameRandom.RandomSeed);
 
         stage.RunFrame(1, new[] { false });
 
         Assert.Equal(12, stage.Reservoir.ActiveCount);
-        Assert.Equal(0xC5BF9705u, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(0xC5BF9705u, (uint)GameRandom.RandomSeed);
     }
 
     [Fact]
@@ -639,7 +639,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
         Assert.Equal((12, 12), ((int)gameState.PlayerStats.Hp, (int)gameState.PlayerStats.HpMax));
         Assert.Equal(new[] { 0x31, 0x31 }, sound.Played.ToArray());
         Assert.Equal(0, stage.Reservoir.ActiveCount);
-        Assert.Equal(0xB017C93Du, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(0xB017C93Du, (uint)GameRandom.RandomSeed);
         Assert.All(trace.Where(record => record.Opcode == 0x82), record => Assert.Equal(EventTraceKind.Degraded, record.Kind));
         Assert.Equal(2, trace.Count(record => record.Opcode == 0x82));
         Assert.Single(log.Debugs, message => message.Contains("life vessel"));
@@ -657,7 +657,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
         Assert.Equal(1, state.Result);
         Assert.Equal((11, 11), ((int)gameState.PlayerStats.Hp, (int)gameState.PlayerStats.HpMax));
         Assert.Equal(new[] { 0x31 }, sound.Played.ToArray());
-        Assert.Equal(0xB017C93Du, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(0xB017C93Du, (uint)GameRandom.RandomSeed);
         Assert.Equal(EventTraceKind.Degraded, trace.First(record => record.Opcode == 0x82).Kind);
     }
 
@@ -683,7 +683,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
 
         Assert.Equal((11, 11), ((int)rig.State.PlayerStats.Hp, (int)rig.State.PlayerStats.HpMax));
         Assert.Empty(rig.Created());
-        Assert.Equal(s.Seed, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(s.Seed, (uint)GameRandom.RandomSeed);
         Assert.Equal(new[] { 49 }, rig.Sound.Played.ToArray());
     }
 

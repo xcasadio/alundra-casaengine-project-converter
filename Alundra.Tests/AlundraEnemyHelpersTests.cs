@@ -135,12 +135,12 @@ public sealed class AlundraEnemyHelpersTests
     [Fact]
     public void StartWalk_EqualsTheBinary_OnEveryState_IncludingTheRandomWord()
     {
-        var saved = AlundraRandom.RandomSeed;
+        var saved = GameRandom.RandomSeed;
         try
         {
             ForEachRow("startwalk", (row, where) =>
             {
-                AlundraRandom.RandomSeed = (uint)row.In[0];
+                GameRandom.RandomSeed = (uint)row.In[0];
                 var self = new AlundraEntityScriptProxy { PosX = row.In[1], PosY = row.In[2], TargetDirection = MarkDir, TargetAnimationId = MarkAnim };
                 self.AIValues[1] = MarkHalf;
                 var hero = new AlundraEntityScriptProxy { PosX = row.In[3], PosY = row.In[4] };
@@ -148,13 +148,13 @@ public sealed class AlundraEnemyHelpersTests
                 EnemyHelpers.StartWalk(self, hero, (uint)row.In[5], row.In[6], row.In[7]);
 
                 // the outputs in the oracle's order: the random word, +0x8C, +0x88, +0x282 (16 bits)
-                int[] actual = { unchecked((int)(uint)AlundraRandom.RandomSeed), (int)self.TargetDirection, (int)self.TargetAnimationId, (ushort)self.AIValues[1] };
+                int[] actual = { unchecked((int)(uint)GameRandom.RandomSeed), (int)self.TargetDirection, (int)self.TargetAnimationId, (ushort)self.AIValues[1] };
                 AssertWords(row.Out, actual, where);
             });
         }
         finally
         {
-            AlundraRandom.RandomSeed = saved;
+            GameRandom.RandomSeed = saved;
         }
     }
 
@@ -179,33 +179,33 @@ public sealed class AlundraEnemyHelpersTests
     [InlineData(0xB017C93DUL, 16, 3)]
     public void Below_IsTheHighWordOfTheProduct(ulong seed, int n, int expected)
     {
-        var saved = AlundraRandom.RandomSeed;
+        var saved = GameRandom.RandomSeed;
         try
         {
-            AlundraRandom.RandomSeed = seed;
+            GameRandom.RandomSeed = seed;
             Assert.Equal(expected, EnemyHelpers.Below(n));
         }
         finally
         {
-            AlundraRandom.RandomSeed = saved;
+            GameRandom.RandomSeed = saved;
         }
     }
 
-    /// <summary>The high bits of the 64-bit state (<see cref="AlundraRandom.RandomSeed"/> is a ulong that keeps them) never reach the draw.</summary>
+    /// <summary>The high bits of the 64-bit state (<see cref="GameRandom.RandomSeed"/> is a ulong that keeps them) never reach the draw.</summary>
     [Fact]
     public void Below_IgnoresTheHighBitsOfTheState()
     {
-        var saved = AlundraRandom.RandomSeed;
+        var saved = GameRandom.RandomSeed;
         try
         {
-            AlundraRandom.RandomSeed = 0xFFFF_FFFF_0000_0000UL;
+            GameRandom.RandomSeed = 0xFFFF_FFFF_0000_0000UL;
             var withHigh = EnemyHelpers.Below(0x65);
-            AlundraRandom.RandomSeed = 0;
+            GameRandom.RandomSeed = 0;
             Assert.Equal(EnemyHelpers.Below(0x65), withHigh);
         }
         finally
         {
-            AlundraRandom.RandomSeed = saved;
+            GameRandom.RandomSeed = saved;
         }
     }
 

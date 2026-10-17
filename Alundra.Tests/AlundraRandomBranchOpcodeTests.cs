@@ -16,9 +16,9 @@ namespace Alundra.Tests;
 [Collection(AlundraRandomStaticStateCollection.Name)]
 public sealed class AlundraRandomBranchOpcodeTests : IDisposable
 {
-    public AlundraRandomBranchOpcodeTests() => AlundraRandom.Reset();
+    public AlundraRandomBranchOpcodeTests() => GameRandom.Reset();
 
-    public void Dispose() => AlundraRandom.Reset();
+    public void Dispose() => GameRandom.Reset();
 
     private static int Run(int threshold, EventProgramRunner? runner = null)
     {
@@ -43,7 +43,7 @@ public sealed class AlundraRandomBranchOpcodeTests : IDisposable
         var result = Run(128);
 
         Assert.Equal(0, result);
-        Assert.Equal(0x35E36190u, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(0x35E36190u, (uint)GameRandom.RandomSeed);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public sealed class AlundraRandomBranchOpcodeTests : IDisposable
     {
         Assert.Equal(1, Run(53));
 
-        AlundraRandom.Reset();
+        GameRandom.Reset();
 
         Assert.Equal(0, Run(54));
     }

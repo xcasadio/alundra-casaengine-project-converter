@@ -418,7 +418,7 @@ public sealed class AlundraHitPassRulesTests
     {
         var bank = AlundraEffectBankLoader.Load(ProjectRootFinder.Find(), "Overworld 3,1-14");
         var reservoir = new AlundraEffectReservoir(bank, _ => { });
-        AlundraRandom.RandomSeed = 0x12345678;
+        GameRandom.RandomSeed = 0x12345678;
         AlundraNativeEffects.CreateHitSparks(reservoir, 1000, 2000, 3000);
 
         var sparks = reservoir.Slots.Where(slot => slot.Active).ToList();
@@ -443,8 +443,8 @@ public sealed class AlundraHitPassRulesTests
             Assert.Equal(Force(Draw()), spark.ForceZ);
         }
 
-        Assert.Equal(state, (uint)AlundraRandom.RandomSeed);
-        AlundraRandom.Reset();
+        Assert.Equal(state, (uint)GameRandom.RandomSeed);
+        GameRandom.Reset();
 
         // A nearly full reservoir (two slots left) creates two sparks, draws six numbers, and none for the one it could not create.
         var nearlyFull = new AlundraEffectReservoir(bank, _ => { });
@@ -453,7 +453,7 @@ public sealed class AlundraHitPassRulesTests
             Assert.NotNull(nearlyFull.Create(false, 9, 0, 0, 0, 0));
         }
 
-        AlundraRandom.RandomSeed = 0x12345678;
+        GameRandom.RandomSeed = 0x12345678;
         AlundraNativeEffects.CreateHitSparks(nearlyFull, 1, 2, 3);
         Assert.Equal(128, nearlyFull.Slots.Count(slot => slot.Active));
         state = 0x12345678u;
@@ -462,8 +462,8 @@ public sealed class AlundraHitPassRulesTests
             Draw();
         }
 
-        Assert.Equal(state, (uint)AlundraRandom.RandomSeed);
-        AlundraRandom.Reset();
+        Assert.Equal(state, (uint)GameRandom.RandomSeed);
+        GameRandom.Reset();
     }
 
     // -----------------------------------------------------------------------------------------

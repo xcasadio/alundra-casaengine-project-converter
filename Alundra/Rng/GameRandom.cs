@@ -8,7 +8,7 @@ namespace Alundra.Rng;
 /// The game's shared random stream (D7, docs/plan-e9d-mode-cellulaire.md) - transcribed verbatim from
 /// <c>alundra-datas-analyser/AlundraTools/AlundraEngine/Random.cs</c>. It is NOT the stream a
 /// <c>CellularCellType.FallRespawn</c> cell's respawn abscissa draws from: the binary draws that from the C
-/// library <c>rand()</c> (<see cref="AlundraLibcRandom"/>, E19.m2, D-E19-66, ADR-0032), which replaced the
+/// library <c>rand()</c> (<see cref="LibcRandom"/>, E19.m2, D-E19-66, ADR-0032), which replaced the
 /// choice D7 made. D7 and the decompilation were wrong on that point; the rest of the game's draws (dialogue,
 /// AI, combat) still use this stream.
 ///
@@ -20,7 +20,7 @@ namespace Alundra.Rng;
 /// original calls it once, from <c>GameEngine.InitializeEngine</c> (game/engine startup, not a world
 /// load), which is out of this slice's scope; wiring it is a separate decision.
 /// </summary>
-public static class AlundraRandom
+public static class GameRandom
 {
     /// <summary>The value of the word in the image of the executable (<c>0x80098708</c>, octet <c>0x78F08</c> of the file), the one <see cref="Reset"/> restores.</summary>
     internal const ulong InitialSeed = 0xB017C93D;

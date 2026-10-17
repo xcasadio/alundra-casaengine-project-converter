@@ -12,15 +12,15 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E19.c1 T3 (docs/plan-e19-opcodes.md §1.2e): opcode 0x0C ("random cardinal direction"), which draws from the process-wide
-/// <see cref="AlundraRandom"/> stream. The class is in the collection that serialises the generator's static state and
+/// <see cref="GameRandom"/> stream. The class is in the collection that serialises the generator's static state and
 /// resets it before and after every test.
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
 public sealed class AlundraRandomOpcodeTests : IDisposable
 {
-    public AlundraRandomOpcodeTests() => AlundraRandom.Reset();
+    public AlundraRandomOpcodeTests() => GameRandom.Reset();
 
-    public void Dispose() => AlundraRandom.Reset();
+    public void Dispose() => GameRandom.Reset();
 
     [Fact]
     public void SetRandomCardinalDirection_0x0C_FiveDrawsGiveTheBinarysDirections_AndTheSeedAdvancesOnce()
@@ -45,7 +45,7 @@ public sealed class AlundraRandomOpcodeTests : IDisposable
 
             directions.Add(entity.TargetDirection);
             sizes.Add(record.Size);
-            seedAfterTheFirstDraw ??= (uint)AlundraRandom.RandomSeed;
+            seedAfterTheFirstDraw ??= (uint)GameRandom.RandomSeed;
         };
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 

@@ -184,16 +184,16 @@ public sealed class AlundraPrefabArcSupportTests
     {
         // E19.d D1 (TH2): the stream of the arcs starts from the seed whatever the tests that ran before.
         var spec = new ArcSpec("RandomReset", "The Klark", "Ship Klark (inner)-390", System.Array.Empty<int>(), 0, 0, 0, 10);
-        AlundraRandom.Next();
-        AlundraRandom.Next();
-        AlundraRandom.Next();
+        GameRandom.Next();
+        GameRandom.Next();
+        GameRandom.Next();
         using (var arc = new ArcRun(spec))
         {
-            Assert.Equal(0xB017C93Dul, AlundraRandom.RandomSeed);
-            AlundraRandom.Next();
+            Assert.Equal(0xB017C93Dul, GameRandom.RandomSeed);
+            GameRandom.Next();
         }
 
-        Assert.Equal(0xB017C93Dul, AlundraRandom.RandomSeed);
+        Assert.Equal(0xB017C93Dul, GameRandom.RandomSeed);
     }
 
     [Fact]

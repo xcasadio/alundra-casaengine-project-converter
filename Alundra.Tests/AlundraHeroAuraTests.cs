@@ -25,7 +25,7 @@ public sealed class AlundraHeroAuraTests : IDisposable
     private const uint Square = PadState.Square;
 
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
-    private readonly ulong _previousSeed = AlundraRandom.RandomSeed;
+    private readonly ulong _previousSeed = GameRandom.RandomSeed;
 
     public AlundraHeroAuraTests()
     {
@@ -36,7 +36,7 @@ public sealed class AlundraHeroAuraTests : IDisposable
     public void Dispose()
     {
         AlundraNativeEffects.CreatedForTests = null;
-        AlundraRandom.RandomSeed = _previousSeed;
+        GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();

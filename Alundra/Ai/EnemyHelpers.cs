@@ -30,9 +30,9 @@ internal static class EnemyHelpers
     /// <summary>The cardinal directions at <c>0x80028B54</c> (FACT: <c>00 10 08 18</c>), indexed by a draw below 4 (the Muruta's random turn, C10 step 3).</summary>
     internal static readonly byte[] CardinalDirections = { 0x00, 0x10, 0x08, 0x18 };
 
-    /// <summary>The generator's draw below <paramref name="n"/>: <c>((ulong)(uint)Next() * n) &gt;&gt; 32</c> (the inline pattern <c>multu / mfhi</c> of the binary). <see cref="AlundraRandom.Next"/> keeps 64 bits of state, so the
+    /// <summary>The generator's draw below <paramref name="n"/>: <c>((ulong)(uint)Next() * n) &gt;&gt; 32</c> (the inline pattern <c>multu / mfhi</c> of the binary). <see cref="GameRandom.Next"/> keeps 64 bits of state, so the
     /// product is taken on its low 32 bits, as the binary's register holds them.</summary>
-    internal static int Below(int n) => (int)(((ulong)(uint)AlundraRandom.Next() * (uint)n) >> 32);
+    internal static int Below(int n) => (int)(((ulong)(uint)GameRandom.Next() * (uint)n) >> 32);
 
     /// <summary>
     /// <c>0x8007FE20</c>, the relative position of <paramref name="self"/> to the hero: <paramref name="output"/> = [|dx|, |dy|, |dz|, dx, dy, dz] with <c>dx = self.TileX - hero.TileX</c> (<c>lw +0x120</c> at <c>0x8007FE28</c> and <c>0x8007FE2C</c>),
@@ -199,7 +199,7 @@ internal static class EnemyHelpers
     }
 
     /// <summary>
-    /// <c>0x8007FEF8</c>, StartWalk (<paramref name="self"/>, animation <paramref name="animation"/>, <paramref name="range"/>, <paramref name="chance"/>): one draw below 0x65 (the random word <c>0x80098708</c>, <see cref="AlundraRandom"/>); when it is below
+    /// <c>0x8007FEF8</c>, StartWalk (<paramref name="self"/>, animation <paramref name="animation"/>, <paramref name="range"/>, <paramref name="chance"/>): one draw below 0x65 (the random word <c>0x80098708</c>, <see cref="GameRandom"/>); when it is below
     /// <c>chance &amp; 0xFF</c> the entity aims at the hero (<see cref="ScriptHelper.GetDirectionToTarget"/> of hero minus entity, <c>0x8007FF6C-0x8007FF84</c> on <c>+0x114</c> and <c>+0x118</c>, i.e. <see cref="AlundraEntityScriptProxy.PosX"/> and
     /// <see cref="AlundraEntityScriptProxy.PosY"/>), else a second draw below 0x20 is its direction; <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> (<c>+0x88</c>) takes <c>animation &amp; 0xFF</c>; when the low 16 bits of
     /// <paramref name="range"/> are not zero, a draw below 16 plus <paramref name="range"/> is stored as 16 bits at <c>+0x282</c> (<see cref="AlundraEntityScriptProxy.AIValues"/>[1], <c>0x80080010</c>).

@@ -19,7 +19,7 @@ namespace Alundra.Items;
 /// code when it is below <c>0x62</c>, else 0. The table needs at most two draws.</description></item>
 /// </list>
 /// The class holds no state and never touches the shared stream: the caller passes the draw (<paramref name="draw"/> returns the 32-bit state of the generator AFTER its step, which is what
-/// <see cref="AlundraRandom.Next"/> returns), so the same code serves the real stream and the virtual word of the measuring sink (<see cref="AlundraRandomShadow"/>). Nothing falls here: the drop at death,
+/// <see cref="GameRandom.Next"/> returns), so the same code serves the real stream and the virtual word of the measuring sink (<see cref="AlundraRandomShadow"/>). Nothing falls here: the drop at death,
 /// its veto and the pickable object are E20.e0c.
 /// </summary>
 internal static class LootRoll

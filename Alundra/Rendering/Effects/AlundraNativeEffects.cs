@@ -25,7 +25,7 @@ public static class AlundraNativeEffects
     /// <summary>
     /// The effects of <c>IncreaseHpMaxAndCreateEffect</c> (<c>0x800333AC</c>) after its life and its sound: eight ring effects, then four sparks, all of the global effect 14 at the hero
     /// (<paramref name="heroX"/>, <paramref name="heroY"/>, <paramref name="heroZ"/>, 16.16) with z + 0x100000. A created ring slot is moved 16 pixels out on the ellipse and pulled back by its forces
-    /// (it converges to the hero on the 16th update); a created spark draws two numbers from <see cref="AlundraRandom"/> for its horizontal forces and rises with a z force of 0x40000. A full reservoir
+    /// (it converges to the hero on the 16th update); a created spark draws two numbers from <see cref="GameRandom"/> for its horizontal forces and rises with a z force of 0x40000. A full reservoir
     /// creates fewer slots and draws fewer numbers (no number for a slot that was not created). Everything wraps in 32 bits.
     /// </summary>
     public static void CreateLifeVesselEffects(AlundraEffectReservoir reservoir, int heroX, int heroY, int heroZ)
@@ -52,8 +52,8 @@ public static class AlundraNativeEffects
                 var spark = reservoir.Create(false, LifeVesselEffect, 0, heroX, heroY, z);
                 if (spark != null)
                 {
-                    var r1 = (uint)AlundraRandom.Next();
-                    var r2 = (uint)AlundraRandom.Next();
+                    var r1 = (uint)GameRandom.Next();
+                    var r2 = (uint)GameRandom.Next();
                     spark.ForceX = (int)(((ulong)r1 * 0x20001) >> 32) - 0x10000;
                     spark.ForceY = (int)(((ulong)r2 * 0x30001) >> 32) - 0x18000;
                     spark.ForceZ = 0x40000;
@@ -98,7 +98,7 @@ public static class AlundraNativeEffects
     /// <summary>
     /// The hold spark of a full charge (<c>UpdatePlayerWeaponEffect</c>, <c>0x8002F5EC-0x8002F71C</c>), at the tick where the charge counter is 60 and <c>+0x1C &amp; 3</c> is 0: a global effect 16 at the hero
     /// (<paramref name="heroX"/>, <paramref name="heroY"/>, <paramref name="heroZ"/> in the binary's frame of Z, so the DLL's <c>PosZ + 1</c>, ADR-0026) with z + 0x100000. ONLY IF it was created: the sound
-    /// (<see cref="ChargeSparkEvenSfx"/> when <paramref name="frameCounter"/> &amp; 7 is 0, else <see cref="ChargeSparkOddSfx"/>), then two numbers <c>r1</c>, <c>r2</c> from <see cref="AlundraRandom"/> (the state is left on
+    /// (<see cref="ChargeSparkEvenSfx"/> when <paramref name="frameCounter"/> &amp; 7 is 0, else <see cref="ChargeSparkOddSfx"/>), then two numbers <c>r1</c>, <c>r2</c> from <see cref="GameRandom"/> (the state is left on
     /// <c>r2</c>), <c>jx = hi(r1 * 0x60001) - 0x30000</c>, <c>jy = hi(r2 * 0x40001) - 0x20000</c> (unsigned products), x += 20 jx, y += 20 jy, forces = the hero's forces minus (jx, jy). A full reservoir creates
     /// nothing: no sound, no number drawn. Queued by the hero on the stage, so the sound and the draws happen when the stage applies the operation, after the sounds of the tick (ADR-0048 deviation 2, plan section 1.9).
     /// </summary>
@@ -113,8 +113,8 @@ public static class AlundraNativeEffects
             }
 
             soundPlayer?.PlaySfx((frameCounter & 7) == 0 ? ChargeSparkEvenSfx : ChargeSparkOddSfx);
-            var r1 = (uint)AlundraRandom.Next();
-            var r2 = (uint)AlundraRandom.Next();
+            var r1 = (uint)GameRandom.Next();
+            var r2 = (uint)GameRandom.Next();
             var jitterX = (int)(((ulong)r1 * 0x60001) >> 32) - 0x30000;
             var jitterY = (int)(((ulong)r2 * 0x40001) >> 32) - 0x20000;
             spark.X += 20 * jitterX;
@@ -193,7 +193,7 @@ public static class AlundraNativeEffects
 
     /// <summary>
     /// The sparks of a hit (<c>0x80039188</c>, called by the hit pass <c>0x80039300</c> at <c>0x80039740</c>): three global effects 9 at the centre of the overlap (<paramref name="centreX"/>, <paramref name="centreY"/>,
-    /// <paramref name="centreZ"/>, 16.16, no offset). For each one that was created, three numbers are drawn from <see cref="AlundraRandom"/> in a row (<c>x' = x * 0x7D2B89DD + 0xE06A02E7</c>) and give its three forces,
+    /// <paramref name="centreZ"/>, 16.16, no offset). For each one that was created, three numbers are drawn from <see cref="GameRandom"/> in a row (<c>x' = x * 0x7D2B89DD + 0xE06A02E7</c>) and give its three forces,
     /// all with the same formula (<c>high word of r * 0x20001, minus 0x10000</c>, <c>0x80039290</c>, <c>0x800392A4</c>, <c>0x800392BC</c>): unlike the vessel's sparks, the three axes use <c>0x20001</c> and there is no
     /// vertical lift. A full reservoir creates fewer sparks and draws fewer numbers (none for a slot that was not created).
     /// </summary>
@@ -206,9 +206,9 @@ public static class AlundraNativeEffects
                 var spark = reservoir.Create(false, HitSparkEffect, 0, centreX, centreY, centreZ);
                 if (spark != null)
                 {
-                    var r1 = (uint)AlundraRandom.Next();
-                    var r2 = (uint)AlundraRandom.Next();
-                    var r3 = (uint)AlundraRandom.Next();
+                    var r1 = (uint)GameRandom.Next();
+                    var r2 = (uint)GameRandom.Next();
+                    var r3 = (uint)GameRandom.Next();
                     spark.ForceX = (int)(((ulong)r1 * 0x20001) >> 32) - 0x10000;
                     spark.ForceY = (int)(((ulong)r2 * 0x20001) >> 32) - 0x10000;
                     spark.ForceZ = (int)(((ulong)r3 * 0x20001) >> 32) - 0x10000;

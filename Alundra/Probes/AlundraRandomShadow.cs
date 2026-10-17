@@ -11,14 +11,14 @@ using Alundra.Rng;
 namespace Alundra.Probes;
 
 /// <summary>
-/// E20.e0b1 (D-E0B-7, docs/plan-e20-annexe/e20-e0b/README.md): the measuring sink of the per-tick advance of the shared random stream (<see cref="AlundraRandom"/>), a measuring channel like
+/// E20.e0b1 (D-E0B-7, docs/plan-e20-annexe/e20-e0b/README.md): the measuring sink of the per-tick advance of the shared random stream (<see cref="GameRandom"/>), a measuring channel like
 /// <see cref="AlundraSlotShadow"/> (ADR-0064 precedent): production code that does NOTHING unless <see cref="EnvVar"/> names a file (read once; absent, no file is written, nothing is allocated and
 /// neither the virtual word nor a counter moves). It never touches the real state of the stream: it only watches it.
 /// <para>
-/// <b>Predicate.</b> <c>R</c> is the real state (what the stream holds), <c>V</c> what it would hold with the advance (phase B). An assignment of <see cref="AlundraRandom.RandomSeed"/> or a
-/// <see cref="AlundraRandom.Reset"/> opens an epoch (<c>V := (uint)value</c>); each <see cref="AlundraRandom.AdvanceFrame"/> makes <c>V := step(V)</c>; each real draw makes <c>R := step(R)</c> and
+/// <b>Predicate.</b> <c>R</c> is the real state (what the stream holds), <c>V</c> what it would hold with the advance (phase B). An assignment of <see cref="GameRandom.RandomSeed"/> or a
+/// <see cref="GameRandom.Reset"/> opens an epoch (<c>V := (uint)value</c>); each <see cref="GameRandom.AdvanceFrame"/> makes <c>V := step(V)</c>; each real draw makes <c>R := step(R)</c> and
 /// <c>V := step(V)</c> and is DIVERGENT when <c>V != (uint)R</c> afterwards (the step is a bijection modulo 2^32, the multiplier being odd: this is exactly "the draw would return another number in phase B");
-/// a read of <see cref="AlundraRandom.RandomSeed"/> by a test is divergent under the same condition. Each event is attributed to the OUTERMOST frame of the <c>Alundra.Tests</c> namespace of the stack at the
+/// a read of <see cref="GameRandom.RandomSeed"/> by a test is divergent under the same condition. Each event is attributed to the OUTERMOST frame of the <c>Alundra.Tests</c> namespace of the stack at the
 /// event (the suites run without parallelism). Draws attributed to a test before any epoch of that test are AMBIENT (a state inherited from the order of the tests).
 /// </para>
 /// One line per attributed test, written when the attributed test changes and at the exit of the process:
@@ -39,7 +39,7 @@ internal static class AlundraRandomShadow
     internal static bool Active => Path != null;
 
     /// <summary>The virtual word <c>V</c>: what the real state would be with the advance. Untouched while the sink is inactive.</summary>
-    internal static uint VirtualWord { get; private set; } = (uint)AlundraRandom.InitialSeed;
+    internal static uint VirtualWord { get; private set; } = (uint)GameRandom.InitialSeed;
 
     /// <summary>Number of events recorded since the start of the process (virtual advances, draws, assignments, reads). Zero while the sink is inactive.</summary>
     internal static long EventCount { get; private set; }
@@ -217,7 +217,7 @@ internal static class AlundraRandomShadow
         {
             var method = frame.GetMethod();
             var type = method?.DeclaringType;
-            if (type == null || type == typeof(AlundraRandom) || type == typeof(AlundraRandomShadow))
+            if (type == null || type == typeof(GameRandom) || type == typeof(AlundraRandomShadow))
             {
                 continue;
             }

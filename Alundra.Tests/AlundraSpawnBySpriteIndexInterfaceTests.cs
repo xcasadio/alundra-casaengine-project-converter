@@ -52,9 +52,9 @@ public sealed class AlundraSpawnBySpriteIndexInterfaceTests
         foreach (var v in vectors)
         {
             var before = arc.Entities.Count;
-            AlundraRandom.RandomSeed = 0x12345678; // the seed the oracle writes before each call (run_e0a.py, SEED).
+            GameRandom.RandomSeed = 0x12345678; // the seed the oracle writes before each call (run_e0a.py, SEED).
             var spawned = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, v.IsMapPage, v.Index, v.X << 16, v.Y << 16, v.Z - 1, v.Direction);
-            var wordAfter = (uint)AlundraRandom.RandomSeed;
+            var wordAfter = (uint)GameRandom.RandomSeed;
             Assert.NotNull(spawned);
             Assert.Equal(before + 1, arc.Entities.Count);
             Assert.Same(spawned, arc.Entities[^1]); // last of the list: the list follows the order of the slots (E20.e0a2) and this vector holds the highest slot, the previous ones having been recycled.

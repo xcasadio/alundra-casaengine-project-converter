@@ -17,13 +17,13 @@ public sealed partial class AlundraRandomPerTickTests : IDisposable
 {
     public AlundraRandomPerTickTests()
     {
-        AlundraRandom.Reset();
+        GameRandom.Reset();
         BackdropWarpDepartureSupport.ResetSingletons();
     }
 
     public void Dispose()
     {
-        AlundraRandom.Reset();
+        GameRandom.Reset();
         BackdropWarpDepartureSupport.ResetSingletons();
     }
 
@@ -40,7 +40,7 @@ public sealed partial class AlundraRandomPerTickTests : IDisposable
         return s;
     }
 
-    private static uint Word => (uint)AlundraRandom.RandomSeed;
+    private static uint Word => (uint)GameRandom.RandomSeed;
 
     /// <summary>A stage holding one effect that alternates between the image sets 0 and 1 at each update of the reservoir (-1 before the first update): the set tells how many updates the callback has seen.</summary>
     private static AlundraEffectStage StageWithOneAlternatingEffect(out AlundraEffectSlot slot)
@@ -100,7 +100,7 @@ public sealed partial class AlundraRandomPerTickTests : IDisposable
     {
         const uint seed = 0x12345678;
         var stage = StageWithOneAlternatingEffect(out var slot);
-        AlundraRandom.RandomSeed = seed;
+        GameRandom.RandomSeed = seed;
 
         stage.RunFrame(4, new[] { false, true, false, false });
         stage.RunFrame(2, new[] { true, true }, null);

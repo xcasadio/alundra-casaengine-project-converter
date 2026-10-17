@@ -8,7 +8,7 @@ using Alundra.Rendering.Backdrops;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E19.m2 (docs/plan-e19-opcodes.md, §1.2s.3, D-E19-66, ADR-0032) - <see cref="AlundraLibcRandom"/>, the C library
+/// E19.m2 (docs/plan-e19-opcodes.md, §1.2s.3, D-E19-66, ADR-0032) - <see cref="LibcRandom"/>, the C library
 /// <c>rand()</c> of the original executable, pinned against values computed by hand from
 /// <c>s = s * 0x41C64E6D + 0x3039</c> (32 bits), result <c>(s &gt;&gt; 16) &amp; 0x7FFF</c>:
 ///
@@ -22,24 +22,24 @@ namespace Alundra.Tests;
 [Collection(AlundraRandomStaticStateCollection.Name)]
 public sealed class AlundraLibcRandomTests : System.IDisposable
 {
-    private readonly uint _savedState = AlundraLibcRandom.State;
+    private readonly uint _savedState = LibcRandom.State;
 
     public void Dispose()
     {
-        AlundraLibcRandom.State = _savedState;
+        LibcRandom.State = _savedState;
     }
 
     [Fact]
     public void Next_FromStateZero_ReproducesTheFirstFiveValuesAndStates()
     {
-        AlundraLibcRandom.State = 0;
+        LibcRandom.State = 0;
 
         var values = new int[5];
         var states = new uint[5];
         for (var i = 0; i < 5; i++)
         {
-            values[i] = AlundraLibcRandom.Next();
-            states[i] = AlundraLibcRandom.State;
+            values[i] = LibcRandom.Next();
+            states[i] = LibcRandom.State;
         }
 
         Assert.Equal(new[] { 0, 21468, 9988, 22117, 3498 }, values);
@@ -49,12 +49,12 @@ public sealed class AlundraLibcRandomTests : System.IDisposable
     [Fact]
     public void Next_FromAnArbitraryState_ReproducesTheHandComputedValues()
     {
-        AlundraLibcRandom.State = 0x12345678;
+        LibcRandom.State = 0x12345678;
 
-        Assert.Equal(2929, AlundraLibcRandom.Next());
-        Assert.Equal(0x0B719151u, AlundraLibcRandom.State);
-        Assert.Equal(28487, AlundraLibcRandom.Next());
-        Assert.Equal(11805, AlundraLibcRandom.Next());
+        Assert.Equal(2929, LibcRandom.Next());
+        Assert.Equal(0x0B719151u, LibcRandom.State);
+        Assert.Equal(28487, LibcRandom.Next());
+        Assert.Equal(11805, LibcRandom.Next());
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ public sealed class AlundraLibcRandomTests : System.IDisposable
 
         var service = new CellularLayerService();
         service.SetLayers(AlundraBackdropStage.BuildCellularDefinitions(document));
-        AlundraLibcRandom.State = 0;
+        LibcRandom.State = 0;
 
         var expected = new[]
         {
@@ -93,7 +93,7 @@ public sealed class AlundraLibcRandomTests : System.IDisposable
         for (var tick = 0; tick < 3; tick++)
         {
             service.SetFrame(0, 0, 1, Vector3.Zero);
-            service.Advance(() => (uint)AlundraLibcRandom.Next());
+            service.Advance(() => (uint)LibcRandom.Next());
 
             foreach (var (cell, ticks) in expected)
             {
@@ -103,7 +103,7 @@ public sealed class AlundraLibcRandomTests : System.IDisposable
 
             if (tick == 0)
             {
-                Assert.Equal(0xA70427DFu, AlundraLibcRandom.State); // three draws: cells 2, 30 and 47.
+                Assert.Equal(0xA70427DFu, LibcRandom.State); // three draws: cells 2, 30 and 47.
             }
         }
     }

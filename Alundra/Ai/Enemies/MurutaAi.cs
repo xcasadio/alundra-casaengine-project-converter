@@ -13,7 +13,7 @@ namespace Alundra.Ai.Enemies;
 /// <c>DestroyEntity(e, -1)</c> of the host (E14.a1b). They are ported from the real code of <c>ALUN_CD.EXE</c> (France) run in the emulator of the E14.a1 oracle (<c>docs/plan-e14-annexe/e14a/oracle-a1</c>: 4,043 single-call vectors
 /// of C10, 720 of D9, 6 of A0, and the calls of the scenarios MU-*) and compared call by call (<c>AlundraMurutaOracleTests</c>). The fields they read are tied to the DLL's in the table of the plan (section 1.3c): the tile, floor
 /// and corner heights of the entity and of the hero, the direction of the TICK (<see cref="AlundraEntityScriptProxy.BoxDirection"/>, D-E14-6), the hero's frame box (the FIELD <see cref="AlundraEntityScriptProxy.HasFrameBox"/>, never
-/// re-evaluated) and current attack, the generator's word (<see cref="AlundraRandom"/>) and the sound player.
+/// re-evaluated) and current attack, the generator's word (<see cref="GameRandom"/>) and the sound player.
 /// <para>
 /// Not ported: the branch of C10 for the map <c>0x99</c> (the BSS word <c>[0x800DC5A0]</c> read at <c>0x80068164</c>, then the parent entity at <c>+0x0C</c>, <c>0x80068178</c>-<c>0x8006819C</c>): no record of the map 153 places a 347, the branch is
 /// dead for this sprite. Without a hero (<see cref="IEntityWorldContext.PlayerEntity"/> null) C10 does nothing and D9 only applies the damage and the animation (as <see cref="EnemyHelpers.HitReaction"/>): the binary always has a hero

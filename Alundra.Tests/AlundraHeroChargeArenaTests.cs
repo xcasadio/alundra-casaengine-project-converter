@@ -25,7 +25,7 @@ public sealed class AlundraHeroChargeArenaTests : IDisposable
     private const int SwordSlot = 1;
 
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
-    private readonly ulong _previousSeed = AlundraRandom.RandomSeed;
+    private readonly ulong _previousSeed = GameRandom.RandomSeed;
     private readonly ITestOutputHelper _output;
 
     public AlundraHeroChargeArenaTests(ITestOutputHelper output)
@@ -37,7 +37,7 @@ public sealed class AlundraHeroChargeArenaTests : IDisposable
 
     public void Dispose()
     {
-        AlundraRandom.RandomSeed = _previousSeed;
+        GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
@@ -161,7 +161,7 @@ public sealed class AlundraHeroChargeArenaTests : IDisposable
     private (List<(int Index, int X, int Y, int Z, int ForceX, int ForceY, int Image, bool Destroying)> Slots, uint Word, List<(int X, int Y, int Z, int ForceX, int ForceY)> Creations) RunCharge(int ticksPerFrame)
     {
         using var arena = Arena("frames" + ticksPerFrame, 212 + 100);
-        AlundraRandom.RandomSeed = 0x12345678;
+        GameRandom.RandomSeed = 0x12345678;
         var creations = new List<(int X, int Y, int Z, int ForceX, int ForceY)>();
         AlundraNativeEffects.CreatedForTests = slot => creations.Add((slot.X, slot.Y, slot.Z, slot.ForceX, slot.ForceY));
         try
@@ -179,7 +179,7 @@ public sealed class AlundraHeroChargeArenaTests : IDisposable
 
         var slots = arena.Arc.Proxy.EffectStage!.Reservoir.ActiveSlots
             .Select(s => (s.Index, s.X, s.Y, s.Z, s.ForceX, s.ForceY, s.CurrentImageSetIndex, s.Destroying)).ToList();
-        return (slots, (uint)AlundraRandom.RandomSeed, creations);
+        return (slots, (uint)GameRandom.RandomSeed, creations);
     }
 
     // The 16 effects of the burst at the hero (6553600, 6553600): (X, Y, ForceX, ForceY), the table of AlundraHeroChargeTests (hand-written from the two tables of the binary).

@@ -933,7 +933,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _backdropStage.AttachCellularService(cellularComponent?.Service);
         if (cellularComponent != null)
         {
-            cellularComponent.RandomSource = () => (uint)AlundraLibcRandom.Next();
+            cellularComponent.RandomSource = () => (uint)LibcRandom.Next();
         }
 
         _backdropStage.Load(world, EngineEnvironment.ProjectPath);
@@ -3032,7 +3032,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     }
 
     /// <summary>E20.e0b1: the per-tick advance of the shared random stream, a static delegate (no allocation per tick) handed to <see cref="AlundraEffectStage.RunFrame"/>.</summary>
-    private static readonly Action AdvanceRandomPerTick = AlundraRandom.AdvanceFrame;
+    private static readonly Action AdvanceRandomPerTick = GameRandom.AdvanceFrame;
 
     /// <summary>The list of the hit pass (<c>0x800384F4</c>, <c>0x80127B28</c>), rebuilt at the lists step of each tick.</summary>
     private readonly List<AlundraEntityScriptProxy> _hitList = new();
@@ -3463,7 +3463,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>
     /// E20.e0b2 (D-E0B-4, D-E0B-6, docs/plan-e20-heros.md section 1.17.2): the loot roll of a creation (<c>0x80032A40</c>, the last action of <c>InitializeEntity</c>), called ONCE per creation as the last statement of the <c>try</c> of each of the
     /// three creation sites, so that a creation that aborted never rolls. <paramref name="hasRecord"/> is whether an entity record made the entity (the map load and <c>0x2D</c>, <c>0x8A</c>, <c>0x8B</c>: yes; the interface: no).
-    /// PHASE B (this commit): the helper writes <see cref="AlundraEntityScriptProxy.ContentsItemId"/> and <see cref="AlundraEntityScriptProxy.ContentsGameFlag"/> and advances the REAL stream by the same roll (<see cref="AlundraRandom.Next"/>,
+    /// PHASE B (this commit): the helper writes <see cref="AlundraEntityScriptProxy.ContentsItemId"/> and <see cref="AlundraEntityScriptProxy.ContentsGameFlag"/> and advances the REAL stream by the same roll (<see cref="GameRandom.Next"/>,
     /// which the measuring sink sees as real draws, so that its virtual word follows: V = R). The header code comes from <see cref="AlundraEntityScriptProxy.HeaderContents"/>, the record code and flag from the record and the proxy. Nothing falls here (E20.e0c).
     /// </summary>
     private void RollLootAtCreation(AlundraEntityScriptProxy? proxy, bool hasRecord, int recordCode)
@@ -3473,7 +3473,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             return;
         }
 
-        var result = LootRoll.Roll(hasRecord, proxy.ContentsGameFlag, recordCode, proxy.HeaderContents, GameState, static () => (uint)AlundraRandom.Next());
+        var result = LootRoll.Roll(hasRecord, proxy.ContentsGameFlag, recordCode, proxy.HeaderContents, GameState, static () => (uint)GameRandom.Next());
         proxy.ContentsItemId = result.ItemId;
         proxy.ContentsGameFlag = result.GameFlag;
     }

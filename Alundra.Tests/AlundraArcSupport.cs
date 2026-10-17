@@ -258,8 +258,8 @@ internal sealed class ArcRun : IDisposable
             // (ResetAll, at the head of this constructor): an arc starts from the same word whatever the map rolled while loading. What the test may read is kept first: the tile the hero occupied DURING the load
             // loop (AdoptPlayerPawn places it before the loop; the tile of the ArcSpec is written below, after the load) and the word of the stream right after the load, just before this second re-seed.
             HeroTileAtLoad = Proxy.PlayerEntity is { } loadedHero ? (loadedHero.TileX, loadedHero.TileY) : (-1, -1);
-            SeedAfterTheLoad = AlundraRandom.RandomSeed;
-            AlundraRandom.Reset();
+            SeedAfterTheLoad = GameRandom.RandomSeed;
+            GameRandom.Reset();
 
             typeof(AlundraBackdropStage).GetField("_clearColorApplied", BindingFlags.Instance | BindingFlags.NonPublic)!
                 .SetValue(Proxy._backdropStage, true); // the headless montage has no view for the clear colour.
@@ -379,7 +379,7 @@ internal sealed class ArcRun : IDisposable
     private static void ResetAll()
     {
         // E19.d (TH2): the shared random stream of the arcs starts from its seed (in game its position depends on the draws made before).
-        AlundraRandom.Reset();
+        GameRandom.Reset();
         ResetSingletons();
         AlundraEtcStringTable.ResetForTests();
         SaveBook.Instance.ResetForTests();

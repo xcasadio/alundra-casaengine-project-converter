@@ -8,7 +8,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E20.e0b1 T1 (docs/plan-e20-heros.md section 1.17.1, annex docs/plan-e20-annexe/e20-e0b/README.md): the measuring sink of the per-tick advance (<see cref="AlundraRandomShadow"/>) is inert without its
-/// environment variable. It says NOTHING about <see cref="AlundraRandom.RandomSeed"/> (the real state, which phase B makes advance): it only looks at the sink, so it is the same test in phase A and in phase B.
+/// environment variable. It says NOTHING about <see cref="GameRandom.RandomSeed"/> (the real state, which phase B makes advance): it only looks at the sink, so it is the same test in phase A and in phase B.
 /// It is a no-op when the sink is active (the suite launched with <c>ALUNDRA_RNG_SHADOW_LOG</c> to measure), where the sink is supposed to record.
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
@@ -16,7 +16,7 @@ public sealed class AlundraRandomShadowTests
 {
     public AlundraRandomShadowTests()
     {
-        AlundraRandom.Reset();
+        GameRandom.Reset();
     }
 
     [Fact]
@@ -28,9 +28,9 @@ public sealed class AlundraRandomShadowTests
         }
 
         // Warm-up: the first calls compile the paths measured below.
-        AlundraRandom.AdvanceFrame();
-        AlundraRandom.Next();
-        _ = AlundraRandom.RandomSeed;
+        GameRandom.AdvanceFrame();
+        GameRandom.Next();
+        _ = GameRandom.RandomSeed;
 
         var word = AlundraRandomShadow.VirtualWord;
         var events = AlundraRandomShadow.EventCount;
@@ -39,8 +39,8 @@ public sealed class AlundraRandomShadowTests
 
         for (var i = 0; i < 1000; i++)
         {
-            AlundraRandom.AdvanceFrame();
-            AlundraRandom.Next();
+            GameRandom.AdvanceFrame();
+            GameRandom.Next();
         }
 
         Assert.Equal(allocated, GC.GetAllocatedBytesForCurrentThread());

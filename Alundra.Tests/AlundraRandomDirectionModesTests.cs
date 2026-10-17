@@ -21,9 +21,9 @@ public sealed class AlundraRandomDirectionModesTests : IDisposable
     private const uint Mode4 = 0x80;
     private const uint Mode5 = 0xA0;
 
-    public AlundraRandomDirectionModesTests() => AlundraRandom.Reset();
+    public AlundraRandomDirectionModesTests() => GameRandom.Reset();
 
-    public void Dispose() => AlundraRandom.Reset();
+    public void Dispose() => GameRandom.Reset();
 
     private static EventProgramRunner NewRunner()
     {
@@ -38,7 +38,7 @@ public sealed class AlundraRandomDirectionModesTests : IDisposable
 
     private static uint[] Draw(ulong seed, params uint[] encodedDirs)
     {
-        AlundraRandom.RandomSeed = seed;
+        GameRandom.RandomSeed = seed;
         var runner = NewRunner();
         var entity = new AlundraEntityScriptProxy();
         var values = new uint[encodedDirs.Length];
@@ -72,14 +72,14 @@ public sealed class AlundraRandomDirectionModesTests : IDisposable
     public void Modes4And5_AlternatingOnOneStream_DrawOncePerCall()
     {
         Assert.Equal(new uint[] { 0, 25, 24 }, Draw(0xB017C93DUL, Mode4, Mode5, Mode4));
-        Assert.Equal(0xE4013D62u, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(0xE4013D62u, (uint)GameRandom.RandomSeed);
     }
 
     [Fact]
     public void Mode4_AdvancesTheSeedOncePerCall()
     {
         Draw(0xB017C93DUL, Mode4);
-        Assert.Equal(0x35E36190u, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(0x35E36190u, (uint)GameRandom.RandomSeed);
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public sealed class AlundraRandomDirectionModesTests : IDisposable
         var codes = document.CodesAsBytes();
         Assert.Equal(new byte[] { 0x5A, 0x80, 0x80 }, codes[144..147]);
 
-        AlundraRandom.RandomSeed = 0xB017C93D;
+        GameRandom.RandomSeed = 0xB017C93D;
         var runner = new EventProgramRunner(document, new GameState());
         var entity = new AlundraEntityScriptProxy();
         var state = new EventProgramState { Codes = codes, CodeIndex = 144 };
@@ -139,6 +139,6 @@ public sealed class AlundraRandomDirectionModesTests : IDisposable
         Assert.Equal(152, state.CodeIndex);
         Assert.Equal(0u, entity.TargetDirection);
         Assert.Equal(8u, entity.TargetAnimationId);
-        Assert.Equal(0x35E36190u, (uint)AlundraRandom.RandomSeed);
+        Assert.Equal(0x35E36190u, (uint)GameRandom.RandomSeed);
     }
 }

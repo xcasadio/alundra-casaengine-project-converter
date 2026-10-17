@@ -41,9 +41,9 @@ public sealed partial class AlundraLootRollWorldTests
             var seed = U(row.GetProperty("rng_in"));
             expected.Add($"{page}/{index} seed {seed:X8}: item {U(row.GetProperty("item"))} +0x40 {I(row.GetProperty("flag40"))} word {U(row.GetProperty("rng_out")):X8}");
 
-            AlundraRandom.RandomSeed = seed;
+            GameRandom.RandomSeed = seed;
             var spawned = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, page == 1, index, HeroX << 16, HeroY << 16, -1, 0x10)!;
-            observed.Add($"{page}/{index} seed {seed:X8}: item {spawned.ContentsItemId} +0x40 {spawned.ContentsGameFlag} word {(uint)AlundraRandom.RandomSeed:X8}");
+            observed.Add($"{page}/{index} seed {seed:X8}: item {spawned.ContentsItemId} +0x40 {spawned.ContentsGameFlag} word {(uint)GameRandom.RandomSeed:X8}");
             Recycle(arc, spawned);
         }
 
@@ -116,9 +116,9 @@ public sealed partial class AlundraLootRollWorldTests
 
             record.CustomProperties["_10"] = flag.ToString(System.Globalization.CultureInfo.InvariantCulture);
             record.CustomProperties["Contents"] = I(row.GetProperty("rec_code")).ToString(System.Globalization.CultureInfo.InvariantCulture);
-            AlundraRandom.RandomSeed = seed;
+            GameRandom.RandomSeed = seed;
             var spawned = Context(arc).SpawnEntityByRecordId(arc.Hero, 4)!;
-            observed.Add($"{prefix}: item {spawned.ContentsItemId} +0x40 {spawned.ContentsGameFlag} word {(uint)AlundraRandom.RandomSeed:X8}");
+            observed.Add($"{prefix}: item {spawned.ContentsItemId} +0x40 {spawned.ContentsGameFlag} word {(uint)GameRandom.RandomSeed:X8}");
             Recycle(arc, spawned);
         }
 
@@ -145,14 +145,14 @@ public sealed partial class AlundraLootRollWorldTests
             }
         };
 
-        AlundraRandom.RandomSeed = seed;
+        GameRandom.RandomSeed = seed;
         var aborted = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, 254, HeroX << 16, HeroY << 16, -1, 0x10);
-        var wordAfterAbort = (uint)AlundraRandom.RandomSeed;
+        var wordAfterAbort = (uint)GameRandom.RandomSeed;
         var second = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, 254, HeroX << 16, HeroY << 16, -1, 0x10)!;
 
         Assert.Equal(
             $"aborted null, word {seed:X8}; second item {U(row.GetProperty("item"))} word {U(row.GetProperty("rng_out")):X8}",
-            $"aborted {(aborted is null ? "null" : "created")}, word {wordAfterAbort:X8}; second item {second.ContentsItemId} word {(uint)AlundraRandom.RandomSeed:X8}");
+            $"aborted {(aborted is null ? "null" : "created")}, word {wordAfterAbort:X8}; second item {second.ContentsItemId} word {(uint)GameRandom.RandomSeed:X8}");
     }
 
     [Fact]
@@ -164,12 +164,12 @@ public sealed partial class AlundraLootRollWorldTests
 
         // The load of the map 478 rolls nothing in the binary (V8: 22 entities, 0 draws): the word is still the seed after the adoption of the hero, who has no loot code of his own.
         var heroText = $"hero item {arc.Hero.ContentsItemId} +0x40 {arc.Hero.ContentsGameFlag} header {arc.Hero.HeaderContents}, word after the load {arc.SeedAfterTheLoad:X8}";
-        AlundraRandom.RandomSeed = U(row.GetProperty("rng_in"));
+        GameRandom.RandomSeed = U(row.GetProperty("rng_in"));
         var spawned = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, 254, HeroX << 16, HeroY << 16, -1, 0x10)!;
 
         Assert.Equal(
             $"hero item 0 +0x40 0 header 0, word after the load {InitialSeed:X8}; creation item {U(row.GetProperty("item"))} word {U(row.GetProperty("rng_out")):X8}",
-            $"{heroText}; creation item {spawned.ContentsItemId} word {(uint)AlundraRandom.RandomSeed:X8}");
+            $"{heroText}; creation item {spawned.ContentsItemId} word {(uint)GameRandom.RandomSeed:X8}");
     }
 
     [Fact]
@@ -185,9 +185,9 @@ public sealed partial class AlundraLootRollWorldTests
         foreach (var contents in new[] { 0x82, 0x182 })
         {
             record.CustomProperties["Contents"] = contents.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            AlundraRandom.RandomSeed = 0x12345678;
+            GameRandom.RandomSeed = 0x12345678;
             var spawned = Context(arc).SpawnEntityByRecordId(arc.Hero, 4)!;
-            observed.Add($"item {spawned.ContentsItemId} word {(uint)AlundraRandom.RandomSeed:X8}");
+            observed.Add($"item {spawned.ContentsItemId} word {(uint)GameRandom.RandomSeed:X8}");
             Recycle(arc, spawned);
         }
 

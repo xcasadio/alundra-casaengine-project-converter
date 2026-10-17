@@ -621,7 +621,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
             case 0x0C: // Random cardinal direction - Script_12_00C (E19.c1 T3): one draw of the shared generator
                        // (AlundraRandom, the original's seed 0x80098708 and constants), then TargetDirection =
                        // cardinal table[seed >> 30]. Size 1.
-                entity.TargetDirection = AnimationTables.CardinalDirectionTable[(int)((uint)AlundraRandom.Next() >> 30)];
+                entity.TargetDirection = AnimationTables.CardinalDirectionTable[(int)((uint)GameRandom.Next() >> 30)];
                 return 1;
 
             case 0x10: // Player lose control - Script_16_010 (EntityEventHandlers.cs:680-684). The flag
@@ -1505,7 +1505,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
             case 0x8C: // If random >= value - Script_140_08C @ 0x80040438 (E19.l1): one draw of the shared generator
                        // (AlundraRandom, the same constants and initial seed as the binary's 0x80098708);
                        // Result = 1 when (seed >> 24) >= v1, else 0 (the old label said "<", inverted). Size 2.
-                state.Result = (uint)AlundraRandom.Next() >> 24 >= (uint)v[1] ? 1 : 0;
+                state.Result = (uint)GameRandom.Next() >> 24 >= (uint)v[1] ? 1 : 0;
                 return 2;
 
             case 0x82: // Give item or pickup by id - Script_130_082 @ 0x8003FE7C (E19.l2, docs/plan-e19-opcodes.md section 1.2m.2):
@@ -3399,7 +3399,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// Full port of <c>GameEngine.ResolveDirectionFromParam</c> (GameEngine.cs:2325-2382, address
     /// 0x8003cfc8) - the 3 high bits of <paramref name="encodedDir"/> select one of 8 modes, the low 5
     /// bits (<c>result</c>) feed most of them. Modes 4 and 5 draw once from the shared generator
-    /// (<see cref="AlundraRandom"/>, the binary's inlined LCG on the state word at 0x80098708) and ignore
+    /// (<see cref="GameRandom"/>, the binary's inlined LCG on the state word at 0x80098708) and ignore
     /// <c>result</c> (E19.m0, docs/plan-e19-opcodes.md 1.2s.1): mode 4 (0x8003D060) returns
     /// <c>CardinalDirectionTable[new &gt;&gt; 30]</c> (table at 0x80023644, the same one as mode 2), mode 5
     /// (0x8003D0BC) returns <c>new &gt;&gt; 27</c> (0..31); both store the new seed (0x8003D08C, 0x8003D0E8)
@@ -3429,10 +3429,10 @@ public sealed class EventProgramRunner : IEventProgramRunner
             }
 
             case 4: // Random cardinal: one draw, table[new >> 30] (0x8003D060).
-                return AnimationTables.CardinalDirectionTable[(uint)AlundraRandom.Next() >> 30];
+                return AnimationTables.CardinalDirectionTable[(uint)GameRandom.Next() >> 30];
 
             case 5: // Random direction (0..31): one draw, new >> 27, no mask (0x8003D0BC).
-                return (uint)AlundraRandom.Next() >> 27;
+                return (uint)GameRandom.Next() >> 27;
 
             case 6: // The PLAYER's current TargetDirection, plus result (not toward-target, unlike mode 3).
             {

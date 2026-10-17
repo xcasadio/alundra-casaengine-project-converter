@@ -33,7 +33,7 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
     private const int BirthTick = WaveOracle.Birth;
 
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
-    private readonly ulong _previousSeed = AlundraRandom.RandomSeed;
+    private readonly ulong _previousSeed = GameRandom.RandomSeed;
     private readonly ITestOutputHelper _output;
 
     public AlundraWaveSwordWiringTests(ITestOutputHelper output)
@@ -51,7 +51,7 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
         PlayerManager.WeaponSpawnCallsForTests = null;
         WaveSwordAi.StubCallsForTests = null;
         AlundraNativeEffects.CreatedForTests = null;
-        AlundraRandom.RandomSeed = _previousSeed;
+        GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
