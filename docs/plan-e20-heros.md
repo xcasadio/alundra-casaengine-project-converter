@@ -6669,13 +6669,14 @@ les orbes et la tornade n'avancent que par la **poussée** `+0xCC/+0xD0`, que la
 pendant un sort, le menu Start est refusé ; E3 est partagé avec 98 sprites d'ennemis (clé commune avec E14) ; le départ lance une piste XA
 (comme `0xB9`, O-E19-36) ; les tomes n'exigent pas E20.g. Questions Q-H4-1 à Q-H4-8 (§2).
 
-### 1.26 E20.e0c — Le butin et l'objet ramassable ⏳ (détaillée le 2026-10-18, révision 2 ; exécutable après la fin du chantier de restructuration)
+### 1.26 E20.e0c — Le butin et l'objet ramassable ⏳ (détaillée le 2026-10-18, révision 2 **READY** ; exécutable après la fin du chantier de restructuration)
 
 **Relecture (2026-10-18).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) le tick de naissance d'un objet lâché n'avait pas de
 défaut alors que V6 mesure déjà l'écart (`BT-L1`, `BT-L3`) : défaut retenu, Q-E0C-8, P-L1 le confirme ; (2) les états 2 et 3 du ramassage
 (le CD, le masque du dialogue, `0x80049AF4`, l'attente du dialogue) étaient réduits à « attendent » : défaut retenu, T0 (f) les lit, (w8) les
 épingle ; Q-E0C-5 concerne aussi les objets lâchés. Seconde relecture : REVISE, un blocage (l'acceptation ne citait pas (w8) et (w9)) :
-FIX en révision 2 ; nouvelle époque, une seule relecture de clôture.
+FIX en révision 2 ; nouvelle époque, une seule relecture de clôture : **READY** (2026-10-18). Les défauts réversibles restent à confirmer
+par l'auteur (Q-E0C-1 à Q-E0C-8).
 
 **Provenance.** Lecture du binaire du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-e0c/`, `report.md` et `check.md`, au HEAD
 `2010ec3`) ; état de la DLL et des tests rejoué au HEAD `978608d` après la restructuration (`docs/plan-e20-annexe/e20-e0c/state-978608d/`,
