@@ -43,7 +43,7 @@ port is always the arcs and tests that run the real DLL. See `docs/plan-e19-opco
 ## Running
 
 - Python 3; `capstone` for the disassembly and emulation scripts.
-- Inputs: the exported project `alundra-project/` (not versioned), the DLL sources under `Alundra/Scripts/` (opcode
+- Inputs: the exported project `alundra-project/` (not versioned), the DLL sources under `Alundra/Events/` (opcode
   sizes, `Dispatch` cases), and `ALUN_CD.EXE` (France). Their paths are written as absolute paths of the author's
   machine (`ROOT`, `EXE`).
 - Run each script from its own folder (some resolve `.` or `../binary` relative to the working directory).
@@ -62,7 +62,7 @@ Fix these before any total is reused or pinned (O-E19-25):
 3. A start candidate written after the site is used (a "park before self-destroy" `0x64` at (0, 0) on map 1).
 4. A site is labelled "rule difference" without checking that the compared runs share the same start.
 5. `emu.py` (walks-0x0b): `0x37 [v]` returns at s+v instead of s+v+1 (the binary, `0x8003E3DC`, and the DLL,
-   `AlundraEventProgramRunner.cs`, opcode `0x37`, return one tick later). The absolute times of the scene emulations
+   `EventProgramRunner.cs`, opcode `0x37`, return one tick later). The absolute times of the scene emulations
    (`scene185.py` and the like) are shifted one tick per wait; their outcome is not.
 
 Other limits, recorded with the reports: no entity contacts in the `0x24` census; cell writes only flagged, not

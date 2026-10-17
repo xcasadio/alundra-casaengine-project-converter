@@ -1,9 +1,9 @@
 """geo.py - E19.d2 census0b: walk geometry under three rules (read-only, scratch).
 
-DLL  : the port today. Cell field of the controller (AlundraCellsCollisionField + CharacterControllerComponent field stage,
+DLL  : the port today. Cell field of the controller (CellsCollisionField + CharacterControllerComponent field stage,
        CharacterControllerComponent.cs:1108-1286): per-axis resolution (h1 then h2), a corner blocks when its cell hits the
        walkability mask or when its ground is higher than foot + StepHeight 3; out-of-grid points read the edge cell
-       (AlundraCellsCollisionField.cs:279-301), so an entity can leave the map; entity bodies are ghosts (D-E12D-1).
+       (CellsCollisionField.cs:279-301), so an entity can leave the map; entity bodies are ghosts (D-E12D-1).
 FIX  : DLL + the recommended fix of the collision surface (option E): entity boxes ORed into the field stage's blocked test
        (same per-axis resolution, no slide, no border clamp).
 ORIG : the binary rule (collision.md F3-F5, collision-check.md, border.md F1-F4, e19a2/binary.md F1/F9/F14):

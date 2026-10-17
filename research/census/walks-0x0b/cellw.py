@@ -1,5 +1,5 @@
 """cellw.py - per map, the cells a REACHABLE 0x54 (set bits), 0x55 (clear bits) or 0x85 (copy a rectangle) can rewrite at
-run time (operands as AlundraEventProgramRunner.cs:1213-1252). The census reads the exported cells only, so a walk blocked
+run time (operands as EventProgramRunner.cs:1213-1252). The census reads the exported cells only, so a walk blocked
 on such a cell is 'uncertain (cell write)'. Output cellw.pkl {mid: {(x, y): [(pc, op)]}}."""
 import collections
 import os

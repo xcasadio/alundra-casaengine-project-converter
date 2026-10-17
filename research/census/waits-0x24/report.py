@@ -75,7 +75,7 @@ w("4. **Speed**: `Speed` of the animation in the actor's sprite header (`Data/sp
   "`Alundra`, id `192c2eeb-...`).")
 w("5. **Ray**: the footprint of the actor (`OffsetX/Y`, `SizeX/Y` of its header) is moved along its direction (the major axis one pixel at a "
   "time) on the cell grid of the map: the first cell whose `walkability | ground_property << 8` hits the actor's mask (`0x40`, `|= 0x01` "
-  "with ClassB, `|= 0x1000` with ClassA, as `AlundraCellsCollisionField.WalkabilityMaskFor`), or whose ground height (slopes as "
+  "with ClassB, `|= 0x1000` with ClassA, as `CellsCollisionField.WalkabilityMaskFor`), or whose ground height (slopes as "
   "`ComputeGroundHeight`) is higher than the current one by more than the controller's `step_height` (prefab `CharacterControllerComponent`), "
   "ends the ray (a wall). The ray stops with *no wall* when it leaves the map (the DLL does not port the screen clip that the original "
   "applies at the map border, `ApplyEntityForces`). When the position cannot be pinned for the hero of a B program, the ray is cast from "

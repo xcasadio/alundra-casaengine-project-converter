@@ -11,7 +11,7 @@ sys.path.insert(0, HERE)
 from pop import maps, SZ_BIN, s16  # noqa: E402
 
 ROOT = "D:/development/repo/alundra-casaengine-project-converter"
-_tbl = open(ROOT + "/Alundra/Scripts/EventOpcodeSizeTable.cs", encoding="utf-8-sig").read()
+_tbl = open(ROOT + "/Alundra/Events/EventOpcodeSizeTable.cs", encoding="utf-8-sig").read()
 NM = {int(m.group(1), 16): m.group(2) for m in re.finditer(r'\{\s*0x([0-9A-Fa-f]{2}),\s*new\(\d+,\s*"([^"]*)"\)', _tbl)}
 
 

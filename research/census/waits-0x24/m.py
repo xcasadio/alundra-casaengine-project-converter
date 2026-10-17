@@ -6,13 +6,13 @@ ROOT = "D:/development/repo/alundra-casaengine-project-converter"
 MAPS = ROOT + "/alundra-project/Maps"
 DATA = ROOT + "/alundra-project/Data"
 
-_tbl = open(ROOT + "/Alundra/Scripts/EventOpcodeSizeTable.cs", encoding="utf-8-sig").read()
+_tbl = open(ROOT + "/Alundra/Events/EventOpcodeSizeTable.cs", encoding="utf-8-sig").read()
 SZ, NM = {}, {}
 for m in re.finditer(r'\{\s*0x([0-9A-Fa-f]{2}),\s*new\((\d+),\s*"([^"]*)"\)', _tbl):
     SZ[int(m.group(1), 16)] = int(m.group(2)); NM[int(m.group(1), 16)] = m.group(3)
 
-# Dispatch case labels of the CURRENT runner (parsed from the switch, lines 512..1447), plus 0x00/0xFF of the loop.
-_run = open(ROOT + "/Alundra/Scripts/AlundraEventProgramRunner.cs", encoding="utf-8-sig").read().splitlines()
+# Dispatch case labels of the CURRENT runner (parsed from the switch of Dispatch), plus 0x00/0xFF of the loop.
+_run = open(ROOT + "/Alundra/Events/EventProgramRunner.cs", encoding="utf-8-sig").read().splitlines()
 _start = next(i for i, l in enumerate(_run) if "private int Dispatch(int command" in l)
 _end = next(i for i in range(_start, len(_run)) if re.match(r"^\s+default:", _run[i]))
 CASES = set()

@@ -27,7 +27,7 @@ from m import Map, SZ, NM, s16, ROOT, MAPS  # noqa: E402
 sys.stdout.reconfigure(encoding="utf-8")
 
 # ------------------------------------------------------------------------------------------------ constants from the DLL
-_tables = open(ROOT + "/Alundra/Scripts/AnimationTables.cs", encoding="utf-8-sig").read()
+_tables = open(ROOT + "/Alundra/Entities/AnimationTables.cs", encoding="utf-8-sig").read()
 
 
 def _cs_array(name):

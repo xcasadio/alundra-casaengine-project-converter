@@ -1,6 +1,6 @@
 """mysim.py - checker's own walk geometry (independent re-implementation, 16.16 integer arithmetic).
 
-DLL rule  [DLL][engine]: AlundraCellsCollisionField (24x16 cells, clamped, ground per slope kind) + CharacterControllerComponent
+DLL rule  [DLL][engine]: CellsCollisionField (24x16 cells, clamped, ground per slope kind) + CharacterControllerComponent
           field stage (:1108-1286): per axis h1 = X then h2 = Y; an axis is blocked when a corner of the footprint at the
           candidate is not walkable under the mask or has ground > foot + StepHeight (3 for all 383 controller prefabs);
           far corner exclusive (BitDecrement). Foot = ground at start; follows the ground after an accepted step when the
@@ -22,7 +22,7 @@ import sys
 
 ROOT = "D:/development/repo/alundra-casaengine-project-converter"
 U = 65536
-_tables = open(ROOT + "/Alundra/Scripts/AnimationTables.cs", encoding="utf-8-sig").read()
+_tables = open(ROOT + "/Alundra/Entities/AnimationTables.cs", encoding="utf-8-sig").read()
 
 
 def _arr(name):

@@ -1,5 +1,5 @@
 """detour.py - for every DLL-blocked state of a 0x0B / 0x1E site (rows_DLL.pkl), can the E4.d navigation detour of the DLL
-(AlundraEventProgramRunner.TryEngageDetour, :2294-2321) route the walker?
+(EventProgramRunner.TryEngageDetour, :2294-2321) route the walker?
   goal  = memorized start (px, truncated) + sign(OffsetX/Y[dir]) * (radius + 24), to a cell clamped to the grid;
   start = the cell of the contact position;
   grid  = navigation layer: walkable iff ((walkability | ground_property << 8) & 0x40) == 0 (NavigationWriter.cs:233-235),

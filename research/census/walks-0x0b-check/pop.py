@@ -19,7 +19,7 @@ ROOT = "D:/development/repo/alundra-casaengine-project-converter"
 HERE = os.path.dirname(os.path.abspath(__file__))
 CENSUS = os.path.join(os.path.dirname(HERE), "census0b")
 
-_tbl = open(ROOT + "/Alundra/Scripts/EventOpcodeSizeTable.cs", encoding="utf-8-sig").read()
+_tbl = open(ROOT + "/Alundra/Events/EventOpcodeSizeTable.cs", encoding="utf-8-sig").read()
 SZ = {}
 for m in re.finditer(r'\{\s*0x([0-9A-Fa-f]{2}),\s*new\((\d+),', _tbl):
     SZ[int(m.group(1), 16)] = int(m.group(2))

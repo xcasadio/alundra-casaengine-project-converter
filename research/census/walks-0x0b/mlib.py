@@ -8,7 +8,7 @@ import sys
 ROOT = "D:/development/repo/alundra-casaengine-project-converter"
 MAPS = ROOT + "/alundra-project/Maps"
 
-_tbl = open(ROOT + "/Alundra/Scripts/EventOpcodeSizeTable.cs", encoding="utf-8-sig").read()
+_tbl = open(ROOT + "/Alundra/Events/EventOpcodeSizeTable.cs", encoding="utf-8-sig").read()
 SZ, NM = {}, {}
 for m in re.finditer(r'\{\s*0x([0-9A-Fa-f]{2}),\s*new\((\d+),\s*"([^"]*)"\)', _tbl):
     SZ[int(m.group(1), 16)] = int(m.group(2))
