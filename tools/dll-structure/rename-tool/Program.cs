@@ -258,6 +258,26 @@ static class Program
             var opts = new SymbolRenameOptions(RenameOverloads: false, RenameInStrings: false, RenameInComments: false, RenameFile: false);
             cur = await Renamer.RenameSymbolAsync(cur, sym, opts, n);
         }
+        // text in inactive preprocessor regions (the other build configuration) is not bound by Roslyn: an old name there is rewritten
+        // textually; the build in that configuration and prove_r3 are the judges of it
+        int disabledFixups = 0;
+        foreach (var d in oursDocs)
+        {
+            var cd = cur.GetDocument(d.Id)!;
+            if (!cd.SupportsSyntaxTree) continue;
+            var croot = (await cd.GetSyntaxRootAsync())!;
+            var dedits = new List<Microsoft.CodeAnalysis.Text.TextChange>();
+            foreach (var tr in croot.DescendantTrivia(descendIntoTrivia: true))
+            {
+                if (!tr.IsKind(SyntaxKind.DisabledTextTrivia)) continue;
+                foreach (Match m in mapper.Matches(tr.ToString()))
+                    dedits.Add(new Microsoft.CodeAnalysis.Text.TextChange(new Microsoft.CodeAnalysis.Text.TextSpan(tr.SpanStart + m.Index, m.Length), map[m.Value]));
+            }
+            if (dedits.Count == 0) continue;
+            disabledFixups += dedits.Count;
+            cur = cur.WithDocumentText(d.Id, (await cd.GetTextAsync()).WithChanges(dedits));
+        }
+        if (disabledFixups > 0) Console.WriteLine($"{disabledFixups} name(s) in inactive preprocessor regions rewritten textually");
         var after = cur;
 
         var changes = after.GetChanges(before);
