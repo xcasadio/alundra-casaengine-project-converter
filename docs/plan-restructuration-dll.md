@@ -1,7 +1,6 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
-Statut : ⏳ proposé le 2026-10-16 ; enveloppe READY ; R0 démarrée, en pause le 2026-10-16 sur Q-R-2, **reprise le 2026-10-17 après la
-réponse de l'auteur (D-R-10)** ; R1 détaillée et READY, attend R0. Démarre après E20.e0a4 (plan E20, §1.16.4).
+Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; R1 détaillée et READY, en cours. Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 ## 0. Décisions de l'auteur
 
@@ -163,7 +162,7 @@ script à chaque tranche ; (5) les renommages imposés : `AlundraPlayerControlle
   (`executor`) ; `plan-verifier` avant chaque tranche ; un verifier frais après chaque tranche, deux pour R0 et R4 (moteur, données).
 - Retour arrière : `git revert` de la tranche ; pour R0 et R4, revert du commit parent et réexport depuis le commit précédent.
 
-## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export 🚧 (révision 4 ; démarrage décidé par l'auteur, D-R-9 ; en pause le 2026-10-16 sur Q-R-2, reprise le 2026-10-17 avec D-R-10)
+## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export 🧪 (faite et CONFIRMED le 2026-10-17 : moteur `d4524e84` à `fcc5280b`, parent `146e1d8`, ADR-0075 du moteur ; restent les recettes de l'auteur, en jeu et dans l'éditeur)
 
 **Relecture (2026-10-16).** Enveloppe (§0 à §3) : **READY**. R0 : **REVISE**, trois blocages corrigés (FIX, révision 1) : (1) le lieu
 de l'exception de D-R-4 et le chemin de son contexte, sans casser les chargements sans DLL (vérification du convertisseur) ; (2) un seul
@@ -313,6 +312,34 @@ ces six fichiers, chacun égal à son SHA-1 prédit ; `m2` contre `m1` : 0 ajout
 et en Debug ; `cmp` de la DLL Debug égal ; garde des traces sans écart. Reste : les relectures fraîches (moteur, données) et la recette de l'auteur en jeu
 (nouvelle partie, les entités bougent, F5, F6, F9) et dans l'éditeur lancé (recette de T3.2).
 
+**Vérification (2026-10-17) : CONFIRMED** par trois verifiers frais. **Moteur** (adversarial, avant la partie parent) : les deux `.sln`,
+`CasaEngine.Tests` 4 314 / 0 échec, les rouges d'avant rejoués, la portée de tolérance de D9/D11 sur tous ses chemins (chargement, préfab,
+proxy de monde, `AddEntity` puis `Update`, refermée après une exception), la ligne Script de l'inspecteur (14 cas, `EntityDetailsScriptRowTests`),
+mutants inventés tués ou prouvés équivalents ; **rejeu** : l'annexe et la prédiction rejouées (885 SHA-1 égaux, `m3` identique au manifeste
+pris par le verifier), les suites (convertisseur 854, `Alundra.Tests` 5 097 en Release et en Debug), le `cmp`, la garde des traces ;
+**adversarial (parent)** : aucun nom court restant dans les données ni dans un chemin du convertisseur, les filets de la DLL, le pointeur,
+rien sur `main`, rien poussé. **Aucun constat P0 à P2.** Reportés (P3 et P4, sans changer le candidat CONFIRMED) :
+- P3 : la condition « constructeur public sans paramètre » d'`IsInstantiableScriptType` n'a pas de test (un tel type serait listé, puis
+  `MissingMethodException` au lieu de l'exception dédiée) ;
+- P3 : le `throw;` des filets de `SpawnEntityByRecordId` et `SpawnEntityBySpriteIndex` n'a pas de test dédié (seul le chargement de carte en a) ;
+- P3 : `CasaEngineMonogame/docs/editor/ui-screen-editor/screen-authoring-conventions.md:229` garde un exemple au nom court ;
+- P4 : la comparaison d'`Entity.cs:233` en `OrdinalIgnoreCase` reste verte (pas de test de casse sur le proxy cloné) ; le fichier de repli
+  d'une portée imbriquée non remis à sa fermeture (sans test) ; `AbortCreation` avant le `throw;` de la boucle de carte sans test ; un
+  commentaire au nom court dans `alundra-casaengine-project-converter/Writers/SpriteWriter.cs:64` ; le rapprochement d'`OutputSizeBytes` non
+  consigné par P1 (la prédiction par SHA-1 et par taille de chaque fichier, elle, est exacte) ; les commits moteur et parent de R0 portent
+  « Claude Sonnet 5.5 » au lieu d'« Opus 5.5 » dans leur ligne d'attribution (non réécrits : rien n'est poussé, une réécriture d'historique
+  n'est pas demandée).
+Constats préexistants, hors tranche, signalés à l'auteur : dans RPGDemo, `NullReferenceException` dans `Entity.Destroy` →
+`AnimatedSpriteComponent.OnEnabledValueChange` quand un rocher lancé touche le joueur (~25 s de jeu) ; dans SandBoxGame,
+`NullReferenceException` à la première image de `DrawBoxWithEffect` (effet nul) ; `EditorScriptAssemblyService.Unload()` rend faux en Debug
+(limite consignée dans l'ADR-0075 du moteur).
+
+**Recettes de l'auteur.** En jeu : nouvelle partie jusqu'au premier écran jouable, les entités bougent (leurs proxies existent), F5, F6,
+F9. Dans l'éditeur (T3.2 du plan du moteur) : (a) un monde et une entité montrent leur ligne « Script » (nom complet), sans avertissement ;
+(b) un nom de script faussé dans une copie de travail d'un fichier de données de RPGDemo (rétablie après) : le monde s'ouvre, l'entité est
+dans la hiérarchie, l'avertissement et son message sont dans l'inspecteur ; (c) l'aperçu d'un préfab au script faussé s'ouvre avec
+l'avertissement ; choisir un script dans la liste, puis annuler.
+
 **Acceptation.** L'annexe de T0 existe à un commit antérieur au premier commit de code ; `CasaEngine.Tests` vert et ses nouveaux cas
 rouges sur le moteur d'avant (nommés) ; les deux `.sln` du moteur ; démos et RPGDemo démarrent ; `Alundra.Tests` Release et Debug, zéro
 échec ; la suite du convertisseur verte et sa phase 8 `Verification: PASSED` sur l'export de R0 ; le `diff_manifests.py` versé, contre la
@@ -324,7 +351,7 @@ chemins autorisés qui change ; un test qui change de valeur attendue ; un déma
 **Retour arrière.** Revert du commit parent (pointeur, convertisseur, DLL, tests) et réexport depuis le commit précédent ; la branche du
 moteur reste non fusionnée.
 
-## 5. Tranche R1 — ADR, table des noms, contrôle des noms ⏳ (détaillée le 2026-10-16 ; révision 1 **READY** ; attend la clôture de R0)
+## 5. Tranche R1 — ADR, table des noms, contrôle des noms ⏳ (détaillée le 2026-10-16 ; révision 1 **READY** ; R0 close le 2026-10-17)
 
 **Relecture (2026-10-16).** R1 : **REVISE**, cinq blocages corrigés (FIX, révision 1) : (1) la table donne pour **chaque type** son
 fichier, son namespace et son nom à chaque étape (r2, r3, final), ce qui tranche le cas des types secondaires des fichiers cités par les
