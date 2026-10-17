@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
-2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; R4 détaillée et READY. Démarre après E20.e0a4 (plan E20, §1.16.4).
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-18** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 en attente de Q-R-3 ; R6 détaillée, à relire. Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -716,7 +716,7 @@ ligne d'attribution (la ligne vient du harnais des exécuteurs ; rien n'est pous
 dérivées du nom des classes de test (par exemple les dossiers temporaires `"AlundraSoundPlayerTests_"`) suivent les classes de test en R5 ;
 `prove_r3.py` corrigé une fois en cours de tranche (`b98b6f8`, faux positifs), sans effet sur la vérification indépendante.
 
-## 8. Tranche R4 — Les 9 types cités par les données ; second export 🧪 (faite le 2026-10-17, `1ecb199` et `15804ae` ; révision 2, relecture de clôture **READY** ; restent les deux verifiers frais et la recette de l'auteur)
+## 8. Tranche R4 — Les 9 types cités par les données ; second export 🧪 (faite et CONFIRMED le 2026-10-18, `6032da0` à `ce6d335` ; révision 2 ; reste la recette de l'auteur)
 
 **Relecture (2026-10-17).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) les outils de R2 et R3 ne savent pas traiter les
 types cités (leur table s'arrête à l'étape `r3`, où ces types n'ont pas bougé ; `apply_r2.py` indexe les anciens noms ; l'outil de
@@ -845,19 +845,117 @@ cas prévus ; un processus du jeu, du lanceur ou de l'éditeur pendant un export
 
 **Retour arrière.** Revert des commits de la tranche et réexport depuis le commit précédent.
 
-## 9. Tranche R5 — Tests en miroir ⏳
+**Vérification de R4 (2026-10-18) : CONFIRMED** par deux verifiers frais (rejeu, adversarial ; `7ce82c2` à `ce6d335`). Rejoué : l'annexe
+`r4/` et la prédiction (885 SHA-1 et tailles égaux, chemins autorisés, `AssetInfos.json` inchangé, nombre de fichiers inchangé) ; le manifeste
+pris par le verifier égal à `m3` ; `rg -uu` : tous les `script_class_name`, `player_controller_class` et `view_model_type` aux noms complets
+finaux ; la suite du convertisseur ; la solution en Release et en Debug ; `Alundra.Tests` 5 097 / 0 échec dans les deux ; `check_names.py --tree
+--stage final` à 0 ; plus aucun type `Alundra*` dans `Alundra/` ; `Alundra/Scripts/` absent ; `prove_r4.py` sur T1 et T2 ; `git log --follow`
+des 10 fichiers ; le `cmp` ; la garde des traces ; mutants inventés (convertisseur, `design.json`, ligne `namespace`, valeur de test) tous
+attrapés. **Aucun constat P0 à P2.** Reportés : **P3** `prove_r4.py --kind end` sort 1 sur l'état livré, à cause du seul commentaire
+`alundra-casaengine-project-converter/Writers/SpriteWriter.cs:92` (`Alundra.Scripts.WallPlacementOverlay`), un reste de R6 : à rejouer vert
+après R6 ; **P4** des commentaires et des `<c>` gardent les anciens noms (≈ 96 fichiers, dont les en-têtes des six `UI/Screens/*.xaml`,
+`xunit.runner.json`, `AlundraScriptNamesInTheDataTests.cs:21,64`) : Q-R-5 ; **P4** les commits de T1 à T3 portent « Claude Sonnet 5.5 » (la
+ligne vient du harnais des exécuteurs), ceux de T0 « Claude Opus 5.5 ». Reste la recette de l'auteur : nouvelle partie, les entités bougent,
+F5, F6, F9 ; dans l'éditeur, la ligne « Script » d'un monde et d'une entité sans avertissement.
+
+## 9. Tranche R5 — Tests en miroir ⚠️ (en attente de Q-R-3 : choix de structure de l'auteur ; découverte du 2026-10-17 dans `scratchpad/r5-disc/`, à regénérer après R4)
 
 **But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/` et `Support/` ; les classes de test sans préfixe ;
 aucune valeur attendue changée. Le classement de l'inventaire (`report_inventory.md` §7) sert de base, recensé à nouveau en T0.
 
-## 10. Tranche R6 — Documentation vivante ⏳
+## 10. Tranche R6 — Documentation vivante ⏳ (détaillée le 2026-10-18, à relire)
 
-**But.** `docs/formats/` (liens vers `Alundra/Scripts/*.cs`), `docs/guidelines-runtime-alundra-casaengine.md` (§5.1 : la règle « préfixer
-`Alundra…` » et le nom court), `docs/editeur-couverture-dll.md`, `docs/stick-probe.md:45` ; les scripts de `research/` qui ouvrent des sources
-par chemin ; les annexes figées ne bougent pas (D-R-6).
+**But.** Les documents vivants, les scripts de `research/` et les commentaires du convertisseur qui citent un ancien chemin ou un ancien nom
+de la DLL disent le chemin et le nom finaux de `tools/dll-structure/table.json` ; la règle de nommage des guides dit celle de l'ADR-0075 ;
+les plans, leurs annexes (D-R-6) et les ADR ne sont pas réécrits.
+
+**Faits (découverte du 2026-10-17, contre-vérifiée, `scratchpad/r6-disc/` : `occurrences.tsv`, 232 lignes, 13 colonnes ; le critique
+confirme l'ensemble, aucune ligne manquante qui compte).** Périmètre : 185 fichiers suivis (docs hors `plan-*.md`, `plan-*-annexe/**` et
+`decisions/` ; `research/**` ; le convertisseur et ses tests, commentaires seulement ; les README de `tools/` ; le README racine). Classes :
+**A** chemin vers un source de la DLL (24 lignes : `docs/formats/save-game.md:3-6`, `cells-companion.md:288,304`, `sprite-records.md:5`,
+`docs/intro-roadmap.md:29,101,227,325`, `research/census/README.md:46,65`, des commentaires du convertisseur) ; **B** nom de type en prose ou en
+exemple (47 lignes, par exemple `docs/formats/effects.md:14,16`, `docs/editeur-couverture-dll.md:50-54`, `docs/stick-probe.md:45` — un message
+de journal renommé par R3 : `StickProbe:` —, `docs/census-0x24-waits.md:17`, que `research/census/waits-0x24/report_v2.py:103` réécrit : script
+et doc ensemble) ; **C** la règle de nommage, `docs/guidelines-runtime-alundra-casaengine.md` §5.1 (l. 191-200 : « `ElementFactory.Create<T>`
+cherche par nom de type simple… Préfixer `Alundra…` »), fausse deux fois depuis R0 (résolution par nom complet, ADR-0075 du moteur) et R1
+(ADR-0075 du parent) ; **D** histoire, gardée (41 : `docs/demarrage-nouvelle-partie.md`, daté du 2026-08-08 ; `rapport-analyse…md:201` ; les
+traces `docs/*.txt`, lues par les gardes des tests ; les rapports datés de `research/census/` ; `tools/dll-structure/README.md`) ; **E**
+scripts de `research/` qui ouvrent un source par chemin (10 lignes, `open(ROOT + "/Alundra/Scripts/X.cs")` : `AnimationTables.cs`,
+`EventOpcodeSizeTable.cs`, `AlundraEventProgramRunner.cs`), qui lèvent `FileNotFoundError` aujourd'hui ; après la correction du chemin, leurs
+trois lectures rendent des valeurs identiques à celles du source d'avant (sonde `prove_research.py`) ; **T** chemins ou classes de test
+(3 lignes) : ils attendent R5. Le critique ajoute : trois citations qualifiées nomment un membre qui a changé de classe ou disparu
+(`intro-roadmap.md:70,227` `AlundraWorldProxy.ShouldSpawnRecord` → `EntitySpawnFactory` ; `:37` `RunEntityEventsPass`, supprimé ; un autre
+`ResolveLogicalPosition` → `EntitySpawnFactory`) : le membre de chaque citation qualifiée se vérifie avant de substituer ; des numéros de ligne
+cités étaient déjà faux à la base : on ne corrige que le chemin et le nom ; deux commentaires `m.py:13` « lines 512..1447 ».
+
+**Choix (session principale, mode autonome du 2026-10-18 ; réversibles, soumis à l'auteur en Q-R-4).** `docs/intro-roadmap.md` est vivant
+(ses sections 0 à 3 se déclarent valides) : ses A et B se corrigent ; `docs/demarrage-nouvelle-partie.md`, daté, reste tel quel (D) ; les
+numéros de ligne cités ne se recalculent pas ; les lignes T vont à R5 ; `docs/editeur-couverture-dll.md:64-66` (« `script_class_name` … aucun
+sélecteur », faux depuis D-R-11) se corrige ; le commentaire du convertisseur `PlayerSetupWriter.cs:27` (un chemin `Alundra/Alundra.Tests/Scripts/
+PlayerManager.cs` qui n'a jamais existé ; ses numéros de ligne sont ceux de la décompilation) vise le fichier de la décompilation
+(`alundra-datas-analyser/AlundraTools/AlundraEngine/Gameplay/PlayerManager.cs`). Hors de R6 : les ~300 anciens noms restés dans les
+**commentaires** du code de la DLL et des tests (R3 et R4 laissent les commentaires intacts) : question Q-R-5.
+
+**Propriétaire, chemins, budget.** Un `mech-executor` (le relevé est complet ; l'application est mécanique, avec la vérification de
+membre). Chemins : les fichiers des classes A, B, C, E du relevé (docs vivants, `research/census/**`, commentaires du convertisseur et de ses
+tests), ce plan (§10). Aucun code de la DLL ni des tests ; aucune donnée ; aucun export. Budget : une passe, une passe de correction au plus ; un
+verifier frais.
+
+**Tâches.**
+- T0 : le relevé versé dans `tools/dll-structure/r6-occurrences.tsv` (regénéré au HEAD d'après R4, avec la colonne de la cible et la
+  vérification du membre de chaque citation qualifiée) et `tools/dll-structure/apply_r6.py` (substitution ligne par ligne, exactement selon le
+  relevé ; refus d'une ligne qui a changé depuis le relevé).
+- T1 — Classes A et B (docs, `research/`, commentaires du convertisseur et de ses tests), un commit par zone (docs, `research/`,
+  convertisseur) ; les citations qualifiées dont le membre a changé de classe pointent vers sa classe réelle ; une citation d'un membre supprimé
+  devient la mention de sa suppression ou se retire de la phrase, sans inventer.
+- T2 — Classe C : `docs/guidelines-runtime-alundra-casaengine.md` §5.1 réécrite : la résolution des objets script par **nom complet**, casse
+  exacte, dans l'assembly de gameplay seule (ADR-0075 du moteur ; les composants restent résolus par nom simple, `WorldWriter.cs:487`) ; les
+  clés `script_class_name`, `player_controller_class` (vide = le `PlayerController` du moteur), `mode_class_name`, `view_model_type` ; les noms
+  de la DLL : un dossier = un namespace `Alundra.<Domaine>`, plus de préfixe, un nom unique contrôlé par `tools/dll-structure/check_names.py`,
+  aucun type nommé comme un segment (ADR-0075 du parent).
+- T3 — Classe E : les dix ouvertures de source de `research/census/` vers les chemins finaux, les deux commentaires « lines 512..1447 » ;
+  preuve : les trois lectures (`EventOpcodeSizeTable`, les tableaux d'`AnimationTables`, les `case` du `Dispatch`) rendent les mêmes valeurs que
+  sur le source de `5434cf6` ; `report_v2.py` régénère `docs/census-0x24-waits.md` à l'identique hors des noms (s'il le peut sans
+  `ALUN_CD.EXE` ni `capstone` : sinon le doc se corrige à la main et la régénération est notée non faite).
+- T4 — Clôture : `apply_r6.py --check` : aucune ligne A, B, C, E du relevé ne garde un ancien chemin ou un ancien nom ; aucun fichier hors des
+  chemins de la tranche n'a changé ; les plans, annexes, ADR et traces intacts (`git diff --stat`) ; la suite du convertisseur verte (seuls
+  des commentaires ont changé : la construction suffit, la suite le confirme) ; ce plan (§10 et résultats).
+
+**Acceptation.** Les preuves de T3 et T4 ; aucune ligne de code changée hors des chemins de `research/` ; le diff des commentaires du
+convertisseur limité aux lignes du relevé.
+
+**Arrêts.** Une citation dont la cible n'est pas établie ; une ligne du relevé changée depuis le relevé ; un fichier gelé (plan, annexe, ADR,
+trace) touché.
+
+**Retour arrière.** `git revert` des commits de la tranche.
 
 ## 11. Questions à l'auteur
 
+- **Q-R-3** (2026-10-17, ouverte ; bloque R5 ; découverte `scratchpad/r5-disc/`, contre-vérifiée) — Le rangement des tests demande des choix de
+  structure que la règle « les tests suivent la même arborescence, sans préfixe » ne tranche pas. En termes concrets :
+  1. **Nom ou sujet.** 79 fichiers de tests (593 tests) portent le nom d'un type mais exercent surtout d'autres domaines (par exemple les
+     15 `AlundraWorldProxy*Tests`, qui testent la caméra, l'audio, les apparitions). Les ranger par le type de leur nom (simple, prévisible)
+     ou par le domaine qu'ils exercent le plus (plus juste, mais sujet à discussion fichier par fichier) ?
+  2. **Les noms qui ont changé dans la DLL.** Retirer seulement le préfixe (`AlundraMusicPlayerTests` → `MusicPlayerTests`, alors que le type
+     s'appelle `BgmPlayer`) ou suivre le nom du type (`BgmPlayerTests`, `GameRandomTests`, `SfxBankTests`, `HeroControllerTests`) ?
+  3. **`Arcs/`.** Seulement les 26 scénarios de bout en bout et les harnais de traces, ou aussi les ~40 fichiers qui pilotent `ArcRun` dans un
+     domaine (19 en `Entities`, 6 en `Hero`…) ?
+  4. **Types partagés déclarés dans un fichier de test** (les collections xUnit de la musique, utilisée par 98 fichiers, et du générateur ;
+     des hôtes d'aides comme `AlundraWorldProxyGlobalFreezeTests`) : les sortir dans `Support/` (une scission, pas un simple déplacement) ou
+     les laisser et ajouter les `using` (98 `using Alundra.Tests.Audio`) ?
+  5. **Un type principal par fichier** pour les 44 fichiers de tests à plusieurs types (15 n'auront plus de type au nom du fichier) :
+     scinder comme la DLL (règle (3)) ou garder les fichiers entiers ?
+  6. `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` : rester à sa place (zéro risque) ou suivre l'audit dans `Events/` ?
+  7. Les gardes d'export sans type de la DLL (`CornerTrack`, `ZeroDurationLoop`) : `Entities` ou un dossier dédié ?
+  En attendant, R5 n'est pas exécutée ; sa découverte sera regénérée après R4 (les numéros de ligne changent).
+- **Q-R-4** (2026-10-18, choix faits en mode autonome pour R6, réversibles) — Valider ou corriger : `docs/intro-roadmap.md` traité comme
+  vivant (ses chemins et noms corrigés) ; `docs/demarrage-nouvelle-partie.md` (daté du 2026-08-08) gardé tel quel ; les numéros de ligne
+  cités dans les docs non recalculés (seuls le chemin et le nom changent) ; `docs/editeur-couverture-dll.md:64-66` corrigé (la ligne
+  « Script » existe de nouveau) ; le commentaire `PlayerSetupWriter.cs:27` pointé vers la décompilation.
+- **Q-R-5** (2026-10-18, ouverte) — Les renommages de R3 et R4 n'ont pas touché les **commentaires** du code : environ 300 anciens noms
+  (`AlundraWorldProxy`, `AlundraEventProgramRunner`…) restent dans les commentaires de la DLL (≈ 60 fichiers) et des tests (≈ 90 fichiers),
+  plus quelques chemins `Alundra/Scripts/…` (par exemple `HeroController.cs:42`, `AlundraScreenFadeCameraWiringTests.cs:24,29,96`). Les
+  corriger dans une tranche dédiée (mécanique, outillée comme R3, commentaires seulement), ou les laisser ?
 - **Q-R-2** — **Tranchée le 2026-10-17 (D-R-10)** : l'aperçu tolérant (A), avec une icône d'avertissement à côté du nom du script dans
   l'éditeur. Question d'origine (2026-10-16 ; O2 du plan du moteur) — Que doit faire **l'éditeur** quand il ouvre
   un monde ou l'aperçu d'un préfab dont la DLL de scripts n'est pas construite ? Aujourd'hui, une entité au script introuvable est
