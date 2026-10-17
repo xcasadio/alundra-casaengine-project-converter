@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using CasaEngine.Framework.Scene.Entities;
 using Alundra.Entities;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Physics;
 
 /// <summary>
 /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): the entity-vs-entity Z SUPPORT clamp - NOT

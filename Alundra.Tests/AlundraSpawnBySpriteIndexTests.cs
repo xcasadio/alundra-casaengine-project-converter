@@ -13,6 +13,7 @@ using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Combat;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

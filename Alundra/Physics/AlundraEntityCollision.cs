@@ -1,8 +1,9 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using Alundra.Entities;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Physics;
 
 /// <summary>
 /// Port of <c>PhysicsEngine.FindEntityCollisionCandidate</c> @ 0x80036F34 (decompilation

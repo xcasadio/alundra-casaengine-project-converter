@@ -6,8 +6,9 @@ using CasaEngine.Framework.Scene.Entities;
 using Microsoft.Xna.Framework;
 using Alundra.Maps;
 using Alundra.Entities;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Physics;
 
 /// <summary>
 /// E19.d2b B3 (docs/plan-e19-opcodes.md §1.2h.2, D-E19-27, D-E19-28, D-E19-34, ADR-0022): the movement obstacle probe the character

@@ -12,6 +12,7 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Hero;
 using Alundra.Items;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

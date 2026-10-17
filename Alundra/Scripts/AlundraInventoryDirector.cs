@@ -4,6 +4,7 @@ using CasaEngine.Engine.Environment;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Items;
+using Alundra.Physics;
 
 namespace Alundra.Scripts;
 

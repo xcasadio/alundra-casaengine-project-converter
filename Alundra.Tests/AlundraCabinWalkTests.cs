@@ -14,6 +14,7 @@ using Alundra.Maps.Loop;
 using Alundra.Session;
 using Alundra.Entities.Spawning;
 using Alundra.Events;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

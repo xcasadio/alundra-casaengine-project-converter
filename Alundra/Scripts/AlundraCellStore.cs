@@ -7,6 +7,7 @@ using CasaEngine.Framework.Assets.TileMap;
 using Microsoft.Xna.Framework;
 using Alundra.Maps;
 using Alundra.Events;
+using Alundra.Physics;
 
 namespace Alundra.Scripts;
 

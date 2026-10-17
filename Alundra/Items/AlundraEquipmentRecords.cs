@@ -3,7 +3,7 @@ using System;
 using Alundra.Maps;
 using Alundra.Hero;
 using Alundra.Combat;
-using Alundra.Scripts;
+using Alundra.Physics;
 
 namespace Alundra.Items;
 

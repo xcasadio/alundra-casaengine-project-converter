@@ -7,6 +7,7 @@ using CasaEngine.Framework.Assets.Animations;
 using Xunit;
 using Alundra.Entities;
 using Alundra.Hero;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

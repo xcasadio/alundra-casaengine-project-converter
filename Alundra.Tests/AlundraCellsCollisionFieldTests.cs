@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.Entities;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

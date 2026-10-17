@@ -5,6 +5,7 @@ using CasaEngine.Framework.Scene.Entities;
 using Alundra.Session;
 using Alundra.Scripts;
 using Alundra.Combat;
+using Alundra.Physics;
 
 namespace Alundra.Hero;
 

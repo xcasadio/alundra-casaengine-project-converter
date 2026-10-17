@@ -11,6 +11,7 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
 using Alundra.Maps;
 using Alundra.Entities;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

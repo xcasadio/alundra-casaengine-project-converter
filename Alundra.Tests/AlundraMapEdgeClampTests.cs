@@ -3,6 +3,7 @@ using System;
 using Alundra.Scripts;
 using Xunit;
 using Alundra.Entities.Spawning;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

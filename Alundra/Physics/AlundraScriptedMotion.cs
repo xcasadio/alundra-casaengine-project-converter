@@ -7,8 +7,9 @@ using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Events;
 using Alundra.Hero;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Physics;
 
 /// <summary>
 /// Shared fixed-step (50 Hz, matching the original PSX build's own physics tick rate) kinematic mover -

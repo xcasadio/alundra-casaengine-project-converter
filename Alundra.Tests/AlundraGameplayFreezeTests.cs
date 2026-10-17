@@ -12,6 +12,7 @@ using Alundra.Maps.Loop;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Hero;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

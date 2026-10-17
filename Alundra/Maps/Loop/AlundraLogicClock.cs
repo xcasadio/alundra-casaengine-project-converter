@@ -1,6 +1,7 @@
 #nullable enable
 
 using Alundra.Scripts;
+using Alundra.Physics;
 
 namespace Alundra.Maps.Loop;
 

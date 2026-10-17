@@ -11,8 +11,9 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Physics;
 
 /// <summary>
 /// Owns the four static per-corner terrain samplers formerly on <see cref="AlundraEntityScriptProxy"/>:

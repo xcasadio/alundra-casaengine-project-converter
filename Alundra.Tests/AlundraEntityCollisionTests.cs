@@ -2,6 +2,7 @@
 using Alundra.Scripts;
 using Xunit;
 using Alundra.Entities;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

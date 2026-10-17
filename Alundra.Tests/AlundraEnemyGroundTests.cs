@@ -6,6 +6,7 @@ using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

@@ -3,6 +3,7 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using Alundra.Scripts;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Physics;
 
 namespace Alundra.Maps.Loop;
 

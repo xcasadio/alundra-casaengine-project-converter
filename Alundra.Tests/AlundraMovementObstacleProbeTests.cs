@@ -9,6 +9,7 @@ using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

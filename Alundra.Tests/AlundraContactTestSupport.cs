@@ -22,6 +22,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Events;
 using Alundra.Combat;
 using Alundra.Items;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Maps;
 using Alundra.Events;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

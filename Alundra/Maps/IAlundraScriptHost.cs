@@ -10,6 +10,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Combat;
 using Alundra.Items;
+using Alundra.Physics;
 
 namespace Alundra.Maps;
 

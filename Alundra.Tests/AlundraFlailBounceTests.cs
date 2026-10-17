@@ -8,6 +8,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Items;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 

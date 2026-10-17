@@ -1,6 +1,7 @@
 using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps.Loop;
+using Alundra.Physics;
 
 namespace Alundra.Tests;
 
