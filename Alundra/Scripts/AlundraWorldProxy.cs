@@ -35,6 +35,8 @@ using Alundra.Rng;
 using Alundra.Physics;
 using Alundra.Cells;
 using Alundra.Cameras;
+using Alundra.Rendering.Backdrops;
+using Alundra.Rendering.Effects;
 
 namespace Alundra.Scripts;
 

@@ -1,10 +1,10 @@
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.Sprites;
 using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Rendering.ScrollingLayers;
 using Microsoft.Xna.Framework;
 using Xunit;
+using Alundra.Rendering.Backdrops;
 
 namespace Alundra.Tests;
 

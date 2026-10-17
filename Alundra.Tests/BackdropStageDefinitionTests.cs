@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components;
 using CasaEngine.Framework.Assets.Sprites;
@@ -12,6 +11,7 @@ using CasaEngine.Framework.Rendering.ScrollingLayers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Xunit;
+using Alundra.Rendering.Backdrops;
 
 namespace Alundra.Tests;
 

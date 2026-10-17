@@ -10,6 +10,7 @@ using Alundra.Scripts;
 using Alundra.Combat;
 using Alundra.Items;
 using Alundra.Physics;
+using Alundra.Rendering.Effects;
 
 namespace Alundra.Hero;
 

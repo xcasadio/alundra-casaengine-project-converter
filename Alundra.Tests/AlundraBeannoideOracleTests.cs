@@ -17,6 +17,7 @@ using Alundra.Hero;
 using Alundra.Combat;
 using Alundra.Items;
 using Alundra.Rng;
+using Alundra.Rendering.Effects;
 
 namespace Alundra.Tests;
 

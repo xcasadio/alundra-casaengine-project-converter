@@ -7,8 +7,9 @@ using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Rendering.EffectQuads;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Alundra.Cameras;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Rendering.Effects;
 
 /// <summary>
 /// The effect stage of a world (E19.g G3a, docs/plan-e19-opcodes.md section 1.2o.6, ADR-0045): the bank read from the exported companions, the reservoir, the load-time

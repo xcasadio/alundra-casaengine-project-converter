@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using Alundra.Cells;
 using Alundra.Cameras;
 
-namespace Alundra.Scripts;
+namespace Alundra.Rendering.Effects;
 
 /// <summary>
 /// The pure construction of the quads the DLL pushes to the engine's <see cref="EffectQuadService"/> (E19.g G3c, docs/plan-e19-opcodes.md rules G3C-R1 to G3C-R4, ADR-0049): the

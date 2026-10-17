@@ -1,8 +1,9 @@
 #nullable enable
 
 using Alundra.Rng;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Rendering.Effects;
 
 /// <summary>
 /// The effects the binary's native code creates on the effect reservoir (E19.g G3d, docs/plan-e19-opcodes.md section 1.2o.6, parent ADR-0048). Pure functions of the reservoir and of a

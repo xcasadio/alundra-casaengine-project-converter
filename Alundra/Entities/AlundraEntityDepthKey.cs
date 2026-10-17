@@ -1,6 +1,7 @@
 #nullable enable
 using Alundra.Maps.Loop;
 using Alundra.Scripts;
+using Alundra.Rendering.Effects;
 
 namespace Alundra.Entities;
 

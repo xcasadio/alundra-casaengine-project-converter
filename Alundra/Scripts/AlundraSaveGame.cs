@@ -6,6 +6,7 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Items;
+using Alundra.Rendering.Backdrops;
 
 namespace Alundra.Scripts;
 

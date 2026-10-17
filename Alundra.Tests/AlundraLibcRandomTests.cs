@@ -1,9 +1,9 @@
 #nullable enable
-using Alundra.Scripts;
 using CasaEngine.Framework.Rendering.CellularLayers;
 using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Rng;
+using Alundra.Rendering.Backdrops;
 
 namespace Alundra.Tests;
 

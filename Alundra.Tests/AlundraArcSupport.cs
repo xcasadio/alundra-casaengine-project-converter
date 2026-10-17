@@ -33,6 +33,7 @@ using Alundra.Ai.Objects;
 using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Rng;
+using Alundra.Rendering.Backdrops;
 
 namespace Alundra.Tests;
 

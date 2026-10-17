@@ -2,8 +2,8 @@
 using System;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
+using Alundra.Rendering.Effects;
 
 namespace Alundra.Tests;
 

@@ -21,6 +21,7 @@ using Alundra.Ai.Objects;
 using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Physics;
+using Alundra.Rendering.Effects;
 
 namespace Alundra.Scripts;
 

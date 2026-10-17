@@ -6,6 +6,7 @@ using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Rendering.Effects;
 
 namespace Alundra.Tests;
 

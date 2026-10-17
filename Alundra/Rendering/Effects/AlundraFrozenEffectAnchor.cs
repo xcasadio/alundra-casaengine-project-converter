@@ -1,7 +1,8 @@
 #nullable enable
 using Alundra.Entities;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Rendering.Effects;
 
 /// <summary>
 /// E14.a1b T2 (docs/plan-e14-ia-native.md section 1.3b, ADR-0060): the anchor of the break effect of a destroyed entity, an immutable SNAPSHOT taken by <c>DestroyEntity</c> right after it wrote the status 4: the position

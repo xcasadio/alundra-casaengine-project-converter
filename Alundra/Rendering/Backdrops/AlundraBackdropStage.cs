@@ -23,8 +23,9 @@ using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
 using Alundra.Cameras;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Rendering.Backdrops;
 
 /// <summary>
 /// Rendering instance wiring extracted out of <see cref="AlundraWorldProxy"/>

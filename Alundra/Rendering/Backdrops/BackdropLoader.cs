@@ -8,7 +8,7 @@ using CasaEngine.Core.Logging;
 using Alundra.Entities;
 using Alundra.Events;
 
-namespace Alundra.Scripts;
+namespace Alundra.Rendering.Backdrops;
 
 /// <summary>
 /// Resolves and loads the current world's scrolling-background companion file (see

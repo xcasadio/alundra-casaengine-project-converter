@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Rendering.ScrollingLayers;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
+using Alundra.Rendering.Backdrops;
 
 namespace Alundra.Tests;
 

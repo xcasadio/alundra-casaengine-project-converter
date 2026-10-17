@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using Alundra.Scripts;
+using Alundra.Rendering.Effects;
 
 namespace Alundra.Tests;
 

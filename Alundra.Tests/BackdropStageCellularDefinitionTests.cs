@@ -1,12 +1,12 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.Sprites;
 using CasaEngine.Framework.Rendering.CellularLayers;
 using CasaEngine.Framework.Rendering.Depth;
 using Microsoft.Xna.Framework;
 using Xunit;
+using Alundra.Rendering.Backdrops;
 
 namespace Alundra.Tests;
 

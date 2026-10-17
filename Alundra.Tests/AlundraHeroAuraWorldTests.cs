@@ -10,6 +10,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Rng;
+using Alundra.Rendering.Effects;
 
 namespace Alundra.Tests;
 

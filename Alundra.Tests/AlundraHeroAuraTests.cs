@@ -11,6 +11,7 @@ using static Alundra.Tests.AlundraHeroChargeTests;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Rng;
+using Alundra.Rendering.Effects;
 
 namespace Alundra.Tests;
 

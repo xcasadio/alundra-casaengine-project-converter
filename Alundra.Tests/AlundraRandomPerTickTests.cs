@@ -1,8 +1,8 @@
 #nullable enable
 using System;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Rng;
+using Alundra.Rendering.Effects;
 
 namespace Alundra.Tests;
 

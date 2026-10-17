@@ -1,6 +1,6 @@
 using System.Text.Json;
-using Alundra.Scripts;
 using Xunit;
+using Alundra.Rendering.Backdrops;
 
 namespace Alundra.Tests;
 

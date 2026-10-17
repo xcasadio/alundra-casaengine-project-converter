@@ -15,6 +15,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Rng;
+using Alundra.Rendering.Effects;
 
 namespace Alundra.Tests;
 
