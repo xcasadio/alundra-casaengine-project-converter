@@ -1,0 +1,52 @@
+file	line	name	new_name	class	domain	text	note
+Alundra.Tests/HeroTraceHarnessTests.cs	80	AlundraWorldProxy	AlundraWorldProxy	4		"\"1. AlundraWorldProxy.LogicTicksThisFrame (a future M3.a's own clock switch);\\n\""	prose of a harness, written in the four versioned hero traces (docs/hero-trace-389-*.txt): kept
+Alundra.Tests/HeroTraceHarnessTests.cs	84	AlundraWorldProxy	AlundraWorldProxy	4		"\"5. AlundraWorldProxy.AdoptPlayerPawn: this harness RE-COPIES its New Game initial state field by\\n\""	prose of a harness, written in the four versioned hero traces (docs/hero-trace-389-*.txt): kept
+Alundra.Tests/HeroTraceHarnessTests.cs	87	AlundraPlayerController	AlundraPlayerController	4		"\"6. the real entry path of AlundraPlayerController.BuildPadState (Input, InputMappingManager,\\n\""	prose of a harness, written in the four versioned hero traces (docs/hero-trace-389-*.txt): kept
+Alundra.Tests/IntroTraceHarnessTests.cs	833	AlundraWorldProxy	WorldProxy	1b		"\"map BGM index resolution/playback - PORTED (docs/plan-e11c-musique.md, slice C1: AlundraWorldProxy.TriggerMapEntryMusic -> AlundraMusicPlayer.PlayMapMusic, map 389 -> music index 25); the sound-GROUP/ambient half (LoadMapSoundGroup) is NOT ported - the map -> VAB-group table is not exported (plan's own fact 2.1), same trou as E11.a's group parameter\""	comment-like text of a test harness, not written in a versioned trace; follows the type
+Alundra.Tests/IntroTraceHarnessTests.cs	868	AlundraEntityScriptProxy	EntityScriptProxy	1b		"\"player movement/input/physics - no player controller yet (E2's own scope); AlundraEntityScriptProxy.Update excludes the player from its own pick/run half, same as the original's own loop starting at slot index 1\""	comment-like text of a test harness, not written in a versioned trace; follows the type
+Alundra.Tests/IntroTraceHarnessTests.cs	913	AlundraEntityScriptProxy	EntityScriptProxy	1b		"\"PARTIAL: AlundraFrameSyncPasses.SyncAnimation (called per-entity from AlundraEntityScriptProxy.Update) ports the target-resolution half (CurrentAnimationId/AnimationDirection) and StepAnimationClock the ends the scripts see (Hold flag, Chain, Loop counter) through the sprite's logical tick clock (E19.c2); NextFrameDelay and the frames themselves are not ported (the drawing is CasaEngine's own Animation2dCompositionSampler, in real time)\""	comment-like text of a test harness, not written in a versioned trace; follows the type
+Alundra.Tests/IntroTraceHarnessTests.cs	914	AlundraEntityScriptProxy	EntityScriptProxy	1b		"\"PARTIAL (E4.e/E4.f): horizontal integration is ported per-entity, inside AlundraEntityScriptProxy.Update itself (AlundraScriptedMotion.TickScriptedNpc, run earlier this same frame, above); vertical gravity/ground-clamp + entity-vs-entity Z support (CheckEntityCollisionDown, EntitySupport.TryFindSupport) is ported here (RunVerticalPhysicsPass); CheckRidingEntities (search 5/6 fidelity) runs once per frame from RunFrame. Riding-platform FORCE feed for a MOVING platform (UpdateRidingEntity's own AdjustedForceX/Y propagation, MoveEntity's own PlatformEntity branch) is still not ported - map 389's intro platforms are all static (documented deviation, E14 for moving platforms).\""	comment-like text of a test harness, not written in a versioned trace; follows the type
+Alundra.Tests/IntroTraceHarnessTests.cs	926	AlundraWorldProxy	WorldProxy	1b		"\"not ported (AlundraWorldProxy.RunWallInterleaveSortKeyPass covers a narrower wall/sprite depth-interleave concern only, and is not even called by this harness - no rendering here)\""	comment-like text of a test harness, not written in a versioned trace; follows the type
+Alundra/Cameras/CameraDirector.cs	185	AlundraWorldProxy	WorldProxy	1b		"$\"AlundraWorldProxy: no Camera2dComponent found in world \""	names a type other than the one that writes it (CameraDirector)
+Alundra/Entities/Spawning/EntitySpawnFactory.cs	395	AlundraWorldProxy	WorldProxy	1b		"$\"AlundraWorldProxy: record '"	names a type other than the one that writes it (EntitySpawnFactory)
+Alundra/Entities/Spawning/EntitySpawnFactory.cs	401	AlundraWorldProxy	WorldProxy	1b		"$\"AlundraWorldProxy: record '"	names a type other than the one that writes it (EntitySpawnFactory)
+Alundra/Scripts/AlundraEntityScriptProxy.cs	1698	AlundraEntityScriptProxy	EntityScriptProxy	1		"$\"AlundraEntityScriptProxy: entity["	
+Alundra/Scripts/AlundraEntityScriptProxy.cs	1726	AlundraEntityScriptProxy	EntityScriptProxy	1		"$\"AlundraEntityScriptProxy: entity["	
+Alundra/Scripts/AlundraPlayerController.cs	108	AlundraPlayerController	HeroController	1		"$\"AlundraPlayerController: no '"	
+Alundra/Scripts/AlundraPlayerController.cs	123	AlundraPlayerController	HeroController	1		"$\"AlundraPlayerController: failed to load '"	
+Alundra/Scripts/AlundraPlayerController.cs	134	AlundraPlayerController	HeroController	1		"$\"AlundraPlayerController: '"	
+Alundra/Scripts/AlundraWorldProxy.cs	148	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: "	
+Alundra/Scripts/AlundraWorldProxy.cs	947	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: no '"	
+Alundra/Scripts/AlundraWorldProxy.cs	959	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: entity '"	
+Alundra/Scripts/AlundraWorldProxy.cs	1005	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: world '"	
+Alundra/Scripts/AlundraWorldProxy.cs	1069	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: record '"	
+Alundra/Scripts/AlundraWorldProxy.cs	1080	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: record '"	
+Alundra/Scripts/AlundraWorldProxy.cs	1131	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: failed to spawn entity for record '"	
+Alundra/Scripts/AlundraWorldProxy.cs	1144	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: world '"	
+Alundra/Scripts/AlundraWorldProxy.cs	1389	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: world '"	
+Alundra/Scripts/AlundraWorldProxy.cs	1495	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: dialogue asset '"	
+Alundra/Scripts/AlundraWorldProxy.cs	1573	AlundraWorldProxy	WorldProxy	1		"\"AlundraWorldProxy: dialogue presenter wired to the active UI view (post-bootstrap retry).\""	
+Alundra/Scripts/AlundraWorldProxy.cs	1613	AlundraWorldProxy	WorldProxy	1		"\"AlundraWorldProxy: HUD screen wired to the active UI view (post-bootstrap retry).\""	
+Alundra/Scripts/AlundraWorldProxy.cs	1658	AlundraWorldProxy	WorldProxy	1		"\"AlundraWorldProxy: inventory screen wired to the active UI view (post-bootstrap retry).\""	
+Alundra/Scripts/AlundraWorldProxy.cs	1700	AlundraWorldProxy	WorldProxy	1		"\"AlundraWorldProxy: sub-inventory screen wired to the active UI view (post-bootstrap retry).\""	
+Alundra/Scripts/AlundraWorldProxy.cs	1738	AlundraWorldProxy	WorldProxy	1		"\"AlundraWorldProxy: save screen wired to the active UI view (post-bootstrap retry).\""	
+Alundra/Scripts/AlundraWorldProxy.cs	1768	AlundraWorldProxy	WorldProxy	1		"\"AlundraWorldProxy: text box screen wired to the active UI view (post-bootstrap retry).\""	
+Alundra/Scripts/AlundraWorldProxy.cs	1772	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: the text box screen could not be built, the dialogue box will not be drawn: "	
+Alundra/Scripts/AlundraWorldProxy.cs	1802	AlundraWorldProxy	WorldProxy	1		"\"AlundraWorldProxy: choice screen wired to the active UI view (post-bootstrap retry).\""	
+Alundra/Scripts/AlundraWorldProxy.cs	1806	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: the choice screen could not be built, the choice box will not be drawn: "	
+Alundra/Scripts/AlundraWorldProxy.cs	1961	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: world '"	
+Alundra/Scripts/AlundraWorldProxy.cs	1980	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: world '"	
+Alundra/Scripts/AlundraWorldProxy.cs	2086	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: no "	
+Alundra/Scripts/AlundraWorldProxy.cs	2100	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: the engine-spawned pawn in world '"	
+Alundra/Scripts/AlundraWorldProxy.cs	2198	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: no sprite-records.json header found for the hero prefab in world \""	
+Alundra/Scripts/AlundraWorldProxy.cs	2268	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: hero prefab in world '"	
+Alundra/Scripts/AlundraWorldProxy.cs	3287	AlundraWorldProxy	WorldProxy	1		"\"AlundraWorldProxy: destroyed entity recycled.\""	
+Alundra/Scripts/AlundraWorldProxy.cs	3316	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: entity["	
+Alundra/Scripts/AlundraWorldProxy.cs	3333	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: entity["	
+Alundra/Scripts/AlundraWorldProxy.cs	3378	AlundraWorldProxy	WorldProxy	1		"\"AlundraWorldProxy: SpawnEntityByRecordId called before InitializeWithWorld; ignored.\""	
+Alundra/Scripts/AlundraWorldProxy.cs	3385	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: SpawnEntityByRecordId("	
+Alundra/Scripts/AlundraWorldProxy.cs	3393	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: SpawnEntityByRecordId("	
+Alundra/Scripts/AlundraWorldProxy.cs	3404	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: SpawnEntityByRecordId("	
+Alundra/Scripts/AlundraWorldProxy.cs	3453	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: SpawnEntityByRecordId("	
+Alundra/Scripts/AlundraWorldProxy.cs	3494	AlundraWorldProxy	WorldProxy	1		"$\"AlundraWorldProxy: SpawnEntityBySpriteIndex("	
+Alundra/Scripts/AlundraWorldProxy.cs	3642	AlundraWorldProxy	WorldProxy	1		"\"AlundraWorldProxy: OnPortalTriggerDetected fired with no PlayerEntity adopted; departure ignored.\""	
