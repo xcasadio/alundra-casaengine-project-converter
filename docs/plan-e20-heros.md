@@ -6839,7 +6839,7 @@ toucher au moteur ; plus de 10 tests existants bougent ; un nom refusé par `che
 **Retour arrière.** La phase C se retire seule (la ligne de `DestroyEntity`) ; la phase B se retire seule (les deux inscriptions et le
 rafraîchissement) ; la phase A ne change aucun comportement.
 
-### 1.27 E20.e — L'herbe coupée : `CheckAndTriggerTileEffect` ⏳ (détaillée le 2026-10-18, révision 2 ; exécutable après E20.e0c et la fin du chantier de restructuration)
+### 1.27 E20.e — L'herbe coupée : `CheckAndTriggerTileEffect` ⏳ (détaillée le 2026-10-18, révision 2 **READY** ; exécutable après E20.e0c et la fin du chantier de restructuration)
 
 **Relecture (2026-10-18).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) l'oracle `wave_grass` d'E20.f3 a été calculé sur un champ
 synthétique (toutes les cases en herbe, hauteur 0, `wave_grass.py:2`), pas sur la vraie carte 14 : (w1) et (w2) se comparent maintenant à un
@@ -6847,7 +6847,7 @@ oracle que T0 (g) calcule sur les vraies cases de la 14 et le même état de dé
 (2) le chemin de l'octet 9 jusqu'au port est nommé et ses fichiers sont dans le périmètre. Seconde relecture : REVISE, un blocage (la vague
 C61 est un natif, éteint dans le banc `HitArena` : (w2) ne pouvait pas passer, et rallumer les natifs réveillait les Beannoïdes de la carte) :
 FIX en révision 2 (le banc vidé des autres entités, natifs allumés, une sonde du générateur en T0) ; nouvelle époque, une seule relecture de
-clôture.
+clôture : **READY** (2026-10-18). Les défauts réversibles restent à confirmer par l'auteur (Q-E1 à Q-E5).
 
 **Provenance.** Lecture du binaire du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-e/`, `report.md` et `check.md`, au HEAD
 `9502f75`) ; état de la DLL et des tests rejoué au HEAD `978608d` (`docs/plan-e20-annexe/e20-e/state-978608d/` : 60 citations traduites,
