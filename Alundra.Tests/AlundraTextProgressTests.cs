@@ -1,6 +1,6 @@
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
+using Alundra.Dialogues;
 
 namespace Alundra.Tests;
 

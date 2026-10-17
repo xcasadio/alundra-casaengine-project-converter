@@ -1,8 +1,8 @@
 #nullable enable
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Runtime;
 using Xunit;
+using Alundra.Dialogues.Yarn;
 
 namespace Alundra.Tests;
 

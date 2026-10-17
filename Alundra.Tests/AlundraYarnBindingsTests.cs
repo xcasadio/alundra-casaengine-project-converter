@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Compiler.Dialogue;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Dialogue.Assets;
@@ -13,6 +12,8 @@ using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.Dialogue.Yarn;
 using Xunit;
 using Alundra.Session;
+using Alundra.Dialogues;
+using Alundra.Dialogues.Yarn;
 
 namespace Alundra.Tests;
 

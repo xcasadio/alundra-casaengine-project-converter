@@ -13,6 +13,8 @@ using Xunit;
 using Xunit.Abstractions;
 using static Alundra.Tests.UI.TextBoxGpu;
 using Alundra.Entities;
+using Alundra.Dialogues;
+using Alundra.Dialogues.Yarn;
 
 namespace Alundra.Tests.UI;
 

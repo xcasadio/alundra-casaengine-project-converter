@@ -7,6 +7,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Scripts;
+using Alundra.Dialogues;
 
 namespace Alundra.Transitions;
 

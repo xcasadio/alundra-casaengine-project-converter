@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using MGUI.Core.UI;
 using MGUI.Shared.Helpers;
 using Alundra.Entities;
+using Alundra.Dialogues;
 
 namespace Alundra.Scripts;
 

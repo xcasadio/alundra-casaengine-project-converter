@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using CasaEngine.Engine.Environment;
+using Alundra.Dialogues;
 
 namespace Alundra.Scripts;
 

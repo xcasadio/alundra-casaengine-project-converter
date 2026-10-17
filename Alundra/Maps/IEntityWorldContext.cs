@@ -11,6 +11,7 @@ using Alundra.Cameras;
 using Alundra.Rendering.Effects;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Dialogues;
 
 namespace Alundra.Maps;
 

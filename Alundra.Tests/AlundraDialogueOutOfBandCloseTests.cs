@@ -8,6 +8,7 @@ using CasaEngine.Framework.UI;
 using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Session;
+using Alundra.Dialogues;
 
 namespace Alundra.Tests;
 

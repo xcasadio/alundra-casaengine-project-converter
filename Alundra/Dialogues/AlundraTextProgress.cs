@@ -2,7 +2,7 @@
 
 using Alundra.Session;
 
-namespace Alundra.Scripts;
+namespace Alundra.Dialogues;
 
 /// <summary>
 /// E15.c T3 (docs/plan-e15-yarn.md §5.7, T2 - binary facts, authoritative over the decompilation):

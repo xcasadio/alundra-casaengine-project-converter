@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using static Alundra.Tests.ArcChecks;
 using Alundra.Entities;
 using Alundra.Events;
+using Alundra.Dialogues;
 
 namespace Alundra.Tests;
 

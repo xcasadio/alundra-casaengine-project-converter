@@ -1,3 +1,5 @@
+using Alundra.Dialogues;
+
 namespace Alundra.Scripts;
 
 /// <summary>Where a portrait flight is at the pass just run (E19.f4b): the flight in, the rest, the flight back, or the last (degenerate) pass of the return.</summary>

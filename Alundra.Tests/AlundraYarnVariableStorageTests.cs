@@ -13,6 +13,8 @@ using CasaEngine.Framework.Dialogue.Yarn;
 using Xunit;
 using Yarn;
 using Alundra.Session;
+using Alundra.Dialogues;
+using Alundra.Dialogues.Yarn;
 
 namespace Alundra.Tests;
 

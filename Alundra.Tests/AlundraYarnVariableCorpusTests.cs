@@ -2,12 +2,12 @@
 using System;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Compiler.Dialogue;
 using CasaEngine.Framework.Assets.Loaders;
 using CasaEngine.Framework.Dialogue.Assets;
 using Xunit;
 using Yarn;
+using Alundra.Dialogues.Yarn;
 
 namespace Alundra.Tests;
 

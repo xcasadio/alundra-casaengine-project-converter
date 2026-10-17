@@ -6,7 +6,7 @@ using CasaEngine.Core.Logging;
 using Yarn;
 using Alundra.Session;
 
-namespace Alundra.Scripts;
+namespace Alundra.Dialogues.Yarn;
 
 /// <summary>
 /// E16.f T2 (docs/plan-e16-etat-partie.md, ADR-0010, ADR-0011): <c>Yarn.IVariableStorage</c> adossé aux

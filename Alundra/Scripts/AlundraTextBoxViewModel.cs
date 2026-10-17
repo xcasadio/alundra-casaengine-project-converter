@@ -2,6 +2,7 @@
 using System;
 using MGUI.Core.UI;
 using MGUI.Shared.Helpers;
+using Alundra.Dialogues;
 
 namespace Alundra.Scripts;
 

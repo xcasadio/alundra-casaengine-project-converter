@@ -28,6 +28,7 @@ using Alundra.Events;
 using Alundra.Ai.Objects;
 using Alundra.Hero;
 using Alundra.Rendering.Backdrops;
+using Alundra.Dialogues;
 
 namespace Alundra.Tests;
 

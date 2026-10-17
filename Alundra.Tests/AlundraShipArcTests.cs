@@ -7,6 +7,7 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Transitions;
+using Alundra.Dialogues;
 
 namespace Alundra.Tests;
 

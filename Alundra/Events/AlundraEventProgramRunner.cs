@@ -23,6 +23,8 @@ using Alundra.Rng;
 using Alundra.Physics;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
+using Alundra.Dialogues;
+using Alundra.Dialogues.Yarn;
 
 namespace Alundra.Events;
 

@@ -10,6 +10,7 @@ using Alundra.Scripts;
 using MGUI.Core.UI;
 using Xunit;
 using Alundra.Hero;
+using Alundra.Dialogues;
 
 namespace Alundra.Tests;
 

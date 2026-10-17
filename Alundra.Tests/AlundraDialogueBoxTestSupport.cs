@@ -1,8 +1,8 @@
 #nullable enable
 using System.Collections.Generic;
-using Alundra.Scripts;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Dialogues;
 
 namespace Alundra.Tests;
 

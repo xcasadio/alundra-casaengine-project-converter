@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Alundra.Scripts;
+namespace Alundra.Dialogues;
 
 /// <summary>What a <see cref="DialogueToken"/> stands for in the text of a page (F2-R3).</summary>
 internal enum DialogueTokenKind

@@ -6,7 +6,7 @@ using System.IO;
 using CasaEngine.Core.Logging;
 using Alundra.Audio;
 
-namespace Alundra.Scripts;
+namespace Alundra.Dialogues;
 
 /// <summary>
 /// E19.f2b1b F2B1B-R1: the advances of the glyphs of the dialogue box, read from <c>UI/font3.fnt</c> of the project (the lines <c>char id=N ... xadvance=M</c>, the ids being Unicode

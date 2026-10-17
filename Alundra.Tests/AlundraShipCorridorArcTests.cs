@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using static Alundra.Tests.ArcChecks;
 using Alundra.Session;
@@ -11,6 +10,7 @@ using Alundra.Hero;
 using Alundra.Rng;
 using Alundra.Cameras;
 using Alundra.Transitions;
+using Alundra.Dialogues;
 
 namespace Alundra.Tests;
 

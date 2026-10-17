@@ -5,8 +5,10 @@ using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Yarn;
+using Alundra.Dialogues.Yarn;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Dialogues;
 
 /// <summary>
 /// E15.c T6 (docs/plan-e15-yarn.md, contract items 5/6; ADR-0006, `docs/formats/dialogues-yarn.md`):

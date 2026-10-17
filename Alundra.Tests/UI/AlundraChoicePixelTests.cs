@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework;
 using Xunit;
 using static Alundra.Tests.UI.TextBoxGpu;
 using Alundra.Hero;
+using Alundra.Dialogues;
 
 namespace Alundra.Tests.UI;
 

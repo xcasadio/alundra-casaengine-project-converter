@@ -14,6 +14,8 @@ using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Session;
 using Alundra.Entities;
+using Alundra.Dialogues;
+using Alundra.Dialogues.Yarn;
 
 namespace Alundra.Tests;
 

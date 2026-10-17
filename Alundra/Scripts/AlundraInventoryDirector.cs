@@ -7,6 +7,7 @@ using Alundra.Items;
 using Alundra.Physics;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Dialogues;
 
 namespace Alundra.Scripts;
 

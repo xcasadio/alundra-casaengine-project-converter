@@ -8,6 +8,7 @@ using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.Dialogue.UI;
 using CasaEngine.Framework.UI;
 using Alundra.Events;
+using Alundra.Dialogues;
 
 namespace Alundra.Scripts;
 

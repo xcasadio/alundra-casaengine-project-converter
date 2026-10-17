@@ -21,6 +21,8 @@ using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Session;
 using Alundra.Transitions;
+using Alundra.Dialogues;
+using Alundra.Dialogues.Yarn;
 
 namespace Alundra.Tests;
 

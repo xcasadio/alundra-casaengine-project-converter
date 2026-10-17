@@ -18,6 +18,7 @@ using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Dialogues;
 
 namespace Alundra.Tests;
 

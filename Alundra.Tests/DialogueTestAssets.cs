@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Alundra.Scripts;
 using CasaEngine.Compiler.Dialogue;
 using CasaEngine.Framework.Dialogue.Assets;
 using Xunit;
+using Alundra.Dialogues;
+using Alundra.Dialogues.Yarn;
 
 namespace Alundra.Tests;
 

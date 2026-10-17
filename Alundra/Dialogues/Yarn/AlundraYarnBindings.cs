@@ -10,7 +10,7 @@ using Yarn;
 using Alundra.Session;
 using Alundra.Items;
 
-namespace Alundra.Scripts;
+namespace Alundra.Dialogues.Yarn;
 
 /// <summary>
 /// E15.c T4 (docs/plan-e15-yarn.md, E15.c contract item 3; ADR-0007): registers on a

@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using static Alundra.Tests.ArcChecks;
 using Alundra.Events;
 using Alundra.Cameras;
 using Alundra.Transitions;
+using Alundra.Dialogues;
 
 namespace Alundra.Tests;
 

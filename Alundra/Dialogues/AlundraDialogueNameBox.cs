@@ -1,7 +1,8 @@
 #nullable enable
 using System;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Dialogues;
 
 /// <summary>What one drawn pass of the name box shows (E19.f4b: the logic; the view is E19.f4c2, <see cref="TextBoxNameViewModel"/>). Positions are screen pixels; the frame is at <see cref="AlundraDialogueNameBox.FrameY"/>, the text at <see cref="AlundraDialogueNameBox.TextY"/>.</summary>
 internal sealed record NameBoxDrawnState(int FrameX, int TextX);

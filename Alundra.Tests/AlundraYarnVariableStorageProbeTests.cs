@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Compiler.Dialogue;
 using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Presentation;
@@ -10,13 +9,14 @@ using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.Dialogue.Yarn;
 using Xunit;
 using Yarn;
+using Alundra.Dialogues.Yarn;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// E16.f T1 (docs/plan-e16-etat-partie.md): establishes, on a REAL <see cref="YarnDialogueRunner"/> /
 /// <see cref="global::Yarn.Dialogue"/> against the pinned Yarn Spinner 3.2.1 packages, the three points
-/// the E16.f contract needs before <see cref="Alundra.Scripts.AlundraYarnVariableStorage"/> (T2) can be
+/// the E16.f contract needs before <see cref="Alundra.Dialogues.Yarn.AlundraYarnVariableStorage"/> (T2) can be
 /// written - never inferred from the SDK's docs or source, since neither ships with this repo:
 /// <list type="number">
 /// <item><description>what the virtual machine does with a refused read (exception, the <c>Program</c>'s

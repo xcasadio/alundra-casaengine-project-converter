@@ -5,11 +5,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Runtime;
 using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Dialogues;
 
 namespace Alundra.Tests;
 

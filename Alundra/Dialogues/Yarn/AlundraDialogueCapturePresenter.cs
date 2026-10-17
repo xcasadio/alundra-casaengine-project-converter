@@ -5,8 +5,9 @@ using System.Text;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Dialogue.Presentation;
 using CasaEngine.Framework.Dialogue.Runtime;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Dialogues.Yarn;
 
 /// <summary>
 /// E15.c T5 (docs/plan-e15-yarn.md, E15.c contract items 2/4; ADR-0008): the presenter

@@ -35,6 +35,7 @@ using Alundra.Items;
 using Alundra.Rng;
 using Alundra.Rendering.Backdrops;
 using Alundra.Transitions;
+using Alundra.Dialogues;
 
 namespace Alundra.Tests;
 

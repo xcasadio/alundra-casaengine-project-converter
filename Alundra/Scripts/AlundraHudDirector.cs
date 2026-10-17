@@ -2,6 +2,7 @@
 
 using Alundra.Session;
 using Alundra.Transitions;
+using Alundra.Dialogues;
 
 namespace Alundra.Scripts;
 

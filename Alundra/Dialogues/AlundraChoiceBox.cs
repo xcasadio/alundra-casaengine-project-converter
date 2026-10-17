@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Alundra.Hero;
 
-namespace Alundra.Scripts;
+namespace Alundra.Dialogues;
 
 /// <summary>What one drawn pass of the choice box shows (E19.f3a: the logic only, the view is E19.f3b). Positions are screen pixels.</summary>
 internal sealed record ChoiceDrawnState(
