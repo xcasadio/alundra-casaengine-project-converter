@@ -11,6 +11,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
+using Alundra.Probes;
 
 namespace Alundra.Tests;
 

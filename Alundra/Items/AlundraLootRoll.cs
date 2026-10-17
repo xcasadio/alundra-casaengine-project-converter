@@ -1,8 +1,8 @@
 #nullable enable
 using System;
 using Alundra.Session;
-using Alundra.Scripts;
 using Alundra.Rng;
+using Alundra.Probes;
 
 namespace Alundra.Items;
 

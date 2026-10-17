@@ -1,6 +1,6 @@
 #nullable enable
 
-using Alundra.Scripts;
+using Alundra.Probes;
 
 namespace Alundra.Rng;
 

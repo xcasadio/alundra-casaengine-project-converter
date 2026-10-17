@@ -23,6 +23,7 @@ using Alundra.Items;
 using Alundra.Physics;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
+using Alundra.Probes;
 
 namespace Alundra.Scripts;
 

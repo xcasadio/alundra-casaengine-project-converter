@@ -13,6 +13,7 @@ using Alundra.Physics;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.UI.Hud;
+using Alundra.Probes;
 
 namespace Alundra.Hero;
 

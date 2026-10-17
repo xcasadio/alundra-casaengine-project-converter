@@ -4,7 +4,7 @@ using System.Globalization;
 using CasaEngine.Core.Logging;
 using Alundra.Hero;
 
-namespace Alundra.Scripts;
+namespace Alundra.Probes;
 
 /// <summary>
 /// E20.d2a S3 (D-E20-32): the stick probe. When the environment variable <see cref="EnvVar"/> is <c>1</c> at process start, the DLL journals, through the engine's logs (<c>log.txt</c> of the game's working folder, rewritten

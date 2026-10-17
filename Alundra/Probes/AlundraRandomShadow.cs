@@ -8,7 +8,7 @@ using Alundra.Entities;
 using Alundra.Items;
 using Alundra.Rng;
 
-namespace Alundra.Scripts;
+namespace Alundra.Probes;
 
 /// <summary>
 /// E20.e0b1 (D-E0B-7, docs/plan-e20-annexe/e20-e0b/README.md): the measuring sink of the per-tick advance of the shared random stream (<see cref="AlundraRandom"/>), a measuring channel like
