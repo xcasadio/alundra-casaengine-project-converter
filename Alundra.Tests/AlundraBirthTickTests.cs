@@ -10,6 +10,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Alundra.Maps;
 using Alundra.Maps.Loop;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

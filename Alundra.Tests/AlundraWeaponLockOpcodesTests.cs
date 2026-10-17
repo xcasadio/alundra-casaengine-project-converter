@@ -7,6 +7,7 @@ using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
 using Alundra.Maps;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

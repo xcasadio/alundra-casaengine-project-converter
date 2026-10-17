@@ -8,6 +8,7 @@ using System.Text.Json;
 using Alundra.Scripts;
 using Xunit;
 using static Alundra.Tests.AlundraLootOracle;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

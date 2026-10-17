@@ -3,6 +3,7 @@ using System.IO;
 using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Runtime;
 using Xunit;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

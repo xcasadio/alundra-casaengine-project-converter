@@ -7,6 +7,7 @@ using Alundra.Scripts;
 using CasaEngine.Engine.Input;
 using CasaEngine.Framework.Input;
 using Xunit;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

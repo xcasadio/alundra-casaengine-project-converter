@@ -13,6 +13,7 @@ using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Maps;
 using Alundra.Maps.Loop;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

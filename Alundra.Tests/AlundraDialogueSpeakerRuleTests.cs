@@ -9,6 +9,7 @@ using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
 using Xunit;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

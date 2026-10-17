@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
+using Alundra.Session;
 
 namespace Alundra.Scripts;
 

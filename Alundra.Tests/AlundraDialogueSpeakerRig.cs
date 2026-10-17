@@ -7,6 +7,7 @@ using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Runtime;
 using Alundra.Maps;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

@@ -7,6 +7,7 @@ using System.Text.Json;
 using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

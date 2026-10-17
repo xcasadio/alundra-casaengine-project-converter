@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using CasaEngine.Framework.Scene.Entities;
+using Alundra.Session;
 
 namespace Alundra.Scripts;
 

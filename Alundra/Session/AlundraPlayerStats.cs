@@ -1,6 +1,8 @@
 #nullable enable
 
-namespace Alundra.Scripts;
+using Alundra.Scripts;
+
+namespace Alundra.Session;
 
 /// <summary>
 /// Port of <c>AlundraEngine.Gameplay.PlayerStats</c>

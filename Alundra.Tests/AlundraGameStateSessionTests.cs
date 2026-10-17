@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using Alundra.Scripts;
 using Xunit;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

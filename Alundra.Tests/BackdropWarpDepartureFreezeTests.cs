@@ -8,6 +8,7 @@ using CasaEngine.Framework.Rendering.ScrollingLayers;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

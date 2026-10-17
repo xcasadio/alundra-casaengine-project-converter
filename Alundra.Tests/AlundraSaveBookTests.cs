@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Xunit;
 using static Alundra.Tests.SaveGameDirectorTestSupport;
 using Alundra.Maps;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

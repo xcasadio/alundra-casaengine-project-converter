@@ -7,6 +7,7 @@ using CasaEngine.Framework.Audio;
 using CasaEngine.Framework.Audio.Mixing;
 using Xunit;
 using Alundra.Maps;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

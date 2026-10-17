@@ -7,6 +7,7 @@ using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.Dialogue.Yarn;
 using Yarn;
+using Alundra.Session;
 
 namespace Alundra.Scripts;
 

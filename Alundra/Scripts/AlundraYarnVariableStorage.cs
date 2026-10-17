@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using CasaEngine.Core.Logging;
 using Yarn;
+using Alundra.Session;
 
 namespace Alundra.Scripts;
 

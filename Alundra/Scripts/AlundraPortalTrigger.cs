@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 using Alundra.Maps;
+using Alundra.Session;
 
 namespace Alundra.Scripts;
 

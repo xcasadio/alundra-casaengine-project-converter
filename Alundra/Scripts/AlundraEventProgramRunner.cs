@@ -10,6 +10,7 @@ using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.Dialogue.Yarn;
 using Microsoft.Xna.Framework;
 using Alundra.Maps;
+using Alundra.Session;
 
 namespace Alundra.Scripts;
 

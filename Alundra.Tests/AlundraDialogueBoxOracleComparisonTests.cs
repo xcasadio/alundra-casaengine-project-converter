@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Assets;
 using Xunit;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

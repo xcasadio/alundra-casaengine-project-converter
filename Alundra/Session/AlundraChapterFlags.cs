@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Alundra.Scripts;
+namespace Alundra.Session;
 
 /// <summary>
 /// E16.c C1/C7 (docs/plan-e16-etat-partie.md, F8): port of <c>GetFirstEnabledFlagIndex</c> @ 0x800813B0 -

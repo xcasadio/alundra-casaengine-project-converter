@@ -7,6 +7,7 @@ using CasaEngine.Framework.Rendering.EffectQuads;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
 using Xunit;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

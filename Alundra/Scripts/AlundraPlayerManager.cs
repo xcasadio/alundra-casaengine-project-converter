@@ -2,6 +2,7 @@
 using System;
 using Alundra.Maps;
 using Alundra.Maps.Loop;
+using Alundra.Session;
 
 namespace Alundra.Scripts;
 

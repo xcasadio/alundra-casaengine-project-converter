@@ -9,6 +9,7 @@ using CasaEngine.Framework.UI;
 using Microsoft.Xna.Framework;
 using Xunit;
 using static Alundra.Tests.UI.TextBoxGpu;
+using Alundra.Session;
 
 namespace Alundra.Tests.UI;
 

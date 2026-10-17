@@ -5,6 +5,7 @@ using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Assets.Animations;
 using Alundra.Maps.Loop;
 using Alundra.Scripts;
+using Alundra.Session;
 
 namespace Alundra.Maps;
 

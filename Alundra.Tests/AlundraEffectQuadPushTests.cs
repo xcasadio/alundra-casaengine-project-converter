@@ -14,6 +14,7 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

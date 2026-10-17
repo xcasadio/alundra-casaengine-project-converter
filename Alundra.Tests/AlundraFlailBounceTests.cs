@@ -5,6 +5,7 @@ using System.Linq;
 using Alundra.Scripts;
 using CasaEngine.Engine.Physics;
 using Xunit;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

@@ -7,6 +7,7 @@ using CasaEngine.Framework.Assets.Animations;
 using Xunit;
 using Xunit.Sdk;
 using World = CasaEngine.Framework.Scene.World.World;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

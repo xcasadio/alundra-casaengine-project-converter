@@ -2,6 +2,7 @@
 using System;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.SaveGames;
+using Alundra.Session;
 
 namespace Alundra.Scripts;
 

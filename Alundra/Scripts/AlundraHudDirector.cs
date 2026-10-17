@@ -1,5 +1,7 @@
 #nullable enable
 
+using Alundra.Session;
+
 namespace Alundra.Scripts;
 
 /// <summary>

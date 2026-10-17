@@ -6,6 +6,7 @@ using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Gameplay;
 using CasaEngine.Framework.Input;
+using Alundra.Session;
 
 namespace Alundra.Scripts;
 

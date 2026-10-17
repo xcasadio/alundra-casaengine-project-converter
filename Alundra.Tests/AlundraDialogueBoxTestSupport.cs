@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 using Alundra.Scripts;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

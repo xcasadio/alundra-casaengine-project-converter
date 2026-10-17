@@ -3,6 +3,7 @@ using System;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Application;
 using Alundra.Maps;
+using Alundra.Session;
 
 namespace Alundra.Scripts;
 

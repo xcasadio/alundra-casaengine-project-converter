@@ -2,6 +2,7 @@
 using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps.Loop;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

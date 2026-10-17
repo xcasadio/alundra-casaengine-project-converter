@@ -6,6 +6,7 @@ using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

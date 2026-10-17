@@ -7,6 +7,7 @@ using CasaEngine.Engine.Input;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.SaveGames;
 using Microsoft.Xna.Framework.Input;
+using Alundra.Session;
 
 namespace Alundra.Scripts;
 

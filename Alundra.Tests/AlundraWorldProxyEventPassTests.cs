@@ -4,6 +4,7 @@ using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using Alundra.Maps;
 using Alundra.Maps.Loop;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

@@ -7,6 +7,7 @@ using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using Microsoft.Xna.Framework;
 using Xunit;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

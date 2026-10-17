@@ -8,6 +8,7 @@ using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
 using static Alundra.Tests.ArcChecks;
+using Alundra.Session;
 
 namespace Alundra.Tests;
 

@@ -2,8 +2,9 @@
 using System;
 using Alundra.Maps;
 using Alundra.Maps.Loop;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Session;
 
 /// <summary>
 /// V1 sliver of the original's game-flag storage, just enough for the event-program interpreter's
