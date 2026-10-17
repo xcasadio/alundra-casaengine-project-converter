@@ -125,7 +125,7 @@ Alundra/
   Transitions/   WarpDirector, PortalTrigger, PortalScanner, PortalRecord, ScreenFadeDirector
   Dialogues/     DialogueDirector, DialogueBox, DialogueNameBox, ChoiceBox, EtcStringTable, Font3Advances, TextProgress ;
                  Yarn/ (YarnBindings, YarnVariableStorage, DialogueCapturePresenter)
-  UI/            Hud/, Inventory/, SubInventory/, Messages/ (les écrans TextBox), Choice/, Speech/ (DialoguePresenter), SaveScreen/, Shared/
+  UI/            Hud/, Inventory/, SubInventory/, Messages/ (les écrans TextBox), Choice/, Speech/ (DialoguePresenter), Saving/ (les écrans de sauvegarde), Shared/
   SaveGames/     SaveGame, SaveGameDirector, SaveGameRules, EngineSaveSlots, ISaveSlots, TestSaves
   Probes/        RandomShadow, SlotShadow, StickProbe
 Alundra.Tests/   la même arborescence par domaine, plus Arcs/ (scénarios de bout en bout) et Support/ (outillage partagé)
@@ -138,6 +138,7 @@ script à chaque tranche ; (5) les renommages imposés : `AlundraPlayerControlle
 `EventProgramRunner.cs` devient `IEventProgramRunner.cs`) ; (6) ne changent pas : le nom d'assembly `Alundra`, les clés de données
 (`AlundraCells`, `AlundraWallPlacements`, `AlundraFloorPlacements`, `AlundraCompanionJson`), les noms d'assets, le format des sauvegardes ;
 (7) les plans, ADR et annexes historiques ne sont pas réécrits (D-R-6).
+La lecture de la règle (3) (types secondaires publics, types internes, type principal d'un fichier) est écrite dans l'ADR-0075 ; la table complète par type est `tools/dll-structure/table.md`.
 
 ## 3. Enveloppe du programme
 
@@ -353,7 +354,7 @@ chemins autorisés qui change ; un test qui change de valeur attendue ; un déma
 **Retour arrière.** Revert du commit parent (pointeur, convertisseur, DLL, tests) et réexport depuis le commit précédent ; la branche du
 moteur reste non fusionnée.
 
-## 5. Tranche R1 — ADR, table des noms, contrôle des noms ⏳ (détaillée le 2026-10-16 ; révision 1 **READY** ; R0 close le 2026-10-17)
+## 5. Tranche R1 — ADR, table des noms, contrôle des noms ✅ (faite le 2026-10-17 ; verifier frais à passer ; détaillée le 2026-10-16, révision 1 **READY**, R0 close le 2026-10-17)
 
 **Relecture (2026-10-16).** R1 : **REVISE**, cinq blocages corrigés (FIX, révision 1) : (1) la table donne pour **chaque type** son
 fichier, son namespace et son nom à chaque étape (r2, r3, final), ce qui tranche le cas des types secondaires des fichiers cités par les
@@ -443,6 +444,21 @@ construction requise.
 
 **Arrêts.** Une collision ou un type au nom d'un segment que le §2 ne résout pas ; un fichier sans type principal que la lecture du §2 ne
 tranche pas ; une révision de base qui ne contient pas le résultat de R0.
+
+**Résultats (2026-10-17).** T1 `1c5b741`, T2 `f2bdb4b`, T3 ce commit ; aucun `.cs` touché, aucune construction, aucun export.
+- Outil `tools/dll-structure/` (`scan_types.py`, `gen_table.py`, `check_names.py`, `selftest.py`, `README.md`, `table.json`, `table.md`), table lue à la
+  révision épinglée `5434cf6`. Comptes : 129 fichiers `Alundra/Scripts` + `Plugin.cs` + `InternalsVisibleTo.Tests.cs` (131), **219 types** de premier
+  niveau (148 renommés, 42 fichiers à plusieurs types, 76 types scindés, 10 lignes citées par les données = 9 types, `EntityScriptProxy` partielle en deux
+  fichiers), **205 fichiers d'arrivée** (identiques aux trois étapes) ; aucun chemin ni nom en double. Identique au prototype du scratchpad (0 écart sur les 219 × 3 étapes).
+- `check_names.py --table` : 0 collision, 0 segment masquant un type, 1 avertissement (`Session` imbriqué dans `Alundra.Tests/UI/TextBoxGpuHarness.cs:262`). Un paquet
+  listé sans XML est une erreur ; `Portable.Xaml`, sans XML, est nommé dans `PACKAGES_WITHOUT_XML` (limite écrite dans le README).
+- `check_names.py --tree --stage r2` sur l'arbre réel d'avant R2 : rouge, **524 écarts** = 196 fichiers absents + 120 `.cs` hors table + 208 types hors place, soit
+  exactement le décompte tiré de la table (fichiers d'arrivée sans fichier d'origine à ce chemin, fichiers d'origine hors des chemins d'arrivée, types dont le triplet
+  fichier / namespace / nom de `r2` diffère de l'origine).
+- `selftest.py` : six cas verts (conforme 0 ; namespace 1 `[namespace]` ; nom 1 `[nom]` ; fichier en trop 1 `[hors table]` ; fichier manquant 1 `[absent]` ; `--table` avec
+  `Vector2` 1 `[collision]`) plus la table intacte 0.
+- Table rejouée : `git diff --exit-code -- tools/dll-structure` vide. ADR-0075 écrit et indexé ; §2 et ADR et table concordent (`Probes/SlotShadow`, `UI/Saving`, règle (3)).
+- Restent : un verifier frais (budget de la tranche) ; la ligne « Statut » en tête et la ligne R1 du §3 disent encore « en cours » / ⏳ (hors des chemins de R1, à mettre à jour par la clôture).
 
 ## 6. Tranche R2 — Déplacements et scissions ⏳
 
