@@ -5,6 +5,7 @@ using CasaEngine.Engine.Physics;
 using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Maps.Loop;
+using Alundra.Cameras;
 
 namespace Alundra.Tests;
 

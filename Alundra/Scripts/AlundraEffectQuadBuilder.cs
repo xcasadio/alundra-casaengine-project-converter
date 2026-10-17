@@ -5,6 +5,7 @@ using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Rendering.EffectQuads;
 using Microsoft.Xna.Framework;
 using Alundra.Cells;
+using Alundra.Cameras;
 
 namespace Alundra.Scripts;
 

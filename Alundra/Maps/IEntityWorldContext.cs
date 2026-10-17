@@ -7,6 +7,7 @@ using Alundra.Events;
 using Alundra.Combat;
 using Alundra.Items;
 using Alundra.Cells;
+using Alundra.Cameras;
 
 namespace Alundra.Maps;
 

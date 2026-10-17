@@ -1,8 +1,8 @@
 #nullable enable
 using System.Collections.Generic;
-using Alundra.Scripts;
 using Microsoft.Xna.Framework;
 using Xunit;
+using Alundra.Cameras;
 
 namespace Alundra.Tests;
 

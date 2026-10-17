@@ -18,8 +18,9 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Cameras;
 
 /// <summary>
 /// Owns the pure camera mathematics formerly on <see cref="AlundraWorldProxy"/>: the scripted-follow

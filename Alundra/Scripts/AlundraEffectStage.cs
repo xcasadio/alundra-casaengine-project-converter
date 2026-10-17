@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Rendering.EffectQuads;
 using CasaEngine.Framework.Scene.Entities.Components;
+using Alundra.Cameras;
 
 namespace Alundra.Scripts;
 

@@ -1,5 +1,7 @@
 #nullable enable
-namespace Alundra.Scripts;
+using Alundra.Scripts;
+
+namespace Alundra.Cameras;
 
 /// <summary>
 /// E19.k1 (docs/plan-e19-opcodes.md, section 1.2k) - the camera sway (screen shake) state of the original: ONE

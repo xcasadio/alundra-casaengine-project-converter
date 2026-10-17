@@ -12,6 +12,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
+using Alundra.Cameras;
 
 namespace Alundra.Tests;
 

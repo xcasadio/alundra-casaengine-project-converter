@@ -23,6 +23,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Hero;
 using Alundra.Items;
+using Alundra.Cameras;
 
 namespace Alundra.Tests;
 

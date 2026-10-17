@@ -11,6 +11,7 @@ using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Session;
 using Alundra.Entities;
+using Alundra.Cameras;
 
 namespace Alundra.Tests;
 

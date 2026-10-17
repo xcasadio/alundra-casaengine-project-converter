@@ -9,6 +9,7 @@ using Alundra.Session;
 using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Rng;
+using Alundra.Cameras;
 
 namespace Alundra.Tests;
 

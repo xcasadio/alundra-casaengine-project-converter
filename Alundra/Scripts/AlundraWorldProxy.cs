@@ -34,6 +34,7 @@ using Alundra.Items;
 using Alundra.Rng;
 using Alundra.Physics;
 using Alundra.Cells;
+using Alundra.Cameras;
 
 namespace Alundra.Scripts;
 

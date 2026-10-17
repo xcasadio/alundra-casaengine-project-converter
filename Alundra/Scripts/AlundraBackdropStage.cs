@@ -22,6 +22,7 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
+using Alundra.Cameras;
 
 namespace Alundra.Scripts;
 
