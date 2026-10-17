@@ -22,6 +22,8 @@ using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.UI;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
+using Alundra.Maps;
+using Alundra.Maps.Loop;
 
 namespace Alundra.Scripts;
 

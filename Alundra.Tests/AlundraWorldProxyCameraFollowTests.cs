@@ -4,6 +4,7 @@ using Alundra.Scripts;
 using CasaEngine.Engine.Physics;
 using Microsoft.Xna.Framework;
 using Xunit;
+using Alundra.Maps.Loop;
 
 namespace Alundra.Tests;
 

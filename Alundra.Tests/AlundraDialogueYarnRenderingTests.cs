@@ -5,6 +5,7 @@ using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Dialogue.Runtime;
 using Xunit;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

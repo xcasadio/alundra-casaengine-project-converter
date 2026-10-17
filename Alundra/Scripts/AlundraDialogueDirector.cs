@@ -8,6 +8,7 @@ using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Presentation;
 using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.Dialogue.Yarn;
+using Alundra.Maps;
 
 namespace Alundra.Scripts;
 

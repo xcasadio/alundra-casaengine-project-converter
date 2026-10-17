@@ -4,6 +4,7 @@ using System.Reflection;
 using Alundra.Scripts;
 using Xunit;
 using Xunit.Sdk;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

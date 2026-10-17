@@ -10,6 +10,7 @@ using CasaEngine.Framework.UI;
 using Xunit;
 using static Alundra.Tests.SaveGameDirectorTestSupport;
 using World = CasaEngine.Framework.Scene.World.World;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

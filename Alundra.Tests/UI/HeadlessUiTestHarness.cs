@@ -7,6 +7,7 @@ using MGUI.Shared.Text;
 using MGUI.Shared.Text.Engines;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Alundra.Scripts;
 
 namespace Alundra.Tests.UI;
 

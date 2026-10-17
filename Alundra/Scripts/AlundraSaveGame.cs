@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using CasaEngine.Framework.SaveGames;
+using Alundra.Maps;
 
 namespace Alundra.Scripts;
 

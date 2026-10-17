@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using Alundra.Maps;
 
 namespace Alundra.Scripts;
 

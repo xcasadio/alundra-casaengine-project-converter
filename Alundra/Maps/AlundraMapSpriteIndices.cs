@@ -6,8 +6,9 @@ using System.Linq;
 using System.Text.Json;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Maps;
 
 /// <summary>
 /// E20.e0a1 (docs/plan-e20-heros.md section 1.16.1, ADR-0063): the indices of the map page of the sprite table that are valid on each map, read from <c>Data/map-sprite-indices.json</c> (E20.e0x, ADR-0062: per map

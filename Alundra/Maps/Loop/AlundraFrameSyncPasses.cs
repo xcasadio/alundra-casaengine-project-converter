@@ -18,8 +18,9 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Maps.Loop;
 
 /// <summary>
 /// Owns the per-frame entity synchronisation passes formerly on <see cref="AlundraWorldProxy"/>:

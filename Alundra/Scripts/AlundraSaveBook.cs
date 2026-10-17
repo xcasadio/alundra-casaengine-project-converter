@@ -1,5 +1,6 @@
 #nullable enable
 using CasaEngine.Core.Logging;
+using Alundra.Maps;
 
 namespace Alundra.Scripts;
 

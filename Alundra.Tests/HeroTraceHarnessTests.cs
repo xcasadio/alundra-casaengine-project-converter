@@ -14,6 +14,8 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using World = CasaEngine.Framework.Scene.World.World;
+using Alundra.Maps;
+using Alundra.Maps.Loop;
 
 namespace Alundra.Tests;
 

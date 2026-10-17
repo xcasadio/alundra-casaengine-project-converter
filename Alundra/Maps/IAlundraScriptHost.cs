@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Assets.Animations;
+using Alundra.Maps.Loop;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Maps;
 
 /// <summary>
 /// Seam an <see cref="AlundraEntityScriptProxy"/> uses to reach the handful of world-level services its

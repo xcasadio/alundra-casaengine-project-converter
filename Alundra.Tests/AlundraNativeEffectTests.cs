@@ -9,6 +9,7 @@ using Alundra.Scripts;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.AI.Navigation;
 using Xunit;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

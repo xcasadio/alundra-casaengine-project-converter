@@ -10,6 +10,7 @@ using CasaEngine.Framework.Rendering.CellularLayers;
 using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Rendering.ScrollingLayers;
 using Xunit;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

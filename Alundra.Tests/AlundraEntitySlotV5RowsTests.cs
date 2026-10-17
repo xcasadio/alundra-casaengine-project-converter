@@ -7,6 +7,7 @@ using System.Text.Json;
 using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

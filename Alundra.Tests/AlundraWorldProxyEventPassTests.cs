@@ -2,6 +2,8 @@ using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
+using Alundra.Maps;
+using Alundra.Maps.Loop;
 
 namespace Alundra.Tests;
 

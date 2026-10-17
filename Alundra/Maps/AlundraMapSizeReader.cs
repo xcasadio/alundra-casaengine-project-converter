@@ -3,8 +3,9 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Text.Json;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Maps;
 
 /// <summary>
 /// E16.c C1/C4 (docs/plan-e16-etat-partie.md, D-E16-32, F3): reads a map's size in tiles, <c>map_size</c>

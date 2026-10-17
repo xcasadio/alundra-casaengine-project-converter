@@ -1,6 +1,8 @@
 #nullable enable
 
-namespace Alundra.Scripts;
+using Alundra.Scripts;
+
+namespace Alundra.Maps.Loop;
 
 /// <summary>
 /// Bug fix (user-reported runtime pacing bug, gull entity 6, docs/... see commit message for the log

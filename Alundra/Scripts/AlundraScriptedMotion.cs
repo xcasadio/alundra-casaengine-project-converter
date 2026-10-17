@@ -1,6 +1,8 @@
 #nullable enable
 using System;
 using Microsoft.Xna.Framework;
+using Alundra.Maps;
+using Alundra.Maps.Loop;
 
 namespace Alundra.Scripts;
 

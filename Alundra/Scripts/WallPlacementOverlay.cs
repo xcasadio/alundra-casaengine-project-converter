@@ -6,6 +6,7 @@ using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Scene.Entities.Components;
+using Alundra.Maps.Loop;
 
 namespace Alundra.Scripts;
 

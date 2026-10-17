@@ -5,8 +5,9 @@ using System.IO;
 using System.Text.Json;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Maps;
 
 /// <summary>
 /// T4 (docs/plan-transitions-carte.md §1.1.e/§3): the FORWARD half of <c>Maps/world-index.json</c> -

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Alundra.Scripts;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

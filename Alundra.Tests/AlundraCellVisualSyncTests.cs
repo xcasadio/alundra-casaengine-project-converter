@@ -18,6 +18,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

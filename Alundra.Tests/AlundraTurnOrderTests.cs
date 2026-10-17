@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using Xunit;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

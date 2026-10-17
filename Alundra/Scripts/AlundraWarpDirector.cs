@@ -2,6 +2,7 @@
 using System;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Application;
+using Alundra.Maps;
 
 namespace Alundra.Scripts;
 

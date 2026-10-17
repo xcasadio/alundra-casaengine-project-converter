@@ -9,6 +9,8 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
 using Xunit;
 using Xunit.Abstractions;
+using Alundra.Maps;
+using Alundra.Maps.Loop;
 
 namespace Alundra.Tests;
 

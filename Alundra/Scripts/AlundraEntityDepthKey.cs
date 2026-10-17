@@ -1,4 +1,6 @@
 #nullable enable
+using Alundra.Maps.Loop;
+
 namespace Alundra.Scripts;
 
 /// <summary>

@@ -6,6 +6,7 @@ using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

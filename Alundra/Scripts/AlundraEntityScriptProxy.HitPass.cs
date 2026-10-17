@@ -1,6 +1,7 @@
 #nullable enable
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
+using Alundra.Maps.Loop;
 
 namespace Alundra.Scripts;
 

@@ -13,6 +13,8 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
+using Alundra.Maps;
+using Alundra.Maps.Loop;
 
 namespace Alundra.Tests;
 

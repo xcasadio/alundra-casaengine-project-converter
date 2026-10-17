@@ -1,6 +1,7 @@
 #nullable enable
 using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Rendering.ScreenEffects;
+using Alundra.Maps;
 
 namespace Alundra.Scripts;
 

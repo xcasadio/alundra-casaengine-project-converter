@@ -1,7 +1,8 @@
 #nullable enable
 using CasaEngine.Framework.Scene.Entities.Components;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Maps.Loop;
 
 /// <summary>
 /// E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): the part of the world freeze the T2 gate cannot

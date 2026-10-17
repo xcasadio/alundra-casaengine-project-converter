@@ -7,6 +7,7 @@ using CasaEngine.Framework.Dialogue.Presentation;
 using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.Dialogue.Yarn;
 using Xunit;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

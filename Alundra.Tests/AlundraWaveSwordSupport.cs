@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using Alundra.Scripts;
 using Xunit;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

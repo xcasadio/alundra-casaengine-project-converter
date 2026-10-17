@@ -9,6 +9,7 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
 using static Alundra.Tests.AlundraLootOracle;
 using World = CasaEngine.Framework.Scene.World.World;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

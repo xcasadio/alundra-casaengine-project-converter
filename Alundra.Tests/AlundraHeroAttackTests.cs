@@ -8,6 +8,8 @@ using System.Text.RegularExpressions;
 using Alundra.Scripts;
 using CasaEngine.Engine.Physics;
 using Xunit;
+using Alundra.Maps;
+using Alundra.Maps.Loop;
 
 namespace Alundra.Tests;
 

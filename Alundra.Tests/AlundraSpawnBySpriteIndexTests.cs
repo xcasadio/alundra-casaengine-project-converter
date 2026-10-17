@@ -9,6 +9,7 @@ using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using static Alundra.Tests.SaveGameDirectorTestSupport;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 

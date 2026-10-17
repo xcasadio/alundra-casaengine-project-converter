@@ -25,6 +25,7 @@ using Xunit;
 using Xunit.Sdk;
 using static Alundra.Tests.SaveGameDirectorTestSupport;
 using World = CasaEngine.Framework.Scene.World.World;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
