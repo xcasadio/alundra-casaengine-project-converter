@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
-2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-18** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 en attente de Q-R-3 ; R6 détaillée, à relire. Démarre après E20.e0a4 (plan E20, §1.16.4).
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 en attente de Q-R-3 ; R6 détaillée, à relire. Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -716,7 +716,7 @@ ligne d'attribution (la ligne vient du harnais des exécuteurs ; rien n'est pous
 dérivées du nom des classes de test (par exemple les dossiers temporaires `"AlundraSoundPlayerTests_"`) suivent les classes de test en R5 ;
 `prove_r3.py` corrigé une fois en cours de tranche (`b98b6f8`, faux positifs), sans effet sur la vérification indépendante.
 
-## 8. Tranche R4 — Les 9 types cités par les données ; second export 🧪 (faite et CONFIRMED le 2026-10-18, `6032da0` à `ce6d335` ; révision 2 ; reste la recette de l'auteur)
+## 8. Tranche R4 — Les 9 types cités par les données ; second export 🧪 (faite et CONFIRMED le 2026-10-17, `6032da0` à `ce6d335` ; révision 2 ; reste la recette de l'auteur)
 
 **Relecture (2026-10-17).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) les outils de R2 et R3 ne savent pas traiter les
 types cités (leur table s'arrête à l'étape `r3`, où ces types n'ont pas bougé ; `apply_r2.py` indexe les anciens noms ; l'outil de
@@ -845,7 +845,7 @@ cas prévus ; un processus du jeu, du lanceur ou de l'éditeur pendant un export
 
 **Retour arrière.** Revert des commits de la tranche et réexport depuis le commit précédent.
 
-**Vérification de R4 (2026-10-18) : CONFIRMED** par deux verifiers frais (rejeu, adversarial ; `7ce82c2` à `ce6d335`). Rejoué : l'annexe
+**Vérification de R4 (2026-10-17) : CONFIRMED** par deux verifiers frais (rejeu, adversarial ; `7ce82c2` à `ce6d335`). Rejoué : l'annexe
 `r4/` et la prédiction (885 SHA-1 et tailles égaux, chemins autorisés, `AssetInfos.json` inchangé, nombre de fichiers inchangé) ; le manifeste
 pris par le verifier égal à `m3` ; `rg -uu` : tous les `script_class_name`, `player_controller_class` et `view_model_type` aux noms complets
 finaux ; la suite du convertisseur ; la solution en Release et en Debug ; `Alundra.Tests` 5 097 / 0 échec dans les deux ; `check_names.py --tree
@@ -863,9 +863,9 @@ F5, F6, F9 ; dans l'éditeur, la ligne « Script » d'un monde et d'une entité 
 **But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/` et `Support/` ; les classes de test sans préfixe ;
 aucune valeur attendue changée. Le classement de l'inventaire (`report_inventory.md` §7) sert de base, recensé à nouveau en T0.
 
-## 10. Tranche R6 — Documentation vivante 🧪 (détaillée le 2026-10-18 ; révision 2, en relecture de clôture)
+## 10. Tranche R6 — Documentation vivante 🧪 (détaillée le 2026-10-17 ; révision 2, en relecture de clôture)
 
-**Relecture (2026-10-18).** REVISE, trois blocages corrigés (FIX, révision 1) : (1) les lignes qui demandent du jugement ont leur texte
+**Relecture (2026-10-17).** REVISE, trois blocages corrigés (FIX, révision 1) : (1) les lignes qui demandent du jugement ont leur texte
 cible fixé ci-dessous (« Cibles fixées ») et l'exécutant devient un `executor` ; (2) les lignes F ont une tâche, un texte et un
 contrôle ; (3) T0 nomme ses générateurs, ses modes et ses chemins. Seconde relecture : REVISE, un blocage P2 (le vérificateur de membres
 lit `hits.tsv`, que seul `check/cscan.py` écrit, non nommé) : FIX en révision 2 (T0 (b) nomme `cscan.py`, l'ordre et le dossier, et remplace
@@ -894,7 +894,7 @@ trois lectures rendent des valeurs identiques à celles du source d'avant (sonde
 `ResolveLogicalPosition` → `EntitySpawnFactory`) : le membre de chaque citation qualifiée se vérifie avant de substituer ; des numéros de ligne
 cités étaient déjà faux à la base : on ne corrige que le chemin et le nom ; deux commentaires `m.py:13` « lines 512..1447 ».
 
-**Choix (session principale, mode autonome du 2026-10-18 ; réversibles, soumis à l'auteur en Q-R-4).** `docs/intro-roadmap.md` est vivant
+**Choix (session principale, mode autonome du 2026-10-17 ; réversibles, soumis à l'auteur en Q-R-4).** `docs/intro-roadmap.md` est vivant
 (ses sections 0 à 3 se déclarent valides) : ses A et B se corrigent ; `docs/demarrage-nouvelle-partie.md`, daté, reste tel quel (D) ; les
 numéros de ligne cités ne se recalculent pas ; les lignes T vont à R5 ; `docs/editeur-couverture-dll.md:64-66` (« `script_class_name` … aucun
 sélecteur », faux depuis D-R-11) se corrige ; le commentaire du convertisseur `PlayerSetupWriter.cs:27` (un chemin `Alundra/Alundra.Tests/Scripts/
@@ -999,7 +999,7 @@ verifier frais.
   `python -B decl.py`, lancé avec ce dossier comme répertoire courant (il lit `./hits.tsv`), imprime `DECL` ou `NODECL` pour chaque
   citation qualifiée `AncienType.Membre` selon que le membre est **déclaré** dans le fichier final du type (plus strict que
   `check/members.py`, qui ne cherche que le nom et laisse passer un membre déplacé appelé depuis ce fichier). Attendu, rejoué le
-  2026-10-18 au HEAD `ee175f7` : exactement cinq `NODECL`, les lignes des cibles 1 à 5 (`WorldWriter.cs:206`, guidelines `:138`,
+  2026-10-17 au HEAD `ee175f7` : exactement cinq `NODECL`, les lignes des cibles 1 à 5 (`WorldWriter.cs:206`, guidelines `:138`,
   intro-roadmap `:37`, `:70`, `:227`) ; tout autre `NODECL` arrête la tranche ;
   la sortie de (a) diffère de `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/r6-disc/disc/occurrences.tsv` seulement par des lignes expliquées (un écart non expliqué
   arrête la tranche) ;
@@ -1035,6 +1035,19 @@ trace) touché.
 
 **Résultats (2026-10-17, exécution par un `executor`).** T0 : générateurs rejoués au HEAD `211a757` dans deux dossiers neufs ; (a) `occurrences.tsv` identique octet pour octet à celui de la découverte (232 lignes, aucun écart à expliquer) ; (b) `decl.py` : 28 `DECL`, exactement les cinq `NODECL` attendus (cibles 1 à 5), aucun autre. Le relevé versé `tools/dll-structure/r6-occurrences.tsv` compte 74 lignes (par ligne ou plage : 41 B, 18 A, 12 E, 2 F, 1 C ; les 84 occurrences du relevé de découverte groupées par ligne, plus les deux commentaires « lines 512..1447 » en classe E), cibles fixées 1 à 8 au caractère près. `apply_r6.py` (modes `apply` et `--check`) : `apply` appliqué une fois (74 lignes, 35 fichiers), `--check` sort 0, `prove_r4.py --kind end` sort 0 (le P3 `SpriteWriter.cs:92` est fermé). T3 : `prove_research.py` rend `identical=True` pour les trois lectures (`EventOpcodeSizeTable` 198 entrées, `AnimationTables` 3 tableaux, `Dispatch` 158 cases) ; `report_v2.py` ne peut pas régénérer `docs/census-0x24-waits.md` (il lit `census_v2.pkl`, absent, qui demande `gstatic.pkl`, `census.pkl` et une exécution complète du recensement, non versionnés) : le doc est corrigé à la main, avec la même phrase que `report_v2.py:103` ; régénération notée non faite. Suite du convertisseur : 854 réussies, 0 échec. Jugements : les deux commentaires « lines 512..1447 » (déjà faux à la base) deviennent « (parsed from the switch of Dispatch) » ; `WorldWriter.cs:376` « (Alundra/Scripts/) » → « (Alundra/Maps/) » et `research/census/README.md:46` → `Alundra/Events/` (les sources cités sont dans ces dossiers). Écart au plan : T2 (classe C) est dans le commit des docs, la même zone que T1 docs. Reste (🧪) : un verifier frais sur l'ensemble, les réponses de l'auteur à Q-R-4 et Q-R-5, les lignes T (chemins de tests) qui attendent R5.
 
+**Vérification de R6 (2026-10-17) : REFUTED** par un verifier frais, sur un seul constat (**P2**, introduit, borné) : la cible fixée 2
+n'était pas appliquée au caractère près, `alundra-casaengine-project-converter/Writers/WorldWriter.cs:206` portait 8 espaces devant `///`
+au lieu de 4 (la cellule « after » du relevé aussi, d'où un `--check` vert). Tout le reste tient : le rejeu du relevé depuis `211a757`
+rend les 35 fichiers à l'octet ; seules les lignes du relevé changent ; les 84 occurrences A, B, C, E, F couvertes ; aucun fichier hors
+de la tranche ; `prove_r4.py --kind end` vert ; convertisseur 854 / 0 ; `prove_research.py` identique ; la ligne corrigée à la main de
+`docs/census-0x24-waits.md` égale à la chaîne de `report_v2.py:103` ; les textes nouveaux exacts au moteur `92d8e847` et à la
+décompilation ; mutations de `apply_r6.py` (ancien texte remis, nouveau texte changé, fichier gelé ou hors tranche, ligne changée avant
+`apply`, second `apply`) toutes refusées. Écarts de l'exécuteur jugés corrects. Avis non bloquants (**P4**) : `--check` autorise tout ce
+plan et ne contrôle pas les lignes hors relevé des 35 fichiers (le verifier l'a fait à part) ; `research/census/README.md:46` ne nomme pas
+`Alundra/Entities/AnimationTables.cs`, que trois scripts lisent aussi (déjà le cas à la base). **FIX** (session principale) : la ligne et la
+cellule ramenées à 4 espaces ; `apply_r6.py --check` 0, `prove_r4.py --kind end` 0, convertisseur 854 / 0 ; un verifier frais sur l'état
+corrigé. Les dates « 2026-10-18 » de ce plan (R4, R6, Q-R-4, Q-R-5) étaient fausses : tout s'est passé le 2026-10-17 ; corrigées.
+
 **Retour arrière.** `git revert` des commits de la tranche.
 
 ## 11. Questions à l'auteur
@@ -1056,11 +1069,11 @@ trace) touché.
   6. `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` : rester à sa place (zéro risque) ou suivre l'audit dans `Events/` ?
   7. Les gardes d'export sans type de la DLL (`CornerTrack`, `ZeroDurationLoop`) : `Entities` ou un dossier dédié ?
   En attendant, R5 n'est pas exécutée ; sa découverte sera regénérée après R4 (les numéros de ligne changent).
-- **Q-R-4** (2026-10-18, choix faits en mode autonome pour R6, réversibles) — Valider ou corriger : `docs/intro-roadmap.md` traité comme
+- **Q-R-4** (2026-10-17, choix faits en mode autonome pour R6, réversibles) — Valider ou corriger : `docs/intro-roadmap.md` traité comme
   vivant (ses chemins et noms corrigés) ; `docs/demarrage-nouvelle-partie.md` (daté du 2026-08-08) gardé tel quel ; les numéros de ligne
   cités dans les docs non recalculés (seuls le chemin et le nom changent) ; `docs/editeur-couverture-dll.md:64-66` corrigé (la ligne
   « Script » existe de nouveau) ; le commentaire `PlayerSetupWriter.cs:27` pointé vers la décompilation.
-- **Q-R-5** (2026-10-18, ouverte) — Les renommages de R3 et R4 n'ont pas touché les **commentaires** du code : environ 300 anciens noms
+- **Q-R-5** (2026-10-17, ouverte) — Les renommages de R3 et R4 n'ont pas touché les **commentaires** du code : environ 300 anciens noms
   (`AlundraWorldProxy`, `AlundraEventProgramRunner`…) restent dans les commentaires de la DLL (≈ 60 fichiers) et des tests (≈ 90 fichiers),
   plus quelques chemins `Alundra/Scripts/…` (par exemple `HeroController.cs:42`, `AlundraScreenFadeCameraWiringTests.cs:24,29,96`). Les
   corriger dans une tranche dédiée (mécanique, outillée comme R3, commentaires seulement), ou les laisser ?

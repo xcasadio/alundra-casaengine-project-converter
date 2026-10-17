@@ -203,7 +203,7 @@ public static class WorldWriter
     /// docs/plan-e3-collisions.md decision E3-1), for a spawn placed at the centre of its tile.
     /// PlayerStartComponent's local_transform is copied verbatim onto the spawned pawn's root
     /// (World.CreateLocalPlayerController, World.cs:361-364), so this must be the same logical pose
-        /// the DLL itself writes (<c>EntitySpawnFactory.ResolveLogicalPosition</c>) - a RenderProjectionComponent
+    /// the DLL itself writes (<c>EntitySpawnFactory.ResolveLogicalPosition</c>) - a RenderProjectionComponent
     /// child of the pawn's own root derives the render pose from it every update:
     ///  - runtime tile coordinate to pixels (docs/guidelines-runtime-alundra-casaengine.md section 2.2):
     ///    pixelX = tileX*24 + 12, pixelY = tileY*16 + 8 (the +12/+8 centre the point in the tile).
