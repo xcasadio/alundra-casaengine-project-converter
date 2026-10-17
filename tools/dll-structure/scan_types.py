@@ -37,11 +37,21 @@ PACKAGES = {
     'SharpGLTF.Core 1.0.6': 'sharpgltf.core/1.0.6/lib/*/*.xml',
     'SharpGLTF.Toolkit 1.0.6': 'sharpgltf.toolkit/1.0.6/lib/*/*.xml',
     'YarnSpinner 3.2.1': 'yarnspinner/3.2.1/lib/*/*.xml',
+    'Autofac 5.2.0': 'autofac/5.2.0/lib/*/*.xml',
+    'Cyotek.Drawing.BitmapFont 2.0.4': 'cyotek.drawing.bitmapfont/2.0.4/lib/*/*.xml',
+    'FontStashSharp.Rasterizers.StbTrueTypeSharp 1.2.7': 'fontstashsharp.rasterizers.stbtruetypesharp/1.2.7/lib/*/*.xml',
+    'Google.Protobuf 3.25.2': 'google.protobuf/3.25.2/lib/*/*.xml',
+    'MonoGame.Extended.Content.Pipeline 6.1.1': 'monogame.extended.content.pipeline/6.1.1/lib/*/*.xml',
+    'SharpGLTF.Runtime 1.0.6': 'sharpgltf.runtime/1.0.6/lib/*/*.xml',
+    'System.Memory 4.5.3': 'system.memory/4.5.3/lib/*/*.xml',
+    'System.ValueTuple 4.5.0': 'system.valuetuple/4.5.0/lib/*/*.xml',
 }
 # Packages the DLL's dependency set contains but that ship no XML documentation: named here so that the gap is explicit, never silent.
 # The build stays the judge for them (an ambiguous name is CS0104).
 PACKAGES_WITHOUT_XML = {
     'Portable.Xaml 0.26.0': 'portable.xaml/0.26.0/lib',
+    'StbImageSharp 2.30.16': 'stbimagesharp/2.30.16/lib',
+    'StbTrueTypeSharp 1.26.13': 'stbtruetypesharp/1.26.13/lib',
 }
 
 BCL_GLOB = 'C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.*/ref/net9.0'
