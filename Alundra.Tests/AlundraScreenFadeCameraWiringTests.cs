@@ -10,6 +10,7 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Session;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

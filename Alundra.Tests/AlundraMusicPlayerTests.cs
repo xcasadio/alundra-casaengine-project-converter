@@ -15,6 +15,7 @@ using CasaEngine.Framework.Audio.Mixing;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Session;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

@@ -6,6 +6,7 @@ using CasaEngine.Framework.AI.Navigation;
 using Xunit;
 using Alundra.Maps;
 using Alundra.Session;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

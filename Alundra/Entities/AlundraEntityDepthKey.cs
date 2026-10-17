@@ -1,7 +1,8 @@
 #nullable enable
 using Alundra.Maps.Loop;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Entities;
 
 /// <summary>
 /// E20.f1b (docs/plan-e20-heros.md section 1.9, ADR-0057, annex <c>docs/plan-e20-annexe/e20-f1/depth-key.md</c>): the depth key <c>+0x1BC</c> of an entity of the binary, as the sort driver <c>0x800399B8</c> leaves it

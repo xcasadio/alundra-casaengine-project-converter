@@ -4,6 +4,8 @@ using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Runtime;
 using Xunit;
 using Alundra.Session;
+using Alundra.Entities;
+using Alundra.Entities.Spawning;
 
 namespace Alundra.Tests;
 

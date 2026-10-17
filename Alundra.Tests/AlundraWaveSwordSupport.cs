@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

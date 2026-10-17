@@ -8,6 +8,7 @@ using Xunit;
 using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
 using Alundra.Maps;
 using Alundra.Session;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

@@ -3,6 +3,7 @@ using System;
 using System.Runtime.CompilerServices;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Framework.Assets.Animations;
+using Alundra.Entities.Spawning;
 
 namespace Alundra.Scripts;
 

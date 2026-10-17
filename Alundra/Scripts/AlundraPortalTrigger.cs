@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Alundra.Maps;
 using Alundra.Session;
+using Alundra.Entities;
 
 namespace Alundra.Scripts;
 

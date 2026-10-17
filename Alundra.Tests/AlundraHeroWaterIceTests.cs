@@ -5,6 +5,7 @@ using System.Linq;
 using Alundra.Scripts;
 using CasaEngine.Framework.Assets.Animations;
 using Xunit;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

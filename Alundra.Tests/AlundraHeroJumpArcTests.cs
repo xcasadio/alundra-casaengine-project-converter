@@ -6,6 +6,7 @@ using Alundra.Scripts;
 using Xunit;
 using static Alundra.Tests.ArcChecks;
 using Alundra.Session;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

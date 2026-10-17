@@ -3,6 +3,8 @@ using System;
 using Microsoft.Xna.Framework;
 using Alundra.Maps;
 using Alundra.Maps.Loop;
+using Alundra.Entities;
+using Alundra.Entities.Spawning;
 
 namespace Alundra.Scripts;
 

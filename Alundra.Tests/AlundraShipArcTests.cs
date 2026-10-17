@@ -4,6 +4,7 @@ using System.Linq;
 using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using Xunit;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

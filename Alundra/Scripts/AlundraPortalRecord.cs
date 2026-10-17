@@ -1,5 +1,7 @@
 ﻿#nullable enable
 
+using Alundra.Entities;
+
 namespace Alundra.Scripts;
 
 /// <summary>

@@ -6,6 +6,7 @@ using System.Reflection;
 using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

@@ -19,6 +19,8 @@ using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
 using Alundra.Scripts;
+using Alundra.Entities;
+using Alundra.Entities.Spawning;
 
 namespace Alundra.Maps.Loop;
 

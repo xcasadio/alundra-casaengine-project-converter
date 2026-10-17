@@ -11,6 +11,7 @@ using static Alundra.Tests.AlundraLootOracle;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Maps;
 using Alundra.Session;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

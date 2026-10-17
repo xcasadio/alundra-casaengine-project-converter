@@ -6,6 +6,7 @@ using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using static Alundra.Tests.SaveGameDirectorTestSupport;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

@@ -19,8 +19,9 @@ using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
 using Alundra.Maps.Loop;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Entities.Spawning;
 
 /// <summary>
 /// Owns the record-to-entity spawn pipeline formerly on <see cref="AlundraWorldProxy"/>: the

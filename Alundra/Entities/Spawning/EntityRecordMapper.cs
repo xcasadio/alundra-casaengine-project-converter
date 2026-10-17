@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using CasaEngine.Framework.Assets.TileMap;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Entities.Spawning;
 
 /// <summary>
 /// Pure mapping from one record of the "Entities" object layer emitted for a converted map

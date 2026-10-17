@@ -3,7 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace Alundra.Scripts;
+namespace Alundra.Entities;
 
 /// <summary>
 /// E20.e0a2 (docs/plan-e20-heros.md section 1.16.2, ADR-0064): the table of the entity slots of one world, as the 64 entries of the binary's flat entity array (<c>0x80127FC4</c>, stride <c>0x294</c>). Slot 0 is the hero

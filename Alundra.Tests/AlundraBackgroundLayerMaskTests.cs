@@ -12,6 +12,7 @@ using CasaEngine.Framework.Rendering.ScrollingLayers;
 using Xunit;
 using Alundra.Maps;
 using Alundra.Session;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

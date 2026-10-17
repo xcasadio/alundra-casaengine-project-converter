@@ -9,6 +9,7 @@ using Xunit;
 using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
 using static Alundra.Tests.ArcChecks;
 using Alundra.Session;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

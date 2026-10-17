@@ -8,6 +8,8 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
 using Alundra.Maps.Loop;
 using Alundra.Session;
+using Alundra.Entities;
+using Alundra.Entities.Spawning;
 
 namespace Alundra.Tests;
 

@@ -10,6 +10,7 @@ using Xunit;
 using static Alundra.Tests.SaveGameDirectorTestSupport;
 using Alundra.Maps;
 using Alundra.Session;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

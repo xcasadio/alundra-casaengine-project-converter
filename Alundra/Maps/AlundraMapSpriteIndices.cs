@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
-using Alundra.Scripts;
+using Alundra.Entities;
 
 namespace Alundra.Maps;
 

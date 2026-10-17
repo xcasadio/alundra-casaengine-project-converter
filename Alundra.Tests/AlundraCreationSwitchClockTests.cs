@@ -8,6 +8,7 @@ using Alundra.Scripts;
 using Xunit;
 using Xunit.Abstractions;
 using Alundra.Maps;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

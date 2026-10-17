@@ -18,6 +18,7 @@ using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Maps;
 using Alundra.Maps.Loop;
 using Alundra.Session;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

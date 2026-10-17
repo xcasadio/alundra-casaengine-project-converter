@@ -10,6 +10,8 @@ using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using static Alundra.Tests.SaveGameDirectorTestSupport;
 using Alundra.Maps;
+using Alundra.Entities;
+using Alundra.Entities.Spawning;
 
 namespace Alundra.Tests;
 

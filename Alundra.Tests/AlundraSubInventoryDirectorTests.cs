@@ -7,6 +7,7 @@ using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Dialogue.Assets;
 using Xunit;
 using Alundra.Session;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

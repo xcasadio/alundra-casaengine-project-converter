@@ -2,6 +2,7 @@
 using System;
 using Alundra.Scripts;
 using Xunit;
+using Alundra.Entities.Spawning;
 
 namespace Alundra.Tests;
 

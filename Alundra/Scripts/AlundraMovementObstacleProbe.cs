@@ -5,6 +5,7 @@ using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using Microsoft.Xna.Framework;
 using Alundra.Maps;
+using Alundra.Entities;
 
 namespace Alundra.Scripts;
 

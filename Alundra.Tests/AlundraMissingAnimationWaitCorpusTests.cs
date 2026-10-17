@@ -7,6 +7,7 @@ using System.Text.Json;
 using Alundra.Scripts;
 using Xunit;
 using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

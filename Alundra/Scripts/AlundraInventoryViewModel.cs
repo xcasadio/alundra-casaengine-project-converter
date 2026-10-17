@@ -3,6 +3,7 @@ using System;
 using Microsoft.Xna.Framework;
 using MGUI.Core.UI;
 using MGUI.Shared.Helpers;
+using Alundra.Entities;
 
 namespace Alundra.Scripts;
 

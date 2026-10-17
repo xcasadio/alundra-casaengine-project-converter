@@ -5,6 +5,8 @@ using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Assets.TileMap;
 using Xunit;
+using Alundra.Entities;
+using Alundra.Entities.Spawning;
 
 namespace Alundra.Tests;
 

@@ -25,6 +25,8 @@ using Microsoft.Xna.Framework;
 using Alundra.Maps;
 using Alundra.Maps.Loop;
 using Alundra.Session;
+using Alundra.Entities;
+using Alundra.Entities.Spawning;
 
 namespace Alundra.Scripts;
 
@@ -370,17 +372,17 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     private bool _loggedNoPlayerController;
 
     /// <summary>
-    /// Seam over <c>Data/sprite-records.json</c> lookups (see <see cref="Alundra.Scripts.SpriteRecordCatalog"/>'s
+    /// Seam over <c>Data/sprite-records.json</c> lookups (see <see cref="Alundra.Entities.SpriteRecordCatalog"/>'s
     /// class doc), read once and reused for every record this proxy spawns. Internal, not injected
     /// through the constructor - same reasoning as <see cref="EventProgramRunner"/>: <c>ElementFactory</c>
     /// constructs gameplay proxies parameterless, so tests swap this field directly.
     ///
-    /// D-T-14 (docs/plan-transitions-carte.md, slice T1): resolved through <see cref="Alundra.Scripts.SpriteRecordCatalog.GetOrCreate"/>'s
+    /// D-T-14 (docs/plan-transitions-carte.md, slice T1): resolved through <see cref="Alundra.Entities.SpriteRecordCatalog.GetOrCreate"/>'s
     /// session-scoped cache (keyed by <see cref="EngineEnvironment.ProjectPath"/>) rather than always
     /// constructing a fresh catalog - two consecutive worlds over the same project now read
     /// <c>Data/sprite-records.json</c> only once.
     /// </summary>
-    internal ISpriteRecordCatalog SpriteRecordCatalog = Alundra.Scripts.SpriteRecordCatalog.GetOrCreate(EngineEnvironment.ProjectPath);
+    internal ISpriteRecordCatalog SpriteRecordCatalog = Alundra.Entities.SpriteRecordCatalog.GetOrCreate(EngineEnvironment.ProjectPath);
 
     /// <summary>
     /// E20.e0a1 (ADR-0063): the valid indices of the map page of each map (<c>Data/map-sprite-indices.json</c>), read at the FIRST call of <see cref="SpawnEntityBySpriteIndex"/> and never at the load of a world (no

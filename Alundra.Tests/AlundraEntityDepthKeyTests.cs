@@ -5,8 +5,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Alundra.Scripts;
 using Xunit;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

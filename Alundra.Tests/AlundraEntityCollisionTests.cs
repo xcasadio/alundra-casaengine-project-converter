@@ -1,6 +1,7 @@
 #nullable enable
 using Alundra.Scripts;
 using Xunit;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 

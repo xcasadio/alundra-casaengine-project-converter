@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Alundra.Scripts;
 using Xunit;
+using Alundra.Entities;
+using Alundra.Entities.Spawning;
 
 namespace Alundra.Tests;
 

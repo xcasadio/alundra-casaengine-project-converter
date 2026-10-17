@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using CasaEngine.Core.Logging;
 using Alundra.Maps;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Entities;
 
 /// <summary>
 /// Port of <c>GameEngine.GetMatchingEntityBySearchType</c> (alundra-datas-analyser

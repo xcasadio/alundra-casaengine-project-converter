@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 using CasaEngine.Framework.Scene.Entities;
+using Alundra.Entities;
 
 namespace Alundra.Scripts;
 

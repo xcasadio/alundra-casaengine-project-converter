@@ -1,4 +1,6 @@
-namespace Alundra.Scripts;
+using Alundra.Scripts;
+
+namespace Alundra.Entities;
 
 /// <summary>
 /// Static lookup tables ported verbatim from

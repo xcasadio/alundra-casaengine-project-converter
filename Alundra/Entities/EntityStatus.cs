@@ -1,4 +1,4 @@
-﻿namespace Alundra.Scripts;
+﻿namespace Alundra.Entities;
 
 /// <summary>
 /// Values of <see cref="Entity.Status"/> (offset 0x10 of the original <c>Entity</c> struct).
@@ -42,16 +42,4 @@ public enum EntityStatus
 
     /// <summary>Never produced by the transliterated code; kept for parity with the original enum.</summary>
     Unknown = 5
-}
-
-/// <summary>Convenience predicates over <see cref="EntityStatus"/>.</summary>
-public static class EntityStatusExtensions
-{
-    /// <summary>
-    /// True for <see cref="EntityStatus.Normal"/> and <see cref="EntityStatus.Deactivated"/>, the two
-    /// statuses that make an entity simulated, collidable and drawn. Transliterated from the original
-    /// unsigned trick <c>(uint)(status - 2) &lt; 2</c>.
-    /// </summary>
-    public static bool IsActive(this EntityStatus status)
-        => status is EntityStatus.Normal or EntityStatus.Deactivated;
 }
