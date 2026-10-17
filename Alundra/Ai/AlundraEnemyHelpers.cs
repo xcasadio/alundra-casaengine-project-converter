@@ -3,8 +3,10 @@ using System;
 using System.Diagnostics;
 using Alundra.Maps;
 using Alundra.Events;
+using Alundra.Ai.Enemies;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Ai;
 
 /// <summary>
 /// E14.a0b T3 (docs/plan-e14-ia-native.md section 1.2): the helpers the native handlers of the enemies share (Beannoid C1, Muruta C10, and later E14.a1's), ported from <c>ALUN_CD.EXE</c> (France) and compared, state by state, with the real code run

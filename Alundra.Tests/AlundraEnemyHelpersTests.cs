@@ -5,6 +5,7 @@ using System.Linq;
 using Alundra.Scripts;
 using Xunit;
 using Alundra.Events;
+using Alundra.Ai;
 
 namespace Alundra.Tests;
 

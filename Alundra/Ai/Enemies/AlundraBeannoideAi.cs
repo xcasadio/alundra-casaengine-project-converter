@@ -2,8 +2,9 @@
 using System;
 using Alundra.Maps;
 using Alundra.Events;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Ai.Enemies;
 
 /// <summary>
 /// E14.a1b T4 (docs/plan-e14-ia-native.md section 1.3b, D-E14-1): the native handlers of the Beannoid (sprite type 335) - A1 (<c>0x80061758</c>, slot A, code 1), C1 (<c>0x80065ED4</c>, slot C, code 1) and D1

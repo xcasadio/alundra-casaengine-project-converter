@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Xunit;
 using static Alundra.Tests.SaveGameDirectorTestSupport;
 using Alundra.Session;
+using Alundra.Ai.Objects;
 
 namespace Alundra.Tests.Scripts;
 

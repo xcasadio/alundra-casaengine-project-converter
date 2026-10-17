@@ -3,8 +3,9 @@ using CasaEngine.Core.Logging;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Events;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Ai.Objects;
 
 /// <summary>
 /// E16.e L4 (docs/plan-e16-etat-partie.md): what the save book needs from the save screen - the port of the

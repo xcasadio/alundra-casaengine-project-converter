@@ -1,4 +1,5 @@
 using Alundra.Scripts;
+using Alundra.Ai;
 
 namespace Alundra.Events;
 

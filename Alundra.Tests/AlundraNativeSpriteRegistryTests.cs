@@ -6,6 +6,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
+using Alundra.Ai.Objects;
 
 namespace Alundra.Tests;
 

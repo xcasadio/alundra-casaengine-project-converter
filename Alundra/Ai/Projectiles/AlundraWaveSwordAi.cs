@@ -1,8 +1,9 @@
 #nullable enable
 using System.Collections.Generic;
 using Alundra.Events;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Ai.Projectiles;
 
 /// <summary>
 /// E20.f3c (docs/plan-e20-heros.md section 1.19.3, D-F3-6): the native handler C61 (<c>0x8007A958</c>) of the sword wave, the sprite types 27 (steel), 28 (demon) and 29 (holy) of the global page. C61 calls

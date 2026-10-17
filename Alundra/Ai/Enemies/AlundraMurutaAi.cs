@@ -2,8 +2,9 @@
 using System;
 using Alundra.Maps;
 using Alundra.Events;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Ai.Enemies;
 
 /// <summary>
 /// E14.a1c T1 (docs/plan-e14-ia-native.md section 1.3c, D-E14-1): the native handlers of the Muruta (sprite type 347) - A0 (<c>0x8006174C</c>, slot A, code 0), C10 (<c>0x80068154</c>, slot C, code 10) and D9

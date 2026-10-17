@@ -13,6 +13,10 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Scripts;
+using Alundra.Ai;
+using Alundra.Ai.Enemies;
+using Alundra.Ai.Objects;
+using Alundra.Ai.Projectiles;
 
 namespace Alundra.Events;
 

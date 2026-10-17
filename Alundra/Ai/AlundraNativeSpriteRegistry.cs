@@ -5,8 +5,12 @@ using System.Linq;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Events;
+using Alundra.Ai.Enemies;
+using Alundra.Ai.Objects;
+using Alundra.Ai.Projectiles;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Ai;
 
 /// <summary>
 /// A native sprite handler (D-E14-1, docs/plan-e14-ia-native.md section 1.1a): the port of one entry of the

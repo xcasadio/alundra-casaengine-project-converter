@@ -9,6 +9,7 @@ using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps;
 using Alundra.Entities;
+using Alundra.Ai.Projectiles;
 
 namespace Alundra.Tests;
 
