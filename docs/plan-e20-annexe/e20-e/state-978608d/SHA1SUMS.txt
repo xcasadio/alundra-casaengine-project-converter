@@ -1,0 +1,16 @@
+bfcd5d79fe00e9c3ccad6c6933c6afddb76a29b1 *./README.md
+ab6ce6948db442505e190d51bebb8009423148fa *./check.md
+44dbe5288b183b547aa920fce2d5ca12b15451d7 *./scripts/census_export_copy.py
+289f92e67d4055470fde3e86d23b525fa50c09b4 *./scripts/decl.py
+ee28f2bb9c93fca414c30789ab4f3e00011b1268 *./scripts/m14.py
+d7c98e88023f3185cbbee9c2758466b674a62f63 *./scripts/mapl.py
+45b3ab7d9c02447d138fab2622a24dc8bdd10868 *./scripts/purecheck.py
+45d8d8c6bbcf6a7d26b8c3bee1d0c4de74270d1f *./scripts/puretests.py
+67bb8cbb7f380fb6658a7b7f12a626ebee4d9d14 *./scripts/resolve.py
+d8873589c258a51c81bf396ca29369350cb8396e *./scripts/v_census.py
+dafda1be2eaa67481ba2d31a88c6a513afecaf00 *./scripts/v_m14.py
+39e5ebd8cfb5897332552fca70b02db85a903e51 *./scripts/v_map.py
+2989249aaead122039901571fdd15e703945a85d *./scripts/v_pure.py
+f3ab4882ac40a153b29b8b5770b6f4f601323e76 *./scripts/v_puret.py
+3bb9756e544a1d57c049f63d42d23fe1b40e33f8 *./scripts/v_show.sh
+37589cdd031a4b43d9c1f97ce5c1978a8f1f2ef5 *./state.md

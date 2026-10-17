@@ -1,0 +1,12 @@
+176929ef1a5e8db6d68186c34a49641a2ec3911d *./README.md
+4d9af7361fb300f184d7331360ac1cff7bfc1e5b *./check-scripts/catalog.py
+1d479d33d501f895d8ed167ad17b00cbdeea8e33 *./check-scripts/catalog2.py
+7a01ff9c5b09acab079288230fd5643bee205a93 *./check-scripts/md5table.py
+609797671bdd69a85c7c7005965901a1a1800ecb *./check-scripts/normdiff.out
+4eb5d4c040a33f757a68024b0781f93fa55039b3 *./check-scripts/normdiff.py
+23d4d9975d74883031f64dc3ebe4b08b3f7985c5 *./check-scripts/oracle_facts.py
+3b6f9db49fe87944547ea589863e9eb008938acd *./check-scripts/show.sh
+0cec8751416330bc5566dc49b30418985f1df34a *./check.md
+676deda1c836f6ee489e682871ceaff0308dec33 *./scripts/map_lines.py
+e0d41ab3e0b38b5f248d09b9e6837f3659bc297e *./scripts/norm_diff.py
+9f550a98394d3fbb2ad80ab1703e7ecd0c220e80 *./state.md

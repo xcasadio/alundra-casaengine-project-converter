@@ -6669,6 +6669,276 @@ les orbes et la tornade n'avancent que par la **poussée** `+0xCC/+0xD0`, que la
 pendant un sort, le menu Start est refusé ; E3 est partagé avec 98 sprites d'ennemis (clé commune avec E14) ; le départ lance une piste XA
 (comme `0xB9`, O-E19-36) ; les tomes n'exigent pas E20.g. Questions Q-H4-1 à Q-H4-8 (§2).
 
+### 1.26 E20.e0c — Le butin et l'objet ramassable ⏳ (détaillée le 2026-10-18, à relire ; exécutable après la fin du chantier de restructuration)
+
+**Provenance.** Lecture du binaire du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-e0c/`, `report.md` et `check.md`, au HEAD
+`2010ec3`) ; état de la DLL et des tests rejoué au HEAD `978608d` après la restructuration (`docs/plan-e20-annexe/e20-e0c/state-978608d/`,
+`state.md` et sa contre-vérification `check.md` : 45 citations traduites, toutes au même code ; 27 affirmations sur la DLL, toutes encore
+vraies, quatre preuves corrigées). Le binaire tranche ; la décompilation se lit, ne se corrige pas.
+
+**But.** Comme l'original : un ennemi tué ou un conteneur détruit lâche l'objet tiré à sa création (`+0x3C`, déjà tiré par E20.e0b2) ;
+l'objet monte de 10 px par tick, retombe, rebondit selon la gravité de la carte, se ramasse au contact du héros (argent, cœurs, magie,
+herbe) avec son son, ou s'éteint au bout de 600 ticks ; la coupe d'herbe (E20.e) trouve `SpawnRandomLoot` prêt. Les objets posés sur les
+cartes et le coffre restent inertes (comme aujourd'hui).
+
+**Faits (binaire, FAIT sauf mention).**
+- `SpawnContents(e)` `0x80032B90` : `item = e.+0x3C` ; si `item == 0`, rien ; veto MP (`0x80032A00` : objets `0x26`, `0x51`, `0x52`
+  annulés si `MpMax == 0`) ; `SpawnWarpEntity(parent 0, page globale, type item + 0x1E, e.+0x114, +0x118, +0x11C, direction 0)` ; table
+  pleine → rien, sans son ; puis sept écritures : `+0xB8 = 0xA0000` (`ForceZ`), `+0x274 = 1` (« lâché »), `+0x6C &= ~0x80` (plus
+  collisionnable), `+0x278 = 600` si l'octet 4 de la table des objets `0x800C5F7C` est non nul sinon `-1`, `+0x27C = 0`, `+0x280 = e.+0x40`
+  (le drapeau du conteneur), `+0x284 = 0xA0000` ; son `0x54` (84). `SpawnRandomLoot(code, X, Y, Z)` `0x80032C7C` : le même corps, l'objet
+  tiré par `Choose(code)` (le générateur avance même si l'on abandonne ensuite), la position donnée, `+0x280 = 0` ; un seul appelant, la
+  coupe d'herbe.
+- `DestroyEntity(e, a1)` `0x8003A59C` appelle `SpawnContents(e)` en **première** instruction utile ; la destruction légère `0x8003A774`
+  (32 appelants, dont C255) ne lâche rien ; la récursion `0x8003A648` (E11, 7 types de boss) détruit d'abord les enfants.
+- C255 `0x8007C174` (381 mots ; tick de 87 types globaux, 31 à 118 sauf 72) et A255 `0x80061BD4` (chargement de 88 types, les mêmes plus le
+  coffre 30). Branche « lâché » (`+0x274 == 1`) : A255 rend la main tout de suite ; C255 : si au sol et `+0x284 != 0`, `v = (+0x284 * 12)
+  >> 4`, remis à 0 si `v <= u16[en-tête de carte + 4] << 8` (la gravité), `+0xB8 = +0x284` ; décompte de `+0x278` (s'il n'est ni `-1` ni 0),
+  destruction légère à 0, `+0x1CC = 0x78` à 120 (clignotement) ; `+0x27C` : 0 attend la fin de la montée (`ForceZ <= 0`), 1 teste le
+  recouvrement des boîtes avec le héros (positions `+0x1D8..` de l'image précédente, tailles `+0x1F0..` : `d = objet − héros`, `d >= 0 ?
+  d < taille du héros + 1 : −d < taille de l'objet + 1` sur les trois axes ; rien si un dialogue est ouvert), puis `GiveItem` (`0x80033F00`),
+  `SetGameFlag(+0x280)`, le son de l'octet 5 de la table, `+0x27C += 2` (objets du butin : aucun n'est un objet-clé), 2 et 3 attendent puis
+  destruction légère. Séquence de rebond à la gravité 128 (481 cartes) : `0x78000 … 0x9029`, puis 0 ; 23 rebonds à la gravité 3 (cartes 159
+  et 160).
+- `GiveItem` pour les objets atteignables par le butin : `0x45`..`0x48` argent 1, 5, 10, 30 (plafond 9999) ; `0x54` PV + 2 ; `0x55` PV +
+  `max(1, PVmax/4)` et un effet global 14 animation 0 ; `0x56` PV + `max(5, PVmax/2)` et 4 effets ; `0x51` (et `0x26`) PM + 1 et 4 effets
+  global 14 animation 2 ; `0x24` (herbe) : à l'inventaire d'abord, utilisée si l'inventaire est plein. Chaque effet **créé** consomme 2 pas
+  du générateur (8 pas pour 4 étincelles si le réservoir n'est pas plein) ; la fonction rend `octet 4 == 0`.
+- Recensement (critique, corrigé) : 4 200 entités posées tirent dans la table à leur création (3 355 avec apparition automatique) ;
+  objets lâchables atteignables : `0x24`, `0x45`..`0x48`, `0x51`, `0x54`..`0x56` (sprites globaux 66, 99 à 102, 111, 114 à 116) ; 152 objets
+  posés sur 53 types (hors tranche) ; le code `0x82` des cruches, caisses et tonneaux ne donne que des cœurs.
+
+**Faits (DLL au HEAD `978608d`).** Existent : le tirage à la création et sa table (`Alundra/Items/LootRoll.cs:54`, `:111`, md5 identique au
+binaire ; `Alundra/Maps/WorldProxy.cs:3469`, appelé aux trois sites de création `:1119`, `:3440`, `:3566`) ; les champs de l'objet
+(`Alundra/Entities/EntityScriptProxy.cs` : `ContentsItemId`, `ContentsGameFlag` `:106-107`, `ForceZ` `:338`, `IsOnGround` `:417`,
+`DamagedTickCounter` `:483`, `ModdedPos*` `:486`, `AIValues` `:1230`, `short[10]`, sans accès 32 bits) ; l'apparition par indice
+(`Alundra/Maps/IEntityWorldContext.cs:81`, `WorldProxy.cs:3488`, `:3601`, ajoute 1 au Z, `:3549`) ; `AddMoney`, `SetPlayerMp`,
+`IncreaseHpMaxAndFill` (`Alundra/Hero/PlayerManager.cs:2285`, `:1970`, `:1875`) ; le modèle d'étincelles
+(`Alundra/Rendering/Effects/NativeEffects.cs:31`) ; le registre des natifs par (slot, code) avec liste de types
+(`Alundra/Ai/NativeSpriteRegistry.cs:54`, sept clés de production `:36-43`) ; le test d'axe de C255, déjà écrit pour la passe de coups
+(`Alundra/Combat/HitPass.cs:63`, `AxisOverlaps`). Manquent : `SpawnContents`, `SpawnRandomLoot`, le veto, `GiveItem`, C255, A255 ; le
+bouchon nommé « (1) loot » de `WorldProxy.DestroyEntity` (`:3303`) ; les colonnes 0 (règle des 600 ticks) et 1 (son) de
+`item-drop-properties.json` (`Alundra/Items/ItemTables.cs:57-58`, `:81-90` : lues puis jetées) ; `ModdedPos` n'est écrit qu'à la création
+(`Alundra/Entities/Spawning/EntitySpawnFactory.cs:825-827`) et **aucun code ne le lit** ; aucun rendu ne cache une entité selon
+`(DamagedTickCounter & 3) == 3` ; `CombinedVramFlagsOR` n'est nourri que pour le héros (`EntityScriptProxy.cs:1642-1646`), alors que les 9
+sprites lâchables portent `DestroyOnVramFlags` (`0x200000`). Depuis R0, une création dont le nom de script ne se résout pas relance
+`ScriptTypeResolutionException` (`WorldProxy.cs:1122`, `:3444`, `:3580`).
+
+**Tests qui épinglent les manques** (noms et chemins au HEAD ; R5 les déplacera selon sa table) : le bouchon de `DestroyEntity`
+(`Alundra.Tests/AlundraDestroyEntityBreakEffectTests.cs:204-219`, aucun tirage, aucune entité) ; les oracles d'ennemis, qui **excluent**
+les 160 entrées `spawn_39F58` et `sound 84` de leurs journaux (`AlundraBeannoideOracleTests.cs:370`, `:404-415` ; `AlundraMurutaOracleTests.cs:450`,
+`:483-494` ; l'oracle porte déjà le lâcher et le veto : 80 vecteurs sur 144 lâchent, types 99, 100, 101, 114, 115) ; le compte des clés du
+registre de production (`AlundraNativeSpriteRegistryTests.cs:55` et `AlundraWaveSwordLifeTests.cs:181-183`, 7) ; `AlundraItemTablesTests`
+(colonne 2 seule) ; les arcs 115 et 116 tuent des Muruta et des Beannoïdes sans rien asserter des objets nés (`AlundraMurutaHallArcTests`,
+`AlundraBeannoideGrateArcTests`). Un monde de test nu (`new WorldProxy()` sans `InitializeWithWorld`) refuse toute apparition par indice
+(`WorldProxy.cs:3498-3500`) : les tests de lâcher demandent un monde initialisé avec le catalogue.
+
+**Défauts réversibles retenus en mode autonome (à confirmer par l'auteur, §2).** Q-E0C-1 : les objets posés et le coffre **hors** tranche
+(ils demandent le dialogue, la fanfare CD et le blocage : une tranche e0c-b) ; C255 et A255 s'inscrivent pour leurs 87 et 88 types, mais
+leurs branches « posé » (`+0x274 == 0`) et « coffre » (`== 2`) sont des bouchons nommés qui ne font rien (l'objet posé reste inerte comme
+aujourd'hui). Q-E0C-2 : les étincelles naissent **tout de suite** (`EffectStage.CreateNow`, comme le binaire : l'ordre exact des pas du
+générateur), ce qui étend l'ADR-0057 aux objets (un ADR). Q-E0C-3 : le clignotement des 120 derniers ticks **avec E20.c2b** (une règle de
+rendu générique, partagée avec le héros blessé ; d'ici là l'objet s'éteint à 600 ticks sans avertissement ; `+0x1CC = 0x78` est quand même
+écrit, ce qui rend l'objet non ciblable par la passe de coups, `HitPass.cs:127`, comme le binaire). Q-E0C-4 : `ModdedPos` **rafraîchi en fin
+d'image** pour les entités actives (fidèle, une image de décalage). Q-E0C-5 : sans objet ici (branche « posé »). Q-E0C-6 : la récursion E11
+**avec E14.b** (les boss). Q-E0C-7 : les PV des cœurs écrits sur le héros quand il porte sa vie (`LifePulledFromStats`), sur les statistiques
+sinon, comme `IncreaseHpMaxAndFill`. Un objet lâché dans l'eau ou dans un trou n'est pas détruit tant que `CombinedVramFlagsOR` n'est nourri
+que pour le héros (écart noté, O-E0K-2).
+
+**Prérequis.** E20.e0b2 ✅, E20.e0a1 à e0a5 ✅, E20.e0k1 à e0k3 ✅ ; la fin du chantier de restructuration (règle du programme) et la garde
+des fichiers neufs (Q-R-7 du plan de restructuration : sans elle, `check_names.py --tree` refuse tout fichier ajouté).
+
+**Périmètre.** Nouveaux : `Alundra/Items/LootDrop.cs` (`SpawnContents`, `SpawnRandomLoot`, le veto), `Alundra/Items/ItemEffects.cs`
+(`GiveItem` pour les objets atteignables, les étincelles), `Alundra/Ai/Objects/PickupAi.cs` (C255 et A255, branche « lâché ») ; modifiés :
+`ItemTables.cs` (colonnes 0 et 1), `EntityScriptProxy.cs` (accès 32 bits aux mots `+0x280`, `+0x284`, `+0x288`), la passe de fin d'image
+(`ModdedPos`), `NativeSpriteRegistry.cs` (deux clés de production), `WorldProxy.DestroyEntity` (le bouchon (1)) ; les tests ; l'annexe ; un
+ADR. Les noms passent la règle 4 de l'ADR-0075 (`check_names.py`).
+
+**Hors périmètre.** Les objets posés et le coffre (Q-E0C-1) ; la récursion E11 (Q-E0C-6) ; le clignotement rendu (Q-E0C-3) ; la
+destruction des objets par la VRAM ; la coupe d'herbe (E20.e) ; le lâcher des enfants d'ennemis remis à 0 par leurs gestionnaires (E14.b).
+
+**Partage des phases.**
+- **Phase A** (T1, sans changement de comportement) : `LootDrop` et `ItemEffects` purs, testés contre les vecteurs de l'oracle (aucun
+  appelant de production) ; les colonnes de `ItemTables` ; l'accès 32 bits.
+- **Phase B** (T2) : C255 et A255 inscrits ; `ModdedPos` rafraîchi. Inerte tant que rien ne lâche (aucune entité de type 31 à 118 n'est
+  « lâchée » aujourd'hui ; les posées gardent leur bouchon).
+- **Phase C** (T3) : `DestroyEntity` appelle `SpawnContents` en tête. Seul effet visible : les objets tombent des ennemis et des conteneurs
+  détruits.
+
+**Tâches.**
+- ⏳ **T0 — Annexe, oracle, mesures** (aucun code de la DLL) : (a) les modèles et harnais de la lecture (`docs/plan-e20-annexe/e20-e0c/work/`)
+  rejoués depuis une copie, sortie identique au manifeste ; les vecteurs exportés en JSON pour les tests de la DLL (`SpawnContents`,
+  `SpawnRandomLoot`, veto, table pleine ; C255 sur 8 000 vecteurs ; `GiveItem` des objets atteignables, avec les pas du générateur) ; (b)
+  **P-L1** : le tick de naissance d'un objet lâché par la mort d'un ennemi dans son programme E1 (le binaire : l'objet participe-t-il au tick
+  courant s'il prend un emplacement plus haut ? la DLL : une entité née dans la passe des programmes rejoint le bloc du tick suivant,
+  `WorldProxy.cs:2930-2936`) : mesurée sur la machine MIPS et sur la DLL ; un écart est un arrêt et une question, pas un choix de l'exécuteur
+  (ADR-0065, ADR-0074) ; (c) **P-L2** : le premier `IsOnGround` de l'objet lâché dans la DLL (le binaire : 0 au premier tick de C255, la fin
+  d'image l'ayant déjà déplacé de `0xA0000`) ; (d) où la fin d'image de la DLL rafraîchira `ModdedPos` (l'équivalent de `0x80038364`,
+  `0x800383C0-0x800383E0`, entités des états 2 et 3 non bloquées) ; (e) la liste prédite des tests qui bougeront en T3, nommément.
+- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile) : (l1) `SpawnContents` et `SpawnRandomLoot` contre les vecteurs (les
+  sept écritures, le son 84, le Z passé moins 1 à `SpawnEntityBySpriteIndex`, le veto qui consomme quand même le générateur, la table pleine
+  sans son), chaque cas « sans effet » accolé à un cas positif ; (l2) `GiveItem` : argent et plafond, PV des trois cœurs et leurs plafonds,
+  PM, herbe avec inventaire plein et non plein, étincelles créées et pas du générateur, accolés deux à deux ; (l3) colonnes 0 et 1 de la
+  table ; (l4) accès 32 bits, lecture et écriture des trois mots.
+- ⏳ **T2 — Tests de monde, rouges avant T3** (un monde initialisé avec le catalogue ; un objet mis par `SpawnContents` sur une entité dont
+  `ContentsItemId` est posé, à 1, 2 et 3 ticks par image) : (w1) la montée, le rebond tick par tick à la gravité 128 et à la gravité 3 ;
+  (w2) le ramassage au contact, aux bornes exactes du recouvrement (`taille + 1`), accolé au tick où le héros est à un pixel de plus ; (w3)
+  rien pendant un dialogue ouvert ; (w4) l'extinction à 600 ticks (destruction légère, aucun lâcher), `+0x1CC = 0x78` à 120 ; (w5) un objet
+  sans règle des 600 ticks (`-1`) reste ; (w6) l'effet du ramassage sur le héros (argent, PV, PM, herbe) et le son de l'octet 5 ; (w7) un
+  objet posé (type 31 à 118 né d'un enregistrement) ne fait rien, accolé à l'objet lâché. **Phase B (code B)** : C255 et A255 inscrits,
+  `ModdedPos` rafraîchi ; le compte du registre passe de 7 à 9 (les deux tests qui l'épinglent, réécrits par dérivation). Verts.
+- ⏳ **T3 — Phase C** : `DestroyEntity` lâche en tête. Tests de production, **rouges avant la ligne** : (d1) le test qui épinglait le bouchon
+  (`AlundraDestroyEntityBreakEffectTests.cs:204-219`) réécrit : une entité à `ContentsItemId = 69` lâche le type 99, le générateur n'avance pas
+  (le tirage a eu lieu à la création), une entité à contenu 0 ne lâche rien ; (d2) les oracles Beannoïde et Muruta **comparent** les entrées
+  `spawn_39F58` et `sound 84` au lieu de les exclure (80 lâchers, 48 vetos, 16 contenus nuls) ; (d3) la destruction légère ne lâche rien ;
+  (d4) un arc réel : tuer un Beannoïde de la carte 14 (code `0xFC`) jusqu'au ramassage, ou jusqu'à l'extinction.
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). Mutants du
+  code de la DLL, au moins 14, tous tués : veto oublié ; veto avant le tirage ; `+0x278` toujours 600 ; seuil du rebond `<` pour `<=` ; rebond
+  sans la remise à 0 ; décompte qui détruit à 1 ; marque à 120 oubliée ; recouvrement `<=` pour `<` (chaque sens) ; positions du tick
+  courant au lieu de l'image précédente ; ramassage pendant un dialogue ; plafond d'argent ; PV d'un cœur moyen à `PVmax/2` ; étincelles par la
+  file au lieu de tout de suite ; lâcher à la destruction légère ; lâcher après l'état 4 au lieu d'avant.
+
+**Acceptation.** Les vecteurs de l'oracle égaux ; (l1) à (l4) verts en T1 ; (w1) à (w7) rouges avant le code B (nommés), verts après ; (d1)
+à (d4) rouges avant T3, verts après ; suite en Release (copie neutralisée) **et** en Debug, zéro échec ; tests déplacés ⊂ liste prédite de T0
+(e), chacun réécrit par dérivation ; les traces et les arcs inchangés hors de la liste ; `cmp` de la DLL ; moteur, convertisseur et données
+sans diff ; recette de l'auteur : sauvegarde de test près d'un Beannoïde de la carte 14 ; le tuer, voir l'objet monter et rebondir, le
+ramasser (argent ou cœur, son), en laisser un s'éteindre.
+
+**Arrêts.** P-L1 ou P-L2 contredit le binaire ; un test hors de la liste prédite bouge ; un vecteur de l'oracle diffère ; un besoin de
+toucher au moteur ; plus de 10 tests existants bougent ; un nom refusé par `check_names.py`.
+
+**Budget.** Un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** La phase C se retire seule (la ligne de `DestroyEntity`) ; la phase B se retire seule (les deux inscriptions et le
+rafraîchissement) ; la phase A ne change aucun comportement.
+
+### 1.27 E20.e — L'herbe coupée : `CheckAndTriggerTileEffect` ⏳ (détaillée le 2026-10-18, à relire ; exécutable après E20.e0c et la fin du chantier de restructuration)
+
+**Provenance.** Lecture du binaire du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-e/`, `report.md` et `check.md`, au HEAD
+`9502f75`) ; état de la DLL et des tests rejoué au HEAD `978608d` (`docs/plan-e20-annexe/e20-e/state-978608d/` : 60 citations traduites,
+toutes au même code ; 25 affirmations, 21 confirmées telles quelles, 4 avec une correction) ; l'oracle MIPS de l'herbe déjà écrit par
+E20.f3a (`docs/plan-e20-annexe/e20-f3/oracle/out/wave_grass.txt`, `.json`, `wave_grass2.txt`, `wave_grass_zwindow.txt`).
+
+**But.** Comme l'original : l'épée du héros (15 états d'attaque) et la vague de l'épée (C61) coupent les buissons ; la case perd son bit
+`0x02` et sa pile de tuiles (le buisson disparaît), l'effet global 2 naît au centre de la case, le butin est tiré (une chance sur huit
+d'argent ou de cœur, E20.e0c) et le son 31 joue. La flèche chargée (C94, E20.f4) et la bombe (E12, E20.h3) n'auront que l'appel à ajouter.
+
+**Faits (binaire, FAIT sauf mention).**
+- `CheckAndTriggerTileEffect` `0x8003A7B0` (140 instructions), quatre appelants : le héros (`CreatePlayerAnimationEffects`, premier aiguillage,
+  15 états : `0x04, 0x10, 0x12, 0x14, 0x16, 0x18, 0x19, 0x3F, 0x40, 0x41, 0x42, 0x44, 0x46, 0x49, 0x4B`, dans les deux modes, à chaque tick
+  de ces états), C61 (une enveloppe de 8 mots), C94, E12.
+- Rien si l'entité n'a pas de boîte de frame (`+0x1D4 == 0`). La boîte est celle **stockée à la fin de l'image précédente**
+  (`0x80038064`, ou à la création). Les quatre coins dans l'ordre (colA, rowA), (colB, rowA), (colA, rowB), (colB, rowB) :
+  `colA = T[(s16)(X >> 16)]`, `colB = T[(X + W) >> 16]` (`T[p] = p / 24` pour `p` de 0 à 1247), `rowA = Y >> 20`, `rowB = (Y + D) >> 20`
+  (plancher) ; chaque case bornée à 0..51 et 0..59 ; seul le bit `0x02` de l'octet 0 compte ; bande de Z : `zc = hauteur << 20 + 0x80000`,
+  sauté si `zc < bz` ou `bz + bh < zc` (signés). Coupe : bit `0x02` effacé, mot `+6 = 0xFFFF` (la pile), rien d'autre (hauteur, pente, sol
+  gardés ; une case coupée ne se recoupe pas). Position : `X = col * 24 + 12`, `Y = row * 16 + 8` px, avec la colonne et la rangée **non
+  bornées**. Puis `CreateEffectEntity(0, octet 9 de l'en-tête de carte, 0, X, Y, hauteur << 20)` (sans le `+0x80000`), `SpawnRandomLoot(0xFF,
+  X, Y, hauteur << 20)`, `PlaySoundEffect(0x1F)`. L'effet ignore une table d'effets pleine ; le butin et le son suivent quand même.
+- Émulation : 4 000 vecteurs de la lecture et 6 000 de la critique (son propre interpréteur), 0 écart avec le pseudo-code. Hors table
+  (`X < 0` ou `X + W >= 1248` px) : le binaire lit le tableau des pointeurs d'entités ou un mot global (déterministe pour une disposition,
+  valeur hors du modèle) ; la DLL bornera (écart noté).
+- Seuls CATE et l'opcode `0x9E` lisent le bit `0x02` ; il n'entre dans aucun masque de marche : **couper ne change ni la collision ni la
+  hauteur**. Le rendu (`0x8002CDA0`, une fois par image) saute la pile `0xFFFF` : le buisson disparaît à l'image même. Aucune persistance
+  dans le binaire (INFÉRENCE : la carte relue à chaque entrée, comme D-E7-5).
+- Écarts de la décompilation (le binaire tranche) : D1 garde de table ajoutée ; D3 la rangée sud divisée deux fois ; D4 `+0x80000` de trop
+  au Z de l'effet et du butin ; D7 deux tirages par maillon de butin ; D9 une division tronquée au lieu du plancher (rangée −1 au-dessus de
+  la carte).
+- Données : 9 089 cases coupables dans 165 cartes sur 483 (aucune sur la 389), 8 989 avec une pile, 100 sans (coupe invisible : effet,
+  butin, son) ; l'octet 9 vaut 2 sur les 483 cartes (exporté sous le nom trompeur `BalanceLevel`) ; l'effet global 2 (9 images de 5 ticks,
+  fin `Destroy`) et les sons 31 et 84 sont exportés. La carte 14 a 179 cases coupables (rangées 11 à 55).
+
+**Faits (DLL au HEAD `978608d`).** Bouchons nommés : `PlayerAnimationEffects.PlayerGrassCut` (`Alundra/Hero/PlayerAnimationEffects.cs:218`,
+appelé par `Create` `:65-67`, lui-même appelé dans les deux modes, `Alundra/Hero/PlayerManager.cs:337`, `:350` ; `IsGrassCutState` `:195`
+égale la table du binaire) et `WaveSwordAi.CheckAndTriggerTileEffect` (`Alundra/Ai/Projectiles/WaveSwordAi.cs:40`, appelé par `Tick` `:34`),
+chacun avec son journal de test. La boîte : `StoreHitBox` (`Alundra/Entities/EntityScriptProxy.HitPass.cs:87-99`, l'équivalent de
+`0x80038064`, à la création `:78` et en fin de pas `EntityScriptProxy.cs:1610`) ; dans `RunEntityBlock`, `MovePlayer` (`WorldProxy.cs:2927`)
+et les programmes (`:2941`) passent avant la physique (`:2979`) : CATE lira la boîte du tick précédent, comme le binaire. La convention de Z
+(`IsWall` ajoute 1 au `HitBoxZ`, `PlayerAnimationEffects.cs:178`, ADR-0026) ; la lecture de case du binaire
+(`Alundra/Physics/CellsCollisionField.cs:272-285`) ; `BinaryColumn`/`BinaryRow` (`:185-188`) rendent une valeur **bornée** : la position de
+l'effet demande la valeur non bornée. Le magasin de cases (`Alundra/Cells/CellStore.cs:35`, `ApplyCellBits` `:314` n'écrit que les bits,
+jamais la pile ; `CellsMutated` `:53`) et le visuel (`Alundra/Cells/CellVisualSync.cs:338-355` retire les tuiles d'une pile devenue nulle ;
+la reconstruction a lieu une fois par image, `WorldProxy.cs:2650`, après `RunEntityBlock` : le buisson disparaît dans le même `Update`) ;
+`ICellMutator` (`Alundra/Cells/ICellMutator.cs:21-38`, trois opérations, un seul implémenteur, aucun faux dans les tests). Les natifs du
+registre reçoivent un `IEntityWorldContext` (`Alundra/Ai/NativeSpriteRegistry.cs:20`, `Alundra/Events/EventProgramRunner.cs:305`) : C61 a
+`CellMutator`, `SpawnEntityBySpriteIndex` et `EffectStage` ; le héros les atteint par `host is IEntityWorldContext` (`PlayerManager.cs:1216`) ;
+le banc `ContactHost` des tests n'est qu'un `IScriptHost`. Effets : `EffectReservoir.Create` (`Alundra/Rendering/Effects/EffectReservoir.cs:101`,
+128 emplacements), `EffectStage.Emit` `:192` et `CreateNow` `:199` (réservé au héros, ADR-0057). L'octet 9 n'est lu par personne (précédent
+de lecture d'une propriété de carte : `Alundra/Combat/BalanceTables.cs:173-178`). Rien d'autre ne lit le bit `0x02` ; l'opcode `0x9E` n'est
+pas porté.
+
+**Tests qui épinglent les bouchons** (à faire évoluer ; R5 les déplacera) : `AlundraFlailBounceTests` (les 15 états journalisent la coupe,
+les autres non, l'ordre exact `[GrassCut, Landing, LowHpAlarm]`, un appel à chaque tick des états du fléau) ; `AlundraWaveSwordLifeTests.V2_…`
+(25 appels de S+1 à S+25) et `AlundraWaveSwordSupport.WaveOracle.GrassCallTicks`. Tests dont les valeurs supposent qu'aucune coupe n'a lieu :
+`AlundraHeroAttackTests.RealPrefab_TheHeroOfTheExport_SwingsTheBasicSwordOnTheGroundAndInTheAir_AtTheTicksOfTheOracle` (carte 10 réelle,
+la boîte de l'épée de base touche la case coupable (10, 56) de hauteur 0 d'après le calcul de la critique : l'assertion « seul le son 29 »
+changerait, INFÉRENCE à mesurer en T0) ; `AlundraTestSavesTests` (liste exacte de 9 préréglages : un préréglage de recette l'allonge). Les
+autres bancs (`JumpHeroRig`, `HitArena` de la carte 14, nage) n'ont pas de case coupable à portée (calculé par la critique, non mesuré).
+
+**Défauts réversibles retenus en mode autonome (à confirmer par l'auteur, §2, Q-E1 à Q-E5).** Q-E1 : E20.e **après** E20.e0c (le butin et
+son ramassage d'abord, comme le plan). Q-E2 : l'effet, le butin et le son **tout de suite** (`CreateNow`, sans file : l'ordre exact des
+pas du générateur, le binaire n'a pas de file), pour le héros comme pour C61 : l'ADR-0057 s'étend à CATE (même ADR que Q-E0C-2). Q-E3 :
+l'octet 9 **lu** dans la propriété exportée de la carte, repli sur 2. Q-E4 : les 100 cases sans pile gardent le comportement du binaire
+(coupe invisible, avec butin et son). Q-E5 : pas de persistance, l'herbe repousse à chaque entrée de carte (D-E7-5). Pour la tranche (pas
+pour l'auteur) : Q-E6 le repère de Z se mesure en T0 ; Q-E7 hors table, la DLL borne (écart noté) ; Q-E8 la participation au tick de
+naissance du butin se mesure en T0 (P-L1 d'E20.e0c) ; Q-E9 le renommage de « BalanceLevel » dans la doc de format et le convertisseur, hors
+tranche (une note). Sans `IEntityWorldContext` (banc de test), CATE ne fait rien : le binaire n'a pas de mode dégradé, la production a
+toujours le magasin.
+
+**Prérequis.** E20.e0c (`SpawnRandomLoot`, C255) ; E20.c1a et c1b (boîtes) ✅, E7 (magasin et visuel) ✅, E20.e0a, e0b, e0k ✅, E20.f3c (C61
+en production) ✅ ; la fin du chantier de restructuration et la garde des fichiers neufs (Q-R-7).
+
+**Périmètre.** Nouveau : `Alundra/Cells/TileEffect.cs` (le port de CATE) ; modifiés : `CellStore.cs` et `ICellMutator.cs` (une opération de
+coupe : bit `0x02`, mot de pile `-1`, pile détruite, `CellsMutated` ; distincte de `SetCellBits`/`ClearCellBits`, dont un test épingle qu'elles
+ne reconstruisent jamais l'overlay), `PlayerAnimationEffects.cs` et `WaveSwordAi.cs` (les deux bouchons appellent le port ; leurs journaux
+d'appels restent), `Alundra/SaveGames/TestSaves.cs` (un préréglage de recette `herbe-m14`) ; les tests ; l'annexe ; un ADR.
+
+**Hors périmètre.** C94 et E12 (leurs tranches) ; l'opcode `0x9E` ; les autres bouchons de `CreatePlayerAnimationEffects` (pas, poussière,
+atterrissage, eau : une tranche E20.e2 avec son T0) ; la libération de l'effet actif de `DestroyEntity` (`+0x1B8`, étape (4)) ; le coût de
+l'overlay (mesuré, non optimisé).
+
+**Partage des phases.**
+- **Phase A** (T1, sans changement de comportement) : l'opération de coupe du magasin et `TileEffect` pur (effet, butin et son par une
+  interface), testés contre les vecteurs ; aucun appelant de production.
+- **Phase B** (T3) : les deux bouchons appellent `TileEffect` ; visible en jeu (les buissons se coupent).
+
+**Tâches.**
+- ⏳ **T0 — Annexe, oracle, mesures** (aucun code) : (a) les émulations de la lecture et de la critique (`work/emu_cate.py`,
+  `check/` : ses `emu2.py`, `emu3.py`) et l'oracle `wave_grass` d'E20.f3 rejoués depuis une copie, sorties identiques ; vecteurs exportés en
+  JSON (boîte, cases avant, cases après, positions, Z, nombre de tirages) ; (b) **Q-E6** : le repère de Z de la DLL (la règle inférée est
+  `HitBoxZ + 1` dans les deux comparaisons, comme `IsWall`), contre l'égalité exacte `HitBoxZ == zc` atteignable : vecteurs de bord sur la
+  machine MIPS ; (c) la latence d'une image (boîte de l'image précédente) mesurée sur la DLL ; (d) le test réel de la carte 10
+  (`AlundraHeroAttackTests.RealPrefab_…`) : la coupe a-t-elle lieu, à quel tick, avec quel son et quel tirage (la valeur attendue réécrite
+  par dérivation du binaire, jamais collée) ; (e) la liste prédite des tests qui bougeront en T3 ; (f) la carte et la case de la recette
+  (la 14, un buisson accessible, épée équipée).
+- ⏳ **T1 — Phase A** (tests d'abord) : (c1) la coupe du magasin : bit, pile, sol et hauteur gardés, une seule reconstruction de l'overlay
+  par image, collision et grille de navigation inchangées, une case coupée qui ne se recoupe pas, chaque cas accolé à son contraire ; (c2)
+  `TileEffect` contre les vecteurs : les quatre coins et leur ordre, les bornes, la bande de Z aux trois valeurs de bord, la position non
+  bornée, l'octet 9 et son repli, l'ordre coupe, effet, butin, son, un tirage ou deux par case coupée, la table d'effets pleine qui n'arrête
+  ni le butin ni le son ; (c3) sans boîte, rien ; sans `IEntityWorldContext`, rien, accolé au monde réel qui coupe.
+- ⏳ **T2 — Tests de monde, rouges avant T3** (monde réel de la carte 14, héros et vague) : (w1) un coup d'épée sur un buisson : la pile
+  disparaît au tick de l'oracle, l'effet 2 naît à la position de l'oracle, le son 31, le générateur avance comme dans l'oracle ; (w2) la vague
+  vers l'est et vers le nord : les 13 et 10 coupes de `wave_grass`, tick par tick ; (w3) une frappe à côté d'un buisson ne coupe rien ; (w4)
+  un état hors des 15 ne coupe pas, à la même place ; (w5) l'herbe repousse à la rentrée dans la carte.
+- ⏳ **T3 — Phase B** : les deux appels. Verts ; les tests qui épinglaient les bouchons gardent leurs journaux d'appel (inchangés) ; ceux de
+  la liste prédite réécrits par dérivation.
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles). Mutants, au moins 12, tous tués : rangée sud
+  divisée deux fois (D3) ; `+0x80000` ajouté au Z de l'effet (D4) ; division tronquée (D9) ; colonne bornée pour la position ; un coin oublié ;
+  ordre des coins changé ; bit `0x01` au lieu de `0x02` ; bande de Z stricte ; pile gardée ; collision changée par la coupe ; butin avant
+  l'effet ; son oublié ; boîte du tick courant.
+
+**Acceptation.** Les vecteurs et l'oracle `wave_grass` égaux ; (c1) à (c3) verts en T1 ; (w1) à (w5) rouges avant T3 (nommés), verts après ;
+suite en Release (copie neutralisée) et en Debug, zéro échec ; tests déplacés ⊂ liste prédite de T0 (e) ; traces inchangées (la 389 n'a
+aucune case coupable) ; `cmp` de la DLL ; moteur, convertisseur et données sans diff ; recette de l'auteur : la sauvegarde `herbe-m14`,
+couper un buisson à l'épée puis avec la vague, voir le buisson disparaître, l'effet, parfois un objet, l'entendre.
+
+**Arrêts.** Q-E6 contredit la règle inférée sans règle de remplacement établie ; un test hors de la liste prédite bouge ; un besoin de toucher
+au moteur ; plus de 10 tests existants bougent ; un nom refusé par `check_names.py`.
+
+**Budget.** Un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** La phase B se retire seule (les deux appels) ; la phase A ne change aucun comportement.
+
 ## 2. Points ouverts
 
 | Point | Question | Où elle se tranche |
@@ -6709,6 +6979,11 @@ pendant un sort, le menu Start est refusé ; E3 est partagé avec 98 sprites d'e
 | Q-E0C-5 | (2026-10-17) Ne pas porter l'écriture parasite `SetGameFlag(0xFFFFFFFF)` des objets posés ni le registre `[0x80149CBC]` (règle « corriger les défauts de l'original ») ? Proposé : non, écart documenté | l'auteur |
 | Q-E0C-6 | (2026-10-17) Le lâcher des enfants d'un boss par E11 (récursion) : dans e0c ou avec E14.b ? La DLL traite E11 comme un no-op | l'auteur |
 | Q-E0C-7 | (2026-10-17) Les PV des cœurs : écrire la vie du héros quand elle est portée par le héros, les statistiques sinon (même règle qu'`IncreaseHpMaxAndFill`) ? Proposé : oui | E20.e0c (T0) |
+| Q-E1 | (2026-10-18) L'ordre : la coupe de l'herbe (E20.e) après le butin et son ramassage (E20.e0c), comme le plan ? Sinon la coupe peut venir d'abord avec un butin « tiré seulement » (le générateur reste fidèle, rien ne tombe). Défaut retenu : après e0c | l'auteur |
+| Q-E2 | (2026-10-18) L'effet, l'objet et le son d'une coupe naissent-ils tout de suite (comme le binaire, qui n'a pas de file : l'ordre exact des tirages) ou par la file des effets (une étincelle peut alors tirer avant ou après l'objet) ? Défaut retenu : tout de suite, l'ADR-0057 étendu (avec Q-E0C-2) | l'auteur |
+| Q-E3 | (2026-10-18) L'effet de coupe vient de l'octet 9 de l'en-tête de carte (exporté sous le nom trompeur `BalanceLevel`, il vaut 2 sur les 483 cartes) : le lire, avec repli sur 2, ou figer l'effet 2 ? Défaut retenu : le lire | l'auteur |
+| Q-E4 | (2026-10-18) 100 cases coupables n'ont pas de buisson visible (une douzaine de cartes) : garder le binaire (la coupe y est invisible, mais l'effet, l'objet et le son ont lieu) ? Défaut retenu : oui | l'auteur |
+| Q-E5 | (2026-10-18) L'herbe repousse à chaque entrée dans la carte (le binaire ne garde rien) : est-ce voulu ? Défaut retenu : oui | l'auteur |
 | Q-H4-1 | (2026-10-17) Les pistes XA lancées par les sorts : les jouer (décodage du `.bin`, O-E19-36) ou un bouchon journalisé comme `0xB9` ? | l'auteur |
 | Q-H4-2 | (2026-10-17) Défauts avérés de l'original (la règle : un bug avéré se corrige) : le dernier emplacement utilisé n'est jamais visé par les sorts ; la première frappe du vent 1 est perdue (7 frappes au lieu de 8) ; le guidage de C63 tourne dans le sens numérique et non par le plus court ; le tri de la requête est instable. Corriger lesquels ? | l'auteur |
 | Q-H4-3 | (2026-10-17) Qui porte la poussée `+0xCC/+0xD0` (orbes d'eau, tornade) : E20.e0k, E14, ou une tranche nouvelle avant l'eau et le vent 2 ? | l'auteur |

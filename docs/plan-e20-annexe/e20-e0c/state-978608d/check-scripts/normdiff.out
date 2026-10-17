@@ -1,0 +1,90 @@
+=== Alundra/Scripts/AlundraLootRoll.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra/Scripts/AlundraWorldProxy.cs : residue old 92 new 110 ; non-comment old 19 new 34
+   OLD| internal ISpriteRecordCatalog SpriteRecordCatalog = Alundra.Scripts.SpriteRecordCatalog.GetOrCreate(EngineEnvironment.ProjectPath);
+   OLD| public IBgmFadeDirector BgmFadeDirector => BgmFadeDirector.Instance;
+   OLD| public IScreenFadeDirector ScreenFadeDirector => ScreenFadeDirector.Instance;
+   OLD| public IDialogueDirector DialogueDirector => DialogueDirector.Instance;
+   OLD| BgmFadeDirector.Instance.AttachToWorld(audioService, SoundPlayer);
+   OLD| ScreenFadeDirector.Instance.AttachToWorld(world.Game?.ScreenEffectComponent?.Service);
+   OLD| ScreenFadeDirector.Instance.InstallForMapEntry();
+   OLD| DialogueDirector.Instance.AttachToWorld(presenter, GameState, SoundPlayer);
+   OLD| DialogueDirector.Instance.InstallForMapEntry();
+   OLD| DialogueDirector.Instance.ScrollSource = () => CameraMath.ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero);
+   OLD| DialogueDirector.Instance.AttachToWorld(_dialoguePresenter, GameState, SoundPlayer);
+   OLD| _textBoxPresenter = new TextBoxPresenter(DialogueDirector.Instance, textBoxScreen.ViewModel, textBoxScreen, uiView);
+   OLD| _choicePresenter = new ChoicePresenter(DialogueDirector.Instance, choiceScreen.ViewModel, choiceScreen, uiView);
+   OLD| _choicePresenter = new ChoicePresenter(DialogueDirector.Instance, viewModel, screen, uiView);
+   OLD| _textBoxPresenter = new TextBoxPresenter(DialogueDirector.Instance, viewModel, screen, uiView);
+   OLD| DialogueDirector.Instance.Pass(squareHeld, squarePressed, choicePressed, choiceInterval);
+   OLD| ScreenFadeDirector.Instance.Advance(ticksThisFrame);
+   OLD| ScreenFadeDirector.Instance.PushToAttachedService();
+   OLD| BgmFadeDirector.Instance.Advance(ticksThisFrame);
+   NEW| {
+   NEW| {
+   NEW| {
+   NEW| }
+   NEW| }
+   NEW| }
+   NEW| internal ISpriteRecordCatalog SpriteRecordCatalog = Alundra.Entities.SpriteRecordCatalog.GetOrCreate(EngineEnvironment.ProjectPath);
+   NEW| public IBgmFadeDirector BgmFadeDirector => Audio.BgmFadeDirector.Instance;
+   NEW| public IScreenFadeDirector ScreenFadeDirector => Transitions.ScreenFadeDirector.Instance;
+   NEW| public IDialogueDirector DialogueDirector => Dialogues.DialogueDirector.Instance;
+   NEW| catch (ScriptTypeResolutionException)
+   NEW| catch (ScriptTypeResolutionException)
+   NEW| catch (ScriptTypeResolutionException)
+   NEW| AbortCreation(entity, added, slot);
+   NEW| AbortCreation(entity, added, slot);
+   NEW| AbortCreation(entity, added, slot);
+   NEW| throw;
+   NEW| throw;
+   NEW| throw;
+   NEW| Audio.BgmFadeDirector.Instance.AttachToWorld(audioService, SoundPlayer);
+   NEW| Transitions.ScreenFadeDirector.Instance.AttachToWorld(world.Game?.ScreenEffectComponent?.Service);
+   NEW| Transitions.ScreenFadeDirector.Instance.InstallForMapEntry();
+   NEW| Dialogues.DialogueDirector.Instance.AttachToWorld(presenter, GameState, SoundPlayer);
+   NEW| Dialogues.DialogueDirector.Instance.InstallForMapEntry();
+   NEW| Dialogues.DialogueDirector.Instance.ScrollSource = () => CameraMath.ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero);
+   NEW| Dialogues.DialogueDirector.Instance.AttachToWorld(_dialoguePresenter, GameState, SoundPlayer);
+   NEW| _textBoxPresenter = new TextBoxPresenter(Dialogues.DialogueDirector.Instance, textBoxScreen.ViewModel, textBoxScreen, uiView);
+   NEW| _choicePresenter = new ChoicePresenter(Dialogues.DialogueDirector.Instance, choiceScreen.ViewModel, choiceScreen, uiView);
+   NEW| _choicePresenter = new ChoicePresenter(Dialogues.DialogueDirector.Instance, viewModel, screen, uiView);
+   NEW| _textBoxPresenter = new TextBoxPresenter(Dialogues.DialogueDirector.Instance, viewModel, screen, uiView);
+   NEW| Dialogues.DialogueDirector.Instance.Pass(squareHeld, squarePressed, choicePressed, choiceInterval);
+   NEW| Transitions.ScreenFadeDirector.Instance.Advance(ticksThisFrame);
+   NEW| Transitions.ScreenFadeDirector.Instance.PushToAttachedService();
+   NEW| Audio.BgmFadeDirector.Instance.Advance(ticksThisFrame);
+=== Alundra/Scripts/AlundraRandom.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra/Scripts/AlundraEntityScriptProxy.cs : residue old 17 new 17 ; non-comment old 0 new 0
+=== Alundra/Scripts/AlundraEntitySpawnFactory.cs : residue old 13 new 13 ; non-comment old 3 new 3
+   OLD| entity.GameplayProxyClassName = nameof(EntityScriptProxy);
+   OLD| entity.GameplayProxyClassName = nameof(EntityScriptProxy);
+   OLD| GameplayProxyClassName = nameof(EntityScriptProxy),
+   NEW| entity.GameplayProxyClassName = typeof(EntityScriptProxy).FullName!;
+   NEW| entity.GameplayProxyClassName = typeof(EntityScriptProxy).FullName!;
+   NEW| GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
+=== Alundra/Scripts/IEntityWorldContext.cs : residue old 4 new 5 ; non-comment old 0 new 1
+   NEW| #nullable enable
+=== Alundra/Scripts/AlundraEventProgramRunner.cs : residue old 35 new 37 ; non-comment old 0 new 2
+   NEW| #nullable enable
+   NEW| #nullable enable
+=== Alundra/Scripts/AlundraPlayerManager.cs : residue old 12 new 12 ; non-comment old 0 new 0
+=== Alundra/Scripts/AlundraNativeEffects.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra/Scripts/AlundraNativeSpriteRegistry.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra/Scripts/AlundraWaveSwordAi.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra/Scripts/AlundraSaveBook.cs : residue old 1 new 1 ; non-comment old 0 new 0
+=== Alundra/Scripts/AlundraItemTables.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra/Scripts/AlundraHitPass.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra.Tests/AlundraDestroyEntityBreakEffectTests.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra.Tests/AlundraBeannoideOracleTests.cs : residue old 1 new 1 ; non-comment old 1 new 1
+   OLD| var entity = new Entity { Name = "hero", GameplayProxyClassName = nameof(EntityScriptProxy) };
+   NEW| var entity = new Entity { Name = "hero", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
+=== Alundra.Tests/AlundraMurutaOracleTests.cs : residue old 1 new 1 ; non-comment old 1 new 1
+   OLD| var entity = new Entity { Name = "hero", GameplayProxyClassName = nameof(EntityScriptProxy) };
+   NEW| var entity = new Entity { Name = "hero", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
+=== Alundra.Tests/AlundraEnemyHandlerOracle.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra.Tests/AlundraLootRollTests.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra.Tests/AlundraLootRollWorldTests.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra.Tests/AlundraLootRollWorldTests.Rolls.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra.Tests/AlundraItemAndMoneyOpcodesTests.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra.Tests/AlundraNativeSpriteRegistryTests.cs : residue old 0 new 0 ; non-comment old 0 new 0
+=== Alundra.Tests/AlundraItemTablesTests.cs : residue old 0 new 0 ; non-comment old 0 new 0
