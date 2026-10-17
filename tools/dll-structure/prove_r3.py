@@ -356,6 +356,8 @@ def main():
                 before, after = read_dir(a.before_dir), read_dir(a.after_dir)
             elif a.worktree:
                 before, after = read_rev('HEAD'), read_dir(REPO)
+                # git stores LF (core.autocrlf=true) while the working tree may hold CRLF: compare what git would commit
+                after = {k: v.replace(b'\r\n', b'\n') for k, v in after.items()}
             else:
                 before, after = read_rev(a.commit + '^'), read_rev(a.commit)
             if a.kind == 'move':
