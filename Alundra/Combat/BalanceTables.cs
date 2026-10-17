@@ -12,7 +12,7 @@ namespace Alundra.Combat;
 
 /// <summary>
 /// The 512 balance entries of the game (E20.c1a C1, docs/plan-e20-heros.md section 1.5): <c>Data/balance.json</c>, which the converter republishes from <c>BALANCE.BIN</c> (<c>EntriesBySpriteIndex</c>), loaded
-/// once per project like <see cref="AlundraItemTables"/>. The record of an entity is chosen as <c>0x80044550</c> does: the sprite index (an index in <c>0x1F..0x7F</c> is read as <c>0x1E</c>), then the chain of
+/// once per project like <see cref="ItemTables"/>. The record of an entity is chosen as <c>0x80044550</c> does: the sprite index (an index in <c>0x1F..0x7F</c> is read as <c>0x1E</c>), then the chain of
 /// levels is walked while the level of the record is below the threshold of the map (<c>0x80044520</c>, the property <c>D</c> of the map header). Degraded mode: a file that is missing or unreadable logs one
 /// warning and leaves every entry empty, so no entity gets a record (and so no attack, no response, no life from it).
 /// </summary>
@@ -185,7 +185,7 @@ public sealed class BalanceTables
 
     private static readonly Dictionary<string, BalanceTables> SessionCacheByProjectPath = new();
 
-    /// <summary>Returns the cached tables for <paramref name="projectPath"/>, loading them on the first request (the same session cache as <see cref="AlundraItemTables.GetOrCreate"/>).</summary>
+    /// <summary>Returns the cached tables for <paramref name="projectPath"/>, loading them on the first request (the same session cache as <see cref="ItemTables.GetOrCreate"/>).</summary>
     public static BalanceTables GetOrCreate(string projectPath)
     {
         var key = projectPath ?? string.Empty;

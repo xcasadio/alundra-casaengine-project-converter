@@ -221,7 +221,7 @@ internal sealed class RunMontage
 
     public int StartY { get; private set; }
 
-    private static AlundraItemTables Tables() => AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
+    private static ItemTables Tables() => ItemTables.GetOrCreate(ProjectRootFinder.Find());
 
     /// <summary>The field of the trace: 52 x 60 cells of 24 x 16 px, the layout painted (walkability, ground property, height).</summary>
     public static AlundraCellsCollisionField FieldOf(RunOracleTrace trace)

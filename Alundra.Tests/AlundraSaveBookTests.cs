@@ -125,7 +125,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         PlayerManager.MovePlayer(_hero, in right, State, host: null);
         Assert.Equal(1u, _hero.TargetAnimationId); // Moving.
 
-        var tables = new AlundraItemTables(FindProjectRoot());
+        var tables = new ItemTables(FindProjectRoot());
         AlundraInventoryDirector.Instance.AttachToWorld(State, tables, null);
         AlundraSubInventoryDirector.Instance.AttachToWorld(State, tables, null);
         InventoryTick(PadState.Start);

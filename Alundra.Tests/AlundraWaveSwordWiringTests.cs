@@ -225,17 +225,17 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
 
     private static void ArmBow(AlundraEntityScriptProxy hero)
     {
-        hero.WeaponRecordPointer = AlundraWeaponTables.AnimationAddress(8, air: false);
-        hero.WeaponStepCounter = AlundraWeaponTables.RecordByte(hero.WeaponRecordPointer + 2);
+        hero.WeaponRecordPointer = WeaponTables.AnimationAddress(8, air: false);
+        hero.WeaponStepCounter = WeaponTables.RecordByte(hero.WeaponRecordPointer + 2);
         hero.TargetAnimationId = 0x13;
     }
 
     /// <summary>The release of a charge of the steel sword (record 1): the pointer of the charged animation 0x18 (type 27, delay 20), the counter at the delay so that the next tick shoots.</summary>
     private static void ArmSteelSword(AlundraEntityScriptProxy hero)
     {
-        hero.WeaponRecordPointer = AlundraWeaponTables.ChargeAnimationAddress(1);
-        Assert.Equal(27, AlundraWeaponTables.RecordByte(hero.WeaponRecordPointer + 1));
-        hero.WeaponStepCounter = AlundraWeaponTables.RecordByte(hero.WeaponRecordPointer + 2);
+        hero.WeaponRecordPointer = WeaponTables.ChargeAnimationAddress(1);
+        Assert.Equal(27, WeaponTables.RecordByte(hero.WeaponRecordPointer + 1));
+        hero.WeaponStepCounter = WeaponTables.RecordByte(hero.WeaponRecordPointer + 2);
         hero.TargetAnimationId = 0x18;
     }
 

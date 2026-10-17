@@ -224,7 +224,7 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
         public IEnumerable<MGWindow> GetWindows() => Array.Empty<MGWindow>();
     }
 
-    private static AlundraItemTables TablesWithPortrait(Guid? portraitId)
+    private static ItemTables TablesWithPortrait(Guid? portraitId)
     {
         var projectPath = ItemTablesFixture.Write(ItemTablesFixture.RealProperties(), null, null);
         try
@@ -236,7 +236,7 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
                     $"{{ \"SpriteAssetId\": \"{portraitId.Value}\" }}");
             }
 
-            return new AlundraItemTables(projectPath);
+            return new ItemTables(projectPath);
         }
         finally
         {

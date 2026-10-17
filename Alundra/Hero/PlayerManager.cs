@@ -286,7 +286,7 @@ public static class PlayerManager
 
         // E20.b B1, binary 0x80031B70-0x80031B8C (the very head of MovePlayer): the weapon record of the equipped weapon, byte[0x80028C14 + GetItemIdFromCurrentWeapon()]. Without item tables (a host that has none)
         // the hero has no weapon, which the binary reads the same way: item -1 gives byte[0x80028C13] = 0, the record of the basic sword.
-        player.CurrentWeaponRecord = AlundraWeaponTables.RecordIndexOfItem(
+        player.CurrentWeaponRecord = WeaponTables.RecordIndexOfItem(
             host?.ItemTables is { } itemTables ? GetItemIdFromCurrentWeapon(state, itemTables) : NoItem);
 
         // E20.d1 T1: the facing the binary has at the head of this tick (read by the cone of the run), computed before the tick writes anything.
@@ -954,7 +954,7 @@ public static class PlayerManager
     /// <item><description>A release of the Square comes first (<c>0x8002EB38</c>): the charged attack needs the charge timer at 60 and the ground (<see cref="ReleaseChargedAttack"/>, E20.f1a); otherwise this path
     /// returns 0 and a release never reaches the press test (D-E20-9: a press followed by a release in the same tick does not strike, which the tick pad cannot even produce).</description></item>
     /// <item><description>The press of the Square (<c>ButtonsJustPressed</c>): the animation byte of the weapon record, the ground one or, in the air, the one 4 bytes after
-    /// (<c>0x80028C79 + 13 w</c>, <see cref="AlundraWeaponTables.AnimationAddress"/>). Animation 0 (the staff, no weapon record animation): the sound 3, 0. Otherwise the pending-spawn pointer
+    /// (<c>0x80028C79 + 13 w</c>, <see cref="WeaponTables.AnimationAddress"/>). Animation 0 (the staff, no weapon record animation): the sound 3, 0. Otherwise the pending-spawn pointer
     /// (<c>0x80127110</c>) takes the address, its counter (<c>0x80127114</c>) 0, and the target animation (<c>+0x88</c>) the animation; the sound of the swing comes from the change of animation
     /// itself (E19.t).</description></item>
     /// </list>
@@ -976,8 +976,8 @@ public static class PlayerManager
             return 0;
         }
 
-        var address = AlundraWeaponTables.AnimationAddress(player.CurrentWeaponRecord, IsHeroInTheAir(player));
-        var animation = AlundraWeaponTables.RecordByte(address);
+        var address = WeaponTables.AnimationAddress(player.CurrentWeaponRecord, IsHeroInTheAir(player));
+        var animation = WeaponTables.RecordByte(address);
         if (animation == 0)
         {
             player.ScriptHost?.SoundPlayer?.PlaySfx(NoAttackSoundId);
@@ -1016,10 +1016,10 @@ public static class PlayerManager
         }
 
         player.ScriptHost?.SoundPlayer?.PlaySfx(ReleaseSfx);
-        var address = AlundraWeaponTables.ChargeAnimationAddress(player.CurrentWeaponRecord);
+        var address = WeaponTables.ChargeAnimationAddress(player.CurrentWeaponRecord);
         player.WeaponRecordPointer = address;
         player.WeaponStepCounter = 0;
-        player.TargetAnimationId = AlundraWeaponTables.RecordByte(address);
+        player.TargetAnimationId = WeaponTables.RecordByte(address);
         return 1;
     }
 
@@ -1045,7 +1045,7 @@ public static class PlayerManager
     /// <see cref="PlayerTryAttack"/> of the same tick).
     /// <list type="number">
     /// <item><description>The counter (<see cref="AlundraEntityScriptProxy.WeaponChargeTimer"/>, <c>0x80126FFC</c>): +1 up to 60 when the Square is held or released this tick, the weapon record of the equipped weapon is chargeable
-    /// (<c>byte[0x80028C78 + 13 w]</c> non-zero) and the animation the hero is in counts the charge (<see cref="AlundraWeaponTables.AnimationCountsCharge"/>); else 0.</description></item>
+    /// (<c>byte[0x80028C78 + 13 w]</c> non-zero) and the animation the hero is in counts the charge (<see cref="WeaponTables.AnimationCountsCharge"/>); else 0.</description></item>
     /// <item><description>Below 11: the aura is released (<see cref="ReleaseAura"/>), the function ends. From 11: the aura is created or renewed (<see cref="CreateAuraIfNeeded"/>, E20.f1b), every tick.</description></item>
     /// <item><description>Only when <c>+0x1C &amp; 3</c> is 0 (the counter of frames BEFORE the counters pass of this tick): below 60 the sound 0x2A; at 60 the hold spark, queued on the stage
     /// (<see cref="AlundraNativeEffects.CreateChargeSpark"/>, whose sound and two numbers happen only if the effect is created, when the stage applies it).</description></item>
@@ -1055,8 +1055,8 @@ public static class PlayerManager
     internal static void UpdatePlayerWeaponEffect(AlundraEntityScriptProxy player, in PadState pad, IScriptHost? host)
     {
         if (((pad.ButtonsHold | pad.ButtonsReleased) & PadState.Square) != 0
-            && AlundraWeaponTables.RecordByte(AlundraWeaponTables.RecordsAddress + (uint)(AlundraWeaponTables.RecordSize * player.CurrentWeaponRecord)) != 0
-            && AlundraWeaponTables.AnimationCountsCharge(player.TargetAnimationId))
+            && WeaponTables.RecordByte(WeaponTables.RecordsAddress + (uint)(WeaponTables.RecordSize * player.CurrentWeaponRecord)) != 0
+            && WeaponTables.AnimationCountsCharge(player.TargetAnimationId))
         {
             if (player.WeaponChargeTimer < FullChargeTimer)
             {
@@ -1168,7 +1168,7 @@ public static class PlayerManager
     /// <summary>
     /// E20.b B4: port of <c>UpdateWeaponStepProgression</c> (<c>0x8002F768</c>, called at <c>0x80031D70</c>, every tick before the state switch), without the spawn. With a pending pointer
     /// (<see cref="AlundraEntityScriptProxy.WeaponRecordPointer"/>): a record whose type (<c>ptr[1]</c>) is 0, or whose current animation does not carry the "spawns after the delay" flag of
-    /// <see cref="AlundraWeaponTables.AnimationFlagsAddress"/>, clears the pointer (the melee swings: at the tick after the press); otherwise the counter counts up to the delay of the record
+    /// <see cref="WeaponTables.AnimationFlagsAddress"/>, clears the pointer (the melee swings: at the tick after the press); otherwise the counter counts up to the delay of the record
     /// (<c>ptr[2]</c>), then the projectile is spawned (<see cref="SpawnWeaponProjectile"/>) and the pointer cleared.
     /// </summary>
     private static void UpdateWeaponStepProgression(AlundraEntityScriptProxy player, IScriptHost? host)
@@ -1179,13 +1179,13 @@ public static class PlayerManager
             return;
         }
 
-        if (AlundraWeaponTables.RecordByte(pointer + 1) == 0 || !AlundraWeaponTables.AnimationSpawnsAfterDelay(player.TargetAnimationId))
+        if (WeaponTables.RecordByte(pointer + 1) == 0 || !WeaponTables.AnimationSpawnsAfterDelay(player.TargetAnimationId))
         {
             player.WeaponRecordPointer = 0;
             return;
         }
 
-        if (player.WeaponStepCounter < AlundraWeaponTables.RecordByte(pointer + 2))
+        if (player.WeaponStepCounter < WeaponTables.RecordByte(pointer + 2))
         {
             player.WeaponStepCounter++;
             return;
@@ -1201,7 +1201,7 @@ public static class PlayerManager
     {
         WeaponSpawnCallCountForTests++;
         var call = new WeaponSpawnCall(
-            AlundraWeaponTables.RecordByte(recordPointer + 1), player.PosX, player.PosY, player.PosZ + (AlundraWeaponTables.RecordByte(recordPointer + 3) << 16),
+            WeaponTables.RecordByte(recordPointer + 1), player.PosX, player.PosY, player.PosZ + (WeaponTables.RecordByte(recordPointer + 3) << 16),
             SpawnDirections[Math.Clamp(player.BoxDirection, 0, SpawnDirections.Length - 1)]);
         WeaponSpawnCallsForTests?.Add(call);
 
@@ -1290,7 +1290,7 @@ public static class PlayerManager
     /// <summary>
     /// <c>UpdateItemEffectState</c> (<c>0x800307E8</c>), the first thing of the END of <see cref="MovePlayer"/> (<c>0x80032914</c>) on every exit. E20.c1b K2 ported its steps 2 to 5, E20.c2a T2 the others:
     /// <list type="number">
-    /// <item><description>step 1, the boots level (<see cref="BootsLevelOf"/>), stored in <see cref="AlundraEquipmentRecords.BootsLevel"/>;</description></item>
+    /// <item><description>step 1, the boots level (<see cref="BootsLevelOf"/>), stored in <see cref="EquipmentRecords.BootsLevel"/>;</description></item>
     /// <item><description>steps 2 to 5, the three equipment records (<see cref="FillEquipmentRecords"/>);</description></item>
     /// <item><description>step 6, the hero's defence sheet (<see cref="ComputeHeroSheet"/>);</description></item>
     /// <item><description>step 7, the regeneration (<see cref="RegenerateLife"/>), which reads the hold word of the pad.</description></item>
@@ -1346,18 +1346,18 @@ public static class PlayerManager
     /// <summary>
     /// Step 6 of <c>UpdateItemEffectState</c> (<c>0x800309A8-0x80030C18</c>): the hero's sheet is a copy of the record of the armour, or of the hero's own record (<c>+0x1C4</c>, <see cref="AlundraEntityScriptProxy.BalanceRecord"/>)
     /// when no armour is owned, whose responses 1 to 11 (bytes 3 to 13) are then combined with those of the weapon record and of the accessory record by <see cref="CombineResponse"/>. A missing weapon or accessory record
-    /// counts as <c>0x10</c>. Written into <see cref="AlundraEquipmentRecords.HeroSheet"/>, one reusable record.
+    /// counts as <c>0x10</c>. Written into <see cref="EquipmentRecords.HeroSheet"/>, one reusable record.
     /// </summary>
-    internal static void ComputeHeroSheet(AlundraEntityScriptProxy hero, AlundraEquipmentRecords records)
+    internal static void ComputeHeroSheet(AlundraEntityScriptProxy hero, EquipmentRecords records)
     {
-        var source = records[AlundraEquipmentRecords.Armour] ?? hero.BalanceRecord;
+        var source = records[EquipmentRecords.Armour] ?? hero.BalanceRecord;
         if (source == null)
         {
             return;
         }
 
-        var weapon = records[AlundraEquipmentRecords.Weapon];
-        var accessory = records[AlundraEquipmentRecords.Accessory];
+        var weapon = records[EquipmentRecords.Weapon];
+        var accessory = records[EquipmentRecords.Accessory];
         Span<byte> responses = stackalloc byte[11];
         for (var i = 1; i <= 11; i++)
         {
@@ -1418,7 +1418,7 @@ public static class PlayerManager
     /// other than 0, the counter grows by one and, when it passes the byte 2, goes back to 0 and the life gains 1 (so a period of byte 2 + 1 ticks; a record without a byte 2 zeroes its counter); the life is then
     /// capped at the maximum.
     /// </summary>
-    internal static void RegenerateLife(AlundraEntityScriptProxy hero, in PadState pad, GameState state, AlundraEquipmentRecords? records)
+    internal static void RegenerateLife(AlundraEntityScriptProxy hero, in PadState pad, GameState state, EquipmentRecords? records)
     {
         var counters = state.RegenerationCounters;
         if ((state.PlayerControlFlags & RegenerationClosedFlags) != 0
@@ -1434,7 +1434,7 @@ public static class PlayerManager
         }
 
         var life = hero.Hp;
-        for (var slot = 0; slot < AlundraEquipmentRecords.Count; slot++)
+        for (var slot = 0; slot < EquipmentRecords.Count; slot++)
         {
             var record = records?[slot];
             if (record != null && record.MaxHp != 0)
@@ -1455,7 +1455,7 @@ public static class PlayerManager
         hero.Hp = hero.HpMax < life ? hero.HpMax : life;
     }
 
-    /// <summary>The "armour" category of the equipment records: <c>byte[0x800C5F7C + 8 n + 6] &amp; 0x7F</c> (<see cref="AlundraItemTables.DropField3"/>, equal to the binary on the 98 rows).</summary>
+    /// <summary>The "armour" category of the equipment records: <c>byte[0x800C5F7C + 8 n + 6] &amp; 0x7F</c> (<see cref="ItemTables.DropField3"/>, equal to the binary on the 98 rows).</summary>
     internal const int ArmourCategory = 2;
 
     /// <summary>The "weapon" category of the equipment records.</summary>
@@ -1470,14 +1470,14 @@ public static class PlayerManager
     /// <summary>
     /// Steps 2 to 5 of <c>UpdateItemEffectState</c> (<c>0x800307E8</c>), E20.c1b K2, docs/plan-e20-heros.md section 1.6: the six words <c>0x80146E00-0x80146E14</c> are cleared, then
     /// <list type="number">
-    /// <item><description>record 0 is the armour: the owned item of the highest number whose category (<see cref="AlundraItemTables.DropField3"/> <c>&amp; 0x7F</c>) is 2, scanning <c>0x61</c> down to 0;</description></item>
+    /// <item><description>record 0 is the armour: the owned item of the highest number whose category (<see cref="ItemTables.DropField3"/> <c>&amp; 0x7F</c>) is 2, scanning <c>0x61</c> down to 0;</description></item>
     /// <item><description>record 1 is the weapon: <see cref="GetItemIdFromCurrentWeapon"/> when it answers 1 to <c>0x61</c> with the category 1;</description></item>
     /// <item><description>record 2 is the accessory: <see cref="SetItemIdFromCurrentItemId"/> (which also rewrites <c>ItemId</c>, as the binary's <c>0x8004E0F8</c> does: the tick is a second caller beside the HUD) when it answers 1 to
     /// <c>0x61</c> with the category 3.</description></item>
     /// </list>
     /// The record of item <c>n</c> is <see cref="BalanceTables.SelectEquipment"/>, with NO remapping of the index (the sprite lookup remaps <c>0x1F-0x7F</c> to <c>0x1E</c>, the equipment lookup does not).
     /// </summary>
-    internal static void FillEquipmentRecords(GameState state, AlundraItemTables itemTables, BalanceTables balanceTables, int threshold, AlundraEquipmentRecords records)
+    internal static void FillEquipmentRecords(GameState state, ItemTables itemTables, BalanceTables balanceTables, int threshold, EquipmentRecords records)
     {
         records.ClearAll(); // 0x800308A4-0x800308BC: all six words, the item words too (the map load, 0x80044520, empties the pointers only: records.Clear()).
 
@@ -1485,7 +1485,7 @@ public static class PlayerManager
         {
             if (GetNumberOfItem(state, n) > 0 && (itemTables.DropField3[n] & 0x7F) == ArmourCategory)
             {
-                records.Set(AlundraEquipmentRecords.Armour, balanceTables.SelectEquipment(n, threshold), n);
+                records.Set(EquipmentRecords.Armour, balanceTables.SelectEquipment(n, threshold), n);
                 break;
             }
         }
@@ -1493,13 +1493,13 @@ public static class PlayerManager
         var weapon = GetItemIdFromCurrentWeapon(state, itemTables);
         if (weapon is >= 1 and <= LastEquipmentItem && (itemTables.DropField3[(int)weapon] & 0x7F) == WeaponCategory)
         {
-            records.Set(AlundraEquipmentRecords.Weapon, balanceTables.SelectEquipment((int)weapon, threshold), (int)weapon);
+            records.Set(EquipmentRecords.Weapon, balanceTables.SelectEquipment((int)weapon, threshold), (int)weapon);
         }
 
         var accessory = SetItemIdFromCurrentItemId(state, itemTables);
         if (accessory is >= 1 and <= LastEquipmentItem && (itemTables.DropField3[(int)accessory] & 0x7F) == AccessoryCategory)
         {
-            records.Set(AlundraEquipmentRecords.Accessory, balanceTables.SelectEquipment((int)accessory, threshold), (int)accessory);
+            records.Set(EquipmentRecords.Accessory, balanceTables.SelectEquipment((int)accessory, threshold), (int)accessory);
         }
     }
 
@@ -2043,7 +2043,7 @@ public static class PlayerManager
     /// (items 1, 17 and 25 in the shipped data), then the weapon is set to slot 1, the sword's.
     /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> runs this once per session, at the New Game entry.
     /// </summary>
-    public static void InitializeNewGameInventory(GameState state, AlundraItemTables tables)
+    public static void InitializeNewGameInventory(GameState state, ItemTables tables)
     {
         // GameInitializer.cs:473-479: 0x80 pairs, both halves zeroed.
         Array.Clear(state.NumberOfItems);
@@ -2069,7 +2069,7 @@ public static class PlayerManager
     /// <summary>Port of <c>SetPlayerWeaponId</c> (PlayerManager.cs:1832-1845, 8004e484): stores -1 (no weapon) or
     /// a weapon slot 1..6, rejects everything else (0 included), and ends, as the original does, by resolving the
     /// weapon's item - a lookup whose result the original discards too.</summary>
-    public static void SetPlayerWeaponId(GameState state, AlundraItemTables tables, int weaponId)
+    public static void SetPlayerWeaponId(GameState state, ItemTables tables, int weaponId)
     {
         // ALUN_CD.EXE (France) 0x8004e484 settles docs/plan-e13c-icones-hud.md open point 7: the argument is a
         // 32-bit int; -1 is stored (beq at 0x8004e490), otherwise (weaponId - 1) <u 6 must hold (sltiu at
@@ -2085,7 +2085,7 @@ public static class PlayerManager
 
     /// <summary>Port of <c>GetItemIdFromCurrentWeapon</c> (PlayerManager.cs:4462-4466, 8004e030): the item
     /// the equipped weapon slot resolves to, or <see cref="NoItem"/>.</summary>
-    public static uint GetItemIdFromCurrentWeapon(GameState state, AlundraItemTables tables)
+    public static uint GetItemIdFromCurrentWeapon(GameState state, ItemTables tables)
     {
         return GetWeaponIdBySlotId(state, tables, state.PlayerStats.WeaponId - 1);
     }
@@ -2093,7 +2093,7 @@ public static class PlayerManager
     /// <summary>Port of <c>GetWeaponIdBySlotId</c> (PlayerManager.cs:4433-4460). Each case of the original
     /// calls its own <c>GetWeaponIdFromSlotN</c> (PlayerManager.cs:4468-4496), every one of which is nothing
     /// but <c>GetItemIdFromSlotId(N)</c>; the call is written inline here, the case-to-slot mapping kept.</summary>
-    public static uint GetWeaponIdBySlotId(GameState state, AlundraItemTables tables, int slotId)
+    public static uint GetWeaponIdBySlotId(GameState state, ItemTables tables, int slotId)
     {
         var itemId = NoItem;
 
@@ -2126,7 +2126,7 @@ public static class PlayerManager
     /// items of an inventory slot, the one to use. The first owned match wins at once when its replacement
     /// flag is clear; otherwise a later owned match replaces it only on a strictly higher replacement
     /// priority. <see cref="NoItem"/> when nothing in the slot is owned.</summary>
-    public static uint GetItemIdFromSlotId(GameState state, AlundraItemTables tables, uint slotId)
+    public static uint GetItemIdFromSlotId(GameState state, ItemTables tables, uint slotId)
     {
         if (slotId >= 0x20)
         {
@@ -2215,7 +2215,7 @@ public static class PlayerManager
     /// STARTED from, not the re-resolved one, exactly as the original does. <see cref="NoItem"/> when the
     /// equipped accessory is not owned, which is the New Game state: item 0, count 0, an empty box.
     /// </summary>
-    public static uint SetItemIdFromCurrentItemId(GameState state, AlundraItemTables tables)
+    public static uint SetItemIdFromCurrentItemId(GameState state, ItemTables tables)
     {
         var currentItemId = state.PlayerStats.ItemId;
         var numberOfItem = GetNumberOfItem(state, currentItemId);
@@ -2236,7 +2236,7 @@ public static class PlayerManager
     /// an item unless the player already holds its max count (column 3). Returns the new count, or the
     /// unchanged count when it was already at its max - the binary's own value (8004e58c/8004e5b0: the count is
     /// returned); the decompilation returned the item id there, which made opcode 0x82 report "given" for nothing.</summary>
-    public static int AddOneItemIfUnlocked(GameState state, AlundraItemTables tables, int itemId)
+    public static int AddOneItemIfUnlocked(GameState state, ItemTables tables, int itemId)
     {
         if (itemId < 0 || itemId >= ItemsCount)
         {
@@ -2293,8 +2293,8 @@ public static class PlayerManager
     /// <summary>Port of <c>GetItemTextureIdByItemId</c> (GraphicManager.cs:1910-1914, 8004e168): an item's
     /// icon column, the sprite record whose portrait is its icon (31 for the sword). The HUD does not go
     /// through it to find the icon's asset - the converter already resolved icon to asset, see
-    /// <see cref="AlundraItemTables.TryGetIconAssetId"/> - but it is the link the tests pin, item 1 to 31.</summary>
-    public static int GetItemTextureIdByItemId(AlundraItemTables tables, int itemId)
+    /// <see cref="ItemTables.TryGetIconAssetId"/> - but it is the link the tests pin, item 1 to 31.</summary>
+    public static int GetItemTextureIdByItemId(ItemTables tables, int itemId)
     {
         return tables.ItemsProperties[itemId * 5 + 4];
     }
@@ -2306,7 +2306,7 @@ public static class PlayerManager
     /// effect included. Each item that resolves is mapped to its portrait's asset id; a sentinel, or an item
     /// without a portrait, leaves its box empty.
     /// </summary>
-    public static (Guid? Weapon, Guid? Accessory) ResolveHudEquipmentIcons(GameState state, AlundraItemTables tables)
+    public static (Guid? Weapon, Guid? Accessory) ResolveHudEquipmentIcons(GameState state, ItemTables tables)
     {
         Guid? weapon = null;
         var weaponItemId = GetItemIdFromCurrentWeapon(state, tables);

@@ -43,8 +43,8 @@ public sealed class AlundraWeaponSpawnSeamTests : IDisposable
     /// <summary>Arms the hero's bow so that the NEXT tick of <c>MovePlayer</c> reaches the spawn of the shot (the record of Hunter's Bow, the animation that spawns after the delay).</summary>
     private static void Arm(AlundraEntityScriptProxy hero)
     {
-        hero.WeaponRecordPointer = AlundraWeaponTables.AnimationAddress(8, air: false);
-        hero.WeaponStepCounter = AlundraWeaponTables.RecordByte(hero.WeaponRecordPointer + 2);
+        hero.WeaponRecordPointer = WeaponTables.AnimationAddress(8, air: false);
+        hero.WeaponStepCounter = WeaponTables.RecordByte(hero.WeaponRecordPointer + 2);
         hero.TargetAnimationId = 0x13;
     }
 

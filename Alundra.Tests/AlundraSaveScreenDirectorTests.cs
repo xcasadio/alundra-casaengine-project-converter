@@ -721,7 +721,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     [Fact]
     public void IsActiveAndMenuOpen_HoldOverTheWholeFlow_AndTheInventoryNeverOpens()
     {
-        var tables = new AlundraItemTables(FindProjectRoot());
+        var tables = new ItemTables(FindProjectRoot());
         AlundraInventoryDirector.Instance.AttachToWorld(State, tables, null);
         AlundraSubInventoryDirector.Instance.AttachToWorld(State, tables, null);
 

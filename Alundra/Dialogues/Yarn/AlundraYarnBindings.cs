@@ -96,7 +96,7 @@ public sealed class AlundraYarnBindings
     }
 
     /// <summary>Overload tests use to point item-name resolution at a fixture project directory instead
-    /// of <see cref="EngineEnvironment.ProjectPath"/> (same pattern as <see cref="AlundraItemTables"/>).</summary>
+    /// of <see cref="EngineEnvironment.ProjectPath"/> (same pattern as <see cref="ItemTables"/>).</summary>
     public AlundraYarnBindings(GameState gameState, string projectPath)
     {
         ArgumentNullException.ThrowIfNull(gameState);

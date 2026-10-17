@@ -28,7 +28,7 @@ public sealed class AlundraSaveGameRules
     /// <param name="isWorldInCatalog">True when the world at a <c>world-index.json</c> value is in the asset
     /// catalog. An exception it throws becomes a refusal (C4).</param>
     /// <param name="itemTables">The item table the counters are bounded by.</param>
-    public AlundraSaveGameRules(string projectPath, Func<string, bool> isWorldInCatalog, AlundraItemTables itemTables)
+    public AlundraSaveGameRules(string projectPath, Func<string, bool> isWorldInCatalog, ItemTables itemTables)
     {
         ArgumentNullException.ThrowIfNull(projectPath);
         ArgumentNullException.ThrowIfNull(isWorldInCatalog);
@@ -51,5 +51,5 @@ public sealed class AlundraSaveGameRules
     public Func<string, bool> IsWorldInCatalog { get; }
 
     /// <summary>The item table the counters are bounded by (F11: in degraded mode every ceiling is 0).</summary>
-    public AlundraItemTables ItemTables { get; }
+    public ItemTables ItemTables { get; }
 }

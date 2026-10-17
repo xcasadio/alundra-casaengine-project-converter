@@ -15,7 +15,7 @@ using Alundra.Items;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E20.c1b K1, K2 and K5 (docs/plan-e20-heros.md section 1.6): the damage functions of the binary (<see cref="Damage"/>), the three equipment records (<see cref="AlundraEquipmentRecords"/>, filled by
+/// E20.c1b K1, K2 and K5 (docs/plan-e20-heros.md section 1.6): the damage functions of the binary (<see cref="Damage"/>), the three equipment records (<see cref="EquipmentRecords"/>, filled by
 /// <see cref="PlayerManager.FillEquipmentRecords"/> as steps 2 to 5 of <c>UpdateItemEffectState</c>) and their selection without the sprite remapping, against the oracle
 /// <c>docs/plan-e20-annexe/e20-c1b/oracle/out/</c> (<c>K1.json</c>, <c>K2.json</c>: the real code of <c>ALUN_CD.EXE</c> (France), twelve inventories built by the real new-game code) and the HP cases of the D2 oracle
 /// (<c>docs/plan-e20-annexe/d2-oracle-coups/out/cases.txt</c>, cases 3 and 4 and the extra x8): the expected values below are the oracle's, never computed by the code under test.
@@ -63,7 +63,7 @@ public sealed class AlundraDamageTests
 
     public static IEnumerable<object[]> InventoryNames() => Inventories.Select(name => new object[] { name });
 
-    private static AlundraItemTables ItemTables() => AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
+    private static ItemTables ItemTables() => Items.ItemTables.GetOrCreate(ProjectRootFinder.Find());
 
     private static BalanceTables BalanceTables() => Combat.BalanceTables.GetOrCreate(ProjectRootFinder.Find());
 
@@ -90,7 +90,7 @@ public sealed class AlundraDamageTests
         state.PlayerStats.WeaponId = (short)pre.GetProperty("stats").GetProperty("weapon_id").GetInt32();
     }
 
-    private static void AssertRecordsEqual(JsonElement expectedRecords, AlundraEquipmentRecords records, string where)
+    private static void AssertRecordsEqual(JsonElement expectedRecords, EquipmentRecords records, string where)
     {
         var slot = 0;
         foreach (var expected in expectedRecords.EnumerateArray())
@@ -118,7 +118,7 @@ public sealed class AlundraDamageTests
             slot++;
         }
 
-        Assert.Equal(AlundraEquipmentRecords.Count, slot);
+        Assert.Equal(EquipmentRecords.Count, slot);
     }
 
     [Theory]
@@ -127,7 +127,7 @@ public sealed class AlundraDamageTests
     {
         var inventory = Load("K1.json").GetProperty(name);
         var state = StateOf(inventory.GetProperty("pre"));
-        var records = new AlundraEquipmentRecords();
+        var records = new EquipmentRecords();
 
         PlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
         AssertRecordsEqual(inventory.GetProperty("records"), records, name + " (first tick)");
@@ -137,7 +137,7 @@ public sealed class AlundraDamageTests
         var second = inventory.GetProperty("second");
         Assert.Equal(second.GetProperty("item_id").GetInt32(), state.PlayerStats.ItemId);
         var secondWords = second.GetProperty("record_words").EnumerateArray().Select(w => w[1].GetInt32()).ToArray();
-        for (var slot = 0; slot < AlundraEquipmentRecords.Count; slot++)
+        for (var slot = 0; slot < EquipmentRecords.Count; slot++)
         {
             Assert.Equal(secondWords[slot] == 0 ? 0 : secondWords[slot] - 0x1E, records.ItemIdOf(slot));
         }
@@ -148,14 +148,14 @@ public sealed class AlundraDamageTests
     {
         var inventory = Load("K1.json").GetProperty("rings2");
         var state = StateOf(inventory.GetProperty("pre"));
-        var records = new AlundraEquipmentRecords();
+        var records = new EquipmentRecords();
 
         PlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
-        Assert.Equal(51, records.ItemIdOf(AlundraEquipmentRecords.Accessory)); // the OLD id (0x33), as 0x8004E0F8 returns it.
+        Assert.Equal(51, records.ItemIdOf(EquipmentRecords.Accessory)); // the OLD id (0x33), as 0x8004E0F8 returns it.
         Assert.Equal(52, state.PlayerStats.ItemId); // rewritten with the best of the slot (0x34).
 
         PlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
-        Assert.Equal(52, records.ItemIdOf(AlundraEquipmentRecords.Accessory));
+        Assert.Equal(52, records.ItemIdOf(EquipmentRecords.Accessory));
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public sealed class AlundraDamageTests
         var host = rig.Host;
         host.ItemTables = ItemTables();
         host.BalanceTables = BalanceTables();
-        host.EquipmentRecords = new AlundraEquipmentRecords();
+        host.EquipmentRecords = new EquipmentRecords();
         CopyInventory(host.GameState, inventory.GetProperty("pre"));
 
         rig.Step(); // one tick of the hero's MovePlayer, which ends with UpdateItemEffectState.
@@ -204,14 +204,14 @@ public sealed class AlundraDamageTests
 
         // A host without balance tables leaves the records alone (they were emptied by hand to see it). E20.c2a T2: the hand-made Clear() is the map load's (0x80044520), which empties the three POINTERS
         // only: the item words stay (here the armour's, 0x12 = 18 for the inventory 'all'); only the six-word clear of UpdateItemEffectState steps 2 to 5 (ClearAll) zeroes them, and it did not run.
-        var armourWord = host.EquipmentRecords.ItemIdOf(AlundraEquipmentRecords.Armour);
+        var armourWord = host.EquipmentRecords.ItemIdOf(EquipmentRecords.Armour);
         Assert.NotEqual(0, armourWord);
         host.EquipmentRecords.Clear();
         host.BalanceTables = null;
         rig.Step();
-        Assert.Null(host.EquipmentRecords[AlundraEquipmentRecords.Weapon]);
-        Assert.Null(host.EquipmentRecords[AlundraEquipmentRecords.Armour]);
-        Assert.Equal(armourWord, host.EquipmentRecords.ItemIdOf(AlundraEquipmentRecords.Armour));
+        Assert.Null(host.EquipmentRecords[EquipmentRecords.Weapon]);
+        Assert.Null(host.EquipmentRecords[EquipmentRecords.Armour]);
+        Assert.Equal(armourWord, host.EquipmentRecords.ItemIdOf(EquipmentRecords.Armour));
     }
 
     // -----------------------------------------------------------------------------------------
@@ -239,9 +239,9 @@ public sealed class AlundraDamageTests
         return new BalanceRecord(natural.Level, natural.RecordSize, natural.MaxHp, responses, natural.Attacks.ToArray(), null);
     }
 
-    private static AlundraEquipmentRecords EquipmentOf(JsonElement attacks)
+    private static EquipmentRecords EquipmentOf(JsonElement attacks)
     {
-        var records = new AlundraEquipmentRecords();
+        var records = new EquipmentRecords();
         var slot = 0;
         foreach (var entry in attacks.EnumerateArray())
         {
@@ -309,12 +309,12 @@ public sealed class AlundraDamageTests
         var meta = Load("K2.json").GetProperty(name).GetProperty("meta");
         var inventory = Load("K1.json").GetProperty(name);
         var state = StateOf(inventory.GetProperty("pre"));
-        var records = new AlundraEquipmentRecords();
+        var records = new EquipmentRecords();
         PlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
 
         // The swing the weapon gives (E20.b), then the hero's own attack record for that animation: the state the oracle's hit pass left (steel and holy swing with 0x3F and 0x49, so their power counts twice).
-        var weaponRecord = AlundraWeaponTables.RecordIndexOfItem(PlayerManager.GetItemIdFromCurrentWeapon(state, ItemTables()));
-        var animation = AlundraWeaponTables.RecordByte(AlundraWeaponTables.AnimationAddress(weaponRecord, false));
+        var weaponRecord = WeaponTables.RecordIndexOfItem(PlayerManager.GetItemIdFromCurrentWeapon(state, ItemTables()));
+        var animation = WeaponTables.RecordByte(WeaponTables.AnimationAddress(weaponRecord, false));
         Assert.Equal(meta.GetProperty("hero_anim").GetInt32(), (int)animation);
         var attack = BalanceTables().Select(0, 0)!.AttackForAnimation(animation)!;
         Assert.Equal(meta.GetProperty("atk_attr").GetInt32(), attack.Attribute);
@@ -331,8 +331,8 @@ public sealed class AlundraDamageTests
     [Fact]
     public void K2_TheEquipmentTerm_NeedsTheBit0x80_AndCountsForAnyAttacker()
     {
-        var records = new AlundraEquipmentRecords();
-        records.Set(AlundraEquipmentRecords.Weapon, new BalanceRecord(255, 17, 0, new byte[11], new[] { new BalanceAttack(1, 8) }, null), 4);
+        var records = new EquipmentRecords();
+        records.Set(EquipmentRecords.Weapon, new BalanceRecord(255, 17, 0, new byte[11], new[] { new BalanceAttack(1, 8) }, null), 4);
         var sheet = BeannoidWithResponse(0x81, 16);
 
         Assert.Equal(100 - 9, Damage.ResolveBalanceTarget(new BalanceAttack(0x81, 1), sheet, 100, records, 0)); // (1 + 8) * 16 >> 4

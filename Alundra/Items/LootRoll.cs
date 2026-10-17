@@ -22,7 +22,7 @@ namespace Alundra.Items;
 /// <see cref="AlundraRandom.Next"/> returns), so the same code serves the real stream and the virtual word of the measuring sink (<see cref="AlundraRandomShadow"/>). Nothing falls here: the drop at death,
 /// its veto and the pickable object are E20.e0c.
 /// </summary>
-internal static class AlundraLootRoll
+internal static class LootRoll
 {
     /// <summary>Address of the table in the executable.</summary>
     public const uint TableAddress = 0x80028E0C;

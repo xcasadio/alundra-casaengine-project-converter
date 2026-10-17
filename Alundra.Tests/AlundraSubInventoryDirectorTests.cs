@@ -114,14 +114,14 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     private static DialogueAsset LoadRealEtcDialogueAsset(string projectPath)
         => DialogueTestAssets.LoadFromDisk(Path.Combine(projectPath, "Dialogues", "Etc.dialogue"));
 
-    private static GameState NewGameState(AlundraItemTables tables)
+    private static GameState NewGameState(ItemTables tables)
     {
         var state = new GameState();
         PlayerManager.InitializeNewGameInventory(state, tables);
         return state;
     }
 
-    private static void AttachAll(GameState state, AlundraItemTables tables, IAlundraSoundPlayer? sound)
+    private static void AttachAll(GameState state, ItemTables tables, IAlundraSoundPlayer? sound)
     {
         AlundraInventoryDirector.Instance.AttachToWorld(state, tables, sound);
         AlundraSubInventoryDirector.Instance.AttachToWorld(state, tables, sound);
@@ -384,7 +384,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         // Every position must describe something, or its text never leaves state 0 (an unowned or empty
         // position freezes the reveal, plan §1.5) and "the move resets the text" would prove nothing: the real
         // exported tables, the seven crests and five key items owned, armor and boots from the New Game.
-        var tables = new AlundraItemTables(FindAlundraProjectPath());
+        var tables = new ItemTables(FindAlundraProjectPath());
         var state = NewGameState(tables);
         Own(state, tables, 0x3E, 0x3F, 0x40, 0x41, 0x42, 0x43, 0x44);
         Own(state, tables, AllKeyItemIds[..5]);
@@ -439,7 +439,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     // Gives one of each item outright (the count lives at NumberOfItems[id * 2 + 1], the same field the tests
     // of AlundraItemInventoryTests write): AddOneItemIfUnlocked would refuse every key item, none of them
     // carries the new-game unlock bit.
-    private static void Own(GameState state, AlundraItemTables tables, params int[] itemIds)
+    private static void Own(GameState state, ItemTables tables, params int[] itemIds)
     {
         _ = tables;
         foreach (var itemId in itemIds)
@@ -457,7 +457,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     {
         // The real exported tables: ItemTablesFixture.LoadReal() only carries items 0-4, 17 and 25, where every
         // key item would have inventory slot 0.
-        var tables = new AlundraItemTables(FindAlundraProjectPath());
+        var tables = new ItemTables(FindAlundraProjectPath());
         var state = NewGameState(tables);
         Own(state, tables, AllKeyItemIds[..ownedCount]);
 
@@ -473,7 +473,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
             {
                 Assert.True(ids[i] != -1,
                     $"key item position {i} is empty: ids [{string.Join(",", ids)}], state {AlundraSubInventoryDirector.Instance.State}, "
-                    + $"count(33) {PlayerManager.GetNumberOfItem(state, 33)}, slot(33) {tables.ItemsProperties[33 * AlundraItemTables.ItemColumnCount]}");
+                    + $"count(33) {PlayerManager.GetNumberOfItem(state, 33)}, slot(33) {tables.ItemsProperties[33 * ItemTables.ItemColumnCount]}");
                 filled.Add(ids[i]);
             }
             else
@@ -492,7 +492,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     [Fact]
     public void KeyItems_OneOwned_OnlyTheFirstPositionIsFilled()
     {
-        var tables = new AlundraItemTables(FindAlundraProjectPath());
+        var tables = new ItemTables(FindAlundraProjectPath());
         var state = NewGameState(tables);
         Own(state, tables, AllKeyItemIds[0]);
 

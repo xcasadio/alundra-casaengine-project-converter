@@ -131,7 +131,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
     private static GameState NewState() => new();
 
-    private static AlundraInventoryDirector NewDirector(GameState state, AlundraItemTables? tables = null, IAlundraSoundPlayer? sound = null)
+    private static AlundraInventoryDirector NewDirector(GameState state, ItemTables? tables = null, IAlundraSoundPlayer? sound = null)
     {
         var director = AlundraInventoryDirector.Instance;
         director.AttachToWorld(state, tables ?? ItemTablesFixture.LoadReal(), sound);

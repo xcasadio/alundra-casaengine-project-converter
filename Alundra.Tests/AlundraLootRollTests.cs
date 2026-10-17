@@ -13,7 +13,7 @@ using Alundra.Items;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E20.e0b2 (docs/plan-e20-heros.md section 1.17.2, T1): the pure loot roll <see cref="AlundraLootRoll"/> against EVERY vector of the oracle of the real binary
+/// E20.e0b2 (docs/plan-e20-heros.md section 1.17.2, T1): the pure loot roll <see cref="LootRoll"/> against EVERY vector of the oracle of the real binary
 /// (<c>docs/plan-e20-annexe/e20-e0b/oracle/out</c>, found above the test binaries): 2 626 + 256 choices of an item, 52 rolls on a hand-built entity, 183 rolls of the real <c>SpawnWarpEntity</c>, 12 rolls of the real record
 /// spawner, 6 000 random rolls with flags, two banks, record and header codes. Nothing here computes an expected value from the DLL's own logic: the rows of the oracle are the expected values. The class is pure
 /// (no shared stream, no world), so these tests need no static-state collection.
@@ -51,19 +51,19 @@ public sealed class AlundraLootRollTests
     [Fact]
     public void TheTable_IsThe2048BytesOfTheExecutable_AndTheDumpOfTheOracle()
     {
-        Assert.Equal(AlundraLootRoll.RowCount * AlundraLootRoll.RowSize, AlundraLootRoll.Table.Length);
-        Assert.Equal("7c6b97ac50de72f436a6fbf08ed6bcd7", Convert.ToHexString(MD5.HashData(AlundraLootRoll.Table)).ToLowerInvariant());
+        Assert.Equal(LootRoll.RowCount * LootRoll.RowSize, LootRoll.Table.Length);
+        Assert.Equal("7c6b97ac50de72f436a6fbf08ed6bcd7", Convert.ToHexString(MD5.HashData(LootRoll.Table)).ToLowerInvariant());
 
         using var document = Read("loot_table.json");
         var rows = document.RootElement.GetProperty("table").EnumerateArray().ToList();
-        Assert.Equal(AlundraLootRoll.RowCount, rows.Count);
+        Assert.Equal(LootRoll.RowCount, rows.Count);
         for (var r = 0; r < rows.Count; r++)
         {
             var row = rows[r].EnumerateArray().Select(e => (byte)e.GetInt32()).ToArray();
-            Assert.Equal(row, AlundraLootRoll.Table.Slice(r * AlundraLootRoll.RowSize, AlundraLootRoll.RowSize).ToArray());
+            Assert.Equal(row, LootRoll.Table.Slice(r * LootRoll.RowSize, LootRoll.RowSize).ToArray());
         }
 
-        var nonZeroRows = Enumerable.Range(0, AlundraLootRoll.RowCount).Where(r => AlundraLootRoll.Table.Slice(r * AlundraLootRoll.RowSize, AlundraLootRoll.RowSize).ToArray().Any(b => b != 0)).ToArray();
+        var nonZeroRows = Enumerable.Range(0, LootRoll.RowCount).Where(r => LootRoll.Table.Slice(r * LootRoll.RowSize, LootRoll.RowSize).ToArray().Any(b => b != 0)).ToArray();
         Assert.Equal(new[] { 0x01, 0x02, 0x03, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F }, nonZeroRows);
     }
 
@@ -79,7 +79,7 @@ public sealed class AlundraLootRollTests
         {
             var code = I(v[0]);
             var stream = new Stream(U(v[1]));
-            var item = AlundraLootRoll.Choose(code, stream.Next, out var draws);
+            var item = LootRoll.Choose(code, stream.Next, out var draws);
             var label = $"code 0x{code:X} seed {U(v[1]):X8}";
             Assert.True(I(v[2]) == (int)item, $"{label}: item {item}, machine {I(v[2])}");
             Assert.True(U(v[3]) == stream.State, $"{label}: word {stream.State:X8}, machine {U(v[3]):X8}");
@@ -104,7 +104,7 @@ public sealed class AlundraLootRollTests
 
             var hasRecord = I(v.GetProperty("rec")) != 0;
             var stream = new Stream(U(v.GetProperty("rng_in")));
-            var result = AlundraLootRoll.Roll(
+            var result = LootRoll.Roll(
                 hasRecord, hasRecord ? I(v.GetProperty("flag")) : 0, hasRecord ? I(v.GetProperty("rec_code")) : 0, I(v.GetProperty("header_contents")), state, stream.Next);
             Assert.True(I(v.GetProperty("item")) == (int)result.ItemId, $"{label}: item {result.ItemId}, machine {I(v.GetProperty("item"))}");
             Assert.True(I(v.GetProperty("flag_out")) == result.GameFlag, $"{label}: +0x40 {result.GameFlag}, machine {I(v.GetProperty("flag_out"))}");
@@ -123,7 +123,7 @@ public sealed class AlundraLootRollTests
         {
             var label = $"page {I(v.GetProperty("page"))} index {I(v.GetProperty("index"))} seed {v.GetProperty("seed_name").GetString()}";
             var stream = new Stream(U(v.GetProperty("rng_in")));
-            var result = AlundraLootRoll.Roll(false, 0, 0, I(v.GetProperty("header_contents")), new GameState(), stream.Next);
+            var result = LootRoll.Roll(false, 0, 0, I(v.GetProperty("header_contents")), new GameState(), stream.Next);
             Assert.True(I(v.GetProperty("item")) == (int)result.ItemId, $"{label}: item {result.ItemId}, machine {I(v.GetProperty("item"))}");
             Assert.True(I(v.GetProperty("flag40")) == result.GameFlag, $"{label}: +0x40 {result.GameFlag}, machine {I(v.GetProperty("flag40"))}");
             Assert.True(U(v.GetProperty("rng_out")) == stream.State, $"{label}: word {stream.State:X8}, machine {U(v.GetProperty("rng_out")):X8}");
@@ -149,7 +149,7 @@ public sealed class AlundraLootRollTests
             }
 
             var stream = new Stream(U(v.GetProperty("rng_in")));
-            var result = AlundraLootRoll.Roll(true, I(v.GetProperty("rec_10")), I(v.GetProperty("rec_Contents")), beannoidHeaderContents, state, stream.Next);
+            var result = LootRoll.Roll(true, I(v.GetProperty("rec_10")), I(v.GetProperty("rec_Contents")), beannoidHeaderContents, state, stream.Next);
             Assert.True(I(v.GetProperty("item")) == (int)result.ItemId, $"{label}: item {result.ItemId}, machine {I(v.GetProperty("item"))}");
             Assert.True(I(v.GetProperty("flag40")) == result.GameFlag, $"{label}: +0x40 {result.GameFlag}, machine {I(v.GetProperty("flag40"))}");
             Assert.True(U(v.GetProperty("rng_out")) == stream.State, $"{label}: word {stream.State:X8}, machine {U(v.GetProperty("rng_out")):X8}");
@@ -179,7 +179,7 @@ public sealed class AlundraLootRollTests
             }
 
             var stream = new Stream(U(v[4]));
-            var result = AlundraLootRoll.Roll(I(v[0]) != 0, I(v[1]), I(v[2]), I(v[3]), state, stream.Next);
+            var result = LootRoll.Roll(I(v[0]) != 0, I(v[1]), I(v[2]), I(v[3]), state, stream.Next);
             var label = $"has_record {I(v[0])} flag 0x{I(v[1]):X} record 0x{I(v[2]):X} header 0x{I(v[3]):X} seed {U(v[4]):X8}";
             Assert.True(I(v[7]) == (int)result.ItemId, $"{label}: item {result.ItemId}, machine {I(v[7])}");
             Assert.True(I(v[8]) == result.GameFlag, $"{label}: +0x40 {result.GameFlag}, machine {I(v[8])}");
@@ -205,12 +205,12 @@ public sealed class AlundraLootRollTests
             return 0;
         }
 
-        Assert.Equal(0, AlundraLootRoll.Roll(false, 0, 0, 0x24, state, Draw).Draws);
-        Assert.Equal(36u, AlundraLootRoll.Roll(false, 0, 0, 0x24, state, Draw).ItemId);
-        var raised = AlundraLootRoll.Roll(true, 5, 0x82, 0xFC, state, Draw);
-        Assert.Equal(new AlundraLootRoll.Result(0, 5, 0), raised);
+        Assert.Equal(0, LootRoll.Roll(false, 0, 0, 0x24, state, Draw).Draws);
+        Assert.Equal(36u, LootRoll.Roll(false, 0, 0, 0x24, state, Draw).ItemId);
+        var raised = LootRoll.Roll(true, 5, 0x82, 0xFC, state, Draw);
+        Assert.Equal(new LootRoll.Result(0, 5, 0), raised);
         Assert.Equal(0, calls);
-        var rolled = AlundraLootRoll.Roll(true, 0, 0x82, 0, state, Draw);
+        var rolled = LootRoll.Roll(true, 0, 0x82, 0, state, Draw);
         Assert.Equal(1, rolled.Draws);
         Assert.Equal(1, calls);
     }
@@ -227,10 +227,10 @@ public sealed class AlundraLootRollTests
             return 0;
         }
 
-        var withoutRecord = AlundraLootRoll.Roll(false, 0, 0, 0x182, state, Draw);
-        var withRecord = AlundraLootRoll.Roll(true, 0, 0x100, 0x182, state, Draw);
-        Assert.Equal(AlundraLootRoll.Roll(false, 0, 0, 0x82, state, Draw), withoutRecord);
-        Assert.Equal(AlundraLootRoll.Roll(true, 0, 0, 0x82, state, Draw), withRecord);
+        var withoutRecord = LootRoll.Roll(false, 0, 0, 0x182, state, Draw);
+        var withRecord = LootRoll.Roll(true, 0, 0x100, 0x182, state, Draw);
+        Assert.Equal(LootRoll.Roll(false, 0, 0, 0x82, state, Draw), withoutRecord);
+        Assert.Equal(LootRoll.Roll(true, 0, 0, 0x82, state, Draw), withRecord);
         Assert.Equal(1, withoutRecord.Draws);
         Assert.Equal(1, withRecord.Draws);
         Assert.Equal(4, calls);

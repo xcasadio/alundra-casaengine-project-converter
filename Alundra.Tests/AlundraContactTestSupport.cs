@@ -83,14 +83,14 @@ internal sealed class ContactHost : IScriptHost
     public IAlundraSoundPlayer? SoundPlayer { get; set; }
 
     /// <summary>E20.b B1: the item tables the host hands to the hero's <c>MovePlayer</c> (null: none, as the default member of the interface, so the hero has no weapon and swings the basic sword).</summary>
-    public AlundraItemTables? ItemTables { get; set; }
+    public ItemTables? ItemTables { get; set; }
 
     /// <summary>E20.c1b K2: the balance tables, the threshold and the equipment records the host hands to the hero's tick (null: none, as the default members of the interface).</summary>
     public BalanceTables? BalanceTables { get; set; }
 
     public int BalanceThreshold { get; set; }
 
-    public AlundraEquipmentRecords? EquipmentRecords { get; set; }
+    public EquipmentRecords? EquipmentRecords { get; set; }
 
     /// <summary>E20.f1a: the effect stage the host hands to the hero's tick (null: none, as the default member of the interface, so the hold spark and the burst of a charge create nothing).</summary>
     public AlundraEffectStage? EffectStage { get; set; }

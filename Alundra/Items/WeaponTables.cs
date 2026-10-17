@@ -18,7 +18,7 @@ namespace Alundra.Items;
 /// projectile after the delay of the record].</description></item>
 /// </list>
 /// </summary>
-internal static class AlundraWeaponTables
+internal static class WeaponTables
 {
     /// <summary>Address of <see cref="RecordIndexOfItem"/> in the executable.</summary>
     public const uint ItemToRecordAddress = 0x80028C14;

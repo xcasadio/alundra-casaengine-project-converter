@@ -16,7 +16,7 @@ namespace Alundra.UI.SubInventory;
 /// and <c>UpdateCursorSpritePosition</c>'s own reference table (plan §1.5). No MGUI type appears anywhere in
 /// this file, same "pure function of plain data" shape as <see cref="AlundraInventoryComposer"/> - every
 /// input is either a director-exposed value or a value the caller (SI4's presenter) already resolved through
-/// <see cref="AlundraItemTables"/>/<see cref="GameState"/>.
+/// <see cref="ItemTables"/>/<see cref="GameState"/>.
 ///
 /// <b>D-E13D-34 (icons at their original top-left, no centring)</b>: every icon - armory, key items, armor,
 /// boots - is drawn where the original draws it, whatever its sprite's size; the author's "au plus simple",
@@ -41,12 +41,12 @@ public static class AlundraSubInventoryComposer
     /// <param name="boxPositions">The seven boxes' current native (X, Y), <see cref="AlundraSubInventoryDirector.BoxPosition"/>
     /// order.</param>
     /// <param name="armoryIconAssetIds">7 entries (Rubis..Diamant) - the icon asset id for each OWNED crest
-    /// (<see cref="AlundraSubInventoryDirector.ArmoryOwned"/> true and <see cref="AlundraItemTables.TryGetIconAssetId"/>
+    /// (<see cref="AlundraSubInventoryDirector.ArmoryOwned"/> true and <see cref="ItemTables.TryGetIconAssetId"/>
     /// resolved), null otherwise (not owned, or no icon).</param>
     /// <param name="keyItemIconAssetIds">5 entries, the icon asset id for each entry of
     /// <see cref="AlundraSubInventoryDirector.KeyItemIds"/> that is filled and resolves, null otherwise.</param>
     /// <param name="armorIconAssetId">The equipped armor's icon (<see cref="AlundraSubInventoryDirector.ArmorItemId"/>
-    /// resolved through <see cref="AlundraItemTables.TryGetIconAssetId"/>), or null when nothing is equipped
+    /// resolved through <see cref="ItemTables.TryGetIconAssetId"/>), or null when nothing is equipped
     /// there (or it has no icon) - hides both the icon and its frame.</param>
     /// <param name="bootsIconAssetId">Same as <paramref name="armorIconAssetId"/>, boots.</param>
     /// <param name="cursorReference"><see cref="AlundraSubInventoryDirector.CursorReference"/>'s own result

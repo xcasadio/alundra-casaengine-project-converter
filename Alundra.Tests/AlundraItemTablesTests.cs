@@ -7,16 +7,16 @@ using Alundra.Items;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E13.c S3 (docs/plan-e13c-icones-hud.md): <see cref="AlundraItemTables"/> reads the three <c>Data/</c>
+/// E13.c S3 (docs/plan-e13c-icones-hud.md): <see cref="ItemTables"/> reads the three <c>Data/</c>
 /// item tables the converter republishes, and degrades to zeros - never an exception - when one is missing,
 /// unreadable or short. Driven off fixture directories, the way <see cref="AlundraSoundGroupIndexTableTests"/>
 /// drives its own table.
 /// </summary>
 public class AlundraItemTablesTests : IDisposable
 {
-    public AlundraItemTablesTests() => AlundraItemTables.ResetForTests();
+    public AlundraItemTablesTests() => ItemTables.ResetForTests();
 
-    public void Dispose() => AlundraItemTables.ResetForTests();
+    public void Dispose() => ItemTables.ResetForTests();
 
     [Fact]
     public void LoadsAllThreeTables_IndexedLikeTheOriginal()
@@ -30,13 +30,13 @@ public class AlundraItemTablesTests : IDisposable
             tables.ItemsProperties[8], tables.ItemsProperties[9],
         });
         Assert.Equal(65535, tables.ItemsProperties[0 * 5 + 4]); // item 0 has no icon
-        Assert.Equal(AlundraItemTables.ItemRowCount * AlundraItemTables.ItemColumnCount, tables.ItemsProperties.Count);
+        Assert.Equal(ItemTables.ItemRowCount * ItemTables.ItemColumnCount, tables.ItemsProperties.Count);
 
         // g_itemDropProperties[itemId].Field3 - the whole byte, unlock bit and low bits together.
         Assert.Equal(129, tables.DropField3[1]);
         Assert.Equal(130, tables.DropField3[17]);
         Assert.Equal(128, tables.DropField3[25]);
-        Assert.Equal(AlundraItemTables.DropRecordCount, tables.DropField3.Count);
+        Assert.Equal(ItemTables.DropRecordCount, tables.DropField3.Count);
 
         Assert.True(tables.TryGetIconAssetId(1, out var swordIcon));
         Assert.Equal(ItemTablesFixture.SwordIconAssetId, swordIcon);
@@ -49,8 +49,8 @@ public class AlundraItemTablesTests : IDisposable
         var projectPath = ItemTablesFixture.Write(null, null, null);
         try
         {
-            AlundraItemTables tables = null!;
-            Assert.Null(Record.Exception(() => tables = new AlundraItemTables(projectPath)));
+            ItemTables tables = null!;
+            Assert.Null(Record.Exception(() => tables = new ItemTables(projectPath)));
 
             Assert.All(tables.ItemsProperties, value => Assert.Equal(0, value));
             Assert.All(tables.DropField3, value => Assert.Equal(0, value));
@@ -72,8 +72,8 @@ public class AlundraItemTablesTests : IDisposable
         File.WriteAllText(Path.Combine(dataPath, "item-icon-index.json"), "{");
         try
         {
-            AlundraItemTables tables = null!;
-            Assert.Null(Record.Exception(() => tables = new AlundraItemTables(projectPath)));
+            ItemTables tables = null!;
+            Assert.Null(Record.Exception(() => tables = new ItemTables(projectPath)));
 
             Assert.All(tables.ItemsProperties, value => Assert.Equal(0, value));
             Assert.All(tables.DropField3, value => Assert.Equal(0, value));
@@ -92,12 +92,12 @@ public class AlundraItemTablesTests : IDisposable
         var projectPath = ItemTablesFixture.Write(properties, ItemTablesFixture.RealDrops(), ItemTablesFixture.RealIcons());
         try
         {
-            var tables = new AlundraItemTables(projectPath);
+            var tables = new ItemTables(projectPath);
 
             Assert.Equal(31, tables.ItemsProperties[1 * 5 + 4]);
             Assert.Equal(32, tables.ItemsProperties[2 * 5 + 4]);
             Assert.Equal(0, tables.ItemsProperties[3 * 5 + 4]); // item 3 was cut off
-            Assert.Equal(AlundraItemTables.ItemRowCount * AlundraItemTables.ItemColumnCount, tables.ItemsProperties.Count);
+            Assert.Equal(ItemTables.ItemRowCount * ItemTables.ItemColumnCount, tables.ItemsProperties.Count);
         }
         finally
         {
@@ -112,12 +112,12 @@ public class AlundraItemTablesTests : IDisposable
         var second = ItemTablesFixture.Write(null, null, null);
         try
         {
-            var a = AlundraItemTables.GetOrCreate(first);
+            var a = ItemTables.GetOrCreate(first);
 
-            Assert.Same(a, AlundraItemTables.GetOrCreate(first));
-            Assert.NotSame(a, AlundraItemTables.GetOrCreate(second));
+            Assert.Same(a, ItemTables.GetOrCreate(first));
+            Assert.NotSame(a, ItemTables.GetOrCreate(second));
             Assert.True(a.TryGetIconAssetId(1, out _));
-            Assert.False(AlundraItemTables.GetOrCreate(second).TryGetIconAssetId(1, out _));
+            Assert.False(ItemTables.GetOrCreate(second).TryGetIconAssetId(1, out _));
         }
         finally
         {

@@ -108,7 +108,7 @@ internal static class AlundraRandomShadow
     }
 
     /// <summary>
-    /// E20.e0b2 phase A: the virtual loot roll of one creation. <paramref name="roll"/> replays <see cref="AlundraLootRoll"/> with the draw it is given, which steps the virtual word <c>V</c> (never a copy of the real state)
+    /// E20.e0b2 phase A: the virtual loot roll of one creation. <paramref name="roll"/> replays <see cref="LootRoll"/> with the draw it is given, which steps the virtual word <c>V</c> (never a copy of the real state)
     /// and returns the steps it made (0, 1 or 2); the real state is not touched. Counted per attributed test as <c>virtual_rolls</c> (creations) and <c>virtual_roll_steps</c>.
     /// </summary>
     internal static void OnVirtualRoll(Func<Func<uint>, int> roll)

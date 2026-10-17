@@ -567,7 +567,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
     // (2) The probes of the oracle on the hero montage, tick by tick.
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraItemTables Tables() => AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
+    private static ItemTables Tables() => ItemTables.GetOrCreate(ProjectRootFinder.Find());
 
     private static void Equip(ContactHost host, int item)
     {

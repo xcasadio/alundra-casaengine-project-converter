@@ -34,7 +34,7 @@ namespace Alundra.Items;
 /// separate "not loaded" state: no item then has a slot, a count or an unlock bit, so every lookup the port
 /// makes returns the original's own sentinel, and a broken export simply shows no icon.
 /// </summary>
-public sealed class AlundraItemTables
+public sealed class ItemTables
 {
     private const string DataDirectoryName = "Data";
     private const string PropertiesFileName = "items-properties.json";
@@ -63,13 +63,13 @@ public sealed class AlundraItemTables
     private Guid? _inventoryPortraitAssetId;
 
     /// <summary>Loads from <c>Data/</c> under <see cref="EngineEnvironment.ProjectPath"/>.</summary>
-    public AlundraItemTables() : this(EngineEnvironment.ProjectPath)
+    public ItemTables() : this(EngineEnvironment.ProjectPath)
     {
     }
 
     /// <summary>Loads from <c>Data/</c> under <paramref name="projectPath"/> - the overload tests use to point
     /// at a temporary fixture directory instead of the real project.</summary>
-    public AlundraItemTables(string projectPath)
+    public ItemTables(string projectPath)
     {
         var dataPath = Path.Combine(projectPath, DataDirectoryName);
 
@@ -107,7 +107,7 @@ public sealed class AlundraItemTables
         {
             if (!File.Exists(filePath))
             {
-                Logs.WriteWarning($"AlundraItemTables: '{filePath}' not found; the inventories open without their portrait (degraded mode).");
+                Logs.WriteWarning($"ItemTables: '{filePath}' not found; the inventories open without their portrait (degraded mode).");
                 return;
             }
 
@@ -121,13 +121,13 @@ public sealed class AlundraItemTables
                 return;
             }
 
-            Logs.WriteWarning($"AlundraItemTables: '{filePath}' has no valid SpriteAssetId; the inventories open without their portrait (degraded mode).");
+            Logs.WriteWarning($"ItemTables: '{filePath}' has no valid SpriteAssetId; the inventories open without their portrait (degraded mode).");
         }
         catch (Exception ex)
         {
             _inventoryPortraitAssetId = null;
             Logs.WriteWarning(
-                $"AlundraItemTables: failed to load '{filePath}' ({ex.Message}); the inventories open without their portrait (degraded mode).");
+                $"ItemTables: failed to load '{filePath}' ({ex.Message}); the inventories open without their portrait (degraded mode).");
         }
     }
 
@@ -151,7 +151,7 @@ public sealed class AlundraItemTables
         {
             if (!File.Exists(filePath))
             {
-                Logs.WriteWarning($"AlundraItemTables: '{filePath}' not found; its entries read as zero (degraded mode).");
+                Logs.WriteWarning($"ItemTables: '{filePath}' not found; its entries read as zero (degraded mode).");
                 return;
             }
 
@@ -171,7 +171,7 @@ public sealed class AlundraItemTables
             if (rows.GetArrayLength() != rowCount)
             {
                 Logs.WriteWarning(
-                    $"AlundraItemTables: '{filePath}' holds {rows.GetArrayLength()} rows, {rowCount} expected; "
+                    $"ItemTables: '{filePath}' holds {rows.GetArrayLength()} rows, {rowCount} expected; "
                     + "missing rows read as zero, extra rows are ignored.");
             }
         }
@@ -179,7 +179,7 @@ public sealed class AlundraItemTables
         {
             clear();
             Logs.WriteWarning(
-                $"AlundraItemTables: failed to load '{filePath}' ({ex.Message}); its entries read as zero "
+                $"ItemTables: failed to load '{filePath}' ({ex.Message}); its entries read as zero "
                 + "(degraded mode).");
         }
     }
@@ -190,14 +190,14 @@ public sealed class AlundraItemTables
         {
             if (!File.Exists(filePath))
             {
-                Logs.WriteWarning($"AlundraItemTables: '{filePath}' not found; no item has an icon (degraded mode).");
+                Logs.WriteWarning($"ItemTables: '{filePath}' not found; no item has an icon (degraded mode).");
                 return;
             }
 
             var parsed = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(filePath));
             if (parsed == null)
             {
-                Logs.WriteWarning($"AlundraItemTables: '{filePath}' parsed to nothing; no item has an icon (degraded mode).");
+                Logs.WriteWarning($"ItemTables: '{filePath}' parsed to nothing; no item has an icon (degraded mode).");
                 return;
             }
 
@@ -213,7 +213,7 @@ public sealed class AlundraItemTables
         {
             _iconAssetIdByItemId.Clear();
             Logs.WriteWarning(
-                $"AlundraItemTables: failed to load '{filePath}' ({ex.Message}); no item has an icon (degraded mode).");
+                $"ItemTables: failed to load '{filePath}' ({ex.Message}); no item has an icon (degraded mode).");
         }
     }
 
@@ -222,15 +222,15 @@ public sealed class AlundraItemTables
     /// <see cref="AlundraSoundGroupIndexTable"/>'s own: two consecutive worlds over the same project read the
     /// three files only once, while two different projects never share cached tables.
     /// </summary>
-    private static readonly Dictionary<string, AlundraItemTables> SessionCacheByProjectPath = new();
+    private static readonly Dictionary<string, ItemTables> SessionCacheByProjectPath = new();
 
     /// <summary>Returns the cached tables for <paramref name="projectPath"/>, loading them on the first
     /// request.</summary>
-    public static AlundraItemTables GetOrCreate(string projectPath)
+    public static ItemTables GetOrCreate(string projectPath)
     {
         if (!SessionCacheByProjectPath.TryGetValue(projectPath, out var tables))
         {
-            tables = new AlundraItemTables(projectPath);
+            tables = new ItemTables(projectPath);
             SessionCacheByProjectPath[projectPath] = tables;
         }
 

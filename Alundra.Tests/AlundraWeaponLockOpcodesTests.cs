@@ -36,17 +36,17 @@ public sealed class AlundraWeaponLockOpcodesTests
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
-        public AlundraItemTables? Tables { get; set; }
-        public AlundraItemTables? ItemTables => Tables;
+        public ItemTables? Tables { get; set; }
+        public ItemTables? ItemTables => Tables;
     }
 
-    private static readonly AlundraItemTables RealTables = new(SaveGameDirectorTestSupport.FindProjectRoot());
+    private static readonly ItemTables RealTables = new(SaveGameDirectorTestSupport.FindProjectRoot());
 
     private static AlundraEntityScriptProxy NewEntity()
         => new() { Status = EntityStatus.Normal, LogicContextEntity = new Entity { Name = "logic" } };
 
     /// <summary>Runs the instruction bytes followed by <c>0x1A 9 0xFF</c>: animation 9 proves the opcode consumed exactly its size.</summary>
-    private static (EventProgramState State, EventTraceRecord First) Run(GameState gameState, AlundraItemTables? tables, params int[] instruction)
+    private static (EventProgramState State, EventTraceRecord First) Run(GameState gameState, ItemTables? tables, params int[] instruction)
     {
         var codes = instruction.Concat(new[] { 0x1A, 9, 0xFF }).ToArray();
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new int[6], Codes = codes };

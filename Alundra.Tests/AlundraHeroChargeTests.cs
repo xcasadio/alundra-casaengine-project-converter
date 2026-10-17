@@ -59,7 +59,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
     // The montage.
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraItemTables Tables() => AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
+    private static ItemTables Tables() => ItemTables.GetOrCreate(ProjectRootFinder.Find());
 
     /// <summary>One charge effect as the montage reads it: after its creation and the writes that follow, before its first update.</summary>
     internal readonly record struct Effect(int Id, bool MapTable, int X, int Y, int Z, int ForceX, int ForceY, int ForceZ, int Mode, int Index = -1);

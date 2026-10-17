@@ -108,7 +108,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
 
     /// <summary>
     /// E20.e0b2 (D-E0B-5, docs/plan-e20-heros.md section 1.17.2): the <c>Contents</c> byte of the sprite header (the binary reads it through the header pointer <c>+0x64</c>, byte <c>+0x1F</c>), the code the loot roll uses when the record
-    /// has none (<see cref="AlundraLootRoll"/>). Written at the creation by <see cref="EntitySpawnFactory.ApplyHeaderInitialization"/>; 0 when no header resolved and for the hero. Copied by <see cref="Clone"/>.
+    /// has none (<see cref="LootRoll"/>). Written at the creation by <see cref="EntitySpawnFactory.ApplyHeaderInitialization"/>; 0 when no header resolved and for the hero. Copied by <see cref="Clone"/>.
     /// </summary>
     public int HeaderContents;
     //public SiEntityRecord? EntityRecord;
@@ -425,7 +425,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     public int _17c;
     public uint CombinedVramFlagsOR;
 
-    /// <summary>E20.b B1: the weapon record of the equipped weapon (<see cref="AlundraWeaponTables"/>), the binary's <c>0x8012710C</c>. Posed at the head of every <see cref="PlayerManager.MovePlayer"/>
+    /// <summary>E20.b B1: the weapon record of the equipped weapon (<see cref="WeaponTables"/>), the binary's <c>0x8012710C</c>. Posed at the head of every <see cref="PlayerManager.MovePlayer"/>
     /// (<c>0x80031B8C</c>), read by <c>PlayerTryAttack</c>; 0 (the basic sword's record) until then. Hero only.</summary>
     internal int CurrentWeaponRecord;
 

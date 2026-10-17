@@ -35,15 +35,15 @@ public sealed class AlundraItemAndMoneyOpcodesTests
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
-        public AlundraItemTables? Tables { get; set; }
-        public AlundraItemTables? ItemTables => Tables;
+        public ItemTables? Tables { get; set; }
+        public ItemTables? ItemTables => Tables;
     }
 
-    private static readonly AlundraItemTables RealTables = LoadTables();
+    private static readonly ItemTables RealTables = LoadTables();
 
     /// <summary>The fixture's real rows plus the five items these tests touch, with the exported
     /// <c>alundra-project/Data/items-properties.json</c> values (key 61 max 99, 36 max 9, 41 max 1, 38 max 1, 88 max 1).</summary>
-    private static AlundraItemTables LoadTables()
+    private static ItemTables LoadTables()
     {
         var rows = ItemTablesFixture.RealProperties();
         rows[36] = new[] { 12, 0, 0, 9, 66 };
@@ -54,7 +54,7 @@ public sealed class AlundraItemAndMoneyOpcodesTests
         var projectPath = ItemTablesFixture.Write(rows, ItemTablesFixture.RealDrops(), ItemTablesFixture.RealIcons());
         try
         {
-            return new AlundraItemTables(projectPath);
+            return new ItemTables(projectPath);
         }
         finally
         {
@@ -195,10 +195,10 @@ public sealed class AlundraItemAndMoneyOpcodesTests
         var rows = ItemTablesFixture.RealProperties();
         rows[0] = new[] { 0, 0, 0, 1, 65535 };
         var projectPath = ItemTablesFixture.Write(rows, ItemTablesFixture.RealDrops(), ItemTablesFixture.RealIcons());
-        AlundraItemTables tables;
+        ItemTables tables;
         try
         {
-            tables = new AlundraItemTables(projectPath);
+            tables = new ItemTables(projectPath);
         }
         finally
         {

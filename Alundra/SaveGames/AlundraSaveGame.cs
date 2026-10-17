@@ -352,7 +352,7 @@ public sealed class AlundraSaveGame : ISaveGameData
         {
             var itemId = (i - 1) / 2;
             var max = i % 2 == 1 && itemId < PlayerManager.ItemsCount
-                ? itemsProperties[itemId * AlundraItemTables.ItemColumnCount + MaxCountColumn]
+                ? itemsProperties[itemId * ItemTables.ItemColumnCount + MaxCountColumn]
                 : 0;
 
             if (NumberOfItems[i] < 0 || NumberOfItems[i] > max)

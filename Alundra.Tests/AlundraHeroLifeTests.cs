@@ -82,7 +82,7 @@ public sealed class AlundraHeroLifeTests
         }
     }
 
-    private static AlundraItemTables ItemTables() => AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
+    private static ItemTables ItemTables() => Items.ItemTables.GetOrCreate(ProjectRootFinder.Find());
 
     private static BalanceTables BalanceTables() => Combat.BalanceTables.GetOrCreate(ProjectRootFinder.Find());
 
@@ -98,7 +98,7 @@ public sealed class AlundraHeroLifeTests
 
         public GameState State => Host.GameState;
 
-        public AlundraEquipmentRecords Records => Host.EquipmentRecords!;
+        public EquipmentRecords Records => Host.EquipmentRecords!;
     }
 
     private static readonly JsonElement KitInventory = JsonDocument.Parse("{\"owned\":[1,17,25],\"item\":null}").RootElement.Clone();
@@ -106,7 +106,7 @@ public sealed class AlundraHeroLifeTests
     /// <summary>The inventory of an oracle run (<c>meta.inventory</c>: the owned items, the equipped accessory), the weapon slot 1 of the new game, the stats as given through the real setters, and a hero created from them.</summary>
     private static Montage BuildMontage(JsonElement inventory, int hp, int hpMax)
     {
-        var host = new ContactHost { ItemTables = ItemTables(), BalanceTables = BalanceTables(), EquipmentRecords = new AlundraEquipmentRecords() };
+        var host = new ContactHost { ItemTables = ItemTables(), BalanceTables = BalanceTables(), EquipmentRecords = new EquipmentRecords() };
         var state = host.GameState;
         Array.Clear(state.NumberOfItems);
         foreach (var id in inventory.GetProperty("owned").EnumerateArray())
@@ -464,7 +464,7 @@ public sealed class AlundraHeroLifeTests
 
         Assert.All(m.Records.HeroSheet!.DamageResponses, b => Assert.Equal(0, b)); // oracle G-noarmour: record 0 of the balance table, all responses 0.
 
-        var bare = new AlundraEquipmentRecords();
+        var bare = new EquipmentRecords();
         PlayerManager.ComputeHeroSheet(new AlundraEntityScriptProxy(), bare); // no armour and no record of its own: nothing to copy.
         Assert.Null(bare.HeroSheet);
     }
@@ -472,31 +472,31 @@ public sealed class AlundraHeroLifeTests
     [Fact]
     public void TheMapLoad_EmptiesThePointersOnly_AndTheSixWordClearEmptiesTheItemWordsToo()
     {
-        var records = new AlundraEquipmentRecords();
+        var records = new EquipmentRecords();
         var record = new BalanceRecord(255, 15, 0, new byte[11], Array.Empty<BalanceAttack>(), null);
-        records.Set(AlundraEquipmentRecords.Armour, record, 0x12);
-        records.Set(AlundraEquipmentRecords.Accessory, record, 0x36);
+        records.Set(EquipmentRecords.Armour, record, 0x12);
+        records.Set(EquipmentRecords.Accessory, record, 0x36);
 
         records.Clear(); // 0x80044520.
 
-        Assert.Null(records[AlundraEquipmentRecords.Armour]);
-        Assert.Null(records[AlundraEquipmentRecords.Accessory]);
-        Assert.Equal(0x12, records.ItemIdOf(AlundraEquipmentRecords.Armour));
-        Assert.Equal(0x36, records.ItemIdOf(AlundraEquipmentRecords.Accessory));
+        Assert.Null(records[EquipmentRecords.Armour]);
+        Assert.Null(records[EquipmentRecords.Accessory]);
+        Assert.Equal(0x12, records.ItemIdOf(EquipmentRecords.Armour));
+        Assert.Equal(0x36, records.ItemIdOf(EquipmentRecords.Accessory));
 
         records.ClearAll(); // 0x800308A4-0x800308BC.
 
-        Assert.Equal(0, records.ItemIdOf(AlundraEquipmentRecords.Armour));
-        Assert.Equal(0, records.ItemIdOf(AlundraEquipmentRecords.Accessory));
+        Assert.Equal(0, records.ItemIdOf(EquipmentRecords.Armour));
+        Assert.Equal(0, records.ItemIdOf(EquipmentRecords.Accessory));
     }
 
     // -----------------------------------------------------------------------------------------
     // T2: step 7, the rules of the regeneration written from the disassembly (0x80030C20-0x80030D3C)
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraEquipmentRecords RecordsWithPeriods(params int[] periods)
+    private static EquipmentRecords RecordsWithPeriods(params int[] periods)
     {
-        var records = new AlundraEquipmentRecords();
+        var records = new EquipmentRecords();
         for (var slot = 0; slot < periods.Length; slot++)
         {
             records.Set(slot, new BalanceRecord(255, 15, periods[slot], new byte[11], Array.Empty<BalanceAttack>(), null), slot + 1);
@@ -505,7 +505,7 @@ public sealed class AlundraHeroLifeTests
         return records;
     }
 
-    private static void Regenerate(AlundraEntityScriptProxy hero, GameState state, AlundraEquipmentRecords? records, uint hold = 0)
+    private static void Regenerate(AlundraEntityScriptProxy hero, GameState state, EquipmentRecords? records, uint hold = 0)
     {
         var pad = new PadState { ButtonsHold = hold };
         PlayerManager.RegenerateLife(hero, in pad, state, records);
@@ -819,7 +819,7 @@ public sealed class AlundraHeroLifeArcTests
         Assert.NotNull(records.HeroSheet);
         Assert.All(records.HeroSheet!.DamageResponses, b => Assert.Equal(0x10, b)); // cloth, dagger, nothing: the kit's sheet, before any tick.
         Assert.Equal(0, records.BootsLevel);
-        Assert.Null(records[AlundraEquipmentRecords.Armour]); // the map load left the pointers empty, the first tick fills them.
+        Assert.Null(records[EquipmentRecords.Armour]); // the map load left the pointers empty, the first tick fills them.
     }
 
     [Fact]
@@ -834,11 +834,11 @@ public sealed class AlundraHeroLifeArcTests
         });
 
         Assert.Equal(0x33, ArcRun.State.PlayerStats.ItemId); // the adoption's own fill restored it.
-        Assert.Null(arc.Proxy.EquipmentRecords[AlundraEquipmentRecords.Accessory]);
+        Assert.Null(arc.Proxy.EquipmentRecords[EquipmentRecords.Accessory]);
 
         arc.OneFrame();
 
         Assert.Equal(0x34, ArcRun.State.PlayerStats.ItemId);
-        Assert.Equal(0x33, arc.Proxy.EquipmentRecords.ItemIdOf(AlundraEquipmentRecords.Accessory));
+        Assert.Equal(0x33, arc.Proxy.EquipmentRecords.ItemIdOf(EquipmentRecords.Accessory));
     }
 }

@@ -177,8 +177,8 @@ public sealed class AlundraCreationSwitchClockTests : IDisposable
         private void Arm()
         {
             var hero = Arc.Hero;
-            hero.WeaponRecordPointer = AlundraWeaponTables.AnimationAddress(8, air: false);
-            hero.WeaponStepCounter = AlundraWeaponTables.RecordByte(hero.WeaponRecordPointer + 2);
+            hero.WeaponRecordPointer = WeaponTables.AnimationAddress(8, air: false);
+            hero.WeaponStepCounter = WeaponTables.RecordByte(hero.WeaponRecordPointer + 2);
             hero.TargetAnimationId = 0x13;
         }
 

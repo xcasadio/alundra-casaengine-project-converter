@@ -143,7 +143,7 @@ internal sealed class ArcRun : IDisposable
     public static GameState State => GameState.Instance;
 
     /// <summary>E20.f0 T4: the item tables of the world, which the hero's inventory setters need (non-null in an arc with <see cref="ArcSpec.Prefabs"/>).</summary>
-    private AlundraItemTables InventoryTables
+    private ItemTables InventoryTables
         => ((IScriptHost)Proxy).ItemTables
            ?? throw new InvalidOperationException($"Arc '{Spec.Name}': the world has no item tables (the inventory helpers need an arc with Prefabs).");
 

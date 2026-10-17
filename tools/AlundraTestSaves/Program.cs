@@ -115,7 +115,7 @@ internal static class Program
         Logs.AddLogger(new ConsoleLogger(output, error));
 
         // 3. The item tables: the loader never throws and answers zeroed tables for an absent file.
-        var tables = AlundraItemTables.GetOrCreate(projectDirectory);
+        var tables = ItemTables.GetOrCreate(projectDirectory);
         if (!tables.ItemsProperties.Any(value => value != 0) || !tables.DropField3.Any(value => value != 0))
         {
             error.WriteLine($"the item tables of '{projectDirectory}' are not loaded (ItemsProperties or DropField3 is all zero): expected Data/items-properties.json and its siblings.");

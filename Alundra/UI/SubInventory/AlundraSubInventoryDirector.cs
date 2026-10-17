@@ -72,13 +72,13 @@ public sealed class AlundraSubInventoryDirector
     private bool _hasTickedSinceOpen;
 
     private GameState? _gameState;
-    private AlundraItemTables? _itemTables;
+    private ItemTables? _itemTables;
     private IAlundraSoundPlayer? _soundPlayer;
 
     /// <summary>Re-points this session-scoped instance, same "re-point without touching state" contract as
     /// <see cref="AlundraInventoryDirector.AttachToWorld"/>. Every argument null is tolerated (no live
     /// session yet) - <see cref="Tick"/>/<see cref="OpenFromPostProcess"/> then degrade to no-ops.</summary>
-    public void AttachToWorld(GameState? gameState, AlundraItemTables? itemTables, IAlundraSoundPlayer? soundPlayer)
+    public void AttachToWorld(GameState? gameState, ItemTables? itemTables, IAlundraSoundPlayer? soundPlayer)
     {
         _gameState = gameState;
         _itemTables = itemTables;
@@ -339,9 +339,9 @@ public sealed class AlundraSubInventoryDirector
             return -1;
         }
 
-        for (var id = startIndex; id < AlundraItemTables.ItemRowCount; id++)
+        for (var id = startIndex; id < ItemTables.ItemRowCount; id++)
         {
-            if (_itemTables.ItemsProperties[id * AlundraItemTables.ItemColumnCount] == wantedSlot
+            if (_itemTables.ItemsProperties[id * ItemTables.ItemColumnCount] == wantedSlot
                 && PlayerManager.GetNumberOfItem(_gameState, id) > 0)
             {
                 return id;

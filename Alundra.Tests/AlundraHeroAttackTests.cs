@@ -55,7 +55,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
     // The montage and the comparison.
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraItemTables Tables() => AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
+    private static ItemTables Tables() => ItemTables.GetOrCreate(ProjectRootFinder.Find());
 
     /// <summary>The new-game inventory (the kit: the basic sword equipped), then <paramref name="item"/> owned and its slot equipped, or no weapon at all.</summary>
     private static void Equip(ContactHost host, int? item = null, bool noWeapon = false)
@@ -398,16 +398,16 @@ public sealed class AlundraHeroAttackTests : IDisposable
     [Fact]
     public void B1_TheTablesAreTheBinarys_AddressesAndValues()
     {
-        Assert.Equal(0x80028C79u, AlundraWeaponTables.AnimationAddress(0, air: false));
-        Assert.Equal(0x80028C7Du, AlundraWeaponTables.AnimationAddress(0, air: true));
-        Assert.Equal(0x80028CE1u, AlundraWeaponTables.AnimationAddress(8, air: false)); // Hunter's Bow, as the oracle journals it.
-        Assert.Equal(0x3F, AlundraWeaponTables.RecordByte(AlundraWeaponTables.AnimationAddress(1, air: false)));
-        Assert.Equal(0x41, AlundraWeaponTables.RecordByte(AlundraWeaponTables.AnimationAddress(1, air: true)));
-        Assert.Equal(new[] { 0, 0, 1, 2, 3, 8, 9, 10, 11, 6, 7, 0, 0, 0, 5, 0, 4, 0 }, Enumerable.Range(0, 18).Select(i => AlundraWeaponTables.RecordIndexOfItem((uint)i)).ToArray());
-        Assert.Equal(0, AlundraWeaponTables.RecordIndexOfItem(PlayerManager.NoItem));
-        Assert.Equal(0, AlundraWeaponTables.RecordIndexOfItem(99));
-        Assert.True(AlundraWeaponTables.AnimationSpawnsAfterDelay(0x13) && AlundraWeaponTables.AnimationSpawnsAfterDelay(0x18) && !AlundraWeaponTables.AnimationSpawnsAfterDelay(0x10));
-        Assert.True(AlundraWeaponTables.AnimationCountsCharge(0x2D) && AlundraWeaponTables.AnimationCountsCharge(0) && !AlundraWeaponTables.AnimationCountsCharge(0x10));
+        Assert.Equal(0x80028C79u, WeaponTables.AnimationAddress(0, air: false));
+        Assert.Equal(0x80028C7Du, WeaponTables.AnimationAddress(0, air: true));
+        Assert.Equal(0x80028CE1u, WeaponTables.AnimationAddress(8, air: false)); // Hunter's Bow, as the oracle journals it.
+        Assert.Equal(0x3F, WeaponTables.RecordByte(WeaponTables.AnimationAddress(1, air: false)));
+        Assert.Equal(0x41, WeaponTables.RecordByte(WeaponTables.AnimationAddress(1, air: true)));
+        Assert.Equal(new[] { 0, 0, 1, 2, 3, 8, 9, 10, 11, 6, 7, 0, 0, 0, 5, 0, 4, 0 }, Enumerable.Range(0, 18).Select(i => WeaponTables.RecordIndexOfItem((uint)i)).ToArray());
+        Assert.Equal(0, WeaponTables.RecordIndexOfItem(PlayerManager.NoItem));
+        Assert.Equal(0, WeaponTables.RecordIndexOfItem(99));
+        Assert.True(WeaponTables.AnimationSpawnsAfterDelay(0x13) && WeaponTables.AnimationSpawnsAfterDelay(0x18) && !WeaponTables.AnimationSpawnsAfterDelay(0x10));
+        Assert.True(WeaponTables.AnimationCountsCharge(0x2D) && WeaponTables.AnimationCountsCharge(0) && !WeaponTables.AnimationCountsCharge(0x10));
     }
 
     // -----------------------------------------------------------------------------------------

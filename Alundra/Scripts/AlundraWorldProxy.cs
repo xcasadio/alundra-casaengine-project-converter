@@ -415,17 +415,17 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E13.c S3 (docs/plan-e13c-icones-hud.md): the three item tables the converter republishes under
-    /// <c>Data/</c> - see <see cref="AlundraItemTables"/>'s own doc. Resolved through the same kind of
+    /// <c>Data/</c> - see <see cref="Items.ItemTables"/>'s own doc. Resolved through the same kind of
     /// session cache as <see cref="SpriteRecordCatalog"/> above, for the same reason: two consecutive worlds
     /// over one project read the files once. Internal and assignable so tests swap in fixture tables, the
     /// same seam <see cref="SpriteRecordCatalog"/> offers.
     /// </summary>
-    internal AlundraItemTables ItemTables = AlundraItemTables.GetOrCreate(EngineEnvironment.ProjectPath);
+    internal ItemTables ItemTables = ItemTables.GetOrCreate(EngineEnvironment.ProjectPath);
 
-    AlundraItemTables? IEntityWorldContext.ItemTables => ItemTables;
+    ItemTables? IEntityWorldContext.ItemTables => ItemTables;
 
     /// <summary>E20.b B1: the same tables for the hero's <c>MovePlayer</c>, which resolves the equipped weapon from them.</summary>
-    AlundraItemTables? IScriptHost.ItemTables => ItemTables;
+    ItemTables? IScriptHost.ItemTables => ItemTables;
 
     /// <summary>
     /// E20.c1a C1 (docs/plan-e20-heros.md section 1.5): the 512 balance entries (<c>Data/balance.json</c>), loaded once per project like <see cref="ItemTables"/>. Internal and assignable so tests swap in their own.
@@ -444,11 +444,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): the three equipment records (<c>0x80146E00-0x80146E14</c>), one set per world. The hero's tick fills them (<see cref="PlayerManager"/>, <c>UpdateItemEffectState</c>
     /// steps 2 to 5); they are emptied when the map is loaded (<c>InitializeItems</c> <c>0x80044520</c>), here with the threshold.
     /// </summary>
-    internal AlundraEquipmentRecords EquipmentRecords = new();
+    internal EquipmentRecords EquipmentRecords = new();
 
-    AlundraEquipmentRecords? IScriptHost.EquipmentRecords => EquipmentRecords;
+    EquipmentRecords? IScriptHost.EquipmentRecords => EquipmentRecords;
 
-    AlundraEquipmentRecords? IEntityWorldContext.EquipmentRecords => EquipmentRecords;
+    EquipmentRecords? IEntityWorldContext.EquipmentRecords => EquipmentRecords;
 
     /// <summary>
     /// Port of the original global <c>g_activeCollisionEntity</c>: the entity currently involved in the
@@ -3473,7 +3473,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             return;
         }
 
-        var result = AlundraLootRoll.Roll(hasRecord, proxy.ContentsGameFlag, recordCode, proxy.HeaderContents, GameState, static () => (uint)AlundraRandom.Next());
+        var result = LootRoll.Roll(hasRecord, proxy.ContentsGameFlag, recordCode, proxy.HeaderContents, GameState, static () => (uint)AlundraRandom.Next());
         proxy.ContentsItemId = result.ItemId;
         proxy.ContentsGameFlag = result.GameFlag;
     }

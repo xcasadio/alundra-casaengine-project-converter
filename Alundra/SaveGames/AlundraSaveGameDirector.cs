@@ -564,7 +564,7 @@ public sealed class AlundraSaveGameDirector
                 rules = new AlundraSaveGameRules(
                     projectPath,
                     path => AssetCatalog.GetByFileName(path) != null,
-                    AlundraItemTables.GetOrCreate(projectPath));
+                    ItemTables.GetOrCreate(projectPath));
             }
         }
         catch (Exception ex)

@@ -46,7 +46,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
 
     private readonly string _projectPath;
     private readonly Dictionary<int, string> _worldPaths = new();
-    private readonly AlundraItemTables _itemTables;
+    private readonly ItemTables _itemTables;
     private readonly AlundraSaveGameRules _rules;
 
     public AlundraSaveGameValidationTests()
@@ -121,12 +121,12 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
         return rows;
     }
 
-    private static AlundraItemTables LoadItemTables(int[][]? properties)
+    private static ItemTables LoadItemTables(int[][]? properties)
     {
         var path = ItemTablesFixture.Write(properties, null, null);
         try
         {
-            return new AlundraItemTables(path);
+            return new ItemTables(path);
         }
         finally
         {

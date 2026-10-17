@@ -13,7 +13,7 @@ namespace Alundra.Items;
 /// <see cref="PlayerManager"/> (<c>UpdateItemEffectState</c> <c>0x800307E8</c>, steps 2 to 5) and read only by the damage calculation (<see cref="Damage"/>, <c>0x8004464C</c>) and by the step 6 of
 /// <c>UpdateItemEffectState</c> (E20.c2). One instance per world, reached through <see cref="IScriptHost.EquipmentRecords"/> and <see cref="IEntityWorldContext.EquipmentRecords"/>.
 /// </summary>
-public sealed class AlundraEquipmentRecords
+public sealed class EquipmentRecords
 {
     /// <summary>The slot of the armour record (<c>0x80146E00</c>).</summary>
     public const int Armour = 0;

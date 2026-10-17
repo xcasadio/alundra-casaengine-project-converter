@@ -12,7 +12,7 @@ namespace Alundra.UI.SubInventory;
 
 /// <summary>
 /// E13.d SI4 (docs/plan-e13d-sous-inventaire.md): reads <see cref="AlundraSubInventoryDirector"/>'s own
-/// already-ticked state plus the item lookups it does not own (<see cref="AlundraItemTables"/>,
+/// already-ticked state plus the item lookups it does not own (<see cref="ItemTables"/>,
 /// <see cref="GameState"/>), composes a <see cref="SubInventoryDisplayModel"/> through the pure
 /// <see cref="AlundraSubInventoryComposer"/>, and writes it into the screen's
 /// <see cref="AlundraSubInventoryViewModel"/> (parent ADR-0002), which the screen's XAML binds - one
@@ -34,7 +34,7 @@ public sealed class AlundraSubInventoryPresenter
 {
     private readonly AlundraSubInventoryDirector _director;
     private readonly GameState _gameState;
-    private readonly AlundraItemTables _itemTables;
+    private readonly ItemTables _itemTables;
     private readonly AlundraSubInventoryViewModel _viewModel;
     private readonly IUIScreen _screen;
     private readonly IUIViewRuntime? _uiView;
@@ -46,7 +46,7 @@ public sealed class AlundraSubInventoryPresenter
     public AlundraSubInventoryPresenter(
         AlundraSubInventoryDirector director,
         GameState gameState,
-        AlundraItemTables itemTables,
+        ItemTables itemTables,
         AlundraSubInventoryViewModel viewModel,
         IUIScreen screen,
         IUIViewRuntime? uiView)

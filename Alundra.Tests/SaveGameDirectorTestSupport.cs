@@ -93,7 +93,7 @@ internal static class SaveGameDirectorTestSupport
     internal static AlundraSaveGameRules RealRules()
     {
         var root = FindProjectRoot();
-        return new AlundraSaveGameRules(root, _ => true, new AlundraItemTables(root));
+        return new AlundraSaveGameRules(root, _ => true, new ItemTables(root));
     }
 
     /// <summary>A hero on the ground at a tile of map 389 (the New Game tile by default).</summary>

@@ -26,7 +26,7 @@ internal static class ItemTablesFixture
 
     public static int[][] RealProperties()
     {
-        var rows = NewRows(AlundraItemTables.ItemRowCount, AlundraItemTables.ItemColumnCount);
+        var rows = NewRows(ItemTables.ItemRowCount, ItemTables.ItemColumnCount);
         rows[0] = new[] { 0, 0, 0, 0, 65535 };
         rows[1] = new[] { 1, 1, 0, 1, 31 };
         rows[2] = new[] { 1, 1, 1, 1, 32 };
@@ -39,7 +39,7 @@ internal static class ItemTablesFixture
 
     public static int[][] RealDrops()
     {
-        var rows = NewRows(AlundraItemTables.DropRecordCount, 4);
+        var rows = NewRows(ItemTables.DropRecordCount, 4);
         rows[1] = new[] { 0, 0, 129, 1 };
         rows[17] = new[] { 0, 0, 130, 1 };
         rows[25] = new[] { 0, 0, 128, 1 };
@@ -84,13 +84,13 @@ internal static class ItemTablesFixture
         return projectPath;
     }
 
-    /// <summary>The real tables, loaded through <see cref="AlundraItemTables"/> itself.</summary>
-    public static AlundraItemTables LoadReal()
+    /// <summary>The real tables, loaded through <see cref="ItemTables"/> itself.</summary>
+    public static ItemTables LoadReal()
     {
         var projectPath = Write(RealProperties(), RealDrops(), RealIcons());
         try
         {
-            return new AlundraItemTables(projectPath);
+            return new ItemTables(projectPath);
         }
         finally
         {
@@ -129,7 +129,7 @@ internal static class ItemTablesFixture
 /// </summary>
 public class AlundraItemInventoryTests
 {
-    private static GameState NewGameState(AlundraItemTables tables)
+    private static GameState NewGameState(ItemTables tables)
     {
         var state = new GameState();
         PlayerManager.InitializeNewGameInventory(state, tables);
@@ -194,7 +194,7 @@ public class AlundraItemInventoryTests
         var projectPath = ItemTablesFixture.Write(null, null, null);
         try
         {
-            var tables = new AlundraItemTables(projectPath);
+            var tables = new ItemTables(projectPath);
             var state = NewGameState(tables);
 
             Assert.Equal(1, state.PlayerStats.WeaponId);
@@ -320,7 +320,7 @@ public class AlundraItemInventoryTests
         var projectPath = ItemTablesFixture.Write(properties, ItemTablesFixture.RealDrops(), ItemTablesFixture.RealIcons());
         try
         {
-            var tables = new AlundraItemTables(projectPath);
+            var tables = new ItemTables(projectPath);
             var state = new GameState();
             state.NumberOfItems[2 * 2 + 1] = 1;
             state.NumberOfItems[4 * 2 + 1] = 1; // higher priority, never looked at
@@ -341,7 +341,7 @@ public class AlundraItemInventoryTests
         var projectPath = ItemTablesFixture.Write(properties, ItemTablesFixture.RealDrops(), ItemTablesFixture.RealIcons());
         try
         {
-            var tables = new AlundraItemTables(projectPath);
+            var tables = new ItemTables(projectPath);
             var state = new GameState();
             state.NumberOfItems[1 * 2 + 1] = 1;
             state.NumberOfItems[3 * 2 + 1] = 1;

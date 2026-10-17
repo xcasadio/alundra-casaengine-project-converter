@@ -115,7 +115,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
     public void NewGameCapture_OnMap389_IsAccepted_AtDataVersion1()
     {
         var root = FindProjectRoot();
-        var tables = new AlundraItemTables(root);
+        var tables = new ItemTables(root);
         var state = new GameState();
         PlayerManager.InitializeNewGameInventory(state, tables);
         Assert.Contains(state.NumberOfItems, count => count != 0); // the New Game inventory is really there.
@@ -137,7 +137,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
 
     // ---- Bounds, then the jauge and the inventories (SC5) --------------------------------------------------
 
-    private static AlundraSaveGame BoundsSave(AlundraItemTables tables, bool atMaximum)
+    private static AlundraSaveGame BoundsSave(ItemTables tables, bool atMaximum)
     {
         var save = new AlundraSaveGame { InitialMapId = 389 };
         for (var i = 0; i < save.MapIdToInternalMapIndexTable.Length; i++)
@@ -167,7 +167,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         save.DeathRetryCount = byte.MaxValue;
         for (var id = 0; id < PlayerManager.ItemsCount; id++)
         {
-            save.NumberOfItems[id * 2 + 1] = (short)tables.ItemsProperties[id * AlundraItemTables.ItemColumnCount + 3];
+            save.NumberOfItems[id * 2 + 1] = (short)tables.ItemsProperties[id * ItemTables.ItemColumnCount + 3];
         }
 
         Assert.Contains(save.NumberOfItems, count => count > 1); // a real ceiling above 1 (items 36 and 61).
@@ -218,7 +218,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
     public void SaveAtTheBounds_Applied_ThenDrawnByTheJaugeAndBothInventories_WithoutException(bool atMaximum)
     {
         var root = FindProjectRoot();
-        var tables = new AlundraItemTables(root);
+        var tables = new ItemTables(root);
         var rules = new AlundraSaveGameRules(root, _ => true, tables);
         var save = BoundsSave(tables, atMaximum);
         Assert.True(save.TryValidate(rules, out var error), error);

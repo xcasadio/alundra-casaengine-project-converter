@@ -31,7 +31,7 @@ public sealed class AlundraEnemyHitReactionTests
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
-        public AlundraEquipmentRecords? EquipmentRecords { get; set; }
+        public EquipmentRecords? EquipmentRecords { get; set; }
         public uint HeroAnimationLatch { get; set; }
     }
 
@@ -102,8 +102,8 @@ public sealed class AlundraEnemyHitReactionTests
     public void HitReaction_ReadsTheEquipmentAndTheLatchOfTheContext()
     {
         // K2 of the E20.c1b oracle: an attack with the bit 0x80 adds the power of Attacks[g + 1 < count ? g + 1 : 0] of each equipment record, g = the latch as a signed number
-        var records = new AlundraEquipmentRecords();
-        records.Set(AlundraEquipmentRecords.Weapon, new BalanceRecord(255, 21, 0, new byte[11], new[] { new BalanceAttack(1, 2), new BalanceAttack(1, 3), new BalanceAttack(1, 5) }, null), 4);
+        var records = new EquipmentRecords();
+        records.Set(EquipmentRecords.Weapon, new BalanceRecord(255, 21, 0, new byte[11], new[] { new BalanceAttack(1, 2), new BalanceAttack(1, 3), new BalanceAttack(1, 5) }, null), 4);
         var expected = new Dictionary<uint, int> { [1] = 100 - 6, [0] = 100 - 4, [16] = 100 - 3 };      // (1 + Attacks[2].Power 5), (1 + Attacks[1] 3), (1 + Attacks[0] 2) at response 0x10
         foreach (var (latch, hp) in expected)
         {

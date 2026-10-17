@@ -21,7 +21,7 @@ internal static class Damage
     /// <c>((power + equipment) * r) &gt;&gt; 4</c>, at least 1, taken off down to 0. The equipment term (attribute bit <c>0x80</c>, for ANY attacker) is, for each non-empty equipment record, the power of
     /// <c>Attacks[g + 1 &lt; count ? g + 1 : 0]</c>, <c>g</c> being <paramref name="animationLatch"/> read as a signed number (a record with no attack counts nothing).
     /// </summary>
-    public static int ResolveBalanceTarget(BalanceAttack? attack, BalanceRecord? sheet, int hp, AlundraEquipmentRecords? equipment, uint animationLatch)
+    public static int ResolveBalanceTarget(BalanceAttack? attack, BalanceRecord? sheet, int hp, EquipmentRecords? equipment, uint animationLatch)
     {
         if (sheet == null || attack == null || attack.Attribute == 0)
         {
@@ -43,7 +43,7 @@ internal static class Damage
         var power = attack.Power;
         if ((attack.Attribute & EquipmentBit) != 0 && equipment != null)
         {
-            for (var slot = 0; slot < AlundraEquipmentRecords.Count; slot++)
+            for (var slot = 0; slot < EquipmentRecords.Count; slot++)
             {
                 power += EquipmentPower(equipment[slot], animationLatch);
             }
@@ -76,7 +76,7 @@ internal static class Damage
     /// does not test it for null, a caller only asks after a hit; here an absent attacker leaves the life alone) against <paramref name="sheet"/>, the sheet of the target (<c>+0x1C4</c>, or <c>0x80127008</c> for the hero),
     /// and returns whether the life is now 0.
     /// </summary>
-    public static bool ComputeNewHp(AlundraEntityScriptProxy target, BalanceRecord? sheet, AlundraEquipmentRecords? equipment, uint animationLatch)
+    public static bool ComputeNewHp(AlundraEntityScriptProxy target, BalanceRecord? sheet, EquipmentRecords? equipment, uint animationLatch)
     {
         var attack = (target.TouchingEntity?.GameplayProxy as AlundraEntityScriptProxy)?.CurrentAttack;
         target.Hp = ResolveBalanceTarget(attack, sheet, target.Hp, equipment, animationLatch);

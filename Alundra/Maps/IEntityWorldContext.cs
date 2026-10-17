@@ -134,7 +134,7 @@ public interface IEntityWorldContext
     /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): this world's three equipment records (<c>0x80146E00-0x80146E14</c>), read by the damage calculation (<see cref="Damage"/>) of the native handlers that
     /// decide on a hit (E14.a) and of the hero's entry (E20.c2). A default interface member, null like <see cref="ItemTables"/>.
     /// </summary>
-    AlundraEquipmentRecords? EquipmentRecords => null;
+    EquipmentRecords? EquipmentRecords => null;
 
     /// <summary>
     /// E14.a0b T4 (docs/plan-e14-ia-native.md section 1.2): the frozen animation of the hero (<c>0x80146DF8</c>, <see cref="HitPass.HeroAnimationLatch"/>), the second input the damage calculation of the native hit handlers needs next to
@@ -147,7 +147,7 @@ public interface IEntityWorldContext
     /// 0x82 (max count per item). A default interface member, same "degraded, skip" shape as <see cref="SoundPlayer"/>:
     /// null makes that branch a degraded no-op. <see cref="AlundraWorldProxy"/> returns its own tables.
     /// </summary>
-    AlundraItemTables? ItemTables => null;
+    ItemTables? ItemTables => null;
 
     /// <summary>
     /// This session's background-music playback seam (docs/plan-e11c-musique.md, slice C1) - NOT

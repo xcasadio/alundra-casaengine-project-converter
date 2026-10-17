@@ -18,7 +18,7 @@ namespace Alundra.UI.Inventory;
 /// No MGUI type appears anywhere in this file (same "pure function of plain data" shape as
 /// <see cref="AlundraHudComposer"/>) - every input is either a director-exposed value or a value the
 /// caller (D5's presenter) already resolved through <see cref="PlayerManager"/>/
-/// <see cref="AlundraItemTables"/>, themselves plain C#, no MGUI.
+/// <see cref="ItemTables"/>, themselves plain C#, no MGUI.
 ///
 /// <b>D-E13D-10 (icons centred, not pixel-exact)</b>: every grid icon reuses
 /// <see cref="AlundraHudIcon"/>'s own centring formula (<see cref="AlundraHudIcon.ScreenLeft"/>/
@@ -67,7 +67,7 @@ public static class AlundraInventoryComposer
     /// <param name="slotItemIds">24 entries, <see cref="AlundraInventoryDirector.ResolveSlotItemId"/>'s
     /// own return per slot - null for an empty/unowned slot.</param>
     /// <param name="slotIconAssetIds">24 entries, the icon asset id for each slot with a resolved item
-    /// (<see cref="AlundraItemTables.TryGetIconAssetId"/>'s own result) - null where the item has no
+    /// (<see cref="ItemTables.TryGetIconAssetId"/>'s own result) - null where the item has no
     /// portrait, or the slot itself has none.</param>
     /// <param name="currentWeaponItemId">The equipped weapon's item id (<see cref="PlayerManager.GetItemIdFromCurrentWeapon"/>),
     /// or null when nothing is equipped/resolvable - used only to find which of slots 0-5 shows the

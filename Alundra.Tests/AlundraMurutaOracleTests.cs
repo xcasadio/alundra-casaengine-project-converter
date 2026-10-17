@@ -110,7 +110,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
-        public AlundraEquipmentRecords? EquipmentRecords { get; set; }
+        public EquipmentRecords? EquipmentRecords { get; set; }
         public uint HeroAnimationLatch { get; set; }
         public IAlundraSoundPlayer? SoundPlayer { get; set; }
     }
@@ -135,10 +135,10 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         }
     }
 
-    private static AlundraEquipmentRecords? _kit;
+    private static EquipmentRecords? _kit;
 
     /// <summary>The new-game kit as the oracle's D-calls had it (armour item 17 without attack, weapon item 1 with the attack (1, 1)), checked against the oracle by <see cref="AlundraBeannoideOracleTests"/>.</summary>
-    private static AlundraEquipmentRecords Kit()
+    private static EquipmentRecords Kit()
     {
         if (_kit != null)
         {
@@ -146,9 +146,9 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         }
 
         var state = new GameState();
-        var items = AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
+        var items = ItemTables.GetOrCreate(ProjectRootFinder.Find());
         PlayerManager.InitializeNewGameInventory(state, items);
-        var records = new AlundraEquipmentRecords();
+        var records = new EquipmentRecords();
         PlayerManager.FillEquipmentRecords(state, items, BalanceTables.GetOrCreate(ProjectRootFinder.Find()), 0, records);
         return _kit = records;
     }

@@ -111,14 +111,14 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
-        public AlundraEquipmentRecords? EquipmentRecords { get; set; }
+        public EquipmentRecords? EquipmentRecords { get; set; }
         public uint HeroAnimationLatch { get; set; }
     }
 
-    private static AlundraEquipmentRecords? _kit;
+    private static EquipmentRecords? _kit;
 
     /// <summary>The new-game kit as the oracle's D-calls had it: armour item 17 without attack, weapon item 1 with the attack (1, 1), no accessory (<c>kit.meta.equipment</c> of the E20.c1b oracle K2.json, checked by <see cref="TheKit_EqualsTheEquipmentOfTheOracle"/>).</summary>
-    private static AlundraEquipmentRecords Kit()
+    private static EquipmentRecords Kit()
     {
         if (_kit != null)
         {
@@ -126,9 +126,9 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
         }
 
         var state = new GameState();
-        var items = AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
+        var items = ItemTables.GetOrCreate(ProjectRootFinder.Find());
         PlayerManager.InitializeNewGameInventory(state, items);
-        var records = new AlundraEquipmentRecords();
+        var records = new EquipmentRecords();
         PlayerManager.FillEquipmentRecords(state, items, BalanceTables.GetOrCreate(ProjectRootFinder.Find()), 0, records);
         return _kit = records;
     }
@@ -459,7 +459,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
         using var document = JsonDocument.Parse(File.ReadAllText(path));
         var expected = document.RootElement.GetProperty("kit").GetProperty("meta").GetProperty("equipment").GetString();
         var records = Kit();
-        var actual = string.Join(", ", Enumerable.Range(0, AlundraEquipmentRecords.Count).Select(slot =>
+        var actual = string.Join(", ", Enumerable.Range(0, EquipmentRecords.Count).Select(slot =>
             $"[{slot}] " + (records[slot] is { } r ? $"item {records.ItemIdOf(slot)} [{string.Join(", ", r.Attacks.Select(a => $"({a.Attribute}, {a.Power})"))}]" : "null")));
 
         Assert.Equal(expected, actual);

@@ -128,10 +128,10 @@ public interface IScriptHost
 
     /// <summary>
     /// E20.b B1 (docs/plan-e20-heros.md section 1.4): this world's item tables, which <see cref="PlayerManager.MovePlayer"/> reads at its head to resolve the equipped weapon
-    /// (<c>GetItemIdFromCurrentWeapon</c>, then the weapon record of <see cref="AlundraWeaponTables"/>). A default interface member, null like <see cref="SoundPlayer"/>, so no other host needs to
+    /// (<c>GetItemIdFromCurrentWeapon</c>, then the weapon record of <see cref="WeaponTables"/>). A default interface member, null like <see cref="SoundPlayer"/>, so no other host needs to
     /// change: without tables the hero has no weapon, which the binary reads as record 0 (the basic sword's). <see cref="AlundraWorldProxy"/> returns its own tables; a rig may set some.
     /// </summary>
-    AlundraItemTables? ItemTables => null;
+    ItemTables? ItemTables => null;
 
     /// <summary>
     /// E20.c1a C1 (docs/plan-e20-heros.md section 1.5): this world's balance tables (<c>Data/balance.json</c>), from which an entity gets its record, life, attack and responses at its creation
@@ -146,7 +146,7 @@ public interface IScriptHost
     /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): this world's three equipment records (<c>0x80146E00-0x80146E14</c>), which the hero's <see cref="PlayerManager.MovePlayer"/> fills at every tick
     /// (<c>UpdateItemEffectState</c> steps 2 to 5). A default interface member, null like <see cref="BalanceTables"/>: a host without the seam keeps no equipment.
     /// </summary>
-    AlundraEquipmentRecords? EquipmentRecords => null;
+    EquipmentRecords? EquipmentRecords => null;
 
     /// <summary>
     /// E20.f1a (docs/plan-e20-heros.md section 1.9): this world's effect stage, on which the hero's <see cref="PlayerManager.MovePlayer"/> queues the hold spark and the burst of the charged attack
