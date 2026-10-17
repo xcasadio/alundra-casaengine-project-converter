@@ -863,7 +863,7 @@ F5, F6, F9 ; dans l'éditeur, la ligne « Script » d'un monde et d'une entité 
 **But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/` et `Support/` ; les classes de test sans préfixe ;
 aucune valeur attendue changée. Le classement de l'inventaire (`report_inventory.md` §7) sert de base, recensé à nouveau en T0.
 
-## 10. Tranche R6 — Documentation vivante ⏳ (détaillée le 2026-10-18 ; révision 2, en relecture de clôture)
+## 10. Tranche R6 — Documentation vivante 🚧 (détaillée le 2026-10-18 ; révision 2, en relecture de clôture)
 
 **Relecture (2026-10-18).** REVISE, trois blocages corrigés (FIX, révision 1) : (1) les lignes qui demandent du jugement ont leur texte
 cible fixé ci-dessous (« Cibles fixées ») et l'exécutant devient un `executor` ; (2) les lignes F ont une tâche, un texte et un
