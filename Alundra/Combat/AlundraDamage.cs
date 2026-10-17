@@ -1,5 +1,7 @@
 #nullable enable
-namespace Alundra.Scripts;
+using Alundra.Scripts;
+
+namespace Alundra.Combat;
 
 /// <summary>
 /// The damage functions of the binary as pure functions (E20.c1b K1, docs/plan-e20-heros.md section 1.6): <c>ResolveBalanceTarget</c> (<c>0x8004464C</c>) and <c>ComputeNewHp</c> (<c>0x8003A374</c>). Every input is a

@@ -2,6 +2,7 @@
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Alundra.Maps.Loop;
+using Alundra.Combat;
 
 namespace Alundra.Scripts;
 

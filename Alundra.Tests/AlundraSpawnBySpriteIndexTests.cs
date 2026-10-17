@@ -12,6 +12,7 @@ using static Alundra.Tests.SaveGameDirectorTestSupport;
 using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
+using Alundra.Combat;
 
 namespace Alundra.Tests;
 

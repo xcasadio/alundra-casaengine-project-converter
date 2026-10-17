@@ -2,6 +2,7 @@
 using System;
 using Alundra.Maps;
 using Alundra.Hero;
+using Alundra.Combat;
 
 namespace Alundra.Scripts;
 

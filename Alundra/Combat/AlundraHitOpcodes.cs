@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using Alundra.Entities;
 using Alundra.Events;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Combat;
 
 /// <summary>
 /// The questions the opcodes <c>0x87</c> (<c>0x80040048</c>) and <c>0x95</c> (<c>0x800407C0</c>) ask the hit state (E20.c1b K4, docs/plan-e20-heros.md section 1.6), as pure functions over entity proxies:

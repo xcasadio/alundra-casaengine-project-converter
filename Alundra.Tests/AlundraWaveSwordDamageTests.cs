@@ -1,7 +1,7 @@
 #nullable enable
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
+using Alundra.Combat;
 
 namespace Alundra.Tests;
 

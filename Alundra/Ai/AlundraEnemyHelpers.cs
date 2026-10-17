@@ -5,6 +5,7 @@ using Alundra.Maps;
 using Alundra.Events;
 using Alundra.Ai.Enemies;
 using Alundra.Scripts;
+using Alundra.Combat;
 
 namespace Alundra.Ai;
 

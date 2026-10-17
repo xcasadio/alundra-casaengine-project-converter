@@ -1,8 +1,9 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Combat;
 
 /// <summary>
 /// The hit pass of the binary, <c>UpdateBalanceRecords</c> (<c>0x80039300</c>, the last pass of the entity block, E20.c1a C3, docs/plan-e20-heros.md section 1.5). Pure logic over a list of entity proxies, headless-testable:

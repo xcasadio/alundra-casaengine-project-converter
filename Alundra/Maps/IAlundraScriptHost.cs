@@ -8,6 +8,7 @@ using Alundra.Scripts;
 using Alundra.Session;
 using Alundra.Events;
 using Alundra.Hero;
+using Alundra.Combat;
 
 namespace Alundra.Maps;
 

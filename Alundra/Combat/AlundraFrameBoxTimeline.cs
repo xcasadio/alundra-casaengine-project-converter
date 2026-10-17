@@ -5,7 +5,7 @@ using CasaEngine.Engine.Geometry;
 using CasaEngine.Framework.Assets.Animations;
 using Alundra.Entities.Spawning;
 
-namespace Alundra.Scripts;
+namespace Alundra.Combat;
 
 /// <summary>One frame box of an animation, in the binary's integers (E20.c1a C2): the three signed offsets and the three sizes, in pixels (the binary stores them <c>&lt;&lt; 16</c>, sizes minus 1).</summary>
 internal readonly record struct AlundraFrameBox(int OffsetX, int OffsetY, int OffsetZ, int Width, int Depth, int Height);

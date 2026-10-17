@@ -13,6 +13,7 @@ using Alundra.Events;
 using Alundra.Ai;
 using Alundra.Ai.Enemies;
 using Alundra.Hero;
+using Alundra.Combat;
 
 namespace Alundra.Tests;
 

@@ -4,6 +4,7 @@ using CasaEngine.Framework.AI.Navigation;
 using Alundra.Scripts;
 using Alundra.Entities;
 using Alundra.Events;
+using Alundra.Combat;
 
 namespace Alundra.Maps;
 

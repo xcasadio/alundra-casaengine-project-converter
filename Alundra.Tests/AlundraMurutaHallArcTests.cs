@@ -8,6 +8,7 @@ using Xunit.Abstractions;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Ai.Enemies;
+using Alundra.Combat;
 
 namespace Alundra.Tests;
 

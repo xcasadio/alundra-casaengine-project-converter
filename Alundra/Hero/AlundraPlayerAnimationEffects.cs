@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CasaEngine.Framework.Scene.Entities;
 using Alundra.Session;
 using Alundra.Scripts;
+using Alundra.Combat;
 
 namespace Alundra.Hero;
 
