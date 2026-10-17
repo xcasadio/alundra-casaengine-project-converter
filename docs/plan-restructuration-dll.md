@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
-2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 en attente de Q-R-3 ; R6 détaillée, à relire. Démarre après E20.e0a4 (plan E20, §1.16.4).
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée, à relire, en attente de Q-R-3 avant son T0a ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -858,12 +858,113 @@ après R6 ; **P4** des commentaires et des `<c>` gardent les anciens noms (≈ 9
 ligne vient du harnais des exécuteurs), ceux de T0 « Claude Opus 5.5 ». Reste la recette de l'auteur : nouvelle partie, les entités bougent,
 F5, F6, F9 ; dans l'éditeur, la ligne « Script » d'un monde et d'une entité sans avertissement.
 
-## 9. Tranche R5 — Tests en miroir ⚠️ (en attente de Q-R-3 : choix de structure de l'auteur ; découverte du 2026-10-17 dans `scratchpad/r5-disc/`, à regénérer après R4)
+## 9. Tranche R5 — Tests en miroir ⚠️ (détaillée le 2026-10-17, à relire ; T0a attend les réponses de l'auteur à Q-R-3)
 
-**But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/` et `Support/` ; les classes de test sans préfixe ;
-aucune valeur attendue changée. Le classement de l'inventaire (`report_inventory.md` §7) sert de base, recensé à nouveau en T0.
+**But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/` et `Support/`, sur le modèle de la DLL (un
+dossier = un namespace) ; les classes de test sans préfixe `Alundra` ; **aucune valeur attendue changée, aucun test ajouté ni retiré** ;
+la DLL `Alundra.dll` identique à l'octet à celle d'avant la tranche (aucun fichier de `Alundra/` touché).
 
-## 10. Tranche R6 — Documentation vivante 🧪 (détaillée le 2026-10-17 ; révision 2, en relecture de clôture)
+**Faits (découverte du 2026-10-17 à `7ce82c2`, `scratchpad/r5-disc/` : `disc-report.md`, contre-vérifiée par `check-report.md` ; rejouée
+le 2026-10-17 à `211a757`, après R4, dans `scratchpad/r5-disc2/`).** Le rejeu prend la DLL de tests de `bin/Debug` (construite après le
+dernier commit de sources, `15804ae`), relance `IlScan` puis `evidence.py`, `classify.py`, `couplings.py`, `build.py`, `extras.py` ; une
+seule correction des scripts : `common.py` reconnaît aussi les noms finaux de la table (après R4, l'arbre est à l'étape `final` ; sans elle,
+les 9 types déplacés par R4 étaient inconnus). Résultat : `r5-files.tsv` identique à celui du 2026-10-17 sur ses 336 lignes pour le
+dossier, le chemin, la décision et la confiance ; seuls des numéros de ligne changent (R4 a retiré des `using Alundra.Scripts;`).
+Comptes : 333 `.cs` (308 en `Alundra.Tests`, 20 en `Alundra.Tests.UI`, 5 en `Alundra.Tests.Scripts`), 432 types de premier niveau dont
+298 préfixés, 44 fichiers à plusieurs types, 2 classes partielles sur deux fichiers (`AlundraLootRollWorldTests`,
+`AlundraRandomPerTickTests`), 3 024 `Fact`/`Theory` (5 097 cas exécutés) ; 333 fichiers changent de dossier, 306 aussi de nom ; aucune
+collision (types de la DLL, du moteur, de MGUI, des paquets, de la BCL, segments de namespace) ; deux avertissements sur des types
+imbriqués (`Session`, `UI/TextBoxGpuHarness.cs`, et `NoOpEventProgramRunner`). Couplages (`couplings.tsv`) : **Q1** 39 références
+qualifiées à un type de test (`using static Alundra.Tests.X;` surtout) ; **L1** 81 littéraux qui portent un nom de classe de test
+(`r5-literals.tsv` : 25 préfixes de dossiers temporaires, 50 préfixes de message, 6 « Not used by … ») ; aucun test n'asserte sur ces
+chaînes ; **X1** 5 `CollectionDefinition`, dont la musique (`[Collection]` posé dans 98 fichiers) et le générateur (19) ; **F1**
+`Alundra.Tests/Data/story-chain-skipped-opcodes.tsv`, lu par `StoryChainOpcodeAudit.FindListPath` ; **R1** les sondes de la DLL
+(`Probes/RandomShadow.cs`, `Probes/SlotShadow.cs`) testent `Namespace.StartsWith("Alundra.Tests")`, vrai après R5, et journalisent le nom
+simple de la classe de test, sans consommateur ; **T1** `tools/dll-structure/r3-literals.tsv`, `r4-literals.tsv`, `prove_r3.py --all` et
+`prove_r4.py --kind end` lisent des chemins de `Alundra.Tests/` : après R5, leurs contrôles de fin ne se rejouent qu'au commit de leur
+clôture. **Capture de namespace** (prouvée par une compilation jetable) : dès qu'un fichier existe dans `Alundra.Tests.<Seg>`, un `Seg.X`
+écrit dans n'importe quel fichier de `Alundra.Tests.*` désigne ce namespace avant `Alundra.<Seg>` (`CS0234`) : six sites à écrire
+`Alundra.<Seg>.X` au pas du domaine qui crée le namespace (`AlundraDamageTests.cs`, `Items.ItemTables` et `Combat.BalanceTables` ;
+`AlundraHeroLifeTests.cs`, deux ; `IntroTraceHarnessTests.cs`, `Dialogues.DialogueDirector`, deux). Les `using` à ajouter se recalculent
+à l'application (le critique en compte 368 paires dans 221 fichiers, la découverte 356 dans 219 : la colonne ne sert pas d'entrée).
+**Inconnu** : l'ordre d'exécution des classes par xUnit peut dépendre de leurs noms complets ; R5 est la première tranche qui les
+change ; les collections et les remises à zéro existantes protègent les états partagés connus, sans preuve contre un nouvel ordre.
+
+**Choix de l'auteur (Q-R-3, §11).** Sept choix de structure : nom ou sujet (79 fichiers, 593 tests), noms des tests des types renommés
+(`BgmPlayer`, `GameRandom`, `SfxBank`, `HeroController`), périmètre d'`Arcs/`, types partagés déclarés dans un fichier de test (collections
+xUnit, hôtes d'aides), un type principal par fichier (44 fichiers), le fichier de `Data/`, les gardes d'export sans type de la DLL. Les onze
+classements contestés par le critique (`check-report.md` §2.B) suivent la règle choisie au point 1 ; une ligne que la règle ne tranche
+pas est une question, pas un choix de l'exécuteur.
+
+**Choix de la session principale (mode autonome, réversibles, soumis à l'auteur en Q-R-6).** (a) Les preuves de fin de R3 et R4
+(`r3_literals.py check --stage after`, `prove_r3.py --all`, `prove_r4.py --kind end`) sont **gelées** à leur commit de clôture (`a193671`,
+`ce6d335`) : un paragraphe de `tools/dll-structure/README.md` le dit, rien n'est remappé ; (b) les commentaires du code ne changent pas
+(Q-R-5) ; les trois lignes T de R6 (`docs/intro-roadmap.md:26,63`, `docs/formats/dialogues-yarn.md:123`) se corrigent en T22 ; (c) les
+dossiers temporaires des anciennes exécutions, nommés par les anciens préfixes, restent orphelins (hors du dépôt).
+
+**Propriétaire, chemins, budget.** Un `executor` (T0 : l'outil et la table s'écrivent avec jugement ; ensuite l'application est
+mécanique). Chemins : `Alundra.Tests/**` (hors `bin/`, `obj/`, `TestResults/`), `tools/dll-structure/` (T0 ; puis les outils pour les
+seules corrections de leurs règles, par un commit d'outil suivi du rejeu), les trois lignes T des docs (T22), ce plan (§9). Aucun fichier de
+`Alundra/`, du convertisseur, des données, d'un sous-module ; aucun export. Le jeu, l'éditeur et le lanceur fermés pendant la tranche
+(vérifié en T0 : `alundra-project/Alundra.dll` s'ouvre en écriture). Release toujours avec la copie neutralisée
+(`-p:CustomAfterMicrosoftCommonTargets=…/e20e0a3b-exec/skipcopy.targets`) ; Debug en dernier. Budget : une passe d'exécution, une passe de
+correction au plus ; un verifier frais à la fin.
+
+**Tâches.**
+- T0a (aucun test touché) — **les réponses de l'auteur à Q-R-3** appliquées aux règles de la découverte (`classify.py`, `decisions.py`),
+  la découverte rejouée au HEAD, la table versée : `tools/dll-structure/r5-files.tsv` (une ligne par fichier : ancien chemin, nouveau
+  chemin, namespace, domaine du commit) et `tools/dll-structure/r5-types.tsv` (ancien nom complet → nouveau nom complet, une ligne par type
+  de premier niveau ; les scissions de fichiers si le point 5 les demande, avec le fichier d'arrivée de chaque type) ; contrôles : chaque
+  `.cs` couvert une fois, chaque type une fois, aucun chemin en double (insensible à la casse), aucune collision
+  (`check_names.collision_findings`), aucun type au nom d'un segment ; un commit d'outil.
+- T0b — **l'outil de renommage** étendu : `FindType` cherche aussi dans le projet `Alundra.Tests` (aujourd'hui la seule compilation
+  `Alundra`, `rename-tool/Program.cs`) et lit ses paires dans `r5-types.tsv` ; mêmes garanties qu'en R3 (références relevées avant,
+  liaisons inchangées après, aucun diagnostic nouveau, refus sans écrire) ; preuve sur une copie hors du dépôt : un domaine de tests
+  renommé, solution construite, et un conflit fabriqué refusé.
+- T0c — `tools/dll-structure/apply_r5.py` : pour un domaine, (1) `git mv` des fichiers vers leur chemin de `r5-files.tsv` (nom de fichier
+  compris) ; (2) la ligne `namespace`, les `using` recalculés depuis l'emplacement courant de chaque type de test (comme `apply_r2.py`), les
+  39 références Q1, les 81 littéraux L1 de `r5-literals.tsv` regénéré, les six sites de capture au pas du domaine qui crée leur
+  namespace, et, si le point 6 le demande, le chemin de `Data/` ; puis l'outil de renommage. `tools/dll-structure/prove_r5.py`, sur le
+  modèle de `prove_r3.py` (lexeur de R2, occurrence par occurrence) : un commit (1) ne contient que des renommages à 100 % selon la table ;
+  un commit (2) ne change que la ligne `namespace`, des `using` ajoutés ou retirés, les noms selon `r5-types.tsv` (avec au plus une
+  qualification ajoutée par Roslyn), les entrées Q1, L1 et de capture de son domaine, exactement comme le relevé le dit ; chaque entrée du
+  domaine doit changer ; tout autre changement est refusé. Preuves de T0 : une mutation d'une valeur attendue, d'un littéral hors relevé et
+  d'un commentaire, chacune refusée ; une entrée L1 omise refusée.
+- T0d — **comptes de départ** : aucun processus du jeu ; solution en Release (copie neutralisée) et en Debug, 0 erreur ; `Alundra.Tests`
+  Release et Debug, 5 097 réussis / 0 échec, **deux exécutions complètes** chacune ; `dotnet test --list-tests` (la liste des noms complets
+  des tests, gardée hors du dépôt) ; SHA-256 de `Alundra/bin/Release/…/Alundra.dll` et de `Alundra/bin/Debug/…/Alundra.dll` ; `cmp` de la
+  DLL Debug avec `alundra-project/Alundra.dll` ; garde des traces.
+- T1 à T21 — par domaine, dans l'ordre de la découverte (`Support` en premier ; `Maps` avec `Loop`, `Session`, `Entities` avec
+  `Spawning`, `Events`, `Ai` et ses trois sous-dossiers, `Hero`, `Combat`, `Items` avec la classe partielle `LootRollWorldTests`, `Rng` avec
+  `RandomPerTickTests`, `Physics`, `Cells`, `Cameras`, `Rendering` avec `Backdrops` et `Effects`, `Audio`, `Transitions`, `Dialogues` avec
+  `Yarn`, `UI` et ses huit sous-dossiers d'un coup, `SaveGames`, `Probes` ; `Arcs` en dernier), **deux commits** : (1) `apply_r5.py
+  <Domaine> --move`, construction de la solution en Release (copie neutralisée), `prove_r5.py --kind move`, commit
+  `refactor(tests): move the <domaine> tests into their folder (R5, git mv only)` ; (2) `apply_r5.py <Domaine> --code`, construction,
+  `prove_r5.py --kind code` vert, `Alundra.Tests` Release 5 097 / 0, commit `refactor(tests): <domaine> tests in their namespace, without
+  the Alundra prefix (R5)`. Une erreur de construction ne se corrige que par une règle de l'outil (commit d'outil, rejeu du temps (2)
+  depuis l'état du commit (1)) : sinon arrêt.
+- T22 — Clôture : plus de dossier `Alundra.Tests/Scripts/`, plus de fichier directement sous `Alundra.Tests/UI/` (seulement ses
+  sous-dossiers), plus de `.cs` à la racine de `Alundra.Tests/` (y restent le projet, `xunit.runner.json` et `Data/` selon le point 6) ; plus aucun type `Alundra*` ni `IAlundra*` déclaré dans
+  `Alundra.Tests/` (recherche) ; un mode `check_names.py --tests` (chaque fichier à son chemin de `r5-files.tsv`, namespace = dossier,
+  aucun préfixe, aucune collision), sortie 0 ; la solution en Release (copie neutralisée) puis en Debug, 0 erreur ; `Alundra.Tests`
+  Release et Debug, 5 097 / 0, **deux exécutions complètes** chacune ; la liste `--list-tests` égale à celle de T0d par `r5-types.tsv`
+  (même multi-ensemble de noms de méthodes et de cas, chaque classe renommée selon la table) ; les SHA-256 des deux `Alundra.dll` égaux à
+  ceux de T0d ; `cmp` ; garde des traces ; `git log --follow` retrouve l'historique d'avant R5 de cinq fichiers tirés de domaines
+  différents et des deux classes partielles ; le paragraphe de gel de `tools/dll-structure/README.md` (choix (a)) ; les trois lignes T des
+  docs ; ce plan (§9 et résultats).
+
+**Acceptation.** Les preuves de T22 ; aucune valeur attendue de test modifiée, aucun test ajouté, retiré ou sauté ; recette courte de
+l'auteur (nouvelle partie jusqu'au premier écran jouable, F5, F6, F9), demandée par la règle du programme bien que la DLL soit identique
+à l'octet.
+
+**Arrêts.** Un test qui change de valeur, de compte ou d'issue (dont un échec qui n'apparaît que dans le nouvel ordre d'exécution :
+question, pas de correction) ; la liste des tests qui diffère autrement que par les noms de la table ; une `Alundra.dll` qui change ; un
+conflit de renommage que Roslyn ne résout pas ; une occurrence changée que `prove_r5.py` n'explique pas ; un fichier hors des chemins ; un
+classement que les réponses de l'auteur ne tranchent pas ; un paquet absent du cache.
+
+**Retour arrière.** `git revert` des commits de la tranche, dans l'ordre inverse.
+
+## 10. Tranche R6 — Documentation vivante 🧪 (faite et CONFIRMED le 2026-10-17, `7674ffa` à `2964d9a` ; révision 2 ; restent Q-R-4 et Q-R-5)
 
 **Relecture (2026-10-17).** REVISE, trois blocages corrigés (FIX, révision 1) : (1) les lignes qui demandent du jugement ont leur texte
 cible fixé ci-dessous (« Cibles fixées ») et l'exécutant devient un `executor` ; (2) les lignes F ont une tâche, un texte et un
@@ -1048,6 +1149,15 @@ plan et ne contrôle pas les lignes hors relevé des 35 fichiers (le verifier l'
 cellule ramenées à 4 espaces ; `apply_r6.py --check` 0, `prove_r4.py --kind end` 0, convertisseur 854 / 0 ; un verifier frais sur l'état
 corrigé. Les dates « 2026-10-18 » de ce plan (R4, R6, Q-R-4, Q-R-5) étaient fausses : tout s'est passé le 2026-10-17 ; corrigées.
 
+**Seconde vérification de R6 (2026-10-17) : CONFIRMED** par un verifier frais (`211a757` à `2964d9a`) : les 8 cibles fixées au
+caractère près, indentation comprise (la cible 2 à 4 espaces) ; les 35 fichiers reconstruits depuis `211a757` et le relevé, égaux à
+l'octet, fins de ligne comprises ; `apply_r6.py --check` 0 ; rien hors de la tranche (dans ce plan, hors du §10, les seules
+substitutions de date) ; `prove_r4.py --kind end` 0 ; convertisseur 854 / 0 ; le paragraphe de vérification exact. Avis **P4** : la suite
+a tourné avec les modifications locales des sous-modules — **REJECT** : ce sont `CasaEngine.Launcher/Program.cs` (le chemin local de
+l'auteur, hors des projets de test) et, dans `alundra-datas-analyser/`, le pointeur `MGUI` et `AlundraTools/log.txt` (l'analyseur
+n'est pas dans le graphe de construction du convertisseur) : sans effet. Les deux avis P4 de la première vérification restent notés
+(DEFER, sans effet sur la tranche).
+
 **Retour arrière.** `git revert` des commits de la tranche.
 
 ## 11. Questions à l'auteur
@@ -1077,6 +1187,11 @@ corrigé. Les dates « 2026-10-18 » de ce plan (R4, R6, Q-R-4, Q-R-5) étaient 
   (`AlundraWorldProxy`, `AlundraEventProgramRunner`…) restent dans les commentaires de la DLL (≈ 60 fichiers) et des tests (≈ 90 fichiers),
   plus quelques chemins `Alundra/Scripts/…` (par exemple `HeroController.cs:42`, `AlundraScreenFadeCameraWiringTests.cs:24,29,96`). Les
   corriger dans une tranche dédiée (mécanique, outillée comme R3, commentaires seulement), ou les laisser ?
+- **Q-R-6** (2026-10-17, choix faits en mode autonome pour R5, réversibles) — Valider ou corriger : les preuves de fin de R3 et R4
+  (`prove_r3.py --all`, `r3_literals.py check --stage after`, `prove_r4.py --kind end`), qui lisent des chemins de `Alundra.Tests/`, sont
+  gelées à leur commit de clôture (`a193671`, `ce6d335`) plutôt que remappées après R5 ; les commentaires du code ne changent pas en R5
+  (comme en R3 et R4, voir Q-R-5) ; les dossiers temporaires des anciennes exécutions de tests, nommés par les anciens préfixes, restent
+  orphelins sur la machine.
 - **Q-R-2** — **Tranchée le 2026-10-17 (D-R-10)** : l'aperçu tolérant (A), avec une icône d'avertissement à côté du nom du script dans
   l'éditeur. Question d'origine (2026-10-16 ; O2 du plan du moteur) — Que doit faire **l'éditeur** quand il ouvre
   un monde ou l'aperçu d'un préfab dont la DLL de scripts n'est pas construite ? Aujourd'hui, une entité au script introuvable est
