@@ -8,7 +8,7 @@ namespace Alundra.UI.Hud;
 /// <summary>
 /// Pure port of the jauge's own composition logic - <c>HudManager.DisplayHpMaxWithNumber</c>
 /// (HudManager.cs:910-953), <c>DisplayLife</c> (:716-826), <c>DisplayMp</c> (:605-690 minus its own
-/// animated-icon computation, which <see cref="AlundraHudDirector.MagicPipFrame"/> already owns, C1) and
+/// animated-icon computation, which <see cref="HudDirector.MagicPipFrame"/> already owns, C1) and
 /// <c>DisplayMoney</c> (:857-906). Takes only the DIRECTOR's own DISPLAYED (rolled) values - never
 /// <see cref="PlayerStats"/> directly (mission item 2: "la composition suit les valeurs affichées
 /// (roulées) du directeur, pas les vraies stats") - and returns the flat list of tiles the original would
@@ -17,7 +17,7 @@ namespace Alundra.UI.Hud;
 /// ne tique rien... le directeur reste ignorant de MGUI" - the composer stays ignorant of it too, that is
 /// what makes it independently testable, mission item 7).
 /// </summary>
-public static class AlundraHudComposer
+public static class HudComposer
 {
     // UIBoxHud = { X = 0, Y = 0x10 } (StaticVariables.cs:12270, HudManager.cs:33-36/52-54). Named
     // constants (not inlined 0/16) so every offset below reads exactly like HudManager.cs's own
@@ -47,12 +47,12 @@ public static class AlundraHudComposer
         HudGlyph.Coin0, HudGlyph.Coin1, HudGlyph.Coin2, HudGlyph.Coin3,
     };
 
-    /// <param name="isDrawn"><see cref="AlundraHudDirector.IsDrawn"/> - false returns an empty list
+    /// <param name="isDrawn"><see cref="HudDirector.IsDrawn"/> - false returns an empty list
     /// (mission item 7's own "IsDrawn faux -&gt; liste vide"), the outer guard every original Display*
     /// call sits behind (HudManager.cs:223, Fun_8004bea4).</param>
-    /// <param name="hp">Displayed/rolled current HP - <see cref="AlundraHudDirector.Hp"/> ([0]).</param>
-    /// <param name="hpMax">Displayed/rolled HP max - <see cref="AlundraHudDirector.HpMax"/> ([1]).</param>
-    /// <param name="hpMaxTrue">The TRUE current HP cap - <see cref="AlundraHudDirector.TrueHpMax"/>. Read
+    /// <param name="hp">Displayed/rolled current HP - <see cref="HudDirector.Hp"/> ([0]).</param>
+    /// <param name="hpMax">Displayed/rolled HP max - <see cref="HudDirector.HpMax"/> ([1]).</param>
+    /// <param name="hpMaxTrue">The TRUE current HP cap - <see cref="HudDirector.TrueHpMax"/>. Read
     /// only where the original itself reads it (<c>DisplayLife</c>'s own <c>GetPlayerHpMax()</c> call,
     /// HudManager.cs:767, for the empty-big-crystal count) - every OTHER original Display* read in this
     /// composer uses the rolled <paramref name="hpMax"/> instead (mission item 2's own audit: :921/:926,
@@ -61,23 +61,23 @@ public static class AlundraHudComposer
     /// != 0</c> (HudManager.cs:729-730) - true while either the current-HP or the HP-max catch-up
     /// sub-step is mid-cycle, previewing the icon composition one point ahead of <paramref name="hp"/>
     /// itself.</param>
-    /// <param name="mp">Displayed/rolled current MP - <see cref="AlundraHudDirector.Mp"/> ([2]).</param>
-    /// <param name="mpMax">Displayed/rolled MP max - <see cref="AlundraHudDirector.MpMax"/> ([3]).</param>
+    /// <param name="mp">Displayed/rolled current MP - <see cref="HudDirector.Mp"/> ([2]).</param>
+    /// <param name="mpMax">Displayed/rolled MP max - <see cref="HudDirector.MpMax"/> ([3]).</param>
     /// <param name="mpCatchUpPreview">DisplayMp's own <c>g_playerDataHud[7] != 0 || g_playerDataHud[8]
     /// != 0</c> (HudManager.cs:620-621), the MP counterpart of <paramref name="hpCatchUpPreview"/>.</param>
-    /// <param name="money">Displayed/rolled money - <see cref="AlundraHudDirector.Money"/> ([4]), always
+    /// <param name="money">Displayed/rolled money - <see cref="HudDirector.Money"/> ([4]), always
     /// rendered as exactly 4 digits, no leading-zero suppression (HudManager.cs:863-881).</param>
-    /// <param name="coinIconFrame"><see cref="AlundraHudDirector.CoinIconFrame"/> ([9]).</param>
-    /// <param name="magicPipFrame"><see cref="AlundraHudDirector.MagicPipFrame"/> - one animation frame
+    /// <param name="coinIconFrame"><see cref="HudDirector.CoinIconFrame"/> ([9]).</param>
+    /// <param name="magicPipFrame"><see cref="HudDirector.MagicPipFrame"/> - one animation frame
     /// per magic pip (0..3), read only for the pips actually drawn full (<paramref name="mp"/> of them).</param>
-    public static IReadOnlyList<AlundraHudTile> Compose(
+    public static IReadOnlyList<HudTile> Compose(
         bool isDrawn,
         int hp, int hpMax, int hpMaxTrue, bool hpCatchUpPreview,
         int mp, int mpMax, bool mpCatchUpPreview,
         int money, int coinIconFrame,
         IReadOnlyList<int> magicPipFrame)
     {
-        var tiles = new List<AlundraHudTile>(26);
+        var tiles = new List<HudTile>(26);
 
         if (!isDrawn)
         {
@@ -97,20 +97,20 @@ public static class AlundraHudComposer
     /// 0 and 1 are repositioned every frame (Fun_8004bea4:243-249) but never given a glyph nor an
     /// <c>AddSprite</c> call anywhere in this function's own loop (which starts at <c>i = 2</c>,
     /// HudManager.cs:918/938), so they are not ported at all: the original itself never draws them.</summary>
-    private static void ComposeHpMaxNumber(List<AlundraHudTile> tiles, int hpMax)
+    private static void ComposeHpMaxNumber(List<HudTile> tiles, int hpMax)
     {
         var tens = (hpMax / 10) % 10; // HudManager.cs:921.
         var units = hpMax % 10; // HudManager.cs:926.
 
-        tiles.Add(new AlundraHudTile(HudGlyph.Slash, BoxX + 0x90 + 2 * 8, BoxY)); // :932-933.
-        tiles.Add(new AlundraHudTile(Digits[tens], BoxX + 0x90 + 3 * 8, BoxY)); // :923-924.
-        tiles.Add(new AlundraHudTile(Digits[units], BoxX + 0x90 + 4 * 8, BoxY)); // :928-929.
+        tiles.Add(new HudTile(HudGlyph.Slash, BoxX + 0x90 + 2 * 8, BoxY)); // :932-933.
+        tiles.Add(new HudTile(Digits[tens], BoxX + 0x90 + 3 * 8, BoxY)); // :923-924.
+        tiles.Add(new HudTile(Digits[units], BoxX + 0x90 + 4 * 8, BoxY)); // :928-929.
     }
 
     /// <summary>Port of <c>DisplayLife</c> (HudManager.cs:716-826): the big-crystal row (up to 4 slots,
     /// filled right-to-left then empty continuing left) plus the small-pip row (10 slots, two ranks of
     /// 5, always either full or empty, never hidden).</summary>
-    private static void ComposeLife(List<AlundraHudTile> tiles, int hp, int hpMaxDisplayed, int hpMaxTrue, bool catchUpPreview)
+    private static void ComposeLife(List<HudTile> tiles, int hp, int hpMaxDisplayed, int hpMaxTrue, bool catchUpPreview)
     {
         // :727-733, ported verbatim - NO upper guard. A third-pass verifier finding clamped this to
         // hpMaxDisplayed, reasoning that hp==hpMaxDisplayed with the preview flag set was unreachable; a
@@ -162,7 +162,7 @@ public static class AlundraHudComposer
         for (var i = nbEmptyBigIcons - 1; i >= 0; i--) // :767-782 - leftmost first, rightmost (i=0) last/topmost.
         {
             var slot = 3 - i - nbBigIcons;
-            tiles.Add(new AlundraHudTile(HudGlyph.BigHeartEmpty, BoxX + 0x50 + slot * 8, BoxY));
+            tiles.Add(new HudTile(HudGlyph.BigHeartEmpty, BoxX + 0x50 + slot * 8, BoxY));
         }
 
         // :747-765 - addresses g_lifeBigIconSprites[3-i] for i in 0..nbBigIcons-1, the SAME "3-i" formula
@@ -196,30 +196,30 @@ public static class AlundraHudComposer
                 continue;
             }
 
-            tiles.Add(new AlundraHudTile(HudGlyph.BigHeartFull, BoxX + 0x50 + slot * 8, BoxY));
+            tiles.Add(new HudTile(HudGlyph.BigHeartFull, BoxX + 0x50 + slot * 8, BoxY));
         }
 
         for (var i = 0; i < remainder; i++) // :787-807 - full pips, rank-major (5 per rank).
         {
             var rank = i / 5;
             var column = i % 5;
-            tiles.Add(new AlundraHudTile(HudGlyph.SmallHeartFull, BoxX + 0x78 + column * 8, BoxY + rank * 8));
+            tiles.Add(new HudTile(HudGlyph.SmallHeartFull, BoxX + 0x78 + column * 8, BoxY + rank * 8));
         }
 
         for (var i = remainder; i < 10; i++) // :810-826 - empty pips filling the remaining ranks.
         {
             var rank = i / 5;
             var column = i % 5;
-            tiles.Add(new AlundraHudTile(HudGlyph.SmallHeartEmpty, BoxX + 0x78 + column * 8, BoxY + rank * 8));
+            tiles.Add(new HudTile(HudGlyph.SmallHeartEmpty, BoxX + 0x78 + column * 8, BoxY + rank * 8));
         }
     }
 
     /// <summary>Port of <c>DisplayMp</c> (HudManager.cs:605-690), minus its own animated-icon computation
-    /// (:634-646, C1's <see cref="AlundraHudDirector.MagicPipFrame"/> already owns that per §6 point 4's
+    /// (:634-646, C1's <see cref="HudDirector.MagicPipFrame"/> already owns that per §6 point 4's
     /// unison table). Full pips 0..mp-1 (animated), empty pips mp..mpMax-1; a pip index &gt;= mpMax gets no
     /// tile at all (the original's own loop bound, HudManager.cs:674/689, never draws it).</summary>
     private static void ComposeMagic(
-        List<AlundraHudTile> tiles, int mp, int mpMaxDisplayed, bool catchUpPreview, IReadOnlyList<int> magicPipFrame)
+        List<HudTile> tiles, int mp, int mpMaxDisplayed, bool catchUpPreview, IReadOnlyList<int> magicPipFrame)
     {
         // :617-624, bounded to the four pip slots: a defect of the original, corrected (D-E13-13,
         // docs/plan-e13-hud.md). Closing the jauge during the MP-max catch-up strands its sub-step [8]: reopening
@@ -236,30 +236,30 @@ public static class AlundraHudComposer
         for (var i = 0; i < displayedMp; i++) // :628-668.
         {
             var frame = magicPipFrame[i] % 4; // defensive against a future per-pip table, §6 point 4.
-            tiles.Add(new AlundraHudTile(MagicPipFullByFrame[frame], BoxX + 0xd8 + i * 8, BoxY));
+            tiles.Add(new HudTile(MagicPipFullByFrame[frame], BoxX + 0xd8 + i * 8, BoxY));
         }
 
         for (var i = displayedMp; i < mpMaxDisplayed; i++) // :670-690.
         {
-            tiles.Add(new AlundraHudTile(HudGlyph.MagicPipEmpty, BoxX + 0xd8 + i * 8, BoxY));
+            tiles.Add(new HudTile(HudGlyph.MagicPipEmpty, BoxX + 0xd8 + i * 8, BoxY));
         }
     }
 
     /// <summary>Port of <c>DisplayMoney</c> (HudManager.cs:857-906): always exactly 4 digits (thousands,
     /// hundreds, tens, units, in that left-to-right screen order) with no leading-zero suppression, plus
     /// the coin icon.</summary>
-    private static void ComposeMoney(List<AlundraHudTile> tiles, int money, int coinIconFrame)
+    private static void ComposeMoney(List<HudTile> tiles, int money, int coinIconFrame)
     {
         var thousands = money / 1000 % 10; // :864-868.
         var hundreds = money / 100 % 10; // :870-872.
         var tens = money / 10 % 10; // :875-877.
         var units = money % 10; // :879-881.
 
-        tiles.Add(new AlundraHudTile(Digits[thousands], BoxX + 0x100 + 0 * 8, BoxY));
-        tiles.Add(new AlundraHudTile(Digits[hundreds], BoxX + 0x100 + 1 * 8, BoxY));
-        tiles.Add(new AlundraHudTile(Digits[tens], BoxX + 0x100 + 2 * 8, BoxY));
-        tiles.Add(new AlundraHudTile(Digits[units], BoxX + 0x100 + 3 * 8, BoxY));
-        tiles.Add(new AlundraHudTile(CoinByFrame[coinIconFrame], BoxX + 0x100 + 4 * 8, BoxY)); // :883-884.
+        tiles.Add(new HudTile(Digits[thousands], BoxX + 0x100 + 0 * 8, BoxY));
+        tiles.Add(new HudTile(Digits[hundreds], BoxX + 0x100 + 1 * 8, BoxY));
+        tiles.Add(new HudTile(Digits[tens], BoxX + 0x100 + 2 * 8, BoxY));
+        tiles.Add(new HudTile(Digits[units], BoxX + 0x100 + 3 * 8, BoxY));
+        tiles.Add(new HudTile(CoinByFrame[coinIconFrame], BoxX + 0x100 + 4 * 8, BoxY)); // :883-884.
     }
 
     // g_inventoryWeaponIconX (StaticVariables.cs:12272-12275) - its own last two shorts, indices [8] and
@@ -291,17 +291,17 @@ public static class AlundraHudComposer
     /// two quads unconditionally whenever the jauge itself is drawn, empty case slot or not, OUTSIDE both
     /// of <c>HudManager.cs:584-592</c>'s own <c>if</c>s, and never animates them (mission item 5: function
     /// :491-602 read in full, neither <c>INT_800a827c</c> nor <c>g_playerDataHud</c> is read here) - so the
-    /// jauge-wide draw/hide decision belongs to whoever hosts these quads (<see cref="AlundraHudScreen"/>'s
+    /// jauge-wide draw/hide decision belongs to whoever hosts these quads (<see cref="HudScreen"/>'s
     /// own canvas visibility), not to this pure function.</summary>
-    public static IReadOnlyList<AlundraHudBackgroundQuad> ComposeEquipmentBackgrounds()
+    public static IReadOnlyList<HudBackgroundQuad> ComposeEquipmentBackgrounds()
     {
         return new[]
         {
-            new AlundraHudBackgroundQuad(
+            new HudBackgroundQuad(
                 WeaponBoxX, BoxY, EquipmentBoxWidth, EquipmentBoxHeight,
                 EquipmentBoxTopLeft, EquipmentBoxTopRight, EquipmentBoxBottomLeft, EquipmentBoxBottomRight,
                 EquipmentBoxAlpha),
-            new AlundraHudBackgroundQuad(
+            new HudBackgroundQuad(
                 AccessoryBoxX, BoxY, EquipmentBoxWidth, EquipmentBoxHeight,
                 EquipmentBoxTopLeft, EquipmentBoxTopRight, EquipmentBoxBottomLeft, EquipmentBoxBottomRight,
                 EquipmentBoxAlpha),
@@ -315,27 +315,27 @@ public static class AlundraHudComposer
     /// accessory's at <c>[9]</c>, both at <c>UIBoxHud.Y</c>: the SAME two abscissas as the backgrounds above
     /// (<see cref="WeaponBoxX"/>, <see cref="AccessoryBoxX"/>) and the same baked <see cref="BoxY"/> every
     /// tile uses. Each icon carries its background's whole rectangle, so the screen centres it in its box
-    /// (D-E13D-10, see <see cref="AlundraHudIcon"/>) and it slides with the whole jauge through the canvas
+    /// (D-E13D-10, see <see cref="HudIcon"/>) and it slides with the whole jauge through the canvas
     /// translation. A null asset id is the original's sentinel branch - nothing drawn for that box. Empty
     /// when the jauge is not drawn, like <see cref="Compose"/>'s own tiles.
     /// </summary>
-    public static IReadOnlyList<AlundraHudIcon> ComposeEquipmentIcons(
+    public static IReadOnlyList<HudIcon> ComposeEquipmentIcons(
         bool isDrawn, Guid? weaponIconAssetId, Guid? accessoryIconAssetId)
     {
         if (!isDrawn)
         {
-            return Array.Empty<AlundraHudIcon>();
+            return Array.Empty<HudIcon>();
         }
 
-        var icons = new List<AlundraHudIcon>(2);
+        var icons = new List<HudIcon>(2);
         if (weaponIconAssetId is { } weapon)
         {
-            icons.Add(new AlundraHudIcon(weapon, WeaponBoxX, BoxY, EquipmentBoxWidth, EquipmentBoxHeight));
+            icons.Add(new HudIcon(weapon, WeaponBoxX, BoxY, EquipmentBoxWidth, EquipmentBoxHeight));
         }
 
         if (accessoryIconAssetId is { } accessory)
         {
-            icons.Add(new AlundraHudIcon(accessory, AccessoryBoxX, BoxY, EquipmentBoxWidth, EquipmentBoxHeight));
+            icons.Add(new HudIcon(accessory, AccessoryBoxX, BoxY, EquipmentBoxWidth, EquipmentBoxHeight));
         }
 
         return icons;

@@ -23,8 +23,8 @@ using Alundra.UI.SubInventory;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E13.d D4 acceptance (docs/plan-e13d-inventaire.md) - drives <see cref="AlundraInventoryDirector"/> the
-/// way <see cref="AlundraHudDirectorTests"/> drives <see cref="AlundraHudDirector"/>: a tick is
+/// E13.d D4 acceptance (docs/plan-e13d-inventaire.md) - drives <see cref="InventoryDirector"/> the
+/// way <see cref="AlundraHudDirectorTests"/> drives <see cref="HudDirector"/>: a tick is
 /// <c>state.TickPad.Update(hold)</c> then <c>director.Tick(player)</c>, isolated <see cref="GameState"/>
 /// instances for every test but the last (which drives the real <see cref="AlundraWorldProxy"/>).
 /// </summary>
@@ -34,10 +34,10 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
     public AlundraInventoryDirectorTests()
     {
-        AlundraInventoryDirector.Instance.ResetForTests();
-        AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
-        AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
-        AlundraHudDirector.Instance.ResetForTests();
+        InventoryDirector.Instance.ResetForTests();
+        SubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        InventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -52,10 +52,10 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
     public void Dispose()
     {
-        AlundraInventoryDirector.Instance.ResetForTests();
-        AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
-        AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
-        AlundraHudDirector.Instance.ResetForTests();
+        InventoryDirector.Instance.ResetForTests();
+        SubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        InventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -131,14 +131,14 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
     private static GameState NewState() => new();
 
-    private static AlundraInventoryDirector NewDirector(GameState state, ItemTables? tables = null, ISoundPlayer? sound = null)
+    private static InventoryDirector NewDirector(GameState state, ItemTables? tables = null, ISoundPlayer? sound = null)
     {
-        var director = AlundraInventoryDirector.Instance;
+        var director = InventoryDirector.Instance;
         director.AttachToWorld(state, tables ?? ItemTablesFixture.LoadReal(), sound);
         return director;
     }
 
-    private static void Tick(GameState state, AlundraInventoryDirector director, uint hold, AlundraEntityScriptProxy? player = null)
+    private static void Tick(GameState state, InventoryDirector director, uint hold, AlundraEntityScriptProxy? player = null)
     {
         state.TickPad.Update(hold);
         director.Tick(player);
@@ -146,7 +146,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
     /// <summary>Ticks (no input) until <paramref name="predicate"/> holds, up to <paramref name="maxTicks"/> -
     /// used for the text-reveal milestones whose exact tick count is secondary to the state reached.</summary>
-    private static void TickUntil(GameState state, AlundraInventoryDirector director, Func<bool> predicate, int maxTicks = 300)
+    private static void TickUntil(GameState state, InventoryDirector director, Func<bool> predicate, int maxTicks = 300)
     {
         for (var i = 0; i < maxTicks && !predicate(); i++)
         {
@@ -159,9 +159,9 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     /// <summary>Opens the inventory (one trigger tick) and drives it through the full 18-call opening
     /// slide (this class' own <see cref="OpeningOrder_SoundHudFlagsAndBoxSlide_MatchTheTracedSeventeenTickShape"/>
     /// documents why 18, the same "mode == 0 on entry, two calls after the target is reached" shape
-    /// <see cref="AlundraHudDirector"/>'s own tween has) so the caller starts from the settled,
+    /// <see cref="HudDirector"/>'s own tween has) so the caller starts from the settled,
     /// input-accepting state.</summary>
-    private static void OpenAndSettle(GameState state, AlundraInventoryDirector director)
+    private static void OpenAndSettle(GameState state, InventoryDirector director)
     {
         Tick(state, director, PadState.Start); // trigger + DisplayInventory + FUN_80054f1c, same tick.
         for (var i = 0; i < 18; i++)
@@ -348,7 +348,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         Assert.Equal(new[] { 4 }, sound.Requests);
         Assert.Equal(5u, director.ForbiddenWarpFlag);
         Assert.True((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0);
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, AlundraHudDirector.Instance.Phase); // ArmDisappearance's own guard (Phase&3==1) is false while Idle - never armed from a cold Idle HUD.
+        Assert.Equal(HudDirector.HudPhase.Idle, HudDirector.Instance.Phase); // ArmDisappearance's own guard (Phase&3==1) is false while Idle - never armed from a cold Idle HUD.
         Assert.Equal((8, 16), director.BoxPosition(0)); // weapon box - untouched this same tick.
 
         // First slide tick (tween.Tick == 0 -> interpolate at t=0 -> box snaps to its off-screen SOURCE).
@@ -757,12 +757,12 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     {
         var state = NewState();
         var director = NewDirector(state);
-        AlundraHudDirector.Instance.AttachToWorld(state);
+        HudDirector.Instance.AttachToWorld(state);
         OpenAndSettle(state, director);
 
         // Latch NOT set - InitializeHudPositionBeforeHide must be a no-op (HudManager.cs:42-57's own guard).
         Tick(state, director, PadState.Start);
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, AlundraHudDirector.Instance.Phase);
+        Assert.Equal(HudDirector.HudPhase.Idle, HudDirector.Instance.Phase);
         for (var i = 0; i < 18; i++) // let the close slide finish (clears MenuOpen) before re-opening.
         {
             Tick(state, director, 0);
@@ -776,7 +776,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         Tick(state, director2, PadState.Start);
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Opening, AlundraHudDirector.Instance.Phase);
+        Assert.Equal(HudDirector.HudPhase.Opening, HudDirector.Instance.Phase);
     }
 
     [Fact]
@@ -794,7 +794,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         Assert.Equal(new[] { 5 }, sound.Requests); // FUN_800556dc's own sound - the close slide is armed.
         Assert.Equal(3u, director.ForbiddenWarpFlag); // bit0 (residual) | bit1 (SlideCloseBit).
-        Assert.Equal(1, AlundraInventoryPostProcess.Instance.State);
+        Assert.Equal(1, InventoryPostProcess.Instance.State);
         Assert.True((state.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen) != 0);
     }
 
@@ -952,7 +952,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         // TileMap entity) never reaches it, same reason AlundraHudDirectorTests wires its own view
         // directly for a headless montage. Attach directly here: this test's own subject is the TICK
         // WIRING inside Update (the per-tick loop next to the dialogue/HUD ones), not the attach path.
-        AlundraInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, ItemTablesFixture.LoadReal(), worldProxy.SoundPlayer);
+        InventoryDirector.Instance.AttachToWorld(worldProxy.GameState, ItemTablesFixture.LoadReal(), worldProxy.SoundPlayer);
 
         // Open, through the real world proxy's loop of the passes (the pad pass at the head of the tick, the inventory block at its end; Start held for exactly one 1-tick
         // frame gives one edge), then settle the 18-call slide the same way.
@@ -963,15 +963,15 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         {
             worldProxy.Update(0.02f);
         }
-        Assert.True(AlundraInventoryDirector.Instance.IsActive);
-        var slotBefore = AlundraInventoryDirector.Instance.SelectedSlotId;
+        Assert.True(InventoryDirector.Instance.IsActive);
+        var slotBefore = InventoryDirector.Instance.SelectedSlotId;
 
         // One rendered frame, two logic ticks, Down held throughout - must move the cursor exactly once
         // (D-E13D-9's own "un appui donne exactement un front" even across a multi-tick frame).
         worldProxy.GameState.LastPadState = new PadState { ButtonsHold = PadState.Down };
         worldProxy.Update(0.04f);
 
-        Assert.Equal(slotBefore + 6, AlundraInventoryDirector.Instance.SelectedSlotId);
+        Assert.Equal(slotBefore + 6, InventoryDirector.Instance.SelectedSlotId);
     }
 
     /// <summary>
@@ -1001,7 +1001,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
             PosX = (18 * 24 + 12) << 16, // on portal 0's own source cell.
             PosY = (38 * 16 + 8) << 16,
         };
-        AlundraInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, ItemTablesFixture.LoadReal(), worldProxy.SoundPlayer);
+        InventoryDirector.Instance.AttachToWorld(worldProxy.GameState, ItemTablesFixture.LoadReal(), worldProxy.SoundPlayer);
 
         // A non-degraded departure (real world index, a GameManager to hand the world path to), so the gate
         // stays posted through the world-change request instead of being lifted by the abort guard - same
@@ -1021,7 +1021,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
             worldProxy.Update(0.02f);
 
             Assert.True(WarpDirector.Instance.IsTransitionInProgress, $"frame {frame}: the montage left the transition");
-            Assert.False(AlundraInventoryDirector.Instance.IsActive, $"frame {frame}: the inventory opened mid-transition");
+            Assert.False(InventoryDirector.Instance.IsActive, $"frame {frame}: the inventory opened mid-transition");
             Assert.Equal(0u, worldProxy.GameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
         }
 
@@ -1036,6 +1036,6 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         worldProxy.GameState.LastPadState = new PadState { ButtonsHold = PadState.Start };
         worldProxy.Update(0.02f);
-        Assert.True(AlundraInventoryDirector.Instance.IsActive);
+        Assert.True(InventoryDirector.Instance.IsActive);
     }
 }

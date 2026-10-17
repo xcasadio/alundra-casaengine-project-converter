@@ -16,18 +16,18 @@ namespace Alundra.UI.Saving;
 /// E16.e T4 (docs/plan-e16-etat-partie.md, L5): the save screen - a project asset,
 /// <c>UI/Screens/SaveScreen.uiscreen</c> and its XAML, versioned in <c>alundra-project</c> (parent ADR-0002), loaded
 /// through the asset manager and bound to an <see cref="AlundraSaveScreenViewModel"/> that
-/// <see cref="AlundraSaveScreenPresenter"/> writes every logic tick. Same shape as <see cref="AlundraSubInventoryScreen"/>:
+/// <see cref="SaveScreenPresenter"/> writes every logic tick. Same shape as <see cref="SubInventoryScreen"/>:
 /// the code only sizes and scales the window, the XAML declares everything else (the author's rule: screens are
 /// declared in XAML).
 ///
 /// <para><b>Layer/modal</b>: <see cref="UILayer.Menu"/>, modal, like the inventories; the OUI/NON question is the
 /// dialogue screen, on <see cref="UILayer.Modal"/>, above it.</para>
 ///
-/// <para><b>Pixel scale / point sampling</b>: identical to <see cref="AlundraInventoryScreen"/> - one INTEGER factor
+/// <para><b>Pixel scale / point sampling</b>: identical to <see cref="InventoryScreen"/> - one INTEGER factor
 /// applied once as <c>RootCanvas</c>'s own <c>RenderTransform.Scale</c> (engine ADR-0006), every
 /// <see cref="MGImage"/> point-sampled.</para>
 /// </summary>
-public sealed class AlundraSaveScreen : XamlUIScreenBase, IDisposable
+public sealed class SaveScreen : XamlUIScreenBase, IDisposable
 {
     /// <summary>The id of <c>UI/Screens/SaveScreen.uiscreen</c>, fixed in its envelope.</summary>
     internal const string ScreenAssetId = "4d6cb7b6-ed7c-40dc-964c-79f0e8c6f1bc";
@@ -42,10 +42,10 @@ public sealed class AlundraSaveScreen : XamlUIScreenBase, IDisposable
     private IDisposable? _font3;
 
     /// <summary>Holds font3 from construction to <see cref="Dispose"/>, through the game's UI font registry, the
-    /// contract of <see cref="AlundraInventoryScreen"/>.</summary>
+    /// contract of <see cref="InventoryScreen"/>.</summary>
     /// <exception cref="InvalidOperationException">The export has no loadable font3, or no save screen asset (no
     /// silent fallback).</exception>
-    public AlundraSaveScreen(AssetContentManager assetContentManager, UIFontRegistry fonts)
+    public SaveScreen(AssetContentManager assetContentManager, UIFontRegistry fonts)
         : base(assetContentManager, ScreenAssetId)
     {
         ArgumentNullException.ThrowIfNull(fonts);
@@ -53,18 +53,18 @@ public sealed class AlundraSaveScreen : XamlUIScreenBase, IDisposable
 
         try
         {
-            _font3 = fonts.Acquire(AlundraInventoryScreen.Font3FontAssetId);
+            _font3 = fonts.Acquire(InventoryScreen.Font3FontAssetId);
         }
         catch (Exception ex)
         {
             base.Dispose();
             throw new InvalidOperationException(
-                $"AlundraSaveScreen: font3 ('UI\\font3.fnt', asset {AlundraInventoryScreen.Font3FontAssetId}) cannot be held; "
+                $"SaveScreen: font3 ('UI\\font3.fnt', asset {InventoryScreen.Font3FontAssetId}) cannot be held; "
                 + "the export must provide it.", ex);
         }
     }
 
-    /// <summary>What the XAML binds, and what <see cref="AlundraSaveScreenPresenter"/> writes.</summary>
+    /// <summary>What the XAML binds, and what <see cref="SaveScreenPresenter"/> writes.</summary>
     public AlundraSaveScreenViewModel ViewModel { get; }
 
     /// <summary>Gives font3 back and the screen asset itself, when the world that built this screen ends. Idempotent.</summary>

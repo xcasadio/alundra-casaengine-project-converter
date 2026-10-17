@@ -10,11 +10,11 @@ using Alundra.UI.Shared;
 
 namespace Alundra.Tests;
 
-/// <summary>The DLL's two machines (<see cref="DialogueNameBox"/>, <see cref="AlundraInventoryPortrait"/> as the dialogue's instance) behind the interface of the raw sequences.</summary>
+/// <summary>The DLL's two machines (<see cref="DialogueNameBox"/>, <see cref="InventoryPortrait"/> as the dialogue's instance) behind the interface of the raw sequences.</summary>
 internal sealed class DllSpeakerMachines : ISpeakerMachines
 {
     private readonly DialogueNameBox _name = new();
-    private readonly AlundraInventoryPortrait _portrait = new();
+    private readonly InventoryPortrait _portrait = new();
     private readonly Func<int, string?> _resolve;
 
     public DllSpeakerMachines(IReadOnlyDictionary<int, (string Name, int Width)> names) => _resolve = id => names.TryGetValue(id, out var n) ? n.Name : null;
@@ -31,13 +31,13 @@ internal sealed class DllSpeakerMachines : ISpeakerMachines
 
     public bool PortraitOpen(RawEntity entity, (int X, int Y) cam, int height)
     {
-        var head = AlundraInventoryPortrait.ComputeHeadPoint(entity.X << 16, entity.Y << 16, entity.Z << 16, cam.X, cam.Y);
+        var head = InventoryPortrait.ComputeHeadPoint(entity.X << 16, entity.Y << 16, entity.Z << 16, cam.X, cam.Y);
         return _portrait.Start(head.X, head.Y, 8, 172 - height, 48, height);
     }
 
     public void PortraitClose(RawEntity entity, (int X, int Y) cam)
     {
-        var head = AlundraInventoryPortrait.ComputeHeadPoint(entity.X << 16, entity.Y << 16, entity.Z << 16, cam.X, cam.Y);
+        var head = InventoryPortrait.ComputeHeadPoint(entity.X << 16, entity.Y << 16, entity.Z << 16, cam.X, cam.Y);
         _portrait.BeginReturn(head.X, head.Y);
     }
 
@@ -57,10 +57,10 @@ internal sealed class DllSpeakerMachines : ISpeakerMachines
 
         var phase = _portrait.Phase switch
         {
-            AlundraPortraitPhase.In => "in",
-            AlundraPortraitPhase.Rest => "rest",
-            AlundraPortraitPhase.Out => "out",
-            AlundraPortraitPhase.Gone => "gone",
+            PortraitPhase.In => "in",
+            PortraitPhase.Rest => "rest",
+            PortraitPhase.Out => "out",
+            PortraitPhase.Gone => "gone",
             _ => "?",
         };
         return $"{_portrait.X}|{_portrait.Y}|{_portrait.DrawnWidth}|{_portrait.DrawnHeight}|{_portrait.Rgb}|{phase}";

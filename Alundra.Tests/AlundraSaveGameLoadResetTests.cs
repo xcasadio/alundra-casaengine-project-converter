@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// E16.d T1 (docs/plan-e16-etat-partie.md, K8 steps 1, 3 and 4, D-E16-19, SC1, SC7): the session resets a
 /// load runs on the arrival map - <see cref="GameState.ResetSessionForLoad"/>,
-/// <see cref="AlundraHudDirector.ResetDisplayForLoad"/> and the <c>ResetSessionForLoad</c> of both inventory
+/// <see cref="HudDirector.ResetDisplayForLoad"/> and the <c>ResetSessionForLoad</c> of both inventory
 /// directors, the post-process and the portrait. Nothing here reads or writes a save file (D-E16-31).
 /// </summary>
 public sealed class AlundraSaveGameLoadResetTests : IDisposable
@@ -33,11 +33,11 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
 
     private static void ResetSingletons()
     {
-        AlundraInventoryDirector.Instance.ResetForTests();
-        AlundraSubInventoryDirector.Instance.ResetForTests();
-        AlundraInventoryPostProcess.Instance.ResetForTests();
-        AlundraInventoryPortrait.Instance.ResetForTests();
-        AlundraHudDirector.Instance.ResetForTests();
+        InventoryDirector.Instance.ResetForTests();
+        SubInventoryDirector.Instance.ResetForTests();
+        InventoryPostProcess.Instance.ResetForTests();
+        InventoryPortrait.Instance.ResetForTests();
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();
@@ -120,7 +120,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
 
     // ---- AlundraHudDirector.ResetDisplayForLoad (K8 step 3, SC1) --------------------------------------------
 
-    private static void TickHud(AlundraHudDirector hud, AlundraHudPresenter presenter, int ticks)
+    private static void TickHud(HudDirector hud, HudPresenter presenter, int ticks)
     {
         for (var i = 0; i < ticks; i++)
         {
@@ -132,7 +132,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
     /// <summary>
     /// SC1: a jauge caught mid-catch-up of the MP max (displayed 3, true 4, <c>_mpMaxSubStep</c> non-zero) and
     /// closed instantly (the script's "hide now" request), then a load of a save at 4 MP out of 4: after
-    /// <see cref="AlundraHudDirector.ResetDisplayForLoad"/>, the jauge reopened by its display request and ticked,
+    /// <see cref="HudDirector.ResetDisplayForLoad"/>, the jauge reopened by its display request and ticked,
     /// with its real presenter and composer, until every roll settles - no exception. Without the reset the preview
     /// stays on with an MP max of 4, the path SC1 names.
     /// </summary>
@@ -142,14 +142,14 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         var state = new GameState();
         state.PlayerStats.MpMax = 3;
         state.PlayerStats.Mp = 3;
-        var hud = AlundraHudDirector.Instance;
+        var hud = HudDirector.Instance;
         hud.AttachToWorld(state);
         var view = new AlundraHudViewModel();
-        var presenter = new AlundraHudPresenter(hud, view);
+        var presenter = new HudPresenter(hud, view);
 
         // Open the jauge and let the MP roll up to 3 out of 3.
-        state.AddFlag(AlundraHudDirector.ScriptOpenRequestFlag, AlundraHudDirector.ScriptOpenRequestMask);
-        for (var i = 0; i < 200 && !(hud.Phase == AlundraHudDirector.HudPhase.Displayed && hud.Mp == 3 && !hud.MpDisplayPreviewIncrement); i++)
+        state.AddFlag(HudDirector.ScriptOpenRequestFlag, HudDirector.ScriptOpenRequestMask);
+        for (var i = 0; i < 200 && !(hud.Phase == HudDirector.HudPhase.Displayed && hud.Mp == 3 && !hud.MpDisplayPreviewIncrement); i++)
         {
             TickHud(hud, presenter, 1);
         }
@@ -169,7 +169,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         // The script's "hide now" request: the jauge goes idle at once, the sub-step frozen mid-cycle.
         state.AddFlag(1814, 0x400000);
         TickHud(hud, presenter, 1);
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, hud.Phase);
+        Assert.Equal(HudDirector.HudPhase.Idle, hud.Phase);
         Assert.NotEqual(0, hud.SubStepsForTests.MpMax);
         Assert.True(hud.MpDisplayPreviewIncrement);
 
@@ -183,12 +183,12 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         Assert.Equal((4, 4), (hud.Mp, hud.MpMax));
 
         // Reopened and ticked until every roll settles, through the real presenter.
-        state.AddFlag(AlundraHudDirector.ScriptOpenRequestFlag, AlundraHudDirector.ScriptOpenRequestMask);
+        state.AddFlag(HudDirector.ScriptOpenRequestFlag, HudDirector.ScriptOpenRequestMask);
         var settled = false;
         for (var tick = 0; tick < 500 && !settled; tick++)
         {
             TickHud(hud, presenter, 1);
-            settled = hud.Phase == AlundraHudDirector.HudPhase.Displayed
+            settled = hud.Phase == HudDirector.HudPhase.Displayed
                 && !hud.IsMoneyRolling
                 && hud.Mp == 4 && hud.MpMax == 4
                 && !hud.HpDisplayPreviewIncrement && !hud.MpDisplayPreviewIncrement;
@@ -203,16 +203,16 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
     public void Hud_ResetDisplayForLoad_TakesTheLoadedValues_AndKeepsPhaseYFrameCounterAndTheAttachedState()
     {
         var state = new GameState();
-        var hud = AlundraHudDirector.Instance;
+        var hud = HudDirector.Instance;
         hud.AttachToWorld(state);
         state.PlayerStats.Money = 500;
-        state.AddFlag(AlundraHudDirector.ScriptOpenRequestFlag, AlundraHudDirector.ScriptOpenRequestMask);
+        state.AddFlag(HudDirector.ScriptOpenRequestFlag, HudDirector.ScriptOpenRequestMask);
         for (var i = 0; i < 25; i++)
         {
             hud.Tick(); // opened, displayed, money still rolling up (10 per tick).
         }
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, hud.Phase);
+        Assert.Equal(HudDirector.HudPhase.Displayed, hud.Phase);
         Assert.True(hud.IsMoneyRolling);
         var (phase, y, frameCounter) = (hud.Phase, hud.Y, hud.FrameCounter);
 
@@ -235,10 +235,10 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
     private static void InventoryTick(GameState state, uint hold)
     {
         state.TickPad.Update(hold);
-        AlundraInventoryDirector.Instance.Tick(null);
-        AlundraSubInventoryDirector.Instance.Tick();
-        AlundraInventoryPostProcess.Instance.Run();
-        AlundraInventoryPortrait.Instance.Step();
+        InventoryDirector.Instance.Tick(null);
+        SubInventoryDirector.Instance.Tick();
+        InventoryPostProcess.Instance.Run();
+        InventoryPortrait.Instance.Step();
     }
 
     private static void InventoryTicks(GameState state, int count)
@@ -251,10 +251,10 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
 
     private static void ResetAllInventoriesForLoad()
     {
-        AlundraInventoryDirector.Instance.ResetSessionForLoad();
-        AlundraSubInventoryDirector.Instance.ResetSessionForLoad();
-        AlundraInventoryPostProcess.Instance.ResetSessionForLoad();
-        AlundraInventoryPortrait.Instance.ResetSessionForLoad();
+        InventoryDirector.Instance.ResetSessionForLoad();
+        SubInventoryDirector.Instance.ResetSessionForLoad();
+        InventoryPostProcess.Instance.ResetSessionForLoad();
+        InventoryPortrait.Instance.ResetSessionForLoad();
     }
 
     [Fact]
@@ -263,8 +263,8 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         var tables = ItemTablesFixture.LoadReal();
         var state = new GameState();
         PlayerManager.InitializeNewGameInventory(state, tables);
-        var main = AlundraInventoryDirector.Instance;
-        var sub = AlundraSubInventoryDirector.Instance;
+        var main = InventoryDirector.Instance;
+        var sub = SubInventoryDirector.Instance;
         main.AttachToWorld(state, tables, null);
         sub.AttachToWorld(state, tables, null);
 
@@ -272,7 +272,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         InventoryTick(state, PadState.Start);
         InventoryTicks(state, 20);
         Assert.True(main.IsDrawn);
-        Assert.NotEqual(AlundraInventoryPortrait.StateIdle, AlundraInventoryPortrait.Instance.State);
+        Assert.NotEqual(InventoryPortrait.StateIdle, InventoryPortrait.Instance.State);
 
         ResetAllInventoriesForLoad();
 
@@ -281,9 +281,9 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         Assert.False(main.IsCallbackArmed);
         Assert.Equal(0, main.SelectedSlotId);
         Assert.False(sub.IsActive);
-        Assert.Equal(0, AlundraInventoryPostProcess.Instance.State);
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, AlundraInventoryPortrait.Instance.State);
-        Assert.False(AlundraInventoryPortrait.Instance.IsVisible);
+        Assert.Equal(0, InventoryPostProcess.Instance.State);
+        Assert.Equal(InventoryPortrait.StateIdle, InventoryPortrait.Instance.State);
+        Assert.False(InventoryPortrait.Instance.IsVisible);
 
         // The attachments survived: Start opens the main inventory again, then R1 hands over to the
         // sub-inventory (both degrade to no-ops without their attached state and tables).
@@ -315,21 +315,21 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
     [Fact]
     public void PostProcessAndPortrait_ResetSessionForLoad_GoBackToIdle()
     {
-        AlundraInventoryPostProcess.Instance.State = 2;
-        AlundraInventoryPortrait.Instance.Start(10, 20);
-        AlundraInventoryPortrait.Instance.Step();
-        Assert.True(AlundraInventoryPortrait.Instance.State != AlundraInventoryPortrait.StateIdle);
+        InventoryPostProcess.Instance.State = 2;
+        InventoryPortrait.Instance.Start(10, 20);
+        InventoryPortrait.Instance.Step();
+        Assert.True(InventoryPortrait.Instance.State != InventoryPortrait.StateIdle);
 
-        AlundraInventoryPostProcess.Instance.ResetSessionForLoad();
-        AlundraInventoryPortrait.Instance.ResetSessionForLoad();
+        InventoryPostProcess.Instance.ResetSessionForLoad();
+        InventoryPortrait.Instance.ResetSessionForLoad();
 
-        Assert.Equal(0, AlundraInventoryPostProcess.Instance.State);
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, AlundraInventoryPortrait.Instance.State);
-        Assert.Equal((0, 0, 0, 0), (AlundraInventoryPortrait.Instance.X, AlundraInventoryPortrait.Instance.Y,
-            AlundraInventoryPortrait.Instance.DrawnWidth, AlundraInventoryPortrait.Instance.DrawnHeight));
+        Assert.Equal(0, InventoryPostProcess.Instance.State);
+        Assert.Equal(InventoryPortrait.StateIdle, InventoryPortrait.Instance.State);
+        Assert.Equal((0, 0, 0, 0), (InventoryPortrait.Instance.X, InventoryPortrait.Instance.Y,
+            InventoryPortrait.Instance.DrawnWidth, InventoryPortrait.Instance.DrawnHeight));
 
         // A new flight starts normally afterwards.
-        AlundraInventoryPortrait.Instance.Start(10, 20);
-        Assert.Equal(AlundraInventoryPortrait.StateOpening, AlundraInventoryPortrait.Instance.State);
+        InventoryPortrait.Instance.Start(10, 20);
+        Assert.Equal(InventoryPortrait.StateOpening, InventoryPortrait.Instance.State);
     }
 }

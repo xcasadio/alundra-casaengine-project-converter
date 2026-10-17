@@ -86,11 +86,11 @@ public sealed class AlundraDialoguePresenterFontTests
 
     private static UIFontRegistry NewFonts(out AssetContentManager assets, out CpuFont3Loader loader, bool withFont3 = true)
     {
-        var font3 = new AssetInfo(AlundraInventoryScreen.Font3FontAssetId) { Name = "font3", FileName = @"UI\font3.fnt" };
+        var font3 = new AssetInfo(InventoryScreen.Font3FontAssetId) { Name = "font3", FileName = @"UI\font3.fnt" };
         assets = new AssetContentManager
         {
             RuntimeContext = new EngineRuntimeContext(
-                null, Path.GetTempPath(), id => withFont3 && id == AlundraInventoryScreen.Font3FontAssetId ? font3 : null),
+                null, Path.GetTempPath(), id => withFont3 && id == InventoryScreen.Font3FontAssetId ? font3 : null),
         };
 
         loader = new CpuFont3Loader();
@@ -187,9 +187,9 @@ public sealed class AlundraDialoguePresenterFontTests
 
     /// <summary>Contract item 4/D-E15-12: the dialogue box's own <c>lblLine</c> element - the SAME element
     /// <see cref="AlundraFont3GlyphTests"/> checks against the real exported font3 - actually receives
-    /// <c>FontFamily = "font3"</c> from <see cref="AlundraDialoguePresenter"/>'s own wiring, not only that
+    /// <c>FontFamily = "font3"</c> from <see cref="DialoguePresenter"/>'s own wiring, not only that
     /// the family is resolvable on the text engine (the previous test above). Built through the real
-    /// <see cref="AlundraDialoguePresenter.ScreenForTests"/> seam and <c>DialogueScreen</c>'s own public
+    /// <see cref="DialoguePresenter.ScreenForTests"/> seam and <c>DialogueScreen</c>'s own public
     /// <c>BuildWindow</c>/<c>Show</c> (the exact path <c>OnInitialize</c> runs, engine
     /// <c>DialogueScreenLayoutTests</c>'s own precedent), never a raw <c>DialogueScreen</c> built by hand.</summary>
     [Fact]
@@ -199,7 +199,7 @@ public sealed class AlundraDialoguePresenterFontTests
         var textEngine = new FontStashSharpTextEngine();
         fonts.Attach(textEngine);
 
-        var presenter = new AlundraDialoguePresenter(new RecordingUIViewRuntime(), fonts);
+        var presenter = new DialoguePresenter(new RecordingUIViewRuntime(), fonts);
 
         var desktop = new MGDesktop(new HeadlessRuntime(textEngine));
         desktop.LoadDefaultResources();
@@ -222,7 +222,7 @@ public sealed class AlundraDialoguePresenterFontTests
         var textEngine = new FontStashSharpTextEngine();
         fonts.Attach(textEngine);
 
-        var presenter = new AlundraDialoguePresenter(new RecordingUIViewRuntime(), fonts);
+        var presenter = new DialoguePresenter(new RecordingUIViewRuntime(), fonts);
         Assert.True(ResolvesFont3(textEngine));
         Assert.Equal(1, loader.Loads);
 
@@ -239,7 +239,7 @@ public sealed class AlundraDialoguePresenterFontTests
     [Fact]
     public void WithoutFontsGiven_FallsBackToTheDefaultFont_NoException()
     {
-        var presenter = new AlundraDialoguePresenter(new RecordingUIViewRuntime());
+        var presenter = new DialoguePresenter(new RecordingUIViewRuntime());
 
         var exception = Record.Exception(() => presenter.ShowLine(new DialogueLine("Bonjour.")));
 
@@ -252,7 +252,7 @@ public sealed class AlundraDialoguePresenterFontTests
     {
         var fonts = NewFonts(out _, out _, withFont3: false);
 
-        var exception = Record.Exception(() => new AlundraDialoguePresenter(new RecordingUIViewRuntime(), fonts));
+        var exception = Record.Exception(() => new DialoguePresenter(new RecordingUIViewRuntime(), fonts));
 
         Assert.Null(exception); // tolerant degrade (D-E15-12 never crashes the box over a missing font3).
     }

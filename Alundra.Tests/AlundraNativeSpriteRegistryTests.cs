@@ -36,7 +36,7 @@ public sealed class AlundraNativeSpriteRegistryTests : IDisposable
     {
         GameState.Instance.ResetForTests();
         SaveBook.Instance.ResetForTests();
-        AlundraSaveScreenDirector.Instance.ResetForTests();
+        SaveScreenDirector.Instance.ResetForTests();
     }
 
     private static EventProgramRunner NewRunner() => new(null, GameState.Instance);

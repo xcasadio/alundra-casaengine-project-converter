@@ -12,7 +12,7 @@ namespace Alundra.UI.Messages;
 /// into the screen's <see cref="AlundraTextBoxViewModel"/>, which <c>TextBoxScreen.xaml</c> binds - one <see cref="Tick"/> right after each pass of the box, from
 /// <see cref="AlundraWorldProxy.Update(float)"/>.
 /// </summary>
-public sealed class AlundraTextBoxPresenter
+public sealed class TextBoxPresenter
 {
     private readonly DialogueDirector _director;
     private readonly AlundraTextBoxViewModel _viewModel;
@@ -20,7 +20,7 @@ public sealed class AlundraTextBoxPresenter
     private readonly IUIViewRuntime? _uiView;
     private bool _pushed;
 
-    public AlundraTextBoxPresenter(
+    public TextBoxPresenter(
         DialogueDirector director,
         AlundraTextBoxViewModel viewModel,
         IUIScreen screen,

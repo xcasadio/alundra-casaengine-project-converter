@@ -7,26 +7,26 @@ using Alundra.UI.SubInventory;
 namespace Alundra.UI.Saving;
 
 /// <summary>
-/// E16.e T4 (docs/plan-e16-etat-partie.md, L5): reads <see cref="AlundraSaveScreenDirector"/>'s already-ticked state
+/// E16.e T4 (docs/plan-e16-etat-partie.md, L5): reads <see cref="SaveScreenDirector"/>'s already-ticked state
 /// and writes it into the screen's <see cref="AlundraSaveScreenViewModel"/>, which <c>SaveScreen.xaml</c> binds - one
 /// <see cref="Tick"/> per LOGIC tick, from <see cref="AlundraWorldProxy.Update(float)"/>'s per-tick loop, right after
-/// the director (the shape of <see cref="AlundraSubInventoryPresenter"/>).
+/// the director (the shape of <see cref="SubInventoryPresenter"/>).
 ///
 /// <para><b>Push/remove</b> (the inventory's precedent): this presenter owns the screen and pushes it on the active
 /// <see cref="IUIViewRuntime"/> the tick the director becomes active, and removes it the tick it is no longer
 /// active (the end of <c>0x63</c>, or a world change, SE3). The OUI/NON question is the dialogue screen, on the
 /// <see cref="UILayer.Modal"/> layer, pushed over this one (<see cref="UILayer.Menu"/>) without removing it.</para>
 /// </summary>
-public sealed class AlundraSaveScreenPresenter
+public sealed class SaveScreenPresenter
 {
-    private readonly AlundraSaveScreenDirector _director;
+    private readonly SaveScreenDirector _director;
     private readonly AlundraSaveScreenViewModel _viewModel;
     private readonly IUIScreen _screen;
     private readonly IUIViewRuntime? _uiView;
     private bool _pushed;
 
-    public AlundraSaveScreenPresenter(
-        AlundraSaveScreenDirector director,
+    public SaveScreenPresenter(
+        SaveScreenDirector director,
         AlundraSaveScreenViewModel viewModel,
         IUIScreen screen,
         IUIViewRuntime? uiView)

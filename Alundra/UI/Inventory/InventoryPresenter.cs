@@ -11,25 +11,25 @@ using Alundra.UI.Speech;
 namespace Alundra.UI.Inventory;
 
 /// <summary>
-/// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-6): reads <see cref="AlundraInventoryDirector"/>'s own
+/// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-6): reads <see cref="InventoryDirector"/>'s own
 /// already-ticked state plus the item/stat lookups it does not own (<see cref="PlayerManager"/>,
 /// <see cref="ItemTables"/>, <see cref="PlayerStats"/>), composes an
-/// <see cref="InventoryDisplayModel"/> through the pure <see cref="AlundraInventoryComposer"/>, and writes
+/// <see cref="InventoryDisplayModel"/> through the pure <see cref="InventoryComposer"/>, and writes
 /// it into the screen's <see cref="AlundraInventoryViewModel"/> (parent ADR-0002), which the screen's XAML binds -
 /// one <see cref="Tick"/> call per LOGIC tick, made from
 /// <see cref="AlundraWorldProxy.Update(float)"/>'s own pad-tick loop, immediately after
-/// <see cref="AlundraInventoryDirector.Tick"/> (same site the director itself already reads its pad edges
+/// <see cref="InventoryDirector.Tick"/> (same site the director itself already reads its pad edges
 /// from - <c>AlundraWorldProxy.cs</c>'s own comment on why a consumer of those edges must run inside that
 /// same per-tick loop).
 ///
-/// <b>Push/remove (dialogue precedent, <see cref="AlundraDialoguePresenter"/>, its own class doc and
+/// <b>Push/remove (dialogue precedent, <see cref="DialoguePresenter"/>, its own class doc and
 /// <c>:114-133</c>)</b>: this presenter owns the screen (constructed once, alongside this presenter) and
 /// pushes it onto the active <see cref="IUIViewRuntime"/> the moment
-/// <see cref="AlundraInventoryDirector.IsDrawn"/> turns true (never on the setup tick, where it is still
-/// false - <see cref="AlundraInventoryDirector.IsDrawn"/>'s own doc), removing it the moment
-/// <see cref="AlundraInventoryDirector.IsActive"/> turns false (the close slide's very last tick).
+/// <see cref="InventoryDirector.IsDrawn"/> turns true (never on the setup tick, where it is still
+/// false - <see cref="InventoryDirector.IsDrawn"/>'s own doc), removing it the moment
+/// <see cref="InventoryDirector.IsActive"/> turns false (the close slide's very last tick).
 /// </summary>
-public sealed class AlundraInventoryPresenter
+public sealed class InventoryPresenter
 {
     // MainInventoryManager.cs:1305 (herbs, g_ItemIdBySlotIndex[6]) and :1524 (g_3d, the key item id) -
     // re-cited here since this presenter, not the director, is what asks AlundraPlayerManager for their
@@ -37,7 +37,7 @@ public sealed class AlundraInventoryPresenter
     private const int HerbItemId = 0x24;
     private const int KeyItemId = 0x3d;
 
-    private readonly AlundraInventoryDirector _director;
+    private readonly InventoryDirector _director;
     private readonly GameState _gameState;
     private readonly ItemTables _itemTables;
     private readonly AlundraInventoryViewModel _viewModel;
@@ -48,8 +48,8 @@ public sealed class AlundraInventoryPresenter
     private readonly Guid? _portraitAssetId;
     private bool _pushed;
 
-    public AlundraInventoryPresenter(
-        AlundraInventoryDirector director,
+    public InventoryPresenter(
+        InventoryDirector director,
         GameState gameState,
         ItemTables itemTables,
         AlundraInventoryViewModel viewModel,
@@ -81,7 +81,7 @@ public sealed class AlundraInventoryPresenter
         {
             PushScreenIfNeeded();
             _viewModel.Apply(ComposeModel());
-            _viewModel.Portrait.Apply(AlundraInventoryPortrait.Instance, _portraitAssetId);
+            _viewModel.Portrait.Apply(InventoryPortrait.Instance, _portraitAssetId);
             return;
         }
 
@@ -121,10 +121,10 @@ public sealed class AlundraInventoryPresenter
             boxPositions[i] = _director.BoxPosition(i);
         }
 
-        var slotItemIds = new int?[AlundraInventoryComposer.SlotCount];
-        var slotIconAssetIds = new Guid?[AlundraInventoryComposer.SlotCount];
+        var slotItemIds = new int?[InventoryComposer.SlotCount];
+        var slotIconAssetIds = new Guid?[InventoryComposer.SlotCount];
 
-        for (var slot = 0; slot < AlundraInventoryComposer.SlotCount; slot++)
+        for (var slot = 0; slot < InventoryComposer.SlotCount; slot++)
         {
             var itemId = _director.ResolveSlotItemId(slot);
             slotItemIds[slot] = itemId;
@@ -148,7 +148,7 @@ public sealed class AlundraInventoryPresenter
         var keyCount = PlayerManager.GetNumberOfItem(_gameState, KeyItemId);
         var falconTotal = _gameState.PlayerStats.Falcon + _gameState.PlayerStats.FalconTemp;
 
-        return AlundraInventoryComposer.Compose(
+        return InventoryComposer.Compose(
             _director.IsDrawn,
             boxPositions,
             _director.SelectedSlotId,

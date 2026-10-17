@@ -47,7 +47,7 @@ namespace Alundra.Dialogues;
 /// empty string, never a failure.
 ///
 /// <b>Cache</b>: the inventory's text reveal asks for a name/description on every logic tick while it
-/// types (50 per second, <see cref="AlundraInventoryTextReveal"/>) - each line's already-converted
+/// types (50 per second, <see cref="InventoryTextReveal"/>) - each line's already-converted
 /// <c>font3</c> text is kept in <see cref="_parsedTextCache"/> the first time it is read, so
 /// <see cref="YarnLineTextParser"/> parses it only once per session, never once per tick.
 /// </summary>

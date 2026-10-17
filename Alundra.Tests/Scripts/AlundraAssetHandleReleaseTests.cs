@@ -31,7 +31,7 @@ public sealed class AlundraAssetHandleReleaseTests
         public bool IsFileSupported(string fileName) => true;
     }
 
-    private static readonly Guid HudScreenId = Guid.Parse(AlundraHudScreen.ScreenAssetId);
+    private static readonly Guid HudScreenId = Guid.Parse(HudScreen.ScreenAssetId);
 
     /// <summary>The HUD screen's envelope, as the screen only needs it held (these tests never build its window).</summary>
     private sealed class ScreenEnvelopeLoader : IAssetLoader
@@ -95,7 +95,7 @@ public sealed class AlundraAssetHandleReleaseTests
     public void OnEndPlay_DisposesTheHudScreen()
     {
         var assets = NewAssets(out _);
-        var screen = new AlundraHudScreen(AlundraHudDirector.Instance, assets);
+        var screen = new HudScreen(HudDirector.Instance, assets);
         var proxy = new AlundraWorldProxy();
         proxy.AttachHudScreenForTests(screen);
 

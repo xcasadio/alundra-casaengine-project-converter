@@ -107,7 +107,7 @@ public sealed class HudImageViewModel : ViewModelBase
 
     /// <summary>The part of the position finer than a native pixel, in native pixels (0 or a fraction): the screen
     /// applies it to the image's <c>RenderTransform</c>, which MGUI's XAML cannot bind (gap G9). Only the equipment
-    /// icons use it: they are centred in screen pixels (<see cref="AlundraHudIcon.ScreenLeft"/>).</summary>
+    /// icons use it: they are centred in screen pixels (<see cref="HudIcon.ScreenLeft"/>).</summary>
     public Vector2 SubPixelOffset
     {
         get => _subPixelOffset;

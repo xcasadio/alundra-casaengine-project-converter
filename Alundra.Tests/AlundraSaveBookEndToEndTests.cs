@@ -82,7 +82,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
 
     private static GameState State => GameState.Instance;
 
-    private static AlundraSaveScreenDirector Screen => AlundraSaveScreenDirector.Instance;
+    private static SaveScreenDirector Screen => SaveScreenDirector.Instance;
 
     [Fact]
     public void RealMap17_TheBook_Oui_TheScreen_Slot2_Oui_WritesSlot2InBinary_ThenItsLabelShowsTheGame()
@@ -177,7 +177,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         Assert.True(DialogueDirector.Instance.SelectChoiceForTests(0));
 
         // The capture, then the screen and its picker.
-        FramesUntil(proxy, () => Screen.IsPickerActive && Screen.State == AlundraSaveScreenDirector.StatePickWait, 300);
+        FramesUntil(proxy, () => Screen.IsPickerActive && Screen.State == SaveScreenDirector.StatePickWait, 300);
         Frames(proxy, 20); // the opening slide settles.
         Assert.Equal(new[] { "slot1", "slot2", "slot3", "slot4" }, _slots.LoadCalls);
 
@@ -190,7 +190,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         Assert.True(DialogueDirector.Instance.IsAwaitingChoice);
         Assert.True(DialogueDirector.Instance.SelectChoiceForTests(0));
 
-        FramesUntil(proxy, () => Screen.State == AlundraSaveScreenDirector.StateWaitSquare, 400);
+        FramesUntil(proxy, () => Screen.State == SaveScreenDirector.StateWaitSquare, 400);
         var call = Assert.Single(_slots.SaveCalls);
         Assert.Equal("slot2", call.Slot);
         Assert.Equal(SaveGameFormat.Binary, call.Format);

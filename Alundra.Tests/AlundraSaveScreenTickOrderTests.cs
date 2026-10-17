@@ -37,17 +37,17 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
         ResetSingletons();
         EtcStringTable.ResetForTests();
         SaveBook.Instance.ResetForTests();
-        AlundraSaveScreenDirector.Instance.ResetForTests();
+        SaveScreenDirector.Instance.ResetForTests();
         var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
         _proxy = new AlundraWorldProxy();
         _proxy.InitializeWithWorld(world);
         _proxy.PlayerEntity = new AlundraEntityScriptProxy();
         EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
-        DialogueDirector.Instance.AttachToWorld(new AlundraDialoguePresenter(_uiView), _proxy.GameState);
+        DialogueDirector.Instance.AttachToWorld(new DialoguePresenter(_uiView), _proxy.GameState);
         AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
         AlundraSaveGameDirector.Instance.SaveSlots = _slots;
-        AlundraSaveScreenDirector.Instance.AttachToWorld(_proxy.GameState, null);
+        SaveScreenDirector.Instance.AttachToWorld(_proxy.GameState, null);
     }
 
     public void Dispose()
@@ -55,10 +55,10 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
         ResetSingletons();
         EtcStringTable.ResetForTests();
         SaveBook.Instance.ResetForTests();
-        AlundraSaveScreenDirector.Instance.ResetForTests();
+        SaveScreenDirector.Instance.ResetForTests();
     }
 
-    private static AlundraSaveScreenDirector Director => AlundraSaveScreenDirector.Instance;
+    private static SaveScreenDirector Director => SaveScreenDirector.Instance;
 
     private static DialogueDirector Dialogue => DialogueDirector.Instance;
 
@@ -144,19 +144,19 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
     {
         Assert.True(Director.StartFailure());
         var guard = 0;
-        while (Director.State != AlundraSaveScreenDirector.StateWaitSquare && guard++ < 400)
+        while (Director.State != SaveScreenDirector.StateWaitSquare && guard++ < 400)
         {
             Frame(1);
         }
 
-        Assert.Equal(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
+        Assert.Equal(SaveScreenDirector.StateWaitSquare, Director.State);
         Frame(ticksPerFrame, PadState.Square);
-        for (var i = 0; i < 400 && Director.State == AlundraSaveScreenDirector.StateWaitSquare; i++)
+        for (var i = 0; i < 400 && Director.State == SaveScreenDirector.StateWaitSquare; i++)
         {
             Frame(1, PadState.Square);
         }
 
-        Assert.NotEqual(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
+        Assert.NotEqual(SaveScreenDirector.StateWaitSquare, Director.State);
     }
 
     /// <summary>D-E19-99: the question opens one tick after the Cross whatever the grouping of the ticks into frames: in the next frame when the Cross frame has one tick, in the same frame
@@ -228,7 +228,7 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
     }
 
     /// <summary>D-E19-99: the Square of the wait state (the binary's state 0x3F5 of the memory-card process, in RenderScene) is read one tick after its press: frames from the press frame until the
-    /// screen leaves <see cref="AlundraSaveScreenDirector.StateWaitSquare"/>.</summary>
+    /// screen leaves <see cref="SaveScreenDirector.StateWaitSquare"/>.</summary>
     [Theory]
     [InlineData(1, 20)]
     [InlineData(2, 10)]
@@ -237,21 +237,21 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
     {
         Assert.True(Director.StartFailure());
         var guard = 0;
-        while (Director.State != AlundraSaveScreenDirector.StateWaitSquare && guard++ < 400)
+        while (Director.State != SaveScreenDirector.StateWaitSquare && guard++ < 400)
         {
             Frame(1);
         }
 
-        Assert.Equal(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
+        Assert.Equal(SaveScreenDirector.StateWaitSquare, Director.State);
         for (var i = 0; i < 30; i++)
         {
             Frame(1);
         }
 
         Frame(ticksPerFrame, PadState.Square);
-        Assert.Equal(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
+        Assert.Equal(SaveScreenDirector.StateWaitSquare, Director.State);
         var frames = 0;
-        while (Director.State == AlundraSaveScreenDirector.StateWaitSquare && frames < 80)
+        while (Director.State == SaveScreenDirector.StateWaitSquare && frames < 80)
         {
             Frame(ticksPerFrame);
             frames++;

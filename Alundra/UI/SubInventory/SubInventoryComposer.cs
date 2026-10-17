@@ -14,7 +14,7 @@ namespace Alundra.UI.SubInventory;
 /// <c>:1157-1200</c>/<c>:1119-1154</c>), <c>FUN_80052f24</c> (names, <c>:297-323</c>),
 /// <c>DisplayAmountOfMoneyFalconKeys2</c> (<c>:742-854</c>, same places as the main inventory's own digits)
 /// and <c>UpdateCursorSpritePosition</c>'s own reference table (plan §1.5). No MGUI type appears anywhere in
-/// this file, same "pure function of plain data" shape as <see cref="AlundraInventoryComposer"/> - every
+/// this file, same "pure function of plain data" shape as <see cref="InventoryComposer"/> - every
 /// input is either a director-exposed value or a value the caller (SI4's presenter) already resolved through
 /// <see cref="ItemTables"/>/<see cref="GameState"/>.
 ///
@@ -22,7 +22,7 @@ namespace Alundra.UI.SubInventory;
 /// boots - is drawn where the original draws it, whatever its sprite's size; the author's "au plus simple",
 /// replacing D-E13D-23's centring in an invisible 24x32 cell.
 /// </summary>
-public static class AlundraSubInventoryComposer
+public static class SubInventoryComposer
 {
     // StaticVariables.cs (INT_ARRAY_800b42f8/800b4314), plan §1.5's own table - the armory's seven crest
     // offsets (Rubis..Diamant), duplicated here so this composer stays a pure function of plain data (same
@@ -36,21 +36,21 @@ public static class AlundraSubInventoryComposer
     private const int EquipmentIconOffsetY = 0x18;
     private const int EquipmentIconSlotStride = 0x28;
 
-    /// <param name="isDrawn">Director's own <see cref="AlundraSubInventoryDirector.IsDrawn"/> - false makes
+    /// <param name="isDrawn">Director's own <see cref="SubInventoryDirector.IsDrawn"/> - false makes
     /// every other argument irrelevant (nothing is read).</param>
-    /// <param name="boxPositions">The seven boxes' current native (X, Y), <see cref="AlundraSubInventoryDirector.BoxPosition"/>
+    /// <param name="boxPositions">The seven boxes' current native (X, Y), <see cref="SubInventoryDirector.BoxPosition"/>
     /// order.</param>
     /// <param name="armoryIconAssetIds">7 entries (Rubis..Diamant) - the icon asset id for each OWNED crest
-    /// (<see cref="AlundraSubInventoryDirector.ArmoryOwned"/> true and <see cref="ItemTables.TryGetIconAssetId"/>
+    /// (<see cref="SubInventoryDirector.ArmoryOwned"/> true and <see cref="ItemTables.TryGetIconAssetId"/>
     /// resolved), null otherwise (not owned, or no icon).</param>
     /// <param name="keyItemIconAssetIds">5 entries, the icon asset id for each entry of
-    /// <see cref="AlundraSubInventoryDirector.KeyItemIds"/> that is filled and resolves, null otherwise.</param>
-    /// <param name="armorIconAssetId">The equipped armor's icon (<see cref="AlundraSubInventoryDirector.ArmorItemId"/>
+    /// <see cref="SubInventoryDirector.KeyItemIds"/> that is filled and resolves, null otherwise.</param>
+    /// <param name="armorIconAssetId">The equipped armor's icon (<see cref="SubInventoryDirector.ArmorItemId"/>
     /// resolved through <see cref="ItemTables.TryGetIconAssetId"/>), or null when nothing is equipped
     /// there (or it has no icon) - hides both the icon and its frame.</param>
     /// <param name="bootsIconAssetId">Same as <paramref name="armorIconAssetId"/>, boots.</param>
-    /// <param name="cursorReference"><see cref="AlundraSubInventoryDirector.CursorReference"/>'s own result
-    /// for <see cref="AlundraSubInventoryDirector.SelectedPosition"/> - which box the cursor sits on plus its
+    /// <param name="cursorReference"><see cref="SubInventoryDirector.CursorReference"/>'s own result
+    /// for <see cref="SubInventoryDirector.SelectedPosition"/> - which box the cursor sits on plus its
     /// offset.</param>
     public static SubInventoryDisplayModel Compose(
         bool isDrawn,
@@ -119,9 +119,9 @@ public static class AlundraSubInventoryComposer
         var descriptionBox = boxPositions[5];
         var moneyFalconKeyBox = boxPositions[6];
 
-        var moneyDigits = AlundraInventoryComposer.ComposeDigits(money, 4, moneyFalconKeyBox.X + 0x18, moneyFalconKeyBox.Y + 4);
-        var falconDigits = AlundraInventoryComposer.ComposeDigits(falconTotal, 2, moneyFalconKeyBox.X + 0x28, moneyFalconKeyBox.Y + 0x1c);
-        var keyDigits = AlundraInventoryComposer.ComposeDigits(keyCount, 2, moneyFalconKeyBox.X + 0x28, moneyFalconKeyBox.Y + 0x34);
+        var moneyDigits = InventoryComposer.ComposeDigits(money, 4, moneyFalconKeyBox.X + 0x18, moneyFalconKeyBox.Y + 4);
+        var falconDigits = InventoryComposer.ComposeDigits(falconTotal, 2, moneyFalconKeyBox.X + 0x28, moneyFalconKeyBox.Y + 0x1c);
+        var keyDigits = InventoryComposer.ComposeDigits(keyCount, 2, moneyFalconKeyBox.X + 0x28, moneyFalconKeyBox.Y + 0x34);
 
         var cursorBox = boxPositions[cursorReference.BoxIndex];
         var cursor = new SubInventoryCursorState(cursorBox.X + cursorReference.OffsetX, cursorBox.Y + cursorReference.OffsetY);

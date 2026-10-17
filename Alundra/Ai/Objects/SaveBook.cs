@@ -116,14 +116,14 @@ public sealed class SaveBook
     private const string LogPrefix = "SaveBook: ";
 
     /// <summary>
-    /// L4/L5: the save screen, as the book sees it - the session's <see cref="AlundraSaveScreenDirector"/> (E16.e T3).
+    /// L4/L5: the save screen, as the book sees it - the session's <see cref="SaveScreenDirector"/> (E16.e T3).
     /// Null makes state 5 abandon (nothing can be shown), logged. Tests pose a fake.
     /// </summary>
     internal ISaveBookScreen? Screen { get; set; } = ProductionScreen;
 
     /// <summary>E16.e T5: the production screen, one source for the default and for <see cref="ResetForTests"/> - so
     /// the end-to-end test, which never replaces it, pins the production wiring.</summary>
-    private static ISaveBookScreen ProductionScreen => AlundraSaveScreenDirector.Instance;
+    private static ISaveBookScreen ProductionScreen => SaveScreenDirector.Instance;
 
     /// <summary>L4/SE1: <see cref="DialogueDirector.OpenSerial"/> right after the book's own
     /// <see cref="DialogueDirector.Open"/>, or null when the book owns no box.</summary>

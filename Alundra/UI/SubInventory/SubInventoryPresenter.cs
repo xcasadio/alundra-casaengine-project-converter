@@ -11,28 +11,28 @@ using Alundra.UI.Shared;
 namespace Alundra.UI.SubInventory;
 
 /// <summary>
-/// E13.d SI4 (docs/plan-e13d-sous-inventaire.md): reads <see cref="AlundraSubInventoryDirector"/>'s own
+/// E13.d SI4 (docs/plan-e13d-sous-inventaire.md): reads <see cref="SubInventoryDirector"/>'s own
 /// already-ticked state plus the item lookups it does not own (<see cref="ItemTables"/>,
 /// <see cref="GameState"/>), composes a <see cref="SubInventoryDisplayModel"/> through the pure
-/// <see cref="AlundraSubInventoryComposer"/>, and writes it into the screen's
+/// <see cref="SubInventoryComposer"/>, and writes it into the screen's
 /// <see cref="AlundraSubInventoryViewModel"/> (parent ADR-0002), which the screen's XAML binds - one
 /// <see cref="Tick"/> call per LOGIC tick, made from <see cref="AlundraWorldProxy.Update(float)"/>'s own
-/// pad-tick loop, immediately after <see cref="AlundraSubInventoryDirector.Tick"/> (same "presenter runs
-/// right after its director, inside the per-tick loop" shape <see cref="AlundraInventoryPresenter"/> already
+/// pad-tick loop, immediately after <see cref="SubInventoryDirector.Tick"/> (same "presenter runs
+/// right after its director, inside the per-tick loop" shape <see cref="InventoryPresenter"/> already
 /// establishes).
 ///
-/// <b>Push/remove (same precedent as <see cref="AlundraInventoryPresenter"/>)</b>: this presenter owns the
+/// <b>Push/remove (same precedent as <see cref="InventoryPresenter"/>)</b>: this presenter owns the
 /// screen (constructed once, alongside this presenter) and pushes it onto the active
-/// <see cref="IUIViewRuntime"/> the moment <see cref="AlundraSubInventoryDirector.IsDrawn"/> turns true
+/// <see cref="IUIViewRuntime"/> the moment <see cref="SubInventoryDirector.IsDrawn"/> turns true
 /// (never on the setup tick, where it is still false), removing it the moment
-/// <see cref="AlundraSubInventoryDirector.IsActive"/> turns false (the close slide's very last tick). Since
+/// <see cref="SubInventoryDirector.IsActive"/> turns false (the close slide's very last tick). Since
 /// the two inventory screens are never pushed together (D-E13D-26 - the bascule always crosses at least one
-/// tick where neither director is drawn, plan §1.2), this presenter and <see cref="AlundraInventoryPresenter"/>
+/// tick where neither director is drawn, plan §1.2), this presenter and <see cref="InventoryPresenter"/>
 /// never both hold their own screen pushed at the same tick.
 /// </summary>
-public sealed class AlundraSubInventoryPresenter
+public sealed class SubInventoryPresenter
 {
-    private readonly AlundraSubInventoryDirector _director;
+    private readonly SubInventoryDirector _director;
     private readonly GameState _gameState;
     private readonly ItemTables _itemTables;
     private readonly AlundraSubInventoryViewModel _viewModel;
@@ -43,8 +43,8 @@ public sealed class AlundraSubInventoryPresenter
     private readonly Guid? _portraitAssetId;
     private bool _pushed;
 
-    public AlundraSubInventoryPresenter(
-        AlundraSubInventoryDirector director,
+    public SubInventoryPresenter(
+        SubInventoryDirector director,
         GameState gameState,
         ItemTables itemTables,
         AlundraSubInventoryViewModel viewModel,
@@ -76,7 +76,7 @@ public sealed class AlundraSubInventoryPresenter
         {
             PushScreenIfNeeded();
             _viewModel.Apply(ComposeModel());
-            _viewModel.Portrait.Apply(AlundraInventoryPortrait.Instance, _portraitAssetId);
+            _viewModel.Portrait.Apply(InventoryPortrait.Instance, _portraitAssetId);
             return;
         }
 
@@ -145,7 +145,7 @@ public sealed class AlundraSubInventoryPresenter
         var keyCount = PlayerManager.GetNumberOfItem(_gameState, KeyItemId);
         var falconTotal = _gameState.PlayerStats.Falcon + _gameState.PlayerStats.FalconTemp;
 
-        return AlundraSubInventoryComposer.Compose(
+        return SubInventoryComposer.Compose(
             _director.IsDrawn,
             boxPositions,
             armoryIconAssetIds,

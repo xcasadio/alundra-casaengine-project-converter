@@ -8,10 +8,10 @@ using Alundra.UI.Hud;
 
 namespace Alundra.UI.Inventory;
 
-/// <summary>The whole inventory screen's display state for one tick - <see cref="AlundraInventoryComposer.Compose"/>'s
-/// own return value, written into <see cref="AlundraInventoryViewModel"/> by <see cref="AlundraInventoryPresenter"/>.
+/// <summary>The whole inventory screen's display state for one tick - <see cref="InventoryComposer.Compose"/>'s
+/// own return value, written into <see cref="AlundraInventoryViewModel"/> by <see cref="InventoryPresenter"/>.
 /// <see cref="Visible"/> false means every other member is a default/empty placeholder - the screen must
-/// not read them (same "IsDrawn faux -&gt; liste vide" contract as <see cref="AlundraHudComposer"/>).</summary>
+/// not read them (same "IsDrawn faux -&gt; liste vide" contract as <see cref="HudComposer"/>).</summary>
 public sealed class InventoryDisplayModel
 {
     public bool Visible { get; init; }

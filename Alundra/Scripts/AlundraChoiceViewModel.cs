@@ -10,7 +10,7 @@ namespace Alundra.Scripts;
 
 /// <summary>
 /// E19.f3b (docs/plan-e19-opcodes.md): what <c>UI/Screens/ChoiceScreen.xaml</c> binds - the frame's x, the two labels (text and x) and the cursor (sprite and x); the rows
-/// (144, 152, 136) never move and are declared in the XAML. <see cref="AlundraChoicePresenter"/> writes it after each pass of the choice box from the box's drawn state
+/// (144, 152, 136) never move and are declared in the XAML. <see cref="ChoicePresenter"/> writes it after each pass of the choice box from the box's drawn state
 /// (<see cref="Apply"/>); only the values that change notify. <c>Top</c> of the two labels is not bound.
 /// </summary>
 public sealed class AlundraChoiceViewModel : ViewModelBase

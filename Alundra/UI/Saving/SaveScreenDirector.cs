@@ -19,7 +19,7 @@ namespace Alundra.UI.Saving;
 /// pure, tick-driven port of the save flow of <c>StartMemoryCardProcess</c> (0x8005F458) and of its two UI
 /// transitions, the message box (transition 9, <c>Fun_80050ec8</c>, 0x80050EC8) and the slot picker (transition 10,
 /// <c>InitializeMemoryCardMenu</c> 0x800583EC then <c>DisplayMemoryCardMenu</c> 0x80058F24). SESSION-scoped
-/// singleton without any MGUI dependency, same director/presenter/screen split as <see cref="AlundraInventoryDirector"/>
+/// singleton without any MGUI dependency, same director/presenter/screen split as <see cref="InventoryDirector"/>
 /// (J8): everything the screen draws is exposed as plain read-only state. It replaces the original's
 /// <c>g_globalTransitionState</c>: <see cref="IsActive"/> is true from state <c>0x2710</c> to the end of <c>0x63</c>.
 ///
@@ -53,18 +53,18 @@ namespace Alundra.UI.Saving;
 /// 0x80, a leaving box goes below 0). Here the tint stays on its target from the duration on.</description></item>
 /// </list>
 /// </summary>
-public sealed class AlundraSaveScreenDirector : ISaveBookScreen
+public sealed class SaveScreenDirector : ISaveBookScreen
 {
     /// <summary>The one session instance, built in a nested holder so the class's own static tables
     /// (<see cref="SlotNames"/>, <see cref="RowY"/>), which the constructor reads, are initialized first.</summary>
-    public static AlundraSaveScreenDirector Instance => Holder.Value;
+    public static SaveScreenDirector Instance => Holder.Value;
 
     private static class Holder
     {
-        internal static readonly AlundraSaveScreenDirector Value = new();
+        internal static readonly SaveScreenDirector Value = new();
     }
 
-    private AlundraSaveScreenDirector()
+    private SaveScreenDirector()
     {
         for (var i = 0; i < RecordCount; i++)
         {
@@ -194,7 +194,7 @@ public sealed class AlundraSaveScreenDirector : ISaveBookScreen
     internal const int PickPending = -1;
     internal const int PickCancelled = -2;
 
-    private const string LogPrefix = "AlundraSaveScreenDirector: ";
+    private const string LogPrefix = "SaveScreenDirector: ";
 
     private enum Transition
     {
@@ -605,7 +605,7 @@ public sealed class AlundraSaveScreenDirector : ISaveBookScreen
                 // 0x0E: the gauge put back before it hides.
                 _fadeSubstate = 0;
                 _fadeFrame = 0;
-                AlundraHudDirector.Instance.InitializeHudPositionBeforeHide();
+                HudDirector.Instance.InitializeHudPositionBeforeHide();
                 _state = StateEndWait;
                 return;
 

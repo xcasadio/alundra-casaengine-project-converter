@@ -152,7 +152,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         Assert.False(Director.HasPendingLoad);
 
         // The jauge shows the loaded values at once (SC1).
-        var hud = AlundraHudDirector.Instance;
+        var hud = HudDirector.Instance;
         Assert.Equal((15, 20, 1, 2, 500), (hud.Hp, hud.HpMax, hud.Mp, hud.MpMax, hud.Money));
         Assert.Equal((0, 0, 0, 0), hud.SubStepsForTests);
 
@@ -189,22 +189,22 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
     /// arrival map: the load runs inside the map installation, then the HUD install runs the map-entry call
     /// (0x8002c3d0), which sees the loaded latch and arms the appearance; without the latch in the save, nothing.</summary>
     [Theory]
-    [InlineData(true, AlundraHudDirector.HudPhase.Opening)]
-    [InlineData(false, AlundraHudDirector.HudPhase.Idle)]
-    public void AMapEntryAfterALoad_ArmsTheHud_OnlyWhenTheSaveCarriesTheLatch(bool latchInSave, AlundraHudDirector.HudPhase expected)
+    [InlineData(true, HudDirector.HudPhase.Opening)]
+    [InlineData(false, HudDirector.HudPhase.Idle)]
+    public void AMapEntryAfterALoad_ArmsTheHud_OnlyWhenTheSaveCarriesTheLatch(bool latchInSave, HudDirector.HudPhase expected)
     {
         var save = RichSave();
-        save.GameFlags[AlundraHudDirector.PersistentLatchFlag >> 5] = latchInSave ? AlundraHudDirector.PersistentLatchMask : 0u;
+        save.GameFlags[HudDirector.PersistentLatchFlag >> 5] = latchInSave ? HudDirector.PersistentLatchMask : 0u;
         Assert.True(save.TryValidate(RealRules(), out var error), error);
         ArmLoad(save);
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, AlundraHudDirector.Instance.Phase);
+        Assert.Equal(HudDirector.HudPhase.Idle, HudDirector.Instance.Phase);
 
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
         AddHeroPawn(world);
         InitializeWithRealProject(new AlundraWorldProxy(), world);
 
         Assert.False(Director.HasPendingLoad);
-        Assert.Equal(expected, AlundraHudDirector.Instance.Phase);
+        Assert.Equal(expected, HudDirector.Instance.Phase);
     }
 
     [Theory]
@@ -276,24 +276,24 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
     public void StartPressedDuringTheLoadsFade_DoesNotOpenTheInventory_AndTheApplicationLeavesItAtRest()
     {
         var tables = ItemTablesFixture.LoadReal();
-        AlundraInventoryDirector.Instance.AttachToWorld(State, tables, null);
-        AlundraSubInventoryDirector.Instance.AttachToWorld(State, tables, null);
+        InventoryDirector.Instance.AttachToWorld(State, tables, null);
+        SubInventoryDirector.Instance.AttachToWorld(State, tables, null);
         ArmLoad(RichSave());
         Assert.True(WarpDirector.Instance.IsTransitionInProgress);
 
         InventoryTick(PadState.Start);
         InventoryTicks(10);
-        Assert.False(AlundraInventoryDirector.Instance.IsActive);
+        Assert.False(InventoryDirector.Instance.IsActive);
         Assert.Equal(0u, State.PlayerControlFlags);
 
         State.InstallForMapEntry();
         Director.ApplyPendingLoad(State, 389);
 
-        Assert.False(AlundraInventoryDirector.Instance.IsActive);
-        Assert.False(AlundraInventoryDirector.Instance.IsCallbackArmed);
-        Assert.False(AlundraSubInventoryDirector.Instance.IsActive);
-        Assert.Equal(0, AlundraInventoryPostProcess.Instance.State);
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, AlundraInventoryPortrait.Instance.State);
+        Assert.False(InventoryDirector.Instance.IsActive);
+        Assert.False(InventoryDirector.Instance.IsCallbackArmed);
+        Assert.False(SubInventoryDirector.Instance.IsActive);
+        Assert.Equal(0, InventoryPostProcess.Instance.State);
+        Assert.Equal(InventoryPortrait.StateIdle, InventoryPortrait.Instance.State);
         Assert.Equal(0u, State.PlayerControlFlags);
 
         var exception = Record.Exception(() =>
@@ -301,7 +301,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
             for (var tick = 0; tick < 120; tick++)
             {
                 InventoryTick(tick % 30 == 0 ? PadState.Start : 0u);
-                AlundraHudDirector.Instance.Tick();
+                HudDirector.Instance.Tick();
             }
         });
         Assert.Null(exception);

@@ -42,7 +42,7 @@ public sealed class AlundraDialogueOutOfBandCloseTests : IDisposable
     [Fact]
     public void ThePresenterOptsOutOfTheEngineScreensCloseButton()
     {
-        var presenter = new AlundraDialoguePresenter(new RecordingUIViewRuntime());
+        var presenter = new DialoguePresenter(new RecordingUIViewRuntime());
 
         Assert.False(presenter.ScreenForTests.ShowCloseButton);
     }
@@ -50,7 +50,7 @@ public sealed class AlundraDialogueOutOfBandCloseTests : IDisposable
     [Fact]
     public void AWindowDrivenClose_BringsTheLogicalBoxDown_AndClearsTheFreezeFlag()
     {
-        var presenter = new AlundraDialoguePresenter(new RecordingUIViewRuntime());
+        var presenter = new DialoguePresenter(new RecordingUIViewRuntime());
         var state = new GameState();
         DialogueDirector.Instance.AttachToWorld(presenter, state);
 
@@ -61,7 +61,7 @@ public sealed class AlundraDialogueOutOfBandCloseTests : IDisposable
         Assert.NotEqual(0u, state.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask);
 
         // The window's own close control fires - the exact production wiring, not a mirror.
-        var requestClose = typeof(AlundraDialoguePresenter)
+        var requestClose = typeof(DialoguePresenter)
             .GetMethod("RequestClose", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(requestClose);
         requestClose!.Invoke(presenter, null);

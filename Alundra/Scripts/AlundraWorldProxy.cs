@@ -474,7 +474,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     private bool _dialoguePresenterWired;
 
     // The presenter this world built, disposed when the world ends: its screen holds the project's dialogue markup.
-    private AlundraDialoguePresenter? _dialoguePresenter;
+    private DialoguePresenter? _dialoguePresenter;
 
     /// <summary>E15.c T5 (docs/plan-e15-yarn.md, contract item 1): this world's own <c>dialogue_{mapId}</c>
     /// Yarn asset, held through the catalog and the game's asset manager (ADR-0037, same hold/give-back
@@ -486,91 +486,91 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// project the same way.</summary>
     private AssetHandle<DialogueAsset>? _sharedDialogueAssetHandle;
 
-    /// <summary>E13 C2 (docs/plan-e13-hud.md): true once <see cref="AlundraHudScreen"/> has been built and
+    /// <summary>E13 C2 (docs/plan-e13-hud.md): true once <see cref="HudScreen"/> has been built and
     /// pushed onto a live UI view - same "retry every frame until the post-bootstrap view exists" shape as
     /// <see cref="_dialoguePresenterWired"/>/<see cref="TryWireDialoguePresenterOnce"/>, for the identical
     /// reason (<see cref="InstallDialogueSystems"/>'s own doc: the ViewManager is empty by construction at
     /// <see cref="InitializeWithWorld"/> time, every world load). Per-proxy, not session-scoped: a new
-    /// world needs its own screen pushed onto its own (new) view - <see cref="AlundraHudDirector"/> itself
+    /// world needs its own screen pushed onto its own (new) view - <see cref="HudDirector"/> itself
     /// stays the session-scoped one, this flag only gates the VIEW wiring.</summary>
     private bool _hudScreenWired;
 
     /// <summary>E13 C3 (docs/plan-e13-hud.md, D-E13-8): the presenter that pushes
-    /// <see cref="AlundraHudDirector"/>'s own per-tick state into whichever <see cref="IAlundraHudView"/> is
+    /// <see cref="HudDirector"/>'s own per-tick state into whichever <see cref="IHudView"/> is
     /// currently wired - null until <see cref="TryWireHudScreenOnce"/> succeeds (production), or until a
     /// test attaches one directly via <see cref="AttachHudPresenterForTests"/> (the screen itself is not
-    /// constructible headless, same reason <see cref="AlundraDialoguePresenter"/>'s own tests double
+    /// constructible headless, same reason <see cref="DialoguePresenter"/>'s own tests double
     /// <see cref="IUIViewRuntime"/> instead of a real <c>ScreenStack</c>). Per-proxy, same lifetime as
     /// <see cref="_hudScreenWired"/> - a new world's screen gets a new presenter over the SAME session-scoped
-    /// <see cref="AlundraHudDirector.Instance"/>.</summary>
-    private AlundraHudPresenter? _hudPresenter;
+    /// <see cref="HudDirector.Instance"/>.</summary>
+    private HudPresenter? _hudPresenter;
 
     /// <summary>E13.d D5 (docs/plan-e13d-inventaire.md): same "per-proxy retry gate" shape as
     /// <see cref="_hudScreenWired"/> - guards <see cref="TryWireInventoryScreenOnce"/>'s own view lookup,
-    /// never the session-scoped <see cref="AlundraInventoryDirector"/> itself.</summary>
+    /// never the session-scoped <see cref="InventoryDirector"/> itself.</summary>
     private bool _inventoryScreenWired;
 
-    /// <summary>E13.d D5: the presenter that pushes/removes <see cref="AlundraInventoryScreen"/> and pushes
+    /// <summary>E13.d D5: the presenter that pushes/removes <see cref="InventoryScreen"/> and pushes
     /// its per-tick <see cref="InventoryDisplayModel"/> - null until <see cref="TryWireInventoryScreenOnce"/>
     /// succeeds (production), or until a test attaches one via <see cref="AttachInventoryPresenterForTests"/>.</summary>
-    private AlundraInventoryPresenter? _inventoryPresenter;
+    private InventoryPresenter? _inventoryPresenter;
 
     /// <summary>D5.f (engine ADR-0036): the inventory screen this proxy built. It holds font3 from its
     /// construction, and <see cref="OnEndPlay"/> disposes it so the hold is given back when this world ends;
     /// the font then stays pending until the next world's screen takes it again.</summary>
-    private AlundraInventoryScreen? _inventoryScreen;
+    private InventoryScreen? _inventoryScreen;
 
     /// <summary>E13.d SI4 (docs/plan-e13d-sous-inventaire.md): same "per-proxy retry gate" shape as
     /// <see cref="_inventoryScreenWired"/> - guards <see cref="TryWireSubInventoryScreenOnce"/>'s own view
-    /// lookup, never the session-scoped <see cref="AlundraSubInventoryDirector"/> itself.</summary>
+    /// lookup, never the session-scoped <see cref="SubInventoryDirector"/> itself.</summary>
     private bool _subInventoryScreenWired;
 
-    /// <summary>E13.d SI4: the presenter that pushes/removes <see cref="AlundraSubInventoryScreen"/> and pushes
+    /// <summary>E13.d SI4: the presenter that pushes/removes <see cref="SubInventoryScreen"/> and pushes
     /// its per-tick <see cref="SubInventoryDisplayModel"/> - null until <see cref="TryWireSubInventoryScreenOnce"/>
     /// succeeds (production), or until a test attaches one via <see cref="AttachSubInventoryPresenterForTests"/>.</summary>
-    private AlundraSubInventoryPresenter? _subInventoryPresenter;
+    private SubInventoryPresenter? _subInventoryPresenter;
 
     /// <summary>E13.d SI4 (engine ADR-0036): the sub-inventory screen this proxy built. It holds font3 from
     /// its construction, and <see cref="OnEndPlay"/> disposes it the same way <see cref="_inventoryScreen"/>
     /// does.</summary>
-    private AlundraSubInventoryScreen? _subInventoryScreen;
+    private SubInventoryScreen? _subInventoryScreen;
 
     /// <summary>E16.e T4 (docs/plan-e16-etat-partie.md, L5): the per-proxy retry gate of
     /// <see cref="TryWireSaveScreenOnce"/>, the shape of <see cref="_subInventoryScreenWired"/>.</summary>
     private bool _saveScreenWired;
 
-    /// <summary>E16.e T4: the presenter that pushes/removes <see cref="AlundraSaveScreen"/> and writes its view
+    /// <summary>E16.e T4: the presenter that pushes/removes <see cref="SaveScreen"/> and writes its view
     /// model - null until <see cref="TryWireSaveScreenOnce"/> succeeds, or a test attaches one
     /// (<see cref="AttachSaveScreenPresenterForTests"/>).</summary>
-    private AlundraSaveScreenPresenter? _saveScreenPresenter;
+    private SaveScreenPresenter? _saveScreenPresenter;
 
     /// <summary>E16.e T4: the save screen this proxy built; it holds font3, and <see cref="OnEndPlay"/> disposes
     /// it the same way <see cref="_subInventoryScreen"/> does.</summary>
-    private AlundraSaveScreen? _saveScreen;
+    private SaveScreen? _saveScreen;
 
     /// <summary>E19.f2b1c F2B1C-R4: the per-proxy retry gate of <see cref="TryWireTextBoxScreenOnce"/>, the shape of <see cref="_saveScreenWired"/>.</summary>
     private bool _textBoxScreenWired;
 
-    /// <summary>E19.f2b1c F2B1C-R4: the presenter that pushes/removes <see cref="AlundraTextBoxScreen"/> and writes its view model after each pass of the dialogue
+    /// <summary>E19.f2b1c F2B1C-R4: the presenter that pushes/removes <see cref="TextBoxScreen"/> and writes its view model after each pass of the dialogue
     /// box - null until <see cref="TryWireTextBoxScreenOnce"/> succeeds, or a test attaches one (<see cref="AttachTextBoxPresenterForTests"/>).</summary>
-    private AlundraTextBoxPresenter? _textBoxPresenter;
+    private TextBoxPresenter? _textBoxPresenter;
 
     /// <summary>E19.f2b1c F2B1C-R4: the text box screen this proxy built; it holds font3, and <see cref="OnEndPlay"/> disposes it like <see cref="_saveScreen"/>.</summary>
-    private AlundraTextBoxScreen? _textBoxScreen;
+    private TextBoxScreen? _textBoxScreen;
 
     /// <summary>E19.f3b F3B-R3: the per-proxy retry gate of <see cref="TryWireChoiceScreenOnce"/>, the shape of <see cref="_textBoxScreenWired"/>.</summary>
     private bool _choiceScreenWired;
 
-    /// <summary>E19.f3b F3B-R3: the presenter that pushes/removes <see cref="AlundraChoiceScreen"/> and writes its view model after each pass of the choice box - null until
+    /// <summary>E19.f3b F3B-R3: the presenter that pushes/removes <see cref="ChoiceScreen"/> and writes its view model after each pass of the choice box - null until
     /// <see cref="TryWireChoiceScreenOnce"/> succeeds, or a test attaches one (<see cref="AttachChoicePresenterForTests"/>).</summary>
-    private AlundraChoicePresenter? _choicePresenter;
+    private ChoicePresenter? _choicePresenter;
 
     /// <summary>E19.f3b F3B-R3: the choice screen this proxy built; it holds font3, and <see cref="OnEndPlay"/> disposes it like <see cref="_textBoxScreen"/>.</summary>
-    private AlundraChoiceScreen? _choiceScreen;
+    private ChoiceScreen? _choiceScreen;
 
     /// <summary>Engine ADR-0037: the HUD screen this proxy built. It holds its glyph and icon sprites, and
     /// <see cref="OnEndPlay"/> disposes it so they are given back when this world ends.</summary>
-    private AlundraHudScreen? _hudScreen;
+    private HudScreen? _hudScreen;
 
     /// <summary>
     /// This world's own <see cref="TileMapData"/> (resolved once in <see cref="InitializeWithWorld"/>,
@@ -1392,7 +1392,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     }
 
     /// <summary>
-    /// E13 C1 (docs/plan-e13-hud.md): re-points the SESSION-scoped <see cref="AlundraHudDirector.Instance"/>
+    /// E13 C1 (docs/plan-e13-hud.md): re-points the SESSION-scoped <see cref="HudDirector.Instance"/>
     /// at this world's own <see cref="GameState"/>, then runs its map-entry hook, which arms the jauge's
     /// appearance when the persistent latch (flag 1662) is set (E19.r R1: the port of the main loop's map-entry
     /// block, 0x8002c3d0) - same "AttachToWorld re-points, InstallForMapEntry is the separate map-entry call"
@@ -1401,8 +1401,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// </summary>
     internal void InstallHudSystems()
     {
-        AlundraHudDirector.Instance.AttachToWorld(GameState);
-        AlundraHudDirector.Instance.InstallForMapEntry();
+        HudDirector.Instance.AttachToWorld(GameState);
+        HudDirector.Instance.InstallForMapEntry();
 
         // Eager attempt for hosts that pre-wire a view before install (same "serves the wiring test's
         // montage, real game retries in Update" shape as InstallDialogueSystems's own eager lookup) -
@@ -1414,22 +1414,22 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E16.e L5/SE3 (docs/plan-e16-etat-partie.md): re-points the SESSION-scoped
-    /// <see cref="AlundraSaveScreenDirector.Instance"/> at this world's <see cref="GameState"/> and
+    /// <see cref="SaveScreenDirector.Instance"/> at this world's <see cref="GameState"/> and
     /// <see cref="SoundPlayer"/>, then runs its map entry - which ends, without writing, a save flow a world change
     /// cut. Called from <see cref="InitializeWithWorld"/> right AFTER <see cref="InstallDialogueSystems"/>: the
     /// dialogue director's own map entry has already dropped its box and choice and rebuilt its runner.
     /// </summary>
     internal void InstallSaveScreenSystems()
     {
-        AlundraSaveScreenDirector.Instance.AttachToWorld(GameState, SoundPlayer);
-        AlundraSaveScreenDirector.Instance.InstallForMapEntry();
+        SaveScreenDirector.Instance.AttachToWorld(GameState, SoundPlayer);
+        SaveScreenDirector.Instance.InstallForMapEntry();
     }
 
     /// <summary>
     /// E13.d D4 (docs/plan-e13d-inventaire.md): re-points the SESSION-scoped
-    /// <see cref="AlundraInventoryDirector.Instance"/> at this world's own <see cref="GameState"/>,
+    /// <see cref="InventoryDirector.Instance"/> at this world's own <see cref="GameState"/>,
     /// <see cref="ItemTables"/> and <see cref="SoundPlayer"/> - same "AttachToWorld re-points, no
-    /// separate map-entry reset" shape as <see cref="AlundraHudDirector"/> (this director has no
+    /// separate map-entry reset" shape as <see cref="HudDirector"/> (this director has no
     /// map-entry state either: <see cref="GameState.PlayerControlFlags"/>/<c>MenuOpen</c> already
     /// survives a map change like every other <see cref="Session.GameState"/> field, and the inventory
     /// itself is never open across a map transition: MenuOpen, cleared only with the closing slide's end, blocks
@@ -1440,11 +1440,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// </summary>
     internal void InstallInventorySystems()
     {
-        AlundraInventoryDirector.Instance.AttachToWorld(GameState, ItemTables, SoundPlayer);
+        InventoryDirector.Instance.AttachToWorld(GameState, ItemTables, SoundPlayer);
 
         // E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-20): same "re-point without touching state"
         // shape, right next to the main inventory's own director - the two are session singletons like it.
-        AlundraSubInventoryDirector.Instance.AttachToWorld(GameState, ItemTables, SoundPlayer);
+        SubInventoryDirector.Instance.AttachToWorld(GameState, ItemTables, SoundPlayer);
     }
 
     /// <summary>
@@ -1500,7 +1500,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E12.a (docs/plan-e12-dialogues.md, item ③bis/④): installs the dialogue-flow seam - re-points the
-    /// SESSION-scoped <see cref="DialogueDirector.Instance"/> at an <see cref="AlundraDialoguePresenter"/>
+    /// SESSION-scoped <see cref="DialogueDirector.Instance"/> at an <see cref="DialoguePresenter"/>
     /// wired to this world's own ACTIVE UI view (<c>world.Game.GameManager.ViewManager.GetActiveUIView()</c>
     /// - the SAME route the engine's own <c>UIOverlayDemo</c> uses), THEN resets this map entry's dialogue
     /// state (<see cref="DialogueDirector.InstallForMapEntry"/>). No active UI view (no <c>Game</c>,
@@ -1525,7 +1525,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // TryWireDialoguePresenterOnce's per-frame retry in Update.
         var uiView = world.Game?.GameManager?.ViewManager?.GetActiveUIView();
         var presenter = uiView != null
-            ? new AlundraDialoguePresenter(uiView, world.Game?.UIFonts, world.Game?.AssetContentManager)
+            ? new DialoguePresenter(uiView, world.Game?.UIFonts, world.Game?.AssetContentManager)
             : null;
         _dialoguePresenter?.Dispose();
         _dialoguePresenter = presenter;
@@ -1567,7 +1567,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         }
 
         _dialoguePresenter?.Dispose();
-        _dialoguePresenter = new AlundraDialoguePresenter(uiView, _world?.Game?.UIFonts, _world?.Game?.AssetContentManager);
+        _dialoguePresenter = new DialoguePresenter(uiView, _world?.Game?.UIFonts, _world?.Game?.AssetContentManager);
         Dialogues.DialogueDirector.Instance.AttachToWorld(_dialoguePresenter, GameState, SoundPlayer);
         _dialoguePresenterWired = true;
         Logs.WriteInfo("AlundraWorldProxy: dialogue presenter wired to the active UI view (post-bootstrap retry).");
@@ -1575,15 +1575,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E13 C2's own version of <see cref="TryWireDialoguePresenterOnce"/>: retry-until-success, once per
-    /// frame, because the UI view <see cref="AlundraHudScreen"/> is pushed onto is created strictly AFTER
+    /// frame, because the UI view <see cref="HudScreen"/> is pushed onto is created strictly AFTER
     /// <see cref="InitializeWithWorld"/> ran (same proven boot order, <see cref="InstallDialogueSystems"/>'s
     /// own doc). Requires BOTH a live UI view AND <c>World.Game.AssetContentManager</c> (the screen loads
-    /// its 24 sprites the moment it is initialized, <see cref="AlundraHudScreen.OnInitialize"/>) - a
+    /// its 24 sprites the moment it is initialized, <see cref="HudScreen.OnInitialize"/>) - a
     /// headless test world with no <c>Game</c> degrades to never wiring, the same tolerated shape as every
     /// other missing-system seam in this DLL. The screen is NON-modal (D-E13-1/mission item 1) and pushed
-    /// once, never removed: it draws nothing itself while <see cref="AlundraHudDirector.IsDrawn"/> is false
-    /// (<see cref="AlundraHudComposer"/>'s own "IsDrawn faux -&gt; liste vide"), so there is no open/close
-    /// state to unwind here the way <see cref="AlundraDialoguePresenter"/> unwinds its own push/remove.
+    /// once, never removed: it draws nothing itself while <see cref="HudDirector.IsDrawn"/> is false
+    /// (<see cref="HudComposer"/>'s own "IsDrawn faux -&gt; liste vide"), so there is no open/close
+    /// state to unwind here the way <see cref="DialoguePresenter"/> unwinds its own push/remove.
     /// </summary>
     private void TryWireHudScreenOnce()
     {
@@ -1599,7 +1599,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             return; // retry next frame - same reason TryWireDialoguePresenterOnce retries.
         }
 
-        var hudScreen = new AlundraHudScreen(AlundraHudDirector.Instance, assetContentManager);
+        var hudScreen = new HudScreen(HudDirector.Instance, assetContentManager);
         _hudScreen = hudScreen;
         uiView.PushScreen(hudScreen);
 
@@ -1607,31 +1607,31 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // hudTick loop runs (Update(float)'s own call order: TryWireHudScreenOnce, then the tick loop) - so
         // the presenter's first Tick() this frame already has a live view to push into, matching
         // AlundraHudScreen.OnInitialize's own "production call order" doc.
-        _hudPresenter = new AlundraHudPresenter(
-            AlundraHudDirector.Instance, hudScreen.ViewModel, ResolveHudEquipmentIcons);
+        _hudPresenter = new HudPresenter(
+            HudDirector.Instance, hudScreen.ViewModel, ResolveHudEquipmentIcons);
         _hudScreenWired = true;
         Logs.WriteInfo("AlundraWorldProxy: HUD screen wired to the active UI view (post-bootstrap retry).");
     }
 
-    /// <summary>Test-only seam: attaches an <see cref="AlundraHudPresenter"/> over the SAME session-scoped
-    /// <see cref="AlundraHudDirector.Instance"/> this proxy's own production wiring
-    /// (<see cref="TryWireHudScreenOnce"/>) would use, but against any <see cref="IAlundraHudView"/> -
-    /// typically a recording test double, since a real <see cref="AlundraHudScreen"/> is not constructible
+    /// <summary>Test-only seam: attaches an <see cref="HudPresenter"/> over the SAME session-scoped
+    /// <see cref="HudDirector.Instance"/> this proxy's own production wiring
+    /// (<see cref="TryWireHudScreenOnce"/>) would use, but against any <see cref="IHudView"/> -
+    /// typically a recording test double, since a real <see cref="HudScreen"/> is not constructible
     /// headless (see <see cref="_hudPresenter"/>'s own doc). Lets a test drive <see cref="Update(float)"/>'s
     /// real per-tick loop and observe that it keeps pushing into the view regardless of a modal dialogue,
     /// without needing a live graphics stack - same shape as <see cref="InstallDialogueSystems"/> being
     /// exposed internal for the identical reason.</summary>
-    internal void AttachHudPresenterForTests(IAlundraHudView view)
+    internal void AttachHudPresenterForTests(IHudView view)
     {
-        _hudPresenter = new AlundraHudPresenter(AlundraHudDirector.Instance, view);
+        _hudPresenter = new HudPresenter(HudDirector.Instance, view);
     }
 
     /// <summary>
     /// E13.d D5's own version of <see cref="TryWireHudScreenOnce"/>: retry-until-success, once per frame,
     /// same reason (the UI view is created strictly AFTER <see cref="InitializeWithWorld"/> ran). Unlike
-    /// the HUD's screen, <see cref="AlundraInventoryScreen"/> is NOT pushed here: it is modal
+    /// the HUD's screen, <see cref="InventoryScreen"/> is NOT pushed here: it is modal
     /// (<see cref="IUIScreen.IsModal"/>) and stays down until the director actually draws it, so the
-    /// presenter itself owns push/remove (dialogue precedent, <see cref="AlundraInventoryPresenter"/>'s
+    /// presenter itself owns push/remove (dialogue precedent, <see cref="InventoryPresenter"/>'s
     /// own class doc) - this method only constructs the presenter once a live view and asset content
     /// manager exist.
     /// </summary>
@@ -1650,30 +1650,30 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             return; // retry next frame - same reason TryWireHudScreenOnce retries.
         }
 
-        var inventoryScreen = new AlundraInventoryScreen(assetContentManager, fonts);
+        var inventoryScreen = new InventoryScreen(assetContentManager, fonts);
         _inventoryScreen = inventoryScreen;
-        _inventoryPresenter = new AlundraInventoryPresenter(
-            AlundraInventoryDirector.Instance, GameState, ItemTables, inventoryScreen.ViewModel, inventoryScreen, uiView);
+        _inventoryPresenter = new InventoryPresenter(
+            InventoryDirector.Instance, GameState, ItemTables, inventoryScreen.ViewModel, inventoryScreen, uiView);
         _inventoryScreenWired = true;
         Logs.WriteInfo("AlundraWorldProxy: inventory screen wired to the active UI view (post-bootstrap retry).");
     }
 
-    /// <summary>Test-only seam: attaches an <see cref="AlundraInventoryPresenter"/> over the SAME
-    /// session-scoped <see cref="AlundraInventoryDirector.Instance"/> this proxy's own production wiring
+    /// <summary>Test-only seam: attaches an <see cref="InventoryPresenter"/> over the SAME
+    /// session-scoped <see cref="InventoryDirector.Instance"/> this proxy's own production wiring
     /// (<see cref="TryWireInventoryScreenOnce"/>) would use, but against any <see cref="AlundraInventoryViewModel"/>/
     /// <see cref="IUIScreen"/>/<see cref="IUIViewRuntime"/> - typically recording test doubles, since a real
-    /// <see cref="AlundraInventoryScreen"/>'s window is not buildable headless. Lets a test drive
+    /// <see cref="InventoryScreen"/>'s window is not buildable headless. Lets a test drive
     /// <see cref="Update(float)"/>'s real per-tick loop and observe push/remove/render timing without a live
     /// graphics stack - same shape as <see cref="AttachHudPresenterForTests"/>.</summary>
     internal void AttachInventoryPresenterForTests(AlundraInventoryViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
-        _inventoryPresenter = new AlundraInventoryPresenter(
-            AlundraInventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
+        _inventoryPresenter = new InventoryPresenter(
+            InventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
     }
 
     /// <summary>
     /// E13.d SI4's own version of <see cref="TryWireInventoryScreenOnce"/> - same retry-until-success shape,
-    /// same reason. <see cref="AlundraSubInventoryScreen"/> is modal too, and stays down until its own
+    /// same reason. <see cref="SubInventoryScreen"/> is modal too, and stays down until its own
     /// director actually draws it (D-E13D-26): this method only constructs the presenter once a live view
     /// and asset content manager exist.
     /// </summary>
@@ -1692,23 +1692,23 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             return; // retry next frame - same reason TryWireInventoryScreenOnce retries.
         }
 
-        var subInventoryScreen = new AlundraSubInventoryScreen(assetContentManager, fonts);
+        var subInventoryScreen = new SubInventoryScreen(assetContentManager, fonts);
         _subInventoryScreen = subInventoryScreen;
-        _subInventoryPresenter = new AlundraSubInventoryPresenter(
-            AlundraSubInventoryDirector.Instance, GameState, ItemTables, subInventoryScreen.ViewModel, subInventoryScreen, uiView);
+        _subInventoryPresenter = new SubInventoryPresenter(
+            SubInventoryDirector.Instance, GameState, ItemTables, subInventoryScreen.ViewModel, subInventoryScreen, uiView);
         _subInventoryScreenWired = true;
         Logs.WriteInfo("AlundraWorldProxy: sub-inventory screen wired to the active UI view (post-bootstrap retry).");
     }
 
-    /// <summary>Test-only seam: attaches an <see cref="AlundraSubInventoryPresenter"/> over the SAME
-    /// session-scoped <see cref="AlundraSubInventoryDirector.Instance"/> this proxy's own production wiring
+    /// <summary>Test-only seam: attaches an <see cref="SubInventoryPresenter"/> over the SAME
+    /// session-scoped <see cref="SubInventoryDirector.Instance"/> this proxy's own production wiring
     /// (<see cref="TryWireSubInventoryScreenOnce"/>) would use, but against any
     /// <see cref="AlundraSubInventoryViewModel"/>/<see cref="IUIScreen"/>/<see cref="IUIViewRuntime"/> -
     /// same shape as <see cref="AttachInventoryPresenterForTests"/>.</summary>
     internal void AttachSubInventoryPresenterForTests(AlundraSubInventoryViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
-        _subInventoryPresenter = new AlundraSubInventoryPresenter(
-            AlundraSubInventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
+        _subInventoryPresenter = new SubInventoryPresenter(
+            SubInventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
     }
 
     /// <summary>
@@ -1731,9 +1731,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             return; // retry next frame.
         }
 
-        var saveScreen = new AlundraSaveScreen(assetContentManager, fonts);
+        var saveScreen = new SaveScreen(assetContentManager, fonts);
         _saveScreen = saveScreen;
-        _saveScreenPresenter = new AlundraSaveScreenPresenter(AlundraSaveScreenDirector.Instance, saveScreen.ViewModel, saveScreen, uiView);
+        _saveScreenPresenter = new SaveScreenPresenter(SaveScreenDirector.Instance, saveScreen.ViewModel, saveScreen, uiView);
         _saveScreenWired = true;
         Logs.WriteInfo("AlundraWorldProxy: save screen wired to the active UI view (post-bootstrap retry).");
     }
@@ -1742,7 +1742,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// E19.f2b1c F2B1C-R4 (docs/plan-e19-opcodes.md): <see cref="TryWireSaveScreenOnce"/>'s shape for the text box screen - retry-until-success, once per frame, since
     /// the UI view appears after <see cref="InitializeWithWorld"/>. The screen is pushed by its presenter at the first drawn pass of the box. Unlike the save screen's, a
     /// failure to build it (the export has no text box screen or no font3) is logged once and ends the retries: the box machine runs without a view, the way the
-    /// engine's dialogue presenter degrades (<see cref="AlundraDialoguePresenter"/>).
+    /// engine's dialogue presenter degrades (<see cref="DialoguePresenter"/>).
     /// </summary>
     internal void TryWireTextBoxScreenOnce()
     {
@@ -1762,9 +1762,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _textBoxScreenWired = true;
         try
         {
-            var textBoxScreen = new AlundraTextBoxScreen(assetContentManager, fonts);
+            var textBoxScreen = new TextBoxScreen(assetContentManager, fonts);
             _textBoxScreen = textBoxScreen;
-            _textBoxPresenter = new AlundraTextBoxPresenter(Dialogues.DialogueDirector.Instance, textBoxScreen.ViewModel, textBoxScreen, uiView);
+            _textBoxPresenter = new TextBoxPresenter(Dialogues.DialogueDirector.Instance, textBoxScreen.ViewModel, textBoxScreen, uiView);
             Logs.WriteInfo("AlundraWorldProxy: text box screen wired to the active UI view (post-bootstrap retry).");
         }
         catch (Exception ex)
@@ -1796,9 +1796,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _choiceScreenWired = true;
         try
         {
-            var choiceScreen = new AlundraChoiceScreen(assetContentManager, fonts);
+            var choiceScreen = new ChoiceScreen(assetContentManager, fonts);
             _choiceScreen = choiceScreen;
-            _choicePresenter = new AlundraChoicePresenter(Dialogues.DialogueDirector.Instance, choiceScreen.ViewModel, choiceScreen, uiView);
+            _choicePresenter = new ChoicePresenter(Dialogues.DialogueDirector.Instance, choiceScreen.ViewModel, choiceScreen, uiView);
             Logs.WriteInfo("AlundraWorldProxy: choice screen wired to the active UI view (post-bootstrap retry).");
         }
         catch (Exception ex)
@@ -1807,48 +1807,48 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         }
     }
 
-    /// <summary>Test-only seam: attaches an <see cref="AlundraChoicePresenter"/> over the session's <see cref="DialogueDirector.Instance"/>, against any view model, screen and
+    /// <summary>Test-only seam: attaches an <see cref="ChoicePresenter"/> over the session's <see cref="DialogueDirector.Instance"/>, against any view model, screen and
     /// UI view - the shape of <see cref="AttachTextBoxPresenterForTests"/>.</summary>
     internal void AttachChoicePresenterForTests(AlundraChoiceViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
-        _choicePresenter = new AlundraChoicePresenter(Dialogues.DialogueDirector.Instance, viewModel, screen, uiView);
+        _choicePresenter = new ChoicePresenter(Dialogues.DialogueDirector.Instance, viewModel, screen, uiView);
     }
 
     /// <summary>Test-only seam: the choice screen this proxy holds (built by <see cref="TryWireChoiceScreenOnce"/> or attached by a test), null once <see cref="OnEndPlay"/> gave it back.</summary>
-    internal AlundraChoiceScreen? ChoiceScreenForTests => _choiceScreen;
+    internal ChoiceScreen? ChoiceScreenForTests => _choiceScreen;
 
     /// <summary>Test-only seam: the choice screen <see cref="OnEndPlay"/> disposes, as <see cref="TryWireChoiceScreenOnce"/> would have built it (which needs a live game).</summary>
-    internal void AttachChoiceScreenForTests(AlundraChoiceScreen screen)
+    internal void AttachChoiceScreenForTests(ChoiceScreen screen)
     {
         _choiceScreen = screen;
     }
 
-    /// <summary>Test-only seam: attaches an <see cref="AlundraSaveScreenPresenter"/> over the session's
-    /// <see cref="AlundraSaveScreenDirector.Instance"/>, against any view model, screen and UI view - the shape of
+    /// <summary>Test-only seam: attaches an <see cref="SaveScreenPresenter"/> over the session's
+    /// <see cref="SaveScreenDirector.Instance"/>, against any view model, screen and UI view - the shape of
     /// <see cref="AttachSubInventoryPresenterForTests"/>.</summary>
     internal void AttachSaveScreenPresenterForTests(AlundraSaveScreenViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
-        _saveScreenPresenter = new AlundraSaveScreenPresenter(AlundraSaveScreenDirector.Instance, viewModel, screen, uiView);
+        _saveScreenPresenter = new SaveScreenPresenter(SaveScreenDirector.Instance, viewModel, screen, uiView);
     }
 
-    /// <summary>Test-only seam: attaches an <see cref="AlundraTextBoxPresenter"/> over the session's <see cref="DialogueDirector.Instance"/>, against any view
+    /// <summary>Test-only seam: attaches an <see cref="TextBoxPresenter"/> over the session's <see cref="DialogueDirector.Instance"/>, against any view
     /// model, screen and UI view - the shape of <see cref="AttachSaveScreenPresenterForTests"/>.</summary>
     internal void AttachTextBoxPresenterForTests(AlundraTextBoxViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
-        _textBoxPresenter = new AlundraTextBoxPresenter(Dialogues.DialogueDirector.Instance, viewModel, screen, uiView);
+        _textBoxPresenter = new TextBoxPresenter(Dialogues.DialogueDirector.Instance, viewModel, screen, uiView);
     }
 
     /// <summary>Test-only seam: the text box screen this proxy holds (built by <see cref="TryWireTextBoxScreenOnce"/> or attached by a test), null once <see cref="OnEndPlay"/> gave it back.</summary>
-    internal AlundraTextBoxScreen? TextBoxScreenForTests => _textBoxScreen;
+    internal TextBoxScreen? TextBoxScreenForTests => _textBoxScreen;
 
     /// <summary>Test-only seam: the text box screen <see cref="OnEndPlay"/> disposes, as <see cref="TryWireTextBoxScreenOnce"/> would have built it (which needs a live
     /// game).</summary>
-    internal void AttachTextBoxScreenForTests(AlundraTextBoxScreen screen)
+    internal void AttachTextBoxScreenForTests(TextBoxScreen screen)
     {
         _textBoxScreen = screen;
     }
 
-    /// <summary>docs/plan-portrait-inventaire.md PI8: refreshes <see cref="AlundraInventoryPortrait"/>'s head point
+    /// <summary>docs/plan-portrait-inventaire.md PI8: refreshes <see cref="InventoryPortrait"/>'s head point
     /// for this tick, before the inventory directors, from the player's 16.16 position and the original's
     /// <c>g_cameraScrollingX/Y</c>, obtained through <see cref="CameraMath.ToOriginalScrollSpace"/> (the one
     /// sanctioned conversion, same fallback to <see cref="Vector3.Zero"/> as the backdrop stage when no camera is
@@ -1862,8 +1862,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         }
 
         var scroll = CameraMath.ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero);
-        var head = AlundraInventoryPortrait.ComputeHeadPoint(player.PosX, player.PosY, player.PosZ, scroll.X, scroll.Y);
-        AlundraInventoryPortrait.Instance.SetHeadPoint(head.X, head.Y);
+        var head = InventoryPortrait.ComputeHeadPoint(player.PosX, player.PosY, player.PosZ, scroll.X, scroll.Y);
+        InventoryPortrait.Instance.SetHeadPoint(head.X, head.Y);
     }
 
     /// <summary>E13.c S3: the equipment source handed to the production presenter - the port of the two
@@ -2551,7 +2551,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             // The gate below is read after it, so the MenuOpen it posts freezes the map events of the same tick. Never open together with an inventory: the inventory's trigger refuses while it is
             // active (J9). Its presenter reads the state the director just reached (E16.e T4, L5).
             var (screenPressed, screenInterval) = tick == 0 ? _choicePadOfLastTick : _choicePadOfTick[tick - 1];
-            AlundraSaveScreenDirector.Instance.Tick(screenPressed, screenInterval);
+            SaveScreenDirector.Instance.Tick(screenPressed, screenInterval);
             _saveScreenPresenter?.Tick();
 
             if (PlayerEntity != null && !GameplayGateNow())
@@ -2588,7 +2588,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             // trigger, and the map events freeze one tick later than the trigger's opening, like the binary.
             TickTraceForTests?.Invoke("inventory");
             UpdateInventoryPortraitHeadPoint();
-            AlundraInventoryDirector.Instance.Tick(PlayerEntity);
+            InventoryDirector.Instance.Tick(PlayerEntity);
 
             // E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-21/22): the sub-inventory director's own
             // Tick(), then the post-process, run right after - the port's equivalent of the original's own
@@ -2596,8 +2596,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             // directors' per-frame work and AlundraInventoryPostProcess.Run the "render" half, the post-process
             // AFTER both directors for THIS tick, as the original runs it after all thirteen of its callbacks
             // (GraphicManager.cs:1677-1706 - its own post-process runs after its own callback-table loop).
-            AlundraSubInventoryDirector.Instance.Tick();
-            AlundraInventoryPostProcess.Instance.Run();
+            SubInventoryDirector.Instance.Tick();
+            InventoryPostProcess.Instance.Run();
 
             // docs/plan-portrait-inventaire.md P4/PI8: the portrait steps once per tick HERE, after both
             // directors' per-frame work and the post-process and before the presenters - the original's own
@@ -2605,7 +2605,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             // (0x80048054 at 0x8002be5c) inside RenderScene. A start or a return made in this tick's render
             // half therefore steps in this same tick, and the trigger's opening (this tick's Update half)
             // too, which is the original's next render.
-            AlundraInventoryPortrait.Instance.Step();
+            InventoryPortrait.Instance.Step();
 
             // E13.d D5 (docs/plan-e13d-inventaire.md): the presenter, right after the director's own
             // Tick() for this SAME tick (a consumer of the director's own per-tick state must run inside
@@ -2776,7 +2776,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // HUD's time.
         for (var hudTick = 0; hudTick < ticksThisFrame; hudTick++)
         {
-            AlundraHudDirector.Instance.Tick();
+            HudDirector.Instance.Tick();
 
             // E13 C3 (D-E13-8): the presenter, PER LOGIC TICK, right next to the director's own Tick()
             // above and never gated behind any screen-stack Update - AlundraHudScreen's own Update is now
@@ -3780,28 +3780,28 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>Test-only seam: the inventory screen <see cref="OnEndPlay"/> disposes, as
     /// <see cref="TryWireInventoryScreenOnce"/> would have built it (which needs a live game).</summary>
-    internal void AttachInventoryScreenForTests(AlundraInventoryScreen screen)
+    internal void AttachInventoryScreenForTests(InventoryScreen screen)
     {
         _inventoryScreen = screen;
     }
 
     /// <summary>Test-only seam: the sub-inventory screen <see cref="OnEndPlay"/> disposes, as
     /// <see cref="TryWireSubInventoryScreenOnce"/> would have built it (which needs a live game).</summary>
-    internal void AttachSubInventoryScreenForTests(AlundraSubInventoryScreen screen)
+    internal void AttachSubInventoryScreenForTests(SubInventoryScreen screen)
     {
         _subInventoryScreen = screen;
     }
 
     /// <summary>Test-only seam: the HUD screen <see cref="OnEndPlay"/> disposes, as
     /// <see cref="TryWireHudScreenOnce"/> would have built it (which needs a live game).</summary>
-    internal void AttachHudScreenForTests(AlundraHudScreen screen)
+    internal void AttachHudScreenForTests(HudScreen screen)
     {
         _hudScreen = screen;
     }
 
     /// <summary>Test-only seam: the dialogue presenter <see cref="OnEndPlay"/> disposes, as
     /// <see cref="TryWireDialoguePresenterOnce"/> would have built it (which needs a live game).</summary>
-    internal void AttachDialoguePresenterForTests(AlundraDialoguePresenter presenter)
+    internal void AttachDialoguePresenterForTests(DialoguePresenter presenter)
     {
         _dialoguePresenter = presenter;
     }

@@ -21,7 +21,7 @@ namespace Alundra.Tests;
 /// E13 C1 acceptance (docs/plan-e13-hud.md, tranche "C1 - DLL : le directeur de session du HUD"). Every
 /// flag constant below is re-derived independently from <see cref="GameState"/>'s own arithmetic
 /// (<c>IndexOf(flag) = (flag &gt;&gt; 5) &amp; 0x3ff</c>, AlundraGameState.cs:194/196 - see the mission's
-/// own item 4) rather than copied from <see cref="AlundraHudDirector"/>'s private constants, so a
+/// own item 4) rather than copied from <see cref="HudDirector"/>'s private constants, so a
 /// regression in one cannot silently pass the other's test.
 /// </summary>
 public sealed class AlundraHudDirectorTests : IDisposable
@@ -40,7 +40,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
 
     public AlundraHudDirectorTests()
     {
-        AlundraHudDirector.Instance.ResetForTests();
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
 
         // The last test in this file (Update_AdvancesTheHudDirector_EvenWhileAModalDialogueIsOpen)
@@ -55,7 +55,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
 
     public void Dispose()
     {
-        AlundraHudDirector.Instance.ResetForTests();
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -63,15 +63,15 @@ public sealed class AlundraHudDirectorTests : IDisposable
         WarpDirector.Instance.ResetForTests();
     }
 
-    private static AlundraHudDirector ArmedOpening(GameState state)
+    private static HudDirector ArmedOpening(GameState state)
     {
-        var director = AlundraHudDirector.Instance;
+        var director = HudDirector.Instance;
         director.AttachToWorld(state);
         state.AddFlag(ScriptOpenRequestFlag, ScriptOpenRequestMask);
         return director;
     }
 
-    private static void TickMany(AlundraHudDirector director, int count)
+    private static void TickMany(HudDirector director, int count)
     {
         for (var i = 0; i < count; i++)
         {
@@ -99,7 +99,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
         }
 
         Assert.Equal(expected, actual);
-        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Displayed, director.Phase);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
         var state = new GameState();
         var director = ArmedOpening(state);
         TickMany(director, 18); // reach Displayed(1) at Y = 16, exactly like the previous test.
-        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Displayed, director.Phase);
 
         // The original clears the persistent latch from elsewhere while the jauge is displayed
         // (GameEngine.cs:336, a map-transition effect id - out of C1's own scope, plan §1.6/§6 point 2) -
@@ -125,7 +125,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
         }
 
         Assert.Equal(expected, actual);
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Idle, director.Phase);
 
         // The truncation-toward-zero shape (§1.3) makes closing genuinely NOT the opening reversed -
         // the reversed opening table would read 16,12,8,4,0,-3,-7,-11,-15,-19,-22,-26,-30,-34,-38,-41,
@@ -146,20 +146,20 @@ public sealed class AlundraHudDirectorTests : IDisposable
         var state = new GameState();
         var director = ArmedOpening(state);
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase); // before the first Tick.
+        Assert.Equal(HudDirector.HudPhase.Idle, director.Phase); // before the first Tick.
 
         director.Tick(); // trigger machine arms Opening(5) and takes the first tween step this SAME tick.
-        Assert.Equal(AlundraHudDirector.HudPhase.Opening, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Opening, director.Phase);
 
         TickMany(director, 17); // 17 more ticks (18 total) collapses Opening(5) -> Displayed(1).
-        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Displayed, director.Phase);
 
         state.SetFlag(PersistentLatchFlag, ~PersistentLatchMask); // external latch clear, see previous test.
         director.Tick();
-        Assert.Equal(AlundraHudDirector.HudPhase.Closing, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Closing, director.Phase);
 
         TickMany(director, 17); // 18 total collapses Closing(3) -> Idle(0).
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Idle, director.Phase);
     }
 
     /// <summary>Plan E13.d SI9.c: the persistent latch cleared during the opening slide arms the disappearance
@@ -171,20 +171,20 @@ public sealed class AlundraHudDirectorTests : IDisposable
         var state = new GameState();
         var director = ArmedOpening(state);
         TickMany(director, 5); // Opening, mid-slide: -41, -38, -34, -30, -26.
-        Assert.Equal(AlundraHudDirector.HudPhase.Opening, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Opening, director.Phase);
         var yWhenArmed = director.Y;
         Assert.Equal(-26, yWhenArmed);
 
         state.SetFlag(PersistentLatchFlag, ~PersistentLatchMask); // a map script's flag opcode.
         director.Tick();
-        Assert.Equal(AlundraHudDirector.HudPhase.ClosingDuringOpening, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.ClosingDuringOpening, director.Phase);
 
         // Never back down toward 16: every step goes from where it was toward the closed ordinate.
         var previous = yWhenArmed;
         var ticks = 1;
         Assert.True(director.Y <= previous, $"tick 1: {director.Y} > {previous}");
         previous = director.Y;
-        while (director.Phase != AlundraHudDirector.HudPhase.Idle && ticks < 40)
+        while (director.Phase != HudDirector.HudPhase.Idle && ticks < 40)
         {
             director.Tick();
             ticks++;
@@ -192,7 +192,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
             previous = director.Y;
         }
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Idle, director.Phase);
         Assert.Equal(18, ticks); // the same 18-call tween shape as every other slide.
         Assert.Equal(-41, director.Y);
         Assert.False(director.IsDrawn);
@@ -204,7 +204,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
         var state = new GameState();
         var director = ArmedOpening(state);
         TickMany(director, 18);
-        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Displayed, director.Phase);
         Assert.Equal(16, director.Y);
         var frameCounterBefore = director.FrameCounter;
 
@@ -213,7 +213,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
         state.AddFlag(ScriptCloseRequestFlag, ScriptCloseRequestMask);
         director.Tick();
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Idle, director.Phase);
         Assert.Equal(16, director.Y); // position untouched - no tween ever ran.
         // wasActive was computed AFTER branch (iii) already zeroed the phase THIS tick (Tick's own doc):
         // the counter/rolled-display half of this same tick never ran either.
@@ -229,7 +229,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
         state.SetFlag(PersistentLatchFlag, ~PersistentLatchMask);
         TickMany(director, 18); // Idle(0) again - the latch was never re-set by branch (i) itself.
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Idle, director.Phase);
         Assert.Equal(0u, state.GetFlag(PersistentLatchFlag) & PersistentLatchMask);
 
         // Branch (i) fires again every one of these ticks (latch still 0) but ArmDisappearance's own
@@ -237,7 +237,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
         for (var i = 0; i < 5; i++)
         {
             director.Tick();
-            Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+            Assert.Equal(HudDirector.HudPhase.Idle, director.Phase);
         }
     }
 
@@ -292,7 +292,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     }
 
     /// <summary>The bound screens program (parent ADR-0002): the HUD plays the coin as a UI animation while the money
-    /// rolls. <see cref="AlundraHudDirector.IsMoneyRolling"/> is true exactly while the coin frame may advance - the
+    /// rolls. <see cref="HudDirector.IsMoneyRolling"/> is true exactly while the coin frame may advance - the
     /// displayed amount is moving, or the coin is finishing its cycle - and false once the roll settles with the coin
     /// garaged at frame 0.</summary>
     [Fact]
@@ -369,7 +369,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
 
     /// <summary>The four pips are all different at any instant, and each one is exactly its own index
     /// ahead of the base phase - which is what makes the row ripple rather than blink together.</summary>
-    private static void AssertRipple(AlundraHudDirector director, int basePhase)
+    private static void AssertRipple(HudDirector director, int basePhase)
     {
         Assert.Equal(4, director.MagicPipFrame.Count);
 
@@ -486,13 +486,13 @@ public sealed class AlundraHudDirectorTests : IDisposable
         var expected = new[] { -41, -38, -34, -30, -26, -22, -19, -15, -11, -7, -3, 0, 4, 8, 12, 16, 16, 16 };
         var state = new GameState();
         state.AddFlag(PersistentLatchFlag, PersistentLatchMask);
-        var director = AlundraHudDirector.Instance;
+        var director = HudDirector.Instance;
         director.AttachToWorld(state);
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Idle, director.Phase);
 
         director.InstallForMapEntry();
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Opening, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Opening, director.Phase);
         var actual = new int[18];
         for (var i = 0; i < 18; i++)
         {
@@ -501,18 +501,18 @@ public sealed class AlundraHudDirectorTests : IDisposable
         }
 
         Assert.Equal(expected, actual);
-        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Displayed, director.Phase);
     }
 
     [Fact]
     public void InstallForMapEntry_LatchClear_StaysIdle()
     {
-        var director = AlundraHudDirector.Instance;
+        var director = HudDirector.Instance;
         director.AttachToWorld(new GameState());
 
         director.InstallForMapEntry();
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Idle, director.Phase);
         Assert.False(director.IsDrawn);
     }
 
@@ -532,7 +532,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
                                            // real install, same seam AlundraDialogueFramePassTests documents.
 
         DialogueDirector.Instance.AttachToWorld(new DialogueService(), proxy.GameState);
-        AlundraHudDirector.Instance.AttachToWorld(proxy.GameState);
+        HudDirector.Instance.AttachToWorld(proxy.GameState);
         return proxy;
     }
 
@@ -540,7 +540,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     public void Update_AdvancesTheHudDirector_EvenWhileAModalDialogueIsOpen()
     {
         var proxy = BuildProxyWithBothDirectorsAttached();
-        var hud = AlundraHudDirector.Instance;
+        var hud = HudDirector.Instance;
         var dialogue = DialogueDirector.Instance;
 
         proxy.GameState.AddFlag(ScriptOpenRequestFlag, ScriptOpenRequestMask); // arm the HUD open.
@@ -557,7 +557,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
         Assert.True(dialogue.IsOpen); // unaffected either way - not this test's own point.
         Assert.True(hud.IsDrawn);
         Assert.Equal(1, hud.FrameCounter);
-        Assert.Equal(AlundraHudDirector.HudPhase.Opening, hud.Phase);
+        Assert.Equal(HudDirector.HudPhase.Opening, hud.Phase);
 
         for (var i = 0; i < 4; i++)
         {

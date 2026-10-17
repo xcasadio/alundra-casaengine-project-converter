@@ -15,7 +15,7 @@ using Alundra.UI.Speech;
 namespace Alundra.Tests;
 
 /// <summary>
-/// ③bis (docs/plan-e12-dialogues.md, slice E12.a) - the UI wiring link: <see cref="AlundraDialoguePresenter"/>
+/// ③bis (docs/plan-e12-dialogues.md, slice E12.a) - the UI wiring link: <see cref="DialoguePresenter"/>
 /// must push its own <see cref="CasaEngine.Framework.Dialogue.UI.DialogueScreen"/> onto the ATTACHED
 /// <see cref="IUIViewRuntime"/> the moment a line/choice opens the dialogue, and remove it the moment it
 /// closes. A real <c>ScreenStack</c>/<c>UIRoot</c> is NOT constructible headless (its <c>Push</c>
@@ -74,7 +74,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
     public void ShowLine_TransitioningClosedToOpen_PushesTheScreenExactlyOnce()
     {
         var uiView = new RecordingUIViewRuntime();
-        var presenter = new AlundraDialoguePresenter(uiView);
+        var presenter = new DialoguePresenter(uiView);
 
         presenter.ShowLine(new DialogueLine("hello"));
 
@@ -86,7 +86,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
     public void ShowLine_WhileAlreadyOpen_DoesNotPushASecondTime()
     {
         var uiView = new RecordingUIViewRuntime();
-        var presenter = new AlundraDialoguePresenter(uiView);
+        var presenter = new DialoguePresenter(uiView);
 
         presenter.ShowLine(new DialogueLine("first"));
         presenter.ShowLine(new DialogueLine("second")); // still open - just updates the line.
@@ -98,7 +98,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
     public void Close_RemovesTheScreenExactlyOnce()
     {
         var uiView = new RecordingUIViewRuntime();
-        var presenter = new AlundraDialoguePresenter(uiView);
+        var presenter = new DialoguePresenter(uiView);
 
         presenter.ShowLine(new DialogueLine("hello"));
         var closed = presenter.Close();
@@ -112,7 +112,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
     public void ShowChoices_TransitioningClosedToOpen_AlsoPushesTheScreen()
     {
         var uiView = new RecordingUIViewRuntime();
-        var presenter = new AlundraDialoguePresenter(uiView);
+        var presenter = new DialoguePresenter(uiView);
 
         presenter.ShowChoices(new[] { "OUI", "NON" });
 
@@ -123,7 +123,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
     public void CloseWhileNeverOpened_DoesNotRemoveAnything()
     {
         var uiView = new RecordingUIViewRuntime();
-        var presenter = new AlundraDialoguePresenter(uiView);
+        var presenter = new DialoguePresenter(uiView);
 
         var closed = presenter.Close();
 

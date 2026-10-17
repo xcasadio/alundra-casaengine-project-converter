@@ -95,7 +95,7 @@ public sealed class AlundraChoiceScreenXamlTests
         envelope.Load(envelopeJson);
 
         Assert.Equal(Guid.Parse("a623e495-f197-475c-887d-042140ec7248"), envelope.Id);
-        Assert.Equal(Guid.Parse(AlundraChoiceScreen.ScreenAssetId), envelope.Id);
+        Assert.Equal(Guid.Parse(ChoiceScreen.ScreenAssetId), envelope.Id);
         Assert.Equal("ChoiceScreen", envelopeJson["name"]!.ToString());
         Assert.Equal("ChoiceScreen.xaml", envelope.SourceXamlFile);
         Assert.Equal("ChoiceScreen.design.json", envelope.DesignTimeDataFile);

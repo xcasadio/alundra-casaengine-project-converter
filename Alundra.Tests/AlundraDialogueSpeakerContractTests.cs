@@ -27,12 +27,12 @@ public sealed class AlundraDialogueSpeakerContractTests
 
     private sealed record Row(int Frame, string Phase, NameBoxDrawnState? Name, (int X, int Y, int W, int H, int Rgb, string Phase)? Portrait, HashSet<string> Events);
 
-    private static string PhaseName(AlundraPortraitPhase phase) => phase switch
+    private static string PhaseName(PortraitPhase phase) => phase switch
     {
-        AlundraPortraitPhase.In => "in",
-        AlundraPortraitPhase.Rest => "rest",
-        AlundraPortraitPhase.Out => "out",
-        AlundraPortraitPhase.Gone => "gone",
+        PortraitPhase.In => "in",
+        PortraitPhase.Rest => "rest",
+        PortraitPhase.Out => "out",
+        PortraitPhase.Gone => "gone",
         _ => string.Empty,
     };
 

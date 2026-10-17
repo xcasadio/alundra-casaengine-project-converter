@@ -28,9 +28,9 @@ namespace Alundra.Tests.UI;
 [Collection(MguiDataBindingCollection.Name)]
 public sealed class AlundraScreensFollowTheWindowTests : IDisposable
 {
-    public AlundraScreensFollowTheWindowTests() => AlundraHudDirector.Instance.ResetForTests();
+    public AlundraScreensFollowTheWindowTests() => HudDirector.Instance.ResetForTests();
 
-    public void Dispose() => AlundraHudDirector.Instance.ResetForTests();
+    public void Dispose() => HudDirector.Instance.ResetForTests();
 
     private sealed class ScreenEnvelopeLoader : IAssetLoader
     {
@@ -69,7 +69,7 @@ public sealed class AlundraScreensFollowTheWindowTests : IDisposable
             Name = screenName,
             FileName = Path.Combine("UI", "Screens", screenName + ".uiscreen"),
         };
-        var font3Info = new AssetInfo(AlundraInventoryScreen.Font3FontAssetId) { Name = "font3", FileName = Path.Combine("UI", "font3.fnt") };
+        var font3Info = new AssetInfo(InventoryScreen.Font3FontAssetId) { Name = "font3", FileName = Path.Combine("UI", "font3.fnt") };
         var assets = new AssetContentManager
         {
             RuntimeContext = new EngineRuntimeContext(
@@ -119,8 +119,8 @@ public sealed class AlundraScreensFollowTheWindowTests : IDisposable
     [Fact]
     public void TheHudScreen_RescalesItsCanvasAndItsViewModel_WhenTheDesktopBoundsChange()
     {
-        var assets = NewAssets(AlundraHudScreen.ScreenAssetId, "HudScreen");
-        using var screen = new AlundraHudScreen(AlundraHudDirector.Instance, assets);
+        var assets = NewAssets(HudScreen.ScreenAssetId, "HudScreen");
+        using var screen = new HudScreen(HudDirector.Instance, assets);
         var (desktop, runtime) = HeadlessUiTestHarness.NewDesktop();
 
         AssertFollowsTheDesktop(screen, () => screen.BuildWindow(desktop), runtime, desktop);
@@ -136,8 +136,8 @@ public sealed class AlundraScreensFollowTheWindowTests : IDisposable
     [Fact]
     public void TheInventoryScreen_RescalesItsCanvas_WhenTheDesktopBoundsChange()
     {
-        var assets = NewAssets(AlundraInventoryScreen.ScreenAssetId, "InventoryScreen");
-        using var screen = new AlundraInventoryScreen(assets, new UIFontRegistry(assets));
+        var assets = NewAssets(InventoryScreen.ScreenAssetId, "InventoryScreen");
+        using var screen = new InventoryScreen(assets, new UIFontRegistry(assets));
         var (desktop, runtime) = HeadlessUiTestHarness.NewDesktop();
 
         AssertFollowsTheDesktop(screen, () => screen.BuildWindow(desktop), runtime, desktop);
@@ -146,8 +146,8 @@ public sealed class AlundraScreensFollowTheWindowTests : IDisposable
     [Fact]
     public void TheSubInventoryScreen_RescalesItsCanvas_WhenTheDesktopBoundsChange()
     {
-        var assets = NewAssets(AlundraSubInventoryScreen.ScreenAssetId, "SubInventoryScreen");
-        using var screen = new AlundraSubInventoryScreen(assets, new UIFontRegistry(assets));
+        var assets = NewAssets(SubInventoryScreen.ScreenAssetId, "SubInventoryScreen");
+        using var screen = new SubInventoryScreen(assets, new UIFontRegistry(assets));
         var (desktop, runtime) = HeadlessUiTestHarness.NewDesktop();
 
         AssertFollowsTheDesktop(screen, () => screen.BuildWindow(desktop), runtime, desktop);
@@ -156,8 +156,8 @@ public sealed class AlundraScreensFollowTheWindowTests : IDisposable
     [Fact]
     public void TheSaveScreen_RescalesItsCanvas_WhenTheDesktopBoundsChange()
     {
-        var assets = NewAssets(AlundraSaveScreen.ScreenAssetId, "SaveScreen");
-        using var screen = new AlundraSaveScreen(assets, new UIFontRegistry(assets));
+        var assets = NewAssets(SaveScreen.ScreenAssetId, "SaveScreen");
+        using var screen = new SaveScreen(assets, new UIFontRegistry(assets));
         var (desktop, runtime) = HeadlessUiTestHarness.NewDesktop();
 
         AssertFollowsTheDesktop(screen, () => screen.BuildWindow(desktop), runtime, desktop);
@@ -167,8 +167,8 @@ public sealed class AlundraScreensFollowTheWindowTests : IDisposable
     [Fact]
     public void TheTextBoxScreen_RescalesItsCanvas_WhenTheDesktopBoundsChange()
     {
-        var assets = NewAssets(AlundraTextBoxScreen.ScreenAssetId, "TextBoxScreen");
-        using var screen = new AlundraTextBoxScreen(assets, new UIFontRegistry(assets));
+        var assets = NewAssets(TextBoxScreen.ScreenAssetId, "TextBoxScreen");
+        using var screen = new TextBoxScreen(assets, new UIFontRegistry(assets));
         var (desktop, runtime) = HeadlessUiTestHarness.NewDesktop();
 
         Assert.True(screen.IsModal);
@@ -181,8 +181,8 @@ public sealed class AlundraScreensFollowTheWindowTests : IDisposable
     [Fact]
     public void TheChoiceScreen_RescalesItsCanvas_WhenTheDesktopBoundsChange()
     {
-        var assets = NewAssets(AlundraChoiceScreen.ScreenAssetId, "ChoiceScreen");
-        using var screen = new AlundraChoiceScreen(assets, new UIFontRegistry(assets));
+        var assets = NewAssets(ChoiceScreen.ScreenAssetId, "ChoiceScreen");
+        using var screen = new ChoiceScreen(assets, new UIFontRegistry(assets));
         var (desktop, runtime) = HeadlessUiTestHarness.NewDesktop();
 
         Assert.True(screen.IsModal);

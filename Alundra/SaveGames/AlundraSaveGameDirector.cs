@@ -370,7 +370,7 @@ public sealed class AlundraSaveGameDirector
     /// <item><description>Otherwise, in this order and without throwing (the array lengths are fixed on both
     /// sides, E16.c C6): <see cref="GameState.ResetSessionForLoad"/> (step 1); the save's
     /// <see cref="AlundraSaveGame.ApplyTo"/> (step 2: flags, map table, item counters, stats, death retries,
-    /// game time, which resumes from there); <see cref="AlundraHudDirector.ResetDisplayForLoad"/> with the stats
+    /// game time, which resumes from there); <see cref="HudDirector.ResetDisplayForLoad"/> with the stats
     /// just loaded (step 3, SC1); and the <c>ResetSessionForLoad</c> of both inventory directors, the
     /// post-process and the portrait (step 4, SD5).</description></item>
     /// </list>
@@ -399,11 +399,11 @@ public sealed class AlundraSaveGameDirector
 
         state.ResetSessionForLoad();
         save.ApplyTo(state);
-        AlundraHudDirector.Instance.ResetDisplayForLoad(state.PlayerStats);
-        AlundraInventoryDirector.Instance.ResetSessionForLoad();
-        AlundraSubInventoryDirector.Instance.ResetSessionForLoad();
-        AlundraInventoryPostProcess.Instance.ResetSessionForLoad();
-        AlundraInventoryPortrait.Instance.ResetSessionForLoad();
+        HudDirector.Instance.ResetDisplayForLoad(state.PlayerStats);
+        InventoryDirector.Instance.ResetSessionForLoad();
+        SubInventoryDirector.Instance.ResetSessionForLoad();
+        InventoryPostProcess.Instance.ResetSessionForLoad();
+        InventoryPortrait.Instance.ResetSessionForLoad();
 
         Logs.WriteInfo(
             LogPrefix + $"load applied on map {save.InitialMapId}, tile ({save.CameraTileX}, {save.CameraTileY}, "
@@ -492,8 +492,8 @@ public sealed class AlundraSaveGameDirector
     /// K6 step 1 and K7 step 1: what both keys refuse, each tested on its own (G7) - a dialogue box open
     /// (<see cref="DialogueDirector.IsOpen"/>: a box with a control mode other than 0 or 1 leaves
     /// <see cref="GameState.PlayerControlFlags"/> untouched); the main or the sub-inventory active; the
-    /// inventory post-process not idle, or the portrait not <see cref="AlundraInventoryPortrait.StateIdle"/>
-    /// (<see cref="AlundraInventoryPortrait.StateAtRest"/> is the portrait shown DURING a menu, SD12); a warp
+    /// inventory post-process not idle, or the portrait not <see cref="InventoryPortrait.StateIdle"/>
+    /// (<see cref="InventoryPortrait.StateAtRest"/> is the portrait shown DURING a menu, SD12); a warp
     /// transition in progress (not implied by the control flags); the master BGM fade armed (opcode
     /// <c>0xA6</c>: it would survive the load and could cut the arrival map's music, SD4); any bit of
     /// <see cref="GameState.PlayerControlFlags"/>.
@@ -505,24 +505,24 @@ public sealed class AlundraSaveGameDirector
             return "a dialogue box is open.";
         }
 
-        if (AlundraInventoryDirector.Instance.IsActive)
+        if (InventoryDirector.Instance.IsActive)
         {
             return "the inventory is open.";
         }
 
-        if (AlundraSubInventoryDirector.Instance.IsActive)
+        if (SubInventoryDirector.Instance.IsActive)
         {
             return "the sub-inventory is open.";
         }
 
-        if (AlundraInventoryPostProcess.Instance.State != 0)
+        if (InventoryPostProcess.Instance.State != 0)
         {
-            return $"the inventory post-process is pending (state {AlundraInventoryPostProcess.Instance.State}).";
+            return $"the inventory post-process is pending (state {InventoryPostProcess.Instance.State}).";
         }
 
-        if (AlundraInventoryPortrait.Instance.State != AlundraInventoryPortrait.StateIdle)
+        if (InventoryPortrait.Instance.State != InventoryPortrait.StateIdle)
         {
-            return $"the inventory portrait is not idle (state {AlundraInventoryPortrait.Instance.State}).";
+            return $"the inventory portrait is not idle (state {InventoryPortrait.Instance.State}).";
         }
 
         if (WarpDirector.Instance.IsTransitionInProgress)

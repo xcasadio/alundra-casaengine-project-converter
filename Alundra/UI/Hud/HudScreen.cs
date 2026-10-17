@@ -17,7 +17,7 @@ namespace Alundra.UI.Hud;
 /// E13 C2/C3 (docs/plan-e13-hud.md): the non-modal screen that draws the permanent jauge. Since the bound screens
 /// program (parent ADR-0002) it is a project asset, <c>UI/Screens/HudScreen.uiscreen</c> and its XAML, versioned in
 /// <c>alundra-project</c>, loaded through the asset manager and bound to an <see cref="AlundraHudViewModel"/> that
-/// <see cref="AlundraHudPresenter"/> writes every LOGIC tick (D-E13-8: never from this screen's rendered-frame
+/// <see cref="HudPresenter"/> writes every LOGIC tick (D-E13-8: never from this screen's rendered-frame
 /// <see cref="Update"/>, which <see cref="CasaEngine.Framework.UI.ScreenStack"/> freezes below a modal screen). The
 /// XAML declares every element - the two equipment background quads, the two equipment icons and the 26 tiles by
 /// role (<see cref="MaxTileCount"/>) - and binds what changes; the magic pips and the coin play the converter's UI
@@ -34,7 +34,7 @@ namespace Alundra.UI.Hud;
 /// <b>Sharpness</b>: every <see cref="MGImage"/> sets <see cref="MGImage.UseLinearFilteringWhenDownscaling"/> = false,
 /// which MGUI's XAML cannot declare (gap G8).
 /// </summary>
-public sealed class AlundraHudScreen : XamlUIScreenBase, IDisposable
+public sealed class HudScreen : XamlUIScreenBase, IDisposable
 {
     /// <summary>The id of <c>UI/Screens/HudScreen.uiscreen</c>, fixed in its envelope.</summary>
     internal const string ScreenAssetId = "37d8200e-55f0-4906-a484-97a04be0d2aa";
@@ -52,7 +52,7 @@ public sealed class AlundraHudScreen : XamlUIScreenBase, IDisposable
     // AlundraHudComposerTests sizes its own exhaustive grid test against it.
     internal const int MaxTileCount = 26;
 
-    private readonly AlundraHudDirector _director;
+    private readonly HudDirector _director;
     private readonly AssetContentManager _assetContentManager;
     private MGCanvas? _canvas;
     private MGImage? _equipmentIcon0;
@@ -67,7 +67,7 @@ public sealed class AlundraHudScreen : XamlUIScreenBase, IDisposable
     public override bool IsModal => false;
 
     /// <exception cref="InvalidOperationException">The export has no HUD screen asset (no silent fallback).</exception>
-    public AlundraHudScreen(AlundraHudDirector director, AssetContentManager assetContentManager)
+    public HudScreen(HudDirector director, AssetContentManager assetContentManager)
         : base(assetContentManager, ScreenAssetId)
     {
         ArgumentNullException.ThrowIfNull(director);
@@ -76,7 +76,7 @@ public sealed class AlundraHudScreen : XamlUIScreenBase, IDisposable
         ViewModel = new AlundraHudViewModel(ReadIconSize);
     }
 
-    /// <summary>What the XAML binds, and the view <see cref="AlundraHudPresenter"/> writes.</summary>
+    /// <summary>What the XAML binds, and the view <see cref="HudPresenter"/> writes.</summary>
     public AlundraHudViewModel ViewModel { get; }
 
     /// <summary>Test-only seam: the host window, so a headless layout test can inspect it.</summary>
@@ -162,7 +162,7 @@ public sealed class AlundraHudScreen : XamlUIScreenBase, IDisposable
         }
     }
 
-    /// <summary>E13 C3 (D-E13-8, mission item 2): deliberately EMPTY. <see cref="AlundraHudPresenter"/> owns every
+    /// <summary>E13 C3 (D-E13-8, mission item 2): deliberately EMPTY. <see cref="HudPresenter"/> owns every
     /// refresh, ticked once per LOGIC tick from <see cref="AlundraWorldProxy.Update(float)"/> - never from this
     /// rendered-frame callback, which <see cref="CasaEngine.Framework.UI.ScreenStack"/> freezes for every screen
     /// below a modal one (<c>ScreenStack.cs:5-13</c>).</summary>
@@ -182,7 +182,7 @@ public sealed class AlundraHudScreen : XamlUIScreenBase, IDisposable
             }
             catch (Exception ex)
             {
-                Logs.WriteWarning($"AlundraHudScreen: equipment icon sprite {assetId} failed to load ({ex.Message}); its box stays empty.");
+                Logs.WriteWarning($"HudScreen: equipment icon sprite {assetId} failed to load ({ex.Message}); its box stays empty.");
                 hold = null;
             }
 

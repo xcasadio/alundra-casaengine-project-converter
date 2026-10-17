@@ -22,9 +22,9 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E13 C3 acceptance (docs/plan-e13-hud.md, tranche "Les transitions et les deux cycles, au tick", D-E13-8).
-/// <see cref="AlundraHudScreen"/> is not constructible headless (<see cref="AlundraDialoguePresenterWiringTests"/>'s
+/// <see cref="HudScreen"/> is not constructible headless (<see cref="AlundraDialoguePresenterWiringTests"/>'s
 /// own class doc: a real <c>MGWindow</c>/<c>ScreenStack</c> needs a live graphics stack), so every test here
-/// drives <see cref="AlundraHudPresenter"/> against a recording <see cref="IAlundraHudView"/> double instead -
+/// drives <see cref="HudPresenter"/> against a recording <see cref="IHudView"/> double instead -
 /// the value the presenter itself PUSHED, exactly what mission item 4.a asks for when the element is not
 /// constructible without a head.
 /// </summary>
@@ -45,7 +45,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
 
     public AlundraHudPresenterTests()
     {
-        AlundraHudDirector.Instance.ResetForTests();
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -55,7 +55,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
 
     public void Dispose()
     {
-        AlundraHudDirector.Instance.ResetForTests();
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -63,27 +63,27 @@ public sealed class AlundraHudPresenterTests : IDisposable
         WarpDirector.Instance.ResetForTests();
     }
 
-    private sealed class RecordingHudView : IAlundraHudView
+    private sealed class RecordingHudView : IHudView
     {
         public int PixelScale { get; }
         public readonly List<bool> VisibleCalls = new();
         public readonly List<Vector2> TranslationCalls = new();
-        public readonly List<IReadOnlyList<AlundraHudTile>> TileCalls = new();
-        public readonly List<IReadOnlyList<AlundraHudIcon>> IconCalls = new();
+        public readonly List<IReadOnlyList<HudTile>> TileCalls = new();
+        public readonly List<IReadOnlyList<HudIcon>> IconCalls = new();
 
         public RecordingHudView(int pixelScale) => PixelScale = pixelScale;
 
         public void SetVisible(bool visible) => VisibleCalls.Add(visible);
         public void SetTranslation(Vector2 translation) => TranslationCalls.Add(translation);
-        public void SetTiles(IReadOnlyList<AlundraHudTile> tiles) => TileCalls.Add(tiles);
-        public void SetEquipmentIcons(IReadOnlyList<AlundraHudIcon> icons) => IconCalls.Add(icons);
+        public void SetTiles(IReadOnlyList<HudTile> tiles) => TileCalls.Add(tiles);
+        public void SetEquipmentIcons(IReadOnlyList<HudIcon> icons) => IconCalls.Add(icons);
         public readonly List<(int FrameCounter, bool MoneyRolling)> ClockCalls = new();
         public void SetAnimationClock(int frameCounter, bool moneyRolling) => ClockCalls.Add((frameCounter, moneyRolling));
     }
 
-    private static AlundraHudDirector ArmedOpening(GameState state)
+    private static HudDirector ArmedOpening(GameState state)
     {
-        var director = AlundraHudDirector.Instance;
+        var director = HudDirector.Instance;
         director.AttachToWorld(state);
         state.AddFlag(ScriptOpenRequestFlag, ScriptOpenRequestMask);
         return director;
@@ -104,7 +104,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         var state = new GameState();
         var director = ArmedOpening(state);
         var view = new RecordingHudView(scale);
-        var presenter = new AlundraHudPresenter(director, view);
+        var presenter = new HudPresenter(director, view);
 
         for (var i = 0; i < 18; i++)
         {
@@ -114,7 +114,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
 
         var expected = expectedY.Select(y => new Vector2(0f, (y - bakedBoxY) * scale)).ToArray();
         Assert.Equal(expected, view.TranslationCalls);
-        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Displayed, director.Phase);
     }
 
     /// <summary>The bound screens program: every tick pushes the director's clock (frame counter, money roll) before
@@ -126,7 +126,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         var director = ArmedOpening(state);
         PlayerManager.SetMoney(state, 1000);
         var view = new RecordingHudView(1);
-        var presenter = new AlundraHudPresenter(director, view);
+        var presenter = new HudPresenter(director, view);
 
         for (var i = 0; i < 12; i++)
         {
@@ -150,7 +150,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         var state = new GameState();
         var director = ArmedOpening(state);
         var view = new RecordingHudView(scale);
-        var presenter = new AlundraHudPresenter(director, view);
+        var presenter = new HudPresenter(director, view);
 
         for (var i = 0; i < 18; i++) // reach Displayed(1) at Y = 16, same setup as AlundraHudDirectorTests's own.
         {
@@ -158,7 +158,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
             presenter.Tick();
         }
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Displayed, director.Phase);
         view.TranslationCalls.Clear(); // isolate the CLOSING sequence only.
 
         // Same simulated external latch clear AlundraHudDirectorTests's own closing test uses.
@@ -172,7 +172,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
 
         var expected = expectedY.Select(y => new Vector2(0f, (y - bakedBoxY) * scale)).ToArray();
         Assert.Equal(expected, view.TranslationCalls);
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Idle, director.Phase);
 
         // The two sequences genuinely differ (§1.3: truncation-toward-zero makes closing NOT the opening
         // reversed) - guards against a presenter/test bug that would make both tables coincidentally equal.
@@ -198,14 +198,14 @@ public sealed class AlundraHudPresenterTests : IDisposable
         PlayerManager.SetMoney(state, 1000); // keeps the coin roll going for the whole 40 ticks.
 
         var view = new RecordingHudView(pixelScale: 1);
-        var presenter = new AlundraHudPresenter(director, view);
+        var presenter = new HudPresenter(director, view);
 
         for (var i = 0; i < 40; i++)
         {
             director.Tick();
             presenter.Tick();
 
-            var expectedTiles = AlundraHudComposer.Compose(
+            var expectedTiles = HudComposer.Compose(
                 director.IsDrawn,
                 director.Hp, director.HpMax, director.TrueHpMax, director.HpDisplayPreviewIncrement,
                 director.Mp, director.MpMax, director.MpDisplayPreviewIncrement,
@@ -244,7 +244,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         PlayerManager.SetPlayerMpMax(state, 3);
         PlayerManager.SetPlayerMp(state, 3);
         var view = new RecordingHudView(pixelScale: 1);
-        var presenter = new AlundraHudPresenter(director, view);
+        var presenter = new HudPresenter(director, view);
 
         void Step()
         {
@@ -253,13 +253,13 @@ public sealed class AlundraHudPresenterTests : IDisposable
         }
 
         // Opened, the displayed MP rolled up to 3 / 3.
-        for (var i = 0; i < 200 && !(director.Phase == AlundraHudDirector.HudPhase.Displayed
+        for (var i = 0; i < 200 && !(director.Phase == HudDirector.HudPhase.Displayed
                                      && director.Mp == 3 && !director.MpDisplayPreviewIncrement); i++)
         {
             Step();
         }
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Displayed, director.Phase);
         Assert.Equal(3, director.Mp);
         Assert.Equal(3, director.MpMax);
 
@@ -280,15 +280,15 @@ public sealed class AlundraHudPresenterTests : IDisposable
         // A map script hides the jauge at once (branch (iii), flag 1814), then asks it back (branch (ii), flag 1813).
         state.AddFlag(ScriptCloseRequestFlag, ScriptCloseRequestMask);
         Step();
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Idle, director.Phase);
 
         state.AddFlag(ScriptOpenRequestFlag, ScriptOpenRequestMask);
-        for (var i = 0; i < 200 && !(director.Phase == AlundraHudDirector.HudPhase.Displayed && director.Mp == 4); i++)
+        for (var i = 0; i < 200 && !(director.Phase == HudDirector.HudPhase.Displayed && director.Mp == 4); i++)
         {
             Step();
         }
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Displayed, director.Phase);
         Assert.Equal(4, director.Mp);
         Assert.Equal(4, director.MpMax);
 
@@ -310,12 +310,12 @@ public sealed class AlundraHudPresenterTests : IDisposable
     {
         var sword = Guid.Parse("aeebd7a0-faa7-57b0-a844-34470272a4eb");
         var state = new GameState();
-        var director = AlundraHudDirector.Instance;
+        var director = HudDirector.Instance;
         director.AttachToWorld(state); // no open request: the jauge stays hidden
 
         var sourceCalls = 0;
         var view = new RecordingHudView(pixelScale: 2);
-        var presenter = new AlundraHudPresenter(director, view, () =>
+        var presenter = new HudPresenter(director, view, () =>
         {
             sourceCalls++;
             return (sword, null);
@@ -337,7 +337,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         }
 
         Assert.True(director.IsDrawn);
-        Assert.Equal(new[] { new AlundraHudIcon(sword, 16, 16, 24, 32) }, view.IconCalls[^1]);
+        Assert.Equal(new[] { new HudIcon(sword, 16, 16, 24, 32) }, view.IconCalls[^1]);
         Assert.True(sourceCalls > 0);
         Assert.Equal(view.IconCalls.Count, view.TileCalls.Count); // one icon push per tile push
     }
@@ -348,7 +348,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         var state = new GameState();
         var director = ArmedOpening(state);
         var view = new RecordingHudView(pixelScale: 1);
-        var presenter = new AlundraHudPresenter(director, view);
+        var presenter = new HudPresenter(director, view);
 
         for (var i = 0; i < 20; i++)
         {
@@ -367,7 +367,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
     // presenter - so a regression that re-gates the presenter behind a screen-stack Update would be caught.
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraWorldProxy BuildProxyWithHudPresenterAttached(IAlundraHudView view)
+    private static AlundraWorldProxy BuildProxyWithHudPresenterAttached(IHudView view)
     {
         var world = new World { Name = "TestWorld" };
         var camera = new Camera2dComponent();
@@ -378,7 +378,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
                                            // real install, same seam AlundraHudDirectorTests documents.
 
         DialogueDirector.Instance.AttachToWorld(new DialogueService(), proxy.GameState);
-        AlundraHudDirector.Instance.AttachToWorld(proxy.GameState);
+        HudDirector.Instance.AttachToWorld(proxy.GameState);
         proxy.AttachHudPresenterForTests(view);
         return proxy;
     }
@@ -424,9 +424,9 @@ public sealed class AlundraHudPresenterTests : IDisposable
     [Fact]
     public void Tick_WithNothingDrawn_PushesFalseVisibilityAndNoTiles()
     {
-        var director = AlundraHudDirector.Instance; // freshly reset (constructor) - Idle, IsDrawn == false.
+        var director = HudDirector.Instance; // freshly reset (constructor) - Idle, IsDrawn == false.
         var view = new RecordingHudView(pixelScale: 4);
-        var presenter = new AlundraHudPresenter(director, view);
+        var presenter = new HudPresenter(director, view);
 
         Assert.False(director.IsDrawn);
         presenter.Tick();
@@ -446,8 +446,8 @@ public sealed class AlundraHudPresenterTests : IDisposable
     public void PresenterAndScreen_NeverCallAnyMguiAnimationApi()
     {
         var repoRoot = FindRepoRoot();
-        AssertNoAnimationCalls(Path.Combine(repoRoot, "Alundra", "UI", "Hud", "AlundraHudPresenter.cs"));
-        AssertNoAnimationCalls(Path.Combine(repoRoot, "Alundra", "UI", "Hud", "AlundraHudScreen.cs"));
+        AssertNoAnimationCalls(Path.Combine(repoRoot, "Alundra", "UI", "Hud", "HudPresenter.cs"));
+        AssertNoAnimationCalls(Path.Combine(repoRoot, "Alundra", "UI", "Hud", "HudScreen.cs"));
     }
 
     private static void AssertNoAnimationCalls(string path)
@@ -464,7 +464,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory is not null)
         {
-            var candidate = Path.Combine(directory.FullName, "Alundra", "UI", "Hud", "AlundraHudDirector.cs");
+            var candidate = Path.Combine(directory.FullName, "Alundra", "UI", "Hud", "HudDirector.cs");
             if (File.Exists(candidate))
             {
                 return directory.FullName;
@@ -474,7 +474,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraHudPresenterTests: no 'Alundra/Scripts/AlundraHudDirector.cs' found above "
+            $"AlundraHudPresenterTests: no 'Alundra/Scripts/HudDirector.cs' found above "
             + $"'{AppContext.BaseDirectory}' - this test needs the repo's own source tree, not just the built DLL.");
     }
 }

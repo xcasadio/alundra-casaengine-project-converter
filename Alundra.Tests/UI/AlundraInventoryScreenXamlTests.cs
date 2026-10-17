@@ -76,7 +76,7 @@ public sealed class AlundraInventoryScreenXamlTests
         var envelope = new UIScreenAsset();
         envelope.Load(JObject.Parse(File.ReadAllText(Path.Combine(directory, "InventoryScreen.uiscreen"))));
 
-        Assert.Equal(Guid.Parse(AlundraInventoryScreen.ScreenAssetId), envelope.Id);
+        Assert.Equal(Guid.Parse(InventoryScreen.ScreenAssetId), envelope.Id);
         Assert.True(File.Exists(Path.Combine(directory, envelope.SourceXamlFile)));
         Assert.True(File.Exists(Path.Combine(directory, envelope.DesignTimeDataFile)));
     }
@@ -183,7 +183,7 @@ public sealed class AlundraInventoryScreenXamlTests
     {
         Visible = true,
         Boxes = new[] { new InventoryBoxSprite(0, 8, 16) },
-        SlotIcons = new[] { new InventorySlotIcon(3, new AlundraHudIcon(ItemTablesFixture.SwordIconAssetId, 100, 40, 24, 32)) },
+        SlotIcons = new[] { new InventorySlotIcon(3, new HudIcon(ItemTablesFixture.SwordIconAssetId, 100, 40, 24, 32)) },
         MoneyDigits = new[] { new InventoryDigit(0, 200, 100), new InventoryDigit(1, 212, 100) },
         WeaponName = "Sword",
         WeaponNameX = 192,
@@ -231,7 +231,7 @@ public sealed class AlundraInventoryScreenXamlTests
     public void AllTwentyFourSlotIcons_Exist()
     {
         var window = LoadWindow();
-        for (var i = 0; i < AlundraInventoryComposer.SlotCount; i++)
+        for (var i = 0; i < InventoryComposer.SlotCount; i++)
         {
             var name = $"IconSlot{i}";
             Assert.True(window.TryGetElementByName(name, out MGElement element), $"missing '{name}'");

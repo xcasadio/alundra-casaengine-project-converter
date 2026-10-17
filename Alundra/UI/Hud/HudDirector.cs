@@ -32,11 +32,11 @@ namespace Alundra.UI.Hud;
 /// <see cref="InstallForMapEntry"/> is the separate map-entry call, which arms the appearance when the persistent
 /// latch is set (the main loop's map-entry block, 0x8002c3d0 - see that method's own doc).</para>
 /// </summary>
-public sealed class AlundraHudDirector
+public sealed class HudDirector
 {
-    public static readonly AlundraHudDirector Instance = new();
+    public static readonly HudDirector Instance = new();
 
-    private AlundraHudDirector()
+    private HudDirector()
     {
     }
 
@@ -153,7 +153,7 @@ public sealed class AlundraHudDirector
     /// as a UI animation (parent ADR-0002) know when to play it and when to hold its first frame.</summary>
     public bool IsMoneyRolling { get; private set; }
 
-    /// <summary>E13 C2 (docs/plan-e13-hud.md, <see cref="AlundraHudComposer"/>): <c>DisplayLife</c>'s own
+    /// <summary>E13 C2 (docs/plan-e13-hud.md, <see cref="HudComposer"/>): <c>DisplayLife</c>'s own
     /// <c>g_playerDataHud[5] != 0 || g_playerDataHud[6] != 0</c> guard (HudManager.cs:729-730) - true while
     /// either the current-HP or the HP-max catch-up sub-step is mid-cycle, which previews the drawn icon
     /// composition one point ahead of <see cref="Hp"/> itself. Exposed read-only rather than the raw
@@ -224,7 +224,7 @@ public sealed class AlundraHudDirector
     /// E13.d D4 (docs/plan-e13d-inventaire.md §1.5/D4): the inventory's own call to
     /// <c>HudManager.InitializeHudPosition</c> (MainInventoryManager.cs:484, called from
     /// <c>DisplayInventory</c> itself) - the minimum change to make <see cref="ArmDisappearance"/>
-    /// reachable from <see cref="AlundraInventoryDirector"/> without touching its own behaviour or the
+    /// reachable from <see cref="InventoryDirector"/> without touching its own behaviour or the
     /// dispatch table's own branch (i), which already calls it every tick the persistent latch is off.
     /// The original guard (HudManager.cs:26-39, <c>(g_drawFrameFlags &amp; 3) == 1</c>) is already
     /// re-checked inside <see cref="ArmDisappearance"/> itself, so this wrapper adds nothing but the

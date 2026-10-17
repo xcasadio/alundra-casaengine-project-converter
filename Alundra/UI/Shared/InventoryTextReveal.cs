@@ -16,7 +16,7 @@ namespace Alundra.UI.Shared;
 /// <para>The sub-inventory's copy read the second line one byte early in the executable (<c>0x80054314</c>),
 /// never showing it; the shared machine reads it where the main inventory's does (D-E13D-30, SI7).</para>
 /// </summary>
-internal sealed class AlundraInventoryTextReveal
+internal sealed class InventoryTextReveal
 {
     /// <summary>The raw state value: 0 name setup, 1..0x10 name reveal, 0x11..0x4c hold, 0x4d desc-line-0
     /// setup, 0x4e..0x8d desc-line-0 reveal, 0x8e desc-line-1 setup, 0x8f..0xce desc-line-1 reveal, 0xcf

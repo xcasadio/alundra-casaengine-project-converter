@@ -19,10 +19,10 @@ using Alundra.UI.SubInventory;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-6): <see cref="AlundraInventoryScreen"/> is not
+/// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-6): <see cref="InventoryScreen"/> is not
 /// constructible headless (same reason <see cref="AlundraHudPresenterTests"/> and
 /// <see cref="AlundraDialoguePresenterWiringTests"/> give their own class docs), so this drives
-/// <see cref="AlundraInventoryPresenter"/> against a real <see cref="AlundraInventoryViewModel"/> (parent ADR-0002:
+/// <see cref="InventoryPresenter"/> against a real <see cref="AlundraInventoryViewModel"/> (parent ADR-0002:
 /// the presenter writes the view model the screen's XAML binds), a recording <see cref="IUIScreen"/> stand-in and a
 /// recording <see cref="IUIViewRuntime"/> - the pattern <see cref="AlundraHudPresenterTests"/> and
 /// <see cref="AlundraDialoguePresenterWiringTests"/> already establish.
@@ -31,10 +31,10 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
 {
     public AlundraInventoryPresenterTests()
     {
-        AlundraInventoryDirector.Instance.ResetForTests();
-        AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
-        AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
-        AlundraHudDirector.Instance.ResetForTests();
+        InventoryDirector.Instance.ResetForTests();
+        SubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        InventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -44,10 +44,10 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
 
     public void Dispose()
     {
-        AlundraInventoryDirector.Instance.ResetForTests();
-        AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
-        AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
-        AlundraHudDirector.Instance.ResetForTests();
+        InventoryDirector.Instance.ResetForTests();
+        SubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        InventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -88,26 +88,26 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
         public void Dispose() { }
     }
 
-    private static void Tick(GameState state, AlundraInventoryDirector director, AlundraInventoryPresenter presenter, uint hold)
+    private static void Tick(GameState state, InventoryDirector director, InventoryPresenter presenter, uint hold)
     {
         state.TickPad.Update(hold);
         director.Tick(null);
         presenter.Tick();
     }
 
-    private static (GameState State, AlundraInventoryDirector Director, AlundraInventoryPresenter Presenter,
+    private static (GameState State, InventoryDirector Director, InventoryPresenter Presenter,
         AlundraInventoryViewModel View, FakeInventoryScreen Screen, RecordingUIViewRuntime UiView) NewFixture()
     {
         var state = GameState.Instance;
         var itemTables = ItemTablesFixture.LoadReal();
-        var director = AlundraInventoryDirector.Instance;
+        var director = InventoryDirector.Instance;
         director.AttachToWorld(state, itemTables, null);
 
         // Every icon 16x16: its size only centres it in its cell.
         var view = new AlundraInventoryViewModel(_ => new Point(16, 16));
         var screen = new FakeInventoryScreen();
         var uiView = new RecordingUIViewRuntime();
-        var presenter = new AlundraInventoryPresenter(director, state, itemTables, view, screen, uiView);
+        var presenter = new InventoryPresenter(director, state, itemTables, view, screen, uiView);
 
         return (state, director, presenter, view, screen, uiView);
     }
@@ -213,8 +213,8 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
 
         var tables = ItemTablesFixture.LoadReal();
         PlayerManager.InitializeNewGameInventory(worldProxy.GameState, tables);
-        AlundraInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
-        AlundraSubInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null); // the loop ticks it too.
+        InventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
+        SubInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null); // the loop ticks it too.
 
         var view = new AlundraInventoryViewModel(_ => new Point(16, 16));
         var screen = new FakeInventoryScreen();
@@ -228,12 +228,12 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
         }
 
         Frame(PadState.Start);
-        for (var i = 0; i < 20 && !AlundraInventoryDirector.Instance.IsDrawn; i++)
+        for (var i = 0; i < 20 && !InventoryDirector.Instance.IsDrawn; i++)
         {
             Frame(0);
         }
 
-        Assert.True(AlundraInventoryDirector.Instance.IsDrawn);
+        Assert.True(InventoryDirector.Instance.IsDrawn);
         Assert.Equal(new IUIScreen[] { screen }, uiView.Pushed);
         Assert.Equal(MGUI.Core.UI.Visibility.Visible, view.RootVisibility);
     }

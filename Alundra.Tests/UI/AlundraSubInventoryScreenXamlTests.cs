@@ -76,7 +76,7 @@ public sealed class AlundraSubInventoryScreenXamlTests
         var envelope = new UIScreenAsset();
         envelope.Load(JObject.Parse(File.ReadAllText(Path.Combine(directory, "SubInventoryScreen.uiscreen"))));
 
-        Assert.Equal(Guid.Parse(AlundraSubInventoryScreen.ScreenAssetId), envelope.Id);
+        Assert.Equal(Guid.Parse(SubInventoryScreen.ScreenAssetId), envelope.Id);
         Assert.True(File.Exists(Path.Combine(directory, envelope.SourceXamlFile)));
         Assert.True(File.Exists(Path.Combine(directory, envelope.DesignTimeDataFile)));
     }

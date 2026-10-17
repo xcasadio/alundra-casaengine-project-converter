@@ -22,9 +22,9 @@ namespace Alundra.Tests.UI;
 [Collection(MguiDataBindingCollection.Name)]
 public sealed class AlundraScreenBindingReleaseTests : IDisposable
 {
-    public AlundraScreenBindingReleaseTests() => AlundraHudDirector.Instance.ResetForTests();
+    public AlundraScreenBindingReleaseTests() => HudDirector.Instance.ResetForTests();
 
-    public void Dispose() => AlundraHudDirector.Instance.ResetForTests();
+    public void Dispose() => HudDirector.Instance.ResetForTests();
 
     private sealed class ScreenEnvelopeLoader : IAssetLoader
     {
@@ -72,16 +72,16 @@ public sealed class AlundraScreenBindingReleaseTests : IDisposable
     [Fact]
     public void ADisposedInventoryScreen_LeavesNoBindingOnItsWindow()
     {
-        var screenInfo = new AssetInfo(Guid.Parse(AlundraInventoryScreen.ScreenAssetId))
+        var screenInfo = new AssetInfo(Guid.Parse(InventoryScreen.ScreenAssetId))
         {
             Name = "InventoryScreen",
             FileName = Path.Combine("UI", "Screens", "InventoryScreen.uiscreen"),
         };
-        var font3Info = new AssetInfo(AlundraInventoryScreen.Font3FontAssetId) { Name = "font3", FileName = Path.Combine("UI", "font3.fnt") };
+        var font3Info = new AssetInfo(InventoryScreen.Font3FontAssetId) { Name = "font3", FileName = Path.Combine("UI", "font3.fnt") };
         var assets = NewAssets(screenInfo, font3Info);
         assets.RegisterAssetLoader(typeof(BitmapFont), new AlundraInventoryScreenFontTests.CpuFont3Loader());
 
-        var screen = new AlundraInventoryScreen(assets, new UIFontRegistry(assets));
+        var screen = new InventoryScreen(assets, new UIFontRegistry(assets));
         var (desktop, _) = HeadlessUiTestHarness.NewDesktop();
         var tree = screen.BuildWindow(desktop).TraverseVisualTree().ToHashSet();
         Assert.NotEqual(0, BindingsOn(tree));
@@ -97,7 +97,7 @@ public sealed class AlundraScreenBindingReleaseTests : IDisposable
     public void ADisposedTextBoxScreen_LeavesNoBindingOnItsWindow_TheSpeakerElementsIncluded()
     {
         var assets = TextBoxScreenAssets.New();
-        var screen = new AlundraTextBoxScreen(assets, new UIFontRegistry(assets));
+        var screen = new TextBoxScreen(assets, new UIFontRegistry(assets));
         var (desktop, _) = HeadlessUiTestHarness.NewDesktop();
         var tree = screen.BuildWindow(desktop).TraverseVisualTree().ToHashSet();
         Assert.NotEqual(0, BindingsOn(tree));
@@ -116,14 +116,14 @@ public sealed class AlundraScreenBindingReleaseTests : IDisposable
     [Fact]
     public void ADisposedHudScreen_LeavesNoBindingOnItsWindow()
     {
-        var screenInfo = new AssetInfo(Guid.Parse(AlundraHudScreen.ScreenAssetId))
+        var screenInfo = new AssetInfo(Guid.Parse(HudScreen.ScreenAssetId))
         {
             Name = "HudScreen",
             FileName = Path.Combine("UI", "Screens", "HudScreen.uiscreen"),
         };
         var assets = NewAssets(screenInfo);
 
-        var screen = new AlundraHudScreen(AlundraHudDirector.Instance, assets);
+        var screen = new HudScreen(HudDirector.Instance, assets);
         var (desktop, _) = HeadlessUiTestHarness.NewDesktop();
         var tree = screen.BuildWindow(desktop).TraverseVisualTree().ToHashSet();
         Assert.NotEqual(0, BindingsOn(tree));

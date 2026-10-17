@@ -3,7 +3,7 @@ using Alundra.Dialogues;
 namespace Alundra.UI.Shared;
 
 /// <summary>Where a portrait flight is at the pass just run (E19.f4b): the flight in, the rest, the flight back, or the last (degenerate) pass of the return.</summary>
-public enum AlundraPortraitPhase
+public enum PortraitPhase
 {
     /// <summary>Nothing drawn (idle).</summary>
     None,

@@ -74,7 +74,7 @@ public sealed class AlundraSaveScreenXamlTests
         var envelope = new UIScreenAsset();
         envelope.Load(JObject.Parse(File.ReadAllText(Path.Combine(directory, "SaveScreen.uiscreen"))));
 
-        Assert.Equal(Guid.Parse(AlundraSaveScreen.ScreenAssetId), envelope.Id);
+        Assert.Equal(Guid.Parse(SaveScreen.ScreenAssetId), envelope.Id);
         Assert.True(File.Exists(Path.Combine(directory, envelope.SourceXamlFile)));
         Assert.True(File.Exists(Path.Combine(directory, envelope.DesignTimeDataFile)));
     }

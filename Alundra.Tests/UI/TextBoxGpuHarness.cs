@@ -472,7 +472,7 @@ public sealed class AlundraGpuFactAttribute : FactAttribute
     }
 }
 
-/// <summary>E19.f2b1c: the asset manager of the tests that build the real <see cref="Alundra.UI.Messages.AlundraTextBoxScreen"/> (and, E19.f3b, <see cref="Alundra.UI.Choice.AlundraChoiceScreen"/>: the envelopes of the exported project and the
+/// <summary>E19.f2b1c: the asset manager of the tests that build the real <see cref="Alundra.UI.Messages.TextBoxScreen"/> (and, E19.f3b, <see cref="Alundra.UI.Choice.ChoiceScreen"/>: the envelopes of the exported project and the
 /// font3 of the registry, loaded on the CPU), as <c>AlundraScreensFollowTheWindowTests</c> builds it.</summary>
 internal static class TextBoxScreenAssets
 {
@@ -490,18 +490,18 @@ internal static class TextBoxScreenAssets
 
     public static CasaEngine.Framework.Assets.AssetContentManager New(bool withTheScreen = true)
     {
-        var screenInfo = new CasaEngine.Framework.Assets.AssetInfo(Guid.Parse(Alundra.UI.Messages.AlundraTextBoxScreen.ScreenAssetId))
+        var screenInfo = new CasaEngine.Framework.Assets.AssetInfo(Guid.Parse(Alundra.UI.Messages.TextBoxScreen.ScreenAssetId))
         {
             Name = "TextBoxScreen",
             FileName = Path.Combine("UI", "Screens", "TextBoxScreen.uiscreen"),
         };
         // E19.f3b: the envelope of the choice screen too; `withTheScreen: false` still means "no screen asset" (neither of the two).
-        var choiceInfo = new CasaEngine.Framework.Assets.AssetInfo(Guid.Parse(Alundra.UI.Choice.AlundraChoiceScreen.ScreenAssetId))
+        var choiceInfo = new CasaEngine.Framework.Assets.AssetInfo(Guid.Parse(Alundra.UI.Choice.ChoiceScreen.ScreenAssetId))
         {
             Name = "ChoiceScreen",
             FileName = Path.Combine("UI", "Screens", "ChoiceScreen.uiscreen"),
         };
-        var font3Info = new CasaEngine.Framework.Assets.AssetInfo(Alundra.UI.Inventory.AlundraInventoryScreen.Font3FontAssetId) { Name = "font3", FileName = Path.Combine("UI", "font3.fnt") };
+        var font3Info = new CasaEngine.Framework.Assets.AssetInfo(Alundra.UI.Inventory.InventoryScreen.Font3FontAssetId) { Name = "font3", FileName = Path.Combine("UI", "font3.fnt") };
         var assets = new CasaEngine.Framework.Assets.AssetContentManager
         {
             RuntimeContext = new CasaEngine.Framework.Application.EngineRuntimeContext(

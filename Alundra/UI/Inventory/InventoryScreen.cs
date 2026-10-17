@@ -16,7 +16,7 @@ namespace Alundra.UI.Inventory;
 /// <summary>
 /// The main inventory screen (E13.d D5, parent ADR-0002): a project asset, <c>UI/Screens/InventoryScreen.uiscreen</c>
 /// and its XAML, versioned in <c>alundra-project</c>, loaded through the asset manager and bound to an
-/// <see cref="AlundraInventoryViewModel"/> that <see cref="AlundraInventoryPresenter"/> writes every logic tick.
+/// <see cref="AlundraInventoryViewModel"/> that <see cref="InventoryPresenter"/> writes every logic tick.
 /// The XAML declares every element, the sources that never change (the six boxes, the selection frames, the
 /// cursor animation) and binds everything else; this class only sizes the window, scales the canvas, and reads the
 /// icon sprites' sizes the view model centres them with.
@@ -26,14 +26,14 @@ namespace Alundra.UI.Inventory;
 /// while it is up, same as the original the whole screen freezes gameplay while the inventory is drawn.
 ///
 /// <b>Pixel scale (D-E13D-6)</b>: one INTEGER factor, <c>Math.Max(1, ValidScreenBounds.Width / 320)</c> - the same
-/// formula <see cref="AlundraHudScreen"/> uses - applied ONCE as <c>RootCanvas</c>'s own <c>RenderTransform.Scale</c>
+/// formula <see cref="HudScreen"/> uses - applied ONCE as <c>RootCanvas</c>'s own <c>RenderTransform.Scale</c>
 /// (MGUI <c>UIRenderTransform</c>, engine ADR-0006): every child stays in NATIVE pixel coordinates and sizes, and
 /// the single render-only matrix grows the whole tree together.
 ///
 /// <b>Point sampling</b>: every <see cref="MGImage"/> sets <c>UseLinearFilteringWhenDownscaling = false</c>, same as
 /// the HUD's images. MGUI's XAML cannot declare it (gap G8 of the engine's MGUI gaps report), so it stays here.
 /// </summary>
-public sealed class AlundraInventoryScreen : XamlUIScreenBase, IDisposable
+public sealed class InventoryScreen : XamlUIScreenBase, IDisposable
 {
     /// <summary>The id of <c>UI/Screens/InventoryScreen.uiscreen</c>, fixed in its envelope.</summary>
     internal const string ScreenAssetId = "d79fc172-1faf-41f2-894d-81d6903484fd";
@@ -64,7 +64,7 @@ public sealed class AlundraInventoryScreen : XamlUIScreenBase, IDisposable
     /// </summary>
     /// <exception cref="InvalidOperationException">The export has no loadable font3, or no inventory screen asset
     /// (no silent fallback).</exception>
-    public AlundraInventoryScreen(AssetContentManager assetContentManager, UIFontRegistry fonts)
+    public InventoryScreen(AssetContentManager assetContentManager, UIFontRegistry fonts)
         : base(assetContentManager, ScreenAssetId)
     {
         ArgumentNullException.ThrowIfNull(fonts);
@@ -79,12 +79,12 @@ public sealed class AlundraInventoryScreen : XamlUIScreenBase, IDisposable
         {
             base.Dispose();
             throw new InvalidOperationException(
-                $"AlundraInventoryScreen: font3 ('UI\\font3.fnt', asset {Font3FontAssetId}) cannot be held; "
+                $"InventoryScreen: font3 ('UI\\font3.fnt', asset {Font3FontAssetId}) cannot be held; "
                 + "the export must provide it.", ex);
         }
     }
 
-    /// <summary>What the XAML binds, and what <see cref="AlundraInventoryPresenter"/> writes.</summary>
+    /// <summary>What the XAML binds, and what <see cref="InventoryPresenter"/> writes.</summary>
     public AlundraInventoryViewModel ViewModel { get; }
 
     /// <summary>True once <see cref="Dispose"/> gave font3 back.</summary>
@@ -110,7 +110,7 @@ public sealed class AlundraInventoryScreen : XamlUIScreenBase, IDisposable
     public override UILayer Layer => UILayer.Menu;
     public override bool IsModal => true;
 
-    /// <summary>Test-only seam, same shape as <see cref="AlundraHudScreen.WindowForTests"/>.</summary>
+    /// <summary>Test-only seam, same shape as <see cref="HudScreen.WindowForTests"/>.</summary>
     internal MGWindow? WindowForTests => Window;
 
     protected override void OnWindowLoaded(MGWindow window)
@@ -164,7 +164,7 @@ public sealed class AlundraInventoryScreen : XamlUIScreenBase, IDisposable
             }
             catch (Exception ex)
             {
-                Logs.WriteWarning($"AlundraInventoryScreen: icon sprite {assetId} failed to load ({ex.Message}); its slot stays empty.");
+                Logs.WriteWarning($"InventoryScreen: icon sprite {assetId} failed to load ({ex.Message}); its slot stays empty.");
                 hold = null;
             }
 

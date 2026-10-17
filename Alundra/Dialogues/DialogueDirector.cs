@@ -38,8 +38,8 @@ namespace Alundra.Dialogues;
 /// E19.f2a (docs/plan-e19-opcodes.md section 1.2j.3, F2-R1 to F2-R6, ADR-0029): the box is the binary's, to the tick. The director owns an
 /// <see cref="DialogueBox"/> (the machine: slides, typing steps, lines and scroll, cursor, voices, close and release) and feeds it the
 /// pages the Yarn runner delivers, cut into steps from their text and markers; the world proxy runs <see cref="Pass"/> once per logic tick
-/// BEFORE the scripts of that tick. The box is drawn by the text box screen (E19.f2b1c, <see cref="AlundraTextBoxPresenter"/> reads the box after each pass), the choice box by the choice screen
-/// (E19.f3b, <see cref="AlundraChoicePresenter"/> reads it after the same pass); the engine's presenter no longer draws anything for a choice. The text flags of a page are set at their glyph, not at the display of the page.
+/// BEFORE the scripts of that tick. The box is drawn by the text box screen (E19.f2b1c, <see cref="TextBoxPresenter"/> reads the box after each pass), the choice box by the choice screen
+/// (E19.f3b, <see cref="ChoicePresenter"/> reads it after the same pass); the engine's presenter no longer draws anything for a choice. The text flags of a page are set at their glyph, not at the display of the page.
 /// </summary>
 public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
 {
@@ -60,7 +60,7 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
 
     // E19.f4b: the speaker's name box and portrait (the binary's slot 12 and portrait block), run by every pass of the director right after the text box's and the choice's.
     private readonly DialogueNameBox _nameBox = new();
-    private readonly AlundraInventoryPortrait _portrait = new();
+    private readonly InventoryPortrait _portrait = new();
     private AlundraEntityScriptProxy? _portraitSpeaker;
     private DialoguePortraitRef? _portraitSource;
     private readonly HashSet<int> _warnedPortraitSpriteTypes = new();
@@ -122,8 +122,8 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
     /// <summary>E19.f4b: the name box of the speaker (logic only; the view is E19.f4c): its state is read by the view and by the tests, only this director writes it.</summary>
     internal DialogueNameBox NameBox => _nameBox;
 
-    /// <summary>E19.f4b: the dialogue's own instance of the portrait machine (rest (8, 172 - h)); the inventories' is <see cref="AlundraInventoryPortrait.Instance"/>, never touched here.</summary>
-    internal AlundraInventoryPortrait Portrait => _portrait;
+    /// <summary>E19.f4b: the dialogue's own instance of the portrait machine (rest (8, 172 - h)); the inventories' is <see cref="InventoryPortrait.Instance"/>, never touched here.</summary>
+    internal InventoryPortrait Portrait => _portrait;
 
     /// <summary>E19.f4c2 (F4C2-R4): the image of the portrait whose start the machine accepted, locked at the opening with <see cref="PortraitSpeaker"/> (null while no start was accepted): the view never reads the
     /// speaker's live field, which a speaker destroyed and recycled by another entity (ADR-0024) would change in the middle of the return flight.</summary>
@@ -138,7 +138,7 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
     /// </summary>
     internal Func<(int X, int Y)>? ScrollSource { get; set; }
 
-    /// <summary>E19.f3b: the choice box (OUI / NON) the world draws: its state is read by the choice presenter (<see cref="AlundraChoicePresenter"/>) and by the tests; only this director writes it.</summary>
+    /// <summary>E19.f3b: the choice box (OUI / NON) the world draws: its state is read by the choice presenter (<see cref="ChoicePresenter"/>) and by the tests; only this director writes it.</summary>
     internal ChoiceBox ChoiceBox => _choice;
 
     /// <summary>Test-only seam (F2B1B-R1): the advance of a glyph, in place of the production reader of <c>UI/font3.fnt</c>; set and put back by the test (<c>try</c>/<c>finally</c>).</summary>
@@ -405,7 +405,7 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
             {
                 // The start is ignored while the machine is busy; the speaker (and so the height) is kept only when it was accepted.
                 var head = HeadPointOf(speaker);
-                if (_portrait.Start(head.X, head.Y, PortraitRestX, PortraitRestBottom - portrait.Height, AlundraInventoryPortrait.FullWidth, portrait.Height))
+                if (_portrait.Start(head.X, head.Y, PortraitRestX, PortraitRestBottom - portrait.Height, InventoryPortrait.FullWidth, portrait.Height))
                 {
                     _portraitSpeaker = speaker;
                     _portraitSource = portrait;
@@ -426,7 +426,7 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
     private (int X, int Y) HeadPointOf(AlundraEntityScriptProxy speaker)
     {
         var scroll = ScrollSource is { } source ? source() : (0, 0);
-        return AlundraInventoryPortrait.ComputeHeadPoint(speaker.PosX, speaker.PosY, speaker.PosZ, scroll.Item1, scroll.Item2);
+        return InventoryPortrait.ComputeHeadPoint(speaker.PosX, speaker.PosY, speaker.PosZ, scroll.Item1, scroll.Item2);
     }
 
     /// <summary>The ETC text of a name (<see cref="EtcStringTable.TryResolveText"/>), or null when no ETC is loaded; an empty or absent entry gives the empty string, which the name box refuses.</summary>
@@ -522,7 +522,7 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
     {
         // 0x80045EF8-0x80045F08: the name box's closer, then the dialogue portrait's return to where its speaker is NOW (the speaker whose start was accepted).
         _nameBox.Close();
-        if (_portrait.State != AlundraInventoryPortrait.StateIdle && _portraitSpeaker is { } speaker)
+        if (_portrait.State != InventoryPortrait.StateIdle && _portraitSpeaker is { } speaker)
         {
             var head = HeadPointOf(speaker);
             _portrait.BeginReturn(head.X, head.Y);

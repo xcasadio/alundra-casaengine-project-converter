@@ -19,9 +19,9 @@ using Alundra.UI.SubInventory;
 namespace Alundra.Tests.Scripts;
 
 /// <summary>
-/// E13.d SI4 (docs/plan-e13d-sous-inventaire.md): <see cref="AlundraSubInventoryScreen"/> is not
+/// E13.d SI4 (docs/plan-e13d-sous-inventaire.md): <see cref="SubInventoryScreen"/> is not
 /// constructible headless (same reason <see cref="AlundraInventoryPresenterTests"/> gives its own class
-/// doc), so this drives <see cref="AlundraSubInventoryPresenter"/> against a real
+/// doc), so this drives <see cref="SubInventoryPresenter"/> against a real
 /// <see cref="AlundraSubInventoryViewModel"/>, a recording <see cref="IUIScreen"/> stand-in and a recording
 /// <see cref="IUIViewRuntime"/> - the same pattern.
 /// </summary>
@@ -29,10 +29,10 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
 {
     public AlundraSubInventoryPresenterTests()
     {
-        AlundraInventoryDirector.Instance.ResetForTests();
-        AlundraSubInventoryDirector.Instance.ResetForTests();
-        AlundraInventoryPostProcess.Instance.ResetForTests();
-        AlundraHudDirector.Instance.ResetForTests();
+        InventoryDirector.Instance.ResetForTests();
+        SubInventoryDirector.Instance.ResetForTests();
+        InventoryPostProcess.Instance.ResetForTests();
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -42,10 +42,10 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
 
     public void Dispose()
     {
-        AlundraInventoryDirector.Instance.ResetForTests();
-        AlundraSubInventoryDirector.Instance.ResetForTests();
-        AlundraInventoryPostProcess.Instance.ResetForTests();
-        AlundraHudDirector.Instance.ResetForTests();
+        InventoryDirector.Instance.ResetForTests();
+        SubInventoryDirector.Instance.ResetForTests();
+        InventoryPostProcess.Instance.ResetForTests();
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -86,26 +86,26 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
         public void Dispose() { }
     }
 
-    private static void Tick(GameState state, AlundraSubInventoryDirector director, AlundraSubInventoryPresenter presenter, uint hold)
+    private static void Tick(GameState state, SubInventoryDirector director, SubInventoryPresenter presenter, uint hold)
     {
         state.TickPad.Update(hold);
         director.Tick();
         presenter.Tick();
     }
 
-    private static (GameState State, AlundraSubInventoryDirector Director, AlundraSubInventoryPresenter Presenter,
+    private static (GameState State, SubInventoryDirector Director, SubInventoryPresenter Presenter,
         AlundraSubInventoryViewModel View, FakeSubInventoryScreen Screen, RecordingUIViewRuntime UiView) NewFixture()
     {
         var state = GameState.Instance;
         var itemTables = ItemTablesFixture.LoadReal();
-        var director = AlundraSubInventoryDirector.Instance;
+        var director = SubInventoryDirector.Instance;
         director.AttachToWorld(state, itemTables, null);
 
         // Every icon 16x16: its size only centres it in its cell.
         var view = new AlundraSubInventoryViewModel();
         var screen = new FakeSubInventoryScreen();
         var uiView = new RecordingUIViewRuntime();
-        var presenter = new AlundraSubInventoryPresenter(director, state, itemTables, view, screen, uiView);
+        var presenter = new SubInventoryPresenter(director, state, itemTables, view, screen, uiView);
 
         return (state, director, presenter, view, screen, uiView);
     }
@@ -198,35 +198,35 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
     }
 
     /// <summary>The two screens are never pushed together (D-E13D-26) - a real round trip through both real
-    /// directors and the real post-process, both presenters' own <see cref="AlundraSubInventoryPresenter.IsPushedForTests"/>/
-    /// <see cref="AlundraInventoryPresenter.IsPushedForTests"/> recorded every tick.</summary>
+    /// directors and the real post-process, both presenters' own <see cref="SubInventoryPresenter.IsPushedForTests"/>/
+    /// <see cref="InventoryPresenter.IsPushedForTests"/> recorded every tick.</summary>
     [Fact]
     public void MainAndSubScreens_AreNeverBothPushed_DuringARoundTrip()
     {
         var state = GameState.Instance;
         var itemTables = ItemTablesFixture.LoadReal();
 
-        var mainDirector = AlundraInventoryDirector.Instance;
-        var subDirector = AlundraSubInventoryDirector.Instance;
+        var mainDirector = InventoryDirector.Instance;
+        var subDirector = SubInventoryDirector.Instance;
         mainDirector.AttachToWorld(state, itemTables, null);
         subDirector.AttachToWorld(state, itemTables, null);
 
         var mainView = new AlundraInventoryViewModel(_ => new Point(16, 16));
         var mainScreen = new FakeSubInventoryScreenForMain();
         var mainUiView = new RecordingUIViewRuntime();
-        var mainPresenter = new AlundraInventoryPresenter(mainDirector, state, itemTables, mainView, mainScreen, mainUiView);
+        var mainPresenter = new InventoryPresenter(mainDirector, state, itemTables, mainView, mainScreen, mainUiView);
 
         var subView = new AlundraSubInventoryViewModel();
         var subScreen = new FakeSubInventoryScreen();
         var subUiView = new RecordingUIViewRuntime();
-        var subPresenter = new AlundraSubInventoryPresenter(subDirector, state, itemTables, subView, subScreen, subUiView);
+        var subPresenter = new SubInventoryPresenter(subDirector, state, itemTables, subView, subScreen, subUiView);
 
         void OneTick(uint hold)
         {
             state.TickPad.Update(hold);
             mainDirector.Tick(null);
             subDirector.Tick();
-            AlundraInventoryPostProcess.Instance.Run();
+            InventoryPostProcess.Instance.Run();
             mainPresenter.Tick();
             subPresenter.Tick();
             Assert.False(mainPresenter.IsPushedForTests && subPresenter.IsPushedForTests, "both screens pushed on the same tick");
@@ -279,8 +279,8 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
 
         var tables = ItemTablesFixture.LoadReal();
         PlayerManager.InitializeNewGameInventory(worldProxy.GameState, tables);
-        AlundraInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
-        AlundraSubInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
+        InventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
+        SubInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
 
         var view = new AlundraSubInventoryViewModel();
         var screen = new FakeSubInventoryScreen();
@@ -299,16 +299,16 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
             Frame(0);
         }
 
-        Assert.True(AlundraInventoryDirector.Instance.IsActive);
+        Assert.True(InventoryDirector.Instance.IsActive);
         Frame(PadState.R1);
-        for (var i = 0; i < 40 && !AlundraSubInventoryDirector.Instance.IsDrawn; i++)
+        for (var i = 0; i < 40 && !SubInventoryDirector.Instance.IsDrawn; i++)
         {
             Frame(0);
         }
 
         Frame(0); // one tick with the sub-inventory drawn, through the real loop.
 
-        Assert.True(AlundraSubInventoryDirector.Instance.IsDrawn);
+        Assert.True(SubInventoryDirector.Instance.IsDrawn);
         Assert.Equal(new IUIScreen[] { screen }, ui.Pushed);
         Assert.Equal(MGUI.Core.UI.Visibility.Visible, view.RootVisibility);
     }

@@ -49,7 +49,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
 
     private static void ResetSingletons()
     {
-        AlundraHudDirector.Instance.ResetForTests();
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -449,7 +449,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
         var hero = CarryingHero(state, 3, 12);
         state.PlayerStats.MpMax = 4;
         state.PlayerStats.Mp = 1;
-        var hud = AlundraHudDirector.Instance;
+        var hud = HudDirector.Instance;
         hud.ResetDisplayForLoad(new PlayerStats { Hp = 3, HpMax = 10, Mp = 1, MpMax = 2 }); // the display lags behind: 3/10 and 1/2.
         Assert.Equal((3, 10, 1, 2), (hud.Hp, hud.HpMax, hud.Mp, hud.MpMax));
 
@@ -544,7 +544,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     public void TheHud_CatchesUpToTheNewMaximum_AfterAFewTicks()
     {
         var state = new GameState();
-        var director = AlundraHudDirector.Instance;
+        var director = HudDirector.Instance;
         director.AttachToWorld(state);
         state.AddFlag(1813, 0x200000); // "please appear"
         for (var i = 0; i < 18; i++)
@@ -552,7 +552,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
             director.Tick();
         }
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+        Assert.Equal(HudDirector.HudPhase.Displayed, director.Phase);
         Assert.Equal(10, director.HpMax);
 
         Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = HeroAt(0, 0, 0) }, state, VesselProgram);

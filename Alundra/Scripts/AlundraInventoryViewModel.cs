@@ -11,7 +11,7 @@ namespace Alundra.Scripts;
 
 /// <summary>
 /// The inventory screen's view model (parent ADR-0002, engine ADR-0038): what <c>UI/Screens/InventoryScreen.xaml</c>
-/// binds, one named member per element of the screen. <see cref="AlundraInventoryPresenter"/> writes it once per
+/// binds, one named member per element of the screen. <see cref="InventoryPresenter"/> writes it once per
 /// logic tick through <see cref="Apply"/>, from the composer's <see cref="InventoryDisplayModel"/>; only the values
 /// that change notify, so a settled inventory pushes nothing to the screen.
 /// <para/>
@@ -34,7 +34,7 @@ public sealed class AlundraInventoryViewModel : ViewModelBase
     };
 
     private readonly Func<Guid, Point?>? _iconSize;
-    private readonly InventoryImageViewModel[] _iconSlots = new InventoryImageViewModel[AlundraInventoryComposer.SlotCount];
+    private readonly InventoryImageViewModel[] _iconSlots = new InventoryImageViewModel[InventoryComposer.SlotCount];
     private readonly InventoryImageViewModel[] _moneyDigits = { new(), new(), new(), new() };
     private readonly InventoryImageViewModel[] _falconDigits = { new(), new() };
     private readonly InventoryImageViewModel[] _keyDigits = { new(), new() };

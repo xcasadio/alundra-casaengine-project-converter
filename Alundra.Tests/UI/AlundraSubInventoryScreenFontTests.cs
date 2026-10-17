@@ -70,15 +70,15 @@ public sealed class AlundraSubInventoryScreenFontTests
 
     private static UIFontRegistry NewFonts(out AssetContentManager assets, out CpuFont3Loader loader, bool withFont3 = true)
     {
-        var font3 = new AssetInfo(AlundraInventoryScreen.Font3FontAssetId) { Name = "font3", FileName = @"UI\font3.fnt" };
-        var screenId = Guid.Parse(AlundraSubInventoryScreen.ScreenAssetId);
+        var font3 = new AssetInfo(InventoryScreen.Font3FontAssetId) { Name = "font3", FileName = @"UI\font3.fnt" };
+        var screenId = Guid.Parse(SubInventoryScreen.ScreenAssetId);
         var screen = new AssetInfo(screenId) { Name = "SubInventoryScreen", FileName = @"UI\Screens\SubInventoryScreen.uiscreen" };
         assets = new AssetContentManager
         {
             RuntimeContext = new EngineRuntimeContext(
                 null,
                 Path.GetTempPath(),
-                id => withFont3 && id == AlundraInventoryScreen.Font3FontAssetId ? font3 : id == screenId ? screen : null),
+                id => withFont3 && id == InventoryScreen.Font3FontAssetId ? font3 : id == screenId ? screen : null),
         };
 
         loader = new CpuFont3Loader();
@@ -97,7 +97,7 @@ public sealed class AlundraSubInventoryScreenFontTests
         var textEngine = new FontStashSharpTextEngine();
         fonts.Attach(textEngine);
 
-        var screen = new AlundraSubInventoryScreen(assets, fonts);
+        var screen = new SubInventoryScreen(assets, fonts);
         Assert.True(ResolvesFont3(textEngine));
         Assert.Equal(1, loader.Loads);
 
@@ -115,14 +115,14 @@ public sealed class AlundraSubInventoryScreenFontTests
         var fonts = NewFonts(out var assets, out var loader);
         var map389TextEngine = new FontStashSharpTextEngine();
         fonts.Attach(map389TextEngine);
-        var map389Screen = new AlundraSubInventoryScreen(assets, fonts);
+        var map389Screen = new SubInventoryScreen(assets, fonts);
 
         assets.CollectUnreferenced();
         map389Screen.Dispose();
         fonts.Detach(map389TextEngine);
         var map390TextEngine = new FontStashSharpTextEngine();
         fonts.Attach(map390TextEngine);
-        using var map390Screen = new AlundraSubInventoryScreen(assets, fonts);
+        using var map390Screen = new SubInventoryScreen(assets, fonts);
 
         Assert.True(ResolvesFont3(map390TextEngine));
         Assert.Equal(1, loader.Loads);
@@ -133,17 +133,17 @@ public sealed class AlundraSubInventoryScreenFontTests
     {
         var fonts = NewFonts(out var assets, out _, withFont3: false);
 
-        var exception = Assert.Throws<InvalidOperationException>(() => new AlundraSubInventoryScreen(assets, fonts));
+        var exception = Assert.Throws<InvalidOperationException>(() => new SubInventoryScreen(assets, fonts));
 
         Assert.Contains("font3", exception.Message);
-        Assert.Contains(AlundraInventoryScreen.Font3FontAssetId.ToString(), exception.Message);
+        Assert.Contains(InventoryScreen.Font3FontAssetId.ToString(), exception.Message);
     }
 
     [Fact]
     public void OnEndPlay_DisposesTheSubInventoryScreen()
     {
         var fonts = NewFonts(out var assets, out _);
-        var screen = new AlundraSubInventoryScreen(assets, fonts);
+        var screen = new SubInventoryScreen(assets, fonts);
         var proxy = new AlundraWorldProxy();
         proxy.AttachSubInventoryScreenForTests(screen);
 

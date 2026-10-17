@@ -20,8 +20,8 @@ using Alundra.UI.Messages;
 namespace Alundra.Tests.UI;
 
 /// <summary>
-/// E19.f4c2 T5 (docs/plan-e19-opcodes.md, F4C2-1): the pixels of the speaker's name box and portrait on a real GPU. The real <see cref="AlundraTextBoxScreen"/> (its versioned XAML) is
-/// written by the real <see cref="AlundraTextBoxPresenter"/> from the real director on the scenes of the f4 annex (S1 Jess, S2, S3, S5, S8 Miming 48 x 72), image by image, drawn by an
+/// E19.f4c2 T5 (docs/plan-e19-opcodes.md, F4C2-1): the pixels of the speaker's name box and portrait on a real GPU. The real <see cref="TextBoxScreen"/> (its versioned XAML) is
+/// written by the real <see cref="TextBoxPresenter"/> from the real director on the scenes of the f4 annex (S1 Jess, S2, S3, S5, S8 Miming 48 x 72), image by image, drawn by an
 /// <c>MGDesktop</c> into a render target at the integer scale k (and in the view offset of a window that is not 4:3), read back and compared with the references of the f4c annex
 /// (<c>docs/plan-e19-f4c-annexe/refs/*.png</c>, produced by <c>gen_cases.py</c> from the binary's value model, never from the DLL), each image in its class (<c>classes.tsv</c>):
 /// <b>exact</b> (Rgb 128, the portrait at rest; or no portrait) and <b>tint8</b> (Rgb other than 128: every pixel outside the portrait's quad exact, inside it each channel within 8/255 of
@@ -97,7 +97,7 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
         {
             var session = GetSession();
             var assets = TextBoxScreenAssets.New();
-            using var screen = new AlundraTextBoxScreen(assets, new UIFontRegistry(assets));
+            using var screen = new TextBoxScreen(assets, new UIFontRegistry(assets));
             var desktop = session.NewDesktop();
             session.Host.Bounds = new Rectangle(0, 0, 320 * k, 240 * k);
             var window = screen.BuildWindow(desktop);
@@ -105,7 +105,7 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
 
             using var rig = new SpeakerRig();
             var (speaker, codes) = SceneOf(scenario);
-            var presenter = new AlundraTextBoxPresenter(rig.Director, screen.ViewModel, screen, null);
+            var presenter = new TextBoxPresenter(rig.Director, screen.ViewModel, screen, null);
             var next = 0;
             for (var f = 0; f <= frame; f++)
             {
@@ -129,7 +129,7 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
         {
             var session = GetSession();
             var assets = TextBoxScreenAssets.New();
-            using var screen = new AlundraTextBoxScreen(assets, new UIFontRegistry(assets));
+            using var screen = new TextBoxScreen(assets, new UIFontRegistry(assets));
             var desktop = session.NewDesktop();
             session.Host.Bounds = new Rectangle(0, 0, 320, 240);
             var window = screen.BuildWindow(desktop);

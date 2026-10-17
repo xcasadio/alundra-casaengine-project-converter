@@ -121,12 +121,12 @@ internal static class SaveGameDirectorTestSupport
     {
         AlundraSaveGameDirector.Instance.ResetForTests();
         AlundraSaveGameDirector.RecipeKeysEnabledOverrideForTests = null;
-        AlundraSaveScreenDirector.Instance.ResetForTests();
-        AlundraInventoryDirector.Instance.ResetForTests();
-        AlundraSubInventoryDirector.Instance.ResetForTests();
-        AlundraInventoryPostProcess.Instance.ResetForTests();
-        AlundraInventoryPortrait.Instance.ResetForTests();
-        AlundraHudDirector.Instance.ResetForTests();
+        SaveScreenDirector.Instance.ResetForTests();
+        InventoryDirector.Instance.ResetForTests();
+        SubInventoryDirector.Instance.ResetForTests();
+        InventoryPostProcess.Instance.ResetForTests();
+        InventoryPortrait.Instance.ResetForTests();
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();
@@ -160,48 +160,48 @@ internal static class SaveGameDirectorTestSupport
             case SaveGameBlocker.SubInventoryOpen:
             {
                 var tables = ItemTablesFixture.LoadReal();
-                AlundraInventoryDirector.Instance.AttachToWorld(GameState.Instance, tables, null);
-                AlundraSubInventoryDirector.Instance.AttachToWorld(GameState.Instance, tables, null);
+                InventoryDirector.Instance.AttachToWorld(GameState.Instance, tables, null);
+                SubInventoryDirector.Instance.AttachToWorld(GameState.Instance, tables, null);
                 InventoryTick(PadState.Start);
                 InventoryTicks(20);
                 if (blocker == SaveGameBlocker.SubInventoryOpen)
                 {
                     InventoryTick(PadState.R1);
                     InventoryTicks(40);
-                    Assert.True(AlundraSubInventoryDirector.Instance.IsActive);
-                    Assert.False(AlundraInventoryDirector.Instance.IsActive);
+                    Assert.True(SubInventoryDirector.Instance.IsActive);
+                    Assert.False(InventoryDirector.Instance.IsActive);
                 }
                 else
                 {
-                    Assert.True(AlundraInventoryDirector.Instance.IsActive);
+                    Assert.True(InventoryDirector.Instance.IsActive);
                 }
 
                 // Only the inventory blocks: the portrait (shared by both menus) and the flags are put back.
-                AlundraInventoryPortrait.Instance.ResetSessionForLoad();
+                InventoryPortrait.Instance.ResetSessionForLoad();
                 GameState.Instance.PlayerControlFlags = 0;
                 return (hero, blocker == SaveGameBlocker.SubInventoryOpen ? "sub-inventory is open" : "the inventory is open");
             }
 
             case SaveGameBlocker.PostProcessPending:
-                AlundraInventoryPostProcess.Instance.State = 1;
+                InventoryPostProcess.Instance.State = 1;
                 return (hero, "post-process is pending");
             case SaveGameBlocker.PortraitOpening:
-                AlundraInventoryPortrait.Instance.Start(100, 100);
-                Assert.Equal(AlundraInventoryPortrait.StateOpening, AlundraInventoryPortrait.Instance.State);
+                InventoryPortrait.Instance.Start(100, 100);
+                Assert.Equal(InventoryPortrait.StateOpening, InventoryPortrait.Instance.State);
                 return (hero, "portrait is not idle");
             case SaveGameBlocker.PortraitAtRest:
-                AlundraInventoryPortrait.Instance.Start(100, 100);
+                InventoryPortrait.Instance.Start(100, 100);
                 for (var i = 0; i < 20; i++)
                 {
-                    AlundraInventoryPortrait.Instance.Step();
+                    InventoryPortrait.Instance.Step();
                 }
 
-                Assert.Equal(AlundraInventoryPortrait.StateAtRest, AlundraInventoryPortrait.Instance.State);
+                Assert.Equal(InventoryPortrait.StateAtRest, InventoryPortrait.Instance.State);
                 return (hero, "portrait is not idle");
             case SaveGameBlocker.PortraitReturning:
-                AlundraInventoryPortrait.Instance.Start(100, 100);
-                AlundraInventoryPortrait.Instance.BeginReturn(100, 100);
-                Assert.Equal(AlundraInventoryPortrait.StateReturning, AlundraInventoryPortrait.Instance.State);
+                InventoryPortrait.Instance.Start(100, 100);
+                InventoryPortrait.Instance.BeginReturn(100, 100);
+                Assert.Equal(InventoryPortrait.StateReturning, InventoryPortrait.Instance.State);
                 return (hero, "portrait is not idle");
             case SaveGameBlocker.TransitionInProgress:
                 WarpDirector.Instance.BeginDepartureFromChangeMapOpcode(390, 0, 0, 0, 0, 0, HeroAt(), new GameState());
@@ -222,10 +222,10 @@ internal static class SaveGameDirectorTestSupport
     internal static void InventoryTick(uint hold)
     {
         GameState.Instance.TickPad.Update(hold);
-        AlundraInventoryDirector.Instance.Tick(null);
-        AlundraSubInventoryDirector.Instance.Tick();
-        AlundraInventoryPostProcess.Instance.Run();
-        AlundraInventoryPortrait.Instance.Step();
+        InventoryDirector.Instance.Tick(null);
+        SubInventoryDirector.Instance.Tick();
+        InventoryPostProcess.Instance.Run();
+        InventoryPortrait.Instance.Step();
     }
 
     internal static void InventoryTicks(int count)

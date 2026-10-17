@@ -26,9 +26,9 @@ namespace Alundra.UI.Shared;
 /// original's single block (P3): a start requested while the previous menu's return is still flying is ignored, as
 /// the original's own <c>state == 0</c> guard (<c>0x80057d30</c>) ignores it.</para>
 /// </summary>
-public sealed class AlundraInventoryPortrait
+public sealed class InventoryPortrait
 {
-    public static readonly AlundraInventoryPortrait Instance = new();
+    public static readonly InventoryPortrait Instance = new();
 
     public const int StateIdle = 0;
     public const int StateReturning = 2;
@@ -83,8 +83,8 @@ public sealed class AlundraInventoryPortrait
     /// Computed and exposed, not rendered (D-E19-89).</summary>
     public int Rgb { get; private set; }
 
-    /// <summary>Where the last <see cref="Step"/> was in the flight (<see cref="AlundraPortraitPhase.None"/> while idle).</summary>
-    public AlundraPortraitPhase Phase { get; private set; }
+    /// <summary>Where the last <see cref="Step"/> was in the flight (<see cref="PortraitPhase.None"/> while idle).</summary>
+    public PortraitPhase Phase { get; private set; }
 
     /// <summary>The player's head point on the original's 320x240 screen, where every flight starts or ends:
     /// <c>(PosX_hi - scrollX, PosY_hi - scrollY - PosZ_hi - 32)</c> (<c>0x80057e08-0x80057e84</c>). The positions are the
@@ -177,7 +177,7 @@ public sealed class AlundraInventoryPortrait
             DrawnHeight = 0;
             DrawnThisStep = false;
             Rgb = 0;
-            Phase = AlundraPortraitPhase.None;
+            Phase = PortraitPhase.None;
             return;
         }
 
@@ -193,7 +193,7 @@ public sealed class AlundraInventoryPortrait
                 DrawnWidth = _fullWidth;
                 DrawnHeight = _fullHeight;
                 Rgb = 0x80;
-                Phase = AlundraPortraitPhase.Rest;
+                Phase = PortraitPhase.Rest;
             }
             else
             {
@@ -202,7 +202,7 @@ public sealed class AlundraInventoryPortrait
                 DrawnWidth = 0;
                 DrawnHeight = 0;
                 Rgb = 0;
-                Phase = AlundraPortraitPhase.Gone;
+                Phase = PortraitPhase.Gone;
             }
 
             return;
@@ -215,14 +215,14 @@ public sealed class AlundraInventoryPortrait
             DrawnWidth = _fullWidth * (Steps - _step) / Steps;
             DrawnHeight = _fullHeight * (Steps - _step) / Steps;
             Rgb = 0x7F + ((_step << 7) / Steps);
-            Phase = AlundraPortraitPhase.In;
+            Phase = PortraitPhase.In;
         }
         else
         {
             DrawnWidth = _fullWidth * _step / Steps;
             DrawnHeight = _fullHeight * _step / Steps;
             Rgb = 0x7F + (((Steps - _step) << 7) / Steps);
-            Phase = AlundraPortraitPhase.Out;
+            Phase = PortraitPhase.Out;
         }
 
         _step--;
@@ -256,7 +256,7 @@ public sealed class AlundraInventoryPortrait
         DrawnHeight = 0;
         DrawnThisStep = false;
         Rgb = 0;
-        Phase = AlundraPortraitPhase.None;
+        Phase = PortraitPhase.None;
         HeadX = 0;
         HeadY = 0;
     }

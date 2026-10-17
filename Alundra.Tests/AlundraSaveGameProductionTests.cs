@@ -48,11 +48,11 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
 
     private static void ResetSingletons()
     {
-        AlundraInventoryDirector.Instance.ResetForTests();
-        AlundraSubInventoryDirector.Instance.ResetForTests();
-        AlundraInventoryPostProcess.Instance.ResetForTests();
-        AlundraInventoryPortrait.Instance.ResetForTests();
-        AlundraHudDirector.Instance.ResetForTests();
+        InventoryDirector.Instance.ResetForTests();
+        SubInventoryDirector.Instance.ResetForTests();
+        InventoryPostProcess.Instance.ResetForTests();
+        InventoryPortrait.Instance.ResetForTests();
+        HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -227,18 +227,18 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         save.ApplyTo(state);
 
         // The jauge: opened by its display request, ticked with its real presenter until every roll settles.
-        var hud = AlundraHudDirector.Instance;
+        var hud = HudDirector.Instance;
         hud.AttachToWorld(state);
         var hudView = new AlundraHudViewModel();
-        var hudPresenter = new AlundraHudPresenter(hud, hudView, () => PlayerManager.ResolveHudEquipmentIcons(state, tables));
-        state.AddFlag(AlundraHudDirector.ScriptOpenRequestFlag, AlundraHudDirector.ScriptOpenRequestMask);
+        var hudPresenter = new HudPresenter(hud, hudView, () => PlayerManager.ResolveHudEquipmentIcons(state, tables));
+        state.AddFlag(HudDirector.ScriptOpenRequestFlag, HudDirector.ScriptOpenRequestMask);
 
         var settled = false;
         for (var tick = 0; tick < 3000 && !settled; tick++)
         {
             hud.Tick();
             hudPresenter.Tick();
-            settled = hud.Phase == AlundraHudDirector.HudPhase.Displayed
+            settled = hud.Phase == HudDirector.HudPhase.Displayed
                 && !hud.IsMoneyRolling
                 && hud.Hp == save.Hp && hud.HpMax == save.HpMax
                 && hud.Mp == save.Mp && hud.MpMax == save.MpMax
@@ -252,21 +252,21 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
 
         // The inventories: main opened by Start, then the sub-inventory by R1, then back - the presenters compute
         // their display models from the applied state every drawn tick.
-        var main = AlundraInventoryDirector.Instance;
-        var sub = AlundraSubInventoryDirector.Instance;
+        var main = InventoryDirector.Instance;
+        var sub = SubInventoryDirector.Instance;
         main.AttachToWorld(state, tables, null);
         sub.AttachToWorld(state, tables, null);
         var mainView = new AlundraInventoryViewModel(_ => new Point(16, 16));
         var subView = new AlundraSubInventoryViewModel();
-        var mainPresenter = new AlundraInventoryPresenter(main, state, tables, mainView, new FakeScreen(), new RecordingUIViewRuntime());
-        var subPresenter = new AlundraSubInventoryPresenter(sub, state, tables, subView, new FakeScreen(), new RecordingUIViewRuntime());
+        var mainPresenter = new InventoryPresenter(main, state, tables, mainView, new FakeScreen(), new RecordingUIViewRuntime());
+        var subPresenter = new SubInventoryPresenter(sub, state, tables, subView, new FakeScreen(), new RecordingUIViewRuntime());
 
         void OneTick(uint hold)
         {
             state.TickPad.Update(hold);
             main.Tick(null);
             sub.Tick();
-            AlundraInventoryPostProcess.Instance.Run();
+            InventoryPostProcess.Instance.Run();
             mainPresenter.Tick();
             subPresenter.Tick();
             hud.Tick();

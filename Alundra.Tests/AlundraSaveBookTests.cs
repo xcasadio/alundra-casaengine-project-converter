@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// E16.e T2 (docs/plan-e16-etat-partie.md, L4, H1, H2, SE1, SE2, SE7, SE8): the save book, driven through the real
 /// dispatch (<see cref="AlundraEntityScriptProxy.RunPickedEvent"/>) on the REAL dialogue director, with a real
-/// <see cref="AlundraDialoguePresenter"/> over a recording UI view, the real export's <c>Dialogues/Etc.dialogue</c>
+/// <see cref="DialoguePresenter"/> over a recording UI view, the real export's <c>Dialogues/Etc.dialogue</c>
 /// and validation rules (K1), and a fake save screen (<see cref="ISaveBookScreen"/>). Every abandon and the
 /// normal end are followed by <see cref="AssertReleased"/>: the whole <c>PlayerControlFlags</c> at 0, no box, no
 /// choice, then the hero walks and the inventory opens (SE1).
@@ -51,7 +51,7 @@ public sealed class AlundraSaveBookTests : IDisposable
 
         EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
-        DialogueDirector.Instance.AttachToWorld(new AlundraDialoguePresenter(new RecordingUIViewRuntime()), State);
+        DialogueDirector.Instance.AttachToWorld(new DialoguePresenter(new RecordingUIViewRuntime()), State);
         AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
         AlundraSaveGameDirector.Instance.SaveSlots = _slots;
         SaveBook.Instance.Screen = _screen;
@@ -126,10 +126,10 @@ public sealed class AlundraSaveBookTests : IDisposable
         Assert.Equal(1u, _hero.TargetAnimationId); // Moving.
 
         var tables = new ItemTables(FindProjectRoot());
-        AlundraInventoryDirector.Instance.AttachToWorld(State, tables, null);
-        AlundraSubInventoryDirector.Instance.AttachToWorld(State, tables, null);
+        InventoryDirector.Instance.AttachToWorld(State, tables, null);
+        SubInventoryDirector.Instance.AttachToWorld(State, tables, null);
         InventoryTick(PadState.Start);
-        Assert.True(AlundraInventoryDirector.Instance.IsActive);
+        Assert.True(InventoryDirector.Instance.IsActive);
     }
 
     // ---- The whole flow (H1) --------------------------------------------------------------------------------

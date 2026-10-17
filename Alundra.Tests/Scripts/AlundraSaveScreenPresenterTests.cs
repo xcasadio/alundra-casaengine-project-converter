@@ -21,10 +21,10 @@ using Alundra.SaveGames;
 namespace Alundra.Tests.Scripts;
 
 /// <summary>
-/// E16.e T4 (docs/plan-e16-etat-partie.md, L5): <see cref="AlundraSaveScreen"/> is not constructible headless (it
-/// needs the game's asset manager and fonts), so this drives <see cref="AlundraSaveScreenPresenter"/> over the real
-/// <see cref="AlundraSaveScreenDirector"/>, a real <see cref="AlundraSaveScreenViewModel"/>, a recording
-/// <see cref="IUIScreen"/> stand-in on <see cref="AlundraSaveScreen.ScreenLayer"/>, and ONE recording
+/// E16.e T4 (docs/plan-e16-etat-partie.md, L5): <see cref="SaveScreen"/> is not constructible headless (it
+/// needs the game's asset manager and fonts), so this drives <see cref="SaveScreenPresenter"/> over the real
+/// <see cref="SaveScreenDirector"/>, a real <see cref="AlundraSaveScreenViewModel"/>, a recording
+/// <see cref="IUIScreen"/> stand-in on <see cref="SaveScreen.ScreenLayer"/>, and ONE recording
 /// <see cref="IUIViewRuntime"/> shared with the real dialogue presenter - so the order of the two screens on the
 /// view is observed. The save service is a fake (D-E16-31).
 /// </summary>
@@ -32,12 +32,12 @@ namespace Alundra.Tests.Scripts;
 public sealed class AlundraSaveScreenPresenterTests : IDisposable
 {
     private readonly AlundraSaveBookTests.RecordingUIViewRuntime _uiView = new();
-    private readonly AlundraDialoguePresenter _dialoguePresenter;
+    private readonly DialoguePresenter _dialoguePresenter;
     private readonly FakeSaveScreen _screen = new();
     private readonly FakeSaveScreen _choiceScreen = new();
     private readonly AlundraSaveScreenViewModel _viewModel = new();
-    private readonly AlundraSaveScreenPresenter _presenter;
-    private readonly AlundraChoicePresenter _choicePresenter;
+    private readonly SaveScreenPresenter _presenter;
+    private readonly ChoicePresenter _choicePresenter;
     private readonly AlundraSaveScreenDirectorTests.SlotsBySlot _slots = new();
 
     public AlundraSaveScreenPresenterTests()
@@ -45,13 +45,13 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         ResetAll();
         EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
-        _dialoguePresenter = new AlundraDialoguePresenter(_uiView);
+        _dialoguePresenter = new DialoguePresenter(_uiView);
         DialogueDirector.Instance.AttachToWorld(_dialoguePresenter, State);
         AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
         AlundraSaveGameDirector.Instance.SaveSlots = _slots;
         Director.AttachToWorld(State, null);
-        _presenter = new AlundraSaveScreenPresenter(Director, _viewModel, _screen, _uiView);
-        _choicePresenter = new AlundraChoicePresenter(DialogueDirector.Instance, new AlundraChoiceViewModel(), _choiceScreen, _uiView); // E19.f3b: on the same view
+        _presenter = new SaveScreenPresenter(Director, _viewModel, _screen, _uiView);
+        _choicePresenter = new ChoicePresenter(DialogueDirector.Instance, new AlundraChoiceViewModel(), _choiceScreen, _uiView); // E19.f3b: on the same view
     }
 
     public void Dispose() => ResetAll();
@@ -65,7 +65,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
 
     private static GameState State => GameState.Instance;
 
-    private static AlundraSaveScreenDirector Director => AlundraSaveScreenDirector.Instance;
+    private static SaveScreenDirector Director => SaveScreenDirector.Instance;
 
     private void Tick(int count = 1, uint hold = 0)
     {
@@ -158,7 +158,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         Tick(hold: PadState.Cross);
         Assert.Equal(new IUIScreen[] { _screen }, _uiView.Pushed); // E19.f3a: the engine's dialogue screen is gone: only the save screen is on the view
         Assert.Empty(_uiView.Removed);
-        Assert.Equal(AlundraSaveScreen.ScreenLayer, _screen.Layer);
+        Assert.Equal(SaveScreen.ScreenLayer, _screen.Layer);
 
         Assert.True(DialogueDirector.Instance.SelectChoiceForTests(1));
         var taken = 0;
@@ -196,13 +196,13 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         worldProxy.GameState.LastPadState = new PadState();
         worldProxy.Update(0.02f);
 
-        Assert.Equal(AlundraSaveScreenDirector.StateExamineWait, Director.State);
+        Assert.Equal(SaveScreenDirector.StateExamineWait, Director.State);
         Assert.Equal(new IUIScreen[] { screen }, uiView.Pushed);
     }
 
     private sealed class FakeSaveScreen : IUIScreen
     {
-        public UILayer Layer => AlundraSaveScreen.ScreenLayer;
+        public UILayer Layer => SaveScreen.ScreenLayer;
         public bool IsModal => true;
         public bool BlocksViewsBelow => true;
         public void Initialize(UIRoot root) { }

@@ -16,17 +16,17 @@ namespace Alundra.UI.Inventory;
 /// (<c>:1157-1225</c>, weapon/item names) and the description box positions used by
 /// <c>DisplayInventoryTexts</c>/<c>DisplayInventoryDescription</c> (<c>:929-1154</c>, <c>:1097-1134</c>).
 /// No MGUI type appears anywhere in this file (same "pure function of plain data" shape as
-/// <see cref="AlundraHudComposer"/>) - every input is either a director-exposed value or a value the
+/// <see cref="HudComposer"/>) - every input is either a director-exposed value or a value the
 /// caller (D5's presenter) already resolved through <see cref="PlayerManager"/>/
 /// <see cref="ItemTables"/>, themselves plain C#, no MGUI.
 ///
 /// <b>D-E13D-10 (icons centred, not pixel-exact)</b>: every grid icon reuses
-/// <see cref="AlundraHudIcon"/>'s own centring formula (<see cref="AlundraHudIcon.ScreenLeft"/>/
-/// <see cref="AlundraHudIcon.ScreenTop"/>), the SAME 24x32 (0x18x0x20 - the selection frame's own size)
+/// <see cref="HudIcon"/>'s own centring formula (<see cref="HudIcon.ScreenLeft"/>/
+/// <see cref="HudIcon.ScreenTop"/>), the SAME 24x32 (0x18x0x20 - the selection frame's own size)
 /// box the original's <c>g_uiBoxesInventoryAnimationOffsetX/Y</c> step by, instead of the original's own
 /// top-left placement.
 /// </summary>
-public static class AlundraInventoryComposer
+public static class InventoryComposer
 {
     public const int SlotCount = 24;
     private const int CellWidth = 0x18;  // 24 - the selection frame's own size, D-E13D-10's "cell".
@@ -60,11 +60,11 @@ public static class AlundraInventoryComposer
     private static readonly int[] CursorPhaseX = { 0, -1, -2, -2 };
     private static readonly int[] CursorPhaseY = { 0, 1, 2, 2 };
 
-    /// <param name="isDrawn">Director's own <see cref="AlundraInventoryDirector.IsDrawn"/> - false makes
+    /// <param name="isDrawn">Director's own <see cref="InventoryDirector.IsDrawn"/> - false makes
     /// every other argument irrelevant (nothing is read), matching the setup tick's own "nothing drawn yet".</param>
-    /// <param name="boxPositions">The seven boxes' current native (X, Y), <see cref="AlundraInventoryDirector.BoxPosition"/>
+    /// <param name="boxPositions">The seven boxes' current native (X, Y), <see cref="InventoryDirector.BoxPosition"/>
     /// order (index 4, the spacer, is read but never emitted).</param>
-    /// <param name="slotItemIds">24 entries, <see cref="AlundraInventoryDirector.ResolveSlotItemId"/>'s
+    /// <param name="slotItemIds">24 entries, <see cref="InventoryDirector.ResolveSlotItemId"/>'s
     /// own return per slot - null for an empty/unowned slot.</param>
     /// <param name="slotIconAssetIds">24 entries, the icon asset id for each slot with a resolved item
     /// (<see cref="ItemTables.TryGetIconAssetId"/>'s own result) - null where the item has no
@@ -124,7 +124,7 @@ public static class AlundraInventoryComposer
 
             var cellX = weaponBackground.X + OffsetX[slot];
             var cellY = weaponBackground.Y + OffsetY[slot];
-            icons.Add(new InventorySlotIcon(slot, new AlundraHudIcon(assetId.Value, cellX, cellY, CellWidth, CellHeight)));
+            icons.Add(new InventorySlotIcon(slot, new HudIcon(assetId.Value, cellX, cellY, CellWidth, CellHeight)));
         }
 
         // MainInventoryManager.cs:1405-1408/1418-1421 - row 0 (slots 0-5) compares against the equipped
@@ -216,7 +216,7 @@ public static class AlundraInventoryComposer
 
     /// <summary>Port of the three identical digit loops in <c>DisplayAmountOfMoneyFalconKeys</c>
     /// (<c>MainInventoryManager.cs:1478-1588</c>) - most significant digit first, 8 native pixels apart.
-    /// Internal (not private): <see cref="AlundraSubInventoryComposer"/> reuses it as-is, plan §1.5's own
+    /// Internal (not private): <see cref="SubInventoryComposer"/> reuses it as-is, plan §1.5's own
     /// "the main's places" for the sub-inventory's money/falcon/key digits, on the SAME shared box - a
     /// one-line visibility change rather than a copy (E13.d SI4 brief).</summary>
     internal static List<InventoryDigit> ComposeDigits(int value, int count, int startX, int y)

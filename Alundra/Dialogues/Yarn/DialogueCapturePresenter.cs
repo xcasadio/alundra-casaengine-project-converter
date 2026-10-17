@@ -12,7 +12,7 @@ namespace Alundra.Dialogues.Yarn;
 /// <summary>
 /// E15.c T5 (docs/plan-e15-yarn.md, E15.c contract items 2/4; ADR-0008): the presenter
 /// <see cref="DialogueDirector"/>'s own <c>YarnDialogueRunner</c> is built on - never the world's
-/// own presenter (<see cref="AlundraDialoguePresenter"/>). The runner calls <see cref="ShowLine"/>/
+/// own presenter (<see cref="DialoguePresenter"/>). The runner calls <see cref="ShowLine"/>/
 /// <see cref="Close"/> on THIS presenter itself (<c>YarnDialogueRunner.Start</c> calls <c>Stop</c> first,
 /// which closes whatever presenter it was built on - engine <c>YarnDialogueRunner.cs:130-138</c>,
 /// <c>:163-167</c>), while the world's own presenter is reattached on every

@@ -5,7 +5,7 @@ using Alundra.UI.Shared;
 namespace Alundra.Tests;
 
 /// <summary>
-/// docs/plan-portrait-inventaire.md PI7: <see cref="AlundraInventoryPortrait"/> against the tables measured in the
+/// docs/plan-portrait-inventaire.md PI7: <see cref="InventoryPortrait"/> against the tables measured in the
 /// France executable (§1.1 of the plan, cross-checked by PI1). The tables are written out literally here, not
 /// recomputed from the formulas the class uses, so a wrong formula cannot agree with itself.
 /// </summary>
@@ -28,9 +28,9 @@ public sealed class AlundraInventoryPortraitTests
     [Fact]
     public void Opening_DrawsTheMeasuredSizes_ThenStaysAtRest()
     {
-        var portrait = new AlundraInventoryPortrait();
+        var portrait = new InventoryPortrait();
         portrait.Start(160, 120);
-        Assert.Equal(AlundraInventoryPortrait.StateOpening, portrait.State);
+        Assert.Equal(InventoryPortrait.StateOpening, portrait.State);
 
         for (var call = 0; call < OpeningSizes.Length; call++)
         {
@@ -38,12 +38,12 @@ public sealed class AlundraInventoryPortraitTests
             Assert.Equal(OpeningSizes[call], (portrait.DrawnWidth, portrait.DrawnHeight));
         }
 
-        Assert.Equal(AlundraInventoryPortrait.StateAtRest, portrait.State);
+        Assert.Equal(InventoryPortrait.StateAtRest, portrait.State);
         for (var call = 0; call < 100; call++)
         {
             portrait.Step();
             Assert.Equal((248, 104, 48, 56), (portrait.X, portrait.Y, portrait.DrawnWidth, portrait.DrawnHeight));
-            Assert.Equal(AlundraInventoryPortrait.StateAtRest, portrait.State);
+            Assert.Equal(InventoryPortrait.StateAtRest, portrait.State);
         }
     }
 
@@ -51,7 +51,7 @@ public sealed class AlundraInventoryPortraitTests
     public void Opening_FliesFromTheHead_WithAPositiveSpan()
     {
         // Head (160, 120): span (-88, 16) from the rest position.
-        var portrait = new AlundraInventoryPortrait();
+        var portrait = new InventoryPortrait();
         portrait.Start(160, 120);
 
         portrait.Step(); // s = 15: at the head.
@@ -78,7 +78,7 @@ public sealed class AlundraInventoryPortraitTests
     public void Opening_TruncatesTowardZero_WithANegativeSpan()
     {
         // Head (300, 60): span (52, -44). s = 14: Y = 104 + trunc(-616 / 15) = 104 - 41 = 63 (a floor would give 62).
-        var portrait = new AlundraInventoryPortrait();
+        var portrait = new InventoryPortrait();
         portrait.Start(300, 60);
 
         portrait.Step();
@@ -94,7 +94,7 @@ public sealed class AlundraInventoryPortraitTests
 
         // The head has moved since the opening: the return targets the point read NOW (0x80057b84 re-reads it).
         portrait.BeginReturn(160, 120);
-        Assert.Equal(AlundraInventoryPortrait.StateReturning, portrait.State);
+        Assert.Equal(InventoryPortrait.StateReturning, portrait.State);
 
         for (var call = 0; call < ReturnSizes.Length; call++)
         {
@@ -116,12 +116,12 @@ public sealed class AlundraInventoryPortraitTests
             }
         }
 
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, portrait.State);
+        Assert.Equal(InventoryPortrait.StateIdle, portrait.State);
         Assert.False(portrait.IsVisible);
 
         portrait.Step();
         Assert.False(portrait.IsVisible);
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, portrait.State);
+        Assert.Equal(InventoryPortrait.StateIdle, portrait.State);
     }
 
     [Fact]
@@ -129,29 +129,29 @@ public sealed class AlundraInventoryPortraitTests
     {
         var portrait = OpenedToRest();
         portrait.Start(0, 0);
-        Assert.Equal(AlundraInventoryPortrait.StateAtRest, portrait.State);
+        Assert.Equal(InventoryPortrait.StateAtRest, portrait.State);
 
         portrait.BeginReturn(160, 120);
         portrait.Step();
         portrait.Start(0, 0); // a start while the return still flies is dropped, as by the original's guard
-        Assert.Equal(AlundraInventoryPortrait.StateReturning, portrait.State);
+        Assert.Equal(InventoryPortrait.StateReturning, portrait.State);
 
         for (var call = 0; call < 15; call++)
         {
             portrait.Step();
         }
 
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, portrait.State);
+        Assert.Equal(InventoryPortrait.StateIdle, portrait.State);
         portrait.Start(160, 120);
-        Assert.Equal(AlundraInventoryPortrait.StateOpening, portrait.State);
+        Assert.Equal(InventoryPortrait.StateOpening, portrait.State);
     }
 
     [Fact]
     public void Return_IsIgnoredWhileIdle_AndNothingIsDrawn()
     {
-        var portrait = new AlundraInventoryPortrait();
+        var portrait = new InventoryPortrait();
         portrait.BeginReturn(160, 120);
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, portrait.State);
+        Assert.Equal(InventoryPortrait.StateIdle, portrait.State);
         portrait.Step();
         Assert.False(portrait.IsVisible);
     }
@@ -160,23 +160,23 @@ public sealed class AlundraInventoryPortraitTests
     public void HeadPoint_ReadsTheIntegerPartsWithoutAnyPixelOffset()
     {
         // PosX/PosY/PosZ are 16.16: integer parts 300, 200 and 16, plus fractions that must be dropped.
-        var head = AlundraInventoryPortrait.ComputeHeadPoint(
+        var head = InventoryPortrait.ComputeHeadPoint(
             (300 << 16) | 0xffff, (200 << 16) | 0x8000, 16 << 16, scrollX: 100, scrollY: 50);
 
         // X = 300 - 100 (no "+2"); Y = 200 - 50 - 16 - 32.
         Assert.Equal((200, 102), head);
     }
 
-    private static AlundraInventoryPortrait OpenedToRest()
+    private static InventoryPortrait OpenedToRest()
     {
-        var portrait = new AlundraInventoryPortrait();
+        var portrait = new InventoryPortrait();
         portrait.Start(200, 180);
         for (var call = 0; call < 16; call++)
         {
             portrait.Step();
         }
 
-        Assert.Equal(AlundraInventoryPortrait.StateAtRest, portrait.State);
+        Assert.Equal(InventoryPortrait.StateAtRest, portrait.State);
         return portrait;
     }
 }

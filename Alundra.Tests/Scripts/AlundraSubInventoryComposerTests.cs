@@ -8,7 +8,7 @@ using Alundra.UI.SubInventory;
 namespace Alundra.Tests.Scripts;
 
 /// <summary>
-/// E13.d SI4 (docs/plan-e13d-sous-inventaire.md): pins <see cref="AlundraSubInventoryComposer.Compose"/>'s own
+/// E13.d SI4 (docs/plan-e13d-sous-inventaire.md): pins <see cref="SubInventoryComposer.Compose"/>'s own
 /// position formulas by hand-computed values, against the plan's own §1.3/§1.5 tables - same shape as
 /// <see cref="AlundraInventoryComposerTests"/>.
 /// </summary>
@@ -44,7 +44,7 @@ public sealed class AlundraSubInventoryComposerTests
         int keyCount = 0,
         int falconTotal = 0)
     {
-        return AlundraSubInventoryComposer.Compose(
+        return SubInventoryComposer.Compose(
             isDrawn: true,
             boxPositions: RestBoxPositions,
             armoryIconAssetIds: armoryIconAssetIds ?? NoArmoryIcons,
@@ -64,7 +64,7 @@ public sealed class AlundraSubInventoryComposerTests
     [Fact]
     public void NotDrawn_ReturnsInvisibleEmptyModel()
     {
-        var model = AlundraSubInventoryComposer.Compose(
+        var model = SubInventoryComposer.Compose(
             isDrawn: false, boxPositions: RestBoxPositions,
             armoryIconAssetIds: NoArmoryIcons, keyItemIconAssetIds: NoKeyItemIcons,
             armorIconAssetId: null, bootsIconAssetId: null,

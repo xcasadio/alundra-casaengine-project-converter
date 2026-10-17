@@ -19,7 +19,7 @@ using Alundra.UI.Messages;
 namespace Alundra.Tests.UI;
 
 /// <summary>
-/// E19.f3b F3B-1 (docs/plan-e19-opcodes.md, F3B-R1 to R3): the pixels of the choice screen on a real GPU. The real <see cref="AlundraChoiceScreen"/> (its versioned XAML, its view
+/// E19.f3b F3B-1 (docs/plan-e19-opcodes.md, F3B-R1 to R3): the pixels of the choice screen on a real GPU. The real <see cref="ChoiceScreen"/> (its versioned XAML, its view
 /// model written by <see cref="AlundraChoiceViewModel.Apply"/> from the real <see cref="ChoiceBox"/> at the pass of each scenario of
 /// <c>docs/plan-e19-f3-annexe/values.json</c>) is drawn by an <c>MGDesktop</c> into a render target, read back, and compared texel for texel with the 19 images of
 /// <c>docs/plan-e19-f3-annexe/view/pixels/</c> (composed by the independent <c>view/compositor/ref.py</c> from the exported PNGs and the binary's tables, not rerun here) and
@@ -116,8 +116,8 @@ public sealed class AlundraChoicePixelTests
         {
             var session = GetSession();
             var assets = TextBoxScreenAssets.New();
-            using var choice = new AlundraChoiceScreen(assets, new UIFontRegistry(assets));
-            using var textBox = underlay is null ? null : new AlundraTextBoxScreen(assets, new UIFontRegistry(assets));
+            using var choice = new ChoiceScreen(assets, new UIFontRegistry(assets));
+            using var textBox = underlay is null ? null : new TextBoxScreen(assets, new UIFontRegistry(assets));
             var desktop = session.NewDesktop();
             session.Host.Bounds = new Rectangle(0, 0, 320 * k, 240 * k);
             var choiceWindow = choice.BuildWindow(desktop);

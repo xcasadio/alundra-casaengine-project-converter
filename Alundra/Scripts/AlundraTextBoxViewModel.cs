@@ -10,7 +10,7 @@ namespace Alundra.Scripts;
 
 /// <summary>
 /// E19.f2b1c F2B1C-R2 (docs/plan-e19-opcodes.md): what <c>UI/Screens/TextBoxScreen.xaml</c> binds - the frame, the clip canvas, the three rows (text and
-/// position relative to the clip canvas) and the cursor. <see cref="AlundraTextBoxPresenter"/> writes it after each pass of the dialogue box from the box's drawn
+/// position relative to the clip canvas) and the cursor. <see cref="TextBoxPresenter"/> writes it after each pass of the dialogue box from the box's drawn
 /// state (<see cref="Apply"/>); only the values that change notify.
 /// </summary>
 public sealed class AlundraTextBoxViewModel : ViewModelBase
@@ -46,7 +46,7 @@ public sealed class AlundraTextBoxViewModel : ViewModelBase
 
     public TextBoxCursorViewModel Cursor { get; } = new();
 
-    /// <summary>E19.f4c2: the speaker's name box (written by <see cref="AlundraTextBoxPresenter"/> from <see cref="DialogueDirector.NameBox"/>).</summary>
+    /// <summary>E19.f4c2: the speaker's name box (written by <see cref="TextBoxPresenter"/> from <see cref="DialogueDirector.NameBox"/>).</summary>
     public TextBoxNameViewModel NameBox { get; } = new();
 
     /// <summary>E19.f4c2: the speaker's portrait, the inventories' view model of it (written by the presenter with <see cref="InventoryPortraitViewModel.ApplyDialogue"/>).</summary>

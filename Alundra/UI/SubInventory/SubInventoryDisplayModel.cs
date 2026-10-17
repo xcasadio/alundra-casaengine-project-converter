@@ -8,9 +8,9 @@ using Alundra.UI.Inventory;
 
 namespace Alundra.UI.SubInventory;
 
-/// <summary>The whole sub-inventory screen's display state for one tick - <see cref="AlundraSubInventoryComposer.Compose"/>'s
+/// <summary>The whole sub-inventory screen's display state for one tick - <see cref="SubInventoryComposer.Compose"/>'s
 /// own return value, written into <see cref="AlundraSubInventoryViewModel"/> by
-/// <see cref="AlundraSubInventoryPresenter"/>. <see cref="Visible"/> false means every other member is a
+/// <see cref="SubInventoryPresenter"/>. <see cref="Visible"/> false means every other member is a
 /// default/empty placeholder - same "IsDrawn faux -&gt; liste vide" contract as
 /// <see cref="InventoryDisplayModel"/>.</summary>
 public sealed class SubInventoryDisplayModel

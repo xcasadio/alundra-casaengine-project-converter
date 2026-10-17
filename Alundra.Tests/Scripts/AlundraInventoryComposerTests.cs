@@ -7,7 +7,7 @@ using Alundra.UI.Inventory;
 namespace Alundra.Tests.Scripts;
 
 /// <summary>
-/// E13.d D5 (docs/plan-e13d-inventaire.md): pins <see cref="AlundraInventoryComposer.Compose"/>'s own
+/// E13.d D5 (docs/plan-e13d-inventaire.md): pins <see cref="InventoryComposer.Compose"/>'s own
 /// position formulas by hand-computed values, against the original citations reproduced in the
 /// composer's own doc (<c>MainInventoryManager.cs:1267-1615</c>).
 /// </summary>
@@ -24,8 +24,8 @@ public sealed class AlundraInventoryComposerTests
         (0x10, 0xA8), // 6 description
     };
 
-    private static readonly int?[] EmptySlots = new int?[AlundraInventoryComposer.SlotCount];
-    private static readonly Guid?[] NoIcons = new Guid?[AlundraInventoryComposer.SlotCount];
+    private static readonly int?[] EmptySlots = new int?[InventoryComposer.SlotCount];
+    private static readonly Guid?[] NoIcons = new Guid?[InventoryComposer.SlotCount];
 
     private static InventoryDisplayModel ComposeAtRest(
         int selectedSlotId = 0,
@@ -43,7 +43,7 @@ public sealed class AlundraInventoryComposerTests
         int keyCount = 0,
         int falconTotal = 0)
     {
-        return AlundraInventoryComposer.Compose(
+        return InventoryComposer.Compose(
             isDrawn: true,
             boxPositions: RestBoxPositions,
             selectedSlotId: selectedSlotId,
@@ -65,7 +65,7 @@ public sealed class AlundraInventoryComposerTests
     [Fact]
     public void NotDrawn_ReturnsInvisibleEmptyModel()
     {
-        var model = AlundraInventoryComposer.Compose(
+        var model = InventoryComposer.Compose(
             isDrawn: false, boxPositions: RestBoxPositions, selectedSlotId: 0, cursorFrameDelay: 0,
             equippedWeaponName: "x", equippedItemName: "y",
             descriptionLine0: "d0", descriptionLine1: "d1",
@@ -102,7 +102,7 @@ public sealed class AlundraInventoryComposerTests
             (0x40, 0x10), (0x08, 0x40), (0xB0, 0x10), (0xB0, 0x40), (0xF0, 0x70), (0xB0, 0x60), (0x10, 0xA8),
         };
 
-        var model = AlundraInventoryComposer.Compose(
+        var model = InventoryComposer.Compose(
             isDrawn: true, boxPositions: slidBoxes, selectedSlotId: 0, cursorFrameDelay: 0,
             equippedWeaponName: "", equippedItemName: "",
             descriptionLine0: "", descriptionLine1: "",

@@ -10,7 +10,7 @@ namespace Alundra.Tests;
 /// E13 C2 acceptance (docs/plan-e13-hud.md, mission item 7): the pure composition function, exercised
 /// against HudManager.cs's own DisplayLife (:716-826), DisplayMp (:605-690), DisplayMoney (:857-906) and
 /// DisplayHpMaxWithNumber (:910-953) - expected positions re-derived from those citations directly in
-/// each test's own comments, never copied from <see cref="AlundraHudComposer"/> itself.
+/// each test's own comments, never copied from <see cref="HudComposer"/> itself.
 /// </summary>
 public sealed class AlundraHudComposerTests
 {
@@ -19,7 +19,7 @@ public sealed class AlundraHudComposerTests
     [Fact]
     public void Compose_WhenNotDrawn_ReturnsAnEmptyList()
     {
-        var tiles = AlundraHudComposer.Compose(
+        var tiles = HudComposer.Compose(
             isDrawn: false,
             hp: 38, hpMax: 45, hpMaxTrue: 45, hpCatchUpPreview: false,
             mp: 2, mpMax: 3, mpCatchUpPreview: false,
@@ -32,7 +32,7 @@ public sealed class AlundraHudComposerTests
     [Fact]
     public void Compose_DebugStats_38Of45Hp_2Of3Mp_2163Money()
     {
-        var tiles = AlundraHudComposer.Compose(
+        var tiles = HudComposer.Compose(
             isDrawn: true,
             hp: 38, hpMax: 45, hpMaxTrue: 45, hpCatchUpPreview: false,
             mp: 2, mpMax: 3, mpCatchUpPreview: false,
@@ -40,42 +40,42 @@ public sealed class AlundraHudComposerTests
             magicPipFrame: UnisonPipFrame0);
 
         // DisplayHpMaxWithNumber (:921-933): tens=(45/10)%10=4, units=45%10=5, slash at X=0x90+2*8=0xA0=160.
-        Assert.Contains(new AlundraHudTile(HudGlyph.Slash, 160, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.Digit4, 168, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.Digit5, 176, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Slash, 160, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Digit4, 168, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Digit5, 176, 16), tiles);
 
         // DisplayLife (:735-765): displayed=38, nbBigIcons=3 (38/10), remainder=8 (38%10), no override.
         // Filled slots 3,2,1 -> X = 0x50+slot*8 = 104, 96, 88.
-        Assert.Contains(new AlundraHudTile(HudGlyph.BigHeartFull, 104, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.BigHeartFull, 96, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.BigHeartFull, 88, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.BigHeartFull, 104, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.BigHeartFull, 96, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.BigHeartFull, 88, 16), tiles);
         // nbEmptyBigIcons = (45-1)/10 - 3 = 4-3 = 1, slot = 3-0-3 = 0 -> X = 0x50 = 80.
-        Assert.Contains(new AlundraHudTile(HudGlyph.BigHeartEmpty, 80, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.BigHeartEmpty, 80, 16), tiles);
         // remainder=8: 8 full small pips (rank/column), 2 empty (i=8,9).
-        Assert.Contains(new AlundraHudTile(HudGlyph.SmallHeartFull, 120, 16), tiles); // i=0 (col0,rank0)
-        Assert.Contains(new AlundraHudTile(HudGlyph.SmallHeartFull, 136, 24), tiles); // i=7 (col2,rank1)
-        Assert.Contains(new AlundraHudTile(HudGlyph.SmallHeartEmpty, 144, 24), tiles); // i=8 (col3,rank1)
-        Assert.Contains(new AlundraHudTile(HudGlyph.SmallHeartEmpty, 152, 24), tiles); // i=9 (col4,rank1)
+        Assert.Contains(new HudTile(HudGlyph.SmallHeartFull, 120, 16), tiles); // i=0 (col0,rank0)
+        Assert.Contains(new HudTile(HudGlyph.SmallHeartFull, 136, 24), tiles); // i=7 (col2,rank1)
+        Assert.Contains(new HudTile(HudGlyph.SmallHeartEmpty, 144, 24), tiles); // i=8 (col3,rank1)
+        Assert.Contains(new HudTile(HudGlyph.SmallHeartEmpty, 152, 24), tiles); // i=9 (col4,rank1)
 
         // DisplayMp (:617-690): displayedMp=2, both pips full at unison frame 0, X=0xd8+i*8=216,224;
         // then one empty pip at i=2 (< mpMax=3), X=232.
-        Assert.Contains(new AlundraHudTile(HudGlyph.MagicPipFull0, 216, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.MagicPipFull0, 224, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.MagicPipEmpty, 232, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.MagicPipFull0, 216, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.MagicPipFull0, 224, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.MagicPipEmpty, 232, 16), tiles);
         Assert.DoesNotContain(tiles, t => t.NativeX == 240); // i=3 >= mpMax(3): no tile at all.
 
         // DisplayMoney (:863-884): 2163 -> thousands=2, hundreds=1, tens=6, units=3, coin frame 0.
-        Assert.Contains(new AlundraHudTile(HudGlyph.Digit2, 256, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.Digit1, 264, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.Digit6, 272, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.Digit3, 280, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.Coin0, 288, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Digit2, 256, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Digit1, 264, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Digit6, 272, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Digit3, 280, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Coin0, 288, 16), tiles);
     }
 
     [Fact]
     public void Compose_NewGame_10Of10Hp_ShowsTenSmallHeartsAndNoBigIcons()
     {
-        var tiles = AlundraHudComposer.Compose(
+        var tiles = HudComposer.Compose(
             isDrawn: true,
             hp: 10, hpMax: 10, hpMaxTrue: 10, hpCatchUpPreview: false,
             mp: 0, mpMax: 0, mpCatchUpPreview: false,
@@ -99,14 +99,14 @@ public sealed class AlundraHudComposerTests
         Assert.DoesNotContain(tiles, t => t.Glyph == HudGlyph.SmallHeartEmpty);
 
         // DisplayHpMaxWithNumber: tens=(10/10)%10=1, units=10%10=0 -> "10".
-        Assert.Contains(new AlundraHudTile(HudGlyph.Digit1, 168, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.Digit0, 176, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Digit1, 168, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Digit0, 176, 16), tiles);
     }
 
     [Fact]
     public void Compose_Max_50Of50Hp_ShowsFourFullBigHeartsAndTenSmallHearts()
     {
-        var tiles = AlundraHudComposer.Compose(
+        var tiles = HudComposer.Compose(
             isDrawn: true,
             hp: 50, hpMax: 50, hpMaxTrue: 50, hpCatchUpPreview: false,
             mp: 4, mpMax: 4, mpCatchUpPreview: false,
@@ -156,18 +156,18 @@ public sealed class AlundraHudComposerTests
     [Fact]
     public void Compose_ZeroMoney_ShowsFourZeroDigitsWithNoLeadingZeroSuppression()
     {
-        var tiles = AlundraHudComposer.Compose(
+        var tiles = HudComposer.Compose(
             isDrawn: true,
             hp: 10, hpMax: 10, hpMaxTrue: 10, hpCatchUpPreview: false,
             mp: 0, mpMax: 0, mpCatchUpPreview: false,
             money: 0, coinIconFrame: 0,
             magicPipFrame: UnisonPipFrame0);
 
-        Assert.Contains(new AlundraHudTile(HudGlyph.Digit0, 256, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.Digit0, 264, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.Digit0, 272, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.Digit0, 280, 16), tiles);
-        Assert.Contains(new AlundraHudTile(HudGlyph.Coin0, 288, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Digit0, 256, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Digit0, 264, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Digit0, 272, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Digit0, 280, 16), tiles);
+        Assert.Contains(new HudTile(HudGlyph.Coin0, 288, 16), tiles);
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public sealed class AlundraHudComposerTests
     {
         // hp=9 with the preview flag set previews as if hp=10: DisplayLife's own iVar6 = g_playerDataHud[0]+1
         // (HudManager.cs:729-733). displayed=10, override fires -> 10 small full hearts, no big icons.
-        var tiles = AlundraHudComposer.Compose(
+        var tiles = HudComposer.Compose(
             isDrawn: true,
             hp: 9, hpMax: 10, hpMaxTrue: 10, hpCatchUpPreview: true,
             mp: 0, mpMax: 1, mpCatchUpPreview: false,
@@ -198,13 +198,13 @@ public sealed class AlundraHudComposerTests
     [Fact]
     public void Compose_MpPreview_IsBoundedByTheFourPipSlots_NotByTheDisplayedMax()
     {
-        static bool IsFullPip(AlundraHudTile tile) =>
+        static bool IsFullPip(HudTile tile) =>
             tile.Glyph is HudGlyph.MagicPipFull0 or HudGlyph.MagicPipFull1 or HudGlyph.MagicPipFull2
                 or HudGlyph.MagicPipFull3;
 
         // D-E13-13 (docs/plan-e13-hud.md): a stranded MP-max sub-step keeps the preview on at 4 / 4 MP. DisplayMp
         // (:617-624) asks for a fifth pip; g_MpIconSprites holds four per bank, so the composition stops at four.
-        var atFour = AlundraHudComposer.Compose(
+        var atFour = HudComposer.Compose(
             isDrawn: true,
             hp: 10, hpMax: 10, hpMaxTrue: 10, hpCatchUpPreview: false,
             mp: 4, mpMax: 4, mpCatchUpPreview: true,
@@ -216,7 +216,7 @@ public sealed class AlundraHudComposerTests
 
         // A normal MP-max catch-up (HudManager.cs:421-433) only starts once the displayed MP has reached the
         // displayed max, and previews the incoming pip one past it: the bound is the slot count, never mpMax.
-        var growing = AlundraHudComposer.Compose(
+        var growing = HudComposer.Compose(
             isDrawn: true,
             hp: 10, hpMax: 10, hpMaxTrue: 10, hpCatchUpPreview: false,
             mp: 3, mpMax: 3, mpCatchUpPreview: true,
@@ -236,7 +236,7 @@ public sealed class AlundraHudComposerTests
         // 3-i-nbBigIcons (:771) is 3 (the rightmost of the four) exactly at i=0. So the rightmost empty
         // crystal must be the LAST BigHeartEmpty tile in the composed list, and the leftmost (slot 0,
         // i=3) must be first.
-        var tiles = AlundraHudComposer.Compose(
+        var tiles = HudComposer.Compose(
             isDrawn: true,
             hp: 0, hpMax: 45, hpMaxTrue: 45, hpCatchUpPreview: false,
             mp: 0, mpMax: 0, mpCatchUpPreview: false,
@@ -265,7 +265,7 @@ public sealed class AlundraHudComposerTests
         // 0,1,2 empty. Using the displayed 30 instead (the bug this test guards against) would give
         // (30-1)/10-1=1 empty crystal (slot 2 only) - one full crystal ahead of two crystals that should
         // still read empty.
-        var tiles = AlundraHudComposer.Compose(
+        var tiles = HudComposer.Compose(
             isDrawn: true,
             hp: 20, hpMax: 30, hpMaxTrue: 50, hpCatchUpPreview: false,
             mp: 0, mpMax: 0, mpCatchUpPreview: false,
@@ -315,7 +315,7 @@ public sealed class AlundraHudComposerTests
         // 50/50 state does.
         //
         // remainder=1: one full small pip (i=0, rank0/col0), nine empty ones (i=1..9) - :787-826.
-        var tiles = AlundraHudComposer.Compose(
+        var tiles = HudComposer.Compose(
             isDrawn: true,
             hp: 50, hpMax: 50, hpMaxTrue: 50, hpCatchUpPreview: true,
             mp: 4, mpMax: 4, mpCatchUpPreview: false,
@@ -359,12 +359,12 @@ public sealed class AlundraHudComposerTests
 
         Assert.Equal(1, smallFull);
         Assert.Equal(9, smallEmpty);
-        Assert.Contains(new AlundraHudTile(HudGlyph.SmallHeartFull, 120, 16), tiles); // i=0: col0,rank0.
+        Assert.Contains(new HudTile(HudGlyph.SmallHeartFull, 120, 16), tiles); // i=0: col0,rank0.
 
         // Exactly one tile fewer than the 27 the pre-fourth-pass unclamped code would have produced (the
         // dropped slot -1 write): 3 (HpMaxNumber) + 4 (big full) + 0 (big empty) + 1 (small full) +
         // 9 (small empty) + 4 (mp full, mp==mpMax==4) + 5 (money) = 26 - exactly AlundraHudScreen.MaxTileCount.
-        Assert.Equal(AlundraHudScreen.MaxTileCount, tiles.Count);
+        Assert.Equal(HudScreen.MaxTileCount, tiles.Count);
     }
 
     [Fact]
@@ -391,7 +391,7 @@ public sealed class AlundraHudComposerTests
                         // mp/mpMax/mpCatchUpPreview held at their own maximal-but-in-bounds combination
                         // (mp==mpMax==4, no MP preview - magicPipFrame only has 4 slots, ComposeMagic's own
                         // doc) since this grid targets the HP-side regression only.
-                        var tiles = AlundraHudComposer.Compose(
+                        var tiles = HudComposer.Compose(
                             isDrawn: true,
                             hp, hpMax, hpMaxTrue, hpCatchUpPreview,
                             mp: 4, mpMax: 4, mpCatchUpPreview: false,
@@ -399,9 +399,9 @@ public sealed class AlundraHudComposerTests
                             magicPipFrame: UnisonPipFrame0);
 
                         Assert.True(
-                            tiles.Count <= AlundraHudScreen.MaxTileCount,
+                            tiles.Count <= HudScreen.MaxTileCount,
                             $"hp={hp} hpMax={hpMax} hpMaxTrue={hpMaxTrue} hpCatchUpPreview={hpCatchUpPreview} " +
-                            $"produced {tiles.Count} tiles, over MaxTileCount={AlundraHudScreen.MaxTileCount}.");
+                            $"produced {tiles.Count} tiles, over MaxTileCount={HudScreen.MaxTileCount}.");
                     }
                 }
             }
@@ -411,14 +411,14 @@ public sealed class AlundraHudComposerTests
     /// <summary>
     /// E13 C6 acceptance (docs/plan-e13-hud.md, "Les fonds des cases arme et accessoire"): the two
     /// POLY_G4-equivalent background quads, re-derived directly from HudManager.cs's own citations, never
-    /// copied from <see cref="AlundraHudComposer"/> itself.
+    /// copied from <see cref="HudComposer"/> itself.
     /// </summary>
     public sealed class AlundraHudComposerEquipmentBackgroundsTests
     {
         [Fact]
         public void ComposeEquipmentBackgrounds_ReturnsExactlyTwoQuads()
         {
-            var quads = AlundraHudComposer.ComposeEquipmentBackgrounds();
+            var quads = HudComposer.ComposeEquipmentBackgrounds();
 
             Assert.Equal(2, quads.Count);
         }
@@ -428,7 +428,7 @@ public sealed class AlundraHudComposerTests
         {
             // HudManager.cs:180-187: X = UIBoxHud.X + g_inventoryWeaponIconX[8 + 0] = 0 + 0x10 = 16,
             // Y = UIBoxHud.Y = 0x10 = 16. Graphics/POLY_G4.cs:3-32: 24x32 (0x18 x 0x20).
-            var weapon = AlundraHudComposer.ComposeEquipmentBackgrounds()[0];
+            var weapon = HudComposer.ComposeEquipmentBackgrounds()[0];
 
             Assert.Equal(16, weapon.NativeX);
             Assert.Equal(16, weapon.NativeY);
@@ -440,7 +440,7 @@ public sealed class AlundraHudComposerTests
         public void ComposeEquipmentBackgrounds_AccessoryQuad_IsAtNativePosition48_16_24x32()
         {
             // HudManager.cs:180-187: X = UIBoxHud.X + g_inventoryWeaponIconX[8 + 1] = 0 + 0x30 = 48.
-            var accessory = AlundraHudComposer.ComposeEquipmentBackgrounds()[1];
+            var accessory = HudComposer.ComposeEquipmentBackgrounds()[1];
 
             Assert.Equal(48, accessory.NativeX);
             Assert.Equal(16, accessory.NativeY);
@@ -456,7 +456,7 @@ public sealed class AlundraHudComposerTests
             // FUN_8004b770:189-201, posed once and shared by both boxes: top-left (0,0,0), top-right
             // (255,255,0), bottom-left (0,255,255), bottom-right (0,0,255). AddQuadColor(polyG4,
             // SpriteDepth.BackgroundUI, 0.5f) at HudManager.cs:587/591: alpha 0.5.
-            var quad = AlundraHudComposer.ComposeEquipmentBackgrounds()[index];
+            var quad = HudComposer.ComposeEquipmentBackgrounds()[index];
 
             Assert.Equal(new HudRgb(0, 0, 0), quad.TopLeftColor);
             Assert.Equal(new HudRgb(255, 255, 0), quad.TopRightColor);
@@ -471,10 +471,10 @@ public sealed class AlundraHudComposerTests
             // C6's own mission item 1: "MaxTileCount ne change pas : ce ne sont pas des tuiles" - this
             // pure function returns its own separate list type (AlundraHudBackgroundQuad, not
             // AlundraHudTile), so it can never contribute to a Compose() tile-overflow count.
-            var quads = AlundraHudComposer.ComposeEquipmentBackgrounds();
+            var quads = HudComposer.ComposeEquipmentBackgrounds();
 
-            Assert.All(quads, quad => Assert.IsType<AlundraHudBackgroundQuad>(quad));
-            Assert.Equal(26, AlundraHudScreen.MaxTileCount);
+            Assert.All(quads, quad => Assert.IsType<HudBackgroundQuad>(quad));
+            Assert.Equal(26, HudScreen.MaxTileCount);
         }
     }
 
@@ -490,10 +490,10 @@ public sealed class AlundraHudComposerTests
     [Fact]
     public void ComposeEquipmentIcons_Weapon_CarriesItsBackgroundsWholeBox()
     {
-        var icon = Assert.Single(AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, null));
+        var icon = Assert.Single(HudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, null));
 
-        Assert.Equal(new AlundraHudIcon(SwordIcon, 16, 16, 24, 32), icon);
-        var weaponBox = AlundraHudComposer.ComposeEquipmentBackgrounds()[0];
+        Assert.Equal(new HudIcon(SwordIcon, 16, 16, 24, 32), icon);
+        var weaponBox = HudComposer.ComposeEquipmentBackgrounds()[0];
         Assert.Equal(
             (weaponBox.NativeX, weaponBox.NativeY, weaponBox.NativeWidth, weaponBox.NativeHeight),
             (icon.BoxNativeX, icon.BoxNativeY, icon.BoxNativeWidth, icon.BoxNativeHeight));
@@ -502,11 +502,11 @@ public sealed class AlundraHudComposerTests
     [Fact]
     public void ComposeEquipmentIcons_Accessory_CarriesItsBackgroundsWholeBox()
     {
-        var icons = AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, OtherIcon);
+        var icons = HudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, OtherIcon);
 
         Assert.Equal(2, icons.Count);
-        Assert.Equal(new AlundraHudIcon(OtherIcon, 48, 16, 24, 32), icons[1]);
-        var accessoryBox = AlundraHudComposer.ComposeEquipmentBackgrounds()[1];
+        Assert.Equal(new HudIcon(OtherIcon, 48, 16, 24, 32), icons[1]);
+        var accessoryBox = HudComposer.ComposeEquipmentBackgrounds()[1];
         Assert.Equal(
             (accessoryBox.NativeX, accessoryBox.NativeY, accessoryBox.NativeWidth, accessoryBox.NativeHeight),
             (icons[1].BoxNativeX, icons[1].BoxNativeY, icons[1].BoxNativeWidth, icons[1].BoxNativeHeight));
@@ -525,7 +525,7 @@ public sealed class AlundraHudComposerTests
     public void ScreenPosition_AtScale4_CentresTheIconInTheWeaponBox(
         int iconWidth, int iconHeight, int expectedLeft, int expectedTop)
     {
-        var icon = Assert.Single(AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, null));
+        var icon = Assert.Single(HudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, null));
 
         Assert.Equal(expectedLeft, icon.ScreenLeft(iconWidth, pixelScale: 4));
         Assert.Equal(expectedTop, icon.ScreenTop(iconHeight, pixelScale: 4));
@@ -537,7 +537,7 @@ public sealed class AlundraHudComposerTests
     [Fact]
     public void ScreenPosition_InTheAccessoryBox_IsCentredFromThatBoxsOwnLeftEdge()
     {
-        var accessory = AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, null, OtherIcon)[0];
+        var accessory = HudComposer.ComposeEquipmentIcons(isDrawn: true, null, OtherIcon)[0];
 
         Assert.Equal(48 * 4 + 16, accessory.ScreenLeft(16, pixelScale: 4));
         Assert.Equal(16 * 4 + 34, accessory.ScreenTop(15, pixelScale: 4));
@@ -547,7 +547,7 @@ public sealed class AlundraHudComposerTests
     public void ScreenPosition_AtAnOddScale_GivesTheExtraScreenPixelToTheFarSide()
     {
         // The sword at scale 3: 3 free screen rows, 1 above (48 + 1) and 2 below.
-        var icon = Assert.Single(AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, null));
+        var icon = Assert.Single(HudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, null));
 
         Assert.Equal(49, icon.ScreenTop(31, pixelScale: 3));
         Assert.Equal(48, icon.ScreenLeft(24, pixelScale: 3));
@@ -556,7 +556,7 @@ public sealed class AlundraHudComposerTests
     [Fact]
     public void ComposeEquipmentIcons_NothingEquipped_OrJaugeNotDrawn_IsEmpty()
     {
-        Assert.Empty(AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, null, null));
-        Assert.Empty(AlundraHudComposer.ComposeEquipmentIcons(isDrawn: false, SwordIcon, OtherIcon));
+        Assert.Empty(HudComposer.ComposeEquipmentIcons(isDrawn: true, null, null));
+        Assert.Empty(HudComposer.ComposeEquipmentIcons(isDrawn: false, SwordIcon, OtherIcon));
     }
 }

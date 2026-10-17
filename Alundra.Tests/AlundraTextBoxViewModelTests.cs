@@ -438,7 +438,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
 
     /// <summary>The loop of the montage: per image, the pass of the director, the tick of the presenter (what the world proxy does after each pass), then the script phase (the opcode of the
     /// pending dialogue on a fresh state, from image 3). <paramref name="afterImage"/> sees the view model as the pass of that image left it.</summary>
-    private static void Drive(SpeakerRig rig, AlundraTextBoxPresenter presenter, Scene scene, Action<int> afterImage)
+    private static void Drive(SpeakerRig rig, TextBoxPresenter presenter, Scene scene, Action<int> afterImage)
     {
         var next = 0;
         for (var f = 0; f < scene.Frames; f++)
@@ -483,7 +483,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
         var table = Table(scene.File, scene.Prefix);
         var names = SpeakerAnnex.Names();
         var viewModel = new AlundraTextBoxViewModel();
-        var presenter = new AlundraTextBoxPresenter(rig.Director, viewModel, new SpeakerScreen(), null);
+        var presenter = new TextBoxPresenter(rig.Director, viewModel, new SpeakerScreen(), null);
         var portraitRef = scene.Speaker.DialoguePortrait;
         var diffs = new List<string>();
         var namesSeen = 0;
@@ -583,7 +583,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
             using var rig = new SpeakerRig();
             var scene = SceneOf(scenario, rig, pinned: true);
             var viewModel = new AlundraTextBoxViewModel();
-            var presenter = new AlundraTextBoxPresenter(rig.Director, viewModel, new SpeakerScreen(), null);
+            var presenter = new TextBoxPresenter(rig.Director, viewModel, new SpeakerScreen(), null);
             var wanted = states.Where(s => s.State.GetProperty("scenario").GetString() == scenario).GroupBy(s => s.State.GetProperty("frame").GetInt32()).ToDictionary(g => g.Key, g => g.First());
 
             Drive(rig, presenter, scene, f =>
@@ -688,7 +688,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
     public void ApplyDialogue_WritesTheQuadOfThePassAsTheInventoryDoes_WithTheDialoguesRestAndTheImagesOwnHeight()
     {
         var jess = new DialoguePortraitRef(Guid.Parse(JessPortraitId), 48, 56);
-        var portrait = new AlundraInventoryPortrait();
+        var portrait = new InventoryPortrait();
         var vm = new InventoryPortraitViewModel();
 
         vm.ApplyDialogue(portrait, jess); // idle: nothing drawn
@@ -719,7 +719,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
     public void ApplyDialogue_ATallPortrait_KeepsTheCanvasTopOfTheXamlAndPutsTheGapInTheTranslation()
     {
         var miming = new DialoguePortraitRef(Guid.Parse(MimingPortraitId), 48, 72);
-        var portrait = new AlundraInventoryPortrait();
+        var portrait = new InventoryPortrait();
         var vm = new InventoryPortraitViewModel();
         Assert.True(portrait.Start(160, 98, 8, 100, 48, 72));
         for (var i = 0; i < 17; i++)
@@ -806,7 +806,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
         using var rig = new SpeakerRig();
         var scene = SceneOf("S1", rig);
         var viewModel = new AlundraTextBoxViewModel();
-        var presenter = new AlundraTextBoxPresenter(rig.Director, viewModel, new SpeakerScreen(), null);
+        var presenter = new TextBoxPresenter(rig.Director, viewModel, new SpeakerScreen(), null);
 
         Drive(rig, presenter, scene, f =>
         {

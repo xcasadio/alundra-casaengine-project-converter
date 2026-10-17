@@ -15,16 +15,16 @@ namespace Alundra.UI.SubInventory;
 /// <summary>
 /// E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-20): a pure, tick-driven port of the original's
 /// sub-inventory (<c>SubInventoryManager</c>) - same director/presenter/screen split as
-/// <see cref="AlundraInventoryDirector"/>, no MGUI dependency: every piece of state D5's future screen
+/// <see cref="InventoryDirector"/>, no MGUI dependency: every piece of state D5's future screen
 /// (SI4) will need to draw is exposed as plain, read-only properties.
 ///
-/// <para><b>No trigger of its own</b>: unlike <see cref="AlundraInventoryDirector"/>, this director never
+/// <para><b>No trigger of its own</b>: unlike <see cref="InventoryDirector"/>, this director never
 /// reads the pad to OPEN itself - it only opens through <see cref="OpenFromPostProcess"/>, called by
-/// <see cref="AlundraInventoryPostProcess.Run"/> once the main inventory's closing slide has settled
+/// <see cref="InventoryPostProcess.Run"/> once the main inventory's closing slide has settled
 /// (plan §1.1/§1.2). Its own L1/R1 (<see cref="RunInput"/>) closes it and hands control BACK to the main
-/// inventory the same way, through <see cref="AlundraInventoryPostProcess.State"/> = 2.</para>
+/// inventory the same way, through <see cref="InventoryPostProcess.State"/> = 2.</para>
 ///
-/// <para><b>The text reveal is the machine both inventories share</b> (<see cref="AlundraInventoryTextReveal"/>,
+/// <para><b>The text reveal is the machine both inventories share</b> (<see cref="InventoryTextReveal"/>,
 /// D-E13D-35, SI11): the original has two distinct functions and two sets of globals
 /// (<c>DisplayInventoryTexts</c>/<c>g_inventoryCursorText</c> for the main inventory, <c>FUN_80053fdc</c>/
 /// <c>INT_8017f788</c> here); this director owns its own instance, and keeps what is its own - the item described
@@ -39,11 +39,11 @@ namespace Alundra.UI.SubInventory;
 /// <c>c - 0x8f</c>, like the main inventory and like the decompilation of both machines
 /// (<c>SubInventoryManager.cs:608/614</c>), and shows both lines.</para>
 /// </summary>
-public sealed class AlundraSubInventoryDirector
+public sealed class SubInventoryDirector
 {
-    public static readonly AlundraSubInventoryDirector Instance = new();
+    public static readonly SubInventoryDirector Instance = new();
 
-    private AlundraSubInventoryDirector()
+    private SubInventoryDirector()
     {
     }
 
@@ -62,7 +62,7 @@ public sealed class AlundraSubInventoryDirector
     /// closing slide) - the complement of "idle, waiting for <see cref="OpenFromPostProcess"/>".</summary>
     public bool IsActive => State != 0;
 
-    /// <summary>Same "AND" shape as <see cref="AlundraInventoryDirector.IsDrawn"/>: false on the tick
+    /// <summary>Same "AND" shape as <see cref="InventoryDirector.IsDrawn"/>: false on the tick
     /// <see cref="OpenFromPostProcess"/> itself runs (the post-process runs AFTER this director's own
     /// <see cref="Tick"/> for that same tick, plan §1.2 - so nothing is drawn by either inventory that
     /// tick) and false again from the close-completion tick on (this AND evaluates false on its own the
@@ -76,7 +76,7 @@ public sealed class AlundraSubInventoryDirector
     private ISoundPlayer? _soundPlayer;
 
     /// <summary>Re-points this session-scoped instance, same "re-point without touching state" contract as
-    /// <see cref="AlundraInventoryDirector.AttachToWorld"/>. Every argument null is tolerated (no live
+    /// <see cref="InventoryDirector.AttachToWorld"/>. Every argument null is tolerated (no live
     /// session yet) - <see cref="Tick"/>/<see cref="OpenFromPostProcess"/> then degrade to no-ops.</summary>
     public void AttachToWorld(GameState? gameState, ItemTables? itemTables, ISoundPlayer? soundPlayer)
     {
@@ -100,7 +100,7 @@ public sealed class AlundraSubInventoryDirector
     /// E16.d K8, step 4 (docs/plan-e16-etat-partie.md): the sub-inventory's half of loading a save, run on the
     /// arrival map - every piece of session state back to its start-of-session value (closed, cursor at 0,
     /// names, key items, text reveal, boxes and tweens), the three attachments kept, same contract as
-    /// <see cref="AlundraInventoryDirector.ResetSessionForLoad"/>.
+    /// <see cref="InventoryDirector.ResetSessionForLoad"/>.
     /// </summary>
     internal void ResetSessionForLoad()
     {
@@ -193,7 +193,7 @@ public sealed class AlundraSubInventoryDirector
     /// point 31).</summary>
     public (int X, int Y) BoxPosition(int boxIndex) => (_boxes[boxIndex].CurrentX, _boxes[boxIndex].CurrentY);
 
-    /// <summary>Own copy of <see cref="AlundraInventoryDirector"/>'s own <c>AdvanceBoxTween</c> - port of
+    /// <summary>Own copy of <see cref="InventoryDirector"/>'s own <c>AdvanceBoxTween</c> - port of
     /// <c>UIManager.UpdateUiBoxesPosition</c>, same 18-call shape: returns true exactly when
     /// <see cref="BoxTween.Mode"/> was ALREADY 0 on entry.</summary>
     private static bool AdvanceBoxTween(ref BoxState box, ref BoxTween tween)
@@ -356,22 +356,22 @@ public sealed class AlundraSubInventoryDirector
     // =====================================================================================
 
     /// <summary>Port of <c>INT_8017f788</c> - the raw state value of the text reveal
-    /// (<see cref="AlundraInventoryTextReveal.State"/>).</summary>
+    /// (<see cref="InventoryTextReveal.State"/>).</summary>
     public int TextRevealState => _textReveal.State;
 
     public string NameVisiblePrefix => _textReveal.NameVisiblePrefix;
     public string Description0VisiblePrefix => _textReveal.Description0VisiblePrefix;
     public string Description1VisiblePrefix => _textReveal.Description1VisiblePrefix;
 
-    /// <summary>SI4: what this tick drew on line 0 (<see cref="AlundraInventoryTextReveal.DrawnLine0"/>).</summary>
+    /// <summary>SI4: what this tick drew on line 0 (<see cref="InventoryTextReveal.DrawnLine0"/>).</summary>
     public string DrawnDescriptionLine0 => _textReveal.DrawnLine0;
 
-    /// <summary>What this tick drew on line 1 (<see cref="AlundraInventoryTextReveal.DrawnLine1"/>).</summary>
+    /// <summary>What this tick drew on line 1 (<see cref="InventoryTextReveal.DrawnLine1"/>).</summary>
     public string DrawnDescriptionLine1 => _textReveal.DrawnLine1;
 
     /// <summary><c>FUN_80053fdc</c>'s state (<c>INT_8017f788</c>, <c>INT_8017f78c</c>): the machine both
     /// inventories share since E13.d SI11 (D-E13D-35), this director's own instance.</summary>
-    private readonly AlundraInventoryTextReveal _textReveal = new();
+    private readonly InventoryTextReveal _textReveal = new();
 
     /// <summary>Port of <c>FUN_80053fdc</c>'s own item resolution (<c>:474-516</c>) - see this class' own
     /// doc for the 14-entry table. <c>value &lt; -7</c> is UNREACHABLE with this table (the decompiled
@@ -433,8 +433,8 @@ public sealed class AlundraSubInventoryDirector
     // =====================================================================================
 
     /// <summary>Port of <c>StartFadeOut</c> (<c>GraphicManager.cs:1767-1783</c>), portrait included since
-    /// docs/plan-portrait-inventaire.md PI8 (<see cref="AlundraInventoryPortrait"/>, started just before sound 4 as at
-    /// <c>0x800526ac</c>) - called ONLY from <see cref="AlundraInventoryPostProcess.Run"/>, never directly. <see cref="AlundraHudDirector.InitializeHudPosition"/>
+    /// docs/plan-portrait-inventaire.md PI8 (<see cref="InventoryPortrait"/>, started just before sound 4 as at
+    /// <c>0x800526ac</c>) - called ONLY from <see cref="InventoryPostProcess.Run"/>, never directly. <see cref="HudDirector.InitializeHudPosition"/>
     /// first (a guarded no-op while the gauge is hidden, same call <c>DisplayInventory</c>'s own head
     /// makes), then <c>InitializeSubInventory</c> (<c>SubInventoryManager.cs:21-294</c>, plan §1.3): state
     /// 5, text state reset, MenuOpen raised, the seven boxes' opening tweens armed, then the armor/boots
@@ -446,7 +446,7 @@ public sealed class AlundraSubInventoryDirector
             return;
         }
 
-        AlundraHudDirector.Instance.InitializeHudPosition();
+        HudDirector.Instance.InitializeHudPosition();
 
         State = StateResidual | StateOpening;
         _textReveal.Reset();
@@ -468,7 +468,7 @@ public sealed class AlundraSubInventoryDirector
 
         // StartFadeOut 0x800526ac: the portrait's flight from the head, after SetTransitionType(4) and
         // GetAnimationImageByIndex(0), before sound 4 - ignored unless the shared portrait is idle.
-        AlundraInventoryPortrait.Instance.StartFromHead();
+        InventoryPortrait.Instance.StartFromHead();
 
         _soundPlayer?.PlaySfx(4);
     }
@@ -542,8 +542,8 @@ public sealed class AlundraSubInventoryDirector
         if ((pad.ButtonsJustPressedByInterval & (PadState.Start | PadState.Triangle | PadState.L2 | PadState.R2)) != 0)
         {
             RunCloseSetup();
-            AlundraInventoryPortrait.Instance.ReturnToHead(); // 0x80053648, between the slide-out and the gauge.
-            AlundraHudDirector.Instance.InitializeHudPositionBeforeHide();
+            InventoryPortrait.Instance.ReturnToHead(); // 0x80053648, between the slide-out and the gauge.
+            HudDirector.Instance.InitializeHudPositionBeforeHide();
         }
 
         // :371-377 - L1/R1: close, hand control back to the MAIN inventory through the post-process.
@@ -551,8 +551,8 @@ public sealed class AlundraSubInventoryDirector
         {
             RunCloseSetup();
             _gameState.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
-            AlundraInventoryPortrait.Instance.ReturnToHead(); // 0x80053684, before the post-process state (0x80053694).
-            AlundraInventoryPostProcess.Instance.State = 2;
+            InventoryPortrait.Instance.ReturnToHead(); // 0x80053684, before the post-process state (0x80053694).
+            InventoryPostProcess.Instance.State = 2;
         }
     }
 
@@ -592,7 +592,7 @@ public sealed class AlundraSubInventoryDirector
             }
 
             // :414-417 - MenuOpen cleared ONLY if the post-process is not about to open the main inventory.
-            if ((AlundraInventoryPostProcess.Instance.State & 2) == 0)
+            if ((InventoryPostProcess.Instance.State & 2) == 0)
             {
                 _gameState!.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
             }

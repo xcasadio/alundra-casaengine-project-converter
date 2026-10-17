@@ -10,13 +10,13 @@ namespace Alundra.UI.Hud;
 
 /// <summary>
 /// E13 C3 (docs/plan-e13-hud.md, D-E13-8: "le tick logique possede tout le temps du HUD. MGUI dessine.").
-/// Reads <see cref="AlundraHudDirector"/>'s own already-ticked state and pushes it into an
-/// <see cref="IAlundraHudView"/> - never the reverse, and never on its own clock: one <see cref="Tick"/>
+/// Reads <see cref="HudDirector"/>'s own already-ticked state and pushes it into an
+/// <see cref="IHudView"/> - never the reverse, and never on its own clock: one <see cref="Tick"/>
 /// call is made from <see cref="AlundraWorldProxy.Update(float)"/>'s own <c>ticksThisFrame</c> loop,
-/// immediately after <see cref="AlundraHudDirector.Tick"/> itself - the same "presenter wraps the engine
-/// seam, director stays ignorant of it" shape <see cref="AlundraDialoguePresenter"/> already uses for the
+/// immediately after <see cref="HudDirector.Tick"/> itself - the same "presenter wraps the engine
+/// seam, director stays ignorant of it" shape <see cref="DialoguePresenter"/> already uses for the
 /// dialogue box (E12's own patron the mission cites), except this presenter never pushes/pops any screen
-/// itself: <see cref="AlundraHudScreen"/> is pushed once by <see cref="AlundraWorldProxy"/>'s own
+/// itself: <see cref="HudScreen"/> is pushed once by <see cref="AlundraWorldProxy"/>'s own
 /// <c>TryWireHudScreenOnce</c> and stays up for the whole session (C2), so there is no open/close state to
 /// unwind here.
 ///
@@ -25,7 +25,7 @@ namespace Alundra.UI.Hud;
 /// <c>EnterExit</c> call - the 18 values of plan §1.3 are the director's OWN tween output (C1), not
 /// something this class or MGUI interpolates a second time.
 /// </summary>
-public sealed class AlundraHudPresenter
+public sealed class HudPresenter
 {
     // AlundraHudComposer's own private "BoxY = 0x10" (HudManager.cs:33-36/52-54, UIBoxHud.Y) is baked into
     // EVERY tile's own NativeY that composer emits (AlundraHudComposer.cs, every ComposeXxx method) - this
@@ -39,16 +39,16 @@ public sealed class AlundraHudPresenter
     // own "ATTENTION AU DOUBLE DECALAGE".
     private const int BakedBoxY = 0x10;
 
-    private readonly AlundraHudDirector _director;
-    private readonly IAlundraHudView _view;
+    private readonly HudDirector _director;
+    private readonly IHudView _view;
     private readonly Func<(Guid? Weapon, Guid? Accessory)> _equipmentSource;
 
     /// <param name="equipmentSource">E13.c S3: what the two equipment boxes show, asked once per drawn tick -
     /// in production <see cref="PlayerManager.ResolveHudEquipmentIcons"/> over the session state. Omitted,
     /// both boxes stay empty, which is what every presenter built before S3 showed.</param>
-    public AlundraHudPresenter(
-        AlundraHudDirector director,
-        IAlundraHudView view,
+    public HudPresenter(
+        HudDirector director,
+        IHudView view,
         Func<(Guid? Weapon, Guid? Accessory)>? equipmentSource = null)
     {
         ArgumentNullException.ThrowIfNull(director);
@@ -61,7 +61,7 @@ public sealed class AlundraHudPresenter
     /// <summary>
     /// One LOGIC tick: push visibility, translation and the recomposed tile list. All three read the
     /// director's CURRENT (already-ticked) state - this method never advances anything itself, and must be
-    /// called strictly AFTER <see cref="AlundraHudDirector.Tick"/> for the same tick (production call site:
+    /// called strictly AFTER <see cref="HudDirector.Tick"/> for the same tick (production call site:
     /// <see cref="AlundraWorldProxy.Update(float)"/>'s own <c>hudTick</c> loop).
     /// </summary>
     public void Tick()
@@ -76,7 +76,7 @@ public sealed class AlundraHudPresenter
         _view.SetTranslation(new Vector2(0f, scaledDeltaY));
 
         _view.SetAnimationClock(_director.FrameCounter, _director.IsMoneyRolling);
-        _view.SetTiles(AlundraHudComposer.Compose(
+        _view.SetTiles(HudComposer.Compose(
             _director.IsDrawn,
             _director.Hp, _director.HpMax, _director.TrueHpMax, _director.HpDisplayPreviewIncrement,
             _director.Mp, _director.MpMax, _director.MpDisplayPreviewIncrement,
@@ -87,6 +87,6 @@ public sealed class AlundraHudPresenter
         // own draw (HudManager.DisplayHudWeaponAndItem), and the accessory lookup has a side effect
         // (AlundraPlayerManager.SetItemIdFromCurrentItemId), so a hidden jauge must not run it.
         var (weapon, accessory) = _director.IsDrawn ? _equipmentSource() : (null, null);
-        _view.SetEquipmentIcons(AlundraHudComposer.ComposeEquipmentIcons(_director.IsDrawn, weapon, accessory));
+        _view.SetEquipmentIcons(HudComposer.ComposeEquipmentIcons(_director.IsDrawn, weapon, accessory));
     }
 }

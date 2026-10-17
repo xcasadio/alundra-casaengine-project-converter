@@ -41,12 +41,12 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
 
     private static void Reset()
     {
-        AlundraInventoryDirector.Instance.ResetForTests();
-        AlundraSubInventoryDirector.Instance.ResetForTests();
-        AlundraInventoryPostProcess.Instance.ResetForTests();
-        AlundraInventoryPortrait.Instance.ResetForTests();
-        AlundraSaveScreenDirector.Instance.ResetForTests();
-        AlundraHudDirector.Instance.ResetForTests();
+        InventoryDirector.Instance.ResetForTests();
+        SubInventoryDirector.Instance.ResetForTests();
+        InventoryPostProcess.Instance.ResetForTests();
+        InventoryPortrait.Instance.ResetForTests();
+        SaveScreenDirector.Instance.ResetForTests();
+        HudDirector.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();
         // The warp case reads the screen fade: a fade an earlier test class left settled at the departure colour
         // makes the departure's own fade settle on its first tick, and the warp director then aborts it (no
@@ -58,8 +58,8 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
     {
         var m = new DialogueBoxMontage();
         var tables = ItemTablesFixture.LoadReal();
-        AlundraInventoryDirector.Instance.AttachToWorld(m.State, tables, new NullSounds());
-        AlundraSubInventoryDirector.Instance.AttachToWorld(m.State, tables, new NullSounds());
+        InventoryDirector.Instance.AttachToWorld(m.State, tables, new NullSounds());
+        SubInventoryDirector.Instance.AttachToWorld(m.State, tables, new NullSounds());
         return m;
     }
 
@@ -145,7 +145,7 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
         Assert.True(m.Director.IsOpen);
         m.RunFrame(); // frame R: the pass releases the box, then the trigger reads the Start of this tick
         Assert.False(m.Director.IsOpen);
-        Assert.True(AlundraInventoryDirector.Instance.IsActive);
+        Assert.True(InventoryDirector.Instance.IsActive);
         Assert.Equal(GameState.PlayerControlBits.MenuOpen, m.State.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
     }
 
@@ -169,9 +169,9 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
         m.RunFrames(P + 1);
         Assert.True(m.Director.IsOpen);
         Assert.Equal(expectedFlags, m.State.PlayerControlFlags);
-        Assert.False(AlundraInventoryDirector.Instance.IsActive);
+        Assert.False(InventoryDirector.Instance.IsActive);
         m.RunFrames(40);
-        Assert.False(AlundraInventoryDirector.Instance.IsActive);
+        Assert.False(InventoryDirector.Instance.IsActive);
     }
 
     [Fact]
@@ -195,9 +195,9 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
         m.RunFrames(P + 1);
         Assert.True(started);
         Assert.True(WarpDirector.Instance.IsTransitionInProgress);
-        Assert.False(AlundraInventoryDirector.Instance.IsActive);
+        Assert.False(InventoryDirector.Instance.IsActive);
         Assert.Equal(0u, m.State.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
         m.RunFrames(2);
-        Assert.False(AlundraInventoryDirector.Instance.IsActive);
+        Assert.False(InventoryDirector.Instance.IsActive);
     }
 }

@@ -10,7 +10,7 @@ namespace Alundra.UI.Hud;
 /// of one of the jauge's 24 ACTIVE tiles (relevé C, all 24 re-read from data-extracted/ui/wind.json's own
 /// array position, reproduced identically by alundra-project/UI/wind-sprites.json's own "index"/
 /// "asset_id" - the wind index -> asset-id mapping this enum stands in for lives on
-/// <see cref="AlundraHudScreen"/>, never here, so this file stays MGUI/asset-agnostic (mission item 7's
+/// <see cref="HudScreen"/>, never here, so this file stays MGUI/asset-agnostic (mission item 7's
 /// own "fonction pure").
 /// </summary>
 public enum HudGlyph

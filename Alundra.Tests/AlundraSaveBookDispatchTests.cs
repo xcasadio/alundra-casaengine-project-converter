@@ -41,7 +41,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
 
         // E16.e T3: slot F now notes the flow to the real save screen - reset both session singletons.
         SaveBook.Instance.ResetForTests();
-        AlundraSaveScreenDirector.Instance.ResetForTests();
+        SaveScreenDirector.Instance.ResetForTests();
     }
 
     private static void LoadRealEtc()

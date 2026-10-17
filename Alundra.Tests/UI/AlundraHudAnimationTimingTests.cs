@@ -102,11 +102,11 @@ public sealed class AlundraHudAnimationTimingTests
     public void FourFullPips_OverTwentyFiveCycles_FollowTheOriginalWithinTwentyMilliseconds(int frameCounter)
     {
         var viewModel = new AlundraHudViewModel();
-        IAlundraHudView view = viewModel;
+        IHudView view = viewModel;
         var phase = (frameCounter / 10) % 4;
         view.SetVisible(true);
         view.SetAnimationClock(frameCounter, moneyRolling: false);
-        view.SetTiles(AlundraHudComposer.Compose(
+        view.SetTiles(HudComposer.Compose(
             true, 5, 5, 5, false, 4, 4, false, 0, 0, new[] { phase, (phase + 1) % 4, (phase + 2) % 4, (phase + 3) % 4 }));
 
         var animation = LoadAnimation("ui_hud_magic_pip");
@@ -136,10 +136,10 @@ public sealed class AlundraHudAnimationTimingTests
     public void TheCoin_WhileTheMoneyRolls_FollowsTheOriginalWithinTwentyMilliseconds(int frameCounter, int coinFrame)
     {
         var viewModel = new AlundraHudViewModel();
-        IAlundraHudView view = viewModel;
+        IHudView view = viewModel;
         view.SetVisible(true);
         view.SetAnimationClock(frameCounter, moneyRolling: true);
-        view.SetTiles(AlundraHudComposer.Compose(true, 5, 5, 5, false, 0, 0, false, 100, coinFrame, new[] { 0, 1, 2, 3 }));
+        view.SetTiles(HudComposer.Compose(true, 5, 5, 5, false, 0, 0, false, 100, coinFrame, new[] { 0, 1, 2, 3 }));
         Assert.True(viewModel.Coin.IsAnimationPlaying);
 
         const double durationMs = 25 * 4 * 120.0;

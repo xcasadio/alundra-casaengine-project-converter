@@ -20,7 +20,7 @@ namespace Alundra.UI.Inventory;
 /// E13.d D4 (docs/plan-e13d-inventaire.md, D-E13D-1/D-E13D-6): a pure, tick-driven port of the
 /// original's main inventory (<c>MainInventoryManager</c>) - the DIRECTOR half of the director/
 /// presenter/screen split D-E13D-6 chose (same shape as <see cref="DialogueDirector"/> and
-/// <see cref="AlundraHudDirector"/>). No MGUI dependency at all: every piece of state D5's screen will
+/// <see cref="HudDirector"/>). No MGUI dependency at all: every piece of state D5's screen will
 /// need to draw is exposed as plain, read-only properties.
 ///
 /// <para><b>The trigger</b> - ported from <c>GameEngine.cs:1567-1576</c>, checked once per logic tick
@@ -28,7 +28,7 @@ namespace Alundra.UI.Inventory;
 /// TREATED AS ALWAYS ZERO (never blocks the trigger), declared where it is tested below:
 /// <c>g_warpLockTimer</c> (an item-use/magic-sequence lock, <c>PlayerManager.cs:1929-4013</c> - no such
 /// system is ported here at all). <c>g_globalTransitionState</c> (the memory-card/save-menu state machine,
-/// <c>UI/MemoryCardManager.cs</c>) is ported since E16.e as <see cref="AlundraSaveScreenDirector.IsActive"/>.
+/// <c>UI/MemoryCardManager.cs</c>) is ported since E16.e as <see cref="SaveScreenDirector.IsActive"/>.
 /// The map-entry delay <c>g_warpDelayFrames</c> is ported since E13.d SI12, as a duration
 /// (<see cref="WarpDirector.IsWarpDelayRunning"/>). One guard has no line in the original: no opening
 /// while a warp transition runs (<see cref="WarpDirector.IsTransitionInProgress"/>, SD5, D-E13D-38) - the
@@ -64,8 +64,8 @@ namespace Alundra.UI.Inventory;
 /// <para><b>The opening portrait</b> (docs/plan-portrait-inventaire.md, PI8; deferred by D-E13D-12 until then):
 /// <c>InitializeHudTransitionVariablesAndSetStart</c>/<c>InitializeHudTransitionVariables</c>/
 /// <c>UpdateHudTransitionVariables</c>/<c>UpdateHudTransitionState</c> and the portrait quad
-/// (<c>MainInventoryManager.cs:197-440</c>) are <see cref="AlundraInventoryPortrait"/>, one instance shared with
-/// <see cref="AlundraSubInventoryDirector"/>. This class starts it in <see cref="RunDisplayInventoryHead"/> and
+/// (<c>MainInventoryManager.cs:197-440</c>) are <see cref="InventoryPortrait"/>, one instance shared with
+/// <see cref="SubInventoryDirector"/>. This class starts it in <see cref="RunDisplayInventoryHead"/> and
 /// starts its return in both exits (close and L1/R1) right after <see cref="RunCloseSetup"/>, as the executable
 /// orders them; the world steps it once per tick after the post-process. It only ever touches portrait-local
 /// state: <c>g_forbiddenWarpFlag</c>, the box tweens and <c>g_inventoryCursorText</c> are not affected, so the
@@ -73,21 +73,21 @@ namespace Alundra.UI.Inventory;
 ///
 /// <para><b>L1/R1 (the sub-inventory switch, <c>MainInventoryManager.cs:853-859</c>)</b> (E13.d SI3,
 /// docs/plan-e13d-sous-inventaire.md, D-E13D-21/22): closes the main inventory (<see cref="RunCloseSetup"/>,
-/// sound 5) and poses <see cref="AlundraInventoryPostProcess.State"/> = 1 - it does NOT call
-/// <see cref="AlundraHudDirector.InitializeHudPositionBeforeHide"/> (the gauge stays hidden, plan §1.1).
-/// <see cref="AlundraInventoryPostProcess.Run"/> then opens the sub-inventory once this closing slide
+/// sound 5) and poses <see cref="InventoryPostProcess.State"/> = 1 - it does NOT call
+/// <see cref="HudDirector.InitializeHudPositionBeforeHide"/> (the gauge stays hidden, plan §1.1).
+/// <see cref="InventoryPostProcess.Run"/> then opens the sub-inventory once this closing slide
 /// settles (<see cref="IsCallbackArmed"/> false) - see that class' own doc for the two-tick clock (plan
-/// §1.2). The reverse switch (<see cref="AlundraSubInventoryDirector"/>'s own L1/R1) hands control back
+/// §1.2). The reverse switch (<see cref="SubInventoryDirector"/>'s own L1/R1) hands control back
 /// through <see cref="RunDisplayInventoryHeadFromPostProcess"/>: the HEAD of <c>DisplayInventory</c> runs
 /// on the post-process's own tick, and the SETUP (<c>FUN_80054f1c</c>) only on the NEXT one
 /// (<see cref="_setupPending"/>, D-E13D-22) - unlike the ordinary trigger path, where <see cref="Tick"/>
 /// runs both on the SAME tick (this class' own doc above).</para>
 /// </summary>
-public sealed class AlundraInventoryDirector
+public sealed class InventoryDirector
 {
-    public static readonly AlundraInventoryDirector Instance = new();
+    public static readonly InventoryDirector Instance = new();
 
-    private AlundraInventoryDirector()
+    private InventoryDirector()
     {
     }
 
@@ -114,7 +114,7 @@ public sealed class AlundraInventoryDirector
     public bool IsActive => ForbiddenWarpFlag != 0;
 
     /// <summary>E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-21): "is the main inventory's own
-    /// callback slot 6 armed" - what <see cref="AlundraInventoryPostProcess.Run"/> tests as "slot 6 free"
+    /// callback slot 6 armed" - what <see cref="InventoryPostProcess.Run"/> tests as "slot 6 free"
     /// before opening the sub-inventory (state 1). Ported as <see cref="ForbiddenWarpFlag"/> != 0 (the
     /// slide/residual bits) OR <see cref="_setupPending"/> (the callback is armed the instant
     /// <c>SetTransitionType(6)</c> runs, inside <see cref="RunDisplayInventoryHead"/>/
@@ -141,7 +141,7 @@ public sealed class AlundraInventoryDirector
     private ISoundPlayer? _soundPlayer;
 
     /// <summary>Re-points this session-scoped instance, same "re-point without touching state" contract
-    /// as <see cref="AlundraHudDirector.AttachToWorld"/>/<see cref="DialogueDirector.AttachToWorld"/>.
+    /// as <see cref="HudDirector.AttachToWorld"/>/<see cref="DialogueDirector.AttachToWorld"/>.
     /// Every argument null is tolerated (no live session yet) - <see cref="Tick"/> then degrades to a
     /// no-op, same shape as every other missing-system seam in this DLL.</summary>
     public void AttachToWorld(GameState? gameState, ItemTables? itemTables, ISoundPlayer? soundPlayer)
@@ -265,7 +265,7 @@ public sealed class AlundraInventoryDirector
     public (int X, int Y) BoxPosition(int boxIndex) => (_boxes[boxIndex].CurrentX, _boxes[boxIndex].CurrentY);
 
     /// <summary>Port of <c>UIManager.UpdateUiBoxesPosition</c> (<c>UIManager.cs:968-993</c>), same
-    /// simplification <see cref="AlundraHudDirector"/>'s own <c>AdvancePositionTween</c> makes (X and Y
+    /// simplification <see cref="HudDirector"/>'s own <c>AdvancePositionTween</c> makes (X and Y
     /// both, here, instead of Y alone): the sprite-grid loop that follows the tween in the original
     /// always contributes 0 to its own returned <c>result</c> for a box with a nonzero size (the loop
     /// unconditionally reassigns <c>result = 0</c> every row, UIManager.cs:1021) and the spacer box
@@ -274,7 +274,7 @@ public sealed class AlundraInventoryDirector
     /// ever reaches too. Returns true exactly when <see cref="BoxTween.Mode"/> was ALREADY 0 on entry -
     /// two calls after the interpolation reached its target (one call snaps to the target and decrements
     /// mode 2-&gt;1, the next call re-snaps and decrements 1-&gt;0, only the call after THAT returns
-    /// true) - same "18-call" shape <see cref="AlundraHudDirector"/>'s own tween has.</summary>
+    /// true) - same "18-call" shape <see cref="HudDirector"/>'s own tween has.</summary>
     private static bool AdvanceBoxTween(ref BoxState box, ref BoxTween tween)
     {
         if (tween.Mode == 0)
@@ -327,7 +327,7 @@ public sealed class AlundraInventoryDirector
     // =====================================================================================
 
     /// <summary>Port of <c>g_inventoryCursorText</c> - the raw state value of the text reveal
-    /// (<see cref="AlundraInventoryTextReveal.State"/>).</summary>
+    /// (<see cref="InventoryTextReveal.State"/>).</summary>
     public int TextRevealState => _textReveal.State;
 
     public string NameVisiblePrefix => _textReveal.NameVisiblePrefix;
@@ -335,16 +335,16 @@ public sealed class AlundraInventoryDirector
     public string Description1VisiblePrefix => _textReveal.Description1VisiblePrefix;
 
     /// <summary>D5: the text the original's <c>DisplayInventoryDescription(0)</c> drew on THIS tick
-    /// (<see cref="AlundraInventoryTextReveal.DrawnLine0"/>) - what the screen shows.</summary>
+    /// (<see cref="InventoryTextReveal.DrawnLine0"/>) - what the screen shows.</summary>
     public string DrawnDescriptionLine0 => _textReveal.DrawnLine0;
 
     /// <summary>D5: the text <c>DisplayInventoryDescription(1)</c> drew on THIS tick
-    /// (<see cref="AlundraInventoryTextReveal.DrawnLine1"/>).</summary>
+    /// (<see cref="InventoryTextReveal.DrawnLine1"/>).</summary>
     public string DrawnDescriptionLine1 => _textReveal.DrawnLine1;
 
     /// <summary><c>DisplayInventoryTexts</c>' state (<c>g_inventoryCursorText</c>, <c>INT_8017fef0</c>): the
     /// machine both inventories share since E13.d SI11 (D-E13D-35), this director's own instance.</summary>
-    private readonly AlundraInventoryTextReveal _textReveal = new();
+    private readonly InventoryTextReveal _textReveal = new();
 
     /// <summary>E13.d SI3 (D-E13D-22): armed by <see cref="RunDisplayInventoryHeadFromPostProcess"/> when
     /// the HEAD it just ran was not stopped by its own guard - <see cref="Tick"/> checks this FIRST, before
@@ -462,7 +462,7 @@ public sealed class AlundraInventoryDirector
         // (StaticVariables.cs:12484) is the memory-card/save-menu state machine (UI/MemoryCardManager.cs); its
         // port since E16.e L5 (docs/plan-e16-etat-partie.md, J9) is the save screen, active exactly while that
         // state is not 0.
-        if (AlundraSaveScreenDirector.Instance.IsActive)
+        if (SaveScreenDirector.Instance.IsActive)
         {
             return false;
         }
@@ -522,13 +522,13 @@ public sealed class AlundraInventoryDirector
         // 0x80048514 after the CD init, and no writer of the reset request 0x8009a858 was found.)
 
         // MainInventoryManager.cs:484 - HudManager.InitializeHudPosition().
-        AlundraHudDirector.Instance.InitializeHudPosition();
+        HudDirector.Instance.InitializeHudPosition();
 
         // MainInventoryManager.cs:485-493 - SetTransitionType(6) (the setup callback's own arming,
         // reproduced by this class' own Tick ordering, not by a stored callback), then the portrait's own
         // start (GetAnimationImageByIndex(0), 0x80057c18 called at 0x800556b0): the flight from the head,
         // ignored unless the shared portrait is idle (docs/plan-portrait-inventaire.md, PI8).
-        AlundraInventoryPortrait.Instance.StartFromHead();
+        InventoryPortrait.Instance.StartFromHead();
 
         // MainInventoryManager.cs:494 - DisplayIconNames().
         RunDisplayIconNames(state);
@@ -543,7 +543,7 @@ public sealed class AlundraInventoryDirector
     /// (<see cref="RunDisplayInventoryHead"/>) and, if it was not stopped by its own guard, arms
     /// <see cref="_setupPending"/> so the NEXT <see cref="Tick"/> runs the SETUP alone (plan §1.2's own
     /// clock table: "FUN_80054f1c (mise en place du principal) ... rien de dessiné" on the tick AFTER the
-    /// head). Called from <see cref="AlundraInventoryPostProcess.Run"/> only.</summary>
+    /// head). Called from <see cref="InventoryPostProcess.Run"/> only.</summary>
     internal void RunDisplayInventoryHeadFromPostProcess()
     {
         if (_gameState == null)
@@ -705,8 +705,8 @@ public sealed class AlundraInventoryDirector
         if ((pad.ButtonsJustPressedByInterval & (PadState.Start | PadState.Triangle | PadState.L2 | PadState.R2)) != 0)
         {
             RunCloseSetup(state);
-            AlundraInventoryPortrait.Instance.ReturnToHead(); // 0x80056938, between the slide-out and the gauge.
-            AlundraHudDirector.Instance.InitializeHudPositionBeforeHide();
+            InventoryPortrait.Instance.ReturnToHead(); // 0x80056938, between the slide-out and the gauge.
+            HudDirector.Instance.InitializeHudPositionBeforeHide();
         }
 
         // :853-859 - L1/R1 (OpenSubInventory): close (same FUN_800556dc/sound 5 as the branch above), but
@@ -717,8 +717,8 @@ public sealed class AlundraInventoryDirector
         {
             RunCloseSetup(state);
             state.PlayerControlFlags |= GameState.PlayerControlBits.MenuOpen;
-            AlundraInventoryPortrait.Instance.ReturnToHead(); // 0x80056974, before the post-process state (0x80056984).
-            AlundraInventoryPostProcess.Instance.State = 1;
+            InventoryPortrait.Instance.ReturnToHead(); // 0x80056974, before the post-process state (0x80056984).
+            InventoryPostProcess.Instance.State = 1;
         }
     }
 
@@ -760,7 +760,7 @@ public sealed class AlundraInventoryDirector
 
             // :896-899 - MenuOpen cleared ONLY if the post-process is not about to open the sub-inventory
             // (E13.d SI3, D-E13D-21/22 - replaces the former _pendingSubInventoryTransition hook).
-            if ((AlundraInventoryPostProcess.Instance.State & 1) == 0)
+            if ((InventoryPostProcess.Instance.State & 1) == 0)
             {
                 state.PlayerControlFlags &= ~GameState.PlayerControlBits.MenuOpen;
             }

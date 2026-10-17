@@ -10,7 +10,7 @@ namespace Alundra.Scripts;
 
 /// <summary>
 /// The HUD's view model (parent ADR-0002, engine ADR-0038): what <c>UI/Screens/HudScreen.xaml</c> binds, one named
-/// member per element, and the <see cref="IAlundraHudView"/> <see cref="AlundraHudPresenter"/> writes every logic
+/// member per element, and the <see cref="IHudView"/> <see cref="HudPresenter"/> writes every logic
 /// tick. It places the composer's tiles by role - the three HP-max tiles, up to four big and ten small life tiles,
 /// up to four magic pips, four money digits and the coin - instead of the pool the screen used to fill in paint
 /// order, so an element never changes role and its animation never restarts because its neighbours moved.
@@ -22,7 +22,7 @@ namespace Alundra.Scripts;
 /// whenever the pips change (a pip fills or empties, the maximum changes, the HUD reappears), so the four keep their
 /// 200 ms offsets from one another; the coin is restarted when it starts rolling.
 /// </summary>
-public sealed class AlundraHudViewModel : ViewModelBase, IAlundraHudView
+public sealed class AlundraHudViewModel : ViewModelBase, IHudView
 {
     private const double TickMilliseconds = 20.0;
     private const int PipTicksPerFrame = 10;
@@ -85,7 +85,7 @@ public sealed class AlundraHudViewModel : ViewModelBase, IAlundraHudView
     }
 
     /// <summary>The integer pixel scale the screen applies to the whole canvas (D-E13-9); set by the screen when its
-    /// window is built, read by <see cref="AlundraHudPresenter"/> to scale the slide.</summary>
+    /// window is built, read by <see cref="HudPresenter"/> to scale the slide.</summary>
     public int PixelScale { get; set; } = 1;
 
     /// <summary>Tiles the composer produced beyond the elements of their role: none, by construction of the
@@ -149,7 +149,7 @@ public sealed class AlundraHudViewModel : ViewModelBase, IAlundraHudView
     public HudImageViewModel EquipmentIcon0 => _equipmentIcons[0];
     public HudImageViewModel EquipmentIcon1 => _equipmentIcons[1];
 
-    void IAlundraHudView.SetVisible(bool visible)
+    void IHudView.SetVisible(bool visible)
     {
         var shown = visible ? Visibility.Visible : Visibility.Collapsed;
         if (shown == Visibility.Visible && RootVisibility != Visibility.Visible)
@@ -161,15 +161,15 @@ public sealed class AlundraHudViewModel : ViewModelBase, IAlundraHudView
         RootVisibility = shown;
     }
 
-    void IAlundraHudView.SetTranslation(Vector2 translation) => Translation = translation;
+    void IHudView.SetTranslation(Vector2 translation) => Translation = translation;
 
-    void IAlundraHudView.SetAnimationClock(int frameCounter, bool moneyRolling)
+    void IHudView.SetAnimationClock(int frameCounter, bool moneyRolling)
     {
         _frameCounter = frameCounter;
         _moneyRolling = moneyRolling;
     }
 
-    void IAlundraHudView.SetTiles(IReadOnlyList<AlundraHudTile> tiles)
+    void IHudView.SetTiles(IReadOnlyList<HudTile> tiles)
     {
         var hpMax = 0;
         var lifeBig = 0;
@@ -250,7 +250,7 @@ public sealed class AlundraHudViewModel : ViewModelBase, IAlundraHudView
         _animationsNeedRestart = false;
     }
 
-    void IAlundraHudView.SetEquipmentIcons(IReadOnlyList<AlundraHudIcon> icons)
+    void IHudView.SetEquipmentIcons(IReadOnlyList<HudIcon> icons)
     {
         for (var i = 0; i < _equipmentIcons.Length; i++)
         {
@@ -277,7 +277,7 @@ public sealed class AlundraHudViewModel : ViewModelBase, IAlundraHudView
         }
     }
 
-    private void Place(HudImageViewModel[] role, ref int count, AlundraHudTile tile)
+    private void Place(HudImageViewModel[] role, ref int count, HudTile tile)
     {
         if (count >= role.Length)
         {

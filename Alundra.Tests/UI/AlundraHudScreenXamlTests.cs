@@ -33,9 +33,9 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
         "MoneyDigit0", "MoneyDigit1", "MoneyDigit2", "MoneyDigit3", "Coin",
     };
 
-    public AlundraHudScreenXamlTests() => AlundraHudDirector.Instance.ResetForTests();
+    public AlundraHudScreenXamlTests() => HudDirector.Instance.ResetForTests();
 
-    public void Dispose() => AlundraHudDirector.Instance.ResetForTests();
+    public void Dispose() => HudDirector.Instance.ResetForTests();
 
     private static string ProjectDirectory()
     {
@@ -79,7 +79,7 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
         var envelope = new UIScreenAsset();
         envelope.Load(JObject.Parse(File.ReadAllText(Path.Combine(directory, "HudScreen.uiscreen"))));
 
-        Assert.Equal(Guid.Parse(AlundraHudScreen.ScreenAssetId), envelope.Id);
+        Assert.Equal(Guid.Parse(HudScreen.ScreenAssetId), envelope.Id);
         Assert.True(File.Exists(Path.Combine(directory, envelope.SourceXamlFile)));
         Assert.True(File.Exists(Path.Combine(directory, envelope.DesignTimeDataFile)));
     }
@@ -109,7 +109,7 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
             Element<MGImage>(window, name);
         }
 
-        Assert.Equal(AlundraHudScreen.MaxTileCount, TileNames.Length);
+        Assert.Equal(HudScreen.MaxTileCount, TileNames.Length);
         Assert.Equal(TileNames.Length + 2, Element<MGCanvas>(window, "RootCanvas").TraverseVisualTree().OfType<MGImage>().Count());
         Assert.Equal(AlundraHudViewModel.CoinAnimationId, Element<MGImage>(window, "Coin").SourceName);
     }
@@ -119,7 +119,7 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
     public void EquipmentBackgrounds_MatchTheComposersQuads()
     {
         var window = LoadWindow(out _);
-        var quads = AlundraHudComposer.ComposeEquipmentBackgrounds();
+        var quads = HudComposer.ComposeEquipmentBackgrounds();
         var rectangles = new[] { Element<MGRectangle>(window, "WeaponBoxBackground"), Element<MGRectangle>(window, "AccessoryBoxBackground") };
 
         for (var i = 0; i < quads.Count; i++)
@@ -147,11 +147,11 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
         var window = LoadWindow(out var desktop);
         var viewModel = new AlundraHudViewModel();
         window.WindowDataContext = viewModel;
-        IAlundraHudView view = viewModel;
+        IHudView view = viewModel;
 
         view.SetVisible(true);
         view.SetAnimationClock(37, moneyRolling: true);
-        var tiles = AlundraHudComposer.Compose(true, 9, 12, 12, false, 2, 4, false, 1234, 0, new[] { 3, 0, 1, 2 });
+        var tiles = HudComposer.Compose(true, 9, 12, 12, false, 2, 4, false, 1234, 0, new[] { 3, 0, 1, 2 });
         view.SetTiles(tiles);
         desktop.Update();
 
@@ -196,7 +196,7 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
     [Fact]
     public void TheScreen_ScalesItsCanvas_AndAppliesTheSlide()
     {
-        var screenId = Guid.Parse(AlundraHudScreen.ScreenAssetId);
+        var screenId = Guid.Parse(HudScreen.ScreenAssetId);
         var info = new AssetInfo(screenId) { Name = "HudScreen", FileName = Path.Combine("UI", "Screens", "HudScreen.uiscreen") };
         var assets = new AssetContentManager
         {
@@ -204,7 +204,7 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
         };
         assets.RegisterAssetLoader(typeof(UIScreenAsset), new ScreenEnvelopeLoader());
 
-        using var screen = new AlundraHudScreen(AlundraHudDirector.Instance, assets);
+        using var screen = new HudScreen(HudDirector.Instance, assets);
         var (desktop, _) = HeadlessUiTestHarness.NewDesktop(); // 640 wide: pixel scale 2
         var window = screen.BuildWindow(desktop);
         var canvas = Element<MGCanvas>(window, "RootCanvas");
@@ -213,7 +213,7 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
         Assert.Equal(2, screen.ViewModel.PixelScale);
         Assert.Same(screen.ViewModel, window.WindowDataContext);
 
-        ((IAlundraHudView)screen.ViewModel).SetTranslation(new Vector2(0, -40));
+        ((IHudView)screen.ViewModel).SetTranslation(new Vector2(0, -40));
         Assert.Equal(new Vector2(0, -40), canvas.RenderTransform.Translation);
 
         screen.ViewModel.EquipmentIcon1.SubPixelOffset = new Vector2(0.5f, 0f);

@@ -11,7 +11,7 @@ namespace Alundra.UI.Inventory;
 
 /// <summary>
 /// The opening portrait as both inventory screens bind it (docs/plan-portrait-inventaire.md, PI8): the image sits at
-/// its rest position (<see cref="AlundraInventoryPortrait.RestX"/>, <see cref="AlundraInventoryPortrait.RestY"/>) in
+/// its rest position (<see cref="InventoryPortrait.RestX"/>, <see cref="InventoryPortrait.RestY"/>) in
 /// the XAML, and the flight moves and scales it through the bindable render transform (MGUI ADR-0020): the
 /// translation is the quad's top-left minus the rest position, the scale its size over 48x56, anchored at the
 /// top-left corner. <see cref="Vector2"/> on both sides, so each push is a typed copy. Every setter notifies only on
@@ -108,7 +108,7 @@ public sealed class InventoryPortraitViewModel : ViewModelBase
     /// the scale is the drawn size over the image's own size (48 x its height), the brightness is Rgb / 128, and a pass of 0 x 0 stays visible at the scale 0, exactly the original's 0 x 0 quad
     /// (no visibility change in flight, as the inventories).
     /// </summary>
-    internal void ApplyDialogue(AlundraInventoryPortrait portrait, DialoguePortraitRef? source)
+    internal void ApplyDialogue(InventoryPortrait portrait, DialoguePortraitRef? source)
     {
         ArgumentNullException.ThrowIfNull(portrait);
         if (!portrait.DrawnThisStep || !source.HasValue)
@@ -124,7 +124,7 @@ public sealed class InventoryPortraitViewModel : ViewModelBase
         }
 
         Translation = new Vector2(portrait.X - DialogueRestX, portrait.Y - DialogueRestY);
-        Scale = new Vector2(portrait.DrawnWidth / (float)AlundraInventoryPortrait.FullWidth, portrait.DrawnHeight / (float)image.Height);
+        Scale = new Vector2(portrait.DrawnWidth / (float)InventoryPortrait.FullWidth, portrait.DrawnHeight / (float)image.Height);
         Brightness = portrait.Rgb / 128f;
         Visibility = Visibility.Visible;
     }
@@ -134,7 +134,7 @@ public sealed class InventoryPortraitViewModel : ViewModelBase
     /// visibility change: collapsing and showing the element would run the window's layout twice per flight, which the
     /// render-only transform exists to avoid (plan D3, MGUI ADR-0006). Only a missing source (degraded export)
     /// collapses the element.</summary>
-    internal void Apply(AlundraInventoryPortrait portrait, Guid? sourceId)
+    internal void Apply(InventoryPortrait portrait, Guid? sourceId)
     {
         if (!sourceId.HasValue)
         {
@@ -147,10 +147,10 @@ public sealed class InventoryPortraitViewModel : ViewModelBase
             SourceName = sourceId.Value.ToString("D");
         }
 
-        Translation = new Vector2(portrait.X - AlundraInventoryPortrait.RestX, portrait.Y - AlundraInventoryPortrait.RestY);
+        Translation = new Vector2(portrait.X - InventoryPortrait.RestX, portrait.Y - InventoryPortrait.RestY);
         Scale = new Vector2(
-            portrait.DrawnWidth / (float)AlundraInventoryPortrait.FullWidth,
-            portrait.DrawnHeight / (float)AlundraInventoryPortrait.FullHeight);
+            portrait.DrawnWidth / (float)InventoryPortrait.FullWidth,
+            portrait.DrawnHeight / (float)InventoryPortrait.FullHeight);
         // E19.f4c3 (D-E19-100): the original's vertex colour over 128 (1 at rest, 0 once idle); the early return above, with no source, leaves it alone.
         Brightness = portrait.Rgb / 128f;
         Visibility = Visibility.Visible;

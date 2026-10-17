@@ -81,14 +81,14 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         public readonly AlundraSaveBookTests.RecordingUIViewRuntime UiView = new();
         public readonly FakeTextBoxScreen Screen = new();
         public readonly AlundraTextBoxViewModel ViewModel = new();
-        public readonly AlundraTextBoxPresenter Presenter;
+        public readonly TextBoxPresenter Presenter;
         public readonly GameState State = new();
 
         public Rig(IDialoguePresenter? presenter = null)
         {
             Director.AttachToWorld(presenter ?? new DialogueService(), State);
             Director.InstallForMapEntry();
-            Presenter = new AlundraTextBoxPresenter(Director, ViewModel, Screen, UiView);
+            Presenter = new TextBoxPresenter(Director, ViewModel, Screen, UiView);
         }
 
         /// <summary>One pass of the box then the tick of the presenter, as the world proxy does after each pass.</summary>
@@ -183,9 +183,9 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         var uiView = new AlundraSaveBookTests.RecordingUIViewRuntime();
         var rig = new Rig();
         // The rig's own view is not the one shared here: share one view so the order of the two screens is observed.
-        var textBox = new AlundraTextBoxPresenter(Director, rig.ViewModel, rig.Screen, uiView);
+        var textBox = new TextBoxPresenter(Director, rig.ViewModel, rig.Screen, uiView);
         var choiceScreen = new FakeTextBoxScreen();
-        var choice = new AlundraChoicePresenter(Director, new AlundraChoiceViewModel(), choiceScreen, uiView);
+        var choice = new ChoicePresenter(Director, new AlundraChoiceViewModel(), choiceScreen, uiView);
         Director.Open(Bonjour(), "Start", 1);
         for (var i = 0; i < 25; i++)
         {
@@ -232,7 +232,7 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         var uiView = new AlundraSaveBookTests.RecordingUIViewRuntime();
         _ = new Rig();
         var choiceScreen = new FakeTextBoxScreen();
-        var choice = new AlundraChoicePresenter(Director, new AlundraChoiceViewModel(), choiceScreen, uiView);
+        var choice = new ChoicePresenter(Director, new AlundraChoiceViewModel(), choiceScreen, uiView);
 
         Director.OpenChoice(new[] { "OUI", "NON" });
         for (var i = 0; i < 3; i++)
@@ -258,13 +258,13 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         public readonly AlundraSaveBookTests.RecordingUIViewRuntime UiView = new();
         public readonly FakeTextBoxScreen Screen = new();
         public readonly AlundraChoiceViewModel ViewModel = new();
-        public readonly AlundraChoicePresenter Presenter;
+        public readonly ChoicePresenter Presenter;
 
         public ChoiceRig()
         {
             Director.AttachToWorld(new DialogueService(), new GameState());
             Director.InstallForMapEntry();
-            Presenter = new AlundraChoicePresenter(Director, ViewModel, Screen, UiView);
+            Presenter = new ChoicePresenter(Director, ViewModel, Screen, UiView);
         }
 
         /// <summary>One pass of the director (which runs the choice box last) then the tick of the presenter, as the world proxy does after each pass.</summary>
@@ -466,7 +466,7 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
     public void OnEndPlay_GivesTheTextBoxScreenBack()
     {
         var assets = TextBoxScreenAssets.New();
-        var screen = new AlundraTextBoxScreen(assets, new UIFontRegistry(assets));
+        var screen = new TextBoxScreen(assets, new UIFontRegistry(assets));
         var proxy = new AlundraWorldProxy();
         proxy.AttachTextBoxScreenForTests(screen);
         Assert.Equal(0, assets.CollectUnreferenced()); // held by the screen
@@ -481,7 +481,7 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
     public void OnEndPlay_GivesTheChoiceScreenBack()
     {
         var assets = TextBoxScreenAssets.New();
-        var screen = new AlundraChoiceScreen(assets, new UIFontRegistry(assets));
+        var screen = new ChoiceScreen(assets, new UIFontRegistry(assets));
         var proxy = new AlundraWorldProxy();
         proxy.AttachChoiceScreenForTests(screen);
         Assert.Equal(0, assets.CollectUnreferenced()); // held by the screen
@@ -625,7 +625,7 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         var ui = new AlundraSaveBookTests.RecordingUIViewRuntime();
         var screen = new FakeTextBoxScreen();
         var viewModel = new AlundraTextBoxViewModel();
-        var presenter = new AlundraTextBoxPresenter(rig.Director, viewModel, screen, ui);
+        var presenter = new TextBoxPresenter(rig.Director, viewModel, screen, ui);
         var dialogues = new[] { SpeakerRig.Codes0D(SpeakerRig.TextAb), SpeakerRig.Codes0D(SpeakerRig.TextCd) };
         var next = 0;
         var onlyTheSpeaker = new List<int>();
@@ -667,7 +667,7 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         var ui = new AlundraSaveBookTests.RecordingUIViewRuntime();
         var screen = new FakeTextBoxScreen();
         var viewModel = new AlundraTextBoxViewModel();
-        var presenter = new AlundraTextBoxPresenter(rig.Director, viewModel, screen, ui);
+        var presenter = new TextBoxPresenter(rig.Director, viewModel, screen, ui);
 
         rig.Director.OpenSpeaker(Speaker()); // a speaker's portrait and name, and no box
         for (var f = 0; f < 40; f++)
@@ -697,7 +697,7 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         using var rig = new SpeakerRig();
         var ui = new AlundraSaveBookTests.RecordingUIViewRuntime();
         var screen = new FakeTextBoxScreen();
-        var presenter = new AlundraTextBoxPresenter(rig.Director, new AlundraTextBoxViewModel(), screen, ui);
+        var presenter = new TextBoxPresenter(rig.Director, new AlundraTextBoxViewModel(), screen, ui);
 
         rig.Director.OpenSpeaker(Speaker());
         for (var f = 0; f < 30; f++)

@@ -16,7 +16,7 @@ namespace Alundra.Tests.UI;
 /// <c>CasaEngine.Tests.UI.HeadlessUiTestHarness</c> (<c>CasaEngineMonogame/CasaEngine.Tests/UI/HeadlessUiTestHarness.cs</c>),
 /// which is internal to that assembly and not referenced by <c>Alundra.Tests</c>. Stands up an
 /// <see cref="MGDesktop"/> with no graphics device, for tests that build or inspect a real MGUI tree
-/// (<see cref="AlundraInventoryScreen"/>'s own XAML) but never draw one.
+/// (<see cref="InventoryScreen"/>'s own XAML) but never draw one.
 /// <para/>
 /// Kept intentionally small: only what loading <c>InventoryScreen.xaml</c> and reading its elements by
 /// name needs. A divergence from the engine's own copy is possible if that harness evolves (ADR-0001's

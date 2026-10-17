@@ -39,7 +39,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
 
         Assert.True(rig.Director.NameBox.IsSlotOpen);
         Assert.Equal(0x104, rig.Director.NameBox.NameId);
-        Assert.Equal(AlundraInventoryPortrait.StateOpening, rig.Director.Portrait.State);
+        Assert.Equal(InventoryPortrait.StateOpening, rig.Director.Portrait.State);
         Assert.Same(logic, rig.Director.PortraitSpeaker);
     }
 
@@ -79,7 +79,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
         Assert.True(rig.Run(owner, SpeakerRig.Codes5C(5, SpeakerRig.TextCd)));
 
         Assert.Equal(0x10C, rig.Director.NameBox.NameId);
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, rig.Director.Portrait.State);
+        Assert.Equal(InventoryPortrait.StateIdle, rig.Director.Portrait.State);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
 
         Assert.True(rig.Director.IsOpen);
         Assert.False(rig.Director.NameBox.IsSlotOpen);
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, rig.Director.Portrait.State);
+        Assert.Equal(InventoryPortrait.StateIdle, rig.Director.Portrait.State);
         Assert.Null(rig.Director.PortraitSpeaker);
     }
 
@@ -106,7 +106,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
 
         Assert.Equal(0x10C, rig.Director.NameBox.NameId); // not the 0x104 of the entity
         Assert.Same(owner, rig.Director.PortraitSpeaker);
-        Assert.Equal(AlundraInventoryPortrait.StateOpening, rig.Director.Portrait.State);
+        Assert.Equal(InventoryPortrait.StateOpening, rig.Director.Portrait.State);
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
 
         Assert.True(rig.Director.IsOpen);
         Assert.False(rig.Director.NameBox.IsSlotOpen);
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, rig.Director.Portrait.State);
+        Assert.Equal(InventoryPortrait.StateIdle, rig.Director.Portrait.State);
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
         Assert.False(rig.Run(owner, SpeakerRig.Codes0D(SpeakerRig.TextAb))); // the degraded advance: no box opened
 
         Assert.False(rig.Director.NameBox.IsSlotOpen);
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, rig.Director.Portrait.State);
+        Assert.Equal(InventoryPortrait.StateIdle, rig.Director.Portrait.State);
     }
 
     // ---- the refusals of the name, in their order, at the level of the opcode ---------------------------------------------------
@@ -229,7 +229,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
         Assert.False(rig.Run(jess, SpeakerRig.Codes0D(SpeakerRig.TextCd)));
 
         Assert.True(rig.Director.NameBox.IsSlotOpen);
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, rig.Director.Portrait.State);
+        Assert.Equal(InventoryPortrait.StateIdle, rig.Director.Portrait.State);
         Assert.Single(log.Warnings, w => w.Contains("DialoguePortrait", StringComparison.Ordinal));
         Assert.Empty(log.Errors);
 
@@ -412,12 +412,12 @@ public sealed class AlundraDialogueSpeakerRuleTests
 
         rig.Pass();
         Assert.Equal(320, rig.Director.NameBox.Drawn!.FrameX);
-        Assert.Equal(AlundraPortraitPhase.In, rig.Director.Portrait.Phase);
+        Assert.Equal(PortraitPhase.In, rig.Director.Portrait.Phase);
 
         var passes = rig.PassUntilCloseTrigger();
         Assert.True(passes > 0);
         Assert.Equal(DialogueNameBox.FlagClosing | DialogueNameBox.FlagOpen, rig.Director.NameBox.Flags);
-        Assert.Equal(AlundraPortraitPhase.Out, rig.Director.Portrait.Phase);
+        Assert.Equal(PortraitPhase.Out, rig.Director.Portrait.Phase);
         Assert.Equal((64, 8, 116), (rig.Director.NameBox.Drawn!.FrameX, rig.Director.Portrait.X, rig.Director.Portrait.Y)); // the first closing passes are at the rest
     }
 
@@ -435,7 +435,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
 
         Assert.False(rig.Director.NameBox.IsSlotOpen);
         Assert.Equal(0, rig.Director.NameBox.Flags);
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, rig.Director.Portrait.State);
+        Assert.Equal(InventoryPortrait.StateIdle, rig.Director.Portrait.State);
         Assert.Null(rig.Director.PortraitSpeaker);
         rig.Pass();
         Assert.Null(rig.Director.NameBox.Drawn);
@@ -449,12 +449,12 @@ public sealed class AlundraDialogueSpeakerRuleTests
         var speaker = SpeakerRig.Speaker(0x104, portrait: true);
         rig.Director.OpenSpeaker(speaker); // an attempt that opened the satellites and then no box
         Assert.False(rig.Director.IsOpen);
-        Assert.NotEqual(AlundraInventoryPortrait.StateIdle, rig.Director.Portrait.State);
+        Assert.NotEqual(InventoryPortrait.StateIdle, rig.Director.Portrait.State);
         Assert.True(rig.Director.NameBox.IsSlotOpen);
 
         rig.Director.NotifyPresenterClosed();
 
-        Assert.Equal(AlundraInventoryPortrait.StateIdle, rig.Director.Portrait.State);
+        Assert.Equal(InventoryPortrait.StateIdle, rig.Director.Portrait.State);
         Assert.False(rig.Director.NameBox.IsSlotOpen);
         Assert.Null(rig.Director.PortraitSpeaker);
     }
@@ -462,11 +462,11 @@ public sealed class AlundraDialogueSpeakerRuleTests
     [Fact]
     public void ResetForTests_ClearsEverything_ButNotTheInventorysPortrait()
     {
-        AlundraInventoryPortrait.Instance.ResetForTests();
+        InventoryPortrait.Instance.ResetForTests();
         try
         {
             using var rig = new SpeakerRig();
-            AlundraInventoryPortrait.Instance.Start(10, 10);
+            InventoryPortrait.Instance.Start(10, 10);
             using var log = SaveGameDirectorTestSupport.LogCapture.Install();
             var speaker = SpeakerRig.Speaker(0x104, portrait: true);
             speaker.DialoguePortrait = null;
@@ -476,9 +476,9 @@ public sealed class AlundraDialogueSpeakerRuleTests
             rig.Director.ResetForTests();
 
             Assert.False(rig.Director.NameBox.IsSlotOpen);
-            Assert.Equal(AlundraInventoryPortrait.StateIdle, rig.Director.Portrait.State);
+            Assert.Equal(InventoryPortrait.StateIdle, rig.Director.Portrait.State);
             Assert.Null(rig.Director.ScrollSource);
-            Assert.Equal(AlundraInventoryPortrait.StateOpening, AlundraInventoryPortrait.Instance.State);
+            Assert.Equal(InventoryPortrait.StateOpening, InventoryPortrait.Instance.State);
 
             // the warnings emitted are forgotten: the same sprite type warns again
             rig.Director.AttachToWorld(new CasaEngine.Framework.Dialogue.Runtime.DialogueService(), rig.GameState, rig.Sound);
@@ -490,7 +490,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
         }
         finally
         {
-            AlundraInventoryPortrait.Instance.ResetForTests();
+            InventoryPortrait.Instance.ResetForTests();
         }
     }
 

@@ -100,7 +100,7 @@ public sealed class AlundraTextBoxScreenXamlTests
         envelope.Load(envelopeJson);
 
         Assert.Equal(Guid.Parse("5a6a4f8c-bcfc-4abf-9581-a687e4ad2228"), envelope.Id);
-        Assert.Equal(Guid.Parse(AlundraTextBoxScreen.ScreenAssetId), envelope.Id);
+        Assert.Equal(Guid.Parse(TextBoxScreen.ScreenAssetId), envelope.Id);
         Assert.Equal("TextBoxScreen", envelopeJson["name"]!.ToString());
         Assert.Equal("TextBoxScreen.xaml", envelope.SourceXamlFile);
         Assert.Equal("TextBoxScreen.design.json", envelope.DesignTimeDataFile);

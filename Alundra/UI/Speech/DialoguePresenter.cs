@@ -37,7 +37,7 @@ namespace Alundra.UI.Speech;
 /// directly by <see cref="EventProgramRunner"/>, which only ever sees it through the generic
 /// <see cref="IDialoguePresenter"/> reference <see cref="DialogueDirector"/> was attached to.
 /// </summary>
-public sealed class AlundraDialoguePresenter : IDialoguePresenter, IDisposable
+public sealed class DialoguePresenter : IDialoguePresenter, IDisposable
 {
     /// <summary>D-E15-12/ADR-0008: the font family name every project screen that shows font3 names in
     /// its markup (e.g. <c>FontFamily="font3"</c> in <c>InventoryScreen.xaml</c>) - passed to
@@ -51,7 +51,7 @@ public sealed class AlundraDialoguePresenter : IDialoguePresenter, IDisposable
     private bool _pushed;
 
     /// <param name="fonts">The game's UI font registry (engine ADR-0036). When given, this presenter holds
-    /// font3 from construction to <see cref="Dispose"/> the same way <see cref="AlundraInventoryScreen"/> does
+    /// font3 from construction to <see cref="Dispose"/> the same way <see cref="InventoryScreen"/> does
     /// (D-E15-12, ADR-0008) and passes it to <see cref="DialogueScreen"/> as <c>fontFamily</c>; when null, or
     /// when font3 cannot be held (logged once), the box falls back to the theme's default font, as before
     /// E15.c.</param>
@@ -59,7 +59,7 @@ public sealed class AlundraDialoguePresenter : IDialoguePresenter, IDisposable
     /// project names in its DialogueScreenAsset setting (UI/Screens/DialogueScreen.uiscreen, written by the
     /// converter; bound screens slice B4, engine T6.1) and holds it until <see cref="Dispose"/>; without it, or when
     /// that markup cannot be used (the engine logs why), the engine's built-in box.</param>
-    public AlundraDialoguePresenter(IUIViewRuntime uiView, UIFontRegistry? fonts = null, AssetContentManager? assetContentManager = null)
+    public DialoguePresenter(IUIViewRuntime uiView, UIFontRegistry? fonts = null, AssetContentManager? assetContentManager = null)
     {
         ArgumentNullException.ThrowIfNull(uiView);
         _uiView = uiView;
@@ -69,13 +69,13 @@ public sealed class AlundraDialoguePresenter : IDialoguePresenter, IDisposable
         {
             try
             {
-                _font3 = fonts.Acquire(AlundraInventoryScreen.Font3FontAssetId);
+                _font3 = fonts.Acquire(InventoryScreen.Font3FontAssetId);
                 fontFamily = Font3FontFamily;
             }
             catch (Exception ex)
             {
                 Logs.WriteWarning(
-                    $"AlundraDialoguePresenter: font3 ('UI\\font3.fnt', asset {AlundraInventoryScreen.Font3FontAssetId}) "
+                    $"DialoguePresenter: font3 ('UI\\font3.fnt', asset {InventoryScreen.Font3FontAssetId}) "
                     + $"could not be held ({ex.GetType().Name}: {ex.Message}); the dialogue box falls back to the "
                     + "default font.");
             }

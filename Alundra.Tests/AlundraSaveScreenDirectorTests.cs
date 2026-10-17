@@ -29,7 +29,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E16.e T3 (docs/plan-e16-etat-partie.md, L2, L3, L5, J3, J4, SE3, SE4, SE5, SE9): the save screen's director
-/// without MGUI, on the REAL dialogue director (a real <see cref="AlundraDialoguePresenter"/> over a recording UI
+/// without MGUI, on the REAL dialogue director (a real <see cref="DialoguePresenter"/> over a recording UI
 /// view, whose choice the test picks), the real export's <c>Dialogues/Etc.dialogue</c> and validation rules (K1), and
 /// a fake save service behind <see cref="AlundraSaveGameDirector.SaveSlots"/> (D-E16-31: the real save folder is
 /// never reached).
@@ -45,13 +45,13 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     private const string Failed0 = "Echec de l'enregistrement!";
     private const string Failed1 = "Essaye d'enregistrer l'histoire de nouveau.";
 
-    /// <summary>Ticks from <see cref="AlundraSaveScreenDirector.Start"/> to the settled picker: 1 (0x2710), 20
+    /// <summary>Ticks from <see cref="SaveScreenDirector.Start"/> to the settled picker: 1 (0x2710), 20
     /// (0x2711), 20 (0x3f4), 1 (0x0C, the picker's initialization), 18 (the opening slide).</summary>
     private const int TicksToSettledPicker = 1 + 20 + 20 + 1 + 18;
 
     private readonly SlotsBySlot _slots = new();
     private readonly AlundraSaveBookTests.RecordingUIViewRuntime _uiView = new();
-    private readonly AlundraDialoguePresenter _presenter;
+    private readonly DialoguePresenter _presenter;
     private readonly RecordingSound _sound = new();
 
     public AlundraSaveScreenDirectorTests()
@@ -59,7 +59,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         ResetAll();
         EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
-        _presenter = new AlundraDialoguePresenter(_uiView);
+        _presenter = new DialoguePresenter(_uiView);
         Dialogue.AttachToWorld(_presenter, State);
         AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
         AlundraSaveGameDirector.Instance.SaveSlots = _slots;
@@ -73,14 +73,14 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         ResetSingletons();
         EtcStringTable.ResetForTests();
         SaveBook.Instance.ResetForTests();
-        AlundraSaveScreenDirector.Instance.ResetForTests();
+        SaveScreenDirector.Instance.ResetForTests();
     }
 
     private static GameState State => GameState.Instance;
 
     private static DialogueDirector Dialogue => DialogueDirector.Instance;
 
-    private static AlundraSaveScreenDirector Director => AlundraSaveScreenDirector.Instance;
+    private static SaveScreenDirector Director => SaveScreenDirector.Instance;
 
     private readonly List<int> _stateLog = new();
 
@@ -128,7 +128,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         save ??= ValidSave();
         Assert.True(Director.Start(save));
         Tick(TicksToSettledPicker);
-        Assert.Equal(AlundraSaveScreenDirector.StatePickWait, Director.State);
+        Assert.Equal(SaveScreenDirector.StatePickWait, Director.State);
         return save;
     }
 
@@ -162,7 +162,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         var save = ValidSave();
         Assert.True(Director.Start(save));
         Assert.True(Director.IsActive);
-        Assert.Equal(AlundraSaveScreenDirector.StateExamine, Director.State);
+        Assert.Equal(SaveScreenDirector.StateExamine, Director.State);
 
         // 0x2710: MenuOpen and the "Examen" message, which slides in from y = 240.
         Tick();
@@ -176,7 +176,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
         // 0x3f4 closes the message (sound 5); the picker opens at 0x0C, with ETC 0x83 in the message box.
         Tick(TicksToSettledPicker - 18);
-        Assert.Equal(new[] { AlundraSaveScreenDirector.MessageCloseSfx }, _sound.Played);
+        Assert.Equal(new[] { SaveScreenDirector.MessageCloseSfx }, _sound.Played);
         Assert.True(Director.IsPickerActive);
         Assert.Equal(PickHeading, Director.MessageLine0.Text);
         Assert.Equal((32, 184), (Director.MessageLine0.X, Director.MessageLine0.Y));
@@ -184,11 +184,11 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         AnswerAndClose(0);
 
         // 0x3f8, then 0xA5 and the write at the end of 0x10's wait.
-        TickUntilState(AlundraSaveScreenDirector.StateWrite);
+        TickUntilState(SaveScreenDirector.StateWrite);
         Assert.True(Director.IsMessageBoxDrawn);
         Assert.Equal(Saving, Director.MessageLine0.Text);
         Assert.Empty(_slots.SaveCalls);
-        TickUntilState(AlundraSaveScreenDirector.StateSaved);
+        TickUntilState(SaveScreenDirector.StateSaved);
         var call = Assert.Single(_slots.SaveCalls);
         Assert.Equal("slot1", call.Slot);
         Assert.Equal(SaveGameFormat.Binary, call.Format);
@@ -196,16 +196,16 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.Equal(save.BuildMetadata(), call.Metadata);
 
         // 0x3fe, 0x16: "Histoire enregistrée.", which waits for Square: nothing passes alone.
-        TickUntilState(AlundraSaveScreenDirector.StateWaitSquare);
+        TickUntilState(SaveScreenDirector.StateWaitSquare);
         Assert.Equal((Saved, string.Empty), (Director.MessageLine0.Text, Director.MessageLine1.Text));
         Tick(300);
-        Assert.Equal(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
+        Assert.Equal(SaveScreenDirector.StateWaitSquare, Director.State);
         Assert.True(Director.IsActive);
         Assert.Equal(GameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
 
         // Square closes the message; the end chain; MenuOpen cleared at 0x63.
         Press(PadState.Square);
-        TickUntilState(AlundraSaveScreenDirector.StateIdle);
+        TickUntilState(SaveScreenDirector.StateIdle);
         Assert.False(Director.IsActive);
         Assert.Equal(0u, State.PlayerControlFlags);
         Assert.Single(_slots.SaveCalls);
@@ -213,24 +213,24 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.Equal(
             new[]
             {
-                AlundraSaveScreenDirector.StateExamine, AlundraSaveScreenDirector.StateExamineWait,
-                AlundraSaveScreenDirector.StateReadWait, AlundraSaveScreenDirector.StatePick,
-                AlundraSaveScreenDirector.StatePickWait, AlundraSaveScreenDirector.StateWrite,
-                AlundraSaveScreenDirector.StateSaved, AlundraSaveScreenDirector.StateSavedMessage,
-                AlundraSaveScreenDirector.StateWaitSquare, AlundraSaveScreenDirector.StateBlankMessage,
-                AlundraSaveScreenDirector.StateCloseWait, AlundraSaveScreenDirector.StateHud,
-                AlundraSaveScreenDirector.StateEndWait, AlundraSaveScreenDirector.StateEnd,
+                SaveScreenDirector.StateExamine, SaveScreenDirector.StateExamineWait,
+                SaveScreenDirector.StateReadWait, SaveScreenDirector.StatePick,
+                SaveScreenDirector.StatePickWait, SaveScreenDirector.StateWrite,
+                SaveScreenDirector.StateSaved, SaveScreenDirector.StateSavedMessage,
+                SaveScreenDirector.StateWaitSquare, SaveScreenDirector.StateBlankMessage,
+                SaveScreenDirector.StateCloseWait, SaveScreenDirector.StateHud,
+                SaveScreenDirector.StateEndWait, SaveScreenDirector.StateEnd,
             },
             VisitedStates());
 
         // The waits of AdvanceFadeOldCheck: 0x13 is 20 ticks, 0x0B 12; 0x3f6 starts at 0x11 after the empty 0x0D.
-        Assert.Equal(20, TicksIn(AlundraSaveScreenDirector.StateExamineWait));
-        Assert.Equal(20, TicksIn(AlundraSaveScreenDirector.StateReadWait));
-        Assert.Equal(20, TicksIn(AlundraSaveScreenDirector.StateWrite));
-        Assert.Equal(20, TicksIn(AlundraSaveScreenDirector.StateSaved));
-        Assert.Equal(3, TicksIn(AlundraSaveScreenDirector.StateCloseWait));
-        Assert.Equal(12, TicksIn(AlundraSaveScreenDirector.StateEndWait));
-        Assert.Equal(1, TicksIn(AlundraSaveScreenDirector.StateEnd));
+        Assert.Equal(20, TicksIn(SaveScreenDirector.StateExamineWait));
+        Assert.Equal(20, TicksIn(SaveScreenDirector.StateReadWait));
+        Assert.Equal(20, TicksIn(SaveScreenDirector.StateWrite));
+        Assert.Equal(20, TicksIn(SaveScreenDirector.StateSaved));
+        Assert.Equal(3, TicksIn(SaveScreenDirector.StateCloseWait));
+        Assert.Equal(12, TicksIn(SaveScreenDirector.StateEndWait));
+        Assert.Equal(1, TicksIn(SaveScreenDirector.StateEnd));
     }
 
     [Fact]
@@ -239,21 +239,21 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         StartAndOpenPicker();
         AnswerAndClose(1);
 
-        TickUntilState(AlundraSaveScreenDirector.StateIdle);
+        TickUntilState(SaveScreenDirector.StateIdle);
         Assert.Empty(_slots.SaveCalls);
         Assert.Equal(0u, State.PlayerControlFlags);
 
         var visited = VisitedStates();
-        var fromPick = visited.SkipWhile(s => s != AlundraSaveScreenDirector.StatePickWait).ToList();
+        var fromPick = visited.SkipWhile(s => s != SaveScreenDirector.StatePickWait).ToList();
         Assert.Equal(
             new[]
             {
-                AlundraSaveScreenDirector.StatePickWait, AlundraSaveScreenDirector.StateWrite,
-                AlundraSaveScreenDirector.StateCloseWait, AlundraSaveScreenDirector.StateHud,
-                AlundraSaveScreenDirector.StateEndWait, AlundraSaveScreenDirector.StateEnd,
+                SaveScreenDirector.StatePickWait, SaveScreenDirector.StateWrite,
+                SaveScreenDirector.StateCloseWait, SaveScreenDirector.StateHud,
+                SaveScreenDirector.StateEndWait, SaveScreenDirector.StateEnd,
             },
             fromPick);
-        Assert.Equal(20, TicksIn(AlundraSaveScreenDirector.StateCloseWait));
+        Assert.Equal(20, TicksIn(SaveScreenDirector.StateCloseWait));
     }
 
     [Fact]
@@ -266,10 +266,10 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.Equal((Failed0, Failed1), (Director.MessageLine0.Text, Director.MessageLine1.Text));
         Assert.Equal((32, 240 + 12 + 16), (Director.MessageLine1.X, Director.MessageLine1.Y));
         Tick(200);
-        Assert.Equal(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
+        Assert.Equal(SaveScreenDirector.StateWaitSquare, Director.State);
 
         Press(PadState.Square);
-        TickUntilState(AlundraSaveScreenDirector.StateIdle);
+        TickUntilState(SaveScreenDirector.StateIdle);
         Assert.Equal(0u, State.PlayerControlFlags);
         Assert.True(_slots.NothingCalled);
     }
@@ -319,7 +319,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Press(PadState.Up);
         Tick(20);
         AnswerAndClose(0);
-        TickUntilState(AlundraSaveScreenDirector.StateWaitSquare);
+        TickUntilState(SaveScreenDirector.StateWaitSquare);
 
         Assert.Equal(4, _slots.LoadCalls.Count);
     }
@@ -379,7 +379,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
         // Still overwritable: OUI writes the capture itself.
         AnswerAndClose(0);
-        TickUntilState(AlundraSaveScreenDirector.StateSaved);
+        TickUntilState(SaveScreenDirector.StateSaved);
         Assert.Same(capture, Assert.Single(_slots.SaveCalls).Data);
     }
 
@@ -551,7 +551,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         }
 
         Assert.Equal(37, taken);
-        Assert.Equal(AlundraSaveScreenDirector.StatePickWait, Director.State);
+        Assert.Equal(SaveScreenDirector.StatePickWait, Director.State);
 
         Tick(16);
         Assert.Equal(new[] { (16, -57), (16, -57), (16, -57) }, new[] { 0, 1, 2 }.Select(Director.RecordPosition));
@@ -569,7 +569,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.False(Director.IsRecordDrawn(1));
 
         Tick();
-        Assert.Equal(AlundraSaveScreenDirector.StatePickWait, Director.State); // then 0x3f8's own wait.
+        Assert.Equal(SaveScreenDirector.StatePickWait, Director.State); // then 0x3f8's own wait.
     }
 
     // ---- L5: OUI/NON through the dialogue director ---------------------------------------------------------------
@@ -599,7 +599,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.False(Dialogue.IsAwaitingChoice);
         Assert.Equal(GameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
 
-        TickUntilState(AlundraSaveScreenDirector.StateEnd);
+        TickUntilState(SaveScreenDirector.StateEnd);
         Assert.Equal(GameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
         Tick();
         Assert.Equal(0u, State.PlayerControlFlags);
@@ -626,7 +626,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
         Assert.Equal(19, taken); // E19.f3c (D-E19-93): armed 26 ticks after the Cross, past the first interactive pass (19): pressed at the next pass, answered in the tick of the close pass
 
-        TickUntilState(AlundraSaveScreenDirector.StateWaitSquare);
+        TickUntilState(SaveScreenDirector.StateWaitSquare);
         Assert.Equal("slot2", Assert.Single(_slots.SaveCalls).Slot);
     }
 
@@ -641,7 +641,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Press(PadState.Cross);
         Assert.False(Dialogue.IsAwaitingChoice);
 
-        TickUntilState(AlundraSaveScreenDirector.StateIdle);
+        TickUntilState(SaveScreenDirector.StateIdle);
         Assert.Empty(_slots.SaveCalls);
         Assert.Equal(0u, State.PlayerControlFlags);
         Assert.Contains(logs.Warnings, w => w.Contains("no dialogue presenter"));
@@ -687,9 +687,9 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         StartAndOpenPicker();
         AnswerAndClose(0);
 
-        TickUntilState(AlundraSaveScreenDirector.StateWaitSquare);
-        Assert.Contains(AlundraSaveScreenDirector.StateFailed, _stateLog);
-        Assert.DoesNotContain(AlundraSaveScreenDirector.StateSaved, _stateLog);
+        TickUntilState(SaveScreenDirector.StateWaitSquare);
+        Assert.Contains(SaveScreenDirector.StateFailed, _stateLog);
+        Assert.DoesNotContain(SaveScreenDirector.StateSaved, _stateLog);
         Assert.Equal((Failed0, Failed1), (Director.MessageLine0.Text, Director.MessageLine1.Text));
     }
 
@@ -700,8 +700,8 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         AlundraSaveGameDirector.Instance.SaveSlots = new AlundraEngineSaveSlots(() => throw new IOException("disk gone"));
         AnswerAndClose(0);
 
-        TickUntilState(AlundraSaveScreenDirector.StateWaitSquare);
-        Assert.Contains(AlundraSaveScreenDirector.StateFailed, _stateLog);
+        TickUntilState(SaveScreenDirector.StateWaitSquare);
+        Assert.Contains(SaveScreenDirector.StateFailed, _stateLog);
         Assert.Equal(Failed0, Director.MessageLine0.Text);
     }
 
@@ -712,8 +712,8 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         _slots.ThrowOnSave = true;
         AnswerAndClose(0);
 
-        TickUntilState(AlundraSaveScreenDirector.StateWaitSquare);
-        Assert.Contains(AlundraSaveScreenDirector.StateFailed, _stateLog);
+        TickUntilState(SaveScreenDirector.StateWaitSquare);
+        Assert.Contains(SaveScreenDirector.StateFailed, _stateLog);
     }
 
     // ---- L5: IsActive, MenuOpen, the inventory -------------------------------------------------------------------
@@ -722,14 +722,14 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     public void IsActiveAndMenuOpen_HoldOverTheWholeFlow_AndTheInventoryNeverOpens()
     {
         var tables = new ItemTables(FindProjectRoot());
-        AlundraInventoryDirector.Instance.AttachToWorld(State, tables, null);
-        AlundraSubInventoryDirector.Instance.AttachToWorld(State, tables, null);
+        InventoryDirector.Instance.AttachToWorld(State, tables, null);
+        SubInventoryDirector.Instance.AttachToWorld(State, tables, null);
 
         Assert.True(Director.Start(ValidSave()));
         Tick();
         StartAndOpenPickerTail();
         AnswerAndClose(0);
-        while (Director.State != AlundraSaveScreenDirector.StateWaitSquare)
+        while (Director.State != SaveScreenDirector.StateWaitSquare)
         {
             Assert.True(Director.IsActive);
             Assert.Equal(GameState.PlayerControlBits.MenuOpen, State.PlayerControlFlags);
@@ -739,16 +739,16 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         // J9: even with the flags cleared by hand, the save screen alone keeps the inventory shut.
         State.PlayerControlFlags = 0;
         InventoryTick(PadState.Start);
-        Assert.False(AlundraInventoryDirector.Instance.IsActive);
+        Assert.False(InventoryDirector.Instance.IsActive);
         State.PlayerControlFlags = GameState.PlayerControlBits.MenuOpen;
 
         Press(PadState.Square);
-        TickUntilState(AlundraSaveScreenDirector.StateIdle);
+        TickUntilState(SaveScreenDirector.StateIdle);
         Assert.False(Director.IsActive);
 
         InventoryTick(0);
         InventoryTick(PadState.Start);
-        Assert.True(AlundraInventoryDirector.Instance.IsActive);
+        Assert.True(InventoryDirector.Instance.IsActive);
     }
 
     private void StartAndOpenPickerTail() => Tick(TicksToSettledPicker - 1);
@@ -847,7 +847,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.True(Director.IsPickerActive);
         BookTick(hold: PadState.Cross);
         Assert.True(Dialogue.SelectChoiceForTests(0)); // the screen's OUI.
-        for (var i = 0; i < 400 && Director.State != AlundraSaveScreenDirector.StateWaitSquare; i++)
+        for (var i = 0; i < 400 && Director.State != SaveScreenDirector.StateWaitSquare; i++)
         {
             BookTick();
         }

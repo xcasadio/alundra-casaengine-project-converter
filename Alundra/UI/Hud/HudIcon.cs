@@ -7,14 +7,14 @@ namespace Alundra.UI.Hud;
 
 /// <summary>E13.c S3 (docs/plan-e13c-icones-hud.md): one equipment icon - the <c>.sprite</c> asset that is an
 /// item's portrait - and the box it is drawn in, as a NATIVE pixel rectangle, same convention as
-/// <see cref="AlundraHudTile"/>. Its own record rather than a new <see cref="HudGlyph"/>: the 24 glyphs are a
+/// <see cref="HudTile"/>. Its own record rather than a new <see cref="HudGlyph"/>: the 24 glyphs are a
 /// fixed set loaded once, an icon is whichever item is equipped, known only as an asset id. Its size is not
 /// carried here - it is the sprite's own, as the original takes <c>Swidth</c>/<c>Sheight</c> straight from
 /// the image (GraphicManager.cs:1933-1934) - so the screen, which loads the sprite, centres it in the box
 /// through <see cref="ScreenLeft"/> and <see cref="ScreenTop"/>. The original draws the icon's top-left at
 /// the box's top-left instead; the author's D-E13D-10 (2026-09-21, docs/plan-e13d-inventaire.md) centres
 /// every icon in its parent box rather than matching the original to the pixel.</summary>
-public readonly record struct AlundraHudIcon(
+public readonly record struct HudIcon(
     Guid AssetId, int BoxNativeX, int BoxNativeY, int BoxNativeWidth, int BoxNativeHeight)
 {
     /// <summary>The icon's left edge in screen pixels, centred in its box: the box's own left edge scaled

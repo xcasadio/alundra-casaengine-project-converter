@@ -17,7 +17,7 @@ using Alundra.UI.Messages;
 namespace Alundra.Tests.UI;
 
 /// <summary>
-/// E19.f2b1c T5 (docs/plan-e19-opcodes.md, F2B1C-R3/R4): the pixels of the text box screen on a real GPU. The real <see cref="AlundraTextBoxScreen"/> (its versioned XAML, its
+/// E19.f2b1c T5 (docs/plan-e19-opcodes.md, F2B1C-R3/R4): the pixels of the text box screen on a real GPU. The real <see cref="TextBoxScreen"/> (its versioned XAML, its
 /// view model written by <see cref="AlundraTextBoxViewModel.Apply"/> from the real dialogue box at the pass of each scenario) is drawn by an <c>MGDesktop</c> into a render target,
 /// read back, and compared texel for texel with the images composed from the binary's model (<c>docs/plan-e19-f2b1-annexe/pixels/*.png</c>, produced by
 /// <c>scripts/refcompose2.py</c>, which reads the binary outside the repository and is not rerun here) and with the points of <c>pixels.md</c>; the synthetic states (the cut
@@ -140,7 +140,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
         {
             var session = GetSession();
             var assets = TextBoxScreenAssets.New();
-            using var screen = new AlundraTextBoxScreen(assets, new UIFontRegistry(assets));
+            using var screen = new TextBoxScreen(assets, new UIFontRegistry(assets));
             var desktop = session.NewDesktop();
             session.Host.Bounds = new Rectangle(0, 0, 320 * k, 240 * k);
             var window = screen.BuildWindow(desktop);

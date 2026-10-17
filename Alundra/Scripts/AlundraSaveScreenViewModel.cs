@@ -11,8 +11,8 @@ namespace Alundra.Scripts;
 /// <summary>
 /// E16.e T4 (docs/plan-e16-etat-partie.md, L5, J4): what <c>UI/Screens/SaveScreen.xaml</c> binds - the message box
 /// and its two lines, the picker's four boxes with their tint and their two lines each.
-/// <see cref="AlundraSaveScreenPresenter"/> writes it once per logic tick from
-/// <see cref="AlundraSaveScreenDirector"/>'s already-ticked state (<see cref="Apply"/>); only the values that change
+/// <see cref="SaveScreenPresenter"/> writes it once per logic tick from
+/// <see cref="SaveScreenDirector"/>'s already-ticked state (<see cref="Apply"/>); only the values that change
 /// notify. Every text comes from the game (ETC texts, the computed summary), bounded by the director (L3).
 /// </summary>
 public sealed class AlundraSaveScreenViewModel : ViewModelBase
@@ -63,7 +63,7 @@ public sealed class AlundraSaveScreenViewModel : ViewModelBase
     /// message box and each record only on a tick the original draws them (a hidden one keeps its place and empties
     /// its lines); a record's tint as the colour of its box.
     /// </summary>
-    public void Apply(AlundraSaveScreenDirector director)
+    public void Apply(SaveScreenDirector director)
     {
         ArgumentNullException.ThrowIfNull(director);
         AppliedCount++;
@@ -84,7 +84,7 @@ public sealed class AlundraSaveScreenViewModel : ViewModelBase
         ApplyText(MessageLine0, director.MessageLine0, messageDrawn);
         ApplyText(MessageLine1, director.MessageLine1, messageDrawn);
 
-        for (var i = 0; i < AlundraSaveScreenDirector.RecordCount; i++)
+        for (var i = 0; i < SaveScreenDirector.RecordCount; i++)
         {
             var drawn = director.IsRecordDrawn(i);
             var box = _recordBoxes[i];

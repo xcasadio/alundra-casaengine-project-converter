@@ -11,7 +11,7 @@ namespace Alundra.UI.Choice;
 /// <see cref="AlundraChoiceViewModel"/>, which <c>ChoiceScreen.xaml</c> binds - one <see cref="Tick"/> right after each pass of the director (which runs the choice pass last),
 /// from <see cref="AlundraWorldProxy.Update(float)"/>, after the text box presenter's.
 /// </summary>
-public sealed class AlundraChoicePresenter
+public sealed class ChoicePresenter
 {
     private readonly DialogueDirector _director;
     private readonly AlundraChoiceViewModel _viewModel;
@@ -19,7 +19,7 @@ public sealed class AlundraChoicePresenter
     private readonly IUIViewRuntime? _uiView;
     private bool _pushed;
 
-    public AlundraChoicePresenter(
+    public ChoicePresenter(
         DialogueDirector director,
         AlundraChoiceViewModel viewModel,
         IUIScreen screen,

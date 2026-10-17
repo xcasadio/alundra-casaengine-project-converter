@@ -50,7 +50,7 @@ public sealed class AlundraNewGameEntryTests : IDisposable
         ScreenFadeDirector.Instance.ResetForTests();
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests(); // F5: joins the music-player singleton collection.
-        AlundraHudDirector.Instance.ResetForTests(); // E19.r R1: the map entry now arms the jauge.
+        HudDirector.Instance.ResetForTests(); // E19.r R1: the map entry now arms the jauge.
     }
 
     public void Dispose()
@@ -62,7 +62,7 @@ public sealed class AlundraNewGameEntryTests : IDisposable
         ScreenFadeDirector.Instance.ResetForTests();
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests();
-        AlundraHudDirector.Instance.ResetForTests();
+        HudDirector.Instance.ResetForTests();
     }
 
     // -----------------------------------------------------------------------------------------------
@@ -148,7 +148,7 @@ public sealed class AlundraNewGameEntryTests : IDisposable
     }
 
     private static bool HudScriptOpenRequestIsRaised()
-        => (GameState.Instance.GetFlag(AlundraHudDirector.ScriptOpenRequestFlag) & AlundraHudDirector.ScriptOpenRequestMask) != 0;
+        => (GameState.Instance.GetFlag(HudDirector.ScriptOpenRequestFlag) & HudDirector.ScriptOpenRequestMask) != 0;
 
     // -----------------------------------------------------------------------------------------------
     // Comportement d'origine : stats de nouvelle partie, et la jauge n'apparaît que sur demande de script.
@@ -176,7 +176,7 @@ public sealed class AlundraNewGameEntryTests : IDisposable
     {
         InitializeNewGameEntryOnMap389();
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Idle, AlundraHudDirector.Instance.Phase);
+        Assert.Equal(HudDirector.HudPhase.Idle, HudDirector.Instance.Phase);
     }
 
     /// <summary>E19.r R1 (0x8002c3d0): the map-entry block calls <c>InitializeHudPositionBeforeHide</c>; with the latch
@@ -184,11 +184,11 @@ public sealed class AlundraNewGameEntryTests : IDisposable
     [Fact]
     public void MapEntry_WithTheLatchSetInTheSession_ArmsTheHudAppearance()
     {
-        GameState.Instance.AddFlag(AlundraHudDirector.PersistentLatchFlag, AlundraHudDirector.PersistentLatchMask);
+        GameState.Instance.AddFlag(HudDirector.PersistentLatchFlag, HudDirector.PersistentLatchMask);
 
         InitializeNewGameEntryOnMap389();
 
-        Assert.Equal(AlundraHudDirector.HudPhase.Opening, AlundraHudDirector.Instance.Phase);
+        Assert.Equal(HudDirector.HudPhase.Opening, HudDirector.Instance.Phase);
     }
 
     // -----------------------------------------------------------------------------------------------

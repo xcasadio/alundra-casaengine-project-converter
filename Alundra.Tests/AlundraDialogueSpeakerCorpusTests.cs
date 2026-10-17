@@ -112,7 +112,7 @@ public sealed class AlundraDialogueSpeakerCorpusTests
             var opened = rig.Run(owner, codes);
             var box = rig.Director.NameBox;
             var gotName = box.IsSlotOpen;
-            var gotPortrait = rig.Director.Portrait.State != AlundraInventoryPortrait.StateIdle;
+            var gotPortrait = rig.Director.Portrait.State != InventoryPortrait.StateIdle;
             if (!opened || gotName != expectName || gotPortrait != expectPortrait || (gotName && box.NameId != expectedNameId))
             {
                 failures.Add($"map {site.Map} {site.Op} @{site.Pc} ({site.Kind}, type {site.SpriteType}): opened {opened}, name {(gotName ? box.NameId : -1)}/{(expectName ? expectedNameId : -1)}, portrait {gotPortrait}/{expectPortrait}");

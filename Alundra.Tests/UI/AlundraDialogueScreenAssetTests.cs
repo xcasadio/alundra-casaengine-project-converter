@@ -92,7 +92,7 @@ public sealed class AlundraDialogueScreenAssetTests
         return assets;
     }
 
-    private static MGWindow BuildWindow(AlundraDialoguePresenter presenter)
+    private static MGWindow BuildWindow(DialoguePresenter presenter)
     {
         var (desktop, _) = HeadlessUiTestHarness.NewDesktop();
         return presenter.ScreenForTests.BuildWindow(desktop);
@@ -113,7 +113,7 @@ public sealed class AlundraDialogueScreenAssetTests
     [Fact]
     public void WithTheGamesAssets_ThePresenterShowsTheProjectMarkup_AndDrivesItsLine()
     {
-        var presenter = new AlundraDialoguePresenter(new NullUIViewRuntime(), assetContentManager: NewAssets());
+        var presenter = new DialoguePresenter(new NullUIViewRuntime(), assetContentManager: NewAssets());
         var window = BuildWindow(presenter);
         presenter.ScreenForTests.Show();
 
@@ -129,7 +129,7 @@ public sealed class AlundraDialogueScreenAssetTests
     [Fact]
     public void WithoutTheGamesAssets_ThePresenterKeepsTheBuiltInBox()
     {
-        var presenter = new AlundraDialoguePresenter(new NullUIViewRuntime());
+        var presenter = new DialoguePresenter(new NullUIViewRuntime());
 
         Assert.NotEqual(AlundraWindowName, BuildWindow(presenter).Name);
     }
@@ -138,7 +138,7 @@ public sealed class AlundraDialogueScreenAssetTests
     public void Dispose_GivesTheProjectMarkupBack()
     {
         var assets = NewAssets();
-        var presenter = new AlundraDialoguePresenter(new NullUIViewRuntime(), assetContentManager: assets);
+        var presenter = new DialoguePresenter(new NullUIViewRuntime(), assetContentManager: assets);
         Assert.Equal(0, assets.CollectUnreferenced());
 
         presenter.Dispose();
@@ -152,7 +152,7 @@ public sealed class AlundraDialogueScreenAssetTests
     {
         var assets = NewAssets();
         var proxy = new AlundraWorldProxy();
-        proxy.AttachDialoguePresenterForTests(new AlundraDialoguePresenter(new NullUIViewRuntime(), assetContentManager: assets));
+        proxy.AttachDialoguePresenterForTests(new DialoguePresenter(new NullUIViewRuntime(), assetContentManager: assets));
 
         proxy.OnEndPlay(null!);
 

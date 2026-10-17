@@ -10,7 +10,7 @@ namespace Alundra.Scripts;
 /// <summary>
 /// The sub-inventory screen's view model (parent ADR-0002, engine ADR-0038): what
 /// <c>UI/Screens/SubInventoryScreen.xaml</c> binds, one named member per element of the screen.
-/// <see cref="AlundraSubInventoryPresenter"/> writes it once per logic tick through <see cref="Apply"/>, from
+/// <see cref="SubInventoryPresenter"/> writes it once per logic tick through <see cref="Apply"/>, from
 /// the composer's <see cref="SubInventoryDisplayModel"/>; only the values that change notify, so a settled
 /// sub-inventory pushes nothing to the screen. Reuses <see cref="InventoryImageViewModel"/>/
 /// <see cref="InventoryTextViewModel"/> from <see cref="AlundraInventoryViewModel"/> (E13.d SI4 brief) - the

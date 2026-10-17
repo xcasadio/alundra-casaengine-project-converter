@@ -1905,7 +1905,7 @@ public static class PlayerManager
 
     /// <summary>
     /// Opcode <c>0xC3</c> (<c>Script_195_0C3</c>, <c>0x80041D6C</c>): <c>Hp = HpMax</c> on the hero entity (<c>0x80041D7C-0x80041D84</c>), <c>SetPlayerMp(GetPlayerMpMax())</c>, then <c>InitializeHpAndMp</c>
-    /// (<c>0x8004B730</c>): the four displayed counters of the HUD (<see cref="AlundraHudDirector"/>) jump to the maxima of the stats, so the hearts and pips fill at once instead of rolling up. Without a hero that
+    /// (<c>0x8004B730</c>): the four displayed counters of the HUD (<see cref="HudDirector"/>) jump to the maxima of the stats, so the hearts and pips fill at once instead of rolling up. Without a hero that
     /// carries its life the stats are filled instead (<see cref="SetPlayerHp"/> to the stats' own maximum).
     /// </summary>
     public static void RestoreLifeAndMagic(GameState state, AlundraEntityScriptProxy? hero)
@@ -1920,7 +1920,7 @@ public static class PlayerManager
         }
 
         SetPlayerMp(state, state.PlayerStats.MpMax);
-        AlundraHudDirector.Instance.SnapDisplayedLifeAndMagic(state.PlayerStats);
+        HudDirector.Instance.SnapDisplayedLifeAndMagic(state.PlayerStats);
     }
 
     /// <summary>PlayerManager.SetPlayerHp (0x8004dd30, PlayerManager.cs:1734-1761, IsGodMode override at
