@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
-2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; R2 détaillée et READY. Démarre après E20.e0a4 (plan E20, §1.16.4).
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; R3 détaillée, à relire. Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -569,19 +569,84 @@ un des 9 types cités déplacé ou renommé ; `prove_r2.py` rouge ; un processus
 
 **Retour arrière.** `git revert` des commits de la tranche, dans l'ordre inverse (aucune donnée ni export touchés).
 
-## 7. Tranche R3 — Renommages ⏳
+**Vérification de R2 (2026-10-17) : CONFIRMED** par un verifier frais (`7a15453` à `27eca9b`). Rejoué : `check_names.py --tree --stage
+r2` à 0 écart (207 fichiers, 220 types) ; la solution en Release (copie neutralisée) et en Debug, y compris sans construction
+incrémentale ; `Alundra.Tests` 5 097 / 0 échec dans les deux ; la garde des traces ; le `cmp` ; `prove_r2.py --all` ; une preuve
+indépendante (appariement par la table, corps comparés à l'octet : chaque bloc scindé est un bloc contigu de l'origine, aucune ligne perdue,
+le BOM gardé ; les seules lignes de corps changées sont 7 qualifications réécrites ; dans les tests et `tools/AlundraTestSaves`, 1 292 `using`
+ajoutés, 95 `using Alundra.Scripts;` retirés, aucune ligne `namespace`, 8 paires de qualifications ou de chemins) ; aucun type renommé ;
+les 10 fichiers cités en place ; `git log --follow` retrouve l'historique complet des 120 fichiers déplacés (renommages R100) ; aucun
+`cref` périmé introduit (construction avec un fichier de documentation dans le scratchpad) ; le périmètre des chemins. **Aucun constat P0
+à P3.** Reportés (P4) : les `using` ajoutés suivent l'ordre des domaines, pas l'ordre alphabétique (par exemple
+`AlundraHudPresenterTests.cs:13-19`) ; le message d'erreur d'`AlundraHudPresenterTests.cs:477` cite encore l'ancien chemin ; les 20
+premiers commits de la tranche portent « Claude Sonnet 5.5 » dans leur ligne d'attribution (non réécrits). Reste la recette de l'auteur.
 
-**But.** Plus de préfixe : chaque type sous son nom de l'étape `r3` (les 9 types cités gardent le leur jusqu'à R4) ; les fichiers renommés
-comme leurs types (`git mv`).
+## 7. Tranche R3 — Renommages ⏳ (détaillée le 2026-10-17, à relire)
 
-**Règles.** Renommages par outil (Roslyn ou l'IDE, §3), jamais par remplacement de texte global ; l'outil choisi et prouvé en T0 de la
-tranche ; les littéraux de journal qui portent un nom de classe suivent, et les tests qui les lisent avec eux ; les clés de données
-(`AlundraCells`, `AlundraWallPlacements`, `AlundraFloorPlacements`, `AlundraCompanionJson`) et les noms d'assets ne bougent pas. Les
-propriétés typées par une interface et nommées comme une classe (`WorldProxy`, environ vingt sites, par exemple
-`ScreenFadeDirector => AlundraScreenFadeDirector.Instance`) sont qualifiées par le namespace. `AlundraEventProgramRunner` →
-`EventProgramRunner` et `EventProgramRunner.cs` → `IEventProgramRunner.cs` dans le même commit. Un commit par domaine, chacun construit et vert.
+**But.** Chaque type sous son nom de l'étape `r3` de la table, chaque fichier à son chemin `r3` : plus de préfixe `Alundra`, sauf les 9
+types cités par les données (R4) ; **aucun changement de comportement** ; les clés de données et les noms d'assets intacts.
 
-**Acceptation.** Comme R2 avec `--stage r3`, plus : aucun type préfixé hors des 9 de R4 (recherche).
+**Faits (2026-10-17, HEAD `27eca9b`).** La table : 148 lignes renommées (147 types, la classe partielle `AlundraEntityScriptProxy` comptant deux fois), dont 138 types en
+R3 (les 9 cités attendent R4 ; leurs types
+secondaires non cités, par exemple `AlundraPadState` → `PadState` et `AlundraMapEvent` → `MapEvent`, se renomment ici) ; les fichiers
+renommés comme leurs types (`r3_path`). Les noms spéciaux : `AlundraMusicPlayer` → `BgmPlayer`, `AlundraRandom` → `GameRandom`,
+`AlundraSoundBank` → `SfxBank`, `AlundraEventProgramRunner` → `EventProgramRunner` (et le fichier `Events/EventProgramRunner.cs`, qui
+porte l'interface `IEventProgramRunner`, devient `Events/IEventProgramRunner.cs` dans le même commit). Le relevé du 2026-10-16
+(`scratchpad/dll-structure/couplings/member-clash.txt`) : des propriétés portent déjà le nom futur d'un type, parfois d'un autre type
+(par exemple `WorldProxy.ScreenFadeDirector` de type `IAlundraScreenFadeDirector`, `DialogueDirector`, `SoundPlayer`, `MusicPlayer`,
+`BgmFadeDirector` ; `GameState` sur 32 sites, du même type) ; un renommage sémantique doit qualifier là où le nom simple se lierait au
+membre. Les littéraux de chaîne qui portent un nom de type (`couplings/lit-dll.txt` : 180 occurrences dans 48 fichiers, surtout des
+préfixes de journal, par exemple `AlundraWorldProxy` 38, `AlundraEventProgramRunner` 20 ; `lit-tests.txt` : 56 lignes de tests) ; des
+clés de données portent le préfixe sans être des types (`AlundraCells`, `AlundraWallPlacements`, `AlundraFloorPlacements`,
+`AlundraCompanionJson`, §2 règle (6)). Les paquets de Roslyn sont dans le cache NuGet local (`microsoft.codeanalysis.workspaces.msbuild`
+4.14.0, `microsoft.codeanalysis.csharp.workspaces` 4.14.0, `microsoft.build.locator` 1.7.8) : un outil de renommage se construit sans
+téléchargement.
+
+**Propriétaire, chemins, budget.** Un `executor` (l'outil de renommage et le relevé des littéraux s'écrivent avec jugement ;
+l'application est ensuite mécanique). Chemins : `Alundra/**` (hors `bin/`, `obj/`), `Alundra.Tests/**`, `tools/AlundraTestSaves/**`,
+`tools/dll-structure/` (T0 ; puis l'outil de renommage et `prove_r3.py` pour les seules corrections de leurs règles, par un commit d'outil
+suivi du rejeu), ce plan (§7). Aucun export, aucune donnée, aucun fichier du convertisseur ni de `docs/` hors ce plan (R6), aucun
+sous-module, aucun nom de classe de test (R5). Le jeu et l'éditeur fermés pendant la tranche. Copie neutralisée comme en R2. Budget : une
+passe d'exécution, une passe de correction au plus ; un verifier frais à la fin.
+
+**Tâches.**
+- T0 (aucun code de la DLL) : (a) **l'outil de renommage**, `tools/dll-structure/rename-tool/` (une petite console C# hors de la
+  solution, `Microsoft.CodeAnalysis.Workspaces.MSBuild` et `Microsoft.Build.Locator` des versions du cache local, sans téléchargement ;
+  si un paquet manque, arrêt et question) : elle ouvre `Alundra.Tests/Alundra.Tests.csproj` (qui charge `Alundra`) et
+  `tools/AlundraTestSaves/AlundraTestSaves.csproj` dans un même espace de travail, et applique `Renamer.RenameSymbolAsync` aux types d'un
+  domaine selon `table.json` (ancien nom `r2` → nom `r3`), sans renommer dans les commentaires ni les chaînes, en gardant la résolution de
+  conflits de Roslyn (qualification là où le nom simple se lierait à un membre) ; elle écrit les fichiers changés en gardant leurs fins
+  de ligne et leur BOM ; elle refuse un domaine si un conflit reste non résolu (arrêt). La preuve sur un premier type : renommer
+  `AlundraRandom` → `GameRandom` sur une copie de l'arbre hors du dépôt, construire, `prove_r3.py` vert. (b) **le relevé des littéraux**,
+  versé dans `tools/dll-structure/r3-literals.tsv` : chaque littéral de chaîne de la DLL, des tests et de `tools/AlundraTestSaves` qui
+  contient un ancien nom de type de la table, classé en (1) nom de la classe qui écrit (préfixe de journal ou message qui la nomme) :
+  renommé avec elle, et les tests qui le lisent avec lui ; (2) clé de données, nom d'asset ou de fichier, nom d'une donnée exportée : jamais
+  changé ; (3) autre : arrêt et question si son sens n'est pas établi. (c) `tools/dll-structure/prove_r3.py`, qui apparie les fichiers par
+  la table : un commit de déplacement ne contient que des renommages à 100 % ; pour un commit de renommage, chaque ligne changée, une fois
+  remplacés mot à mot les anciens noms de la table par leurs noms `r3`, égale l'ancienne ligne, à l'ajout près d'une qualification de
+  namespace ou de `global::` posée par Roslyn, ou bien c'est un littéral de classe (1) du relevé ; aucune ligne d'une clé de classe (2) ne
+  change. (d) Les comptes de départ.
+- T1 à T20 — par domaine, dans l'ordre de R2, **deux commits** : (1) `git mv` des fichiers du domaine vers leur nom `r3` (le contenu
+  identique à l'octet ; le domaine `Events` fait d'abord `EventProgramRunner.cs` → `IEventProgramRunner.cs` puis
+  `AlundraEventProgramRunner.cs` → `EventProgramRunner.cs`), construction de la solution en Release (copie neutralisée), `prove_r3.py`,
+  commit `refactor(dll): rename the <domaine> files after their types (R3, git mv only)` ; (2) l'outil de renommage sur les types du
+  domaine, puis les littéraux de classe (1) du domaine selon le relevé, construction, `prove_r3.py` vert, `Alundra.Tests` Release vert, même
+  compte, `check_names.py --tree --stage r3` dont les écarts restants ne portent que sur les domaines pas encore faits, commit
+  `refactor(dll): drop the Alundra prefix in the <domaine> domain (R3)`. Une erreur de construction ne se corrige que par une règle de
+  l'outil (commit d'outil, rejeu du temps 2 depuis l'état du commit (1)) : sinon arrêt.
+- T21 — Clôture : `check_names.py --tree --stage r3` **vert (sortie 0)** ; aucun type déclaré dans `Alundra/` dont le nom commence par
+  `Alundra` ou `IAlundra`, hors des 9 cités (recherche) ; la solution en Release (copie neutralisée) puis en Debug, 0 erreur ; `Alundra.Tests`
+  Release et Debug, même compte qu'en T0 ; `cmp` ; garde des traces ; `git log --follow` sur les fichiers renommés ; `prove_r3.py --all` ;
+  les clés de données de la règle (6) toujours présentes (recherche) ; ce plan (§7 et résultats).
+
+**Acceptation.** Les preuves de T21 ; aucune valeur attendue de test modifiée hors des littéraux de classe (1) du relevé ; recette courte de
+l'auteur (nouvelle partie jusqu'au premier écran jouable, F5, F6, F9).
+
+**Arrêts.** Un conflit de renommage que Roslyn ne résout pas ; un littéral de classe (3) ; une ligne changée que `prove_r3.py` n'explique pas ;
+un test qui change de valeur ou de compte ; une clé de données ou un nom d'asset touché ; un des 9 types cités renommé ; un paquet absent du
+cache.
+
+**Retour arrière.** `git revert` des commits de la tranche, dans l'ordre inverse.
 
 ## 8. Tranche R4 — Les 9 types cités par les données ; second export ⏳
 
