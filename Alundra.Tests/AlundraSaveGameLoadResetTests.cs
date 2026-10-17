@@ -40,7 +40,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     // ---- AlundraGameState.ResetSessionForLoad (K8 step 1) ------------------------------------------------

@@ -57,7 +57,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     private static string FindProjectRoot()

@@ -30,8 +30,8 @@ namespace Alundra.UI.Inventory;
 /// system is ported here at all). <c>g_globalTransitionState</c> (the memory-card/save-menu state machine,
 /// <c>UI/MemoryCardManager.cs</c>) is ported since E16.e as <see cref="AlundraSaveScreenDirector.IsActive"/>.
 /// The map-entry delay <c>g_warpDelayFrames</c> is ported since E13.d SI12, as a duration
-/// (<see cref="AlundraWarpDirector.IsWarpDelayRunning"/>). One guard has no line in the original: no opening
-/// while a warp transition runs (<see cref="AlundraWarpDirector.IsTransitionInProgress"/>, SD5, D-E13D-38) - the
+/// (<see cref="WarpDirector.IsWarpDelayRunning"/>). One guard has no line in the original: no opening
+/// while a warp transition runs (<see cref="WarpDirector.IsTransitionInProgress"/>, SD5, D-E13D-38) - the
 /// original simply never runs the trigger during its transition loop; see <see cref="TryTrigger"/>.</para>
 ///
 /// <para><b>Where it sits in the tick</b> (E19.u, docs/plan-e19-opcodes.md section 1.2y, D-E19-103, ADR-0050):
@@ -371,7 +371,7 @@ public sealed class AlundraInventoryDirector
 
         // GameEngine.cs:1562-1564 (0x8002bc58-0x8002bc68): the map-entry delay is consumed every tick, open or
         // not, before the trigger tests it - one logic tick of time (plan E13.d SI12, D-E13D-36).
-        AlundraWarpDirector.Instance.AdvanceWarpDelay(ScriptedMotion.FixedTickSeconds);
+        WarpDirector.Instance.AdvanceWarpDelay(ScriptedMotion.FixedTickSeconds);
 
         // D-E13D-22: a HEAD run by the post-process last tick has a SETUP still pending - run it alone,
         // before the trigger/idle check (RunDisplayInventoryHeadFromPostProcess's own doc), no trigger and
@@ -440,14 +440,14 @@ public sealed class AlundraInventoryDirector
         // map - a defect of the original, corrected (D-E13D-30). Since E19.u (ADR-0050) this holds for a warp that a
         // map event starts on the very tick Start is pressed too: the trigger runs after that tick's map events, sees
         // the warp and refuses; before E19.u the inventory opened first and froze the map events, so that warp did not start.
-        if (AlundraWarpDirector.Instance.IsTransitionInProgress)
+        if (WarpDirector.Instance.IsTransitionInProgress)
         {
             return false;
         }
 
         // GameEngine.cs:1573 - StaticVariables.g_warpDelayFrames == 0 (0x8002bcb8, read after the decrement at
         // the head of Tick): no opening while the map-entry delay runs - 0.2 s since E13.d SI12 (D-E13D-36).
-        if (AlundraWarpDirector.Instance.IsWarpDelayRunning)
+        if (WarpDirector.Instance.IsWarpDelayRunning)
         {
             return false;
         }

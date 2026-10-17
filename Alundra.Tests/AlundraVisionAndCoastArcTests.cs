@@ -154,8 +154,8 @@ public sealed class AlundraVisionAndCoastArcTests
         AssertNothingSkippedOrExceeded(arc);
 
         // 3. The rest, in the order of the plan.
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
-        var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
+        var arrival = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(476u, arrival.MapIndex);
         Assert.Equal(786432, arrival.PosX);
         Assert.Equal(524288, arrival.PosY);
@@ -362,8 +362,8 @@ public sealed class AlundraVisionAndCoastArcTests
         AssertNothingSkippedOrExceeded(arc);
 
         // 3. The rest, in the order of the plan.
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
-        var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
+        var arrival = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(163u, arrival.MapIndex);
         Assert.Equal(63700992, arrival.PosX);
         Assert.Equal(9961472, arrival.PosY);

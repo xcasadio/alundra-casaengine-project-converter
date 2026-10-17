@@ -33,7 +33,7 @@ public sealed class AlundraHitEffectWorldTests : IDisposable
     public AlundraHitEffectWorldTests()
     {
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
@@ -41,7 +41,7 @@ public sealed class AlundraHitEffectWorldTests : IDisposable
         GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     private sealed record SlotView(int Effect, int Mode, IEffectAnchor? Anchor, int DepthOffset, int Index);

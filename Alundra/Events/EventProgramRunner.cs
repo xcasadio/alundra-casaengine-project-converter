@@ -1863,9 +1863,9 @@ public sealed class EventProgramRunner : IEventProgramRunner
                     state.Result = 0;
                     LogDegradedOpcodeOnce(0x52, "UsePortalUnderHero", "script host");
                 }
-                else if (AlundraPortalScanner.FindPortalAtTile(portalHost.Portals, portalHero.TileX, portalHero.TileY) is { } portalUnderHero)
+                else if (PortalScanner.FindPortalAtTile(portalHost.Portals, portalHero.TileX, portalHero.TileY) is { } portalUnderHero)
                 {
-                    AlundraWarpDirector.Instance.BeginDeparture(
+                    WarpDirector.Instance.BeginDeparture(
                         portalUnderHero, portalHero.TargetDirection, portalHero, _gameState, arrivalAnimationId: portalHero.TargetAnimationId);
                     state.Result = 1;
                 }
@@ -1904,7 +1904,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
                         var posX = (v[3] * TileWidthPx + TileWidthPx / 2) << 16;
                         var posY = (v[4] * TileHeightPx + TileHeightPx / 2) << 16;
                         var posZ = v[5] << 20;
-                        AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+                        WarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
                             desiredMapIndex, posX, posY, posZ, v[6], v[7], changeMapPlayer, _gameState);
                     }
                 }

@@ -30,7 +30,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
     public AlundraHeroAuraWorldTests()
     {
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
@@ -39,7 +39,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
         GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     private static HitArena Arena(string name, int x = 212, int y = 96)

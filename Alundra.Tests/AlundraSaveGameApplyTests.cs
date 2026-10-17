@@ -57,7 +57,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         _slots.Slots.Add(new AlundraSlotEntry("debug-json", true, T0));
 
         _gameManager = BuildGameManager();
-        AlundraWarpDirector.Instance.AttachToWorld(_gameManager, null, _root);
+        WarpDirector.Instance.AttachToWorld(_gameManager, null, _root);
     }
 
     public void Dispose()
@@ -174,8 +174,8 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         Director.ApplyPendingLoad(State, 389);
         Assert.True(State.NewGameInventoryInitialized);
 
-        AlundraWarpDirector.Instance.ConsumeArrivalRecord(); // the load's own arrival is over.
-        Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
+        WarpDirector.Instance.ConsumeArrivalRecord(); // the load's own arrival is over.
+        Assert.False(WarpDirector.Instance.HasPendingArrival);
 
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
         AddHeroPawn(world);
@@ -279,7 +279,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         AlundraInventoryDirector.Instance.AttachToWorld(State, tables, null);
         AlundraSubInventoryDirector.Instance.AttachToWorld(State, tables, null);
         ArmLoad(RichSave());
-        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.True(WarpDirector.Instance.IsTransitionInProgress);
 
         InventoryTick(PadState.Start);
         InventoryTicks(10);
@@ -354,11 +354,11 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
 
         // F9 on the departure map, then the departure until the engine is asked for map 389.
         ArmLoad(save);
-        Assert.True(AlundraWarpDirector.Instance.TryResolveWorldPath(389, out var map389Path));
+        Assert.True(WarpDirector.Instance.TryResolveWorldPath(389, out var map389Path));
         for (var tick = 0; tick < 100 && GetPendingWorldToLoad(_gameManager) == null; tick++)
         {
-            AlundraScreenFadeDirector.Instance.Advance(1);
-            AlundraWarpDirector.Instance.Advance(1);
+            ScreenFadeDirector.Instance.Advance(1);
+            WarpDirector.Instance.Advance(1);
         }
 
         Assert.Equal(map389Path, GetPendingWorldToLoad(_gameManager));

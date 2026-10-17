@@ -70,7 +70,7 @@ public sealed class BackdropWarpDepartureFreezeTests : IDisposable
 
             proxy.Update(0.02f);
 
-            Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress, $"F{frame}");
+            Assert.True(WarpDirector.Instance.IsTransitionInProgress, $"F{frame}");
             Assert.Equal(0, scrolling.PendingTicks);
             Assert.Equal(0, cellular.PendingTicks);
             Assert.Equal(scrollingFrames + 1, scrolling.FramesPushed);
@@ -79,8 +79,8 @@ public sealed class BackdropWarpDepartureFreezeTests : IDisposable
 
         GC.KeepAlive(player);
 
-        AlundraWarpDirector.Instance.InstallForMapEntry();
-        Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        WarpDirector.Instance.InstallForMapEntry();
+        Assert.False(WarpDirector.Instance.IsTransitionInProgress);
 
         proxy.Update(0.02f);
         Assert.Equal(1, scrolling.PendingTicks);
@@ -226,8 +226,8 @@ internal static class BackdropWarpDepartureSupport
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
-        AlundraScreenFadeDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+        ScreenFadeDirector.Instance.ResetForTests();
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests();
     }
@@ -248,10 +248,10 @@ internal static class BackdropWarpDepartureSupport
         player.ScriptHost = proxy;
         proxy.PlayerEntity = player;
 
-        AlundraWarpDirector.Instance.AttachToWorld(
+        WarpDirector.Instance.AttachToWorld(
             new GameManager(null), soundPlayer: null, AlundraWorldProxyGlobalFreezeTests.FindProjectRoot());
 
-        var portal = new AlundraPortalRecord
+        var portal = new PortalRecord
         {
             Index = 0,
             X1 = 18,
@@ -265,8 +265,8 @@ internal static class BackdropWarpDepartureSupport
             Flags = 0x5001,
         };
 
-        AlundraWarpDirector.Instance.BeginDeparture(portal, 0x10, player, proxy.GameState);
-        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        WarpDirector.Instance.BeginDeparture(portal, 0x10, player, proxy.GameState);
+        Assert.True(WarpDirector.Instance.IsTransitionInProgress);
         return player;
     }
 

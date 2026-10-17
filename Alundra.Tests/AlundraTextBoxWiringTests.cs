@@ -57,7 +57,7 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         AlundraDialogueCapturePresenter.ResetForTests();
         AlundraFont3Advances.ResetForTests();
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     private sealed class FakeTextBoxScreen : IUIScreen

@@ -153,8 +153,8 @@ public sealed class AlundraShipArcTests
         arc.RunUntil(() => arc.Has(BProgram, 688, 0x53), "B2 executes 0x53 @688 towards map 476");
 
         Assert.NotEqual(0u, ArcRun.State.GetFlag(1640) & (1u << (1640 & 0x1f)));
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
-        var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
+        var arrival = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(476u, arrival.MapIndex);
         Assert.Equal(12 << 16, arrival.PosX);
         Assert.Equal(8 << 16, arrival.PosY);
@@ -208,8 +208,8 @@ public sealed class AlundraShipArcTests
         arc.RunUntil(() => arc.Has(BProgram, 688, 0x53), "B2 executes 0x53 @688 towards map 476 (the walk of 0x1E @658 ends at its contact)");
 
         Assert.NotEqual(0u, ArcRun.State.GetFlag(1640) & (1u << (1640 & 0x1f)));
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
-        Assert.Equal(476u, AlundraWarpDirector.Instance.ArrivalRecordForTests.MapIndex);
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
+        Assert.Equal(476u, WarpDirector.Instance.ArrivalRecordForTests.MapIndex);
         Assert.Empty(arc.SkippedOrExceeded.ToList());
         Assert.True(arc.Frame < 900);
     }

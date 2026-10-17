@@ -724,7 +724,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         for (var frame = 0; frame < 5; frame++)
         {
             proxy.Update(0.02f);
-            Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress, $"F{frame}");
+            Assert.True(WarpDirector.Instance.IsTransitionInProgress, $"F{frame}");
             var slot = Assert.Single(stage.Reservoir.ActiveSlots); // created once, never again: the queue is empty after the Update
             Assert.Equal(-1, slot.CurrentImageSetIndex); // no tick during the departure
         }

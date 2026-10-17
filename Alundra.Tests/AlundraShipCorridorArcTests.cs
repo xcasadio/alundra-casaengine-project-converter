@@ -142,8 +142,8 @@ public sealed class AlundraShipCorridorArcTests
 
     private static void AssertTheDepartureToMap391()
     {
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
-        var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
+        var arrival = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(391u, arrival.MapIndex);
         Assert.Equal(24379392, arrival.PosX);
         Assert.Equal(29884416, arrival.PosY);
@@ -165,7 +165,7 @@ public sealed class AlundraShipCorridorArcTests
         Assert.Equal(205, arc.Frame);
         arc.PlaceHero(540, 360, 64);
         arc.HoldDirections(PadState.Down);
-        arc.RunUntil(() => AlundraWarpDirector.Instance.HasPendingArrival, "the portal (22, 23) of map 392 departs towards map 391");
+        arc.RunUntil(() => WarpDirector.Instance.HasPendingArrival, "the portal (22, 23) of map 392 departs towards map 391");
 
         // 2. Nothing skipped (0x8E @20 is executed, once).
         AssertNothingSkippedOrExceeded(arc);
@@ -211,7 +211,7 @@ public sealed class AlundraShipCorridorArcTests
         Assert.Equal(228, arc.Frame);
         arc.PlaceHero(540, 360, 64);
         arc.HoldDirections(PadState.Down);
-        arc.RunUntil(() => AlundraWarpDirector.Instance.HasPendingArrival, "the portal (22, 23) of map 392 departs towards map 391");
+        arc.RunUntil(() => WarpDirector.Instance.HasPendingArrival, "the portal (22, 23) of map 392 departs towards map 391");
 
         AssertNothingSkippedOrExceeded(arc);
         Assert.Equal(1, arc.Trace.Count(t => t.Opcode == 0x8E && t.Pc == 20));

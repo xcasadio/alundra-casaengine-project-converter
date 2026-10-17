@@ -40,13 +40,13 @@ namespace Alundra.Transitions;
 /// steps are kept as textually separate statements (never merged into one assignment) so a mutation that
 /// drops ONLY the reset - while keeping the re-arm - is something a test can actually apply (T7).</para>
 /// </remarks>
-public sealed class AlundraScreenFadeDirector : IAlundraScreenFadeDirector
+public sealed class ScreenFadeDirector : IScreenFadeDirector
 {
     /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-E10-6) -
     /// never <see langword="new"/>'d per world.</summary>
-    public static readonly AlundraScreenFadeDirector Instance = new();
+    public static readonly ScreenFadeDirector Instance = new();
 
-    private AlundraScreenFadeDirector()
+    private ScreenFadeDirector()
     {
     }
 
@@ -170,8 +170,8 @@ public sealed class AlundraScreenFadeDirector : IAlundraScreenFadeDirector
     /// covering the interface so the life gauge darkens with the scenery instead of staying legible on
     /// black. One call rather than a fade plus a flag, so the two can never drift apart.
     /// <para/>
-    /// Deliberately not on <see cref="IAlundraScreenFadeDirector"/>: the event-opcode path must keep
-    /// reaching only <see cref="BeginFadeEffect"/>, and only <see cref="AlundraWarpDirector"/> departs.
+    /// Deliberately not on <see cref="IScreenFadeDirector"/>: the event-opcode path must keep
+    /// reaching only <see cref="BeginFadeEffect"/>, and only <see cref="WarpDirector"/> departs.
     /// </summary>
     public void BeginWarpDepartureFade(int r, int g, int b, int tpage, int duration, int persistLock)
     {

@@ -51,7 +51,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
         _slots.LoadedSave = ValidSave(tileX: 20, tileY: 30, tileZ: 1);
 
         _gameManager = BuildGameManager();
-        AlundraWarpDirector.Instance.AttachToWorld(_gameManager, null, _root);
+        WarpDirector.Instance.AttachToWorld(_gameManager, null, _root);
     }
 
     public void Dispose()
@@ -74,8 +74,8 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
 
     private static void AssertNoDeparture()
     {
-        Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
-        Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
+        Assert.False(WarpDirector.Instance.IsTransitionInProgress);
+        Assert.False(WarpDirector.Instance.HasPendingArrival);
         Assert.False(Director.HasPendingLoad);
     }
 
@@ -126,8 +126,8 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
     {
         PressF9(HeroAt());
         Assert.True(Director.HasPendingLoad);
-        AlundraWarpDirector.Instance.InstallForMapEntry(); // lifts the gate, the load stays pending.
-        Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        WarpDirector.Instance.InstallForMapEntry(); // lifts the gate, the load stays pending.
+        Assert.False(WarpDirector.Instance.IsTransitionInProgress);
         var before = StateSnapshot.Take(State);
         using var log = LogCapture.Install();
 
@@ -230,7 +230,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
     [Fact]
     public void NoGameManagerAttached_IsRefused_StateIdentical_NoDeparture()
     {
-        AlundraWarpDirector.Instance.AttachToWorld(null, null, _root);
+        WarpDirector.Instance.AttachToWorld(null, null, _root);
         var before = StateSnapshot.Take(State);
         using var log = LogCapture.Install();
 
@@ -246,7 +246,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
     [Fact]
     public void TransitionInProgress_IsRefused_NoLoadPending()
     {
-        AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(390, 0, 0, 0, 0, 0, HeroAt(), new GameState());
+        WarpDirector.Instance.BeginDepartureFromChangeMapOpcode(390, 0, 0, 0, 0, 0, HeroAt(), new GameState());
         var before = StateSnapshot.Take(State);
 
         PressF9(HeroAt());
@@ -267,8 +267,8 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
         Directory.CreateDirectory(emptyProject);
         try
         {
-            AlundraWarpDirector.Instance.AttachToWorld(_gameManager, null, emptyProject);
-            Assert.True(AlundraScreenFadeDirector.Instance.IsSettled);
+            WarpDirector.Instance.AttachToWorld(_gameManager, null, emptyProject);
+            Assert.True(ScreenFadeDirector.Instance.IsSettled);
             var before = StateSnapshot.Take(State);
             using var log = LogCapture.Install();
 
@@ -276,7 +276,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
 
             Assert.Contains(log.Warnings, line => line.Contains("F9 refused") && line.Contains("map 389 has no world"));
             AssertNoDeparture();
-            Assert.True(AlundraScreenFadeDirector.Instance.IsSettled);
+            Assert.True(ScreenFadeDirector.Instance.IsSettled);
             Assert.Null(GetMusicPendingWarpDeparture());
             StateSnapshot.Take(State).AssertSameAs(before);
         }
@@ -299,7 +299,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
         PressF9(HeroAt());
 
         Assert.True(Director.HasPendingLoad);
-        var warp = AlundraWarpDirector.Instance;
+        var warp = WarpDirector.Instance;
         Assert.True(warp.IsTransitionInProgress);
         Assert.True(warp.HasPendingArrival);
         var arrival = warp.ArrivalRecordForTests;
@@ -310,7 +310,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
         Assert.Equal(0, arrival.EffectId);
         Assert.True(warp.TryResolveWorldPath(389, out var path));
         Assert.Equal(path, warp.PendingWorldPathForTests);
-        Assert.False(AlundraScreenFadeDirector.Instance.IsSettled); // the departure's own fade.
+        Assert.False(ScreenFadeDirector.Instance.IsSettled); // the departure's own fade.
         Assert.Null(GetMusicPendingWarpDeparture()); // empty sound action: the arrival sets the music.
 
         StateSnapshot.Take(State).AssertSameGameStateAs(before); // nothing applied before the arrival (K7).
@@ -331,7 +331,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
 
         PressF9(hero);
 
-        var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        var arrival = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(GameState.ResetAnimationId, arrival.AnimationId);
         Assert.Equal(0x36u, arrival.AnimationId);
         Assert.Equal(GameState.ResetDirectionId, arrival.DirectionId);
@@ -345,16 +345,16 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
     {
         PressF9(HeroAt());
         Assert.True(Director.HasPendingLoad);
-        AlundraWarpDirector.Instance.AttachToWorld(null, null, _root);
+        WarpDirector.Instance.AttachToWorld(null, null, _root);
         using var log = LogCapture.Install();
 
-        for (var tick = 0; tick < 100 && AlundraWarpDirector.Instance.IsTransitionInProgress; tick++)
+        for (var tick = 0; tick < 100 && WarpDirector.Instance.IsTransitionInProgress; tick++)
         {
-            AlundraScreenFadeDirector.Instance.Advance(1);
-            AlundraWarpDirector.Instance.Advance(1);
+            ScreenFadeDirector.Instance.Advance(1);
+            WarpDirector.Instance.Advance(1);
         }
 
-        Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.False(WarpDirector.Instance.IsTransitionInProgress);
         Assert.False(Director.HasPendingLoad);
         Assert.Contains(log.Warnings, line => line.Contains("pending load of map 389 abandoned"));
     }
@@ -410,7 +410,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
         proxy.Update(0.02f);
 
         Assert.True(Director.HasPendingLoad);
-        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.True(WarpDirector.Instance.IsTransitionInProgress);
         Assert.Equal(1, runner.ScriptRuns); // frozen on the very frame of the key.
     }
 }

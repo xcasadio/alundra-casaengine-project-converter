@@ -225,8 +225,8 @@ public sealed class AlundraShipBlockArcTests
 
         // 3. The rest, in the order of the plan.
         AssertFrame(arc, B, 540, 2463);
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
-        var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
+        var arrival = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(416u, arrival.MapIndex);
         Assert.Equal(65273856, arrival.PosX);
         Assert.Equal(51904512, arrival.PosY);

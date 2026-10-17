@@ -218,7 +218,7 @@ internal sealed class CameraDirector
         // transition neither a step nor an offset: the binary leaves its frame loop as soon as the departure is
         // armed (0x8002C454-0x8002C45C) and its transition loop calls neither the render nor the follow.
         var sway = CameraSway.Instance;
-        var swayActive = !AlundraWarpDirector.Instance.IsTransitionInProgress;
+        var swayActive = !WarpDirector.Instance.IsTransitionInProgress;
 
         if (_debugCamera == null)
         {

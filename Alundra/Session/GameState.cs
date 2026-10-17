@@ -31,7 +31,7 @@ public sealed class GameState
 {
     /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-T-3,
     /// docs/plan-transitions-carte.md) - same shape as <see cref="BgmPlayer.Instance"/>/
-    /// <see cref="AlundraScreenFadeDirector.Instance"/>/<see cref="AlundraDialogueDirector.Instance"/>.
+    /// <see cref="ScreenFadeDirector.Instance"/>/<see cref="AlundraDialogueDirector.Instance"/>.
     /// Unlike those three, this class KEEPS its public parameterless constructor (two test harnesses -
     /// <see cref="AlundraEventProgramRunnerTests"/> and <see cref="IntroTraceHarnessTests"/> among others -
     /// build their own private instance directly, never through this session carrier) - so <see cref="Instance"/>
@@ -155,7 +155,7 @@ public sealed class GameState
     /// T3 (docs/plan-transitions-carte.md, point 5): port of the original's <c>g_isWarpDisabled</c>
     /// global, tested at the head of <c>PlayerManager.HandleWarpTransition</c> (T4's own scope) and set
     /// by event opcodes <c>0x9B</c>/<c>0x9C</c> (T7's own scope, out of this slice). T3's own
-    /// <see cref="AlundraPortalTrigger.TryGetTrigger"/> already respects it (folded into the predicate
+    /// <see cref="PortalTrigger.TryGetTrigger"/> already respects it (folded into the predicate
     /// itself - see that method's own doc on why), so the flag is wired here BEFORE either opcode exists.
     /// Zero at construction (New Game default, same rationale as <see cref="PlayerControlFlags"/> above),
     /// and reset to <c>false</c> at every map entry (<see cref="InstallForMapEntry"/>) - the original does
@@ -434,7 +434,7 @@ public sealed class GameState
 
     /// <summary>Test-only: restores this session carrier to its New-Game-equivalent construction state,
     /// so tests do not leak state into each other through <see cref="Instance"/> - same seam as
-    /// <see cref="BgmPlayer.ResetForTests"/>/<see cref="AlundraScreenFadeDirector.ResetForTests"/>.</summary>
+    /// <see cref="BgmPlayer.ResetForTests"/>/<see cref="ScreenFadeDirector.ResetForTests"/>.</summary>
     internal void ResetForTests()
     {
         Array.Clear(GameFlags);

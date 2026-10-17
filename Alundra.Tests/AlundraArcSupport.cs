@@ -246,7 +246,7 @@ internal sealed class ArcRun : IDisposable
                 typeof(World).GetMethod("InternalAddEntities", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(world, null);
 
                 Assert.True(BackdropLoader.TryParseMapIndex(spec.WorldName, out var arrivalMap), $"arc {spec.Name}: no map id in '{spec.WorldName}'");
-                AlundraWarpDirector.Instance.SetPendingArrivalForTests(
+                WarpDirector.Instance.SetPendingArrivalForTests(
                     (uint)arrivalMap, arrival.PosX, arrival.PosY, arrival.PosZ, arrival.AnimationId, arrival.DirectionId);
             }
 

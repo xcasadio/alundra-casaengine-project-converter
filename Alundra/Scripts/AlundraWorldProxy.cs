@@ -335,7 +335,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     ///
     /// D-T-3 (docs/plan-transitions-carte.md, slice T1): this is no longer a field initializer - it is
     /// this SESSION's own carrier (<see cref="GameState.Instance"/>), same shape as
-    /// <see cref="DialogueDirector"/>/<see cref="BgmPlayer.Instance"/>/<see cref="AlundraScreenFadeDirector.Instance"/>
+    /// <see cref="DialogueDirector"/>/<see cref="BgmPlayer.Instance"/>/<see cref="ScreenFadeDirector.Instance"/>
     /// below - so game flags, control flags, the last pad snapshot and the interact latch's own numeric
     /// fields all survive a map change instead of being lost with the old, per-world instance (§1.4.c).
     /// <see cref="GameState.InstallForMapEntry"/> applies this session's own map-entry disposition
@@ -372,11 +372,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>
     /// T3 (docs/plan-transitions-carte.md §1.1/§3): this world's own parsed "Portals" object-layer
     /// records (see <see cref="BuildPortals"/>), in slot order - the exact list
-    /// <see cref="AlundraPortalScanner.FindPortalAtTile"/> scans (§1.2.b: first-match-wins is order-
+    /// <see cref="PortalScanner.FindPortalAtTile"/> scans (§1.2.b: first-match-wins is order-
     /// sensitive, so this MUST stay in record order, never re-sorted). Empty (not null) when this world
     /// has no "Portals" layer. Exposed as <see cref="IScriptHost.Portals"/>.
     /// </summary>
-    private readonly List<AlundraPortalRecord> _portals = new();
+    private readonly List<PortalRecord> _portals = new();
 
     private bool _loggedNoHeroHeader;
 
@@ -686,13 +686,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// This session's screen fade/tint seam (E10.b, docs/plan-e10-fondu.md, D-E10-6) - the SESSION-scoped
-    /// <see cref="AlundraScreenFadeDirector.Instance"/> (see that class's own doc), NOT a per-world
+    /// <see cref="ScreenFadeDirector.Instance"/> (see that class's own doc), NOT a per-world
     /// instance. Always non-null (unlike <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>): attaching
     /// to a <c>null</c> engine service is itself a tolerated, tested state (T2) - the singleton is
     /// installed by <see cref="InstallScreenFadeSystems"/> regardless of whether this world has a
     /// <c>Game</c>.
     /// </summary>
-    public IAlundraScreenFadeDirector ScreenFadeDirector => AlundraScreenFadeDirector.Instance;
+    public IScreenFadeDirector ScreenFadeDirector => Transitions.ScreenFadeDirector.Instance;
 
     /// <summary>
     /// This session's camera sway (E19.k1, docs/plan-e19-opcodes.md section 1.2k) - the SESSION-scoped
@@ -770,7 +770,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>The gate of the map events, the entities and the pending triggers: <c>PlayerControlFlags &amp; GameplayBlockedMask</c>, or a warp transition in progress (T4, D-T-6).</summary>
     private bool GameplayGateNow() => (GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0
-        || AlundraWarpDirector.Instance.IsTransitionInProgress;
+        || WarpDirector.Instance.IsTransitionInProgress;
 
     /// <summary>Test-only seam (E19.u, docs/plan-e19-u-annexe/): the effect gate of each logic tick of the last <see cref="Update"/> (see <see cref="_effectFrozenOfTick"/>).</summary>
     internal IReadOnlyList<bool> EffectFrozenOfTickForTests => _effectFrozenOfTick;
@@ -1341,7 +1341,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// T4 (docs/plan-transitions-carte.md §3, D-T-2): installs the warp-departure seam - re-points the
-    /// SESSION-scoped <see cref="AlundraWarpDirector.Instance"/> at this world's own
+    /// SESSION-scoped <see cref="WarpDirector.Instance"/> at this world's own
     /// <c>world.Game.GameManager</c> (the <c>SetWorldToLoad</c> seam, §1.1.e/§1.3.e) and
     /// <see cref="SoundPlayer"/> (the departure sfx channel, §1.2.d), THEN applies D-T-15's own map-entry
     /// disposition. Called AFTER <see cref="InstallAudioSystems"/> (so <see cref="SoundPlayer"/> is
@@ -1351,38 +1351,38 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// </summary>
     internal void InstallWarpSystems(World world)
     {
-        AlundraWarpDirector.Instance.AttachToWorld(world.Game?.GameManager, SoundPlayer, EngineEnvironment.ProjectPath);
-        AlundraWarpDirector.Instance.InstallForMapEntry();
+        WarpDirector.Instance.AttachToWorld(world.Game?.GameManager, SoundPlayer, EngineEnvironment.ProjectPath);
+        WarpDirector.Instance.InstallForMapEntry();
     }
 
     /// <summary>
     /// E10.b (docs/plan-e10-fondu.md, D-E10-7): installs the screen fade/tint seam - re-points the
-    /// SESSION-scoped <see cref="AlundraScreenFadeDirector.Instance"/> at this world's own
+    /// SESSION-scoped <see cref="ScreenFadeDirector.Instance"/> at this world's own
     /// <see cref="CasaEngine.Framework.Rendering.ScreenEffects.ScreenEffectService"/>
     /// (<c>world.Game?.ScreenEffectComponent?.Service</c> - null without a <c>Game</c>, tolerated, T2),
-    /// THEN arms effect 0 for this map entry (<see cref="AlundraScreenFadeDirector.InstallForMapEntry"/>).
+    /// THEN arms effect 0 for this map entry (<see cref="ScreenFadeDirector.InstallForMapEntry"/>).
     /// Called from <see cref="InitializeWithWorld"/> - the ONLY call site (D-E10-7's own M16 lesson: no
     /// separate, independently deletable call site) - and extracted as its own INTERNAL method, same
     /// precedent as <see cref="InstallAudioSystems"/>, so a test can drive it directly against a world
     /// with no <c>Game</c> (T2) or against two successive worlds sharing the same session (T7).
     ///
-    /// <b>Pushes nothing to the service</b> (see <see cref="AlundraScreenFadeDirector.InstallForMapEntry"/>'s
+    /// <b>Pushes nothing to the service</b> (see <see cref="ScreenFadeDirector.InstallForMapEntry"/>'s
     /// own doc) - the first push happens from <see cref="Update"/>, after that same frame's
-    /// <see cref="AlundraScreenFadeDirector.Advance"/> call.
+    /// <see cref="ScreenFadeDirector.Advance"/> call.
     ///
     /// <b>T5 (§1.4.g, D-T-7)</b>: this is the injection point for the arrival's own transition effect id,
-    /// PEEKED (not consumed - <see cref="AlundraWarpDirector.PendingArrivalEffectId"/>'s own doc) off the
-    /// SESSION-scoped <see cref="AlundraWarpDirector.Instance"/> - <see cref="InstallWarpSystems"/> has
+    /// PEEKED (not consumed - <see cref="WarpDirector.PendingArrivalEffectId"/>'s own doc) off the
+    /// SESSION-scoped <see cref="WarpDirector.Instance"/> - <see cref="InstallWarpSystems"/> has
     /// already run by this call site (:548 vs :549), so its own <c>InstallForMapEntry</c> has not touched
     /// the record (D-T-15: conserved). D-T-7 ramène tout id non nul à l'effet 0: the fade machine armed
     /// just above is unconditionally effect 0 regardless of what is logged here - only the log is new.
     /// </summary>
     internal void InstallScreenFadeSystems(World world)
     {
-        AlundraScreenFadeDirector.Instance.AttachToWorld(world.Game?.ScreenEffectComponent?.Service);
-        AlundraScreenFadeDirector.Instance.InstallForMapEntry();
+        Transitions.ScreenFadeDirector.Instance.AttachToWorld(world.Game?.ScreenEffectComponent?.Service);
+        Transitions.ScreenFadeDirector.Instance.InstallForMapEntry();
 
-        var arrivalEffectId = AlundraWarpDirector.Instance.PendingArrivalEffectId;
+        var arrivalEffectId = WarpDirector.Instance.PendingArrivalEffectId;
         if (arrivalEffectId != 0)
         {
             Logs.WriteInfo(
@@ -1435,7 +1435,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// itself is never open across a map transition: MenuOpen, cleared only with the closing slide's end, blocks
     /// the portal test and freezes the event programs, so no warp starts while it is open, and the trigger
     /// refuses while
-    /// <see cref="AlundraWarpDirector.IsTransitionInProgress"/> - the warp poses no control-flag bit, SD5,
+    /// <see cref="WarpDirector.IsTransitionInProgress"/> - the warp poses no control-flag bit, SD5,
     /// D-E13D-38).
     /// </summary>
     internal void InstallInventorySystems()
@@ -2062,10 +2062,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// camera-follow yet (E5).
     ///
     /// <b>T5 (docs/plan-transitions-carte.md §3 T5, D-T-4)</b>: the New Game constants quoted above are
-    /// now only the FALLBACK. When <see cref="AlundraWarpDirector.Instance"/> holds a pending arrival -
+    /// now only the FALLBACK. When <see cref="WarpDirector.Instance"/> holds a pending arrival -
     /// this world is the destination of a warp, not a fresh New Game/Continue load - the position,
-    /// animation id and direction id below come from <see cref="AlundraWarpDirector.ConsumeArrivalRecord"/>
-    /// instead, which ALSO clears <see cref="AlundraWarpDirector.HasPendingArrival"/> ([R9]: the record is
+    /// animation id and direction id below come from <see cref="WarpDirector.ConsumeArrivalRecord"/>
+    /// instead, which ALSO clears <see cref="WarpDirector.HasPendingArrival"/> ([R9]: the record is
     /// session-scoped and would otherwise still read as "pending" on the NEXT map entry, warp or not).
     /// <see cref="AlundraEntityScriptProxy.ClampToGround"/> still runs unconditionally either way - an
     /// arrival's <c>PosZ</c> is the portal's own <c>ZLevel &lt;&lt; 20</c> (frequently 0, §1.2.c), not yet
@@ -2123,7 +2123,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // destination of a warp - clears AlundraWarpDirector.HasPendingArrival on the way out, so a LATER,
         // non-warp map entry never reads this same stale record (see AlundraWarpDirector.ConsumeArrivalRecord's
         // own doc). Null falls back to the New Game constants exactly as before this slice.
-        var arrivalRecord = AlundraWarpDirector.Instance.ConsumeArrivalRecord();
+        var arrivalRecord = WarpDirector.Instance.ConsumeArrivalRecord();
 
         // E13.c S3 (docs/plan-e13c-icones-hud.md): "no pending arrival" is the New Game - the only other
         // source of a map entry is a warp, and a warp always leaves a non-null record - so this is where the
@@ -2362,7 +2362,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// T3 (docs/plan-transitions-carte.md §1.1/§3): parses the "Portals" object-layer into
-    /// <see cref="_portals"/>, one <see cref="AlundraPortalRecord"/> per object, in record order (§1.2.b
+    /// <see cref="_portals"/>, one <see cref="PortalRecord"/> per object, in record order (§1.2.b
     /// needs slot order preserved for its first-match-wins scan). Reads the 9 raw fields plus
     /// <c>Index</c> - ALL exported as STRING custom properties (§1.1.b) - never the object's own
     /// x/y/width/height rectangle. Left empty when there is no "Portals" layer - previously this layer
@@ -2394,7 +2394,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             EntitySpawnFactory.TryGetRecordInt(record, "ZLevel", out var zLevel);
             EntitySpawnFactory.TryGetRecordInt(record, "Flags", out var flags);
 
-            _portals.Add(new AlundraPortalRecord
+            _portals.Add(new PortalRecord
             {
                 Index = index,
                 X1 = x1,
@@ -2468,7 +2468,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // (the original's own AdvanceWarpTransitionFrame short-circuits its whole entity pipeline
         // instead of testing a flag at all - see that class' own doc).
         var gameplayBlocked = (GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0
-            || AlundraWarpDirector.Instance.IsTransitionInProgress;
+            || WarpDirector.Instance.IsTransitionInProgress;
 
         // E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-9): the pad the inventory reads, advanced once
         // per LOGIC tick from this frame's sampled hold state. The original refreshes g_padState1 at the
@@ -2689,7 +2689,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // The operations queued by the scripts are applied in it, tick by tick (and at the end of the frame, whatever the ticks).
         // E20.e0b1 (D-E0B-1, D-E0B-2): the binary's frame function ends with one step of the shared random stream (0x8002BD0C-0x8002BD34): the callback is called once per tick, after the update of the
         // reservoir, frozen tick or not, and not at all during a warp departure (0 tick).
-        _effectStage.RunFrame(AlundraWarpDirector.Instance.IsTransitionInProgress ? 0 : ticksThisFrame, _effectFrozenOfTick, AdvanceRandomPerTick);
+        _effectStage.RunFrame(WarpDirector.Instance.IsTransitionInProgress ? 0 : ticksThisFrame, _effectFrozenOfTick, AdvanceRandomPerTick);
 
         // E5.a: resolve the camera once, then run the scripted follow BEFORE the debug pan - see
         // UpdateCameraFollow's own doc on why this order lets the pan's base-adoption mechanism pick up
@@ -2737,7 +2737,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // backdrop driver, so nothing of the backdrops advances there. Same predicate as the camera sway gate.
         _backdropStage.ApplyOriginalBackgroundClearColorOnce(_world);
         _backdropStage.PushFrame(
-            AlundraWarpDirector.Instance.IsTransitionInProgress ? 0 : ticksThisFrame,
+            WarpDirector.Instance.IsTransitionInProgress ? 0 : ticksThisFrame,
             _cameraDirector.ResolvedCamera);
 
         // E19.g G3c (G3C-R5): the effect quads, pushed at EVERY rendered frame right after the backdrops, outside every gate: a tick frozen by PlayerControlFlags & 0x48 or a warp departure (0 tick)
@@ -2751,8 +2751,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // engine's ScreenEffectService - no camera read, no backdrop read. "Advance, then push" - never
         // the reverse (§1.5: pushing before Advance would submit a stale, or even the just-armed 255,
         // value one frame early).
-        AlundraScreenFadeDirector.Instance.Advance(ticksThisFrame);
-        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        Transitions.ScreenFadeDirector.Instance.Advance(ticksThisFrame);
+        Transitions.ScreenFadeDirector.Instance.PushToAttachedService();
 
         // B2 (docs/plan-e11b-opcodes-audio.md, D-B-5): the master BGM fade machine - same tick-driven
         // discipline as the screen fade above (LOGIC ticks, never rendered frames), no separate "push"
@@ -2763,7 +2763,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // (this class' own gel gate must keep running WHILE it holds other passes frozen) - placed right
         // after the fade's own Advance so it observes THIS tick's just-updated IsSettled, never a
         // frame-stale one (see AlundraWarpDirector.Advance's own doc).
-        AlundraWarpDirector.Instance.Advance(ticksThisFrame);
+        WarpDirector.Instance.Advance(ticksThisFrame);
 
         // E19.f2a F2-R1: the dialogue box's pass no longer lives here: it runs inside the loop of the logic ticks above, BEFORE the map events of each tick
         // (the binary's RenderScene runs the box before Update(0)), whether the game is blocked or not (E12.a F1: the box must advance, close and release
@@ -3623,7 +3623,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     // T3 (docs/plan-transitions-carte.md §3): production always exposes the real parsed list - the
     // interface's own default (empty) only covers hosts from OTHER slices/tests that never override it.
-    IReadOnlyList<AlundraPortalRecord> IScriptHost.Portals => _portals;
+    IReadOnlyList<PortalRecord> IScriptHost.Portals => _portals;
 
     /// <summary>E19.t: the sound player the changes of animation reach through the host seam (the world's own, <see cref="SoundPlayer"/>).</summary>
     ISoundPlayer? IScriptHost.SoundPlayer => SoundPlayer;
@@ -3632,7 +3632,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     // advance - AlundraPlayerManager.MovePlayer calls this from INSIDE PlayerEntity's own Update, so
     // AlundraWarpDirector.IsTransitionInProgress is already true before this SAME frame's
     // AlundraWorldProxy.Update reads its own gel gate (see AlundraWarpDirector.BeginDeparture's own doc).
-    void IScriptHost.OnPortalTriggerDetected(AlundraPortalRecord portal, uint arrivalDirectionId)
+    void IScriptHost.OnPortalTriggerDetected(PortalRecord portal, uint arrivalDirectionId)
     {
         if (PlayerEntity == null)
         {
@@ -3643,7 +3643,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             return;
         }
 
-        AlundraWarpDirector.Instance.BeginDeparture(portal, arrivalDirectionId, PlayerEntity, GameState);
+        WarpDirector.Instance.BeginDeparture(portal, arrivalDirectionId, PlayerEntity, GameState);
     }
 
     /// <summary>

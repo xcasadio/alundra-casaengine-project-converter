@@ -50,14 +50,14 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
     public AlundraHeroObjectTopsTests()
     {
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
     {
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     /// <summary>Terrain cells of 16 px from x = 144 px (the cells are 24 px wide: from the sixth), flat 0 before.</summary>

@@ -42,8 +42,8 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
-        AlundraScreenFadeDirector.Instance.ResetForTests(); // SD5: the warp departure tests arm the outgoing fade...
+        WarpDirector.Instance.ResetForTests();
+        ScreenFadeDirector.Instance.ResetForTests(); // SD5: the warp departure tests arm the outgoing fade...
         BgmPlayer.Instance.ResetForTests();        // ...record a departure request on the music player...
         BgmFadeDirector.Instance.ResetForTests();    // ...which may arm the BGM fade at the frame close.
         AlundraEtcStringTable.ResetForTests(); // E15.c T6: this class' own SetEtcFixture leaves an injected asset behind.
@@ -60,8 +60,8 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
-        AlundraScreenFadeDirector.Instance.ResetForTests(); // SD5: same reason as the constructor.
+        WarpDirector.Instance.ResetForTests();
+        ScreenFadeDirector.Instance.ResetForTests(); // SD5: same reason as the constructor.
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests();
         AlundraEtcStringTable.ResetForTests(); // E15.c T6: same reason as the constructor.
@@ -96,7 +96,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
     /// <summary>Portal 0 of map 389 (mono-cell (18,38) to map 390) - same record as
     /// <c>AlundraWarpDepartureTests.Map389Portal0</c>.</summary>
-    private static AlundraPortalRecord Map389Portal0() => new()
+    private static PortalRecord Map389Portal0() => new()
     {
         Index = 0,
         X1 = 18,
@@ -259,7 +259,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     {
         var state = NewState();
         var director = NewDirector(state);
-        AlundraWarpDirector.Instance.InstallForMapEntry();
+        WarpDirector.Instance.InstallForMapEntry();
 
         for (var tick = 1; tick <= 8; tick++)
         {
@@ -269,10 +269,10 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         Tick(state, director, PadState.Start); // tick 9: a fresh edge, 0.02 s of delay still left.
         Assert.False(director.IsActive);
-        Assert.True(AlundraWarpDirector.Instance.IsWarpDelayRunning);
+        Assert.True(WarpDirector.Instance.IsWarpDelayRunning);
 
         Tick(state, director, PadState.Start | PadState.L2); // tick 10: a fresh L2 edge, delay over.
-        Assert.False(AlundraWarpDirector.Instance.IsWarpDelayRunning);
+        Assert.False(WarpDirector.Instance.IsWarpDelayRunning);
         Assert.True(director.IsActive);
     }
 
@@ -294,8 +294,8 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
             PosY = (38 * 16 + 8) << 16,
         };
 
-        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, state);
-        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        WarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, state);
+        Assert.True(WarpDirector.Instance.IsTransitionInProgress);
         Assert.Equal(0u, state.PlayerControlFlags); // the warp poses no control-flag bit (D-T-6).
 
         Tick(state, director, PadState.Start, player);
@@ -1006,9 +1006,9 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         // A non-degraded departure (real world index, a GameManager to hand the world path to), so the gate
         // stays posted through the world-change request instead of being lifted by the abort guard - same
         // montage as AlundraWarpDepartureTests' own freeze test. Departs through the production trigger site.
-        AlundraWarpDirector.Instance.AttachToWorld(new GameManager(null), soundPlayer: null, projectRoot);
+        WarpDirector.Instance.AttachToWorld(new GameManager(null), soundPlayer: null, projectRoot);
         ((IScriptHost)worldProxy).OnPortalTriggerDetected(Map389Portal0(), 0x10);
-        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.True(WarpDirector.Instance.IsTransitionInProgress);
         Assert.Equal(0u, worldProxy.GameState.PlayerControlFlags); // the warp poses no control-flag bit (D-T-6).
 
         worldProxy.Update(0.02f); // the departure frame's own world half - nothing pressed.
@@ -1020,14 +1020,14 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
             worldProxy.GameState.LastPadState = new PadState { ButtonsHold = frame % 2 == 1 ? PadState.Start : 0u };
             worldProxy.Update(0.02f);
 
-            Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress, $"frame {frame}: the montage left the transition");
+            Assert.True(WarpDirector.Instance.IsTransitionInProgress, $"frame {frame}: the montage left the transition");
             Assert.False(AlundraInventoryDirector.Instance.IsActive, $"frame {frame}: the inventory opened mid-transition");
             Assert.Equal(0u, worldProxy.GameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
         }
 
         // Not vacuous: the same montage opens once the arrival has lifted the gate and the 0.2 s map-entry
         // delay has run out.
-        AlundraWarpDirector.Instance.InstallForMapEntry();
+        WarpDirector.Instance.InstallForMapEntry();
         worldProxy.GameState.LastPadState = default;
         for (var i = 0; i < 10; i++)
         {

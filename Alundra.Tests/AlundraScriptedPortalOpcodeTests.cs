@@ -28,8 +28,8 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
     private static void ResetSessionState()
     {
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
-        AlundraScreenFadeDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+        ScreenFadeDirector.Instance.ResetForTests();
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests();
     }
@@ -52,12 +52,12 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
         public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public IReadOnlyList<AlundraPortalRecord> Portals { get; init; } = Array.Empty<AlundraPortalRecord>();
+        public IReadOnlyList<PortalRecord> Portals { get; init; } = Array.Empty<PortalRecord>();
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) { }
         public int LogicTicksThisFrame(float elapsedTime) => 0;
     }
 
-    private static AlundraPortalRecord PortalAround(int tileX, int tileY) => new()
+    private static PortalRecord PortalAround(int tileX, int tileY) => new()
     {
         Index = 0,
         X1 = tileX - 1,
@@ -83,7 +83,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
     };
 
     private static (EventProgramState State, EventProgramRunner Runner) Run(
-        AlundraEntityScriptProxy hero, IReadOnlyList<AlundraPortalRecord> portals, GameState gameState, int result, bool withHost = true)
+        AlundraEntityScriptProxy hero, IReadOnlyList<PortalRecord> portals, GameState gameState, int result, bool withHost = true)
     {
         var document = new EventProgramDocument
         {
@@ -111,8 +111,8 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
 
         Assert.Equal(1, state.Result);
         Assert.Equal(1, state.CodeIndex);
-        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
-        var record = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        Assert.True(WarpDirector.Instance.IsTransitionInProgress);
+        var record = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(44u, record.AnimationId);
         Assert.Equal(2u, record.DirectionId);
     }
@@ -126,8 +126,8 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
 
         Assert.Equal(0, state.Result);
         Assert.Equal(1, state.CodeIndex);
-        Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
-        Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
+        Assert.False(WarpDirector.Instance.IsTransitionInProgress);
+        Assert.False(WarpDirector.Instance.HasPendingArrival);
     }
 
     [Fact]
@@ -138,8 +138,8 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
         var (state, _) = Run(hero, new[] { PortalAround(30, 20) }, new GameState { IsWarpDisabled = true }, result: 0);
 
         Assert.Equal(1, state.Result);
-        Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
-        Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
+        Assert.False(WarpDirector.Instance.IsTransitionInProgress);
+        Assert.False(WarpDirector.Instance.HasPendingArrival);
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
         var (state, _) = Run(hero, new[] { PortalAround(30, 20) }, new GameState(), result: 1, withHost: false);
 
         Assert.Equal(0, state.Result);
-        Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.False(WarpDirector.Instance.IsTransitionInProgress);
     }
 
     [Fact]
@@ -158,9 +158,9 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
     {
         var hero = Hero(30, 20);
 
-        AlundraWarpDirector.Instance.BeginDeparture(PortalAround(30, 20), 0x10, hero, new GameState());
+        WarpDirector.Instance.BeginDeparture(PortalAround(30, 20), 0x10, hero, new GameState());
 
-        var record = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        var record = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(0x36u, record.AnimationId);
         Assert.Equal(0x10u, record.DirectionId);
     }

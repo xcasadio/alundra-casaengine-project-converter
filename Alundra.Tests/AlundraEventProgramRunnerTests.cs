@@ -89,7 +89,7 @@ public class AlundraEventProgramRunnerTests
 
         // E10.b (docs/plan-e10-fondu.md): same override shape as SoundPlayer above - overrides
         // IEntityWorldContext.ScreenFadeDirector's default-interface-member "=> null" for THIS class.
-        public IAlundraScreenFadeDirector? ScreenFadeDirector { get; set; }
+        public IScreenFadeDirector? ScreenFadeDirector { get; set; }
 
         // B2 (docs/plan-e11b-opcodes-audio.md): same override shape as SoundPlayer above - overrides
         // IEntityWorldContext.MusicPlayer's default-interface-member "=> null" for THIS class.
@@ -164,8 +164,8 @@ public class AlundraEventProgramRunnerTests
     /// <summary>Records every <see cref="BeginFadeEffect"/>/<see cref="SetWarpFadeDuration"/> call, in
     /// order - the dispatch-level oracle for 0xAF/0xB0's own operand extraction (E10.b,
     /// docs/plan-e10-fondu.md). <see cref="IsSettled"/> is settable so 0xB1's own dispatch (Result written
-    /// both ways) is directly testable without a real <see cref="AlundraScreenFadeDirector"/>.</summary>
-    private sealed class FakeScreenFadeDirector : IAlundraScreenFadeDirector
+    /// both ways) is directly testable without a real <see cref="ScreenFadeDirector"/>.</summary>
+    private sealed class FakeScreenFadeDirector : IScreenFadeDirector
     {
         public readonly List<(int R, int G, int B, int Tpage, int Duration, int Persist)> BeginFadeCalls = new();
         public readonly List<(int R, int G, int B, int Duration)> SetWarpFadeDurationCalls = new();
@@ -3652,7 +3652,7 @@ public class AlundraEventProgramRunnerTests
     [Fact]
     public void ChangeMap_0x53_KeepsPlayerCurrentAnimationAndDirection_NotThePortalPathConstant()
     {
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
         try
         {
             // v1/v2 = map id (17 | 1<<8 = 273); v3/v4/v5 = tile x/y/z (5,6,2); v6 = effect (4); v7 = sfx (69).
@@ -3665,8 +3665,8 @@ public class AlundraEventProgramRunnerTests
 
             runner.RunOneScriptCall(entity, state);
 
-            var record = AlundraWarpDirector.Instance.ArrivalRecordForTests;
-            Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
+            var record = WarpDirector.Instance.ArrivalRecordForTests;
+            Assert.True(WarpDirector.Instance.HasPendingArrival);
 
             // The whole point of T7: the player's OWN current animation/direction, never the portal
             // path's constant 0x36 animation - a version that wrote 0x36 here instead fails this assert.
@@ -3676,14 +3676,14 @@ public class AlundraEventProgramRunnerTests
         }
         finally
         {
-            AlundraWarpDirector.Instance.ResetForTests();
+            WarpDirector.Instance.ResetForTests();
         }
     }
 
     [Fact]
     public void ChangeMap_0x53_DecodesMapIdTileEffectAndSfx_ExactValues()
     {
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
         var projectRoot = FindProjectRootForRealMap389();
         try
         {
@@ -3693,7 +3693,7 @@ public class AlundraEventProgramRunnerTests
             // (seq_num -1, max_voices 0, real manifest) is genuinely silent (B17) and would never reach
             // PlaySfx regardless of project path, so this test's own "raw v[7] forwarded" claim now needs
             // an AUDIBLE sfx (55, same fixture as acceptance item (o)) to still exercise it.
-            AlundraWarpDirector.Instance.AttachToWorld(gameManager: null, soundPlayer, projectRoot);
+            WarpDirector.Instance.AttachToWorld(gameManager: null, soundPlayer, projectRoot);
 
             // map id = (v2<<8)|v1 = (1<<8)|17 = 273; tile (5,6,2); effect 4; sfx 55 - same operands as the
             // previous test (bar sfx), this one is purely about the decoded values (§ T7 "Ce que 0x53 fait
@@ -3710,7 +3710,7 @@ public class AlundraEventProgramRunnerTests
             Assert.Equal(EventTraceKind.Implemented, kind);
             Assert.Equal(8, state.CodeIndex); // advanced by its own size (8).
 
-            var record = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+            var record = WarpDirector.Instance.ArrivalRecordForTests;
             Assert.Equal(273u, record.MapIndex);
             Assert.Equal((5 * 24 + 12) << 16, record.PosX); // MapTileWidth = 24.
             Assert.Equal((6 * 16 + 8) << 16, record.PosY); // MapTileHeight = 16.
@@ -3723,14 +3723,14 @@ public class AlundraEventProgramRunnerTests
         }
         finally
         {
-            AlundraWarpDirector.Instance.ResetForTests();
+            WarpDirector.Instance.ResetForTests();
         }
     }
 
     [Fact]
     public void ChangeMap_0x53_NoPlayerEntity_DegradedNoOp_SkipsBySize()
     {
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
         try
         {
             var document = NewDocument(0x53, 17, 1, 5, 6, 2, 0, 69, 0xFF);
@@ -3742,11 +3742,11 @@ public class AlundraEventProgramRunnerTests
 
             Assert.Equal(EventTraceKind.Degraded, kind);
             Assert.Equal(8, state.CodeIndex);
-            Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
+            Assert.False(WarpDirector.Instance.HasPendingArrival);
         }
         finally
         {
-            AlundraWarpDirector.Instance.ResetForTests();
+            WarpDirector.Instance.ResetForTests();
         }
     }
 
@@ -3755,7 +3755,7 @@ public class AlundraEventProgramRunnerTests
     {
         // [R8]: the IsWarpDisabled test applies to 0x53 too, even though it never goes through
         // AlundraPortalTrigger's predicate (which is what would normally test this upstream).
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
         try
         {
             var document = NewDocument(0x53, 17, 1, 5, 6, 2, 0, 69, 0xFF);
@@ -3768,19 +3768,19 @@ public class AlundraEventProgramRunnerTests
 
             runner.RunOneScriptCall(entity, state);
 
-            Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
-            Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
+            Assert.False(WarpDirector.Instance.HasPendingArrival);
+            Assert.False(WarpDirector.Instance.IsTransitionInProgress);
         }
         finally
         {
-            AlundraWarpDirector.Instance.ResetForTests();
+            WarpDirector.Instance.ResetForTests();
         }
     }
 
     [Fact]
     public void SetWarpDisabled_0x9B_SetsFlag_AndBlocksASubsequentDeparture()
     {
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
         try
         {
             var document = NewDocument(0x9B, 0xFF);
@@ -3798,21 +3798,21 @@ public class AlundraEventProgramRunnerTests
             // A subsequent departure through the SAME AlundraWarpDirector this flag already gates (T4's
             // own [R8] test) must now do nothing.
             var player = NewPlayerForWarp(targetAnimationId: 0, targetDirection: 0);
-            AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+            WarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
                 desiredMapIndex: 1, posX: 0, posY: 0, posZ: 0, effectId: 0, sfxId: 0, player, gameState);
 
-            Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
+            Assert.False(WarpDirector.Instance.HasPendingArrival);
         }
         finally
         {
-            AlundraWarpDirector.Instance.ResetForTests();
+            WarpDirector.Instance.ResetForTests();
         }
     }
 
     [Fact]
     public void SetWarpDisabled_0x9C_ClearsFlag_UnblocksADeparture()
     {
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
         try
         {
             var document = NewDocument(0x9C, 0xFF);
@@ -3828,14 +3828,14 @@ public class AlundraEventProgramRunnerTests
             Assert.False(gameState.IsWarpDisabled);
 
             var player = NewPlayerForWarp(targetAnimationId: 0, targetDirection: 0);
-            AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+            WarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
                 desiredMapIndex: 1, posX: 0, posY: 0, posZ: 0, effectId: 0, sfxId: 0, player, gameState);
 
-            Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
+            Assert.True(WarpDirector.Instance.HasPendingArrival);
         }
         finally
         {
-            AlundraWarpDirector.Instance.ResetForTests();
+            WarpDirector.Instance.ResetForTests();
         }
     }
 

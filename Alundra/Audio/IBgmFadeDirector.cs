@@ -55,7 +55,7 @@ public interface IBgmFadeDirector
 
     /// <summary>
     /// Advances the master fade machine by <paramref name="ticks"/> LOGIC ticks (D-B-5: tick-driven,
-    /// never frame-driven - the same discipline <see cref="IAlundraScreenFadeDirector"/> already
+    /// never frame-driven - the same discipline <see cref="IScreenFadeDirector"/> already
     /// follows). Called by <see cref="AlundraWorldProxy.Update"/> with <c>ticksThisFrame</c>, once per
     /// rendered frame. A no-op while <see cref="IsArmed"/> is <see langword="false"/> (the machine is at
     /// rest - the original's own <c>FUN_8004b674</c> returns immediately when its state is 0).

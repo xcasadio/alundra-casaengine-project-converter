@@ -48,8 +48,8 @@ public sealed class AlundraTickStructureTests : IDisposable
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
-        AlundraScreenFadeDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+        ScreenFadeDirector.Instance.ResetForTests();
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests();
     }

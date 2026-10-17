@@ -40,7 +40,7 @@ public sealed class AlundraHeroSwimTests : IDisposable
     public AlundraHeroSwimTests()
     {
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
@@ -49,7 +49,7 @@ public sealed class AlundraHeroSwimTests : IDisposable
         PlayerManager.TryUseItemResultForTests = null;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     // -----------------------------------------------------------------------------------------

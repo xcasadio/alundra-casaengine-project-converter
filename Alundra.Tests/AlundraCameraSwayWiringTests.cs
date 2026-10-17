@@ -40,7 +40,7 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     private static Camera2dComponent AddCameraEntity(World world)
@@ -137,14 +137,14 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
             PosX = (18 * 24 + 12) << 16,
             PosY = (38 * 16 + 8) << 16,
         };
-        AlundraWarpDirector.Instance.BeginDeparture(
-            new AlundraPortalRecord
+        WarpDirector.Instance.BeginDeparture(
+            new PortalRecord
             {
                 Index = 0, X1 = 18, Y1 = 38, X2 = 18, Y2 = 38, DestMapId = 390, DestTileX = 10, DestTileY = 40,
                 ZLevel = 0, Flags = 0x5001,
             },
             0x10, player, state);
-        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.True(WarpDirector.Instance.IsTransitionInProgress);
 
         proxy.Update(0.02f);
 

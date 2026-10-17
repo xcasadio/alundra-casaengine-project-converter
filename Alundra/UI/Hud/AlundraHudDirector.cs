@@ -27,7 +27,7 @@ namespace Alundra.UI.Hud;
 /// conversation (docs/plan-e13-hud.md, C1's own "Pourquoi un directeur et pas l'écran").</para>
 ///
 /// <para>SESSION-scoped singleton, same shape as <see cref="AlundraDialogueDirector"/>/
-/// <see cref="AlundraScreenFadeDirector"/>: <see cref="AttachToWorld"/> re-points this session's
+/// <see cref="ScreenFadeDirector"/>: <see cref="AttachToWorld"/> re-points this session's
 /// <see cref="GameState"/> reference WITHOUT touching any animated state;
 /// <see cref="InstallForMapEntry"/> is the separate map-entry call, which arms the appearance when the persistent
 /// latch is set (the main loop's map-entry block, 0x8002c3d0 - see that method's own doc).</para>
@@ -195,7 +195,7 @@ public sealed class AlundraHudDirector
 
     /// <summary>Re-points this session-scoped instance at the current world's own
     /// <see cref="GameState"/> - same "re-point without touching state" contract as
-    /// <see cref="AlundraDialogueDirector.AttachToWorld"/>/<see cref="AlundraScreenFadeDirector.AttachToWorld"/>.
+    /// <see cref="AlundraDialogueDirector.AttachToWorld"/>/<see cref="ScreenFadeDirector.AttachToWorld"/>.
     /// <paramref name="gameState"/> null is tolerated (no live session yet) - <see cref="Tick"/> then
     /// degrades to a no-op (<see cref="RunTriggerMachine"/>'s own null guard), same shape as every other
     /// missing-system seam in this DLL.</summary>

@@ -129,8 +129,8 @@ internal static class SaveGameDirectorTestSupport
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
-        AlundraScreenFadeDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+        ScreenFadeDirector.Instance.ResetForTests();
         CameraSway.Instance.ResetForTests();
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests();
@@ -204,8 +204,8 @@ internal static class SaveGameDirectorTestSupport
                 Assert.Equal(AlundraInventoryPortrait.StateReturning, AlundraInventoryPortrait.Instance.State);
                 return (hero, "portrait is not idle");
             case SaveGameBlocker.TransitionInProgress:
-                AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(390, 0, 0, 0, 0, 0, HeroAt(), new GameState());
-                Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+                WarpDirector.Instance.BeginDepartureFromChangeMapOpcode(390, 0, 0, 0, 0, 0, HeroAt(), new GameState());
+                Assert.True(WarpDirector.Instance.IsTransitionInProgress);
                 return (hero, "map transition is in progress");
             case SaveGameBlocker.MasterMusicFadeArmed:
                 BgmFadeDirector.Instance.LoadBgm(1);
@@ -445,9 +445,9 @@ internal static class SaveGameDirectorTestSupport
                 state.GameVariables.ToArray(),
                 state.NewGameInventoryInitialized,
                 state.IsWarpDisabled,
-                AlundraWarpDirector.Instance.IsTransitionInProgress,
-                AlundraWarpDirector.Instance.HasPendingArrival,
-                AlundraScreenFadeDirector.Instance.IsSettled,
+                WarpDirector.Instance.IsTransitionInProgress,
+                WarpDirector.Instance.HasPendingArrival,
+                ScreenFadeDirector.Instance.IsSettled,
                 AlundraSaveGameDirector.Instance.HasPendingLoad);
         }
 

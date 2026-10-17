@@ -305,7 +305,7 @@ public sealed class AlundraSaveGameDirector
 
         // K7 step 5 (SD1): the departure must be one the abort guard can never end - that guard lifts the gate
         // but leaves the fade (persistence latch 1) and the sound, both started before the path is resolved.
-        var warp = AlundraWarpDirector.Instance;
+        var warp = WarpDirector.Instance;
         if (state.IsWarpDisabled)
         {
             Refuse(LoadKey, "the warp is disabled on this map.");
@@ -525,7 +525,7 @@ public sealed class AlundraSaveGameDirector
             return $"the inventory portrait is not idle (state {AlundraInventoryPortrait.Instance.State}).";
         }
 
-        if (AlundraWarpDirector.Instance.IsTransitionInProgress)
+        if (WarpDirector.Instance.IsTransitionInProgress)
         {
             return "a map transition is in progress.";
         }

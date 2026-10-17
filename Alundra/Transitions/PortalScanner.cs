@@ -10,9 +10,9 @@ namespace Alundra.Transitions;
 /// <summary>
 /// T3 (docs/plan-transitions-carte.md §3): port of <c>GameEngine.GetActivatedPortal</c>
 /// (<c>GameEngine.cs:2418-2438</c>, §1.2.b) - the portal slot scan every warp check runs before doing
-/// anything else. DETECTION ONLY, same scope note as <see cref="AlundraPortalTrigger"/>'s own class doc.
+/// anything else. DETECTION ONLY, same scope note as <see cref="PortalTrigger"/>'s own class doc.
 /// </summary>
-internal static class AlundraPortalScanner
+internal static class PortalScanner
 {
     /// <summary>
     /// First slot (in <paramref name="portals"/> order - i.e. record/slot order, §1.2.b) whose
@@ -23,7 +23,7 @@ internal static class AlundraPortalScanner
     /// (the decompilation's <c>return null</c> for it is not in the binary) and a later slot that might also
     /// contain the tile is never reached.
     /// </summary>
-    internal static AlundraPortalRecord? FindPortalAtTile(IReadOnlyList<AlundraPortalRecord> portals, int tileX, int tileY)
+    internal static PortalRecord? FindPortalAtTile(IReadOnlyList<PortalRecord> portals, int tileX, int tileY)
     {
         foreach (var portal in portals)
         {

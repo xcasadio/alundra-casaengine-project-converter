@@ -558,7 +558,7 @@ public sealed class AlundraTestSavesTests : IDisposable
         director.SaveSlots = slots;
         director.RulesFactoryForTests = RealRules;
         slots.Slots.Add(new AlundraSlotEntry("test-" + name, true, T0));
-        AlundraWarpDirector.Instance.AttachToWorld(BuildGameManager(), null, FindProjectRoot());
+        WarpDirector.Instance.AttachToWorld(BuildGameManager(), null, FindProjectRoot());
 
         var state = GameState.Instance;
         slots.LoadedSave = Build(name);

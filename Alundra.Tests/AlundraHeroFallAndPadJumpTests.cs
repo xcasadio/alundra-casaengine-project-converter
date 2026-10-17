@@ -47,14 +47,14 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
     public AlundraHeroFallAndPadJumpTests()
     {
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
     {
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     private static JumpHeroRig FreeRig(CellsCollisionField? field = null, float x = 200.25f, float z = 0f, float groundSnapDistance = -1f)
@@ -695,12 +695,12 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         Assert.Equal(0f, hero.Controller!.Settings.StepHeight);
 
         // The same re-adoption as UJ-7 (the pending arrival consumed by AdoptPlayerPawn of the world).
-        AlundraWarpDirector.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.SetPendingArrivalForTests(179, (17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0);
+        WarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.SetPendingArrivalForTests(179, (17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0);
         var tileMapData = (CasaEngine.Framework.Assets.TileMap.TileMapData)typeof(AlundraWorldProxy)
             .GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!;
         typeof(AlundraWorldProxy).GetMethod("AdoptPlayerPawn", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(arc.Proxy, new object[] { arc.RealWorld!, tileMapData });
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
 
         Assert.False(hero.HeroAirborne);
         Assert.Equal(captured, hero.Controller!.Settings.StepHeight);

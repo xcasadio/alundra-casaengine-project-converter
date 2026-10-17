@@ -23,7 +23,7 @@ namespace Alundra.Transitions;
 /// <see cref="IScriptHost.OnPortalTriggerDetected"/> - see that member's own doc) - "exposé par
 /// une couture que T4 remplira".
 /// </summary>
-internal static class AlundraPortalTrigger
+internal static class PortalTrigger
 {
     /// <summary>Bit tested against <see cref="AlundraEntityScriptProxy.CombinedVramFlagsAND"/> - the
     /// "hole" tile (§1.2.a, <c>PlayerManager.cs:3424</c>: <c>directionId &amp; 4U</c>).</summary>
@@ -35,7 +35,7 @@ internal static class AlundraPortalTrigger
 
     /// <summary>
     /// Port of <c>StaticVariables.SHORT_ARRAY_80022776</c> (address 0x80022776, <c>StaticVariables.cs:530</c>):
-    /// <c>[0x4000, 0x1000, 0x8000, 0x2000]</c>, indexed by <see cref="AlundraPortalRecord.RequiredFacingDirection"/>
+    /// <c>[0x4000, 0x1000, 0x8000, 0x2000]</c>, indexed by <see cref="PortalRecord.RequiredFacingDirection"/>
     /// (domain 0..3), gives the <see cref="PadState.ButtonsHold"/> mask that must be held for the
     /// warp to trigger. The four values already equal this port's own <see cref="PadState"/>
     /// Down/Up/Left/Right masks (0x4000/0x1000/0x8000/0x2000, <c>AlundraPlayerController.cs:28-31</c>) -
@@ -55,11 +55,11 @@ internal static class AlundraPortalTrigger
     /// plan's point 5 so this already-wired seam behaves correctly before T4's director exists, and T4
     /// need not re-check it once it does.
     /// </summary>
-    internal static (AlundraPortalRecord Portal, uint ArrivalDirectionId)? TryGetTrigger(
+    internal static (PortalRecord Portal, uint ArrivalDirectionId)? TryGetTrigger(
         AlundraEntityScriptProxy player,
         in PadState pad,
         GameState state,
-        IReadOnlyList<AlundraPortalRecord> portals)
+        IReadOnlyList<PortalRecord> portals)
     {
         if (state.IsWarpDisabled)
         {
@@ -72,7 +72,7 @@ internal static class AlundraPortalTrigger
         {
             // PlayerManager.cs:3455-3468 (hole branch): unconditional once a portal is found here - no
             // orientation test, no held key, no PlayerControlFlags test.
-            var holePortal = AlundraPortalScanner.FindPortalAtTile(portals, player.TileX, player.TileY);
+            var holePortal = PortalScanner.FindPortalAtTile(portals, player.TileX, player.TileY);
             return holePortal == null
                 ? null
                 : (holePortal, AnimationTables.CardinalDirectionTable[holePortal.ArrivalDirectionIndex]);
@@ -91,7 +91,7 @@ internal static class AlundraPortalTrigger
             return null;
         }
 
-        var portal = AlundraPortalScanner.FindPortalAtTile(portals, player.TileX, player.TileY);
+        var portal = PortalScanner.FindPortalAtTile(portals, player.TileX, player.TileY);
         if (portal == null)
         {
             return null;

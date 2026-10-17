@@ -224,7 +224,7 @@ public sealed class BgmPlayer : IMusicPlayer
     /// (arm the fade, stop outright, or do nothing) runs later, at the frame-close site
     /// (<see cref="EvaluatePendingWarpDeparture"/>), AFTER <c>g_resetSoundFlag</c>'s own consumption
     /// (B9) - see <see cref="_pendingWarpDeparture"/>'s own doc for why. Called by
-    /// <see cref="AlundraWarpDirector"/>'s own two departure sites in place of a <see cref="PlayMapMusic"/>
+    /// <see cref="WarpDirector"/>'s own two departure sites in place of a <see cref="PlayMapMusic"/>
     /// call (P7's own "le départ ne charge plus rien"). A second call before the pending one is evaluated
     /// overwrites it - the original has exactly one departure per frame, so this cannot happen in practice.
     /// </summary>

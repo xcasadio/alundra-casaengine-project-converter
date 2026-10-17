@@ -29,7 +29,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// T5 (docs/plan-transitions-carte.md §3 T5, D-T-4/D-T-7): <c>AlundraWorldProxy.AdoptPlayerPawn</c>
-/// consuming <see cref="AlundraWarpDirector"/>'s pending arrival record instead of always writing the New
+/// consuming <see cref="WarpDirector"/>'s pending arrival record instead of always writing the New
 /// Game constants, and <c>InstallScreenFadeSystems</c> transporting the arrival's own transition effect
 /// id into the log (D-T-7: reduced to effect 0 regardless).
 ///
@@ -59,8 +59,8 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
-        AlundraScreenFadeDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+        ScreenFadeDirector.Instance.ResetForTests();
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests(); // F5: joins the music-player singleton collection.
     }
@@ -70,8 +70,8 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
-        AlundraScreenFadeDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+        ScreenFadeDirector.Instance.ResetForTests();
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests();
     }
@@ -282,7 +282,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
 
     /// <summary>Portal 0 of map 389 (§1.1.c/§1.1.d): mono-cell (18,38), destination 390 tile (10,40),
     /// arrival direction index 1 -&gt; <c>AnimationTables.CardinalDirectionTable[1] == 0x10</c>.</summary>
-    private static AlundraPortalRecord Map389Portal0(int transitionEffectId = 0) => new()
+    private static PortalRecord Map389Portal0(int transitionEffectId = 0) => new()
     {
         Index = 0,
         X1 = 18,
@@ -319,7 +319,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
     private static void ArmPendingArrival(int transitionEffectId = 0)
     {
         var departurePlayer = NewDeparturePlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
-        AlundraWarpDirector.Instance.BeginDeparture(
+        WarpDirector.Instance.BeginDeparture(
             Map389Portal0(transitionEffectId), arrivalDirectionId: 0x10, departurePlayer, new GameState());
     }
 
@@ -375,7 +375,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
     public void AdoptPlayerPawn_WithPendingArrival_ConsumesRecord_ClampsToGround_AndClearsHasPendingArrival()
     {
         ArmPendingArrival();
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
 
         var world = BuildRealMap390World();
         var (heroEntity, _) = BuildHeroPawnEntity(world);
@@ -414,7 +414,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         Assert.Equal(~0x10u, hero.CurrentDirection);
 
         // [R9]: consumed, not just read - a LATER, non-warp map entry must never see this record again.
-        Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
+        Assert.False(WarpDirector.Instance.HasPendingArrival);
     }
 
     [Fact]
@@ -441,15 +441,15 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         // §1.4.f/D-T-15: InstallScreenFadeSystems (called from InitializeWithWorld, before AdoptPlayerPawn)
         // arms the incoming fade unconditionally on every map entry, warp arrival or not - subtractive,
         // 0xff0000 -> 0, 16 ticks (AlundraScreenFadeDirector.InstallForMapEntry's own doc).
-        Assert.False(AlundraScreenFadeDirector.Instance.IsSettled);
+        Assert.False(ScreenFadeDirector.Instance.IsSettled);
         for (var tick = 0; tick < 15; tick++)
         {
-            AlundraScreenFadeDirector.Instance.Advance(1);
-            Assert.False(AlundraScreenFadeDirector.Instance.IsSettled);
+            ScreenFadeDirector.Instance.Advance(1);
+            Assert.False(ScreenFadeDirector.Instance.IsSettled);
         }
 
-        AlundraScreenFadeDirector.Instance.Advance(1);
-        Assert.True(AlundraScreenFadeDirector.Instance.IsSettled);
+        ScreenFadeDirector.Instance.Advance(1);
+        Assert.True(ScreenFadeDirector.Instance.IsSettled);
     }
 
     // -----------------------------------------------------------------------------------------------
@@ -459,7 +459,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
     [Fact]
     public void AdoptPlayerPawn_WithNoPendingArrival_FallsBackToNewGameConstants()
     {
-        Assert.False(AlundraWarpDirector.Instance.HasPendingArrival); // fresh session, ResetForTests above.
+        Assert.False(WarpDirector.Instance.HasPendingArrival); // fresh session, ResetForTests above.
 
         var world = BuildRealMap390World();
         var (heroEntity, _) = BuildHeroPawnEntity(world);
@@ -483,7 +483,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         Assert.Equal((GameState.CameraTileY * 16 + 8) << 16, hero.PosY);
         Assert.Equal(GameState.ResetAnimationId, hero.TargetAnimationId);
         Assert.Equal(GameState.ResetDirectionId, hero.TargetDirection);
-        Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
+        Assert.False(WarpDirector.Instance.HasPendingArrival);
     }
 
     /// <summary>Mutation "retomber sur les constantes New Game alors qu'un enregistrement existe": with a
@@ -555,7 +555,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
     public void InstallScreenFadeSystems_WithNonZeroArrivalEffectId_LogsTheTransportedIdReducedToEffectZero()
     {
         ArmPendingArrival(transitionEffectId: 5);
-        Assert.Equal(5, AlundraWarpDirector.Instance.ArrivalRecordForTests.EffectId);
+        Assert.Equal(5, WarpDirector.Instance.ArrivalRecordForTests.EffectId);
 
         var world = BuildRealMap390World();
         var proxy = new AlundraWorldProxy();
@@ -568,7 +568,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         // D-T-7: transported and logged, but the fade machine armed is unconditionally effect 0 regardless
         // - the same 16-tick subtractive-to-black incoming fade every map entry arms (§1.4.f), not settled
         // the instant InstallForMapEntry runs.
-        Assert.False(AlundraScreenFadeDirector.Instance.IsSettled);
+        Assert.False(ScreenFadeDirector.Instance.IsSettled);
     }
 
     /// <summary>Mutation "ignorer l'id transporté": with NO pending arrival (effect id peeks as 0), nothing
@@ -576,7 +576,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
     [Fact]
     public void InstallScreenFadeSystems_WithNoPendingArrival_LogsNothingAboutATransitionEffect()
     {
-        Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
+        Assert.False(WarpDirector.Instance.HasPendingArrival);
 
         var world = BuildRealMap390World();
         var proxy = new AlundraWorldProxy();

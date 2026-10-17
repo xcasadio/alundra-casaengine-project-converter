@@ -149,8 +149,8 @@ public sealed class AlundraHeroJumpArcTests
         Assert.Equal(47877120, at2463.X);
         Assert.Equal(50790400, at2463.Y);
         Assert.Equal((2097152, 1), (at2463.Z, at2463.ForceAdjusted));
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
-        var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
+        var arrival = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(135u, arrival.MapIndex);
         Assert.Equal((30670848, 54001664, 1048576), (arrival.PosX, arrival.PosY, arrival.PosZ));
         Assert.Equal(16u, arrival.DirectionId);

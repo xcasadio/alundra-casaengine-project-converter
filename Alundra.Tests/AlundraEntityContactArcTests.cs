@@ -126,8 +126,8 @@ public sealed class AlundraEntityContactArcTests
         Assert.Equal((11862016, 21495808), (s[B, 112, 125].Hero.X, s[B, 112, 125].Hero.Y));
 
         // 0x53 @147: map 362, (16515072, 17301504, 2097152), effect 4.
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
-        var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
+        var arrival = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(362u, arrival.MapIndex);
         Assert.Equal((16515072, 17301504, 2097152), (arrival.PosX, arrival.PosY, arrival.PosZ));
         Assert.Equal(4, arrival.EffectId);

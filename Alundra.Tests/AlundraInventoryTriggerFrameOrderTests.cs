@@ -47,11 +47,11 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
         AlundraInventoryPortrait.Instance.ResetForTests();
         AlundraSaveScreenDirector.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
         // The warp case reads the screen fade: a fade an earlier test class left settled at the departure colour
         // makes the departure's own fade settle on its first tick, and the warp director then aborts it (no
         // GameManager in this montage), so the test depended on the order of the test classes.
-        AlundraScreenFadeDirector.Instance.ResetForTests();
+        ScreenFadeDirector.Instance.ResetForTests();
     }
 
     private static DialogueBoxMontage Build()
@@ -187,14 +187,14 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
         {
             if (!started && m.Frame == P)
             {
-                AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(1, 0, 0, 0, 0, 0, m.Proxy.PlayerEntity!, m.State);
+                WarpDirector.Instance.BeginDepartureFromChangeMapOpcode(1, 0, 0, 0, 0, 0, m.Proxy.PlayerEntity!, m.State);
                 started = true;
             }
         };
         m.PadForFrame = f => f == P ? PadState.Start : 0u;
         m.RunFrames(P + 1);
         Assert.True(started);
-        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.True(WarpDirector.Instance.IsTransitionInProgress);
         Assert.False(AlundraInventoryDirector.Instance.IsActive);
         Assert.Equal(0u, m.State.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
         m.RunFrames(2);

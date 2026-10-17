@@ -238,18 +238,18 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
         var document = new EventProgramDocument { MapIndex = 179, EventCodesATable = new[] { 0, 0 }, Codes = new[] { 0x53, 179, 0, 17, 7, 1, 0, 0, 0xFF } };
         var runner = new EventProgramRunner(document, ArcRun.State, new HeroWorldContext(hero));
         runner.RunOneScriptCall(new AlundraEntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal }, new EventProgramState { Codes = document.CodesAsBytes() });
-        var record = AlundraWarpDirector.Instance.ArrivalRecordForTests;
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
+        var record = WarpDirector.Instance.ArrivalRecordForTests;
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
         Assert.Equal(2u, record.AnimationId);
 
         // The destination map's entry: the record is consumed by AdoptPlayerPawn of the world of the arrival (here the same world, entered again: the
         // transition itself - fade, world change - is not played by the headless montage, so the record is posed again after the reset of the director).
-        AlundraWarpDirector.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.SetPendingArrivalForTests(record.MapIndex, record.PosX, record.PosY, record.PosZ, record.AnimationId, record.DirectionId);
+        WarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.SetPendingArrivalForTests(record.MapIndex, record.PosX, record.PosY, record.PosZ, record.AnimationId, record.DirectionId);
         var tileMapData = (CasaEngine.Framework.Assets.TileMap.TileMapData)typeof(AlundraWorldProxy)
             .GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!;
         typeof(AlundraWorldProxy).GetMethod("AdoptPlayerPawn", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(arc.Proxy, new object[] { arc.RealWorld!, tileMapData });
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
         Assert.Equal(2u, hero.TargetAnimationId); // the arrival animation is the 2 the 0x53 copied.
         Assert.True(hero.SpawnAnimationActive);
         Assert.Equal(2u, hero.SpawnAnimationId);

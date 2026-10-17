@@ -26,7 +26,7 @@ using Alundra.Transitions;
 namespace Alundra.Tests;
 
 /// <summary>
-/// T4 (docs/plan-transitions-carte.md §3 T4) - <see cref="AlundraWarpDirector"/>: the departure
+/// T4 (docs/plan-transitions-carte.md §3 T4) - <see cref="WarpDirector"/>: the departure
 /// sequence, its own gel gate, and the map-entry disposition (D-T-15) that ends it. Every test resets
 /// the FOUR session singletons this class' own montages touch, plus the three T1 introduced (D-T-14) -
 /// same shape as every other class that constructs an <see cref="AlundraWorldProxy"/>. Joins
@@ -44,8 +44,8 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
-        AlundraScreenFadeDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+        ScreenFadeDirector.Instance.ResetForTests();
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests(); // T2.1 (n/o/p): the warp-departure music tests.
     }
@@ -55,8 +55,8 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
-        AlundraScreenFadeDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+        ScreenFadeDirector.Instance.ResetForTests();
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests();
     }
@@ -65,7 +65,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
     /// <summary>Portal 0 of map 389 (§1.1.c/§1.1.d): mono-cell (18,38), destination 390 tile (10,40),
     /// Flags 0x5001 (RequiredFacing 1, ArrivalDirection 1, TransitionEffect 0, WarpBehavior 1).</summary>
-    private static AlundraPortalRecord Map389Portal0() => new()
+    private static PortalRecord Map389Portal0() => new()
     {
         Index = 0,
         X1 = 18,
@@ -193,13 +193,13 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             ((IScriptHost)proxy).OnPortalTriggerDetected(portal, arrivalDirectionId);
 
             // The gel starts THIS SAME call (D-T-6).
-            Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+            Assert.True(WarpDirector.Instance.IsTransitionInProgress);
 
             // Exact arrival record (§1.2.c/T4's own acceptance bullet):
             // target (10*24+12, 40*16+8) << 16, Z = 0 before clamp; internal map index 390 (identity
             // table); animation 0x36; direction 0x10.
-            var record = AlundraWarpDirector.Instance.ArrivalRecordForTests;
-            Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
+            var record = WarpDirector.Instance.ArrivalRecordForTests;
+            Assert.True(WarpDirector.Instance.HasPendingArrival);
             Assert.Equal(390u, record.MapIndex);
             Assert.Equal((10 * 24 + 12) << 16, record.PosX);
             Assert.Equal((40 * 16 + 8) << 16, record.PosY);
@@ -209,7 +209,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             Assert.Equal(0, record.EffectId); // TransitionEffectId bits of 0x5001 are 0.
 
             // D-T-5: outgoing fade armed with the persistence latch, not yet settled.
-            Assert.False(AlundraScreenFadeDirector.Instance.IsSettled);
+            Assert.False(ScreenFadeDirector.Instance.IsSettled);
 
             // [R6] reserve #1: the hero's engine-driven gravity is suspended for the departure - see
             // AlundraPlayerManager.SuspendGravityForWarpDeparture's own doc.
@@ -226,7 +226,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             {
                 proxy.Update(1f / 50f);
                 var pending = GetPendingWorldToLoad(gameManager);
-                Assert.True(pending == null || AlundraScreenFadeDirector.Instance.IsSettled);
+                Assert.True(pending == null || ScreenFadeDirector.Instance.IsSettled);
             }
 
             Assert.Equal(expectedPath, GetPendingWorldToLoad(gameManager));
@@ -271,10 +271,10 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         // emission branch, which keeps the gate posted through to InstallForMapEntry - exactly what
         // happens in game.
         var projectRoot = FindProjectRoot();
-        AlundraWarpDirector.Instance.AttachToWorld(new GameManager(null), soundPlayer: null, projectRoot);
+        WarpDirector.Instance.AttachToWorld(new GameManager(null), soundPlayer: null, projectRoot);
 
-        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, proxy.GameState);
-        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        WarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, proxy.GameState);
+        Assert.True(WarpDirector.Instance.IsTransitionInProgress);
 
         var runner = (EventProgramRunner)proxy.EventProgramRunner;
         var spriteRunsBeforeAnyTick = runner.SpriteEventRunCount;
@@ -298,8 +298,8 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         }
 
         // Lift the gate the same way T5's own map entry will (D-T-15) - a second InstallForMapEntry.
-        AlundraWarpDirector.Instance.InstallForMapEntry();
-        Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        WarpDirector.Instance.InstallForMapEntry();
+        Assert.False(WarpDirector.Instance.IsTransitionInProgress);
 
         proxy.Update(1f / 50f);
         Assert.Equal(spriteRunsBeforeAnyTick + 1, runner.SpriteEventRunCount);
@@ -330,9 +330,9 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         var portal = Map389Portal0();
         ((IScriptHost)proxy1).OnPortalTriggerDetected(portal, 0x10);
 
-        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
-        Assert.True(AlundraWarpDirector.Instance.IsDepartureArmedForTests);
-        var recordBeforeArrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        Assert.True(WarpDirector.Instance.IsTransitionInProgress);
+        Assert.True(WarpDirector.Instance.IsDepartureArmedForTests);
+        var recordBeforeArrival = WarpDirector.Instance.ArrivalRecordForTests;
 
         // Same singleton, second world - the montage T7 already proves is the real cross-world shape
         // (AlundraScreenFadeDirectorTests:370-412). InstallWarpSystems directly (this world has no
@@ -342,14 +342,14 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         var proxy2 = new AlundraWorldProxy();
         proxy2.InstallWarpSystems(world2); // runs AlundraWarpDirector.InstallForMapEntry (D-T-15).
 
-        Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
-        Assert.False(AlundraWarpDirector.Instance.IsDepartureArmedForTests);
-        Assert.Null(AlundraWarpDirector.Instance.PendingWorldPathForTests);
+        Assert.False(WarpDirector.Instance.IsTransitionInProgress);
+        Assert.False(WarpDirector.Instance.IsDepartureArmedForTests);
+        Assert.Null(WarpDirector.Instance.PendingWorldPathForTests);
 
         // CONSERVED - T5's own AdoptPlayerPawn/InstallScreenFadeSystems have not run in this DLL slice,
         // so nothing has consumed it yet; it must still read back exactly as armed.
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
-        Assert.Equal(recordBeforeArrival, AlundraWarpDirector.Instance.ArrivalRecordForTests);
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
+        Assert.Equal(recordBeforeArrival, WarpDirector.Instance.ArrivalRecordForTests);
     }
 
     [Fact]
@@ -368,14 +368,14 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         player.ScriptHost = proxy;
         proxy.PlayerEntity = player;
 
-        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, proxy.GameState);
+        WarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, proxy.GameState);
         var runner = (EventProgramRunner)proxy.EventProgramRunner;
         var before = runner.SpriteEventRunCount;
 
         proxy.Update(1f / 50f);
         Assert.Equal(before, runner.SpriteEventRunCount); // frozen.
 
-        AlundraWarpDirector.Instance.InstallForMapEntry();
+        WarpDirector.Instance.InstallForMapEntry();
         proxy.Update(1f / 50f);
         Assert.Equal(before + 1, runner.SpriteEventRunCount); // resumed - the site of production test.
     }
@@ -389,16 +389,16 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         // index, so the pending path was null before InstallForMapEntry ever ran. Resolve a real one
         // first, and assert it is non-null, so the clearing has something to clear.
         var projectRoot = FindProjectRoot();
-        AlundraWarpDirector.Instance.AttachToWorld(new GameManager(null), soundPlayer: null, projectRoot);
+        WarpDirector.Instance.AttachToWorld(new GameManager(null), soundPlayer: null, projectRoot);
 
         var player = NewPlayer(posXPixels: 0, posYPixels: 0);
-        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new GameState());
+        WarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new GameState());
 
-        Assert.NotNull(AlundraWarpDirector.Instance.PendingWorldPathForTests);
+        Assert.NotNull(WarpDirector.Instance.PendingWorldPathForTests);
 
-        AlundraWarpDirector.Instance.InstallForMapEntry();
+        WarpDirector.Instance.InstallForMapEntry();
 
-        Assert.Null(AlundraWarpDirector.Instance.PendingWorldPathForTests);
+        Assert.Null(WarpDirector.Instance.PendingWorldPathForTests);
     }
 
     [Fact]
@@ -408,18 +408,18 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         // tick after the machine settles, and the screen would flash back to the departure map for the
         // frame the switch happens on.
         var service = new ScreenEffectService();
-        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+        ScreenFadeDirector.Instance.AttachToWorld(service);
 
         var player = NewPlayer(posXPixels: 0, posYPixels: 0);
-        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new GameState());
+        WarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new GameState());
 
         for (var tick = 0; tick < 24; tick++)
         {
-            AlundraScreenFadeDirector.Instance.Advance(1);
-            AlundraScreenFadeDirector.Instance.PushToAttachedService();
+            ScreenFadeDirector.Instance.Advance(1);
+            ScreenFadeDirector.Instance.PushToAttachedService();
         }
 
-        Assert.True(AlundraScreenFadeDirector.Instance.IsSettled);
+        Assert.True(ScreenFadeDirector.Instance.IsSettled);
         Assert.True(service.Active, "the settled black must keep being submitted - that is what the persistence latch is for.");
         Assert.Equal(0xff, service.R);
     }
@@ -431,21 +431,21 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         // nothing would leave the gate posted for the rest of the session - player and NPCs frozen, in
         // silence. Unreachable on the shipped export, but a mute permanent lock is the worst possible
         // failure, so it fails loudly and recoverably instead.
-        AlundraWarpDirector.Instance.AttachToWorld(gameManager: null, soundPlayer: null, FindProjectRoot());
+        WarpDirector.Instance.AttachToWorld(gameManager: null, soundPlayer: null, FindProjectRoot());
 
         var player = NewPlayerWithController(gravity: 42f, maxFallSpeed: 7f);
-        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new GameState());
+        WarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new GameState());
 
-        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.True(WarpDirector.Instance.IsTransitionInProgress);
         Assert.Equal(0f, player.Controller!.Settings.Gravity);
 
         for (var tick = 0; tick < 24; tick++)
         {
-            AlundraScreenFadeDirector.Instance.Advance(1);
-            AlundraWarpDirector.Instance.Advance(1);
+            ScreenFadeDirector.Instance.Advance(1);
+            WarpDirector.Instance.Advance(1);
         }
 
-        Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.False(WarpDirector.Instance.IsTransitionInProgress);
         Assert.Equal(42f, player.Controller!.Settings.Gravity);
         Assert.Equal(7f, player.Controller!.Settings.MaxFallSpeed);
         Assert.False(player.Controller!.IsVerticalOwnedExternally);
@@ -461,7 +461,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
     /// <summary>Portal from map 389 to <paramref name="destMapId"/>, WarpBehaviorId
     /// <paramref name="warpBehaviorId"/> (Flags' own low nibble) - otherwise identical to
     /// <see cref="Map389Portal0"/>.</summary>
-    private static AlundraPortalRecord Map389PortalTo(int destMapId, int warpBehaviorId) => new()
+    private static PortalRecord Map389PortalTo(int destMapId, int warpBehaviorId) => new()
     {
         Index = 0,
         X1 = 18,
@@ -761,7 +761,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.PlayerEntity = player;
 
             // The 0x53 path itself, not the portal path: v[7]'s raw sfx id (69), no WarpBehaviorTable.
-            AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+            WarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
                 desiredMapIndex: 45, posX: 10 * 24, posY: 40 * 16, posZ: 0, effectId: 0, sfxId: 69,
                 player, GameState.Instance);
 
@@ -818,7 +818,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
             proxy389.PlayerEntity = player;
 
-            AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+            WarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
                 desiredMapIndex: 45, posX: 10 * 24, posY: 40 * 16, posZ: 0, effectId: 0, sfxId: 55,
                 player, GameState.Instance);
 
@@ -873,17 +873,17 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         try
         {
             var soundPlayer = new FakeWarpSoundPlayer();
-            AlundraWarpDirector.Instance.AttachToWorld(gameManager: null, soundPlayer, projectRoot);
+            WarpDirector.Instance.AttachToWorld(gameManager: null, soundPlayer, projectRoot);
 
             var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
 
-            AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+            WarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
                 desiredMapIndex: 45, posX: 10 * 24, posY: 40 * 16, posZ: 0, effectId: 0, sfxId: 379,
                 player, GameState.Instance);
 
             Assert.DoesNotContain(379, soundPlayer.Requests); // silent - never played.
 
-            AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+            WarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
                 desiredMapIndex: 45, posX: 10 * 24, posY: 40 * 16, posZ: 0, effectId: 0, sfxId: 55,
                 player, GameState.Instance);
 

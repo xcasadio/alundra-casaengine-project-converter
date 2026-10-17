@@ -112,12 +112,12 @@ public interface IScriptHost
     /// <summary>
     /// T3 (docs/plan-transitions-carte.md §1.1/§3): this world's own parsed "Portals" object-layer
     /// records (see <see cref="AlundraWorldProxy.BuildPortals"/>), in slot order - the exact list
-    /// <see cref="AlundraPortalScanner.FindPortalAtTile"/> scans. Default-implemented as an empty list
+    /// <see cref="PortalScanner.FindPortalAtTile"/> scans. Default-implemented as an empty list
     /// so every host built for an unrelated slice/test (none of them portal-aware) needs no change to
     /// keep implementing this interface - only <see cref="AlundraWorldProxy"/> overrides it with real
     /// data.
     /// </summary>
-    IReadOnlyList<AlundraPortalRecord> Portals => Array.Empty<AlundraPortalRecord>();
+    IReadOnlyList<PortalRecord> Portals => Array.Empty<PortalRecord>();
 
     /// <summary>
     /// E19.t (docs/plan-e19-opcodes.md §1.2r, D-E19-57): this world's sound-effect player, which every change of animation reaches (the sound of the new
@@ -158,13 +158,13 @@ public interface IScriptHost
     /// <summary>
     /// T3's own seam for T4 (docs/plan-transitions-carte.md §3: "le prédicat ... exposé par une couture
     /// que T4 remplira"). Called by <see cref="PlayerManager.MovePlayer"/>, at most once per
-    /// call, exactly when <see cref="AlundraPortalTrigger.TryGetTrigger"/> returns non-null - the moment
+    /// call, exactly when <see cref="PortalTrigger.TryGetTrigger"/> returns non-null - the moment
     /// the original's <c>CheckAndExecuteWarp</c> would have called <c>HandleWarpTransition</c>. Default
     /// no-op here: T3 DETECTS, it does not ACT (no fade, no <c>SetWorldToLoad</c> request) - see
-    /// <see cref="AlundraPortalTrigger"/>'s own class doc. T4's <c>AlundraWarpDirector</c> overrides this
+    /// <see cref="PortalTrigger"/>'s own class doc. T4's <c>AlundraWarpDirector</c> overrides this
     /// on <see cref="AlundraWorldProxy"/> to actually start the departure sequence.
     /// </summary>
-    void OnPortalTriggerDetected(AlundraPortalRecord portal, uint arrivalDirectionId)
+    void OnPortalTriggerDetected(PortalRecord portal, uint arrivalDirectionId)
     {
     }
 }

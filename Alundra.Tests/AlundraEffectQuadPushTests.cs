@@ -518,7 +518,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
         {
             EmptyTheService(service);
             proxy.Update(0.02f);
-            Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress, $"F{frame}");
+            Assert.True(WarpDirector.Instance.IsTransitionInProgress, $"F{frame}");
             Assert.Equal(2, service.QuadCount);
         }
 

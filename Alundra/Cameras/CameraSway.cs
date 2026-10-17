@@ -12,7 +12,7 @@ namespace Alundra.Cameras;
 /// of the camera follow <c>0x8002CDA0</c>). The camera follow adds <see cref="OffsetX"/>/<see cref="OffsetY"/> to
 /// the scroll at every tick (<see cref="CameraMath.ComputeSmoothedCameraTarget"/>).
 ///
-/// <para>Session-scoped, like <see cref="AlundraScreenFadeDirector.Instance"/>, and never saved. A map load
+/// <para>Session-scoped, like <see cref="ScreenFadeDirector.Instance"/>, and never saved. A map load
 /// only clears <see cref="Flag"/> (<see cref="OnMapLoad"/>, <c>0x8002CD54</c>): the first <see cref="Step"/>
 /// afterwards clears Limit, Speed and Offset, and <see cref="ReachX"/>/<see cref="ReachY"/> persist from one
 /// map to the next - faithful to the binary, kept.</para>

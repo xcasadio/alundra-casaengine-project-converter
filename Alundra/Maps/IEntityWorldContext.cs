@@ -171,7 +171,7 @@ public interface IEntityWorldContext
     /// <see cref="AlundraWorldProxy"/> installs the session-scoped
     /// <see cref="BgmFadeDirector.Instance"/> (see that class's own doc for why it is a singleton
     /// rather than a per-world instance - the same D-C-6/D-E10-6 lesson as
-    /// <see cref="BgmPlayer"/>/<see cref="AlundraScreenFadeDirector"/>).
+    /// <see cref="BgmPlayer"/>/<see cref="Transitions.ScreenFadeDirector"/>).
     /// </summary>
     IBgmFadeDirector? BgmFadeDirector => null;
 
@@ -180,10 +180,10 @@ public interface IEntityWorldContext
     /// 0xAF/0xB0/0xB1 in <see cref="EventProgramRunner.Dispatch"/>. A default interface member,
     /// same "degraded, skip" shape as <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/> above,
     /// defaulting to null so every EXISTING implementer keeps compiling unmodified.
-    /// <see cref="AlundraWorldProxy"/> installs the session-scoped <see cref="AlundraScreenFadeDirector.Instance"/>
+    /// <see cref="AlundraWorldProxy"/> installs the session-scoped <see cref="ScreenFadeDirector.Instance"/>
     /// (D-E10-6 - see that class's own doc for why it is a singleton rather than a per-world instance).
     /// </summary>
-    IAlundraScreenFadeDirector? ScreenFadeDirector => null;
+    IScreenFadeDirector? ScreenFadeDirector => null;
 
     /// <summary>
     /// This session's camera sway seam (E19.k1, docs/plan-e19-opcodes.md section 1.2k) - backs opcodes 0x8E/0x8F in
@@ -218,7 +218,7 @@ public interface IEntityWorldContext
     /// (<see cref="NoOpEntityWorldContext"/>, every existing test fake) keeps compiling unmodified.
     /// <see cref="AlundraWorldProxy"/> installs the session-scoped <see cref="AlundraDialogueDirector.Instance"/>
     /// (see that class's own doc for why it is a singleton rather than a per-world instance - same D-C-6/
-    /// D-E10-6 lesson as <see cref="BgmPlayer"/>/<see cref="AlundraScreenFadeDirector"/>) via
+    /// D-E10-6 lesson as <see cref="BgmPlayer"/>/<see cref="Transitions.ScreenFadeDirector"/>) via
     /// <see cref="AlundraWorldProxy.InstallDialogueSystems"/>. Unlike <see cref="ScreenFadeDirector"/>, this
     /// member stays NULLABLE even on <see cref="AlundraWorldProxy"/> itself: <see cref="IAlundraDialogueDirector.HasPresenter"/>
     /// is what actually distinguishes real from degraded dispatch (the singleton is attached with a null

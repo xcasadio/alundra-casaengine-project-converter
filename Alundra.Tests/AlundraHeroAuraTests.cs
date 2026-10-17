@@ -30,7 +30,7 @@ public sealed class AlundraHeroAuraTests : IDisposable
     public AlundraHeroAuraTests()
     {
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
@@ -39,7 +39,7 @@ public sealed class AlundraHeroAuraTests : IDisposable
         GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     /// <summary>The auras alive in the reservoir: effect 3 of the global table anchored to the hero.</summary>

@@ -13,7 +13,7 @@ namespace Alundra.Maps;
 
 /// <summary>
 /// T4 (docs/plan-transitions-carte.md §1.1.e/§3): the FORWARD half of <c>Maps/world-index.json</c> -
-/// map id to world path - the direction <see cref="AlundraWarpDirector"/> needs to resolve
+/// map id to world path - the direction <see cref="WarpDirector"/> needs to resolve
 /// <c>g_desiredMap</c> into the string <c>GameManager.SetWorldToLoad(string)</c> takes. Every existing
 /// reader of this same file (<see cref="MapEventProgramLoader"/>, <c>BackdropLoader</c>, and the old
 /// <c>AlundraDialogueStringsLoader</c>, removed in E15.d) goes the OTHER way (a world's own trailing

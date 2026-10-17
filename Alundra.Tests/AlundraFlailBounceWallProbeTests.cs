@@ -31,14 +31,14 @@ public sealed class AlundraFlailBounceWallProbeTests : IDisposable
     public AlundraFlailBounceWallProbeTests()
     {
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
     {
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     private sealed record Tick(uint Target, int HitCounter, bool HasBox);

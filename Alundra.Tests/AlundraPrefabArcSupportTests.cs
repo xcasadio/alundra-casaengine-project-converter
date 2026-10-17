@@ -163,7 +163,7 @@ public sealed class AlundraPrefabArcSupportTests
             Arrival: new ArcArrival(19660800, 23592960, 0, GameState.ResetAnimationId, 16));
         using var arc = new ArcRun(spec);
 
-        Assert.False(AlundraWarpDirector.Instance.HasPendingArrival); // consumed by the adoption, as in production.
+        Assert.False(WarpDirector.Instance.HasPendingArrival); // consumed by the adoption, as in production.
         Assert.Equal((19660800, 23592960), (arc.Hero.PosX, arc.Hero.PosY));
         Assert.Equal(1048576, arc.Hero.PosZ);
         Assert.Equal((12, 22, 1), (arc.Hero.TileX, arc.Hero.TileY, arc.Hero.TileZ));

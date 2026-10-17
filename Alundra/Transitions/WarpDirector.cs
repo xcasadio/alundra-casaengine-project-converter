@@ -14,7 +14,7 @@ namespace Alundra.Transitions;
 
 /// <summary>
 /// T4 (docs/plan-transitions-carte.md §1.2.c/§1.2.e/§3, D-T-2): SESSION-scoped singleton - same
-/// contract shape as <see cref="BgmPlayer"/>/<see cref="AlundraScreenFadeDirector"/>/
+/// contract shape as <see cref="BgmPlayer"/>/<see cref="ScreenFadeDirector"/>/
 /// <see cref="AlundraDialogueDirector"/> (<c>Instance</c>, <see cref="AttachToWorld"/>,
 /// <see cref="InstallForMapEntry"/>, <see cref="ResetForTests"/>) - port of <c>PlayerManager.HandleWarpTransition</c>
 /// (<c>PlayerManager.cs:3488-3541</c>) plus the map-entry preamble that ENDS it
@@ -51,13 +51,13 @@ namespace Alundra.Transitions;
 /// counter re-poses the gate the very next tick - the exact falsifiable shape D-T-15's own mutation
 /// table names, rather than a silent no-op.</para>
 /// </remarks>
-public sealed class AlundraWarpDirector
+public sealed class WarpDirector
 {
     /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-T-2) -
     /// never <see langword="new"/>'d per world.</summary>
-    public static readonly AlundraWarpDirector Instance = new();
+    public static readonly WarpDirector Instance = new();
 
-    private AlundraWarpDirector()
+    private WarpDirector()
     {
     }
 
@@ -254,7 +254,7 @@ public sealed class AlundraWarpDirector
     /// <summary>
     /// D-T-15's own map-entry disposition - called from <see cref="AlundraWorldProxy.InitializeWithWorld"/>
     /// alongside its session-carrier peers (<see cref="GameState.InstallForMapEntry"/>,
-    /// <see cref="AlundraScreenFadeDirector.InstallForMapEntry"/>), BEFORE <c>AdoptPlayerPawn</c> runs
+    /// <see cref="ScreenFadeDirector.InstallForMapEntry"/>), BEFORE <c>AdoptPlayerPawn</c> runs
     /// (T5's own reader of the arrival record this method deliberately leaves untouched - see this
     /// class' own doc). Port of <c>GameEngine.cs:302</c>'s <c>_isWarpTransitionRunning = false</c>,
     /// which the original runs strictly BEFORE its own map re-initialization - without this, joueur and
@@ -316,7 +316,7 @@ public sealed class AlundraWarpDirector
     /// starting this very frame, not one frame late.
     /// </summary>
     public void BeginDeparture(
-        AlundraPortalRecord portal,
+        PortalRecord portal,
         uint arrivalDirectionId,
         AlundraEntityScriptProxy player,
         GameState state,
@@ -337,7 +337,7 @@ public sealed class AlundraWarpDirector
         // chantier's scope), so it is never reachable here regardless.
         var effectId = portal.TransitionEffectId;
         Logs.WriteInfo(
-            $"AlundraWarpDirector: departure through portal {portal.Index} to map {portal.DestMapId}, "
+            $"WarpDirector: departure through portal {portal.Index} to map {portal.DestMapId}, "
             + $"TransitionEffectId={effectId} (treated as effect 0 - D-T-7).");
 
         var desiredMapIndex = state.MapIdToInternalMapIndexTable[portal.DestMapId];
@@ -367,7 +367,7 @@ public sealed class AlundraWarpDirector
     /// <summary>
     /// T7 (docs/plan-transitions-carte.md, section "T7 - Opcodes 0x53, 0x9B, 0x9C"): additive overload
     /// for opcode 0x53 (<c>Script_ChangeMap_053</c>, <c>EntityEventHandlers.cs:1554-1585</c>), which
-    /// carries its own map/tile/effect/sfx operands directly, no <see cref="AlundraPortalRecord"/> - so it
+    /// carries its own map/tile/effect/sfx operands directly, no <see cref="PortalRecord"/> - so it
     /// cannot call <see cref="BeginDeparture"/> itself. Converges on the SAME <see cref="BeginDepartureCore"/>
     /// as the portal path so both share every side effect (arrival record, fade, gravity suspension,
     /// world-path resolution, gel arming) byte for byte - WITHOUT touching <see cref="BeginDeparture"/>'s
@@ -378,7 +378,7 @@ public sealed class AlundraWarpDirector
     /// is <paramref name="sfxId"/>, the opcode's own raw <c>v[7]</c> operand, played DIRECTLY - not looked
     /// up through <see cref="WarpBehaviorTable"/> (there is no <c>WarpBehaviorId</c> here, no portal).
     /// [R8]: the <see cref="GameState.IsWarpDisabled"/> test is repeated here too, exactly like
-    /// <see cref="BeginDeparture"/> - opcode 0x53 never goes through <see cref="AlundraPortalTrigger"/>'s
+    /// <see cref="BeginDeparture"/> - opcode 0x53 never goes through <see cref="PortalTrigger"/>'s
     /// predicate.
     ///
     /// <paramref name="desiredMapIndex"/> is used AS-IS, unlike the portal path: the original assigns
@@ -407,7 +407,7 @@ public sealed class AlundraWarpDirector
         }
 
         Logs.WriteInfo(
-            $"AlundraWarpDirector: departure through opcode 0x53 (ChangeMap) to map index {desiredMapIndex}, "
+            $"WarpDirector: departure through opcode 0x53 (ChangeMap) to map index {desiredMapIndex}, "
             + $"TransitionEffectId={effectId}.");
 
         BeginDepartureCore(
@@ -475,7 +475,7 @@ public sealed class AlundraWarpDirector
             return;
         }
 
-        Logs.WriteInfo($"AlundraWarpDirector: departure of a loaded save to map {desiredMapIndex} (effect 0).");
+        Logs.WriteInfo($"WarpDirector: departure of a loaded save to map {desiredMapIndex} (effect 0).");
 
         BeginDepartureCore(
             desiredMapIndex,
@@ -526,7 +526,7 @@ public sealed class AlundraWarpDirector
         // line in §1.4.f. C4 (D-E13-11) is the one thing added since: this fade covers the INTERFACE too,
         // so the life gauge darkens with the scenery instead of staying legible on black - the original
         // does not close the HUD before a warp, it fades over the frame the gauge is already in.
-        AlundraScreenFadeDirector.Instance.BeginWarpDepartureFade(0xff, 0xff, 0xff, tpage: 2, duration: 16, persistLock: 1);
+        ScreenFadeDirector.Instance.BeginWarpDepartureFade(0xff, 0xff, 0xff, tpage: 2, duration: 16, persistLock: 1);
 
         // [R6] reserve #1 (T2's own closing-verifier note, this class' own remarks): suspend the hero's
         // engine-driven gravity for the duration of the departure - see
@@ -600,7 +600,7 @@ public sealed class AlundraWarpDirector
 
     /// <summary>
     /// Called once per frame from <see cref="AlundraWorldProxy.Update"/> (a "dehors" pass, same
-    /// unconditional shape as <see cref="AlundraScreenFadeDirector.Advance"/>/<c>PushToAttachedService</c>
+    /// unconditional shape as <see cref="ScreenFadeDirector.Advance"/>/<c>PushToAttachedService</c>
     /// right next to it - the departure sequence itself must keep running WHILE the gel it drives is
     /// posed). See this class' own remarks for why <see cref="IsTransitionInProgress"/> is re-derived
     /// here every tick instead of being a one-shot latch.
@@ -618,7 +618,7 @@ public sealed class AlundraWarpDirector
         // §1.1.e: "émis seulement une fois le fondu stabilisé" - AlundraScreenFadeDirector.Advance always
         // runs before this call in AlundraWorldProxy.Update's own frame order, so this reads the SAME
         // tick's settled state, never a frame-stale one.
-        if (!AlundraScreenFadeDirector.Instance.IsSettled || _worldChangeRequested)
+        if (!ScreenFadeDirector.Instance.IsSettled || _worldChangeRequested)
         {
             return;
         }
@@ -639,7 +639,7 @@ public sealed class AlundraWarpDirector
         // 483 contiguous entries and every DestMapId falls inside it - so this turns a data-degraded
         // case into a loud, recoverable failure rather than a mute lock.
         Logs.WriteWarning(
-            "AlundraWarpDirector: departure aborted - "
+            "WarpDirector: departure aborted - "
             + (_pendingWorldPath == null
                 ? "no world path resolved for the destination map"
                 : "no GameManager attached to request the world change")
@@ -648,7 +648,7 @@ public sealed class AlundraWarpDirector
     }
 
     /// <summary>Test-only: clears every piece of session state so tests do not leak into each other
-    /// through this singleton - same seam as <see cref="AlundraScreenFadeDirector.ResetForTests"/>.</summary>
+    /// through this singleton - same seam as <see cref="ScreenFadeDirector.ResetForTests"/>.</summary>
     internal void ResetForTests()
     {
         _gameManager = null;

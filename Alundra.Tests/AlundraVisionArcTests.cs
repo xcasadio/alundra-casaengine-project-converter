@@ -225,8 +225,8 @@ public sealed class AlundraVisionArcTests
 
         Assert.NotEqual(0u, ArcRun.State.GetFlag(1641) & (1u << (1641 & 0x1f)));
         Assert.Equal(0u, ArcRun.State.GetFlag(1640) & (1u << (1640 & 0x1f)));
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
-        var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
+        var arrival = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(478u, arrival.MapIndex);
         Assert.Equal(35389440, arrival.PosX);
         Assert.Equal(60293120, arrival.PosY);
@@ -303,8 +303,8 @@ public sealed class AlundraVisionArcTests
         Assert.Equal(AlundraEffectOpcodeTests.Codes(476)[effects.Sites.Last(t => t.Opcode == 0x92).Pc + 2], slot.TargetAnimation);
         Assert.True(aura.AliveSinceCreation, "the aura was freed");
 
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
-        var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
+        var arrival = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(392u, arrival.MapIndex);
         Assert.Equal(46399488, arrival.PosX);
         Assert.Equal(14155776, arrival.PosY);

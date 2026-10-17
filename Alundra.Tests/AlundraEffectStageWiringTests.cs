@@ -383,7 +383,7 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
         for (var frame = 0; frame < 16; frame++)
         {
             proxy.Update(0.02f);
-            Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress, $"F{frame}");
+            Assert.True(WarpDirector.Instance.IsTransitionInProgress, $"F{frame}");
             Assert.Equal(0, slot.CurrentImageSetIndex);
             Assert.Equal(2, stage.Reservoir.ActiveCount);
         }
@@ -392,7 +392,7 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
         var created = stage.Reservoir.Slots[1];
         Assert.Equal(-1, created.CurrentImageSetIndex); // created during the departure, never updated
 
-        AlundraWarpDirector.Instance.InstallForMapEntry();
+        WarpDirector.Instance.InstallForMapEntry();
         proxy.Update(0.02f);
         Assert.Equal(1, slot.CurrentImageSetIndex);
         Assert.Equal(0, created.CurrentImageSetIndex);

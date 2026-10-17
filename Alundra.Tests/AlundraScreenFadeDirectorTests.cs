@@ -18,7 +18,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// xunit collection covering every test class that touches the SESSION-scoped
-/// <see cref="AlundraScreenFadeDirector.Instance"/> singleton (D-E10-6, docs/plan-e10-fondu.md, slice
+/// <see cref="ScreenFadeDirector.Instance"/> singleton (D-E10-6, docs/plan-e10-fondu.md, slice
 /// E10.b) - same rationale as <see cref="AlundraMusicPlayerSingletonCollection"/>: classes sharing a
 /// collection never run in parallel with each other, which is what keeps them from racing on that
 /// shared mutable state (xunit runs different test CLASSES in this project in parallel by default).
@@ -31,7 +31,7 @@ public class AlundraScreenFadeDirectorSingletonCollection
 
 /// <summary>
 /// T1-T7 of docs/plan-e10-fondu.md, slice E10.b. Every test resets
-/// <see cref="AlundraScreenFadeDirector.Instance"/> first/last (the "moyen de le réinitialiser en test"
+/// <see cref="ScreenFadeDirector.Instance"/> first/last (the "moyen de le réinitialiser en test"
 /// D-E10-6 asks the slice to name, same shape as <see cref="BgmPlayer.ResetForTests"/>).
 /// </summary>
 [Collection(AlundraScreenFadeDirectorSingletonCollection.Name)]
@@ -39,7 +39,7 @@ public class AlundraScreenFadeDirectorTests : IDisposable
 {
     public AlundraScreenFadeDirectorTests()
     {
-        AlundraScreenFadeDirector.Instance.ResetForTests();
+        ScreenFadeDirector.Instance.ResetForTests();
 
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
@@ -47,19 +47,19 @@ public class AlundraScreenFadeDirectorTests : IDisposable
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
+        WarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
     }
 
     public void Dispose()
     {
-        AlundraScreenFadeDirector.Instance.ResetForTests();
+        ScreenFadeDirector.Instance.ResetForTests();
 
         // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
         // isolation) - kept for symmetry with the existing session-singleton test classes.
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
+        WarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
     }
 
     // ---- fixtures -------------------------------------------------------------------------------
@@ -170,14 +170,14 @@ public class AlundraScreenFadeDirectorTests : IDisposable
     {
         var game = BuildGameWithScreenEffects();
         var service = game.ScreenEffectComponent.Service;
-        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+        ScreenFadeDirector.Instance.AttachToWorld(service);
 
         // duration = 0 -> the necessity-deviation snap path (D-E10-8): current jumps straight to target,
         // so ONE Advance call pushes exactly (r,g,b) with no interpolation math to account for.
-        AlundraScreenFadeDirector.Instance.BeginFadeEffect(r: 10, g: 20, b: 30, tpage: 1, duration: 0, persistLock: 0);
+        ScreenFadeDirector.Instance.BeginFadeEffect(r: 10, g: 20, b: 30, tpage: 1, duration: 0, persistLock: 0);
 
-        AlundraScreenFadeDirector.Instance.Advance(1);
-        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        ScreenFadeDirector.Instance.Advance(1);
+        ScreenFadeDirector.Instance.PushToAttachedService();
 
         Assert.True(service.Active);
         Assert.Equal((byte)10, service.R);
@@ -203,27 +203,27 @@ public class AlundraScreenFadeDirectorTests : IDisposable
     {
         var game = BuildGameWithScreenEffects();
         var service = game.ScreenEffectComponent.Service;
-        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+        ScreenFadeDirector.Instance.AttachToWorld(service);
 
         // Every colour operand is shifted <<16 (16.16), so a raw delta is always a multiple of 65536 -
         // with duration = 9 (which does NOT divide 65536), delta = 1 * 65536 gives step = floor(65536/9)
         // = 7281, remainder 7 - after 9 ticks the accumulated 65529 is 7 short of target, and the next
         // tick's own step (7281) clears that remainder in one more tick: exactly duration + 1 = 10 ticks.
-        AlundraScreenFadeDirector.Instance.BeginFadeEffect(r: 1, g: 1, b: 1, tpage: 0, duration: 9, persistLock: 0);
+        ScreenFadeDirector.Instance.BeginFadeEffect(r: 1, g: 1, b: 1, tpage: 0, duration: 9, persistLock: 0);
 
         for (var tick = 1; tick <= 9; tick++)
         {
-            AlundraScreenFadeDirector.Instance.Advance(1);
-            AlundraScreenFadeDirector.Instance.PushToAttachedService();
+            ScreenFadeDirector.Instance.Advance(1);
+            ScreenFadeDirector.Instance.PushToAttachedService();
             Assert.True(service.Active, $"tick {tick}: expected still ramping (not yet arrived).");
             Assert.NotEqual((byte)1, service.R);
         }
 
-        AlundraScreenFadeDirector.Instance.Advance(1); // tick 10 = duration + 1.
-        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        ScreenFadeDirector.Instance.Advance(1); // tick 10 = duration + 1.
+        ScreenFadeDirector.Instance.PushToAttachedService();
 
         Assert.Equal((byte)1, service.R); // arrived, clamped exactly to target.
-        Assert.True(AlundraScreenFadeDirector.Instance.IsSettled);
+        Assert.True(ScreenFadeDirector.Instance.IsSettled);
     }
 
     [Fact]
@@ -231,20 +231,20 @@ public class AlundraScreenFadeDirectorTests : IDisposable
     {
         var game = BuildGameWithScreenEffects();
         var service = game.ScreenEffectComponent.Service;
-        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+        ScreenFadeDirector.Instance.AttachToWorld(service);
 
         // Ascending: target (colour 1, raw delta 65536) ABOVE current (0, the default). duration
         // (70000) is LARGER than the raw delta (65536), so step truncates fully to 0 (not just a
         // remainder) - the fade NEVER completes, so 0xB1 (IsSettled) stays false forever.
-        AlundraScreenFadeDirector.Instance.BeginFadeEffect(r: 1, g: 1, b: 1, tpage: 0, duration: 70000, persistLock: 0);
+        ScreenFadeDirector.Instance.BeginFadeEffect(r: 1, g: 1, b: 1, tpage: 0, duration: 70000, persistLock: 0);
 
         for (var tick = 0; tick < 100; tick++)
         {
-            AlundraScreenFadeDirector.Instance.Advance(1);
-            AlundraScreenFadeDirector.Instance.PushToAttachedService();
+            ScreenFadeDirector.Instance.Advance(1);
+            ScreenFadeDirector.Instance.PushToAttachedService();
         }
 
-        Assert.False(AlundraScreenFadeDirector.Instance.IsSettled);
+        Assert.False(ScreenFadeDirector.Instance.IsSettled);
         Assert.Equal((byte)0, service.R); // current never left 0 - the step truly never moved it.
         Assert.True(service.Active);
     }
@@ -254,25 +254,25 @@ public class AlundraScreenFadeDirectorTests : IDisposable
     {
         var game = BuildGameWithScreenEffects();
         var service = game.ScreenEffectComponent.Service;
-        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+        ScreenFadeDirector.Instance.AttachToWorld(service);
 
         // First settle current at colour 1 (duration 0 snap), THEN fade DOWN to 0 with the SAME
         // magnitude-vs-duration relationship as the ascending case above (raw delta 65536 < duration
         // 70000) - the truncated step is 0, but MoveTowards' own "step >= 0" branch (chosen by the SIGN
         // OF STEP, not of the delta - see that method's own doc) finds `target(0) < current(65536) + 0`
         // already true, and snaps straight to target in exactly ONE tick instead of never moving.
-        AlundraScreenFadeDirector.Instance.BeginFadeEffect(r: 1, g: 1, b: 1, tpage: 0, duration: 0, persistLock: 0);
-        AlundraScreenFadeDirector.Instance.Advance(1);
-        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        ScreenFadeDirector.Instance.BeginFadeEffect(r: 1, g: 1, b: 1, tpage: 0, duration: 0, persistLock: 0);
+        ScreenFadeDirector.Instance.Advance(1);
+        ScreenFadeDirector.Instance.PushToAttachedService();
         Assert.Equal((byte)1, service.R);
 
-        AlundraScreenFadeDirector.Instance.BeginFadeEffect(r: 0, g: 0, b: 0, tpage: 0, duration: 70000, persistLock: 0);
+        ScreenFadeDirector.Instance.BeginFadeEffect(r: 0, g: 0, b: 0, tpage: 0, duration: 70000, persistLock: 0);
 
-        AlundraScreenFadeDirector.Instance.Advance(1);
-        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        ScreenFadeDirector.Instance.Advance(1);
+        ScreenFadeDirector.Instance.PushToAttachedService();
 
         Assert.Equal((byte)0, service.R); // settled to target in exactly one tick.
-        Assert.True(AlundraScreenFadeDirector.Instance.IsSettled);
+        Assert.True(ScreenFadeDirector.Instance.IsSettled);
     }
 
     [Fact]
@@ -302,17 +302,17 @@ public class AlundraScreenFadeDirectorTests : IDisposable
     {
         var game = BuildGameWithScreenEffects();
         var service = game.ScreenEffectComponent.Service;
-        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+        ScreenFadeDirector.Instance.AttachToWorld(service);
 
-        AlundraScreenFadeDirector.Instance.BeginFadeEffect(r: 40, g: 50, b: 60, tpage: 0, duration: 4, persistLock: 7);
+        ScreenFadeDirector.Instance.BeginFadeEffect(r: 40, g: 50, b: 60, tpage: 0, duration: 4, persistLock: 7);
 
         for (var tick = 0; tick < 4; tick++)
         {
-            AlundraScreenFadeDirector.Instance.Advance(1);
-            AlundraScreenFadeDirector.Instance.PushToAttachedService();
+            ScreenFadeDirector.Instance.Advance(1);
+            ScreenFadeDirector.Instance.PushToAttachedService();
         }
 
-        Assert.True(AlundraScreenFadeDirector.Instance.IsSettled); // machine B itself has arrived.
+        Assert.True(ScreenFadeDirector.Instance.IsSettled); // machine B itself has arrived.
         Assert.True(service.Active); // yet the persistence latch keeps it submitted.
         Assert.Equal((byte)40, service.R);
         Assert.Equal((byte)50, service.G);
@@ -321,8 +321,8 @@ public class AlundraScreenFadeDirectorTests : IDisposable
         // Indefinitely: many more frames, some with zero ticks, still keep submitting the settled color.
         for (var i = 0; i < 20; i++)
         {
-            AlundraScreenFadeDirector.Instance.Advance(0);
-            AlundraScreenFadeDirector.Instance.PushToAttachedService();
+            ScreenFadeDirector.Instance.Advance(0);
+            ScreenFadeDirector.Instance.PushToAttachedService();
         }
 
         Assert.True(service.Active);
@@ -352,21 +352,21 @@ public class AlundraScreenFadeDirectorTests : IDisposable
     {
         var game = BuildGameWithScreenEffects();
         var service = game.ScreenEffectComponent.Service;
-        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+        ScreenFadeDirector.Instance.AttachToWorld(service);
 
         // Before any fade at all: settled (both machines idle).
-        Assert.True(AlundraScreenFadeDirector.Instance.IsSettled);
+        Assert.True(ScreenFadeDirector.Instance.IsSettled);
 
         // Target (colour 4) above the default current (0) so there is an actual delta to ramp - a
         // duration of 4 divides 4*65536 evenly (§1.4's own "gray fades" case), settling exactly at tick 4.
-        AlundraScreenFadeDirector.Instance.BeginFadeEffect(r: 4, g: 4, b: 4, tpage: 0, duration: 4, persistLock: 0);
-        AlundraScreenFadeDirector.Instance.Advance(1);
+        ScreenFadeDirector.Instance.BeginFadeEffect(r: 4, g: 4, b: 4, tpage: 0, duration: 4, persistLock: 0);
+        ScreenFadeDirector.Instance.Advance(1);
 
-        Assert.False(AlundraScreenFadeDirector.Instance.IsSettled); // mid-fade: not settled.
+        Assert.False(ScreenFadeDirector.Instance.IsSettled); // mid-fade: not settled.
 
-        AlundraScreenFadeDirector.Instance.Advance(3); // ticks 2,3,4 - arrival at tick 4 (duration exact).
+        ScreenFadeDirector.Instance.Advance(3); // ticks 2,3,4 - arrival at tick 4 (duration exact).
 
-        Assert.True(AlundraScreenFadeDirector.Instance.IsSettled); // after arrival: settled again.
+        Assert.True(ScreenFadeDirector.Instance.IsSettled); // after arrival: settled again.
     }
 
     [Fact]
@@ -397,10 +397,10 @@ public class AlundraScreenFadeDirectorTests : IDisposable
 
         // World 1 poses its OWN persisted tint (persist != 0) - this is the state that must NOT leak
         // into world 2 (§1.1: the next map entry clears it).
-        AlundraScreenFadeDirector.Instance.BeginFadeEffect(r: 5, g: 5, b: 5, tpage: 0, duration: 1, persistLock: 9);
-        AlundraScreenFadeDirector.Instance.Advance(1); // settles machine B; the persist latch (9) remains.
-        AlundraScreenFadeDirector.Instance.PushToAttachedService();
-        Assert.True(AlundraScreenFadeDirector.Instance.IsSettled);
+        ScreenFadeDirector.Instance.BeginFadeEffect(r: 5, g: 5, b: 5, tpage: 0, duration: 1, persistLock: 9);
+        ScreenFadeDirector.Instance.Advance(1); // settles machine B; the persist latch (9) remains.
+        ScreenFadeDirector.Instance.PushToAttachedService();
+        Assert.True(ScreenFadeDirector.Instance.IsSettled);
         Assert.True(game1.ScreenEffectComponent.Service.Active); // persisted.
 
         var game2 = BuildGameWithScreenEffects();
@@ -415,18 +415,18 @@ public class AlundraScreenFadeDirectorTests : IDisposable
         var service2 = game2.ScreenEffectComponent.Service;
 
         // Freshly armed: flags = 1 (not settled), first advanced value 239 (world 1's tint discarded).
-        Assert.False(AlundraScreenFadeDirector.Instance.IsSettled);
+        Assert.False(ScreenFadeDirector.Instance.IsSettled);
 
         for (var tick = 1; tick <= 16; tick++)
         {
-            AlundraScreenFadeDirector.Instance.Advance(1);
-            AlundraScreenFadeDirector.Instance.PushToAttachedService();
+            ScreenFadeDirector.Instance.Advance(1);
+            ScreenFadeDirector.Instance.PushToAttachedService();
         }
 
         // World 2's own fade completed at tick 16 - no submission at tick 17 (the persist latch was
         // reset to 0 by world 2's own install preamble, so nothing leaks from world 1's persist=9).
-        AlundraScreenFadeDirector.Instance.Advance(1);
-        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        ScreenFadeDirector.Instance.Advance(1);
+        ScreenFadeDirector.Instance.PushToAttachedService();
         Assert.False(service2.Active, "tick 17: world 1's persisted latch must not leak into world 2.");
     }
 
@@ -438,54 +438,54 @@ public class AlundraScreenFadeDirectorTests : IDisposable
         // AlundraScreenFadeDirector.InstallForMapEntry, keep the re-arm" - the re-arm never touches the
         // latch, so a leaked non-zero value survives into the second world's own fully-settled state.
         var game1 = BuildGameWithScreenEffects();
-        AlundraScreenFadeDirector.Instance.AttachToWorld(game1.ScreenEffectComponent.Service);
-        AlundraScreenFadeDirector.Instance.BeginFadeEffect(r: 5, g: 5, b: 5, tpage: 0, duration: 1, persistLock: 9);
-        AlundraScreenFadeDirector.Instance.Advance(1);
-        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        ScreenFadeDirector.Instance.AttachToWorld(game1.ScreenEffectComponent.Service);
+        ScreenFadeDirector.Instance.BeginFadeEffect(r: 5, g: 5, b: 5, tpage: 0, duration: 1, persistLock: 9);
+        ScreenFadeDirector.Instance.Advance(1);
+        ScreenFadeDirector.Instance.PushToAttachedService();
 
         // Simulate the mutated install: re-arm WITHOUT resetting the persistence latch (skip the reset
         // preamble entirely, call only the re-arm's own effect - here reproduced via BeginFadeEffect with
         // persistLock left unspecified would still reset it through the real API, so this directly pokes
         // the private field to model "the preamble line was deleted").
-        var latchField = typeof(AlundraScreenFadeDirector).GetField("_persistLock", BindingFlags.Instance | BindingFlags.NonPublic);
+        var latchField = typeof(ScreenFadeDirector).GetField("_persistLock", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(latchField);
-        var leakedLatchBeforeMutatedInstall = (int)latchField!.GetValue(AlundraScreenFadeDirector.Instance)!;
+        var leakedLatchBeforeMutatedInstall = (int)latchField!.GetValue(ScreenFadeDirector.Instance)!;
         Assert.NotEqual(0, leakedLatchBeforeMutatedInstall); // sanity: something to leak.
 
         // Re-arm effect 0 WITHOUT going through InstallForMapEntry's own reset (mutated shape).
-        var currentRField = typeof(AlundraScreenFadeDirector).GetField("_currentR", BindingFlags.Instance | BindingFlags.NonPublic)!;
-        var currentGField = typeof(AlundraScreenFadeDirector).GetField("_currentG", BindingFlags.Instance | BindingFlags.NonPublic)!;
-        var currentBField = typeof(AlundraScreenFadeDirector).GetField("_currentB", BindingFlags.Instance | BindingFlags.NonPublic)!;
-        var targetRField = typeof(AlundraScreenFadeDirector).GetField("_targetR", BindingFlags.Instance | BindingFlags.NonPublic)!;
-        var targetGField = typeof(AlundraScreenFadeDirector).GetField("_targetG", BindingFlags.Instance | BindingFlags.NonPublic)!;
-        var targetBField = typeof(AlundraScreenFadeDirector).GetField("_targetB", BindingFlags.Instance | BindingFlags.NonPublic)!;
-        var fadeActiveField = typeof(AlundraScreenFadeDirector).GetField("_fadeActive", BindingFlags.Instance | BindingFlags.NonPublic)!;
-        var tpageField = typeof(AlundraScreenFadeDirector).GetField("_tpage", BindingFlags.Instance | BindingFlags.NonPublic)!;
-        var stepRField = typeof(AlundraScreenFadeDirector).GetField("_stepR", BindingFlags.Instance | BindingFlags.NonPublic)!;
-        var stepGField = typeof(AlundraScreenFadeDirector).GetField("_stepG", BindingFlags.Instance | BindingFlags.NonPublic)!;
-        var stepBField = typeof(AlundraScreenFadeDirector).GetField("_stepB", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var currentRField = typeof(ScreenFadeDirector).GetField("_currentR", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var currentGField = typeof(ScreenFadeDirector).GetField("_currentG", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var currentBField = typeof(ScreenFadeDirector).GetField("_currentB", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var targetRField = typeof(ScreenFadeDirector).GetField("_targetR", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var targetGField = typeof(ScreenFadeDirector).GetField("_targetG", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var targetBField = typeof(ScreenFadeDirector).GetField("_targetB", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var fadeActiveField = typeof(ScreenFadeDirector).GetField("_fadeActive", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var tpageField = typeof(ScreenFadeDirector).GetField("_tpage", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var stepRField = typeof(ScreenFadeDirector).GetField("_stepR", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var stepGField = typeof(ScreenFadeDirector).GetField("_stepG", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var stepBField = typeof(ScreenFadeDirector).GetField("_stepB", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
-        currentRField.SetValue(AlundraScreenFadeDirector.Instance, 0xff0000);
-        currentGField.SetValue(AlundraScreenFadeDirector.Instance, 0xff0000);
-        currentBField.SetValue(AlundraScreenFadeDirector.Instance, 0xff0000);
-        targetRField.SetValue(AlundraScreenFadeDirector.Instance, 0);
-        targetGField.SetValue(AlundraScreenFadeDirector.Instance, 0);
-        targetBField.SetValue(AlundraScreenFadeDirector.Instance, 0);
-        fadeActiveField.SetValue(AlundraScreenFadeDirector.Instance, true);
-        tpageField.SetValue(AlundraScreenFadeDirector.Instance, 2);
-        stepRField.SetValue(AlundraScreenFadeDirector.Instance, -0xff000);
-        stepGField.SetValue(AlundraScreenFadeDirector.Instance, -0xff000);
-        stepBField.SetValue(AlundraScreenFadeDirector.Instance, -0xff000);
+        currentRField.SetValue(ScreenFadeDirector.Instance, 0xff0000);
+        currentGField.SetValue(ScreenFadeDirector.Instance, 0xff0000);
+        currentBField.SetValue(ScreenFadeDirector.Instance, 0xff0000);
+        targetRField.SetValue(ScreenFadeDirector.Instance, 0);
+        targetGField.SetValue(ScreenFadeDirector.Instance, 0);
+        targetBField.SetValue(ScreenFadeDirector.Instance, 0);
+        fadeActiveField.SetValue(ScreenFadeDirector.Instance, true);
+        tpageField.SetValue(ScreenFadeDirector.Instance, 2);
+        stepRField.SetValue(ScreenFadeDirector.Instance, -0xff000);
+        stepGField.SetValue(ScreenFadeDirector.Instance, -0xff000);
+        stepBField.SetValue(ScreenFadeDirector.Instance, -0xff000);
         // _persistLock is DELIBERATELY left untouched - the mutation under test.
 
         for (var tick = 1; tick <= 16; tick++)
         {
-            AlundraScreenFadeDirector.Instance.Advance(1);
-            AlundraScreenFadeDirector.Instance.PushToAttachedService();
+            ScreenFadeDirector.Instance.Advance(1);
+            ScreenFadeDirector.Instance.PushToAttachedService();
         }
 
-        AlundraScreenFadeDirector.Instance.Advance(1); // tick 17.
-        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        ScreenFadeDirector.Instance.Advance(1); // tick 17.
+        ScreenFadeDirector.Instance.PushToAttachedService();
 
         // Under the mutation: the leaked non-zero latch keeps the gate open - submission continues at
         // tick 17, which is exactly what the real T7 test's own final assertion (Assert.False) forbids.
@@ -518,12 +518,12 @@ public class AlundraScreenFadeDirectorTests : IDisposable
     public void C4_TheDepartureFade_DrawsAboveTheInterface()
     {
         var service = BuildGameWithScreenEffects().ScreenEffectComponent.Service;
-        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+        ScreenFadeDirector.Instance.AttachToWorld(service);
 
         // Exactly what AlundraWarpDirector issues when a portal is taken.
-        AlundraScreenFadeDirector.Instance.BeginWarpDepartureFade(0xff, 0xff, 0xff, tpage: 2, duration: 16, persistLock: 1);
-        AlundraScreenFadeDirector.Instance.Advance(1);
-        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        ScreenFadeDirector.Instance.BeginWarpDepartureFade(0xff, 0xff, 0xff, tpage: 2, duration: 16, persistLock: 1);
+        ScreenFadeDirector.Instance.Advance(1);
+        ScreenFadeDirector.Instance.PushToAttachedService();
 
         Assert.Equal(ScreenEffectLayer.AboveUI, service.Layer);
     }
@@ -532,12 +532,12 @@ public class AlundraScreenFadeDirectorTests : IDisposable
     public void C4_AnOpcodeFade_StaysBelowTheInterface()
     {
         var service = BuildGameWithScreenEffects().ScreenEffectComponent.Service;
-        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+        ScreenFadeDirector.Instance.AttachToWorld(service);
 
         // Opcode 0xAF: not a warp, so the interface must stay on top of it.
-        AlundraScreenFadeDirector.Instance.BeginFadeEffect(0xff, 0, 0, tpage: 1, duration: 8, persistLock: 0);
-        AlundraScreenFadeDirector.Instance.Advance(1);
-        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        ScreenFadeDirector.Instance.BeginFadeEffect(0xff, 0, 0, tpage: 1, duration: 8, persistLock: 0);
+        ScreenFadeDirector.Instance.Advance(1);
+        ScreenFadeDirector.Instance.PushToAttachedService();
 
         Assert.Equal(ScreenEffectLayer.BelowUI, service.Layer);
     }
@@ -548,16 +548,16 @@ public class AlundraScreenFadeDirectorTests : IDisposable
         // The reason BeginFadeEffect clears the flag rather than leaving it: without that, an opcode fade
         // issued after any warp would silently inherit the warp's layer and darken the HUD for no reason.
         var service = BuildGameWithScreenEffects().ScreenEffectComponent.Service;
-        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+        ScreenFadeDirector.Instance.AttachToWorld(service);
 
-        AlundraScreenFadeDirector.Instance.BeginWarpDepartureFade(0xff, 0xff, 0xff, tpage: 2, duration: 16, persistLock: 1);
-        AlundraScreenFadeDirector.Instance.Advance(1);
-        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        ScreenFadeDirector.Instance.BeginWarpDepartureFade(0xff, 0xff, 0xff, tpage: 2, duration: 16, persistLock: 1);
+        ScreenFadeDirector.Instance.Advance(1);
+        ScreenFadeDirector.Instance.PushToAttachedService();
         Assert.Equal(ScreenEffectLayer.AboveUI, service.Layer);
 
-        AlundraScreenFadeDirector.Instance.BeginFadeEffect(0, 0, 0xff, tpage: 1, duration: 4, persistLock: 0);
-        AlundraScreenFadeDirector.Instance.Advance(1);
-        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        ScreenFadeDirector.Instance.BeginFadeEffect(0, 0, 0xff, tpage: 1, duration: 4, persistLock: 0);
+        ScreenFadeDirector.Instance.Advance(1);
+        ScreenFadeDirector.Instance.PushToAttachedService();
 
         Assert.Equal(ScreenEffectLayer.BelowUI, service.Layer);
     }

@@ -25,10 +25,10 @@ namespace Alundra.Tests;
 /// T3 (docs/plan-transitions-carte.md §3) - DETECTION ONLY: the tile-flag probe
 /// (<see cref="AlundraEntityScriptProxy.UpdateVramFlags"/>, D-T-10), the portal record parse
 /// (<see cref="AlundraWorldProxy.BuildPortals"/>, §1.1), the slot scan
-/// (<see cref="AlundraPortalScanner.FindPortalAtTile"/>, §1.2.b), and the trigger predicate
-/// (<see cref="AlundraPortalTrigger.TryGetTrigger"/>, §1.2.a), including its exact
+/// (<see cref="PortalScanner.FindPortalAtTile"/>, §1.2.b), and the trigger predicate
+/// (<see cref="PortalTrigger.TryGetTrigger"/>, §1.2.a), including its exact
 /// <see cref="PlayerManager.MovePlayer"/> call site. No transition is ever started here - see
-/// <see cref="AlundraPortalTrigger"/>'s own class doc.
+/// <see cref="PortalTrigger"/>'s own class doc.
 /// </summary>
 public class AlundraPortalDetectionTests : IDisposable
 {
@@ -46,14 +46,14 @@ public class AlundraPortalDetectionTests : IDisposable
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     // ---------------------------------------------------------------------------------------
     // Section A - AlundraPortalScanner.FindPortalAtTile (§1.2.b), pure, no map data needed.
     // ---------------------------------------------------------------------------------------
 
-    private static AlundraPortalRecord Portal(int index, int x1, int y1, int x2, int y2, int destMapId, int arrivalDirectionIndex = 0, int requiredFacing = 0)
+    private static PortalRecord Portal(int index, int x1, int y1, int x2, int y2, int destMapId, int arrivalDirectionIndex = 0, int requiredFacing = 0)
         => new()
         {
             Index = index,
@@ -73,13 +73,13 @@ public class AlundraPortalDetectionTests : IDisposable
     {
         // Two overlapping slots both contain (5,5) - slot 0 covers a huge area, slot 1 is a tight
         // mono-cell match. §1.2.b: FIRST match wins, regardless of which rectangle is smaller/closer.
-        var portals = new List<AlundraPortalRecord>
+        var portals = new List<PortalRecord>
         {
             Portal(0, 0, 0, 10, 10, destMapId: 100),
             Portal(1, 5, 5, 5, 5, destMapId: 200),
         };
 
-        var found = AlundraPortalScanner.FindPortalAtTile(portals, 5, 5);
+        var found = PortalScanner.FindPortalAtTile(portals, 5, 5);
 
         Assert.NotNull(found);
         Assert.Equal(100, found!.DestMapId);
@@ -90,13 +90,13 @@ public class AlundraPortalDetectionTests : IDisposable
     {
         // E19.m1 (M-10, binary 0x8003166C): the scan never reads the destination map id. Slot 0 matches with
         // DestMapId == 0 and is returned as is; slot 1 also matches the same tile and is never reached.
-        var portals = new List<AlundraPortalRecord>
+        var portals = new List<PortalRecord>
         {
             Portal(0, 5, 5, 5, 5, destMapId: 0),
             Portal(1, 0, 0, 10, 10, destMapId: 200),
         };
 
-        var found = AlundraPortalScanner.FindPortalAtTile(portals, 5, 5);
+        var found = PortalScanner.FindPortalAtTile(portals, 5, 5);
 
         Assert.NotNull(found);
         Assert.Equal(0, found!.Index);
@@ -106,9 +106,9 @@ public class AlundraPortalDetectionTests : IDisposable
     [Fact]
     public void FindPortalAtTile_NoSlotContainsTile_ReturnsNull()
     {
-        var portals = new List<AlundraPortalRecord> { Portal(0, 0, 0, 3, 3, destMapId: 100) };
+        var portals = new List<PortalRecord> { Portal(0, 0, 0, 3, 3, destMapId: 100) };
 
-        var found = AlundraPortalScanner.FindPortalAtTile(portals, 50, 50);
+        var found = PortalScanner.FindPortalAtTile(portals, 50, 50);
 
         Assert.Null(found);
     }
@@ -134,12 +134,12 @@ public class AlundraPortalDetectionTests : IDisposable
     {
         // §1.2.a hole branch (PlayerManager.cs:3455-3468): no orientation test, no held key, no
         // PlayerControlFlags test - only that a portal is found at the player's tile.
-        var portals = new List<AlundraPortalRecord> { Portal(0, 1, 1, 1, 1, destMapId: 390, arrivalDirectionIndex: 2) };
+        var portals = new List<PortalRecord> { Portal(0, 1, 1, 1, 1, destMapId: 390, arrivalDirectionIndex: 2) };
         var player = Player(tileX: 1, tileY: 1, combinedVramFlagsAnd: 0x4, animationDirection: 3);
         var state = new GameState { PlayerControlFlags = 0xFFFFFFFF };
         var pad = new PadState { ButtonsHold = 0 };
 
-        var trigger = AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals);
+        var trigger = PortalTrigger.TryGetTrigger(player, in pad, state, portals);
 
         Assert.NotNull(trigger);
         Assert.Equal(0, trigger!.Value.Portal.Index);
@@ -149,12 +149,12 @@ public class AlundraPortalDetectionTests : IDisposable
     [Fact]
     public void HoleBranch_NoPortalAtTile_ReturnsNull()
     {
-        var portals = new List<AlundraPortalRecord> { Portal(0, 9, 9, 9, 9, destMapId: 390) };
+        var portals = new List<PortalRecord> { Portal(0, 9, 9, 9, 9, destMapId: 390) };
         var player = Player(tileX: 1, tileY: 1, combinedVramFlagsAnd: 0x4, animationDirection: 0);
         var state = new GameState();
         var pad = new PadState();
 
-        Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
+        Assert.Null(PortalTrigger.TryGetTrigger(player, in pad, state, portals));
     }
 
     [Fact]
@@ -162,12 +162,12 @@ public class AlundraPortalDetectionTests : IDisposable
     {
         // RequiredFacingDirection 1 -> RequiredInputByFacing[1] == 0x1000 (Up). ArrivalDirectionIndex 1
         // -> AnimationTables.CardinalDirectionTable[1] == 0x10, never the raw index 1 (§1.2.c).
-        var portals = new List<AlundraPortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, arrivalDirectionIndex: 1, requiredFacing: 1) };
+        var portals = new List<PortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, arrivalDirectionIndex: 1, requiredFacing: 1) };
         var player = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0x8000, animationDirection: 1);
         var state = new GameState { PlayerControlFlags = 0 };
         var pad = new PadState { ButtonsHold = 0x1000 };
 
-        var trigger = AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals);
+        var trigger = PortalTrigger.TryGetTrigger(player, in pad, state, portals);
 
         Assert.NotNull(trigger);
         Assert.Equal(0x10u, trigger!.Value.ArrivalDirectionId);
@@ -176,12 +176,12 @@ public class AlundraPortalDetectionTests : IDisposable
     [Fact]
     public void PortalFloorBranch_MissingFloorBit_ReturnsNull()
     {
-        var portals = new List<AlundraPortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
+        var portals = new List<PortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
         var player = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0, animationDirection: 1);
         var state = new GameState();
         var pad = new PadState { ButtonsHold = 0x1000 };
 
-        Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
+        Assert.Null(PortalTrigger.TryGetTrigger(player, in pad, state, portals));
     }
 
     [Fact]
@@ -189,12 +189,12 @@ public class AlundraPortalDetectionTests : IDisposable
     {
         // PlayerManager.cs:3429 - a test PROPER TO THIS BRANCH, distinct from the InputBlockedMask gate
         // MovePlayer's own caller applies elsewhere - any nonzero value blocks it, not just a masked bit.
-        var portals = new List<AlundraPortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
+        var portals = new List<PortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
         var player = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0x8000, animationDirection: 1);
         var state = new GameState { PlayerControlFlags = 1 };
         var pad = new PadState { ButtonsHold = 0x1000 };
 
-        Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
+        Assert.Null(PortalTrigger.TryGetTrigger(player, in pad, state, portals));
     }
 
     /// <summary>E20.f0 T2: the warp gate is the whole value (binary <c>0x8002F1C4</c>: <c>lw</c> then <c>bnez</c>): the scripted weapon lock 0x80 alone refuses the warp,
@@ -202,27 +202,27 @@ public class AlundraPortalDetectionTests : IDisposable
     [Fact]
     public void PortalFloorBranch_OnlyTheScriptedWeaponBit0x80Set_ReturnsNull_AndTriggersOnceCleared()
     {
-        var portals = new List<AlundraPortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
+        var portals = new List<PortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
         var player = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0x8000, animationDirection: 1);
         var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ForcedWeapon };
         var pad = new PadState { ButtonsHold = 0x1000 };
 
-        Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
+        Assert.Null(PortalTrigger.TryGetTrigger(player, in pad, state, portals));
 
         state.PlayerControlFlags = 0;
 
-        Assert.NotNull(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
+        Assert.NotNull(PortalTrigger.TryGetTrigger(player, in pad, state, portals));
     }
 
     [Fact]
     public void PortalFloorBranch_RequiredKeyNotHeld_ReturnsNull()
     {
-        var portals = new List<AlundraPortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
+        var portals = new List<PortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
         var player = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0x8000, animationDirection: 1);
         var state = new GameState();
         var pad = new PadState { ButtonsHold = 0 };
 
-        Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
+        Assert.Null(PortalTrigger.TryGetTrigger(player, in pad, state, portals));
     }
 
     [Fact]
@@ -232,18 +232,18 @@ public class AlundraPortalDetectionTests : IDisposable
         // TargetDirection (domain {0x00,0x08,0x10,0x18}). RequiredFacingDirection is 1: give the player an
         // AnimationDirection that MISMATCHES (2) but a TargetDirection that, if misread as the compared
         // field, would spuriously "match" (1) - the predicate must still refuse to trigger.
-        var portals = new List<AlundraPortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
+        var portals = new List<PortalRecord> { Portal(0, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1) };
         var player = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0x8000, animationDirection: 2, targetDirection: 1);
         var state = new GameState();
         var pad = new PadState { ButtonsHold = 0x1000 };
 
-        Assert.Null(AlundraPortalTrigger.TryGetTrigger(player, in pad, state, portals));
+        Assert.Null(PortalTrigger.TryGetTrigger(player, in pad, state, portals));
 
         // Conversely: AnimationDirection MATCHES (1) while TargetDirection carries an unrelated
         // domain-0x00/0x08/0x10/0x18 value (0x10) - the predicate must still fire, proving it never
         // reads TargetDirection either way.
         var player2 = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0x8000, animationDirection: 1, targetDirection: 0x10);
-        Assert.NotNull(AlundraPortalTrigger.TryGetTrigger(player2, in pad, state, portals));
+        Assert.NotNull(PortalTrigger.TryGetTrigger(player2, in pad, state, portals));
     }
 
     [Fact]
@@ -251,7 +251,7 @@ public class AlundraPortalDetectionTests : IDisposable
     {
         // Point 5 of the ticket: the predicate folds in AlundraGameState.IsWarpDisabled itself (the
         // original only tests g_isWarpDisabled downstream, in HandleWarpTransition - T4's own scope).
-        var portals = new List<AlundraPortalRecord>
+        var portals = new List<PortalRecord>
         {
             Portal(0, 1, 1, 1, 1, destMapId: 390), // hole-eligible tile.
             Portal(1, 18, 38, 18, 38, destMapId: 390, requiredFacing: 1), // portal-floor-eligible tile.
@@ -260,10 +260,10 @@ public class AlundraPortalDetectionTests : IDisposable
         var pad = new PadState { ButtonsHold = 0x1000 };
 
         var holePlayer = Player(tileX: 1, tileY: 1, combinedVramFlagsAnd: 0x4, animationDirection: 0);
-        Assert.Null(AlundraPortalTrigger.TryGetTrigger(holePlayer, in pad, state, portals));
+        Assert.Null(PortalTrigger.TryGetTrigger(holePlayer, in pad, state, portals));
 
         var floorPlayer = Player(tileX: 18, tileY: 38, combinedVramFlagsAnd: 0x8000, animationDirection: 1);
-        Assert.Null(AlundraPortalTrigger.TryGetTrigger(floorPlayer, in pad, state, portals));
+        Assert.Null(PortalTrigger.TryGetTrigger(floorPlayer, in pad, state, portals));
     }
 
     // ---------------------------------------------------------------------------------------
@@ -354,11 +354,11 @@ public class AlundraPortalDetectionTests : IDisposable
         public int LogicTicksThisFrame(float elapsedTime) => 0;
     }
 
-    private static List<AlundraPortalRecord> BuildMap389PortalZero() => new()
+    private static List<PortalRecord> BuildMap389PortalZero() => new()
     {
         // §1.1.c/§1.1.d, real exported data: portal 0 of map 389, mono-cell, Flags 20481 (0x5001) ->
         // RequiredFacing 1, ArrivalDirection 1, TransitionEffect 0, WarpBehavior 1.
-        new AlundraPortalRecord { Index = 0, X1 = 18, Y1 = 38, X2 = 18, Y2 = 38, DestMapId = 390, DestTileX = 10, DestTileY = 40, ZLevel = 0, Flags = 20481 },
+        new PortalRecord { Index = 0, X1 = 18, Y1 = 38, X2 = 18, Y2 = 38, DestMapId = 390, DestTileX = 10, DestTileY = 40, ZLevel = 0, Flags = 20481 },
     };
 
     [Fact]
@@ -395,7 +395,7 @@ public class AlundraPortalDetectionTests : IDisposable
         var pad = new PadState { ButtonsHold = 0x1000 }; // RequiredFacingDirection 1 -> Up.
         proxy.AnimationDirection = 1; // matches portal 0's RequiredFacingDirection.
 
-        var trigger = AlundraPortalTrigger.TryGetTrigger(proxy, in pad, state, portals);
+        var trigger = PortalTrigger.TryGetTrigger(proxy, in pad, state, portals);
 
         Assert.NotNull(trigger);
         Assert.Equal(390, trigger!.Value.Portal.DestMapId);
@@ -443,7 +443,7 @@ public class AlundraPortalDetectionTests : IDisposable
         var pad = new PadState { ButtonsHold = 0x1000 };
         proxy.AnimationDirection = 1;
 
-        Assert.Null(AlundraPortalTrigger.TryGetTrigger(proxy, in pad, state, portals));
+        Assert.Null(PortalTrigger.TryGetTrigger(proxy, in pad, state, portals));
     }
 
     // ---------------------------------------------------------------------------------------
@@ -569,7 +569,7 @@ public class AlundraPortalDetectionTests : IDisposable
         // ushort (Portal.cs:32), where the shift is 0..3 by construction. The mask keeps this an
         // in-range index into the four-entry required-input and cardinal-direction tables.
         var portal = Portal(index: 0, x1: 0, y1: 0, x2: 0, y2: 0, destMapId: 1);
-        var wide = new AlundraPortalRecord
+        var wide = new PortalRecord
         {
             Index = portal.Index,
             X1 = portal.X1,
@@ -603,12 +603,12 @@ public class AlundraPortalDetectionTests : IDisposable
         public GameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public IReadOnlyList<AlundraPortalRecord> Portals { get; init; } = Array.Empty<AlundraPortalRecord>();
-        public readonly List<(AlundraPortalRecord Portal, uint ArrivalDirectionId)> Triggered = new();
+        public IReadOnlyList<PortalRecord> Portals { get; init; } = Array.Empty<PortalRecord>();
+        public readonly List<(PortalRecord Portal, uint ArrivalDirectionId)> Triggered = new();
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) { }
         public int LogicTicksThisFrame(float elapsedTime) => 0;
 
-        public void OnPortalTriggerDetected(AlundraPortalRecord portal, uint arrivalDirectionId)
+        public void OnPortalTriggerDetected(PortalRecord portal, uint arrivalDirectionId)
             => Triggered.Add((portal, arrivalDirectionId));
     }
 
@@ -643,7 +643,7 @@ public class AlundraPortalDetectionTests : IDisposable
     {
         // Negative control for the MovePlayer-level wiring itself: with no portal at the player's tile,
         // the host's own seam must never be called, hole bit or not.
-        var host = new RecordingPortalScriptHost { Portals = Array.Empty<AlundraPortalRecord>() };
+        var host = new RecordingPortalScriptHost { Portals = Array.Empty<PortalRecord>() };
         var state = host.GameState;
 
         var player = new AlundraEntityScriptProxy

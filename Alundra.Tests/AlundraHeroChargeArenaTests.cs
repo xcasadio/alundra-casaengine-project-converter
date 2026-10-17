@@ -32,7 +32,7 @@ public sealed class AlundraHeroChargeArenaTests : IDisposable
     {
         _output = output;
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
@@ -40,7 +40,7 @@ public sealed class AlundraHeroChargeArenaTests : IDisposable
         GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     private static HitArena Arena(string name, int targetX)

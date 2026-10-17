@@ -24,7 +24,7 @@ using Alundra.UI.Shared;
 namespace Alundra.Dialogues;
 
 /// <summary>
-/// SESSION-scoped singleton (same shape as <see cref="BgmPlayer"/>/<see cref="AlundraScreenFadeDirector"/>
+/// SESSION-scoped singleton (same shape as <see cref="BgmPlayer"/>/<see cref="ScreenFadeDirector"/>
 /// - see either class's own doc for the full "vacuous by construction" reasoning, D-C-6/D-E10-6): the
 /// original's own <c>g_dialog_flags</c>/close-mode mask/choice result are GLOBALS that survive a map
 /// change, and a per-world instance rebuilt in <see cref="AlundraWorldProxy.InitializeWithWorld"/> would
@@ -147,7 +147,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     /// <summary>Re-points this session-scoped instance at the current world's own presenter/game state/sound player -
     /// called by <see cref="AlundraWorldProxy.InstallDialogueSystems"/> on every world install. Deliberately
     /// does NOT touch the box, the page state or the choice state (same
-    /// contract as <see cref="BgmPlayer.AttachToWorld"/>/<see cref="AlundraScreenFadeDirector.AttachToWorld"/>)
+    /// contract as <see cref="BgmPlayer.AttachToWorld"/>/<see cref="ScreenFadeDirector.AttachToWorld"/>)
     /// - only <see cref="InstallForMapEntry"/> does that: the box goes on running, its page already known, even when the
     /// presenter is gone (E19.f2a, F2-R2). <paramref name="presenter"/> null is a valid,
     /// tolerated value (no UI view available for this world's active render view) - <see cref="HasPresenter"/>
@@ -186,7 +186,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         _boundGameState = gameState;
     }
 
-    /// <summary>Map-entry reset (mirrors <see cref="AlundraScreenFadeDirector.InstallForMapEntry"/>'s own
+    /// <summary>Map-entry reset (mirrors <see cref="ScreenFadeDirector.InstallForMapEntry"/>'s own
     /// contract): closes out any dialogue this session still thought was open (clearing
     /// <see cref="GameState.PlayerControlFlags"/>'s MessageBox/MenuOpen bits so a stale lock never
     /// survives a map transition) and resets every piece of open/mask/page/choice state to New-Game-
@@ -638,7 +638,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     }
 
     /// <summary>Test-only: clears every piece of session state (same seam as
-    /// <see cref="BgmPlayer.ResetForTests"/>/<see cref="AlundraScreenFadeDirector.ResetForTests"/>)
+    /// <see cref="BgmPlayer.ResetForTests"/>/<see cref="ScreenFadeDirector.ResetForTests"/>)
     /// so tests do not leak into each other through this singleton.</summary>
     internal void ResetForTests()
     {

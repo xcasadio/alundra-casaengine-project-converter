@@ -18,7 +18,7 @@ namespace Alundra.Transitions;
 /// <see cref="AlundraWorldProxy.BuildPortals"/> and never mutated afterward - mutability here is just to
 /// match the object-initializer style <see cref="MapEvent"/> already uses, not a design need.
 /// </summary>
-public sealed class AlundraPortalRecord
+public sealed class PortalRecord
 {
     public int Index;
     public int X1, Y1, X2, Y2;
@@ -30,7 +30,7 @@ public sealed class AlundraPortalRecord
     /// <summary>
     /// Bits 14-15 of <see cref="Flags"/> (<c>Portal.cs:32</c>) - direction (domain 0..3) the player must
     /// face, and hold on the pad, for the warp to trigger. Index into
-    /// <see cref="AlundraPortalTrigger"/>'s own <c>RequiredInputByFacing</c> table (the port of
+    /// <see cref="PortalTrigger"/>'s own <c>RequiredInputByFacing</c> table (the port of
     /// <c>StaticVariables.SHORT_ARRAY_80022776</c>, address 0x80022776, <c>StaticVariables.cs:530</c>).
     /// </summary>
     // Masked to the two bits the original's own ushort Flags can carry there (Portal.cs:32 shifts a

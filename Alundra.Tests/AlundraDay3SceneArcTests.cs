@@ -53,8 +53,8 @@ public sealed class AlundraDay3SceneArcTests
 
     private static void AssertPendingArrival(uint map, int x, int y, int z)
     {
-        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
-        var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+        Assert.True(WarpDirector.Instance.HasPendingArrival);
+        var arrival = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(map, arrival.MapIndex);
         Assert.Equal((x, y, z), (arrival.PosX, arrival.PosY, arrival.PosZ));
     }

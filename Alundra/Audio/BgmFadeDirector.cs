@@ -9,7 +9,7 @@ using Alundra.Transitions;
 namespace Alundra.Audio;
 
 /// <summary>
-/// SESSION-scoped singleton (D-B-5, same shape/reasoning as <see cref="AlundraScreenFadeDirector"/>/
+/// SESSION-scoped singleton (D-B-5, same shape/reasoning as <see cref="ScreenFadeDirector"/>/
 /// <see cref="BgmPlayer"/> - see either class's own doc for why a per-world instance would make
 /// this state vacuous by construction): the faithful transcription of <c>FUN_8004b674</c>
 /// (SoundManager.cs:3763-3801), the master fade machine 0xA5/0xA6 share (fact 2, transcribed in full in
@@ -88,9 +88,9 @@ public sealed class BgmFadeDirector : IBgmFadeDirector
     /// <see cref="AudioService"/>/<see cref="ISoundPlayer"/> - called by
     /// <see cref="AlundraWorldProxy.InstallAudioSystems"/> on every world install, even when
     /// <paramref name="audioService"/> is null (no <c>Game</c> for this world - tolerated, same shape as
-    /// <see cref="AlundraScreenFadeDirector.AttachToWorld"/>). Deliberately does NOT touch
+    /// <see cref="ScreenFadeDirector.AttachToWorld"/>). Deliberately does NOT touch
     /// <see cref="IsArmed"/>'s own state (D-B-5, same "AttachToWorld never touches state" contract as
-    /// <see cref="BgmPlayer.AttachToWorld"/>/<see cref="AlundraScreenFadeDirector.AttachToWorld"/>)
+    /// <see cref="BgmPlayer.AttachToWorld"/>/<see cref="ScreenFadeDirector.AttachToWorld"/>)
     /// - a fade already in flight survives a map change exactly like the original's global does.</summary>
     public void AttachToWorld(AudioService? audioService, ISoundPlayer? soundPlayer)
     {
@@ -214,7 +214,7 @@ public sealed class BgmFadeDirector : IBgmFadeDirector
 
     /// <summary>Test-only: clears every piece of session state so tests do not leak into each other
     /// through this singleton - same seam as <see cref="BgmPlayer.ResetForTests"/>/
-    /// <see cref="AlundraScreenFadeDirector.ResetForTests"/>.</summary>
+    /// <see cref="ScreenFadeDirector.ResetForTests"/>.</summary>
     internal void ResetForTests()
     {
         _audioService = null;

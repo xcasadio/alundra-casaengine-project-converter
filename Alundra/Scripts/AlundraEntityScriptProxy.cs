@@ -1304,7 +1304,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IEffectAnchor
         // same "third mechanism" note as AlundraWorldProxy.Update's own T4 comment on its sibling
         // gameplayBlocked local.
         var gameplayBlocked = (ScriptHost.GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0
-            || AlundraWarpDirector.Instance.IsTransitionInProgress;
+            || WarpDirector.Instance.IsTransitionInProgress;
 
         // T2 REGRESSION FIX (softlock reported in play): the pad snapshot is "dehors", NOT "dedans".
         // It is the port of the original's g_padState1, which PadManager.UpdatePads refreshes from the

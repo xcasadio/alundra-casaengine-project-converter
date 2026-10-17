@@ -159,12 +159,12 @@ public sealed partial class AlundraRandomPerTickTests
         for (var frame = 0; frame < 3; frame++)
         {
             proxy.Update(0.02f);
-            Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress, $"F{frame}");
+            Assert.True(WarpDirector.Instance.IsTransitionInProgress, $"F{frame}");
             Assert.Equal(StepN(seed, 1), Word); // the departure frames give the stage 0 tick: no step.
         }
 
         GC.KeepAlive(player);
-        AlundraWarpDirector.Instance.InstallForMapEntry();
+        WarpDirector.Instance.InstallForMapEntry();
         proxy.Update(0.02f); // the first normal frame after the departure: step 2.
 
         Assert.Equal(StepN(seed, 2), Word);

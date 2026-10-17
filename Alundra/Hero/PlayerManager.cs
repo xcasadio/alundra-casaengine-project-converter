@@ -309,7 +309,7 @@ public static class PlayerManager
         // portal list to scan without a world.
         if (host != null)
         {
-            var trigger = AlundraPortalTrigger.TryGetTrigger(player, in pad, state, host.Portals);
+            var trigger = PortalTrigger.TryGetTrigger(player, in pad, state, host.Portals);
             if (trigger != null)
             {
                 host.OnPortalTriggerDetected(trigger.Value.Portal, trigger.Value.ArrivalDirectionId);
@@ -1665,7 +1665,7 @@ public static class PlayerManager
     /// every entity, not just the scripted ones this DLL's own gel gate already covers). This port's
     /// hero instead owns a continuous engine-driven <c>CharacterControllerComponent.Settings.Gravity</c>/
     /// <c>MaxFallSpeed</c> integrator that the gel gate (<see cref="GameState.PlayerControlBits.GameplayBlockedMask"/>/
-    /// <see cref="AlundraWarpDirector.IsTransitionInProgress"/>) never touches - so a departure triggered
+    /// <see cref="WarpDirector.IsTransitionInProgress"/>) never touches - so a departure triggered
     /// mid-air would keep falling for the whole 16-tick outgoing fade, importing that fall into the
     /// arrival pose. CHOSEN FIX (not a deviation): reuse the exact same DLL-only mechanism
     /// <see cref="SuspendGravityForClimb"/> already proves safe (zero Gravity/MaxFallSpeed +

@@ -33,14 +33,14 @@ public sealed class AlundraHeroSwimArenaTests : IDisposable
     public AlundraHeroSwimArenaTests()
     {
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
     {
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     private sealed record Tick(int Number, uint Anim, uint Dir, int ForceX, int ForceY, int PosX, int PosY, int PosZ, int Slope, bool Adjusted, int OnGround);

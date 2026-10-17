@@ -31,14 +31,14 @@ public sealed class AlundraHeroRunArenaTests : IDisposable
     public AlundraHeroRunArenaTests()
     {
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     public void Dispose()
     {
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
     }
 
     public static IEnumerable<object[]> Tackles() => RunOracleTrace.NamesOf("g7/tackle").Select(n => new object[] { n });

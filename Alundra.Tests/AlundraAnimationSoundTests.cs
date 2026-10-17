@@ -363,11 +363,11 @@ public sealed class AlundraAnimationSoundTests
         var sounds = Inject(arc);
         Assert.Empty(sounds.Ids);
 
-        AlundraWarpDirector.Instance.ResetForTests();
-        AlundraWarpDirector.Instance.SetPendingArrivalForTests(179, (17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, 43u, 0u);
+        WarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.SetPendingArrivalForTests(179, (17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, 43u, 0u);
         var tileMapData = (TileMapData)typeof(AlundraWorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!;
         typeof(AlundraWorldProxy).GetMethod("AdoptPlayerPawn", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(arc.Proxy, new object[] { arc.RealWorld!, tileMapData });
-        AlundraWarpDirector.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
 
         Assert.Equal(43u, hero.TargetAnimationId);
         Assert.Equal(new[] { 10 }, sounds.Ids); // asked by the adoption itself.
