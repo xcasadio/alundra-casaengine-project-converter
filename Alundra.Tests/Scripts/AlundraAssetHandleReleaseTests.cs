@@ -4,6 +4,7 @@ using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.UI.MGUI;
 using Xunit;
+using Alundra.UI.Hud;
 
 namespace Alundra.Tests.Scripts;
 

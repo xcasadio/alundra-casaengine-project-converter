@@ -3,60 +3,10 @@ using System;
 using MGUI.Core.UI;
 using MGUI.Shared.Helpers;
 using Alundra.Dialogues;
+using Alundra.UI.Choice;
+using Alundra.UI.Inventory;
 
 namespace Alundra.Scripts;
-
-/// <summary>E19.f3b: the frame of the choice box, <c>(Left, 144)</c> in the XAML; <c>Left</c> is the slide (311 to 176, then 176 to 320).</summary>
-public sealed class ChoiceFrameViewModel : ViewModelBase
-{
-    private int? _left;
-
-    public int? Left
-    {
-        get => _left;
-        set
-        {
-            if (_left != value)
-            {
-                _left = value;
-                NotifyPropertyChanged();
-            }
-        }
-    }
-}
-
-/// <summary>E19.f3b: the selection cursor of the choice box, <c>(Left, 136)</c> in the XAML, one of four sprites by name (the text box's wait cursor sprites).</summary>
-public sealed class ChoiceCursorViewModel : ViewModelBase
-{
-    private string? _sourceName;
-    private int? _left;
-
-    public string? SourceName
-    {
-        get => _sourceName;
-        set
-        {
-            if (_sourceName != value)
-            {
-                _sourceName = value;
-                NotifyPropertyChanged();
-            }
-        }
-    }
-
-    public int? Left
-    {
-        get => _left;
-        set
-        {
-            if (_left != value)
-            {
-                _left = value;
-                NotifyPropertyChanged();
-            }
-        }
-    }
-}
 
 /// <summary>
 /// E19.f3b (docs/plan-e19-opcodes.md): what <c>UI/Screens/ChoiceScreen.xaml</c> binds - the frame's x, the two labels (text and x) and the cursor (sprite and x); the rows

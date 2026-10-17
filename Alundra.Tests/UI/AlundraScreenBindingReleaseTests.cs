@@ -1,4 +1,3 @@
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.Fonts;
@@ -8,6 +7,9 @@ using MGUI.Core.UI;
 using MGUI.Core.UI.DataBinding;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Alundra.UI.Hud;
+using Alundra.UI.Inventory;
+using Alundra.UI.Messages;
 
 namespace Alundra.Tests.UI;
 

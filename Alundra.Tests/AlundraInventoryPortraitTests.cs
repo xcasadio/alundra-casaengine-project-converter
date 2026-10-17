@@ -1,6 +1,6 @@
 #nullable enable
-using Alundra.Scripts;
 using Xunit;
+using Alundra.UI.Shared;
 
 namespace Alundra.Tests;
 

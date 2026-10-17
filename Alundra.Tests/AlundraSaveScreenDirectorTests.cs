@@ -19,6 +19,10 @@ using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Audio;
 using Alundra.Dialogues;
+using Alundra.UI.Inventory;
+using Alundra.UI.Saving;
+using Alundra.UI.Speech;
+using Alundra.UI.SubInventory;
 
 namespace Alundra.Tests;
 

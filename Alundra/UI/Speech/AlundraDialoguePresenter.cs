@@ -9,8 +9,10 @@ using CasaEngine.Framework.Dialogue.UI;
 using CasaEngine.Framework.UI;
 using Alundra.Events;
 using Alundra.Dialogues;
+using Alundra.Scripts;
+using Alundra.UI.Inventory;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Speech;
 
 /// <summary>
 /// docs/plan-e12-dialogues.md, slice E12.a, item ③bis - THE UI WIRING LINK (blocking P2 of relecture: the

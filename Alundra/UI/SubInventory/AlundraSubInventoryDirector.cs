@@ -6,8 +6,11 @@ using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Audio;
 using Alundra.Dialogues;
+using Alundra.UI.Hud;
+using Alundra.UI.Inventory;
+using Alundra.UI.Shared;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.SubInventory;
 
 /// <summary>
 /// E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-20): a pure, tick-driven port of the original's

@@ -13,6 +13,9 @@ using Alundra.Session;
 using Alundra.Ai.Objects;
 using Alundra.Hero;
 using Alundra.Dialogues;
+using Alundra.UI.Choice;
+using Alundra.UI.Saving;
+using Alundra.UI.Speech;
 
 namespace Alundra.Tests.Scripts;
 

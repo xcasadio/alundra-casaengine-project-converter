@@ -2,6 +2,7 @@ using Alundra.Scripts;
 using CasaEngine.Framework.Assets.Animations;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Alundra.UI.Hud;
 
 namespace Alundra.Tests.UI;
 

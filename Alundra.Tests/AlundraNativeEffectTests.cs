@@ -19,6 +19,7 @@ using Alundra.Rendering.Effects;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.UI.Hud;
 
 namespace Alundra.Tests;
 

@@ -6,8 +6,11 @@ using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
 using Microsoft.Xna.Framework;
+using Alundra.Scripts;
+using Alundra.UI.Inventory;
+using Alundra.UI.Saving;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Messages;
 
 /// <summary>
 /// E19.f2b1c F2B1C-R3/R4 (docs/plan-e19-opcodes.md): the screen of the dialogue box - a project asset, <c>UI/Screens/TextBoxScreen.uiscreen</c> and its XAML,

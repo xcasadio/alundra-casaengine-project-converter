@@ -2,6 +2,8 @@
 using System;
 using MGUI.Core.UI;
 using MGUI.Shared.Helpers;
+using Alundra.UI.Inventory;
+using Alundra.UI.SubInventory;
 
 namespace Alundra.Scripts;
 

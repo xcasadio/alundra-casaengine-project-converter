@@ -16,6 +16,9 @@ using Alundra.Ai.Objects;
 using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Dialogues;
+using Alundra.UI.Inventory;
+using Alundra.UI.Speech;
+using Alundra.UI.SubInventory;
 
 namespace Alundra.Tests;
 

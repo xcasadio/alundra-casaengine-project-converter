@@ -2,8 +2,9 @@
 using System;
 using CasaEngine.Framework.UI;
 using Alundra.Dialogues;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Messages;
 
 /// <summary>
 /// E19.f2b1c F2B1C-R4 (docs/plan-e19-opcodes.md): reads the drawn state of the dialogue box after a pass (<see cref="AlundraDialogueDirector.Box"/>) and, since E19.f4c2, of the

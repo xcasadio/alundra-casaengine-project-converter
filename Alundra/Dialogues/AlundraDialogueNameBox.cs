@@ -1,6 +1,6 @@
 #nullable enable
 using System;
-using Alundra.Scripts;
+using Alundra.UI.Messages;
 
 namespace Alundra.Dialogues;
 

@@ -3,62 +3,10 @@ using System;
 using System.Collections.Generic;
 using Alundra.Hero;
 using Alundra.Items;
+using Alundra.UI.Hud;
+using Alundra.UI.SubInventory;
 
-namespace Alundra.Scripts;
-
-/// <summary>One of the six baked box sprites (D-E13D-13/D3.b) at its director-tweened native position.
-/// <see cref="BoxIndex"/> is <see cref="AlundraInventoryDirector.BoxPosition"/>'s own index (0 weapon,
-/// 1 item, 2 weapon name, 3 item name, 5 money/falcon/key, 6 description - index 4, the 0x0 spacer, never
-/// appears here, nothing to draw).</summary>
-public readonly record struct InventoryBoxSprite(int BoxIndex, int NativeX, int NativeY);
-
-/// <summary>One digit glyph (0-9) at a native pixel position - money, falcon, key or the herb count.</summary>
-public readonly record struct InventoryDigit(int Value, int NativeX, int NativeY);
-
-/// <summary>One of the two selection frames (<c>wind_039</c>) - invisible when nothing in that row is
-/// currently equipped (e.g. no accessory equipped at all, <see cref="AlundraPlayerManager.NoItem"/>).</summary>
-public readonly record struct InventorySelectionFrame(bool Visible, int NativeX, int NativeY);
-
-/// <summary>The cursor (<c>wind_159/182/210/237</c>) - <see cref="Phase"/> is 0..3. <see cref="NativeX"/>/<see cref="NativeY"/>
-/// include the original's per-phase pixel offset; <see cref="BaseNativeX"/>/<see cref="BaseNativeY"/> are the same
-/// position without it, for a screen that plays the cursor as a UI animation carrying that offset itself
-/// (parent ADR-0002, the converter's <c>ui_inventory_cursor</c>).</summary>
-public readonly record struct InventoryCursorState(int NativeX, int NativeY, int Phase, int BaseNativeX, int BaseNativeY);
-
-/// <summary>One grid slot's icon - the slot it belongs to (0..23) plus the same centred-icon shape
-/// <see cref="AlundraHudComposer"/>'s own <see cref="AlundraHudIcon"/> uses (D-E13D-10).</summary>
-public readonly record struct InventorySlotIcon(int SlotIndex, AlundraHudIcon Icon);
-
-/// <summary>The whole inventory screen's display state for one tick - <see cref="AlundraInventoryComposer.Compose"/>'s
-/// own return value, written into <see cref="AlundraInventoryViewModel"/> by <see cref="AlundraInventoryPresenter"/>.
-/// <see cref="Visible"/> false means every other member is a default/empty placeholder - the screen must
-/// not read them (same "IsDrawn faux -&gt; liste vide" contract as <see cref="AlundraHudComposer"/>).</summary>
-public sealed class InventoryDisplayModel
-{
-    public bool Visible { get; init; }
-    public IReadOnlyList<InventoryBoxSprite> Boxes { get; init; } = Array.Empty<InventoryBoxSprite>();
-    public IReadOnlyList<InventorySlotIcon> SlotIcons { get; init; } = Array.Empty<InventorySlotIcon>();
-    public bool HerbDigitVisible { get; init; }
-    public InventoryDigit HerbDigit { get; init; }
-    public IReadOnlyList<InventoryDigit> MoneyDigits { get; init; } = Array.Empty<InventoryDigit>();
-    public IReadOnlyList<InventoryDigit> FalconDigits { get; init; } = Array.Empty<InventoryDigit>();
-    public IReadOnlyList<InventoryDigit> KeyDigits { get; init; } = Array.Empty<InventoryDigit>();
-    public string WeaponName { get; init; } = string.Empty;
-    public int WeaponNameX { get; init; }
-    public int WeaponNameY { get; init; }
-    public string ItemName { get; init; } = string.Empty;
-    public int ItemNameX { get; init; }
-    public int ItemNameY { get; init; }
-    public string DescriptionLine0 { get; init; } = string.Empty;
-    public int DescriptionLine0X { get; init; }
-    public int DescriptionLine0Y { get; init; }
-    public string DescriptionLine1 { get; init; } = string.Empty;
-    public int DescriptionLine1X { get; init; }
-    public int DescriptionLine1Y { get; init; }
-    public InventorySelectionFrame WeaponSelectionFrame { get; init; }
-    public InventorySelectionFrame ItemSelectionFrame { get; init; }
-    public InventoryCursorState Cursor { get; init; }
-}
+namespace Alundra.UI.Inventory;
 
 /// <summary>
 /// E13.d D5 (docs/plan-e13d-inventaire.md): pure port of the main inventory's own per-frame drawing -

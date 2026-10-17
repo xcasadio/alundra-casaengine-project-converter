@@ -10,6 +10,7 @@ using MGUI.Core.UI.Containers;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Alundra.UI.Speech;
 
 namespace Alundra.Tests.UI;
 

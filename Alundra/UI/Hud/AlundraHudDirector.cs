@@ -3,8 +3,10 @@
 using Alundra.Session;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.Scripts;
+using Alundra.UI.Inventory;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Hud;
 
 /// <summary>
 /// E13 C1 (docs/plan-e13-hud.md, D-E13-8: "le tick logique possède tout le temps du HUD. MGUI

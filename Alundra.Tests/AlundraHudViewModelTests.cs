@@ -7,6 +7,7 @@ using Alundra.Scripts;
 using MGUI.Core.UI;
 using Microsoft.Xna.Framework;
 using Xunit;
+using Alundra.UI.Hud;
 
 namespace Alundra.Tests;
 

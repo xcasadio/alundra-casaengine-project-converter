@@ -2,8 +2,9 @@
 using System;
 using CasaEngine.Framework.UI;
 using Alundra.Dialogues;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Choice;
 
 /// <summary>
 /// E19.f3b (docs/plan-e19-opcodes.md): reads the drawn state of the choice box after a pass (<see cref="AlundraDialogueDirector.ChoiceBox"/>) and writes it into the screen's

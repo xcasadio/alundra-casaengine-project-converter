@@ -3,7 +3,7 @@ using System;
 using CasaEngine.Engine.Environment;
 using Alundra.Dialogues;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Shared;
 
 /// <summary>
 /// E13.d SI11 (docs/plan-e13d-sous-inventaire.md, D-E13D-35): the item text reveal both inventories run - the

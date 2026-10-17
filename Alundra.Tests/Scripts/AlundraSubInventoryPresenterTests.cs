@@ -11,6 +11,10 @@ using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.UI.Hud;
+using Alundra.UI.Inventory;
+using Alundra.UI.Shared;
+using Alundra.UI.SubInventory;
 
 namespace Alundra.Tests.Scripts;
 

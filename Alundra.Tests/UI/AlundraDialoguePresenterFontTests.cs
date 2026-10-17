@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.Fonts;
@@ -18,6 +17,8 @@ using MGUI.Shared.Text;
 using MGUI.Shared.Text.Engines;
 using Microsoft.Xna.Framework;
 using Xunit;
+using Alundra.UI.Inventory;
+using Alundra.UI.Speech;
 
 namespace Alundra.Tests.UI;
 

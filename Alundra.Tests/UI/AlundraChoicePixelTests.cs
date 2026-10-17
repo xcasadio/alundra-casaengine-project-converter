@@ -13,6 +13,8 @@ using Xunit;
 using static Alundra.Tests.UI.TextBoxGpu;
 using Alundra.Hero;
 using Alundra.Dialogues;
+using Alundra.UI.Choice;
+using Alundra.UI.Messages;
 
 namespace Alundra.Tests.UI;
 

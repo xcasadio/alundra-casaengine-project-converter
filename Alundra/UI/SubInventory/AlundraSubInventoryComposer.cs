@@ -3,65 +3,9 @@ using System;
 using System.Collections.Generic;
 using Alundra.Session;
 using Alundra.Items;
+using Alundra.UI.Inventory;
 
-namespace Alundra.Scripts;
-
-/// <summary>One of the seven baked box sprites (D-E13D-13/SI2) at its director-tweened native position.
-/// <see cref="BoxIndex"/> is <see cref="AlundraSubInventoryDirector.BoxPosition"/>'s own public index order:
-/// 0 armory, 1 key items, 2 armor name, 3 boots name, 4 icons, 5 description, 6 money/falcon/key.</summary>
-public readonly record struct SubInventoryBoxSprite(int BoxIndex, int NativeX, int NativeY);
-
-/// <summary>An icon drawn with its top-left at the native position the original itself draws it at - no
-/// centring (D-E13D-34: the sub-inventory is the one screen whose icons are not laid out in the standard
-/// 24x32 cells, so the main inventory's D-E13D-10 centring does not apply).</summary>
-public readonly record struct SubInventoryIcon(Guid AssetId, int NativeX, int NativeY);
-
-/// <summary>One armory crest icon (0..6, Rubis..Diamant) or key-item icon (0..4) - the slot it belongs to
-/// plus the icon at its original position.</summary>
-public readonly record struct SubInventorySlotIcon(int SlotIndex, SubInventoryIcon Icon);
-
-/// <summary>The armor or boots equipment icon, with its selection frame (<c>wind_039</c>) at the SAME native
-/// position (plan §1.5, <c>FUN_80052fb4</c>: the frame is visible only when the item resolves) - null when
-/// nothing is equipped there, matching <see cref="AlundraSubInventoryDirector.ArmorItemId"/>/<c>BootsItemId</c>.</summary>
-public readonly record struct SubInventoryEquipmentIcon(Guid AssetId, int NativeX, int NativeY);
-
-/// <summary>The cursor's base native position (plan §1.5: <c>PTR_ARRAY_800b44b8</c>/<c>INT_ARRAY_800b4368</c>/
-/// <c>800b43a0</c>) - unlike the main inventory's own <see cref="InventoryCursorState"/>, there is no
-/// per-phase offset to compute here: the <c>ui_inventory_cursor</c> animation carries it itself (D-E13D-27,
-/// same "animation carries the offset" choice the main inventory's own screen already makes for its own
-/// <c>Cursor.Show</c>).</summary>
-public readonly record struct SubInventoryCursorState(int NativeX, int NativeY);
-
-/// <summary>The whole sub-inventory screen's display state for one tick - <see cref="AlundraSubInventoryComposer.Compose"/>'s
-/// own return value, written into <see cref="AlundraSubInventoryViewModel"/> by
-/// <see cref="AlundraSubInventoryPresenter"/>. <see cref="Visible"/> false means every other member is a
-/// default/empty placeholder - same "IsDrawn faux -&gt; liste vide" contract as
-/// <see cref="InventoryDisplayModel"/>.</summary>
-public sealed class SubInventoryDisplayModel
-{
-    public bool Visible { get; init; }
-    public IReadOnlyList<SubInventoryBoxSprite> Boxes { get; init; } = Array.Empty<SubInventoryBoxSprite>();
-    public IReadOnlyList<SubInventorySlotIcon> ArmoryIcons { get; init; } = Array.Empty<SubInventorySlotIcon>();
-    public IReadOnlyList<SubInventorySlotIcon> KeyItemIcons { get; init; } = Array.Empty<SubInventorySlotIcon>();
-    public SubInventoryEquipmentIcon? Armor { get; init; }
-    public SubInventoryEquipmentIcon? Boots { get; init; }
-    public string? ArmorName { get; init; }
-    public int ArmorNameX { get; init; }
-    public int ArmorNameY { get; init; }
-    public string? BootsName { get; init; }
-    public int BootsNameX { get; init; }
-    public int BootsNameY { get; init; }
-    public string DescriptionLine0 { get; init; } = string.Empty;
-    public int DescriptionLine0X { get; init; }
-    public int DescriptionLine0Y { get; init; }
-    public string DescriptionLine1 { get; init; } = string.Empty;
-    public int DescriptionLine1X { get; init; }
-    public int DescriptionLine1Y { get; init; }
-    public IReadOnlyList<InventoryDigit> MoneyDigits { get; init; } = Array.Empty<InventoryDigit>();
-    public IReadOnlyList<InventoryDigit> FalconDigits { get; init; } = Array.Empty<InventoryDigit>();
-    public IReadOnlyList<InventoryDigit> KeyDigits { get; init; } = Array.Empty<InventoryDigit>();
-    public SubInventoryCursorState Cursor { get; init; }
-}
+namespace Alundra.UI.SubInventory;
 
 /// <summary>
 /// E13.d SI4 (docs/plan-e13d-sous-inventaire.md): pure port of the sub-inventory's own per-frame drawing -

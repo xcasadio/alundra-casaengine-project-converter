@@ -9,8 +9,9 @@ using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
 using Microsoft.Xna.Framework;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Hud;
 
 /// <summary>
 /// E13 C2/C3 (docs/plan-e13-hud.md): the non-modal screen that draws the permanent jauge. Since the bound screens

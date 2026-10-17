@@ -16,6 +16,9 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
+using Alundra.UI.Inventory;
+using Alundra.UI.Messages;
+using Alundra.UI.Shared;
 
 namespace Alundra.Tests;
 

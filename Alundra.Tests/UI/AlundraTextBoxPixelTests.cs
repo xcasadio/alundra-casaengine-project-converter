@@ -12,6 +12,7 @@ using static Alundra.Tests.UI.TextBoxGpu;
 using Alundra.Session;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
+using Alundra.UI.Messages;
 
 namespace Alundra.Tests.UI;
 

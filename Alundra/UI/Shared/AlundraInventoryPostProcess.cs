@@ -1,6 +1,10 @@
 #nullable enable
 
-namespace Alundra.Scripts;
+using Alundra.Scripts;
+using Alundra.UI.Inventory;
+using Alundra.UI.SubInventory;
+
+namespace Alundra.UI.Shared;
 
 /// <summary>
 /// E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-21): port of <c>g_postProcessState</c>

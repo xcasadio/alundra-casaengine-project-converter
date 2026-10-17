@@ -11,6 +11,8 @@ using Alundra.Events;
 using Alundra.Ai.Objects;
 using Alundra.Hero;
 using Alundra.Dialogues;
+using Alundra.UI.Saving;
+using Alundra.UI.Speech;
 
 namespace Alundra.Tests;
 

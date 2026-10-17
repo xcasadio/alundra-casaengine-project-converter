@@ -8,8 +8,13 @@ using Alundra.Physics;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.Scripts;
+using Alundra.UI.Hud;
+using Alundra.UI.Saving;
+using Alundra.UI.Shared;
+using Alundra.UI.SubInventory;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Inventory;
 
 /// <summary>
 /// E13.d D4 (docs/plan-e13d-inventaire.md, D-E13D-1/D-E13D-6): a pure, tick-driven port of the

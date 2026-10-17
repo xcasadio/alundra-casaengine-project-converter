@@ -2,13 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.UI;
 using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Session;
 using Alundra.Dialogues;
+using Alundra.UI.Speech;
 
 namespace Alundra.Tests;
 

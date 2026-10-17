@@ -14,6 +14,7 @@ using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Cameras;
 using Alundra.Dialogues;
+using Alundra.UI.Shared;
 
 namespace Alundra.Tests;
 

@@ -17,6 +17,9 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues.Yarn;
 using Alundra.Scripts;
+using Alundra.UI.Choice;
+using Alundra.UI.Messages;
+using Alundra.UI.Shared;
 
 namespace Alundra.Dialogues;
 

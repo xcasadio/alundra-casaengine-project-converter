@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Alundra.UI.Hud;
+using Alundra.UI.Inventory;
 
 namespace Alundra.Tests.UI;
 

@@ -16,6 +16,7 @@ using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.UI.Hud;
 
 namespace Alundra.Tests;
 
@@ -445,8 +446,8 @@ public sealed class AlundraHudPresenterTests : IDisposable
     public void PresenterAndScreen_NeverCallAnyMguiAnimationApi()
     {
         var repoRoot = FindRepoRoot();
-        AssertNoAnimationCalls(Path.Combine(repoRoot, "Alundra", "Scripts", "AlundraHudPresenter.cs"));
-        AssertNoAnimationCalls(Path.Combine(repoRoot, "Alundra", "Scripts", "AlundraHudScreen.cs"));
+        AssertNoAnimationCalls(Path.Combine(repoRoot, "Alundra", "UI", "Hud", "AlundraHudPresenter.cs"));
+        AssertNoAnimationCalls(Path.Combine(repoRoot, "Alundra", "UI", "Hud", "AlundraHudScreen.cs"));
     }
 
     private static void AssertNoAnimationCalls(string path)
@@ -463,7 +464,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory is not null)
         {
-            var candidate = Path.Combine(directory.FullName, "Alundra", "Scripts", "AlundraHudDirector.cs");
+            var candidate = Path.Combine(directory.FullName, "Alundra", "UI", "Hud", "AlundraHudDirector.cs");
             if (File.Exists(candidate))
             {
                 return directory.FullName;

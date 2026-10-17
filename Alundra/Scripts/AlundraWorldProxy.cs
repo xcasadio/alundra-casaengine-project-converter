@@ -40,6 +40,14 @@ using Alundra.Rendering.Effects;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.UI.Choice;
+using Alundra.UI.Hud;
+using Alundra.UI.Inventory;
+using Alundra.UI.Messages;
+using Alundra.UI.Saving;
+using Alundra.UI.Shared;
+using Alundra.UI.Speech;
+using Alundra.UI.SubInventory;
 
 namespace Alundra.Scripts;
 

@@ -12,6 +12,7 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Alundra.UI.Messages;
 
 namespace Alundra.Tests.UI;
 

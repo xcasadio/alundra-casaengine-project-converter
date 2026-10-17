@@ -7,6 +7,7 @@ using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Yarn;
 using Alundra.Dialogues.Yarn;
 using Alundra.Scripts;
+using Alundra.UI.Shared;
 
 namespace Alundra.Dialogues;
 

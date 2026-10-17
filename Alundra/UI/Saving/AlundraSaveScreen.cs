@@ -6,8 +6,11 @@ using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
 using Microsoft.Xna.Framework;
+using Alundra.Scripts;
+using Alundra.UI.Inventory;
+using Alundra.UI.SubInventory;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Saving;
 
 /// <summary>
 /// E16.e T4 (docs/plan-e16-etat-partie.md, L5): the save screen - a project asset,

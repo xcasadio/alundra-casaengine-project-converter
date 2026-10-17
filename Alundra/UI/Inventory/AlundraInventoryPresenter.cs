@@ -4,8 +4,11 @@ using CasaEngine.Framework.UI;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Items;
+using Alundra.Scripts;
+using Alundra.UI.Shared;
+using Alundra.UI.Speech;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Inventory;
 
 /// <summary>
 /// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-6): reads <see cref="AlundraInventoryDirector"/>'s own

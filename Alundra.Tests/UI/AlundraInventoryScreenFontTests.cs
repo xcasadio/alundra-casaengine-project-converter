@@ -8,6 +8,7 @@ using FontStashSharp;
 using MGUI.FontStashSharp;
 using MGUI.Shared.Text;
 using Xunit;
+using Alundra.UI.Inventory;
 
 namespace Alundra.Tests.UI;
 

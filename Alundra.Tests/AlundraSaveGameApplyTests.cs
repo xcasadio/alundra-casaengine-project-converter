@@ -16,6 +16,10 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Transitions;
+using Alundra.UI.Hud;
+using Alundra.UI.Inventory;
+using Alundra.UI.Shared;
+using Alundra.UI.SubInventory;
 
 namespace Alundra.Tests;
 

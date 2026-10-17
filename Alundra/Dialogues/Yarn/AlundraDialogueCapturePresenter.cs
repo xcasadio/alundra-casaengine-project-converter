@@ -5,7 +5,7 @@ using System.Text;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Dialogue.Presentation;
 using CasaEngine.Framework.Dialogue.Runtime;
-using Alundra.Scripts;
+using Alundra.UI.Speech;
 
 namespace Alundra.Dialogues.Yarn;
 

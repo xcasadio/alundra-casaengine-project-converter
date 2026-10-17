@@ -13,6 +13,7 @@ using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.UI.Hud;
 
 namespace Alundra.Tests;
 

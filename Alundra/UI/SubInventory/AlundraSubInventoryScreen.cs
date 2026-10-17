@@ -6,8 +6,10 @@ using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
 using Microsoft.Xna.Framework;
+using Alundra.Scripts;
+using Alundra.UI.Inventory;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.SubInventory;
 
 /// <summary>
 /// The sub-inventory screen (E13.d SI4, parent ADR-0002): a project asset,

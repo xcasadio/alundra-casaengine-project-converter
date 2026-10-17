@@ -6,8 +6,11 @@ using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
 using Microsoft.Xna.Framework;
+using Alundra.Scripts;
+using Alundra.UI.Inventory;
+using Alundra.UI.Messages;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Choice;
 
 /// <summary>
 /// E19.f3b (docs/plan-e19-opcodes.md): the screen of the choice box - a project asset, <c>UI/Screens/ChoiceScreen.uiscreen</c> and its XAML, versioned in <c>alundra-project</c>

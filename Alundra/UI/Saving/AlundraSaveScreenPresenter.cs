@@ -1,8 +1,10 @@
 #nullable enable
 using System;
 using CasaEngine.Framework.UI;
+using Alundra.Scripts;
+using Alundra.UI.SubInventory;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Saving;
 
 /// <summary>
 /// E16.e T4 (docs/plan-e16-etat-partie.md, L5): reads <see cref="AlundraSaveScreenDirector"/>'s already-ticked state

@@ -7,8 +7,11 @@ using Alundra.Ai.Objects;
 using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Dialogues;
+using Alundra.Scripts;
+using Alundra.UI.Hud;
+using Alundra.UI.Inventory;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Saving;
 
 /// <summary>
 /// E16.e L2/L3/L5 (docs/plan-e16-etat-partie.md, D-E16-34 to D-E16-37): the save screen the save book starts - a

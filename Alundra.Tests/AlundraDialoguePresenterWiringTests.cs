@@ -10,6 +10,7 @@ using Alundra.Entities;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.UI.Speech;
 
 namespace Alundra.Tests;
 

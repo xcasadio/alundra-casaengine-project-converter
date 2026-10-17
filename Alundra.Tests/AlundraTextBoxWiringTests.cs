@@ -23,6 +23,8 @@ using Alundra.Session;
 using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
+using Alundra.UI.Choice;
+using Alundra.UI.Messages;
 
 namespace Alundra.Tests;
 

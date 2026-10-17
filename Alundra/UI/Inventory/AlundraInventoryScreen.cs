@@ -8,8 +8,10 @@ using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
 using Microsoft.Xna.Framework;
+using Alundra.Scripts;
+using Alundra.UI.Hud;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Inventory;
 
 /// <summary>
 /// The main inventory screen (E13.d D5, parent ADR-0002): a project asset, <c>UI/Screens/InventoryScreen.uiscreen</c>

@@ -2,12 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.UI.Hud;
+using Alundra.UI.Inventory;
+using Alundra.UI.Saving;
+using Alundra.UI.Shared;
+using Alundra.UI.SubInventory;
 
 namespace Alundra.Tests;
 
