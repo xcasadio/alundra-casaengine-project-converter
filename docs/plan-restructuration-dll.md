@@ -1231,6 +1231,12 @@ n'est pas dans le graphe de construction du convertisseur) : sans effet. Les deu
   gelées à leur commit de clôture (`a193671`, `ce6d335`) plutôt que remappées après R5 ; les commentaires du code ne changent pas en R5
   (comme en R3 et R4, voir Q-R-5) ; les dossiers temporaires des anciennes exécutions de tests, nommés par les anciens préfixes, restent
   orphelins sur la machine.
+- **Q-R-7** (2026-10-18, proposition) — Après le chantier, une tranche qui **ajoute un fichier** à la DLL fait échouer
+  `check_names.py --tree --stage final` (`[hors table]`, `tools/dll-structure/check_names.py:96-98`), et `table.json` est générée sur la
+  base `5434cf6` (« do not edit ») ; l'ADR-0075 ne règle ce cas que pendant le chantier. Proposé : une petite tranche R7, outil seul, après
+  R5 : un mode `check_names.py --rules` qui contrôle l'arbre vivant de la DLL et des tests contre les règles de l'ADR-0075 (un dossier = un
+  namespace, aucun préfixe `Alundra`, un nom unique parmi la DLL, le moteur, MGUI, MonoGame, les paquets et la BCL, aucun type au nom d'un
+  segment), sans la table, et qui devient la garde des tranches suivantes ; la table reste l'archive du chantier. Valider ou corriger.
 - **Q-R-2** — **Tranchée le 2026-10-17 (D-R-10)** : l'aperçu tolérant (A), avec une icône d'avertissement à côté du nom du script dans
   l'éditeur. Question d'origine (2026-10-16 ; O2 du plan du moteur) — Que doit faire **l'éditeur** quand il ouvre
   un monde ou l'aperçu d'un préfab dont la DLL de scripts n'est pas construite ? Aujourd'hui, une entité au script introuvable est
