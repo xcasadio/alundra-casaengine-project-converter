@@ -7151,13 +7151,16 @@ après le chargement (`GameRandom.Reset()`, `:255-261`) : un arc est déterminis
 et du soulèvement de g1b) : g4a avec g3, g4b avec g1b. Q-G3-c (la chute de la caisse du dessus) : l'écart documenté jusqu'à E19.h2, mesuré
 en g4b.
 
-#### 1.29.1 E20.g4a — La barricade par le saut ⏳ (révision 1)
+#### 1.29.1 E20.g4a — La barricade par le saut ⏳ (révision 2)
 
 **Relecture (2026-10-18).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) les règles du pilote s'ancraient sur `0x11 @124`, qui ne
 s'exécute qu'après un roulis, comptaient en images sans dire comment trouver le tick du sondage à 2 et 3 ticks par image, et reposaient sur
 une inférence (« calé au mur, le roulis ne sort pas de la fenêtre ») : elles sont réécrites sur la cadence réelle de B1, mesurée en T0, et le
 pilote **ne déclenche aucun roulis** ; (2) le périmètre ne nommait ni la table des glissements des arcs, ni le fichier des arcs, ni les deux
-tables du test des préréglages.
+tables du test des préréglages. Seconde relecture : REVISE, un blocage introduit par la révision 1 (le lâcher forcé à chaque sondage tombe
+aussi pendant le saut, alors que la fenêtre en X du binaire a été mesurée Gauche tenue de bout en bout) : FIX en révision 2 (le saut part à
+l'image qui suit un sondage, sa fenêtre en X est mesurée sur la DLL sous la règle du pilote à chaque cadence, arrêt si elle est vide) ;
+nouvelle époque, une seule relecture de clôture.
 
 **Faits de B1 qui portent le pilote** (`critic-complet/c5_392_B1.out:29-40`, A5r `AlundraShipCorridorArcTests.cs:214-234`). La boucle :
 `@104 0x11` (rend la main), `@105 0x37 [15]` (attend), `@107 0x2F` (une direction est-elle tenue ?), `@111 0x04` (non : retour à `@105`),
@@ -7187,12 +7190,17 @@ code de la DLL hors du préréglage.
   avant les arcs : il lit l'état du jeu avant chaque image et ne l'écrit jamais ; **il lâche toutes les directions pendant chaque image qui
   peut contenir un sondage** (l'image d'ancrage `0x11 @104`, puis tous les `C` d'après (a), les deux images candidates quand le sondage
   peut tomber dans l'une ou l'autre) ; hors de ces images il tient la direction de la phase de (b) jusqu'à son seuil ; **le saut** : Croix
-  et Gauche tenues ensemble, à la première image où le héros est au sol, `PosY` dans [295,0 ; 297,0] et `PosX` dans [657,0 ; 694,4]
-  (depuis l'est, `bin/report.md` §A3.2), hors d'une image de sondage ; un roulis observé (`0x10 @118`) est un arrêt de l'arc ; (d) **les
+  et Gauche tenues ensemble, à **la première image qui suit une image de sondage** où le héros est au sol, `PosY` dans [295,0 ; 297,0] et
+  `PosX` dans la fenêtre de T0 (f) (le saut dure 18 ticks dans le binaire et le sondage revient tous les 16 : une seule image de lâcher tombe
+  alors pendant le saut, vers sa fin, et en l'air le roulis ne part pas, `0x70 @114`), Gauche tenue ensuite hors des images de lâcher ; un roulis observé (`0x10 @118`) est un arrêt de l'arc ; (d) **les
   glissements** : le calage au mur nord (Gauche seule depuis y0 de 286 à 295 : la loi `295 + ((y0 − 295) mod 0,5)` est un second pas d'un
   demi-pixel le long d'un mur de case, `ScriptedMotion.cs:771-773`, `:888`, qui compte dans `SlideCount`) : le nombre de glissements de
   chaque arc neuf, à chaque cadence, mesuré, comparé à la loi, puis épinglé dans `ArcsThatSlide` ; un compte que la loi n'explique pas est
-  un arrêt ; (e) le calage mesuré sur la DLL après g3 contre `critic/out/w3_door.txt` ; un écart est un arrêt.
+  un arrêt ; (e) le calage mesuré sur la DLL après g3 contre `critic/out/w3_door.txt` ; un écart est un arrêt ; (f) **la fenêtre en X du saut sous la
+  règle du pilote**, mesurée sur la DLL après g3 à 1, 2 et 3 ticks par image : départ à l'image qui suit un sondage, `PosY` à 295,0, 296,0 et
+  297,0, `PosX` balayé de 650 à 700 par pas de 0,5 px ; la fenêtre retenue est l'intersection des cadences (la plage du binaire, 657,0 à
+  694,4 Gauche tenue, sert de contrôle : la fenêtre mesurée doit y être incluse) ; une fenêtre vide à une cadence est un arrêt. Les arcs
+  neufs portent un nom par cadence (`ArcsThatSlide` est indexé par `Spec.Name`), pour que T0 (d) épingle chacun.
 - ⏳ **T1 — Arcs** (sous B1, les 12 enregistrements, à 1, 2 et 3 ticks par image) : (a1) le calage au mur nord (les valeurs de T0 (b)) ; (a2)
   la route du saut de bout en bout par le pilote de T0 (c) : depuis l'arrivée de B1, les phases de T0 (b), le saut, la descente à l'ouest, le
   contournement de rec9, jusqu'au portail 0 (`WarpDirector.Instance.HasPendingArrival`, la cellule (22, 23)) ; aucun roulis ; (a3) une entrée en cardinal à y0 > 297,0 : le saut se refuse (le héros reste à
@@ -7204,7 +7212,7 @@ code de la DLL hors du préréglage.
 `ArcsThatSlide`, T0 (d)) ; la suite verte ; recette de l'auteur avec `barricade-m392` : se caler
 contre le haut de la porte, sauter sur la caisse basse, rejoindre le portail.
 
-**Arrêts.** T0 (a) montre un roulis ou une cadence irrégulière ; T0 (d) un compte de glissements que la loi n'explique pas ; T0 (e)
+**Arrêts.** T0 (a) montre un roulis ou une cadence irrégulière ; la fenêtre de T0 (f) est vide à une cadence, ou sort de celle du binaire ; T0 (d) un compte de glissements que la loi n'explique pas ; T0 (e)
 contredit le binaire ; un roulis pendant un arc ; le pilote doit lire autre chose que l'état du jeu (aucune valeur écrite par le test pendant l'arc) ;
 un besoin de toucher au moteur.
 
